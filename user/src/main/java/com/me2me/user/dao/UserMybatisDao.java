@@ -5,6 +5,7 @@ import com.me2me.user.mapper.UserMapper;
 import com.me2me.user.model.User;
 import com.me2me.user.model.UserExample;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
  * Author: 赵朋扬
  * Date: 2016/2/26.
  */
+@Repository
 public class UserMybatisDao {
 
     @Autowired
