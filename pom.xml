@@ -20,6 +20,8 @@
         <module>root</module>
         <module>common</module>
         <module>core</module>
+        <module>io-api</module>
+        <module>io</module>
     </modules>
 
     <properties>
