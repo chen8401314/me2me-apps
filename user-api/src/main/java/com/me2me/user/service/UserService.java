@@ -3,6 +3,7 @@ package com.me2me.user.service;
 import com.me2me.common.web.Response;
 import com.me2me.user.dto.UserLoginDto;
 import com.me2me.user.dto.UserSignUpDto;
+import com.me2me.user.dto.VerifyDto;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -26,6 +27,13 @@ public interface UserService {
      * @return
      */
     Response login(UserLoginDto userLoginDto);
+
+
+    /**
+     * 验证码和校验验证码接口
+     * @return
+     */
+    Response verify(VerifyDto verifyDto);
 
 
 
