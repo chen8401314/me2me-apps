@@ -38,5 +38,10 @@ public class SecurityUtils {
     public static void main(String[] args) {
         String value = getMask();
         System.out.println(value);
+        int len = "69f95dccbb4bdd6370f3a426ecea3979".length();
+        System.out.println(len);
+
+        String s = SecurityUtils.md5("123456","820610");
+        System.out.println(s);
     }
 }

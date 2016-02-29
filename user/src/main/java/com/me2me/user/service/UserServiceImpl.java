@@ -58,7 +58,8 @@ public class UserServiceImpl implements UserService {
     public Response login(UserLoginDto userLoginDto) {
         User user = userMybatisDao.getUserByUserName(userLoginDto.getUserName());
         if(user != null){
-            if(userLoginDto.getEncrypt().equals(user.getEncrypt())){
+            String salt = user.getSalt();
+            if(SecurityUtils.md5(userLoginDto.getEncrypt(),salt).equals(user.getEncrypt())){
                 // 则用户登录成功
                 LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
                 loginSuccessDto.setUid(user.getUid());
