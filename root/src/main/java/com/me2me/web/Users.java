@@ -117,8 +117,7 @@ public class Users {
     @RequestMapping(value = "/getBasicData",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getBasicData(BasicDataRequest request){
         BasicDataDto basicDataDto = new BasicDataDto();
-        userService.getBasicData(basicDataDto);
-        return null;
+        return userService.getBasicData(basicDataDto);
     }
 
     /**
