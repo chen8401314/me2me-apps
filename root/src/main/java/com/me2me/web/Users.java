@@ -126,7 +126,6 @@ public class Users {
     @ResponseBody
     @RequestMapping(value = "/thirdPartAuth",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response thirdPartAuth(ThirdPartAuthRequest request){
-
         return null;
     }
 
