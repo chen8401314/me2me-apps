@@ -15,4 +15,6 @@ public class LoginSuccessDto implements BaseEntity {
 
     private String userName;
 
+    private String token;
+
 }

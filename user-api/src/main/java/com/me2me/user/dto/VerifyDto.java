@@ -16,4 +16,6 @@ public class VerifyDto implements BaseEntity {
 
     private String verifyCode;
 
+    private String mobile;
+
 }
