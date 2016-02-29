@@ -116,9 +116,8 @@ public class Users {
     @ResponseBody
     @RequestMapping(value = "/getBasicData",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getBasicData(BasicDataRequest request){
-        BasicDateDto basicDateDto = new BasicDateDto();
-        userService.getBasicData(basicDateDto);
-        return null;
+        BasicDataDto basicDataDto = new BasicDataDto();
+        return userService.getBasicData(basicDataDto);
     }
 
     /**
@@ -127,7 +126,6 @@ public class Users {
     @ResponseBody
     @RequestMapping(value = "/thirdPartAuth",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response thirdPartAuth(ThirdPartAuthRequest request){
-
         return null;
     }
 
