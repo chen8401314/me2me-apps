@@ -4,9 +4,14 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.dto.*;
+import com.me2me.user.model.Dictionary;
+import com.me2me.user.model.DictionaryExample;
 import com.me2me.user.model.User;
+import com.me2me.user.model.UserHobby;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -74,7 +79,7 @@ public class UserServiceImpl implements UserService {
             }else{
                 user.setEncrypt(modifyEncryptDto.getFirstEncrypt());
                 userMybatisDao.modifyUser(user);
-                return Response.failure(ResponseStatus.USER_MODIFYENCRYPT_SUCCESS.status,ResponseStatus.USER_MODIFYENCRYPT_SUCCESS.message);
+                return Response.failure(ResponseStatus.USER_MODIFY_ENCRYPT_SUCCESS.status,ResponseStatus.USER_MODIFY_ENCRYPT_SUCCESS.message);
             }
         }else {
             return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
@@ -82,23 +87,32 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
-     * 用户模块获取基础数据
-     * @param type
+     * 修改用户爱好
+     * @param modifyUserHobbyDto
      * @return
      */
-    public Response getBasicData(int type) {
-
-        return null;
+    public Response modifyUserHobby(ModifyUserHobbyDto modifyUserHobbyDto){
+        String userName = modifyUserHobbyDto.getUserName();
+        User user = userMybatisDao.getUserByUserName(userName);
+        String hobby = modifyUserHobbyDto.getHobby();
+        String [] hobbies = hobby.split(",");
+        UserHobby deleteUserHobby = new UserHobby();
+        deleteUserHobby.setUid(user.getUid());
+        userMybatisDao.deleteUserHobby(deleteUserHobby);
+        for (String h : hobbies){
+            UserHobby userHobby = new UserHobby();
+            userHobby.setHobby(Long.parseLong(h));
+            userHobby.setUid(user.getUid());
+            userMybatisDao.createUserHobby(userHobby);
+        }
+        return Response.success(ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.status,ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.message);
     }
 
-    /**
-     * 修改用户爱好
-     * @param modifyEncryptDto
-     * @return
-     */
-    public Response modifyUserHobby(ModifyEncryptDto modifyEncryptDto){
-
-        return null;
+    public Response getBasicData(BasicDataDto basicDataDto){
+        List<Dictionary> dictionaryList = userMybatisDao.getDictionary(basicDataDto);
+        BasicDataSuccessDto basicDataSuccessDto = new BasicDataSuccessDto();
+        basicDataSuccessDto.setResult(dictionaryList);
+        return Response.success(basicDataSuccessDto);
     }
 
 }
