@@ -31,6 +31,13 @@
 
 
         <table tableName="user" domainObjectName="User"/>
-        <table tableName="user_token" domainObjectName="UserToken"/>
+        <table tableName="user_profile" domainObjectName="UserProfile"/>
+        <table tableName="dictionary" domainObjectName="Dictionary"/>
+        <table tableName="dictionary_type" domainObjectName="DictionaryType"/>
+        <table tableName="address" domainObjectName="Address"/>
+        <table tableName="user_hobby" domainObjectName="UserHobby"/>
+        <table tableName="user_token" domainObjectName="UserTsoken"/>
+        <table tableName="user_device" domainObjectName="UserDevice"/>
+        <table tableName="user_channel" domainObjectName="UserChannel"/>
     </context>
 </generatorConfiguration>

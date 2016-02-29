@@ -76,6 +76,16 @@ public class Response<T extends Serializable>  {
     }
 
     /**
+     * 请求成功
+     * @param code
+     * @param message
+     * @return
+     */
+    public static <T extends BaseEntity> Response success(int code,String message){
+        return new Response(code,message);
+    }
+
+    /**
      * 用户自定义成功
      * @param code
      * @param message

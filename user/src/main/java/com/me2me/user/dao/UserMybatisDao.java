@@ -2,11 +2,9 @@ package com.me2me.user.dao;
 
 import com.me2me.common.web.Specification;
 import com.me2me.user.mapper.UserMapper;
-import com.me2me.user.mapper.UserTokenMapper;
 import com.me2me.user.model.User;
 import com.me2me.user.model.UserExample;
-import com.me2me.user.model.UserToken;
-import com.me2me.user.model.UserTokenExample;
+import com.me2me.user.model.UserHobby;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -22,9 +20,6 @@ public class UserMybatisDao {
 
     @Autowired
     private UserMapper userMapper;
-
-    @Autowired
-    private UserTokenMapper userTokenMapper;
 
 
     /**
@@ -48,17 +43,13 @@ public class UserMybatisDao {
         return (users!=null&&users.size()>0)? users.get(0):null;
     }
 
-    /**
-     * 根据用户账号获取用户Token
-     * @param uid
-     */
-    public UserToken getUserTokenByUid(long uid){
-        UserTokenExample example = new UserTokenExample();
-        UserTokenExample.Criteria criteria = example.createCriteria();
-        criteria.andUidEqualTo(uid);
-        List<UserToken> userTokens = userTokenMapper.selectByExample(example);
-        return (userTokens!=null&&userTokens.size()>0)? userTokens.get(0):null;
+    public void modifyUser(User user){
+        userMapper.updateByPrimaryKey(user);
+
     }
 
 
+    public void modifyUserHobby(UserHobby userHobby){
+
+    }
 }

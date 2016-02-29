@@ -3,12 +3,8 @@ package com.me2me.user.service;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.user.dao.UserMybatisDao;
-import com.me2me.user.dto.LoginSuccessDto;
-import com.me2me.user.dto.UserLoginDto;
-import com.me2me.user.dto.UserSignUpDto;
-import com.me2me.user.dto.VerifyDto;
+import com.me2me.user.dto.*;
 import com.me2me.user.model.User;
-import com.me2me.user.model.UserToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,14 +35,12 @@ public class UserServiceImpl implements UserService {
      */
     public Response login(UserLoginDto userLoginDto) {
         User user = userMybatisDao.getUserByUserName(userLoginDto.getUserName());
-        if(user!=null){
+        if(user != null){
             if(userLoginDto.getEncrypt().equals(user.getEncrypt())){
                 // 则用户登录成功
                 LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
                 loginSuccessDto.setUid(user.getUid());
                 loginSuccessDto.setUserName(user.getUserName());
-                UserToken token = userMybatisDao.getUserTokenByUid(user.getUid());
-                loginSuccessDto.setToken(token.getToken());
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status,ResponseStatus.USER_LOGIN_SUCCESS.message,loginSuccessDto);
             }else{
                 // 用户密码不正确
@@ -58,7 +52,53 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * 发送校验验证码
+     * @param verifyDto
+     * @return
+     */
     public Response verify(VerifyDto verifyDto) {
         return null;
     }
+
+    /**
+     * 修改密码
+     * @param modifyEncryptDto
+     * @return
+     */
+    public Response modifyEncrypt(ModifyEncryptDto modifyEncryptDto){
+        User user = userMybatisDao.getUserByUserName(modifyEncryptDto.getUserName());
+        if(user != null){
+            if(!modifyEncryptDto.getOldEncrypt().equals(user.getEncrypt())){
+                return Response.failure(ResponseStatus.USER_PASSWORD_ERROR.status,ResponseStatus.USER_PASSWORD_ERROR.message);
+            }else{
+                user.setEncrypt(modifyEncryptDto.getFirstEncrypt());
+                userMybatisDao.modifyUser(user);
+                return Response.failure(ResponseStatus.USER_MODIFYENCRYPT_SUCCESS.status,ResponseStatus.USER_MODIFYENCRYPT_SUCCESS.message);
+            }
+        }else {
+            return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
+        }
+    }
+
+    /**
+     * 用户模块获取基础数据
+     * @param type
+     * @return
+     */
+    public Response getBasicData(int type) {
+
+        return null;
+    }
+
+    /**
+     * 修改用户爱好
+     * @param modifyEncryptDto
+     * @return
+     */
+    public Response modifyUserHobby(ModifyEncryptDto modifyEncryptDto){
+
+        return null;
+    }
+
 }
