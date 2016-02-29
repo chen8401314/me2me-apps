@@ -104,8 +104,7 @@ public class Users {
         ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();
         modifyUserHobbyDto.setUserName(request.getUserName());
         modifyUserHobbyDto.setHobby(request.getHobby());
-        userService.modifyUserHobby(modifyUserHobbyDto);
-        return null;
+        return userService.modifyUserHobby(modifyUserHobbyDto);
     }
 
 
