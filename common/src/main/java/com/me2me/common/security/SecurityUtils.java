@@ -31,8 +31,8 @@ public class SecurityUtils {
     public static String getMask(){
         StringBuilder sb = new StringBuilder();
         for(int i = 0;i<6;i++){
-            int a = random.nextInt(10);
-            sb.append(a);
+            int temp = random.nextInt(10);
+            sb.append(temp);
         }
         return sb.toString();
     }
