@@ -4,6 +4,7 @@ import com.me2me.common.web.Specification;
 import com.me2me.user.mapper.UserMapper;
 import com.me2me.user.model.User;
 import com.me2me.user.model.UserExample;
+import com.me2me.user.model.UserHobby;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -47,4 +48,8 @@ public class UserMybatisDao {
 
     }
 
+
+    public void modifyUserHobby(UserHobby userHobby){
+
+    }
 }

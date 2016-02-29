@@ -84,24 +84,6 @@ public class Users {
     }
 
     /**
-     * 检测验证码接口
-     * @param request
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = "/checkVerify",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response checkVerify(CheckVerifyRequest request){
-        String verifyCode = request.getVerifyCode();
-        //// TODO: 2016/2/29  add check verifyCode
-        String cacheCode = "";
-        if(verifyCode.equals(cacheCode)){
-            return null;
-        }else{
-            return null;
-        }
-    }
-
-    /**
      * 用户资料修改
      * @param request
      * @param avatar
@@ -124,22 +106,27 @@ public class Users {
         return null;
     }
 
-    /**
-     * 获取用户爱好
-     * @param request
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = "/getUserHobby",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response modifyUserHobby(UserHobbyRequest request){
-        return null;
-    }
 
     /**
      * 获取用户基础数据
      *
      */
+    @ResponseBody
+    @RequestMapping(value = "/getBasicData",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getBasicData(BasicDataRequest request){
 
+        return null;
+    }
+
+    /**
+     * 第三方登录
+     */
+    @ResponseBody
+    @RequestMapping(value = "/thirdPartAuth",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response thirdPartAuth(ThirdPartAuthRequest request){
+
+        return null;
+    }
 
 
 

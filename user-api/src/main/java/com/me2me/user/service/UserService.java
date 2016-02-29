@@ -43,6 +43,15 @@ public interface UserService {
      */
     Response modifyEncrypt(ModifyEncryptDto modifyEncryptDto);
 
+    /**
+     * 用户端获取基础数据
+     * @param type
+     * @return
+     */
+    Response getBasicData(int type);
+
+    Response modifyUserHobby(ModifyEncryptDto modifyEncryptDto);
+
 
 
 }

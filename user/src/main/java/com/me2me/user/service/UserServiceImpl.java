@@ -52,10 +52,20 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    /**
+     * 发送校验验证码
+     * @param verifyDto
+     * @return
+     */
     public Response verify(VerifyDto verifyDto) {
         return null;
     }
 
+    /**
+     * 修改密码
+     * @param modifyEncryptDto
+     * @return
+     */
     public Response modifyEncrypt(ModifyEncryptDto modifyEncryptDto){
         User user = userMybatisDao.getUserByUserName(modifyEncryptDto.getUserName());
         if(user != null){
@@ -70,4 +80,25 @@ public class UserServiceImpl implements UserService {
             return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
         }
     }
+
+    /**
+     * 用户模块获取基础数据
+     * @param type
+     * @return
+     */
+    public Response getBasicData(int type) {
+
+        return null;
+    }
+
+    /**
+     * 修改用户爱好
+     * @param modifyEncryptDto
+     * @return
+     */
+    public Response modifyUserHobby(ModifyEncryptDto modifyEncryptDto){
+
+        return null;
+    }
+
 }
