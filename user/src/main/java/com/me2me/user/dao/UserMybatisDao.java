@@ -42,5 +42,9 @@ public class UserMybatisDao {
         return (users!=null&&users.size()>0)? users.get(0):null;
     }
 
+    public void modifyUser(User user){
+        userMapper.updateByPrimaryKey(user);
+
+    }
 
 }

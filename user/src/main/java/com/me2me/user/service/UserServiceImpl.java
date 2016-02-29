@@ -3,9 +3,7 @@ package com.me2me.user.service;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.user.dao.UserMybatisDao;
-import com.me2me.user.dto.LoginSuccessDto;
-import com.me2me.user.dto.UserLoginDto;
-import com.me2me.user.dto.UserSignUpDto;
+import com.me2me.user.dto.*;
 import com.me2me.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,7 +35,7 @@ public class UserServiceImpl implements UserService {
      */
     public Response login(UserLoginDto userLoginDto) {
         User user = userMybatisDao.getUserByUserName(userLoginDto.getUserName());
-        if(user!=null){
+        if(user != null){
             if(userLoginDto.getEncrypt().equals(user.getEncrypt())){
                 // 则用户登录成功
                 LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
@@ -50,6 +48,25 @@ public class UserServiceImpl implements UserService {
             }
 
         }else{
+            return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
+        }
+    }
+
+    public Response verify(VerifyDto verifyDto) {
+        return null;
+    }
+
+    public Response modifyEncrypt(ModifyEncryptDto modifyEncryptDto){
+        User user = userMybatisDao.getUserByUserName(modifyEncryptDto.getUserName());
+        if(user != null){
+            if(!modifyEncryptDto.getOldEncrypt().equals(user.getEncrypt())){
+                return Response.failure(ResponseStatus.USER_PASSWORD_ERROR.status,ResponseStatus.USER_PASSWORD_ERROR.message);
+            }else{
+                user.setEncrypt(modifyEncryptDto.getFirstEncrypt());
+                userMybatisDao.modifyUser(user);
+                return Response.failure(ResponseStatus.USER_MODIFYENCRYPT_SUCCESS.status,ResponseStatus.USER_MODIFYENCRYPT_SUCCESS.message);
+            }
+        }else {
             return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
         }
     }

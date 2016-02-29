@@ -16,6 +16,8 @@ public enum  ResponseStatus {
 
     USER_LOGIN_SUCCESS("用户登录成功","user login success",2001),
 
+    USER_MODIFYENCRYPT_SUCCESS("用户密码修改成功","user modifyEncrypt success",2002),
+
     USER_PASSWORD_ERROR("用户密码错误","user password error",5000),
 
     USER_NOT_EXISTS("该用户不存在","user not exists",5001);
