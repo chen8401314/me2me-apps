@@ -117,7 +117,7 @@ public class UserServiceImpl implements UserService {
         UserHobby deleteUserHobby = new UserHobby();
         deleteUserHobby.setUid(user.getUid());
         userMybatisDao.deleteUserHobby(deleteUserHobby);
-        for (String h : hobbies){
+        for(String h : hobbies){
             UserHobby userHobby = new UserHobby();
             userHobby.setHobby(Long.parseLong(h));
             userHobby.setUid(user.getUid());
