@@ -6,6 +6,8 @@ import org.jivesoftware.smack.SmackException;
 import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.chat.Chat;
 import org.jivesoftware.smack.chat.ChatManager;
+import org.jivesoftware.smack.chat.ChatManagerListener;
+import org.jivesoftware.smack.chat.ChatMessageListener;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.roster.Roster;
 import org.jivesoftware.smack.roster.RosterEntry;
@@ -13,8 +15,10 @@ import org.jivesoftware.smack.roster.RosterGroup;
 import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.tcp.XMPPTCPConnectionConfiguration;
 import org.jivesoftware.smackx.iqregister.AccountManager;
+import org.jivesoftware.smackx.offline.OfflineMessageManager;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -43,7 +47,22 @@ public class Main {
 //            login("abc"+i,"abc111111");
 //        }
         // login("abc0","abc111111");
-       Roster.getInstanceFor(getConnection("abc","abc111111")).createEntry("abc10","abc10",new String[]{"friends"});
+       // Roster.getInstanceFor(getConnection("abc","abc111111")).createEntry("abc10","abc10",new String[]{"friends"});
+         XMPPTCPConnection connection = getConnection("abc1","abc111111");
+        // XMPPTCPConnection connection = getConnection("abc0","abc111111");
+        Chat chat = ChatManager.getInstanceFor(connection).createChat("abc0@iz23a2nwds6z");
+        chat.sendMessage("hello");
+        ChatManager chatManager = ChatManager.getInstanceFor(connection);
+        chatManager.addChatListener(new ChatManagerListener() {
+            public void chatCreated(Chat chat, boolean b) {
+                chat.addMessageListener(new ChatMessageListener() {
+                    public void processMessage(Chat chat, Message message) {
+                        System.out.println(message);
+                    }
+                });
+            }
+        });
+        while(true){}
     }
 
 

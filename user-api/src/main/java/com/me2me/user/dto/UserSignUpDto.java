@@ -17,7 +17,7 @@ public class UserSignUpDto implements BaseEntity {
 
     private int gander ;
 
-    private int constellation;
+    private int star;
 
     
 
