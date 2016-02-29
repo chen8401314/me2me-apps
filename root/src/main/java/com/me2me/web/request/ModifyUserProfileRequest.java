@@ -13,6 +13,10 @@ public class ModifyUserProfileRequest {
 
     @Getter
     @Setter
+    private int action;
+
+    @Getter
+    @Setter
     private String userName;
 
     @Getter
