@@ -8,6 +8,7 @@ import com.me2me.user.dto.UserLoginDto;
 import com.me2me.user.dto.UserSignUpDto;
 import com.me2me.user.dto.VerifyDto;
 import com.me2me.user.model.User;
+import com.me2me.user.model.UserToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -44,6 +45,8 @@ public class UserServiceImpl implements UserService {
                 LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
                 loginSuccessDto.setUid(user.getUid());
                 loginSuccessDto.setUserName(user.getUserName());
+                UserToken token = userMybatisDao.getUserTokenByUid(user.getUid());
+                loginSuccessDto.setToken(token.getToken());
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status,ResponseStatus.USER_LOGIN_SUCCESS.message,loginSuccessDto);
             }else{
                 // 用户密码不正确

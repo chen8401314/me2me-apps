@@ -31,5 +31,6 @@
 
 
         <table tableName="user" domainObjectName="User"/>
+        <table tableName="user_token" domainObjectName="UserToken"/>
     </context>
 </generatorConfiguration>
