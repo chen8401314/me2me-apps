@@ -6,6 +6,7 @@ import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.dto.LoginSuccessDto;
 import com.me2me.user.dto.UserLoginDto;
 import com.me2me.user.dto.UserSignUpDto;
+import com.me2me.user.dto.VerifyDto;
 import com.me2me.user.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,5 +53,9 @@ public class UserServiceImpl implements UserService {
         }else{
             return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
         }
+    }
+
+    public Response verify(VerifyDto verifyDto) {
+        return null;
     }
 }
