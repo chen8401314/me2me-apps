@@ -1,10 +1,7 @@
 package com.me2me.user.service;
 
 import com.me2me.common.web.Response;
-import com.me2me.user.dto.ModifyEncryptDto;
-import com.me2me.user.dto.UserLoginDto;
-import com.me2me.user.dto.UserSignUpDto;
-import com.me2me.user.dto.VerifyDto;
+import com.me2me.user.dto.*;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -44,14 +41,16 @@ public interface UserService {
     Response modifyEncrypt(ModifyEncryptDto modifyEncryptDto);
 
     /**
-     * 用户端获取基础数据
-     * @param type
+     * 修改爱好
+     * @param modifyUserHobbyDto
      * @return
      */
-    Response getBasicData(int type);
+    Response modifyUserHobby(ModifyUserHobbyDto modifyUserHobbyDto);
 
-    Response modifyUserHobby(ModifyEncryptDto modifyEncryptDto);
-
-
-
+    /**
+     * 用户端获取基础数据
+     * @param basicDataDto
+     * @return
+     */
+    Response getBasicData(BasicDataDto basicDataDto);
 }

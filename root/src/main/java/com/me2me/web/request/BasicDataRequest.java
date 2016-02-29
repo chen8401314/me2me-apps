@@ -14,5 +14,5 @@ public class BasicDataRequest extends Request{
 
     @Getter
     @Setter
-    private int type;
+    private long type;
 }

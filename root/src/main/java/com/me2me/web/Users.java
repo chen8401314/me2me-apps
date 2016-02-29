@@ -1,9 +1,7 @@
 package com.me2me.web;
 
 import com.me2me.common.web.Response;
-import com.me2me.user.dto.ModifyEncryptDto;
-import com.me2me.user.dto.UserLoginDto;
-import com.me2me.user.dto.UserSignUpDto;
+import com.me2me.user.dto.*;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,6 +101,10 @@ public class Users {
     @ResponseBody
     @RequestMapping(value = "/modifyUserHobby",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response modifyUserHobby(ModifyUserHobbyRequest request){
+        ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();
+        modifyUserHobbyDto.setUserName(request.getUserName());
+        modifyUserHobbyDto.setHobby(request.getHobby());
+        userService.modifyUserHobby(modifyUserHobbyDto);
         return null;
     }
 
@@ -114,7 +116,8 @@ public class Users {
     @ResponseBody
     @RequestMapping(value = "/getBasicData",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getBasicData(BasicDataRequest request){
-
+        BasicDateDto basicDateDto = new BasicDateDto();
+        userService.getBasicData(basicDateDto);
         return null;
     }
 
