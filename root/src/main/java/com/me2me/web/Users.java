@@ -35,7 +35,7 @@ public class Users {
         UserSignUpDto userSignUpDto = new UserSignUpDto();
         userSignUpDto.setMobile(request.getMobile());
         userSignUpDto.setGander(request.getGander());
-        userSignUpDto.setConstellation(request.getConstellation());
+        userSignUpDto.setStar(request.getStart());
         userSignUpDto.setEncrypt(request.getEncrypt());
         // todo add request params
         return userService.signUp(userSignUpDto);

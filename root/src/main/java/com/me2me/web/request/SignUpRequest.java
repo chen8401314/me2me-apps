@@ -33,5 +33,5 @@ public class SignUpRequest extends Request{
 
     @Getter
     @Setter
-    private int constellation;
+    private int start;
 }
