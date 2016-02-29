@@ -3,6 +3,7 @@ package com.me2me.common.security;
 import org.apache.shiro.crypto.hash.Md5Hash;
 
 import java.util.Random;
+import java.util.UUID;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -12,6 +13,7 @@ import java.util.Random;
 public class SecurityUtils {
 
     private static Random random = new Random();
+
     /**
      * MD5 加盐加密
      * @param password
@@ -35,13 +37,21 @@ public class SecurityUtils {
         return sb.toString();
     }
 
+    /**
+     * 生成用户token工具类
+     * @return
+     */
+    public static String getToken(){
+        return UUID.randomUUID().toString().replace("-","");
+    }
+
     public static void main(String[] args) {
         String value = getMask();
         System.out.println(value);
         int len = "69f95dccbb4bdd6370f3a426ecea3979".length();
         System.out.println(len);
-
         String s = SecurityUtils.md5("123456","820610");
         System.out.println(s);
+        System.out.println(getToken());
     }
 }
