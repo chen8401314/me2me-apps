@@ -32,6 +32,7 @@
         <druid.version>1.0.13</druid.version>
         <aspectjweaver.version>1.8.6</aspectjweaver.version>
         <lombok.version>1.16.6</lombok.version>
+        <shiro.version>1.2.4</shiro.version>
     </properties>
 
     <dependencyManagement>
@@ -115,6 +116,11 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.shiro</groupId>
+                <artifactId>shiro-core</artifactId>
+                <version>${shiro.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

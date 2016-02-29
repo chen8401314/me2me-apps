@@ -1,5 +1,6 @@
 package com.me2me.web;
 
+import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.web.Response;
 import com.me2me.user.dto.*;
 import com.me2me.user.service.UserService;
@@ -110,10 +111,10 @@ public class Users {
 
     /**
      * 获取用户基础数据
-     *
+     * 感觉意义不是很大 推荐用全量接口
      */
     @ResponseBody
-    @RequestMapping(value = "/getBasicData",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/getBasicDataByType",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getBasicData(BasicDataRequest request){
         BasicDataDto basicDataDto = new BasicDataDto();
         basicDataDto.setType(request.getType());

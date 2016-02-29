@@ -30,7 +30,7 @@
         </javaClientGenerator>
 
 
-        <table tableName="user" domainObjectName="User"/>
+        <!--<table tableName="user" domainObjectName="User"/>-->
         <table tableName="user_profile" domainObjectName="UserProfile"/>
         <table tableName="dictionary" domainObjectName="Dictionary"/>
         <table tableName="dictionary_type" domainObjectName="DictionaryType"/>

@@ -1,7 +1,9 @@
 package com.me2me.user.service;
 
+import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
+import com.me2me.common.web.Specification;
 import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.dto.*;
 import com.me2me.user.model.Dictionary;
@@ -11,6 +13,7 @@ import com.me2me.user.model.UserHobby;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,11 +29,25 @@ public class UserServiceImpl implements UserService {
 
     /**
      * 用户注册
-     * @param userDto
+     * @param userSignUpDto
      * @return
      */
-    public Response signUp(UserSignUpDto userDto) {
-        return null;
+    public Response signUp(UserSignUpDto userSignUpDto) {
+        SignUpSuccessDto signUpSuccessDto = new SignUpSuccessDto();
+        User user = new User();
+        String salt = SecurityUtils.getMask();
+        user.setEncrypt(SecurityUtils.md5(userSignUpDto.getEncrypt(),salt));
+        user.setSalt(salt);
+        user.setCreateTime(new Date());
+        user.setUpdateTime(new Date());
+        user.setStatus(Specification.UserStatus.NORMAL.index);
+        user.setUserName(userSignUpDto.getMobile());
+        userMybatisDao.createUser(user);
+        signUpSuccessDto.setUserName(user.getUserName());
+        // tudo 需要获取用户token
+        signUpSuccessDto.setToken("fdsfdsfds");
+        signUpSuccessDto.setUid(user.getUid());
+        return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
 
     /**
