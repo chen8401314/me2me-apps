@@ -59,7 +59,7 @@ public class YunXinSms {
      * @return 返回执行结果，true表示成功，false表示失败
      * @throws UnsupportedEncodingException
      */
-    public static Boolean sendSms(String mobileNo) throws UnsupportedEncodingException {
+    public static Boolean sendSms(String mobileNo)  {
         logger.info("{} send verify code",mobileNo);
         Map<String,String> param = new HashMap<String, String>();
         param.put("mobile",mobileNo);
@@ -74,7 +74,7 @@ public class YunXinSms {
      * @return 返回执行结果，true表示成功，false表示失败
      * @throws UnsupportedEncodingException
      */
-    public static Boolean verify(String mobileNo,String code)throws UnsupportedEncodingException{
+    public static Boolean verify(String mobileNo,String code){
         logger.info("execute verify method");
         Map<String,String> param = new HashMap<String, String>();
         param.put("mobile",mobileNo);
@@ -136,7 +136,7 @@ public class YunXinSms {
         }
     }
 
-    public static void main(String[] args) throws UnsupportedEncodingException, InterruptedException {
+    public static void main(String[] args)  {
         String[] mobileList = new String[]{"18698589577","18202149850","18221006454"};
 //"18621848116","15821376667","18629601696","13818695402","13601932249","18616336525"};
 //        for (String s : mobileList) {
