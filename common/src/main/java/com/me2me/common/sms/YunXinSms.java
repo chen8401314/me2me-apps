@@ -91,7 +91,7 @@ public class YunXinSms {
      * @return 请求的状态码
      * @throws UnsupportedEncodingException
      */
-    private static String executeURLRequest(String url, Map<String,String> param) throws UnsupportedEncodingException {
+    private static String executeURLRequest(String url, Map<String,String> param)  {
         logger.info("execute yunxin url {}",url);
         CloseableHttpClient httpClient = HttpClients.custom()
                 .setDefaultHeaders(setUpHeader())
@@ -102,10 +102,11 @@ public class YunXinSms {
             pairs.add(new BasicNameValuePair(entry.getKey(), entry.getValue()));
         }
 
-        httpPost.setEntity(new UrlEncodedFormEntity(pairs, "utf-8"));
+
         String resultCode = "";
         try {
             CloseableHttpResponse response = httpClient.execute(httpPost);
+            httpPost.setEntity(new UrlEncodedFormEntity(pairs, "utf-8"));
             try{
                 JSONObject jsonObject = JSONObject.parseObject(EntityUtils.toString(response.getEntity()));
                 resultCode = jsonObject.getString("code");
