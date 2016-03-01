@@ -27,6 +27,14 @@ public enum  ResponseStatus {
 
     USER_ADD_FRIEND_SUCCESS("用户创建好友成功","user create friend success",2020),
 
+    USER_REMOVE_FRIEND_SUCCESS("用户删除好友成功","user remove friend success",2021),
+
+    USER_CREATE_GROUP_SUCCESS("用户创建群组成功","user create group success",2022),
+
+    ADD_GROUP_MEMBER_SUCCESS("添加群成员成功","add group member success",2023),
+
+    REMOVE_GROUP_MEMBER_SUCCESS("移除群成员成功","remove group member success",2023),
+
     USER_PASSWORD_ERROR("用户密码错误","user password error",5000),
 
     USER_NOT_EXISTS("该用户不存在","user not exists",5001),
@@ -35,7 +43,9 @@ public enum  ResponseStatus {
 
     USER_VERIFY_CHECK_ERROR("验证码不正确","user verify check error",5003),
 
-    USER_VERIFY_ERROR("验证码接口调用错误","user verify error",5004);
+    USER_VERIFY_ERROR("验证码接口调用错误","user verify error",5004),
+
+    USER_ADD_FRIEND_ERROR("不能自己添加自己为好友","can't add yourself",5020);
 
 
     public String message;
