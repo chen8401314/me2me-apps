@@ -1,7 +1,7 @@
 package com.me2me.common.security;
 
 import org.apache.shiro.crypto.hash.Md5Hash;
-
+import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import java.util.UUID;
 
@@ -45,13 +45,16 @@ public class SecurityUtils {
         return UUID.randomUUID().toString().replace("-","");
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws NoSuchAlgorithmException {
         String value = getMask();
-        System.out.println(value);
+        // System.out.println(value);
         int len = "69f95dccbb4bdd6370f3a426ecea3979".length();
-        System.out.println(len);
-        String s = SecurityUtils.md5("123456","820610");
-        System.out.println(s);
-        System.out.println(getToken());
+        // System.out.println(len);
+        String s = SecurityUtils.md5("123456","");
+        // 9db06bcff9248837f86d1a6bcf41c9e7
+        // System.out.println(s);
+        // System.out.println(getToken());
+        String x = new Md5Hash("111111").toString();
+        System.out.println(new Md5Hash(x).toString());
     }
 }
