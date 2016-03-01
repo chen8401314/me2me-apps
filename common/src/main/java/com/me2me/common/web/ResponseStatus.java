@@ -12,6 +12,7 @@ package com.me2me.common.web;
 public enum  ResponseStatus {
 
 
+
     USER_SING_UP_SUCCESS("用户注册成功","user sign up success",2000),
 
     USER_LOGIN_SUCCESS("用户登录成功","user login success",2001),
@@ -23,6 +24,8 @@ public enum  ResponseStatus {
     USER_VERIFY_GET_SUCCESS("验证码发送成功","user verify get success",2004),
 
     USER_VERIFY_CHECK_SUCCESS("用户爱好修改成功","user verify check success",2005),
+
+    USER_ADD_FRIEND_SUCCESS("用户创建好友成功","user create friend success",2020),
 
     USER_PASSWORD_ERROR("用户密码错误","user password error",5000),
 
