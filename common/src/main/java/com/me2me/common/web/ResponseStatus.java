@@ -20,9 +20,19 @@ public enum  ResponseStatus {
 
     USER_MODIFY_HOBBY_SUCCESS("用户爱好修改成功","user modifyHobby success",2003),
 
+    USER_VERIFY_GET_SUCCESS("验证码发送成功","user verify get success",2004),
+
+    USER_VERIFY_CHECK_SUCCESS("用户爱好修改成功","user verify check success",2005),
+
     USER_PASSWORD_ERROR("用户密码错误","user password error",5000),
 
-    USER_NOT_EXISTS("该用户不存在","user not exists",5001);
+    USER_NOT_EXISTS("该用户不存在","user not exists",5001),
+
+    USER_VERIFY_GET_ERROR("验证码发送失败","user verify get error",5002),
+
+    USER_VERIFY_CHECK_ERROR("验证码不正确","user verify check error",5003),
+
+    USER_VERIFY_ERROR("验证码接口调用错误","user verify error",5004);
 
 
     public String message;
