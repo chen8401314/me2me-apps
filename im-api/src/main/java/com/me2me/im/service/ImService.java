@@ -7,17 +7,56 @@ package com.me2me.im.service;
  */
 public interface ImService {
 
-    /**
-     * 注册用户到im server 中
-     */
-    void register();
 
     /**
-     * 用户登录到im server 中
+     * 添加好友接口
      */
-    void login();
+    void addFriend();
+
+    /**
+     * 移除好友
+     */
+    void removeFriend();
+
+    /**
+     * 创建群组
+     */
+    void createGroup();
 
 
-    void sendMessage();
+    /**
+     * 添加群成员
+     */
+    void addGroupMember();
+
+    /**
+     * 移除群成员
+     */
+    void removeGroupMember();
+
+    /**
+     * 获取好友列表
+     */
+    void getFriends();
+
+    /**
+     * 获取群列表
+     */
+    void loadGroups();
+
+    /**
+     * 获取群成员列表
+     */
+    void loadGroupMembers();
+
+    /**
+     * 搜索接口支持（好友、群）
+     */
+    void search();
+
+    /**
+     * 修改群信息
+     */
+    void modifyGroup();
 
 }

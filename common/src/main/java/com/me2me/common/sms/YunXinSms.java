@@ -138,10 +138,11 @@ public class YunXinSms {
     public static void main(String[] args) throws UnsupportedEncodingException, InterruptedException {
         String[] mobileList = new String[]{"18698589577","18202149850","18221006454"};
 //"18621848116","15821376667","18629601696","13818695402","13601932249","18616336525"};
-        for (String s : mobileList) {
-            System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-            System.out.println(sendSms(s));
-            Thread.sleep(2000L);
-        }
+//        for (String s : mobileList) {
+//            System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+//            System.out.println(sendSms(s));
+//            Thread.sleep(2000L);
+//        }
+        sendSms("17721431009");
     }
 }
