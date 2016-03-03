@@ -43,6 +43,47 @@ public interface Specification {
     }
 
 
+    /**
+     * 验证码枚举
+     */
+    public enum VerifyAction{
+
+        GET("获取验证码",0),
+
+        CHECK("验证验证码",1);
+
+        public String name;
+        public int index;
+        VerifyAction(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    /**
+     * 基础数据枚举
+     */
+    public enum UserBasicData{
+
+        YEARS("年代情怀",2),
+
+        START("星座",1),
+
+        SOCIAL_CLASS("社会阶层",4),
+
+        INDUSTRY("行业",3),
+
+        MARRIAGE_STATUS("婚恋状态",5),
+
+        BEAR_STATUS("生育状态",6);
+
+        public String name;
+        public int index;
+        UserBasicData(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
 
 
 }

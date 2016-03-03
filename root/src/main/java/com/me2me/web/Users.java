@@ -66,6 +66,7 @@ public class Users {
         ModifyEncryptDto modifyEncryptDto = new ModifyEncryptDto();
         modifyEncryptDto.setUserName(request.getUserName());
         modifyEncryptDto.setOldEncrypt(request.getOldEncrypt());
+        modifyEncryptDto.setOldEncrypt(request.getFirstEncrypt());
         modifyEncryptDto.setSecondEncrypt(request.getSecondEncrypt());
         return userService.modifyEncrypt(modifyEncryptDto);
     }
@@ -78,8 +79,11 @@ public class Users {
     @ResponseBody
     @RequestMapping(value = "/verify",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response verify(VerifyRequest request){
-        //// TODO: 2016/2/29 get verify code
-        return null;
+        VerifyDto verifyDto = new VerifyDto();
+        verifyDto.setAction(request.getAction());
+        verifyDto.setMobile(request.getMobile());
+        verifyDto.setVerifyCode(request.getVerifyCode());
+        return userService.verify(verifyDto);
     }
 
     /**
@@ -91,7 +95,20 @@ public class Users {
     @ResponseBody
     @RequestMapping(value = "/modifyUserProfile",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response modifyUserProfile(ModifyUserProfileRequest request, MultipartFile avatar){
-       return null;
+        ModifyUserProfileDto modifyUserProfileDto = new ModifyUserProfileDto();
+        modifyUserProfileDto.setAction(request.getAction());
+        //// TODO: 2016/3/1 调用七牛图像上传返回文件地址
+        modifyUserProfileDto.setUserName(request.getUserName());
+        modifyUserProfileDto.setBearStatus(request.getBearStatus());
+        modifyUserProfileDto.setGender(request.getGander());
+        modifyUserProfileDto.setIndustry(request.getIndustry());
+        modifyUserProfileDto.setMarriageStatus(request.getMarriageStatus());
+        modifyUserProfileDto.setStartId(request.getStartId());
+        modifyUserProfileDto.setNickName(request.getNickName());
+        modifyUserProfileDto.setSocialClass(request.getSocialClass());
+        modifyUserProfileDto.setYearsId(request.getYearsId());
+        modifyUserProfileDto.setUid(request.getUid());
+       return  userService.modifyUserProfile(modifyUserProfileDto);
     }
 
     /**
@@ -115,10 +132,20 @@ public class Users {
      */
     @ResponseBody
     @RequestMapping(value = "/getBasicDataByType",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response getBasicData(BasicDataRequest request){
+    public Response getBasicDataByType(BasicDataRequest request){
         BasicDataDto basicDataDto = new BasicDataDto();
         basicDataDto.setType(request.getType());
-        return userService.getBasicData(basicDataDto);
+        return userService.getBasicDataByType(basicDataDto);
+    }
+
+    /**
+     * 获取用户基础数据
+     * 全量接口
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getBasicData",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getBasicData(){
+        return userService.getBasicData();
     }
 
     /**

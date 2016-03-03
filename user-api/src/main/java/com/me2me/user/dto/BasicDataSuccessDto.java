@@ -5,6 +5,7 @@ import com.me2me.user.model.Dictionary;
 import lombok.Data;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -15,5 +16,5 @@ import java.util.List;
 @Data
 public class BasicDataSuccessDto implements BaseEntity {
 
-    private List<Dictionary> result;
+    private Map<Long,List<Dictionary>> result;
 }
