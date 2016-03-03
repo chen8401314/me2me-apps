@@ -1,5 +1,9 @@
 package com.me2me.im.service;
 
+import com.me2me.common.web.Response;
+import com.me2me.im.dto.GroupDto;
+import com.me2me.im.dto.GroupMemberDto;
+
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 赵朋扬
@@ -11,52 +15,52 @@ public interface ImService {
     /**
      * 添加好友接口
      */
-    void addFriend();
+    Response addFriend(long uid, long fid);
 
     /**
      * 移除好友
      */
-    void removeFriend();
+    Response removeFriend(long uid,long fid);
 
     /**
      * 创建群组
      */
-    void createGroup();
+    Response createGroup(GroupDto groupDto);
 
 
     /**
      * 添加群成员
      */
-    void addGroupMember();
+    Response addGroupMember(GroupMemberDto groupMemberDto);
 
     /**
      * 移除群成员
      */
-    void removeGroupMember();
+    Response removeGroupMember(long groupMemberId);
 
     /**
      * 获取好友列表
      */
-    void getFriends();
+    Response getFriends(long uid);
 
     /**
      * 获取群列表
      */
-    void loadGroups();
+    Response loadGroups(long uid);
 
     /**
      * 获取群成员列表
      */
-    void loadGroupMembers();
+    Response loadGroupMembers(long gid);
 
     /**
      * 搜索接口支持（好友、群）
      */
-    void search();
+    Response search();
 
     /**
      * 修改群信息
      */
-    void modifyGroup();
+    Response modifyGroup();
 
 }
