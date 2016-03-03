@@ -12,7 +12,16 @@ import lombok.Setter;
  */
 public class VerifyRequest extends Request{
 
+
+    @Getter
+    @Setter
+    private int action;
+
     @Getter
     @Setter
     private String mobile;
+
+    @Getter
+    @Setter
+    private String verifyCode;
 }
