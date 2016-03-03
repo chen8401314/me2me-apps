@@ -35,6 +35,12 @@ public enum  ResponseStatus {
 
     REMOVE_GROUP_MEMBER_SUCCESS("移除群成员成功","remove group member success",2023),
 
+    USER_MODIFY_AVATAR_SUCCESS("用户头像修改成功","user modify avatar success",2006),
+
+    USER_MODIFY_NICK_NAME_SUCCESS("用昵称像修改成功","user modify nickName success",2007),
+
+    USER_MODIFY_PROFILE_SUCCESS("用户资料修改成功","user modify profile success",2008),
+
     USER_PASSWORD_ERROR("用户密码错误","user password error",5000),
 
     USER_NOT_EXISTS("该用户不存在","user not exists",5001),
@@ -45,7 +51,11 @@ public enum  ResponseStatus {
 
     USER_VERIFY_ERROR("验证码接口调用错误","user verify error",5004),
 
-    USER_ADD_FRIEND_ERROR("不能自己添加自己为好友","can't add yourself",5020);
+    USER_ADD_FRIEND_ERROR("不能自己添加自己为好友","can't add yourself",5020),
+
+    USER_MODIFY_ENCRYPT_PASSWORD_NOT_SAME_ERROR("两次密码输入不一致"," user the two passwords are not the same",5005),
+
+    USER_MODIFY_USER_PROFILE_ERROR("用户信息修改错误","user modify user profile error",5006);
 
 
     public String message;
