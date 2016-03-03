@@ -12,4 +12,12 @@
     <artifactId>content-api</artifactId>
 
 
+    <dependencies>
+        <dependency>
+            <groupId>com.plusnet.search</groupId>
+            <artifactId>search-api</artifactId>
+            <version>1.0.8</version>
+        </dependency>
+    </dependencies>
+
 </project>
