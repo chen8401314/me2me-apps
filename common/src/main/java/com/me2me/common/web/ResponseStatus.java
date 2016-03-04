@@ -25,15 +25,15 @@ public enum  ResponseStatus {
 
     USER_VERIFY_CHECK_SUCCESS("用户爱好修改成功","user verify check success",2005),
 
-    USER_ADD_FRIEND_SUCCESS("用户创建好友成功","user create friend success",2020),
+    USER_ADD_FRIEND_SUCCESS("用户创建好友成功","user create friend success",20020),
 
-    USER_REMOVE_FRIEND_SUCCESS("用户删除好友成功","user remove friend success",2021),
+    USER_REMOVE_FRIEND_SUCCESS("用户删除好友成功","user remove friend success",20021),
 
-    USER_CREATE_GROUP_SUCCESS("用户创建群组成功","user create group success",2022),
+    USER_CREATE_GROUP_SUCCESS("用户创建群组成功","user create group success",20022),
 
-    ADD_GROUP_MEMBER_SUCCESS("添加群成员成功","add group member success",2023),
+    ADD_GROUP_MEMBER_SUCCESS("添加群成员成功","add group member success",20023),
 
-    REMOVE_GROUP_MEMBER_SUCCESS("移除群成员成功","remove group member success",2023),
+    REMOVE_GROUP_MEMBER_SUCCESS("移除群成员成功","remove group member success",20023),
 
     USER_MODIFY_AVATAR_SUCCESS("用户头像修改成功","user modify avatar success",2006),
 
@@ -51,7 +51,7 @@ public enum  ResponseStatus {
 
     USER_VERIFY_ERROR("验证码接口调用错误","user verify error",5004),
 
-    USER_ADD_FRIEND_ERROR("不能自己添加自己为好友","can't add yourself",5020),
+    USER_ADD_FRIEND_ERROR("不能自己添加自己为好友","can't add yourself",50020),
 
     USER_MODIFY_ENCRYPT_PASSWORD_NOT_SAME_ERROR("两次密码输入不一致"," user the two passwords are not the same",5005),
 
