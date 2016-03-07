@@ -2,9 +2,11 @@ package com.me2me.user.dao;
 
 import com.me2me.common.web.Specification;
 import com.me2me.user.dto.BasicDataDto;
+import com.me2me.user.dto.ModifyUserProfileDto;
 import com.me2me.user.mapper.DictionaryMapper;
 import com.me2me.user.mapper.UserHobbyMapper;
 import com.me2me.user.mapper.UserMapper;
+import com.me2me.user.mapper.UserProfileMapper;
 import com.me2me.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -27,6 +29,9 @@ public class UserMybatisDao {
 
     @Autowired
     private DictionaryMapper dictionaryMapper;
+
+    @Autowired
+    private UserProfileMapper userProfileMapper;
 
     /**
      * 保存用户注册信息
@@ -72,4 +77,48 @@ public class UserMybatisDao {
         criteria.andTidEqualTo(basicDataDto.getType());
         return dictionaryMapper.selectByExample(example);
     }
+    public void modifyUserAvatar(ModifyUserProfileDto modifyUserProfileDto){
+        UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(modifyUserProfileDto.getUid());
+        List<UserProfile> userProfileList = userProfileMapper.selectByExample(example);
+        if(userProfileList != null && userProfileList.size() > 0){
+            UserProfile userProfile = userProfileList.get(0);
+            userProfile.setAvatar(modifyUserProfileDto.getAvatar());
+            userProfileMapper.updateByPrimaryKey(userProfile);
+        }
+    }
+
+    public void modifyNickName(ModifyUserProfileDto modifyUserProfileDto){
+        UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(modifyUserProfileDto.getUid());
+        List<UserProfile> userProfileList = userProfileMapper.selectByExample(example);
+        if(userProfileList != null && userProfileList.size() > 0){
+            UserProfile userProfile = userProfileList.get(0);
+            userProfile.setAvatar(modifyUserProfileDto.getNickName());
+            userProfileMapper.updateByPrimaryKey(userProfile);
+        }
+    }
+
+    public void modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto){
+        UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(modifyUserProfileDto.getUid());
+        List<UserProfile> userProfileList = userProfileMapper.selectByExample(example);
+        if(userProfileList != null && userProfileList.size() > 0){
+            UserProfile userProfile = userProfileList.get(0);
+            userProfile.setMobile(modifyUserProfileDto.getUserName());
+            userProfile.setBearStatus(modifyUserProfileDto.getBearStatus());
+            userProfile.setMarriageStatus(modifyUserProfileDto.getMarriageStatus());
+            userProfile.setGender(modifyUserProfileDto.getGender());
+            userProfile.setIndustry(modifyUserProfileDto.getIndustry());
+            userProfile.setSocialClass(modifyUserProfileDto.getSocialClass());
+            userProfile.setYearsId(modifyUserProfileDto.getYearsId());
+            userProfile.setStarId(modifyUserProfileDto.getStartId());
+            userProfileMapper.updateByPrimaryKey(userProfile);
+        }
+    }
+
+
 }

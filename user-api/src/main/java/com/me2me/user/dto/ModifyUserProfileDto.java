@@ -1,64 +1,40 @@
-package com.me2me.web.request;
+package com.me2me.user.dto;
 
+import com.me2me.common.web.BaseEntity;
+import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 代宝磊
- * Date: 2016/2/29
- * Time :11:31
+ * Date: 2016/3/1
+ * Time :15:34
  */
-public class ModifyUserProfileRequest {
+@Data
+public class ModifyUserProfileDto implements BaseEntity{
 
-    @Getter
-    @Setter
     private int action;
 
-    @Getter
-    @Setter
     private long uid;
 
-    @Getter
-    @Setter
     private String userName;
 
-    @Getter
-    @Setter
-    private int gander;
-
-    @Getter
-    @Setter
     private String nickName;
 
-    @Getter
-    @Setter
     private int gender;
 
-    @Getter
-    @Setter
+    private String avatar;
+
     private long yearsId;
 
-    @Getter
-    @Setter
     private long startId;
 
-    @Getter
-    @Setter
     private long socialClass;
 
-    @Getter
-    @Setter
     private long industry;
 
-    @Getter
-    @Setter
     private long marriageStatus;
 
-    @Getter
-    @Setter
     private long bearStatus ;
-
-
-
 }

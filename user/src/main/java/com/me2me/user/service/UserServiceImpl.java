@@ -1,20 +1,20 @@
 package com.me2me.user.service;
 
 import com.me2me.common.security.SecurityUtils;
+import com.me2me.common.sms.YunXinSms;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.dto.*;
-import com.me2me.user.model.Dictionary;
-import com.me2me.user.model.DictionaryExample;
-import com.me2me.user.model.User;
-import com.me2me.user.model.UserHobby;
+import com.me2me.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -44,8 +44,8 @@ public class UserServiceImpl implements UserService {
         user.setUserName(userSignUpDto.getMobile());
         userMybatisDao.createUser(user);
         signUpSuccessDto.setUserName(user.getUserName());
-        // tudo 需要获取用户token
-        signUpSuccessDto.setToken("fdsfdsfds");
+        // 获取用户token
+        signUpSuccessDto.setToken(SecurityUtils.getToken());
         signUpSuccessDto.setUid(user.getUid());
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
@@ -81,7 +81,22 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public Response verify(VerifyDto verifyDto) {
-        return null;
+        if(verifyDto.getAction() == Specification.VerifyAction.GET.index){
+            boolean result = YunXinSms.sendSms(verifyDto.getMobile());
+            if(result){
+                return Response.success(ResponseStatus.USER_VERIFY_GET_SUCCESS.status,ResponseStatus.USER_VERIFY_GET_SUCCESS.message);
+            }else{
+                Response.failure(ResponseStatus.USER_VERIFY_GET_ERROR.status,ResponseStatus.USER_VERIFY_GET_ERROR.message);
+            }
+        }else if(verifyDto.getAction() == Specification.VerifyAction.CHECK.index){
+            boolean result = YunXinSms.verify(verifyDto.getMobile(),verifyDto.getVerifyCode());
+            if(result) {
+                return Response.success(ResponseStatus.USER_VERIFY_CHECK_SUCCESS.status, ResponseStatus.USER_VERIFY_CHECK_SUCCESS.message);
+            }else{
+                Response.failure(ResponseStatus.USER_VERIFY_CHECK_ERROR.status,ResponseStatus.USER_VERIFY_CHECK_ERROR.message);
+            }
+            }
+        return Response.failure(ResponseStatus.USER_VERIFY_ERROR.status,ResponseStatus.USER_VERIFY_ERROR.message);
     }
 
     /**
@@ -90,17 +105,21 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public Response modifyEncrypt(ModifyEncryptDto modifyEncryptDto){
-        User user = userMybatisDao.getUserByUserName(modifyEncryptDto.getUserName());
-        if(user != null){
-            if(!modifyEncryptDto.getOldEncrypt().equals(user.getEncrypt())){
-                return Response.failure(ResponseStatus.USER_PASSWORD_ERROR.status,ResponseStatus.USER_PASSWORD_ERROR.message);
-            }else{
-                user.setEncrypt(modifyEncryptDto.getFirstEncrypt());
-                userMybatisDao.modifyUser(user);
-                return Response.failure(ResponseStatus.USER_MODIFY_ENCRYPT_SUCCESS.status,ResponseStatus.USER_MODIFY_ENCRYPT_SUCCESS.message);
+        if(!modifyEncryptDto.getFirstEncrypt().equals(modifyEncryptDto.getSecondEncrypt())) {
+            return Response.failure(ResponseStatus.USER_MODIFY_ENCRYPT_PASSWORD_NOT_SAME_ERROR.status,ResponseStatus.USER_MODIFY_ENCRYPT_PASSWORD_NOT_SAME_ERROR.message);
+        }else{
+            User user = userMybatisDao.getUserByUserName(modifyEncryptDto.getUserName());
+            if(user != null){
+                if(!modifyEncryptDto.getOldEncrypt().equals(user.getEncrypt())){
+                    return Response.failure(ResponseStatus.USER_PASSWORD_ERROR.status,ResponseStatus.USER_PASSWORD_ERROR.message);
+                }else{
+                    user.setEncrypt(modifyEncryptDto.getFirstEncrypt());
+                    userMybatisDao.modifyUser(user);
+                    return Response.success(ResponseStatus.USER_MODIFY_ENCRYPT_SUCCESS.status, ResponseStatus.USER_MODIFY_ENCRYPT_SUCCESS.message);
+                }
+            }else {
+                return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
             }
-        }else {
-            return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
         }
     }
 
@@ -126,11 +145,70 @@ public class UserServiceImpl implements UserService {
         return Response.success(ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.status,ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.message);
     }
 
-    public Response getBasicData(BasicDataDto basicDataDto){
+
+    /**
+     * 获取基础数据
+     * @param basicDataDto
+     * @return
+     */
+    public Response getBasicDataByType(BasicDataDto basicDataDto){
         List<Dictionary> dictionaryList = userMybatisDao.getDictionary(basicDataDto);
         BasicDataSuccessDto basicDataSuccessDto = new BasicDataSuccessDto();
-        basicDataSuccessDto.setResult(dictionaryList);
+        Map<Long,List<Dictionary>> result = new HashMap<Long, List<Dictionary>>();
+        result.put(basicDataDto.getType(),dictionaryList);
+        basicDataSuccessDto.setResult(result);
         return Response.success(basicDataSuccessDto);
+    }
+
+    public Response getBasicData() {
+        BasicDataSuccessDto basicDataSuccessDto = new BasicDataSuccessDto();
+        Map<Long,List<Dictionary>> result = new HashMap<Long, List<Dictionary>>();
+        BasicDataDto basicDataDto = new BasicDataDto();
+        basicDataDto.setType(Specification.UserBasicData.START.index);
+        List<Dictionary> dictionaryList = userMybatisDao.getDictionary(basicDataDto);
+        result.put(basicDataDto.getType(),dictionaryList);
+
+        basicDataDto.setType(Specification.UserBasicData.INDUSTRY.index);
+        dictionaryList = userMybatisDao.getDictionary(basicDataDto);
+        result.put(basicDataDto.getType(),dictionaryList);
+
+        basicDataDto.setType(Specification.UserBasicData.BEAR_STATUS.index);
+        dictionaryList = userMybatisDao.getDictionary(basicDataDto);
+        result.put(basicDataDto.getType(),dictionaryList);
+
+        basicDataDto.setType(Specification.UserBasicData.SOCIAL_CLASS.index);
+        dictionaryList = userMybatisDao.getDictionary(basicDataDto);
+        result.put(basicDataDto.getType(),dictionaryList);
+
+        basicDataDto.setType(Specification.UserBasicData.YEARS.index);
+        dictionaryList = userMybatisDao.getDictionary(basicDataDto);
+        result.put(basicDataDto.getType(),dictionaryList);
+
+        basicDataDto.setType(Specification.UserBasicData.MARRIAGE_STATUS.index);
+        dictionaryList = userMybatisDao.getDictionary(basicDataDto);
+        result.put(basicDataDto.getType(),dictionaryList);
+
+        basicDataSuccessDto.setResult(result);
+        return Response.success(basicDataSuccessDto);
+    }
+
+    /**
+     * 用户信息修改
+     * @param modifyUserProfileDto
+     * @return
+     */
+    public Response modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto){
+        if(modifyUserProfileDto.getAction() == Specification.ModifyUserProfileAction.AVATAR.index){
+            userMybatisDao.modifyUserAvatar(modifyUserProfileDto);
+            return Response.success(ResponseStatus.USER_MODIFY_AVATAR_SUCCESS.status,ResponseStatus.USER_MODIFY_AVATAR_SUCCESS.message,modifyUserProfileDto);
+        }else if(modifyUserProfileDto.getAction() == Specification.ModifyUserProfileAction.NICKNAME.index){
+            userMybatisDao.modifyNickName(modifyUserProfileDto);
+            Response.success(ResponseStatus.USER_MODIFY_NICK_NAME_SUCCESS.status,ResponseStatus.USER_MODIFY_NICK_NAME_SUCCESS.message,modifyUserProfileDto);
+        }else if(modifyUserProfileDto.getAction() == Specification.ModifyUserProfileAction.USER_PROFILE.index){
+            userMybatisDao.modifyUserProfile(modifyUserProfileDto);
+            Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message,modifyUserProfileDto);
+        }
+        return Response.failure(ResponseStatus.USER_MODIFY_USER_PROFILE_ERROR.status,ResponseStatus.USER_MODIFY_USER_PROFILE_ERROR.message);
     }
 
 }

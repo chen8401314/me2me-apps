@@ -52,5 +52,18 @@ public interface UserService {
      * @param basicDataDto
      * @return
      */
-    Response getBasicData(BasicDataDto basicDataDto);
+    Response getBasicDataByType(BasicDataDto basicDataDto);
+
+    /**
+     * 用户端获取基础数据
+     * @return
+     */
+    Response getBasicData();
+
+    /**
+     * 用户信息修改
+     * @param modifyUserProfileDto
+     * @return
+     */
+    Response modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto);
 }
