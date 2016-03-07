@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -32,7 +33,7 @@ public class Users {
      */
     @RequestMapping(value = "/signUp",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response signUp(SignUpRequest request){
+    public Response signUp(@RequestBody SignUpRequest request){
         UserSignUpDto userSignUpDto = new UserSignUpDto();
         userSignUpDto.setMobile(request.getMobile());
         userSignUpDto.setGander(request.getGander());
@@ -46,9 +47,9 @@ public class Users {
      * 用户登录
      * @return
      */
-    @RequestMapping(value = "/login",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/login",method = RequestMethod.POST,consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response login(LoginRequest request){
+    public Response login(@RequestBody LoginRequest request){
         UserLoginDto userLoginDto = new UserLoginDto();
         userLoginDto.setUserName(request.getUserName());
         userLoginDto.setEncrypt(request.getEncrypt());
@@ -62,11 +63,11 @@ public class Users {
      */
     @ResponseBody
     @RequestMapping(value = "/modifyEncrypt",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response modifyEncrypt(ModifyEncryptRequest request){
+    public Response modifyEncrypt(@RequestBody ModifyEncryptRequest request){
         ModifyEncryptDto modifyEncryptDto = new ModifyEncryptDto();
         modifyEncryptDto.setUserName(request.getUserName());
         modifyEncryptDto.setOldEncrypt(request.getOldEncrypt());
-        modifyEncryptDto.setOldEncrypt(request.getFirstEncrypt());
+        modifyEncryptDto.setFirstEncrypt(request.getFirstEncrypt());
         modifyEncryptDto.setSecondEncrypt(request.getSecondEncrypt());
         return userService.modifyEncrypt(modifyEncryptDto);
     }
@@ -78,7 +79,7 @@ public class Users {
      */
     @ResponseBody
     @RequestMapping(value = "/verify",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response verify(VerifyRequest request){
+    public Response verify(@RequestBody VerifyRequest request){
         VerifyDto verifyDto = new VerifyDto();
         verifyDto.setAction(request.getAction());
         verifyDto.setMobile(request.getMobile());
@@ -89,12 +90,11 @@ public class Users {
     /**
      * 用户资料修改
      * @param request
-     * @param avatar
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "/modifyUserProfile",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response modifyUserProfile(ModifyUserProfileRequest request, MultipartFile avatar){
+    public Response modifyUserProfile(@RequestBody ModifyUserProfileRequest request){
         ModifyUserProfileDto modifyUserProfileDto = new ModifyUserProfileDto();
         modifyUserProfileDto.setAction(request.getAction());
         //// TODO: 2016/3/1 调用七牛图像上传返回文件地址
@@ -118,7 +118,7 @@ public class Users {
      */
     @ResponseBody
     @RequestMapping(value = "/modifyUserHobby",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response modifyUserHobby(ModifyUserHobbyRequest request){
+    public Response modifyUserHobby(@RequestBody ModifyUserHobbyRequest request){
         ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();
         modifyUserHobbyDto.setUserName(request.getUserName());
         modifyUserHobbyDto.setHobby(request.getHobby());
@@ -132,7 +132,7 @@ public class Users {
      */
     @ResponseBody
     @RequestMapping(value = "/getBasicDataByType",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response getBasicDataByType(BasicDataRequest request){
+    public Response getBasicDataByType(@RequestBody BasicDataRequest request){
         BasicDataDto basicDataDto = new BasicDataDto();
         basicDataDto.setType(request.getType());
         return userService.getBasicDataByType(basicDataDto);
@@ -153,7 +153,7 @@ public class Users {
      */
     @ResponseBody
     @RequestMapping(value = "/thirdPartAuth",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response thirdPartAuth(ThirdPartAuthRequest request){
+    public Response thirdPartAuth(@RequestBody ThirdPartAuthRequest request){
         return null;
     }
 
@@ -163,7 +163,7 @@ public class Users {
      */
     @ResponseBody
     @RequestMapping(value = "/favorite",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response favorite(ThirdPartAuthRequest request){
+    public Response favorite(@RequestBody ThirdPartAuthRequest request){
         return null;
     }
 
