@@ -14,4 +14,12 @@ public class CreateGroupRequest extends Request {
     @Getter
     @Setter
     private String groupName;
+
+    @Getter
+    @Setter
+    private long uid;
+
+    @Getter
+    @Setter
+    private String groupMember;
 }

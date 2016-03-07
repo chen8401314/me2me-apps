@@ -10,6 +10,7 @@ import com.me2me.im.model.Group;
 import com.me2me.im.model.GroupMember;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -39,6 +40,10 @@ public class ImServiceImpl implements ImService {
         friend.setUid(uid);
         friend.setFid(fid);
         imMybatisDao.addFriend(friend);
+        friend = new Friend();
+        friend.setUid(fid);
+        friend.setFid(uid);
+        imMybatisDao.addFriend(friend);
         return Response.success(ResponseStatus.USER_ADD_FRIEND_SUCCESS.status,ResponseStatus.USER_ADD_FRIEND_SUCCESS.message);
     }
 
@@ -67,6 +72,16 @@ public class ImServiceImpl implements ImService {
         group.setOwner(groupDto.getUid());
         group.setGroupName(groupDto.getGroupName());
         imMybatisDao.createGroup(group);
+        String groupMember = groupDto.getGroupMember();
+        if(!StringUtils.isEmpty(groupMember)){
+            String[] members = groupMember.split(",");
+            for (String m : members){
+                GroupMember member = new GroupMember();
+                member.setUid(groupDto.getUid());
+                member.setGid(group.getId());
+                imMybatisDao.addGroupMember(member);
+            }
+        }
         return Response.success(ResponseStatus.USER_CREATE_GROUP_SUCCESS.status,ResponseStatus.USER_CREATE_GROUP_SUCCESS.message);
     }
 
