@@ -15,4 +15,6 @@ public class GroupDto implements BaseEntity {
 
     private long uid;
 
+    private String groupMember;
+
 }

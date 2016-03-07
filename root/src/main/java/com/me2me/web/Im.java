@@ -57,6 +57,7 @@ public class Im {
         GroupDto groupDto = new GroupDto();
         groupDto.setUid(request.getUid());
         groupDto.setGroupName(request.getGroupName());
+        groupDto.setGroupMember(request.getGroupMember());
         return imService.createGroup(groupDto);
     }
 
