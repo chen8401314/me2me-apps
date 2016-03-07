@@ -34,7 +34,7 @@ public class ImServiceImpl implements ImService {
     public Response addFriend(long uid, long fid) {
         if(uid==fid){
             // 不能添加自己为好友
-            Response.failure(ResponseStatus.USER_ADD_FRIEND_ERROR.status,ResponseStatus.USER_ADD_FRIEND_ERROR.message);
+            return Response.failure(ResponseStatus.USER_ADD_FRIEND_ERROR.status,ResponseStatus.USER_ADD_FRIEND_ERROR.message);
         }
         Friend friend = new Friend();
         friend.setUid(uid);
@@ -82,10 +82,6 @@ public class ImServiceImpl implements ImService {
                 imMybatisDao.addGroupMember(member);
             }
         }
-        GroupMember member = new GroupMember();
-        member.setUid(groupDto.getUid());
-        member.setGid(group.getId());
-        imMybatisDao.addGroupMember(member);
         return Response.success(ResponseStatus.USER_CREATE_GROUP_SUCCESS.status,ResponseStatus.USER_CREATE_GROUP_SUCCESS.message);
     }
 

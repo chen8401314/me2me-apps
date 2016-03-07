@@ -77,10 +77,14 @@ public class ImMybatisDao {
         for(GroupMember groupMember : list){
             gids.add(groupMember.getGid());
         }
-        GroupExample g = new GroupExample();
-        GroupExample.Criteria c = g.createCriteria();
-        c.andIdIn(gids);
-        return groupMapper.selectByExample(g);
+        if(gids != null && gids.size() > 0) {
+            GroupExample g = new GroupExample();
+            GroupExample.Criteria c = g.createCriteria();
+            c.andIdIn(gids);
+            return groupMapper.selectByExample(g);
+        }else{
+            return null;
+        }
     }
 
     public List<GroupMember> getGroupMembersByGid(long gid) {
