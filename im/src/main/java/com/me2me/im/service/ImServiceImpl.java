@@ -77,11 +77,15 @@ public class ImServiceImpl implements ImService {
             String[] members = groupMember.split(",");
             for (String m : members){
                 GroupMember member = new GroupMember();
-                member.setUid(groupDto.getUid());
+                member.setUid(Long.parseLong(m));
                 member.setGid(group.getId());
                 imMybatisDao.addGroupMember(member);
             }
         }
+        GroupMember member = new GroupMember();
+        member.setUid(groupDto.getUid());
+        member.setGid(group.getId());
+        imMybatisDao.addGroupMember(member);
         return Response.success(ResponseStatus.USER_CREATE_GROUP_SUCCESS.status,ResponseStatus.USER_CREATE_GROUP_SUCCESS.message);
     }
 
