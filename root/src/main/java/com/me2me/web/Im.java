@@ -8,6 +8,7 @@ import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -30,7 +31,7 @@ public class Im {
      */
     @RequestMapping(value = "/addFriend",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response addFriend(FriendRequest request){
+    public Response addFriend(@RequestBody FriendRequest request){
         return imService.addFriend(request.getUid(),request.getFid());
     }
 
@@ -41,13 +42,18 @@ public class Im {
      */
     @RequestMapping(value = "/removeFriend",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response removeFriend(FriendRequest request){
+    public Response removeFriend(@RequestBody FriendRequest request){
         return imService.removeFriend(request.getUid(),request.getFid());
     }
 
+    /**
+     * 创建群组
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/createGroup",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response createGroup(CreateGroupRequest request){
+    public Response createGroup(@RequestBody CreateGroupRequest request){
         GroupDto groupDto = new GroupDto();
         groupDto.setUid(request.getUid());
         groupDto.setGroupName(request.getGroupName());
@@ -56,7 +62,7 @@ public class Im {
 
     @RequestMapping(value = "/addGroupMember",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response addGroupMember(AddGroupMemberRequest request){
+    public Response addGroupMember(@RequestBody AddGroupMemberRequest request){
         GroupMemberDto groupMemberDto = new GroupMemberDto();
         groupMemberDto.setUid(request.getUid());
         groupMemberDto.setGid(request.getGid());
@@ -65,25 +71,25 @@ public class Im {
 
     @RequestMapping(value = "/removeGroupMember",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response removeGroupMember(RemoveGroupMemberRequest request){
+    public Response removeGroupMember(@RequestBody RemoveGroupMemberRequest request){
         return imService.removeGroupMember(request.getGroupMemberId()   );
     }
 
     @RequestMapping(value = "/showFriends",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response showFriends(BasicRequest request){
+    public Response showFriends(@RequestBody BasicRequest request){
         return imService.getFriends(request.getUid());
     }
 
     @RequestMapping(value = "/showGroups",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response showGroups(BasicRequest request){
+    public Response showGroups(@RequestBody BasicRequest request){
         return imService.loadGroups(request.getUid());
     }
 
     @RequestMapping(value = "/showGroupMembers",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response showGroupMembers(ShowGroupMemberRequest request){
+    public Response showGroupMembers(@RequestBody ShowGroupMemberRequest request){
         return imService.loadGroupMembers(request.getGid());
     }
 

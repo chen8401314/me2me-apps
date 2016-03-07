@@ -39,6 +39,10 @@ public class ImServiceImpl implements ImService {
         friend.setUid(uid);
         friend.setFid(fid);
         imMybatisDao.addFriend(friend);
+        friend = new Friend();
+        friend.setUid(fid);
+        friend.setFid(uid);
+        imMybatisDao.addFriend(friend);
         return Response.success(ResponseStatus.USER_ADD_FRIEND_SUCCESS.status,ResponseStatus.USER_ADD_FRIEND_SUCCESS.message);
     }
 

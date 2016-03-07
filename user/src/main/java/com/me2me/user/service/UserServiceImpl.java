@@ -110,10 +110,10 @@ public class UserServiceImpl implements UserService {
         }else{
             User user = userMybatisDao.getUserByUserName(modifyEncryptDto.getUserName());
             if(user != null){
-                if(!modifyEncryptDto.getOldEncrypt().equals(user.getEncrypt())){
+                if(!SecurityUtils.md5(modifyEncryptDto.getOldEncrypt(),user.getSalt()).equals(user.getEncrypt())){
                     return Response.failure(ResponseStatus.USER_PASSWORD_ERROR.status,ResponseStatus.USER_PASSWORD_ERROR.message);
                 }else{
-                    user.setEncrypt(modifyEncryptDto.getFirstEncrypt());
+                    user.setEncrypt(SecurityUtils.md5(modifyEncryptDto.getFirstEncrypt(),user.getSalt()));
                     userMybatisDao.modifyUser(user);
                     return Response.success(ResponseStatus.USER_MODIFY_ENCRYPT_SUCCESS.status, ResponseStatus.USER_MODIFY_ENCRYPT_SUCCESS.message);
                 }
@@ -203,10 +203,10 @@ public class UserServiceImpl implements UserService {
             return Response.success(ResponseStatus.USER_MODIFY_AVATAR_SUCCESS.status,ResponseStatus.USER_MODIFY_AVATAR_SUCCESS.message,modifyUserProfileDto);
         }else if(modifyUserProfileDto.getAction() == Specification.ModifyUserProfileAction.NICKNAME.index){
             userMybatisDao.modifyNickName(modifyUserProfileDto);
-            Response.success(ResponseStatus.USER_MODIFY_NICK_NAME_SUCCESS.status,ResponseStatus.USER_MODIFY_NICK_NAME_SUCCESS.message,modifyUserProfileDto);
+            return Response.success(ResponseStatus.USER_MODIFY_NICK_NAME_SUCCESS.status,ResponseStatus.USER_MODIFY_NICK_NAME_SUCCESS.message,modifyUserProfileDto);
         }else if(modifyUserProfileDto.getAction() == Specification.ModifyUserProfileAction.USER_PROFILE.index){
             userMybatisDao.modifyUserProfile(modifyUserProfileDto);
-            Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message,modifyUserProfileDto);
+            return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message,modifyUserProfileDto);
         }
         return Response.failure(ResponseStatus.USER_MODIFY_USER_PROFILE_ERROR.status,ResponseStatus.USER_MODIFY_USER_PROFILE_ERROR.message);
     }
