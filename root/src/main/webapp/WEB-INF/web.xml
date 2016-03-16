@@ -45,4 +45,8 @@
     <filter-name>CharacterEncodingFilter</filter-name>
     <servlet-name>appServlet</servlet-name>
   </filter-mapping>
+  
+  <welcome-file-list>
+    <welcome-file>index.jsp</welcome-file>
+  </welcome-file-list>
 </web-app>

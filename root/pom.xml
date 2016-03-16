@@ -55,6 +55,11 @@
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
             </dependencies>
+            <build>
+                <filters>
+                    <filter>src/main/filter/dev.properties</filter>
+                </filters>
+            </build>
         </profile>
 
         <!--测试环境-->
