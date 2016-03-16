@@ -61,6 +61,11 @@ public class Im {
         return imService.createGroup(groupDto);
     }
 
+    /**
+     * 添加群组成员
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/addGroupMember",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response addGroupMember(@RequestBody AddGroupMemberRequest request){
@@ -70,28 +75,61 @@ public class Im {
         return imService.addGroupMember(groupMemberDto);
     }
 
+    /**
+     * 移除群组成员
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/removeGroupMember",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response removeGroupMember(@RequestBody RemoveGroupMemberRequest request){
         return imService.removeGroupMember(request.getGroupMemberId()   );
     }
 
+    /**
+     * 好友列表
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/showFriends",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response showFriends(@RequestBody BasicRequest request){
         return imService.getFriends(request.getUid());
     }
 
+    /**
+     * 群组列表
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/showGroups",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response showGroups(@RequestBody BasicRequest request){
         return imService.loadGroups(request.getUid());
     }
 
+    /**
+     * 群组成员列表
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/showGroupMembers",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response showGroupMembers(@RequestBody ShowGroupMemberRequest request){
         return imService.loadGroupMembers(request.getGid());
     }
+
+    /**
+     * 查询群组,好友
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/search",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response search(@RequestBody SearchRequest request){
+        return imService.search();
+    }
+
+
 
 }

@@ -53,6 +53,7 @@ public class Users {
         UserLoginDto userLoginDto = new UserLoginDto();
         userLoginDto.setUserName(request.getUserName());
         userLoginDto.setEncrypt(request.getEncrypt());
+        //// TODO: 2016/3/8  登录返回信息补全 
         return userService.login(userLoginDto);
     }
 
