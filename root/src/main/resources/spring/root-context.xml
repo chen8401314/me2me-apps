@@ -11,7 +11,7 @@
     <!--<beans profile="dev">-->
         <!--<import resource="user-context.xml"/>-->
     <!--</beans>-->
-    <util:properties id="app" location="classpath:application.properties"/>
+    <!--<util:properties id="app" location="classpath:application.properties"/>-->
     <import resource="classpath:spring/user-context.xml"/>
     <import resource="classpath:spring/im-context.xml"/>
     <import resource="mysql-context.xml"/>

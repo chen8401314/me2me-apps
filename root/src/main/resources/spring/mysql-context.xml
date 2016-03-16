@@ -6,7 +6,7 @@
        http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
     <bean id="druidDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-        <property name="url" value="#{app.jdbcUrl}" />
+        <property name="url" value="jdbc:mysql://192.168.89.103:3306/apps?useUnicode=true&amp;characterEncoding=UTF-8" />
         <property name="username" value="plAdmin" />
         <property name="password" value="1q2w_3e4r" />
         <property name="maxActive" value="200" />
