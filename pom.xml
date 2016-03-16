@@ -35,6 +35,8 @@
         <aspectjweaver.version>1.8.6</aspectjweaver.version>
         <lombok.version>1.16.6</lombok.version>
         <shiro.version>1.2.4</shiro.version>
+        <slf4j.version>1.7.12</slf4j.version>
+        <httpclient.version>4.5</httpclient.version>
     </properties>
 
     <dependencyManagement>
@@ -123,6 +125,16 @@
                 <groupId>org.apache.shiro</groupId>
                 <artifactId>shiro-core</artifactId>
                 <version>${shiro.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
