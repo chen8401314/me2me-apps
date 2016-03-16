@@ -7,12 +7,13 @@
        http://www.springframework.org/schema/util
        http://www.springframework.org/schema/util/spring-util.xsd">
 
-
-    <!--<beans profile="dev">-->
-        <!--<import resource="user-context.xml"/>-->
-    <!--</beans>-->
-    <!--<util:properties id="app" location="classpath:application.properties"/>-->
-    <import resource="classpath:spring/user-context.xml"/>
-    <import resource="classpath:spring/im-context.xml"/>
-    <import resource="mysql-context.xml"/>
+    <util:properties id="app" location="classpath:application.properties"/>
+    <beans profile="dev">
+        <import resource="classpath:spring/user-context.xml"/>
+        <import resource="classpath:spring/im-context.xml"/>
+        <import resource="classpath:spring/mysql-context.xml"/>
+    </beans>
+    <!--<import resource="classpath:spring/user-context.xml"/>-->
+    <!--<import resource="classpath:spring/im-context.xml"/>-->
+    <!--<import resource="classpath:spring/mysql-context.xml"/>-->
 </beans>

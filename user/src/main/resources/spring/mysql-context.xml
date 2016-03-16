@@ -6,13 +6,13 @@
        http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
     <bean id="druidDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-        <property name="url" value="jdbc:mysql://192.168.89.103:3306/apps?useUnicode=true&amp;characterEncoding=UTF-8" />
-        <property name="username" value="plAdmin" />
-        <property name="password" value="1q2w_3e4r" />
-        <property name="maxActive" value="200" />
-        <property name="initialSize" value="5" />
-        <property name="maxWait" value="60000" />
-        <property name="minIdle" value="5" />
+        <property name="url" value="#{app.jdbcUrl}" />
+        <property name="username" value="#{app.jdbcUserName}" />
+        <property name="password" value="#{app.jdbcPassword}" />
+        <property name="maxActive" value="#{app.jdbcMaxActive}" />
+        <property name="initialSize" value="#{app.jdbcInitialSize}" />
+        <property name="maxWait" value="#{app.jdbcMaxWait}" />
+        <property name="minIdle" value="#{app.jdbcMinIdle}" />
         <property name="timeBetweenEvictionRunsMillis" value="3000" />
         <property name="minEvictableIdleTimeMillis" value="300000" />
         <property name="validationQuery" value="SELECT 'x'" />
@@ -28,7 +28,7 @@
         <property name="mapperLocations" value="classpath*:mybatis/*.xml"/>
     </bean>
     <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
-        <property name="basePackage" value="com.me2me.user.mapper"/>
+        <property name="basePackage" value="com.me2me.*.mapper"/>
     </bean>
 
     <bean id="dataSourceTransactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
