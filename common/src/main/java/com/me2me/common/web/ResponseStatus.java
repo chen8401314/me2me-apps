@@ -41,6 +41,16 @@ public enum  ResponseStatus {
 
     REMOVE_GROUP_MEMBER_SUCCESS("移除群成员成功","remove group member success",20023),
 
+
+
+
+
+
+
+
+
+
+
     USER_PASSWORD_ERROR("用户密码错误","user password error",5000),
 
     USER_NOT_EXISTS("该用户不存在","user not exists",5001),
