@@ -105,8 +105,8 @@ public class YunXinSms {
 
         String resultCode = "";
         try {
-            CloseableHttpResponse response = httpClient.execute(httpPost);
             httpPost.setEntity(new UrlEncodedFormEntity(pairs, "utf-8"));
+            CloseableHttpResponse response = httpClient.execute(httpPost);
             try{
                 JSONObject jsonObject = JSONObject.parseObject(EntityUtils.toString(response.getEntity()));
                 resultCode = jsonObject.getString("code");
