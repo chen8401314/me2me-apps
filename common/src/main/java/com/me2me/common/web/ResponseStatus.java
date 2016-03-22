@@ -23,7 +23,7 @@ public enum  ResponseStatus {
 
     USER_VERIFY_GET_SUCCESS("验证码发送成功","user verify get success",2004),
 
-    USER_VERIFY_CHECK_SUCCESS("用户爱好修改成功","user verify check success",2005),
+    USER_VERIFY_CHECK_SUCCESS("验证码通过","user verify check success",2005),
 
     USER_MODIFY_AVATAR_SUCCESS("用户头像修改成功","user modify avatar success",2006),
 
@@ -40,6 +40,8 @@ public enum  ResponseStatus {
     ADD_GROUP_MEMBER_SUCCESS("添加群成员成功","add group member success",20023),
 
     REMOVE_GROUP_MEMBER_SUCCESS("移除群成员成功","remove group member success",20023),
+
+    PUBLISH_ARTICLE_SUCCESS("用户发表文章成功","user publish article success",20040),
 
 
 

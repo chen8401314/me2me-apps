@@ -211,4 +211,9 @@ public class UserServiceImpl implements UserService {
         return Response.failure(ResponseStatus.USER_MODIFY_USER_PROFILE_ERROR.status,ResponseStatus.USER_MODIFY_USER_PROFILE_ERROR.message);
     }
 
+    @Override
+    public UserProfile getUserProfileByUid(long uid) {
+        return userMybatisDao.getUserProfileByUid(uid);
+    }
+
 }

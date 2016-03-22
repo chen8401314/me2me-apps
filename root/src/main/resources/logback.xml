@@ -31,4 +31,8 @@
         <appender-ref ref="FILE"/>
     </root>
 
+    <root level="${logLevel}">
+        <appender-ref ref="STDOUT"/>
+    </root>
+
 </configuration>

@@ -2,6 +2,7 @@ package com.me2me.user.service;
 
 import com.me2me.common.web.Response;
 import com.me2me.user.dto.*;
+import com.me2me.user.model.UserProfile;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -66,4 +67,6 @@ public interface UserService {
      * @return
      */
     Response modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto);
+
+    UserProfile getUserProfileByUid(long uid);
 }

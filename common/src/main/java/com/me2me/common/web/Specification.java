@@ -86,4 +86,21 @@ public interface Specification {
     }
 
 
+    public enum ArticleType{
+
+        ORIGIN("原生",0),
+
+        FORWARD("转载",1);
+
+        public String name;
+        public int index;
+        ArticleType(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+
+
+
 }

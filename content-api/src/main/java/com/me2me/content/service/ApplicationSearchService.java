@@ -10,6 +10,6 @@ import com.plusnet.search.content.ContentResponse;
  */
 public interface ApplicationSearchService {
 
-    ContentResponse search(ContentRequest contentRequest);
+//    ContentResponse search(ContentRequest contentRequest);
 
 }

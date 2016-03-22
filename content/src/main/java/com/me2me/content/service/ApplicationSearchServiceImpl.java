@@ -19,22 +19,22 @@ import java.util.List;
 public class ApplicationSearchServiceImpl implements ApplicationSearchService {
 
 
-    @Autowired
-    private ContentQueryService contentQueryService;
-
-    public ContentResponse search(ContentRequest contentRequest) {
-        return contentQueryService.query(contentRequest);
-    }
-
-    public static void main(String[] args) {
-        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:spring/content-context.xml");
-        ApplicationSearchService searchService = ctx.getBean(ApplicationSearchService.class);
-        ContentRequest contentRequest = new ContentRequest();
-        contentRequest.setScene("蹲坑");
-
-        ContentResponse contentResponse = searchService.search(contentRequest);
-        List contents = contentResponse.getContents();
-        System.out.println(contents);
-    }
+//    @Autowired
+//    private ContentQueryService contentQueryService;
+//
+//    public ContentResponse search(ContentRequest contentRequest) {
+//        return contentQueryService.query(contentRequest);
+//    }
+//
+//    public static void main(String[] args) {
+//        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:spring/content-context.xml");
+//        ApplicationSearchService searchService = ctx.getBean(ApplicationSearchService.class);
+//        ContentRequest contentRequest = new ContentRequest();
+//        contentRequest.setScene("蹲坑");
+//
+//        ContentResponse contentResponse = searchService.search(contentRequest);
+//        List contents = contentResponse.getContents();
+//        System.out.println(contents);
+//    }
 
 }

@@ -121,4 +121,7 @@ public class UserMybatisDao {
     }
 
 
+    public UserProfile getUserProfileByUid(long uid) {
+        return userProfileMapper.selectByPrimaryKey(uid);
+    }
 }
