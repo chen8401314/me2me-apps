@@ -49,10 +49,10 @@ public class UserServiceImpl implements UserService {
         user.setStatus(Specification.UserStatus.NORMAL.index);
         user.setUserName(userSignUpDto.getMobile());
         // 校验验证码是否正确
-        boolean result = YunXinSms.verify(userSignUpDto.getMobile(),userSignUpDto.getVerifyCode());
-        if(!result){
-            Response.failure(ResponseStatus.USER_VERIFY_GET_ERROR.status,ResponseStatus.USER_VERIFY_GET_ERROR.message);
-        }
+//        boolean result = YunXinSms.verify(userSignUpDto.getMobile(),userSignUpDto.getVerifyCode());
+//        if(!result){
+//            Response.failure(ResponseStatus.USER_VERIFY_GET_ERROR.status,ResponseStatus.USER_VERIFY_GET_ERROR.message);
+//        }
         userMybatisDao.createUser(user);
         UserProfile userProfile = new UserProfile();
         userProfile.setUid(user.getUid());

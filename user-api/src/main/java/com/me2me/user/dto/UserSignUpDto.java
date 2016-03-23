@@ -19,8 +19,6 @@ public class UserSignUpDto implements BaseEntity {
 
     private int star;
 
-    private String verifyCode;
-
     private String nickName;
 
     
