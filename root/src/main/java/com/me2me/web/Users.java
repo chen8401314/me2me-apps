@@ -98,7 +98,6 @@ public class Users {
     public Response modifyUserProfile(ModifyUserProfileRequest request){
         ModifyUserProfileDto modifyUserProfileDto = new ModifyUserProfileDto();
         modifyUserProfileDto.setAction(request.getAction());
-        //// TODO: 2016/3/1 调用七牛图像上传返回文件地址
         modifyUserProfileDto.setUserName(request.getUserName());
         modifyUserProfileDto.setBearStatus(request.getBearStatus());
         modifyUserProfileDto.setGender(request.getGander());
