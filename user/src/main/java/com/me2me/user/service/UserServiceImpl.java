@@ -5,8 +5,10 @@ import com.me2me.common.sms.YunXinSms;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.dto.*;
+import com.me2me.user.event.VerifyEvent;
 import com.me2me.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,6 +25,9 @@ import java.util.Map;
  */
 @Service
 public class UserServiceImpl implements UserService {
+
+    @Autowired
+    private ApplicationEventBus applicationEventBus;
 
     @Autowired
     private UserMybatisDao userMybatisDao;
@@ -42,6 +47,11 @@ public class UserServiceImpl implements UserService {
         user.setUpdateTime(new Date());
         user.setStatus(Specification.UserStatus.NORMAL.index);
         user.setUserName(userSignUpDto.getMobile());
+        // 校验验证码是否正确
+        boolean result = YunXinSms.verify(userSignUpDto.getMobile(),userSignUpDto.getVerifyCode());
+        if(!result){
+            Response.failure(ResponseStatus.USER_VERIFY_GET_ERROR.status,ResponseStatus.USER_VERIFY_GET_ERROR.message);
+        }
         userMybatisDao.createUser(user);
         signUpSuccessDto.setUserName(user.getUserName());
         // 获取用户token
@@ -82,12 +92,8 @@ public class UserServiceImpl implements UserService {
      */
     public Response verify(VerifyDto verifyDto) {
         if(verifyDto.getAction() == Specification.VerifyAction.GET.index){
-            boolean result = YunXinSms.sendSms(verifyDto.getMobile());
-            if(result){
-                return Response.success(ResponseStatus.USER_VERIFY_GET_SUCCESS.status,ResponseStatus.USER_VERIFY_GET_SUCCESS.message);
-            }else{
-                Response.failure(ResponseStatus.USER_VERIFY_GET_ERROR.status,ResponseStatus.USER_VERIFY_GET_ERROR.message);
-            }
+            applicationEventBus.post(new VerifyEvent(verifyDto.getMobile(),null));
+            return Response.success(ResponseStatus.USER_VERIFY_GET_SUCCESS.status,ResponseStatus.USER_VERIFY_GET_SUCCESS.message);
         }else if(verifyDto.getAction() == Specification.VerifyAction.CHECK.index){
             boolean result = YunXinSms.verify(verifyDto.getMobile(),verifyDto.getVerifyCode());
             if(result) {

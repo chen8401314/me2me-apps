@@ -39,7 +39,6 @@ public class Users {
         userSignUpDto.setGander(request.getGander());
         userSignUpDto.setStar(request.getStart());
         userSignUpDto.setEncrypt(request.getEncrypt());
-        // todo add request params
         return userService.signUp(userSignUpDto);
     }
 
