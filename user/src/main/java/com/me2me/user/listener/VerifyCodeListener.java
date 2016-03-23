@@ -30,11 +30,6 @@ public class VerifyCodeListener {
     }
 
     @Subscribe
-    public void verify(VerifyEvent verifyEvent){
-        YunXinSms.verify(verifyEvent.getMobile(),verifyEvent.getVerifyCode());
-    }
-
-    @Subscribe
     public void send(VerifyEvent verifyEvent){
         YunXinSms.sendSms(verifyEvent.getMobile());
     }

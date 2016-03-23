@@ -34,4 +34,10 @@ public class SignUpRequest extends Request{
     @Getter
     @Setter
     private int start;
+
+    @Getter
+    @Setter
+    private String nickName;
+
+
 }

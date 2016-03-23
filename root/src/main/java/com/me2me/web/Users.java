@@ -39,6 +39,7 @@ public class Users {
         userSignUpDto.setGender(request.getGender());
         userSignUpDto.setStar(request.getStart());
         userSignUpDto.setEncrypt(request.getEncrypt());
+        userSignUpDto.setNickName(request.getNickName());
         return userService.signUp(userSignUpDto);
     }
 
