@@ -57,11 +57,17 @@ public class UserServiceImpl implements UserService {
         UserProfile userProfile = new UserProfile();
         userProfile.setUid(user.getUid());
         userProfile.setAvatar(Constant.DEFAULT_AVATAR);
+        userProfile.setNickName(userSignUpDto.getNickName());
         userMybatisDao.createUserProfile(userProfile);
         signUpSuccessDto.setUserName(user.getUserName());
         // 获取用户token
         signUpSuccessDto.setToken(SecurityUtils.getToken());
         signUpSuccessDto.setUid(user.getUid());
+        // 保存用户token信息
+        UserToken userToken = new UserToken();
+        userToken.setUid(user.getUid());
+        userToken.setToken(signUpSuccessDto.getToken());
+        userMybatisDao.createUserToken(userToken);
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
 
