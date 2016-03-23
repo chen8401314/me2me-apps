@@ -10,8 +10,38 @@ import com.me2me.content.dto.ContentDto;
  */
 public interface ContentService {
 
+
+    /**
+     * 精选接口
+     * @return
+     */
+    Response recommend(int sinceId);
+
+    /**
+     * 广场列表
+     * @param sinceId
+     * @return
+     */
     Response square(int sinceId);
 
+    /**
+     * 发布接口
+     * @param contentDto
+     * @return
+     */
     Response publish(ContentDto contentDto);
+
+    /**
+     * 点赞接口
+     * @return
+     */
+    Response like();
+
+    /**
+     * 打标签接口
+     * @return
+     */
+    Response writeTag();
+
 
 }

@@ -9,6 +9,8 @@ import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 赵朋扬
@@ -25,6 +27,7 @@ public class VerifyCodeListener {
         this.applicationEventBus = applicationEventBus;
     }
 
+    @PostConstruct
     public void init(){
         this.applicationEventBus.register(this);
     }

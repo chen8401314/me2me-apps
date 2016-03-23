@@ -50,7 +50,11 @@ public class UserMybatisDao {
     }
 
     public UserToken getUserTokenByUid(long uid){
-        return userTokenMapper.selectByPrimaryKey(uid);
+        UserTokenExample example = new UserTokenExample();
+        UserTokenExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        List<UserToken> lists = userTokenMapper.selectByExample(example);
+        return (lists != null && lists.size() > 0) ? lists.get(0) : null;
     }
 
     /**
@@ -134,6 +138,10 @@ public class UserMybatisDao {
 
 
     public UserProfile getUserProfileByUid(long uid) {
-        return userProfileMapper.selectByPrimaryKey(uid);
+        UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        List<UserProfile> lists = userProfileMapper.selectByExample(example);
+        return (lists != null && lists.size() > 0) ? lists.get(0) : null;
     }
 }
