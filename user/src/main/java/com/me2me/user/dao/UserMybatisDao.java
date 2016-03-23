@@ -49,6 +49,10 @@ public class UserMybatisDao {
         userTokenMapper.insertSelective(userToken);
     }
 
+    public UserToken getUserTokenByUid(long uid){
+        return userTokenMapper.selectByPrimaryKey(uid);
+    }
+
     /**
      * 根据用户账号获取用户信息
      * @param username

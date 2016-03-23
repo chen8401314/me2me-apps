@@ -48,11 +48,6 @@ public class UserServiceImpl implements UserService {
         user.setUpdateTime(new Date());
         user.setStatus(Specification.UserStatus.NORMAL.index);
         user.setUserName(userSignUpDto.getMobile());
-        // 校验验证码是否正确
-//        boolean result = YunXinSms.verify(userSignUpDto.getMobile(),userSignUpDto.getVerifyCode());
-//        if(!result){
-//            Response.failure(ResponseStatus.USER_VERIFY_GET_ERROR.status,ResponseStatus.USER_VERIFY_GET_ERROR.message);
-//        }
         userMybatisDao.createUser(user);
         UserProfile userProfile = new UserProfile();
         userProfile.setUid(user.getUid());
@@ -63,11 +58,16 @@ public class UserServiceImpl implements UserService {
         // 获取用户token
         signUpSuccessDto.setToken(SecurityUtils.getToken());
         signUpSuccessDto.setUid(user.getUid());
+        signUpSuccessDto.setNickName(userProfile.getNickName());
+        signUpSuccessDto.setGender(userProfile.getGender());
+        signUpSuccessDto.setUserNo("");
+        signUpSuccessDto.setAvatar(userProfile.getAvatar());
         // 保存用户token信息
         UserToken userToken = new UserToken();
         userToken.setUid(user.getUid());
         userToken.setToken(signUpSuccessDto.getToken());
         userMybatisDao.createUserToken(userToken);
+        signUpSuccessDto.setToken(userToken.getToken());
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
 
@@ -82,9 +82,16 @@ public class UserServiceImpl implements UserService {
             String salt = user.getSalt();
             if(SecurityUtils.md5(userLoginDto.getEncrypt(),salt).equals(user.getEncrypt())){
                 // 则用户登录成功
+                UserProfile userProfile = userMybatisDao.getUserProfileByUid(user.getUid());
+                UserToken userToken = userMybatisDao.getUserTokenByUid(user.getUid());
                 LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
                 loginSuccessDto.setUid(user.getUid());
                 loginSuccessDto.setUserName(user.getUserName());
+                loginSuccessDto.setNickName(userProfile.getNickName());
+                loginSuccessDto.setGender(userProfile.getGender());
+                loginSuccessDto.setUserNo("");
+                loginSuccessDto.setAvatar(userProfile.getAvatar());
+                loginSuccessDto.setToken(userToken.getToken());
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status,ResponseStatus.USER_LOGIN_SUCCESS.message,loginSuccessDto);
             }else{
                 // 用户密码不正确

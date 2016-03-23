@@ -17,4 +17,12 @@ public class SignUpSuccessDto implements BaseEntity {
 
     private String token;
 
+    private String nickName;
+
+    private int gender;
+
+    private String userNo;
+
+    private String avatar;
+
 }
