@@ -29,7 +29,7 @@ public class PublishContentRequest extends Request {
 
     @Getter
     @Setter
-    private String forwardCid;
+    private long forwardCid;
 
     @Getter
     @Setter

@@ -23,7 +23,7 @@ public class ContentDto implements BaseEntity {
 
     private int contentType;
 
-    private String forwardCid;
+    private long forwardCid;
 
     private int type;
 
