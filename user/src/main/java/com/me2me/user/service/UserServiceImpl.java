@@ -52,6 +52,7 @@ public class UserServiceImpl implements UserService {
         UserProfile userProfile = new UserProfile();
         userProfile.setUid(user.getUid());
         userProfile.setAvatar(Constant.DEFAULT_AVATAR);
+        userProfile.setMobile(userSignUpDto.getMobile());
         userProfile.setNickName(userSignUpDto.getNickName());
         userMybatisDao.createUserProfile(userProfile);
         signUpSuccessDto.setUserName(user.getUserName());
