@@ -25,7 +25,11 @@ public class SignUpRequest extends Request{
 
     @Getter
     @Setter
-    private int gander;
+    private String verifyCode;
+
+    @Getter
+    @Setter
+    private int gender;
 
     @Getter
     @Setter

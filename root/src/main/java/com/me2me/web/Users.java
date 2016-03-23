@@ -36,9 +36,10 @@ public class Users {
     public Response signUp(SignUpRequest request){
         UserSignUpDto userSignUpDto = new UserSignUpDto();
         userSignUpDto.setMobile(request.getMobile());
-        userSignUpDto.setGander(request.getGander());
+        userSignUpDto.setGender(request.getGender());
         userSignUpDto.setStar(request.getStart());
         userSignUpDto.setEncrypt(request.getEncrypt());
+        userSignUpDto.setVerifyCode(request.getVerifyCode());
         return userService.signUp(userSignUpDto);
     }
 
@@ -52,7 +53,6 @@ public class Users {
         UserLoginDto userLoginDto = new UserLoginDto();
         userLoginDto.setUserName(request.getUserName());
         userLoginDto.setEncrypt(request.getEncrypt());
-        //// TODO: 2016/3/8  登录返回信息补全 
         return userService.login(userLoginDto);
     }
 

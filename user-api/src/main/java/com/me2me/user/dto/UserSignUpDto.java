@@ -15,7 +15,7 @@ public class UserSignUpDto implements BaseEntity {
 
     private String encrypt ;
 
-    private int gander ;
+    private int gender ;
 
     private int star;
 

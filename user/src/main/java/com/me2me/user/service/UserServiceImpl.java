@@ -1,5 +1,6 @@
 package com.me2me.user.service;
 
+import com.me2me.common.Constant;
 import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.sms.YunXinSms;
 import com.me2me.common.web.Response;
@@ -53,6 +54,10 @@ public class UserServiceImpl implements UserService {
             Response.failure(ResponseStatus.USER_VERIFY_GET_ERROR.status,ResponseStatus.USER_VERIFY_GET_ERROR.message);
         }
         userMybatisDao.createUser(user);
+        UserProfile userProfile = new UserProfile();
+        userProfile.setUid(user.getUid());
+        userProfile.setAvatar(Constant.DEFAULT_AVATAR);
+        userMybatisDao.createUserProfile(userProfile);
         signUpSuccessDto.setUserName(user.getUserName());
         // 获取用户token
         signUpSuccessDto.setToken(SecurityUtils.getToken());

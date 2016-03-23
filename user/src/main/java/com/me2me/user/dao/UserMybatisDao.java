@@ -41,6 +41,10 @@ public class UserMybatisDao {
         userMapper.insertSelective(user);
     }
 
+    public void createUserProfile(UserProfile userProfile){
+        userProfileMapper.insertSelective(userProfile);
+    }
+
     /**
      * 根据用户账号获取用户信息
      * @param username
