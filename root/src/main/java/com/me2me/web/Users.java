@@ -166,6 +166,15 @@ public class Users {
         return null;
     }
 
+    /**
+     * 收藏夹
+     */
+    @ResponseBody
+    @RequestMapping(value = "/favorite",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response favorite(ThirdPartAuthRequest request){
+        return null;
+    }
+
 
 
 }
