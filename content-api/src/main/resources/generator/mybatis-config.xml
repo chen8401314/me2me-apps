@@ -33,6 +33,7 @@
         <!--<table tableName="user" domainObjectName="User"/>-->
         <!--<table tableName="content" domainObjectName="Content"/>-->
         <table tableName="content_image" domainObjectName="ContentImage"/>
+        <table tableName="content_user_likes" domainObjectName="ContentUserLike"/>
 
     </context>
 </generatorConfiguration>

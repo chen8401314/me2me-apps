@@ -2,6 +2,8 @@ package com.me2me.content.service;
 
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.ContentDto;
+import com.me2me.content.dto.LikeDto;
+import com.me2me.content.dto.WriteTagDto;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -35,13 +37,13 @@ public interface ContentService {
      * 点赞接口
      * @return
      */
-    Response like();
+    Response like(LikeDto likeDto);
 
     /**
      * 打标签接口
      * @return
      */
-    Response writeTag();
+    Response writeTag(WriteTagDto writeTagDto);
 
 
 }

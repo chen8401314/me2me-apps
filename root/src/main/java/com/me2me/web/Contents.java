@@ -2,6 +2,7 @@ package com.me2me.web;
 
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.ContentDto;
+import com.me2me.content.dto.LikeDto;
 import com.me2me.content.service.ContentService;
 import com.me2me.user.dto.*;
 import com.me2me.user.service.UserService;
@@ -51,6 +52,19 @@ public class Contents {
         contentDto.setImageUrls(request.getImageUrls());
         contentDto.setType(request.getType());
         return contentService.publish(contentDto);
+    }
+
+    /**
+     * 用户点赞接口
+     * @return
+     */
+    @RequestMapping(value = "/likes",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response publish(LikeRequest request){
+        LikeDto likeDto = new LikeDto();
+        likeDto.setUid(request.getUid());
+        likeDto.setCid(request.getCid());
+        return contentService.like(likeDto);
     }
 
 

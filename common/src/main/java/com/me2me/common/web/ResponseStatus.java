@@ -43,6 +43,8 @@ public enum  ResponseStatus {
 
     PUBLISH_ARTICLE_SUCCESS("用户发表文章成功","user publish article success",20040),
 
+    CONTENT_USER_LIKES_SUCCESS("用户点赞成功","content user likes success",20041),
+
 
 
 
