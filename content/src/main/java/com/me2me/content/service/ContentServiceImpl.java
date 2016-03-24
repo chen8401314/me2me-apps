@@ -32,6 +32,11 @@ public class ContentServiceImpl implements ContentService {
     private UserService userService;
 
     @Override
+    public Response recommend(int sinceId) {
+        return null;
+    }
+
+    @Override
     public Response square(int sinceId) {
         SquareDataDto squareDataDto = new SquareDataDto();
         List<Content> contents = contentMybatisDao.loadSquareData(sinceId);
@@ -95,5 +100,15 @@ public class ContentServiceImpl implements ContentService {
             }
         }
         return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message);
+    }
+
+    @Override
+    public Response like() {
+        return null;
+    }
+
+    @Override
+    public Response writeTag() {
+        return null;
     }
 }
