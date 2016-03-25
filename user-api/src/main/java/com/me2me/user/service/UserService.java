@@ -76,4 +76,12 @@ public interface UserService {
      * @return
      */
     Response retrieveEncrypt(FindEncryptDto findEncryptDto);
+
+    /**
+     * 给指定的用户贴标签
+     * @param pasteTagDto
+     * @return
+     */
+    Response writeTag(PasteTagDto pasteTagDto);
+
 }

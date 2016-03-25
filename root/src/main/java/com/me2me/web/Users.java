@@ -3,6 +3,7 @@ package com.me2me.web;
 import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.web.Response;
 import com.me2me.user.dto.*;
+import com.me2me.user.model.UserTags;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -183,5 +184,19 @@ public class Users {
     }
 
 
+    /**
+     * 贴标签
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/pasteTag",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response pasteTags(TagRequest request){
+        PasteTagDto pasteTagDto = new PasteTagDto();
+        pasteTagDto.setTag(request.getTag());
+        pasteTagDto.setUid(request.getUid());
+        pasteTagDto.setFuid(request.getFuid());
+        return userService.writeTag(pasteTagDto);
+    }
 
 }

@@ -3,6 +3,7 @@ package com.me2me.user.dao;
 import com.me2me.common.web.Specification;
 import com.me2me.user.dto.BasicDataDto;
 import com.me2me.user.dto.ModifyUserProfileDto;
+import com.me2me.user.dto.PasteTagDto;
 import com.me2me.user.mapper.*;
 import com.me2me.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,12 @@ public class UserMybatisDao {
 
     @Autowired
     private UserTokenMapper userTokenMapper;
+
+    @Autowired
+    private UserTagsMapper userTagsMapper;
+
+    @Autowired
+    private UserTagsDetailsMapper userTagsDetailsMapper;
 
     /**
      * 保存用户注册信息
@@ -144,4 +151,38 @@ public class UserMybatisDao {
         List<UserProfile> lists = userProfileMapper.selectByExample(example);
         return (lists != null && lists.size() > 0) ? lists.get(0) : null;
     }
+
+    /**
+     * 贴标签
+     * @param pasteTagDto
+     */
+    public void pasteTag(PasteTagDto pasteTagDto){
+
+        UserTagsExample userTagsExample = new UserTagsExample();
+        UserTagsExample.Criteria criteria = userTagsExample.createCriteria();
+        criteria.andTagEqualTo(pasteTagDto.getTag());
+
+        UserTagsDetailsExample userTagsDetailsExample = new UserTagsDetailsExample();
+        List<UserTags> list =  userTagsMapper.selectByExample(userTagsExample);
+        //判断该标签是否已存在，如果存在就在原有的计数上累加，否则插入新的记录
+        if(null != list && !list.isEmpty()){
+            UserTags tags = list.get(0);
+            UserTagsDetailsExample.Criteria criteria1 = userTagsDetailsExample.createCriteria();
+            criteria1.andUidEqualTo(pasteTagDto.getUid()).andTidEqualTo(tags.getId());
+            List<UserTagsDetails> detailsList = userTagsDetailsMapper.selectByExample(userTagsDetailsExample);
+            UserTagsDetails details =  detailsList.get(0);
+            details.setFrequency(Math.addExact(details.getFrequency(),1));
+            userTagsDetailsMapper.updateByPrimaryKey(details);
+        }else {
+            UserTags userTags = new UserTags();
+            userTags.setTag(pasteTagDto.getTag());
+            Integer tagId = userTagsMapper.insertSelective(userTags);
+            UserTagsDetails details = new UserTagsDetails();
+            details.setTid(tagId.longValue());
+            details.setFuid(pasteTagDto.getFuid());
+            details.setUid(pasteTagDto.getUid());
+            userTagsDetailsMapper.insert(details);
+        }
+    }
+
 }

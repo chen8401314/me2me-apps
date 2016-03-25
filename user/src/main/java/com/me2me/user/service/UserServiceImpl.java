@@ -262,4 +262,9 @@ public class UserServiceImpl implements UserService {
         return userMybatisDao.getUserProfileByUid(uid);
     }
 
+    @Override
+    public Response writeTag(PasteTagDto pasteTagDto) {
+        userMybatisDao.pasteTag(pasteTagDto);
+        return Response.success(ResponseStatus.PASTE_TAG_SUCCESS.status,ResponseStatus.PASTE_TAG_SUCCESS.message);
+    }
 }
