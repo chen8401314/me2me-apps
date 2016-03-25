@@ -73,6 +73,21 @@ public class Users {
     }
 
     /**
+     * 找回密码
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/findEncrypt",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response findEncrypt(FindEncryptRequest request){
+        FindEncryptDto findEncryptDto = new FindEncryptDto();
+        findEncryptDto.setUserName(request.getUserName());
+        findEncryptDto.setFirstEncrypt(request.getFirstEncrypt());
+        findEncryptDto.setSecondEncrypt(request.getSecondEncrypt());
+        return userService.retrieveEncrypt(findEncryptDto);
+    }
+
+    /**
      * 获取验证码接口
      * @param request
      * @return

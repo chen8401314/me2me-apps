@@ -100,6 +100,20 @@ public interface Specification {
         }
     }
 
+    public enum ContentStatus{
+
+        NORMAL("正常",0),
+
+        DELETE("转载",1);
+
+        public String name;
+        public int index;
+        ContentStatus(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
 
 
 
