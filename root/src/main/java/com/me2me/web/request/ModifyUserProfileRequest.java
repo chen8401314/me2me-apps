@@ -25,15 +25,11 @@ public class ModifyUserProfileRequest {
 
     @Getter
     @Setter
-    private int gander;
+    private int gender;
 
     @Getter
     @Setter
     private String nickName;
-
-    @Getter
-    @Setter
-    private int gender;
 
     @Getter
     @Setter
@@ -59,6 +55,9 @@ public class ModifyUserProfileRequest {
     @Setter
     private long bearStatus ;
 
+    @Getter
+    @Setter
+    private String avatar;
 
 
 }
