@@ -22,7 +22,7 @@ public class SquareDataDto implements BaseEntity {
      * 1. 显示原生UGC和转发系统（图文|音乐）
      *
      */
-    private List<SquareDataElement> squareDatas = Lists.newArrayList();
+    private List<SquareDataElement> results = Lists.newArrayList();
 
     public static SquareDataElement createElement(){
         return new SquareDataElement();
@@ -49,6 +49,8 @@ public class SquareDataDto implements BaseEntity {
         private int type;
 
         private Date createTime;
+
+        private int isLike;
 
         private String coverImage;
 

@@ -54,6 +54,7 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setContent(content.getContent());
             squareDataElement.setFeeling(content.getFeeling());
             squareDataElement.setType(content.getType());
+            squareDataElement.setIsLike(1);
             squareDataElement.setCreateTime(content.getCreateTime());
             squareDataElement.setCoverImage(content.getConverImage());
             squareDataElement.setLikeCount(content.getLikeCount());
@@ -62,7 +63,7 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setForwardTitle(content.getForwardTitle());
             squareDataElement.setContentType(content.getContentType());
             squareDataElement.setForwardUrl(content.getForwardUrl());
-            squareDataDto.getSquareDatas().add(squareDataElement);
+            squareDataDto.getResults().add(squareDataElement);
         }
     }
 
