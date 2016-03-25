@@ -59,6 +59,9 @@ public class ModifyUserProfileRequest {
     @Setter
     private long bearStatus ;
 
+    @Getter
+    @Setter
+    private String avatar;
 
 
 }
