@@ -21,7 +21,7 @@ public class FileTransferServiceImpl implements FileTransferService{
 
     private static final String SECRET_KEY ="9fmLV9tnplKRITWQV7QOQYANArqCNELd_SXtjwh9";
 
-    private static final String BUCKET = "http://7xqn7o.com2.z0.glb.qiniucdn.com/";
+    private static final String BUCKET = "ifeeling";
 
 
     /**
