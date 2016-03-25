@@ -114,7 +114,7 @@ public class Users {
         modifyUserProfileDto.setAction(request.getAction());
         modifyUserProfileDto.setUserName(request.getUserName());
         modifyUserProfileDto.setBearStatus(request.getBearStatus());
-        modifyUserProfileDto.setGender(request.getGander());
+        modifyUserProfileDto.setGender(request.getGender());
         modifyUserProfileDto.setIndustry(request.getIndustry());
         modifyUserProfileDto.setMarriageStatus(request.getMarriageStatus());
         modifyUserProfileDto.setStartId(request.getStartId());
