@@ -3,6 +3,7 @@ package com.me2me.user.dao;
 import com.me2me.common.web.Specification;
 import com.me2me.user.dto.BasicDataDto;
 import com.me2me.user.dto.ModifyUserProfileDto;
+import com.me2me.user.dto.PasteTagDto;
 import com.me2me.user.mapper.*;
 import com.me2me.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +33,12 @@ public class UserMybatisDao {
 
     @Autowired
     private UserTokenMapper userTokenMapper;
+
+    @Autowired
+    private UserTagsMapper userTagsMapper;
+
+    @Autowired
+    private UserTagsDetailsMapper userTagsDetailsMapper;
 
     /**
      * 保存用户注册信息
@@ -144,4 +151,20 @@ public class UserMybatisDao {
         List<UserProfile> lists = userProfileMapper.selectByExample(example);
         return (lists != null && lists.size() > 0) ? lists.get(0) : null;
     }
+
+    /**
+     * 贴标签
+     * @param pasteTagDto
+     */
+    public void pasteTag(PasteTagDto pasteTagDto){
+        UserTags userTags = new UserTags();
+        userTags.setTag(pasteTagDto.getTag());
+        Integer tagId = userTagsMapper.insertSelective(userTags);
+        UserTagsDetails details = new UserTagsDetails();
+        details.setTid(tagId.longValue());
+        details.setFuid(pasteTagDto.getFuid());
+        details.setUid(pasteTagDto.getUid());
+        userTagsDetailsMapper.insert(details);
+    }
+
 }

@@ -69,4 +69,12 @@ public interface UserService {
     Response modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto);
 
     UserProfile getUserProfileByUid(long uid);
+
+    /**
+     * 给指定的用户贴标签
+     * @param pasteTagDto
+     * @return
+     */
+    Response writeTag(PasteTagDto pasteTagDto);
+
 }

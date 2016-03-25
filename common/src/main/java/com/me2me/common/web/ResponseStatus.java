@@ -47,7 +47,7 @@ public enum  ResponseStatus {
 
     GET_QINIU_TOKEN_SUCCESS("获取七牛token成功","get qiniu token success",20050),
 
-
+    PASTE_TAG_SUCCESS("打标签成功","paste tag success",20060),
 
 
 
@@ -72,6 +72,8 @@ public enum  ResponseStatus {
     USER_MODIFY_USER_PROFILE_ERROR("用户信息修改错误","user modify user profile error",5006),
 
     USER_ADD_FRIEND_ERROR("不能自己添加自己为好友","can't add yourself",50020);
+
+
 
     public String message;
 
