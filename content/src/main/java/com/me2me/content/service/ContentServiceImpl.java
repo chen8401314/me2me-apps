@@ -34,21 +34,15 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private ContentUserLikeMapper contentUserLikeMapper;
-
-    @Autowired
-    private ContentMapper contentMapper;
-
     @Override
     public Response highQuality(int sinceId) {
-        return null;
+        SquareDataDto squareDataDto = new SquareDataDto();
+        List<Content> contents = contentMybatisDao.highQuality(sinceId);
+        buildDatas(squareDataDto, contents);
+        return Response.success(squareDataDto);
     }
 
-    @Override
-    public Response square(int sinceId) {
-        SquareDataDto squareDataDto = new SquareDataDto();
-        List<Content> contents = contentMybatisDao.loadSquareData(sinceId);
+    private void buildDatas(SquareDataDto squareDataDto, List<Content> contents) {
         for(Content content : contents){
             SquareDataDto.SquareDataElement squareDataElement = SquareDataDto.createElement();
             squareDataElement.setId(content.getId());
@@ -60,6 +54,7 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setContent(content.getContent());
             squareDataElement.setFeeling(content.getFeeling());
             squareDataElement.setType(content.getType());
+            squareDataElement.setIsLike(1);
             squareDataElement.setCreateTime(content.getCreateTime());
             squareDataElement.setCoverImage(content.getConverImage());
             squareDataElement.setLikeCount(content.getLikeCount());
@@ -68,8 +63,15 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setForwardTitle(content.getForwardTitle());
             squareDataElement.setContentType(content.getContentType());
             squareDataElement.setForwardUrl(content.getForwardUrl());
-            squareDataDto.getSquareDatas().add(squareDataElement);
+            squareDataDto.getResults().add(squareDataElement);
         }
+    }
+
+    @Override
+    public Response square(int sinceId) {
+        SquareDataDto squareDataDto = new SquareDataDto();
+        List<Content> contents = contentMybatisDao.loadSquareData(sinceId);
+        buildDatas(squareDataDto, contents);
         return Response.success(squareDataDto);
     }
 
@@ -90,6 +92,7 @@ public class ContentServiceImpl implements ContentService {
         }else if(content.getType()== Specification.ArticleType.FORWARD.index){
             // 转载文章
             long forwardCid = contentDto.getForwardCid();
+            // // TODO: 2016/3/25 添加转载
             content.setForwardUrl("");
             content.setForwardTitle("");
         }

@@ -36,6 +36,10 @@ public class ContentMybatisDao {
         return contentMapper.loadSquareData(sinceId);
     }
 
+    public List<Content>highQuality(int sinceId){
+        return contentMapper.loadHighQualityData(sinceId);
+    }
+
     public void createContent(Content content){
         contentMapper.insertSelective(content);
     }

@@ -25,7 +25,7 @@ public class ModifyUserProfileRequest {
 
     @Getter
     @Setter
-    private int gander;
+    private int gender;
 
     @Getter
     @Setter
