@@ -84,5 +84,13 @@ public class ContentMybatisDao {
         contentTagLikesMapper.insertSelective(contentTagLikes);
     }
 
+    public int isLike(long uid,long cid){
+        ContentTagLikesExample example = new ContentTagLikesExample();
+        ContentTagLikesExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(cid);
+        criteria.andUidEqualTo(uid);
+        List list = contentTagLikesMapper.selectByExample(example);
+        return  list.size() > 0 ? 1 : 0 ;
+    }
 
 }

@@ -246,6 +246,7 @@ public class UserServiceImpl implements UserService {
     public Response modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto){
         if(modifyUserProfileDto.getAction() == Specification.ModifyUserProfileAction.AVATAR.index){
             userMybatisDao.modifyUserAvatar(modifyUserProfileDto);
+            modifyUserProfileDto.setAvatar(Constant.QINIU_DOMAIN + "/" +modifyUserProfileDto.getAvatar());
             return Response.success(ResponseStatus.USER_MODIFY_AVATAR_SUCCESS.status,ResponseStatus.USER_MODIFY_AVATAR_SUCCESS.message,modifyUserProfileDto);
         }else if(modifyUserProfileDto.getAction() == Specification.ModifyUserProfileAction.NICKNAME.index){
             userMybatisDao.modifyNickName(modifyUserProfileDto);
