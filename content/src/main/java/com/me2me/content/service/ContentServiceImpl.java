@@ -148,5 +148,11 @@ public class ContentServiceImpl implements ContentService {
         return Response.failure(ResponseStatus.CONTENT_DELETE_SUCCESS.status,ResponseStatus.CONTENT_DELETE_SUCCESS.message);
     }
 
+    @Override
+    public int isLike(long uid, long cid) {
+        contentMybatisDao.isLike(uid,cid);
+        return 0;
+    }
+
 
 }
