@@ -69,4 +69,11 @@ public interface UserService {
     Response modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto);
 
     UserProfile getUserProfileByUid(long uid);
+
+    /**
+     * 找回密码
+     * @param findEncryptDto
+     * @return
+     */
+    Response retrieveEncrypt(FindEncryptDto findEncryptDto);
 }

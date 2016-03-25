@@ -150,6 +150,26 @@ public class UserServiceImpl implements UserService {
     }
 
     /**
+     * 找回密码
+     * @param findEncryptDto
+     * @return
+     */
+    public Response retrieveEncrypt(FindEncryptDto findEncryptDto){
+        if(!findEncryptDto.getFirstEncrypt().equals(findEncryptDto.getSecondEncrypt())) {
+            return Response.failure(ResponseStatus.USER_FIND_ENCRYPT_PASSWORD_NOT_SAME_ERROR.status,ResponseStatus.USER_FIND_ENCRYPT_PASSWORD_NOT_SAME_ERROR.message);
+        }else{
+            User user = userMybatisDao.getUserByUserName(findEncryptDto.getUserName());
+            if(user != null){
+                    user.setEncrypt(SecurityUtils.md5(findEncryptDto.getFirstEncrypt(),user.getSalt()));
+                    userMybatisDao.modifyUser(user);
+                    return Response.success(ResponseStatus.USER_FIND_ENCRYPT_SUCCESS.status, ResponseStatus.USER_FIND_ENCRYPT_SUCCESS.message);
+            }else {
+                return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
+            }
+        }
+    }
+
+    /**
      * 修改用户爱好
      * @param modifyUserHobbyDto
      * @return
