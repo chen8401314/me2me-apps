@@ -34,6 +34,9 @@ public class Contents {
     @RequestMapping(value = "/highQuality",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response highQuality(SquareRequest request){
+        if(request.getSinceId()==-1){
+            request.setSinceId(Integer.MAX_VALUE);
+        }
         return contentService.highQuality(request.getSinceId());
     }
 
@@ -44,6 +47,9 @@ public class Contents {
     @RequestMapping(value = "/square",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response square(SquareRequest request){
+        if(request.getSinceId()==-1){
+            request.setSinceId(Integer.MAX_VALUE);
+        }
         return contentService.square(request.getSinceId());
     }
 
