@@ -28,7 +28,17 @@ public class Contents {
     private ContentService contentService;
 
     /**
-     * 用户注册接口
+     * 精选接口
+     * @return
+     */
+    @RequestMapping(value = "/highQuality",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response highQuality(SquareRequest request){
+        return contentService.highQuality(request.getSinceId());
+    }
+
+    /**
+     * 广场接口
      * @return
      */
     @RequestMapping(value = "/square",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
