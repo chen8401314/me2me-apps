@@ -33,10 +33,6 @@ public class ModifyUserProfileRequest {
 
     @Getter
     @Setter
-    private int gender;
-
-    @Getter
-    @Setter
     private long yearsId;
 
     @Getter
