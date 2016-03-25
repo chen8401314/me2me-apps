@@ -54,7 +54,7 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setContent(content.getContent());
             squareDataElement.setFeeling(content.getFeeling());
             squareDataElement.setType(content.getType());
-            squareDataElement.setIsLike(1);
+            squareDataElement.setIsLike(isLike(userProfile.getUid(),content.getId()));
             squareDataElement.setCreateTime(content.getCreateTime());
             squareDataElement.setCoverImage(content.getConverImage());
             squareDataElement.setLikeCount(content.getLikeCount());
@@ -153,8 +153,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public int isLike(long uid, long cid) {
-        contentMybatisDao.isLike(uid,cid);
-        return 0;
+        return contentMybatisDao.isLike(uid,cid);
     }
 
 
