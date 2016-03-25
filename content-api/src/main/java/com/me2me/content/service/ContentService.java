@@ -2,6 +2,7 @@ package com.me2me.content.service;
 
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.ContentDto;
+import com.me2me.content.dto.DeleteContentDto;
 import com.me2me.content.dto.LikeDto;
 import com.me2me.content.dto.WriteTagDto;
 
@@ -17,7 +18,7 @@ public interface ContentService {
      * 精选接口
      * @return
      */
-    Response recommend(int sinceId);
+    Response highQuality(int sinceId);
 
     /**
      * 广场列表
@@ -44,6 +45,13 @@ public interface ContentService {
      * @return
      */
     Response writeTag(WriteTagDto writeTagDto);
+
+    /**
+     * 用户发布内容删除
+     * @param id
+     * @return
+     */
+    Response deleteContent(long id);
 
 
 }

@@ -45,9 +45,14 @@ public enum  ResponseStatus {
 
     CONTENT_USER_LIKES_SUCCESS("用户点赞成功","content user likes success",20041),
 
-    GET_QINIU_TOKEN_SUCCESS("获取七牛token成功","get qiniu token success",20050),
+    USER_FIND_ENCRYPT_SUCCESS("用户密码找回成功","user find encrypt success",20042),
 
     PASTE_TAG_SUCCESS("打标签成功","paste tag success",20060),
+    CONTENT_DELETE_SUCCESS("删除成功","content delete success",20043),
+
+    CONTENT_TAGS_LIKES_SUCCESS("标签发布成功","content tags likes success",20044),
+
+    GET_QINIU_TOKEN_SUCCESS("获取七牛token成功","get qiniu token success",20050),
 
 
 
@@ -71,9 +76,9 @@ public enum  ResponseStatus {
 
     USER_MODIFY_USER_PROFILE_ERROR("用户信息修改错误","user modify user profile error",5006),
 
+    USER_FIND_ENCRYPT_PASSWORD_NOT_SAME_ERROR("用户找回密码两次密码不一致","user find encrypt password not same error",5007),
+
     USER_ADD_FRIEND_ERROR("不能自己添加自己为好友","can't add yourself",50020);
-
-
 
     public String message;
 

@@ -71,6 +71,13 @@ public interface UserService {
     UserProfile getUserProfileByUid(long uid);
 
     /**
+     * 找回密码
+     * @param findEncryptDto
+     * @return
+     */
+    Response retrieveEncrypt(FindEncryptDto findEncryptDto);
+
+    /**
      * 给指定的用户贴标签
      * @param pasteTagDto
      * @return

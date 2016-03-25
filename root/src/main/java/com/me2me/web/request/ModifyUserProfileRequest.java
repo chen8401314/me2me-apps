@@ -33,10 +33,6 @@ public class ModifyUserProfileRequest {
 
     @Getter
     @Setter
-    private int gender;
-
-    @Getter
-    @Setter
     private long yearsId;
 
     @Getter
@@ -59,6 +55,9 @@ public class ModifyUserProfileRequest {
     @Setter
     private long bearStatus ;
 
+    @Getter
+    @Setter
+    private String avatar;
 
 
 }

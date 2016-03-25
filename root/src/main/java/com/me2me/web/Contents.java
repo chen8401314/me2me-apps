@@ -3,6 +3,7 @@ package com.me2me.web;
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.ContentDto;
 import com.me2me.content.dto.LikeDto;
+import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.service.ContentService;
 import com.me2me.user.dto.*;
 import com.me2me.user.service.UserService;
@@ -65,6 +66,30 @@ public class Contents {
         likeDto.setUid(request.getUid());
         likeDto.setCid(request.getCid());
         return contentService.like(likeDto);
+    }
+
+    /**
+     *  用户贴标签
+     * @return
+     */
+    @RequestMapping(value = "/writeTag",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response writeTag(WriteTagRequest request){
+        WriteTagDto writeTagDto = new WriteTagDto();
+        writeTagDto.setCid(request.getCid());
+        writeTagDto.setTag(request.getTag());
+        writeTagDto.setUid(request.getUid());
+        return contentService.writeTag(writeTagDto);
+    }
+
+    /**
+     *  用户删除发布内容
+     * @return
+     */
+    @RequestMapping(value = "/deleteContent",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response deleteContent(DeleteContentRequest request){
+        return contentService.deleteContent(request.getId());
     }
 
 

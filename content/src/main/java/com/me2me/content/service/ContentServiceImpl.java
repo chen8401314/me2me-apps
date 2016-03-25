@@ -10,12 +10,8 @@ import com.me2me.content.dto.SquareDataDto;
 import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.mapper.ContentMapper;
 import com.me2me.content.mapper.ContentUserLikeMapper;
-import com.me2me.content.model.Content;
-import com.me2me.content.model.ContentImage;
-import com.me2me.content.model.ContentUserLike;
-import com.me2me.content.model.ContentUserLikeExample;
+import com.me2me.content.model.*;
 import com.me2me.user.model.UserProfile;
-import com.me2me.user.model.UserProfileExample;
 import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -45,7 +41,7 @@ public class ContentServiceImpl implements ContentService {
     private ContentMapper contentMapper;
 
     @Override
-    public Response recommend(int sinceId) {
+    public Response highQuality(int sinceId) {
         return null;
     }
 
@@ -122,30 +118,34 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public Response like(LikeDto likeDto) {
         int addCount = 1 ;
-        ContentUserLikeExample example = new ContentUserLikeExample();
-        ContentUserLikeExample.Criteria criteria = example.createCriteria();
-        criteria.andCidEqualTo(likeDto.getCid());
-        criteria.andUidEqualTo(likeDto.getUid());
-        List<ContentUserLike> list = contentUserLikeMapper.selectByExample(example);
-        ContentUserLike c = list.size() > 0 ? list.get(0) : null;
+        ContentUserLike c = contentMybatisDao.getContentUserLike(likeDto);
         if(c == null){
             ContentUserLike contentUserLike = new ContentUserLike();
             contentUserLike.setUid(likeDto.getUid());
             contentUserLike.setCid(likeDto.getCid());
-            contentUserLikeMapper.insertSelective(contentUserLike);
+            contentMybatisDao.createContentUserLike(contentUserLike);
         }else{
             addCount = -1;
-            contentUserLikeMapper.deleteByPrimaryKey(c.getId());
+            contentMybatisDao.deleteUserLike(c.getId());
         }
-        Content content = contentMapper.selectByPrimaryKey(likeDto.getCid());
+        Content content = contentMybatisDao.getContentById(c.getCid());
         content.setLikeCount(content.getLikeCount() + addCount );
-        contentMapper.updateByPrimaryKey(content);
+        contentMybatisDao.updateContentById(content);
         return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status ,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
     }
 
     @Override
     public Response writeTag(WriteTagDto writeTagDto) {
-        return null;
+        contentMybatisDao.createTag(writeTagDto);
+        return Response.success(ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.status,ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.message);
+    }
+
+    @Override
+    public Response deleteContent(long id) {
+        Content content = contentMybatisDao.getContentById(id);
+        content.setStatus(Specification.ContentStatus.DELETE.index);
+        contentMybatisDao.updateContentById(content);
+        return Response.failure(ResponseStatus.CONTENT_DELETE_SUCCESS.status,ResponseStatus.CONTENT_DELETE_SUCCESS.message);
     }
 
 

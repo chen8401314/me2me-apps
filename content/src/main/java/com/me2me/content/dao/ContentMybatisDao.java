@@ -1,9 +1,9 @@
 package com.me2me.content.dao;
 
-import com.me2me.content.mapper.ContentImageMapper;
-import com.me2me.content.mapper.ContentMapper;
-import com.me2me.content.model.Content;
-import com.me2me.content.model.ContentImage;
+import com.me2me.content.dto.LikeDto;
+import com.me2me.content.dto.WriteTagDto;
+import com.me2me.content.mapper.*;
+import com.me2me.content.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -23,6 +23,15 @@ public class ContentMybatisDao {
     @Autowired
     private ContentImageMapper contentImageMapper;
 
+    @Autowired
+    private ContentUserLikeMapper contentUserLikeMapper;
+
+    @Autowired
+    private ContentTagsMapper contentTagsMapper;
+
+    @Autowired
+    private ContentTagLikesMapper contentTagLikesMapper;
+
     public List<Content> loadSquareData(int sinceId){
         return contentMapper.loadSquareData(sinceId);
     }
@@ -34,5 +43,42 @@ public class ContentMybatisDao {
     public void createContentImage(ContentImage contentImage){
         contentImageMapper.insertSelective(contentImage);
     }
+
+    public void createContentUserLike(ContentUserLike contentUserLike){
+        contentUserLikeMapper.insertSelective(contentUserLike);
+    }
+
+    public Content getContentById(long id){
+        return contentMapper.selectByPrimaryKey(id);
+    }
+
+    public ContentUserLike getContentUserLike(LikeDto likeDto){
+        ContentUserLikeExample example = new ContentUserLikeExample();
+        ContentUserLikeExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(likeDto.getCid());
+        criteria.andUidEqualTo(likeDto.getUid());
+        List<ContentUserLike> list = contentUserLikeMapper.selectByExample(example);
+        return list.size() > 0 ? list.get(0) : null;
+    }
+
+    public void deleteUserLike(long id){
+        contentUserLikeMapper.deleteByPrimaryKey(id);
+    }
+
+    public void updateContentById(Content content){
+        contentMapper.updateByPrimaryKey(content);
+    }
+
+    public void createTag(WriteTagDto writeTagDto){
+        ContentTags contentTags = new ContentTags();
+        contentTags.setTag(writeTagDto.getTag());
+        contentTagsMapper.insertSelective(contentTags);
+        ContentTagLikes contentTagLikes = new ContentTagLikes();
+        contentTagLikes.setTagId(contentTags.getId());
+        contentTagLikes.setCid(writeTagDto.getCid());
+        contentTagLikes.setUid(writeTagDto.getUid());
+        contentTagLikesMapper.insertSelective(contentTagLikes);
+    }
+
 
 }

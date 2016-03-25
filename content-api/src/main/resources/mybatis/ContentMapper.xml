@@ -553,4 +553,13 @@
     from content where id &lt; #{sinceId}
       order by id desc limit 10
   </select>
+
+  <select id="loadHighQualityData"  resultMap="ResultMapWithBLOBs">
+    select
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from content c right join high_quality_content h on c.id = h.cid  where c.id &lt; #{sinceId}
+    order by c.id desc limit 10
+  </select>
 </mapper>
