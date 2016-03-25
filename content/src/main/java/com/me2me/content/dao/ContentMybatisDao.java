@@ -90,7 +90,7 @@ public class ContentMybatisDao {
         criteria.andCidEqualTo(cid);
         criteria.andUidEqualTo(uid);
         List list = contentUserLikeMapper.selectByExample(example);
-        return  list.size() > 0 ? 1 : 0 ;
+        return  (list !=null&&list.size() > 0 ) ? 1 : 0 ;
     }
 
 }
