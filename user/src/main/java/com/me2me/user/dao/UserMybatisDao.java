@@ -157,14 +157,32 @@ public class UserMybatisDao {
      * @param pasteTagDto
      */
     public void pasteTag(PasteTagDto pasteTagDto){
-        UserTags userTags = new UserTags();
-        userTags.setTag(pasteTagDto.getTag());
-        Integer tagId = userTagsMapper.insertSelective(userTags);
-        UserTagsDetails details = new UserTagsDetails();
-        details.setTid(tagId.longValue());
-        details.setFuid(pasteTagDto.getFuid());
-        details.setUid(pasteTagDto.getUid());
-        userTagsDetailsMapper.insert(details);
+
+        UserTagsExample userTagsExample = new UserTagsExample();
+        UserTagsExample.Criteria criteria = userTagsExample.createCriteria();
+        criteria.andTagEqualTo(pasteTagDto.getTag());
+
+        UserTagsDetailsExample userTagsDetailsExample = new UserTagsDetailsExample();
+        List<UserTags> list =  userTagsMapper.selectByExample(userTagsExample);
+        //判断该标签是否已存在，如果存在就在原有的计数上累加，否则插入新的记录
+        if(null != list && !list.isEmpty()){
+            UserTags tags = list.get(0);
+            UserTagsDetailsExample.Criteria criteria1 = userTagsDetailsExample.createCriteria();
+            criteria1.andUidEqualTo(pasteTagDto.getUid()).andTidEqualTo(tags.getId());
+            List<UserTagsDetails> detailsList = userTagsDetailsMapper.selectByExample(userTagsDetailsExample);
+            UserTagsDetails details =  detailsList.get(0);
+            details.setFrequency(Math.addExact(details.getFrequency(),1));
+            userTagsDetailsMapper.updateByPrimaryKey(details);
+        }else {
+            UserTags userTags = new UserTags();
+            userTags.setTag(pasteTagDto.getTag());
+            Integer tagId = userTagsMapper.insertSelective(userTags);
+            UserTagsDetails details = new UserTagsDetails();
+            details.setTid(tagId.longValue());
+            details.setFuid(pasteTagDto.getFuid());
+            details.setUid(pasteTagDto.getUid());
+            userTagsDetailsMapper.insert(details);
+        }
     }
 
 }

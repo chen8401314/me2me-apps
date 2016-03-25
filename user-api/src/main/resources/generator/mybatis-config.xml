@@ -39,7 +39,7 @@
         <!--<table tableName="user_token" domainObjectName="UserTsoken"/>-->
         <!--<table tableName="user_device" domainObjectName="UserDevice"/>-->
         <!--<table tableName="user_channel" domainObjectName="UserChannel"/>-->
-        <table tableName="user_tags" domainObjectName="UserTags"/>
+        <!--<table tableName="user_tags" domainObjectName="UserTags"/>-->
         <table tableName="user_tags_details" domainObjectName="UserTagsDetails" />
     </context>
 </generatorConfiguration>
