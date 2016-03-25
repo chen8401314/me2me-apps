@@ -122,6 +122,7 @@ public class Users {
         modifyUserProfileDto.setSocialClass(request.getSocialClass());
         modifyUserProfileDto.setYearsId(request.getYearsId());
         modifyUserProfileDto.setUid(request.getUid());
+        modifyUserProfileDto.setAvatar(request.getAvatar());
        return  userService.modifyUserProfile(modifyUserProfileDto);
     }
 
