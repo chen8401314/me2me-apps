@@ -119,4 +119,6 @@ public interface ContentMapper {
     int updateByPrimaryKey(Content record);
 
     List<Content> loadSquareData(int sinceId);
+
+    List<Content> loadHighQualityData(int sinceId);
 }

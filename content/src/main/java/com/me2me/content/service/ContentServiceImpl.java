@@ -45,7 +45,7 @@ public class ContentServiceImpl implements ContentService {
     private ContentMapper contentMapper;
 
     @Override
-    public Response recommend(int sinceId) {
+    public Response highQuality(int sinceId) {
         return null;
     }
 
