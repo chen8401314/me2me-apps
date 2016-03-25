@@ -1,5 +1,6 @@
 package com.me2me.io.service;
 
+import com.me2me.common.web.Response;
 import org.springframework.web.multipart.MultipartFile;
 
 /**
@@ -14,5 +15,11 @@ public interface FileTransferService {
      * @param multipartFile
      */
     void upload(MultipartFile multipartFile);
+
+    /**
+     * 获取七牛访问token
+     * @return
+     */
+    Response getQiniuAccessToken();
 
 }

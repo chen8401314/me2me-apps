@@ -18,7 +18,7 @@ public interface ContentService {
      * 精选接口
      * @return
      */
-    Response recommend(int sinceId);
+    Response highQuality(int sinceId);
 
     /**
      * 广场列表
