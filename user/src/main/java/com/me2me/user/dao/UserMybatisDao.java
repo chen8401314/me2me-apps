@@ -8,6 +8,7 @@ import com.me2me.user.mapper.*;
 import com.me2me.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -131,14 +132,36 @@ public class UserMybatisDao {
         List<UserProfile> userProfileList = userProfileMapper.selectByExample(example);
         if(userProfileList != null && userProfileList.size() > 0){
             UserProfile userProfile = userProfileList.get(0);
-            userProfile.setMobile(modifyUserProfileDto.getUserName());
-            userProfile.setBearStatus(modifyUserProfileDto.getBearStatus());
-            userProfile.setMarriageStatus(modifyUserProfileDto.getMarriageStatus());
-            userProfile.setGender(modifyUserProfileDto.getGender());
-            userProfile.setIndustry(modifyUserProfileDto.getIndustry());
-            userProfile.setSocialClass(modifyUserProfileDto.getSocialClass());
-            userProfile.setYearsId(modifyUserProfileDto.getYearsId());
-            userProfile.setStarId(modifyUserProfileDto.getStartId());
+            if(!StringUtils.isEmpty(modifyUserProfileDto.getAvatar())) {
+                userProfile.setAvatar(modifyUserProfileDto.getAvatar());
+            }
+            if(!StringUtils.isEmpty(modifyUserProfileDto.getNickName())) {
+                userProfile.setNickName(modifyUserProfileDto.getNickName());
+            }
+            if(!StringUtils.isEmpty(modifyUserProfileDto.getUserName())) {
+                userProfile.setMobile(modifyUserProfileDto.getUserName());
+            }
+            if(!StringUtils.isEmpty(modifyUserProfileDto.getBearStatus())) {
+                userProfile.setBearStatus(modifyUserProfileDto.getBearStatus());
+            }
+            if(!StringUtils.isEmpty(modifyUserProfileDto.getMarriageStatus())) {
+                userProfile.setMarriageStatus(modifyUserProfileDto.getMarriageStatus());
+            }
+            if(!StringUtils.isEmpty(modifyUserProfileDto.getGender())) {
+                userProfile.setGender(modifyUserProfileDto.getGender());
+            }
+            if(!StringUtils.isEmpty(modifyUserProfileDto.getIndustry())) {
+                userProfile.setIndustry(modifyUserProfileDto.getIndustry());
+            }
+            if(!StringUtils.isEmpty(modifyUserProfileDto.getSocialClass())) {
+                userProfile.setSocialClass(modifyUserProfileDto.getSocialClass());
+            }
+            if(!StringUtils.isEmpty(modifyUserProfileDto.getYearsId())) {
+                userProfile.setYearsId(modifyUserProfileDto.getYearsId());
+            }
+            if(!StringUtils.isEmpty(modifyUserProfileDto.getStartId())) {
+                userProfile.setStarId(modifyUserProfileDto.getStartId());
+            }
             userProfileMapper.updateByPrimaryKey(userProfile);
         }
     }
