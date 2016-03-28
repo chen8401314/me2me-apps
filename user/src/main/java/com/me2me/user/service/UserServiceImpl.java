@@ -244,7 +244,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public Response modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto){
-        if(modifyUserProfileDto.getAction() == Specification.ModifyUserProfileAction.AVATAR.index){
+     /*   if(modifyUserProfileDto.getAction() == Specification.ModifyUserProfileAction.AVATAR.index){
             userMybatisDao.modifyUserAvatar(modifyUserProfileDto);
             modifyUserProfileDto.setAvatar(Constant.QINIU_DOMAIN + "/" +modifyUserProfileDto.getAvatar());
             return Response.success(ResponseStatus.USER_MODIFY_AVATAR_SUCCESS.status,ResponseStatus.USER_MODIFY_AVATAR_SUCCESS.message,modifyUserProfileDto);
@@ -256,6 +256,9 @@ public class UserServiceImpl implements UserService {
             return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message,modifyUserProfileDto);
         }
         return Response.failure(ResponseStatus.USER_MODIFY_USER_PROFILE_ERROR.status,ResponseStatus.USER_MODIFY_USER_PROFILE_ERROR.message);
+    */
+        userMybatisDao.modifyUserProfile(modifyUserProfileDto);
+        return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message,modifyUserProfileDto);
     }
 
     @Override
