@@ -135,7 +135,11 @@ public class ContentServiceImpl implements ContentService {
         Content content = contentMybatisDao.getContentById(likeDto.getCid());
         content.setLikeCount(content.getLikeCount() + addCount );
         contentMybatisDao.updateContentById(content);
-        return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status ,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
+        if(c == null) {
+            return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status, ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
+        }else{
+            return Response.success(ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.status, ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.message);
+        }
         }
 
     @Override
