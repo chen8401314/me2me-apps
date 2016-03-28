@@ -137,24 +137,24 @@ public class ContentServiceImpl implements ContentService {
         return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status ,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
         }
 
-@Override
-public Response writeTag(WriteTagDto writeTagDto) {
-        contentMybatisDao.createTag(writeTagDto);
-        return Response.success(ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.status,ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.message);
-        }
+    @Override
+    public Response writeTag(WriteTagDto writeTagDto) {
+            contentMybatisDao.createTag(writeTagDto);
+            return Response.success(ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.status,ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.message);
+            }
 
-@Override
-public Response deleteContent(long id) {
-        Content content = contentMybatisDao.getContentById(id);
-        content.setStatus(Specification.ContentStatus.DELETE.index);
-        contentMybatisDao.updateContentById(content);
-        return Response.failure(ResponseStatus.CONTENT_DELETE_SUCCESS.status,ResponseStatus.CONTENT_DELETE_SUCCESS.message);
-        }
+    @Override
+    public Response deleteContent(long id) {
+            Content content = contentMybatisDao.getContentById(id);
+            content.setStatus(Specification.ContentStatus.DELETE.index);
+            contentMybatisDao.updateContentById(content);
+            return Response.failure(ResponseStatus.CONTENT_DELETE_SUCCESS.status,ResponseStatus.CONTENT_DELETE_SUCCESS.message);
+            }
 
-@Override
-public int isLike(long uid, long cid) {
-        return contentMybatisDao.isLike(uid,cid);
-        }
+    @Override
+    public int isLike(long uid, long cid) {
+            return contentMybatisDao.isLike(uid,cid);
+            }
 
 
-        }
+            }
