@@ -31,11 +31,12 @@
 
 
         <!--<table tableName="user" domainObjectName="User"/>-->
-        <table tableName="content" domainObjectName="Content"/>-->
-        <!--<table tableName="content_image" domainObjectName="ContentImage"/>-->
-        <!-- <table tableName="content_user_likes" domainObjectName="ContentUserLike"/> -->
-         <!-- <table tableName="content_tags" domainObjectName="ContentTags"/> -->
-        <!-- <table tableName="content_tag_likes" domainObjectName="ContentTagLikes"/> -->
+        <!--<table tableName="content" domainObjectName="Content"/>-->
+        <table tableName="content_image" domainObjectName="ContentImage"/>
+        <table tableName="content_user_likes" domainObjectName="ContentUserLike"/>
+        <!-- <table tableName="content_tags" domainObjectName="ContentTags"/> -->
+        <table tableName="content_tag_likes" domainObjectName="ContentTagLikes"/>
+
 
     </context>
 </generatorConfiguration>
