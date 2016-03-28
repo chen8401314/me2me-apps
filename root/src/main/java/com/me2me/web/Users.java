@@ -194,8 +194,8 @@ public class Users {
     public Response pasteTags(TagRequest request){
         PasteTagDto pasteTagDto = new PasteTagDto();
         pasteTagDto.setTag(request.getTag());
-        pasteTagDto.setUid(request.getUid());
-        pasteTagDto.setFuid(request.getFuid());
+        pasteTagDto.setTargetUid(request.getTargetUid());
+        pasteTagDto.setFromUid(request.getFromUid());
         return userService.writeTag(pasteTagDto);
     }
 

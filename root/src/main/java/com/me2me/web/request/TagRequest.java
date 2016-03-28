@@ -11,9 +11,13 @@ public class TagRequest extends Request{
 
     @Getter
     @Setter
-    private Long fuid;
+    private long fromUid;
 
     @Getter
     @Setter
     private String tag;
+
+    @Getter
+    @Setter
+    private long targetUid;
 }
