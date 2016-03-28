@@ -3,6 +3,8 @@ package com.me2me.content.mapper;
 import com.me2me.content.model.Content;
 import com.me2me.content.model.ContentExample;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface ContentMapper {
@@ -121,4 +123,6 @@ public interface ContentMapper {
     List<Content> loadSquareData(int sinceId);
 
     List<Content> loadHighQualityData(int sinceId);
+
+    List<Content> loadMyPublishData(Map map);
 }

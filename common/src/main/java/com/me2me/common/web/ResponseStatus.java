@@ -55,7 +55,10 @@ public enum  ResponseStatus {
 
     CONTENT_TAGS_LIKES_SUCCESS("标签发布成功","content tags likes success",20044),
 
+    CONTENT_GET_SUCCESS("获取内容详情","content get success",20045),
+
     GET_QINIU_TOKEN_SUCCESS("获取七牛token成功","get qiniu token success",20050),
+
 
 
 

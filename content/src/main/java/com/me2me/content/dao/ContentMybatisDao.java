@@ -7,7 +7,10 @@ import com.me2me.content.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -91,6 +94,13 @@ public class ContentMybatisDao {
         criteria.andUidEqualTo(uid);
         List list = contentUserLikeMapper.selectByExample(example);
         return  (list !=null&&list.size() > 0 ) ? 1 : 0 ;
+    }
+
+    public List<Content>myPublish(long uid,int sinceId) {
+        Map<String,Object> map = new HashMap<String, Object>();
+        map.put("uid",uid);
+        map.put("sinceId",sinceId);
+        return contentMapper.loadMyPublishData(map);
     }
 
 }

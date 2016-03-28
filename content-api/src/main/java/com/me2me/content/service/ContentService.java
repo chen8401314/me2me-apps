@@ -53,7 +53,26 @@ public interface ContentService {
      */
     Response deleteContent(long id);
 
+    /**
+     * 是否点赞
+     * @param uid
+     * @param cid
+     * @return
+     */
     int isLike(long uid,long cid);
 
+    /**
+     * 获取内容详情
+     * @param id
+     * @return
+     */
+    Response getContentDetail(long id);
 
+    /**
+     * 我发布的内容列表
+     * @param uid
+     * @param sinceId
+     * @return
+     */
+    Response myPublish(long uid ,int sinceId);
 }

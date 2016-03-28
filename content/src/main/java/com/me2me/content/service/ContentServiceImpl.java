@@ -5,10 +5,7 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dao.ContentMybatisDao;
-import com.me2me.content.dto.ContentDto;
-import com.me2me.content.dto.LikeDto;
-import com.me2me.content.dto.SquareDataDto;
-import com.me2me.content.dto.WriteTagDto;
+import com.me2me.content.dto.*;
 import com.me2me.content.mapper.ContentMapper;
 import com.me2me.content.mapper.ContentUserLikeMapper;
 import com.me2me.content.model.*;
@@ -67,6 +64,8 @@ public class ContentServiceImpl implements ContentService {
             squareDataDto.getResults().add(squareDataElement);
         }
     }
+
+
 
     @Override
     public Response square(int sinceId) {
@@ -159,6 +158,36 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public int isLike(long uid, long cid) {
         return contentMybatisDao.isLike(uid,cid);
+    }
+
+    @Override
+    public Response getContentDetail(long id) {
+        ContentDetailDto contentDetailDto = new ContentDetailDto();
+        Content content = contentMybatisDao.getContentById(id);
+        contentDetailDto.setFeeling(content.getFeeling());
+        contentDetailDto.setForwardCid(content.getForwardCid());
+        contentDetailDto.setType(content.getType());
+        contentDetailDto.setContentType(content.getType());
+        contentDetailDto.setCoverImage(content.getContent());
+        contentDetailDto.setForwardTitle(content.getForwardTitle());
+        contentDetailDto.setUid(content.getUid());
+        contentDetailDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
+        contentDetailDto.setContent(content.getContent());
+        contentDetailDto.setAuthorization(content.getAuthorization());
+        contentDetailDto.setHotValue(content.getHotValue());
+        contentDetailDto.setLikeCount(content.getLikeCount());
+        contentDetailDto.setCreateTime(content.getCreateTime());
+        contentDetailDto.setThumbnail(content.getThumbnail());
+        return Response.success(contentDetailDto);
+    }
+
+
+    @Override
+    public Response myPublish(long uid ,int sinceId) {
+        SquareDataDto squareDataDto = new SquareDataDto();
+        List<Content> contents = contentMybatisDao.myPublish(uid,sinceId);
+        buildDatas(squareDataDto, contents);
+        return Response.success(squareDataDto);
     }
 
 

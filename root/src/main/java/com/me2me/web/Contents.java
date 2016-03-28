@@ -108,6 +108,27 @@ public class Contents {
         return contentService.deleteContent(request.getId());
     }
 
+    /**
+     * 用户发布列表接口
+     * @return
+     */
+    @RequestMapping(value = "/myPublish",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response myPublish(MyPublishContentRequest request){
+
+        return contentService.myPublish(request.getUid(),request.getSinceId());
+    }
+
+    /**
+     * 内容详情接口
+     * @return
+     */
+    @RequestMapping(value = "/getContentDetail",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response getContentDetail(ContentDetailRequest request){
+
+        return contentService.getContentDetail(request.getId());
+    }
 
 
 
