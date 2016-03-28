@@ -265,7 +265,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response writeTag(PasteTagDto pasteTagDto) {
-        userMybatisDao.pasteTag(pasteTagDto);
+        UserTags userTag = userMybatisDao.getUserTag(pasteTagDto.getTag());
+        if(null != userTag){
+            userMybatisDao.updateUserTagDetail(pasteTagDto.getTargetUid(),userTag.getId());
+        }else {
+            userMybatisDao.saveUserTag(pasteTagDto);
+        }
         return Response.success(ResponseStatus.PASTE_TAG_SUCCESS.status,ResponseStatus.PASTE_TAG_SUCCESS.message);
     }
 }
