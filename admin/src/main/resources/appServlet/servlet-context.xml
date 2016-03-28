@@ -9,7 +9,7 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
 
-    <context:component-scan base-package="com.me2me.web"/>
+    <context:component-scan base-package="com.me2me.admin.web"/>
     <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager">
         <mvc:message-converters register-defaults="true">
             <bean class="org.springframework.http.converter.StringHttpMessageConverter">
@@ -33,12 +33,12 @@
         <property name="favorPathExtension" value="true"/>
     </bean>
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
-        <property name="prefix" value="/WEB-INF/jsp"/>
+        <property name="prefix" value="/WEB-INF/"/>
         <property name="suffix" value=".jsp"/>
     </bean>
     <!--<mvc:default-servlet-handler/>-->
     <!-- 静态资源映射 -->
-    <!-- <mvc:resources mapping="/static/**" location="/static/" cache-period="31536000"/>-->
+     <!--<mvc:resources mapping="/static/**" location="/static/" cache-period="31536000"/>-->
 
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="10485760" />

@@ -152,52 +152,37 @@ public class UserMybatisDao {
         return (lists != null && lists.size() > 0) ? lists.get(0) : null;
     }
 
-
-    /**
-     * 判断指定标签是否存在
-     * @param tag 标签内容
-     * @return 标签数量
-     */
-    public UserTags getUserTag(String tag){
-        UserTagsExample userTagsExample = new UserTagsExample();
-        UserTagsExample.Criteria criteria = userTagsExample.createCriteria();
-        criteria.andTagEqualTo(tag);
-        List<UserTags> tagsList = userTagsMapper.selectByExample(userTagsExample);
-        if(null != tagsList && !tagsList.isEmpty()){
-            return tagsList.get(0);
-        }else {
-            return null;
-        }
-    }
-
-    /**
-     * 更新用户标签详情
-     * @param tagId 标签Id
-     * @param userId 用户Id
-     */
-    public void updateUserTagDetail(Long tagId,Long userId){
-        UserTagsDetailsExample userTagsDetailsExample = new UserTagsDetailsExample();
-        UserTagsDetailsExample.Criteria criteria1 = userTagsDetailsExample.createCriteria();
-        criteria1.andUidEqualTo(userId).andTidEqualTo(tagId);
-        List<UserTagsDetails> detailsList = userTagsDetailsMapper.selectByExample(userTagsDetailsExample);
-        UserTagsDetails details  = detailsList.get(0);
-        details.setFrequency(Math.addExact(details.getFrequency(),1));
-        userTagsDetailsMapper.updateByPrimaryKey(details);
-    }
-
     /**
      * 贴标签
      * @param pasteTagDto
      */
-    public void saveUserTag(PasteTagDto pasteTagDto){
-        UserTags userTags = new UserTags();
-        userTags.setTag(pasteTagDto.getTag());
-        Integer tagId = userTagsMapper.insertSelective(userTags);
-        UserTagsDetails details = new UserTagsDetails();
-        details.setTid(tagId.longValue());
-        details.setFuid(pasteTagDto.getFuid());
-        details.setUid(pasteTagDto.getUid());
-        userTagsDetailsMapper.insert(details);
+    public void pasteTag(PasteTagDto pasteTagDto){
+
+        UserTagsExample userTagsExample = new UserTagsExample();
+        UserTagsExample.Criteria criteria = userTagsExample.createCriteria();
+        criteria.andTagEqualTo(pasteTagDto.getTag());
+
+        UserTagsDetailsExample userTagsDetailsExample = new UserTagsDetailsExample();
+        List<UserTags> list =  userTagsMapper.selectByExample(userTagsExample);
+        //判断该标签是否已存在，如果存在就在原有的计数上累加，否则插入新的记录
+        if(null != list && !list.isEmpty()){
+            UserTags tags = list.get(0);
+            UserTagsDetailsExample.Criteria criteria1 = userTagsDetailsExample.createCriteria();
+            criteria1.andUidEqualTo(pasteTagDto.getUid()).andTidEqualTo(tags.getId());
+            List<UserTagsDetails> detailsList = userTagsDetailsMapper.selectByExample(userTagsDetailsExample);
+            UserTagsDetails details =  detailsList.get(0);
+            details.setFrequency(Math.addExact(details.getFrequency(),1));
+            userTagsDetailsMapper.updateByPrimaryKey(details);
+        }else {
+            UserTags userTags = new UserTags();
+            userTags.setTag(pasteTagDto.getTag());
+            Integer tagId = userTagsMapper.insertSelective(userTags);
+            UserTagsDetails details = new UserTagsDetails();
+            details.setTid(tagId.longValue());
+            details.setFuid(pasteTagDto.getFuid());
+            details.setUid(pasteTagDto.getUid());
+            userTagsDetailsMapper.insert(details);
+        }
     }
 
 }

@@ -53,5 +53,7 @@ public interface ContentService {
      */
     Response deleteContent(long id);
 
+    int isLike(long uid,long cid);
+
 
 }

@@ -54,7 +54,7 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setContent(content.getContent());
             squareDataElement.setFeeling(content.getFeeling());
             squareDataElement.setType(content.getType());
-            squareDataElement.setIsLike(1);
+            squareDataElement.setIsLike(isLike(userProfile.getUid(),content.getId()));
             squareDataElement.setCreateTime(content.getCreateTime());
             squareDataElement.setCoverImage(content.getConverImage());
             squareDataElement.setLikeCount(content.getLikeCount());
@@ -123,19 +123,19 @@ public class ContentServiceImpl implements ContentService {
         int addCount = 1 ;
         ContentUserLike c = contentMybatisDao.getContentUserLike(likeDto);
         if(c == null){
-            ContentUserLike contentUserLike = new ContentUserLike();
-            contentUserLike.setUid(likeDto.getUid());
-            contentUserLike.setCid(likeDto.getCid());
-            contentMybatisDao.createContentUserLike(contentUserLike);
+        ContentUserLike contentUserLike = new ContentUserLike();
+        contentUserLike.setUid(likeDto.getUid());
+        contentUserLike.setCid(likeDto.getCid());
+        contentMybatisDao.createContentUserLike(contentUserLike);
         }else{
-            addCount = -1;
-            contentMybatisDao.deleteUserLike(c.getId());
+        addCount = -1;
+        contentMybatisDao.deleteUserLike(c.getId());
         }
-        Content content = contentMybatisDao.getContentById(c.getCid());
+        Content content = contentMybatisDao.getContentById(likeDto.getCid());
         content.setLikeCount(content.getLikeCount() + addCount );
         contentMybatisDao.updateContentById(content);
         return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status ,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
-    }
+        }
 
     @Override
     public Response writeTag(WriteTagDto writeTagDto) {
@@ -149,6 +149,11 @@ public class ContentServiceImpl implements ContentService {
         content.setStatus(Specification.ContentStatus.DELETE.index);
         contentMybatisDao.updateContentById(content);
         return Response.failure(ResponseStatus.CONTENT_DELETE_SUCCESS.status,ResponseStatus.CONTENT_DELETE_SUCCESS.message);
+    }
+
+    @Override
+    public int isLike(long uid, long cid) {
+        return contentMybatisDao.isLike(uid,cid);
     }
 
 
