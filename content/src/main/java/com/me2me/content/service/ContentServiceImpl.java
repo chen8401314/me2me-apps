@@ -1,5 +1,6 @@
 package com.me2me.content.service;
 
+import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -49,17 +50,17 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setUid(content.getUid());
             squareDataElement.setForwardCid(content.getForwardCid());
             UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
-            squareDataElement.setAvatar(userProfile.getAvatar());
+            squareDataElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             squareDataElement.setNickName(userProfile.getNickName());
             squareDataElement.setContent(content.getContent());
             squareDataElement.setFeeling(content.getFeeling());
             squareDataElement.setType(content.getType());
             squareDataElement.setIsLike(isLike(userProfile.getUid(),content.getId()));
             squareDataElement.setCreateTime(content.getCreateTime());
-            squareDataElement.setCoverImage(content.getConverImage());
+            squareDataElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
             squareDataElement.setLikeCount(content.getLikeCount());
             squareDataElement.setHotValue(content.getHotValue());
-            squareDataElement.setThumbnail(content.getThumbnail());
+            squareDataElement.setThumbnail(Constant.QINIU_DOMAIN + "/" + content.getThumbnail());
             squareDataElement.setForwardTitle(content.getForwardTitle());
             squareDataElement.setContentType(content.getContentType());
             squareDataElement.setForwardUrl(content.getForwardUrl());
