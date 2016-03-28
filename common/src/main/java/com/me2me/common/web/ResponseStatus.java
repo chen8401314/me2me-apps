@@ -48,6 +48,7 @@ public enum  ResponseStatus {
     USER_FIND_ENCRYPT_SUCCESS("用户密码找回成功","user find encrypt success",20042),
 
     PASTE_TAG_SUCCESS("打标签成功","paste tag success",20060),
+
     CONTENT_DELETE_SUCCESS("删除成功","content delete success",20043),
 
     CONTENT_TAGS_LIKES_SUCCESS("标签发布成功","content tags likes success",20044),
