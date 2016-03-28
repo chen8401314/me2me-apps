@@ -9,10 +9,10 @@ import lombok.Data;
 @Data
 public class PasteTagDto implements BaseEntity {
 
-    private String tag; //��ǩ����
+    private String tag;
 
-    private Long targetUid;  //������ǩ���û�Id
+    private Long targetUid;
 
-    private Long fromUid;  //����ǩ���û�Id
+    private Long fromUid;
 
 }
