@@ -210,12 +210,20 @@ public class UserMybatisDao {
 
     /**
      * 贴标签
+     * @param tag
+     */
+    public Integer saveUserTag(String tag){
+        UserTags userTags = new UserTags();
+        userTags.setTag(tag);
+        return userTagsMapper.insertSelective(userTags);
+    }
+
+    /**
+     * 保存标签详情
+      * @param tagId
      * @param pasteTagDto
      */
-    public void saveUserTag(PasteTagDto pasteTagDto){
-        UserTags userTags = new UserTags();
-        userTags.setTag(pasteTagDto.getTag());
-        Integer tagId = userTagsMapper.insertSelective(userTags);
+    public void saveUserTagDetail(Long tagId,PasteTagDto pasteTagDto){
         UserTagsDetails details = new UserTagsDetails();
         details.setTid(tagId.longValue());
         details.setTargetUid(pasteTagDto.getTargetUid());
