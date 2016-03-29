@@ -39,6 +39,9 @@ public class UserMybatisDao {
     private UserTagsMapper userTagsMapper;
 
     @Autowired
+    private UserTagsRecordMapper userTagsRecordMapper;
+
+    @Autowired
     private UserTagsDetailsMapper userTagsDetailsMapper;
 
     /**
@@ -163,9 +166,19 @@ public class UserMybatisDao {
     public void saveUserTagDetail(Long tagId,PasteTagDto pasteTagDto){
         UserTagsDetails details = new UserTagsDetails();
         details.setTid(tagId.longValue());
-        details.setTargetUid(pasteTagDto.getTargetUid());
         details.setUid(pasteTagDto.getFromUid());
         userTagsDetailsMapper.insert(details);
     }
 
+    /**
+     * 保存用户标签记录
+     * @param fromUserId 贴标签的用户Id
+     * @param toUserId 被贴标签的用户Id
+     */
+    public void saveUserTagRecord(Long fromUserId,Long toUserId){
+        UserTagsRecord record = new UserTagsRecord();
+        record.setFromUid(fromUserId);
+        record.setToUid(toUserId);
+        userTagsRecordMapper.insert(record);
+    }
 }
