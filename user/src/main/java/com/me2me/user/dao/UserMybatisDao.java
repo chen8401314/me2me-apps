@@ -83,7 +83,6 @@ public class UserMybatisDao {
 
     }
 
-
     public void deleteUserHobby(UserHobby userHobby){
         UserHobbyExample example = new UserHobbyExample();
         UserHobbyExample.Criteria criteria = example.createCriteria();
@@ -101,71 +100,10 @@ public class UserMybatisDao {
         criteria.andTidEqualTo(basicDataDto.getType());
         return dictionaryMapper.selectByExample(example);
     }
-    public void modifyUserAvatar(ModifyUserProfileDto modifyUserProfileDto){
-        UserProfileExample example = new UserProfileExample();
-        UserProfileExample.Criteria criteria = example.createCriteria();
-        criteria.andUidEqualTo(modifyUserProfileDto.getUid());
-        List<UserProfile> userProfileList = userProfileMapper.selectByExample(example);
-        if(userProfileList != null && userProfileList.size() > 0){
-            UserProfile userProfile = userProfileList.get(0);
-            userProfile.setAvatar(modifyUserProfileDto.getAvatar());
-            userProfileMapper.updateByPrimaryKey(userProfile);
-        }
-    }
 
-    public void modifyNickName(ModifyUserProfileDto modifyUserProfileDto){
-        UserProfileExample example = new UserProfileExample();
-        UserProfileExample.Criteria criteria = example.createCriteria();
-        criteria.andUidEqualTo(modifyUserProfileDto.getUid());
-        List<UserProfile> userProfileList = userProfileMapper.selectByExample(example);
-        if(userProfileList != null && userProfileList.size() > 0){
-            UserProfile userProfile = userProfileList.get(0);
-            userProfile.setAvatar(modifyUserProfileDto.getNickName());
-            userProfileMapper.updateByPrimaryKey(userProfile);
-        }
+    public void modifyUserProfile(UserProfile userProfile){
+        userProfileMapper.updateByPrimaryKey(userProfile);
     }
-
-    public void modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto){
-        UserProfileExample example = new UserProfileExample();
-        UserProfileExample.Criteria criteria = example.createCriteria();
-        criteria.andUidEqualTo(modifyUserProfileDto.getUid());
-        List<UserProfile> userProfileList = userProfileMapper.selectByExample(example);
-        if(userProfileList != null && userProfileList.size() > 0){
-            UserProfile userProfile = userProfileList.get(0);
-            if(!StringUtils.isEmpty(modifyUserProfileDto.getAvatar())) {
-                userProfile.setAvatar(modifyUserProfileDto.getAvatar());
-            }
-            if(!StringUtils.isEmpty(modifyUserProfileDto.getNickName())) {
-                userProfile.setNickName(modifyUserProfileDto.getNickName());
-            }
-            if(!StringUtils.isEmpty(modifyUserProfileDto.getUserName())) {
-                userProfile.setMobile(modifyUserProfileDto.getUserName());
-            }
-            if(!StringUtils.isEmpty(modifyUserProfileDto.getBearStatus())) {
-                userProfile.setBearStatus(modifyUserProfileDto.getBearStatus());
-            }
-            if(!StringUtils.isEmpty(modifyUserProfileDto.getMarriageStatus())) {
-                userProfile.setMarriageStatus(modifyUserProfileDto.getMarriageStatus());
-            }
-            if(!StringUtils.isEmpty(modifyUserProfileDto.getGender())) {
-                userProfile.setGender(modifyUserProfileDto.getGender());
-            }
-            if(!StringUtils.isEmpty(modifyUserProfileDto.getIndustry())) {
-                userProfile.setIndustry(modifyUserProfileDto.getIndustry());
-            }
-            if(!StringUtils.isEmpty(modifyUserProfileDto.getSocialClass())) {
-                userProfile.setSocialClass(modifyUserProfileDto.getSocialClass());
-            }
-            if(!StringUtils.isEmpty(modifyUserProfileDto.getYearsId())) {
-                userProfile.setYearsId(modifyUserProfileDto.getYearsId());
-            }
-            if(!StringUtils.isEmpty(modifyUserProfileDto.getStartId())) {
-                userProfile.setStarId(modifyUserProfileDto.getStartId());
-            }
-            userProfileMapper.updateByPrimaryKey(userProfile);
-        }
-    }
-
 
     public UserProfile getUserProfileByUid(long uid) {
         UserProfileExample example = new UserProfileExample();
@@ -174,7 +112,6 @@ public class UserMybatisDao {
         List<UserProfile> lists = userProfileMapper.selectByExample(example);
         return (lists != null && lists.size() > 0) ? lists.get(0) : null;
     }
-
 
     /**
      * 根据标签内容查找相应的标签

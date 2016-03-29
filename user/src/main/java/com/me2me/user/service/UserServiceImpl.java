@@ -13,6 +13,7 @@ import com.me2me.user.event.VerifyEvent;
 import com.me2me.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -244,20 +245,38 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public Response modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto){
-     /*   if(modifyUserProfileDto.getAction() == Specification.ModifyUserProfileAction.AVATAR.index){
-            userMybatisDao.modifyUserAvatar(modifyUserProfileDto);
-            modifyUserProfileDto.setAvatar(Constant.QINIU_DOMAIN + "/" +modifyUserProfileDto.getAvatar());
-            return Response.success(ResponseStatus.USER_MODIFY_AVATAR_SUCCESS.status,ResponseStatus.USER_MODIFY_AVATAR_SUCCESS.message,modifyUserProfileDto);
-        }else if(modifyUserProfileDto.getAction() == Specification.ModifyUserProfileAction.NICKNAME.index){
-            userMybatisDao.modifyNickName(modifyUserProfileDto);
-            return Response.success(ResponseStatus.USER_MODIFY_NICK_NAME_SUCCESS.status,ResponseStatus.USER_MODIFY_NICK_NAME_SUCCESS.message,modifyUserProfileDto);
-        }else if(modifyUserProfileDto.getAction() == Specification.ModifyUserProfileAction.USER_PROFILE.index){
-            userMybatisDao.modifyUserProfile(modifyUserProfileDto);
-            return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message,modifyUserProfileDto);
+        UserProfile userProfile = userMybatisDao.getUserProfileByUid(modifyUserProfileDto.getUid());
+        if(!StringUtils.isEmpty(modifyUserProfileDto.getAvatar())) {
+            userProfile.setAvatar(modifyUserProfileDto.getAvatar());
         }
-        return Response.failure(ResponseStatus.USER_MODIFY_USER_PROFILE_ERROR.status,ResponseStatus.USER_MODIFY_USER_PROFILE_ERROR.message);
-    */
-        userMybatisDao.modifyUserProfile(modifyUserProfileDto);
+        if(!StringUtils.isEmpty(modifyUserProfileDto.getNickName())) {
+            userProfile.setNickName(modifyUserProfileDto.getNickName());
+        }
+        if(!StringUtils.isEmpty(modifyUserProfileDto.getUserName())) {
+            userProfile.setMobile(modifyUserProfileDto.getUserName());
+        }
+        if(!StringUtils.isEmpty(modifyUserProfileDto.getBearStatus())) {
+            userProfile.setBearStatus(modifyUserProfileDto.getBearStatus());
+        }
+        if(!StringUtils.isEmpty(modifyUserProfileDto.getMarriageStatus())) {
+            userProfile.setMarriageStatus(modifyUserProfileDto.getMarriageStatus());
+        }
+        if(!StringUtils.isEmpty(modifyUserProfileDto.getGender())) {
+            userProfile.setGender(modifyUserProfileDto.getGender());
+        }
+        if(!StringUtils.isEmpty(modifyUserProfileDto.getIndustry())) {
+            userProfile.setIndustry(modifyUserProfileDto.getIndustry());
+        }
+        if(!StringUtils.isEmpty(modifyUserProfileDto.getSocialClass())) {
+            userProfile.setSocialClass(modifyUserProfileDto.getSocialClass());
+        }
+        if(!StringUtils.isEmpty(modifyUserProfileDto.getYearsId())) {
+            userProfile.setYearsId(modifyUserProfileDto.getYearsId());
+        }
+        if(!StringUtils.isEmpty(modifyUserProfileDto.getStartId())) {
+            userProfile.setStarId(modifyUserProfileDto.getStartId());
+        }
+        userMybatisDao.modifyUserProfile(userProfile);
         return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message,modifyUserProfileDto);
     }
 

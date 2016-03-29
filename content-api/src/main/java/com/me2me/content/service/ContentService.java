@@ -75,4 +75,12 @@ public interface ContentService {
      * @return
      */
     Response myPublish(long uid ,int sinceId);
+
+    /**
+     * 内容所有感受列表
+     * @param cid
+     * @param sinceId
+     * @return
+     */
+    Response getContentFeeling(long cid,int sinceId);
 }
