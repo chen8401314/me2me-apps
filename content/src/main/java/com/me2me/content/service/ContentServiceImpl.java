@@ -190,5 +190,11 @@ public class ContentServiceImpl implements ContentService {
         return Response.success(squareDataDto);
     }
 
+    @Override
+    public Response getContentFeeling(long cid, int sinceId) {
+
+        return null;
+    }
+
 
 }

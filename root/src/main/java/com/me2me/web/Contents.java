@@ -130,6 +130,19 @@ public class Contents {
         return contentService.getContentDetail(request.getId());
     }
 
+    /**
+     * 感受列表
+     * @return
+     */
+    @RequestMapping(value = "/getContentFeeling",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response getContentFeeling(ContentFeelingRequest request){
+
+        //// TODO: 2016/3/28 标签详情列表 
+        return null;
+   
+    }
+
 
 
 
