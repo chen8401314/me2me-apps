@@ -33,5 +33,6 @@ img,ul,li{
 }
 
 .ue-content-wrapper p{
+    padding:0 20px;
     color:#082441;
 }

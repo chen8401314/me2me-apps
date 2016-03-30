@@ -5,21 +5,21 @@
 </head>
 <body class="container">
 <div class="row">
-    <th:block th:if="${data.coverImage} ne ''">
+    <th:block th:if="${root.coverImage} ne ''">
         <div class="image-cover">
-            <img class="img-responsive" th:src="${data.coverImage}" />
+            <img class="img-responsive" th:src="${root.coverImage}" />
         </div>
     </th:block>
     <div class="ue-content-wrapper">
-        <p>Java是一种可以撰写跨平台应用程序的面向对象的程序设计语言。Java 技术具有卓越的通用性、高效性、平台移植性和安全性，广泛应用于PC、数据中心、游戏控制台、科学超级计算机、移动电话和互联网，同时拥有全球最大的开发者专业社群。</p>
+        <p th:text="${root.content}">Java是一种可以撰写跨平台应用程序的面向对象的程序设计语言。Java 技术具有卓越的通用性、高效性、平台移植性和安全性，广泛应用于PC、数据中心、游戏控制台、科学超级计算机、移动电话和互联网，同时拥有全球最大的开发者专业社群。</p>
     </div>
     <div class="image-list">
         <ul>
-            <li><img class="img-responsive" src="http://7xs9q4.com2.z0.glb.qiniucdn.com/4ec2d5628535e5dd2820232370c6a7efce1b623a.jpg" /></li>
-            <li><img class="img-responsive" src="http://7xs9q4.com2.z0.glb.qiniucdn.com/headimg%2F90%2F055a05f3-1281-4d7e-9fd2-eac61f8e5a93.jpg" /></li>
-            <li><img class="img-responsive" src="http://7xs9q4.com2.z0.glb.qiniucdn.com/FsNZgu6-OUbpgtiYMcvCH4DG_Raq" /></li>
-            <li><img class="img-responsive" src="http://7xs9q4.com2.z0.glb.qiniucdn.com/Fjl_2CSTmSWfnhqhQ3XK_KFDhck-" /></li>
-            <li><img class="img-responsive" src="http://7xs9q4.com2.z0.glb.qiniucdn.com/Fo6uJIZQjpSPUnmWIyQmeo9rt7AL" /></li>
+            <th:block th:each="url : ${root.imageUrls}">
+            <li>
+                <img class="img-responsive" th:src="${url}" />
+            </li>
+            </th:block>
         </ul>
     </div>
 </div>

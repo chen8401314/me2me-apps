@@ -1,10 +1,14 @@
 package com.me2me.admin.web;
 
+import com.me2me.admin.web.request.ContentForwardRequest;
+import com.me2me.content.dto.ContentH5Dto;
+import com.me2me.content.model.Content;
 import com.me2me.content.service.ContentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -52,12 +56,16 @@ public class Console  {
         return "publish";
     }
 
+    @RequestMapping(value = "/{viewName}")
+    public String publish(@PathVariable("viewName") String viewName){
+        return viewName;
+    }
+
     @RequestMapping(value = "/forward")
-    public ModelAndView forward(){
+    public ModelAndView forward(ContentForwardRequest request){
         ModelAndView mv = new ModelAndView("forward");
-//        Map map = new HashMap<>();
-//        map.put("coverImage","");
-        // mv.addObject("data",map);
+        ContentH5Dto content = contentService.getContent(request.getId());
+        mv.addObject("root",content);
         return mv;
     }
 
