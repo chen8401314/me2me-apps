@@ -81,6 +81,7 @@ public class Contents {
         LikeDto likeDto = new LikeDto();
         likeDto.setUid(request.getUid());
         likeDto.setCid(request.getCid());
+        likeDto.setTid(request.getTid());
         return contentService.like(likeDto);
     }
 
@@ -115,7 +116,6 @@ public class Contents {
     @RequestMapping(value = "/myPublish",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response myPublish(MyPublishContentRequest request){
-
         return contentService.myPublish(request.getUid(),request.getSinceId());
     }
 
@@ -137,10 +137,7 @@ public class Contents {
     @RequestMapping(value = "/getContentFeeling",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getContentFeeling(ContentFeelingRequest request){
-
-        //// TODO: 2016/3/28 标签详情列表 
-        return null;
-   
+        return contentService.getContentFeeling(request.getCid(),request.getSinceId());
     }
 
 

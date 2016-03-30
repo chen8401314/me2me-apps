@@ -247,7 +247,7 @@ public class UserServiceImpl implements UserService {
     public Response modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto){
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(modifyUserProfileDto.getUid());
         if(!StringUtils.isEmpty(modifyUserProfileDto.getAvatar())) {
-            userProfile.setAvatar(modifyUserProfileDto.getAvatar());
+            userProfile.setAvatar(Constant.QINIU_DOMAIN + "/" + modifyUserProfileDto.getAvatar());
         }
         if(!StringUtils.isEmpty(modifyUserProfileDto.getNickName())) {
             userProfile.setNickName(modifyUserProfileDto.getNickName());

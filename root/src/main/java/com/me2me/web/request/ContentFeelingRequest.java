@@ -15,4 +15,8 @@ public class ContentFeelingRequest extends Request {
     @Getter
     @Setter
     private long cid;
+
+    @Getter
+    @Setter
+    private int sinceId;
 }

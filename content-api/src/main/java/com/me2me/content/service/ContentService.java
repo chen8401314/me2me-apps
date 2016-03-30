@@ -5,6 +5,10 @@ import com.me2me.content.dto.ContentDto;
 import com.me2me.content.dto.DeleteContentDto;
 import com.me2me.content.dto.LikeDto;
 import com.me2me.content.dto.WriteTagDto;
+import com.me2me.content.model.Content;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -79,8 +83,14 @@ public interface ContentService {
     /**
      * 内容所有感受列表
      * @param cid
-     * @param sinceId
      * @return
      */
-    Response getContentFeeling(long cid,int sinceId);
+    Response getContentFeeling(long cid, int sinceId);
+
+    /**
+     * 根据内容id，返回内容信息给H5
+     * @param id
+     */
+    Content getContent(long id);
+
 }
