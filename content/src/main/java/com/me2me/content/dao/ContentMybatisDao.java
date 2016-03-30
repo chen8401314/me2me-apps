@@ -107,4 +107,10 @@ public class ContentMybatisDao {
         return result;
     }
 
+    public List<ContentImage> getContentImages(long cid){
+        ContentImageExample example = new ContentImageExample();
+        ContentImageExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(cid);
+        return contentImageMapper.selectByExample(example);
+    }
 }

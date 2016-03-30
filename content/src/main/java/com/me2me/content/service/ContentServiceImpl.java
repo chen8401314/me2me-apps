@@ -222,8 +222,19 @@ public class ContentServiceImpl implements ContentService {
         }
     }
     @Override
-    public Content getContent(long id) {
-        return contentMybatisDao.getContentById(id);
+    public ContentH5Dto getContent(long id) {
+        ContentH5Dto contentH5Dto = new ContentH5Dto();
+        Content content = contentMybatisDao.getContentById(id);
+        List<ContentImage> list = contentMybatisDao.getContentImages(id);
+        for (ContentImage contentImage : list){
+            if(contentImage.getCover() == 0){
+                contentH5Dto.setCoverImage(contentImage.getImage());
+            }if(contentImage.getCover() == 1){
+                contentH5Dto.getImageUrls().add(contentImage.getImage());
+            }
+        }
+        contentH5Dto.setContent(content.getContent());
+        return contentH5Dto;
     }
 
 

@@ -1,11 +1,7 @@
 package com.me2me.content.service;
 
 import com.me2me.common.web.Response;
-import com.me2me.content.dto.ContentDto;
-import com.me2me.content.dto.DeleteContentDto;
-import com.me2me.content.dto.LikeDto;
-import com.me2me.content.dto.WriteTagDto;
-import com.me2me.content.model.Content;
+import com.me2me.content.dto.*;
 
 import java.util.List;
 import java.util.Map;
@@ -91,6 +87,6 @@ public interface ContentService {
      * 根据内容id，返回内容信息给H5
      * @param id
      */
-    Content getContent(long id);
+    ContentH5Dto getContent(long id);
 
 }
