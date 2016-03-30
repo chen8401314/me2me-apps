@@ -228,9 +228,9 @@ public class ContentServiceImpl implements ContentService {
         List<ContentImage> list = contentMybatisDao.getContentImages(id);
         for (ContentImage contentImage : list){
             if(contentImage.getCover() == 0){
-                contentH5Dto.setCoverImage(contentImage.getImage());
+                contentH5Dto.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
             }if(contentImage.getCover() == 1){
-                contentH5Dto.getImageUrls().add(contentImage.getImage());
+                contentH5Dto.getImageUrls().add(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
             }
         }
         contentH5Dto.setContent(content.getContent());
