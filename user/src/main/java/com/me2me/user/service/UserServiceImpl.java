@@ -291,8 +291,10 @@ public class UserServiceImpl implements UserService {
         if(null != userTag){
             userMybatisDao.updateUserTagDetail(pasteTagDto.getTargetUid(),userTag.getId());
         }else {
-            userMybatisDao.saveUserTag(pasteTagDto);
+            Integer tagId = userMybatisDao.saveUserTag(pasteTagDto.getTag());
+            userMybatisDao.saveUserTagDetail(tagId.longValue(),pasteTagDto);
         }
+        userMybatisDao.saveUserTagRecord(pasteTagDto.getFromUid(),pasteTagDto.getTargetUid());
         return Response.success(ResponseStatus.PASTE_TAG_SUCCESS.status,ResponseStatus.PASTE_TAG_SUCCESS.message);
     }
 }

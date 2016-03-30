@@ -41,5 +41,6 @@
         <!--<table tableName="user_channel" domainObjectName="UserChannel"/>-->
         <!--<table tableName="user_tags" domainObjectName="UserTags"/>-->
         <table tableName="user_tags_details" domainObjectName="UserTagsDetails" />
+        <table tableName="user_tags_record" domainObjectName="UserTagsRecord" />
     </context>
 </generatorConfiguration>
