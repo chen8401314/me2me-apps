@@ -116,6 +116,9 @@ public class Contents {
     @RequestMapping(value = "/myPublish",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response myPublish(MyPublishContentRequest request){
+        if(request.getSinceId()==-1){
+            request.setSinceId(Integer.MAX_VALUE);
+        }
         return contentService.myPublish(request.getUid(),request.getSinceId());
     }
 
