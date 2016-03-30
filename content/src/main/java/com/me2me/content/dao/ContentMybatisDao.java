@@ -27,7 +27,7 @@ public class ContentMybatisDao {
     private ContentImageMapper contentImageMapper;
 
     @Autowired
-    private ContentUserLikeMapper contentUserLikeMapper;
+    private ContentUserLikesMapper contentUserLikesMapper;
 
     @Autowired
     private ContentTagsMapper contentTagsMapper;
@@ -51,56 +51,60 @@ public class ContentMybatisDao {
         contentImageMapper.insertSelective(contentImage);
     }
 
-    public void createContentUserLike(ContentUserLike contentUserLike){
-        contentUserLikeMapper.insertSelective(contentUserLike);
+    public void createContentUserLikes(ContentUserLikes contentUserLikes){
+        contentUserLikesMapper.insertSelective(contentUserLikes);
     }
 
     public Content getContentById(long id){
         return contentMapper.selectByPrimaryKey(id);
     }
 
-    public ContentUserLike getContentUserLike(LikeDto likeDto){
-        ContentUserLikeExample example = new ContentUserLikeExample();
-        ContentUserLikeExample.Criteria criteria = example.createCriteria();
+    public ContentUserLikes getContentUserLike(LikeDto likeDto){
+        ContentUserLikesExample example = new ContentUserLikesExample();
+        ContentUserLikesExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(likeDto.getCid());
         criteria.andUidEqualTo(likeDto.getUid());
-        List<ContentUserLike> list = contentUserLikeMapper.selectByExample(example);
+        List<ContentUserLikes> list = contentUserLikesMapper.selectByExample(example);
         return list.size() > 0 ? list.get(0) : null;
     }
 
-    public void deleteUserLike(long id){
-        contentUserLikeMapper.deleteByPrimaryKey(id);
+    public void deleteUserLikes(long id){
+        contentUserLikesMapper.deleteByPrimaryKey(id);
     }
 
     public void updateContentById(Content content){
         contentMapper.updateByPrimaryKey(content);
     }
 
-    public void createTag(WriteTagDto writeTagDto){
-        ContentTags contentTags = new ContentTags();
-        contentTags.setTag(writeTagDto.getTag());
+    public void createTag(ContentTags contentTags){
         contentTagsMapper.insertSelective(contentTags);
-        ContentTagLikes contentTagLikes = new ContentTagLikes();
-        contentTagLikes.setTagId(contentTags.getId());
-        contentTagLikes.setCid(writeTagDto.getCid());
-        contentTagLikes.setUid(writeTagDto.getUid());
+    }
+    public void createContentTagLikes(ContentTagLikes contentTagLikes ){
         contentTagLikesMapper.insertSelective(contentTagLikes);
     }
 
     public int isLike(long uid,long cid){
-        ContentUserLikeExample example = new ContentUserLikeExample();
-        ContentUserLikeExample.Criteria criteria = example.createCriteria();
+        ContentUserLikesExample example = new ContentUserLikesExample();
+        ContentUserLikesExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(cid);
         criteria.andUidEqualTo(uid);
-        List list = contentUserLikeMapper.selectByExample(example);
+        List list = contentUserLikesMapper.selectByExample(example);
         return  (list !=null&&list.size() > 0 ) ? 1 : 0 ;
     }
 
     public List<Content>myPublish(long uid,int sinceId) {
-        Map<String,Object> map = new HashMap<String, Object>();
+        Map<String,Object> map = new HashMap<String,Object>();
         map.put("uid",uid);
         map.put("sinceId",sinceId);
         return contentMapper.loadMyPublishData(map);
+    }
+
+    public List<Map<String,String>>loadAllFeeling(long cid ,int sinceId) {
+        Map<String,Object> map = new HashMap<String,Object>();
+        map.put("cid",cid);
+        map.put("sinceId",sinceId);
+        List<Map<String,String>> result = contentUserLikesMapper.loadAllFeeling(map);
+        return result;
     }
 
 }

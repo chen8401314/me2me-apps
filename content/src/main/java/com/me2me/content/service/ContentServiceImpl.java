@@ -7,7 +7,6 @@ import com.me2me.common.web.Specification;
 import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.*;
 import com.me2me.content.mapper.ContentMapper;
-import com.me2me.content.mapper.ContentUserLikeMapper;
 import com.me2me.content.model.*;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
@@ -16,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -121,15 +121,16 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public Response like(LikeDto likeDto) {
         int addCount = 1 ;
-        ContentUserLike c = contentMybatisDao.getContentUserLike(likeDto);
+        ContentUserLikes c = contentMybatisDao.getContentUserLike(likeDto);
         if(c == null){
-        ContentUserLike contentUserLike = new ContentUserLike();
-        contentUserLike.setUid(likeDto.getUid());
-        contentUserLike.setCid(likeDto.getCid());
-        contentMybatisDao.createContentUserLike(contentUserLike);
+            ContentUserLikes contentUserLikes = new ContentUserLikes();
+            contentUserLikes.setUid(likeDto.getUid());
+            contentUserLikes.setCid(likeDto.getCid());
+            contentUserLikes.setTagId(likeDto.getTid());
+            contentMybatisDao.createContentUserLikes(contentUserLikes);
         }else{
-        addCount = -1;
-        contentMybatisDao.deleteUserLike(c.getId());
+            addCount = -1;
+            contentMybatisDao.deleteUserLikes(c.getId());
         }
         Content content = contentMybatisDao.getContentById(likeDto.getCid());
         content.setLikeCount(content.getLikeCount() + addCount );
@@ -143,7 +144,14 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response writeTag(WriteTagDto writeTagDto) {
-        contentMybatisDao.createTag(writeTagDto);
+        ContentTags contentTags = new ContentTags();
+        contentTags.setTag(writeTagDto.getTag());
+        contentMybatisDao.createTag(contentTags);
+        ContentTagLikes contentTagLikes = new ContentTagLikes();
+        contentTagLikes.setUid(writeTagDto.getUid());
+        contentTagLikes.setCid(writeTagDto.getCid());
+        contentTagLikes.setTagId(contentTags.getId());
+        contentMybatisDao.createContentTagLikes(contentTagLikes);
         return Response.success(ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.status,ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.message);
     }
 
@@ -192,8 +200,30 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response getContentFeeling(long cid, int sinceId) {
+        List<Map<String,String>> result = contentMybatisDao.loadAllFeeling(cid ,sinceId);
+        ContentAllFeelingDto contentAllFeelingDto = new ContentAllFeelingDto();
+        buildContentFeelingDatas(contentAllFeelingDto,result);
+        return Response.success(contentAllFeelingDto);
 
-        return null;
+    }
+
+    private void buildContentFeelingDatas(ContentAllFeelingDto contentAllFeelingDto, List<Map<String,String>> list) {
+        for (Map map : list) {
+            ContentAllFeelingDto.ContentAllFeelingElement contentAllFeelingElement = ContentAllFeelingDto.createElement();
+            contentAllFeelingElement.setTag(map.get("tag").toString());
+            contentAllFeelingElement.setUid(Long.parseLong(map.get("uid").toString()));
+            contentAllFeelingElement.setAvatar(Constant.QINIU_DOMAIN + "/" + map.get("avatar"));
+            contentAllFeelingElement.setTid(Long.parseLong(map.get("tag_id").toString()));
+            contentAllFeelingElement.setCid(Long.parseLong(map.get("cid").toString()));
+            contentAllFeelingElement.setForwardTitle(map.get("forward_title").toString());
+            contentAllFeelingElement.setNickName(map.get("nick_name").toString());
+            contentAllFeelingElement.setLikesCounts(Integer.parseInt(map.get("like_count")== null? "0":map.get("like_count").toString()));
+            contentAllFeelingDto.getResults().add(contentAllFeelingElement);
+        }
+    }
+    @Override
+    public Content getContent(long id) {
+        return contentMybatisDao.getContentById(id);
     }
 
 
