@@ -77,7 +77,13 @@ public class ContentMybatisDao {
     }
 
     public void createTag(ContentTags contentTags){
-        contentTagsMapper.insertSelective(contentTags);
+        ContentTagsExample example = new ContentTagsExample();
+        ContentTagsExample.Criteria criteria = example.createCriteria();
+        criteria.andTagEqualTo(contentTags.getTag());
+        List<ContentTags> list = contentTagsMapper.selectByExample(example);
+        if(list == null ||list.size() ==0) {
+            contentTagsMapper.insertSelective(contentTags);
+        }
     }
     public void createContentTagLikes(ContentTagLikes contentTagLikes ){
         contentTagLikesMapper.insertSelective(contentTagLikes);
