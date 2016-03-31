@@ -15,6 +15,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 赵朋扬
@@ -59,7 +62,9 @@ public class Contents {
      */
     @RequestMapping(value = "/publish",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response publish(PublishContentRequest request){
+    public Response publish(PublishContentRequest request, HttpServletResponse response){
+        // 设置跨域
+        response.setHeader("Access-Control-Allow-Origin","*");
         ContentDto contentDto = new ContentDto();
         contentDto.setUid(request.getUid());
         contentDto.setContent(request.getContent());
