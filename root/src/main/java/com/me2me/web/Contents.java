@@ -149,7 +149,11 @@ public class Contents {
         return contentService.getContentFeeling(request.getCid(),request.getSinceId());
     }
 
-
+    @ResponseBody
+    @RequestMapping(value = "/getUserInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getUserInfo(UserInfoRequest request){
+        return  contentService.getUserInfo(request.getUid());
+    }
 
 
 
