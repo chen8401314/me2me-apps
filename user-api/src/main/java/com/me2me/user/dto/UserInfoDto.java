@@ -3,8 +3,6 @@ package com.me2me.user.dto;
 import com.google.common.collect.Lists;
 import com.me2me.common.web.BaseEntity;
 import lombok.Data;
-
-import javax.swing.text.AbstractDocument;
 import java.util.Date;
 import java.util.List;
 
@@ -17,20 +15,26 @@ import java.util.List;
 @Data
 public class UserInfoDto implements BaseEntity{
 
-    private String nickName;
-
-    private long uid;
-
-    private String avatar;
-
-    private int gender;
-
-    private String mid;
+    private User user = new User();
 
     private List<ContentElement> contentElementList = Lists.newArrayList();
 
     public static ContentElement createElement(){
         return new ContentElement();
+    }
+
+    @Data
+    public static class User implements BaseEntity{
+
+        private String nickName;
+
+        private long uid;
+
+        private String avatar;
+
+        private int gender;
+
+        private String mid;
     }
 
     @Data

@@ -251,10 +251,10 @@ public class ContentServiceImpl implements ContentService {
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
         List<Content> list = contentMybatisDao.myPublish(uid,Integer.MAX_VALUE);
         UserInfoDto userInfoDto = new UserInfoDto();
-        userInfoDto.setNickName(userProfile.getNickName());
-        userInfoDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-        userInfoDto.setGender(userProfile.getGender());
-        userInfoDto.setUid(userProfile.getUid());
+        userInfoDto.getUser().setNickName(userProfile.getNickName());
+        userInfoDto.getUser().setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+        userInfoDto.getUser().setGender(userProfile.getGender());
+        userInfoDto.getUser().setUid(userProfile.getUid());
         for (Content content : list){
             UserInfoDto.ContentElement contentElement = UserInfoDto.createElement();
             contentElement.setFeeling(content.getFeeling());
