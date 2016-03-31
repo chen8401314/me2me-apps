@@ -94,6 +94,6 @@ public interface ContentService {
      * @param uid
      * @return
      */
-    Response getUserInfo(long uid);
+    Response getUserData(long uid);
 
 }

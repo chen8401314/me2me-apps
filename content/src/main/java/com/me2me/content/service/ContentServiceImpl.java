@@ -247,7 +247,7 @@ public class ContentServiceImpl implements ContentService {
         return contentH5Dto;
     }
 
-    public Response getUserInfo(long uid){
+    public Response getUserData(long uid){
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
         List<Content> list = contentMybatisDao.myPublish(uid,Integer.MAX_VALUE);
         UserInfoDto userInfoDto = new UserInfoDto();
@@ -264,6 +264,15 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setHotValue(content.getHotValue());
             contentElement.setLikeCount(0);
             contentElement.setHotValue(content.getHotValue());
+            contentElement.setAuthorization(content.getAuthorization());
+            contentElement.setContentType(content.getContentType());
+            contentElement.setForwardCid(content.getForwardCid());
+            contentElement.setForwardUrl(content.getForwardUrl());
+            contentElement.setThumbnail(content.getThumbnail());
+            contentElement.setType(content.getType());
+            contentElement.setForwardTitle(content.getForwardTitle());
+            ContentTags contentTags =  contentMybatisDao.getContentTags(content.getFeeling());
+            contentElement.setTid(contentTags.getId());
             userInfoDto.getContentElementList().add(contentElement);
 
         }

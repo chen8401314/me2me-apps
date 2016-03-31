@@ -52,6 +52,21 @@ public class UserInfoDto implements BaseEntity{
 
         private int hotValue;
 
+        private Long forwardCid;
+
+        private Integer type;
+
+        private String forwardTitle;
+
+        private String forwardUrl;
+
+        private Integer contentType;
+
+        private String thumbnail;
+
+        private Integer authorization;
+
+
 
 
     }
