@@ -38,6 +38,7 @@
         <slf4j.version>1.7.12</slf4j.version>
         <httpclient.version>4.5</httpclient.version>
         <guava.version>18.0</guava.version>
+        <servlet.version>3.1.0</servlet.version>
     </properties>
 
     <dependencyManagement>
@@ -139,8 +140,8 @@
             </dependency>
             <dependency>
                 <groupId>javax.servlet</groupId>
-                <artifactId>servlet-api</artifactId>
-                <version>3.0</version>
+                <artifactId>javax.servlet-api</artifactId>
+                <version>${servlet.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
