@@ -89,4 +89,11 @@ public interface ContentService {
      */
     ContentH5Dto getContent(long id);
 
+    /**
+     * 用户资料卡
+     * @param uid
+     * @return
+     */
+    Response getUserInfo(long uid);
+
 }

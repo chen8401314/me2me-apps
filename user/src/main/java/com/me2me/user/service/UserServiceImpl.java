@@ -34,6 +34,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserMybatisDao userMybatisDao;
 
+
     /**
      * 用户注册
      * @param userSignUpDto
@@ -297,4 +298,5 @@ public class UserServiceImpl implements UserService {
         userMybatisDao.saveUserTagRecord(pasteTagDto.getFromUid(),pasteTagDto.getTargetUid());
         return Response.success(ResponseStatus.PASTE_TAG_SUCCESS.status,ResponseStatus.PASTE_TAG_SUCCESS.message);
     }
+
 }

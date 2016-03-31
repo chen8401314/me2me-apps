@@ -8,6 +8,8 @@ import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.*;
 import com.me2me.content.mapper.ContentMapper;
 import com.me2me.content.model.*;
+import com.me2me.user.dao.UserMybatisDao;
+import com.me2me.user.dto.UserInfoDto;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +33,9 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private UserMybatisDao userMybatisDao;
 
     @Override
     public Response highQuality(int sinceId) {
@@ -111,7 +116,7 @@ public class ContentServiceImpl implements ContentService {
                 contentMybatisDao.createContentImage(contentImage);
             }
         }
-        return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message);
+        return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,contentDto);
 }
 
     /**
@@ -237,5 +242,27 @@ public class ContentServiceImpl implements ContentService {
         return contentH5Dto;
     }
 
+    public Response getUserInfo(long uid){
+        UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+        List<Content> list = contentMybatisDao.myPublish(uid,Integer.MAX_VALUE);
+        UserInfoDto userInfoDto = new UserInfoDto();
+        userInfoDto.setNickName(userProfile.getNickName());
+        userInfoDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+        userInfoDto.setGender(userProfile.getGender());
+        userInfoDto.setUid(userProfile.getUid());
+        for (Content content : list){
+            UserInfoDto.ContentElement contentElement = UserInfoDto.createElement();
+            contentElement.setFeeling(content.getFeeling());
+            contentElement.setContent(content.getContent());
+            contentElement.setCid(content.getId());
+            contentElement.setCreateTime(content.getCreateTime());
+            contentElement.setHotValue(content.getHotValue());
+            contentElement.setLikeCount(0);
+            contentElement.setHotValue(content.getHotValue());
+            userInfoDto.getContentElementList().add(contentElement);
+
+        }
+        return Response.success(userInfoDto);
+    }
 
 }
