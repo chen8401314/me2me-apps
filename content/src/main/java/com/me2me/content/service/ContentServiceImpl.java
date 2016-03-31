@@ -56,6 +56,8 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setNickName(userProfile.getNickName());
             squareDataElement.setContent(content.getContent());
             squareDataElement.setFeeling(content.getFeeling());
+            ContentTags contentTags = contentMybatisDao.getContentTags(content.getFeeling());
+            squareDataElement.setTid(contentTags.getId());
             squareDataElement.setType(content.getType());
             squareDataElement.setIsLike(isLike(userProfile.getUid(),content.getId()));
             squareDataElement.setCreateTime(content.getCreateTime());
@@ -86,6 +88,9 @@ public class ContentServiceImpl implements ContentService {
         content.setUid(contentDto.getUid());
         content.setContent(contentDto.getContent());
         content.setFeeling(contentDto.getFeeling());
+        ContentTags contentTags = new ContentTags();
+        contentTags.setTag(contentDto.getFeeling());
+        contentMybatisDao.createTag(contentTags);
         if(!StringUtils.isEmpty(contentDto.getImageUrls())){
             String[] images = contentDto.getImageUrls().split(";");
             // 设置封面

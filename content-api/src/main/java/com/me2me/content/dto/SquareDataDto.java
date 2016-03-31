@@ -70,6 +70,8 @@ public class SquareDataDto implements BaseEntity {
         // 转发URL
         private String forwardUrl;
 
+        private long tid;
+
 
     }
 

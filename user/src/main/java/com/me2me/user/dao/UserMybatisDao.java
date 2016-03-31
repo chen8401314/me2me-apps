@@ -30,6 +30,9 @@ public class UserMybatisDao {
     private DictionaryMapper dictionaryMapper;
 
     @Autowired
+    private DictionaryTypeMapper dictionaryTypeMapper;
+
+    @Autowired
     private UserProfileMapper userProfileMapper;
 
     @Autowired
@@ -104,7 +107,15 @@ public class UserMybatisDao {
         return dictionaryMapper.selectByExample(example);
     }
 
-    public void modifyUserProfile(UserProfile userProfile){
+    public DictionaryType getDictionaryType(BasicDataDto basicDataDto) {
+        DictionaryTypeExample example = new DictionaryTypeExample();
+        DictionaryTypeExample.Criteria criteria = example.createCriteria();
+        criteria.andIdEqualTo(basicDataDto.getType());
+        List<DictionaryType> list = dictionaryTypeMapper.selectByExample(example);
+        return (list != null && list.size() > 0) ? list.get(0) : null;
+    }
+
+        public void modifyUserProfile(UserProfile userProfile){
         userProfileMapper.updateByPrimaryKey(userProfile);
     }
 

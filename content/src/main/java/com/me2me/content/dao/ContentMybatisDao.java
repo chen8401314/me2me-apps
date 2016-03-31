@@ -113,4 +113,11 @@ public class ContentMybatisDao {
         criteria.andCidEqualTo(cid);
         return contentImageMapper.selectByExample(example);
     }
+    public ContentTags getContentTags(String feeling){
+        ContentTagsExample example = new ContentTagsExample();
+        ContentTagsExample.Criteria criteria = example.createCriteria();
+        criteria.andTagEqualTo(feeling);
+        List<ContentTags> list = contentTagsMapper.selectByExample(example);
+        return (list !=null && list.size() >0 ) ? list.get(0) : null;
+    }
 }
