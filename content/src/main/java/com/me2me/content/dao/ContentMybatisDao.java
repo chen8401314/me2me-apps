@@ -126,4 +126,6 @@ public class ContentMybatisDao {
         List<ContentTags> list = contentTagsMapper.selectByExample(example);
         return (list !=null && list.size() >0 ) ? list.get(0) : null;
     }
+
+
 }

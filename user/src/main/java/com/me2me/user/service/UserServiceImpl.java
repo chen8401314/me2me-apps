@@ -256,37 +256,12 @@ public class UserServiceImpl implements UserService {
      */
     public Response modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto){
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(modifyUserProfileDto.getUid());
-        if(!StringUtils.isEmpty(modifyUserProfileDto.getAvatar())) {
-            userProfile.setAvatar(Constant.QINIU_DOMAIN + "/" + modifyUserProfileDto.getAvatar());
-        }
-//        if(!StringUtils.isEmpty(modifyUserProfileDto.getNickName())) {
-//            userProfile.setNickName(modifyUserProfileDto.getNickName());
-//        }
-//        if(!StringUtils.isEmpty(modifyUserProfileDto.getUserName())) {
-//            userProfile.setMobile(modifyUserProfileDto.getUserName());
-//        }
-//        if(!StringUtils.isEmpty(modifyUserProfileDto.getBearStatus())) {
-//            userProfile.setBearStatus(modifyUserProfileDto.getBearStatus());
-//        }
-//        if(!StringUtils.isEmpty(modifyUserProfileDto.getMarriageStatus())) {
-//            userProfile.setMarriageStatus(modifyUserProfileDto.getMarriageStatus());
-//        }
-//        if(!StringUtils.isEmpty(modifyUserProfileDto.getGender())) {
-//            userProfile.setGender(modifyUserProfileDto.getGender());
-//        }
-//        if(!StringUtils.isEmpty(modifyUserProfileDto.getIndustry())) {
-//            userProfile.setIndustry(modifyUserProfileDto.getIndustry());
-//        }
-//        if(!StringUtils.isEmpty(modifyUserProfileDto.getSocialClass())) {
-//            userProfile.setSocialClass(modifyUserProfileDto.getSocialClass());
-//        }
-//        if(!StringUtils.isEmpty(modifyUserProfileDto.getYearsId())) {
-//            userProfile.setYearsId(modifyUserProfileDto.getYearsId());
-//        }
-//        if(!StringUtils.isEmpty(modifyUserProfileDto.getStartId())) {
-//            userProfile.setStarId(modifyUserProfileDto.getStartId());
-//        }
+        userProfile.setAvatar(modifyUserProfileDto.getAvatar());
+        userProfile.setNickName(modifyUserProfileDto.getNickName());
+        userProfile.setYearsId(modifyUserProfileDto.getYearsId());
+        userProfile.setGender(modifyUserProfileDto.getGender());
         userMybatisDao.modifyUserProfile(userProfile);
+        modifyUserProfileDto.setAvatar(Constant.QINIU_DOMAIN  + "/" +modifyUserProfileDto.getAvatar());
         return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message,modifyUserProfileDto);
     }
 
