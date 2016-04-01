@@ -196,6 +196,19 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setLikeCount(content.getLikeCount());
         contentDetailDto.setCreateTime(content.getCreateTime());
         contentDetailDto.setThumbnail(content.getThumbnail());
+        ContentDetailDto.ContentTop5FeelingElement contentTop5FeelingElement = ContentDetailDto.createElement();
+        List<Map<String,String>> list  = contentMybatisDao.loadAllFeeling(content.getId(),5);
+        for (Map map : list){
+            contentTop5FeelingElement.setTag(map.get("tag").toString());
+            contentTop5FeelingElement.setUid(Long.parseLong(map.get("uid").toString()));
+            contentTop5FeelingElement.setAvatar(Constant.QINIU_DOMAIN + "/" + map.get("avatar"));
+            contentTop5FeelingElement.setTid(Long.parseLong(map.get("tag_id").toString()));
+            contentTop5FeelingElement.setCid(Long.parseLong(map.get("cid").toString()));
+            contentTop5FeelingElement.setForwardTitle(map.get("forward_title").toString());
+            contentTop5FeelingElement.setNickName(map.get("nick_name").toString());
+            contentTop5FeelingElement.setLikesCounts(Integer.parseInt(map.get("like_count")== null? "0":map.get("like_count").toString()));
+        }
+        contentDetailDto.getResults().add(contentTop5FeelingElement);
         return Response.success(contentDetailDto);
     }
 
