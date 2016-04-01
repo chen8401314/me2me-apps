@@ -14,5 +14,5 @@ public class UserInfoRequest extends Request{
 
     @Setter
     @Getter
-    private long uid;
+    private long id;
 }
