@@ -191,6 +191,7 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setHotValue(content.getHotValue());
         contentDetailDto.setLikeCount(content.getLikeCount());
         contentDetailDto.setCreateTime(content.getCreateTime());
+        contentDetailDto.setId(content.getId());
         ContentTags contentTags = contentMybatisDao.getContentTags(content.getFeeling());
         contentDetailDto.setTid(contentTags.getId());
         ContentDetailDto.ContentTop5FeelingElement contentTop5FeelingElement = ContentDetailDto.createElement();
