@@ -284,6 +284,8 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setThumbnail(content.getThumbnail());
             contentElement.setType(content.getType());
             contentElement.setForwardTitle(content.getForwardTitle());
+            ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
+            contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
             ContentTags contentTags =  contentMybatisDao.getContentTags(content.getFeeling());
             contentElement.setTid(contentTags.getId());
             userInfoDto.getContentElementList().add(contentElement);

@@ -119,6 +119,19 @@ public class ContentMybatisDao {
         criteria.andCidEqualTo(cid);
         return contentImageMapper.selectByExample(example);
     }
+
+    public ContentImage getCoverImages(long cid){
+        ContentImageExample example = new ContentImageExample();
+        ContentImageExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(cid);
+        List<ContentImage> list =  contentImageMapper.selectByExample(example);
+        for (ContentImage contentImage : list){
+            if(contentImage.getCover() ==1){
+                return contentImage;
+            }
+        }
+        return null;
+    }
     public ContentTags getContentTags(String feeling){
         ContentTagsExample example = new ContentTagsExample();
         ContentTagsExample.Criteria criteria = example.createCriteria();
