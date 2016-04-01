@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
         String mobile = userSignUpDto.getMobile();
         if(userMybatisDao.getUserByUserName(mobile)!=null){
             // 该用户已经注册过
-            Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
+            return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
         }
         SignUpSuccessDto signUpSuccessDto = new SignUpSuccessDto();
         User user = new User();
@@ -259,33 +259,33 @@ public class UserServiceImpl implements UserService {
         if(!StringUtils.isEmpty(modifyUserProfileDto.getAvatar())) {
             userProfile.setAvatar(Constant.QINIU_DOMAIN + "/" + modifyUserProfileDto.getAvatar());
         }
-        if(!StringUtils.isEmpty(modifyUserProfileDto.getNickName())) {
-            userProfile.setNickName(modifyUserProfileDto.getNickName());
-        }
-        if(!StringUtils.isEmpty(modifyUserProfileDto.getUserName())) {
-            userProfile.setMobile(modifyUserProfileDto.getUserName());
-        }
-        if(!StringUtils.isEmpty(modifyUserProfileDto.getBearStatus())) {
-            userProfile.setBearStatus(modifyUserProfileDto.getBearStatus());
-        }
-        if(!StringUtils.isEmpty(modifyUserProfileDto.getMarriageStatus())) {
-            userProfile.setMarriageStatus(modifyUserProfileDto.getMarriageStatus());
-        }
-        if(!StringUtils.isEmpty(modifyUserProfileDto.getGender())) {
-            userProfile.setGender(modifyUserProfileDto.getGender());
-        }
-        if(!StringUtils.isEmpty(modifyUserProfileDto.getIndustry())) {
-            userProfile.setIndustry(modifyUserProfileDto.getIndustry());
-        }
-        if(!StringUtils.isEmpty(modifyUserProfileDto.getSocialClass())) {
-            userProfile.setSocialClass(modifyUserProfileDto.getSocialClass());
-        }
-        if(!StringUtils.isEmpty(modifyUserProfileDto.getYearsId())) {
-            userProfile.setYearsId(modifyUserProfileDto.getYearsId());
-        }
-        if(!StringUtils.isEmpty(modifyUserProfileDto.getStartId())) {
-            userProfile.setStarId(modifyUserProfileDto.getStartId());
-        }
+//        if(!StringUtils.isEmpty(modifyUserProfileDto.getNickName())) {
+//            userProfile.setNickName(modifyUserProfileDto.getNickName());
+//        }
+//        if(!StringUtils.isEmpty(modifyUserProfileDto.getUserName())) {
+//            userProfile.setMobile(modifyUserProfileDto.getUserName());
+//        }
+//        if(!StringUtils.isEmpty(modifyUserProfileDto.getBearStatus())) {
+//            userProfile.setBearStatus(modifyUserProfileDto.getBearStatus());
+//        }
+//        if(!StringUtils.isEmpty(modifyUserProfileDto.getMarriageStatus())) {
+//            userProfile.setMarriageStatus(modifyUserProfileDto.getMarriageStatus());
+//        }
+//        if(!StringUtils.isEmpty(modifyUserProfileDto.getGender())) {
+//            userProfile.setGender(modifyUserProfileDto.getGender());
+//        }
+//        if(!StringUtils.isEmpty(modifyUserProfileDto.getIndustry())) {
+//            userProfile.setIndustry(modifyUserProfileDto.getIndustry());
+//        }
+//        if(!StringUtils.isEmpty(modifyUserProfileDto.getSocialClass())) {
+//            userProfile.setSocialClass(modifyUserProfileDto.getSocialClass());
+//        }
+//        if(!StringUtils.isEmpty(modifyUserProfileDto.getYearsId())) {
+//            userProfile.setYearsId(modifyUserProfileDto.getYearsId());
+//        }
+//        if(!StringUtils.isEmpty(modifyUserProfileDto.getStartId())) {
+//            userProfile.setStarId(modifyUserProfileDto.getStartId());
+//        }
         userMybatisDao.modifyUserProfile(userProfile);
         return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message,modifyUserProfileDto);
     }

@@ -117,7 +117,7 @@ public class UserMybatisDao {
     }
 
         public void modifyUserProfile(UserProfile userProfile){
-        userProfileMapper.updateByPrimaryKey(userProfile);
+        userProfileMapper.updateByPrimaryKeySelective(userProfile);
     }
 
     public UserProfile getUserProfileByUid(long uid) {
