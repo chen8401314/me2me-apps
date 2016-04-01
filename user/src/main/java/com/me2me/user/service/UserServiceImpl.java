@@ -283,4 +283,9 @@ public class UserServiceImpl implements UserService {
         return Response.success(ResponseStatus.PASTE_TAG_SUCCESS.status,ResponseStatus.PASTE_TAG_SUCCESS.message);
     }
 
+    @Override
+    public Response userNotice(UserNoticeDto userNoticeDto) {
+        return null;
+    }
+
 }

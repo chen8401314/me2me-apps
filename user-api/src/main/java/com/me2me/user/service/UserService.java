@@ -84,4 +84,7 @@ public interface UserService {
      */
     Response writeTag(PasteTagDto pasteTagDto);
 
+
+    Response userNotice(UserNoticeDto userNoticeDto);
+
 }
