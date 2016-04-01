@@ -17,9 +17,11 @@ import java.util.List;
  * Author: 赵朋扬
  * Date: 2016/3/25.
  */
-@Controller
 @RequestMapping("/console")
+@Controller
 public class Console  {
+
+
 
     @Autowired
     private ContentService contentService;
