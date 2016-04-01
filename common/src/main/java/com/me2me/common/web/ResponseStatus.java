@@ -59,6 +59,8 @@ public enum  ResponseStatus {
 
     GET_QINIU_TOKEN_SUCCESS("获取七牛token成功","get qiniu token success",20050),
 
+    GET_USER_NOTICE_SUCCESS("获取用户提醒成功","get user notice success",20051),
+
 
 
 

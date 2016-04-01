@@ -195,9 +195,6 @@ public class UserMybatisDao {
     }
 
     public void getUserNotice(Long fromUserId,Long toUserId){
-        UserTagsRecord record = new UserTagsRecord();
-        record.setFromUid(fromUserId);
-        record.setToUid(toUserId);
-        userTagsRecordMapper.insert(record);
+
     }
 }

@@ -186,7 +186,7 @@ public class UserServiceImpl implements UserService {
         String userName = modifyUserHobbyDto.getUserName();
         User user = userMybatisDao.getUserByUserName(userName);
         String hobby = modifyUserHobbyDto.getHobby();
-        String [] hobbies = hobby.split(",");
+        String [] hobbies = hobby.split(";");
         UserHobby deleteUserHobby = new UserHobby();
         deleteUserHobby.setUid(user.getUid());
         userMybatisDao.deleteUserHobby(deleteUserHobby);
@@ -285,7 +285,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response userNotice(UserNoticeDto userNoticeDto) {
-        return null;
+        ShowUserNoticeDto showUserNoticeDto = new ShowUserNoticeDto();
+        return Response.success(ResponseStatus.GET_USER_NOTICE_SUCCESS.status,ResponseStatus.GET_USER_NOTICE_SUCCESS.message,showUserNoticeDto);
     }
 
 }
