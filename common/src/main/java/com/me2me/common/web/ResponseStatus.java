@@ -84,6 +84,8 @@ public enum  ResponseStatus {
 
     USER_FIND_ENCRYPT_PASSWORD_NOT_SAME_ERROR("用户找回密码两次密码不一致","user find encrypt password not same error",5007),
 
+    USER_MOBILE_DUPLICATE("手机号码已经注册过了","user mobile duplicate",5008),
+
     USER_ADD_FRIEND_ERROR("不能自己添加自己为好友","can't add yourself",50020);
 
     public String message;
