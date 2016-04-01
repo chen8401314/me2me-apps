@@ -26,6 +26,8 @@ public class ContentDetailDto implements BaseEntity {
 
     private int type;
 
+    private String nickName;
+
     private String coverImage;
 
     private String forwardTitle;
