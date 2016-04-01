@@ -151,7 +151,7 @@ public class Contents {
     @ResponseBody
     @RequestMapping(value = "/getUserData",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getUserInfo(UserInfoRequest request){
-        return  contentService.getUserData(request.getUid());
+        return  contentService.getUserData(request.getId());
     }
 
 
