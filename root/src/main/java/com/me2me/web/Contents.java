@@ -124,7 +124,7 @@ public class Contents {
         if(request.getSinceId()==-1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.myPublish(request.getUid(),request.getSinceId());
+        return contentService.myPublish(request.getCustomerId(),request.getSinceId());
     }
 
     /**
