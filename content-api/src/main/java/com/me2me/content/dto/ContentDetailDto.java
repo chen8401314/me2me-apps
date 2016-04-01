@@ -36,6 +36,8 @@ public class ContentDetailDto implements BaseEntity {
 
     private Date createTime;
 
+    private int isLike;
+
     private List<ContentTop5FeelingElement> tags = Lists.newArrayList();
 
     public static ContentTop5FeelingElement createElement(){
