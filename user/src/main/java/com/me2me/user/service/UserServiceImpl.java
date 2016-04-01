@@ -200,11 +200,14 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public Response getBasicDataByType(BasicDataDto basicDataDto){
+        DictionaryType dictionaryType =userMybatisDao.getDictionaryType(basicDataDto);
         List<Dictionary> dictionaryList = userMybatisDao.getDictionary(basicDataDto);
         BasicDataSuccessDto basicDataSuccessDto = new BasicDataSuccessDto();
-        Map<Long,List<Dictionary>> result = new HashMap<Long, List<Dictionary>>();
-        result.put(basicDataDto.getType(),dictionaryList);
-        basicDataSuccessDto.setResult(result);
+        BasicDataSuccessDto.BasicDataSuccessElement basicDataSuccess = BasicDataSuccessDto.createElement();
+        basicDataSuccess.setTid(basicDataDto.getType());
+        basicDataSuccess.setType(dictionaryType.getName());
+        basicDataSuccess.setList(dictionaryList);
+        basicDataSuccessDto.getResults().add(basicDataSuccess);
         return Response.success(basicDataSuccessDto);
     }
 
@@ -236,7 +239,7 @@ public class UserServiceImpl implements UserService {
         dictionaryList = userMybatisDao.getDictionary(basicDataDto);
         result.put(basicDataDto.getType(),dictionaryList);
 
-        basicDataSuccessDto.setResult(result);
+       // basicDataSuccessDto.setList(result);
         return Response.success(basicDataSuccessDto);
     }
 

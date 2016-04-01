@@ -1,5 +1,6 @@
 package com.me2me.user.dto;
 
+import com.google.common.collect.Lists;
 import com.me2me.common.web.BaseEntity;
 import com.me2me.user.model.Dictionary;
 import lombok.Data;
@@ -16,5 +17,19 @@ import java.util.Map;
 @Data
 public class BasicDataSuccessDto implements BaseEntity {
 
-    private Map<Long,List<Dictionary>> result;
+    private List<BasicDataSuccessElement> results = Lists.newArrayList();
+
+    public static BasicDataSuccessElement createElement(){
+        return new BasicDataSuccessElement();
+    }
+
+    @Data
+    public static class BasicDataSuccessElement implements BaseEntity {
+
+        private long tid;
+
+        private String type;
+
+        private List<Dictionary> list;
+    }
 }

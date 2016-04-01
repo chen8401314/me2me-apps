@@ -56,6 +56,8 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setNickName(userProfile.getNickName());
             squareDataElement.setContent(content.getContent());
             squareDataElement.setFeeling(content.getFeeling());
+            ContentTags contentTags = contentMybatisDao.getContentTags(content.getFeeling());
+            squareDataElement.setTid(contentTags.getId());
             squareDataElement.setType(content.getType());
             squareDataElement.setIsLike(isLike(userProfile.getUid(),content.getId()));
             squareDataElement.setCreateTime(content.getCreateTime());
@@ -86,6 +88,9 @@ public class ContentServiceImpl implements ContentService {
         content.setUid(contentDto.getUid());
         content.setContent(contentDto.getContent());
         content.setFeeling(contentDto.getFeeling());
+        ContentTags contentTags = new ContentTags();
+        contentTags.setTag(contentDto.getFeeling());
+        contentMybatisDao.createTag(contentTags);
         if(!StringUtils.isEmpty(contentDto.getImageUrls())){
             String[] images = contentDto.getImageUrls().split(";");
             // 设置封面
@@ -242,14 +247,14 @@ public class ContentServiceImpl implements ContentService {
         return contentH5Dto;
     }
 
-    public Response getUserInfo(long uid){
+    public Response getUserData(long uid){
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
         List<Content> list = contentMybatisDao.myPublish(uid,Integer.MAX_VALUE);
         UserInfoDto userInfoDto = new UserInfoDto();
-        userInfoDto.setNickName(userProfile.getNickName());
-        userInfoDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-        userInfoDto.setGender(userProfile.getGender());
-        userInfoDto.setUid(userProfile.getUid());
+        userInfoDto.getUser().setNickName(userProfile.getNickName());
+        userInfoDto.getUser().setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+        userInfoDto.getUser().setGender(userProfile.getGender());
+        userInfoDto.getUser().setUid(userProfile.getUid());
         for (Content content : list){
             UserInfoDto.ContentElement contentElement = UserInfoDto.createElement();
             contentElement.setFeeling(content.getFeeling());
@@ -259,6 +264,15 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setHotValue(content.getHotValue());
             contentElement.setLikeCount(0);
             contentElement.setHotValue(content.getHotValue());
+            contentElement.setAuthorization(content.getAuthorization());
+            contentElement.setContentType(content.getContentType());
+            contentElement.setForwardCid(content.getForwardCid());
+            contentElement.setForwardUrl(content.getForwardUrl());
+            contentElement.setThumbnail(content.getThumbnail());
+            contentElement.setType(content.getType());
+            contentElement.setForwardTitle(content.getForwardTitle());
+            ContentTags contentTags =  contentMybatisDao.getContentTags(content.getFeeling());
+            contentElement.setTid(contentTags.getId());
             userInfoDto.getContentElementList().add(contentElement);
 
         }
