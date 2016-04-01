@@ -189,6 +189,8 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setCoverImage(content.getContent());
         contentDetailDto.setForwardTitle(content.getForwardTitle());
         contentDetailDto.setUid(content.getUid());
+        UserProfile userProfile = userMybatisDao.getUserProfileByUid(content.getUid());
+        contentDetailDto.setNickName(userProfile.getNickName());
         contentDetailDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
         contentDetailDto.setContent(content.getContent());
         contentDetailDto.setAuthorization(content.getAuthorization());
@@ -207,8 +209,8 @@ public class ContentServiceImpl implements ContentService {
             contentTop5FeelingElement.setForwardTitle(map.get("forward_title").toString());
             contentTop5FeelingElement.setNickName(map.get("nick_name").toString());
             contentTop5FeelingElement.setLikesCounts(Integer.parseInt(map.get("like_count")== null? "0":map.get("like_count").toString()));
+            contentDetailDto.getTags().add(contentTop5FeelingElement);
         }
-        contentDetailDto.getResults().add(contentTop5FeelingElement);
         return Response.success(contentDetailDto);
     }
 
@@ -284,6 +286,8 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setThumbnail(content.getThumbnail());
             contentElement.setType(content.getType());
             contentElement.setForwardTitle(content.getForwardTitle());
+            ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
+            contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
             ContentTags contentTags =  contentMybatisDao.getContentTags(content.getFeeling());
             contentElement.setTid(contentTags.getId());
             userInfoDto.getContentElementList().add(contentElement);

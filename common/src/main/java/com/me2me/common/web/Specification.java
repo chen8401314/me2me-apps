@@ -104,7 +104,7 @@ public interface Specification {
 
         NORMAL("正常",0),
 
-        DELETE("转载",1);
+        DELETE("删除",1);
 
         public String name;
         public int index;
