@@ -207,8 +207,8 @@ public class ContentServiceImpl implements ContentService {
             contentTop5FeelingElement.setForwardTitle(map.get("forward_title").toString());
             contentTop5FeelingElement.setNickName(map.get("nick_name").toString());
             contentTop5FeelingElement.setLikesCounts(Integer.parseInt(map.get("like_count")== null? "0":map.get("like_count").toString()));
+            contentDetailDto.getResults().add(contentTop5FeelingElement);
         }
-        contentDetailDto.getResults().add(contentTop5FeelingElement);
         return Response.success(contentDetailDto);
     }
 
