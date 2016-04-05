@@ -32,4 +32,5 @@ public class ContentDto implements BaseEntity {
     private long cid;
 
     private Date createTime;
+
 }

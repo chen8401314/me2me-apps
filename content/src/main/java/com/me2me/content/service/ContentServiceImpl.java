@@ -125,6 +125,7 @@ public class ContentServiceImpl implements ContentService {
         }
         contentDto.setCid(content.getId());
         contentDto.setCreateTime(c.getCreateTime());
+        contentDto.setContent(c.getContent());
         return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,contentDto);
 }
 
