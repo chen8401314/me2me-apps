@@ -109,7 +109,7 @@ public class ContentServiceImpl implements ContentService {
         }
         content.setContentType(contentDto.getContentType());
         contentMybatisDao.createContent(content);
-        Content c =contentMybatisDao.getContentById(content.getId());
+        Content c = contentMybatisDao.getContentById(content.getId());
         if(!StringUtils.isEmpty(contentDto.getImageUrls())){
             String[] images = contentDto.getImageUrls().split(";");
             // 保存用户图片集合
