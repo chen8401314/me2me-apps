@@ -23,4 +23,8 @@ public class LikeRequest  extends Request {
     @Getter
     @Setter
     private long tid;
+
+    @Getter
+    @Setter
+    private long customerId;
 }

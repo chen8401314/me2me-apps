@@ -143,5 +143,9 @@ public class ContentMybatisDao {
         return (list !=null && list.size() >0 ) ? list.get(0) : null;
     }
 
+    public ContentTags getContentTagsById(long tid){
+       return contentTagsMapper.selectByPrimaryKey(tid);
+    }
+
 
 }
