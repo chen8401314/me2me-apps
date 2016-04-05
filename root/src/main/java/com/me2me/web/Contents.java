@@ -62,9 +62,7 @@ public class Contents {
      */
     @RequestMapping(value = "/publish",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response publish(PublishContentRequest request, HttpServletResponse response){
-        // 设置跨域
-        response.setHeader("Access-Control-Allow-Origin","*");
+    public Response publish(PublishContentRequest request){
         ContentDto contentDto = new ContentDto();
         contentDto.setUid(request.getUid());
         contentDto.setContent(request.getContent());

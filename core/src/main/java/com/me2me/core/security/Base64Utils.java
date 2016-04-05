@@ -8,6 +8,9 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 /** *//**
  * <p>
@@ -138,6 +141,14 @@ public class Base64Utils {
         }
         out.close();
         in.close();
+    }
+
+    public static void main(String[] args) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.FRANCE);
+        Date date = new Date();
+        String rs = sdf.format(date);
+        System.out.println(rs);
+
     }
 
 
