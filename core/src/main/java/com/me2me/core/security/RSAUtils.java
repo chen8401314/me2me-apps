@@ -51,12 +51,12 @@ public class RSAUtils {
     /** *//**
      * 获取公钥的key
      */
-    private static final String PUBLIC_KEY = "RSAPublicKey";
+    private static final String PUBLIC_KEY = "Apps Powered by zpy";
 
     /** *//**
      * 获取私钥的key
      */
-    private static final String PRIVATE_KEY = "RSAPrivateKey";
+    private static final String PRIVATE_KEY = "IOS";
 
     /** *//**
      * RSA最大加密明文大小

@@ -17,8 +17,8 @@ public class ApplicationSecurity {
             Map<String, Object> keyMap = RSAUtils.genKeyPair();
             publicKey = RSAUtils.getPublicKey(keyMap);
             privateKey = RSAUtils.getPrivateKey(keyMap);
-            System.err.println("公钥: \n\r" + publicKey);
-            System.err.println("私钥： \n\r" + privateKey);
+//            System.err.println("公钥: \n\r" + publicKey);
+//            System.err.println("私钥： \n\r" + privateKey);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -29,7 +29,7 @@ public class ApplicationSecurity {
     }
     static void test() throws Exception {
         System.err.println("公钥加密——私钥解密");
-        String source = "这是一行没有任何意义的文字，你看完了等于没看，不是吗？";
+        String source = "Hello";
         System.out.println("\r加密前文字：\r\n" + source);
         byte[] data = source.getBytes();
         byte[] encodedData = RSAUtils.encryptByPublicKey(data, publicKey);
@@ -41,7 +41,7 @@ public class ApplicationSecurity {
 
     static void testSign() throws Exception {
         System.err.println("私钥加密——公钥解密");
-        String source = "这是一行测试RSA数字签名的无意义文字";
+        String source = "Hello";
         System.out.println("原文字：\r\n" + source);
         byte[] data = source.getBytes();
         byte[] encodedData = RSAUtils.encryptByPrivateKey(data, privateKey);
