@@ -195,9 +195,9 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setId(content.getId());
         ContentTags contentTags = contentMybatisDao.getContentTags(content.getFeeling());
         contentDetailDto.setTid(contentTags.getId());
-        ContentDetailDto.ContentTop5FeelingElement contentTop5FeelingElement = ContentDetailDto.createElement();
         List<Map<String,String>> list  = contentMybatisDao.loadAllFeeling(content.getId(),5);
         for (Map map : list){
+            ContentDetailDto.ContentTop5FeelingElement contentTop5FeelingElement = ContentDetailDto.createElement();
             contentTop5FeelingElement.setTag(map.get("tag").toString());
             contentTop5FeelingElement.setTid(Long.parseLong(map.get("tag_id").toString()));
             contentTop5FeelingElement.setCid(Long.parseLong(map.get("cid").toString()));
