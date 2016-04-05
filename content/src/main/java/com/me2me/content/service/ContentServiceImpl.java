@@ -6,7 +6,6 @@ import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.*;
-import com.me2me.content.mapper.ContentMapper;
 import com.me2me.content.model.*;
 import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.dto.UserInfoDto;
@@ -251,8 +250,17 @@ public class ContentServiceImpl implements ContentService {
             contentTop5FeelingElement.setTag(map.get("tag").toString());
             contentTop5FeelingElement.setTid(Long.parseLong(map.get("tag_id").toString()));
             contentTop5FeelingElement.setCid(Long.parseLong(map.get("cid").toString()));
+            LikeDto like = new LikeDto();
+            like.setCid(contentTop5FeelingElement.getCid());
+            like.setUid(contentTop5FeelingElement.getTid());
+            like.setUid(content.getUid());
+            ContentUserLikes contentUserLike = contentMybatisDao.getContentUserLike(like);
+            if(contentUserLike == null) {
+                contentTop5FeelingElement.setIsLike(0);
+            }else{
+                contentTop5FeelingElement.setIsLike(1);
+            }
             contentTop5FeelingElement.setLikeCount(Integer.parseInt(map.get("like_count")== null? "0":map.get("like_count").toString()));
-            contentTop5FeelingElement.getIsLike();
             contentDetailDto.getTags().add(contentTop5FeelingElement);
         }
         return Response.success(contentDetailDto);
