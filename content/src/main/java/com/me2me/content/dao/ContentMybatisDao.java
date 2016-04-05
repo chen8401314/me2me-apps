@@ -83,6 +83,8 @@ public class ContentMybatisDao {
         List<ContentTags> list = contentTagsMapper.selectByExample(example);
         if(list == null ||list.size() ==0) {
             contentTagsMapper.insertSelective(contentTags);
+        }else {
+            contentTagsMapper.insertSelective(contentTags);
         }
     }
     public void createContentTagLikes(ContentTagLikes contentTagLikes ){

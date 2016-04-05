@@ -18,4 +18,6 @@ public class WriteTagDto {
     private long cid;
 
     private long tagId;
+
+    private long customerId;
 }

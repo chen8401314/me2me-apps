@@ -1,6 +1,6 @@
 package com.me2me.web.request;
 
-import com.me2me.common.web.BaseEntity;
+import com.me2me.common.web.Request;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -10,7 +10,7 @@ import lombok.Setter;
  * Date: 2016/3/24
  * Time :16:39
  */
-public class WriteTagRequest implements BaseEntity{
+public class WriteTagRequest extends Request{
 
     @Getter
     @Setter
@@ -18,7 +18,7 @@ public class WriteTagRequest implements BaseEntity{
 
     @Getter
     @Setter
-    private long uid;
+    private long customerId;
 
     @Getter
     @Setter

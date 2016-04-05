@@ -201,8 +201,11 @@ public class UserMybatisDao {
     public List<UserNotice> userNotice(UserNoticeDto userNoticeDto){
         UserNoticeExample example = new UserNoticeExample();
         UserNoticeExample.Criteria criteria = example.createCriteria();
-        criteria.andToUidEqualTo(userNoticeDto.getCustomerId());
+        criteria.andToUidEqualTo(userNoticeDto.getUid());
         example.setOrderByClause("create_time desc limit "+(userNoticeDto.getSinceId()-10)+", " + userNoticeDto.getSinceId());
         return  userNoticeMapper.selectByExample(example);
+    }
+    public void createUserNotice(UserNotice userNotice){
+        userNoticeMapper.insert(userNotice);
     }
 }

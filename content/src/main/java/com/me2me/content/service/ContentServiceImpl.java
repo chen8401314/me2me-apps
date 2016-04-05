@@ -10,6 +10,7 @@ import com.me2me.content.mapper.ContentMapper;
 import com.me2me.content.model.*;
 import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.dto.UserInfoDto;
+import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -162,6 +163,27 @@ public class ContentServiceImpl implements ContentService {
         contentTagLikes.setCid(writeTagDto.getCid());
         contentTagLikes.setTagId(contentTags.getId());
         contentMybatisDao.createContentTagLikes(contentTagLikes);
+        UserProfile userProfile = userMybatisDao.getUserProfileByUid(writeTagDto.getUid());
+        UserProfile customerProfile = userMybatisDao.getUserProfileByUid(writeTagDto.getCustomerId());
+        Content content = contentMybatisDao.getContentById(writeTagDto.getCid());
+        ContentImage contentImage = contentMybatisDao.getCoverImages(writeTagDto.getCid());
+        UserNotice userNotice = new UserNotice();
+        userNotice.setFromNickName(userProfile.getNickName());
+        userNotice.setTag(writeTagDto.getTag());
+        userNotice.setFromAvatar(userProfile.getAvatar());
+        userNotice.setFromUid(userProfile.getUid());
+        userNotice.setToNickName(customerProfile.getNickName());
+        userNotice.setNoticeType(Specification.UserNoticeType.TAG.index);
+        userNotice.setReadStatus(userNotice.getReadStatus());
+        if(contentImage != null){
+            userNotice.setCoverimage(contentImage.getImage());
+        }else{
+            userNotice.setSummary(content.getContent());
+        }
+        userNotice.setToUid(customerProfile.getUid());
+        userNotice.setLikeCount(0);
+        userNotice.setReadStatus(Specification.NoticeReadStatus.UNREAD.index);
+        userMybatisDao.createUserNotice(userNotice);
         return Response.success(ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.status,ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.message);
     }
 

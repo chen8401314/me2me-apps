@@ -284,7 +284,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response userNotice(UserNoticeDto userNoticeDto){
+    public Response getUserNotice(UserNoticeDto userNoticeDto){
         ShowUserNoticeDto showUserNoticeDto = new ShowUserNoticeDto();
         List<UserNotice> list = userMybatisDao.userNotice(userNoticeDto);
         for (UserNotice userNotice : list){

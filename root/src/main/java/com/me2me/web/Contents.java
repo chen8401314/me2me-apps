@@ -101,6 +101,7 @@ public class Contents {
         writeTagDto.setCid(request.getCid());
         writeTagDto.setTag(request.getTag());
         writeTagDto.setUid(request.getUid());
+        writeTagDto.setCustomerId(request.getCustomerId());
         return contentService.writeTag(writeTagDto);
     }
 

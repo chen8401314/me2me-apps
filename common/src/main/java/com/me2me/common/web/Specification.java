@@ -114,6 +114,37 @@ public interface Specification {
         }
     }
 
+    /**
+     * 提醒类型
+     */
+    public enum UserNoticeType{
+
+        TAG("贴标签",0),
+
+        LIKE("点赞",1);
+
+        public String name;
+        public int index;
+        UserNoticeType(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    public enum NoticeReadStatus{
+
+        UNREAD("未读",0),
+
+        RED("已读",1);
+
+        public String name;
+        public int index;
+        NoticeReadStatus(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
 
 
 

@@ -207,13 +207,13 @@ public class Users {
     @ResponseBody
     @RequestMapping(value = "/userNotice",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response userNotice(UserNoticeRequest request){
-        if(request.getSinceId() <= -1){
+        if(request.getSinceId() <= 10){
             request.setSinceId(10);
         }
         UserNoticeDto userNoticeDto = new UserNoticeDto();
-        userNoticeDto.setCustomerId(request.getCustomerId());
+        userNoticeDto.setUid(request.getUid());
         userNoticeDto.setSinceId(request.getSinceId());
-        return userService.userNotice(userNoticeDto);
+        return userService.getUserNotice(userNoticeDto);
     }
 
 }

@@ -14,10 +14,6 @@ public class UserNoticeRequest extends Request{
 
     @Getter
     @Setter
-    private long customerId;
-
-    @Getter
-    @Setter
     private int sinceId;
 
 
