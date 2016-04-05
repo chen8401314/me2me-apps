@@ -28,4 +28,9 @@ public class ContentDto implements BaseEntity {
     private int type;
 
     private long uid;
+
+    private long cid;
+
+    private Date createTime;
+
 }
