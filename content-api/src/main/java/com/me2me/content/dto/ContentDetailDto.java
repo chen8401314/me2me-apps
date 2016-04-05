@@ -20,33 +20,23 @@ public class ContentDetailDto implements BaseEntity {
 
     private long uid;
 
-    private long forwardCid;
+    private long tid;
 
     private String feeling;
+
+    private String avatar;
 
     private int type;
 
     private String nickName;
 
-    private String coverImage;
-
-    private String forwardTitle;
-
-    private String forwardUrl;
-
-    private int contentType;
-
-    private String content;
-
-    private String thumbnail;
-
     private int hotValue;
 
     private int likeCount;
 
-    private int authorization;
-
     private Date createTime;
+
+    private int isLike;
 
     private List<ContentTop5FeelingElement> tags = Lists.newArrayList();
 
@@ -63,15 +53,10 @@ public class ContentDetailDto implements BaseEntity {
 
         private long tid;
 
-        private int likesCounts;
+        private int likeCount;
 
-        private long uid;
+        private int isLike;
 
-        private String avatar;
-
-        private String nickName;
-
-        private String forwardTitle;
     }
 
 }
