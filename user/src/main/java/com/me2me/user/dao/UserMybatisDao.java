@@ -51,6 +51,9 @@ public class UserMybatisDao {
     @Autowired
     private UserNoticeMapper userNoticeMapper;
 
+    @Autowired
+    private UserTipsMapper userTipsMapper;
+
     /**
      * 保存用户注册信息
      * @param user
@@ -204,5 +207,12 @@ public class UserMybatisDao {
         criteria.andToUidEqualTo(userNoticeDto.getCustomerId());
         example.setOrderByClause("create_time desc limit "+(userNoticeDto.getSinceId()-10)+", " + userNoticeDto.getSinceId());
         return  userNoticeMapper.selectByExample(example);
+    }
+
+    public List<UserTips> getUserTips(long uid){
+        UserTipsExample example = new UserTipsExample();
+        UserTipsExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        return userTipsMapper.selectByExample(example);
     }
 }

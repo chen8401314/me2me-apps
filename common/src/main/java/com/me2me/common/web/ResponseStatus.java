@@ -61,6 +61,8 @@ public enum  ResponseStatus {
 
     GET_USER_NOTICE_SUCCESS("获取用户提醒成功","get user notice success",20051),
 
+    GET_USER_TIPS_SUCCESS("获取用户消息成功","get user tips success",20052),
+
 
 
 
