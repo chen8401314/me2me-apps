@@ -11,6 +11,8 @@ import lombok.Data;
 @Data
 public class UserNoticeDto implements BaseEntity {
 
-    private long uid;
+    private long customerId;
+
+    private int sinceId ;
 
 }

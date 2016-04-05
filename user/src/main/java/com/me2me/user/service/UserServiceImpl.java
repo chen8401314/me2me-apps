@@ -43,10 +43,10 @@ public class UserServiceImpl implements UserService {
     public Response signUp(UserSignUpDto userSignUpDto) {
         // 校验手机号码是否注册
         String mobile = userSignUpDto.getMobile();
-        if(userMybatisDao.getUserByUserName(mobile)!=null){
+       /* if(userMybatisDao.getUserByUserName(mobile)!=null){
             // 该用户已经注册过
             return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
-        }
+        }*/
         SignUpSuccessDto signUpSuccessDto = new SignUpSuccessDto();
         User user = new User();
         String salt = SecurityUtils.getMask();
@@ -286,6 +286,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public Response userNotice(UserNoticeDto userNoticeDto){
         ShowUserNoticeDto showUserNoticeDto = new ShowUserNoticeDto();
+        List<UserNotice> list = userMybatisDao.userNotice(userNoticeDto);
+        for (UserNotice userNotice : list){
+            ShowUserNoticeDto.UserNoticeElement userNoticeElement = new ShowUserNoticeDto.UserNoticeElement();
+            userNoticeElement.setId(userNotice.getId());
+            userNoticeElement.setTag(userNotice.getTag());
+            userNoticeElement.setCoverImage(userNotice.getCoverimage());
+            userNoticeElement.setFromAvatar(userNotice.getFromAvatar());
+            userNoticeElement.setNoticeType(userNotice.getNoticeType());
+            userNoticeElement.setFromNickName(userNotice.getFromNickName());
+            userNoticeElement.setFromUid(userNotice.getFromUid());
+            userNoticeElement.setReadStatus(userNotice.getReadStatus());
+            userNoticeElement.setToNickName(userNotice.getToNickName());
+            userNoticeElement.setCreateTime(userNotice.getCreateTime());
+            userNoticeElement.setLikeCount(userNotice.getLikeCount());
+            userNoticeElement.setSummary(userNotice.getSummary());
+            userNoticeElement.setToUid(userNotice.getToUid());
+            showUserNoticeDto.getUserNoticeList().add(userNoticeElement);
+        }
         return Response.success(ResponseStatus.GET_USER_NOTICE_SUCCESS.status,ResponseStatus.GET_USER_NOTICE_SUCCESS.message,showUserNoticeDto);
     }
 

@@ -4,6 +4,7 @@ import com.me2me.common.web.Specification;
 import com.me2me.user.dto.BasicDataDto;
 import com.me2me.user.dto.ModifyUserProfileDto;
 import com.me2me.user.dto.PasteTagDto;
+import com.me2me.user.dto.UserNoticeDto;
 import com.me2me.user.mapper.*;
 import com.me2me.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,6 +47,9 @@ public class UserMybatisDao {
 
     @Autowired
     private UserTagsDetailsMapper userTagsDetailsMapper;
+
+    @Autowired
+    private UserNoticeMapper userNoticeMapper;
 
     /**
      * 保存用户注册信息
@@ -194,7 +198,11 @@ public class UserMybatisDao {
         userTagsRecordMapper.insert(record);
     }
 
-    public void getUserNotice(Long fromUserId,Long toUserId){
-
+    public List<UserNotice> userNotice(UserNoticeDto userNoticeDto){
+        UserNoticeExample example = new UserNoticeExample();
+        UserNoticeExample.Criteria criteria = example.createCriteria();
+        criteria.andToUidEqualTo(userNoticeDto.getCustomerId());
+        example.setOrderByClause("create_time desc limit "+(userNoticeDto.getSinceId()-10)+", " + userNoticeDto.getSinceId());
+        return  userNoticeMapper.selectByExample(example);
     }
 }

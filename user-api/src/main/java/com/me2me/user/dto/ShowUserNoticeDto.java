@@ -15,31 +15,37 @@ import java.util.List;
 @Data
 public class ShowUserNoticeDto implements BaseEntity {
 
-    private long id;
+    private List<UserNoticeElement> userNoticeList = Lists.newArrayList();
 
-    private int noticeType;
+    @Data
+    public static class UserNoticeElement implements BaseEntity {
 
-    private long fromUid;
+        private long id;
 
-    private long toUid;
+        private int noticeType;
 
-    private String fromNickName;
+        private long fromUid;
 
-    private String toNickName;
+        private long toUid;
 
-    private String tag;
+        private String fromNickName;
 
-    private String coverImage;
+        private String toNickName;
 
-    private String summary;
+        private String tag;
 
-    private int likeCount;
+        private String coverImage;
 
-    private String fromAvatar;
+        private String summary;
 
-    private int readStatus;
+        private int likeCount;
 
-    private Date createTime;
+        private String fromAvatar;
+
+        private int readStatus;
+
+        private Date createTime;
+    }
 
 
 
