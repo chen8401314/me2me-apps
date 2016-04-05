@@ -122,6 +122,8 @@ public class ContentServiceImpl implements ContentService {
                 contentMybatisDao.createContentImage(contentImage);
             }
         }
+        contentDto.setCid(content.getId());
+        contentDto.setCreateTime(content.getCreateTime());
         return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,contentDto);
 }
 
