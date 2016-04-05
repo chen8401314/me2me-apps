@@ -6,7 +6,6 @@ import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.*;
-import com.me2me.content.mapper.ContentMapper;
 import com.me2me.content.model.*;
 import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.dto.UserInfoDto;
@@ -226,7 +225,6 @@ public class ContentServiceImpl implements ContentService {
                 contentDetailDto.setCoverImage(Constant.QINIU_DOMAIN  + "/" + contentImage.getImage());
             }
         }
-        contentDetailDto.setIsLike(0);
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(content.getUid());
         contentDetailDto.setNickName(userProfile.getNickName());
         contentDetailDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
@@ -236,14 +234,33 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setId(content.getId());
         ContentTags contentTags = contentMybatisDao.getContentTags(content.getFeeling());
         contentDetailDto.setTid(contentTags.getId());
+        LikeDto likeDto = new LikeDto();
+        likeDto.setTid(contentTags.getId());
+        likeDto.setUid(content.getUid());
+        likeDto.setCid(content.getId());
+        ContentUserLikes contentUserLikes = contentMybatisDao.getContentUserLike(likeDto);
+        if(contentUserLikes == null) {
+            contentDetailDto.setIsLike(0);
+        }else{
+            contentDetailDto.setIsLike(1);
+        }
         List<Map<String,String>> list  = contentMybatisDao.loadAllFeeling(content.getId(),5);
         for (Map map : list){
             ContentDetailDto.ContentTop5FeelingElement contentTop5FeelingElement = ContentDetailDto.createElement();
             contentTop5FeelingElement.setTag(map.get("tag").toString());
             contentTop5FeelingElement.setTid(Long.parseLong(map.get("tag_id").toString()));
             contentTop5FeelingElement.setCid(Long.parseLong(map.get("cid").toString()));
+            LikeDto like = new LikeDto();
+            like.setCid(contentTop5FeelingElement.getCid());
+            like.setUid(contentTop5FeelingElement.getTid());
+            like.setUid(content.getUid());
+            ContentUserLikes contentUserLike = contentMybatisDao.getContentUserLike(like);
+            if(contentUserLike == null) {
+                contentTop5FeelingElement.setIsLike(0);
+            }else{
+                contentTop5FeelingElement.setIsLike(1);
+            }
             contentTop5FeelingElement.setLikeCount(Integer.parseInt(map.get("like_count")== null? "0":map.get("like_count").toString()));
-            contentTop5FeelingElement.getIsLike();
             contentDetailDto.getTags().add(contentTop5FeelingElement);
         }
         return Response.success(contentDetailDto);
