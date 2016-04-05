@@ -60,7 +60,6 @@ public class UserServiceImpl implements UserService {
         UserProfile userProfile = new UserProfile();
         userProfile.setUid(user.getUid());
         userProfile.setAvatar(Constant.DEFAULT_AVATAR);
-        userProfile.setGender(userSignUpDto.getGender());
         userProfile.setMobile(userSignUpDto.getMobile());
         userProfile.setNickName(userSignUpDto.getNickName());
         userMybatisDao.createUserProfile(userProfile);
@@ -78,6 +77,7 @@ public class UserServiceImpl implements UserService {
         userToken.setToken(signUpSuccessDto.getToken());
         userMybatisDao.createUserToken(userToken);
         signUpSuccessDto.setToken(userToken.getToken());
+        signUpSuccessDto.setYearId(userProfile.getYearsId());
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
 

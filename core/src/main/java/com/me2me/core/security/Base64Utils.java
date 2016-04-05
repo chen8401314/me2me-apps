@@ -1,5 +1,5 @@
 package com.me2me.core.security;
-import com.sun.org.apache.xml.internal.security.utils.Base64;
+import org.apache.shiro.codec.Base64;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -121,6 +121,7 @@ public class Base64Utils {
      * @param bytes 二进制数据
      * @param filePath 文件生成目录
      */
+
     public static void byteArrayToFile(byte[] bytes, String filePath) throws Exception {
         InputStream in = new ByteArrayInputStream(bytes);
         File destFile = new File(filePath);
