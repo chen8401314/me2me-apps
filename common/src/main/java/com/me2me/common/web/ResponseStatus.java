@@ -63,6 +63,7 @@ public enum  ResponseStatus {
 
     GET_USER_TIPS_SUCCESS("获取用户消息成功","get user tips success",20052),
 
+    CLEAN_USER_TIPS_SUCCESS("清空用户消息成功","clean user tips success",20052),
 
 
 

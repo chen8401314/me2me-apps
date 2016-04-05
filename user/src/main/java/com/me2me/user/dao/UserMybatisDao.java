@@ -215,4 +215,8 @@ public class UserMybatisDao {
         criteria.andUidEqualTo(uid);
         return userTipsMapper.selectByExample(example);
     }
+
+    public void modifyUserTips(UserTips userTips){
+        userTipsMapper.updateByPrimaryKeySelective(userTips);
+    }
 }

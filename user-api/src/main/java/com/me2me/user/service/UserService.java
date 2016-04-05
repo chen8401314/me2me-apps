@@ -95,5 +95,12 @@ public interface UserService {
      */
     Response getUserTips(long uid);
 
+    /**
+     * 清空userTips
+     * @param uid
+     * @return
+     */
+    public Response cleanUserTips(long uid);
+
 
 }
