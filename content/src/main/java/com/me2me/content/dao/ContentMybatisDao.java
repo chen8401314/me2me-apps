@@ -64,6 +64,7 @@ public class ContentMybatisDao {
         ContentUserLikesExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(likeDto.getCid());
         criteria.andUidEqualTo(likeDto.getUid());
+        criteria.andTagIdEqualTo(likeDto.getTid());
         List<ContentUserLikes> list = contentUserLikesMapper.selectByExample(example);
         return list.size() > 0 ? list.get(0) : null;
     }

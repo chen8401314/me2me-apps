@@ -226,7 +226,6 @@ public class ContentServiceImpl implements ContentService {
                 contentDetailDto.setCoverImage(Constant.QINIU_DOMAIN  + "/" + contentImage.getImage());
             }
         }
-        contentDetailDto.setIsLike(0);
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(content.getUid());
         contentDetailDto.setNickName(userProfile.getNickName());
         contentDetailDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
@@ -236,6 +235,16 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setId(content.getId());
         ContentTags contentTags = contentMybatisDao.getContentTags(content.getFeeling());
         contentDetailDto.setTid(contentTags.getId());
+        LikeDto likeDto = new LikeDto();
+        likeDto.setTid(contentTags.getId());
+        likeDto.setUid(content.getUid());
+        likeDto.setCid(content.getId());
+        ContentUserLikes contentUserLikes = contentMybatisDao.getContentUserLike(likeDto);
+        if(contentUserLikes == null) {
+            contentDetailDto.setIsLike(0);
+        }else{
+            contentDetailDto.setIsLike(1);
+        }
         List<Map<String,String>> list  = contentMybatisDao.loadAllFeeling(content.getId(),5);
         for (Map map : list){
             ContentDetailDto.ContentTop5FeelingElement contentTop5FeelingElement = ContentDetailDto.createElement();
