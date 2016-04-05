@@ -145,7 +145,18 @@ public interface Specification {
         }
     }
 
+    public enum UserTipsType{
 
+        lIKE("点赞",1);
+
+
+        public String name;
+        public int index;
+        UserTipsType(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
 
 
 }

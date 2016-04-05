@@ -12,6 +12,7 @@ import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.dto.UserInfoDto;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
+import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -184,6 +185,17 @@ public class ContentServiceImpl implements ContentService {
         userNotice.setLikeCount(0);
         userNotice.setReadStatus(Specification.NoticeReadStatus.UNREAD.index);
         userMybatisDao.createUserNotice(userNotice);
+        UserTips userTips = new UserTips();
+        userTips.setUid(writeTagDto.getCustomerId());
+        userTips.setType(Specification.UserTipsType.lIKE.index);
+        UserTips tips  = userMybatisDao.getUserTips(userTips);
+        if(tips == null){
+            userTips.setCount(1);
+            userMybatisDao.createUserTips(userTips);
+        }else{
+            userTips.setCount(tips.getCount()+1);
+            userMybatisDao.modifyUserTips(userTips);
+        }
         return Response.success(ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.status,ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.message);
     }
 

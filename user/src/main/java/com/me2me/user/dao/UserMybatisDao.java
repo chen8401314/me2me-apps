@@ -222,4 +222,17 @@ public class UserMybatisDao {
     public void modifyUserTips(UserTips userTips){
         userTipsMapper.updateByPrimaryKeySelective(userTips);
     }
+
+    public UserTips getUserTips(UserTips userTips){
+        UserTipsExample example = new UserTipsExample();
+        UserTipsExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(userTips.getUid());
+        criteria.andTypeEqualTo(userTips.getType());
+        List<UserTips>  list = userTipsMapper.selectByExample(example);
+        return  (list != null && list.size() >0) ? list.get(0) : null;
+    }
+
+    public void createUserTips(UserTips userTips){
+        userTipsMapper.insert(userTips);
+    }
 }
