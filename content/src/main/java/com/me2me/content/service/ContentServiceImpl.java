@@ -109,6 +109,7 @@ public class ContentServiceImpl implements ContentService {
         }
         content.setContentType(contentDto.getContentType());
         contentMybatisDao.createContent(content);
+        Content c =contentMybatisDao.getContentById(content.getId());
         if(!StringUtils.isEmpty(contentDto.getImageUrls())){
             String[] images = contentDto.getImageUrls().split(";");
             // 保存用户图片集合
@@ -123,7 +124,7 @@ public class ContentServiceImpl implements ContentService {
             }
         }
         contentDto.setCid(content.getId());
-        contentDto.setCreateTime(content.getCreateTime());
+        contentDto.setCreateTime(c.getCreateTime());
         return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,contentDto);
 }
 
