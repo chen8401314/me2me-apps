@@ -88,4 +88,19 @@ public interface UserService {
     Response getUserNotice(UserNoticeDto userNoticeDto);
 
 
+    /**
+     * 获取用户消息提醒-数量
+     * @param uid
+     * @return
+     */
+    Response getUserTips(long uid);
+
+    /**
+     * 清空userTips
+     * @param uid
+     * @return
+     */
+    public Response cleanUserTips(long uid);
+
+
 }

@@ -307,4 +307,24 @@ public class UserServiceImpl implements UserService {
         return Response.success(ResponseStatus.GET_USER_NOTICE_SUCCESS.status,ResponseStatus.GET_USER_NOTICE_SUCCESS.message,showUserNoticeDto);
     }
 
+    @Override
+    public Response getUserTips(long uid) {
+        List<UserTips> list = userMybatisDao.getUserTips(uid);
+        ShowUserTipsDto showUserTipsDto = new ShowUserTipsDto();
+        showUserTipsDto.setTips(list);
+        return Response.success(ResponseStatus.GET_USER_TIPS_SUCCESS.status,ResponseStatus.GET_USER_TIPS_SUCCESS.message,showUserTipsDto);
+    }
+
+    @Override
+    public Response cleanUserTips(long uid) {
+        List<UserTips> list = userMybatisDao.getUserTips(uid);
+        ShowUserTipsDto showUserTipsDto = new ShowUserTipsDto();
+        showUserTipsDto.setTips(list);
+        for(UserTips userTips : list){
+            userTips.setCount(0);
+            userMybatisDao.modifyUserTips(userTips);
+        }
+        return Response.success(ResponseStatus.CLEAN_USER_TIPS_SUCCESS.status,ResponseStatus.CLEAN_USER_TIPS_SUCCESS.message);
+    }
+
 }

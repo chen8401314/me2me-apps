@@ -51,6 +51,9 @@ public class UserMybatisDao {
     @Autowired
     private UserNoticeMapper userNoticeMapper;
 
+    @Autowired
+    private UserTipsMapper userTipsMapper;
+
     /**
      * 保存用户注册信息
      * @param user
@@ -207,5 +210,16 @@ public class UserMybatisDao {
     }
     public void createUserNotice(UserNotice userNotice){
         userNoticeMapper.insert(userNotice);
+    }
+
+    public List<UserTips> getUserTips(long uid){
+        UserTipsExample example = new UserTipsExample();
+        UserTipsExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        return userTipsMapper.selectByExample(example);
+    }
+
+    public void modifyUserTips(UserTips userTips){
+        userTipsMapper.updateByPrimaryKeySelective(userTips);
     }
 }

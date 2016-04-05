@@ -216,4 +216,26 @@ public class Users {
         return userService.getUserNotice(userNoticeDto);
     }
 
+    /**
+     * 轮寻方式获取用户消息
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/userTips",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response userTips(ShowUserTipsRequest request){
+        return userService.getUserTips(request.getUid());
+    }
+
+    /**
+     * 轮寻方式获取用户消息
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/cleanUserTips",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response cleanUserTips(ShowUserTipsRequest request){
+        return userService.cleanUserTips(request.getUid());
+    }
+
 }
