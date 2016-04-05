@@ -185,6 +185,13 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setFeeling(content.getFeeling());
         contentDetailDto.setType(content.getType());
         contentDetailDto.setUid(content.getUid());
+        contentDetailDto.setContent(content.getContent());
+        List<ContentImage> contentImageList = contentMybatisDao.getContentImages(content.getId());
+        for (ContentImage contentImage : contentImageList){
+            if(contentImage.getCover() == 1){
+                contentDetailDto.setCoverImage(Constant.QINIU_DOMAIN  + "/" + contentImage.getImage());
+            }
+        }
         contentDetailDto.setIsLike(0);
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(content.getUid());
         contentDetailDto.setNickName(userProfile.getNickName());

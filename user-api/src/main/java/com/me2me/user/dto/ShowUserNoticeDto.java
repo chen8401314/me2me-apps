@@ -15,53 +15,32 @@ import java.util.List;
 @Data
 public class ShowUserNoticeDto implements BaseEntity {
 
-    private List<UserNoticeElement> results = Lists.newArrayList();
+    private long id;
+
+    private int noticeType;
+
+    private long fromUid;
+
+    private long toUid;
+
+    private String fromNickName;
+
+    private String toNickName;
+
+    private String tag;
+
+    private String coverImage;
+
+    private String summary;
+
+    private int likeCount;
+
+    private String fromAvatar;
+
+    private int readStatus;
+
+    private Date createTime;
 
 
-    public UserNoticeElement createUserNoticeElement(){
-        return new UserNoticeElement();
-    }
-
-    @Data
-    private class UserNoticeElement implements BaseEntity{
-
-        /**
-         * 点赞人或贴标人的UID
-         */
-        private String uid;
-
-        /**
-         * 点赞人或贴标人的头像
-         */
-        private String avatar;
-
-        /**
-         * 标签
-         */
-        private String feelTag;
-
-        /**
-         * 点赞人或贴标人的昵称
-         */
-        private String nickName;
-
-        /**
-         * 时间
-         */
-        private Date time;
-
-        /**
-         * 内容图片
-         */
-        private String blockImage;
-
-        /**
-         * 内容文本
-         */
-        private String blockText;
-
-
-
-    }
 
 }

@@ -284,7 +284,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response userNotice(UserNoticeDto userNoticeDto) {
+    public Response userNotice(UserNoticeDto userNoticeDto){
         ShowUserNoticeDto showUserNoticeDto = new ShowUserNoticeDto();
         return Response.success(ResponseStatus.GET_USER_NOTICE_SUCCESS.status,ResponseStatus.GET_USER_NOTICE_SUCCESS.message,showUserNoticeDto);
     }

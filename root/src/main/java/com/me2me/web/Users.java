@@ -199,4 +199,15 @@ public class Users {
         return userService.writeTag(pasteTagDto);
     }
 
+    /**
+     * 用户消息列表
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/userNotice",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response userNotice(UserNoticeRequest request){
+      return null;
+    }
+
 }
