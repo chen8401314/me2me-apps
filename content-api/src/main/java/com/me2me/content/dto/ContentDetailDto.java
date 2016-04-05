@@ -61,6 +61,8 @@ public class ContentDetailDto implements BaseEntity {
 
         private int isLike;
 
+        private long uid;
+
     }
 
 }

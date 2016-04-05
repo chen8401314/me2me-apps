@@ -139,6 +139,42 @@ public class ContentServiceImpl implements ContentService {
             contentUserLikes.setCid(likeDto.getCid());
             contentUserLikes.setTagId(likeDto.getTid());
             contentMybatisDao.createContentUserLikes(contentUserLikes);
+            //记录点赞流水
+            UserProfile userProfile = userMybatisDao.getUserProfileByUid(likeDto.getUid());
+            UserProfile customerProfile = userMybatisDao.getUserProfileByUid(likeDto.getCustomerId());
+            Content content = contentMybatisDao.getContentById(likeDto.getCid());
+            ContentImage contentImage = contentMybatisDao.getCoverImages(likeDto.getCid());
+            ContentTags contentTags = contentMybatisDao.getContentTagsById(likeDto.getTid());
+            UserNotice userNotice = new UserNotice();
+            userNotice.setFromNickName(userProfile.getNickName());
+            userNotice.setTag(contentTags.getTag());
+            userNotice.setFromAvatar(userProfile.getAvatar());
+            userNotice.setFromUid(userProfile.getUid());
+            userNotice.setToNickName(customerProfile.getNickName());
+            userNotice.setNoticeType(Specification.UserNoticeType.TAG.index);
+            userNotice.setReadStatus(userNotice.getReadStatus());
+            if(contentImage != null){
+                userNotice.setCoverimage(contentImage.getImage());
+            }else{
+                userNotice.setSummary(content.getContent());
+            }
+            userNotice.setToUid(customerProfile.getUid());
+            //// TODO: 2016/4/5 点赞数量
+            userNotice.setLikeCount(0);
+            userNotice.setReadStatus(Specification.NoticeReadStatus.UNREAD.index);
+            userMybatisDao.createUserNotice(userNotice);
+            UserTips userTips = new UserTips();
+            userTips.setUid(likeDto.getCustomerId());
+            userTips.setType(Specification.UserTipsType.lIKE.index);
+            UserTips tips  = userMybatisDao.getUserTips(userTips);
+            if(tips == null){
+                userTips.setCount(1);
+                userMybatisDao.createUserTips(userTips);
+            }else{
+                userTips.setCount(tips.getCount()+1);
+                userMybatisDao.modifyUserTips(userTips);
+            }
+            //记录点赞流水 end
         }else{
             addCount = -1;
             contentMybatisDao.deleteUserLikes(c.getId());
@@ -261,6 +297,7 @@ public class ContentServiceImpl implements ContentService {
                 contentTop5FeelingElement.setIsLike(1);
             }
             contentTop5FeelingElement.setLikeCount(Integer.parseInt(map.get("like_count")== null? "0":map.get("like_count").toString()));
+            contentTop5FeelingElement.setUid(Long.parseLong(map.get("uid").toString()));
             contentDetailDto.getTags().add(contentTop5FeelingElement);
         }
         return Response.success(contentDetailDto);
