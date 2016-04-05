@@ -121,6 +121,7 @@ public class Base64Utils {
      * @param bytes 二进制数据
      * @param filePath 文件生成目录
      */
+
     public static void byteArrayToFile(byte[] bytes, String filePath) throws Exception {
         InputStream in = new ByteArrayInputStream(bytes);
         File destFile = new File(filePath);
