@@ -102,5 +102,12 @@ public interface UserService {
      */
     public Response cleanUserTips(long uid);
 
+    /**
+     * 用户举报接口
+     * @param userReportDto
+     * @return
+     */
+    public Response userReport(UserReportDto userReportDto);
+
 
 }

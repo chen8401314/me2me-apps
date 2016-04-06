@@ -340,6 +340,17 @@ public class UserServiceImpl implements UserService {
         return Response.success(ResponseStatus.CLEAN_USER_TIPS_SUCCESS.status,ResponseStatus.CLEAN_USER_TIPS_SUCCESS.message);
     }
 
+    @Override
+    public Response userReport(UserReportDto userReportDto) {
+        UserReport userReport = new UserReport();
+        userReport.setCid(userReportDto.getCid());
+        userReport.setUid(userReportDto.getUid());
+        userReport.setReason(userReportDto.getReason());
+        userReport.setAttachment(userReportDto.getAttachment());
+        userMybatisDao.createUserReport(userReport);
+        return Response.success(ResponseStatus.USER_CREATE_REPORT_SUCCESS.status,ResponseStatus.USER_CREATE_REPORT_SUCCESS.message);
+    }
+
     /**
      * 是否发送过验证码
      * @return
