@@ -129,7 +129,17 @@ public class UserServiceImpl implements UserService {
             }else{
                 Response.failure(ResponseStatus.USER_VERIFY_CHECK_ERROR.status,ResponseStatus.USER_VERIFY_CHECK_ERROR.message);
             }
+        }else if(verifyDto.getAction() == Specification.VerifyAction.FIND_MY_ENCRYPT.index){
+            // 找回密码
+            // 判断用户是否已经注册过该手机
+            User user = userMybatisDao.getUserByUserName(verifyDto.getMobile());
+            if(user!=null){
+                applicationEventBus.post(new VerifyEvent(verifyDto.getMobile(),null));
+                return Response.success(ResponseStatus.USER_VERIFY_GET_SUCCESS.status,ResponseStatus.USER_VERIFY_GET_SUCCESS.message);
+            }else{
+                Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
             }
+        }
         return Response.failure(ResponseStatus.USER_VERIFY_ERROR.status,ResponseStatus.USER_VERIFY_ERROR.message);
     }
 

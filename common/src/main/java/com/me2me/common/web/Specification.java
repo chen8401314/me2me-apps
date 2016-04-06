@@ -50,7 +50,9 @@ public interface Specification {
 
         GET("获取验证码",0),
 
-        CHECK("验证验证码",1);
+        CHECK("验证验证码",1),
+
+        FIND_MY_ENCRYPT("找回验证码",2);
 
         public String name;
         public int index;
