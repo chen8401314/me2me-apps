@@ -419,7 +419,7 @@ public class ContentServiceImpl implements ContentService {
 
     public Response getUserData(long uid){
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
-        List<Content> list = contentMybatisDao.myPublish(uid,Integer.MAX_VALUE);
+        List<Content> list = contentMybatisDao.myPublish(uid,5);
         UserInfoDto userInfoDto = new UserInfoDto();
         userInfoDto.getUser().setNickName(userProfile.getNickName());
         userInfoDto.getUser().setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
