@@ -361,7 +361,7 @@ public class ContentServiceImpl implements ContentService {
             }else{
                 contentTop5FeelingElement.setIsLike(1);
             }
-            int count = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTop5FeelingElement.getCid());
+            int count = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTop5FeelingElement.getTid());
             contentTop5FeelingElement.setLikeCount(count);
             contentTop5FeelingElement.setUid(Long.parseLong(map.get("uid").toString()));
             contentDetailDto.getTags().add(contentTop5FeelingElement);
