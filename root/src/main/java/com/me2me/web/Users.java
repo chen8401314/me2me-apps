@@ -238,4 +238,15 @@ public class Users {
         return userService.cleanUserTips(request.getUid());
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/userReport",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response userReport(UserReportRequest request){
+        UserReportDto userReportDto = new UserReportDto();
+        userReportDto.setUid(request.getUid());
+        userReportDto.setCid(request.getCid());
+        userReportDto.setReason(request.getReason());
+        userReportDto.setAttachment(request.getAttachment());
+        return userService.userReport(userReportDto);
+    }
+
 }

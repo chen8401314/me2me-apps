@@ -54,6 +54,9 @@ public class UserMybatisDao {
     @Autowired
     private UserTipsMapper userTipsMapper;
 
+
+    @Autowired
+    private UserReportMapper userReportMapper;
     /**
      * 保存用户注册信息
      * @param user
@@ -233,6 +236,10 @@ public class UserMybatisDao {
     }
 
     public void createUserTips(UserTips userTips){
-        userTipsMapper.insert(userTips);
+        userTipsMapper.insertSelective(userTips);
+    }
+
+    public void createUserReport(UserReport userReport){
+        userReportMapper.insertSelective(userReport);
     }
 }
