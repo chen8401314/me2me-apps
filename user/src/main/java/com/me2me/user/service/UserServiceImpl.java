@@ -299,8 +299,8 @@ public class UserServiceImpl implements UserService {
             ShowUserNoticeDto.UserNoticeElement userNoticeElement = new ShowUserNoticeDto.UserNoticeElement();
             userNoticeElement.setId(userNotice.getId());
             userNoticeElement.setTag(userNotice.getTag());
-            userNoticeElement.setCoverImage(userNotice.getCoverimage());
-            userNoticeElement.setFromAvatar(userNotice.getFromAvatar());
+            userNoticeElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + userNotice.getCoverimage());
+            userNoticeElement.setFromAvatar(Constant.QINIU_DOMAIN + "/" + userNotice.getFromAvatar());
             userNoticeElement.setNoticeType(userNotice.getNoticeType());
             userNoticeElement.setFromNickName(userNotice.getFromNickName());
             userNoticeElement.setFromUid(userNotice.getFromUid());
