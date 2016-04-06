@@ -304,7 +304,7 @@ public class UserServiceImpl implements UserService {
             ShowUserNoticeDto.UserNoticeElement userNoticeElement = new ShowUserNoticeDto.UserNoticeElement();
             userNoticeElement.setId(userNotice.getId());
             userNoticeElement.setTag(userNotice.getTag());
-            userNoticeElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + userNotice.getCoverimage());
+            userNoticeElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + userNotice.getCoverImage());
             userNoticeElement.setFromAvatar(Constant.QINIU_DOMAIN + "/" + userNotice.getFromAvatar());
             userNoticeElement.setNoticeType(userNotice.getNoticeType());
             userNoticeElement.setFromNickName(userNotice.getFromNickName());
@@ -315,6 +315,7 @@ public class UserServiceImpl implements UserService {
             userNoticeElement.setLikeCount(userNotice.getLikeCount());
             userNoticeElement.setSummary(userNotice.getSummary());
             userNoticeElement.setToUid(userNotice.getToUid());
+            userNoticeElement.setCid(userNotice.getCid());
             showUserNoticeDto.getUserNoticeList().add(userNoticeElement);
         }
         return Response.success(ResponseStatus.GET_USER_NOTICE_SUCCESS.status,ResponseStatus.GET_USER_NOTICE_SUCCESS.message,showUserNoticeDto);
