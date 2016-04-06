@@ -42,6 +42,11 @@ public class ContentDetailDto implements BaseEntity {
 
     private String coverImage;
 
+    private String title;
+
+    private int contentType;
+
+
     private List<ContentTop5FeelingElement> tags = Lists.newArrayList();
 
     public static ContentTop5FeelingElement createElement(){

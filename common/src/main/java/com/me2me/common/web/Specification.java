@@ -149,12 +149,27 @@ public interface Specification {
 
     public enum UserTipsType{
 
-        lIKE("点赞",1);
+        LIKE("点赞",1);
 
 
         public String name;
         public int index;
         UserTipsType(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    public enum CoverImageType{
+
+        CONTENT("内容图片",0),
+
+        COVER("封面图片",1);
+
+
+        public String name;
+        public int index;
+        CoverImageType(String name,int index){
             this.name = name;
             this.index = index;
         }
