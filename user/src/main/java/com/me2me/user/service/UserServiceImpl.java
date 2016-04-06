@@ -76,6 +76,10 @@ public class UserServiceImpl implements UserService {
         userToken.setToken(signUpSuccessDto.getToken());
         userMybatisDao.createUserToken(userToken);
         signUpSuccessDto.setToken(userToken.getToken());
+        // 获取默认值给前端
+        UserProfile up = userMybatisDao.getUserProfileByUid(user.getUid());
+        signUpSuccessDto.setGender(up.getGender());
+        signUpSuccessDto.setYearId(up.getYearsId());
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
 
