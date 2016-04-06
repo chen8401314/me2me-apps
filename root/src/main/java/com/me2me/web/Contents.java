@@ -71,7 +71,14 @@ public class Contents {
         contentDto.setForwardCid(request.getForwardCid());
         contentDto.setImageUrls(request.getImageUrls());
         contentDto.setType(request.getType());
-        return contentService.publish(contentDto);
+        contentDto.setTitle(request.getTitle());
+        if(contentDto.getType()!=2) {
+            // 用户UGC入口
+            return contentService.publish(contentDto);
+        }else{
+            // 小编发布入口
+            return contentService.editorPublish(contentDto);
+        }
     }
 
     /**

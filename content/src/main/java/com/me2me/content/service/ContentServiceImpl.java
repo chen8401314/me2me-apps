@@ -107,12 +107,12 @@ public class ContentServiceImpl implements ContentService {
             coverImage = images[0] ;
         }
         content.setType(contentDto.getType());
-        if(content.getType()== Specification.ArticleType.ORIGIN.index){
+        if(content.getType() == Specification.ArticleType.ORIGIN.index){
             // 原生文章
-        }else if(content.getType()== Specification.ArticleType.FORWARD.index){
+        }else if(content.getType() == Specification.ArticleType.FORWARD.index){
             // 转载文章
             long forwardCid = contentDto.getForwardCid();
-            // // TODO: 2016/3/25 添加转载
+            // TODO: 2016/3/25 添加转载
             content.setForwardUrl("");
             content.setForwardTitle("");
         }
@@ -148,7 +148,6 @@ public class ContentServiceImpl implements ContentService {
         contentUserLikesCount.setTid(contentTags.getId());
         contentUserLikesCount.setLikecount(0);
         contentMybatisDao.addContentUserLikesCount(contentUserLikesCount);
-
         return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
 }
 
@@ -444,6 +443,39 @@ public class ContentServiceImpl implements ContentService {
 
         }
         return Response.success(userInfoDto);
+    }
+
+    @Override
+    public Response editorPublish(ContentDto contentDto) {
+        CreateContentSuccessDto createContentSuccessDto = new CreateContentSuccessDto();
+        Content content = new Content();
+        content.setUid(contentDto.getUid());
+        content.setContent(contentDto.getContent());
+        if(!StringUtils.isEmpty(contentDto.getFeeling()) && contentDto.getFeeling().contains(";")){
+            content.setFeeling(contentDto.getFeeling().split(";")[0]);
+            String[] tags = contentDto.getFeeling().split(";");
+            for(String t : tags) {
+                ContentTags contentTags = new ContentTags();
+                contentTags.setTag(t);
+                contentMybatisDao.createTag(contentTags);
+            }
+        }
+        content.setConverImage(contentDto.getImageUrls());
+        content.setTitle(contentDto.getTitle());
+        content.setType(contentDto.getType());
+        content.setContentType(contentDto.getContentType());
+        contentMybatisDao.createContent(content);
+        Content c = contentMybatisDao.getContentById(content.getId());
+        createContentSuccessDto.setContent(c.getContent());
+        createContentSuccessDto.setCreateTime(c.getCreateTime());
+        createContentSuccessDto.setUid(c.getUid());
+        createContentSuccessDto.setId(c.getId());
+        createContentSuccessDto.setFeeling(c.getFeeling());
+        createContentSuccessDto.setType(c.getType());
+        createContentSuccessDto.setContentType(c.getContentType());
+        createContentSuccessDto.setForwardCid(c.getForwardCid());
+        createContentSuccessDto.setCoverImage(c.getConverImage());
+        return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
     }
 
 
