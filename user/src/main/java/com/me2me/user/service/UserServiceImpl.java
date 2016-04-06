@@ -104,6 +104,7 @@ public class UserServiceImpl implements UserService {
                 loginSuccessDto.setUserNo("");
                 loginSuccessDto.setAvatar(userProfile.getAvatar());
                 loginSuccessDto.setToken(userToken.getToken());
+                loginSuccessDto.setYearId(userProfile.getYearsId());
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status,ResponseStatus.USER_LOGIN_SUCCESS.message,loginSuccessDto);
             }else{
                 // 用户密码不正确
