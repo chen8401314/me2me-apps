@@ -76,6 +76,10 @@ public class UserServiceImpl implements UserService {
         userToken.setToken(signUpSuccessDto.getToken());
         userMybatisDao.createUserToken(userToken);
         signUpSuccessDto.setToken(userToken.getToken());
+        // 获取默认值给前端
+        UserProfile up = userMybatisDao.getUserProfileByUid(user.getUid());
+        signUpSuccessDto.setGender(up.getGender());
+        signUpSuccessDto.setYearId(up.getYearsId());
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
 
@@ -100,6 +104,7 @@ public class UserServiceImpl implements UserService {
                 loginSuccessDto.setUserNo("");
                 loginSuccessDto.setAvatar(userProfile.getAvatar());
                 loginSuccessDto.setToken(userToken.getToken());
+                loginSuccessDto.setYearId(userProfile.getYearsId());
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status,ResponseStatus.USER_LOGIN_SUCCESS.message,loginSuccessDto);
             }else{
                 // 用户密码不正确
@@ -133,7 +138,7 @@ public class UserServiceImpl implements UserService {
             User user = userMybatisDao.getUserByUserName(verifyDto.getMobile());
             if(user!=null){
                 applicationEventBus.post(new VerifyEvent(verifyDto.getMobile(),null));
-                return Response.success(ResponseStatus.USER_VERIFY_CHECK_SUCCESS.status,ResponseStatus.USER_VERIFY_CHECK_SUCCESS.message);
+                return Response.success(ResponseStatus.USER_VERIFY_GET_SUCCESS.status,ResponseStatus.USER_VERIFY_GET_SUCCESS.message);
             }else{
                 return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
             }

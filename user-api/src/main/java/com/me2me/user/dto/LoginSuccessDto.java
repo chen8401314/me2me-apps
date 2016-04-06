@@ -25,4 +25,6 @@ public class LoginSuccessDto implements BaseEntity {
 
     private String avatar;
 
+    private long yearId;
+
 }
