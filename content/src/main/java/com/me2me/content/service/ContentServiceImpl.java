@@ -137,13 +137,15 @@ public class ContentServiceImpl implements ContentService {
         createContentSuccessDto.setContentType(c.getContentType());
         createContentSuccessDto.setForwardCid(c.getForwardCid());
         createContentSuccessDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + coverImage);
+        createContentSuccessDto.setTid(contentTags.getId());
         //创建标签的点赞数量
         ContentUserLikesCount contentUserLikesCount = new ContentUserLikesCount();
         contentUserLikesCount.setCid(content.getId());
         contentUserLikesCount.setTid(contentTags.getId());
+        contentUserLikesCount.setLikecount(0);
         contentMybatisDao.addContentUserLikesCount(contentUserLikesCount);
 
-        return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,contentDto);
+        return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
 }
 
 
@@ -177,8 +179,11 @@ public class ContentServiceImpl implements ContentService {
             userNotice.setReadStatus(userNotice.getReadStatus());
             if(contentImage != null){
                 userNotice.setCoverimage(contentImage.getImage());
+                userNotice.setSummary("");
             }else{
+                userNotice.setCoverimage("");
                 userNotice.setSummary(content.getContent());
+
             }
             userNotice.setToUid(customerProfile.getUid());
             //// TODO: 2016/4/5 点赞数量
