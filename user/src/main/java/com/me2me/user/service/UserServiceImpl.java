@@ -68,7 +68,6 @@ public class UserServiceImpl implements UserService {
         signUpSuccessDto.setToken(SecurityUtils.getToken());
         signUpSuccessDto.setUid(user.getUid());
         signUpSuccessDto.setNickName(userProfile.getNickName());
-//        signUpSuccessDto.setGender(userProfile.getGender());
         signUpSuccessDto.setUserNo("");
         signUpSuccessDto.setAvatar(userProfile.getAvatar());
         // 保存用户token信息
@@ -77,7 +76,6 @@ public class UserServiceImpl implements UserService {
         userToken.setToken(signUpSuccessDto.getToken());
         userMybatisDao.createUserToken(userToken);
         signUpSuccessDto.setToken(userToken.getToken());
-        signUpSuccessDto.setYearId(userProfile.getYearsId());
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
 
