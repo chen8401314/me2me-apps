@@ -468,6 +468,11 @@ public class ContentServiceImpl implements ContentService {
                 contentTags.setTag(t);
                 contentMybatisDao.createTag(contentTags);
             }
+        }else{
+            content.setFeeling(contentDto.getFeeling());
+            ContentTags contentTags = new ContentTags();
+            contentTags.setTag(content.getFeeling());
+            contentMybatisDao.createTag(contentTags);
         }
         content.setConverImage(contentDto.getImageUrls());
         content.setTitle(contentDto.getTitle());
