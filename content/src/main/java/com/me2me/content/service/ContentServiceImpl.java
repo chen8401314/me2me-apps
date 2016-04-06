@@ -63,7 +63,11 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setIsLike(isLike(userProfile.getUid(),content.getId()));
             squareDataElement.setCreateTime(content.getCreateTime());
             squareDataElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
-            squareDataElement.setLikeCount(content.getLikeCount());
+            ContentUserLikesCount c = new ContentUserLikesCount();
+            c.setTid(contentTags.getId());
+            c.setCid(content.getId());
+            ContentUserLikesCount contentUserLikesCount = contentMybatisDao.getContentUserLikesCount(c);
+            squareDataElement.setLikeCount(contentUserLikesCount.getLikecount());
             squareDataElement.setHotValue(content.getHotValue());
             squareDataElement.setThumbnail(Constant.QINIU_DOMAIN + "/" + content.getThumbnail());
             squareDataElement.setForwardTitle(content.getForwardTitle());
@@ -204,14 +208,21 @@ public class ContentServiceImpl implements ContentService {
             //记录点赞流水 end
 
             //点赞时候点赞数量+1
-
-
-
+            ContentUserLikesCount contentUserLikesCount = new ContentUserLikesCount();
+            contentUserLikesCount.setTid(likeDto.getTid());
+            contentUserLikesCount.setCid(likeDto.getCid());
+            contentUserLikesCount.setLikecount(1);
+            contentMybatisDao.likeTagCount(contentUserLikesCount);
         }else{
             addCount = -1;
             contentMybatisDao.deleteUserLikes(c.getId());
 
             //取消点赞时候点赞数量-1
+            ContentUserLikesCount contentUserLikesCount = new ContentUserLikesCount();
+            contentUserLikesCount.setTid(likeDto.getTid());
+            contentUserLikesCount.setCid(likeDto.getCid());
+            contentUserLikesCount.setLikecount(-1);
+            contentMybatisDao.likeTagCount(contentUserLikesCount);
         }
         Content content = contentMybatisDao.getContentById(likeDto.getCid());
         content.setLikeCount(content.getLikeCount() + addCount );
@@ -228,6 +239,7 @@ public class ContentServiceImpl implements ContentService {
         ContentTags contentTags = new ContentTags();
         contentTags.setTag(writeTagDto.getTag());
         contentMybatisDao.createTag(contentTags);
+        contentTags = contentMybatisDao.getContentTags(writeTagDto.getTag());
         ContentTagLikes contentTagLikes = new ContentTagLikes();
         contentTagLikes.setUid(writeTagDto.getUid());
         contentTagLikes.setCid(writeTagDto.getCid());
@@ -265,6 +277,16 @@ public class ContentServiceImpl implements ContentService {
             userTips.setCount(tips.getCount()+1);
             userMybatisDao.modifyUserTips(userTips);
         }
+        //贴标签时候写标签点赞数量
+        ContentUserLikesCount contentUserLikesCount = new ContentUserLikesCount();
+        contentUserLikesCount.setCid(writeTagDto.getCid());
+        contentUserLikesCount.setTid(contentTags.getId());
+        contentUserLikesCount.setLikecount(0);
+        contentMybatisDao.addContentUserLikesCount(contentUserLikesCount);
+
+        //打标签的时候文章热度+1
+        content.setHotValue(content.getHotValue()+1);
+        contentMybatisDao.updateContentById(content);
         return Response.success(ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.status,ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.message);
     }
 

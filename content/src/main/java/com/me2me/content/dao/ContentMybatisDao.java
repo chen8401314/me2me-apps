@@ -158,9 +158,21 @@ public class ContentMybatisDao {
         criteria.andCidEqualTo(contentUserLikesCount.getCid());
         criteria.andTidEqualTo(contentUserLikesCount.getTid());
         List<ContentUserLikesCount> likesCounts = contentUserLikesCountMapper.selectByExample(example);
-
-        contentUserLikesCountMapper.insertSelective(contentUserLikesCount);
+        if(likesCounts != null && likesCounts.size() >0){
+            contentUserLikesCount.setLikecount(likesCounts.get(0).getLikecount() + contentUserLikesCount.getLikecount());
+            contentUserLikesCount.setId(likesCounts.get(0).getId());
+        }
+        contentUserLikesCountMapper.updateByPrimaryKey(contentUserLikesCount);
     }
 
+    public ContentUserLikesCount getContentUserLikesCount(ContentUserLikesCount contentUserLikesCount){
+        ContentUserLikesCountExample example = new ContentUserLikesCountExample();
+        ContentUserLikesCountExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(contentUserLikesCount.getCid());
+        criteria.andTidEqualTo(contentUserLikesCount.getTid());
+        List<ContentUserLikesCount> likesCounts = contentUserLikesCountMapper.selectByExample(example);
+        return (likesCounts != null && likesCounts.size() >0) ? likesCounts.get(0) : null;
+
+    }
 
 }
