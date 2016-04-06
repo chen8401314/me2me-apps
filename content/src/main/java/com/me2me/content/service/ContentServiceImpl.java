@@ -438,7 +438,6 @@ public class ContentServiceImpl implements ContentService {
             ContentTags contentTags =  contentMybatisDao.getContentTags(content.getFeeling());
             contentElement.setTid(contentTags.getId());
             userInfoDto.getContentElementList().add(contentElement);
-
         }
         return Response.success(userInfoDto);
     }
