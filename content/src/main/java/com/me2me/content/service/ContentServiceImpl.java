@@ -66,8 +66,8 @@ public class ContentServiceImpl implements ContentService {
             ContentUserLikesCount c = new ContentUserLikesCount();
             c.setTid(contentTags.getId());
             c.setCid(content.getId());
-            ContentUserLikesCount contentUserLikesCount = contentMybatisDao.getContentUserLikesCount(c);
-            squareDataElement.setLikeCount(contentUserLikesCount.getLikecount());
+            int likesCount = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTags.getId());
+            squareDataElement.setLikeCount(likesCount);
             squareDataElement.setHotValue(content.getHotValue());
             squareDataElement.setThumbnail(Constant.QINIU_DOMAIN + "/" + content.getThumbnail());
             squareDataElement.setForwardTitle(content.getForwardTitle());
@@ -348,6 +348,8 @@ public class ContentServiceImpl implements ContentService {
         }else{
             contentDetailDto.setIsLike(1);
         }
+        int likeCount = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTags.getId());
+        contentDetailDto.setLikeCount(likeCount);
         List<Map<String,String>> list  = contentMybatisDao.loadAllFeeling(content.getId(),5);
         for (Map map : list){
             ContentDetailDto.ContentTop5FeelingElement contentTop5FeelingElement = ContentDetailDto.createElement();
@@ -364,7 +366,8 @@ public class ContentServiceImpl implements ContentService {
             }else{
                 contentTop5FeelingElement.setIsLike(1);
             }
-            contentTop5FeelingElement.setLikeCount(Integer.parseInt(map.get("like_count")== null? "0":map.get("like_count").toString()));
+            int count = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTags.getId());
+            contentTop5FeelingElement.setLikeCount(count);
             contentTop5FeelingElement.setUid(Long.parseLong(map.get("uid").toString()));
             contentDetailDto.getTags().add(contentTop5FeelingElement);
         }
