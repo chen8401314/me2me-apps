@@ -107,14 +107,26 @@ public class ContentServiceImpl implements ContentService {
             coverImage = images[0] ;
         }
         content.setType(contentDto.getType());
-        if(content.getType()== Specification.ArticleType.ORIGIN.index){
+        if(content.getType() == Specification.ArticleType.ORIGIN.index){
             // 原生文章
-        }else if(content.getType()== Specification.ArticleType.FORWARD.index){
+        }else if(content.getType() == Specification.ArticleType.FORWARD.index){
             // 转载文章
             long forwardCid = contentDto.getForwardCid();
-            // // TODO: 2016/3/25 添加转载
+            // TODO: 2016/3/25 添加转载
             content.setForwardUrl("");
             content.setForwardTitle("");
+        }else if(content.getType() == Specification.ArticleType.EDITOR.index){
+            // 小编文章
+            String feelings = contentDto.getFeeling();
+            String[] tags = feelings.split(";");
+            for(String t : tags){
+                ContentTags ct = contentMybatisDao.getContentTags(t);
+                if(ct==null){
+                    // create tag
+                }else{
+
+                }
+            }
         }
         content.setContentType(contentDto.getContentType());
         contentMybatisDao.createContent(content);
