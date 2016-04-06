@@ -81,7 +81,7 @@ public enum  ResponseStatus {
 
     USER_VERIFY_CHECK_ERROR("验证码不正确","user verify check error",5003),
 
-    USER_VERIFY_ERROR("验证码接口调用错误","user verify error",5004),
+    USER_VERIFY_ERROR("验证码发送次数超限","user verify error",5004),
 
     USER_MODIFY_ENCRYPT_PASSWORD_NOT_SAME_ERROR("两次密码输入不一致"," user the two passwords are not the same",5005),
 
