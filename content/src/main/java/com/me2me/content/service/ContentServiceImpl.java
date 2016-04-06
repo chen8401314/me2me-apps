@@ -313,6 +313,7 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setContent(content.getContent());
         contentDetailDto.setContentType(content.getContentType());
         contentDetailDto.setTitle(content.getTitle());
+        contentDetailDto.setCoverImage("");
         List<ContentImage> contentImageList = contentMybatisDao.getContentImages(content.getId());
         for (ContentImage contentImage : contentImageList){
             if(contentImage.getCover() == Specification.CoverImageType.COVER.index){
