@@ -35,6 +35,9 @@ public class ContentMybatisDao {
     @Autowired
     private ContentTagLikesMapper contentTagLikesMapper;
 
+    @Autowired
+    private ContentUserLikesCountMapper contentUserLikesCountMapper;
+
     public List<Content> loadSquareData(int sinceId){
         return contentMapper.loadSquareData(sinceId);
     }
@@ -83,8 +86,6 @@ public class ContentMybatisDao {
         criteria.andTagEqualTo(contentTags.getTag());
         List<ContentTags> list = contentTagsMapper.selectByExample(example);
         if(list == null ||list.size() ==0) {
-            contentTagsMapper.insertSelective(contentTags);
-        }else {
             contentTagsMapper.insertSelective(contentTags);
         }
     }
@@ -145,6 +146,14 @@ public class ContentMybatisDao {
 
     public ContentTags getContentTagsById(long tid){
        return contentTagsMapper.selectByPrimaryKey(tid);
+    }
+
+    public void addContentUserLikesCount(ContentUserLikesCount contentUserLikesCount){
+        contentUserLikesCountMapper.insertSelective(contentUserLikesCount);
+    }
+
+    public void likeTagCount(ContentUserLikesCount contentUserLikesCount){
+        contentUserLikesCountMapper.insertSelective(contentUserLikesCount);
     }
 
 

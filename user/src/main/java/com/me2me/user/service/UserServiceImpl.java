@@ -335,4 +335,13 @@ public class UserServiceImpl implements UserService {
         return Response.success(ResponseStatus.CLEAN_USER_TIPS_SUCCESS.status,ResponseStatus.CLEAN_USER_TIPS_SUCCESS.message);
     }
 
+    /**
+     * 是否发送过验证码
+     * @return
+     */
+    private boolean checkIsVerify(){
+
+        return false;
+    }
+
 }
