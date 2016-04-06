@@ -96,4 +96,10 @@ public interface ContentService {
      */
     Response getUserData(long uid);
 
+    /**
+     * 小编发布接口
+     * @param contentDto
+     * @return
+     */
+    Response editorPublish(ContentDto contentDto);
 }

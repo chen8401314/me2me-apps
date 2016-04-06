@@ -35,4 +35,10 @@ public class PublishContentRequest extends Request {
     @Setter
     private int type;
 
+    @Getter
+    @Setter
+    private String title;
+
+
+
 }
