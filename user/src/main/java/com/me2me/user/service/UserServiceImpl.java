@@ -127,7 +127,7 @@ public class UserServiceImpl implements UserService {
             if(result) {
                 return Response.success(ResponseStatus.USER_VERIFY_CHECK_SUCCESS.status, ResponseStatus.USER_VERIFY_CHECK_SUCCESS.message);
             }else{
-                Response.failure(ResponseStatus.USER_VERIFY_CHECK_ERROR.status,ResponseStatus.USER_VERIFY_CHECK_ERROR.message);
+                return Response.failure(ResponseStatus.USER_VERIFY_CHECK_ERROR.status,ResponseStatus.USER_VERIFY_CHECK_ERROR.message);
             }
         }else if(verifyDto.getAction() == Specification.VerifyAction.FIND_MY_ENCRYPT.index){
             // 找回密码
@@ -137,7 +137,7 @@ public class UserServiceImpl implements UserService {
                 applicationEventBus.post(new VerifyEvent(verifyDto.getMobile(),null));
                 return Response.success(ResponseStatus.USER_VERIFY_GET_SUCCESS.status,ResponseStatus.USER_VERIFY_GET_SUCCESS.message);
             }else{
-                Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
+                return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
             }
         }
         return Response.failure(ResponseStatus.USER_VERIFY_ERROR.status,ResponseStatus.USER_VERIFY_ERROR.message);
@@ -335,6 +335,15 @@ public class UserServiceImpl implements UserService {
             userMybatisDao.modifyUserTips(userTips);
         }
         return Response.success(ResponseStatus.CLEAN_USER_TIPS_SUCCESS.status,ResponseStatus.CLEAN_USER_TIPS_SUCCESS.message);
+    }
+
+    /**
+     * 是否发送过验证码
+     * @return
+     */
+    private boolean checkIsVerify(){
+
+        return false;
     }
 
 }

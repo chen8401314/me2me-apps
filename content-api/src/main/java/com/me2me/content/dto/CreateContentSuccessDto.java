@@ -1,25 +1,24 @@
 package com.me2me.content.dto;
 
-import com.google.common.collect.Lists;
 import com.me2me.common.web.BaseEntity;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * 上海拙心网络科技有限公司出品
- * Author: 赵朋扬
- * Date: 2016/3/22.
+ * Author: 代宝磊
+ * Date: 2016/4/6
+ * Time :11:20
  */
 @Data
-public class ContentDto implements BaseEntity {
+public class CreateContentSuccessDto  implements BaseEntity{
 
     private String feeling;
 
     private String content;
 
-    private String imageUrls;
+    private String coverImage;
 
     private int contentType;
 
@@ -32,5 +31,4 @@ public class ContentDto implements BaseEntity {
     private long id;
 
     private Date createTime;
-
 }
