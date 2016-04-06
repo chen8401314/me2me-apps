@@ -56,6 +56,7 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             squareDataElement.setNickName(userProfile.getNickName());
             squareDataElement.setContent(content.getContent());
+            squareDataElement.setTitle(content.getTitle());
             squareDataElement.setFeeling(content.getFeeling());
             ContentTags contentTags = contentMybatisDao.getContentTags(content.getFeeling());
             squareDataElement.setTid(contentTags.getId());
