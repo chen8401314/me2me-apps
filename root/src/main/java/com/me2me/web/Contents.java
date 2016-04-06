@@ -142,7 +142,7 @@ public class Contents {
     @ResponseBody
     public Response getContentDetail(ContentDetailRequest request){
 
-        return contentService.getContentDetail(request.getId());
+        return contentService.getContentDetail(request.getId(),request.getUid());
     }
 
     /**
