@@ -143,7 +143,7 @@ public class ContentServiceImpl implements ContentService {
         contentUserLikesCount.setTid(contentTags.getId());
        // contentMybatisDao.addContentUserLikesCount(contentUserLikesCount);
 
-        return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,contentDto);
+        return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
 }
 
 
