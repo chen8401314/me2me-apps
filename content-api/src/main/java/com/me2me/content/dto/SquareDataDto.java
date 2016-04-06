@@ -58,6 +58,9 @@ public class SquareDataDto implements BaseEntity {
 
         private int hotValue;
 
+        // 小编文章标题
+        private String title;
+
         // 转发缩略图
         private String thumbnail;
 
