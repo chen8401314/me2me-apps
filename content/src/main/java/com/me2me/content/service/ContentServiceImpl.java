@@ -353,7 +353,7 @@ public class ContentServiceImpl implements ContentService {
             contentTop5FeelingElement.setCid(Long.parseLong(map.get("cid").toString()));
             LikeDto like = new LikeDto();
             like.setCid(contentTop5FeelingElement.getCid());
-            like.setUid(contentTop5FeelingElement.getTid());
+            like.setTid(contentTop5FeelingElement.getTid());
             like.setUid(uid);
             ContentUserLikes contentUserLike = contentMybatisDao.getContentUserLike(like);
             if(contentUserLike == null) {
