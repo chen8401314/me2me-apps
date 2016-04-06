@@ -177,8 +177,11 @@ public class ContentServiceImpl implements ContentService {
             userNotice.setReadStatus(userNotice.getReadStatus());
             if(contentImage != null){
                 userNotice.setCoverimage(contentImage.getImage());
+                userNotice.setSummary("");
             }else{
+                userNotice.setCoverimage("");
                 userNotice.setSummary(content.getContent());
+
             }
             userNotice.setToUid(customerProfile.getUid());
             //// TODO: 2016/4/5 点赞数量
