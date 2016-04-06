@@ -1,5 +1,6 @@
 package com.me2me.web.request;
 
+import com.me2me.common.web.Request;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -8,7 +9,7 @@ import lombok.Setter;
  * Author: 赵朋扬
  * Date: 2016/3/22.
  */
-public class SquareRequest {
+public class SquareRequest extends Request {
 
     @Getter
     @Setter

@@ -18,14 +18,14 @@ public interface ContentService {
      * 精选接口
      * @return
      */
-    Response highQuality(int sinceId);
+    Response highQuality(int sinceId,long uid);
 
     /**
      * 广场列表
      * @param sinceId
      * @return
      */
-    Response square(int sinceId);
+    Response square(int sinceId,long uid);
 
     /**
      * 发布接口

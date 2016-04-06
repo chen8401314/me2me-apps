@@ -40,7 +40,7 @@ public class Contents {
         if(request.getSinceId()==-1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.highQuality(request.getSinceId());
+        return contentService.highQuality(request.getSinceId(),request.getUid());
     }
 
     /**
@@ -53,7 +53,7 @@ public class Contents {
         if(request.getSinceId()==-1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.square(request.getSinceId());
+        return contentService.square(request.getSinceId(),request.getUid());
     }
 
     /**
