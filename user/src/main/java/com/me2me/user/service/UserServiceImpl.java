@@ -13,7 +13,6 @@ import com.me2me.user.event.VerifyEvent;
 import com.me2me.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.HashMap;

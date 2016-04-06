@@ -353,7 +353,7 @@ public class ContentServiceImpl implements ContentService {
             contentTop5FeelingElement.setCid(Long.parseLong(map.get("cid").toString()));
             LikeDto like = new LikeDto();
             like.setCid(contentTop5FeelingElement.getCid());
-            like.setUid(contentTop5FeelingElement.getTid());
+            like.setTid(contentTop5FeelingElement.getTid());
             like.setUid(uid);
             ContentUserLikes contentUserLike = contentMybatisDao.getContentUserLike(like);
             if(contentUserLike == null) {
@@ -361,7 +361,7 @@ public class ContentServiceImpl implements ContentService {
             }else{
                 contentTop5FeelingElement.setIsLike(1);
             }
-            int count = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTop5FeelingElement.getCid());
+            int count = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTop5FeelingElement.getTid());
             contentTop5FeelingElement.setLikeCount(count);
             contentTop5FeelingElement.setUid(Long.parseLong(map.get("uid").toString()));
             contentDetailDto.getTags().add(contentTop5FeelingElement);
@@ -419,7 +419,7 @@ public class ContentServiceImpl implements ContentService {
 
     public Response getUserData(long uid){
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
-        List<Content> list = contentMybatisDao.myPublish(uid,Integer.MAX_VALUE);
+        List<Content> list = contentMybatisDao.myPublish(uid,5);
         UserInfoDto userInfoDto = new UserInfoDto();
         userInfoDto.getUser().setNickName(userProfile.getNickName());
         userInfoDto.getUser().setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
@@ -453,6 +453,7 @@ public class ContentServiceImpl implements ContentService {
         }
         return Response.success(userInfoDto);
     }
+
 
     @Override
     public Response editorPublish(ContentDto contentDto) {
