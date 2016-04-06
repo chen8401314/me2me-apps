@@ -195,7 +195,7 @@ public class ContentServiceImpl implements ContentService {
             userMybatisDao.createUserNotice(userNotice);
             UserTips userTips = new UserTips();
             userTips.setUid(likeDto.getCustomerId());
-            userTips.setType(Specification.UserTipsType.lIKE.index);
+            userTips.setType(Specification.UserTipsType.LIKE.index);
             UserTips tips  = userMybatisDao.getUserTips(userTips);
             if(tips == null){
                 userTips.setCount(1);
@@ -267,7 +267,7 @@ public class ContentServiceImpl implements ContentService {
         userMybatisDao.createUserNotice(userNotice);
         UserTips userTips = new UserTips();
         userTips.setUid(writeTagDto.getCustomerId());
-        userTips.setType(Specification.UserTipsType.lIKE.index);
+        userTips.setType(Specification.UserTipsType.LIKE.index);
         UserTips tips  = userMybatisDao.getUserTips(userTips);
         if(tips == null){
             userTips.setCount(1);
@@ -310,10 +310,13 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setType(content.getType());
         contentDetailDto.setUid(content.getUid());
         contentDetailDto.setContent(content.getContent());
+        contentDetailDto.setContentType(content.getContentType());
+        contentDetailDto.setTitle(content.getTitle());
         List<ContentImage> contentImageList = contentMybatisDao.getContentImages(content.getId());
         for (ContentImage contentImage : contentImageList){
-            if(contentImage.getCover() == 1){
+            if(contentImage.getCover() == Specification.CoverImageType.COVER.index){
                 contentDetailDto.setCoverImage(Constant.QINIU_DOMAIN  + "/" + contentImage.getImage());
+                break;
             }
         }
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(content.getUid());
