@@ -168,13 +168,13 @@ public class ContentMybatisDao {
 
     }
 
-    public ContentUserLikesCount getContentUserLikesCount(ContentUserLikesCount contentUserLikesCount){
+    public int getContentUserLikesCount(long cid ,long tid){
         ContentUserLikesCountExample example = new ContentUserLikesCountExample();
         ContentUserLikesCountExample.Criteria criteria = example.createCriteria();
-        criteria.andCidEqualTo(contentUserLikesCount.getCid());
-        criteria.andTidEqualTo(contentUserLikesCount.getTid());
+        criteria.andCidEqualTo(cid);
+        criteria.andTidEqualTo(tid);
         List<ContentUserLikesCount> likesCounts = contentUserLikesCountMapper.selectByExample(example);
-        return (likesCounts != null && likesCounts.size() >0) ? likesCounts.get(0) : null;
+        return (likesCounts != null && likesCounts.size() >0) ? likesCounts.get(0).getLikecount() : 0;
 
     }
 
