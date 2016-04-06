@@ -153,6 +153,12 @@ public class ContentMybatisDao {
     }
 
     public void likeTagCount(ContentUserLikesCount contentUserLikesCount){
+        ContentUserLikesCountExample example = new ContentUserLikesCountExample();
+        ContentUserLikesCountExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(contentUserLikesCount.getCid());
+        criteria.andTidEqualTo(contentUserLikesCount.getTid());
+        List<ContentUserLikesCount> likesCounts = contentUserLikesCountMapper.selectByExample(example);
+
         contentUserLikesCountMapper.insertSelective(contentUserLikesCount);
     }
 
