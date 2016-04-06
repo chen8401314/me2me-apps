@@ -67,7 +67,11 @@ public class ContentServiceImpl implements ContentService {
             c.setTid(contentTags.getId());
             c.setCid(content.getId());
             ContentUserLikesCount contentUserLikesCount = contentMybatisDao.getContentUserLikesCount(c);
-            squareDataElement.setLikeCount(contentUserLikesCount.getLikecount());
+            if(contentUserLikesCount != null) {
+                squareDataElement.setLikeCount(contentUserLikesCount.getLikecount());
+            }else{
+                squareDataElement.setLikeCount(0);
+            }
             squareDataElement.setHotValue(content.getHotValue());
             squareDataElement.setThumbnail(Constant.QINIU_DOMAIN + "/" + content.getThumbnail());
             squareDataElement.setForwardTitle(content.getForwardTitle());

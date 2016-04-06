@@ -161,8 +161,11 @@ public class ContentMybatisDao {
         if(likesCounts != null && likesCounts.size() >0){
             contentUserLikesCount.setLikecount(likesCounts.get(0).getLikecount() + contentUserLikesCount.getLikecount());
             contentUserLikesCount.setId(likesCounts.get(0).getId());
+            contentUserLikesCountMapper.updateByPrimaryKey(contentUserLikesCount);
+        }else{
+            contentUserLikesCountMapper.insert(contentUserLikesCount);
         }
-        contentUserLikesCountMapper.updateByPrimaryKey(contentUserLikesCount);
+
     }
 
     public ContentUserLikesCount getContentUserLikesCount(ContentUserLikesCount contentUserLikesCount){
