@@ -66,7 +66,7 @@ public interface ContentService {
      * @param id
      * @return
      */
-    Response getContentDetail(long id);
+    Response getContentDetail(long id,long uid);
 
     /**
      * 我发布的内容列表

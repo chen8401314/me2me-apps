@@ -304,7 +304,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public Response getContentDetail(long id) {
+    public Response getContentDetail(long id ,long uid) {
         ContentDetailDto contentDetailDto = new ContentDetailDto();
         Content content = contentMybatisDao.getContentById(id);
         contentDetailDto.setFeeling(content.getFeeling());
@@ -332,7 +332,7 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setTid(contentTags.getId());
         LikeDto likeDto = new LikeDto();
         likeDto.setTid(contentTags.getId());
-        likeDto.setUid(content.getUid());
+        likeDto.setUid(uid);
         likeDto.setCid(content.getId());
         ContentUserLikes contentUserLikes = contentMybatisDao.getContentUserLike(likeDto);
         if(contentUserLikes == null) {
@@ -351,7 +351,7 @@ public class ContentServiceImpl implements ContentService {
             LikeDto like = new LikeDto();
             like.setCid(contentTop5FeelingElement.getCid());
             like.setUid(contentTop5FeelingElement.getTid());
-            like.setUid(content.getUid());
+            like.setUid(uid);
             ContentUserLikes contentUserLike = contentMybatisDao.getContentUserLike(like);
             if(contentUserLike == null) {
                 contentTop5FeelingElement.setIsLike(0);
