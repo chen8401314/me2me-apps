@@ -45,6 +45,8 @@ public class ShowUserNoticeDto implements BaseEntity {
         private int readStatus;
 
         private Date createTime;
+
+        private long cid;
     }
 
 

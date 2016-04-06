@@ -181,11 +181,12 @@ public class ContentServiceImpl implements ContentService {
             userNotice.setToNickName(customerProfile.getNickName());
             userNotice.setNoticeType(Specification.UserNoticeType.TAG.index);
             userNotice.setReadStatus(userNotice.getReadStatus());
+            userNotice.setCid(likeDto.getCid());
             if(contentImage != null){
-                userNotice.setCoverimage(contentImage.getImage());
+                userNotice.setCoverImage(contentImage.getImage());
                 userNotice.setSummary("");
             }else{
-                userNotice.setCoverimage("");
+                userNotice.setCoverImage("");
                 userNotice.setSummary(content.getContent());
 
             }
@@ -257,14 +258,16 @@ public class ContentServiceImpl implements ContentService {
         userNotice.setToNickName(customerProfile.getNickName());
         userNotice.setNoticeType(Specification.UserNoticeType.TAG.index);
         userNotice.setReadStatus(userNotice.getReadStatus());
+        userNotice.setCid(writeTagDto.getCid());
         if(contentImage != null){
-            userNotice.setCoverimage(contentImage.getImage());
+            userNotice.setCoverImage(contentImage.getImage());
         }else{
             userNotice.setSummary(content.getContent());
         }
         userNotice.setToUid(customerProfile.getUid());
         userNotice.setLikeCount(0);
         userNotice.setReadStatus(Specification.NoticeReadStatus.UNREAD.index);
+
         userMybatisDao.createUserNotice(userNotice);
         UserTips userTips = new UserTips();
         userTips.setUid(writeTagDto.getCustomerId());
