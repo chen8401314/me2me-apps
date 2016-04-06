@@ -39,14 +39,14 @@ public class ContentServiceImpl implements ContentService {
     private UserMybatisDao userMybatisDao;
 
     @Override
-    public Response highQuality(int sinceId) {
+    public Response highQuality(int sinceId,long uid) {
         SquareDataDto squareDataDto = new SquareDataDto();
         List<Content> contents = contentMybatisDao.highQuality(sinceId);
-        buildDatas(squareDataDto, contents);
+        buildDatas(squareDataDto, contents, uid);
         return Response.success(squareDataDto);
     }
 
-    private void buildDatas(SquareDataDto squareDataDto, List<Content> contents) {
+    private void buildDatas(SquareDataDto squareDataDto, List<Content> contents, long uid) {
         for(Content content : contents){
             SquareDataDto.SquareDataElement squareDataElement = SquareDataDto.createElement();
             squareDataElement.setId(content.getId());
@@ -61,7 +61,7 @@ public class ContentServiceImpl implements ContentService {
             ContentTags contentTags = contentMybatisDao.getContentTags(content.getFeeling());
             squareDataElement.setTid(contentTags.getId());
             squareDataElement.setType(content.getType());
-            squareDataElement.setIsLike(isLike(userProfile.getUid(),content.getId()));
+            squareDataElement.setIsLike(isLike(uid,content.getId()));
             squareDataElement.setCreateTime(content.getCreateTime());
             squareDataElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
             ContentUserLikesCount c = new ContentUserLikesCount();
@@ -81,10 +81,10 @@ public class ContentServiceImpl implements ContentService {
 
 
     @Override
-    public Response square(int sinceId) {
+    public Response square(int sinceId,long uid) {
         SquareDataDto squareDataDto = new SquareDataDto();
         List<Content> contents = contentMybatisDao.loadSquareData(sinceId);
-        buildDatas(squareDataDto, contents);
+        buildDatas(squareDataDto, contents,uid);
         return Response.success(squareDataDto);
     }
 
@@ -371,7 +371,7 @@ public class ContentServiceImpl implements ContentService {
     public Response myPublish(long uid ,int sinceId) {
         SquareDataDto squareDataDto = new SquareDataDto();
         List<Content> contents = contentMybatisDao.myPublish(uid,sinceId);
-        buildDatas(squareDataDto, contents);
+        buildDatas(squareDataDto, contents, uid);
         return Response.success(squareDataDto);
     }
 
