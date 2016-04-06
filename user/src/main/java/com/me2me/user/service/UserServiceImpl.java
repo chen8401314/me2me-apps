@@ -68,7 +68,7 @@ public class UserServiceImpl implements UserService {
         signUpSuccessDto.setToken(SecurityUtils.getToken());
         signUpSuccessDto.setUid(user.getUid());
         signUpSuccessDto.setNickName(userProfile.getNickName());
-        signUpSuccessDto.setGender(userProfile.getGender());
+//        signUpSuccessDto.setGender(userProfile.getGender());
         signUpSuccessDto.setUserNo("");
         signUpSuccessDto.setAvatar(userProfile.getAvatar());
         // 保存用户token信息
