@@ -110,7 +110,7 @@ public class ContentMybatisDao {
             map.put("begin",0);
             map.put("length",Constant.DEFAULT_USER_DATA_SIZE);
         }else{
-            map.put("begin",sinceId);
+            map.put("begin",0);
             map.put("length",Constant.DEFAULT_PAGE_SIZE);
         }
         return contentMapper.loadMyPublishData(map);
@@ -123,7 +123,7 @@ public class ContentMybatisDao {
             map.put("begin",0);
             map.put("length",Constant.DEFAULT_USER_DATA_SIZE);
         }else{
-            map.put("begin",sinceId);
+            map.put("begin",0);
             map.put("length",Constant.DEFAULT_PAGE_SIZE);
         }
         List<Map<String,String>> result = contentUserLikesMapper.loadAllFeeling(map);
