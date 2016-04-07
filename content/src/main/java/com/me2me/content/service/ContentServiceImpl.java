@@ -359,7 +359,7 @@ public class ContentServiceImpl implements ContentService {
         }
         int likeCount = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTags.getId());
         contentDetailDto.setLikeCount(likeCount);
-        List<Map<String,String>> list  = contentMybatisDao.loadAllFeeling(content.getId(),Constant.DEFAULT_USER_DATA_SIZE);
+        List<Map<String,String>> list  = contentMybatisDao.loadAllFeeling(content.getId(),Integer.MAX_VALUE);
         for (Map map : list){
             ContentDetailDto.ContentTop5FeelingElement contentTop5FeelingElement = ContentDetailDto.createElement();
             contentTop5FeelingElement.setTag(map.get("tag").toString());
