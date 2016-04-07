@@ -105,7 +105,8 @@ public class ContentMybatisDao {
     public List<Content>myPublish(long uid,int sinceId) {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("uid",uid);
-        map.put("sinceId",sinceId);
+        map.put("begin",sinceId-10);
+        map.put("end",sinceId);
         return contentMapper.loadMyPublishData(map);
     }
 
