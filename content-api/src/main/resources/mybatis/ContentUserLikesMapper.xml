@@ -290,8 +290,8 @@
     left join content_tags d on a.tag_id = d.id
     left join user_profile e on b.uid = e.uid
     left join content_user_likes_count f on (a.tag_id = f.tid and a.cid =f.cid)
-    where a.cid = #{cid,jdbcType=BIGINT}
-  order by f.likeCount desc ,d.id desc limit  #{begin} ,#{length}
+    where a.cid = #{cid,jdbcType=BIGINT} and d.id  &lt; #{sinceId}
+  order by f.likeCount desc ,d.id desc limit 10
   </select>
 
 </mapper>

@@ -129,8 +129,8 @@ public class Contents {
     @RequestMapping(value = "/myPublish",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response myPublish(MyPublishContentRequest request){
-        if(request.getSinceId()== -1){
-            request.setSinceId(0);
+        if(request.getSinceId() == -1){
+            request.setSinceId(Integer.MAX_VALUE);
         }
         return contentService.myPublish(request.getCustomerId(),request.getSinceId());
     }
@@ -154,7 +154,7 @@ public class Contents {
     @ResponseBody
     public Response getContentFeeling(ContentFeelingRequest request){
         if(request.getSinceId() == -1){
-            request.setSinceId(0);
+            request.setSinceId(Integer.MAX_VALUE);
         }
         return contentService.getContentFeeling(request.getCid(),request.getSinceId());
     }

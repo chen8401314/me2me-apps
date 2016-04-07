@@ -137,6 +137,9 @@ public interface Specification {
         }
     }
 
+    /**
+     * 消息读取类型
+     */
     public enum NoticeReadStatus{
 
         UNREAD("未读",0),
@@ -151,6 +154,9 @@ public interface Specification {
         }
     }
 
+    /**
+     * 用户提醒类型
+     */
     public enum UserTipsType{
 
         LIKE("点赞",1);
@@ -164,6 +170,9 @@ public interface Specification {
         }
     }
 
+    /**
+     * 图片类型
+     */
     public enum CoverImageType{
 
         CONTENT("内容图片",0),
@@ -174,6 +183,24 @@ public interface Specification {
         public String name;
         public int index;
         CoverImageType(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    /**
+     * 是否点过赞
+     */
+    public enum IsLike{
+
+        UNLIKE("为点赞",0),
+
+        ISLIKE("点赞",1);
+
+
+        public String name;
+        public int index;
+        IsLike(String name,int index){
             this.name = name;
             this.index = index;
         }
