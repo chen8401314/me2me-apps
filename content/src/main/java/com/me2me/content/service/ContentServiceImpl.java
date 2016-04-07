@@ -63,13 +63,22 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setType(content.getType());
             squareDataElement.setIsLike(isLike(uid,content.getId()));
             squareDataElement.setCreateTime(content.getCreateTime());
-            squareDataElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
+            if(!StringUtils.isEmpty(content.getConverImage())) {
+                squareDataElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
+            }else{
+                squareDataElement.setCoverImage("");
+            }
             ContentUserLikesCount c = new ContentUserLikesCount();
             c.setTid(contentTags.getId());
             c.setCid(content.getId());
             int likesCount = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTags.getId());
             squareDataElement.setLikeCount(likesCount);
             squareDataElement.setHotValue(content.getHotValue());
+            if(!StringUtils.isEmpty(content.getThumbnail())) {
+                squareDataElement.setThumbnail(Constant.QINIU_DOMAIN + "/" + content.getThumbnail());
+            }else{
+                squareDataElement.setThumbnail("");
+            }
             squareDataElement.setThumbnail(Constant.QINIU_DOMAIN + "/" + content.getThumbnail());
             squareDataElement.setForwardTitle(content.getForwardTitle());
             squareDataElement.setContentType(content.getContentType());

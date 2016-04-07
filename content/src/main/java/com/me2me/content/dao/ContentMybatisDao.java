@@ -105,14 +105,26 @@ public class ContentMybatisDao {
     public List<Content>myPublish(long uid,int sinceId) {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("uid",uid);
-        map.put("sinceId",sinceId);
+        if(sinceId == 5){
+            map.put("begin",0);
+            map.put("length",5);
+        }else{
+            map.put("begin",sinceId);
+            map.put("length",10);
+        }
         return contentMapper.loadMyPublishData(map);
     }
 
     public List<Map<String,String>>loadAllFeeling(long cid ,int sinceId) {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("cid",cid);
-        map.put("sinceId",sinceId);
+        if(sinceId == 5){
+            map.put("begin",0);
+            map.put("length",5);
+        }else{
+            map.put("begin",sinceId);
+            map.put("length",10);
+        }
         List<Map<String,String>> result = contentUserLikesMapper.loadAllFeeling(map);
         return result;
     }

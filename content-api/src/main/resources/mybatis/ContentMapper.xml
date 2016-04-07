@@ -583,7 +583,7 @@
       select
   c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
   c.thumbnail, c.hot_value, c.like_count, c.authorization, c.create_time, c.status,c.content
-  from content c  where c.status = 0 and c.uid =  #{uid,jdbcType=BIGINT} and c.id &lt; #{sinceId}
-  order by c.id desc limit 10
+  from content c  where c.status = 0 and c.uid =  #{uid,jdbcType=BIGINT}
+  order by c.id desc limit #{begin},#{length}
   </select>
 </mapper>
