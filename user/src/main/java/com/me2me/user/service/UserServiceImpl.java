@@ -13,6 +13,7 @@ import com.me2me.user.event.VerifyEvent;
 import com.me2me.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -303,7 +304,11 @@ public class UserServiceImpl implements UserService {
             ShowUserNoticeDto.UserNoticeElement userNoticeElement = new ShowUserNoticeDto.UserNoticeElement();
             userNoticeElement.setId(userNotice.getId());
             userNoticeElement.setTag(userNotice.getTag());
-            userNoticeElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + userNotice.getCoverImage());
+            if(!StringUtils.isEmpty( userNotice.getCoverImage())) {
+                userNoticeElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + userNotice.getCoverImage());
+            }else{
+                userNoticeElement.setCoverImage("");
+            }
             userNoticeElement.setFromAvatar(Constant.QINIU_DOMAIN + "/" + userNotice.getFromAvatar());
             userNoticeElement.setNoticeType(userNotice.getNoticeType());
             userNoticeElement.setFromNickName(userNotice.getFromNickName());
