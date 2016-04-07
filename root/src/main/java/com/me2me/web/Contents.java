@@ -1,5 +1,6 @@
 package com.me2me.web;
 
+import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.ContentDto;
 import com.me2me.content.dto.LikeDto;
@@ -152,8 +153,8 @@ public class Contents {
     @RequestMapping(value = "/getContentFeeling",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getContentFeeling(ContentFeelingRequest request){
-        if(request.getSinceId()<10){
-            request.setSinceId(10);
+        if(request.getSinceId() < Constant.DEFAULT_PAGE_SIZE){
+            request.setSinceId(Constant.DEFAULT_PAGE_SIZE);
         }
         return contentService.getContentFeeling(request.getCid(),request.getSinceId());
     }

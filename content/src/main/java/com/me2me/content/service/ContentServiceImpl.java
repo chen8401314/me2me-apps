@@ -150,7 +150,11 @@ public class ContentServiceImpl implements ContentService {
         createContentSuccessDto.setType(c.getType());
         createContentSuccessDto.setContentType(c.getContentType());
         createContentSuccessDto.setForwardCid(c.getForwardCid());
-        createContentSuccessDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + coverImage);
+        if(!StringUtils.isEmpty(coverImage)) {
+            createContentSuccessDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + coverImage);
+        }else{
+            createContentSuccessDto.setCoverImage("");
+        }
         createContentSuccessDto.setTid(contentTags.getId());
         //创建标签的点赞数量
         ContentUserLikesCount contentUserLikesCount = new ContentUserLikesCount();
