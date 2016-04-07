@@ -65,7 +65,7 @@ public enum  ResponseStatus {
 
     CLEAN_USER_TIPS_SUCCESS("清空用户消息成功","clean user tips success",20053),
 
-    USER_CREATE_REPORT_SUCCESS("清空举报成功","user create report success",20054),
+    USER_CREATE_REPORT_SUCCESS("举报成功","user create report success",20054),
 
 
 
