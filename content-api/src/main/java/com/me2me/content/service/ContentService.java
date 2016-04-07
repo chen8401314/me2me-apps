@@ -54,14 +54,6 @@ public interface ContentService {
     Response deleteContent(long id);
 
     /**
-     * 是否点赞
-     * @param uid
-     * @param cid
-     * @return
-     */
-    int isLike(long uid,long cid);
-
-    /**
      * 获取内容详情
      * @param id
      * @return

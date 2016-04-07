@@ -61,7 +61,7 @@ public class ContentServiceImpl implements ContentService {
             ContentTags contentTags = contentMybatisDao.getContentTags(content.getFeeling());
             squareDataElement.setTid(contentTags.getId());
             squareDataElement.setType(content.getType());
-            squareDataElement.setIsLike(isLike(uid,content.getId()));
+            squareDataElement.setIsLike(isLike(uid,content.getId(),contentTags.getId()));
             squareDataElement.setCreateTime(content.getCreateTime());
             if(!StringUtils.isEmpty(content.getConverImage())) {
                 squareDataElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
@@ -205,7 +205,6 @@ public class ContentServiceImpl implements ContentService {
 
             }
             userNotice.setToUid(customerProfile.getUid());
-            //// TODO: 2016/4/5 点赞数量
             userNotice.setLikeCount(0);
             userNotice.setReadStatus(Specification.NoticeReadStatus.UNREAD.index);
             userMybatisDao.createUserNotice(userNotice);
@@ -315,9 +314,8 @@ public class ContentServiceImpl implements ContentService {
         return Response.failure(ResponseStatus.CONTENT_DELETE_SUCCESS.status,ResponseStatus.CONTENT_DELETE_SUCCESS.message);
     }
 
-    @Override
-    public int isLike(long uid, long cid) {
-        return contentMybatisDao.isLike(uid,cid);
+    private int isLike(long uid, long cid,long tid) {
+        return contentMybatisDao.isLike(uid,cid,tid);
     }
 
     @Override
@@ -353,9 +351,9 @@ public class ContentServiceImpl implements ContentService {
         likeDto.setCid(content.getId());
         ContentUserLikes contentUserLikes = contentMybatisDao.getContentUserLike(likeDto);
         if(contentUserLikes == null) {
-            contentDetailDto.setIsLike(0);
+            contentDetailDto.setIsLike(Specification.IsLike.UNLIKE.index);
         }else{
-            contentDetailDto.setIsLike(1);
+            contentDetailDto.setIsLike(Specification.IsLike.ISLIKE.index);
         }
         int likeCount = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTags.getId());
         contentDetailDto.setLikeCount(likeCount);
