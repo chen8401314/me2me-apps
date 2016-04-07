@@ -30,7 +30,7 @@ public class ContentAllFeelingDto implements BaseEntity {
 
         private long tid;
 
-        private int likesCounts;
+        private int likesCount;
 
         private long uid;
 
@@ -38,6 +38,8 @@ public class ContentAllFeelingDto implements BaseEntity {
 
         private String nickName;
 
-        private String forwardTitle;
+        private int type;
+
+        private String content;
     }
 }

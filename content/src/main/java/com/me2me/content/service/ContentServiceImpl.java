@@ -409,9 +409,15 @@ public class ContentServiceImpl implements ContentService {
             contentAllFeelingElement.setAvatar(Constant.QINIU_DOMAIN + "/" + map.get("avatar"));
             contentAllFeelingElement.setTid(Long.parseLong(map.get("tag_id").toString()));
             contentAllFeelingElement.setCid(Long.parseLong(map.get("cid").toString()));
-            contentAllFeelingElement.setForwardTitle(map.get("forward_title").toString());
+            contentAllFeelingElement.setType(Integer.parseInt(map.get("type").toString()));
+            if(Long.parseLong(map.get("type").toString()) == 1) {
+                contentAllFeelingElement.setContent(map.get("content").toString());
+            }else{
+                contentAllFeelingElement.setContent("");
+            }
             contentAllFeelingElement.setNickName(map.get("nick_name").toString());
-            contentAllFeelingElement.setLikesCounts(Integer.parseInt(map.get("like_count")== null? "0":map.get("like_count").toString()));
+            int likeCount = contentMybatisDao.getContentUserLikesCount(Long.parseLong(map.get("cid").toString()),Long.parseLong(map.get("tag_id").toString()));
+            contentAllFeelingElement.setLikesCount(likeCount);
             contentAllFeelingDto.getResults().add(contentAllFeelingElement);
         }
     }

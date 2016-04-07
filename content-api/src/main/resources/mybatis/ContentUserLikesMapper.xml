@@ -285,7 +285,7 @@
   </update>
 
   <select id="loadAllFeeling" parameterType="Map" resultType="Map">
-    select a.uid,a.tag_id,a.cid, d.tag,b.forward_title,e.uid,e.avatar,e.nick_name ,f.likeCount from content_tag_likes a
+    select a.uid,a.tag_id,a.cid, d.tag,b.content,b.type, e.uid,e.avatar,e.nick_name ,f.likeCount from content_tag_likes a
     left join content b on  a.cid = b.id
     left join content_tags d on a.tag_id = d.id
     left join user_profile e on b.uid = e.uid
