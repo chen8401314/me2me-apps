@@ -113,9 +113,10 @@ public class ContentServiceImpl implements ContentService {
         }else if(content.getType() == Specification.ArticleType.FORWARD.index){
             // 转载文章
             long forwardCid = contentDto.getForwardCid();
+            Content forwardContent = contentMybatisDao.getContentById(forwardCid);
             // TODO: 2016/3/25 添加转载
-            content.setForwardUrl("");
-            content.setForwardTitle("");
+            content.setForwardUrl(Constant.FORWARD_URL_TEST+forwardCid);
+            content.setForwardTitle(forwardContent.getTitle());
         }
         content.setContentType(contentDto.getContentType());
         contentMybatisDao.createContent(content);
