@@ -152,6 +152,9 @@ public class Contents {
     @RequestMapping(value = "/getContentFeeling",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getContentFeeling(ContentFeelingRequest request){
+        if(request.getSinceId()==-1){
+            request.setSinceId(Integer.MAX_VALUE);
+        }
         return contentService.getContentFeeling(request.getCid(),request.getSinceId());
     }
 
