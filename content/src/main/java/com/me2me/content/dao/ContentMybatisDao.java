@@ -1,5 +1,6 @@
 package com.me2me.content.dao;
 
+import com.google.common.collect.Maps;
 import com.me2me.common.Constant;
 import com.me2me.content.dto.LikeDto;
 import com.me2me.content.dto.WriteTagDto;
@@ -107,13 +108,13 @@ public class ContentMybatisDao {
     }
 
     public List<Content>myPublish(long uid,int sinceId) {
-        Map<String,Object> map = new HashMap<String,Object>();
+        Map<String,Object> map = Maps.newHashMap();
         map.put("uid",uid);
         if(sinceId == Constant.DEFAULT_USER_DATA_SIZE){
             map.put("begin",0);
             map.put("length",Constant.DEFAULT_USER_DATA_SIZE);
         }else{
-            map.put("begin",0);
+            map.put("begin",sinceId);
             map.put("length",Constant.DEFAULT_PAGE_SIZE);
         }
         return contentMapper.loadMyPublishData(map);
@@ -126,7 +127,7 @@ public class ContentMybatisDao {
             map.put("begin",0);
             map.put("length",Constant.DEFAULT_USER_DATA_SIZE);
         }else{
-            map.put("begin",0);
+            map.put("begin",sinceId);
             map.put("length",Constant.DEFAULT_PAGE_SIZE);
         }
         List<Map<String,String>> result = contentUserLikesMapper.loadAllFeeling(map);
