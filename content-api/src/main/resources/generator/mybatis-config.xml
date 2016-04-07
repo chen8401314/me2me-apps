@@ -31,13 +31,13 @@
 
 
         <!--<table tableName="user" domainObjectName="User"/>-->
-        <table tableName="content" domainObjectName="Content"/>
+        <!--<table tableName="content" domainObjectName="Content"/>-->
         <!--<table tableName="content_image" domainObjectName="ContentImage"/>-->
         <!-- <table tableName="content_user_likes" domainObjectName="ContentUserLikes"/>-->
         <!-- <table tableName="content_tags" domainObjectName="ContentTags"/> -->
         <!-- <table tableName="content_tag_likes" domainObjectName="ContentTagLikes"/> -->
         <!--<table tableName="content_user_likes_count" domainObjectName="ContentUserLikesCount"/>-->
-
+        <table tableName="high_quality_content" domainObjectName="HighQualityContent"/>
 
     </context>
 </generatorConfiguration>
