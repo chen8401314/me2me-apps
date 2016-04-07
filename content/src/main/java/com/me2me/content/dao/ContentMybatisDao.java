@@ -38,6 +38,9 @@ public class ContentMybatisDao {
     @Autowired
     private ContentUserLikesCountMapper contentUserLikesCountMapper;
 
+    @Autowired
+    private HighQualityContentMapper highQualityContentMapper;
+
     public List<Content> loadSquareData(int sinceId){
         return contentMapper.loadSquareData(sinceId);
     }
@@ -187,7 +190,10 @@ public class ContentMybatisDao {
         criteria.andTidEqualTo(tid);
         List<ContentUserLikesCount> likesCounts = contentUserLikesCountMapper.selectByExample(example);
         return (likesCounts != null && likesCounts.size() >0) ? likesCounts.get(0).getLikecount() : 0;
+    }
 
+    public void createHighQualityContent(HighQualityContent highQualityContent){
+        highQualityContentMapper.insertSelective(highQualityContent);
     }
 
 }

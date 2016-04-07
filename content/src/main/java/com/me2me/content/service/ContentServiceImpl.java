@@ -123,9 +123,9 @@ public class ContentServiceImpl implements ContentService {
             // 转载文章
             long forwardCid = contentDto.getForwardCid();
             Content forwardContent = contentMybatisDao.getContentById(forwardCid);
-            // TODO: 2016/3/25 添加转载
             content.setForwardUrl(Constant.FORWARD_URL_TEST+forwardCid);
             content.setForwardTitle(forwardContent.getTitle());
+            content.setThumbnail(forwardContent.getConverImage());
         }
         content.setContentType(contentDto.getContentType());
         contentMybatisDao.createContent(content);
@@ -500,6 +500,10 @@ public class ContentServiceImpl implements ContentService {
         createContentSuccessDto.setContentType(c.getContentType());
         createContentSuccessDto.setForwardCid(c.getForwardCid());
         createContentSuccessDto.setCoverImage(c.getConverImage());
+        // 内容自动加精
+        HighQualityContent hdc = new HighQualityContent();
+        hdc.setCid(c.getId());
+        contentMybatisDao.createHighQualityContent(hdc);
         return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
     }
 
