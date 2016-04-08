@@ -123,6 +123,7 @@ public class ContentServiceImpl implements ContentService {
             // 转载文章
             long forwardCid = contentDto.getForwardCid();
             Content forwardContent = contentMybatisDao.getContentById(forwardCid);
+            content.setForwardCid(forwardCid);
             content.setForwardUrl(Constant.FORWARD_URL_TEST+forwardCid);
             content.setForwardTitle(forwardContent.getTitle());
             content.setThumbnail(forwardContent.getConverImage());
