@@ -195,4 +195,11 @@ public class ContentMybatisDao {
         List<Content> list = contentMapper.selectByExampleWithBLOBs(example);
         return  (list != null && list.size() >0) ? list.get(0) : null;
     }
+
+    public List<ContentTagLikes> getForwardContents(long cid){
+        return contentTagLikesMapper.getContentTagTimeline(cid);
+    }
+
+
+
 }

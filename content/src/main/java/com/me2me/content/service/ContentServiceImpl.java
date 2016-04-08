@@ -134,6 +134,8 @@ public class ContentServiceImpl implements ContentService {
             writeTagDto.setUid(contentDto.getUid());
             writeTag(writeTagDto);
 
+
+
         }
         content.setContentType(contentDto.getContentType());
         contentMybatisDao.createContent(content);
@@ -410,29 +412,48 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response getContentFeeling(long cid, int sinceId) {
-        List<Map<String,String>> result = contentMybatisDao.loadAllFeeling(cid ,sinceId);
+        /**
+         * 1. 文章
+         2. 该文章被多少次转载
+         3. 取出转载内容 + 转载tag
+         */
         ContentAllFeelingDto contentAllFeelingDto = new ContentAllFeelingDto();
-        buildContentFeelingDatas(contentAllFeelingDto,result);
-        return Response.success(contentAllFeelingDto);
-
-    }
-
-    private void buildContentFeelingDatas(ContentAllFeelingDto contentAllFeelingDto, List<Map<String,String>> list) {
-        for (Map map : list) {
+        List<ContentTagLikes> list = contentMybatisDao.getForwardContents(cid);
+        for(ContentTagLikes contentTagLike : list){
+            Content content = contentMybatisDao.getContentById(contentTagLike.getCid());
             ContentAllFeelingDto.ContentAllFeelingElement contentAllFeelingElement = ContentAllFeelingDto.createElement();
-            contentAllFeelingElement.setTag(map.get("tag").toString());
-            contentAllFeelingElement.setUid(Long.parseLong(map.get("uid").toString()));
-            contentAllFeelingElement.setAvatar(Constant.QINIU_DOMAIN + "/" + map.get("avatar"));
-            contentAllFeelingElement.setTid(Long.parseLong(map.get("tag_id").toString()));
-            contentAllFeelingElement.setCid(Long.parseLong(map.get("cid").toString()));
-            //// TODO: 2016/4/7 用户转发时候写的一段文字
-            contentAllFeelingElement.setContent(map.get("content").toString());
-            contentAllFeelingElement.setNickName(map.get("nick_name").toString());
-            int likeCount = contentMybatisDao.getContentUserLikesCount(Long.parseLong(map.get("cid").toString()),Long.parseLong(map.get("tag_id").toString()));
+            // 转载内容
+            if(content.getForwardCid()>0){
+                contentAllFeelingElement.setContent(content.getContent());
+            }
+            UserProfile userProfile = userMybatisDao.getUserProfileByUid(content.getUid());
+            contentAllFeelingElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            contentAllFeelingElement.setContent(content.getContent());
+            contentAllFeelingElement.setTid(contentTagLike.getTagId());
+            contentAllFeelingElement.setNickName(userProfile.getNickName());
+            int likeCount = contentMybatisDao.getContentUserLikesCount(contentTagLike.getCid(),contentTagLike.getTagId());
             contentAllFeelingElement.setLikesCount(likeCount);
             contentAllFeelingDto.getResults().add(contentAllFeelingElement);
         }
+        return Response.success(contentAllFeelingDto);
+
     }
+//    private void buildContentFeelingDatas(ContentAllFeelingDto contentAllFeelingDto, List<Map<String,String>> list) {
+//        for (Map map : list) {
+//            ContentAllFeelingDto.ContentAllFeelingElement contentAllFeelingElement = ContentAllFeelingDto.createElement();
+//            contentAllFeelingElement.setTag(map.get("tag").toString());
+//            contentAllFeelingElement.setUid(Long.parseLong(map.get("uid").toString()));
+//            contentAllFeelingElement.setAvatar(Constant.QINIU_DOMAIN + "/" + map.get("avatar"));
+//            contentAllFeelingElement.setTid(Long.parseLong(map.get("tag_id").toString()));
+//            contentAllFeelingElement.setCid(Long.parseLong(map.get("cid").toString()));
+//            //// TODO: 2016/4/7 用户转发时候写的一段文字
+//            contentAllFeelingElement.setContent(map.get("content").toString());
+//            contentAllFeelingElement.setNickName(map.get("nick_name").toString());
+//            int likeCount = contentMybatisDao.getContentUserLikesCount(Long.parseLong(map.get("cid").toString()),Long.parseLong(map.get("tag_id").toString()));
+//            contentAllFeelingElement.setLikesCount(likeCount);
+//            contentAllFeelingDto.getResults().add(contentAllFeelingElement);
+//        }
+//    }
     @Override
     public ContentH5Dto getContent(long id) {
         ContentH5Dto contentH5Dto = new ContentH5Dto();

@@ -1,5 +1,6 @@
 package com.me2me.content.mapper;
 
+import com.me2me.content.model.Content;
 import com.me2me.content.model.ContentTagLikes;
 import com.me2me.content.model.ContentTagLikesExample;
 import java.util.List;
@@ -93,4 +94,7 @@ public interface ContentTagLikesMapper {
      * @mbggenerated Fri Mar 25 13:38:25 CST 2016
      */
     int updateByPrimaryKey(ContentTagLikes record);
+
+
+    List<ContentTagLikes> getContentTagTimeline(long cid);
 }

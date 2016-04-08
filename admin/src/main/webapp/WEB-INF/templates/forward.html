@@ -26,24 +26,24 @@
 <body>
     <div class="container">
         <div class="row">
-            <th:block th:if="${root.coverImage} ne ''">
-                <div class="image-cover">
-                    <img class="img-responsive" th:src="${root.coverImage}" />
+                <th:block th:if="${root.coverImage} ne ''">
+                    <div class="image-cover">
+                        <img class="img-responsive" th:src="${root.coverImage}" />
+                    </div>
+                </th:block>
+                <div class="ue-content-wrapper">
+                    <p th:utext="${root.content}"></p>
                 </div>
-            </th:block>
-            <div class="ue-content-wrapper">
-                <p th:utext="${root.content}"></p>
+                <div class="image-list">
+                    <ul>
+                        <th:block th:each="url : ${root.imageUrls}">
+                            <li>
+                                <img class="img-responsive" th:src="${url}" />
+                            </li>
+                        </th:block>
+                    </ul>
+                </div>
             </div>
-            <div class="image-list">
-                <ul>
-                    <th:block th:each="url : ${root.imageUrls}">
-                        <li>
-                            <img class="img-responsive" th:src="${url}" />
-                        </li>
-                    </th:block>
-                </ul>
-            </div>
-        </div>
     </div>
     <div class="page-loading-overlay">
         <div class="loader-2"></div>

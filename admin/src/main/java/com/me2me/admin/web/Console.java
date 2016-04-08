@@ -54,8 +54,10 @@ public class Console  {
                 cx = cx.replace("\n", "<br/>");
                 content.setContent(cx);
             }
+            mv.addObject("root",content);
+        }else{
+            mv.setViewName("error");
         }
-        mv.addObject("root",content);
         return mv;
     }
 }
