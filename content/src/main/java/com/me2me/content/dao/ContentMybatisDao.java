@@ -187,4 +187,12 @@ public class ContentMybatisDao {
         highQualityContentMapper.insertSelective(highQualityContent);
     }
 
+    public Content getContent(long cid,long uid){
+        ContentExample example = new ContentExample();
+        ContentExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andForwardCidEqualTo(cid);
+        List<Content> list = contentMapper.selectByExampleWithBLOBs(example);
+        return  (list != null && list.size() >0) ? list.get(0) : null;
+    }
 }

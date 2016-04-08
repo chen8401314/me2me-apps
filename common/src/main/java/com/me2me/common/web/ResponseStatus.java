@@ -93,6 +93,10 @@ public enum  ResponseStatus {
 
     USER_MOBILE_DUPLICATE("手机号码已经注册过了","user mobile duplicate",5008),
 
+    DATA_DOES_NOT_EXIST("请求的数据不存在","data does not exist ",5009),
+
+    DATA_IS_DELETE("请求的数据已删除","data is delete ",50010),
+
     USER_ADD_FRIEND_ERROR("不能自己添加自己为好友","can't add yourself",50020);
 
     public String message;

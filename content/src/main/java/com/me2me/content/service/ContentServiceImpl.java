@@ -126,6 +126,14 @@ public class ContentServiceImpl implements ContentService {
             content.setForwardUrl(Constant.FORWARD_URL_TEST+forwardCid);
             content.setForwardTitle(forwardContent.getTitle());
             content.setThumbnail(forwardContent.getConverImage());
+            //转载文章时候记录转发文章时候原文贴标签
+            WriteTagDto writeTagDto = new WriteTagDto();
+            writeTagDto.setCustomerId(forwardContent.getId());
+            writeTagDto.setCid(forwardCid);
+            writeTagDto.setTag(contentDto.getFeeling());
+            writeTagDto.setUid(contentDto.getUid());
+            writeTag(writeTagDto);
+
         }
         content.setContentType(contentDto.getContentType());
         contentMybatisDao.createContent(content);
@@ -322,6 +330,11 @@ public class ContentServiceImpl implements ContentService {
     public Response getContentDetail(long id ,long uid) {
         ContentDetailDto contentDetailDto = new ContentDetailDto();
         Content content = contentMybatisDao.getContentById(id);
+        if(content == null){
+            return Response.failure(ResponseStatus.DATA_DOES_NOT_EXIST.status,ResponseStatus.DATA_DOES_NOT_EXIST.message);
+        }else if(content.getStatus() == Specification.ContentStatus.DELETE.index){
+            return Response.failure(ResponseStatus.DATA_IS_DELETE.status,ResponseStatus.DATA_IS_DELETE.message);
+        }
         contentDetailDto.setFeeling(content.getFeeling());
         contentDetailDto.setType(content.getType());
         contentDetailDto.setUid(content.getUid());
@@ -412,12 +425,7 @@ public class ContentServiceImpl implements ContentService {
             contentAllFeelingElement.setAvatar(Constant.QINIU_DOMAIN + "/" + map.get("avatar"));
             contentAllFeelingElement.setTid(Long.parseLong(map.get("tag_id").toString()));
             contentAllFeelingElement.setCid(Long.parseLong(map.get("cid").toString()));
-            contentAllFeelingElement.setType(Integer.parseInt(map.get("type").toString()));
-            if(Long.parseLong(map.get("type").toString()) == 1) {
-                contentAllFeelingElement.setContent(map.get("content").toString());
-            }else{
-                contentAllFeelingElement.setContent("");
-            }
+            //// TODO: 2016/4/7 用户转发时候写的一段文字
             contentAllFeelingElement.setNickName(map.get("nick_name").toString());
             int likeCount = contentMybatisDao.getContentUserLikesCount(Long.parseLong(map.get("cid").toString()),Long.parseLong(map.get("tag_id").toString()));
             contentAllFeelingElement.setLikesCount(likeCount);
