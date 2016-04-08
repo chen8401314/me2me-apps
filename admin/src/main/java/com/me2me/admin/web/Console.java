@@ -3,6 +3,8 @@ package com.me2me.admin.web;
 import com.me2me.admin.web.request.ContentForwardRequest;
 import com.me2me.content.dto.ContentH5Dto;
 import com.me2me.content.service.ContentService;
+import com.plusnet.common.util.StringEscapeUtil;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -43,9 +45,11 @@ public class Console  {
     public ModelAndView forward(ContentForwardRequest request){
         ModelAndView mv = new ModelAndView("forward");
         ContentH5Dto content = contentService.getContent(request.getId());
+        // 处理特殊字符
+        String cx = content.getContent().replace("\n","<br/>");
+        cx = StringEscapeUtil.escapeHtml(cx);
+        content.setContent(cx);
         mv.addObject("root",content);
         return mv;
     }
-
-
 }
