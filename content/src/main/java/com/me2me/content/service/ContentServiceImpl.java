@@ -426,6 +426,7 @@ public class ContentServiceImpl implements ContentService {
             contentAllFeelingElement.setTid(Long.parseLong(map.get("tag_id").toString()));
             contentAllFeelingElement.setCid(Long.parseLong(map.get("cid").toString()));
             //// TODO: 2016/4/7 用户转发时候写的一段文字
+            contentAllFeelingElement.setContent(map.get("content").toString());
             contentAllFeelingElement.setNickName(map.get("nick_name").toString());
             int likeCount = contentMybatisDao.getContentUserLikesCount(Long.parseLong(map.get("cid").toString()),Long.parseLong(map.get("tag_id").toString()));
             contentAllFeelingElement.setLikesCount(likeCount);
