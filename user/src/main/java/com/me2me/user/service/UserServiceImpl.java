@@ -219,7 +219,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public Response getBasicDataByType(BasicDataDto basicDataDto){
-        DictionaryType dictionaryType =userMybatisDao.getDictionaryType(basicDataDto);
+        DictionaryType dictionaryType = userMybatisDao.getDictionaryType(basicDataDto);
         List<Dictionary> dictionaryList = userMybatisDao.getDictionary(basicDataDto);
         BasicDataSuccessDto basicDataSuccessDto = new BasicDataSuccessDto();
         BasicDataSuccessDto.BasicDataSuccessElement basicDataSuccess = BasicDataSuccessDto.createElement();
