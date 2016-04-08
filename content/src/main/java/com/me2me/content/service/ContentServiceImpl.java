@@ -127,12 +127,12 @@ public class ContentServiceImpl implements ContentService {
             content.setForwardTitle(forwardContent.getTitle());
             content.setThumbnail(forwardContent.getConverImage());
             //转载文章时候记录转发文章时候原文贴标签
-            WriteTagDto writeTagDto = new WriteTagDto();
+           /* WriteTagDto writeTagDto = new WriteTagDto();
             writeTagDto.setCustomerId(forwardContent.getId());
             writeTagDto.setCid(forwardCid);
             writeTagDto.setTag(contentDto.getFeeling());
             writeTagDto.setUid(contentDto.getUid());
-            writeTag(writeTagDto);
+            writeTag(writeTagDto);*/
 
 
 
@@ -469,6 +469,7 @@ public class ContentServiceImpl implements ContentService {
                 contentH5Dto.getImageUrls().add(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
             }
         }
+        contentH5Dto.setTitle(content.getTitle());
         contentH5Dto.setType(content.getType());
         contentH5Dto.setContent(content.getContent());
         return contentH5Dto;
