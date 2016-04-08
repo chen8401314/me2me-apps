@@ -211,7 +211,7 @@ public class ContentServiceImpl implements ContentService {
                 userNotice.setSummary("");
             }else{
                 userNotice.setCoverImage("");
-                userNotice.setSummary(content.getContent());
+                userNotice.setSummary(content.getContent().substring(0,50));
 
             }
             userNotice.setToUid(customerProfile.getUid());
