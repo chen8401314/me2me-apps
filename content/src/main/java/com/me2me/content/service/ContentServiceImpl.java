@@ -436,6 +436,9 @@ public class ContentServiceImpl implements ContentService {
     public ContentH5Dto getContent(long id) {
         ContentH5Dto contentH5Dto = new ContentH5Dto();
         Content content = contentMybatisDao.getContentById(id);
+        if(content ==null){
+           return null;
+        }
         List<ContentImage> list = contentMybatisDao.getContentImages(id);
         for (ContentImage contentImage : list){
             if(contentImage.getCover() == 1){
