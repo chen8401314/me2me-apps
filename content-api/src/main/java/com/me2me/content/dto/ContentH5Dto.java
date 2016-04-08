@@ -21,5 +21,7 @@ public class ContentH5Dto implements BaseEntity{
 
     private String content;
 
+    private int type;
+
 
 }

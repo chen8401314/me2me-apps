@@ -448,6 +448,7 @@ public class ContentServiceImpl implements ContentService {
                 contentH5Dto.getImageUrls().add(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
             }
         }
+        contentH5Dto.setType(content.getType());
         contentH5Dto.setContent(content.getContent());
         return contentH5Dto;
     }
