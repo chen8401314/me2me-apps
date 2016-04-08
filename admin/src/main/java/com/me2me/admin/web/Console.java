@@ -46,12 +46,14 @@ public class Console  {
     public ModelAndView forward(ContentForwardRequest request){
         ModelAndView mv = new ModelAndView("forward");
         ContentH5Dto content = contentService.getContent(request.getId());
-        if(content.getType()!= Specification.ArticleType.EDITOR.index) {
-            // 处理特殊字符
-            String cx = content.getContent();
-            cx = StringEscapeUtil.escapeHtml(cx);
-            cx = cx.replace("\n", "<br/>");
-            content.setContent(cx);
+        if(content!=null) {
+            if (content.getType() != Specification.ArticleType.EDITOR.index) {
+                // 处理特殊字符
+                String cx = content.getContent();
+                cx = StringEscapeUtil.escapeHtml(cx);
+                cx = cx.replace("\n", "<br/>");
+                content.setContent(cx);
+            }
         }
         mv.addObject("root",content);
         return mv;
