@@ -567,7 +567,7 @@
     <include refid="Base_Column_List" />
     ,
     <include refid="Blob_Column_List" />
-    from content where id &lt; #{sinceId} and type != 2
+    from content where id &lt; #{sinceId} and type != 2 and status != 1
       order by id desc limit 10
   </select>
 
@@ -575,7 +575,7 @@
         select
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
     c.thumbnail, c.hot_value, c.like_count, c.authorization, c.create_time, c.status,c.content
-    from content c  right join high_quality_content h on c.id = h.cid  where c.id &lt; #{sinceId}
+    from content c  right join high_quality_content h on c.id = h.cid  where c.id &lt; #{sinceId} and c.status != 1
     order by c.id desc limit 10
 </select>
 
@@ -583,7 +583,7 @@
       select
   c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
   c.thumbnail, c.hot_value, c.like_count, c.authorization, c.create_time, c.status,c.content
-  from content c  where c.status = 0 and c.uid =  #{uid,jdbcType=BIGINT} and c.id &lt; #{sinceId}
+  from content c  where c.status != 1 and c.uid =  #{uid,jdbcType=BIGINT} and c.id &lt; #{sinceId}
   order by c.id desc limit 10
   </select>
 </mapper>

@@ -269,7 +269,7 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
-  <select id="getContentTagTimeline" resultMap="ResultMapWithBLOBs">
+  <select id="getContentTagTimeline" resultMap="BaseResultMap">
     select id,tag_id,cid,uid
       from content_tag_likes where tag_id in (select id from content_tags where content_tags.id in ( SELECT l.tag_id from content_tag_likes l where  l.cid in (select id from content where forward_cid = #{cid} or id = #{cid})));
   </select>
