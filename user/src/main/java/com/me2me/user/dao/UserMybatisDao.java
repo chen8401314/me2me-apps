@@ -212,6 +212,7 @@ public class UserMybatisDao {
         return  userNoticeMapper.selectByExample(example);
     }
     public void createUserNotice(UserNotice userNotice){
+        userNotice.setSummary(userNotice.getSummary().substring(0,50));
         userNoticeMapper.insert(userNotice);
     }
 
