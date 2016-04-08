@@ -1,6 +1,7 @@
 package com.me2me.admin.web;
 
 import com.me2me.admin.web.request.ContentForwardRequest;
+import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentH5Dto;
 import com.me2me.content.service.ContentService;
 import com.plusnet.common.util.StringEscapeUtil;
@@ -45,10 +46,15 @@ public class Console  {
     public ModelAndView forward(ContentForwardRequest request){
         ModelAndView mv = new ModelAndView("forward");
         ContentH5Dto content = contentService.getContent(request.getId());
-        // 处理特殊字符
-        String cx = content.getContent().replace("\n","<br/>");
-        cx = StringEscapeUtil.escapeHtml(cx);
-        content.setContent(cx);
+        if(content!=null) {
+            if (content.getType() != Specification.ArticleType.EDITOR.index) {
+                // 处理特殊字符
+                String cx = content.getContent();
+                cx = StringEscapeUtil.escapeHtml(cx);
+                cx = cx.replace("\n", "<br/>");
+                content.setContent(cx);
+            }
+        }
         mv.addObject("root",content);
         return mv;
     }
