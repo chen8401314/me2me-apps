@@ -33,9 +33,6 @@
         </profile>
         <profile>
             <id>test</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>
@@ -51,9 +48,6 @@
         </profile>
         <profile>
             <id>product</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>
