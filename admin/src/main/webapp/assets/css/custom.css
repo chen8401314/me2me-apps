@@ -1,0 +1,38 @@
+/**
+ *
+ * Apply your custom CSS here
+ *
+*/
+
+body {
+}
+
+a {
+}
+
+img,ul,li{
+    margin:0;padding:0;
+}
+
+.img{margin:0;padding:0;}
+.image-list li {
+    list-style-type: none;
+    margin:10px 0;
+}
+.content-layout{
+    margin:0 auto;
+    padding: 0;
+}
+
+.ue-content-wrapper{
+    height: auto;
+    margin-top:10px;
+    display: block;
+    letter-spacing: 2px;
+    line-height: 20px;
+}
+
+.ue-content-wrapper p{
+    padding:0 20px;
+    color:#082441;
+}

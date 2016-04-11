@@ -15,5 +15,4 @@ public class UserLoginDto implements BaseEntity {
 
     private String encrypt;
 
-
 }

@@ -1,5 +1,7 @@
 package com.me2me.user;
 
+import com.google.common.eventbus.AsyncEventBus;
+import com.google.common.eventbus.EventBus;
 import com.me2me.user.dao.UserMybatisDao;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -14,5 +16,7 @@ public class Bootstrap {
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:spring/user-context.xml");
         UserMybatisDao dao = ctx.getBean(UserMybatisDao.class);
         System.out.println(dao);
+
+
     }
 }

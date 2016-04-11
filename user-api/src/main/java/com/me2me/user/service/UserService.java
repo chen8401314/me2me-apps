@@ -1,9 +1,8 @@
 package com.me2me.user.service;
 
 import com.me2me.common.web.Response;
-import com.me2me.user.dto.UserLoginDto;
-import com.me2me.user.dto.UserSignUpDto;
-import com.me2me.user.dto.VerifyDto;
+import com.me2me.user.dto.*;
+import com.me2me.user.model.UserProfile;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -35,6 +34,80 @@ public interface UserService {
      */
     Response verify(VerifyDto verifyDto);
 
+    /**
+     * 用户修改密码
+     * @param modifyEncryptDto
+     * @return
+     */
+    Response modifyEncrypt(ModifyEncryptDto modifyEncryptDto);
+
+    /**
+     * 修改爱好
+     * @param modifyUserHobbyDto
+     * @return
+     */
+    Response modifyUserHobby(ModifyUserHobbyDto modifyUserHobbyDto);
+
+    /**
+     * 用户端获取基础数据
+     * @param basicDataDto
+     * @return
+     */
+    Response getBasicDataByType(BasicDataDto basicDataDto);
+
+    /**
+     * 用户端获取基础数据
+     * @return
+     */
+    Response getBasicData();
+
+    /**
+     * 用户信息修改
+     * @param modifyUserProfileDto
+     * @return
+     */
+    Response modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto);
+
+    UserProfile getUserProfileByUid(long uid);
+
+    /**
+     * 找回密码
+     * @param findEncryptDto
+     * @return
+     */
+    Response retrieveEncrypt(FindEncryptDto findEncryptDto);
+
+    /**
+     * 给指定的用户贴标签
+     * @param pasteTagDto
+     * @return
+     */
+    Response writeTag(PasteTagDto pasteTagDto);
+
+
+    Response getUserNotice(UserNoticeDto userNoticeDto);
+
+
+    /**
+     * 获取用户消息提醒-数量
+     * @param uid
+     * @return
+     */
+    Response getUserTips(long uid);
+
+    /**
+     * 清空userTips
+     * @param uid
+     * @return
+     */
+    public Response cleanUserTips(long uid);
+
+    /**
+     * 用户举报接口
+     * @param userReportDto
+     * @return
+     */
+    public Response userReport(UserReportDto userReportDto);
 
 
 }
