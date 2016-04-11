@@ -1,9 +1,16 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:include="fragments/header">
-</head>
-<body class="page-body login-page">
+<head th:fragment="header" xmlns:th="http://www.w3.org/1999/xhtml">
+    <meta charset="UTF-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="author" content="" />
+    <link rel="stylesheet" th:href="@{/assets/css/bootstrap.css}"/>
+    <link rel="stylesheet" th:href="@{/assets/css/admin.css}"/>
+    <script th:src="@{/assets/js/jquery-1.11.1.min.js}"></script>
+    <script th:src="@{/assets/js/bootstrap.min.js}"></script>
+<body>
     该内容不存在
 </body>
 </html>
