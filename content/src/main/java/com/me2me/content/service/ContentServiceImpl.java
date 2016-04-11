@@ -428,12 +428,16 @@ public class ContentServiceImpl implements ContentService {
             ContentAllFeelingDto.ContentAllFeelingElement contentAllFeelingElement = ContentAllFeelingDto.createElement();
             // 转载内容
             if(content.getForwardCid()>0){
+                contentAllFeelingElement.setType(Specification.IsForward.FORWARD.index);
                 contentAllFeelingElement.setContent(content.getContent());
-                UserProfile userProfile = userMybatisDao.getUserProfileByUid(content.getUid());
-                contentAllFeelingElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-                contentAllFeelingElement.setTid(contentTagLike.getTagId());
-                contentAllFeelingElement.setNickName(userProfile.getNickName());
+            }else{
+                contentAllFeelingElement.setType(Specification.IsForward.NATIVE.index);
+                contentAllFeelingElement.setContent("");
             }
+            UserProfile userProfile = userMybatisDao.getUserProfileByUid(content.getUid());
+            contentAllFeelingElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            contentAllFeelingElement.setTid(contentTagLike.getTagId());
+            contentAllFeelingElement.setNickName(userProfile.getNickName());
             int likeCount = contentMybatisDao.getContentUserLikesCount(contentTagLike.getCid(),contentTagLike.getTagId());
             contentAllFeelingElement.setLikesCount(likeCount);
             contentAllFeelingElement.setCid(contentTagLike.getCid());

@@ -206,5 +206,23 @@ public interface Specification {
         }
     }
 
+    /**
+     * 感受列表类型
+     */
+    public enum IsForward{
+
+        NATIVE("原生",0),
+
+        FORWARD("转发",1);
+
+
+        public String name;
+        public int index;
+        IsForward(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
 
 }
