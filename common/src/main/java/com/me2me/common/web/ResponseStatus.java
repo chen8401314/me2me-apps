@@ -97,6 +97,8 @@ public enum  ResponseStatus {
 
     DATA_IS_DELETE("请求的数据已删除","data is delete ",50010),
 
+    USER_MOBILE_NO_SIGN_UP("手机号码还未注册","user mobile no sign up",50011),
+
     USER_ADD_FRIEND_ERROR("不能自己添加自己为好友","can't add yourself",50020);
 
     public String message;

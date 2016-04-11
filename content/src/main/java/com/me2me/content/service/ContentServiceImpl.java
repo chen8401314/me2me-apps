@@ -126,17 +126,8 @@ public class ContentServiceImpl implements ContentService {
             content.setForwardUrl(Constant.FORWARD_URL_TEST+forwardCid);
             content.setForwardTitle(forwardContent.getTitle());
             content.setThumbnail(forwardContent.getConverImage());
-            //转载文章时候记录转发文章时候原文贴标签
-           /* WriteTagDto writeTagDto = new WriteTagDto();
-            writeTagDto.setCustomerId(forwardContent.getId());
-            writeTagDto.setCid(forwardCid);
-            writeTagDto.setTag(contentDto.getFeeling());
-            writeTagDto.setUid(contentDto.getUid());
-            writeTag(writeTagDto);*/
-
-
-
         }
+
         content.setContentType(contentDto.getContentType());
         contentMybatisDao.createContent(content);
         Content c = contentMybatisDao.getContentById(content.getId());
@@ -173,6 +164,18 @@ public class ContentServiceImpl implements ContentService {
         contentUserLikesCount.setTid(contentTags.getId());
         contentUserLikesCount.setLikecount(0);
         contentMybatisDao.addContentUserLikesCount(contentUserLikesCount);
+
+        //content_tag_likes
+        ContentTagLikes contentTagLikes = new ContentTagLikes();
+        contentTagLikes.setUid(contentDto.getUid());
+        if(content.getType() == Specification.ArticleType.ORIGIN.index){
+            contentTagLikes.setCid(content.getId());
+        }else if(content.getType() == Specification.ArticleType.FORWARD.index){
+            contentTagLikes.setCid(contentDto.getForwardCid());
+        }
+        contentTagLikes.setTagId(contentTags.getId());
+        contentMybatisDao.createContentTagLikes(contentTagLikes);
+        //content_tag_likes
         return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
 }
 
@@ -203,7 +206,7 @@ public class ContentServiceImpl implements ContentService {
             userNotice.setFromAvatar(userProfile.getAvatar());
             userNotice.setFromUid(userProfile.getUid());
             userNotice.setToNickName(customerProfile.getNickName());
-            userNotice.setNoticeType(Specification.UserNoticeType.TAG.index);
+            userNotice.setNoticeType(Specification.UserNoticeType.LIKE.index);
             userNotice.setReadStatus(userNotice.getReadStatus());
             userNotice.setCid(likeDto.getCid());
             if(contentImage != null){

@@ -43,10 +43,10 @@ public class UserServiceImpl implements UserService {
     public Response signUp(UserSignUpDto userSignUpDto) {
         // 校验手机号码是否注册
         String mobile = userSignUpDto.getMobile();
-       /* if(userMybatisDao.getUserByUserName(mobile)!=null){
+        if(userMybatisDao.getUserByUserName(mobile)!=null){
             // 该用户已经注册过
-            return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
-        }*/
+            return Response.failure(ResponseStatus.USER_MOBILE_NO_SIGN_UP.status,ResponseStatus.USER_MOBILE_NO_SIGN_UP.message);
+        }
         SignUpSuccessDto signUpSuccessDto = new SignUpSuccessDto();
         User user = new User();
         String salt = SecurityUtils.getMask();
@@ -152,6 +152,11 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public Response modifyEncrypt(ModifyEncryptDto modifyEncryptDto){
+        String mobile = modifyEncryptDto.getUserName();
+        if(userMybatisDao.getUserByUserName(mobile) == null){
+            // 该用户已经注册过
+            return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
+        }
         if(!modifyEncryptDto.getFirstEncrypt().equals(modifyEncryptDto.getSecondEncrypt())) {
             return Response.failure(ResponseStatus.USER_MODIFY_ENCRYPT_PASSWORD_NOT_SAME_ERROR.status,ResponseStatus.USER_MODIFY_ENCRYPT_PASSWORD_NOT_SAME_ERROR.message);
         }else{
@@ -176,6 +181,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public Response retrieveEncrypt(FindEncryptDto findEncryptDto){
+
         if(!findEncryptDto.getFirstEncrypt().equals(findEncryptDto.getSecondEncrypt())) {
             return Response.failure(ResponseStatus.USER_FIND_ENCRYPT_PASSWORD_NOT_SAME_ERROR.status,ResponseStatus.USER_FIND_ENCRYPT_PASSWORD_NOT_SAME_ERROR.message);
         }else{
