@@ -362,6 +362,11 @@ public class UserServiceImpl implements UserService {
         return Response.success(ResponseStatus.USER_CREATE_REPORT_SUCCESS.status,ResponseStatus.USER_CREATE_REPORT_SUCCESS.message);
     }
 
+    @Override
+    public Response showUserTags(long uid) {
+        return null;
+    }
+
     /**
      * 是否发送过验证码
      * @return

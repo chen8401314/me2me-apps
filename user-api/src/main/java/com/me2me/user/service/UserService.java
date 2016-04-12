@@ -100,14 +100,18 @@ public interface UserService {
      * @param uid
      * @return
      */
-    public Response cleanUserTips(long uid);
+    Response cleanUserTips(long uid);
 
     /**
      * 用户举报接口
      * @param userReportDto
      * @return
      */
-    public Response userReport(UserReportDto userReportDto);
+    Response userReport(UserReportDto userReportDto);
+
+    Response showUserTags(long uid);
+
+
 
 
 }
