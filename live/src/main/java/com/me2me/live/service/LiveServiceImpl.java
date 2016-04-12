@@ -13,6 +13,7 @@ import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.model.UserProfile;
+import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +31,7 @@ public class LiveServiceImpl implements LiveService {
     private LiveMybatisDao liveMybatisDao;
 
     @Autowired
-    private UserMybatisDao userMybatisDao;
+    private UserService userService;
 
     @Override
     public Response createLive(CreateLiveDto createLiveDto) {
@@ -49,7 +50,7 @@ public class LiveServiceImpl implements LiveService {
         List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(),getLiveTimeLineDto.getSinceId());
         for(TopicFragment topicFragment : fragmentList){
             long uid = topicFragment.getUid();
-            UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+            UserProfile userProfile = userService.getUserProfileByUid(uid);
             LiveTimeLineDto.LiveElement liveElement = LiveTimeLineDto.createElement();
             liveElement.setUid(uid);
             liveElement.setNickName(userProfile.getNickName());
