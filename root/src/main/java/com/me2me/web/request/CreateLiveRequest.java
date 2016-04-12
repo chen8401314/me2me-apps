@@ -22,5 +22,5 @@ public class CreateLiveRequest  extends Request{
 
     @Getter
     @Setter
-    private String coverImage;
+    private String liveImage;
 }

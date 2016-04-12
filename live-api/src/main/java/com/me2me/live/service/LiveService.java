@@ -3,6 +3,7 @@ package com.me2me.live.service;
 import com.me2me.common.web.Response;
 import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
+import com.me2me.live.dto.SpeakDto;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -24,4 +25,10 @@ public interface LiveService {
      * @return
      */
     Response getLiveTimeline(GetLiveTimeLineDto getLiveTimeLineDto);
+
+    /**
+     * 直播发言
+     * @return
+     */
+    Response speak(SpeakDto speakDto);
 }

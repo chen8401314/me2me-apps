@@ -69,6 +69,10 @@ public enum  ResponseStatus {
 
     USER_CREATE_LIVE_SUCCESS("直播创建成功","user create live success",20055),
 
+    GET_LIVE_TIME_LINE_SUCCESS("获取直播信息成功","get live time line success",20056),
+
+    USER_SPEAK_SUCCESS("用户发言成功","user speak success",20057),
+
 
 
 

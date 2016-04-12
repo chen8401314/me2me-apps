@@ -6,6 +6,7 @@ import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
 import com.me2me.live.dto.LiveTimeLineDto;
+import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.user.dao.UserMybatisDao;
@@ -54,8 +55,25 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setFragment(topicFragment.getFragment());
             liveElement.setPublishTime(topicFragment.getCreateTime());
             liveElement.setType(topicFragment.getType());
-
+            //// TODO: 2016/4/12  follow 逻辑
+            liveElement.setIsFollow(0);
+            liveElement.setContentType(topicFragment.getContentType());
+            liveElement.setFragmentId(topicFragment.getId());
+            liveTimeLineDto.getLiveElements().add(liveElement);
         }
-        return null;
+        return Response.success(ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.status,ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.message,liveTimeLineDto);
+    }
+
+    @Override
+    public Response speak(SpeakDto speakDto) {
+        TopicFragment topicFragment = new TopicFragment();
+        topicFragment.setFragmentImage(speakDto.getFragmentImage());
+        topicFragment.setFragment(speakDto.getFragment());
+        topicFragment.setUid(speakDto.getUid());
+        topicFragment.setContentType(speakDto.getContentType());
+        topicFragment.setType(speakDto.getType());
+        topicFragment.setTopicId(speakDto.getTopicId());
+        liveMybatisDao.createTopicFragment(topicFragment);
+        return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status,ResponseStatus.USER_SPEAK_SUCCESS.message);
     }
 }
