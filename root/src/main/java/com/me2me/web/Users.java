@@ -200,6 +200,19 @@ public class Users {
     }
 
     /**
+     * 获取用户标签列表
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/showUserTags",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response showUserTags(GetTagRequest request){
+
+        return userService.showUserTags(request.getUid());
+    }
+
+
+    /**
      * 用户消息列表
      * @param request
      * @return

@@ -366,6 +366,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response showUserTags(long uid) {
+
+        List<UserTagsDetails> list = userMybatisDao.getUserTags(uid);
+        for(UserTagsDetails tagsDetails : list){
+
+        }
         return null;
     }
 

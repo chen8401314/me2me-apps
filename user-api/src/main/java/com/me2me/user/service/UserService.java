@@ -116,7 +116,4 @@ public interface UserService {
 
     Response showUserTags(long uid);
 
-
-
-
 }

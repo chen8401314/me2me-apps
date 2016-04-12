@@ -239,4 +239,11 @@ public class UserMybatisDao {
     public void createUserReport(UserReport userReport){
         userReportMapper.insertSelective(userReport);
     }
+
+    public List<UserTagsDetails> getUserTags(long uid){
+        UserTagsDetailsExample example = new UserTagsDetailsExample();
+        UserTagsDetailsExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        return userTagsDetailsMapper.selectByExample(example);
+    }
 }

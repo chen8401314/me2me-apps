@@ -211,7 +211,7 @@ public class ContentServiceImpl implements ContentService {
             userNotice.setReadStatus(userNotice.getReadStatus());
             userNotice.setCid(likeDto.getCid());
             if(contentImage != null){
-                userNotice.setCoverImage(contentImage.getImage());
+                userNotice.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
                 userNotice.setSummary("");
             }else{
                 userNotice.setCoverImage("");
