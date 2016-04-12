@@ -1,4 +1,4 @@
-package com.me2me.live;
+package com.me2me.io;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -11,7 +11,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public class Bootstrap {
     public static void main(String[] args) throws InterruptedException {
-        final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:spring/live-dubbo-provider.xml","classpath:spring/live-dubbo-consumer.xml");
+        final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:spring/io-dubbo-provider.xml");
         ctx.start();
         Runtime.getRuntime().addShutdownHook(new Thread(){
             @Override
