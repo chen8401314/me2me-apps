@@ -1,14 +1,13 @@
-package com.me2me.service;
+package com.me2me.live.service;
 
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
-import com.me2me.dao.LiveMybatisDao;
+import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
 import com.me2me.live.dto.LiveTimeLineDto;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicFragment;
-import com.me2me.live.service.LiveService;
 import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.model.UserProfile;
 import org.springframework.beans.factory.annotation.Autowired;

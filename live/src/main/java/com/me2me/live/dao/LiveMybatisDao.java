@@ -1,4 +1,4 @@
-package com.me2me.dao;
+package com.me2me.live.dao;
 
 import com.me2me.live.mapper.TopicFragmentMapper;
 import com.me2me.live.mapper.TopicMapper;

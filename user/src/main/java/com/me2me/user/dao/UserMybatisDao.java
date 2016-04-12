@@ -157,17 +157,17 @@ public class UserMybatisDao {
 
     /**
      * 更新用户标签详情
-     * @param tagId 标签Id
-     * @param userId 用户Id
      */
-    public void updateUserTagDetail(Long tagId,Long userId){
+    public void updateUserTagDetail(UserTagsDetails userTagsDetails){
+        userTagsDetailsMapper.updateByPrimaryKey(userTagsDetails);
+    }
+
+    public UserTagsDetails getUserTagByTidAndUid(long tid,long uid){
         UserTagsDetailsExample userTagsDetailsExample = new UserTagsDetailsExample();
         UserTagsDetailsExample.Criteria criteria1 = userTagsDetailsExample.createCriteria();
-        criteria1.andUidEqualTo(userId).andTidEqualTo(tagId);
-        List<UserTagsDetails> detailsList = userTagsDetailsMapper.selectByExample(userTagsDetailsExample);
-        UserTagsDetails details  = detailsList.get(0);
-        details.setFrequency(Math.addExact(details.getFrequency(),1));
-        userTagsDetailsMapper.updateByPrimaryKey(details);
+        criteria1.andUidEqualTo(uid).andTidEqualTo(tid);
+        List<UserTagsDetails> lists = userTagsDetailsMapper.selectByExample(userTagsDetailsExample);
+        return (lists!=null&&lists.size()>0)? lists.get(0):null;
     }
 
     /**
@@ -189,6 +189,7 @@ public class UserMybatisDao {
         UserTagsDetails details = new UserTagsDetails();
         details.setTid(tagId.longValue());
         details.setUid(pasteTagDto.getFromUid());
+        details.setFrequency(1L);
         userTagsDetailsMapper.insert(details);
     }
 

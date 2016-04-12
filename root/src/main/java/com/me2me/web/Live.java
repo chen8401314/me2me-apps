@@ -28,9 +28,8 @@ import java.util.List;
 @RequestMapping(value = "/api/live")
 public class Live {
 
-    @Autowired
-    private LiveService liveService;
-
+//    @Autowired
+//    private LiveService liveService;
 
     /**
      * 创建直接
@@ -43,7 +42,9 @@ public class Live {
         createLiveDto.setUid(request.getUid());
         createLiveDto.setTitle(request.getTitle());
         createLiveDto.setLiveImage(request.getCoverImage());
-        return liveService.createLive(createLiveDto);
+//        return liveService.createLive(createLiveDto);
+
+        return null;
     }
 
     /**
