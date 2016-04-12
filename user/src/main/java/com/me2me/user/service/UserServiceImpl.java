@@ -366,10 +366,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response showUserTags(long uid) {
-
+        ShowUserTagsDto showUserTagsDto = new ShowUserTagsDto();
         List<UserTagsDetails> list = userMybatisDao.getUserTags(uid);
         for(UserTagsDetails tagsDetails : list){
-
+       //// TODO: 2016/4/12 用户点赞列表 
         }
         return null;
     }
