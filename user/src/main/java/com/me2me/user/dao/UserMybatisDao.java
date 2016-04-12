@@ -148,11 +148,7 @@ public class UserMybatisDao {
         UserTagsExample.Criteria criteria = userTagsExample.createCriteria();
         criteria.andTagEqualTo(tag);
         List<UserTags> tagsList = userTagsMapper.selectByExample(userTagsExample);
-        if(null != tagsList && !tagsList.isEmpty()){
-            return tagsList.get(0);
-        }else {
-            return null;
-        }
+        return (tagsList !=null &&tagsList.size() > 0) ? tagsList.get(0) : null;
     }
 
     /**
@@ -167,14 +163,14 @@ public class UserMybatisDao {
         UserTagsDetailsExample.Criteria criteria1 = userTagsDetailsExample.createCriteria();
         criteria1.andUidEqualTo(uid).andTidEqualTo(tid);
         List<UserTagsDetails> lists = userTagsDetailsMapper.selectByExample(userTagsDetailsExample);
-        return (lists!=null&&lists.size()>0)? lists.get(0):null;
+        return (lists != null && lists.size() > 0) ? lists.get(0) : null;
     }
 
     /**
      * 贴标签
      * @param tag
      */
-    public Integer saveUserTag(String tag){
+    public long saveUserTag(String tag){
         UserTags userTags = new UserTags();
         userTags.setTag(tag);
         return userTagsMapper.insertSelective(userTags);
@@ -187,7 +183,7 @@ public class UserMybatisDao {
      */
     public void saveUserTagDetail(Long tagId,PasteTagDto pasteTagDto){
         UserTagsDetails details = new UserTagsDetails();
-        details.setTid(tagId.longValue());
+        details.setTid(tagId);
         details.setUid(pasteTagDto.getFromUid());
         details.setFrequency(1L);
         userTagsDetailsMapper.insert(details);
