@@ -14,8 +14,7 @@ public class Bootstrap {
 
     public static void main(String[] args) {
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:spring/user-context.xml");
-        UserMybatisDao dao = ctx.getBean(UserMybatisDao.class);
-        System.out.println(dao);
+        ctx.start();
 
 
     }
