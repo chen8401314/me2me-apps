@@ -11,7 +11,6 @@ import com.me2me.live.dto.LiveTimeLineDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicFragment;
-import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
