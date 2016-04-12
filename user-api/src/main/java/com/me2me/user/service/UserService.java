@@ -2,7 +2,9 @@ package com.me2me.user.service;
 
 import com.me2me.common.web.Response;
 import com.me2me.user.dto.*;
+import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
+import com.me2me.user.model.UserTips;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -115,5 +117,13 @@ public interface UserService {
     Response userReport(UserReportDto userReportDto);
 
     Response showUserTags(long uid);
+
+    void createUserNotice(UserNotice userNotice);
+
+    UserTips getUserTips(UserTips userTips);
+
+    void createUserTips(UserTips userTips);
+
+    void modifyUserTips( UserTips userTips);
 
 }

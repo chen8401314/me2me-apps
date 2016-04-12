@@ -366,12 +366,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response showUserTags(long uid) {
-
+        ShowUserTagsDto showUserTagsDto = new ShowUserTagsDto();
         List<UserTagsDetails> list = userMybatisDao.getUserTags(uid);
         for(UserTagsDetails tagsDetails : list){
-
+       //// TODO: 2016/4/12 用户点赞列表 
         }
         return null;
+    }
+
+    @Override
+    public void createUserNotice(UserNotice userNotice) {
+        userMybatisDao.createUserNotice(userNotice);
+    }
+
+    @Override
+    public UserTips getUserTips(UserTips userTips) {
+        return userMybatisDao.getUserTips(userTips);
+    }
+
+    @Override
+    public void createUserTips(UserTips userTips) {
+        userMybatisDao.createUserTips(userTips);
+
+    }
+
+    @Override
+    public void modifyUserTips(UserTips userTips) {
+        userMybatisDao.modifyUserTips(userTips);
+
     }
 
     /**
