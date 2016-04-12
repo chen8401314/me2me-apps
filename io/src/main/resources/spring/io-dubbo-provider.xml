@@ -13,9 +13,7 @@
 
     <dubbo:protocol serialization="nativejava" name="dubbo" port="#{app.dubboPort}" threads="#{app.dubboThreads}" heartbeat="#{app.dubboHeartBeats}"/>
 
-    <dubbo:service interface="com.me2me.user.service.UserService" ref="userServiceImpl" retries="0" timeout="20000"/>
+    <dubbo:service interface="com.me2me.io.service.FileTransferService" ref="fileTransferServiceImpl" retries="0" timeout="20000"/>
 
-    <import resource="mysql-context.xml"/>
-
-    <import resource="user-context.xml"/>
+    <import resource="io-context.xml"/>
 </beans>

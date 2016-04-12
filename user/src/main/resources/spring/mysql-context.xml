@@ -19,7 +19,6 @@
         <property name="testWhileIdle" value="true" />
         <property name="testOnBorrow" value="false" />
         <property name="testOnReturn" value="false" />
-        <!-- 开启Druid的监控统计功能 -->
         <property name="filters" value="stat" />
     </bean>
 
