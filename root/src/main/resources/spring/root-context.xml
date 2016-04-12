@@ -14,5 +14,6 @@
         <import resource="classpath:spring/mysql-context.xml"/>
         <import resource="classpath:spring/content-context.xml"/>
         <import resource="classpath:spring/io-context.xml"/>
+        <import resource="classpath:spring/live-context.xml"/>
     </beans>
 </beans>

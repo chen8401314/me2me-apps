@@ -1,6 +1,8 @@
 package com.me2me.live.service;
 
 import com.me2me.common.web.Response;
+import com.me2me.live.dto.CreateLiveDto;
+import com.me2me.live.dto.GetLiveTimeLineDto;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -14,12 +16,12 @@ public interface LiveService {
      * 创建直播
      * @return
      */
-    Response createLive();
+    Response createLive(CreateLiveDto createLiveDto);
 
 
     /**
      * 获取直播时间线(轮询机制)
      * @return
      */
-    Response getLiveTimeline();
+    Response getLiveTimeline(GetLiveTimeLineDto getLiveTimeLineDto);
 }

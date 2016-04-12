@@ -67,6 +67,8 @@ public enum  ResponseStatus {
 
     USER_CREATE_REPORT_SUCCESS("举报成功","user create report success",20054),
 
+    USER_CREATE_LIVE_SUCCESS("直播创建成功","user create live success",20055),
+
 
 
 

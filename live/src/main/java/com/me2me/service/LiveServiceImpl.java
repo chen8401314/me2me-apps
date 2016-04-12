@@ -1,8 +1,20 @@
 package com.me2me.service;
 
 import com.me2me.common.web.Response;
+import com.me2me.common.web.ResponseStatus;
+import com.me2me.dao.LiveMybatisDao;
+import com.me2me.live.dto.CreateLiveDto;
+import com.me2me.live.dto.GetLiveTimeLineDto;
+import com.me2me.live.dto.LiveTimeLineDto;
+import com.me2me.live.model.Topic;
+import com.me2me.live.model.TopicFragment;
 import com.me2me.live.service.LiveService;
+import com.me2me.user.dao.UserMybatisDao;
+import com.me2me.user.model.UserProfile;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -12,15 +24,39 @@ import org.springframework.stereotype.Service;
 @Service
 public class LiveServiceImpl implements LiveService {
 
+    @Autowired
+    private LiveMybatisDao liveMybatisDao;
 
+    @Autowired
+    private UserMybatisDao userMybatisDao;
 
     @Override
-    public Response createLive() {
-        return null;
+    public Response createLive(CreateLiveDto createLiveDto) {
+        Topic topic = new Topic();
+        topic.setTitle(createLiveDto.getTitle());
+        topic.setLiveImage(createLiveDto.getLiveImage());
+        topic.setUid(createLiveDto.getUid());
+        liveMybatisDao.createTopic(topic);
+        return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status,ResponseStatus.USER_CREATE_LIVE_SUCCESS.message);
     }
 
     @Override
-    public Response getLiveTimeline() {
+    public Response getLiveTimeline(GetLiveTimeLineDto getLiveTimeLineDto) {
+        LiveTimeLineDto liveTimeLineDto = new LiveTimeLineDto();
+        Topic topic = liveMybatisDao.getTopicById(getLiveTimeLineDto.getTopicId());
+        List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(),getLiveTimeLineDto.getSinceId());
+        for(TopicFragment topicFragment : fragmentList){
+            long uid = topicFragment.getUid();
+            UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+            LiveTimeLineDto.LiveElement liveElement = LiveTimeLineDto.createElement();
+            liveElement.setUid(uid);
+            liveElement.setNickName(userProfile.getNickName());
+            liveElement.setFragment(topicFragment.getFragment());
+            liveElement.setFragment(topicFragment.getFragment());
+            liveElement.setPublishTime(topicFragment.getCreateTime());
+            liveElement.setType(topicFragment.getType());
+
+        }
         return null;
     }
 }
