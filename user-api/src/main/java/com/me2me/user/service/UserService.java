@@ -85,6 +85,11 @@ public interface UserService {
     Response writeTag(PasteTagDto pasteTagDto);
 
 
+    /**
+     * 消息提醒列表
+     * @param userNoticeDto
+     * @return
+     */
     Response getUserNotice(UserNoticeDto userNoticeDto);
 
 
