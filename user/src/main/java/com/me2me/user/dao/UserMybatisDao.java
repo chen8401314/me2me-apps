@@ -246,4 +246,8 @@ public class UserMybatisDao {
         criteria.andUidEqualTo(uid);
         return userTagsDetailsMapper.selectByExample(example);
     }
+
+    public UserTags getUserTagsById(long id){
+        return userTagsMapper.selectByPrimaryKey(id);
+    }
 }

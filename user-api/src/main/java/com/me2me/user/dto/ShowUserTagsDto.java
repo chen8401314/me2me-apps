@@ -25,13 +25,9 @@ public class ShowUserTagsDto  implements BaseEntity{
 
         private long uid;
 
-        private long fromUid;
-
-        private String fromNickName;
-
         private String tag;
 
-        private Date createTime;
+        private long likeCount;
     }
 
 }

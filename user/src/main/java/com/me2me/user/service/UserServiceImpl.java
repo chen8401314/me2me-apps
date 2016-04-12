@@ -369,9 +369,14 @@ public class UserServiceImpl implements UserService {
         ShowUserTagsDto showUserTagsDto = new ShowUserTagsDto();
         List<UserTagsDetails> list = userMybatisDao.getUserTags(uid);
         for(UserTagsDetails tagsDetails : list){
-       //// TODO: 2016/4/12 用户点赞列表 
+            ShowUserTagsDto.ShowUserTagElement showUserTagElement = ShowUserTagsDto.createElement();
+            showUserTagElement.setUid(tagsDetails.getUid());
+            UserTags userTags = userMybatisDao.getUserTagsById(tagsDetails.getTid());
+            showUserTagElement.setTag(userTags.getTag());
+            showUserTagElement.setLikeCount(tagsDetails.getFrequency());
+            showUserTagsDto.getShowTags().add(showUserTagElement);
         }
-        return null;
+        return Response.success(ResponseStatus.GET_USER_TAGS_SUCCESS.status,ResponseStatus.GET_USER_TAGS_SUCCESS.message,showUserTagsDto);
     }
 
     @Override

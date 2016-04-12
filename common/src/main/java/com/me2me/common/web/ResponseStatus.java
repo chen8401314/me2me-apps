@@ -73,6 +73,9 @@ public enum  ResponseStatus {
 
     USER_SPEAK_SUCCESS("用户发言成功","user speak success",20057),
 
+    GET_USER_TAGS_SUCCESS("获取用户标签成功","get user tags success",20058),
+
+
 
 
 
