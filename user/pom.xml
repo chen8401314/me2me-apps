@@ -82,8 +82,8 @@
                             <target>${project.build.directory}</target>
                             <daemons>
                                 <daemon>
-                                    <id>app-home-service</id>
-                                    <mainClass>com.app.home.Bootstrap</mainClass>
+                                    <id>app-user-service</id>
+                                    <mainClass>com.me2me.user.Bootstrap</mainClass>
                                     <commandLineArguments>
                                         <commandLineArgument>start</commandLineArgument>
                                     </commandLineArguments>
