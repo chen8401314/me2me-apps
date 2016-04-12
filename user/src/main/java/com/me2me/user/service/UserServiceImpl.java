@@ -292,14 +292,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Response writeTag(PasteTagDto pasteTagDto) {
         UserTags userTag = userMybatisDao.getUserTag(pasteTagDto.getTag());
-        if(null != userTag){
-            UserTagsDetails details = userMybatisDao.getUserTagByTidAndUid(userTag.getId(),pasteTagDto.getTargetUid());
-            details.setFrequency(details.getFrequency() + 1);
-            userMybatisDao.updateUserTagDetail(details);
-        }else {
-            long tagId = userMybatisDao.saveUserTag(pasteTagDto.getTag());
-            userMybatisDao.saveUserTagDetail(tagId,pasteTagDto);
-        }
+        long tagId = userMybatisDao.saveUserTag(pasteTagDto.getTag());
+        userMybatisDao.saveUserTagDetail(tagId,pasteTagDto);
         userMybatisDao.saveUserTagRecord(pasteTagDto.getFromUid(),pasteTagDto.getTargetUid());
         return Response.success(ResponseStatus.PASTE_TAG_SUCCESS.status,ResponseStatus.PASTE_TAG_SUCCESS.message);
     }
@@ -408,6 +402,22 @@ public class UserServiceImpl implements UserService {
     private boolean checkIsVerify(){
 
         return false;
+    }
+
+
+    public Response likes(UserLikeDto userLikeDto){
+        UserTagsRecord userTagsRecord = new UserTagsRecord();
+        userTagsRecord.setFromUid(userLikeDto.getUid());
+        userTagsRecord.setToUid(userLikeDto.getCustomerId());
+        userTagsRecord.setTagId(userLikeDto.getTid());
+        UserTagsDetails userTagsDetails = new UserTagsDetails();
+        userTagsDetails.setUid(userLikeDto.getCustomerId());
+        userTagsDetails.setTid(userLikeDto.getTid());
+        UserTagsDetails details = userMybatisDao.getUserTagByTidAndUid(userLikeDto.getTid(),userLikeDto.getCustomerId());
+        userTagsDetails.setFrequency(details.getFrequency() + 1);
+        userMybatisDao.updateUserTagDetail(userTagsDetails);
+        userMybatisDao.createUserTagsRecord(userTagsRecord);
+        return Response.success(ResponseStatus.USER_TAGS_LIKES_SUCCESS.status,ResponseStatus.USER_TAGS_LIKES_SUCCESS.message);
     }
 
 }

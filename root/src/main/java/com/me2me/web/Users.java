@@ -211,6 +211,20 @@ public class Users {
         return userService.showUserTags(request.getUid());
     }
 
+    /**
+     * 获取用户标签点赞
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/likes",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response likes(LikesRequest request){
+        UserLikeDto userLikeDto = new UserLikeDto();
+        userLikeDto.setCustomerId(request.getCustomerId());
+        userLikeDto.setTid(request.getTid());
+        userLikeDto.setUid(request.getUid());
+        return userService.likes(userLikeDto);
+    }
 
     /**
      * 用户消息列表

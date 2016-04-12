@@ -42,7 +42,7 @@ public class Live {
     }
 
     /**
-     * 获取直接消息
+     * 获取消息列表
      * @param request
      * @return
      */
@@ -56,7 +56,7 @@ public class Live {
     }
 
     /**
-     * 获取直接消息
+     * 直播发话
      * @param request
      * @return
      */

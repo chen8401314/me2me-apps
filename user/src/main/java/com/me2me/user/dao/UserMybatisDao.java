@@ -250,4 +250,8 @@ public class UserMybatisDao {
     public UserTags getUserTagsById(long id){
         return userTagsMapper.selectByPrimaryKey(id);
     }
+
+    public void createUserTagsRecord(UserTagsRecord userTagsRecord){
+        userTagsRecordMapper.insertSelective(userTagsRecord);
+    }
 }

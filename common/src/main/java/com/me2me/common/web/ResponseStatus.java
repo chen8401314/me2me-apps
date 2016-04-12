@@ -75,6 +75,10 @@ public enum  ResponseStatus {
 
     GET_USER_TAGS_SUCCESS("获取用户标签成功","get user tags success",20058),
 
+    USER_TAGS_LIKES_SUCCESS("点赞成功","user tags likes success",20059),
+
+    USER_TAGS_LIKES_CANCEL_SUCCESS("取消点赞成功","user tags likes cancel success",20060),
+
 
 
 

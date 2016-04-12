@@ -126,4 +126,6 @@ public interface UserService {
 
     void modifyUserTips( UserTips userTips);
 
+    Response likes(UserLikeDto userLikeDto);
+
 }
