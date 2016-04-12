@@ -3,12 +3,14 @@ package com.me2me.web;
 import com.me2me.common.web.Response;
 import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
+import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.service.LiveService;
 import com.me2me.user.dto.UserSignUpDto;
 import com.me2me.web.request.CreateLiveRequest;
 import com.me2me.web.request.LiveTimelineRequest;
 import com.me2me.web.request.SignUpRequest;
+import com.me2me.web.request.SpeakRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -28,8 +30,8 @@ import java.util.List;
 @RequestMapping(value = "/api/live")
 public class Live {
 
-//    @Autowired
-//    private LiveService liveService;
+    @Autowired
+    private LiveService liveService;
 
     /**
      * 创建直接
@@ -41,10 +43,8 @@ public class Live {
         CreateLiveDto createLiveDto = new CreateLiveDto();
         createLiveDto.setUid(request.getUid());
         createLiveDto.setTitle(request.getTitle());
-        createLiveDto.setLiveImage(request.getCoverImage());
-//        return liveService.createLive(createLiveDto);
-
-        return null;
+        createLiveDto.setLiveImage(request.getLiveImage());
+        return liveService.createLive(createLiveDto);
     }
 
     /**
@@ -58,9 +58,25 @@ public class Live {
         GetLiveTimeLineDto getLiveTimeLineDto = new GetLiveTimeLineDto();
         getLiveTimeLineDto.setSinceId(request.getSinceId());
         getLiveTimeLineDto.setTopicId(request.getTopicId());
+        return liveService.getLiveTimeline(getLiveTimeLineDto);
+    }
 
-
-        return null;
+    /**
+     * 获取直接消息
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/speak",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response speak(SpeakRequest request){
+        SpeakDto speakDto = new SpeakDto();
+        speakDto.setType(request.getType());
+        speakDto.setContentType(request.getContentType());
+        speakDto.setFragment(request.getFragment());
+        speakDto.setFragmentImage(request.getFragmentImage());
+        speakDto.setUid(request.getUid());
+        speakDto.setTopicId(request.getTopicId());
+        return liveService.speak(speakDto);
     }
 
 }
