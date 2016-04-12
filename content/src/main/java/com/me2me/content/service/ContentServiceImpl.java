@@ -7,7 +7,6 @@ import com.me2me.common.web.Specification;
 import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.*;
-import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.dto.UserInfoDto;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
@@ -34,9 +33,6 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private UserService userService;
-
-    @Autowired
-    private UserMybatisDao userMybatisDao;
 
     @Override
     public Response highQuality(int sinceId,long uid) {
@@ -196,8 +192,8 @@ public class ContentServiceImpl implements ContentService {
             contentUserLikes.setTagId(likeDto.getTid());
             contentMybatisDao.createContentUserLikes(contentUserLikes);
             //记录点赞流水
-            UserProfile userProfile = userMybatisDao.getUserProfileByUid(likeDto.getUid());
-            UserProfile customerProfile = userMybatisDao.getUserProfileByUid(likeDto.getCustomerId());
+            UserProfile userProfile = userService.getUserProfileByUid(likeDto.getUid());
+            UserProfile customerProfile = userService.getUserProfileByUid(likeDto.getCustomerId());
             Content content = contentMybatisDao.getContentById(likeDto.getCid());
             ContentImage contentImage = contentMybatisDao.getCoverImages(likeDto.getCid());
             ContentTags contentTags = contentMybatisDao.getContentTagsById(likeDto.getTid());
@@ -225,17 +221,17 @@ public class ContentServiceImpl implements ContentService {
             userNotice.setToUid(customerProfile.getUid());
             userNotice.setLikeCount(0);
             userNotice.setReadStatus(Specification.NoticeReadStatus.UNREAD.index);
-            userMybatisDao.createUserNotice(userNotice);
+            userService.createUserNotice(userNotice);
             UserTips userTips = new UserTips();
             userTips.setUid(likeDto.getCustomerId());
             userTips.setType(Specification.UserTipsType.LIKE.index);
-            UserTips tips  = userMybatisDao.getUserTips(userTips);
+            UserTips tips  =  userService.getUserTips(userTips);
             if(tips == null){
                 userTips.setCount(1);
-                userMybatisDao.createUserTips(userTips);
+                userService.createUserTips(userTips);
             }else{
                 userTips.setCount(tips.getCount()+1);
-                userMybatisDao.modifyUserTips(userTips);
+                userService.modifyUserTips(userTips);
             }
             //记录点赞流水 end
 
@@ -277,8 +273,8 @@ public class ContentServiceImpl implements ContentService {
         contentTagLikes.setCid(writeTagDto.getCid());
         contentTagLikes.setTagId(contentTags.getId());
         contentMybatisDao.createContentTagLikes(contentTagLikes);
-        UserProfile userProfile = userMybatisDao.getUserProfileByUid(writeTagDto.getUid());
-        UserProfile customerProfile = userMybatisDao.getUserProfileByUid(writeTagDto.getCustomerId());
+        UserProfile userProfile = userService.getUserProfileByUid(writeTagDto.getUid());
+        UserProfile customerProfile = userService.getUserProfileByUid(writeTagDto.getCustomerId());
         Content content = contentMybatisDao.getContentById(writeTagDto.getCid());
         ContentImage contentImage = contentMybatisDao.getCoverImages(writeTagDto.getCid());
         UserNotice userNotice = new UserNotice();
@@ -299,17 +295,17 @@ public class ContentServiceImpl implements ContentService {
         userNotice.setLikeCount(0);
         userNotice.setReadStatus(Specification.NoticeReadStatus.UNREAD.index);
 
-        userMybatisDao.createUserNotice(userNotice);
+        userService.createUserNotice(userNotice);
         UserTips userTips = new UserTips();
         userTips.setUid(writeTagDto.getCustomerId());
         userTips.setType(Specification.UserTipsType.LIKE.index);
-        UserTips tips  = userMybatisDao.getUserTips(userTips);
+        UserTips tips  = userService.getUserTips(userTips);
         if(tips == null){
             userTips.setCount(1);
-            userMybatisDao.createUserTips(userTips);
+            userService.createUserTips(userTips);
         }else{
             userTips.setCount(tips.getCount()+1);
-            userMybatisDao.modifyUserTips(userTips);
+            userService.modifyUserTips(userTips);
         }
         //贴标签时候写标签点赞数量
         ContentUserLikesCount contentUserLikesCount = new ContentUserLikesCount();
@@ -359,7 +355,7 @@ public class ContentServiceImpl implements ContentService {
                 break;
             }
         }
-        UserProfile userProfile = userMybatisDao.getUserProfileByUid(content.getUid());
+        UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
         contentDetailDto.setNickName(userProfile.getNickName());
         contentDetailDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
         contentDetailDto.setHotValue(content.getHotValue());
@@ -438,7 +434,7 @@ public class ContentServiceImpl implements ContentService {
                 contentAllFeelingElement.setType(Specification.IsForward.NATIVE.index);
                 contentAllFeelingElement.setContent("");
             }
-            UserProfile userProfile = userMybatisDao.getUserProfileByUid(content.getUid());
+            UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
             contentAllFeelingElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             contentAllFeelingElement.setTid(contentTagLike.getTagId());
             contentAllFeelingElement.setNickName(userProfile.getNickName());
@@ -473,7 +469,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     public Response getUserData(long uid){
-        UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+        UserProfile userProfile = userService.getUserProfileByUid(uid);
         List<Content> list = contentMybatisDao.myPublish(uid,Integer.MAX_VALUE);
         UserInfoDto userInfoDto = new UserInfoDto();
         userInfoDto.getUser().setNickName(userProfile.getNickName());

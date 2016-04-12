@@ -374,6 +374,28 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Override
+    public void createUserNotice(UserNotice userNotice) {
+        userMybatisDao.createUserNotice(userNotice);
+    }
+
+    @Override
+    public UserTips getUserTips(UserTips userTips) {
+        return userMybatisDao.getUserTips(userTips);
+    }
+
+    @Override
+    public void createUserTips(UserTips userTips) {
+        userMybatisDao.createUserTips(userTips);
+
+    }
+
+    @Override
+    public void modifyUserTips(UserTips userTips) {
+        userMybatisDao.modifyUserTips(userTips);
+
+    }
+
     /**
      * 是否发送过验证码
      * @return
