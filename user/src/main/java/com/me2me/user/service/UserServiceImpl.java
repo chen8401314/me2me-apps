@@ -406,10 +406,16 @@ public class UserServiceImpl implements UserService {
 
 
     public Response likes(UserLikeDto userLikeDto){
+
         UserTagsRecord userTagsRecord = new UserTagsRecord();
         userTagsRecord.setFromUid(userLikeDto.getUid());
         userTagsRecord.setToUid(userLikeDto.getCustomerId());
         userTagsRecord.setTagId(userLikeDto.getTid());
+        UserTagsRecord u = userMybatisDao.getUserTagsRecord(userTagsRecord);
+        if(u != null){
+            userMybatisDao.deleteUserTagsRecord(u);
+            return Response.success(ResponseStatus.USER_TAGS_LIKES_CANCEL_SUCCESS.status,ResponseStatus.USER_TAGS_LIKES_CANCEL_SUCCESS.message);
+        }
         UserTagsDetails userTagsDetails = new UserTagsDetails();
         userTagsDetails.setUid(userLikeDto.getCustomerId());
         userTagsDetails.setTid(userLikeDto.getTid());

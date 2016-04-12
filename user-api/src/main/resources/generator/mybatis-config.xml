@@ -6,10 +6,10 @@
 <generatorConfiguration>
 
     <context id="MySqlTables" targetRuntime="MyBatis3">
-        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://10.47.125.111:3306/apps"
-                        userId="me2me"
-                        password="1q2w_3e4r">
+    <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                    connectionURL="jdbc:mysql://192.168.89.103:3306/apps"
+                    userId="plAdmin"
+                    password="1q2w_3e4r">
         </jdbcConnection>
 
         <javaTypeResolver >
@@ -43,8 +43,9 @@
         <!--<table tableName="user_content_tags" domainObjectName="UserContentTags"/>-->
         <!--<table tableName="user_tags_details" domainObjectName="UserTagsDetails" />-->
         <!--<table tableName="user_tags_record" domainObjectName="UserTagsRecord" />-->
-        <table tableName="user_notice" domainObjectName="UserNotice" />
+        <!--<table tableName="user_notice" domainObjectName="UserNotice" />-->
         <!--<table tableName="user_tips" domainObjectName="UserTips" />-->
         <!--<table tableName="user_report" domainObjectName="UserReport" />-->
+        <table tableName="user_tags_record" domainObjectName="UserTagsRecord" />
     </context>
 </generatorConfiguration>

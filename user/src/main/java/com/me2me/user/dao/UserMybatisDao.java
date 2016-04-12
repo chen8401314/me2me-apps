@@ -254,4 +254,17 @@ public class UserMybatisDao {
     public void createUserTagsRecord(UserTagsRecord userTagsRecord){
         userTagsRecordMapper.insertSelective(userTagsRecord);
     }
+    public UserTagsRecord getUserTagsRecord(UserTagsRecord userTagsRecord){
+        UserTagsRecordExample example = new UserTagsRecordExample();
+        UserTagsRecordExample.Criteria criteria = example.createCriteria();
+        criteria.andFromUidEqualTo(userTagsRecord.getFromUid());
+        criteria.andToUidEqualTo(userTagsRecord.getToUid());
+        criteria.andTagIdEqualTo(userTagsRecord.getTagId());
+        List<UserTagsRecord> userTagsRecordList = userTagsRecordMapper.selectByExample(example);
+        return  (userTagsRecordList != null && userTagsRecordList.size() > 0) ?userTagsRecordList.get(0) : null;
+    }
+
+    public void deleteUserTagsRecord(UserTagsRecord userTagsRecord){
+        userTagsRecordMapper.deleteByPrimaryKey(userTagsRecord.getId());
+    }
 }
