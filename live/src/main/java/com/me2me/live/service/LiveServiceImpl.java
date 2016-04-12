@@ -1,7 +1,9 @@
 package com.me2me.live.service;
 
+import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
+import com.me2me.common.web.Specification;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
@@ -51,8 +53,11 @@ public class LiveServiceImpl implements LiveService {
             LiveTimeLineDto.LiveElement liveElement = LiveTimeLineDto.createElement();
             liveElement.setUid(uid);
             liveElement.setNickName(userProfile.getNickName());
-            liveElement.setFragment(topicFragment.getFragment());
-            liveElement.setFragment(topicFragment.getFragment());
+            if(topicFragment.getContentType() == Specification.LiveContent.TEXT.index) {
+                liveElement.setFragment(topicFragment.getFragment());
+            }else if(topicFragment.getContentType() == Specification.LiveContent.IMAGE.index){
+                liveElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + topicFragment.getFragmentImage());
+            }
             liveElement.setPublishTime(topicFragment.getCreateTime());
             liveElement.setType(topicFragment.getType());
             //// TODO: 2016/4/12  follow 逻辑

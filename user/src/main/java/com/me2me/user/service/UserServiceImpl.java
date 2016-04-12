@@ -294,11 +294,11 @@ public class UserServiceImpl implements UserService {
         UserTags userTag = userMybatisDao.getUserTag(pasteTagDto.getTag());
         if(null != userTag){
             UserTagsDetails details = userMybatisDao.getUserTagByTidAndUid(userTag.getId(),pasteTagDto.getTargetUid());
-//            details.setFrequency(Math.addExact(details.getFrequency(),1));
+            details.setFrequency(details.getFrequency() + 1);
             userMybatisDao.updateUserTagDetail(details);
         }else {
-            Integer tagId = userMybatisDao.saveUserTag(pasteTagDto.getTag());
-            userMybatisDao.saveUserTagDetail(tagId.longValue(),pasteTagDto);
+            long tagId = userMybatisDao.saveUserTag(pasteTagDto.getTag());
+            userMybatisDao.saveUserTagDetail(tagId,pasteTagDto);
         }
         userMybatisDao.saveUserTagRecord(pasteTagDto.getFromUid(),pasteTagDto.getTargetUid());
         return Response.success(ResponseStatus.PASTE_TAG_SUCCESS.status,ResponseStatus.PASTE_TAG_SUCCESS.message);

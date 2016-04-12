@@ -224,5 +224,44 @@ public interface Specification {
         }
     }
 
+    /**
+     *直播文本内容类型
+     */
+    public enum LiveContent{
+
+        TEXT("文本",0),
+
+        IMAGE("图片",1);
+
+
+        public String name;
+        public int index;
+        LiveContent(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    /**
+     *直播文本内容类型
+     */
+    public enum LiveSpeakType{
+
+        ANCHOR("主播",0),
+
+        FANS("粉丝",1),
+
+        FORWARD("转发",2),
+
+        LIKES("点赞",3);
+
+
+        public String name;
+        public int index;
+        LiveSpeakType(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
 
 }
