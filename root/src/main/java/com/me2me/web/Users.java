@@ -301,7 +301,11 @@ public class Users {
     public Response showFans(ShowFansRequest request){
         FansParamsDto fansParamsDto = new FansParamsDto();
         fansParamsDto.setTargetUid(request.getUid());
-        fansParamsDto.setSinceId(request.getSinceId());
+        if(request.getSinceId()==-1) {
+            fansParamsDto.setSinceId(Integer.MAX_VALUE);
+        }else{
+            fansParamsDto.setSinceId(request.getSinceId());
+        }
         return userService.getFans(fansParamsDto);
     }
 
@@ -315,9 +319,11 @@ public class Users {
     public Response showFollows(ShowFansRequest request){
         FollowParamsDto followParamsDto = new FollowParamsDto();
         followParamsDto.setSourceUid(request.getUid());
-        followParamsDto.setSinceId(request.getSinceId());
+        if(request.getSinceId()==-1) {
+            followParamsDto.setSinceId(Integer.MAX_VALUE);
+        }else{
+            followParamsDto.setSinceId(request.getSinceId());
+        }
         return userService.getFollows(followParamsDto);
     }
-
-
 }
