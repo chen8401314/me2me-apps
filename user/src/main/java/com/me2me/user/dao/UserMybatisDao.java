@@ -1,10 +1,7 @@
 package com.me2me.user.dao;
 
 import com.me2me.common.web.Specification;
-import com.me2me.user.dto.BasicDataDto;
-import com.me2me.user.dto.ModifyUserProfileDto;
-import com.me2me.user.dto.PasteTagDto;
-import com.me2me.user.dto.UserNoticeDto;
+import com.me2me.user.dto.*;
 import com.me2me.user.mapper.*;
 import com.me2me.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,9 +51,11 @@ public class UserMybatisDao {
     @Autowired
     private UserTipsMapper userTipsMapper;
 
-
     @Autowired
     private UserReportMapper userReportMapper;
+
+    @Autowired
+    private UserFollowMapper userFollowMapper;
     /**
      * 保存用户注册信息
      * @param user
@@ -266,5 +265,30 @@ public class UserMybatisDao {
 
     public void deleteUserTagsRecord(UserTagsRecord userTagsRecord){
         userTagsRecordMapper.deleteByPrimaryKey(userTagsRecord.getId());
+    }
+
+    public void createFollow(UserFollow userFollow){
+        userFollowMapper.insertSelective(userFollow);
+    }
+
+    public void deleteFollow(long id){
+        userFollowMapper.deleteByPrimaryKey(id);
+    }
+
+    public UserFollow getUserFollow(long sourceUid,long targetUid){
+        UserFollowExample example = new UserFollowExample();
+        UserFollowExample.Criteria criteria =  example.createCriteria();
+        criteria.andSourceUidEqualTo(sourceUid);
+        criteria.andTargetUidEqualTo(targetUid);
+        List<UserFollow> list = userFollowMapper.selectByExample(example);
+        return list!=null&&list.size()>0 ? list.get(0) : null;
+    }
+
+    public List<UserFansDto> getFans(FansParamsDto fansParamsDto){
+        return userFollowMapper.getFans(fansParamsDto);
+    }
+
+    public List<UserFansDto> getFollows(FollowParamsDto followParamsDto){
+        return userFollowMapper.getFollows(followParamsDto);
     }
 }

@@ -91,6 +91,15 @@ public enum  ResponseStatus {
 
 
 
+    USER_FOLLOW_SUCCESS("关注成功","user follow success",20070),
+
+    USER_CANCEL_FOLLOW_SUCCESS("取消关注成功","user follow success",20073),
+
+    SHOW_USER_FANS_LIST_SUCCESS("获取用户粉丝成功","show user fans success",20071),
+
+    SHOW_USER_FOLLOW_LIST_SUCCESS("获取用户关注成功","show user follow success",20072),
+
+
 
 
 
@@ -132,7 +141,11 @@ public enum  ResponseStatus {
 
 
 
-    USER_ADD_FRIEND_ERROR("不能自己添加自己为好友","can't add yourself",50020);
+    USER_ADD_FRIEND_ERROR("不能自己添加自己为好友","can't add yourself",50020),
+
+    CAN_NOT_DUPLICATE_FOLLOW("不能重复关注","can't duplicate follow",50021),
+
+    ILLEGAL_REQUEST("非法的请求参数","illegal request",50030);
 
     public String message;
 

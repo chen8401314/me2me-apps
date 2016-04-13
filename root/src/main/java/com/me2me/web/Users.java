@@ -276,4 +276,54 @@ public class Users {
         return userService.userReport(userReportDto);
     }
 
+    /**
+     * 用户关注|取消关注
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/follow",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response follow(UserFollowRequest request){
+        FollowDto followDto = new FollowDto();
+        followDto.setAction(request.getAction());
+        followDto.setSourceUid(request.getUid());
+        followDto.setTargetUid(request.getTargetUid());
+        return userService.follow(followDto);
+    }
+
+    /**
+     * 用户粉丝列表
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/showFans",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response showFans(ShowFansRequest request){
+        FansParamsDto fansParamsDto = new FansParamsDto();
+        fansParamsDto.setTargetUid(request.getUid());
+        if(request.getSinceId()==-1) {
+            fansParamsDto.setSinceId(Integer.MAX_VALUE);
+        }else{
+            fansParamsDto.setSinceId(request.getSinceId());
+        }
+        return userService.getFans(fansParamsDto);
+    }
+
+    /**
+     * 用户关注列表
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/showFollows",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response showFollows(ShowFansRequest request){
+        FollowParamsDto followParamsDto = new FollowParamsDto();
+        followParamsDto.setSourceUid(request.getUid());
+        if(request.getSinceId()==-1) {
+            followParamsDto.setSinceId(Integer.MAX_VALUE);
+        }else{
+            followParamsDto.setSinceId(request.getSinceId());
+        }
+        return userService.getFollows(followParamsDto);
+    }
 }

@@ -441,4 +441,48 @@ public class UserServiceImpl implements UserService {
         return null;
     }
 
+    @Override
+    public Response follow(FollowDto followDto) {
+        if(followDto.getSourceUid()==followDto.getTargetUid()){
+            return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status,ResponseStatus.ILLEGAL_REQUEST.message);
+        }
+        UserFollow userFollow = new UserFollow();
+        userFollow.setSourceUid(followDto.getSourceUid());
+        userFollow.setTargetUid(followDto.getTargetUid());
+        // 判断是否已经关注过了
+        if(followDto.getAction()==Specification.UserFollowAction.FOLLOW.index) {
+            // 创建关注
+            if(userMybatisDao.getUserFollow(followDto.getSourceUid(),followDto.getTargetUid()) != null){
+                return Response.failure(ResponseStatus.CAN_NOT_DUPLICATE_FOLLOW.status,ResponseStatus.CAN_NOT_DUPLICATE_FOLLOW.message);
+            }
+            userMybatisDao.createFollow(userFollow);
+            return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message);
+        }else if(followDto.getAction()==Specification.UserFollowAction.UN_FOLLOW.index){
+            // 取消关注
+            UserFollow ufw = userMybatisDao.getUserFollow(followDto.getSourceUid(),followDto.getTargetUid());
+            if(ufw!=null) {
+                userMybatisDao.deleteFollow(ufw.getId());
+            }
+            return Response.success(ResponseStatus.USER_CANCEL_FOLLOW_SUCCESS.status, ResponseStatus.USER_CANCEL_FOLLOW_SUCCESS.message);
+        }else{
+            return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status,ResponseStatus.ILLEGAL_REQUEST.message);
+        }
+    }
+
+    @Override
+    public Response getFans(FansParamsDto fansParamsDto) {
+        List<UserFansDto> list = userMybatisDao.getFans(fansParamsDto);
+        ShowUserFansDto showUserFansDto = new ShowUserFansDto();
+        showUserFansDto.setResult(list);
+        return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message,showUserFansDto);
+    }
+
+    @Override
+    public Response getFollows(FollowParamsDto followParamsDto) {
+        List<UserFansDto> list = userMybatisDao.getFollows(followParamsDto);
+        ShowUserFansDto showUserFansDto = new ShowUserFansDto();
+        showUserFansDto.setResult(list);
+        return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message,showUserFansDto);
+    }
+
 }
