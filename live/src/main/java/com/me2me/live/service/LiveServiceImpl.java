@@ -5,10 +5,8 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.live.dao.LiveMybatisDao;
-import com.me2me.live.dto.CreateLiveDto;
-import com.me2me.live.dto.GetLiveTimeLineDto;
-import com.me2me.live.dto.LiveTimeLineDto;
-import com.me2me.live.dto.SpeakDto;
+import com.me2me.live.dto.*;
+import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicExample;
 import com.me2me.live.model.TopicFragment;
@@ -84,20 +82,67 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status,ResponseStatus.USER_SPEAK_SUCCESS.message);
     }
 
+    /**
+     * 获取我关注的直播，和我的直播列表
+     * @param uid
+     * @return
+     */
     @Override
     public Response getMyLives(long uid) {
-
-        return null;
+        ShowTopicListDto showTopicListDto = new ShowTopicListDto();
+        List<Topic> topicList = liveMybatisDao.getMyLives(uid);
+        for(Topic topic : topicList){
+            ShowTopicListDto.ShowTopicElement showTopicElement = ShowTopicListDto.createShowTopicElement();
+            showTopicElement.setUid(topic.getUid());
+            showTopicElement.setCoverImage(Constant.QINIU_DOMAIN  + "/" + topic.getLiveImage());
+            showTopicElement.setTitle(topic.getTitle());
+            //// TODO: 2016/4/13
+            showTopicElement.setAvatar("");
+            showTopicListDto.getShowTopicElements().add(showTopicElement);
+        }
+        return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status,ResponseStatus.GET_MY_LIVE_SUCCESS.message,showTopicListDto);
     }
 
+    /**
+     * 获取所有正在直播列表
+     * @param uid
+     * @return
+     */
     @Override
     public Response getLives(long uid) {
-        return null;
+        ShowTopicListDto showTopicListDto = new ShowTopicListDto();
+        List<Topic> topicList = liveMybatisDao.getLives();
+        for(Topic topic : topicList){
+            ShowTopicListDto.ShowTopicElement showTopicElement = ShowTopicListDto.createShowTopicElement();
+            showTopicElement.setUid(topic.getUid());
+            showTopicElement.setCoverImage(Constant.QINIU_DOMAIN  + "/" + topic.getLiveImage());
+            showTopicElement.setTitle(topic.getTitle());
+            //// TODO: 2016/4/13
+            showTopicElement.setAvatar("");
+            showTopicListDto.getShowTopicElements().add(showTopicElement);
+        }
+        return Response.success(ResponseStatus.GET_LIVES_SUCCESS.status,ResponseStatus.GET_LIVES_SUCCESS.message,showTopicListDto);
     }
 
+    /**
+     * 关注，取消关注
+     * @param uid
+     * @param topicId
+     * @return
+     */
     @Override
     public Response setLive(long uid, long topicId) {
-        return null;
+        LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid,topicId);
+        if(liveFavorite != null){
+            liveMybatisDao.deleteLiveFavorite(liveFavorite);
+            return Response.success(ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.status,ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.message);
+        }else {
+            liveFavorite = new LiveFavorite();
+            liveFavorite.setTopicId(topicId);
+            liveFavorite.setUid(uid);
+            liveMybatisDao.createLiveFavorite(liveFavorite);
+            return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status,ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
+        }
     }
 
     /**
@@ -109,9 +154,13 @@ public class LiveServiceImpl implements LiveService {
     public Response finishMyLive(long uid,long topicId) {
         Topic topic = liveMybatisDao.getTopic(uid,topicId);
         if(topic != null) {
-            topic.setStatus(Specification.LiveStatus.OVER.index);
-            liveMybatisDao.updateTopic(topic);
-            return Response.success(ResponseStatus.USER_FINISH_LIVE_SUCCESS.status,ResponseStatus.GET_USER_TAGS_SUCCESS.message);
+            if(topic.getStatus() == Specification.LiveStatus.LIVING.index) {
+                topic.setStatus(Specification.LiveStatus.OVER.index);
+                liveMybatisDao.updateTopic(topic);
+                return Response.success(ResponseStatus.USER_FINISH_LIVE_SUCCESS.status, ResponseStatus.GET_USER_TAGS_SUCCESS.message);
+            }else{
+                return Response.success(ResponseStatus.USER_LIVE_IS_OVER.status, ResponseStatus.USER_LIVE_IS_OVER.message);
+            }
         }else{
             return Response.success(ResponseStatus.FINISH_LIVE_NO_POWER.status,ResponseStatus.FINISH_LIVE_NO_POWER.message);
         }

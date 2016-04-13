@@ -426,4 +426,19 @@ public class UserServiceImpl implements UserService {
         return Response.success(ResponseStatus.USER_TAGS_LIKES_SUCCESS.status,ResponseStatus.USER_TAGS_LIKES_SUCCESS.message);
     }
 
+    @Override
+    public Response follow(long uid) {
+        return null;
+    }
+
+    @Override
+    public Response getFans(long uid) {
+        return null;
+    }
+
+    @Override
+    public Response getFollows(long uid) {
+        return null;
+    }
+
 }

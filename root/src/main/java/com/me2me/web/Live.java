@@ -5,9 +5,7 @@ import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.service.LiveService;
-import com.me2me.web.request.CreateLiveRequest;
-import com.me2me.web.request.LiveTimelineRequest;
-import com.me2me.web.request.SpeakRequest;
+import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -71,6 +69,51 @@ public class Live {
         speakDto.setUid(request.getUid());
         speakDto.setTopicId(request.getTopicId());
         return liveService.speak(speakDto);
+    }
+
+    /**
+     * 结束自己的直播
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/finishMyLive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response finishMyLive(FinishMyLiveRequest request){
+        return liveService.finishMyLive(request.getUid(),request.getTopicId());
+    }
+
+
+    /**
+     *  关注，取消关注
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/setLive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response setLive(SetLiveRequest request){
+        return liveService.setLive(request.getUid(),request.getTopicId());
+    }
+
+    /**
+     *  获取所有正在直播列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/getLives",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response getLives(GetLivesRequest request){
+        return liveService.getLives(request.getUid());
+    }
+
+    /**
+     * 获取我关注和我自己的直播列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/getMyLives",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response getMyLives(GetMyLivesRequest request){
+        return liveService.getMyLives(request.getUid());
     }
 
 }

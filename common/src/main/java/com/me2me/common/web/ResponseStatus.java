@@ -81,6 +81,16 @@ public enum  ResponseStatus {
 
     USER_FINISH_LIVE_SUCCESS("直接结束成功","user finish live success",20061),
 
+    GET_MY_LIVE_SUCCESS("获取我的直播列表成功","get my live success",20062),
+
+    GET_LIVES_SUCCESS("获取直播列表成功","get lives success",20063),
+
+    SET_LIVE_FAVORITE_SUCCESS("关注成功","set live favorite success",20064),
+
+    CANCEL_LIVE_FAVORITE_SUCCESS("取消关注成功","cancel live favorite success",20065),
+
+
+
 
 
 
@@ -115,6 +125,8 @@ public enum  ResponseStatus {
     USER_MOBILE_NO_SIGN_UP("手机号码还未注册","user mobile no sign up",50011),
 
     FINISH_LIVE_NO_POWER("您没有权限或者直播已经结束","finish live no power",50012),
+
+    USER_LIVE_IS_OVER("直接已经结束","user live is over",20062),
 
 
 
