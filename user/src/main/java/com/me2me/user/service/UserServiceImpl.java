@@ -448,7 +448,7 @@ public class UserServiceImpl implements UserService {
             if(ufw!=null) {
                 userMybatisDao.deleteFollow(ufw.getId());
             }
-            return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message);
+            return Response.success(ResponseStatus.USER_CANCEL_FOLLOW_SUCCESS.status, ResponseStatus.USER_CANCEL_FOLLOW_SUCCESS.message);
         }else{
             return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status,ResponseStatus.ILLEGAL_REQUEST.message);
         }

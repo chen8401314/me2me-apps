@@ -83,6 +83,8 @@ public enum  ResponseStatus {
 
     USER_FOLLOW_SUCCESS("关注成功","user follow success",20070),
 
+    USER_CANCEL_FOLLOW_SUCCESS("取消关注成功","user follow success",20073),
+
     SHOW_USER_FANS_LIST_SUCCESS("获取用户粉丝成功","show user fans success",20071),
 
     SHOW_USER_FOLLOW_LIST_SUCCESS("获取用户关注成功","show user follow success",20072),
