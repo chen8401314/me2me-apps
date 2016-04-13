@@ -443,6 +443,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response follow(FollowDto followDto) {
+
+        // 判断目标对象是否存在
+        UserProfile userProfile = userMybatisDao.getUserProfileByUid(followDto.getTargetUid());
+        if(userProfile==null){
+            return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
+        }
+
         if(followDto.getSourceUid()==followDto.getTargetUid()){
             return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status,ResponseStatus.ILLEGAL_REQUEST.message);
         }
