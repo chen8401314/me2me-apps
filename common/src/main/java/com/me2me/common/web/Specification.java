@@ -5,6 +5,25 @@ package com.me2me.common.web;
  */
 public interface Specification {
     /**
+     * 用户关注行为
+     */
+    public enum UserFollowAction{
+
+        FOLLOW("关注",0),
+
+        UN_FOLLOW("取消",1);
+
+        public String name;
+
+        public int index;
+
+        UserFollowAction(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    /**
      * 用户状态
      */
     public enum UserStatus{
