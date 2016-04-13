@@ -31,4 +31,33 @@ public interface LiveService {
      * @return
      */
     Response speak(SpeakDto speakDto);
+
+    /**
+     * 获取直播列表
+     * @return
+     */
+    Response getMyLives(long uid);
+
+    /**
+     * 获取所有未结束的直播列表
+     * @param uid
+     * @return
+     */
+    Response getLives(long uid);
+
+    /**
+     * 置顶/删除我参与的直播
+     * @param uid
+     * @param topicId
+     * @return
+     */
+    Response setLive(long uid,long topicId);
+
+    /**
+     * 结束自己当前直播
+     * @param uid
+     * @param topicId
+     * @return
+     */
+    Response finishMyLive(long uid, long topicId);
 }

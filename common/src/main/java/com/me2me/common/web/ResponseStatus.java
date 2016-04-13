@@ -79,6 +79,8 @@ public enum  ResponseStatus {
 
     USER_TAGS_LIKES_CANCEL_SUCCESS("取消点赞成功","user tags likes cancel success",20060),
 
+    USER_FINISH_LIVE_SUCCESS("直接结束成功","user finish live success",20061),
+
 
 
 
@@ -111,6 +113,12 @@ public enum  ResponseStatus {
     DATA_IS_DELETE("请求的数据已删除","data is delete ",50010),
 
     USER_MOBILE_NO_SIGN_UP("手机号码还未注册","user mobile no sign up",50011),
+
+    FINISH_LIVE_NO_POWER("您没有权限或者直播已经结束","finish live no power",50012),
+
+
+
+
 
     USER_ADD_FRIEND_ERROR("不能自己添加自己为好友","can't add yourself",50020);
 

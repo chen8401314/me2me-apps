@@ -128,4 +128,11 @@ public interface UserService {
 
     Response likes(UserLikeDto userLikeDto);
 
+    Response follow(long uid);
+
+    Response getFans(long uid);
+
+    Response getFollows(long uid);
+
+
 }

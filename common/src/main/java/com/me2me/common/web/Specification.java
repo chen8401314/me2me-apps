@@ -264,4 +264,22 @@ public interface Specification {
         }
     }
 
+    /**
+     *直播状态
+     */
+    public enum LiveStatus{
+
+        LIVING("正在直播",0),
+
+        OVER("结束直播",1);
+
+
+        public String name;
+        public int index;
+        LiveStatus(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
 }

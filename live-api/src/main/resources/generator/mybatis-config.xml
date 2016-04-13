@@ -30,6 +30,8 @@
         </javaClientGenerator>
 
         <table tableName="topic" domainObjectName="Topic"/>
-        <table tableName="topic_fragment" domainObjectName="TopicFragment"/>
+        <!--<table tableName="topic_fragment" domainObjectName="TopicFragment"/>-->
+
+
     </context>
 </generatorConfiguration>

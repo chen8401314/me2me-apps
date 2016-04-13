@@ -3,6 +3,7 @@ package com.me2me.live.dao;
 import com.me2me.live.mapper.TopicFragmentMapper;
 import com.me2me.live.mapper.TopicMapper;
 import com.me2me.live.model.Topic;
+import com.me2me.live.model.TopicExample;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicFragmentExample;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,5 +44,21 @@ public class LiveMybatisDao {
 
     public void createTopicFragment(TopicFragment topicFragment){
         topicFragmentMapper.insertSelective(topicFragment);
+    }
+
+    public void finishMyLive(long topicId){
+        topicMapper.deleteByPrimaryKey(topicId);
+    }
+
+    public Topic getTopic(long uid,long topicId){
+        TopicExample example = new TopicExample();
+        TopicExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andIdEqualTo(topicId);
+        List<Topic> list = topicMapper.selectByExample(example);
+        return (list != null && list.size() > 0) ? list.get(0) : null;
+    }
+    public void updateTopic(Topic topic){
+        topicMapper.updateByPrimaryKey(topic);
     }
 }

@@ -10,6 +10,7 @@ import com.me2me.live.dto.GetLiveTimeLineDto;
 import com.me2me.live.dto.LiveTimeLineDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.model.Topic;
+import com.me2me.live.model.TopicExample;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
@@ -38,6 +39,7 @@ public class LiveServiceImpl implements LiveService {
         topic.setTitle(createLiveDto.getTitle());
         topic.setLiveImage(createLiveDto.getLiveImage());
         topic.setUid(createLiveDto.getUid());
+        topic.setStatus(Specification.LiveStatus.LIVING.index);
         liveMybatisDao.createTopic(topic);
         return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status,ResponseStatus.USER_CREATE_LIVE_SUCCESS.message);
     }
@@ -80,5 +82,39 @@ public class LiveServiceImpl implements LiveService {
         topicFragment.setTopicId(speakDto.getTopicId());
         liveMybatisDao.createTopicFragment(topicFragment);
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status,ResponseStatus.USER_SPEAK_SUCCESS.message);
+    }
+
+    @Override
+    public Response getMyLives(long uid) {
+
+        return null;
+    }
+
+    @Override
+    public Response getLives(long uid) {
+        return null;
+    }
+
+    @Override
+    public Response setLive(long uid, long topicId) {
+        return null;
+    }
+
+    /**
+     * 结束自己的直播
+     * @param topicId
+     * @return
+     */
+    @Override
+    public Response finishMyLive(long uid,long topicId) {
+        Topic topic = liveMybatisDao.getTopic(uid,topicId);
+        if(topic != null) {
+            topic.setStatus(Specification.LiveStatus.OVER.index);
+            liveMybatisDao.updateTopic(topic);
+            return Response.success(ResponseStatus.USER_FINISH_LIVE_SUCCESS.status,ResponseStatus.GET_USER_TAGS_SUCCESS.message);
+        }else{
+            return Response.success(ResponseStatus.FINISH_LIVE_NO_POWER.status,ResponseStatus.FINISH_LIVE_NO_POWER.message);
+        }
+
     }
 }
