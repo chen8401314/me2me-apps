@@ -7,15 +7,15 @@ public interface Specification {
     /**
      * 用户关注行为
      */
-    public enum UserFollowAction{
+    enum UserFollowAction{
 
         FOLLOW("关注",0),
 
         UN_FOLLOW("取消",1);
 
-        public String name;
+        public final String name;
 
-        public int index;
+        public final int index;
 
         UserFollowAction(String name,int index){
             this.name = name;
@@ -26,7 +26,7 @@ public interface Specification {
     /**
      * 用户状态
      */
-    public enum UserStatus{
+    public  enum UserStatus{
 
         NORMAL("正常",0),
 
@@ -34,8 +34,8 @@ public interface Specification {
 
         STOP("禁用",2);
 
-        public String name;
-        public int index;
+        public final String name;
+        public final int index;
         UserStatus(String name,int index){
             this.name = name;
             this.index = index;
@@ -45,7 +45,7 @@ public interface Specification {
     /**
      * 修改用户信息Action
      */
-    public enum ModifyUserProfileAction{
+    enum ModifyUserProfileAction{
 
         AVATAR("修改头像",0),
 
@@ -53,8 +53,8 @@ public interface Specification {
 
         USER_PROFILE("修改信息",2);
 
-        public String name;
-        public int index;
+        public final String name;
+        public final int index;
         ModifyUserProfileAction(String name,int index){
             this.name = name;
             this.index = index;
@@ -65,7 +65,7 @@ public interface Specification {
     /**
      * 验证码枚举
      */
-    public enum VerifyAction{
+    enum VerifyAction{
 
         GET("获取验证码",0),
 
@@ -73,8 +73,8 @@ public interface Specification {
 
         FIND_MY_ENCRYPT("找回验证码",2);
 
-        public String name;
-        public int index;
+        public final String name;
+        public final int index;
         VerifyAction(String name,int index){
             this.name = name;
             this.index = index;
@@ -84,7 +84,7 @@ public interface Specification {
     /**
      * 基础数据枚举
      */
-    public enum UserBasicData{
+    enum UserBasicData{
 
         YEARS("年代情怀",2),
 
@@ -98,8 +98,8 @@ public interface Specification {
 
         BEAR_STATUS("生育状态",6);
 
-        public String name;
-        public int index;
+        public final String name;
+        public final int index;
         UserBasicData(String name,int index){
             this.name = name;
             this.index = index;
@@ -107,7 +107,7 @@ public interface Specification {
     }
 
 
-    public enum ArticleType{
+    enum ArticleType{
 
         ORIGIN("原生",0),
 
@@ -115,9 +115,9 @@ public interface Specification {
 
         EDITOR("小编",2);
 
-        public String name;
+        public final String name;
 
-        public int index;
+        public final int index;
 
         ArticleType(String name,int index){
             this.name = name;
@@ -125,14 +125,14 @@ public interface Specification {
         }
     }
 
-    public enum ContentStatus{
+    enum ContentStatus{
 
         NORMAL("正常",0),
 
         DELETE("删除",1);
 
-        public String name;
-        public int index;
+        public final String name;
+        public final int index;
         ContentStatus(String name,int index){
             this.name = name;
             this.index = index;
@@ -142,14 +142,14 @@ public interface Specification {
     /**
      * 提醒类型
      */
-    public enum UserNoticeType{
+    enum UserNoticeType{
 
         TAG("贴标签",0),
 
         LIKE("点赞",1);
 
-        public String name;
-        public int index;
+        public final String name;
+        public final int index;
         UserNoticeType(String name,int index){
             this.name = name;
             this.index = index;
@@ -159,14 +159,14 @@ public interface Specification {
     /**
      * 消息读取类型
      */
-    public enum NoticeReadStatus{
+    enum NoticeReadStatus{
 
         UNREAD("未读",0),
 
         RED("已读",1);
 
-        public String name;
-        public int index;
+        public final String name;
+        public final int index;
         NoticeReadStatus(String name,int index){
             this.name = name;
             this.index = index;
@@ -176,13 +176,13 @@ public interface Specification {
     /**
      * 用户提醒类型
      */
-    public enum UserTipsType{
+    enum UserTipsType{
 
         LIKE("点赞",1);
 
 
-        public String name;
-        public int index;
+        public final String name;
+        public final int index;
         UserTipsType(String name,int index){
             this.name = name;
             this.index = index;
@@ -192,15 +192,15 @@ public interface Specification {
     /**
      * 图片类型
      */
-    public enum CoverImageType{
+    enum CoverImageType{
 
         CONTENT("内容图片",0),
 
         COVER("封面图片",1);
 
 
-        public String name;
-        public int index;
+        public final String name;
+        public final int index;
         CoverImageType(String name,int index){
             this.name = name;
             this.index = index;
@@ -210,15 +210,15 @@ public interface Specification {
     /**
      * 是否点过赞
      */
-    public enum IsLike{
+    enum IsLike{
 
         UNLIKE("为点赞",0),
 
         ISLIKE("点赞",1);
 
 
-        public String name;
-        public int index;
+        public final String name;
+        public final int index;
         IsLike(String name,int index){
             this.name = name;
             this.index = index;
@@ -228,15 +228,15 @@ public interface Specification {
     /**
      * 感受列表类型
      */
-    public enum IsForward{
+    enum IsForward{
 
         NATIVE("原生",0),
 
         FORWARD("转发",1);
 
 
-        public String name;
-        public int index;
+        public final String name;
+        public final int index;
         IsForward(String name,int index){
             this.name = name;
             this.index = index;
@@ -246,15 +246,15 @@ public interface Specification {
     /**
      *直播文本内容类型
      */
-    public enum LiveContent{
+    enum LiveContent{
 
         TEXT("文本",0),
 
         IMAGE("图片",1);
 
 
-        public String name;
-        public int index;
+        public final String name;
+        public final int index;
         LiveContent(String name,int index){
             this.name = name;
             this.index = index;
@@ -264,7 +264,7 @@ public interface Specification {
     /**
      *直播文本内容类型
      */
-    public enum LiveSpeakType{
+    enum LiveSpeakType{
 
         ANCHOR("主播",0),
 
@@ -275,8 +275,8 @@ public interface Specification {
         LIKES("点赞",3);
 
 
-        public String name;
-        public int index;
+        public final String name;
+        public final int index;
         LiveSpeakType(String name,int index){
             this.name = name;
             this.index = index;
@@ -286,15 +286,15 @@ public interface Specification {
     /**
      *直播状态
      */
-    public enum LiveStatus{
+    enum LiveStatus{
 
         LIVING("正在直播",0),
 
         OVER("结束直播",1);
 
 
-        public String name;
-        public int index;
+        public final String name;
+        public final int index;
         LiveStatus(String name,int index){
             this.name = name;
             this.index = index;

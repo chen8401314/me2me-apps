@@ -441,6 +441,7 @@ public class ContentServiceImpl implements ContentService {
             int likeCount = contentMybatisDao.getContentUserLikesCount(contentTagLike.getCid(),contentTagLike.getTagId());
             contentAllFeelingElement.setLikesCount(likeCount);
             contentAllFeelingElement.setCid(contentTagLike.getCid());
+            contentAllFeelingElement.setTag(content.getFeeling());
             contentAllFeelingDto.getResults().add(contentAllFeelingElement);
         }
         return Response.success(contentAllFeelingDto);
