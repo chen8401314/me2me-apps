@@ -103,10 +103,11 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setTopicId(topic.getId());
             TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId(),1);
             if(topicFragment != null) {
-                String a = topicFragment.getFragment();
                 showTopicElement.setLastContentType(topicFragment.getContentType());
                 showTopicElement.setLastFragment(topicFragment.getFragment());
                 showTopicElement.setLastFragmentImage(topicFragment.getFragmentImage());
+            }else{
+                showTopicElement.setLastContentType(-1);
             }
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
