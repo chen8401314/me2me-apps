@@ -41,15 +41,15 @@ public class LiveMybatisDao {
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andIdGreaterThan(sinceId);
-        example.setOrderByClause("id asc limit " + sinceId );
-        return topicFragmentMapper.selectByExample(example);
+        example.setOrderByClause("id asc limit 10 "  );
+        return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
 
-    public TopicFragment getLastTopicFragment(long topicId,long sinceId ){
+    public TopicFragment getLastTopicFragment(long topicId ){
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
-        example.setOrderByClause("id desc limit " + sinceId );
+        example.setOrderByClause("id desc limit 1 ");
         List<TopicFragment> topicFragmentList = topicFragmentMapper.selectByExampleWithBLOBs(example);
         return (topicFragmentList != null && topicFragmentList.size() > 0) ? topicFragmentList.get(0) : null;
     }
