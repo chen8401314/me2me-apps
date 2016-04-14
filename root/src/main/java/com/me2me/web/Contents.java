@@ -26,7 +26,7 @@ import javax.servlet.http.HttpServletResponse;
  */
 @Controller
 @RequestMapping(value = "/api/content")
-public class Contents {
+public class Contents extends BaseController {
 
     @Autowired
     private ContentService contentService;
