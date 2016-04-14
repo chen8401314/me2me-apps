@@ -145,11 +145,11 @@ public enum  ResponseStatus {
 
     ILLEGAL_REQUEST("非法的请求参数","illegal request",50016);
 
-    public String message;
+    public final String message;
 
-    public String englishMessage;
+    public final String englishMessage;
 
-    public int status;
+    public final int status;
 
     ResponseStatus(String message,String englishMessage,int status){
         this.message = message;
