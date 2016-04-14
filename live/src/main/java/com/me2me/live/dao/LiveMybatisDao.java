@@ -49,12 +49,9 @@ public class LiveMybatisDao {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
-        criteria.andIdGreaterThan(sinceId);
         example.setOrderByClause("id desc limit " + sinceId );
         List<TopicFragment> topicFragmentList = topicFragmentMapper.selectByExample(example);
-        Preconditions.checkNotNull(topicFragmentList);
-        Preconditions.checkElementIndex(0,topicFragmentList.size());
-        return topicFragmentList.get(0);
+        return (topicFragmentList != null && topicFragmentList.size() > 0) ? topicFragmentList.get(0) : null;
     }
 
     public void createTopicFragment(TopicFragment topicFragment){
@@ -78,10 +75,11 @@ public class LiveMybatisDao {
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
         criteria.andStatusEqualTo(0);
+        TopicExample.Criteria criteriaOr = example.createCriteria();
         List<Long> topicList = getTopicId(uid);
-        if(topicList != null && topicList.size() >0) {
-            example.or(criteria.andIdIn(topicList));
-        }
+        Preconditions.checkNotNull(topicList);
+        Preconditions.checkElementIndex(0,topicList.size());
+        example.or(criteriaOr.andIdIn(topicList));
         return topicMapper.selectByExample(example);
     }
 
