@@ -77,9 +77,9 @@ public class LiveMybatisDao {
         criteria.andIdLessThan(sinceId);
         TopicExample.Criteria criteriaOr = example.createCriteria();
         List<Long> topicList = getTopicId(uid);
-        Preconditions.checkNotNull(topicList);
-        Preconditions.checkElementIndex(0,topicList.size());
-        example.or(criteriaOr.andIdIn(topicList));
+        if(topicList != null && topicList.size() > 0) {
+            example.or(criteriaOr.andIdIn(topicList));
+        }
         example.setOrderByClause("id desc,status asc limit 10" );
         return topicMapper.selectByExample(example);
     }
