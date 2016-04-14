@@ -25,6 +25,8 @@ public class ShowTopicListDto implements BaseEntity{
     @Data
     public static  class ShowTopicElement implements BaseEntity{
 
+        private long topicId;
+
         private String title;
 
         private String coverImage;
@@ -35,9 +37,7 @@ public class ShowTopicListDto implements BaseEntity{
 
         private Date createTime;
 
-        private String lastContent;
-
-        private int contentType;
+        private int LastContentType;
 
         private String lastFragment;
 
