@@ -70,7 +70,7 @@ public class LiveMybatisDao {
         topicMapper.updateByPrimaryKey(topic);
     }
 
-    public List<Topic> getMyLives(long uid){
+    public List<Topic> getMyLives(long uid ,int sinceId){
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
@@ -80,6 +80,7 @@ public class LiveMybatisDao {
         Preconditions.checkNotNull(topicList);
         Preconditions.checkElementIndex(0,topicList.size());
         example.or(criteriaOr.andIdIn(topicList));
+        example.setOrderByClause("id asc limit " + sinceId );
         return topicMapper.selectByExample(example);
     }
 
@@ -95,10 +96,11 @@ public class LiveMybatisDao {
         return result;
     }
 
-    public List<Topic> getLives(){
+    public List<Topic> getLives(int sinceId){
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andStatusEqualTo(0);
+        example.setOrderByClause("id asc limit " + sinceId );
         return topicMapper.selectByExample(example);
     }
 

@@ -88,9 +88,9 @@ public class LiveServiceImpl implements LiveService {
      * @return
      */
     @Override
-    public Response getMyLives(long uid) {
+    public Response getMyLives(long uid ,int sinceId) {
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
-        List<Topic> topicList = liveMybatisDao.getMyLives(uid);
+        List<Topic> topicList = liveMybatisDao.getMyLives(uid ,sinceId);
         for(Topic topic : topicList){
             ShowTopicListDto.ShowTopicElement showTopicElement = ShowTopicListDto.createShowTopicElement();
             showTopicElement.setUid(topic.getUid());
@@ -119,9 +119,9 @@ public class LiveServiceImpl implements LiveService {
      * @return
      */
     @Override
-    public Response getLives(long uid) {
+    public Response getLives(long uid,int sinceId) {
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
-        List<Topic> topicList = liveMybatisDao.getLives();
+        List<Topic> topicList = liveMybatisDao.getLives(sinceId);
         for(Topic topic : topicList){
             ShowTopicListDto.ShowTopicElement showTopicElement = ShowTopicListDto.createShowTopicElement();
             showTopicElement.setUid(topic.getUid());

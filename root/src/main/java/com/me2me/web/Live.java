@@ -107,7 +107,7 @@ public class Live {
     @RequestMapping(value = "/getLives",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getLives(GetLivesRequest request){
-        return liveService.getLives(request.getUid());
+        return liveService.getLives(request.getUid(),request.getSinceId());
     }
 
     /**
@@ -118,7 +118,7 @@ public class Live {
     @RequestMapping(value = "/getMyLives",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getMyLives(GetMyLivesRequest request){
-        return liveService.getMyLives(request.getUid());
+        return liveService.getMyLives(request.getUid(),request.getSinceId());
     }
 
     public static void main(String[] args) {
