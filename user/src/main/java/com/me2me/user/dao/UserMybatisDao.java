@@ -80,6 +80,15 @@ public class UserMybatisDao {
         return (lists != null && lists.size() > 0) ? lists.get(0) : null;
     }
 
+    public UserToken getUserTokenByUid(long uid ,String token){
+        UserTokenExample example = new UserTokenExample();
+        UserTokenExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTokenEqualTo(token);
+        List<UserToken> lists = userTokenMapper.selectByExample(example);
+        return (lists != null && lists.size() > 0) ? lists.get(0) : null;
+    }
+
     /**
      * 根据用户账号获取用户信息
      * @param username

@@ -2,9 +2,7 @@ package com.me2me.user.service;
 
 import com.me2me.common.web.Response;
 import com.me2me.user.dto.*;
-import com.me2me.user.model.UserNotice;
-import com.me2me.user.model.UserProfile;
-import com.me2me.user.model.UserTips;
+import com.me2me.user.model.*;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -135,5 +133,7 @@ public interface UserService {
     Response getFollows(FollowParamsDto followParamsDto);
 
     int isFollow(long targetUid,long sourceUid);
+
+    UserToken getUserByUidAndToken(long uid, String token);
 
 }
