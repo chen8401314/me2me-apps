@@ -88,16 +88,28 @@ public class LiveServiceImpl implements LiveService {
      * @return
      */
     @Override
-    public Response getMyLives(long uid) {
+    public Response getMyLives(long uid ,long sinceId) {
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
-        List<Topic> topicList = liveMybatisDao.getMyLives(uid);
+        List<Topic> topicList = liveMybatisDao.getMyLives(uid ,sinceId);
         for(Topic topic : topicList){
             ShowTopicListDto.ShowTopicElement showTopicElement = ShowTopicListDto.createShowTopicElement();
             showTopicElement.setUid(topic.getUid());
             showTopicElement.setCoverImage(Constant.QINIU_DOMAIN  + "/" + topic.getLiveImage());
             showTopicElement.setTitle(topic.getTitle());
-            //// TODO: 2016/4/13
-            showTopicElement.setAvatar("");
+            UserProfile userProfile = userService.getUserProfileByUid(uid);
+            showTopicElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar() );
+            showTopicElement.setNickName(userProfile.getNickName());
+            showTopicElement.setCreateTime(topic.getCreateTime());
+            showTopicElement.setTopicId(topic.getId());
+            showTopicElement.setStatus(topic.getStatus());
+            TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId(),1);
+            if(topicFragment != null) {
+                showTopicElement.setLastContentType(topicFragment.getContentType());
+                showTopicElement.setLastFragment(topicFragment.getFragment());
+                showTopicElement.setLastFragmentImage(topicFragment.getFragmentImage());
+            }else{
+                showTopicElement.setLastContentType(-1);
+            }
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
         return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status,ResponseStatus.GET_MY_LIVE_SUCCESS.message,showTopicListDto);
@@ -109,16 +121,28 @@ public class LiveServiceImpl implements LiveService {
      * @return
      */
     @Override
-    public Response getLives(long uid) {
+    public Response getLives(long uid,long sinceId) {
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
-        List<Topic> topicList = liveMybatisDao.getLives();
+        List<Topic> topicList = liveMybatisDao.getLives(sinceId);
         for(Topic topic : topicList){
             ShowTopicListDto.ShowTopicElement showTopicElement = ShowTopicListDto.createShowTopicElement();
             showTopicElement.setUid(topic.getUid());
             showTopicElement.setCoverImage(Constant.QINIU_DOMAIN  + "/" + topic.getLiveImage());
             showTopicElement.setTitle(topic.getTitle());
-            //// TODO: 2016/4/13
-            showTopicElement.setAvatar("");
+            UserProfile userProfile = userService.getUserProfileByUid(uid);
+            showTopicElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar() );
+            showTopicElement.setNickName(userProfile.getNickName());
+            showTopicElement.setCreateTime(topic.getCreateTime());
+            showTopicElement.setTopicId(topic.getId());
+            showTopicElement.setStatus(topic.getStatus());
+            TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId(),1);
+            if(topicFragment != null) {
+                showTopicElement.setLastContentType(topicFragment.getContentType());
+                showTopicElement.setLastFragment(topicFragment.getFragment());
+                showTopicElement.setLastFragmentImage(topicFragment.getFragmentImage());
+            }else{
+                showTopicElement.setLastContentType(-1);
+            }
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
         return Response.success(ResponseStatus.GET_LIVES_SUCCESS.status,ResponseStatus.GET_LIVES_SUCCESS.message,showTopicListDto);

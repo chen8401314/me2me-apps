@@ -36,17 +36,17 @@ public interface LiveService {
      * 获取直播列表
      * @return
      */
-    Response getMyLives(long uid);
+    Response getMyLives(long uid,long sinceId);
 
     /**
      * 获取所有未结束的直播列表
      * @param uid
      * @return
      */
-    Response getLives(long uid);
+    Response getLives(long uid,long sinceId);
 
     /**
-     * 置顶/删除我参与的直播
+     * 关注/取消关注我参与的直播
      * @param uid
      * @param topicId
      * @return
@@ -60,4 +60,5 @@ public interface LiveService {
      * @return
      */
     Response finishMyLive(long uid, long topicId);
+
 }

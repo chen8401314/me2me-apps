@@ -476,4 +476,13 @@ public class UserServiceImpl implements UserService {
         return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message,showUserFansDto);
     }
 
+    public int isFollow(long targetUid,long sourceUid){
+        UserFollow ufw = userMybatisDao.getUserFollow(sourceUid,targetUid);
+        if(ufw == null){
+            return 0;
+        }else{
+            return 1;
+        }
+    }
+
 }

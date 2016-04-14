@@ -1,5 +1,6 @@
 package com.me2me.live.dao;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.me2me.live.mapper.LiveFavoriteMapper;
 import com.me2me.live.mapper.TopicFragmentMapper;
@@ -40,8 +41,17 @@ public class LiveMybatisDao {
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andIdGreaterThan(sinceId);
-        example.setOrderByClause("id asc limit 10");
+        example.setOrderByClause("id asc limit " + sinceId );
         return topicFragmentMapper.selectByExample(example);
+    }
+
+    public TopicFragment getLastTopicFragment(long topicId,long sinceId ){
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        example.setOrderByClause("id desc limit " + sinceId );
+        List<TopicFragment> topicFragmentList = topicFragmentMapper.selectByExampleWithBLOBs(example);
+        return (topicFragmentList != null && topicFragmentList.size() > 0) ? topicFragmentList.get(0) : null;
     }
 
     public void createTopicFragment(TopicFragment topicFragment){
@@ -60,15 +70,17 @@ public class LiveMybatisDao {
         topicMapper.updateByPrimaryKey(topic);
     }
 
-    public List<Topic> getMyLives(long uid){
+    public List<Topic> getMyLives(long uid ,long sinceId){
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
-        criteria.andStatusEqualTo(0);
+        criteria.andIdLessThan(sinceId);
+        TopicExample.Criteria criteriaOr = example.createCriteria();
         List<Long> topicList = getTopicId(uid);
-        if(topicList != null && topicList.size() >0) {
-            example.or(criteria.andIdIn(topicList));
-        }
+        Preconditions.checkNotNull(topicList);
+        Preconditions.checkElementIndex(0,topicList.size());
+        example.or(criteriaOr.andIdIn(topicList));
+        example.setOrderByClause("id desc,status asc limit 10" );
         return topicMapper.selectByExample(example);
     }
 
@@ -84,10 +96,11 @@ public class LiveMybatisDao {
         return result;
     }
 
-    public List<Topic> getLives(){
+    public List<Topic> getLives(long sinceId){
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
-        criteria.andStatusEqualTo(0);
+        criteria.andIdLessThan(sinceId);
+        example.setOrderByClause("id desc,status asc limit 10");
         return topicMapper.selectByExample(example);
     }
 

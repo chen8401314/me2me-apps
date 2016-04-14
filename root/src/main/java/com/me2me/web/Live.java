@@ -1,5 +1,7 @@
 package com.me2me.web;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.me2me.common.web.Response;
 import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
@@ -12,6 +14,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
+
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 代宝磊
@@ -102,7 +107,10 @@ public class Live extends BaseController {
     @RequestMapping(value = "/getLives",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getLives(GetLivesRequest request){
-        return liveService.getLives(request.getUid());
+        if(request.getSinceId() == -1){
+            request.setSinceId(Long.MAX_VALUE);
+        }
+        return liveService.getLives(request.getUid(),request.getSinceId());
     }
 
     /**
@@ -113,7 +121,15 @@ public class Live extends BaseController {
     @RequestMapping(value = "/getMyLives",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getMyLives(GetMyLivesRequest request){
-        return liveService.getMyLives(request.getUid());
+        if(request.getSinceId() == -1){
+            request.setSinceId(Long.MAX_VALUE);
+        }
+        return liveService.getMyLives(request.getUid(),request.getSinceId());
     }
 
+    public static void main(String[] args) {
+        List<String> lives = Lists.newArrayList();
+        lives.add("a");
+        Preconditions.checkElementIndex(2,lives.size());
+    }
 }
