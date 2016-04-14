@@ -485,4 +485,10 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public UserToken getUserByUidAndToken(long uid, String token) {
+        return userMybatisDao.getUserTokenByUid(uid, token);
+    }
+
+
 }
