@@ -44,5 +44,7 @@ public class ShowTopicListDto implements BaseEntity{
         private String lastFragmentImage;
 
         private String nickName;
+
+        private int status;
     }
 }

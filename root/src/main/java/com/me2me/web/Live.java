@@ -108,7 +108,7 @@ public class Live {
     @ResponseBody
     public Response getLives(GetLivesRequest request){
         if(request.getSinceId() == -1){
-            request.setSinceId(10);
+            request.setSinceId(Long.MAX_VALUE);
         }
         return liveService.getLives(request.getUid(),request.getSinceId());
     }
@@ -122,7 +122,7 @@ public class Live {
     @ResponseBody
     public Response getMyLives(GetMyLivesRequest request){
         if(request.getSinceId() == -1){
-            request.setSinceId(10);
+            request.setSinceId(Long.MAX_VALUE);
         }
         return liveService.getMyLives(request.getUid(),request.getSinceId());
     }

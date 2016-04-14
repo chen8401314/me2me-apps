@@ -14,5 +14,5 @@ public class GetMyLivesRequest extends Request{
 
     @Setter
     @Getter
-    private int sinceId;
+    private long sinceId;
 }
