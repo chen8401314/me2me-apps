@@ -48,6 +48,10 @@
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
             <mvc:exclude-mapping path="/api/user/login"/>
+            <mvc:exclude-mapping path="/api/user/signUp"/>
+            <mvc:exclude-mapping path="/api/user/findEncrypt"/>
+            <mvc:exclude-mapping path="/api/user/verify"/>
+            <mvc:exclude-mapping path="/api/user/getBasicDataByType"/>
             <bean class="com.me2me.web.handler.AccessSecurityHandler"/>
         </mvc:interceptor>
     </mvc:interceptors>
