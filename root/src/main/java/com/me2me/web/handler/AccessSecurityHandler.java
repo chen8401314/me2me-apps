@@ -2,6 +2,8 @@ package com.me2me.web.handler;
 
 import com.google.common.base.Strings;
 import com.me2me.core.exception.TokenNullException;
+import com.me2me.core.exception.UidAndTokenNotMatchException;
+import com.me2me.user.model.UserToken;
 import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
@@ -24,9 +26,15 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         String uid = request.getParameter("uid");
         String token = request.getParameter("token");
         if(Strings.isNullOrEmpty(uid)||Strings.isNullOrEmpty(token)){
-            throw new TokenNullException("token为空");
+            throw new TokenNullException("uid或token为空");
         }else{
-            return true;
+            long tempUid = Long.valueOf(uid);
+            UserToken userToken = userService.getUserByUidAndToken(tempUid,token);
+            if(userToken==null){
+                throw new UidAndTokenNotMatchException("Uid和token不匹配");
+            }else {
+                return true;
+            }
         }
     }
 }
