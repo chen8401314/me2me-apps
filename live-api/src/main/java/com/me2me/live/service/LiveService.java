@@ -46,7 +46,7 @@ public interface LiveService {
     Response getLives(long uid);
 
     /**
-     * 置顶/删除我参与的直播
+     * 关注/取消关注我参与的直播
      * @param uid
      * @param topicId
      * @return
@@ -60,4 +60,5 @@ public interface LiveService {
      * @return
      */
     Response finishMyLive(long uid, long topicId);
+
 }

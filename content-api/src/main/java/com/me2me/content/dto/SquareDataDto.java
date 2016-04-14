@@ -75,6 +75,9 @@ public class SquareDataDto implements BaseEntity {
 
         private long tid;
 
+        //是否关注
+        private int isFollow;
+
 
     }
 

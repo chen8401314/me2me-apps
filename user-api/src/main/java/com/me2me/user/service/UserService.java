@@ -134,4 +134,6 @@ public interface UserService {
 
     Response getFollows(FollowParamsDto followParamsDto);
 
+    int isFollow(long targetUid,long sourceUid);
+
 }

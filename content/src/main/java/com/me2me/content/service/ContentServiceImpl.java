@@ -79,6 +79,9 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setForwardTitle(content.getForwardTitle());
             squareDataElement.setContentType(content.getContentType());
             squareDataElement.setForwardUrl(content.getForwardUrl());
+            long contentUid = content.getUid();
+            int follow = userService.isFollow(contentUid,uid);
+            squareDataElement.setIsFollow(follow);
             squareDataDto.getResults().add(squareDataElement);
         }
     }

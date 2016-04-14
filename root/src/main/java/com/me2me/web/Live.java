@@ -1,5 +1,7 @@
 package com.me2me.web;
 
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.me2me.common.web.Response;
 import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
@@ -12,6 +14,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.util.List;
+
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 代宝磊
@@ -116,4 +121,8 @@ public class Live {
         return liveService.getMyLives(request.getUid());
     }
 
+    public static void main(String[] args) {
+        List<Live> lives = null;//Lists.newArrayList();
+        Preconditions.checkNotNull(lives,"xdsfdsfds");
+    }
 }
