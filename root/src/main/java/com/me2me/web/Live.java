@@ -25,7 +25,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping(value = "/api/live")
-public class Live {
+public class Live extends BaseController {
 
     @Autowired
     private LiveService liveService;

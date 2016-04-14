@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
  */
 @Controller
 @RequestMapping(value = "/api/user")
-public class Users {
+public class Users extends BaseController {
 
     @Autowired
     private UserService userService;

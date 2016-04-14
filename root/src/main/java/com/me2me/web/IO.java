@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
  */
 @Controller
 @RequestMapping(value = "/api/io")
-public class IO {
+public class IO extends BaseController {
 
     @Autowired
     private FileTransferService fileTransferService;
