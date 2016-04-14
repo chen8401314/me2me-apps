@@ -122,7 +122,8 @@ public class Live {
     }
 
     public static void main(String[] args) {
-        List<Live> lives = null;//Lists.newArrayList();
-        Preconditions.checkNotNull(lives,"xdsfdsfds");
+        List<String> lives = Lists.newArrayList();
+        lives.add("a");
+        Preconditions.checkElementIndex(2,lives.size());
     }
 }

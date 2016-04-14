@@ -1,5 +1,6 @@
 package com.me2me.live.dao;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.me2me.live.mapper.LiveFavoriteMapper;
 import com.me2me.live.mapper.TopicFragmentMapper;
@@ -40,8 +41,20 @@ public class LiveMybatisDao {
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andIdGreaterThan(sinceId);
-        example.setOrderByClause("id asc limit 10");
+        example.setOrderByClause("id asc limit " + sinceId );
         return topicFragmentMapper.selectByExample(example);
+    }
+
+    public TopicFragment getLastTopicFragment(long topicId,long sinceId ){
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andIdGreaterThan(sinceId);
+        example.setOrderByClause("id desc limit " + sinceId );
+        List<TopicFragment> topicFragmentList = topicFragmentMapper.selectByExample(example);
+        Preconditions.checkNotNull(topicFragmentList);
+        Preconditions.checkElementIndex(0,topicFragmentList.size());
+        return topicFragmentList.get(0);
     }
 
     public void createTopicFragment(TopicFragment topicFragment){

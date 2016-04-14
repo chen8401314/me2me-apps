@@ -96,8 +96,13 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setUid(topic.getUid());
             showTopicElement.setCoverImage(Constant.QINIU_DOMAIN  + "/" + topic.getLiveImage());
             showTopicElement.setTitle(topic.getTitle());
-            //// TODO: 2016/4/13
-            showTopicElement.setAvatar("");
+            UserProfile userProfile = userService.getUserProfileByUid(uid);
+            showTopicElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar() );
+            showTopicElement.setNickName(userProfile.getNickName());
+            TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(uid,1);
+            showTopicElement.setLastContent(topicFragment.getFragment());
+            showTopicElement.setContentType(topicFragment.getContentType());
+            showTopicElement.setLastFragmentImage(topicFragment.getFragmentImage());
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
         return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status,ResponseStatus.GET_MY_LIVE_SUCCESS.message,showTopicListDto);

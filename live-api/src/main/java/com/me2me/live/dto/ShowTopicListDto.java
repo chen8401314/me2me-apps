@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import com.me2me.common.web.BaseEntity;
 import lombok.Data;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -31,5 +32,17 @@ public class ShowTopicListDto implements BaseEntity{
         private long uid;
 
         private String avatar;
+
+        private Date createTime;
+
+        private String lastContent;
+
+        private int contentType;
+
+        private String lastFragment;
+
+        private String lastFragmentImage;
+
+        private String nickName;
     }
 }
