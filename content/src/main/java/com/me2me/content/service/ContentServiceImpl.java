@@ -463,8 +463,13 @@ public class ContentServiceImpl implements ContentService {
         List<ContentImage> list = contentMybatisDao.getContentImages(id);
         for (ContentImage contentImage : list){
             if(contentImage.getCover() == 1){
-                contentH5Dto.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
-            }if(contentImage.getCover() == 0){
+                if(content.getType()==Specification.ArticleType.EDITOR.index){
+                    contentH5Dto.setCoverImage(content.getConverImage());
+                }else {
+                    contentH5Dto.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
+                }
+            }
+            if(contentImage.getCover() == 0){
                 contentH5Dto.getImageUrls().add(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
             }
         }
