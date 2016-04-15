@@ -352,14 +352,14 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setContent(content.getContent());
         contentDetailDto.setContentType(content.getContentType());
         contentDetailDto.setTitle(content.getTitle());
-        contentDetailDto.setCoverImage("");
-        List<ContentImage> contentImageList = contentMybatisDao.getContentImages(content.getId());
+        contentDetailDto.setCoverImage(content.getConverImage());
+       /* List<ContentImage> contentImageList = contentMybatisDao.getContentImages(content.getId());
         for (ContentImage contentImage : contentImageList){
             if(contentImage.getCover() == Specification.CoverImageType.COVER.index){
                 contentDetailDto.setCoverImage(Constant.QINIU_DOMAIN  + "/" + contentImage.getImage());
                 break;
             }
-        }
+        }*/
         UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
         contentDetailDto.setNickName(userProfile.getNickName());
         contentDetailDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
