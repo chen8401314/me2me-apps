@@ -537,6 +537,19 @@ public class ContentServiceImpl implements ContentService {
         content.setType(contentDto.getType());
         content.setContentType(contentDto.getContentType());
         contentMybatisDao.createContent(content);
+        if(!StringUtils.isEmpty(contentDto.getFeeling()) && contentDto.getFeeling().contains(";")){
+            String[] tags = contentDto.getFeeling().split(";");
+            for(String t : tags) {
+                if(!t.equals(tags[0])){
+                    ContentTagLikes contentTagLikes = new ContentTagLikes();
+                    contentTagLikes.setUid(contentDto.getUid());
+                    contentTagLikes.setCid(content.getId());
+                    ContentTags contentTags = contentMybatisDao.getContentTags(t);
+                    contentTagLikes.setTagId(contentTags.getId());
+                    contentMybatisDao.createContentTagLikes(contentTagLikes);
+                }
+            }
+        }
         Content c = contentMybatisDao.getContentById(content.getId());
         createContentSuccessDto.setContent(c.getContent());
         createContentSuccessDto.setCreateTime(c.getCreateTime());
