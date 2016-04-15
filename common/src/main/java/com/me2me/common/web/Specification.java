@@ -113,7 +113,9 @@ public interface Specification {
 
         FORWARD("转载",1),
 
-        EDITOR("小编",2);
+        EDITOR("小编",2),
+
+        LIVE("直播",3);
 
         public final String name;
 
