@@ -4,6 +4,8 @@ import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.content.dto.ContentDto;
+import com.me2me.content.service.ContentService;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.*;
 import com.me2me.live.model.LiveFavorite;
@@ -31,6 +33,9 @@ public class LiveServiceImpl implements LiveService {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private ContentService contentService;
+
     @Override
     public Response createLive(CreateLiveDto createLiveDto) {
         Topic topic = new Topic();
@@ -39,13 +44,21 @@ public class LiveServiceImpl implements LiveService {
         topic.setUid(createLiveDto.getUid());
         topic.setStatus(Specification.LiveStatus.LIVING.index);
         liveMybatisDao.createTopic(topic);
+        //创建直播之后添加到我的UGC
+        ContentDto contentDto = new ContentDto();
+        contentDto.setContent(createLiveDto.getTitle());
+        contentDto.setFeeling(createLiveDto.getTitle());
+        contentDto.setImageUrls(createLiveDto.getLiveImage());
+        contentDto.setUid(createLiveDto.getUid());
+        contentDto.setType(Specification.ArticleType.LIVE.index);
+        contentDto.setContentType(0);
+        contentService.publish(contentDto);
         return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status,ResponseStatus.USER_CREATE_LIVE_SUCCESS.message);
     }
 
     @Override
     public Response getLiveTimeline(GetLiveTimeLineDto getLiveTimeLineDto) {
         LiveTimeLineDto liveTimeLineDto = new LiveTimeLineDto();
-        Topic topic = liveMybatisDao.getTopicById(getLiveTimeLineDto.getTopicId());
         List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(),getLiveTimeLineDto.getSinceId());
         for(TopicFragment topicFragment : fragmentList){
             long uid = topicFragment.getUid();
@@ -120,7 +133,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setCreateTime(topic.getCreateTime());
             showTopicElement.setTopicId(topic.getId());
             showTopicElement.setStatus(topic.getStatus());
-            TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId(),1);
+            TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId());
             if(topicFragment != null) {
                 showTopicElement.setLastContentType(topicFragment.getContentType());
                 showTopicElement.setLastFragment(topicFragment.getFragment());

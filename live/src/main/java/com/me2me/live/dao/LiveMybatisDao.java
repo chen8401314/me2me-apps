@@ -41,15 +41,15 @@ public class LiveMybatisDao {
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andIdGreaterThan(sinceId);
-        example.setOrderByClause("id asc limit " + sinceId );
-        return topicFragmentMapper.selectByExample(example);
+        example.setOrderByClause("id asc limit 10 "  );
+        return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
 
-    public TopicFragment getLastTopicFragment(long topicId,long sinceId ){
+    public TopicFragment getLastTopicFragment(long topicId ){
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
-        example.setOrderByClause("id desc limit " + sinceId );
+        example.setOrderByClause("id desc limit 1 ");
         List<TopicFragment> topicFragmentList = topicFragmentMapper.selectByExampleWithBLOBs(example);
         return (topicFragmentList != null && topicFragmentList.size() > 0) ? topicFragmentList.get(0) : null;
     }
@@ -77,9 +77,9 @@ public class LiveMybatisDao {
         criteria.andIdLessThan(sinceId);
         TopicExample.Criteria criteriaOr = example.createCriteria();
         List<Long> topicList = getTopicId(uid);
-        Preconditions.checkNotNull(topicList);
-        Preconditions.checkElementIndex(0,topicList.size());
-        example.or(criteriaOr.andIdIn(topicList));
+        if(topicList != null && topicList.size() > 0) {
+            example.or(criteriaOr.andIdIn(topicList));
+        }
         example.setOrderByClause("id desc,status asc limit 10" );
         return topicMapper.selectByExample(example);
     }

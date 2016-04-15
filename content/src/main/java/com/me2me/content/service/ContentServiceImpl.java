@@ -172,6 +172,8 @@ public class ContentServiceImpl implements ContentService {
             contentTagLikes.setCid(content.getId());
         }else if(content.getType() == Specification.ArticleType.FORWARD.index){
             contentTagLikes.setCid(contentDto.getForwardCid());
+        }else {
+            contentTagLikes.setCid(content.getId());
         }
         contentTagLikes.setTagId(contentTags.getId());
         contentMybatisDao.createContentTagLikes(contentTagLikes);
