@@ -42,6 +42,9 @@ public class LiveTimeLineDto implements BaseEntity {
         private String fragment;
 
         private String fragmentImage;
+
+        private String avatar;
+
     }
 
 }
