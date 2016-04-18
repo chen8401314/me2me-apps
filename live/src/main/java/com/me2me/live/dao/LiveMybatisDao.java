@@ -2,6 +2,7 @@ package com.me2me.live.dao;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.me2me.live.mapper.LiveCpiMapper;
 import com.me2me.live.mapper.LiveFavoriteMapper;
 import com.me2me.live.mapper.TopicFragmentMapper;
 import com.me2me.live.mapper.TopicMapper;
@@ -27,6 +28,9 @@ public class LiveMybatisDao {
 
     @Autowired
     private LiveFavoriteMapper liveFavoriteMapper;
+
+    @Autowired
+    private LiveCpiMapper liveCpiMapper;
 
     public void createTopic(Topic topic){
         topicMapper.insertSelective(topic);
@@ -119,5 +123,13 @@ public class LiveMybatisDao {
 
     public void deleteLiveFavorite(LiveFavorite liveFavorite){
         liveFavoriteMapper.deleteByPrimaryKey(liveFavorite.getId());
+    }
+
+    public LiveCpi getLiveCpi(long topicId){
+        LiveCpiExample example = new LiveCpiExample();
+        LiveCpiExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        List<LiveCpi> liveCpiList = liveCpiMapper.selectByExample(example);
+        return (liveCpiList != null && liveCpiList.size() > 0) ? liveCpiList.get(0) : null;
     }
 }

@@ -8,10 +8,7 @@ import com.me2me.content.dto.ContentDto;
 import com.me2me.content.service.ContentService;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.*;
-import com.me2me.live.model.LiveFavorite;
-import com.me2me.live.model.Topic;
-import com.me2me.live.model.TopicExample;
-import com.me2me.live.model.TopicFragment;
+import com.me2me.live.model.*;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -142,6 +139,13 @@ public class LiveServiceImpl implements LiveService {
             }else{
                 showTopicElement.setLastContentType(-1);
             }
+            LiveCpi cpi = liveMybatisDao.getLiveCpi(topic.getId());
+            if(cpi != null) {
+                showTopicElement.setForwardCount(cpi.getForwardCount());
+                showTopicElement.setTagCount(cpi.getTagCount());
+                showTopicElement.setPersonCount(cpi.getPersonCount());
+                showTopicElement.setReviewCount(cpi.getReviewCount());
+            }
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
     }
@@ -186,6 +190,25 @@ public class LiveServiceImpl implements LiveService {
         }else{
             return Response.success(ResponseStatus.FINISH_LIVE_NO_POWER.status,ResponseStatus.FINISH_LIVE_NO_POWER.message);
         }
-
     }
+
+    /**
+     * 置顶/取消置顶
+     * @param topicId
+     * @return
+     */
+    public Response top(long topicId){
+        return null;
+    }
+
+    /**
+     * 删除直播
+     * @param topicId
+     * @return
+     */
+    public Response delete(long topicId){
+        return null;
+    }
+
+
 }

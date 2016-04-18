@@ -46,5 +46,13 @@ public class ShowTopicListDto implements BaseEntity{
         private String nickName;
 
         private int status;
+
+        private int tagCount;
+
+        private int reviewCount;
+
+        private int forwardCount;
+
+        private int personCount;
     }
 }
