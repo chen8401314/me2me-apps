@@ -166,10 +166,37 @@ public class Contents extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "/getUserData",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response getUserInfo(UserInfoRequest request){
+    public Response getSelectedData(UserInfoRequest request){
         return  contentService.getUserData(request.getCustomerId());
     }
 
 
+    /**
+     * 小编精选
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/selectedDate",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response selectedDate(SelectedDateRequest request){
+        if(request.getSinceId()==-1){
+            request.setSinceId(Integer.MAX_VALUE);
+        }
+        return contentService.getSelectedData(request.getSinceId(),request.getUid());
+    }
+
+    /**
+     * 精选首页
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/highQualityIndex",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response highQualityIndex(SquareRequest request){
+        if(request.getSinceId()==-1){
+            request.setSinceId(Integer.MAX_VALUE);
+        }
+        return contentService.highQualityIndex(request.getSinceId(),request.getUid());
+    }
 
 }

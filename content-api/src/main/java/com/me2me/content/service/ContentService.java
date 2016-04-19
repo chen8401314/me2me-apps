@@ -94,4 +94,17 @@ public interface ContentService {
      * @return
      */
     Response editorPublish(ContentDto contentDto);
+
+    /**
+     * 小编精选
+     * @param sinceId
+     * @return
+     */
+    Response getSelectedData(int sinceId,long uid);
+
+    /**
+     * 精选首页
+     * @return
+     */
+    Response highQualityIndex(int sinceId,long uid);
 }

@@ -3,6 +3,7 @@ package com.me2me.content.dao;
 import com.google.common.collect.Maps;
 import com.me2me.common.Constant;
 import com.me2me.content.dto.LikeDto;
+import com.me2me.content.dto.LoadAllFeelingDto;
 import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.mapper.*;
 import com.me2me.content.model.*;
@@ -115,11 +116,11 @@ public class ContentMybatisDao {
         return contentMapper.loadMyPublishData(map);
     }
 
-    public List<Map<String,String>>loadAllFeeling(long cid ,int sinceId) {
+    public List<LoadAllFeelingDto>loadAllFeeling(long cid , int sinceId) {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("cid",cid);
         map.put("sinceId",sinceId);
-        List<Map<String,String>> result = contentUserLikesMapper.loadAllFeeling(map);
+        List<LoadAllFeelingDto> result = contentUserLikesMapper.loadAllFeeling(map);
         return result;
     }
 
@@ -200,6 +201,8 @@ public class ContentMybatisDao {
         return contentTagLikesMapper.getContentTagTimeline(cid);
     }
 
-
+    public List<Content> loadSelectedData(int sinceId){
+        return contentMapper.loadSelectedData(sinceId);
+    }
 
 }

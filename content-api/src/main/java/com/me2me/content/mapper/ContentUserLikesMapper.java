@@ -1,5 +1,6 @@
 package com.me2me.content.mapper;
 
+import com.me2me.content.dto.LoadAllFeelingDto;
 import com.me2me.content.model.ContentUserLikes;
 import com.me2me.content.model.ContentUserLikesExample;
 import java.util.List;
@@ -96,5 +97,5 @@ public interface ContentUserLikesMapper {
      */
     int updateByPrimaryKey(ContentUserLikes record);
 
-    List<Map<String,String>> loadAllFeeling(Map map);
+    List<LoadAllFeelingDto> loadAllFeeling(Map map);
 }

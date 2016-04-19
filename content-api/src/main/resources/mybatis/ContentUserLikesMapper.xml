@@ -284,8 +284,8 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
-  <select id="loadAllFeeling" parameterType="Map" resultType="Map">
-    select a.uid,a.tag_id,a.cid, d.tag,b.content,b.type, e.uid,e.avatar,e.nick_name ,f.likeCount from content_tag_likes a
+  <select id="loadAllFeeling" parameterType="Map" resultType="com.me2me.content.dto.LoadAllFeelingDto">
+    select a.uid as uid ,a.tag_id as tid ,a.cid as cid , d.tag as tag ,b.content as content ,b.type as type ,e.avatar as avatar,e.nick_name as nickName ,f.likeCount as likeCount from content_tag_likes a
     left join content b on a.cid = b.id
     left join content_tags d on a.tag_id = d.id
     left join user_profile e on b.uid = e.uid

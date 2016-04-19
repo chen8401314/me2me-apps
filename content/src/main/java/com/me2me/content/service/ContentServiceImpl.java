@@ -82,6 +82,30 @@ public class ContentServiceImpl implements ContentService {
             long contentUid = content.getUid();
             int follow = userService.isFollow(contentUid,uid);
             squareDataElement.setIsFollow(follow);
+            List<LoadAllFeelingDto> list  = contentMybatisDao.loadAllFeeling(content.getId(),Integer.MAX_VALUE);
+            int i = 0;
+            for (LoadAllFeelingDto loadAllFeelingDto : list) {
+                if (i > 3) {
+                    break;
+                }
+                LikeDto likeDto = new LikeDto();
+                likeDto.setCid(loadAllFeelingDto.getCid());
+                likeDto.setUid(loadAllFeelingDto.getUid());
+                likeDto.setCustomerId(uid);
+                likeDto.setTid(loadAllFeelingDto.getTid());
+                ContentUserLikes contentUserLikes = contentMybatisDao.getContentUserLike(likeDto);
+                SquareDataDto.SquareDataElement.TagElement tagElement = squareDataElement.createElement();
+                if (contentUserLikes == null) {
+                    tagElement.setIsLike(Specification.IsLike.UNLIKE.index);
+                } else {
+                    tagElement.setIsLike(Specification.IsLike.ISLIKE.index);
+                }
+                int likeCount = contentMybatisDao.getContentUserLikesCount(content.getId(), loadAllFeelingDto.getTid());
+                tagElement.setLikeCount(likeCount);
+                tagElement.setTag(loadAllFeelingDto.getTag());
+                squareDataElement.getTags().add(tagElement);
+                i++;
+            }
             squareDataDto.getResults().add(squareDataElement);
         }
     }
@@ -381,16 +405,16 @@ public class ContentServiceImpl implements ContentService {
         }
         int likeCount = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTags.getId());
         contentDetailDto.setLikeCount(likeCount);
-        List<Map<String,String>> list  = contentMybatisDao.loadAllFeeling(content.getId(),Integer.MAX_VALUE);
+        List<LoadAllFeelingDto> list  = contentMybatisDao.loadAllFeeling(content.getId(),Integer.MAX_VALUE);
         int i = 0;
-        for (Map map : list){
+        for (LoadAllFeelingDto loadAllFeelingDto : list){
             if(i > 4 ){
                 break;
             }
             ContentDetailDto.ContentTop5FeelingElement contentTop5FeelingElement = ContentDetailDto.createElement();
-            contentTop5FeelingElement.setTag(map.get("tag").toString());
-            contentTop5FeelingElement.setTid(Long.parseLong(map.get("tag_id").toString()));
-            contentTop5FeelingElement.setCid(Long.parseLong(map.get("cid").toString()));
+            contentTop5FeelingElement.setTag(loadAllFeelingDto.getTag());
+            contentTop5FeelingElement.setTid(loadAllFeelingDto.getTid());
+            contentTop5FeelingElement.setCid(loadAllFeelingDto.getCid());
             LikeDto like = new LikeDto();
             like.setCid(contentTop5FeelingElement.getCid());
             like.setTid(contentTop5FeelingElement.getTid());
@@ -403,7 +427,7 @@ public class ContentServiceImpl implements ContentService {
             }
             int count = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTop5FeelingElement.getTid());
             contentTop5FeelingElement.setLikeCount(count);
-            contentTop5FeelingElement.setUid(Long.parseLong(map.get("uid").toString()));
+            contentTop5FeelingElement.setUid(loadAllFeelingDto.getCid());
             contentDetailDto.getTags().add(contentTop5FeelingElement);
             i++;
         }
@@ -571,5 +595,26 @@ public class ContentServiceImpl implements ContentService {
         return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
     }
 
+    @Override
+    public Response getSelectedData(int sinceId,long uid) {
+        SquareDataDto squareDataDto = new SquareDataDto();
+        //小编精选
+        List<Content> contentList = contentMybatisDao.loadSelectedData(sinceId);
+        buildDatas(squareDataDto, contentList, uid);
+        return Response.success(squareDataDto);
+    }
 
+    @Override
+    public Response highQualityIndex(int sinceId,long uid) {
+        SquareDataDto squareDataDto = new SquareDataDto();
+        //小编精选
+        List<Content> contentList = contentMybatisDao.loadSelectedData(sinceId);
+        //猜你喜欢
+        List<Content> contents = contentMybatisDao.highQuality(sinceId);
+        if(contentList != null && contentList.size() >0) {
+            contents.add(0, contentList.get(0));
+        }
+        buildDatas(squareDataDto, contents, uid);
+        return Response.success(squareDataDto);
+    }
 }

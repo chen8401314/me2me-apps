@@ -78,7 +78,34 @@ public class SquareDataDto implements BaseEntity {
         //是否关注
         private int isFollow;
 
+        private int tagCount;
 
-    }
+        private int reviewCount;
+
+        private int forwardCount;
+
+        private int personCount;
+
+        private List<TagElement> tags = Lists.newArrayList();
+
+        public static TagElement createElement(){
+            return new TagElement();
+        }
+
+        @Data
+        public static class TagElement implements BaseEntity{
+
+            private String tag;
+
+            private long tid;
+
+            private int likeCount;
+
+            private int isLike;
+        }
+
+
+
+        }
 
 }
