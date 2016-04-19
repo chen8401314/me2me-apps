@@ -33,7 +33,7 @@ public class LiveTimeLineDto implements BaseEntity {
 
         private long fragmentId;
 
-        private Date publishTime;
+        private Date createTime;
 
         private int contentType;
 

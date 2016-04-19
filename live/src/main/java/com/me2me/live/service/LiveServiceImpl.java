@@ -69,7 +69,7 @@ public class LiveServiceImpl implements LiveService {
             }else if(topicFragment.getContentType() == Specification.LiveContent.IMAGE.index){
                 liveElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + topicFragment.getFragmentImage());
             }
-            liveElement.setPublishTime(topicFragment.getCreateTime());
+            liveElement.setCreateTime(topicFragment.getCreateTime());
             liveElement.setType(topicFragment.getType());
             //// TODO: 2016/4/12  follow 逻辑
             liveElement.setIsFollow(0);
