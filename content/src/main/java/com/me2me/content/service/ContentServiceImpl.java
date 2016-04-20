@@ -1,5 +1,7 @@
 package com.me2me.content.service;
 
+import com.google.common.collect.Interner;
+import com.google.common.collect.Lists;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -42,6 +44,75 @@ public class ContentServiceImpl implements ContentService {
         return Response.success(squareDataDto);
     }
 
+    private List<ShowContentListDto.ContentDataElement> buildData(List<Content> activityData,long uid) {
+        List<ShowContentListDto.ContentDataElement> result = Lists.newArrayList();
+        for(Content content : activityData){
+            ShowContentListDto.ContentDataElement contentDataElement = ShowContentListDto.createElement();
+            contentDataElement.setId(content.getId());
+            contentDataElement.setUid(content.getUid());
+            contentDataElement.setForwardCid(content.getForwardCid());
+            UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+            contentDataElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            contentDataElement.setNickName(userProfile.getNickName());
+            contentDataElement.setContent(content.getContent());
+            contentDataElement.setTitle(content.getTitle());
+            contentDataElement.setFeeling(content.getFeeling());
+            ContentTags contentTags = contentMybatisDao.getContentTags(content.getFeeling());
+            contentDataElement.setTid(contentTags.getId());
+            contentDataElement.setType(content.getType());
+            contentDataElement.setIsLike(isLike(uid,content.getId(),contentTags.getId()));
+            contentDataElement.setCreateTime(content.getCreateTime());
+            if(!StringUtils.isEmpty(content.getConverImage())) {
+                contentDataElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
+            }else{
+                contentDataElement.setCoverImage("");
+            }
+            ContentUserLikesCount c = new ContentUserLikesCount();
+            c.setTid(contentTags.getId());
+            c.setCid(content.getId());
+            int likesCount = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTags.getId());
+            contentDataElement.setLikeCount(likesCount);
+            contentDataElement.setHotValue(content.getHotValue());
+            if(!StringUtils.isEmpty(content.getThumbnail())) {
+                contentDataElement.setThumbnail(Constant.QINIU_DOMAIN + "/" + content.getThumbnail());
+            }else{
+                contentDataElement.setThumbnail("");
+            }
+            contentDataElement.setThumbnail(Constant.QINIU_DOMAIN + "/" + content.getThumbnail());
+            contentDataElement.setForwardTitle(content.getForwardTitle());
+            contentDataElement.setContentType(content.getContentType());
+            contentDataElement.setForwardUrl(content.getForwardUrl());
+            long contentUid = content.getUid();
+            int follow = userService.isFollow(contentUid,uid);
+            contentDataElement.setIsFollow(follow);
+            List<LoadAllFeelingDto> list  = contentMybatisDao.loadAllFeeling(content.getId(),Integer.MAX_VALUE);
+            int i = 0;
+            for (LoadAllFeelingDto loadAllFeelingDto : list) {
+                if (i > 3) {
+                    break;
+                }
+                LikeDto likeDto = new LikeDto();
+                likeDto.setCid(loadAllFeelingDto.getCid());
+                likeDto.setUid(loadAllFeelingDto.getUid());
+                likeDto.setCustomerId(uid);
+                likeDto.setTid(loadAllFeelingDto.getTid());
+                ContentUserLikes contentUserLikes = contentMybatisDao.getContentUserLike(likeDto);
+                ShowContentListDto.ContentDataElement.TagElement tagElement = contentDataElement.createElement();
+                if (contentUserLikes == null) {
+                    tagElement.setIsLike(Specification.IsLike.UNLIKE.index);
+                } else {
+                    tagElement.setIsLike(Specification.IsLike.ISLIKE.index);
+                }
+                int likeCount = contentMybatisDao.getContentUserLikesCount(content.getId(), loadAllFeelingDto.getTid());
+                tagElement.setLikeCount(likeCount);
+                tagElement.setTag(loadAllFeelingDto.getTag());
+                contentDataElement.getTags().add(tagElement);
+                i++;
+            }
+            result.add(contentDataElement);
+        }
+        return result;
+    }
     private void buildDatas(SquareDataDto squareDataDto, List<Content> contents, long uid) {
         for(Content content : contents){
             SquareDataDto.SquareDataElement squareDataElement = SquareDataDto.createElement();
@@ -114,10 +185,19 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response square(int sinceId,long uid) {
-        SquareDataDto squareDataDto = new SquareDataDto();
+        ShowContentListDto showContentListDto = new ShowContentListDto();
+        // SquareDataDto squareDataDto = new SquareDataDto();
+        List<Content> list = Lists.newArrayList();
+        if(Integer.MAX_VALUE == sinceId) {
+            list = contentMybatisDao.loadActivityData(sinceId);
+        }
+
         List<Content> contents = contentMybatisDao.loadSquareData(sinceId);
-        buildDatas(squareDataDto, contents,uid);
-        return Response.success(squareDataDto);
+
+        showContentListDto.getActivityData().addAll(buildData(list,uid));
+        showContentListDto.getSquareData().addAll(buildData(contents,uid));
+        //buildDatas(squareDataDto, contents,uid);
+        return Response.success(showContentListDto);
     }
 
     @Override

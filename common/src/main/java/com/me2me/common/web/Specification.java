@@ -115,7 +115,9 @@ public interface Specification {
 
         EDITOR("小编",2),
 
-        LIVE("直播",3);
+        LIVE("直播",3),
+
+        ACTIVITY("活动",4);
 
         public final String name;
 

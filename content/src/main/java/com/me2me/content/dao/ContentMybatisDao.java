@@ -205,4 +205,8 @@ public class ContentMybatisDao {
         return contentMapper.loadSelectedData(sinceId);
     }
 
+    public List<Content> loadActivityData(int sinceId){
+        return contentMapper.loadActivityData(sinceId);
+    }
+
 }

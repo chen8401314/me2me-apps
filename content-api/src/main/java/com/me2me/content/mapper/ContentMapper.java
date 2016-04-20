@@ -127,4 +127,6 @@ public interface ContentMapper {
     List<Content> loadMyPublishData(Map map);
 
     List<Content> loadSelectedData(int sinceId);
+
+    List<Content> loadActivityData(int sinceId);
 }
