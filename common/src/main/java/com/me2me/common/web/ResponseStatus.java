@@ -163,6 +163,8 @@ public enum  ResponseStatus {
 
     CONTENT_IS_NOT_EXIST("修改的内容不存在","content is not exist",50021),
 
+    CONTENT_IS_NOT_YOURS("该内容你无权修改","content is not yours",50021),
+
 
 
 

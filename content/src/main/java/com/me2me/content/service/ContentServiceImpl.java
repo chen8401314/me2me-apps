@@ -704,10 +704,13 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public Response modifyContent(int isPublic,long cid){
+    public Response modifyContent(int isPublic,long cid,long uid){
         Content content = contentMybatisDao.getContentById(cid);
         if(content == null){
             return Response.failure(ResponseStatus.CONTENT_IS_NOT_EXIST.status,ResponseStatus.CONTENT_IS_NOT_EXIST.message);
+        }
+        if(!content.getUid().equals(uid)){
+            return Response.failure(ResponseStatus.CONTENT_IS_NOT_YOURS.status,ResponseStatus.CONTENT_IS_NOT_YOURS.message);
         }
         content.setIspublic(isPublic);
         contentMybatisDao.updateContentById(content);

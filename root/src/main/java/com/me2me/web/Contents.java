@@ -222,7 +222,7 @@ public class Contents extends BaseController {
     @ResponseBody
     public Response modifyContent(ModifyContentRequest request){
 
-        return contentService.modifyContent(request.getIsPublic(),request.getCid());
+        return contentService.modifyContent(request.getIsPublic(),request.getCid(),request.getUid());
     }
 
 
