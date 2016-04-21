@@ -6,6 +6,7 @@ import com.me2me.content.dto.ContentDto;
 import com.me2me.content.dto.LikeDto;
 import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.service.ContentService;
+import com.me2me.content.service.MobileArticleService;
 import com.me2me.user.dto.*;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
@@ -30,6 +31,9 @@ public class Contents extends BaseController {
 
     @Autowired
     private ContentService contentService;
+
+    @Autowired
+    private MobileArticleService mobileArticleService;
 
     /**
      * 精选接口
@@ -198,6 +202,15 @@ public class Contents extends BaseController {
             request.setSinceId(Integer.MAX_VALUE);
         }
         return contentService.highQualityIndex(request.getSinceId(),request.getUid());
+    }
+
+    @RequestMapping(value = "/showArticle",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response showArticle(ShowArticleRequest request){
+        if(request.getSinceId()==-1){
+            request.setSinceId(Integer.MAX_VALUE);
+        }
+        return mobileArticleService.showArticle(request.getSinceId());
     }
 
 }
