@@ -702,4 +702,15 @@ public class ContentServiceImpl implements ContentService {
         //buildDatas(squareDataDto, contents, uid);
         return Response.success(highQualityContentDto);
     }
+
+    @Override
+    public Response modifyContent(int isPublic,long cid){
+        Content content = contentMybatisDao.getContentById(cid);
+        if(content == null){
+            return Response.failure(ResponseStatus.CONTENT_IS_NOT_EXIST.status,ResponseStatus.CONTENT_IS_NOT_EXIST.message);
+        }
+        content.setIspublic(isPublic);
+        contentMybatisDao.updateContentById(content);
+        return Response.success(ResponseStatus.CONTENT_IS_PUBLIC_MODIFY_SUCCESS.status,ResponseStatus.CONTENT_IS_PUBLIC_MODIFY_SUCCESS.message);
+    }
 }

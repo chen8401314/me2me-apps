@@ -101,6 +101,8 @@ public enum  ResponseStatus {
 
     LIVE_SIGN_OUT_SUCCESS("直播退出成功","live sign out success",20044),
 
+    CONTENT_IS_PUBLIC_MODIFY_SUCCESS("内容权限修改成功","content is public modify success",20045),
+
 
 
 
@@ -158,6 +160,8 @@ public enum  ResponseStatus {
     LIVE_IS_NOT_EXIST("直播不存在","live is not exist",50019),
 
     LIVE_IS_NOT_SIGN_IN("您未参与此直播","live is not sign in",50020),
+
+    CONTENT_IS_NOT_EXIST("修改的内容不存在","content is not exist",50021),
 
 
 

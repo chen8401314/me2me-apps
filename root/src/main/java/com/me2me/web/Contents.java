@@ -213,4 +213,18 @@ public class Contents extends BaseController {
         return mobileArticleService.showArticle(request.getSinceId());
     }
 
+    /**
+     * 修改内容权限
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/modifyContent",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response modifyContent(ModifyContentRequest request){
+
+        return contentService.modifyContent(request.getIsPublic(),request.getCid());
+    }
+
+
+
 }

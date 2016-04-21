@@ -49,6 +49,7 @@ public class LiveServiceImpl implements LiveService {
         contentDto.setUid(createLiveDto.getUid());
         contentDto.setType(Specification.ArticleType.LIVE.index);
         contentDto.setContentType(0);
+        contentDto.setIsPublic(1);
         contentService.publish(contentDto);
         return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status,ResponseStatus.USER_CREATE_LIVE_SUCCESS.message);
     }
@@ -210,7 +211,7 @@ public class LiveServiceImpl implements LiveService {
         return null;
     }
 
-
+    @Override
     public Response removeLive(long uid, long topicId){
         //判断是否是自己的直播
         Topic topic = liveMybatisDao.getTopic(uid,topicId);
@@ -227,6 +228,7 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(ResponseStatus.LIVE_REMOVE_SUCCESS.status,ResponseStatus.LIVE_REMOVE_SUCCESS.message);
     }
 
+    @Override
     public Response signOutLive(long uid, long topicId){
         //判断是否是自己的直播
         Topic topic = liveMybatisDao.getTopic(uid,topicId);

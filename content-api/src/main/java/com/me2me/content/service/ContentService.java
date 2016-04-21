@@ -107,4 +107,6 @@ public interface ContentService {
      * @return
      */
     Response highQualityIndex(int sinceId,long uid);
+
+    Response modifyContent(int isPublic,long cid);
 }
