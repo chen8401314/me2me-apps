@@ -211,4 +211,32 @@ public class LiveServiceImpl implements LiveService {
     }
 
 
+    public Response removeLive(long uid, long topicId){
+        //判断是否是自己的直播
+        Topic topic = liveMybatisDao.getTopic(uid,topicId);
+        if(topic == null){
+            return Response.failure(ResponseStatus.LIVE_REMOVE_IS_NOT_YOURS.status,ResponseStatus.LIVE_REMOVE_IS_NOT_YOURS.message);
+        }
+        //判断是否完结
+        if(topic.getStatus() == Specification.LiveStatus.LIVING.index){
+            return Response.failure(ResponseStatus.LIVE_REMOVE_IS_NOT_OVER.status,ResponseStatus.LIVE_REMOVE_IS_NOT_OVER.message);
+        }
+        //移除
+        topic.setStatus(Specification.LiveStatus.REMOVE.index);
+        liveMybatisDao.updateTopic(topic);
+        return Response.success(ResponseStatus.LIVE_REMOVE_SUCCESS.status,ResponseStatus.LIVE_REMOVE_SUCCESS.message);
+    }
+
+    public Response signOutLive(long uid, long topicId){
+        //判断是否是自己的直播
+        Topic topic = liveMybatisDao.getTopic(uid,topicId);
+        if(topic != null){
+            return Response.failure(ResponseStatus.LIVE_OWNER_CAN_NOT_SIGN_OUT.status,ResponseStatus.LIVE_OWNER_CAN_NOT_SIGN_OUT.message);
+        }
+        //移除我的关注列表/退出
+        LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid,topicId);
+        liveMybatisDao.deleteLiveFavorite(liveFavorite);
+        return Response.success(ResponseStatus.LIVE_SIGN_OUT_SUCCESS.status,ResponseStatus.LIVE_SIGN_OUT_SUCCESS.message);
+    }
+
 }

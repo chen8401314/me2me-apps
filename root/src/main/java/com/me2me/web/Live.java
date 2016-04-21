@@ -127,9 +127,27 @@ public class Live extends BaseController {
         return liveService.getMyLives(request.getUid(),request.getSinceId());
     }
 
-    public static void main(String[] args) {
-        List<String> lives = Lists.newArrayList();
-        lives.add("a");
-        Preconditions.checkElementIndex(2,lives.size());
+
+    /**
+     * 完结的直播移除
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/removeLive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response removeLive(RemoveLiveRequest request){
+        return liveService.removeLive(request.getUid(),request.getTopicId());
     }
+
+    /**
+     * 完结的直播移除
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/signOutLive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response signOutLive(SignOutLiveRequest request){
+        return liveService.signOutLive(request.getUid(),request.getTopicId());
+    }
+
 }

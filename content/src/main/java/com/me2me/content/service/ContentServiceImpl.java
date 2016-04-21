@@ -44,7 +44,7 @@ public class ContentServiceImpl implements ContentService {
         return Response.success(squareDataDto);
     }
 
-    private List<ShowContentListDto.ContentDataElement> buildData(List<Content> activityData,long uid) {
+    private List buildData(List<Content> activityData,long uid) {
         List<ShowContentListDto.ContentDataElement> result = Lists.newArrayList();
         for(Content content : activityData){
             ShowContentListDto.ContentDataElement contentDataElement = ShowContentListDto.createElement();
@@ -233,6 +233,7 @@ public class ContentServiceImpl implements ContentService {
         }
 
         content.setContentType(contentDto.getContentType());
+        content.setIspublic(contentDto.getIsPublic());
         contentMybatisDao.createContent(content);
         Content c = contentMybatisDao.getContentById(content.getId());
         if(!StringUtils.isEmpty(contentDto.getImageUrls())){
@@ -686,15 +687,19 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response highQualityIndex(int sinceId,long uid) {
-        SquareDataDto squareDataDto = new SquareDataDto();
+        HighQualityContentDto highQualityContentDto = new HighQualityContentDto();
+        //SquareDataDto squareDataDto = new SquareDataDto();
         //小编精选
-        List<Content> contentList = contentMybatisDao.loadSelectedData(sinceId);
+        List<Content> contentList = Lists.newArrayList();
+        if(Integer.MAX_VALUE == sinceId) {
+            contentList = contentMybatisDao.loadSelectedData(sinceId);
+        }
         //猜你喜欢
         List<Content> contents = contentMybatisDao.highQuality(sinceId);
-        if(contentList != null && contentList.size() >0) {
-            contents.add(0, contentList.get(0));
-        }
-        buildDatas(squareDataDto, contents, uid);
-        return Response.success(squareDataDto);
+
+        highQualityContentDto.getMakeUpData().addAll(buildData(contentList,uid));
+        highQualityContentDto.getGussYouLikeData().addAll(buildData(contents,uid));
+        //buildDatas(squareDataDto, contents, uid);
+        return Response.success(highQualityContentDto);
     }
 }

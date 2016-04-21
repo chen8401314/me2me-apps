@@ -73,6 +73,7 @@ public class Contents extends BaseController {
         contentDto.setImageUrls(request.getImageUrls());
         contentDto.setType(request.getType());
         contentDto.setTitle(request.getTitle());
+        contentDto.setIsPublic(request.getIsPublic());
         if(contentDto.getType()!=2) {
             // 用户UGC入口
             return contentService.publish(contentDto);

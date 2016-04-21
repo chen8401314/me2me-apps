@@ -61,4 +61,20 @@ public interface LiveService {
      */
     Response finishMyLive(long uid, long topicId);
 
+    /**
+     * 移除自己完结的直播
+     * @param uid
+     * @param topicId
+     * @return
+     */
+    Response removeLive(long uid, long topicId);
+
+    /**
+     * 退出非自己的直播
+     * @param uid
+     * @param topicId
+     * @return
+     */
+    Response signOutLive(long uid, long topicId);
+
 }

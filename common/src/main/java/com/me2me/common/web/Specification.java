@@ -294,9 +294,9 @@ public interface Specification {
 
         LIVING("正在直播",0),
 
-        OVER("结束直播",1);
+        OVER("结束直播",1),
 
-
+        REMOVE("移除直播",2);
         public final String name;
         public final int index;
         LiveStatus(String name,int index){
