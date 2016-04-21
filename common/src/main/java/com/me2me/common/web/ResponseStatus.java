@@ -111,6 +111,8 @@ public enum  ResponseStatus {
 
 
 
+
+
     USER_PASSWORD_ERROR("用户密码错误","user password error",5000),
 
     USER_NOT_EXISTS("该用户不存在","user not exists",5001),
@@ -152,6 +154,10 @@ public enum  ResponseStatus {
     LIVE_REMOVE_IS_NOT_YOURS("您不是直播创建人，不能移除","live is not yours",50017),
 
     LIVE_OWNER_CAN_NOT_SIGN_OUT("自己创建的直播不能退出","live owner can not sign out",50018),
+
+    LIVE_IS_NOT_EXIST("直播不存在","live is not exist",50019),
+
+    LIVE_IS_NOT_SIGN_IN("您未参与此直播","live is not sign in",50020),
 
 
 

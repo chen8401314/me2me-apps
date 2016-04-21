@@ -140,7 +140,7 @@ public class Live extends BaseController {
     }
 
     /**
-     * 完结的直播移除
+     * 退出直播
      * @param request
      * @return
      */

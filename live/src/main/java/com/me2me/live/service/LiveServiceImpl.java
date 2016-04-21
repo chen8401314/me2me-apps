@@ -232,9 +232,17 @@ public class LiveServiceImpl implements LiveService {
         Topic topic = liveMybatisDao.getTopic(uid,topicId);
         if(topic != null){
             return Response.failure(ResponseStatus.LIVE_OWNER_CAN_NOT_SIGN_OUT.status,ResponseStatus.LIVE_OWNER_CAN_NOT_SIGN_OUT.message);
+        }else{
+            topic =liveMybatisDao.getTopicById(topicId);
+            if(topic == null){
+               return Response.failure(ResponseStatus.LIVE_IS_NOT_EXIST.status ,ResponseStatus.LIVE_IS_NOT_EXIST.message);
+            }
         }
         //移除我的关注列表/退出
         LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid,topicId);
+        if(liveFavorite == null){
+            Response.failure(ResponseStatus.LIVE_IS_NOT_SIGN_IN.status ,ResponseStatus.LIVE_IS_NOT_SIGN_IN.message);
+        }
         liveMybatisDao.deleteLiveFavorite(liveFavorite);
         return Response.success(ResponseStatus.LIVE_SIGN_OUT_SUCCESS.status,ResponseStatus.LIVE_SIGN_OUT_SUCCESS.message);
     }
