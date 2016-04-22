@@ -305,4 +305,20 @@ public interface Specification {
         }
     }
 
+    /**
+     *直播是否收藏
+     */
+    enum LiveFavorite{
+
+        NORMAL("未收藏",0),
+
+        FAVORITE("收藏",1);
+        public final String name;
+        public final int index;
+        LiveFavorite(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
 }

@@ -148,6 +148,13 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setPersonCount(cpi.getPersonCount());
                 showTopicElement.setReviewCount(cpi.getReviewCount());
             }
+            //判断是否收藏了
+            LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid,topic.getId());
+            if(liveFavorite != null){
+                showTopicElement.setFavorite(Specification.LiveFavorite.FAVORITE.index);
+            }else{
+                showTopicElement.setFavorite(Specification.LiveFavorite.NORMAL.index);
+            }
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
     }
