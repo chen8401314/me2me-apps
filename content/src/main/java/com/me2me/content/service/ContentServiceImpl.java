@@ -176,6 +176,7 @@ public class ContentServiceImpl implements ContentService {
                 squareDataElement.getTags().add(tagElement);
                 i++;
             }
+            squareDataElement.setRights(content.getRights());
             squareDataDto.getResults().add(squareDataElement);
         }
     }

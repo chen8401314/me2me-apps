@@ -16,6 +16,8 @@ import java.util.List;
 @Data
 public class LiveTimeLineDto implements BaseEntity {
 
+
+
     private  List<LiveElement> liveElements = Lists.newArrayList();
 
     public static LiveElement createElement(){
