@@ -77,7 +77,7 @@ public class Contents extends BaseController {
         contentDto.setImageUrls(request.getImageUrls());
         contentDto.setType(request.getType());
         contentDto.setTitle(request.getTitle());
-        contentDto.setIsPublic(request.getIsPublic());
+        contentDto.setRights(request.getRights());
         if(contentDto.getType()!=2) {
             // 用户UGC入口
             return contentService.publish(contentDto);
@@ -222,7 +222,7 @@ public class Contents extends BaseController {
     @ResponseBody
     public Response modifyContent(ModifyContentRequest request){
 
-        return contentService.modifyContent(request.getIsPublic(),request.getCid(),request.getUid());
+        return contentService.modifyContent(request.getRights(),request.getCid(),request.getUid());
     }
 
 

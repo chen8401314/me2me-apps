@@ -18,5 +18,5 @@ public class ModifyContentRequest extends Request{
 
     @Getter
     @Setter
-    private int isPublic;
+    private int rights;
 }

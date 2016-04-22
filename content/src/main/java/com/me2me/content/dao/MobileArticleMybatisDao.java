@@ -19,7 +19,7 @@ public class MobileArticleMybatisDao {
     private MobileArticleMapper mobileArticleMapper;
 
     public List<MobileArticle> showArticle(int sinceId){
-        return mobileArticleMapper.showArticleBySinceId(sinceId);
+        return null;//mobileArticleMapper.showArticleBySinceId(sinceId);
     }
 
 }

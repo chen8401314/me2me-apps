@@ -41,7 +41,7 @@ public class PublishContentRequest extends Request {
 
     @Getter
     @Setter
-    private int isPublic;
+    private int rights;
 
 
 

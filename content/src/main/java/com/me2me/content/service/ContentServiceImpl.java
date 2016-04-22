@@ -1,6 +1,5 @@
 package com.me2me.content.service;
 
-import com.google.common.collect.Interner;
 import com.google.common.collect.Lists;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
@@ -19,7 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.Map;
+
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -233,7 +232,7 @@ public class ContentServiceImpl implements ContentService {
         }
 
         content.setContentType(contentDto.getContentType());
-        content.setIspublic(contentDto.getIsPublic());
+        content.setRights(contentDto.getRights());
         contentMybatisDao.createContent(content);
         Content c = contentMybatisDao.getContentById(content.getId());
         if(!StringUtils.isEmpty(contentDto.getImageUrls())){
@@ -704,7 +703,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public Response modifyContent(int isPublic,long cid,long uid){
+    public Response modifyContent(int rights,long cid,long uid){
         Content content = contentMybatisDao.getContentById(cid);
         if(content == null){
             return Response.failure(ResponseStatus.CONTENT_IS_NOT_EXIST.status,ResponseStatus.CONTENT_IS_NOT_EXIST.message);
@@ -712,7 +711,7 @@ public class ContentServiceImpl implements ContentService {
         if(!content.getUid().equals(uid)){
             return Response.failure(ResponseStatus.CONTENT_IS_NOT_YOURS.status,ResponseStatus.CONTENT_IS_NOT_YOURS.message);
         }
-        content.setIspublic(isPublic);
+        content.setRights(rights);
         contentMybatisDao.updateContentById(content);
         return Response.success(ResponseStatus.CONTENT_IS_PUBLIC_MODIFY_SUCCESS.status,ResponseStatus.CONTENT_IS_PUBLIC_MODIFY_SUCCESS.message);
     }
