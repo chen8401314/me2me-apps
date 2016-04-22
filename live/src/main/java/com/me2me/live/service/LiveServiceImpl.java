@@ -48,6 +48,7 @@ public class LiveServiceImpl implements LiveService {
         contentDto.setImageUrls(createLiveDto.getLiveImage());
         contentDto.setUid(createLiveDto.getUid());
         contentDto.setType(Specification.ArticleType.LIVE.index);
+        contentDto.setForwardCid(topic.getId());
         contentDto.setContentType(0);
         contentDto.setIsPublic(1);
         contentService.publish(contentDto);
