@@ -80,6 +80,7 @@ public class LiveMybatisDao {
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
         criteria.andIdLessThan(sinceId);
+        criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
         TopicExample.Criteria criteriaOr = example.createCriteria();
         List<Long> topicList = getTopicId(uid);
         if(topicList != null && topicList.size() > 0) {

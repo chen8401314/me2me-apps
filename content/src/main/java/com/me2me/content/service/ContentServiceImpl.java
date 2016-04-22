@@ -229,6 +229,10 @@ public class ContentServiceImpl implements ContentService {
             content.setForwardUrl(Constant.FORWARD_URL_TEST+forwardCid);
             content.setForwardTitle(forwardContent.getTitle());
             content.setThumbnail(forwardContent.getConverImage());
+        }else if(content.getType() == Specification.ArticleType.LIVE.index){
+            long forwardCid = contentDto.getForwardCid();
+            content.setForwardCid(forwardCid);
+
         }
 
         content.setContentType(contentDto.getContentType());
