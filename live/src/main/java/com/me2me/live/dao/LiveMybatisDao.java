@@ -2,6 +2,7 @@ package com.me2me.live.dao;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.me2me.common.web.Specification;
 import com.me2me.live.mapper.LiveCpiMapper;
 import com.me2me.live.mapper.LiveFavoriteMapper;
 import com.me2me.live.mapper.TopicFragmentMapper;
@@ -104,6 +105,7 @@ public class LiveMybatisDao {
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andIdLessThan(sinceId);
+        criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
         example.setOrderByClause("id desc,status asc limit 10");
         return topicMapper.selectByExample(example);
     }
