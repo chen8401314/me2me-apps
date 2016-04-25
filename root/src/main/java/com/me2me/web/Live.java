@@ -55,6 +55,7 @@ public class Live extends BaseController {
         GetLiveTimeLineDto getLiveTimeLineDto = new GetLiveTimeLineDto();
         getLiveTimeLineDto.setSinceId(request.getSinceId());
         getLiveTimeLineDto.setTopicId(request.getTopicId());
+        getLiveTimeLineDto.setUid(request.getUid());
         return liveService.getLiveTimeline(getLiveTimeLineDto);
     }
 

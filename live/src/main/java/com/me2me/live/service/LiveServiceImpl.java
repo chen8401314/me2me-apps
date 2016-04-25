@@ -73,7 +73,7 @@ public class LiveServiceImpl implements LiveService {
             }
             liveElement.setCreateTime(topicFragment.getCreateTime());
             liveElement.setType(topicFragment.getType());
-            LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(topicFragment.getUid(),topicFragment.getTopicId());
+            LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(getLiveTimeLineDto.getUid(),topicFragment.getTopicId());
             if(liveFavorite != null){
                 liveElement.setIsFollow(Specification.IsForward.FORWARD.index);
             }else{
