@@ -99,12 +99,12 @@ public class LiveServiceImpl implements LiveService {
         liveMybatisDao.createTopicFragment(topicFragment);
         //直播贴标签，粉丝贴标签，点赞处理
         //主播贴标
-        // TODO: 2016/4/25 贴标签和点赞时候保存数量  
+        // TODO: 2016/4/25 贴标签和点赞时候保存数量
         if(speakDto.getType() == Specification.LiveSpeakType.ANCHORWRITETAG.index){
             WriteTagDto writeTagDto = new WriteTagDto();
             writeTagDto.setTag(speakDto.getFragment());
             //保存标签
-            contentService.writeTag(writeTagDto);
+           // contentService.writeTag(writeTagDto);
             //更新标签数量
 
         //粉丝贴标
@@ -112,7 +112,7 @@ public class LiveServiceImpl implements LiveService {
             //保存标签
             WriteTagDto writeTagDto = new WriteTagDto();
             //保存标签
-            contentService.writeTag(writeTagDto);
+           // contentService.writeTag(writeTagDto);
         //点赞
         }else if(speakDto.getType() == Specification.LiveSpeakType.LIKES.index){
             //更新点赞的数量
