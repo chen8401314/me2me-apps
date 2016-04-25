@@ -10,23 +10,23 @@ import java.util.List;
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 代宝磊
- * Date: 2016/4/20
- * Time :13:29
+ * Date: 2016/4/21
+ * Time :13:34
  */
 @Data
-public class ShowContentListDto implements BaseEntity {
+public class HighQualityContentDto implements BaseEntity {
+
     /**
-     * 广场，规则
-     * 1.广场首页前部分先显示活动内容，再显示广场内容
+     * 精选
+     * 1.精选第一条显示小编精选，其他显示猜你喜欢
      *
      */
 
     //活动内容
-    private List<ContentDataElement> activityData = Lists.newArrayList();
+    private List<ContentDataElement> makeUpData = Lists.newArrayList();
 
     //广场内容
-    private List<ContentDataElement> squareData = Lists.newArrayList();
-
+    private List<ContentDataElement> gussYouLikeData = Lists.newArrayList();
 
 
     public static ContentDataElement createElement(){
@@ -90,8 +90,6 @@ public class ShowContentListDto implements BaseEntity {
         private int forwardCount;
 
         private int personCount;
-
-        private int favorite;
 
         private List<TagElement> tags = Lists.newArrayList();
 

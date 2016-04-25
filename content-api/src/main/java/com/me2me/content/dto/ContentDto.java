@@ -35,4 +35,8 @@ public class ContentDto implements BaseEntity {
 
     private Date createTime;
 
+    private int rights;
+
+
+
 }

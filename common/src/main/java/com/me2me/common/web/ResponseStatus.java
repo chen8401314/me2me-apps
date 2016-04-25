@@ -97,6 +97,14 @@ public enum  ResponseStatus {
 
     SHOW_USER_FOLLOW_LIST_SUCCESS("获取用户关注成功","show user follow success",20042),
 
+    LIVE_REMOVE_SUCCESS("直播移除成功","live remove success",20043),
+
+    LIVE_SIGN_OUT_SUCCESS("直播退出成功","live sign out success",20044),
+
+    CONTENT_IS_PUBLIC_MODIFY_SUCCESS("内容权限修改成功","content is public modify success",20045),
+
+
+
 
 
 
@@ -133,7 +141,7 @@ public enum  ResponseStatus {
 
     FINISH_LIVE_NO_POWER("您没有权限或者直播已经结束","finish live no power",50012),
 
-    USER_LIVE_IS_OVER("直接已经结束","user live is over",20013),
+    USER_LIVE_IS_OVER("直接已经结束","user live is over",50013),
 
 
 
@@ -143,7 +151,42 @@ public enum  ResponseStatus {
 
     CAN_NOT_DUPLICATE_FOLLOW("不能重复关注","can't duplicate follow",50015),
 
-    ILLEGAL_REQUEST("非法的请求参数","illegal request",50016);
+    LIVE_REMOVE_IS_NOT_OVER("直接还未结束，不能移除"," live is not over",50016),
+
+    LIVE_REMOVE_IS_NOT_YOURS("您不是直播创建人，不能移除","live is not yours",50017),
+
+    LIVE_OWNER_CAN_NOT_SIGN_OUT("自己创建的直播不能退出","live owner can not sign out",50018),
+
+    LIVE_IS_NOT_EXIST("直播不存在","live is not exist",50019),
+
+    LIVE_IS_NOT_SIGN_IN("您未参与此直播","live is not sign in",50020),
+
+    CONTENT_IS_NOT_EXIST("修改的内容不存在","content is not exist",50021),
+
+    CONTENT_IS_NOT_YOURS("该内容你无权修改","content is not yours",50021),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    ILLEGAL_REQUEST("非法的请求参数","illegal request",50099);
 
     public final String message;
 

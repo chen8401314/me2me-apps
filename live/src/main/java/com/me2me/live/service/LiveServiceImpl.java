@@ -48,7 +48,9 @@ public class LiveServiceImpl implements LiveService {
         contentDto.setImageUrls(createLiveDto.getLiveImage());
         contentDto.setUid(createLiveDto.getUid());
         contentDto.setType(Specification.ArticleType.LIVE.index);
+        contentDto.setForwardCid(topic.getId());
         contentDto.setContentType(0);
+        contentDto.setRights(1);
         contentService.publish(contentDto);
         return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status,ResponseStatus.USER_CREATE_LIVE_SUCCESS.message);
     }
@@ -71,8 +73,12 @@ public class LiveServiceImpl implements LiveService {
             }
             liveElement.setCreateTime(topicFragment.getCreateTime());
             liveElement.setType(topicFragment.getType());
-            //// TODO: 2016/4/12  follow 逻辑
-            liveElement.setIsFollow(0);
+            LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(getLiveTimeLineDto.getUid(),topicFragment.getTopicId());
+            if(liveFavorite != null){
+                liveElement.setIsFollow(Specification.IsForward.FORWARD.index);
+            }else{
+                liveElement.setIsFollow(Specification.IsForward.NATIVE.index);
+            }
             liveElement.setContentType(topicFragment.getContentType());
             liveElement.setFragmentId(topicFragment.getId());
             liveTimeLineDto.getLiveElements().add(liveElement);
@@ -101,7 +107,8 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response getMyLives(long uid ,long sinceId) {
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
-        List<Topic> topicList = liveMybatisDao.getMyLives(uid ,sinceId);
+        List<Long> topics = liveMybatisDao.getTopicId(uid);
+        List<Topic> topicList = liveMybatisDao.getMyLives(uid ,sinceId ,topics);
         builder(uid, showTopicListDto, topicList);
         return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status,ResponseStatus.GET_MY_LIVE_SUCCESS.message,showTopicListDto);
     }
@@ -125,7 +132,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setUid(topic.getUid());
             showTopicElement.setCoverImage(Constant.QINIU_DOMAIN  + "/" + topic.getLiveImage());
             showTopicElement.setTitle(topic.getTitle());
-            UserProfile userProfile = userService.getUserProfileByUid(uid);
+            UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
             showTopicElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar() );
             showTopicElement.setNickName(userProfile.getNickName());
             showTopicElement.setCreateTime(topic.getCreateTime());
@@ -145,6 +152,13 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setTagCount(cpi.getTagCount());
                 showTopicElement.setPersonCount(cpi.getPersonCount());
                 showTopicElement.setReviewCount(cpi.getReviewCount());
+            }
+            //判断是否收藏了
+            LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid,topic.getId());
+            if(liveFavorite != null){
+                showTopicElement.setFavorite(Specification.LiveFavorite.FAVORITE.index);
+            }else{
+                showTopicElement.setFavorite(Specification.LiveFavorite.NORMAL.index);
             }
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
@@ -210,5 +224,42 @@ public class LiveServiceImpl implements LiveService {
         return null;
     }
 
+    @Override
+    public Response removeLive(long uid, long topicId){
+        //判断是否是自己的直播
+        Topic topic = liveMybatisDao.getTopic(uid,topicId);
+        if(topic == null){
+            return Response.failure(ResponseStatus.LIVE_REMOVE_IS_NOT_YOURS.status,ResponseStatus.LIVE_REMOVE_IS_NOT_YOURS.message);
+        }
+        //判断是否完结
+        if(topic.getStatus() == Specification.LiveStatus.LIVING.index){
+            return Response.failure(ResponseStatus.LIVE_REMOVE_IS_NOT_OVER.status,ResponseStatus.LIVE_REMOVE_IS_NOT_OVER.message);
+        }
+        //移除
+        topic.setStatus(Specification.LiveStatus.REMOVE.index);
+        liveMybatisDao.updateTopic(topic);
+        return Response.success(ResponseStatus.LIVE_REMOVE_SUCCESS.status,ResponseStatus.LIVE_REMOVE_SUCCESS.message);
+    }
+
+    @Override
+    public Response signOutLive(long uid, long topicId){
+        //判断是否是自己的直播
+        Topic topic = liveMybatisDao.getTopic(uid,topicId);
+        if(topic != null){
+            return Response.failure(ResponseStatus.LIVE_OWNER_CAN_NOT_SIGN_OUT.status,ResponseStatus.LIVE_OWNER_CAN_NOT_SIGN_OUT.message);
+        }else{
+            topic =liveMybatisDao.getTopicById(topicId);
+            if(topic == null){
+               return Response.failure(ResponseStatus.LIVE_IS_NOT_EXIST.status ,ResponseStatus.LIVE_IS_NOT_EXIST.message);
+            }
+        }
+        //移除我的关注列表/退出
+        LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid,topicId);
+        if(liveFavorite == null){
+            Response.failure(ResponseStatus.LIVE_IS_NOT_SIGN_IN.status ,ResponseStatus.LIVE_IS_NOT_SIGN_IN.message);
+        }
+        liveMybatisDao.deleteLiveFavorite(liveFavorite);
+        return Response.success(ResponseStatus.LIVE_SIGN_OUT_SUCCESS.status,ResponseStatus.LIVE_SIGN_OUT_SUCCESS.message);
+    }
 
 }

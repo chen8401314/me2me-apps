@@ -7,13 +7,12 @@ import lombok.Setter;
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 代宝磊
- * Date: 2016/3/28
- * Time :17:39
+ * Date: 2016/4/21
+ * Time :9:23
  */
-public class ContentDetailRequest extends Request {
+public class RemoveLiveRequest extends Request{
 
     @Getter
     @Setter
-    private long id;
-
+    private long topicId;
 }

@@ -1,6 +1,5 @@
 package com.me2me.content.service;
 
-import com.google.common.collect.Interner;
 import com.google.common.collect.Lists;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
@@ -19,7 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
-import java.util.Map;
+
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -44,7 +43,7 @@ public class ContentServiceImpl implements ContentService {
         return Response.success(squareDataDto);
     }
 
-    private List<ShowContentListDto.ContentDataElement> buildData(List<Content> activityData,long uid) {
+    private List buildData(List<Content> activityData,long uid) {
         List<ShowContentListDto.ContentDataElement> result = Lists.newArrayList();
         for(Content content : activityData){
             ShowContentListDto.ContentDataElement contentDataElement = ShowContentListDto.createElement();
@@ -177,6 +176,7 @@ public class ContentServiceImpl implements ContentService {
                 squareDataElement.getTags().add(tagElement);
                 i++;
             }
+            squareDataElement.setRights(content.getRights());
             squareDataDto.getResults().add(squareDataElement);
         }
     }
@@ -230,9 +230,14 @@ public class ContentServiceImpl implements ContentService {
             content.setForwardUrl(Constant.FORWARD_URL_TEST+forwardCid);
             content.setForwardTitle(forwardContent.getTitle());
             content.setThumbnail(forwardContent.getConverImage());
+        }else if(content.getType() == Specification.ArticleType.LIVE.index){
+            long forwardCid = contentDto.getForwardCid();
+            content.setForwardCid(forwardCid);
+
         }
 
         content.setContentType(contentDto.getContentType());
+        content.setRights(contentDto.getRights());
         contentMybatisDao.createContent(content);
         Content c = contentMybatisDao.getContentById(content.getId());
         if(!StringUtils.isEmpty(contentDto.getImageUrls())){
@@ -686,15 +691,33 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response highQualityIndex(int sinceId,long uid) {
-        SquareDataDto squareDataDto = new SquareDataDto();
+        HighQualityContentDto highQualityContentDto = new HighQualityContentDto();
+        //SquareDataDto squareDataDto = new SquareDataDto();
         //小编精选
-        List<Content> contentList = contentMybatisDao.loadSelectedData(sinceId);
+        List<Content> contentList = Lists.newArrayList();
+        if(Integer.MAX_VALUE == sinceId) {
+            contentList = contentMybatisDao.loadSelectedData(sinceId);
+        }
         //猜你喜欢
         List<Content> contents = contentMybatisDao.highQuality(sinceId);
-        if(contentList != null && contentList.size() >0) {
-            contents.add(0, contentList.get(0));
+
+        highQualityContentDto.getMakeUpData().addAll(buildData(contentList,uid));
+        highQualityContentDto.getGussYouLikeData().addAll(buildData(contents,uid));
+        //buildDatas(squareDataDto, contents, uid);
+        return Response.success(highQualityContentDto);
+    }
+
+    @Override
+    public Response modifyRights(int rights,long cid,long uid){
+        Content content = contentMybatisDao.getContentById(cid);
+        if(content == null){
+            return Response.failure(ResponseStatus.CONTENT_IS_NOT_EXIST.status,ResponseStatus.CONTENT_IS_NOT_EXIST.message);
         }
-        buildDatas(squareDataDto, contents, uid);
-        return Response.success(squareDataDto);
+        if(!content.getUid().equals(uid)){
+            return Response.failure(ResponseStatus.CONTENT_IS_NOT_YOURS.status,ResponseStatus.CONTENT_IS_NOT_YOURS.message);
+        }
+        content.setRights(rights);
+        contentMybatisDao.updateContentById(content);
+        return Response.success(ResponseStatus.CONTENT_IS_PUBLIC_MODIFY_SUCCESS.status,ResponseStatus.CONTENT_IS_PUBLIC_MODIFY_SUCCESS.message);
     }
 }

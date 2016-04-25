@@ -39,6 +39,10 @@ public class PublishContentRequest extends Request {
     @Setter
     private String title;
 
+    @Getter
+    @Setter
+    private int rights;
+
 
 
 }

@@ -77,6 +77,7 @@ public class Contents extends BaseController {
         contentDto.setImageUrls(request.getImageUrls());
         contentDto.setType(request.getType());
         contentDto.setTitle(request.getTitle());
+        contentDto.setRights(request.getRights());
         if(contentDto.getType()!=2) {
             // 用户UGC入口
             return contentService.publish(contentDto);
@@ -211,5 +212,19 @@ public class Contents extends BaseController {
         }
         return mobileArticleService.showArticle(request.getSinceId());
     }
+
+    /**
+     * 修改内容权限
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/modifyRights",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response modifyRights(ModifyContentRequest request){
+
+        return contentService.modifyRights(request.getRights(),request.getCid(),request.getUid());
+    }
+
+
 
 }

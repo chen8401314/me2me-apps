@@ -37,6 +37,8 @@
         <!-- <table tableName="content_tags" domainObjectName="ContentTags"/> -->
         <!-- <table tableName="content_tag_likes" domainObjectName="ContentTagLikes"/> -->
         <!--<table tableName="content_user_likes_count" domainObjectName="ContentUserLikesCount"/>-->
+        <table tableName="content" domainObjectName="Content"/>
+        <!--<table tableName="content_user_likes_count" domainObjectName="ContentUserLikesCount"/>-->
         <!--<table tableName="content" domainObjectName="Content"/>-->
         <!--<table tableName="high_quality_content" domainObjectName="HighQualityContent"/>-->
         <table tableName="mobile_article" domainObjectName="MobileArticle"/>

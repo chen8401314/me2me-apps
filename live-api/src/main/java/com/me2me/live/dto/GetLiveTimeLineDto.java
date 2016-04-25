@@ -16,4 +16,6 @@ public class GetLiveTimeLineDto implements BaseEntity {
 
     private long sinceId;
 
+    private long uid;
+
 }

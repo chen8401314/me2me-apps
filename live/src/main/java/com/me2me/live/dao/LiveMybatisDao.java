@@ -2,6 +2,7 @@ package com.me2me.live.dao;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
+import com.me2me.common.web.Specification;
 import com.me2me.live.mapper.LiveCpiMapper;
 import com.me2me.live.mapper.LiveFavoriteMapper;
 import com.me2me.live.mapper.TopicFragmentMapper;
@@ -74,16 +75,18 @@ public class LiveMybatisDao {
         topicMapper.updateByPrimaryKey(topic);
     }
 
-    public List<Topic> getMyLives(long uid ,long sinceId){
+    public List<Topic> getMyLives(long uid ,long sinceId ,List<Long> topics){
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
         criteria.andIdLessThan(sinceId);
+        criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
         TopicExample.Criteria criteriaOr = example.createCriteria();
-        List<Long> topicList = getTopicId(uid);
-        if(topicList != null && topicList.size() > 0) {
-            example.or(criteriaOr.andIdIn(topicList));
+        criteriaOr.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index).andIdLessThan(sinceId);
+        if(topics != null && topics.size() > 0) {
+            criteriaOr.andIdIn(topics);
         }
+        example.or(criteriaOr);
         example.setOrderByClause("id desc,status asc limit 10" );
         return topicMapper.selectByExample(example);
     }
@@ -95,7 +98,7 @@ public class LiveMybatisDao {
         criteria.andUidEqualTo(uid);
         List<LiveFavorite> liveFavoriteList = liveFavoriteMapper.selectByExample(example);
         for(LiveFavorite liveFavorite : liveFavoriteList){
-            result.add(liveFavorite.getId());
+            result.add(liveFavorite.getTopicId());
         }
         return result;
     }
@@ -104,6 +107,7 @@ public class LiveMybatisDao {
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andIdLessThan(sinceId);
+        criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
         example.setOrderByClause("id desc,status asc limit 10");
         return topicMapper.selectByExample(example);
     }
