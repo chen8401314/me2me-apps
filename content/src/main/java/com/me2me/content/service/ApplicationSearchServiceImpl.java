@@ -31,7 +31,6 @@ public class ApplicationSearchServiceImpl implements ApplicationSearchService {
 //        ApplicationSearchService searchService = ctx.getBean(ApplicationSearchService.class);
 //        ContentRequest contentRequest = new ContentRequest();
 //        contentRequest.setScene("蹲坑");
-//
 //        ContentResponse contentResponse = searchService.search(contentRequest);
 //        List contents = contentResponse.getContents();
 //        System.out.println(contents);
