@@ -74,12 +74,8 @@ public class LiveServiceImpl implements LiveService {
             }
             liveElement.setCreateTime(topicFragment.getCreateTime());
             liveElement.setType(topicFragment.getType());
-            LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(getLiveTimeLineDto.getUid(),topicFragment.getTopicId());
-            if(liveFavorite != null){
-                liveElement.setIsFollow(Specification.IsForward.FORWARD.index);
-            }else{
-                liveElement.setIsFollow(Specification.IsForward.NATIVE.index);
-            }
+            int isFollow = userService.isFollow(topicFragment.getUid(),getLiveTimeLineDto.getUid());
+            liveElement.setIsFollow(isFollow);
             liveElement.setContentType(topicFragment.getContentType());
             liveElement.setFragmentId(topicFragment.getId());
             liveTimeLineDto.getLiveElements().add(liveElement);
@@ -103,6 +99,7 @@ public class LiveServiceImpl implements LiveService {
         if(speakDto.getType() == Specification.LiveSpeakType.ANCHORWRITETAG.index){
             WriteTagDto writeTagDto = new WriteTagDto();
             writeTagDto.setTag(speakDto.getFragment());
+          //  writeTagDto.setCid();
             //保存标签
            // contentService.writeTag(writeTagDto);
             //更新标签数量
