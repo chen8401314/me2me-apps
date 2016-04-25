@@ -128,7 +128,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setUid(topic.getUid());
             showTopicElement.setCoverImage(Constant.QINIU_DOMAIN  + "/" + topic.getLiveImage());
             showTopicElement.setTitle(topic.getTitle());
-            UserProfile userProfile = userService.getUserProfileByUid(uid);
+            UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
             showTopicElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar() );
             showTopicElement.setNickName(userProfile.getNickName());
             showTopicElement.setCreateTime(topic.getCreateTime());
