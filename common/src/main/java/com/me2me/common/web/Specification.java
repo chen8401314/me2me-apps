@@ -270,14 +270,17 @@ public interface Specification {
      */
     enum LiveSpeakType{
 
-        ANCHOR("主播",0),
+        ANCHOR("主播发言",0),
 
-        FANS("粉丝",1),
+        FANS("粉丝发言",1),
 
         FORWARD("转发",2),
 
-        LIKES("点赞",3);
+        ANCHORWRITETAG("主播贴标",3),
 
+        FANSWRITETAG("粉丝贴标",4),
+
+        LIKES("点赞",5);
 
         public final String name;
         public final int index;

@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
                 loginSuccessDto.setNickName(userProfile.getNickName());
                 loginSuccessDto.setGender(userProfile.getGender());
                 loginSuccessDto.setUserNo("");
-                loginSuccessDto.setAvatar(userProfile.getAvatar());
+                loginSuccessDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
                 loginSuccessDto.setToken(userToken.getToken());
                 loginSuccessDto.setYearId(userProfile.getYearsId());
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status,ResponseStatus.USER_LOGIN_SUCCESS.message,loginSuccessDto);
@@ -472,6 +472,9 @@ public class UserServiceImpl implements UserService {
     public Response getFollows(FollowParamsDto followParamsDto) {
         List<UserFansDto> list = userMybatisDao.getFollows(followParamsDto);
         ShowUserFansDto showUserFansDto = new ShowUserFansDto();
+        for(UserFansDto userFansDto : list){
+            userFansDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFansDto.getAvatar());
+        }
         showUserFansDto.setResult(list);
         return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message,showUserFansDto);
     }

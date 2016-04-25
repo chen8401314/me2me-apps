@@ -136,4 +136,8 @@ public class LiveMybatisDao {
         List<LiveCpi> liveCpiList = liveCpiMapper.selectByExample(example);
         return (liveCpiList != null && liveCpiList.size() > 0) ? liveCpiList.get(0) : null;
     }
+
+    public void updateLiveCpi(LiveCpi liveCpi){
+        LiveCpi cpi = getLiveCpi(liveCpi.getTopicId());
+    }
 }

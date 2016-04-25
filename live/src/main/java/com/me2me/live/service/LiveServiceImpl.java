@@ -5,6 +5,7 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentDto;
+import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.service.ContentService;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.*;
@@ -96,6 +97,28 @@ public class LiveServiceImpl implements LiveService {
         topicFragment.setType(speakDto.getType());
         topicFragment.setTopicId(speakDto.getTopicId());
         liveMybatisDao.createTopicFragment(topicFragment);
+        //直播贴标签，粉丝贴标签，点赞处理
+        //主播贴标
+        // TODO: 2016/4/25 贴标签和点赞时候保存数量  
+        if(speakDto.getType() == Specification.LiveSpeakType.ANCHORWRITETAG.index){
+            WriteTagDto writeTagDto = new WriteTagDto();
+            writeTagDto.setTag(speakDto.getFragment());
+            //保存标签
+            contentService.writeTag(writeTagDto);
+            //更新标签数量
+
+        //粉丝贴标
+        }else if(speakDto.getType() == Specification.LiveSpeakType.FANSWRITETAG.index){
+            //保存标签
+            WriteTagDto writeTagDto = new WriteTagDto();
+            //保存标签
+            contentService.writeTag(writeTagDto);
+        //点赞
+        }else if(speakDto.getType() == Specification.LiveSpeakType.LIKES.index){
+            //更新点赞的数量
+
+        }
+
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status,ResponseStatus.USER_SPEAK_SUCCESS.message);
     }
 
