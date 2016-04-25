@@ -218,11 +218,11 @@ public class Contents extends BaseController {
      * @param request
      * @return
      */
-    @RequestMapping(value = "/modifyContent",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/modifyRights",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response modifyContent(ModifyContentRequest request){
+    public Response modifyRights(ModifyContentRequest request){
 
-        return contentService.modifyContent(request.getRights(),request.getCid(),request.getUid());
+        return contentService.modifyRights(request.getRights(),request.getCid(),request.getUid());
     }
 
 

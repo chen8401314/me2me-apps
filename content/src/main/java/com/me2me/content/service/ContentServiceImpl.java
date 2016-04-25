@@ -708,7 +708,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public Response modifyContent(int rights,long cid,long uid){
+    public Response modifyRights(int rights,long cid,long uid){
         Content content = contentMybatisDao.getContentById(cid);
         if(content == null){
             return Response.failure(ResponseStatus.CONTENT_IS_NOT_EXIST.status,ResponseStatus.CONTENT_IS_NOT_EXIST.message);
