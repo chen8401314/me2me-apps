@@ -103,7 +103,8 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response getMyLives(long uid ,long sinceId) {
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
-        List<Topic> topicList = liveMybatisDao.getMyLives(uid ,sinceId);
+        List<Long> topics = liveMybatisDao.getTopicId(uid);
+        List<Topic> topicList = liveMybatisDao.getMyLives(uid ,sinceId ,topics);
         builder(uid, showTopicListDto, topicList);
         return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status,ResponseStatus.GET_MY_LIVE_SUCCESS.message,showTopicListDto);
     }
