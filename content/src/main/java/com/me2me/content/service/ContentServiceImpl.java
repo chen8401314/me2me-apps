@@ -749,17 +749,18 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public Response showContents(EditorContentDto editorContentDto) {
         ShowContentDto showContentDto = new ShowContentDto();
-        showContentDto.setTotal(10);
-        showContentDto.setTotalPage(100);
-        ShowContentDto.ShowContentElement element = showContentDto.createElement();
-        List<Content> contents = contentMybatisDao.showContentsByPage();
+        showContentDto.setTotal(contentMybatisDao.total(editorContentDto));
+        int totalPage = (showContentDto.getTotal() + editorContentDto.getPageSize() -1) / editorContentDto.getPageSize();
+        showContentDto.setTotalPage(totalPage);
+        List<Content> contents = contentMybatisDao.showContentsByPage(editorContentDto);
         for(Content content : contents){
+            ShowContentDto.ShowContentElement element = showContentDto.createElement();
             element.setUid(content.getUid());
             UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
             element.setNickName(userProfile.getNickName());
             element.setTitle(content.getTitle());
             if(content.getConverImage().isEmpty()){
-                element.setThumb(content.getThumbnail());
+                element.setThumb(Constant.QINIU_DOMAIN +"/" + content.getThumbnail());
             }else{
                 element.setThumb(content.getConverImage());
             }

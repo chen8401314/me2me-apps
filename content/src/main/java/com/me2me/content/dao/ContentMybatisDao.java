@@ -2,6 +2,8 @@ package com.me2me.content.dao;
 
 import com.google.common.collect.Maps;
 import com.me2me.common.Constant;
+import com.me2me.common.web.Specification;
+import com.me2me.content.dto.EditorContentDto;
 import com.me2me.content.dto.LikeDto;
 import com.me2me.content.dto.LoadAllFeelingDto;
 import com.me2me.content.dto.WriteTagDto;
@@ -209,11 +211,33 @@ public class ContentMybatisDao {
         return contentMapper.loadActivityData(sinceId);
     }
 
-    public List<Content> showContentsByPage(){
+    public List<Content> showContentsByPage(EditorContentDto editorContentDto){
         ContentExample example = new ContentExample();
         ContentExample.Criteria criteria = example.createCriteria();
-        example.setOrderByClause("create_time desc");
+        queryCondition(editorContentDto, example, criteria);
+
+        example.setOrderByClause("create_time desc limit "+((editorContentDto.getPage()-1)*editorContentDto.getPageSize())+","+editorContentDto.getPageSize()+"");
         return contentMapper.selectByExampleWithBLOBs(example);
+    }
+
+    private void queryCondition(EditorContentDto editorContentDto, ContentExample example, ContentExample.Criteria criteria) {
+        if(editorContentDto.getArticleType()==1){
+            // PGC
+            criteria.andTypeEqualTo(Specification.ArticleType.EDITOR.index);
+            ContentExample.Criteria criteria2 = example.createCriteria();
+            criteria2.andTypeEqualTo(Specification.ArticleType.ACTIVITY.index);
+            example.or(criteria2);
+        }else{
+            // UGC
+            criteria.andTypeEqualTo(Specification.ArticleType.ORIGIN.index);
+        }
+    }
+
+    public int total(EditorContentDto editorContentDto){
+        ContentExample example = new ContentExample();
+        ContentExample.Criteria criteria = example.createCriteria();
+        queryCondition(editorContentDto, example, criteria);
+        return contentMapper.countByExample(example);
     }
 
     public int getTopicStatus(long topicId){

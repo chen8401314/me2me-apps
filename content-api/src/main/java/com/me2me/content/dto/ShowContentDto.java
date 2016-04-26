@@ -34,6 +34,9 @@ public class ShowContentDto implements BaseEntity {
     @Data
     public class ShowContentElement implements BaseEntity{
 
+
+        private boolean isActivity;
+
         private String title;
 
         private boolean isTop;
