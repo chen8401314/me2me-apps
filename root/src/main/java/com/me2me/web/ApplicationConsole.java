@@ -2,6 +2,8 @@ package com.me2me.web;
 
 import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
+import com.me2me.content.dto.EditorContentDto;
+import com.me2me.content.dto.ShowContentDto;
 import com.me2me.content.service.ContentService;
 import com.me2me.user.dto.*;
 import com.me2me.user.service.UserService;
@@ -47,31 +49,16 @@ public class ApplicationConsole extends BaseController {
      * 用户注册接口
      * @return
      */
-    @RequestMapping(value = "/showPGCList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/showContents",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response showPGCList(BindAccountRequest bindAccountRequest){
-        UserSignUpDto userSignUpDto = new UserSignUpDto();
-        userSignUpDto.setMobile("18000000000");
-        userSignUpDto.setGender(0);
-        userSignUpDto.setEncrypt("123456");
-        userSignUpDto.setNickName(bindAccountRequest.getNickName());
-        return userService.signUp(userSignUpDto);
+    public Response showContents(ShowContentsRequest showContentsRequest){
+        EditorContentDto editorContentDto = new EditorContentDto();
+        editorContentDto.setArticleType(showContentsRequest.getArticleType());
+        editorContentDto.setPage(showContentsRequest.getPage());
+        editorContentDto.setPageSize(showContentsRequest.getPageSize());
+        return contentService.showContents(editorContentDto);
     }
 
-    /**
-     * 用户注册接口
-     * @return
-     */
-    @RequestMapping(value = "/showUGCList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public Response showUGCList(BindAccountRequest bindAccountRequest){
-        UserSignUpDto userSignUpDto = new UserSignUpDto();
-        userSignUpDto.setMobile("18000000000");
-        userSignUpDto.setGender(0);
-        userSignUpDto.setEncrypt("123456");
-        userSignUpDto.setNickName(bindAccountRequest.getNickName());
-        return userService.signUp(userSignUpDto);
-    }
 
 
 }

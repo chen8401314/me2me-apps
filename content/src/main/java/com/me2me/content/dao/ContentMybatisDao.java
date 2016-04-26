@@ -209,4 +209,11 @@ public class ContentMybatisDao {
         return contentMapper.loadActivityData(sinceId);
     }
 
+    public List<Content> showContentsByPage(){
+        ContentExample example = new ContentExample();
+        ContentExample.Criteria criteria = example.createCriteria();
+        example.setOrderByClause("create_time desc");
+        return contentMapper.selectByExampleWithBLOBs(example);
+    }
+
 }
