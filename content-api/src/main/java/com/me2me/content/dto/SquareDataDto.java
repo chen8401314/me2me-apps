@@ -88,6 +88,8 @@ public class SquareDataDto implements BaseEntity {
 
         private int rights;
 
+        private int liveStatus;
+
         private List<TagElement> tags = Lists.newArrayList();
 
         public static TagElement createElement(){

@@ -159,6 +159,12 @@ public class ContentServiceImpl implements ContentService {
             long contentUid = content.getUid();
             int follow = userService.isFollow(contentUid,uid);
             squareDataElement.setIsFollow(follow);
+            //如果是直播需要一个直播状态
+            if(content.getType() == Specification.ArticleType.LIVE.index) {
+                //查询直播状态
+                int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
+                squareDataElement.setLiveStatus(status);
+            }
             List<LoadAllFeelingDto> list  = contentMybatisDao.loadAllFeeling(content.getId(),Integer.MAX_VALUE);
             int i = 0;
             for (LoadAllFeelingDto loadAllFeelingDto : list) {
