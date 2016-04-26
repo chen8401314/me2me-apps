@@ -84,9 +84,16 @@ public class ContentServiceImpl implements ContentService {
             long contentUid = content.getUid();
             int follow = userService.isFollow(contentUid,uid);
             contentDataElement.setIsFollow(follow);
+            //如果是直播需要一个直播状态
+            if(content.getType() == Specification.ArticleType.LIVE.index) {
+                //查询直播状态
+                int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
+                contentDataElement.setLiveStatus(status);
+            }
             List<LoadAllFeelingDto> list  = contentMybatisDao.loadAllFeeling(content.getId(),Integer.MAX_VALUE);
             int i = 0;
             for (LoadAllFeelingDto loadAllFeelingDto : list) {
+                //只展示3条感受
                 if (i > 3) {
                     break;
                 }
@@ -439,6 +446,10 @@ public class ContentServiceImpl implements ContentService {
         Content content = contentMybatisDao.getContentById(id);
         content.setStatus(Specification.ContentStatus.DELETE.index);
         contentMybatisDao.updateContentById(content);
+        //直播删除
+        if(content.getType() == Specification.ArticleType.LIVE.index) {
+            contentMybatisDao.deleteTopicById(content.getForwardCid());
+        }
         return Response.failure(ResponseStatus.CONTENT_DELETE_SUCCESS.status,ResponseStatus.CONTENT_DELETE_SUCCESS.message);
     }
 
@@ -719,5 +730,13 @@ public class ContentServiceImpl implements ContentService {
         content.setRights(rights);
         contentMybatisDao.updateContentById(content);
         return Response.success(ResponseStatus.CONTENT_IS_PUBLIC_MODIFY_SUCCESS.status,ResponseStatus.CONTENT_IS_PUBLIC_MODIFY_SUCCESS.message);
+    }
+
+    @Override
+    public Response getActivities(int sinceId,long uid) {
+        SquareDataDto squareDataDto = new SquareDataDto();
+        List<Content> list = contentMybatisDao.loadSelectedData(sinceId);
+        buildDatas(squareDataDto, list, uid);
+        return Response.success(squareDataDto);
     }
 }

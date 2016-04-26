@@ -93,6 +93,8 @@ public class ShowContentListDto implements BaseEntity {
 
         private int favorite;
 
+        private int liveStatus;
+
         private List<TagElement> tags = Lists.newArrayList();
 
         public static TagElement createElement(){

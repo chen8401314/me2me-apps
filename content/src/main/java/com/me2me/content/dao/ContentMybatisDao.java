@@ -209,4 +209,12 @@ public class ContentMybatisDao {
         return contentMapper.loadActivityData(sinceId);
     }
 
+    public int getTopicStatus(long topicId){
+       return contentMapper.getTopicStatus(topicId);
+    }
+
+    public void deleteTopicById(long topicId){
+        contentMapper.deleteTopicById(topicId);
+    }
+
 }

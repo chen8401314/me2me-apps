@@ -640,4 +640,13 @@
     from content where id &lt; #{sinceId} and type = 4 and status != 1
     order by id desc limit 5
   </select>
+
+  <select id="getTopicStatus" resultType="java.lang.Integer">
+   select status from topic where id = #{topicId,jdbcType=BIGINT}
+  </select>
+
+  <delete id="deleteTopicById" >
+    delete  from topic where id = #{topicId,jdbcType=BIGINT}
+  </delete>
+
 </mapper>

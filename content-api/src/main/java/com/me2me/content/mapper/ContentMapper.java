@@ -129,4 +129,8 @@ public interface ContentMapper {
     List<Content> loadSelectedData(int sinceId);
 
     List<Content> loadActivityData(int sinceId);
+
+    int getTopicStatus(long topicId);
+
+    void deleteTopicById(long topicId);
 }

@@ -108,5 +108,15 @@ public interface ContentService {
      */
     Response highQualityIndex(int sinceId,long uid);
 
+    /**
+     * 修改内容权限
+     * @param rights
+     * @param cid
+     * @param uid
+     * @return
+     */
     Response modifyRights(int rights,long cid,long uid);
+
+
+    Response getActivities(int sinceId,long uid);
 }

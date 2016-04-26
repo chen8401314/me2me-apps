@@ -225,6 +225,17 @@ public class Contents extends BaseController {
         return contentService.modifyRights(request.getRights(),request.getCid(),request.getUid());
     }
 
+    /**
+     * 活动列表接口
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/activities",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response activities(ActivitiesRequest request){
+
+        return contentService.getActivities(request.getSinceId(),request.getUid());
+    }
 
 
 }
