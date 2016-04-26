@@ -1,8 +1,12 @@
 package com.me2me.content.service;
 
+import com.plusnet.forecast.domain.GPS;
 import com.plusnet.search.content.ContentRequest;
 import com.plusnet.search.content.ContentResponse;
+import com.plusnet.search.content.RecommendRequest;
+import com.plusnet.search.content.RecommendResponse;
 import com.plusnet.search.content.api.ContentQueryService;
+import com.plusnet.search.content.api.ContentRecommendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Service;
@@ -20,20 +24,10 @@ public class ApplicationSearchServiceImpl implements ApplicationSearchService {
 
 
 //    @Autowired
-//    private ContentQueryService contentQueryService;
+//    private ContentRecommendService contentRecommendService;
 //
-//    public ContentResponse search(ContentRequest contentRequest) {
-//        return contentQueryService.query(contentRequest);
-//    }
-//
-//    public static void main(String[] args) {
-//        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:spring/content-context.xml");
-//        ApplicationSearchService searchService = ctx.getBean(ApplicationSearchService.class);
-//        ContentRequest contentRequest = new ContentRequest();
-//        contentRequest.setScene("蹲坑");
-//        ContentResponse contentResponse = searchService.search(contentRequest);
-//        List contents = contentResponse.getContents();
-//        System.out.println(contents);
+//    public RecommendResponse recommend(RecommendRequest recommendRequest) {
+//        return contentRecommendService.recommend(recommendRequest);
 //    }
 
 }

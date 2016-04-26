@@ -109,4 +109,8 @@ public interface ContentService {
     Response highQualityIndex(int sinceId,long uid);
 
     Response modifyRights(int rights,long cid,long uid);
+
+    Response showPGCList();
+
+    Response showUGCList();
 }

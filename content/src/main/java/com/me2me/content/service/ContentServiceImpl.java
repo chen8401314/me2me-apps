@@ -720,4 +720,14 @@ public class ContentServiceImpl implements ContentService {
         contentMybatisDao.updateContentById(content);
         return Response.success(ResponseStatus.CONTENT_IS_PUBLIC_MODIFY_SUCCESS.status,ResponseStatus.CONTENT_IS_PUBLIC_MODIFY_SUCCESS.message);
     }
+
+    @Override
+    public Response showPGCList() {
+        return null;
+    }
+
+    @Override
+    public Response showUGCList() {
+        return null;
+    }
 }
