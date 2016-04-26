@@ -216,4 +216,12 @@ public class ContentMybatisDao {
         return contentMapper.selectByExampleWithBLOBs(example);
     }
 
+    public int getTopicStatus(long topicId){
+       return contentMapper.getTopicStatus(topicId);
+    }
+
+    public void deleteTopicById(long topicId){
+        contentMapper.deleteTopicById(topicId);
+    }
+
 }
