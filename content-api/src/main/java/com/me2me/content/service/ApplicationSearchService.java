@@ -2,6 +2,8 @@ package com.me2me.content.service;
 
 import com.plusnet.search.content.ContentRequest;
 import com.plusnet.search.content.ContentResponse;
+import com.plusnet.search.content.RecommendRequest;
+import com.plusnet.search.content.RecommendResponse;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -10,6 +12,6 @@ import com.plusnet.search.content.ContentResponse;
  */
 public interface ApplicationSearchService {
 
-//    ContentResponse search(ContentRequest contentRequest);
+//    RecommendResponse recommend(RecommendRequest recommendRequest);
 
 }

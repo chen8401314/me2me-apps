@@ -739,4 +739,14 @@ public class ContentServiceImpl implements ContentService {
         buildDatas(squareDataDto, list, uid);
         return Response.success(squareDataDto);
     }
+
+    @Override
+    public Response showPGCList() {
+        return null;
+    }
+
+    @Override
+    public Response showUGCList() {
+        return null;
+    }
 }

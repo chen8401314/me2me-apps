@@ -119,4 +119,8 @@ public interface ContentService {
 
 
     Response getActivities(int sinceId,long uid);
+
+    Response showPGCList();
+
+    Response showUGCList();
 }
