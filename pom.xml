@@ -24,6 +24,8 @@
         <module>io</module>
         <module>live-api</module>
         <module>live</module>
+        <module>activity-api</module>
+        <module>activity</module>
     </modules>
 
     <properties>
