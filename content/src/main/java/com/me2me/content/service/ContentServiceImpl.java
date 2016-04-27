@@ -759,12 +759,26 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public Response showPGCList() {
-        return null;
+    public Response showContents(EditorContentDto editorContentDto) {
+        ShowContentDto showContentDto = new ShowContentDto();
+        showContentDto.setTotal(contentMybatisDao.total(editorContentDto));
+        int totalPage = (showContentDto.getTotal() + editorContentDto.getPageSize() -1) / editorContentDto.getPageSize();
+        showContentDto.setTotalPage(totalPage);
+        List<Content> contents = contentMybatisDao.showContentsByPage(editorContentDto);
+        for(Content content : contents){
+            ShowContentDto.ShowContentElement element = showContentDto.createElement();
+            element.setUid(content.getUid());
+            UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+            element.setNickName(userProfile.getNickName());
+            element.setTitle(content.getTitle());
+            if(content.getConverImage().isEmpty()){
+                element.setThumb(Constant.QINIU_DOMAIN +"/" + content.getThumbnail());
+            }else{
+                element.setThumb(content.getConverImage());
+            }
+            showContentDto.getResult().add(element);
+        }
+        return Response.success(200,"数据获取成功",showContentDto);
     }
 
-    @Override
-    public Response showUGCList() {
-        return null;
-    }
 }

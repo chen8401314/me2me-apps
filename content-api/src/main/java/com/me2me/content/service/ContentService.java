@@ -117,10 +117,8 @@ public interface ContentService {
      */
     Response modifyRights(int rights,long cid,long uid);
 
+    Response showContents(EditorContentDto editorContentDto);
 
     Response getActivities(int sinceId,long uid);
 
-    Response showPGCList();
-
-    Response showUGCList();
 }

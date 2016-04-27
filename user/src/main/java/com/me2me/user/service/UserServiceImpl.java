@@ -45,7 +45,7 @@ public class UserServiceImpl implements UserService {
         String mobile = userSignUpDto.getMobile();
         if(userMybatisDao.getUserByUserName(mobile)!=null){
             // 该用户已经注册过
-            return Response.failure(ResponseStatus.USER_MOBILE_NO_SIGN_UP.status,ResponseStatus.USER_MOBILE_NO_SIGN_UP.message);
+            return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
         }
         SignUpSuccessDto signUpSuccessDto = new SignUpSuccessDto();
         User user = new User();
