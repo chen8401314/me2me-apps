@@ -46,6 +46,7 @@ public class LiveServiceImpl implements LiveService {
         ContentDto contentDto = new ContentDto();
         contentDto.setContent(createLiveDto.getTitle());
         contentDto.setFeeling(createLiveDto.getTitle());
+        contentDto.setTitle(createLiveDto.getTitle());
         contentDto.setImageUrls(createLiveDto.getLiveImage());
         contentDto.setUid(createLiveDto.getUid());
         contentDto.setType(Specification.ArticleType.LIVE.index);

@@ -90,6 +90,8 @@ public class SquareDataDto implements BaseEntity {
 
         private int liveStatus;
 
+        private int favorite;
+
         private List<TagElement> tags = Lists.newArrayList();
 
         public static TagElement createElement(){

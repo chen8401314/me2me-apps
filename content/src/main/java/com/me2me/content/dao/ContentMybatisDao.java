@@ -217,4 +217,8 @@ public class ContentMybatisDao {
         contentMapper.deleteTopicById(topicId);
     }
 
+    public int isFavorite(long topicId,long uid){
+        long favorite = contentMapper.isFavorite(topicId,uid);
+        return favorite > 0 ? 1 : 0;
+    }
 }

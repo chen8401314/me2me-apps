@@ -84,12 +84,9 @@ public class ContentServiceImpl implements ContentService {
             long contentUid = content.getUid();
             int follow = userService.isFollow(contentUid,uid);
             contentDataElement.setIsFollow(follow);
-            //如果是直播需要一个直播状态
-            if(content.getType() == Specification.ArticleType.LIVE.index) {
-                //查询直播状态
-                int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
-                contentDataElement.setLiveStatus(status);
-            }
+            //如果是直播需要一个直播状态，当前用户是否收藏
+            setLiveStatusAndFavorite(uid, content, contentDataElement);
+            //设置数量
             List<LoadAllFeelingDto> list  = contentMybatisDao.loadAllFeeling(content.getId(),Integer.MAX_VALUE);
             int i = 0;
             for (LoadAllFeelingDto loadAllFeelingDto : list) {
@@ -119,6 +116,18 @@ public class ContentServiceImpl implements ContentService {
         }
         return result;
     }
+
+    private void setLiveStatusAndFavorite(long uid, Content content, ShowContentListDto.ContentDataElement contentDataElement) {
+        if(content.getType() == Specification.ArticleType.LIVE.index) {
+            //查询直播状态
+            int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
+            contentDataElement.setLiveStatus(status);
+            int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
+            //直播是否收藏
+            contentDataElement.setFavorite(favorite);
+        }
+    }
+
     private void buildDatas(SquareDataDto squareDataDto, List<Content> contents, long uid) {
         for(Content content : contents){
             SquareDataDto.SquareDataElement squareDataElement = SquareDataDto.createElement();
@@ -164,6 +173,9 @@ public class ContentServiceImpl implements ContentService {
                 //查询直播状态
                 int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
                 squareDataElement.setLiveStatus(status);
+                int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
+                //直播是否收藏
+                squareDataElement.setFavorite(favorite);
             }
             List<LoadAllFeelingDto> list  = contentMybatisDao.loadAllFeeling(content.getId(),Integer.MAX_VALUE);
             int i = 0;

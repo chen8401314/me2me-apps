@@ -133,4 +133,6 @@ public interface ContentMapper {
     int getTopicStatus(long topicId);
 
     void deleteTopicById(long topicId);
+
+    long isFavorite(long topicId,long uid);
 }
