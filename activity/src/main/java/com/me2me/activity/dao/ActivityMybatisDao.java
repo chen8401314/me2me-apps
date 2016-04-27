@@ -2,6 +2,7 @@ package com.me2me.activity.dao;
 
 import com.me2me.activity.mapper.ActivityMapper;
 import com.me2me.activity.model.Activity;
+import com.me2me.activity.model.ActivityExample;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.common.web.Specification;
 import com.me2me.user.dto.*;
@@ -29,4 +30,18 @@ public class ActivityMybatisDao {
     }
 
 
+    public List<ActivityWithBLOBs> showActivity(int page, int pageSize) {
+        ActivityExample example = new ActivityExample();
+        ActivityExample.Criteria criteria = example.createCriteria();
+        criteria.andStatusEqualTo(0);
+        example.setOrderByClause("issue desc limit "+ ((page-1)*pageSize) + " , "+pageSize );
+        return activityMapper.selectByExampleWithBLOBs(example);
+    }
+
+    public int total() {
+        ActivityExample example = new ActivityExample();
+        ActivityExample.Criteria criteria = example.createCriteria();
+        criteria.andStatusEqualTo(0);
+        return activityMapper.countByExample(example);
+    }
 }

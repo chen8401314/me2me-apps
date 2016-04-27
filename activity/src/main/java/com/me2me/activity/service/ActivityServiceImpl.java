@@ -2,11 +2,14 @@ package com.me2me.activity.service;
 
 import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dto.CreateActivityDto;
+import com.me2me.activity.dto.ShowActivityDto;
 import com.me2me.activity.model.Activity;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.common.web.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -31,5 +34,25 @@ public class ActivityServiceImpl implements ActivityService {
         activity.setActivityContent(createActivityDto.getContent());
         activityMybatisDao.saveActivity(activity);
         return Response.success(200,"活动创建成功！");
+    }
+
+    @Override
+    public Response showActivity(int page, int pageSize) {
+        ShowActivityDto showActivityDto = new ShowActivityDto();
+        List<ActivityWithBLOBs> list = activityMybatisDao.showActivity(page,pageSize);
+        for(ActivityWithBLOBs activity : list){
+            ShowActivityDto.ActivityElement element = showActivityDto.createElement();
+            element.setStartTime(activity.getStartTime());
+            element.setEndTime(activity.getEndTime());
+            element.setIssue(activity.getIssue());
+            element.setHashTitle(activity.getActivityHashTitle());
+            element.setContent(activity.getActivityContent());
+            element.setTitle(activity.getActivityTitle());
+            showActivityDto.getResult().add(element);
+        }
+        showActivityDto.setTotal(activityMybatisDao.total());
+        int totalPage = (activityMybatisDao.total() + pageSize - 1)/pageSize;
+        showActivityDto.setTotalPage(totalPage);
+        return Response.success(200,"数据加载成功！",showActivityDto);
     }
 }

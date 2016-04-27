@@ -11,11 +11,17 @@ import com.me2me.user.dto.*;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -64,8 +70,15 @@ public class ApplicationConsole extends BaseController {
         return contentService.showContents(editorContentDto);
     }
 
+    @InitBinder
+    public void initBinder(WebDataBinder binder) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        // dateFormat.setLenient(false);
+        binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+    }
+
     /**
-     * 用户注册接口
+     * 运营中心创建活动
      * @return
      */
     @RequestMapping(value = "/createActivity",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
@@ -80,6 +93,16 @@ public class ApplicationConsole extends BaseController {
         createActivityDto.setStartTime(request.getStartTime());
         createActivityDto.setEndTime(request.getEndTime());
         return activityService.createActivity(createActivityDto);
+    }
+
+    /**
+     * 运营中心活动列表
+     * @return
+     */
+    @RequestMapping(value = "/showActivity",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response showActivity(ShowActivityRequest request){
+        return activityService.showActivity(request.getPage(),request.getPageSize());
     }
 
 
