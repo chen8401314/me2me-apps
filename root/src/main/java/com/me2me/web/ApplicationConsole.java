@@ -1,5 +1,7 @@
 package com.me2me.web;
 
+import com.me2me.activity.dto.CreateActivityDto;
+import com.me2me.activity.service.ActivityService;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.EditorContentDto;
@@ -30,6 +32,9 @@ public class ApplicationConsole extends BaseController {
     @Autowired
     private ContentService contentService;
 
+    @Autowired
+    private ActivityService activityService;
+
     /**
      * 用户注册接口
      * @return
@@ -57,6 +62,24 @@ public class ApplicationConsole extends BaseController {
         editorContentDto.setPage(showContentsRequest.getPage());
         editorContentDto.setPageSize(showContentsRequest.getPageSize());
         return contentService.showContents(editorContentDto);
+    }
+
+    /**
+     * 用户注册接口
+     * @return
+     */
+    @RequestMapping(value = "/createActivity",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response createActivity(CreateActivityRequest request){
+        CreateActivityDto createActivityDto = new CreateActivityDto();
+        createActivityDto.setIssue(request.getIssue());
+        createActivityDto.setContent(request.getContent());
+        createActivityDto.setCover(request.getCover());
+        createActivityDto.setTitle(request.getTitle());
+        createActivityDto.setHashTitle(request.getHashTitle());
+        createActivityDto.setStartTime(request.getStartTime());
+        createActivityDto.setEndTime(request.getEndTime());
+        return activityService.createActivity(createActivityDto);
     }
 
 
