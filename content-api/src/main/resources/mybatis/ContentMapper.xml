@@ -649,8 +649,10 @@
     delete  from topic where id = #{topicId,jdbcType=BIGINT}
   </delete>
 
-  <select id="isFavorite" resultType="java.lang.Long" parameterType="com.me2me.content.dto.IsFavoriteDto">
-    select id from live_favorite where topic_id = #{topicId,jdbcType=BIGINT} and uid = #{uid,jdbcType=BIGINT}
+  <select id="isFavorite" resultType="java.lang.Integer" parameterType="com.me2me.content.dto.IsFavoriteDto">
+
+    select count(id) from live_favorite where topic_id = #{topicId,jdbcType=BIGINT} and uid = #{uid,jdbcType=BIGINT}
+
   </select>
 
 </mapper>

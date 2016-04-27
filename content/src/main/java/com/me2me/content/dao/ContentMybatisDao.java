@@ -3,10 +3,7 @@ package com.me2me.content.dao;
 import com.google.common.collect.Maps;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Specification;
-import com.me2me.content.dto.EditorContentDto;
-import com.me2me.content.dto.LikeDto;
-import com.me2me.content.dto.LoadAllFeelingDto;
-import com.me2me.content.dto.WriteTagDto;
+import com.me2me.content.dto.*;
 import com.me2me.content.mapper.*;
 import com.me2me.content.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -249,7 +246,9 @@ public class ContentMybatisDao {
     }
 
     public int isFavorite(long topicId,long uid){
-        long favorite = contentMapper.isFavorite(topicId,uid);
-        return favorite > 0 ? 1 : 0;
+        IsFavoriteDto isFavoriteDto = new IsFavoriteDto();
+        isFavoriteDto.setUid(uid);
+        isFavoriteDto.setTopicId(topicId);
+        return contentMapper.isFavorite(isFavoriteDto);
     }
 }

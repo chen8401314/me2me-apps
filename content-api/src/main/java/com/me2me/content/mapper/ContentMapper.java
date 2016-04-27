@@ -1,5 +1,6 @@
 package com.me2me.content.mapper;
 
+import com.me2me.content.dto.IsFavoriteDto;
 import com.me2me.content.model.Content;
 import com.me2me.content.model.ContentExample;
 import java.util.List;
@@ -134,5 +135,5 @@ public interface ContentMapper {
 
     void deleteTopicById(long topicId);
 
-    long isFavorite(long topicId,long uid);
+    int isFavorite(IsFavoriteDto isFavoriteDto);
 }
