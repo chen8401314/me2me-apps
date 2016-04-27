@@ -233,6 +233,7 @@ public class ContentServiceImpl implements ContentService {
         content.setUid(contentDto.getUid());
         content.setContent(contentDto.getContent());
         content.setFeeling(contentDto.getFeeling());
+        content.setTitle(contentDto.getTitle());
         ContentTags contentTags = new ContentTags();
         contentTags.setTag(contentDto.getFeeling());
         //保存感受标签
