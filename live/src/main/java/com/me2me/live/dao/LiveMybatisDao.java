@@ -83,12 +83,11 @@ public class LiveMybatisDao {
         criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
         TopicExample.Criteria criteriaOr = example.createCriteria();
         if(topics != null && topics.size() > 0) {
-            criteriaOr.andUidEqualTo(uid);
             criteriaOr.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index).andIdLessThan(sinceId);
             criteriaOr.andIdIn(topics);
             example.or(criteriaOr);
         }
-        example.setOrderByClause("id desc,status asc limit 10" );
+        example.setOrderByClause("id desc, status asc limit 10" );
         return topicMapper.selectByExample(example);
     }
 
