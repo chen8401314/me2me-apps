@@ -26,6 +26,8 @@
         <module>live</module>
         <module>activity-api</module>
         <module>activity</module>
+        <module>search-api</module>
+        <module>search</module>
     </modules>
 
     <properties>

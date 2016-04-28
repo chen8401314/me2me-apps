@@ -73,6 +73,11 @@
                     <artifactId>activity</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>search</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
             </dependencies>
             <build>
                 <filters>
@@ -108,6 +113,11 @@
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>io</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>search</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
             </dependencies>
