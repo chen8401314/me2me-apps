@@ -50,7 +50,7 @@ public class ApplicationConsole extends BaseController {
     @ResponseBody
     public Response bindAccount(BindAccountRequest bindAccountRequest){
         UserSignUpDto userSignUpDto = new UserSignUpDto();
-        userSignUpDto.setMobile(CommonUtils.getRandom(10));
+        userSignUpDto.setMobile(CommonUtils.getRandom("8",10));
         userSignUpDto.setGender(0);
         userSignUpDto.setEncrypt("123456");
         userSignUpDto.setNickName(bindAccountRequest.getNickName());

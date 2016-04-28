@@ -33,7 +33,7 @@ public class ActivityServiceImpl implements ActivityService {
         activity.setIssue(createActivityDto.getIssue());
         activity.setActivityContent(createActivityDto.getContent());
         activityMybatisDao.saveActivity(activity);
-        return Response.success(200,"活动创建成功！");
+        return Response.success();
     }
 
     @Override
@@ -53,6 +53,6 @@ public class ActivityServiceImpl implements ActivityService {
         showActivityDto.setTotal(activityMybatisDao.total(keyword));
         int totalPage = (activityMybatisDao.total(keyword) + pageSize - 1)/pageSize;
         showActivityDto.setTotalPage(totalPage);
-        return Response.success(200,"数据加载成功！",showActivityDto);
+        return Response.success(showActivityDto);
     }
 }
