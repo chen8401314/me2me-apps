@@ -394,16 +394,7 @@ public class UserServiceImpl implements UserService {
         userMybatisDao.modifyUserTips(userTips);
 
     }
-
-    /**
-     * 是否发送过验证码
-     * @return
-     */
-    private boolean checkIsVerify(){
-
-        return false;
-    }
-
+    
 
     public Response likes(UserLikeDto userLikeDto){
 
