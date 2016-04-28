@@ -3,7 +3,6 @@ package com.me2me.activity.service;
 import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dto.CreateActivityDto;
 import com.me2me.activity.dto.ShowActivityDto;
-import com.me2me.activity.model.Activity;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.common.web.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +31,7 @@ public class ActivityServiceImpl implements ActivityService {
         activity.setEndTime(createActivityDto.getEndTime());
         activity.setIssue(createActivityDto.getIssue());
         activity.setActivityContent(createActivityDto.getContent());
+        activity.setUid(createActivityDto.getUid());
         activityMybatisDao.saveActivity(activity);
         return Response.success(200,"活动创建成功！");
     }
@@ -42,6 +42,7 @@ public class ActivityServiceImpl implements ActivityService {
         List<ActivityWithBLOBs> list = activityMybatisDao.showActivity(page,pageSize,keyword);
         for(ActivityWithBLOBs activity : list){
             ShowActivityDto.ActivityElement element = showActivityDto.createElement();
+            element.setUid(activity.getUid());
             element.setStartTime(activity.getStartTime());
             element.setEndTime(activity.getEndTime());
             element.setIssue(activity.getIssue());

@@ -394,7 +394,7 @@ public class UserServiceImpl implements UserService {
         userMybatisDao.modifyUserTips(userTips);
 
     }
-    
+
 
     public Response likes(UserLikeDto userLikeDto){
 

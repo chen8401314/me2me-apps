@@ -2,6 +2,7 @@ package com.me2me.web;
 
 import com.me2me.activity.dto.CreateActivityDto;
 import com.me2me.activity.service.ActivityService;
+import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.EditorContentDto;
@@ -49,7 +50,7 @@ public class ApplicationConsole extends BaseController {
     @ResponseBody
     public Response bindAccount(BindAccountRequest bindAccountRequest){
         UserSignUpDto userSignUpDto = new UserSignUpDto();
-        userSignUpDto.setMobile("18000000000");
+        userSignUpDto.setMobile(CommonUtils.getRandom(10));
         userSignUpDto.setGender(0);
         userSignUpDto.setEncrypt("123456");
         userSignUpDto.setNickName(bindAccountRequest.getNickName());
@@ -85,6 +86,7 @@ public class ApplicationConsole extends BaseController {
     @ResponseBody
     public Response createActivity(CreateActivityRequest request){
         CreateActivityDto createActivityDto = new CreateActivityDto();
+        createActivityDto.setUid(request.getUid());
         createActivityDto.setIssue(request.getIssue());
         createActivityDto.setContent(request.getContent());
         createActivityDto.setCover(request.getCover());

@@ -30,6 +30,9 @@ public class ShowActivityDto implements BaseEntity {
     @Data
     public class ActivityElement implements BaseEntity{
 
+        // 发布者
+        private long uid;
+
         // 活动期次
         private String issue;
 
