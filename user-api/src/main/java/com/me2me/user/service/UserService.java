@@ -136,4 +136,6 @@ public interface UserService {
 
     UserToken getUserByUidAndToken(long uid, String token);
 
+    Response getUser(long targetUid, long sourceUid);
+
 }

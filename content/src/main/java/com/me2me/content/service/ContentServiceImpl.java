@@ -617,14 +617,15 @@ public class ContentServiceImpl implements ContentService {
         return contentH5Dto;
     }
 
-    public Response getUserData(long uid){
-        UserProfile userProfile = userService.getUserProfileByUid(uid);
-        List<Content> list = contentMybatisDao.myPublish(uid,Integer.MAX_VALUE);
+    public Response getUserData(long targetUid,long sourceUid){
+        UserProfile userProfile = userService.getUserProfileByUid(targetUid);
+        List<Content> list = contentMybatisDao.myPublish(targetUid,Integer.MAX_VALUE);
         UserInfoDto userInfoDto = new UserInfoDto();
         userInfoDto.getUser().setNickName(userProfile.getNickName());
         userInfoDto.getUser().setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
         userInfoDto.getUser().setGender(userProfile.getGender());
         userInfoDto.getUser().setUid(userProfile.getUid());
+        userInfoDto.getUser().setIsFollow(userService.isFollow(targetUid,sourceUid));
         for (Content content : list){
             UserInfoDto.ContentElement contentElement = UserInfoDto.createElement();
             contentElement.setFeeling(content.getFeeling());

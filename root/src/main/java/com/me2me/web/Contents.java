@@ -172,7 +172,7 @@ public class Contents extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getUserData",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getSelectedData(UserInfoRequest request){
-        return  contentService.getUserData(request.getCustomerId());
+        return  contentService.getUserData(request.getCustomerId(),request.getUid());
     }
 
 

@@ -494,4 +494,15 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    public Response getUser(long targetUid, long sourceUid){
+        UserProfile userProfile =  getUserProfileByUid(targetUid);
+        UserInfoDto.User user = new UserInfoDto.User();
+        user.setNickName(userProfile.getNickName());
+        user.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+        user.setGender(userProfile.getGender());
+        user.setUid(userProfile.getUid());
+        user.setIsFollow(isFollow(targetUid,sourceUid));
+        return Response.success(user);
+    }
+
 }

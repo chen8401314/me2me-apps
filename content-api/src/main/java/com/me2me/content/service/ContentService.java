@@ -82,11 +82,12 @@ public interface ContentService {
     ContentH5Dto getContent(long id);
 
     /**
-     * 用户资料卡
-     * @param uid
+     *
+     * @param targetUid
+     * @param sourceUid
      * @return
      */
-    Response getUserData(long uid);
+    Response getUserData(long targetUid ,long sourceUid);
 
     /**
      * 小编发布接口
