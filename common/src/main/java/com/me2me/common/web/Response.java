@@ -58,6 +58,14 @@ public class Response<T extends Serializable>  {
     }
 
     /**
+     * 系统默认成功
+     * @return
+     */
+    public static <T extends BaseEntity> Response success(){
+        return new Response(DEDFAULT_CODE_SUCCESS,DEFAULT_MESSAGE_SUCCESS);
+    }
+
+    /**
      * 系统默认失败
      * @param message
      * @return
