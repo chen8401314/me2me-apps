@@ -11,8 +11,8 @@ public class CommonUtils {
 
     private static Random r = new Random();
 
-    public static String getRandom(int len){
-        StringBuilder sb = new StringBuilder("8");
+    public static String getRandom(String prefix,int len){
+        StringBuilder sb = new StringBuilder(prefix);
         for(int i = 0;i<len;i++) {
             sb.append(r.nextInt(10));
         }
