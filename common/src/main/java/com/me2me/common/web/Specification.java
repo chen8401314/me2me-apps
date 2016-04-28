@@ -117,7 +117,9 @@ public interface Specification {
 
         LIVE("直播",3),
 
-        ACTIVITY("活动",4);
+        ACTIVITY("活动",4),
+
+        SYSTEM("系统",5);
 
         public final String name;
 
@@ -319,6 +321,20 @@ public interface Specification {
         public final String name;
         public final int index;
         LiveFavorite(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    public  enum ActivityStatus{
+
+        NORMAL("正常",0),
+
+        STOP("下架",1);
+
+        public final String name;
+        public final int index;
+        ActivityStatus(String name,int index){
             this.name = name;
             this.index = index;
         }

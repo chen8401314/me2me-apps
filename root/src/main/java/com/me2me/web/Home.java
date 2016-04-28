@@ -6,6 +6,7 @@ import com.me2me.content.service.ContentService;
 import com.me2me.user.dto.UserSignUpDto;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.BindAccountRequest;
+import com.me2me.web.request.HottestRequest;
 import com.me2me.web.request.ShowContentsRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -35,8 +36,11 @@ public class Home extends BaseController {
      */
     @RequestMapping(value = "/hottest",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response hottest(BindAccountRequest bindAccountRequest){
-        return null;
+    public Response hottest(HottestRequest request){
+        if(request.getSinceId() == -1){
+            request.setSinceId(Integer.MAX_VALUE);
+        }
+        return contentService.getHottest(request.getSinceId(),request.getUid());
     }
 
     /**

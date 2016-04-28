@@ -122,4 +122,6 @@ public interface ContentService {
 
     Response getActivities(int sinceId,long uid);
 
+    Response getHottest(int sinceId,long uid);
+
 }

@@ -251,4 +251,8 @@ public class ContentMybatisDao {
         isFavoriteDto.setTopicId(topicId);
         return contentMapper.isFavorite(isFavoriteDto);
     }
+
+    public List<Content> getHottestContent(int sinceId){
+        return contentMapper.loadHottestContent(sinceId);
+    }
 }
