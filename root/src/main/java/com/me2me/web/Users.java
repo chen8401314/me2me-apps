@@ -326,4 +326,17 @@ public class Users extends BaseController {
         }
         return userService.getFollows(followParamsDto);
     }
+
+
+    /**
+     * 用户关注列表
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getUser",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getUser(UserRequest request){
+
+        return userService.getUser(request.getTargetUid(),request.getUid());
+    }
 }

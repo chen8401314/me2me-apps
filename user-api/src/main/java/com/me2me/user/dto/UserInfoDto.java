@@ -35,6 +35,8 @@ public class UserInfoDto implements BaseEntity{
         private int gender;
 
         private String mid;
+
+        private int isFollow;
     }
 
     @Data
