@@ -1,5 +1,6 @@
 package com.me2me.activity.dao;
 
+import com.google.common.base.Strings;
 import com.me2me.activity.mapper.ActivityMapper;
 import com.me2me.activity.model.Activity;
 import com.me2me.activity.model.ActivityExample;
@@ -30,18 +31,24 @@ public class ActivityMybatisDao {
     }
 
 
-    public List<ActivityWithBLOBs> showActivity(int page, int pageSize) {
+    public List<ActivityWithBLOBs> showActivity(int page, int pageSize,String keyword) {
         ActivityExample example = new ActivityExample();
         ActivityExample.Criteria criteria = example.createCriteria();
         criteria.andStatusEqualTo(0);
+        if(!Strings.isNullOrEmpty(keyword)){
+            criteria.andActivityTitleLike("%"+keyword+"%");
+        }
         example.setOrderByClause("issue desc limit "+ ((page-1)*pageSize) + " , "+pageSize );
         return activityMapper.selectByExampleWithBLOBs(example);
     }
 
-    public int total() {
+    public int total(String keyword) {
         ActivityExample example = new ActivityExample();
         ActivityExample.Criteria criteria = example.createCriteria();
         criteria.andStatusEqualTo(0);
+        if(!Strings.isNullOrEmpty(keyword)){
+            criteria.andActivityTitleLike("%"+keyword+"%");
+        }
         return activityMapper.countByExample(example);
     }
 }

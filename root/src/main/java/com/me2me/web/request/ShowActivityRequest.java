@@ -14,11 +14,15 @@ public class ShowActivityRequest extends Request{
 
     @Getter
     @Setter
-   private int page = 1;
+    private int page = 1;
 
     @Getter
     @Setter
-   private int pageSize = 10;
+    private int pageSize = 10;
+
+    @Getter
+    @Setter
+    private String keyword;
 
 
 

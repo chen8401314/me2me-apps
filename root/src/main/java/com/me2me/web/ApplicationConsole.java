@@ -102,7 +102,7 @@ public class ApplicationConsole extends BaseController {
     @RequestMapping(value = "/showActivity",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response showActivity(ShowActivityRequest request){
-        return activityService.showActivity(request.getPage(),request.getPageSize());
+        return activityService.showActivity(request.getPage(),request.getPageSize(),request.getKeyword());
     }
 
 

@@ -18,7 +18,7 @@ public interface ActivityService {
     Response createActivity(CreateActivityDto createActivityDto);
 
 
-    Response showActivity(int page,int pageSize);
+    Response showActivity(int page,int pageSize,String keyword);
 
 
 }

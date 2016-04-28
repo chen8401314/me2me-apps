@@ -37,9 +37,9 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Response showActivity(int page, int pageSize) {
+    public Response showActivity(int page, int pageSize,String keyword) {
         ShowActivityDto showActivityDto = new ShowActivityDto();
-        List<ActivityWithBLOBs> list = activityMybatisDao.showActivity(page,pageSize);
+        List<ActivityWithBLOBs> list = activityMybatisDao.showActivity(page,pageSize,keyword);
         for(ActivityWithBLOBs activity : list){
             ShowActivityDto.ActivityElement element = showActivityDto.createElement();
             element.setStartTime(activity.getStartTime());
@@ -50,8 +50,8 @@ public class ActivityServiceImpl implements ActivityService {
             element.setTitle(activity.getActivityTitle());
             showActivityDto.getResult().add(element);
         }
-        showActivityDto.setTotal(activityMybatisDao.total());
-        int totalPage = (activityMybatisDao.total() + pageSize - 1)/pageSize;
+        showActivityDto.setTotal(activityMybatisDao.total(keyword));
+        int totalPage = (activityMybatisDao.total(keyword) + pageSize - 1)/pageSize;
         showActivityDto.setTotalPage(totalPage);
         return Response.success(200,"数据加载成功！",showActivityDto);
     }
