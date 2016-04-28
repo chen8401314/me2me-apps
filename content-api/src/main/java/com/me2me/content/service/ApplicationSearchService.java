@@ -12,6 +12,6 @@ import com.plusnet.search.content.RecommendResponse;
  */
 public interface ApplicationSearchService {
 
-//    RecommendResponse recommend(RecommendRequest recommendRequest);
+    RecommendResponse recommend(RecommendRequest recommendRequest);
 
 }

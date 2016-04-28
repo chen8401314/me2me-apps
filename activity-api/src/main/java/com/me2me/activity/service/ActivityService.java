@@ -1,5 +1,6 @@
 package com.me2me.activity.service;
 
+import com.me2me.activity.dto.CreateActivityDto;
 import com.me2me.common.web.Response;
 
 /**
@@ -14,7 +15,10 @@ public interface ActivityService {
      * 创建活动
      * @return
      */
-    Response createActivity();
+    Response createActivity(CreateActivityDto createActivityDto);
+
+
+    Response showActivity(int page,int pageSize);
 
 
 }
