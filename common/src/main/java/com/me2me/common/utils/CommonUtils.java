@@ -18,11 +18,4 @@ public class CommonUtils {
         }
         return sb.toString();
     }
-
-    public static void main(String[] args) {
-        for(int i = 0;i<100;i++) {
-            String value = getRandom(10);
-            System.out.println(value);
-        }
-    }
 }
