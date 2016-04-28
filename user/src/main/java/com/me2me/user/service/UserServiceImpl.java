@@ -496,13 +496,13 @@ public class UserServiceImpl implements UserService {
 
     public Response getUser(long targetUid, long sourceUid){
         UserProfile userProfile =  getUserProfileByUid(targetUid);
-        UserInfoDto userInfoDto = new UserInfoDto();
-        userInfoDto.getUser().setNickName(userProfile.getNickName());
-        userInfoDto.getUser().setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-        userInfoDto.getUser().setGender(userProfile.getGender());
-        userInfoDto.getUser().setUid(userProfile.getUid());
-        userInfoDto.getUser().setIsFollow(isFollow(targetUid,sourceUid));
-        return Response.success(userInfoDto);
+        UserInfoDto.User user = new UserInfoDto.User();
+        user.setNickName(userProfile.getNickName());
+        user.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+        user.setGender(userProfile.getGender());
+        user.setUid(userProfile.getUid());
+        user.setIsFollow(isFollow(targetUid,sourceUid));
+        return Response.success(user);
     }
 
 }
