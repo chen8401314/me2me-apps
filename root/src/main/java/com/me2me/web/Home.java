@@ -30,7 +30,7 @@ public class Home extends BaseController {
     private ContentService contentService;
 
     /**
-     * 用户注册接口
+     * 最热（小编发布，活动轮播位）
      * @return
      */
     @RequestMapping(value = "/hottest",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
@@ -40,7 +40,7 @@ public class Home extends BaseController {
     }
 
     /**
-     * 用户注册接口
+     * 专属（老徐那边的数据接口）
      * @return
      */
     @RequestMapping(value = "/special",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
@@ -49,12 +49,22 @@ public class Home extends BaseController {
         return null;
     }
 
+    /**
+     * 最新（原来的广场）
+     * @param showContentsRequest
+     * @return
+     */
     @RequestMapping(value = "/newest",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response newest(ShowContentsRequest showContentsRequest){
         return null;
     }
 
+    /**
+     * 关注（我关注的人，包含直播和ugc）
+     * @param showContentsRequest
+     * @return
+     */
     @RequestMapping(value = "/attention ",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response attention (ShowContentsRequest showContentsRequest){
