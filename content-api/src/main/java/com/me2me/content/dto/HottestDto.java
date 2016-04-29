@@ -114,5 +114,8 @@ public class HottestDto implements BaseEntity {
         //参与人数
         private int personCount;
 
+        //直播是否收藏
+        private int favorite;
+
     }
 }

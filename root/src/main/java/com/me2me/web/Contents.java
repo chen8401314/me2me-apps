@@ -237,5 +237,16 @@ public class Contents extends BaseController {
         return contentService.getActivities(request.getSinceId(),request.getUid());
     }
 
+    /**
+     * 文章点赞
+     * @return
+     */
+    @RequestMapping(value = "/contentLike",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response contentLike(ContentLikeRequest request){
+
+        return null;
+    }
+
 
 }

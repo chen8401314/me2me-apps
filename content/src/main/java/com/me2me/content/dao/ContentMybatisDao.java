@@ -255,4 +255,11 @@ public class ContentMybatisDao {
     public List<Content> getHottestContent(int sinceId){
         return contentMapper.loadHottestContent(sinceId);
     }
+
+    public int getContentImageCount(long cid){
+        ContentImageExample example = new ContentImageExample();
+        ContentImageExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(cid);
+        return contentImageMapper.countByExample(example);
+    }
 }

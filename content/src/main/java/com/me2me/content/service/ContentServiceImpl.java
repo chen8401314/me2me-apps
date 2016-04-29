@@ -40,6 +40,7 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private ActivityService activityService;
 
+
     @Override
     public Response highQuality(int sinceId,long uid) {
         SquareDataDto squareDataDto = new SquareDataDto();
@@ -801,7 +802,8 @@ public class ContentServiceImpl implements ContentService {
             UserProfile userProfile = userService.getUserProfileByUid(activity.getUid());
             activityElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             activityElement.setNickName(userProfile.getNickName());
-            activityElement.setIsFollow(0);
+            int follow = userService.isFollow(activity.getUid(),uid);
+            activityElement.setIsFollow(follow);
             activityElement.setId(activity.getId());
             hottestDto.getActivityData().add(activityElement);
         }
@@ -823,12 +825,19 @@ public class ContentServiceImpl implements ContentService {
             }else if(content.getType() == Specification.ArticleType.LIVE.index){
                 hottestContentElement.setUid(content.getUid());
                 hottestContentElement.setForwardCid(content.getForwardCid());
-                hottestContentElement.setLiveStatus(0);
+                //查询直播状态
+                int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
+                hottestContentElement.setLiveStatus(status);
+                //直播是否收藏
+                int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
+                hottestContentElement.setFavorite(favorite);
                 UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
                 hottestContentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                 hottestContentElement.setNickName(userProfile.getNickName());
                 hottestContentElement.setFeeling(content.getFeeling());
-                hottestContentElement.setIsFollow(0);
+                int follow = userService.isFollow(content.getUid(),uid);
+                hottestContentElement.setIsFollow(follow);
+
                 hottestContentElement.setPersonCount(0);
             //原生
             }else if(content.getType() == Specification.ArticleType.ORIGIN.index){
@@ -837,8 +846,11 @@ public class ContentServiceImpl implements ContentService {
                 hottestContentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                 hottestContentElement.setNickName(userProfile.getNickName());
                 hottestContentElement.setFeeling(content.getFeeling());
-                hottestContentElement.setIsFollow(0);
-                hottestContentElement.setImageCount(0);
+                int follow = userService.isFollow(content.getUid(),uid);
+                hottestContentElement.setIsFollow(follow);
+                //获取内容图片数量
+                int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
+                hottestContentElement.setImageCount(imageCounts);
             }
             hottestDto.getHottestContentData().add(hottestContentElement);
         }
