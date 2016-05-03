@@ -144,4 +144,6 @@ public interface UserService {
 
     Response checkNickName(String nickName);
 
+    boolean existsNickName(String nickName);
+
 }

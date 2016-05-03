@@ -48,6 +48,11 @@ public class UserServiceImpl implements UserService {
             // 该用户已经注册过
             return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
         }
+        // 检查用户名是否重复
+        if(!this.existsNickName(userSignUpDto.getNickName())){
+            return Response.failure(ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.status,ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.message);
+        }
+
         SignUpSuccessDto signUpSuccessDto = new SignUpSuccessDto();
         User user = new User();
         String salt = SecurityUtils.getMask();
@@ -536,6 +541,14 @@ public class UserServiceImpl implements UserService {
             return Response.failure(ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.status,ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.message);
         }else{
             return Response.success();
+        }
+    }
+    public boolean existsNickName(String nickName) {
+        List<UserProfile> list = userMybatisDao.getByNickName(nickName);
+        if(list!=null&&list.size()>0){
+            return false;
+        }else{
+            return true;
         }
     }
 
