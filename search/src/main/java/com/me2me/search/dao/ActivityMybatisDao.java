@@ -51,4 +51,12 @@ public class ActivityMybatisDao {
         }
         return activityMapper.countByExample(example);
     }
+
+    public List<ActivityWithBLOBs> getActivityTop5(){
+        ActivityExample example = new ActivityExample();
+        ActivityExample.Criteria criteria = example.createCriteria();
+        criteria.andStatusEqualTo(Specification.ActivityStatus.NORMAL.index);
+        example.setOrderByClause(" order by issue desc limit 5 ");
+        return activityMapper.selectByExampleWithBLOBs(example);
+    }
 }

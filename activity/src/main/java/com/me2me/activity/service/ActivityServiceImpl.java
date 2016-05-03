@@ -56,4 +56,15 @@ public class ActivityServiceImpl implements ActivityService {
         showActivityDto.setTotalPage(totalPage);
         return Response.success(200,"数据加载成功！",showActivityDto);
     }
+
+    @Override
+    public List<ActivityWithBLOBs> getActivityTop5(){
+        return activityMybatisDao.getActivityTop5();
+    }
+
+    @Override
+    public List<ActivityWithBLOBs> getActivity(int sinceId) {
+
+        return null;
+    }
 }

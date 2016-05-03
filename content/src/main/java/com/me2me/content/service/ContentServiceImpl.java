@@ -1,6 +1,8 @@
 package com.me2me.content.service;
 
 import com.google.common.collect.Lists;
+import com.me2me.activity.model.ActivityWithBLOBs;
+import com.me2me.activity.service.ActivityService;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -34,6 +36,10 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private ActivityService activityService;
+
 
     @Override
     public Response highQuality(int sinceId,long uid) {
@@ -783,4 +789,71 @@ public class ContentServiceImpl implements ContentService {
         return Response.success(200,"数据获取成功",showContentDto);
     }
 
+    public Response getHottest(int sinceId,long uid){
+        HottestDto hottestDto = new HottestDto();
+        //活动
+        List<ActivityWithBLOBs> activityList = activityService.getActivityTop5();
+        for(ActivityWithBLOBs activity : activityList){
+            HottestDto.ActivityElement activityElement = HottestDto.createActivityElement();
+            activityElement.setTitle(activity.getActivityHashTitle());
+            activityElement.setCoverImage(activity.getActivityCover());
+            activityElement.setUpdateTime(activity.getUpdateTime());
+            activityElement.setUid(activity.getUid());
+            UserProfile userProfile = userService.getUserProfileByUid(activity.getUid());
+            activityElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            activityElement.setNickName(userProfile.getNickName());
+            int follow = userService.isFollow(activity.getUid(),uid);
+            activityElement.setIsFollow(follow);
+            activityElement.setId(activity.getId());
+            hottestDto.getActivityData().add(activityElement);
+        }
+        //内容
+        List<Content> contentList = contentMybatisDao.getHottestContent(sinceId);
+        for(Content content : contentList){
+            HottestDto.HottestContentElement hottestContentElement = HottestDto.createHottestContentElement();
+            hottestContentElement.setType(content.getType());
+            hottestContentElement.setCoverImage(content.getConverImage());
+            hottestContentElement.setId(content.getId());
+            hottestContentElement.setContent(content.getContent());
+            hottestContentElement.setLikeCount(0);
+            hottestContentElement.setReviewCount(0);
+            hottestContentElement.setTitle(content.getTitle());
+            //系统文章不包含，用户信息
+            if(content.getType() == Specification.ArticleType.SYSTEM.index){
+
+           //直播 直播状态
+            }else if(content.getType() == Specification.ArticleType.LIVE.index){
+                hottestContentElement.setUid(content.getUid());
+                hottestContentElement.setForwardCid(content.getForwardCid());
+                //查询直播状态
+                int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
+                hottestContentElement.setLiveStatus(status);
+                //直播是否收藏
+                int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
+                hottestContentElement.setFavorite(favorite);
+                UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+                hottestContentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                hottestContentElement.setNickName(userProfile.getNickName());
+                hottestContentElement.setFeeling(content.getFeeling());
+                int follow = userService.isFollow(content.getUid(),uid);
+                hottestContentElement.setIsFollow(follow);
+
+                hottestContentElement.setPersonCount(0);
+            //原生
+            }else if(content.getType() == Specification.ArticleType.ORIGIN.index){
+                hottestContentElement.setUid(content.getUid());
+                UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+                hottestContentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                hottestContentElement.setNickName(userProfile.getNickName());
+                hottestContentElement.setFeeling(content.getFeeling());
+                int follow = userService.isFollow(content.getUid(),uid);
+                hottestContentElement.setIsFollow(follow);
+                //获取内容图片数量
+                int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
+                hottestContentElement.setImageCount(imageCounts);
+            }
+            hottestDto.getHottestContentData().add(hottestContentElement);
+        }
+        return Response.success(hottestDto);
+    }
 }

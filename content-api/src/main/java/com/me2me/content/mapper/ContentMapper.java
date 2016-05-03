@@ -136,4 +136,6 @@ public interface ContentMapper {
     void deleteTopicById(long topicId);
 
     int isFavorite(IsFavoriteDto isFavoriteDto);
+
+    List<Content> loadHottestContent(int sinceId);
 }
