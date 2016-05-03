@@ -5,6 +5,7 @@ import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.service.LiveService;
+import com.me2me.search.service.SearchService;
 import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -22,5 +23,19 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @Controller
 @RequestMapping(value = "/api/search")
 public class Search extends BaseController {
+
+    @Autowired
+    private SearchService searchService;
+
+    @ResponseBody
+    @RequestMapping(value = "/go",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response search(SearchRequest searchRequest){
+        return searchService.search(searchRequest.getKeyword(),searchRequest.getPage(),searchRequest.getPageSize());
+    }
+    @ResponseBody
+    @RequestMapping(value = "/assistant",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response assistant(SearchRequest searchRequest){
+        return searchService.assistant(searchRequest.getKeyword());
+    }
 
 }

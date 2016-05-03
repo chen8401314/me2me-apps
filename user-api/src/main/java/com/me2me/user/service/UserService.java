@@ -142,4 +142,6 @@ public interface UserService {
 
     Response assistant(String keyword);
 
+    Response checkNickName(String nickName);
+
 }

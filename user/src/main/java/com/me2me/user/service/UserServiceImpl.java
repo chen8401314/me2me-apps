@@ -529,4 +529,14 @@ public class UserServiceImpl implements UserService {
         return Response.success(searchAssistantDto);
     }
 
+    @Override
+    public Response checkNickName(String nickName) {
+        List<UserProfile> list = userMybatisDao.getByNickName(nickName);
+        if(list!=null&&list.size()>0){
+            return Response.failure(ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.status,ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.message);
+        }else{
+            return Response.success();
+        }
+    }
+
 }

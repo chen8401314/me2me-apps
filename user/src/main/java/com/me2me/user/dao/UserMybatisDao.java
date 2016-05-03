@@ -316,4 +316,11 @@ public class UserMybatisDao {
         example.setOrderByClause("nick_name limit 10");
         return userProfileMapper.selectByExample(example);
     }
+
+    public List<UserProfile> getByNickName(String nickName){
+        UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria =  example.createCriteria();
+        criteria.andNickNameEqualTo(nickName);
+        return userProfileMapper.selectByExample(example);
+    }
 }

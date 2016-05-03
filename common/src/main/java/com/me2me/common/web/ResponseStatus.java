@@ -163,9 +163,9 @@ public enum  ResponseStatus {
 
     CONTENT_IS_NOT_EXIST("修改的内容不存在","content is not exist",50021),
 
-    CONTENT_IS_NOT_YOURS("该内容你无权修改","content is not yours",50021),
+    CONTENT_IS_NOT_YOURS("该内容你无权修改","content is not yours",50022),
 
-
+    NICK_NAME_REQUIRE_UNIQUE("用户昵称必须唯一","nick name require unique",50023),
 
 
 
