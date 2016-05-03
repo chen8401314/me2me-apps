@@ -138,4 +138,12 @@ public interface UserService {
 
     Response getUser(long targetUid, long sourceUid);
 
+    Response search(String keyword,int page,int pageSize,long uid);
+
+    Response assistant(String keyword);
+
+    Response checkNickName(String nickName);
+
+    boolean existsNickName(String nickName);
+
 }

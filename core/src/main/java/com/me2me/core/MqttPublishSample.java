@@ -7,6 +7,7 @@ package com.me2me.core;
  */
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.eclipse.paho.client.mqttv3.persist.MqttDefaultFilePersistence;
 
 public class MqttPublishSample {
 
@@ -14,8 +15,20 @@ public class MqttPublishSample {
     private static String userName = "admin";
     private static String passWord = "password";
     private static MqttClient client;
+    public static void main(String[] args) {
+        for(int i = 0;i<100;i++){
+            send();
+        }
+    }
 
     private static String topicStr = "用户推送服务";
+    private static void send() {
+        String topic        = "用户推送服务";
+        String content      = "";
+        int qos             = 2;
+        String broker       = "tcp://127.0.0.1:61613";
+        String clientId     = "test";
+        MemoryPersistence persistence = new MemoryPersistence();
 
     public static void main(String[] args) throws MqttException {
         //host为主机名，test为clientid即连接MQTT的客户端ID，一般以客户端唯一标识符表示，
@@ -64,6 +77,33 @@ public class MqttPublishSample {
         client.connect(options);
         //订阅
         client.subscribe(topicStr, 1);
+        // MqttDefaultFilePersistence persistence = new MqttDefaultFilePersistence();
+
+        try {
+            MqttClient sampleClient = new MqttClient(broker, clientId, persistence);
+            MqttConnectOptions connOpts = new MqttConnectOptions();
+            connOpts.setUserName("admin");
+            connOpts.setPassword("password".toCharArray());
+            System.out.println("Connecting to broker: "+broker);
+            sampleClient.connect(connOpts);
+            System.out.println("Connected");
+            System.out.println("Publishing message: "+content);
+            // MqttMessage message = new MqttMessage(content.getBytes());
+            MqttMessage message = new MqttMessage("潘金莲大战武大郎".getBytes());
+            message.setQos(qos);
+            sampleClient.publish(topic, message);
+            System.out.println("Message published");
+            // Thread.sleep(1000000000L);
+            sampleClient.disconnect();
+            System.out.println("Disconnected");
+        } catch(MqttException me) {
+            System.out.println("reason "+me.getReasonCode());
+            System.out.println("msg "+me.getMessage());
+            System.out.println("loc "+me.getLocalizedMessage());
+            System.out.println("cause "+me.getCause());
+            System.out.println("excep "+me);
+            me.printStackTrace();
+        }
     }
 
 }

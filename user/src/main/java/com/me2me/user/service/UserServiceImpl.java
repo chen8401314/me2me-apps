@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService {
     private UserMybatisDao userMybatisDao;
 
 
+
     /**
      * 用户注册
      * @param userSignUpDto
@@ -47,6 +48,11 @@ public class UserServiceImpl implements UserService {
             // 该用户已经注册过
             return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
         }
+        // 检查用户名是否重复
+        if(!this.existsNickName(userSignUpDto.getNickName())){
+            return Response.failure(ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.status,ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.message);
+        }
+
         SignUpSuccessDto signUpSuccessDto = new SignUpSuccessDto();
         User user = new User();
         String salt = SecurityUtils.getMask();
@@ -494,6 +500,59 @@ public class UserServiceImpl implements UserService {
         user.setUid(userProfile.getUid());
         user.setIsFollow(isFollow(targetUid,sourceUid));
         return Response.success(user);
+    }
+
+    @Override
+    public Response search(String keyword,int page,int pageSize,long uid) {
+        List<UserProfile> list =  userMybatisDao.search(keyword,page,pageSize);
+        SearchDto searchDto = new SearchDto();
+        searchDto.setTotalRecord(userMybatisDao.total(keyword));
+        int totalPage = (searchDto.getTotalRecord() + pageSize -1) / pageSize;
+        searchDto.setTotalPage(totalPage);
+        for(UserProfile userProfile : list){
+            SearchDto.SearchElement element = searchDto.createElement();
+            element.setUid(userProfile.getUid());
+            element.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
+            element.setNickName(userProfile.getNickName());
+            int follow = this.isFollow(userProfile.getUid(),uid);
+            element.setIsFollowed(follow);
+            int followMe = this.isFollow(uid,userProfile.getUid());
+            element.setIsFollowMe(followMe);
+            searchDto.getResult().add(element);
+        }
+        return Response.success(searchDto);
+    }
+
+    @Override
+    public Response assistant(String keyword) {
+        List<UserProfile> list =  userMybatisDao.assistant(keyword);
+        SearchAssistantDto searchAssistantDto = new SearchAssistantDto();
+        for(UserProfile userProfile : list){
+            SearchAssistantDto.SearchAssistantElement element = searchAssistantDto.createElement();
+            element.setUid(userProfile.getUid());
+            element.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
+            element.setNickName(userProfile.getNickName());
+            searchAssistantDto.getResult().add(element);
+        }
+        return Response.success(searchAssistantDto);
+    }
+
+    @Override
+    public Response checkNickName(String nickName) {
+        List<UserProfile> list = userMybatisDao.getByNickName(nickName);
+        if(list!=null&&list.size()>0){
+            return Response.failure(ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.status,ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.message);
+        }else{
+            return Response.success();
+        }
+    }
+    public boolean existsNickName(String nickName) {
+        List<UserProfile> list = userMybatisDao.getByNickName(nickName);
+        if(list!=null&&list.size()>0){
+            return false;
+        }else{
+            return true;
+        }
     }
 
 }
