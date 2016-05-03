@@ -806,20 +806,22 @@ public class ContentServiceImpl implements ContentService {
     public Response getHottest(int sinceId,long uid){
         ShowHottestDto hottestDto = new ShowHottestDto();
         //活动
-        List<ActivityWithBLOBs> activityList = activityService.getActivityTop5();
-        for(ActivityWithBLOBs activity : activityList){
-            ShowHottestDto.ActivityElement activityElement = ShowHottestDto.createActivityElement();
-            activityElement.setTitle(activity.getActivityHashTitle());
-            activityElement.setCoverImage(activity.getActivityCover());
-            activityElement.setUpdateTime(activity.getUpdateTime());
-            activityElement.setUid(activity.getUid());
-            UserProfile userProfile = userService.getUserProfileByUid(activity.getUid());
-            activityElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-            activityElement.setNickName(userProfile.getNickName());
-            int follow = userService.isFollow(activity.getUid(),uid);
-            activityElement.setIsFollow(follow);
-            activityElement.setId(activity.getId());
-            hottestDto.getActivityData().add(activityElement);
+        if(sinceId == Integer.MAX_VALUE) {
+            List<ActivityWithBLOBs> activityList = activityService.getActivityTop5();
+            for (ActivityWithBLOBs activity : activityList) {
+                ShowHottestDto.ActivityElement activityElement = ShowHottestDto.createActivityElement();
+                activityElement.setTitle(activity.getActivityHashTitle());
+                activityElement.setCoverImage(activity.getActivityCover());
+                activityElement.setUpdateTime(activity.getUpdateTime());
+                activityElement.setUid(activity.getUid());
+                UserProfile userProfile = userService.getUserProfileByUid(activity.getUid());
+                activityElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                activityElement.setNickName(userProfile.getNickName());
+                int follow = userService.isFollow(activity.getUid(), uid);
+                activityElement.setIsFollow(follow);
+                activityElement.setId(activity.getId());
+                hottestDto.getActivityData().add(activityElement);
+            }
         }
         //内容
         List<Content> contentList = contentMybatisDao.getHottestContent(sinceId);
