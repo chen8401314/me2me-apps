@@ -506,6 +506,9 @@ public class UserServiceImpl implements UserService {
     public Response search(String keyword,int page,int pageSize,long uid) {
         List<UserProfile> list =  userMybatisDao.search(keyword,page,pageSize);
         SearchDto searchDto = new SearchDto();
+        searchDto.setTotalRecord(userMybatisDao.total(keyword));
+        int totalPage = (searchDto.getTotalRecord() + pageSize -1) / pageSize;
+        searchDto.setTotalPage(totalPage);
         for(UserProfile userProfile : list){
             SearchDto.SearchElement element = searchDto.createElement();
             element.setUid(userProfile.getUid());

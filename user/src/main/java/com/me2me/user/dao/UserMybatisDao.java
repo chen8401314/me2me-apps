@@ -309,6 +309,13 @@ public class UserMybatisDao {
         return userProfileMapper.selectByExample(example);
     }
 
+    public int total(String keyword){
+        UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria =  example.createCriteria();
+        criteria.andNickNameLike("%"+keyword+"%");
+        return userProfileMapper.countByExample(example);
+    }
+
     public List<UserProfile> assistant(String keyword){
         UserProfileExample example = new UserProfileExample();
         UserProfileExample.Criteria criteria =  example.createCriteria();

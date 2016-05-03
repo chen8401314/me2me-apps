@@ -16,6 +16,9 @@ public class SearchDto implements BaseEntity {
 
     private List<SearchElement> elements = Lists.newArrayList();
 
+    private int totalPage;
+
+    private int totalRecord;
 
     public SearchElement createElement(){
         return new SearchElement();
