@@ -28,9 +28,9 @@ public class Search extends BaseController {
     private SearchService searchService;
 
     @ResponseBody
-    @RequestMapping(value = "/go",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response search(SearchRequest searchRequest){
-        return searchService.search(searchRequest.getKeyword(),searchRequest.getPage(),searchRequest.getPageSize());
+        return searchService.search(searchRequest.getKeyword(),searchRequest.getPage(),searchRequest.getPageSize(),searchRequest.getUid());
     }
     @ResponseBody
     @RequestMapping(value = "/assistant",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)

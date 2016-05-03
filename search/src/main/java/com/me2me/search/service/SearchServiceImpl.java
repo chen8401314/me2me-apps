@@ -19,8 +19,8 @@ public class SearchServiceImpl implements SearchService {
     private UserService userService;
 
     @Override
-    public Response search(String keyword,int page,int pageSize) {
-        return userService.search(keyword,page,pageSize);
+    public Response search(String keyword,int page,int pageSize,long uid) {
+        return userService.search(keyword,page,pageSize,uid);
     }
 
     @Override

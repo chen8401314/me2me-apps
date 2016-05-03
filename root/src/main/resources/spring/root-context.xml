@@ -16,5 +16,6 @@
         <import resource="classpath:spring/io-context.xml"/>
         <import resource="classpath:spring/live-context.xml"/>
         <import resource="classpath:spring/activity-context.xml"/>
+        <import resource="classpath:spring/search-context.xml"/>
     </beans>
 </beans>

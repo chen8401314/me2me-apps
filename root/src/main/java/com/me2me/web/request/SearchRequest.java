@@ -17,9 +17,9 @@ public class SearchRequest extends Request {
 
     @Getter
     @Setter
-    private int page;
+    private int page = 1;
 
     @Getter
     @Setter
-    private int pageSize;
+    private int pageSize = 10;
 }
