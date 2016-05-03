@@ -138,4 +138,6 @@ public interface ContentMapper {
     int isFavorite(IsFavoriteDto isFavoriteDto);
 
     List<Content> loadHottestContent(int sinceId);
+
+    List<Content> loadNewestContent(int sinceId);
 }

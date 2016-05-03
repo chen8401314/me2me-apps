@@ -62,8 +62,9 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<ActivityWithBLOBs> getActivity(int sinceId) {
+    public Response getActivity(int sinceId) {
         return null;
     }
+
 
 }

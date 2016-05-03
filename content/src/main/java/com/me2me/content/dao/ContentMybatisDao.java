@@ -1,6 +1,7 @@
 package com.me2me.content.dao;
 
 import com.google.common.collect.Maps;
+import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.*;
@@ -42,6 +43,12 @@ public class ContentMybatisDao {
 
     @Autowired
     private HighQualityContentMapper highQualityContentMapper;
+
+    @Autowired
+    private ContentTagsDetailsMapper contentTagsDetailsMapper;
+
+    @Autowired
+    private ContentReviewMapper contentReviewMapper;
 
     public List<Content> loadSquareData(int sinceId){
         return contentMapper.loadSquareData(sinceId);
@@ -261,5 +268,24 @@ public class ContentMybatisDao {
         ContentImageExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(cid);
         return contentImageMapper.countByExample(example);
+    }
+
+    public List<Content> getNewest(int sinceId){
+        return contentMapper.loadNewestContent(sinceId);
+    }
+
+    public List<Content> getAttention(int sinceId){
+        return  null;
+
+
+    }
+
+
+    public void createContentTagsDetails(ContentTagsDetails contentTagsDetails){
+        contentTagsDetailsMapper.insert(contentTagsDetails);
+    }
+
+    public void createReview(ContentReview review){
+        contentReviewMapper.insert(review);
     }
 }

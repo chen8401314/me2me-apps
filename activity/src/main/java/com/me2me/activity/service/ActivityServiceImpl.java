@@ -2,9 +2,13 @@ package com.me2me.activity.service;
 
 import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dto.CreateActivityDto;
+import com.me2me.activity.dto.ShowActivitiesDto;
 import com.me2me.activity.dto.ShowActivityDto;
 import com.me2me.activity.model.ActivityWithBLOBs;
+import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
+import com.me2me.user.model.UserProfile;
+import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +24,9 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Autowired
     private ActivityMybatisDao activityMybatisDao;
+
+    @Autowired
+    private UserService userService;
 
     @Override
     public Response createActivity(CreateActivityDto createActivityDto) {
@@ -63,8 +70,19 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public List<ActivityWithBLOBs> getActivity(int sinceId) {
-
-        return null;
+    public Response getActivity(int sinceId) {
+        ShowActivitiesDto showActivitiesDto = new ShowActivitiesDto();
+        List<ActivityWithBLOBs> list = activityMybatisDao.getActivity(sinceId);
+        for(ActivityWithBLOBs activity : list){
+            ShowActivitiesDto.ActivityElement activityElement = ShowActivitiesDto.createActivityElement();
+            activityElement.setUid(activity.getUid());
+            activityElement.setTitle(activity.getActivityHashTitle());
+            activityElement.setCoverImage(activity.getActivityCover());
+            UserProfile userProfile = userService.getUserProfileByUid(activity.getUid());
+            activityElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            activityElement.setNickName(userProfile.getNickName());
+            showActivitiesDto.getActivityData().add(activityElement);
+        }
+        return Response.success(showActivitiesDto);
     }
 }
