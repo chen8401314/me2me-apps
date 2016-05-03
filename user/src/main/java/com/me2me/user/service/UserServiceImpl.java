@@ -518,7 +518,7 @@ public class UserServiceImpl implements UserService {
             element.setIsFollowed(follow);
             int followMe = this.isFollow(uid,userProfile.getUid());
             element.setIsFollowMe(followMe);
-            searchDto.getElements().add(element);
+            searchDto.getResult().add(element);
         }
         return Response.success(searchDto);
     }
@@ -532,7 +532,7 @@ public class UserServiceImpl implements UserService {
             element.setUid(userProfile.getUid());
             element.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
             element.setNickName(userProfile.getNickName());
-            searchAssistantDto.getElements().add(element);
+            searchAssistantDto.getResult().add(element);
         }
         return Response.success(searchAssistantDto);
     }
