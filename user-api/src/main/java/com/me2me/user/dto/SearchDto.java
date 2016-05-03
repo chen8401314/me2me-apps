@@ -14,7 +14,7 @@ import java.util.List;
 @Data
 public class SearchDto implements BaseEntity {
 
-    private List<SearchElement> elements = Lists.newArrayList();
+    private List<SearchElement> result = Lists.newArrayList();
 
     private int totalPage;
 

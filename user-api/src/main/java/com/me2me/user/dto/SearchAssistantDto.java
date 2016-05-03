@@ -15,7 +15,7 @@ import java.util.List;
 public class SearchAssistantDto implements BaseEntity {
 
 
-    private List<SearchAssistantElement> elements = Lists.newArrayList();
+    private List<SearchAssistantElement> result = Lists.newArrayList();
 
     public SearchAssistantElement createElement(){
         return new SearchAssistantElement();
