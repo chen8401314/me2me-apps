@@ -35,6 +35,7 @@ public class UserServiceImpl implements UserService {
     private UserMybatisDao userMybatisDao;
 
 
+
     /**
      * 用户注册
      * @param userSignUpDto
@@ -494,6 +495,38 @@ public class UserServiceImpl implements UserService {
         user.setUid(userProfile.getUid());
         user.setIsFollow(isFollow(targetUid,sourceUid));
         return Response.success(user);
+    }
+
+    @Override
+    public Response search(String keyword,int page,int pageSize,long uid) {
+        List<UserProfile> list =  userMybatisDao.search(keyword,page,pageSize);
+        SearchDto searchDto = new SearchDto();
+        for(UserProfile userProfile : list){
+            SearchDto.SearchElement element = searchDto.createElement();
+            element.setUid(userProfile.getUid());
+            element.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
+            element.setNickName(userProfile.getNickName());
+            int follow = this.isFollow(userProfile.getUid(),uid);
+            element.setIsFollowed(follow);
+            int followMe = this.isFollow(uid,userProfile.getUid());
+            element.setIsFollowMe(followMe);
+            searchDto.getElements().add(element);
+        }
+        return Response.success(searchDto);
+    }
+
+    @Override
+    public Response assistant(String keyword) {
+        List<UserProfile> list =  userMybatisDao.assistant(keyword);
+        SearchAssistantDto searchAssistantDto = new SearchAssistantDto();
+        for(UserProfile userProfile : list){
+            SearchAssistantDto.SearchAssistantElement element = searchAssistantDto.createElement();
+            element.setUid(userProfile.getUid());
+            element.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
+            element.setNickName(userProfile.getNickName());
+            searchAssistantDto.getElements().add(element);
+        }
+        return Response.success(searchAssistantDto);
     }
 
 }

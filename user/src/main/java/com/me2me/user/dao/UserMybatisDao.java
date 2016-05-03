@@ -300,4 +300,20 @@ public class UserMybatisDao {
     public List<UserFansDto> getFollows(FollowParamsDto followParamsDto){
         return userFollowMapper.getFollows(followParamsDto);
     }
+
+    public List<UserProfile> search(String keyword,int page,int pageSize){
+        UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria =  example.createCriteria();
+        criteria.andNickNameLike("%"+keyword+"%");
+        example.setOrderByClause("nick_name limit "+((page-1)*pageSize)+", " + pageSize);
+        return userProfileMapper.selectByExample(example);
+    }
+
+    public List<UserProfile> assistant(String keyword){
+        UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria =  example.createCriteria();
+        criteria.andNickNameLike("%"+keyword+"%");
+        example.setOrderByClause("nick_name limit 10");
+        return userProfileMapper.selectByExample(example);
+    }
 }

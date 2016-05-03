@@ -1,6 +1,5 @@
 package com.me2me.search.service;
 
-import com.me2me.search.dto.CreateActivityDto;
 import com.me2me.common.web.Response;
 
 /**
@@ -10,5 +9,8 @@ import com.me2me.common.web.Response;
  */
 public interface SearchService {
 
+    Response search(String keyword,int page,int pageSize);
+
+    Response assistant(String keyword);
 
 }
