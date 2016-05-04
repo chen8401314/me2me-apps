@@ -34,7 +34,7 @@ public class ActivityMybatisDao {
     public List<ActivityWithBLOBs> showActivity(int page, int pageSize,String keyword) {
         ActivityExample example = new ActivityExample();
         ActivityExample.Criteria criteria = example.createCriteria();
-        criteria.andStatusEqualTo(0);
+//        criteria.andStatusEqualTo(0);
         if(!Strings.isNullOrEmpty(keyword)){
             criteria.andActivityTitleLike("%"+keyword+"%");
         }
@@ -66,5 +66,13 @@ public class ActivityMybatisDao {
         criteria.andStatusEqualTo(Specification.ActivityStatus.NORMAL.index);
         criteria.andIdLessThan(sinceId);
         return activityMapper.selectByExampleWithBLOBs(example);
+    }
+
+    public ActivityWithBLOBs getActivityById(long id) {
+        return activityMapper.selectByPrimaryKey(id);
+    }
+
+    public void updateActivity(ActivityWithBLOBs activity) {
+        activityMapper.updateByPrimaryKeySelective(activity);
     }
 }

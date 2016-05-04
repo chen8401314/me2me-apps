@@ -28,5 +28,9 @@ public interface ActivityService {
 
     Response getActivity(int sinceId);
 
+    ActivityWithBLOBs loadActivityById(long id);
+
+    void modifyActivity(ActivityWithBLOBs activity);
+
 
 }

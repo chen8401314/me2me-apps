@@ -1,6 +1,7 @@
 package com.me2me.content.service;
 
 import com.google.common.collect.Lists;
+import com.me2me.activity.model.Activity;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.Constant;
@@ -943,9 +944,21 @@ public class ContentServiceImpl implements ContentService {
             optionContent(action,id);
         }else if(optionAction==2){
             // 活动操作
-            // OptionUGC(action, id);
+            optionActivity(action, id);
         }
-        return null;
+        return Response.success();
+    }
+
+    private void optionActivity(int action, long id) {
+        ActivityWithBLOBs activity = activityService.loadActivityById(id);
+        if(action==1){
+            // UGC置热
+            activity.setStatus(0);
+        }else{
+            // 取消置热
+            activity.setStatus(1);
+        }
+        activityService.modifyActivity(activity);
     }
 
     private void optionContent(int action, long id) {

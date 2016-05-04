@@ -4,9 +4,11 @@ import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dto.CreateActivityDto;
 import com.me2me.activity.dto.ShowActivitiesDto;
 import com.me2me.activity.dto.ShowActivityDto;
+import com.me2me.activity.model.Activity;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
+import com.me2me.common.web.Specification;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +41,7 @@ public class ActivityServiceImpl implements ActivityService {
         activity.setIssue(createActivityDto.getIssue());
         activity.setActivityContent(createActivityDto.getContent());
         activity.setUid(createActivityDto.getUid());
+        activity.setStatus(Specification.ActivityStatus.STOP.index);
         activityMybatisDao.saveActivity(activity);
         return Response.success(200,"活动创建成功！");
     }
@@ -56,6 +59,7 @@ public class ActivityServiceImpl implements ActivityService {
             element.setHashTitle(activity.getActivityHashTitle());
             element.setContent(activity.getActivityContent());
             element.setTitle(activity.getActivityTitle());
+            element.setStatus(activity.getStatus());
             showActivityDto.getResult().add(element);
         }
         showActivityDto.setTotal(activityMybatisDao.total(keyword));
@@ -84,5 +88,15 @@ public class ActivityServiceImpl implements ActivityService {
             showActivitiesDto.getActivityData().add(activityElement);
         }
         return Response.success(showActivitiesDto);
+    }
+
+    @Override
+    public ActivityWithBLOBs loadActivityById(long id) {
+        return activityMybatisDao.getActivityById(id);
+    }
+
+    @Override
+    public void modifyActivity(ActivityWithBLOBs activity) {
+        activityMybatisDao.updateActivity(activity);
     }
 }
