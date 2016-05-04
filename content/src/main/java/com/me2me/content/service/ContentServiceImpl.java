@@ -948,6 +948,12 @@ public class ContentServiceImpl implements ContentService {
         return null;
     }
 
+    @Override
+    public Content getContentByTopicId(long topicId) {
+        List<Content> list = contentMybatisDao.getContentByTopicId(topicId);
+        return (list != null && list.size() > 0) ? list.get(0) : null;
+    }
+
     private void optionContent(int action, long id) {
         if(action==1){
             // UGC置热
