@@ -135,7 +135,9 @@ public interface Specification {
 
         NORMAL("正常",0),
 
-        DELETE("删除",1);
+        DELETE("删除",1),
+
+        RECOVER("回收",2);
 
         public final String name;
         public final int index;

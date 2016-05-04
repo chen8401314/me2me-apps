@@ -674,6 +674,7 @@ public class ContentServiceImpl implements ContentService {
         content.setTitle(contentDto.getTitle());
         content.setType(contentDto.getType());
         content.setContentType(contentDto.getContentType());
+        content.setStatus(Specification.ContentStatus.RECOVER.index);
         contentMybatisDao.createContent(content);
         if(!StringUtils.isEmpty(contentDto.getFeeling()) && contentDto.getFeeling().contains(";")){
             String[] tags = contentDto.getFeeling().split(";");
@@ -698,10 +699,11 @@ public class ContentServiceImpl implements ContentService {
         createContentSuccessDto.setContentType(c.getContentType());
         createContentSuccessDto.setForwardCid(c.getForwardCid());
         createContentSuccessDto.setCoverImage(c.getConverImage());
-        // 内容自动加精
-        HighQualityContent hdc = new HighQualityContent();
-        hdc.setCid(c.getId());
-        contentMybatisDao.createHighQualityContent(hdc);
+
+//        // 内容自动加精
+//        HighQualityContent hdc = new HighQualityContent();
+//        hdc.setCid(c.getId());
+//        contentMybatisDao.createHighQualityContent(hdc);
         return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
     }
 
@@ -978,12 +980,9 @@ public class ContentServiceImpl implements ContentService {
         // pgc 1
         // ugc 0
         // 活动 2
-        if(optionAction==0){
+        if(optionAction==0 || optionAction==1){
             // UGC操作
-            OptionUGC(action,id);
-        }else if(optionAction==1){
-            // PGC操作
-            // OptionUGC(action, id);
+            optionContent(action,id);
         }else if(optionAction==2){
             // 活动操作
             // OptionUGC(action, id);
@@ -991,7 +990,7 @@ public class ContentServiceImpl implements ContentService {
         return null;
     }
 
-    private void OptionUGC(int action, long id) {
+    private void optionContent(int action, long id) {
         if(action==1){
             // UGC置热
             HighQualityContent highQualityContent = new HighQualityContent();
@@ -1003,4 +1002,5 @@ public class ContentServiceImpl implements ContentService {
             contentMybatisDao.removeHighQualityContent(temp.getId());
         }
     }
+
 }
