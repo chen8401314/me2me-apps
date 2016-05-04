@@ -2,6 +2,7 @@ package com.me2me.content.service;
 
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.*;
+import com.me2me.content.model.Content;
 
 import java.util.List;
 import java.util.Map;
@@ -131,4 +132,6 @@ public interface ContentService {
     Response createReview(ReviewDto reviewDto);
 
     Response option(long id, int optionAction, int action);
+
+    Content getContentByTopicId(long topicId);
 }

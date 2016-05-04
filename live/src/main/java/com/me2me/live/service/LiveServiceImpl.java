@@ -6,6 +6,7 @@ import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentDto;
 import com.me2me.content.dto.WriteTagDto;
+import com.me2me.content.model.Content;
 import com.me2me.content.service.ContentService;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.*;
@@ -167,12 +168,11 @@ public class LiveServiceImpl implements LiveService {
             }else{
                 showTopicElement.setLastContentType(-1);
             }
-            LiveCpi cpi = liveMybatisDao.getLiveCpi(topic.getId());
-            if(cpi != null) {
-                showTopicElement.setForwardCount(cpi.getForwardCount());
-                showTopicElement.setTagCount(cpi.getTagCount());
-                showTopicElement.setPersonCount(cpi.getPersonCount());
-                showTopicElement.setReviewCount(cpi.getReviewCount());
+            Content content = contentService.getContentByTopicId(topic.getId());
+            if(content != null) {
+                showTopicElement.setLikeCount(content.getLikeCount());
+                showTopicElement.setPersonCount(content.getPersonCount());
+                showTopicElement.setReviewCount(content.getReviewCount());
             }
             //判断是否收藏了
             LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid,topic.getId());

@@ -325,4 +325,12 @@ public class ContentMybatisDao {
     public void createReview(ContentReview review){
         contentReviewMapper.insert(review);
     }
+
+    public List<Content> getContentByTopicId(long topicId){
+        ContentExample example = new ContentExample();
+        ContentExample.Criteria criteria =example.createCriteria();
+        criteria.andForwardCidEqualTo(topicId);
+        criteria.andTypeEqualTo(Specification.ArticleType.LIVE.index);
+        return contentMapper.selectByExample(example);
+    }
 }
