@@ -330,4 +330,11 @@ public class UserMybatisDao {
         criteria.andNickNameEqualTo(nickName);
         return userProfileMapper.selectByExample(example);
     }
+
+    public List<UserFollow> getUserFollow(long uid){
+        UserFollowExample example = new UserFollowExample();
+        UserFollowExample.Criteria criteria =  example.createCriteria();
+        criteria.andSourceUidEqualTo(uid);
+        return userFollowMapper.selectByExample(example);
+    }
 }

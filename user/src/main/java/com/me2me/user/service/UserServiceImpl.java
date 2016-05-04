@@ -1,5 +1,6 @@
 package com.me2me.user.service;
 
+import com.google.common.collect.Lists;
 import com.me2me.common.Constant;
 import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.sms.YunXinSms;
@@ -554,5 +555,16 @@ public class UserServiceImpl implements UserService {
             return true;
         }
     }
+
+    @Override
+    public List<Long> getFollowList(long uid) {
+        List<Long> result = Lists.newArrayList();
+        List<UserFollow> list = userMybatisDao.getUserFollow(uid);
+        for(UserFollow userFollow :list){
+            result.add(userFollow.getTargetUid());
+        }
+        return  result;
+    }
+
 
 }

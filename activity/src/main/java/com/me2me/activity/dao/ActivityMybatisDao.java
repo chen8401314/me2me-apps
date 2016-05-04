@@ -56,7 +56,15 @@ public class ActivityMybatisDao {
         ActivityExample example = new ActivityExample();
         ActivityExample.Criteria criteria = example.createCriteria();
         criteria.andStatusEqualTo(Specification.ActivityStatus.NORMAL.index);
-        example.setOrderByClause(" issue desc limit 5 ");
+        example.setOrderByClause(" issue desc limit 4 ");
+        return activityMapper.selectByExampleWithBLOBs(example);
+    }
+
+    public List<ActivityWithBLOBs> getActivity(long sinceId){
+        ActivityExample example = new ActivityExample();
+        ActivityExample.Criteria criteria = example.createCriteria();
+        criteria.andStatusEqualTo(Specification.ActivityStatus.NORMAL.index);
+        criteria.andIdLessThan(sinceId);
         return activityMapper.selectByExampleWithBLOBs(example);
     }
 }

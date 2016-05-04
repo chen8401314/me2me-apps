@@ -124,4 +124,10 @@ public interface ContentService {
 
     Response getHottest(int sinceId,long uid);
 
+    Response getNewest(int sinceId,long uid);
+
+    Response getAttention(int sinceId,long uid);
+
+    void createReview(ReviewDto reviewDto);
+
 }

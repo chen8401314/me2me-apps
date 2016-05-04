@@ -14,17 +14,17 @@ import java.util.List;
  * Time :18:04
  */
 @Data
-public class HottestDto implements BaseEntity {
+public class ShowHottestDto implements BaseEntity {
 
     //活动
-    private List<ActivityElement> ActivityData = Lists.newArrayList();
+    private List<ActivityElement> activityData = Lists.newArrayList();
 
     public static ActivityElement createActivityElement(){
         return new ActivityElement();
     }
 
     //小编选的系统文章，小编选的用户文章，小编选的用户直播
-    private List<HottestContentElement> HottestContentData = Lists.newArrayList();
+    private List<HottestContentElement> hottestContentData = Lists.newArrayList();
 
     public static HottestContentElement createHottestContentElement(){
         return new HottestContentElement();

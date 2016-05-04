@@ -1,14 +1,13 @@
 package com.me2me.web;
 
-import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
+import com.me2me.common.web.ResponseStatus;
 import com.me2me.content.dto.ContentDto;
 import com.me2me.content.dto.LikeDto;
+import com.me2me.content.dto.ReviewDto;
 import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.service.ContentService;
 import com.me2me.content.service.MobileArticleService;
-import com.me2me.user.dto.*;
-import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -17,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -246,6 +243,21 @@ public class Contents extends BaseController {
     public Response contentLike(ContentLikeRequest request){
 
         return null;
+    }
+
+    /**
+     * 文章评论接口
+     * @return
+     */
+    @RequestMapping(value = "/review",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response review(ReviewRequest request){
+        ReviewDto reviewDto = new ReviewDto();
+        reviewDto.setUid(request.getUid());
+        reviewDto.setCid(request.getCid());
+        reviewDto.setReview(request.getReview());
+        contentService.createReview(reviewDto);
+       return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
     }
 
 

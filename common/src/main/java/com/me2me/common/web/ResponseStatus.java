@@ -103,6 +103,8 @@ public enum  ResponseStatus {
 
     CONTENT_IS_PUBLIC_MODIFY_SUCCESS("内容权限修改成功","content is public modify success",20045),
 
+    CONTENT_REVIEW_SUCCESS("评论成功","content review success",20046),
+
 
 
 

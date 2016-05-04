@@ -1,13 +1,12 @@
 package com.me2me.web;
 
+import com.me2me.activity.service.ActivityService;
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.EditorContentDto;
 import com.me2me.content.service.ContentService;
 import com.me2me.user.dto.UserSignUpDto;
 import com.me2me.user.service.UserService;
-import com.me2me.web.request.BindAccountRequest;
-import com.me2me.web.request.HottestRequest;
-import com.me2me.web.request.ShowContentsRequest;
+import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -25,10 +24,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class Home extends BaseController {
 
     @Autowired
-    private UserService userService;
+    private ContentService contentService;
 
     @Autowired
-    private ContentService contentService;
+    private ActivityService activityService;
 
     /**
      * 最热（小编发布，活动轮播位）
@@ -44,35 +43,56 @@ public class Home extends BaseController {
     }
 
     /**
+     * 活动列表
+     * @return
+     */
+    @RequestMapping(value = "/activity",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response activity(ActivityRequest request){
+        if(request.getSinceId() == -1){
+            request.setSinceId(Integer.MAX_VALUE);
+        }
+       return activityService.getActivity(request.getSinceId());
+    }
+
+
+
+    /**
      * 专属（老徐那边的数据接口）
      * @return
      */
     @RequestMapping(value = "/special",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response special(ShowContentsRequest showContentsRequest){
+    public Response special(ShowContentsRequest request){
         return null;
     }
 
     /**
-     * 最新（原来的广场）
-     * @param showContentsRequest
+     * 用户日记，直播，活动
+     * @param request
      * @return
      */
     @RequestMapping(value = "/newest",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response newest(ShowContentsRequest showContentsRequest){
-        return null;
+    public Response newest(NewestRequest request){
+        if(request.getSinceId() == -1){
+            request.setSinceId(Integer.MAX_VALUE);
+        }
+        return contentService.getNewest(request.getSinceId(),request.getUid());
     }
 
     /**
      * 关注（我关注的人，包含直播和ugc）
-     * @param showContentsRequest
+     * @param request
      * @return
      */
     @RequestMapping(value = "/attention ",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response attention (ShowContentsRequest showContentsRequest){
-        return null;
+    public Response attention (AttentionRequest request){
+        if(request.getSinceId() == -1){
+            request.setSinceId(Integer.MAX_VALUE);
+        }
+        return contentService.getAttention(request.getSinceId(),request.getUid());
     }
 
 

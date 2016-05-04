@@ -1,11 +1,13 @@
 package com.me2me.content.dao;
 
 import com.google.common.collect.Maps;
+import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.*;
 import com.me2me.content.mapper.*;
 import com.me2me.content.model.*;
+import com.me2me.user.model.UserFollow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -42,6 +44,12 @@ public class ContentMybatisDao {
 
     @Autowired
     private HighQualityContentMapper highQualityContentMapper;
+
+    @Autowired
+    private ContentTagsDetailsMapper contentTagsDetailsMapper;
+
+    @Autowired
+    private ContentReviewMapper contentReviewMapper;
 
     public List<Content> loadSquareData(int sinceId){
         return contentMapper.loadSquareData(sinceId);
@@ -261,5 +269,35 @@ public class ContentMybatisDao {
         ContentImageExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(cid);
         return contentImageMapper.countByExample(example);
+    }
+
+    public List<Content> getNewest(int sinceId){
+        return contentMapper.loadNewestContent(sinceId);
+    }
+
+    public List<Content> getAttention(long sinceId , List<Long> userFollows){
+        ContentExample example = new ContentExample();
+        ContentExample.Criteria criteria = example.createCriteria();
+        criteria.andStatusNotEqualTo(Specification.ContentStatus.DELETE.index);
+        if(userFollows != null && userFollows.size() >0) {
+            criteria.andUidIn(userFollows);
+        }else{
+            criteria.andUidEqualTo(-1L);
+        }
+        criteria.andRightsEqualTo(Specification.ContentRights.EVERY.index);
+        criteria.andIdLessThan(sinceId);
+        example.setOrderByClause(" id desc limit 10 ");
+        return  contentMapper.selectByExampleWithBLOBs(example);
+
+
+    }
+
+
+    public void createContentTagsDetails(ContentTagsDetails contentTagsDetails){
+        contentTagsDetailsMapper.insert(contentTagsDetails);
+    }
+
+    public void createReview(ContentReview review){
+        contentReviewMapper.insert(review);
     }
 }
