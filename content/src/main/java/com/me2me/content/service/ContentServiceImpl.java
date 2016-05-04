@@ -10,9 +10,7 @@ import com.me2me.common.web.Specification;
 import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.*;
-import com.me2me.user.dto.FollowParamsDto;
 import com.me2me.user.dto.UserInfoDto;
-import com.me2me.user.model.UserFollow;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
@@ -105,14 +103,14 @@ public class ContentServiceImpl implements ContentService {
                 LikeDto likeDto = new LikeDto();
                 likeDto.setCid(loadAllFeelingDto.getCid());
                 likeDto.setUid(loadAllFeelingDto.getUid());
-                likeDto.setCustomerId(uid);
-                likeDto.setTid(loadAllFeelingDto.getTid());
+                //likeDto.setCustomerId(uid);
+                //likeDto.setTid(loadAllFeelingDto.getTid());
                 ContentUserLikes contentUserLikes = contentMybatisDao.getContentUserLike(likeDto);
                 ShowContentListDto.ContentDataElement.TagElement tagElement = contentDataElement.createElement();
                 if (contentUserLikes == null) {
                     tagElement.setIsLike(Specification.IsLike.UNLIKE.index);
                 } else {
-                    tagElement.setIsLike(Specification.IsLike.ISLIKE.index);
+                    tagElement.setIsLike(Specification.IsLike.LIKE.index);
                 }
                 int likeCount = contentMybatisDao.getContentUserLikesCount(content.getId(), loadAllFeelingDto.getTid());
                 tagElement.setLikeCount(likeCount);
@@ -194,14 +192,14 @@ public class ContentServiceImpl implements ContentService {
                 LikeDto likeDto = new LikeDto();
                 likeDto.setCid(loadAllFeelingDto.getCid());
                 likeDto.setUid(loadAllFeelingDto.getUid());
-                likeDto.setCustomerId(uid);
-                likeDto.setTid(loadAllFeelingDto.getTid());
+//                likeDto.setCustomerId(uid);
+//                likeDto.setTid(loadAllFeelingDto.getTid());
                 ContentUserLikes contentUserLikes = contentMybatisDao.getContentUserLike(likeDto);
                 SquareDataDto.SquareDataElement.TagElement tagElement = squareDataElement.createElement();
                 if (contentUserLikes == null) {
                     tagElement.setIsLike(Specification.IsLike.UNLIKE.index);
                 } else {
-                    tagElement.setIsLike(Specification.IsLike.ISLIKE.index);
+                    tagElement.setIsLike(Specification.IsLike.LIKE.index);
                 }
                 int likeCount = contentMybatisDao.getContentUserLikesCount(content.getId(), loadAllFeelingDto.getTid());
                 tagElement.setLikeCount(likeCount);
@@ -243,10 +241,6 @@ public class ContentServiceImpl implements ContentService {
         content.setFeeling(contentDto.getFeeling());
         content.setTitle(contentDto.getTitle());
         content.setFeeling(contentDto.getFeeling());
-        //ContentTags contentTags = new ContentTags();
-        //contentTags.setTag(contentDto.getFeeling());
-        //contentMybatisDao.createTag(contentTags);
-        //contentTags = contentMybatisDao.getContentTags(content.getFeeling());
         if(!StringUtils.isEmpty(contentDto.getImageUrls())){
             String[] images = contentDto.getImageUrls().split(";");
             // 设置封面
@@ -265,14 +259,13 @@ public class ContentServiceImpl implements ContentService {
             content.setForwardTitle(forwardContent.getTitle());
             content.setThumbnail(forwardContent.getConverImage());
         }else if(content.getType() == Specification.ArticleType.LIVE.index){
-            long forwardCid = contentDto.getForwardCid();
-            content.setForwardCid(forwardCid);
-
+            content.setForwardCid(contentDto.getForwardCid());
         }
-
         content.setContentType(contentDto.getContentType());
         content.setRights(contentDto.getRights());
+        //保存内容
         contentMybatisDao.createContent(content);
+        //创建标签
         createTag(contentDto,content);
         Content c = contentMybatisDao.getContentById(content.getId());
         if(!StringUtils.isEmpty(contentDto.getImageUrls())){
@@ -301,27 +294,6 @@ public class ContentServiceImpl implements ContentService {
         }else{
             createContentSuccessDto.setCoverImage("");
         }
-//       createContentSuccessDto.setTid(contentTags.getId());
-        //创建标签的点赞数量
-//        ContentUserLikesCount contentUserLikesCount = new ContentUserLikesCount();
-//        contentUserLikesCount.setCid(content.getId());
-//        contentUserLikesCount.setTid(contentTags.getId());
-//        contentUserLikesCount.setLikecount(0);
-//        contentMybatisDao.addContentUserLikesCount(contentUserLikesCount);
-
-        //content_tag_likes
-//        ContentTagLikes contentTagLikes = new ContentTagLikes();
-//        contentTagLikes.setUid(contentDto.getUid());
-//        if(content.getType() == Specification.ArticleType.ORIGIN.index){
-//            contentTagLikes.setCid(content.getId());
-//        }else if(content.getType() == Specification.ArticleType.FORWARD.index){
-//            contentTagLikes.setCid(contentDto.getForwardCid());
-//        }else {
-//            contentTagLikes.setCid(content.getId());
-//        }
-//        contentTagLikes.setTagId(contentTags.getId());
-//        contentMybatisDao.createContentTagLikes(contentTagLikes);
-        //content_tag_likes
         return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
 }
 
@@ -331,6 +303,71 @@ public class ContentServiceImpl implements ContentService {
      * @return
      */
     @Override
+    public Response like(LikeDto likeDto) {
+        Content content = contentMybatisDao.getContentById(likeDto.getCid());
+        if(content == null){
+            return Response.failure(ResponseStatus.CONTENT_LIKES_ERROR.status,ResponseStatus.CONTENT_LIKES_ERROR.message);
+        }else{
+            //取消点赞
+            if(likeDto.getAction() == Specification.IsLike.LIKE.index){
+                content.setLikeCount(content.getLikeCount() -1);
+                contentMybatisDao.updateContentById(content);
+                return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
+            }else{
+                content.setLikeCount(content.getLikeCount() +1);
+                contentMybatisDao.updateContentById(content);
+                remind(content,likeDto.getUid(),Specification.UserNoticeType.LIKE.index);
+                return Response.success(ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.message);
+            }
+        }
+    }
+
+    private void remind(Content content ,long uid ,int type){
+        UserProfile userProfile = userService.getUserProfileByUid(uid);
+        UserProfile customerProfile = userService.getUserProfileByUid(content.getUid());
+        ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
+        UserNotice userNotice = new UserNotice();
+        userNotice.setFromNickName(userProfile.getNickName());
+        userNotice.setFromAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
+        userNotice.setFromUid(userProfile.getUid());
+        userNotice.setToNickName(customerProfile.getNickName());
+        userNotice.setNoticeType(type);
+        userNotice.setReadStatus(userNotice.getReadStatus());
+        userNotice.setCid(content.getId());
+        if(contentImage != null){
+            userNotice.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
+            userNotice.setSummary("");
+        }else{
+            userNotice.setCoverImage("");
+            if(content.getContent().length() > 50) {
+                userNotice.setSummary(content.getContent().substring(0,50));
+            }else{
+                userNotice.setSummary(content.getContent());
+            }
+
+        }
+        userNotice.setToUid(customerProfile.getUid());
+        userNotice.setLikeCount(0);
+        userNotice.setReadStatus(type);
+        userService.createUserNotice(userNotice);
+        UserTips userTips = new UserTips();
+        userTips.setUid(content.getUid());
+        userTips.setType(Specification.UserTipsType.LIKE.index);
+        UserTips tips  =  userService.getUserTips(userTips);
+        if(tips == null){
+            userTips.setCount(1);
+            userService.createUserTips(userTips);
+        }else{
+            userTips.setCount(tips.getCount()+1);
+            userService.modifyUserTips(userTips);
+        }
+    }
+
+    /**
+     * 点赞
+     * @return
+     */
+  /*  @Override
     public Response like(LikeDto likeDto) {
         int addCount = 1 ;
         ContentUserLikes c = contentMybatisDao.getContentUserLike(likeDto);
@@ -409,60 +446,20 @@ public class ContentServiceImpl implements ContentService {
         }else{
             return Response.success(ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.status, ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.message);
         }
-        }
+    }*/
 
     @Override
     public Response writeTag(WriteTagDto writeTagDto) {
         ContentTags contentTags = new ContentTags();
         contentTags.setTag(writeTagDto.getTag());
         contentMybatisDao.createTag(contentTags);
-        contentTags = contentMybatisDao.getContentTags(writeTagDto.getTag());
-        ContentTagLikes contentTagLikes = new ContentTagLikes();
-        contentTagLikes.setUid(writeTagDto.getUid());
-        contentTagLikes.setCid(writeTagDto.getCid());
-        contentTagLikes.setTagId(contentTags.getId());
-        contentMybatisDao.createContentTagLikes(contentTagLikes);
-        UserProfile userProfile = userService.getUserProfileByUid(writeTagDto.getUid());
-        UserProfile customerProfile = userService.getUserProfileByUid(writeTagDto.getCustomerId());
+        ContentTagsDetails contentTagsDetails = new ContentTagsDetails();
+        contentTagsDetails.setTid(contentTags.getId());
+        contentTagsDetails.setCid(writeTagDto.getCid());
+        contentMybatisDao.createContentTagsDetails(contentTagsDetails);
         Content content = contentMybatisDao.getContentById(writeTagDto.getCid());
-        ContentImage contentImage = contentMybatisDao.getCoverImages(writeTagDto.getCid());
-        UserNotice userNotice = new UserNotice();
-        userNotice.setFromNickName(userProfile.getNickName());
-        userNotice.setTag(writeTagDto.getTag());
-        userNotice.setFromAvatar(userProfile.getAvatar());
-        userNotice.setFromUid(userProfile.getUid());
-        userNotice.setToNickName(customerProfile.getNickName());
-        userNotice.setNoticeType(Specification.UserNoticeType.TAG.index);
-        userNotice.setReadStatus(userNotice.getReadStatus());
-        userNotice.setCid(writeTagDto.getCid());
-        if(contentImage != null){
-            userNotice.setCoverImage(contentImage.getImage());
-        }else{
-            userNotice.setSummary(content.getContent());
-        }
-        userNotice.setToUid(customerProfile.getUid());
-        userNotice.setLikeCount(0);
-        userNotice.setReadStatus(Specification.NoticeReadStatus.UNREAD.index);
-
-        userService.createUserNotice(userNotice);
-        UserTips userTips = new UserTips();
-        userTips.setUid(writeTagDto.getCustomerId());
-        userTips.setType(Specification.UserTipsType.LIKE.index);
-        UserTips tips  = userService.getUserTips(userTips);
-        if(tips == null){
-            userTips.setCount(1);
-            userService.createUserTips(userTips);
-        }else{
-            userTips.setCount(tips.getCount()+1);
-            userService.modifyUserTips(userTips);
-        }
-        //贴标签时候写标签点赞数量
-        ContentUserLikesCount contentUserLikesCount = new ContentUserLikesCount();
-        contentUserLikesCount.setCid(writeTagDto.getCid());
-        contentUserLikesCount.setTid(contentTags.getId());
-        contentUserLikesCount.setLikecount(0);
-        contentMybatisDao.addContentUserLikesCount(contentUserLikesCount);
-
+        //添加贴标签提醒
+        remind(content,writeTagDto.getUid(),Specification.UserNoticeType.TAG.index);
         //打标签的时候文章热度+1
         content.setHotValue(content.getHotValue()+1);
         contentMybatisDao.updateContentById(content);
@@ -500,14 +497,10 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setContent(content.getContent());
         contentDetailDto.setContentType(content.getContentType());
         contentDetailDto.setTitle(content.getTitle());
-        contentDetailDto.setCoverImage(content.getConverImage());
-       /* List<ContentImage> contentImageList = contentMybatisDao.getContentImages(content.getId());
-        for (ContentImage contentImage : contentImageList){
-            if(contentImage.getCover() == Specification.CoverImageType.COVER.index){
-                contentDetailDto.setCoverImage(Constant.QINIU_DOMAIN  + "/" + contentImage.getImage());
-                break;
-            }
-        }*/
+        String cover = content.getConverImage();
+        if(!StringUtils.isEmpty(cover)) {
+            contentDetailDto.setCoverImage(Constant.QINIU_DOMAIN  + "/" + content.getConverImage());
+        }
         UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
         contentDetailDto.setNickName(userProfile.getNickName());
         contentDetailDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
@@ -515,45 +508,14 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setLikeCount(content.getLikeCount());
         contentDetailDto.setCreateTime(content.getCreateTime());
         contentDetailDto.setId(content.getId());
-        ContentTags contentTags = contentMybatisDao.getContentTags(content.getFeeling());
-        contentDetailDto.setTid(contentTags.getId());
-        LikeDto likeDto = new LikeDto();
-        likeDto.setTid(contentTags.getId());
-        likeDto.setUid(uid);
-        likeDto.setCid(content.getId());
-        ContentUserLikes contentUserLikes = contentMybatisDao.getContentUserLike(likeDto);
-        if(contentUserLikes == null) {
-            contentDetailDto.setIsLike(Specification.IsLike.UNLIKE.index);
-        }else{
-            contentDetailDto.setIsLike(Specification.IsLike.ISLIKE.index);
-        }
-        int likeCount = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTags.getId());
-        contentDetailDto.setLikeCount(likeCount);
-        List<LoadAllFeelingDto> list  = contentMybatisDao.loadAllFeeling(content.getId(),Integer.MAX_VALUE);
-        int i = 0;
-        for (LoadAllFeelingDto loadAllFeelingDto : list){
-            if(i > 4 ){
-                break;
-            }
+        // 获取感受标签前5条
+        List<ContentTagsDetails> list  = contentMybatisDao.getContentTagsDetails(content.getId(),Integer.MAX_VALUE);
+        for (ContentTagsDetails contentTagsDetails : list){
             ContentDetailDto.ContentTop5FeelingElement contentTop5FeelingElement = ContentDetailDto.createElement();
-            contentTop5FeelingElement.setTag(loadAllFeelingDto.getTag());
-            contentTop5FeelingElement.setTid(loadAllFeelingDto.getTid());
-            contentTop5FeelingElement.setCid(loadAllFeelingDto.getCid());
-            LikeDto like = new LikeDto();
-            like.setCid(contentTop5FeelingElement.getCid());
-            like.setTid(contentTop5FeelingElement.getTid());
-            like.setUid(uid);
-            ContentUserLikes contentUserLike = contentMybatisDao.getContentUserLike(like);
-            if(contentUserLike == null) {
-                contentTop5FeelingElement.setIsLike(Specification.IsLike.UNLIKE.index);
-            }else{
-                contentTop5FeelingElement.setIsLike(Specification.IsLike.ISLIKE.index);
-            }
-            int count = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTop5FeelingElement.getTid());
-            contentTop5FeelingElement.setLikeCount(count);
-            contentTop5FeelingElement.setUid(loadAllFeelingDto.getCid());
+            ContentTags contentTags = contentMybatisDao.getContentTagsById(contentTagsDetails.getTid());
+            contentTop5FeelingElement.setTag(contentTags.getTag());
             contentDetailDto.getTags().add(contentTop5FeelingElement);
-            i++;
+
         }
         return Response.success(contentDetailDto);
     }
@@ -642,8 +604,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setCid(content.getId());
             contentElement.setCreateTime(content.getCreateTime());
             contentElement.setHotValue(content.getHotValue());
-            contentElement.setLikeCount(0);
-            contentElement.setHotValue(content.getHotValue());
+            contentElement.setLikeCount(content.getLikeCount());
             contentElement.setAuthorization(content.getAuthorization());
             contentElement.setContentType(content.getContentType());
             contentElement.setForwardCid(content.getForwardCid());
@@ -671,25 +632,14 @@ public class ContentServiceImpl implements ContentService {
         Content content = new Content();
         content.setUid(contentDto.getUid());
         content.setContent(contentDto.getContent());
-        createTag(contentDto, content);
+        content.setFeeling(contentDto.getFeeling());
         content.setConverImage(contentDto.getImageUrls());
         content.setTitle(contentDto.getTitle());
         content.setType(contentDto.getType());
         content.setContentType(contentDto.getContentType());
         contentMybatisDao.createContent(content);
-        if(!StringUtils.isEmpty(contentDto.getFeeling()) && contentDto.getFeeling().contains(";")){
-            String[] tags = contentDto.getFeeling().split(";");
-            for(String t : tags) {
-                if(!t.equals(tags[0])){
-                    ContentTagLikes contentTagLikes = new ContentTagLikes();
-                    contentTagLikes.setUid(contentDto.getUid());
-                    contentTagLikes.setCid(content.getId());
-                    ContentTags contentTags = contentMybatisDao.getContentTags(t);
-                    contentTagLikes.setTagId(contentTags.getId());
-                    contentMybatisDao.createContentTagLikes(contentTagLikes);
-                }
-            }
-        }
+        //保存标签
+        createTag(contentDto, content);
         Content c = contentMybatisDao.getContentById(content.getId());
         createContentSuccessDto.setContent(c.getContent());
         createContentSuccessDto.setCreateTime(c.getCreateTime());
@@ -713,14 +663,9 @@ public class ContentServiceImpl implements ContentService {
             for(String t : tags) {
                 ContentTags contentTags = new ContentTags();
                 contentTags.setTag(t);
-                ContentTags tag = contentMybatisDao.getContentTags(t);
                 ContentTagsDetails contentTagsDetails = new ContentTagsDetails();
-                if(tag == null){
-                    contentMybatisDao.createTag(contentTags);
-                    contentTagsDetails.setTid(contentTags.getId());
-                }else{
-                    contentTagsDetails.setTid(tag.getId());
-                }
+                contentMybatisDao.createTag(contentTags);
+                contentTagsDetails.setTid(contentTags.getId());
                 contentTagsDetails.setCid(content.getId());
                 contentMybatisDao.createContentTagsDetails(contentTagsDetails);
             }
@@ -728,6 +673,10 @@ public class ContentServiceImpl implements ContentService {
             ContentTags contentTags = new ContentTags();
             contentTags.setTag(contentDto.getFeeling());
             contentMybatisDao.createTag(contentTags);
+            ContentTagsDetails contentTagsDetails = new ContentTagsDetails();
+            contentTagsDetails.setTid(contentTags.getId());
+            contentTagsDetails.setCid(content.getId());
+            contentMybatisDao.createContentTagsDetails(contentTagsDetails);
         }
     }
 
@@ -832,8 +781,8 @@ public class ContentServiceImpl implements ContentService {
             hottestContentElement.setCoverImage(content.getConverImage());
             hottestContentElement.setId(content.getId());
             hottestContentElement.setContent(content.getContent());
-            hottestContentElement.setLikeCount(0);
-            hottestContentElement.setReviewCount(0);
+            hottestContentElement.setLikeCount(content.getLikeCount());
+            hottestContentElement.setReviewCount(content.getReviewCount());
             hottestContentElement.setTitle(content.getTitle());
             //系统文章不包含，用户信息
             if(content.getType() == Specification.ArticleType.SYSTEM.index){
@@ -855,7 +804,7 @@ public class ContentServiceImpl implements ContentService {
                 int follow = userService.isFollow(content.getUid(),uid);
                 hottestContentElement.setIsFollow(follow);
 
-                hottestContentElement.setPersonCount(0);
+                hottestContentElement.setPersonCount(content.getPersonCount());
             //原生
             }else if(content.getType() == Specification.ArticleType.ORIGIN.index){
                 hottestContentElement.setUid(content.getUid());
@@ -909,9 +858,9 @@ public class ContentServiceImpl implements ContentService {
             //判断人员是否关注
             int follow = userService.isFollow(content.getUid(),uid);
             contentElement.setIsFollow(follow);
-            contentElement.setLikeCount(0);
-            contentElement.setReviewCount(0);
-            contentElement.setPersonCount(0);
+            contentElement.setLikeCount(content.getLikeCount());
+            contentElement.setReviewCount(content.getReviewCount());
+            contentElement.setPersonCount(content.getPersonCount());
             showNewestDto.getNewestData().add(contentElement);
         }
         return Response.success(showNewestDto);
@@ -949,20 +898,27 @@ public class ContentServiceImpl implements ContentService {
             //判断人员是否关注
             int follow = userService.isFollow(content.getUid(),uid);
             contentElement.setIsFollow(follow);
-            contentElement.setLikeCount(0);
-            contentElement.setReviewCount(0);
-            contentElement.setPersonCount(0);
+            contentElement.setLikeCount(content.getLikeCount());
+            contentElement.setReviewCount(content.getReviewCount());
+            contentElement.setPersonCount(content.getPersonCount());
             showAttentionDto.getAttentionData().add(contentElement);
         }
         return Response.success(showAttentionDto);
     }
 
     @Override
-    public void createReview(ReviewDto reviewDto) {
+    public Response createReview(ReviewDto reviewDto) {
         ContentReview review = new ContentReview();
         review.setReview(reviewDto.getReview());
         review.setCid(reviewDto.getCid());
         review.setUid(reviewDto.getUid());
         contentMybatisDao.createReview(review);
+        Content content = contentMybatisDao.getContentById(reviewDto.getCid());
+        //更新评论数量
+        content.setReviewCount(content.getReviewCount() +1);
+        contentMybatisDao.updateContentById(content);
+        //添加提醒
+        remind(content,reviewDto.getUid(),Specification.UserNoticeType.REVIEW.index);
+        return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
     }
 }

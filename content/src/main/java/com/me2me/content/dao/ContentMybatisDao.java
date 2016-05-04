@@ -80,7 +80,7 @@ public class ContentMybatisDao {
         ContentUserLikesExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(likeDto.getCid());
         criteria.andUidEqualTo(likeDto.getUid());
-        criteria.andTagIdEqualTo(likeDto.getTid());
+        //criteria.andTagIdEqualTo(likeDto.getTid());
         List<ContentUserLikes> list = contentUserLikesMapper.selectByExample(example);
         return list.size() > 0 ? list.get(0) : null;
     }
@@ -100,6 +100,8 @@ public class ContentMybatisDao {
         List<ContentTags> list = contentTagsMapper.selectByExample(example);
         if(list == null ||list.size() ==0) {
             contentTagsMapper.insertSelective(contentTags);
+        }else{
+            contentTags.setId(list.get(0).getId());
         }
     }
     public void createContentTagLikes(ContentTagLikes contentTagLikes ){
@@ -129,6 +131,15 @@ public class ContentMybatisDao {
         map.put("sinceId",sinceId);
         List<LoadAllFeelingDto> result = contentUserLikesMapper.loadAllFeeling(map);
         return result;
+    }
+
+    public List<ContentTagsDetails> getContentTagsDetails(long cid , long sinceId) {
+        ContentTagsDetailsExample example = new ContentTagsDetailsExample();
+        ContentTagsDetailsExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(cid);
+        criteria.andIdLessThan(sinceId);
+        example.setOrderByClause(" create_time desc limit 5 ");
+        return contentTagsDetailsMapper.selectByExample(example);
     }
 
     public List<ContentImage> getContentImages(long cid){
@@ -291,7 +302,6 @@ public class ContentMybatisDao {
 
 
     }
-
 
     public void createContentTagsDetails(ContentTagsDetails contentTagsDetails){
         contentTagsDetailsMapper.insert(contentTagsDetails);

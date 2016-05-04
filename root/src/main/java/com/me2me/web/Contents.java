@@ -1,7 +1,6 @@
 package com.me2me.web;
 
 import com.me2me.common.web.Response;
-import com.me2me.common.web.ResponseStatus;
 import com.me2me.content.dto.ContentDto;
 import com.me2me.content.dto.LikeDto;
 import com.me2me.content.dto.ReviewDto;
@@ -33,7 +32,7 @@ public class Contents extends BaseController {
     private MobileArticleService mobileArticleService;
 
     /**
-     * 精选接口
+     * 精选接口(已废)
      * @return
      */
     @RequestMapping(value = "/highQuality",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
@@ -46,7 +45,7 @@ public class Contents extends BaseController {
     }
 
     /**
-     * 广场接口
+     * 广场接口(已废)
      * @return
      */
     @RequestMapping(value = "/square",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
@@ -90,12 +89,11 @@ public class Contents extends BaseController {
      */
     @RequestMapping(value = "/likes",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response publish(LikeRequest request){
+    public Response likes(LikeRequest request){
         LikeDto likeDto = new LikeDto();
         likeDto.setUid(request.getUid());
         likeDto.setCid(request.getCid());
-        likeDto.setTid(request.getTid());
-        likeDto.setCustomerId(request.getCustomerId());
+        likeDto.setAction(request.getAction());
         return contentService.like(likeDto);
     }
 
@@ -125,7 +123,7 @@ public class Contents extends BaseController {
     }
 
     /**
-     * 用户发布列表接口
+     * 用户发布列表接口（已废）
      * @return
      */
     @RequestMapping(value = "/myPublish",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
@@ -149,7 +147,7 @@ public class Contents extends BaseController {
     }
 
     /**
-     * 感受列表
+     * 感受列表（已废）
      * @return
      */
     @RequestMapping(value = "/getContentFeeling",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
@@ -174,7 +172,7 @@ public class Contents extends BaseController {
 
 
     /**
-     * 小编精选
+     * 小编精选(已废)
      * @param request
      * @return
      */
@@ -188,7 +186,7 @@ public class Contents extends BaseController {
     }
 
     /**
-     * 精选首页
+     * 精选首页(已废)
      * @param request
      * @return
      */
@@ -235,17 +233,6 @@ public class Contents extends BaseController {
     }
 
     /**
-     * 文章点赞
-     * @return
-     */
-    @RequestMapping(value = "/contentLike",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public Response contentLike(ContentLikeRequest request){
-
-        return null;
-    }
-
-    /**
      * 文章评论接口
      * @return
      */
@@ -256,8 +243,7 @@ public class Contents extends BaseController {
         reviewDto.setUid(request.getUid());
         reviewDto.setCid(request.getCid());
         reviewDto.setReview(request.getReview());
-        contentService.createReview(reviewDto);
-       return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
+        return contentService.createReview(reviewDto);
     }
 
 

@@ -152,7 +152,9 @@ public interface Specification {
 
         TAG("贴标签",0),
 
-        LIKE("点赞",1);
+        LIKE("点赞",1),
+
+        REVIEW("点赞",2);
 
         public final String name;
         public final int index;
@@ -218,9 +220,9 @@ public interface Specification {
      */
     enum IsLike{
 
-        UNLIKE("为点赞",0),
+        UNLIKE("未点赞",0),
 
-        ISLIKE("点赞",1);
+        LIKE("点赞",1);
 
 
         public final String name;

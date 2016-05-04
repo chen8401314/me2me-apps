@@ -16,8 +16,7 @@ public class LikeDto implements BaseEntity {
 
     private long uid;
 
-    private long tid;
+    private int action;
 
-    private long customerId;
 
 }
