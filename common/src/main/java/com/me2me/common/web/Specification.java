@@ -340,4 +340,21 @@ public interface Specification {
         }
     }
 
+    /**
+     * 用户状态
+     */
+    public  enum ContentRights{
+
+        SELF("仅自己",0),
+
+        EVERY("所有人",1);
+
+        public final String name;
+        public final int index;
+        ContentRights(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
 }

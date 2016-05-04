@@ -7,6 +7,7 @@ import com.me2me.common.web.Specification;
 import com.me2me.content.dto.*;
 import com.me2me.content.mapper.*;
 import com.me2me.content.model.*;
+import com.me2me.user.model.UserFollow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -274,8 +275,19 @@ public class ContentMybatisDao {
         return contentMapper.loadNewestContent(sinceId);
     }
 
-    public List<Content> getAttention(int sinceId){
-        return  null;
+    public List<Content> getAttention(long sinceId , List<Long> userFollows){
+        ContentExample example = new ContentExample();
+        ContentExample.Criteria criteria = example.createCriteria();
+        criteria.andStatusNotEqualTo(Specification.ContentStatus.DELETE.index);
+        if(userFollows != null && userFollows.size() >0) {
+            criteria.andUidIn(userFollows);
+        }else{
+            criteria.andUidEqualTo(-1L);
+        }
+        criteria.andRightsEqualTo(Specification.ContentRights.EVERY.index);
+        criteria.andIdLessThan(sinceId);
+        example.setOrderByClause(" id desc limit 10 ");
+        return  contentMapper.selectByExampleWithBLOBs(example);
 
 
     }

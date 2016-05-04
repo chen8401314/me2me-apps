@@ -10,6 +10,7 @@ import com.me2me.common.web.Specification;
 import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.*;
+import com.me2me.user.dto.FollowParamsDto;
 import com.me2me.user.dto.UserInfoDto;
 import com.me2me.user.model.UserFollow;
 import com.me2me.user.model.UserNotice;
@@ -920,7 +921,8 @@ public class ContentServiceImpl implements ContentService {
     public Response getAttention(int sinceId, long uid) {
         ShowAttentionDto showAttentionDto = new ShowAttentionDto();
         //获取此人关注的人是列表
-        List<Content> attentionList = contentMybatisDao.getAttention(sinceId);
+        List<Long> list = userService.getFollowList(uid);
+        List<Content> attentionList = contentMybatisDao.getAttention(sinceId ,list);
         for(Content content : attentionList){
             ShowAttentionDto.ContentElement contentElement = showAttentionDto.createElement();
             contentElement.setId(content.getId());
@@ -936,8 +938,11 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setCoverImage(content.getConverImage());
             contentElement.setTag(content.getFeeling());
             //查询直播状态
-            int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
-            contentElement.setLiveStatus(status);
+            if(content.getType() == Specification.ArticleType.LIVE.index)
+            {
+                int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
+                contentElement.setLiveStatus(status);
+            }
             int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
             //直播是否收藏
             contentElement.setFavorite(favorite);
@@ -949,7 +954,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setPersonCount(0);
             showAttentionDto.getAttentionData().add(contentElement);
         }
-        return null;
+        return Response.success(showAttentionDto);
     }
 
     @Override
