@@ -12,10 +12,15 @@ import lombok.Setter;
  */
 public class OptionRequest extends Request{
 
+    // pgc 1
+    // ugc 0
+    // 活动 2
+
     @Getter
     @Setter
     private int optionAction;
 
+    // 上架，置热为 1 否则为0
     @Getter
     @Setter
     private int action;

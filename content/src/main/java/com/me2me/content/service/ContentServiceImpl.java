@@ -10,9 +10,7 @@ import com.me2me.common.web.Specification;
 import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.*;
-import com.me2me.user.dto.FollowParamsDto;
 import com.me2me.user.dto.UserInfoDto;
-import com.me2me.user.model.UserFollow;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
@@ -969,6 +967,32 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response option(long id, int optionAction, int action) {
+        // pgc 1
+        // ugc 0
+        // 活动 2
+        if(optionAction==0){
+            // UGC操作
+            OptionUGC(action,id);
+        }else if(optionAction==1){
+            // PGC操作
+            // OptionUGC(action, id);
+        }else if(optionAction==2){
+            // 活动操作
+            // OptionUGC(action, id);
+        }
         return null;
+    }
+
+    private void OptionUGC(int action, long id) {
+        if(action==1){
+            // UGC置热
+            HighQualityContent highQualityContent = new HighQualityContent();
+            highQualityContent.setCid(id);
+            contentMybatisDao.createHighQualityContent(highQualityContent);
+        }else{
+            // 取消置热
+            HighQualityContent temp = contentMybatisDao.getHQuantityByCid(id);
+            contentMybatisDao.removeHighQualityContent(temp.getId());
+        }
     }
 }

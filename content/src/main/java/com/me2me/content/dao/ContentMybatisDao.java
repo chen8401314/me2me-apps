@@ -195,6 +195,20 @@ public class ContentMybatisDao {
         highQualityContentMapper.insertSelective(highQualityContent);
     }
 
+    public void removeHighQualityContent(long id){
+        highQualityContentMapper.deleteByPrimaryKey(id);
+    }
+
+    public HighQualityContent getHQuantityByCid(long cid){
+        HighQualityContentExample example = new HighQualityContentExample();
+        HighQualityContentExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(cid);
+        List<HighQualityContent> list = highQualityContentMapper.selectByExample(example);
+        return list!=null&&list.size()>0?list.get(0):null;
+    }
+
+
+
     public Content getContent(long cid,long uid){
         ContentExample example = new ContentExample();
         ContentExample.Criteria criteria = example.createCriteria();
