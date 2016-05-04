@@ -130,4 +130,5 @@ public interface ContentService {
 
     Response createReview(ReviewDto reviewDto);
 
+    Response option(long id, int optionAction, int action);
 }

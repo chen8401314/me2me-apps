@@ -319,7 +319,7 @@ public class UserMybatisDao {
     public List<UserProfile> assistant(String keyword){
         UserProfileExample example = new UserProfileExample();
         UserProfileExample.Criteria criteria =  example.createCriteria();
-        criteria.andNickNameLike("%"+keyword+"%");
+        criteria.andNickNameLike(keyword+"%");
         example.setOrderByClause("nick_name limit 10");
         return userProfileMapper.selectByExample(example);
     }

@@ -742,11 +742,20 @@ public class ContentServiceImpl implements ContentService {
             UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
             element.setNickName(userProfile.getNickName());
             element.setTitle(content.getTitle());
+            element.setId(content.getId());
+            HighQualityContent highQualityContent = contentMybatisDao.getHQuantityByCid(content.getId());
+            if(highQualityContent!=null) {
+                element.setHot(true);
+            }
+            element.setLikeCount(content.getLikeCount());
+            element.setCreateTime(content.getCreateTime());
+
             if(content.getConverImage().isEmpty()){
                 element.setThumb(Constant.QINIU_DOMAIN +"/" + content.getThumbnail());
             }else{
-                element.setThumb(content.getConverImage());
+                element.setThumb(Constant.QINIU_DOMAIN +"/"+ content.getConverImage());
             }
+            element.setContent(content.getContent());
             showContentDto.getResult().add(element);
         }
         return Response.success(200,"数据获取成功",showContentDto);
@@ -920,5 +929,36 @@ public class ContentServiceImpl implements ContentService {
         //添加提醒
         remind(content,reviewDto.getUid(),Specification.UserNoticeType.REVIEW.index);
         return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
+    }
+
+    @Override
+    public Response option(long id, int optionAction, int action) {
+        // pgc 1
+        // ugc 0
+        // 活动 2
+        if(optionAction==0){
+            // UGC操作
+            OptionUGC(action,id);
+        }else if(optionAction==1){
+            // PGC操作
+            // OptionUGC(action, id);
+        }else if(optionAction==2){
+            // 活动操作
+            // OptionUGC(action, id);
+        }
+        return null;
+    }
+
+    private void OptionUGC(int action, long id) {
+        if(action==1){
+            // UGC置热
+            HighQualityContent highQualityContent = new HighQualityContent();
+            highQualityContent.setCid(id);
+            contentMybatisDao.createHighQualityContent(highQualityContent);
+        }else{
+            // 取消置热
+            HighQualityContent temp = contentMybatisDao.getHQuantityByCid(id);
+            contentMybatisDao.removeHighQualityContent(temp.getId());
+        }
     }
 }

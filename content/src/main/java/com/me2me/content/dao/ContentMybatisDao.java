@@ -206,6 +206,20 @@ public class ContentMybatisDao {
         highQualityContentMapper.insertSelective(highQualityContent);
     }
 
+    public void removeHighQualityContent(long id){
+        highQualityContentMapper.deleteByPrimaryKey(id);
+    }
+
+    public HighQualityContent getHQuantityByCid(long cid){
+        HighQualityContentExample example = new HighQualityContentExample();
+        HighQualityContentExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(cid);
+        List<HighQualityContent> list = highQualityContentMapper.selectByExample(example);
+        return list!=null&&list.size()>0?list.get(0):null;
+    }
+
+
+
     public Content getContent(long cid,long uid){
         ContentExample example = new ContentExample();
         ContentExample.Criteria criteria = example.createCriteria();
@@ -231,7 +245,6 @@ public class ContentMybatisDao {
         ContentExample example = new ContentExample();
         ContentExample.Criteria criteria = example.createCriteria();
         queryCondition(editorContentDto, example, criteria);
-
         example.setOrderByClause("create_time desc limit "+((editorContentDto.getPage()-1)*editorContentDto.getPageSize())+","+editorContentDto.getPageSize()+"");
         return contentMapper.selectByExampleWithBLOBs(example);
     }
@@ -241,6 +254,7 @@ public class ContentMybatisDao {
             // PGC
             criteria.andTypeEqualTo(Specification.ArticleType.EDITOR.index);
             ContentExample.Criteria criteria2 = example.createCriteria();
+            criteria.andTitleLike("%"+editorContentDto.getKeyword()+"%");
             criteria2.andTypeEqualTo(Specification.ArticleType.ACTIVITY.index);
             example.or(criteria2);
         }else{
