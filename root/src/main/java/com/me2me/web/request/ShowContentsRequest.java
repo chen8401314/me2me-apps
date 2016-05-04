@@ -26,6 +26,10 @@ public class ShowContentsRequest extends Request {
 
     @Getter
     @Setter
+    private String keyword;
+
+    @Getter
+    @Setter
     // 0 广场 1 精选
     private int articleType;
 }

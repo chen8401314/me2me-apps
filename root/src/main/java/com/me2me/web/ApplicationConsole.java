@@ -68,6 +68,7 @@ public class ApplicationConsole extends BaseController {
         editorContentDto.setArticleType(showContentsRequest.getArticleType());
         editorContentDto.setPage(showContentsRequest.getPage());
         editorContentDto.setPageSize(showContentsRequest.getPageSize());
+        editorContentDto.setKeyword(showContentsRequest.getKeyword());
         return contentService.showContents(editorContentDto);
     }
 

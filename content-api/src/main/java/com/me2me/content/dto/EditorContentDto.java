@@ -22,4 +22,6 @@ public class EditorContentDto implements BaseEntity {
 
     private int articleType;
 
+    private String keyword;
+
 }

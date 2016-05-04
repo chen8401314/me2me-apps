@@ -220,7 +220,6 @@ public class ContentMybatisDao {
         ContentExample example = new ContentExample();
         ContentExample.Criteria criteria = example.createCriteria();
         queryCondition(editorContentDto, example, criteria);
-
         example.setOrderByClause("create_time desc limit "+((editorContentDto.getPage()-1)*editorContentDto.getPageSize())+","+editorContentDto.getPageSize()+"");
         return contentMapper.selectByExampleWithBLOBs(example);
     }
@@ -230,6 +229,7 @@ public class ContentMybatisDao {
             // PGC
             criteria.andTypeEqualTo(Specification.ArticleType.EDITOR.index);
             ContentExample.Criteria criteria2 = example.createCriteria();
+            criteria.andTitleLike("%"+editorContentDto.getKeyword()+"%");
             criteria2.andTypeEqualTo(Specification.ArticleType.ACTIVITY.index);
             example.or(criteria2);
         }else{
