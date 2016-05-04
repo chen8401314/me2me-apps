@@ -791,6 +791,14 @@ public class ContentServiceImpl implements ContentService {
             UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
             element.setNickName(userProfile.getNickName());
             element.setTitle(content.getTitle());
+            element.setId(content.getId());
+            HighQualityContent highQualityContent = contentMybatisDao.getHQuantityByCid(content.getId());
+            if(highQualityContent!=null) {
+                element.setHot(true);
+            }
+            element.setLikeCount(content.getLikeCount());
+            element.setCreateTime(content.getCreateTime());
+
             if(content.getConverImage().isEmpty()){
                 element.setThumb(Constant.QINIU_DOMAIN +"/" + content.getThumbnail());
             }else{

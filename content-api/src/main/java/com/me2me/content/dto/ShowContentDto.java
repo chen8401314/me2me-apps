@@ -39,7 +39,8 @@ public class ShowContentDto implements BaseEntity {
 
         private String title;
 
-        private boolean isTop;
+        // 是否热门
+        private boolean isHot;
 
         // for pgc
         private long uid;
@@ -55,6 +56,13 @@ public class ShowContentDto implements BaseEntity {
         private String thumb;
 
         private String content;
+
+        private long id;
+
+        private int likeCount;
+
+        private int reviewCount;
+
 
     }
 

@@ -13,7 +13,6 @@ import lombok.Setter;
 @Data
 public class EditorContentDto implements BaseEntity {
 
-
     private int type;
 
     private int page = 1;
