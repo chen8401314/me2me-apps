@@ -256,6 +256,7 @@ public class ContentMybatisDao {
             ContentExample.Criteria criteria2 = example.createCriteria();
             criteria.andTitleLike("%"+editorContentDto.getKeyword()+"%");
             criteria2.andTypeEqualTo(Specification.ArticleType.ACTIVITY.index);
+            criteria.andStatusNotEqualTo(1);
             example.or(criteria2);
         }else{
             // UGC
