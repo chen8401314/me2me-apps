@@ -16,6 +16,9 @@ import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
+import com.plusnet.search.content.RecommendRequest;
+import com.plusnet.search.content.RecommendResponse;
+import com.plusnet.search.content.api.ContentRecommendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -40,6 +43,15 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private ActivityService activityService;
+
+    @Autowired
+    private ContentRecommendService contentRecommendService;
+
+    @Override
+    public RecommendResponse recommend(RecommendRequest recommendRequest) {
+        System.out.println(contentRecommendService);
+        return contentRecommendService.recommend(recommendRequest);
+    }
 
 
     @Override

@@ -18,4 +18,7 @@
         <import resource="classpath:spring/activity-context.xml"/>
         <import resource="classpath:spring/search-context.xml"/>
     </beans>
+    <beans profile="product">
+        <import resource="classpath:spring"/>
+    </beans>
 </beans>
