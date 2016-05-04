@@ -145,10 +145,6 @@ public enum  ResponseStatus {
 
     USER_LIVE_IS_OVER("直接已经结束","user live is over",50013),
 
-
-
-
-
     USER_ADD_FRIEND_ERROR("不能自己添加自己为好友","can't add yourself",50014),
 
     CAN_NOT_DUPLICATE_FOLLOW("不能重复关注","can't duplicate follow",50015),
@@ -168,6 +164,8 @@ public enum  ResponseStatus {
     CONTENT_IS_NOT_YOURS("该内容你无权修改","content is not yours",50022),
 
     NICK_NAME_REQUIRE_UNIQUE("用户昵称必须唯一","nick name require unique",50023),
+
+    CONTENT_LIKES_ERROR("用户点赞错误","content likes error",20024),
 
 
 

@@ -58,16 +58,6 @@ public class ContentDetailDto implements BaseEntity {
 
         private String tag;
 
-        private long cid;
-
-        private long tid;
-
-        private int likeCount;
-
-        private int isLike;
-
-        private long uid;
-
     }
 
 }

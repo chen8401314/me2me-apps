@@ -14,17 +14,9 @@ public class LikeRequest  extends Request {
 
     @Getter
     @Setter
-    private long uid ;
-
-    @Getter
-    @Setter
     private long cid;
 
     @Getter
     @Setter
-    private long tid;
-
-    @Getter
-    @Setter
-    private long customerId;
+    private int action;
 }

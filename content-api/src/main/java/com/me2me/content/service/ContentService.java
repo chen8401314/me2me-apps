@@ -128,7 +128,7 @@ public interface ContentService {
 
     Response getAttention(int sinceId,long uid);
 
-    void createReview(ReviewDto reviewDto);
+    Response createReview(ReviewDto reviewDto);
 
     Response option(long id, int optionAction, int action);
 }
