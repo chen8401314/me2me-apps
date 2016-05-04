@@ -461,6 +461,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public Response getFans(FansParamsDto fansParamsDto) {
         List<UserFansDto> list = userMybatisDao.getFans(fansParamsDto);
+        for(UserFansDto userFansDto : list){
+            userFansDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFansDto.getAvatar());
+        }
         ShowUserFansDto showUserFansDto = new ShowUserFansDto();
         showUserFansDto.setResult(list);
         return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message,showUserFansDto);
