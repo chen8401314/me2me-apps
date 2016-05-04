@@ -3,6 +3,8 @@ package com.me2me.content.service;
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.Content;
+import com.plusnet.search.content.RecommendRequest;
+import com.plusnet.search.content.RecommendResponse;
 
 import java.util.List;
 import java.util.Map;
@@ -14,6 +16,7 @@ import java.util.Map;
  */
 public interface ContentService {
 
+    RecommendResponse recommend(RecommendRequest recommendRequest);
 
     /**
      * 精选接口

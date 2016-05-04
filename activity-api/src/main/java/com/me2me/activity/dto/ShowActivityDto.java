@@ -53,6 +53,9 @@ public class ShowActivityDto implements BaseEntity {
 
         // 活动结束时间
         private Date endTime;
+
+        // 活动状态
+        private int status;
     }
 
 

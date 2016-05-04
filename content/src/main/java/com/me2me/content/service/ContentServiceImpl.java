@@ -1,6 +1,7 @@
 package com.me2me.content.service;
 
 import com.google.common.collect.Lists;
+import com.me2me.activity.model.Activity;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.Constant;
@@ -15,6 +16,9 @@ import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
+import com.plusnet.search.content.RecommendRequest;
+import com.plusnet.search.content.RecommendResponse;
+import com.plusnet.search.content.api.ContentRecommendService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -39,6 +43,15 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private ActivityService activityService;
+
+    @Autowired
+    private ContentRecommendService contentRecommendService;
+
+    @Override
+    public RecommendResponse recommend(RecommendRequest recommendRequest) {
+        System.out.println(contentRecommendService);
+        return contentRecommendService.recommend(recommendRequest);
+    }
 
 
     @Override
@@ -943,9 +956,21 @@ public class ContentServiceImpl implements ContentService {
             optionContent(action,id);
         }else if(optionAction==2){
             // 活动操作
-            // OptionUGC(action, id);
+            optionActivity(action, id);
         }
-        return null;
+        return Response.success();
+    }
+
+    private void optionActivity(int action, long id) {
+        ActivityWithBLOBs activity = activityService.loadActivityById(id);
+        if(action==1){
+            // UGC置热
+            activity.setStatus(0);
+        }else{
+            // 取消置热
+            activity.setStatus(1);
+        }
+        activityService.modifyActivity(activity);
     }
 
     @Override
