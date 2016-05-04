@@ -108,6 +108,16 @@ public class ApplicationConsole extends BaseController {
         return activityService.showActivity(request.getPage(),request.getPageSize(),request.getKeyword());
     }
 
+    /**
+     * 运营操作接口
+     * @return
+     */
+    @RequestMapping(value = "/option",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response option(OptionRequest request){
+        return contentService.option(request.getId(),request.getOptionAction(),request.getAction());
+    }
+
 
 
 }

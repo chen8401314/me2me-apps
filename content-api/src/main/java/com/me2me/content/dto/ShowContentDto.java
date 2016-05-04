@@ -54,6 +54,8 @@ public class ShowContentDto implements BaseEntity {
         // 缩略图
         private String thumb;
 
+        private String content;
+
     }
 
 }

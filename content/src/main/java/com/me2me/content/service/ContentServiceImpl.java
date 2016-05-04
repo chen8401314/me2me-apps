@@ -796,8 +796,9 @@ public class ContentServiceImpl implements ContentService {
             if(content.getConverImage().isEmpty()){
                 element.setThumb(Constant.QINIU_DOMAIN +"/" + content.getThumbnail());
             }else{
-                element.setThumb(content.getConverImage());
+                element.setThumb(Constant.QINIU_DOMAIN +"/"+ content.getConverImage());
             }
+            element.setContent(content.getContent());
             showContentDto.getResult().add(element);
         }
         return Response.success(200,"数据获取成功",showContentDto);
@@ -964,5 +965,10 @@ public class ContentServiceImpl implements ContentService {
         review.setCid(reviewDto.getCid());
         review.setUid(reviewDto.getUid());
         contentMybatisDao.createReview(review);
+    }
+
+    @Override
+    public Response option(long id, int optionAction, int action) {
+        return null;
     }
 }
