@@ -4,7 +4,6 @@ import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dto.CreateActivityDto;
 import com.me2me.activity.dto.ShowActivitiesDto;
 import com.me2me.activity.dto.ShowActivityDto;
-import com.me2me.activity.model.Activity;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
@@ -43,7 +42,7 @@ public class ActivityServiceImpl implements ActivityService {
         activity.setUid(createActivityDto.getUid());
         activity.setStatus(Specification.ActivityStatus.STOP.index);
         activityMybatisDao.saveActivity(activity);
-        return Response.success(200,"活动创建成功！");
+        return Response.success();
     }
 
     @Override
