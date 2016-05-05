@@ -53,6 +53,15 @@
             <mvc:exclude-mapping path="/api/user/verify"/>
             <mvc:exclude-mapping path="/api/user/getBasicDataByType"/>
             <mvc:exclude-mapping path="/api/console/bindAccount"/>
+
+            <!--斌哥接口通道-->
+            <mvc:exclude-mapping path="/api/console/showContents"/>
+            <mvc:exclude-mapping path="/api/console/showActivity"/>
+            <mvc:exclude-mapping path="/api/content/publish"/>
+            <mvc:exclude-mapping path="/api/console/createActivity"/>
+            <mvc:exclude-mapping path="/api/console/option"/>
+            <mvc:exclude-mapping path="/api/console/createActivityNotice"/>
+            <!-- end -->
             <bean class="com.me2me.web.handler.AccessSecurityHandler"/>
         </mvc:interceptor>
     </mvc:interceptors>

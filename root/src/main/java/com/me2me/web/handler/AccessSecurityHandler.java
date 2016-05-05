@@ -33,19 +33,19 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String value = request.getParameter("security");
-        JsonSecurity jsonSecurity = JSON.parse(value, JsonSecurity.class);
-        // 检测签名
-        ApplicationSecurity applicationSecurity = userService.getApplicationSecurityByAppId(jsonSecurity.getAppId());
-        if(applicationSecurity==null){
-
-        }else{
-            String secretKey = applicationSecurity.getSecretKey();
-            String sign = SecurityUtils.getCheckSum(jsonSecurity.getAppId(),secretKey,String.valueOf(jsonSecurity.getCurrentTime()),jsonSecurity.getNonce());
-            if(!sign.equals(jsonSecurity)){
-                throw new AccessSignNotMatchException("app access sign not match,please check your application!");
-            }
-        }
+//        String value = request.getParameter("security");
+//        JsonSecurity jsonSecurity = JSON.parse(value, JsonSecurity.class);
+//        // 检测签名
+//        ApplicationSecurity applicationSecurity = userService.getApplicationSecurityByAppId(jsonSecurity.getAppId());
+//        if(applicationSecurity==null){
+//
+//        }else{
+//            String secretKey = applicationSecurity.getSecretKey();
+//            String sign = SecurityUtils.getCheckSum(jsonSecurity.getAppId(),secretKey,String.valueOf(jsonSecurity.getCurrentTime()),jsonSecurity.getNonce());
+//            if(!sign.equals(jsonSecurity)){
+//                throw new AccessSignNotMatchException("app access sign not match,please check your application!");
+//            }
+//        }
 
 
         String uid = request.getParameter("uid");
