@@ -523,7 +523,7 @@ public class UserServiceImpl implements UserService {
             element.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
             element.setNickName(userProfile.getNickName());
             int follow = this.isFollow(userProfile.getUid(),uid);
-            element.setIsFollow(follow);
+            element.setIsFollowed(follow);
             int followMe = this.isFollow(uid,userProfile.getUid());
             element.setIsFollowMe(followMe);
             searchDto.getResult().add(element);
