@@ -2,6 +2,7 @@ package com.me2me.activity.service;
 
 import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dto.CreateActivityDto;
+import com.me2me.activity.dto.CreateActivityNoticeDto;
 import com.me2me.activity.dto.ShowActivitiesDto;
 import com.me2me.activity.dto.ShowActivityDto;
 import com.me2me.activity.model.ActivityWithBLOBs;
@@ -60,6 +61,7 @@ public class ActivityServiceImpl implements ActivityService {
             element.setContent(activity.getActivityContent());
             element.setTitle(activity.getActivityTitle());
             element.setStatus(activity.getStatus());
+            element.setInternalStatus(activity.getInternalStatus());
             showActivityDto.getResult().add(element);
         }
         showActivityDto.setTotal(activityMybatisDao.total(keyword));
@@ -98,5 +100,12 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public void modifyActivity(ActivityWithBLOBs activity) {
         activityMybatisDao.updateActivity(activity);
+    }
+
+    @Override
+    public void createActivityNotice(CreateActivityNoticeDto createActivityNoticeDto) {
+        ActivityWithBLOBs activityWithBLOBs = loadActivityById(createActivityNoticeDto.getId());
+        activityWithBLOBs.setInternalStatus(Specification.ActivityInternalStatus.NOTICED.index);
+        activityMybatisDao.updateActivity(activityWithBLOBs);
     }
 }

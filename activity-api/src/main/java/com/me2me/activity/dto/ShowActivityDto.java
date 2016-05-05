@@ -58,6 +58,9 @@ public class ShowActivityDto implements BaseEntity {
 
         // 活动状态
         private int status;
+
+        // 内部状态
+        private int internalStatus;
     }
 
 

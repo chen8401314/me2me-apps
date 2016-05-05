@@ -1,6 +1,7 @@
 package com.me2me.web;
 
 import com.me2me.activity.dto.CreateActivityDto;
+import com.me2me.activity.dto.CreateActivityNoticeDto;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.web.Response;
@@ -96,6 +97,21 @@ public class ApplicationConsole extends BaseController {
         createActivityDto.setStartTime(request.getStartTime());
         createActivityDto.setEndTime(request.getEndTime());
         return activityService.createActivity(createActivityDto);
+    }
+
+    /**
+     * 运营中心创建活动
+     * @return
+     */
+    @RequestMapping(value = "/createActivityNotice",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response createActivityNotice(CreateActivityNoticeRequest request){
+        CreateActivityNoticeDto createActivityNoticeDto = new CreateActivityNoticeDto();
+        createActivityNoticeDto.setId(request.getId());
+        createActivityNoticeDto.setActivityNoticeCover(request.getActivityNoticeCover());
+        createActivityNoticeDto.setActivityResult(request.getActivityResult());
+        activityService.createActivityNotice(createActivityNoticeDto);
+        return Response.success();
     }
 
     /**
