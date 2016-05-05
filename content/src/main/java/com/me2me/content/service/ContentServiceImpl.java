@@ -832,6 +832,7 @@ public class ContentServiceImpl implements ContentService {
             hottestContentElement.setLikeCount(content.getLikeCount());
             hottestContentElement.setReviewCount(content.getReviewCount());
             hottestContentElement.setTitle(content.getTitle());
+            hottestContentElement.setCreateTime(content.getCreateTime());
             //系统文章不包含，用户信息
             if(content.getType() == Specification.ArticleType.SYSTEM.index){
 
