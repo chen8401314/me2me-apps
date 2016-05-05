@@ -62,7 +62,15 @@ public class ContentServiceImpl implements ContentService {
         recommendRequest.setUserId(userProfile.getUid().toString());
         RecommendResponse recommendResponse =  contentRecommendService.recommend(recommendRequest);
         RecommendContentDto recommendContentDto = new RecommendContentDto();
-        recommendContentDto.setResult(recommendResponse.getContents());
+        List<ContentTO> list = recommendResponse.getContents();
+        for(ContentTO contentTO : list){
+            RecommendContentDto.RecommendElement element = recommendContentDto.createElement();
+            element.setTitle(contentTO.getTitle());
+            element.setCoverImage(contentTO.getCover());
+            element.setLinkUrl(contentTO.getUrl());
+            element.setType(contentTO.getType());
+            recommendContentDto.getResult().add(element);
+        }
         return Response.success(recommendContentDto);
 
     }

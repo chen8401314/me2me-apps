@@ -15,8 +15,24 @@ import java.util.List;
 @Data
 public class RecommendContentDto implements BaseEntity {
 
-    private List<ContentTO> result = Lists.newArrayList();
+    private List<RecommendElement> result = Lists.newArrayList();
 
 
+    public RecommendElement createElement(){
+        return new RecommendElement();
+    }
+
+    @Data
+    public class RecommendElement implements BaseEntity{
+
+        private String title;
+
+        private String linkUrl;
+
+        private String coverImage;
+
+        private String type;
+
+    }
 
 }
