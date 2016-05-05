@@ -152,4 +152,6 @@ public interface UserService {
 
     Response getUserProfile(long uid);
 
+    ApplicationSecurity getApplicationSecurityByAppId(String appId);
+
 }

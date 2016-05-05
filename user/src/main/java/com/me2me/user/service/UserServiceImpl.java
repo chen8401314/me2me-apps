@@ -592,5 +592,10 @@ public class UserServiceImpl implements UserService {
         return  Response.success(showUserProfileDto);
     }
 
+    @Override
+    public ApplicationSecurity getApplicationSecurityByAppId(String appId) {
+        return null;
+    }
+
 
 }

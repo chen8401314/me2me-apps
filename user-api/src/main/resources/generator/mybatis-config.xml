@@ -47,7 +47,7 @@
         <!--<table tableName="user_tips" domainObjectName="UserTips" />-->
         <!--<table tableName="user_report" domainObjectName="UserReport" />-->
         <!--<table tableName="user_tags_record" domainObjectName="UserTagsRecord" />-->
-        <table tableName="user_follow" domainObjectName="UserFollow" />
+        <table tableName="application_security" domainObjectName="ApplicationSecurity" />
 
     </context>
 </generatorConfiguration>
