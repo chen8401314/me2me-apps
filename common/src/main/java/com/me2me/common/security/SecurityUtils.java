@@ -1,6 +1,9 @@
 package com.me2me.common.security;
 
+import com.google.common.base.Charsets;
 import org.apache.shiro.crypto.hash.Md5Hash;
+
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import java.util.UUID;
@@ -45,16 +48,47 @@ public class SecurityUtils {
         return UUID.randomUUID().toString().replace("-","");
     }
 
-    public static void main(String[] args) throws NoSuchAlgorithmException {
-        String value = getMask();
-        // System.out.println(value);
-        int len = "69f95dccbb4bdd6370f3a426ecea3979".length();
-        // System.out.println(len);
-        String s = SecurityUtils.md5("123456","");
-        // 9db06bcff9248837f86d1a6bcf41c9e7
-        // System.out.println(s);
-        // System.out.println(getToken());
-        String x = new Md5Hash("111111").toString();
-        System.out.println(new Md5Hash(x).toString());
+
+
+
+    private static final char[] HEX_DIGITS = { '0', '1', '2', '3', '4', '5',
+            '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+    // 计算并获取CheckSum
+    public static String getCheckSum(String appSecret, String nonce, String curTime) {
+        return encode("sha1", appSecret + nonce + curTime);
     }
+
+    // 计算并获取md5值
+    public static String getMD5(String requestBody) {
+        return encode("md5", requestBody);
+    }
+
+    private static String encode(String algorithm, String value) {
+        if (value == null) {
+            return null;
+        }
+        try {
+            MessageDigest messageDigest
+                    = MessageDigest.getInstance(algorithm);
+            messageDigest.update(value.getBytes(Charsets.UTF_8.name()));
+            return getFormattedText(messageDigest.digest());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+    private static String getFormattedText(byte[] bytes) {
+        int len = bytes.length;
+        StringBuilder buf = new StringBuilder(len * 2);
+        for (int j = 0; j < len; j++) {
+            buf.append(HEX_DIGITS[(bytes[j] >> 4) & 0x0f]);
+            buf.append(HEX_DIGITS[bytes[j] & 0x0f]);
+        }
+        return buf.toString();
+    }
+
+    public static void main(String[] args) {
+        String value = SecurityUtils.getMD5(System.currentTimeMillis()+"");
+        System.out.println(value);
+    }
+
 }
