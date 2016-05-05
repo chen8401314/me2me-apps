@@ -893,7 +893,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setContent(content.getContent());
             contentElement.setType(content.getType());
             contentElement.setTitle(content.getTitle());
-            contentElement.setCoverImage(content.getConverImage());
+            contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
             contentElement.setTag(content.getFeeling());
             if(content.getType() == Specification.ArticleType.LIVE.index) {
                 //查询直播状态
