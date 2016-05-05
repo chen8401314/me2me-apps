@@ -594,7 +594,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ApplicationSecurity getApplicationSecurityByAppId(String appId) {
-        return null;
+        return userMybatisDao.getApplicationSecurityByAppId(appId);
     }
 
 

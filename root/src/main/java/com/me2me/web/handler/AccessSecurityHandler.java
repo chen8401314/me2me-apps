@@ -4,6 +4,7 @@ import com.alibaba.dubbo.common.json.JSON;
 import com.google.common.base.Strings;
 import com.me2me.common.security.SecurityUtils;
 import com.me2me.core.exception.AccessSignNotMatchException;
+import com.me2me.core.exception.AppIdException;
 import com.me2me.core.exception.TokenNullException;
 import com.me2me.core.exception.UidAndTokenNotMatchException;
 import com.me2me.user.model.ApplicationSecurity;
@@ -33,30 +34,32 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-//        String value = request.getParameter("security");
-//        JsonSecurity jsonSecurity = JSON.parse(value, JsonSecurity.class);
-//        // 检测签名
-//        ApplicationSecurity applicationSecurity = userService.getApplicationSecurityByAppId(jsonSecurity.getAppId());
-//        if(applicationSecurity==null){
-//
-//        }else{
-//            String secretKey = applicationSecurity.getSecretKey();
-//            String sign = SecurityUtils.getCheckSum(jsonSecurity.getAppId(),secretKey,String.valueOf(jsonSecurity.getCurrentTime()),jsonSecurity.getNonce());
-//            if(!sign.equals(jsonSecurity)){
-//                throw new AccessSignNotMatchException("app access sign not match,please check your application!");
-//            }
-//        }
-
+        String is_skip = request.getParameter("is_skip");
+        if(!"ok".equals(is_skip)){
+            String value = request.getParameter("security");
+            JsonSecurity jsonSecurity = JSON.parse(value, JsonSecurity.class);
+            // 检测签名
+            ApplicationSecurity applicationSecurity = userService.getApplicationSecurityByAppId(jsonSecurity.getAppId());
+            if(applicationSecurity==null){
+                throw new AppIdException("appId not exists!");
+            }else{
+                String secretKey = applicationSecurity.getSecretKey();
+                String sign = SecurityUtils.sign(jsonSecurity.getAppId(),secretKey,String.valueOf(jsonSecurity.getCurrentTime()),jsonSecurity.getNonce());
+                if(!sign.equals(jsonSecurity)){
+                    throw new AccessSignNotMatchException("app access sign not match,please check your application!");
+                }
+            }
+        }
 
         String uid = request.getParameter("uid");
         String token = request.getParameter("token");
         if(Strings.isNullOrEmpty(uid)||Strings.isNullOrEmpty(token)){
-            throw new TokenNullException("uid或token为空");
+            throw new TokenNullException("uid or token is null!");
         }else{
             long tempUid = Long.valueOf(uid);
             UserToken userToken = userService.getUserByUidAndToken(tempUid,token);
             if(userToken==null){
-                throw new UidAndTokenNotMatchException("Uid和token不匹配");
+                throw new UidAndTokenNotMatchException("uid and token not matches!");
             }else {
                 return true;
             }
