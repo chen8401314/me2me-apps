@@ -64,6 +64,7 @@ public class Home extends BaseController {
     @RequestMapping(value = "/special",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response special(ShowContentsRequest request){
+        // return contentService.recommend();
         return null;
     }
 
