@@ -257,8 +257,6 @@ public class ContentServiceImpl implements ContentService {
         Content content = new Content();
         content.setUid(contentDto.getUid());
         content.setContent(contentDto.getContent());
-        // 参与活动入口
-        activityService.joinActivity(contentDto.getContent(),contentDto.getUid());
         content.setFeeling(contentDto.getFeeling());
         content.setTitle(contentDto.getTitle());
         content.setFeeling(contentDto.getFeeling());
@@ -271,6 +269,8 @@ public class ContentServiceImpl implements ContentService {
         content.setType(contentDto.getType());
         if(content.getType() == Specification.ArticleType.ORIGIN.index){
             // 原生文章
+            // 参与活动入口
+            activityService.joinActivity(contentDto.getContent(),contentDto.getUid());
         }else if(content.getType() == Specification.ArticleType.FORWARD.index){
             // 转载文章
             long forwardCid = contentDto.getForwardCid();
