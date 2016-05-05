@@ -68,7 +68,7 @@ public class ContentServiceImpl implements ContentService {
             element.setTitle(contentTO.getTitle());
             element.setCoverImage(contentTO.getCover());
             element.setLinkUrl(contentTO.getUrl());
-            element.setType(contentTO.getType());
+            element.setType(0);
             recommendContentDto.getResult().add(element);
         }
         return Response.success(recommendContentDto);
@@ -1005,6 +1005,25 @@ public class ContentServiceImpl implements ContentService {
     public Content getContentByTopicId(long topicId) {
         List<Content> list = contentMybatisDao.getContentByTopicId(topicId);
         return (list != null && list.size() > 0) ? list.get(0) : null;
+    }
+
+    @Override
+    public Response showUGCDetails(long id) {
+        Content content =  contentMybatisDao.getContentById(id);
+        ShowUGCDetailsDto showUGCDetailsDto = new ShowUGCDetailsDto();
+        showUGCDetailsDto.setId(content.getId());
+        showUGCDetailsDto.setCover(content.getConverImage());
+        showUGCDetailsDto.setContent(content.getContent());
+        List<ContentImage> contentImages = contentMybatisDao.getContentImages(id);
+        StringBuilder images = new StringBuilder();
+
+        for(ContentImage contentImage : contentImages){
+            if(!contentImage.equals(contentImages.get(contentImages.size()-1))) {
+                images.append(Constant.QINIU_DOMAIN).append("/").append(contentImage).append(";");
+            }
+        }
+        showUGCDetailsDto.setImages(images.toString());
+        return Response.success(showUGCDetailsDto);
     }
 
     private void optionContent(int action, long id) {

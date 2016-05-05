@@ -137,4 +137,6 @@ public interface ContentService {
     Response option(long id, int optionAction, int action);
 
     Content getContentByTopicId(long topicId);
+
+    Response showUGCDetails(long id);
 }

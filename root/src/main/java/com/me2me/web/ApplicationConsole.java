@@ -135,6 +135,16 @@ public class ApplicationConsole extends BaseController {
         return contentService.option(request.getId(),request.getOptionAction(),request.getAction());
     }
 
+    /**
+     * 运营操作接口
+     * @return
+     */
+    @RequestMapping(value = "/showDetails",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response showDetails(ShowDetailsRequest request){
+        return contentService.showUGCDetails(request.getId());
+    }
+
 
 
 }
