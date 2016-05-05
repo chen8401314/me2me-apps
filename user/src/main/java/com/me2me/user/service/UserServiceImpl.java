@@ -473,15 +473,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response getFollows(FollowParamsDto followParamsDto) {
-        List<UserFansDto> list = userMybatisDao.getFollows(followParamsDto);
-        ShowUserFansDto showUserFansDto = new ShowUserFansDto();
-        for(UserFansDto userFansDto : list){
-            userFansDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFansDto.getAvatar());
-            int followMe = this.isFollow(followParamsDto.getSourceUid(),userFansDto.getUid());
-            userFansDto.setIsFollowMe(followMe);
+        List<UserFollowDto> list = userMybatisDao.getFollows(followParamsDto);
+        ShowUserFollowDto showUserFollowDto = new ShowUserFollowDto();
+        for(UserFollowDto userFollowDto : list){
+            userFollowDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFollowDto.getAvatar());
+            int followMe = this.isFollow(followParamsDto.getSourceUid(),userFollowDto.getUid());
+            userFollowDto.setIsFollowMe(followMe);
         }
-        showUserFansDto.setResult(list);
-        return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message,showUserFansDto);
+        showUserFollowDto.setResult(list);
+        return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message,showUserFollowDto);
     }
 
     public int isFollow(long targetUid,long sourceUid){

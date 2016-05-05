@@ -3,6 +3,7 @@ package com.me2me.user.mapper;
 import com.me2me.user.dto.FansParamsDto;
 import com.me2me.user.dto.FollowParamsDto;
 import com.me2me.user.dto.UserFansDto;
+import com.me2me.user.dto.UserFollowDto;
 import com.me2me.user.model.UserFollow;
 import com.me2me.user.model.UserFollowExample;
 import java.util.List;
@@ -99,5 +100,5 @@ public interface UserFollowMapper {
 
     List<UserFansDto> getFans(FansParamsDto fansParamsDto);
 
-    List<UserFansDto> getFollows(FollowParamsDto followParamsDto);
+    List<UserFollowDto> getFollows(FollowParamsDto followParamsDto);
 }

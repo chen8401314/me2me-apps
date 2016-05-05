@@ -297,7 +297,7 @@ public class UserMybatisDao {
         return userFollowMapper.getFans(fansParamsDto);
     }
 
-    public List<UserFansDto> getFollows(FollowParamsDto followParamsDto){
+    public List<UserFollowDto> getFollows(FollowParamsDto followParamsDto){
         return userFollowMapper.getFollows(followParamsDto);
     }
 
