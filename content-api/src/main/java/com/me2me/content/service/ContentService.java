@@ -16,7 +16,7 @@ import java.util.Map;
  */
 public interface ContentService {
 
-    RecommendResponse recommend(RecommendRequest recommendRequest);
+    Response recommend(long uid);
 
     /**
      * 精选接口

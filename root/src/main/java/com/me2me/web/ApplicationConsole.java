@@ -110,6 +110,7 @@ public class ApplicationConsole extends BaseController {
         createActivityNoticeDto.setId(request.getId());
         createActivityNoticeDto.setActivityNoticeCover(request.getActivityNoticeCover());
         createActivityNoticeDto.setActivityResult(request.getActivityResult());
+        createActivityNoticeDto.setActivityNoticeTitle(request.getActivityNoticeTitle());
         activityService.createActivityNotice(createActivityNoticeDto);
         return Response.success();
     }

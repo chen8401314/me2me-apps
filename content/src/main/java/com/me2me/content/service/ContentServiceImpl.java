@@ -20,6 +20,7 @@ import com.plusnet.forecast.domain.GPS;
 import com.plusnet.search.content.RecommendRequest;
 import com.plusnet.search.content.RecommendResponse;
 import com.plusnet.search.content.api.ContentRecommendService;
+import com.plusnet.search.content.domain.ContentTO;
 import com.plusnet.search.content.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,13 +51,20 @@ public class ContentServiceImpl implements ContentService {
     private ContentRecommendService contentRecommendService;
 
     @Override
-    public RecommendResponse recommend(RecommendRequest recommendRequest) {
-//        User user = new User();
-//        user.setBirthday();
-//        user.setMobilePhone();
-//        user.setSex();
-//        user.setUserName();
-        return contentRecommendService.recommend(recommendRequest);
+    public Response recommend(long uid) {
+        RecommendRequest recommendRequest = new RecommendRequest();
+        UserProfile userProfile = userService.getUserProfileByUid(uid);
+        User user = new User();
+        user.setBirthday(userProfile.getBirthday());
+        user.setMobilePhone(userProfile.getMobile());
+        user.setSex(userProfile.getGender().toString());
+        user.setUserName(userProfile.getNickName());
+        recommendRequest.setUserId(userProfile.getUid().toString());
+        RecommendResponse recommendResponse =  contentRecommendService.recommend(recommendRequest);
+        RecommendContentDto recommendContentDto = new RecommendContentDto();
+        recommendContentDto.setResult(recommendResponse.getContents());
+        return Response.success(recommendContentDto);
+
     }
 
 
