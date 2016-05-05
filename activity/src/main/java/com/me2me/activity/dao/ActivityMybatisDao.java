@@ -12,6 +12,7 @@ import com.me2me.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -56,6 +57,7 @@ public class ActivityMybatisDao {
         ActivityExample example = new ActivityExample();
         ActivityExample.Criteria criteria = example.createCriteria();
         criteria.andStatusEqualTo(Specification.ActivityStatus.NORMAL.index);
+        criteria.andStartTimeLessThanOrEqualTo(new Date());
         example.setOrderByClause(" issue desc limit 4 ");
         return activityMapper.selectByExampleWithBLOBs(example);
     }
@@ -74,5 +76,15 @@ public class ActivityMybatisDao {
 
     public void updateActivity(ActivityWithBLOBs activity) {
         activityMapper.updateByPrimaryKeySelective(activity);
+    }
+
+    public static void main(String[] args) {
+
+        String regex = ".*#.*#.*";
+        String demo = "dasdasd#abcdefsdfd#";
+        if(demo.matches(regex)){
+
+            System.out.println(demo);
+        }
     }
 }

@@ -38,6 +38,9 @@ public class ShowAttentionDto implements BaseEntity {
         //作者昵称
         private String nickName;
 
+        //直播之后为直播id
+        private long forwardCid;
+
         //文章缩略内容
         private String content;
 
