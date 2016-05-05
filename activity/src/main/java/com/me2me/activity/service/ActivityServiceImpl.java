@@ -2,6 +2,7 @@ package com.me2me.activity.service;
 
 import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dto.CreateActivityDto;
+import com.me2me.activity.dto.CreateActivityNoticeDto;
 import com.me2me.activity.dto.ShowActivitiesDto;
 import com.me2me.activity.dto.ShowActivityDto;
 import com.me2me.activity.model.ActivityWithBLOBs;
@@ -98,5 +99,11 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public void modifyActivity(ActivityWithBLOBs activity) {
         activityMybatisDao.updateActivity(activity);
+    }
+
+    @Override
+    public void createActivityNotice(CreateActivityNoticeDto createActivityNoticeDto) {
+        ActivityWithBLOBs activityWithBLOBs = loadActivityById(createActivityNoticeDto.getId());
+        activityMybatisDao.updateActivity(activityWithBLOBs);
     }
 }
