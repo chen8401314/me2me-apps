@@ -895,6 +895,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setTitle(content.getTitle());
             contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
             contentElement.setTag(content.getFeeling());
+            contentElement.setForwardCid(content.getForwardCid());
             if(content.getType() == Specification.ArticleType.LIVE.index) {
                 //查询直播状态
                 int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
