@@ -68,7 +68,7 @@ public class ShowActivityDto implements BaseEntity {
         // 通知封面
         private String activityCover;
 
-        // 通知结果
+        // 通知结果a
         private String activityResult;
     }
 
