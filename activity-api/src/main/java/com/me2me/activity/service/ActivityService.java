@@ -34,4 +34,7 @@ public interface ActivityService {
     void modifyActivity(ActivityWithBLOBs activity);
 
     void createActivityNotice(CreateActivityNoticeDto createActivityNoticeDto);
+
+    void joinActivity(String content,long uid);
+
 }

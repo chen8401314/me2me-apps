@@ -6,6 +6,7 @@ import com.me2me.activity.dto.CreateActivityNoticeDto;
 import com.me2me.activity.dto.ShowActivitiesDto;
 import com.me2me.activity.dto.ShowActivityDto;
 import com.me2me.activity.model.ActivityWithBLOBs;
+import com.me2me.activity.model.UserActivity;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
@@ -15,6 +16,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.regex.MatchResult;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -107,5 +111,42 @@ public class ActivityServiceImpl implements ActivityService {
         ActivityWithBLOBs activityWithBLOBs = loadActivityById(createActivityNoticeDto.getId());
         activityWithBLOBs.setInternalStatus(Specification.ActivityInternalStatus.NOTICED.index);
         activityMybatisDao.updateActivity(activityWithBLOBs);
+    }
+
+    /**
+     * 参与活动
+     * @param content
+     */
+    @Override
+    public void joinActivity(String content,long uid) {
+        Pattern pattern = Pattern.compile("(.*)(#.{0,128}#)(.*)");
+        Matcher matcher = pattern.matcher(content);
+        boolean result = matcher.matches();
+        if(result){
+            String hashTitle = matcher.group(2);
+            // 获取hash title
+            ActivityWithBLOBs activityWithBLOBs = activityMybatisDao.getActivityByHashTitle(hashTitle);
+            activityWithBLOBs.setPersonTimes(activityWithBLOBs.getPersonTimes()+1);
+            activityMybatisDao.updateActivity(activityWithBLOBs);
+            UserActivity userActivity = new UserActivity();
+            userActivity.setActivityId(activityWithBLOBs.getId());
+            userActivity.setUid(uid);
+            activityMybatisDao.createUserActivity(userActivity);
+        }
+    }
+
+
+
+    public static void main(String[] args) {
+        Pattern pattern = Pattern.compile("(.*)(#.{0,128}#)(.*)");
+        Matcher matcher = pattern.matcher("#中国人#");
+        boolean v = matcher.matches();
+        System.out.println(v);
+        int i = matcher.groupCount();
+        System.out.println(i);
+        String value = matcher.group(2);
+        System.out.println(value);
+
+
     }
 }

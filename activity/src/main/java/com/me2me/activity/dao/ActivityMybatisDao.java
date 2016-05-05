@@ -2,9 +2,11 @@ package com.me2me.activity.dao;
 
 import com.google.common.base.Strings;
 import com.me2me.activity.mapper.ActivityMapper;
+import com.me2me.activity.mapper.UserActivityMapper;
 import com.me2me.activity.model.Activity;
 import com.me2me.activity.model.ActivityExample;
 import com.me2me.activity.model.ActivityWithBLOBs;
+import com.me2me.activity.model.UserActivity;
 import com.me2me.common.web.Specification;
 import com.me2me.user.dto.*;
 import com.me2me.user.mapper.*;
@@ -24,6 +26,9 @@ public class ActivityMybatisDao {
 
     @Autowired
     private ActivityMapper activityMapper;
+
+    @Autowired
+    private UserActivityMapper userActivityMapper;
 
 
     public void saveActivity(ActivityWithBLOBs activity){
@@ -72,7 +77,20 @@ public class ActivityMybatisDao {
         return activityMapper.selectByPrimaryKey(id);
     }
 
+    public ActivityWithBLOBs getActivityByHashTitle(String hashTitle) {
+        ActivityExample example = new ActivityExample();
+        ActivityExample.Criteria criteria = example.createCriteria();
+        criteria.andStatusEqualTo(Specification.ActivityStatus.NORMAL.index);
+        criteria.andActivityHashTitleEqualTo(hashTitle);
+        List<ActivityWithBLOBs> list = activityMapper.selectByExampleWithBLOBs(example);
+        return list!=null&&list.size()>0?list.get(0):null;
+    }
+
     public void updateActivity(ActivityWithBLOBs activity) {
         activityMapper.updateByPrimaryKeySelective(activity);
+    }
+
+    public void createUserActivity(UserActivity userActivity){
+        userActivityMapper.insertSelective(userActivity);
     }
 }

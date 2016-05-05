@@ -251,6 +251,8 @@ public class ContentServiceImpl implements ContentService {
         Content content = new Content();
         content.setUid(contentDto.getUid());
         content.setContent(contentDto.getContent());
+        // 参与活动入口
+        activityService.joinActivity(contentDto.getContent(),contentDto.getUid());
         content.setFeeling(contentDto.getFeeling());
         content.setTitle(contentDto.getTitle());
         content.setFeeling(contentDto.getFeeling());
