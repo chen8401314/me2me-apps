@@ -17,5 +17,7 @@ public class UserFansDto implements BaseEntity {
 
     private String nickName;
 
-    private int isFollow;
+    private int isFollowed;
+
+    private int isFollowMe;
 }

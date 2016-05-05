@@ -463,6 +463,8 @@ public class UserServiceImpl implements UserService {
         List<UserFansDto> list = userMybatisDao.getFans(fansParamsDto);
         for(UserFansDto userFansDto : list){
             userFansDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFansDto.getAvatar());
+            int followMe = this.isFollow(userFansDto.getUid(),fansParamsDto.getTargetUid());
+            userFansDto.setIsFollowMe(followMe);
         }
         ShowUserFansDto showUserFansDto = new ShowUserFansDto();
         showUserFansDto.setResult(list);
@@ -471,13 +473,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response getFollows(FollowParamsDto followParamsDto) {
-        List<UserFansDto> list = userMybatisDao.getFollows(followParamsDto);
-        ShowUserFansDto showUserFansDto = new ShowUserFansDto();
-        for(UserFansDto userFansDto : list){
-            userFansDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFansDto.getAvatar());
+        List<UserFollowDto> list = userMybatisDao.getFollows(followParamsDto);
+        ShowUserFollowDto showUserFollowDto = new ShowUserFollowDto();
+        for(UserFollowDto userFollowDto : list){
+            userFollowDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFollowDto.getAvatar());
+            int followMe = this.isFollow(followParamsDto.getSourceUid(),userFollowDto.getUid());
+            userFollowDto.setIsFollowMe(followMe);
         }
-        showUserFansDto.setResult(list);
-        return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message,showUserFansDto);
+        showUserFollowDto.setResult(list);
+        return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message,showUserFollowDto);
     }
 
     public int isFollow(long targetUid,long sourceUid){
@@ -519,7 +523,7 @@ public class UserServiceImpl implements UserService {
             element.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
             element.setNickName(userProfile.getNickName());
             int follow = this.isFollow(userProfile.getUid(),uid);
-            element.setIsFollowed(follow);
+            element.setIsFollow(follow);
             int followMe = this.isFollow(uid,userProfile.getUid());
             element.setIsFollowMe(followMe);
             searchDto.getResult().add(element);

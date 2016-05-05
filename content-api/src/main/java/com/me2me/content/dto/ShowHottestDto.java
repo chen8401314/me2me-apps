@@ -44,7 +44,7 @@ public class ShowHottestDto implements BaseEntity {
         private String nickName;
 
         //是否关注发活动的人 0未关注 1关注
-        private int isFollow;
+        private int isFollowed;
 
         //活动id
         private long id;
@@ -82,7 +82,7 @@ public class ShowHottestDto implements BaseEntity {
         private String title;
 
         //感受标签，多个标签分号分开。
-        private String feeling;
+        private String tag;
 
         //文章内容图片数量
         private int imageCount;
@@ -103,7 +103,7 @@ public class ShowHottestDto implements BaseEntity {
         private int reviewCount;
 
         //是否关注
-        private int isFollow;
+        private int isFollowed;
 
         //直播状态
         private int liveStatus;

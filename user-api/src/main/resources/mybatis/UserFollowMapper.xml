@@ -273,7 +273,7 @@
     select uid,nick_name as nickName,avatar from user_profile where uid in (select source_uid from user_follow where target_uid = #{targetUid}) and uid &lt; #{sinceId} limit 10;
   </select>
 
-  <select id="getFollows" resultType="com.me2me.user.dto.FansParamsDto" parameterType="com.me2me.user.dto.UserFollowDto">
+  <select id="getFollows" resultType="com.me2me.user.dto.UserFollowDto" parameterType="com.me2me.user.dto.UserFollowDto">
     select uid,nick_name as nickName,avatar from user_profile where uid in (select target_uid from user_follow where source_uid = #{sourceUid}) and uid &lt; #{sinceId} limit 10;
   </select>
 </mapper>

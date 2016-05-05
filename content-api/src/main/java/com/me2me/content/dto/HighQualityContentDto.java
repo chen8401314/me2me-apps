@@ -81,7 +81,7 @@ public class HighQualityContentDto implements BaseEntity {
         private long tid;
 
         //是否关注
-        private int isFollow;
+        private int isFollowed;
 
         private int tagCount;
 

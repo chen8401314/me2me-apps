@@ -41,6 +41,8 @@ public class ShowNewestDto implements BaseEntity{
         //文章缩略内容
         private String content;
 
+        private long forwardCid;
+
         //标签（1-3个多个以逗号分割）
         private String tag;
 
@@ -57,7 +59,7 @@ public class ShowNewestDto implements BaseEntity{
         private String title;
 
         //是否关注
-        private int isFollow;
+        private int isFollowed;
 
         // 点赞数量
         private int likeCount;

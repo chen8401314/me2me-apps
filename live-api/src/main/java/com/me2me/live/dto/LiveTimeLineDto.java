@@ -31,7 +31,7 @@ public class LiveTimeLineDto implements BaseEntity {
 
         private String nickName;
 
-        private int isFollow;
+        private int isFollowed;
 
         private long fragmentId;
 
