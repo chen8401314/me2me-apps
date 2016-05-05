@@ -61,6 +61,7 @@ public class ActivityServiceImpl implements ActivityService {
             element.setContent(activity.getActivityContent());
             element.setTitle(activity.getActivityTitle());
             element.setStatus(activity.getStatus());
+            element.setInternalStatus(activity.getInternalStatus());
             showActivityDto.getResult().add(element);
         }
         showActivityDto.setTotal(activityMybatisDao.total(keyword));
@@ -104,6 +105,7 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public void createActivityNotice(CreateActivityNoticeDto createActivityNoticeDto) {
         ActivityWithBLOBs activityWithBLOBs = loadActivityById(createActivityNoticeDto.getId());
+        activityWithBLOBs.setInternalStatus(Specification.ActivityInternalStatus.NOTICED.index);
         activityMybatisDao.updateActivity(activityWithBLOBs);
     }
 }

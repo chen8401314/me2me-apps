@@ -344,6 +344,20 @@ public interface Specification {
         }
     }
 
+    public  enum ActivityInternalStatus{
+
+        NO_NOTICE("未发公告",0),
+
+        NOTICED("已发公告",1);
+
+        public final String name;
+        public final int index;
+        ActivityInternalStatus(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
     /**
      * 用户状态
      */
