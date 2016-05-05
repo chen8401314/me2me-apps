@@ -809,7 +809,7 @@ public class ContentServiceImpl implements ContentService {
             for (ActivityWithBLOBs activity : activityList) {
                 ShowHottestDto.ActivityElement activityElement = ShowHottestDto.createActivityElement();
                 activityElement.setTitle(activity.getActivityHashTitle());
-                activityElement.setCoverImage(activity.getActivityCover());
+                activityElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + activity.getActivityCover());
                 activityElement.setUpdateTime(activity.getUpdateTime());
                 activityElement.setUid(activity.getUid());
                 UserProfile userProfile = userService.getUserProfileByUid(activity.getUid());
