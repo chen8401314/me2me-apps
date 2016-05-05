@@ -1013,7 +1013,7 @@ public class ContentServiceImpl implements ContentService {
         Content content =  contentMybatisDao.getContentById(id);
         ShowUGCDetailsDto showUGCDetailsDto = new ShowUGCDetailsDto();
         showUGCDetailsDto.setId(content.getId());
-        showUGCDetailsDto.setCover(content.getConverImage());
+        showUGCDetailsDto.setCover(Constant.QINIU_DOMAIN  + "/" +content.getConverImage());
         showUGCDetailsDto.setContent(content.getContent());
         List<ContentImage> contentImages = contentMybatisDao.getContentImages(id);
         StringBuilder images = new StringBuilder();
