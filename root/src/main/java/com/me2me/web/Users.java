@@ -3,6 +3,7 @@ package com.me2me.web;
 import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.web.Response;
 import com.me2me.user.dto.*;
+import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTags;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
@@ -339,4 +340,17 @@ public class Users extends BaseController {
 
         return userService.getUser(request.getTargetUid(),request.getUid());
     }
+
+    /**
+     * 获取用户信息
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getUserProfile",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getUserProfile(UserProfileRequest request){
+
+        return userService.getUserProfile(request.getUid());
+    }
+
 }

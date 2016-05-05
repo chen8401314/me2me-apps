@@ -848,7 +848,7 @@ public class ContentServiceImpl implements ContentService {
                 UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
                 hottestContentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                 hottestContentElement.setNickName(userProfile.getNickName());
-                hottestContentElement.setFeeling(content.getFeeling());
+                hottestContentElement.setTag(content.getFeeling());
                 int follow = userService.isFollow(content.getUid(),uid);
                 hottestContentElement.setIsFollowed(follow);
 
@@ -859,7 +859,7 @@ public class ContentServiceImpl implements ContentService {
                 UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
                 hottestContentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                 hottestContentElement.setNickName(userProfile.getNickName());
-                hottestContentElement.setFeeling(content.getFeeling());
+                hottestContentElement.setTag(content.getFeeling());
                 int follow = userService.isFollow(content.getUid(),uid);
                 hottestContentElement.setIsFollowed(follow);
                 //获取内容图片数量

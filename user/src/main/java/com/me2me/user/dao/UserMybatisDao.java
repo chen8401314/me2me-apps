@@ -337,4 +337,11 @@ public class UserMybatisDao {
         criteria.andSourceUidEqualTo(uid);
         return userFollowMapper.selectByExample(example);
     }
+
+    public List<UserHobby> getHobby(long uid){
+        UserHobbyExample example = new UserHobbyExample();
+        UserHobbyExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        return userHobbyMapper.selectByExample(example);
+    }
 }

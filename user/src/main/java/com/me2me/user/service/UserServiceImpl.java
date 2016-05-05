@@ -573,5 +573,24 @@ public class UserServiceImpl implements UserService {
         return  result;
     }
 
+    @Override
+    public Response getUserProfile(long uid) {
+        UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+        ShowUserProfileDto showUserProfileDto = new ShowUserProfileDto();
+        showUserProfileDto.setUid(userProfile.getUid());
+        showUserProfileDto.setNickName(userProfile.getNickName());
+        showUserProfileDto.setAvatar(userProfile.getAvatar());
+        showUserProfileDto.setDomainQiniu(Constant.QINIU_DOMAIN);
+        showUserProfileDto.setBirthday(userProfile.getBirthday());
+        showUserProfileDto.setGender(userProfile.getGender());
+        List<UserHobby> list = userMybatisDao.getHobby(uid);
+        for (UserHobby userHobby : list){
+            ShowUserProfileDto.Hobby hobby = showUserProfileDto.createHobby();
+            hobby.setHobby(userHobby.getHobby());
+            showUserProfileDto.getHobbyList().add(hobby);
+        }
+        return  Response.success(showUserProfileDto);
+    }
+
 
 }
