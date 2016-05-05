@@ -44,7 +44,7 @@ public class ShowHottestDto implements BaseEntity {
         private String nickName;
 
         //是否关注发活动的人 0未关注 1关注
-        private int isFollow;
+        private int isFollowed;
 
         //活动id
         private long id;
@@ -103,7 +103,7 @@ public class ShowHottestDto implements BaseEntity {
         private int reviewCount;
 
         //是否关注
-        private int isFollow;
+        private int isFollowed;
 
         //直播状态
         private int liveStatus;

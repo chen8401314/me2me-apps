@@ -60,7 +60,7 @@ public class ShowAttentionDto implements BaseEntity {
         private String title;
 
         //是否关注
-        private int isFollow;
+        private int isFollowed;
 
         // 点赞数量
         private int likeCount;

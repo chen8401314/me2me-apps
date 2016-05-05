@@ -33,7 +33,7 @@ public class SearchDto implements BaseEntity {
 
         private String avatar;
 
-        private int isFollowed;
+        private int isFollow;
 
         private int isFollowMe;
 

@@ -38,7 +38,7 @@ public class ShowActivitiesDto implements BaseEntity{
         private String nickName;
 
         //是否关注发活动的人 0未关注 1关注
-        private int isFollow;
+        private int isFollowed;
 
         //活动id
         private long id;

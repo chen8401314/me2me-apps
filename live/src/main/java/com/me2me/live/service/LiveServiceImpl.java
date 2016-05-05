@@ -77,7 +77,7 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setCreateTime(topicFragment.getCreateTime());
             liveElement.setType(topicFragment.getType());
             int isFollow = userService.isFollow(topicFragment.getUid(),getLiveTimeLineDto.getUid());
-            liveElement.setIsFollow(isFollow);
+            liveElement.setIsFollowed(isFollow);
             liveElement.setContentType(topicFragment.getContentType());
             liveElement.setFragmentId(topicFragment.getId());
             liveTimeLineDto.getLiveElements().add(liveElement);

@@ -124,7 +124,7 @@ public class ContentServiceImpl implements ContentService {
             contentDataElement.setForwardUrl(content.getForwardUrl());
             long contentUid = content.getUid();
             int follow = userService.isFollow(contentUid,uid);
-            contentDataElement.setIsFollow(follow);
+            contentDataElement.setIsFollowed(follow);
             //如果是直播需要一个直播状态，当前用户是否收藏
             setLiveStatusAndFavorite(uid, content, contentDataElement);
             //设置数量
@@ -208,7 +208,7 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setForwardUrl(content.getForwardUrl());
             long contentUid = content.getUid();
             int follow = userService.isFollow(contentUid,uid);
-            squareDataElement.setIsFollow(follow);
+            squareDataElement.setIsFollowed(follow);
             //如果是直播需要一个直播状态
             if(content.getType() == Specification.ArticleType.LIVE.index) {
                 //查询直播状态
@@ -816,7 +816,7 @@ public class ContentServiceImpl implements ContentService {
                 activityElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                 activityElement.setNickName(userProfile.getNickName());
                 int follow = userService.isFollow(activity.getUid(), uid);
-                activityElement.setIsFollow(follow);
+                activityElement.setIsFollowed(follow);
                 activityElement.setId(activity.getId());
                 hottestDto.getActivityData().add(activityElement);
             }
@@ -850,7 +850,7 @@ public class ContentServiceImpl implements ContentService {
                 hottestContentElement.setNickName(userProfile.getNickName());
                 hottestContentElement.setFeeling(content.getFeeling());
                 int follow = userService.isFollow(content.getUid(),uid);
-                hottestContentElement.setIsFollow(follow);
+                hottestContentElement.setIsFollowed(follow);
 
                 hottestContentElement.setPersonCount(content.getPersonCount());
             //原生
@@ -861,7 +861,7 @@ public class ContentServiceImpl implements ContentService {
                 hottestContentElement.setNickName(userProfile.getNickName());
                 hottestContentElement.setFeeling(content.getFeeling());
                 int follow = userService.isFollow(content.getUid(),uid);
-                hottestContentElement.setIsFollow(follow);
+                hottestContentElement.setIsFollowed(follow);
                 //获取内容图片数量
                 int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
                 hottestContentElement.setImageCount(imageCounts);
@@ -905,7 +905,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setFavorite(favorite);
             //判断人员是否关注
             int follow = userService.isFollow(content.getUid(),uid);
-            contentElement.setIsFollow(follow);
+            contentElement.setIsFollowed(follow);
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setReviewCount(content.getReviewCount());
             contentElement.setPersonCount(content.getPersonCount());
@@ -949,7 +949,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setFavorite(favorite);
             //判断人员是否关注
             int follow = userService.isFollow(content.getUid(),uid);
-            contentElement.setIsFollow(follow);
+            contentElement.setIsFollowed(follow);
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setReviewCount(content.getReviewCount());
             contentElement.setPersonCount(content.getPersonCount());
