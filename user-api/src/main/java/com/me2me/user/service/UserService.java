@@ -150,6 +150,8 @@ public interface UserService {
 
     List<Long> getFollowList(long uid);
 
+    Response getUserProfile(long uid);
+
     ApplicationSecurity getApplicationSecurityByAppId(String appId);
 
 }

@@ -343,6 +343,13 @@ public class UserMybatisDao {
         return userFollowMapper.selectByExample(example);
     }
 
+    public List<UserHobby> getHobby(long uid){
+        UserHobbyExample example = new UserHobbyExample();
+        UserHobbyExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        return userHobbyMapper.selectByExample(example);
+    }
+
     public ApplicationSecurity getApplicationSecurityByAppId(String appId){
         ApplicationSecurityExample example = new ApplicationSecurityExample();
         ApplicationSecurityExample.Criteria criteria = example.createCriteria();
