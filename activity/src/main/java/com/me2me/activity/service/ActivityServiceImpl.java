@@ -66,6 +66,9 @@ public class ActivityServiceImpl implements ActivityService {
             element.setTitle(activity.getActivityTitle());
             element.setStatus(activity.getStatus());
             element.setInternalStatus(activity.getInternalStatus());
+            element.setActivityNoticeTitle(activity.getActivityNoticeTitle());
+            element.setActivityResult(activity.getActivityResult());
+            element.setActivityCover(Constant.QINIU_DOMAIN + "/" +activity.getActivityNoticeCover());
             showActivityDto.getResult().add(element);
         }
         showActivityDto.setTotal(activityMybatisDao.total(keyword));
@@ -109,6 +112,9 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public void createActivityNotice(CreateActivityNoticeDto createActivityNoticeDto) {
         ActivityWithBLOBs activityWithBLOBs = loadActivityById(createActivityNoticeDto.getId());
+        activityWithBLOBs.setActivityNoticeCover(createActivityNoticeDto.getActivityNoticeCover());
+        activityWithBLOBs.setActivityNoticeTitle(createActivityNoticeDto.getActivityNoticeTitle());
+        activityWithBLOBs.setActivityResult(createActivityNoticeDto.getActivityResult());
         activityWithBLOBs.setInternalStatus(Specification.ActivityInternalStatus.NOTICED.index);
         activityMybatisDao.updateActivity(activityWithBLOBs);
     }
@@ -126,6 +132,7 @@ public class ActivityServiceImpl implements ActivityService {
             String hashTitle = matcher.group(2);
             // 获取hash title
             ActivityWithBLOBs activityWithBLOBs = activityMybatisDao.getActivityByHashTitle(hashTitle);
+            // todo 判断当前活动是否过期
             activityWithBLOBs.setPersonTimes(activityWithBLOBs.getPersonTimes()+1);
             activityMybatisDao.updateActivity(activityWithBLOBs);
             UserActivity userActivity = new UserActivity();
@@ -146,7 +153,5 @@ public class ActivityServiceImpl implements ActivityService {
         System.out.println(i);
         String value = matcher.group(2);
         System.out.println(value);
-
-
     }
 }

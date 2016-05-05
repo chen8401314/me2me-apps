@@ -61,6 +61,15 @@ public class ShowActivityDto implements BaseEntity {
 
         // 内部状态
         private int internalStatus;
+
+        // 通知标题
+        private String activityNoticeTitle;
+
+        // 通知封面
+        private String activityCover;
+
+        // 通知结果
+        private String activityResult;
     }
 
 
