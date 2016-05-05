@@ -27,6 +27,8 @@ public class ShowUserProfileDto implements BaseEntity{
 
     private String birthday;
 
+    private String account;
+
     private List<Hobby> hobbyList = Lists.newArrayList();
 
     public Hobby createHobby(){ return new Hobby();}

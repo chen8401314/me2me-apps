@@ -809,7 +809,7 @@ public class ContentServiceImpl implements ContentService {
             for (ActivityWithBLOBs activity : activityList) {
                 ShowHottestDto.ActivityElement activityElement = ShowHottestDto.createActivityElement();
                 activityElement.setTitle(activity.getActivityHashTitle());
-                activityElement.setCoverImage(activity.getActivityCover());
+                activityElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + activity.getActivityCover());
                 activityElement.setUpdateTime(activity.getUpdateTime());
                 activityElement.setUid(activity.getUid());
                 UserProfile userProfile = userService.getUserProfileByUid(activity.getUid());
@@ -832,6 +832,7 @@ public class ContentServiceImpl implements ContentService {
             hottestContentElement.setLikeCount(content.getLikeCount());
             hottestContentElement.setReviewCount(content.getReviewCount());
             hottestContentElement.setTitle(content.getTitle());
+            hottestContentElement.setCreateTime(content.getCreateTime());
             //系统文章不包含，用户信息
             if(content.getType() == Specification.ArticleType.SYSTEM.index){
 

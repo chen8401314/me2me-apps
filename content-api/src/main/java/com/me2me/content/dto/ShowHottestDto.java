@@ -117,5 +117,7 @@ public class ShowHottestDto implements BaseEntity {
         //直播是否收藏
         private int favorite;
 
+        private Date createTime;
+
     }
 }
