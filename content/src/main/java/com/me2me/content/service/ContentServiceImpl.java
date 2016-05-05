@@ -826,7 +826,7 @@ public class ContentServiceImpl implements ContentService {
         for(Content content : contentList){
             ShowHottestDto.HottestContentElement hottestContentElement = ShowHottestDto.createHottestContentElement();
             hottestContentElement.setType(content.getType());
-            hottestContentElement.setCoverImage(content.getConverImage());
+            hottestContentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
             hottestContentElement.setId(content.getId());
             hottestContentElement.setContent(content.getContent());
             hottestContentElement.setLikeCount(content.getLikeCount());
