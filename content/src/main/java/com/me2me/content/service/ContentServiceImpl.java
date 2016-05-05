@@ -964,10 +964,9 @@ public class ContentServiceImpl implements ContentService {
     private void optionActivity(int action, long id) {
         ActivityWithBLOBs activity = activityService.loadActivityById(id);
         if(action==1){
-            // UGC置热
+            // 取消置热
             activity.setStatus(0);
         }else{
-            // 取消置热
             activity.setStatus(1);
         }
         activityService.modifyActivity(activity);

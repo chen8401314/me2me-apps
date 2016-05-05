@@ -52,6 +52,7 @@ public class ActivityServiceImpl implements ActivityService {
         for(ActivityWithBLOBs activity : list){
             ShowActivityDto.ActivityElement element = showActivityDto.createElement();
             element.setUid(activity.getUid());
+            element.setId(activity.getId());
             element.setStartTime(activity.getStartTime());
             element.setEndTime(activity.getEndTime());
             element.setIssue(activity.getIssue());
