@@ -569,5 +569,10 @@ public class UserServiceImpl implements UserService {
         return  result;
     }
 
+    @Override
+    public ApplicationSecurity getApplicationSecurityByAppId(String appId) {
+        return null;
+    }
+
 
 }

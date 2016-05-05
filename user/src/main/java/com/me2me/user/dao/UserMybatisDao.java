@@ -1,9 +1,11 @@
 package com.me2me.user.dao;
 
 import com.me2me.common.web.Specification;
+import com.me2me.core.security.*;
 import com.me2me.user.dto.*;
 import com.me2me.user.mapper.*;
 import com.me2me.user.model.*;
+import com.me2me.user.model.ApplicationSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -56,6 +58,9 @@ public class UserMybatisDao {
 
     @Autowired
     private UserFollowMapper userFollowMapper;
+
+    @Autowired
+    private ApplicationSecurityMapper applicationSecurityMapper;
     /**
      * 保存用户注册信息
      * @param user
@@ -336,5 +341,13 @@ public class UserMybatisDao {
         UserFollowExample.Criteria criteria =  example.createCriteria();
         criteria.andSourceUidEqualTo(uid);
         return userFollowMapper.selectByExample(example);
+    }
+
+    public ApplicationSecurity getApplicationSecurityByAppId(String appId){
+        ApplicationSecurityExample example = new ApplicationSecurityExample();
+        ApplicationSecurityExample.Criteria criteria = example.createCriteria();
+        criteria.andAppIdEqualTo(appId);
+        List<ApplicationSecurity> list = applicationSecurityMapper.selectByExample(example);
+        return list!=null&&list.size()>0?list.get(0):null;
     }
 }
