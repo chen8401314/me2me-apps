@@ -82,7 +82,7 @@ public class ShowHottestDto implements BaseEntity {
         private String title;
 
         //感受标签，多个标签分号分开。
-        private String feeling;
+        private String tag;
 
         //文章内容图片数量
         private int imageCount;
