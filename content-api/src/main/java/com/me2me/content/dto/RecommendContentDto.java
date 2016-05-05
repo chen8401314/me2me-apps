@@ -31,7 +31,7 @@ public class RecommendContentDto implements BaseEntity {
 
         private String coverImage;
 
-        private String type;
+        private int type;
 
     }
 
