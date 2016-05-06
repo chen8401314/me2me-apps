@@ -37,4 +37,8 @@ public class ModifyUserProfileDto implements BaseEntity{
     private long marriageStatus;
 
     private long bearStatus ;
+
+    private String birthday;
+
+    private String hobby;
 }

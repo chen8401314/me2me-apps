@@ -107,6 +107,15 @@ public class UserMybatisDao {
         return (users!=null&&users.size()>0)? users.get(0):null;
     }
 
+    public User getUserByUid(long uid){
+        UserExample example = new UserExample();
+        UserExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andStatusEqualTo(Specification.UserStatus.NORMAL.index);
+        List<User> users = userMapper.selectByExample(example);
+        return (users!=null&&users.size()>0)? users.get(0):null;
+    }
+
 
     public void modifyUser(User user){
         userMapper.updateByPrimaryKey(user);

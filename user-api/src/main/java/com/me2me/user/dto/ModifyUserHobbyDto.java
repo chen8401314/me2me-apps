@@ -11,6 +11,9 @@ import lombok.Data;
 @Data
 public class ModifyUserHobbyDto {
 
+
+    private long uid ;
+
     private String userName;
 
     private String hobby;

@@ -209,8 +209,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public Response modifyUserHobby(ModifyUserHobbyDto modifyUserHobbyDto){
-        String userName = modifyUserHobbyDto.getUserName();
-        User user = userMybatisDao.getUserByUserName(userName);
+        User user = userMybatisDao.getUserByUid(modifyUserHobbyDto.getUid());
         String hobby = modifyUserHobbyDto.getHobby();
         String [] hobbies = hobby.split(";");
         UserHobby deleteUserHobby = new UserHobby();
@@ -282,10 +281,25 @@ public class UserServiceImpl implements UserService {
      */
     public Response modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto){
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(modifyUserProfileDto.getUid());
-        userProfile.setAvatar(modifyUserProfileDto.getAvatar());
-        userProfile.setNickName(modifyUserProfileDto.getNickName());
-        userProfile.setYearsId(modifyUserProfileDto.getYearsId());
-        userProfile.setGender(modifyUserProfileDto.getGender());
+        if(StringUtils.isEmpty(modifyUserProfileDto.getAvatar())) {
+            userProfile.setAvatar(modifyUserProfileDto.getAvatar());
+        }
+        if(StringUtils.isEmpty(modifyUserProfileDto.getNickName())) {
+            userProfile.setNickName(modifyUserProfileDto.getNickName());
+        }
+        if(StringUtils.isEmpty(modifyUserProfileDto.getGender())) {
+            userProfile.setGender(modifyUserProfileDto.getGender());
+        }
+        if(StringUtils.isEmpty(modifyUserProfileDto.getGender())) {
+            userProfile.setBirthday(modifyUserProfileDto.getBirthday());
+        }
+        //修改用户爱好
+        if(StringUtils.isEmpty(modifyUserProfileDto.getHobby())){
+            ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();
+            modifyUserHobbyDto.setUid(modifyUserProfileDto.getUid());
+            modifyUserHobbyDto.setHobby(modifyUserProfileDto.getHobby());
+            this.modifyUserHobby(modifyUserHobbyDto);
+        }
         userMybatisDao.modifyUserProfile(userProfile);
         modifyUserProfileDto.setAvatar(Constant.QINIU_DOMAIN  + "/" +modifyUserProfileDto.getAvatar());
         return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message,modifyUserProfileDto);

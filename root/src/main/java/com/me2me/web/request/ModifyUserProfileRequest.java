@@ -59,5 +59,12 @@ public class ModifyUserProfileRequest {
     @Setter
     private String avatar;
 
+    @Getter
+    @Setter
+    private String birthday;
+
+    @Getter
+    @Setter
+    private String hobby;
 
 }
