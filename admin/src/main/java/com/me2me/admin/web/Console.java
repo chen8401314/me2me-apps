@@ -68,14 +68,9 @@ public class Console  {
 
     @RequestMapping(value = "/activity_detail")
     public ModelAndView activity_detail(ContentForwardRequest request){
-        ModelAndView mv = new ModelAndView("forward");
-        ActivityH5Dto content = activityService.ActivityH5(request.getId());
+        ModelAndView mv = new ModelAndView("activity_detail");
+        ActivityH5Dto content = activityService.getActivityH5(request.getId());
         if(content!=null) {
-            // 处理特殊字符
-            String cx = content.getActivityContent();
-            cx = StringEscapeUtil.escapeHtml(cx);
-            cx = cx.replace("\n", "<br/>");
-            content.setActivityContent(cx);
             mv.addObject("root",content);
         }else{
             mv.setViewName("error");
