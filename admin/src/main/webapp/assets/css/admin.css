@@ -89,6 +89,16 @@ img,ul,li{
 
 .ue-content-wrapper p{
     padding:0 20px;
-    color:#5d5d5d;
-    font: 16px/22px "helvetica";
+    color:#082441;
+    font: 16px/20px "helvetica";
+}
+.activity-title{
+    font: 18px/22px "helvetica";
+    font-weight: bold;
+    padding:10px 20px;
+    margin:0;
+    color:#082441;
+}
+.image-cover{
+    padding:0 20px;
 }

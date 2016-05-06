@@ -1,5 +1,7 @@
 package com.me2me.admin.web;
 
+import com.me2me.activity.dto.ActivityH5Dto;
+import com.me2me.activity.service.ActivityService;
 import com.me2me.admin.web.request.ContentForwardRequest;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentH5Dto;
@@ -25,6 +27,9 @@ public class Console  {
 
     @Autowired
     private ContentService contentService;
+
+    @Autowired
+    private ActivityService activityService;
 
     @RequestMapping(value = "/data")
     public ModelAndView data(){
@@ -63,16 +68,9 @@ public class Console  {
 
     @RequestMapping(value = "/activity_detail")
     public ModelAndView activity_detail(ContentForwardRequest request){
-        ModelAndView mv = new ModelAndView("forward");
-        ContentH5Dto content = contentService.getContent(request.getId());
+        ModelAndView mv = new ModelAndView("activity_detail");
+        ActivityH5Dto content = activityService.getActivityH5(request.getId());
         if(content!=null) {
-            if (content.getType() != Specification.ArticleType.EDITOR.index) {
-                // 处理特殊字符
-                String cx = content.getContent();
-                cx = StringEscapeUtil.escapeHtml(cx);
-                cx = cx.replace("\n", "<br/>");
-                content.setContent(cx);
-            }
             mv.addObject("root",content);
         }else{
             mv.setViewName("error");

@@ -28,22 +28,14 @@
 <body>
     <div class="container">
         <div class="row">
+                <h3 class="activity-title" th:text="${root.title}"></h3>
                 <th:block th:if="${root.coverImage} ne ''">
                     <div class="image-cover">
                         <img class="img-responsive" th:src="${root.coverImage}" />
                     </div>
                 </th:block>
                 <div class="ue-content-wrapper">
-                    <p th:utext="${root.content}"></p>
-                </div>
-                <div class="image-list">
-                    <ul>
-                        <th:block th:each="url : ${root.imageUrls}">
-                            <li>
-                                <img class="img-responsive" th:src="${url}" />
-                            </li>
-                        </th:block>
-                    </ul>
+                    <p th:utext="${root.activityContent}"></p>
                 </div>
             </div>
     </div>
