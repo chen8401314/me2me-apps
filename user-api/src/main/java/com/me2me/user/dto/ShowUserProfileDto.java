@@ -29,6 +29,10 @@ public class ShowUserProfileDto implements BaseEntity{
 
     private String account;
 
+    private int followedCount;
+
+    private int fansCount;
+
     private List<Hobby> hobbyList = Lists.newArrayList();
 
     public Hobby createHobby(){ return new Hobby();}

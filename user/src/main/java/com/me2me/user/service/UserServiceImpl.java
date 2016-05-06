@@ -583,6 +583,9 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setQiniuKey(Constant.QINIU_DOMAIN);
         showUserProfileDto.setBirthday(userProfile.getBirthday());
         showUserProfileDto.setGender(userProfile.getGender());
+        showUserProfileDto.setAccount(userProfile.getUid().toString());
+        showUserProfileDto.setFollowedCount(userMybatisDao.getUserFollowCount(uid));
+        showUserProfileDto.setFollowedCount(userMybatisDao.getUserFansCount(uid));
         List<UserHobby> list = userMybatisDao.getHobby(uid);
         for (UserHobby userHobby : list){
             ShowUserProfileDto.Hobby hobby = showUserProfileDto.createHobby();

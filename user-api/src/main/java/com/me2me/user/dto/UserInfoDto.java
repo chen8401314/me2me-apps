@@ -46,7 +46,7 @@ public class UserInfoDto implements BaseEntity{
 
         private long cid;
 
-        private String feeling;
+        private String tag;
 
         private String coverImage;
 
