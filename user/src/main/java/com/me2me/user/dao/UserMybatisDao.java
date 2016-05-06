@@ -343,6 +343,20 @@ public class UserMybatisDao {
         return userFollowMapper.selectByExample(example);
     }
 
+    public int getUserFollowCount(long uid){
+        UserFollowExample example = new UserFollowExample();
+        UserFollowExample.Criteria criteria =  example.createCriteria();
+        criteria.andSourceUidEqualTo(uid);
+        return userFollowMapper.countByExample(example);
+    }
+
+    public int getUserFansCount(long uid){
+        UserFollowExample example = new UserFollowExample();
+        UserFollowExample.Criteria criteria =  example.createCriteria();
+        criteria.andTargetUidEqualTo(uid);
+        return userFollowMapper.countByExample(example);
+    }
+
     public List<UserHobby> getHobby(long uid){
         UserHobbyExample example = new UserHobbyExample();
         UserHobbyExample.Criteria criteria = example.createCriteria();
