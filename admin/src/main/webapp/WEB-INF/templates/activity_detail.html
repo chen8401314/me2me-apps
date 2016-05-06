@@ -34,16 +34,7 @@
                     </div>
                 </th:block>
                 <div class="ue-content-wrapper">
-                    <p th:utext="${root.content}"></p>
-                </div>
-                <div class="image-list">
-                    <ul>
-                        <th:block th:each="url : ${root.imageUrls}">
-                            <li>
-                                <img class="img-responsive" th:src="${url}" />
-                            </li>
-                        </th:block>
-                    </ul>
+                    <p th:utext="${root.activityContent}"></p>
                 </div>
             </div>
     </div>
