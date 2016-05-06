@@ -145,7 +145,7 @@ public class ActivityServiceImpl implements ActivityService {
 
 
     @Override
-    public ActivityH5Dto ActivityH5(long id) {
+    public ActivityH5Dto getActivityH5(long id) {
         ActivityH5Dto activityH5Dto = new ActivityH5Dto();
         ActivityWithBLOBs activityWithBLOBs = activityMybatisDao.getActivityById(id);
         if(activityWithBLOBs == null){
