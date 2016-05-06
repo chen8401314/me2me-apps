@@ -38,5 +38,5 @@ public interface ActivityService {
 
     void joinActivity(String content,long uid);
 
-    public ActivityH5Dto getContent(long id);
+    public ActivityH5Dto ActivityH5(long id);
 }
