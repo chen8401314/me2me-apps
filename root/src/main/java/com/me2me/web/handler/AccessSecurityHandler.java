@@ -34,22 +34,22 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
-        String is_skip = request.getParameter("is_skip");
-        if(!"ok".equals(is_skip)){
-            String value = request.getParameter("security");
-            JsonSecurity jsonSecurity = JSON.parse(value, JsonSecurity.class);
-            // 检测签名
-            ApplicationSecurity applicationSecurity = userService.getApplicationSecurityByAppId(jsonSecurity.getAppId());
-            if(applicationSecurity==null){
-                throw new AppIdException("appId not exists!");
-            }else{
-                String secretKey = applicationSecurity.getSecretKey();
-                String sign = SecurityUtils.sign(jsonSecurity.getAppId(),secretKey,String.valueOf(jsonSecurity.getCurrentTime()),jsonSecurity.getNonce());
-                if(!sign.equals(jsonSecurity)){
-                    throw new AccessSignNotMatchException("app access sign not match,please check your application!");
-                }
-            }
-        }
+//        String is_skip = request.getParameter("is_skip");
+//        if(!"ok".equals(is_skip)){
+//            String value = request.getParameter("security");
+//            JsonSecurity jsonSecurity = JSON.parse(value, JsonSecurity.class);
+//            // 检测签名
+//            ApplicationSecurity applicationSecurity = userService.getApplicationSecurityByAppId(jsonSecurity.getAppId());
+//            if(applicationSecurity==null){
+//                throw new AppIdException("appId not exists!");
+//            }else{
+//                String secretKey = applicationSecurity.getSecretKey();
+//                String sign = SecurityUtils.sign(jsonSecurity.getAppId(),secretKey,String.valueOf(jsonSecurity.getCurrentTime()),jsonSecurity.getNonce());
+//                if(!sign.equals(jsonSecurity)){
+//                    throw new AccessSignNotMatchException("app access sign not match,please check your application!");
+//                }
+//            }
+//        }
 
         String uid = request.getParameter("uid");
         String token = request.getParameter("token");
