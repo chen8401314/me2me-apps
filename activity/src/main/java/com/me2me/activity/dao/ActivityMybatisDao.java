@@ -100,13 +100,12 @@ public class ActivityMybatisDao {
         userActivityMapper.insertSelective(userActivity);
     }
 
-    public static void main(String[] args) {
-
-        String regex = ".*#.*#.*";
-        String demo = "dasdasd#abcdefsdfd#";
-        if(demo.matches(regex)){
-
-            System.out.println(demo);
-        }
+    public boolean isEnd(long id) {
+        ActivityExample example = new ActivityExample();
+        ActivityExample.Criteria criteria = example.createCriteria();
+        criteria.andEndTimeLessThan(new Date());
+        criteria.andIdEqualTo(id);
+        List<ActivityWithBLOBs> list = activityMapper.selectByExampleWithBLOBs(example);
+        return list!=null&&list.size()>0?true:false;
     }
 }
