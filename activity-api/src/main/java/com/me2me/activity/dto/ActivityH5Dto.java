@@ -13,6 +13,7 @@ import java.util.Date;
  */
 @Data
 public class ActivityH5Dto implements BaseEntity{
+
     //活动标题
     private String title;
 
