@@ -579,8 +579,8 @@ public class UserServiceImpl implements UserService {
         ShowUserProfileDto showUserProfileDto = new ShowUserProfileDto();
         showUserProfileDto.setUid(userProfile.getUid());
         showUserProfileDto.setNickName(userProfile.getNickName());
-        showUserProfileDto.setAvatar(userProfile.getAvatar());
-        showUserProfileDto.setDomainQiniu(Constant.QINIU_DOMAIN);
+        showUserProfileDto.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
+        showUserProfileDto.setQiniuKey(Constant.QINIU_DOMAIN);
         showUserProfileDto.setBirthday(userProfile.getBirthday());
         showUserProfileDto.setGender(userProfile.getGender());
         List<UserHobby> list = userMybatisDao.getHobby(uid);

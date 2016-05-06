@@ -21,7 +21,7 @@ public class ShowUserProfileDto implements BaseEntity{
 
     private int gender;
 
-    private String domainQiniu;
+    private String qiniuKey;
 
     private String avatar;
 
