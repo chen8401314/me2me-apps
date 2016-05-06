@@ -2,6 +2,8 @@ package com.me2me.activity.service;
 
 import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dto.*;
+import com.me2me.activity.model.Activity;
+import com.me2me.activity.model.ActivityExample;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.model.UserActivity;
 import com.me2me.common.Constant;
@@ -13,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Date;
 import java.util.List;
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
@@ -134,16 +137,17 @@ public class ActivityServiceImpl implements ActivityService {
             String hashTitle = matcher.group(2);
             // 获取hash title
             ActivityWithBLOBs activityWithBLOBs = activityMybatisDao.getActivityByHashTitle(hashTitle);
-            // todo 判断当前活动是否过期
-            activityWithBLOBs.setPersonTimes(activityWithBLOBs.getPersonTimes()+1);
-            activityMybatisDao.updateActivity(activityWithBLOBs);
-            UserActivity userActivity = new UserActivity();
-            userActivity.setActivityId(activityWithBLOBs.getId());
-            userActivity.setUid(uid);
-            activityMybatisDao.createUserActivity(userActivity);
+            // 判断当前活动是否过期
+            if(activityMybatisDao.isEnd(activityWithBLOBs.getId())) {
+                activityWithBLOBs.setPersonTimes(activityWithBLOBs.getPersonTimes() + 1);
+                activityMybatisDao.updateActivity(activityWithBLOBs);
+                UserActivity userActivity = new UserActivity();
+                userActivity.setActivityId(activityWithBLOBs.getId());
+                userActivity.setUid(uid);
+                activityMybatisDao.createUserActivity(userActivity);
+            }
         }
     }
-
 
     @Override
     public ActivityH5Dto getActivityH5(long id) {
