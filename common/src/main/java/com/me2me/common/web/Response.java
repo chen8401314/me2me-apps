@@ -39,7 +39,7 @@ public class Response<T extends Serializable>  {
     private T data;
     @Getter
     @Setter
-    private String accessToken = SecurityUtils.getToken();
+    private String accessToken;
 
 
     public Response(int code,String message,T data){
@@ -139,6 +139,7 @@ public class Response<T extends Serializable>  {
     public void refreshAccessToken(){
         String accessToken = this.getAccessToken();
         // put to redis cache
+        this.accessToken = SecurityUtils.getAccessToken();
     }
 
 
