@@ -14,7 +14,7 @@ public class JsonSecurity implements Serializable {
 
     private String appId;
 
-    private long currentTime;
+    private String currentTime;
 
     private String nonce;
 

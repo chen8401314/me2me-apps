@@ -58,8 +58,8 @@ public class SecurityUtils {
     private static final char[] HEX_DIGITS = { '0', '1', '2', '3', '4', '5',
             '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
     // 计算并获取CheckSum
-    public static String sign(String appId,String appSecret, String nonce, String curTime) {
-        return encode("sha1", appId + appSecret + curTime + nonce);
+    public static String sign(String appId,String appSecret, String currentTime,String nonce) {
+        return encode("sha1", appId+appSecret+currentTime+nonce);
     }
 
     // 计算并获取md5值
@@ -91,7 +91,19 @@ public class SecurityUtils {
     }
 
     public static void main(String[] args) {
-        String value = SecurityUtils.getMD5(System.currentTimeMillis()+"");
+        // {"appId":"100201","currentTime":"1462506856063","nonce":"eb7f64582ed7451aba4c98cb8af8503b",
+        // "secretKey":"5e516c1db595b1666d4155ab577fabc9","sign":"5fc47faf67e232c465d11b6a7af4837f0c6853ee"}
+
+        // {"appId":"100201","currentTime":"1462513977928","nonce":"65ef133cc2ca46dda98908043e684ef9",
+        // "secretKey":"5e516c1db595b1666d4155ab577fabc9","sign":"2c424fe8480048ac93e55977902d254dbb7f4666"}
+//        public static String sign(String appId,String appSecret, String nonce, String curTime) {
+//            return encode("sha1", appId + appSecret + curTime + nonce);
+//        }
+        // {"appId":"100201","currentTime":"1462514238489",
+        // "nonce":"c20a626961b849969882fc5aa6417371",
+        // "secretKey":"5e516c1db595b1666d4155ab577fabc9","sign":"b207e3058d331c3670fd60aa669a50b3df91dca8"}
+        String value = SecurityUtils.sign("100201","5e516c1db595b1666d4155ab577fabc9","1462514238489","c20a626961b849969882fc5aa6417371");
+        System.out.println(value);
     }
 
 }

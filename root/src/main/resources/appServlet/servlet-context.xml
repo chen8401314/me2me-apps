@@ -47,21 +47,23 @@
     <mvc:interceptors>
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
-            <mvc:exclude-mapping path="/api/user/login"/>
-            <mvc:exclude-mapping path="/api/user/signUp"/>
-            <mvc:exclude-mapping path="/api/user/findEncrypt"/>
-            <mvc:exclude-mapping path="/api/user/verify"/>
-            <mvc:exclude-mapping path="/api/user/getBasicDataByType"/>
-            <mvc:exclude-mapping path="/api/console/bindAccount"/>
+            <!--&lt;!&ndash;白名单接口&ndash;&gt;-->
+            <!--<mvc:exclude-mapping path="/api/user/login"/>-->
+            <!--<mvc:exclude-mapping path="/api/user/signUp"/>-->
+            <!--<mvc:exclude-mapping path="/api/user/findEncrypt"/>-->
+            <!--<mvc:exclude-mapping path="/api/user/verify"/>-->
+            <!--<mvc:exclude-mapping path="/api/user/getBasicDataByType"/>-->
 
-            <!--斌哥接口通道-->
-            <mvc:exclude-mapping path="/api/console/showContents"/>
-            <mvc:exclude-mapping path="/api/console/showActivity"/>
-            <mvc:exclude-mapping path="/api/content/publish"/>
-            <mvc:exclude-mapping path="/api/console/createActivity"/>
-            <mvc:exclude-mapping path="/api/console/option"/>
-            <mvc:exclude-mapping path="/api/console/createActivityNotice"/>
-            <!-- end -->
+            <!--&lt;!&ndash;斌哥接口通道&ndash;&gt;-->
+            <!--<mvc:exclude-mapping path="/api/console/showContents"/>-->
+            <!--<mvc:exclude-mapping path="/api/console/showActivity"/>-->
+            <!--<mvc:exclude-mapping path="/api/content/publish"/>-->
+            <!--<mvc:exclude-mapping path="/api/console/createActivity"/>-->
+            <!--<mvc:exclude-mapping path="/api/console/option"/>-->
+            <!--<mvc:exclude-mapping path="/api/console/createActivityNotice"/>-->
+            <!--<mvc:exclude-mapping path="/api/console/showDetails"/>-->
+            <!--<mvc:exclude-mapping path="/api/console/bindAccount"/>-->
+            <!--&lt;!&ndash; end &ndash;&gt;-->
             <bean class="com.me2me.web.handler.AccessSecurityHandler"/>
         </mvc:interceptor>
     </mvc:interceptors>

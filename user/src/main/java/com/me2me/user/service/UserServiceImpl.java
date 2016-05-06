@@ -463,12 +463,13 @@ public class UserServiceImpl implements UserService {
         List<UserFansDto> list = userMybatisDao.getFans(fansParamsDto);
         for(UserFansDto userFansDto : list){
             userFansDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFansDto.getAvatar());
-            int followMe = this.isFollow(userFansDto.getUid(),fansParamsDto.getTargetUid());
-            userFansDto.setIsFollowMe(followMe);
+            int followed = this.isFollow(userFansDto.getUid(),fansParamsDto.getTargetUid());
+            userFansDto.setIsFollowed(followed);
+            userFansDto.setIsFollowMe(1);
         }
         ShowUserFansDto showUserFansDto = new ShowUserFansDto();
         showUserFansDto.setResult(list);
-        return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message,showUserFansDto);
+        return Response.success(ResponseStatus.SHOW_USER_FANS_LIST_SUCCESS.status, ResponseStatus.SHOW_USER_FANS_LIST_SUCCESS.message,showUserFansDto);
     }
 
     @Override
@@ -585,7 +586,7 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setGender(userProfile.getGender());
         showUserProfileDto.setAccount(userProfile.getUid().toString());
         showUserProfileDto.setFollowedCount(userMybatisDao.getUserFollowCount(uid));
-        showUserProfileDto.setFollowedCount(userMybatisDao.getUserFansCount(uid));
+        showUserProfileDto.setFansCount(userMybatisDao.getUserFansCount(uid));
         List<UserHobby> list = userMybatisDao.getHobby(uid);
         for (UserHobby userHobby : list){
             ShowUserProfileDto.Hobby hobby = showUserProfileDto.createHobby();
