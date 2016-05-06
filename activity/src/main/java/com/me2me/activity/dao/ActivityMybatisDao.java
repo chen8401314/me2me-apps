@@ -63,7 +63,11 @@ public class ActivityMybatisDao {
         ActivityExample.Criteria criteria = example.createCriteria();
         criteria.andStatusEqualTo(Specification.ActivityStatus.NORMAL.index);
         criteria.andStartTimeLessThanOrEqualTo(new Date());
-        example.setOrderByClause(" issue desc limit 4 ");
+        ActivityExample.Criteria criteria2 = example.createCriteria();
+        criteria2.andInternalStatusEqualTo(Specification.ActivityInternalStatus.NOTICED.index);
+        criteria2.andStatusEqualTo(Specification.ActivityStatus.NORMAL.index);
+        example.or(criteria2);
+        example.setOrderByClause(" issue desc ");
         return activityMapper.selectByExampleWithBLOBs(example);
     }
 
