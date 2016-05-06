@@ -1,10 +1,7 @@
 package com.me2me.activity.service;
 
 import com.me2me.activity.dao.ActivityMybatisDao;
-import com.me2me.activity.dto.CreateActivityDto;
-import com.me2me.activity.dto.CreateActivityNoticeDto;
-import com.me2me.activity.dto.ShowActivitiesDto;
-import com.me2me.activity.dto.ShowActivityDto;
+import com.me2me.activity.dto.*;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.model.UserActivity;
 import com.me2me.common.Constant;
@@ -147,6 +144,26 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
 
+    @Override
+    public ActivityH5Dto getContent(long id) {
+        ActivityH5Dto activityH5Dto = new ActivityH5Dto();
+        ActivityWithBLOBs activityWithBLOBs = activityMybatisDao.getActivityById(id);
+        if(activityWithBLOBs == null){
+            return null;
+        }
+        int internalStatus = activityWithBLOBs.getInternalStatus();
+        if(internalStatus == Specification.ActivityInternalStatus.NOTICED.index){
+            activityH5Dto.setActivityContent(activityWithBLOBs.getActivityResult());
+            activityH5Dto.setTitle(activityWithBLOBs.getActivityNoticeTitle());
+            activityH5Dto.setCoverImage(Constant.QINIU_DOMAIN + "/" + activityWithBLOBs.getActivityNoticeCover());
+        }else {
+            activityH5Dto.setActivityContent(activityWithBLOBs.getActivityContent());
+            activityH5Dto.setTitle(activityWithBLOBs.getActivityTitle());
+            activityH5Dto.setCoverImage(Constant.QINIU_DOMAIN + "/" + activityWithBLOBs.getActivityCover());
+        }
+
+        return activityH5Dto;
+    }
 
     public static void main(String[] args) {
         Pattern pattern = Pattern.compile("(.*)(#.{0,128}#)(.*)");
