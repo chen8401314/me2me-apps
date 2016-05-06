@@ -901,7 +901,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setType(content.getType());
             contentElement.setTitle(content.getTitle());
             String cover = content.getConverImage();
-            if(StringUtils.isEmpty(cover)) {
+            if(!StringUtils.isEmpty(cover)) {
                 contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
             }
             contentElement.setTag(content.getFeeling());
