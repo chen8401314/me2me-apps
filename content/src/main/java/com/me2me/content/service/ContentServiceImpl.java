@@ -636,7 +636,7 @@ public class ContentServiceImpl implements ContentService {
         userInfoDto.getUser().setIsFollow(userService.isFollow(targetUid,sourceUid));
         for (Content content : list){
             UserInfoDto.ContentElement contentElement = UserInfoDto.createElement();
-            contentElement.setFeeling(content.getFeeling());
+            contentElement.setTag(content.getFeeling());
             contentElement.setContent(content.getContent());
             contentElement.setCid(content.getId());
             contentElement.setCreateTime(content.getCreateTime());
