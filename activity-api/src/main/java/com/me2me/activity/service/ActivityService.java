@@ -28,7 +28,7 @@ public interface ActivityService {
 
     List<ActivityWithBLOBs> getActivityTop5();
 
-    Response getActivity(int sinceId);
+    Response getActivity(int sinceId,long uid);
 
     ActivityWithBLOBs loadActivityById(long id);
 

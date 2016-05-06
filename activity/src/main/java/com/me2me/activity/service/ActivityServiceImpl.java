@@ -81,7 +81,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Response getActivity(int sinceId) {
+    public Response getActivity(int sinceId,long uid) {
         ShowActivitiesDto showActivitiesDto = new ShowActivitiesDto();
         List<ActivityWithBLOBs> list = activityMybatisDao.getActivity(sinceId);
         for(ActivityWithBLOBs activity : list){
@@ -96,6 +96,8 @@ public class ActivityServiceImpl implements ActivityService {
             activityElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             activityElement.setNickName(userProfile.getNickName());
             activityElement.setId(activity.getId());
+            activityElement.setUpdateTime(activity.getUpdateTime());
+            activityElement.setIsFollowed(userService.isFollow(activity.getUid(),uid));
             showActivitiesDto.getActivityData().add(activityElement);
         }
         return Response.success(showActivitiesDto);

@@ -52,7 +52,7 @@ public class Home extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-       return activityService.getActivity(request.getSinceId());
+       return activityService.getActivity(request.getSinceId(),request.getUid());
     }
 
 
