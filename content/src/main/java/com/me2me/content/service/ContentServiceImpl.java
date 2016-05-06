@@ -180,7 +180,7 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setNickName(userProfile.getNickName());
             squareDataElement.setContent(content.getContent());
             squareDataElement.setTitle(content.getTitle());
-            squareDataElement.setFeeling(content.getFeeling());
+            squareDataElement.setTag(content.getFeeling());
             ContentTags contentTags = contentMybatisDao.getContentTags(content.getFeeling());
             squareDataElement.setTid(contentTags.getId());
             squareDataElement.setType(content.getType());

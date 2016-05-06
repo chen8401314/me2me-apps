@@ -44,7 +44,7 @@ public class SquareDataDto implements BaseEntity {
 
         private String content;
 
-        private String feeling;
+        private String tag;
 
         private int type;
 
