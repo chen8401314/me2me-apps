@@ -95,6 +95,7 @@ public class ActivityServiceImpl implements ActivityService {
             UserProfile userProfile = userService.getUserProfileByUid(activity.getUid());
             activityElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             activityElement.setNickName(userProfile.getNickName());
+            activityElement.setId(activity.getId());
             showActivitiesDto.getActivityData().add(activityElement);
         }
         return Response.success(showActivitiesDto);
