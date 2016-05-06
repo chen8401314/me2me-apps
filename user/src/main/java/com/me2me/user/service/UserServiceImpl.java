@@ -586,7 +586,7 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setGender(userProfile.getGender());
         showUserProfileDto.setAccount(userProfile.getUid().toString());
         showUserProfileDto.setFollowedCount(userMybatisDao.getUserFollowCount(uid));
-        showUserProfileDto.setFollowedCount(userMybatisDao.getUserFansCount(uid));
+        showUserProfileDto.setFansCount(userMybatisDao.getUserFansCount(uid));
         List<UserHobby> list = userMybatisDao.getHobby(uid);
         for (UserHobby userHobby : list){
             ShowUserProfileDto.Hobby hobby = showUserProfileDto.createHobby();
