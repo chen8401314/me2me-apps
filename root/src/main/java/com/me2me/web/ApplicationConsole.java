@@ -1,6 +1,5 @@
 package com.me2me.web;
 
-import com.me2me.activity.dto.CleanHtmlDto;
 import com.me2me.activity.dto.CreateActivityDto;
 import com.me2me.activity.dto.CreateActivityNoticeDto;
 import com.me2me.activity.service.ActivityService;
@@ -99,16 +98,6 @@ public class ApplicationConsole extends BaseController {
         createActivityDto.setStartTime(request.getStartTime());
         createActivityDto.setEndTime(request.getEndTime());
         return activityService.createActivity(createActivityDto);
-    }
-
-
-    @RequestMapping(value = "/cleanHtml",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public Response cleanHtml(CleanHtmlRequest request){
-        String html = StringEscapeUtil.unescapeHtml(request.getHtml());
-        CleanHtmlDto cleanHtmlDto = new CleanHtmlDto();
-        cleanHtmlDto.setResult(html);
-        return Response.success(cleanHtmlDto);
     }
 
     /**
