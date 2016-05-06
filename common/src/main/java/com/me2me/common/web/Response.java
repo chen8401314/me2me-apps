@@ -6,6 +6,8 @@ package com.me2me.common.web;
  * Date: 2016/2/26.
  */
 
+import com.me2me.common.security.SecurityUtils;
+import com.me2me.common.utils.CommonUtils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -35,6 +37,9 @@ public class Response<T extends Serializable>  {
     @Getter
     @Setter
     private T data;
+    @Getter
+    @Setter
+    private String accessToken = SecurityUtils.getToken();
 
 
     public Response(int code,String message,T data){
@@ -54,7 +59,9 @@ public class Response<T extends Serializable>  {
      * @return
      */
     public static <T extends BaseEntity> Response success(T data){
-        return new Response(DEDFAULT_CODE_SUCCESS,DEFAULT_MESSAGE_SUCCESS,data);
+        Response response =  new Response(DEDFAULT_CODE_SUCCESS,DEFAULT_MESSAGE_SUCCESS,data);
+        response.refreshAccessToken();
+        return response;
     }
 
     /**
@@ -62,7 +69,9 @@ public class Response<T extends Serializable>  {
      * @return
      */
     public static <T extends BaseEntity> Response success(){
-        return new Response(DEDFAULT_CODE_SUCCESS,DEFAULT_MESSAGE_SUCCESS);
+        Response response =  new Response(DEDFAULT_CODE_SUCCESS,DEFAULT_MESSAGE_SUCCESS);
+        response.refreshAccessToken();
+        return response;
     }
 
     /**
@@ -71,7 +80,9 @@ public class Response<T extends Serializable>  {
      * @return
      */
     public static Response failure(String message){
-        return new Response(DEFAULT_CODE_FAILURE,DEFAULT_MESSAGE_FAILURE,message);
+        Response response =  new Response(DEFAULT_CODE_FAILURE,DEFAULT_MESSAGE_FAILURE,message);
+        response.refreshAccessToken();
+        return response;
     }
 
     /**
@@ -80,7 +91,10 @@ public class Response<T extends Serializable>  {
      * @return
      */
     public static Response failure(int code,String message){
-        return new Response(code,message);
+        Response response =  new Response(code,message);
+        response.refreshAccessToken();
+        return response;
+
     }
 
     /**
@@ -90,7 +104,9 @@ public class Response<T extends Serializable>  {
      * @return
      */
     public static <T extends BaseEntity> Response success(int code,String message){
-        return new Response(code,message);
+        Response response =  new Response(code,message);
+        response.refreshAccessToken();
+        return response;
     }
 
     /**
@@ -101,7 +117,9 @@ public class Response<T extends Serializable>  {
      * @return
      */
     public static <T extends BaseEntity> Response success(int code,String message,T data){
-        return new Response(code,message,data);
+        Response response =  new Response(code,message,data);
+        response.refreshAccessToken();
+        return response;
     }
 
     /**
@@ -112,7 +130,15 @@ public class Response<T extends Serializable>  {
      * @return
      */
     public static <T extends BaseEntity> Response failure(int code,String message,T data){
-        return new Response(code,message,data);
+
+        Response response =  new Response(code,message,data);
+        response.refreshAccessToken();
+        return response;
+    }
+
+    public void refreshAccessToken(){
+        String accessToken = this.getAccessToken();
+        // put to redis cache
     }
 
 

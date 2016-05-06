@@ -54,7 +54,7 @@ public class SecurityUtils {
     private static final char[] HEX_DIGITS = { '0', '1', '2', '3', '4', '5',
             '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
     // 计算并获取CheckSum
-    public static String getCheckSum(String appId,String appSecret, String nonce, String curTime) {
+    public static String sign(String appId,String appSecret, String nonce, String curTime) {
         return encode("sha1", appId + appSecret + curTime + nonce);
     }
 
@@ -88,7 +88,6 @@ public class SecurityUtils {
 
     public static void main(String[] args) {
         String value = SecurityUtils.getMD5(System.currentTimeMillis()+"");
-        System.out.println(value);
     }
 
 }
