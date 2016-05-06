@@ -48,6 +48,10 @@ public class SecurityUtils {
         return UUID.randomUUID().toString().replace("-","");
     }
 
+    public static String getAccessToken(){
+        return UUID.randomUUID().toString().replace("-","");
+    }
+
 
 
 
