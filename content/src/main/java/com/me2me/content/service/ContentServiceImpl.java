@@ -809,7 +809,10 @@ public class ContentServiceImpl implements ContentService {
             for (ActivityWithBLOBs activity : activityList) {
                 ShowHottestDto.ActivityElement activityElement = ShowHottestDto.createActivityElement();
                 activityElement.setTitle(activity.getActivityHashTitle());
-                activityElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + activity.getActivityCover());
+                String cover = activity.getActivityCover();
+                if(!StringUtils.isEmpty(cover)) {
+                    activityElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
+                }
                 activityElement.setUpdateTime(activity.getUpdateTime());
                 activityElement.setUid(activity.getUid());
                 UserProfile userProfile = userService.getUserProfileByUid(activity.getUid());
@@ -826,7 +829,10 @@ public class ContentServiceImpl implements ContentService {
         for(Content content : contentList){
             ShowHottestDto.HottestContentElement hottestContentElement = ShowHottestDto.createHottestContentElement();
             hottestContentElement.setType(content.getType());
-            hottestContentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
+            String cover = content.getConverImage();
+            if(!StringUtils.isEmpty(cover)) {
+                hottestContentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
+            }
             hottestContentElement.setId(content.getId());
             hottestContentElement.setContent(content.getContent());
             hottestContentElement.setLikeCount(content.getLikeCount());
@@ -894,7 +900,10 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setContent(content.getContent());
             contentElement.setType(content.getType());
             contentElement.setTitle(content.getTitle());
-            contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
+            String cover = content.getConverImage();
+            if(StringUtils.isEmpty(cover)) {
+                contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
+            }
             contentElement.setTag(content.getFeeling());
             contentElement.setForwardCid(content.getForwardCid());
             if(content.getType() == Specification.ArticleType.LIVE.index) {
@@ -937,7 +946,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setForwardCid(content.getForwardCid());
             String cover =  content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
-                contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
+                contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
             }
             contentElement.setTag(content.getFeeling());
             //查询直播状态
