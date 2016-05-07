@@ -18,7 +18,7 @@ public class ModifyUserProfileRequest extends Request{
 
     @Getter
     @Setter
-    private int gender;
+    private Integer gender;
 
     @Getter
     @Setter
@@ -26,27 +26,7 @@ public class ModifyUserProfileRequest extends Request{
 
     @Getter
     @Setter
-    private long yearsId;
-
-    @Getter
-    @Setter
-    private long startId;
-
-    @Getter
-    @Setter
-    private long socialClass;
-
-    @Getter
-    @Setter
-    private long industry;
-
-    @Getter
-    @Setter
-    private long marriageStatus;
-
-    @Getter
-    @Setter
-    private long bearStatus ;
+    private Long yearsId;
 
     @Getter
     @Setter

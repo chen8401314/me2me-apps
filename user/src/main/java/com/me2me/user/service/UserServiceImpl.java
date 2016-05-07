@@ -279,18 +279,6 @@ public class UserServiceImpl implements UserService {
      */
     public Response modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto){
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(modifyUserProfileDto.getUid());
-        if(StringUtils.isEmpty(modifyUserProfileDto.getAvatar())) {
-            userProfile.setAvatar(modifyUserProfileDto.getAvatar());
-        }
-        if(StringUtils.isEmpty(modifyUserProfileDto.getNickName())) {
-            userProfile.setNickName(modifyUserProfileDto.getNickName());
-        }
-        if(StringUtils.isEmpty(modifyUserProfileDto.getGender())) {
-            userProfile.setGender(modifyUserProfileDto.getGender());
-        }
-        if(StringUtils.isEmpty(modifyUserProfileDto.getGender())) {
-            userProfile.setBirthday(modifyUserProfileDto.getBirthday());
-        }
         //修改用户爱好
         if(!StringUtils.isEmpty(modifyUserProfileDto.getHobby())){
             ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();
@@ -299,8 +287,7 @@ public class UserServiceImpl implements UserService {
             this.modifyUserHobby(modifyUserHobbyDto);
         }
         userMybatisDao.modifyUserProfile(userProfile);
-        modifyUserProfileDto.setAvatar(Constant.QINIU_DOMAIN  + "/" +userProfile.getAvatar());
-        return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message,modifyUserProfileDto);
+        return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message);
     }
 
     @Override
@@ -592,7 +579,6 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setUid(userProfile.getUid());
         showUserProfileDto.setNickName(userProfile.getNickName());
         showUserProfileDto.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
-        showUserProfileDto.setQiniuKey(Constant.QINIU_DOMAIN);
         showUserProfileDto.setBirthday(userProfile.getBirthday());
         showUserProfileDto.setGender(userProfile.getGender());
         showUserProfileDto.setMeNumber(userProfile.getUid().toString());
