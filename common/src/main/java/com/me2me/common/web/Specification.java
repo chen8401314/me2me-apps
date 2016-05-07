@@ -375,4 +375,22 @@ public interface Specification {
         }
     }
 
+
+    /**
+     * 内容类型
+     */
+    public  enum ContentType{
+
+        TEXT("图文",0),
+
+        OTHER("其他",1);
+
+        public final String name;
+        public final int index;
+        ContentType(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
 }

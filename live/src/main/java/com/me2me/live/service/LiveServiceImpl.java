@@ -52,8 +52,8 @@ public class LiveServiceImpl implements LiveService {
         contentDto.setUid(createLiveDto.getUid());
         contentDto.setType(Specification.ArticleType.LIVE.index);
         contentDto.setForwardCid(topic.getId());
-        contentDto.setContentType(0);
-        contentDto.setRights(1);
+        contentDto.setContentType(Specification.ContentType.TEXT.index);
+        contentDto.setRights(Specification.ContentRights.EVERY.index);
         contentService.publish(contentDto);
         return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status,ResponseStatus.USER_CREATE_LIVE_SUCCESS.message);
     }
