@@ -279,6 +279,9 @@ public class UserServiceImpl implements UserService {
      */
     public Response modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto){
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(modifyUserProfileDto.getUid());
+        if(!this.existsNickName(modifyUserProfileDto.getNickName())){
+            return Response.failure(ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.status,ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.message);
+        }
         userProfile.setNickName(modifyUserProfileDto.getNickName());
         userProfile.setGender(modifyUserProfileDto.getGender());
         userProfile.setBirthday(modifyUserProfileDto.getBirthday());
