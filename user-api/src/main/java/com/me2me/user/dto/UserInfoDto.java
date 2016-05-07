@@ -56,6 +56,10 @@ public class UserInfoDto implements BaseEntity{
 
         private int likeCount;
 
+        private int reviewCount;
+
+        private int personCount;
+
         private int hotValue;
 
         private Long forwardCid;

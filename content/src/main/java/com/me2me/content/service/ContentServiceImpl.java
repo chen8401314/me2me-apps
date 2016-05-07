@@ -1,7 +1,6 @@
 package com.me2me.content.service;
 
 import com.google.common.collect.Lists;
-import com.me2me.activity.model.Activity;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.Constant;
@@ -16,7 +15,6 @@ import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
-import com.plusnet.forecast.domain.GPS;
 import com.plusnet.search.content.RecommendRequest;
 import com.plusnet.search.content.RecommendResponse;
 import com.plusnet.search.content.api.ContentRecommendService;
@@ -182,31 +180,15 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setContent(content.getContent());
             squareDataElement.setTitle(content.getTitle());
             squareDataElement.setTag(content.getFeeling());
-            ContentTags contentTags = contentMybatisDao.getContentTags(content.getFeeling());
-            // squareDataElement.setTid(contentTags.getId());
             squareDataElement.setType(content.getType());
-            // squareDataElement.setIsLike(isLike(uid,content.getId(),contentTags.getId()));
             squareDataElement.setCreateTime(content.getCreateTime());
             if(!StringUtils.isEmpty(content.getConverImage())) {
                 squareDataElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
             }else{
                 squareDataElement.setCoverImage("");
             }
-            ContentUserLikesCount c = new ContentUserLikesCount();
-            // c.setTid(contentTags.getId());
-            c.setCid(content.getId());
-            // int likesCount = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTags.getId());
-            // squareDataElement.setLikeCount(likesCount);
             squareDataElement.setHotValue(content.getHotValue());
-            if(!StringUtils.isEmpty(content.getThumbnail())) {
-                squareDataElement.setThumbnail(Constant.QINIU_DOMAIN + "/" + content.getThumbnail());
-            }else{
-                squareDataElement.setThumbnail("");
-            }
-            squareDataElement.setThumbnail(Constant.QINIU_DOMAIN + "/" + content.getThumbnail());
-            squareDataElement.setForwardTitle(content.getForwardTitle());
             squareDataElement.setContentType(content.getContentType());
-            squareDataElement.setForwardUrl(content.getForwardUrl());
             long contentUid = content.getUid();
             int follow = userService.isFollow(contentUid,uid);
             squareDataElement.setIsFollowed(follow);
@@ -219,30 +201,9 @@ public class ContentServiceImpl implements ContentService {
                 //直播是否收藏
                 squareDataElement.setFavorite(favorite);
             }
-            List<LoadAllFeelingDto> list  = contentMybatisDao.loadAllFeeling(content.getId(),Integer.MAX_VALUE);
-            int i = 0;
-            for (LoadAllFeelingDto loadAllFeelingDto : list) {
-                if (i > 3) {
-                    break;
-                }
-                LikeDto likeDto = new LikeDto();
-                likeDto.setCid(loadAllFeelingDto.getCid());
-                likeDto.setUid(loadAllFeelingDto.getUid());
-//                likeDto.setCustomerId(uid);
-//                likeDto.setTid(loadAllFeelingDto.getTid());
-                ContentUserLikes contentUserLikes = contentMybatisDao.getContentUserLike(likeDto);
-                SquareDataDto.SquareDataElement.TagElement tagElement = squareDataElement.createElement();
-                if (contentUserLikes == null) {
-                    tagElement.setIsLike(Specification.IsLike.UNLIKE.index);
-                } else {
-                    tagElement.setIsLike(Specification.IsLike.LIKE.index);
-                }
-                int likeCount = contentMybatisDao.getContentUserLikesCount(content.getId(), loadAllFeelingDto.getTid());
-                tagElement.setLikeCount(likeCount);
-                tagElement.setTag(loadAllFeelingDto.getTag());
-                squareDataElement.getTags().add(tagElement);
-                i++;
-            }
+            squareDataElement.setLikeCount(content.getLikeCount());
+            squareDataElement.setReviewCount(content.getReviewCount());
+            squareDataElement.setPersonCount(content.getPersonCount());
             squareDataElement.setRights(content.getRights());
             squareDataDto.getResults().add(squareDataElement);
         }
@@ -549,10 +510,10 @@ public class ContentServiceImpl implements ContentService {
         // 获取感受标签前5条
         List<ContentTagsDetails> list  = contentMybatisDao.getContentTagsDetails(content.getId(),Integer.MAX_VALUE);
         for (ContentTagsDetails contentTagsDetails : list){
-            ContentDetailDto.ContentTop5FeelingElement contentTop5FeelingElement = ContentDetailDto.createElement();
+            ContentDetailDto.ContentTagElement contentTagElement = ContentDetailDto.createElement();
             ContentTags contentTags = contentMybatisDao.getContentTagsById(contentTagsDetails.getTid());
-            contentTop5FeelingElement.setTag(contentTags.getTag());
-            contentDetailDto.getTags().add(contentTop5FeelingElement);
+            contentTagElement.setTag(contentTags.getTag());
+            contentDetailDto.getTags().add(contentTagElement);
 
         }
         return Response.success(contentDetailDto);
@@ -643,6 +604,8 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setCreateTime(content.getCreateTime());
             contentElement.setHotValue(content.getHotValue());
             contentElement.setLikeCount(content.getLikeCount());
+            contentElement.setReviewCount(content.getReviewCount());
+            contentElement.setPersonCount(content.getPersonCount());
             contentElement.setAuthorization(content.getAuthorization());
             contentElement.setContentType(content.getContentType());
             contentElement.setForwardCid(content.getForwardCid());

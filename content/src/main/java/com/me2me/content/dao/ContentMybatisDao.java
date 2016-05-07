@@ -138,7 +138,7 @@ public class ContentMybatisDao {
         ContentTagsDetailsExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(cid);
         criteria.andIdLessThan(sinceId);
-        example.setOrderByClause(" create_time desc limit 5 ");
+        example.setOrderByClause(" create_time desc ");
         return contentTagsDetailsMapper.selectByExample(example);
     }
 

@@ -47,14 +47,14 @@ public class ContentDetailDto implements BaseEntity {
     private int contentType;
 
 
-    private List<ContentTop5FeelingElement> tags = Lists.newArrayList();
+    private List<ContentTagElement> tags = Lists.newArrayList();
 
-    public static ContentTop5FeelingElement createElement(){
-        return new ContentTop5FeelingElement();
+    public static ContentTagElement createElement(){
+        return new ContentTagElement();
     }
 
     @Data
-    public static class ContentTop5FeelingElement implements BaseEntity {
+    public static class ContentTagElement implements BaseEntity {
 
         private String tag;
 
