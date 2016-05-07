@@ -107,17 +107,12 @@ public class Users extends BaseController {
     @RequestMapping(value = "/modifyUserProfile",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response modifyUserProfile(ModifyUserProfileRequest request){
         ModifyUserProfileDto modifyUserProfileDto = new ModifyUserProfileDto();
-        modifyUserProfileDto.setUserName(request.getUserName());
-        //modifyUserProfileDto.setBearStatus(request.getBearStatus());
         modifyUserProfileDto.setGender(request.getGender());
-        //modifyUserProfileDto.setIndustry(request.getIndustry());
-       // modifyUserProfileDto.setMarriageStatus(request.getMarriageStatus());
-        //modifyUserProfileDto.setStartId(request.getStartId());
         modifyUserProfileDto.setNickName(request.getNickName());
-        //modifyUserProfileDto.setSocialClass(request.getSocialClass());
         modifyUserProfileDto.setYearsId(request.getYearsId());
         modifyUserProfileDto.setUid(request.getUid());
         modifyUserProfileDto.setAvatar(request.getAvatar());
+        modifyUserProfileDto.setBirthday(request.getBirthday());
         modifyUserProfileDto.setHobby(request.getHobby());
        return  userService.modifyUserProfile(modifyUserProfileDto);
     }

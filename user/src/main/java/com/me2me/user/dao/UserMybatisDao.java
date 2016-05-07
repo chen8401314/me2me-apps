@@ -148,7 +148,7 @@ public class UserMybatisDao {
         return (list != null && list.size() > 0) ? list.get(0) : null;
     }
 
-        public void modifyUserProfile(UserProfile userProfile){
+    public void modifyUserProfile(UserProfile userProfile){
         userProfileMapper.updateByPrimaryKeySelective(userProfile);
     }
 
