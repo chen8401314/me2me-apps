@@ -120,7 +120,7 @@ public class Contents extends BaseController {
     }
 
     /**
-     * 用户发布列表接口（已废）
+     * 用户发布列表接口
      * @return
      */
     @RequestMapping(value = "/myPublish",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)

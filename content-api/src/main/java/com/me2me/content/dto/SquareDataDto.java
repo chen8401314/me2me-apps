@@ -54,6 +54,7 @@ public class SquareDataDto implements BaseEntity {
 
         private String coverImage;
 
+        //点赞数
         private int likeCount;
 
         private int hotValue;
@@ -61,56 +62,26 @@ public class SquareDataDto implements BaseEntity {
         // 小编文章标题
         private String title;
 
-        // 转发缩略图
-        private String thumbnail;
-
-        // 转发标题
-        private String forwardTitle;
-
         // 转发文章类型 音乐 | 图片
         private int contentType;
-
-        // 转发URL
-        private String forwardUrl;
-
-        private long tid;
 
         //是否关注
         private int isFollowed;
 
-        private int tagCount;
-
+        //评论数
         private int reviewCount;
 
-        private int forwardCount;
-
+        //直播参与人数
         private int personCount;
 
+        //公开权限 0 仅自己 1 公开
         private int rights;
 
+        //直播状态 0 正在直播 1直播已结束
         private int liveStatus;
 
+        //是否收藏
         private int favorite;
-
-        private List<TagElement> tags = Lists.newArrayList();
-
-        public static TagElement createElement(){
-            return new TagElement();
-        }
-
-        @Data
-        public static class TagElement implements BaseEntity{
-
-            private String tag;
-
-            private long tid;
-
-            private int likeCount;
-
-            private int isLike;
-        }
-
-
 
         }
 
