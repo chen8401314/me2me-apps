@@ -21,21 +21,11 @@ public class ModifyUserProfileDto implements BaseEntity{
 
     private String nickName;
 
-    private int gender;
+    private Integer gender;
 
     private String avatar;
 
-    private long yearsId;
-
-    //private long startId;
-
-    //private long socialClass;
-
-    //private long industry;
-
-    //private long marriageStatus;
-
-    //private long bearStatus ;
+    private Long yearsId;
 
     private String birthday;
 

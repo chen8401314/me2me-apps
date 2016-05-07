@@ -269,8 +269,6 @@ public class UserServiceImpl implements UserService {
         basicDataDto.setType(Specification.UserBasicData.MARRIAGE_STATUS.index);
         dictionaryList = userMybatisDao.getDictionary(basicDataDto);
         result.put(basicDataDto.getType(),dictionaryList);
-
-       // basicDataSuccessDto.setList(result);
         return Response.success(basicDataSuccessDto);
     }
 
@@ -281,28 +279,22 @@ public class UserServiceImpl implements UserService {
      */
     public Response modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto){
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(modifyUserProfileDto.getUid());
-        if(StringUtils.isEmpty(modifyUserProfileDto.getAvatar())) {
-            userProfile.setAvatar(modifyUserProfileDto.getAvatar());
+        if(!this.existsNickName(modifyUserProfileDto.getNickName())){
+            return Response.failure(ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.status,ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.message);
         }
-        if(StringUtils.isEmpty(modifyUserProfileDto.getNickName())) {
-            userProfile.setNickName(modifyUserProfileDto.getNickName());
-        }
-        if(StringUtils.isEmpty(modifyUserProfileDto.getGender())) {
-            userProfile.setGender(modifyUserProfileDto.getGender());
-        }
-        if(StringUtils.isEmpty(modifyUserProfileDto.getGender())) {
-            userProfile.setBirthday(modifyUserProfileDto.getBirthday());
-        }
+        userProfile.setNickName(modifyUserProfileDto.getNickName());
+        userProfile.setGender(modifyUserProfileDto.getGender());
+        userProfile.setBirthday(modifyUserProfileDto.getBirthday());
+        userProfile.setAvatar(modifyUserProfileDto.getAvatar());
         //修改用户爱好
-        if(StringUtils.isEmpty(modifyUserProfileDto.getHobby())){
+        if(!StringUtils.isEmpty(modifyUserProfileDto.getHobby())){
             ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();
             modifyUserHobbyDto.setUid(modifyUserProfileDto.getUid());
             modifyUserHobbyDto.setHobby(modifyUserProfileDto.getHobby());
             this.modifyUserHobby(modifyUserHobbyDto);
         }
         userMybatisDao.modifyUserProfile(userProfile);
-        modifyUserProfileDto.setAvatar(Constant.QINIU_DOMAIN  + "/" +modifyUserProfileDto.getAvatar());
-        return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message,modifyUserProfileDto);
+        return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message);
     }
 
     @Override
@@ -418,7 +410,6 @@ public class UserServiceImpl implements UserService {
 
 
     public Response likes(UserLikeDto userLikeDto){
-
         UserTagsRecord userTagsRecord = new UserTagsRecord();
         userTagsRecord.setFromUid(userLikeDto.getUid());
         userTagsRecord.setToUid(userLikeDto.getCustomerId());
@@ -595,10 +586,9 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setUid(userProfile.getUid());
         showUserProfileDto.setNickName(userProfile.getNickName());
         showUserProfileDto.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
-        showUserProfileDto.setQiniuKey(Constant.QINIU_DOMAIN);
         showUserProfileDto.setBirthday(userProfile.getBirthday());
         showUserProfileDto.setGender(userProfile.getGender());
-        showUserProfileDto.setAccount(userProfile.getUid().toString());
+        showUserProfileDto.setMeNumber(userProfile.getUid().toString());
         showUserProfileDto.setFollowedCount(userMybatisDao.getUserFollowCount(uid));
         showUserProfileDto.setFansCount(userMybatisDao.getUserFansCount(uid));
         List<UserHobby> list = userMybatisDao.getHobby(uid);
