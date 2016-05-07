@@ -279,6 +279,10 @@ public class UserServiceImpl implements UserService {
      */
     public Response modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto){
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(modifyUserProfileDto.getUid());
+        userProfile.setNickName(modifyUserProfileDto.getNickName());
+        userProfile.setGender(modifyUserProfileDto.getGender());
+        userProfile.setBirthday(modifyUserProfileDto.getBirthday());
+        userProfile.setAvatar(modifyUserProfileDto.getAvatar());
         //修改用户爱好
         if(!StringUtils.isEmpty(modifyUserProfileDto.getHobby())){
             ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();
