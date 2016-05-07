@@ -13,4 +13,6 @@ public class Constant {
 
     public static final String FORWARD_URL_TEST = "http://192.168.89.79:5678/console/forward?id=";
 
+    public static final String RECOMMEND_DOMAIN = "http://192.168.89.105";
+
 }

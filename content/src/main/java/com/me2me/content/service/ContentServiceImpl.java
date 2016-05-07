@@ -68,7 +68,7 @@ public class ContentServiceImpl implements ContentService {
             element.setTitle(contentTO.getTitle());
             element.setCoverImage(contentTO.getCover());
             // todo is hard
-            element.setLinkUrl("http://192.168.89.105"+contentTO.getUrl());
+            element.setLinkUrl(Constant.RECOMMEND_DOMAIN+contentTO.getUrl());
             element.setType(0);
             recommendContentDto.getResult().add(element);
         }
