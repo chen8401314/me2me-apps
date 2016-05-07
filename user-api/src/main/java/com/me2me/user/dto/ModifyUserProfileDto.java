@@ -27,16 +27,6 @@ public class ModifyUserProfileDto implements BaseEntity{
 
     private long yearsId;
 
-    //private long startId;
-
-    //private long socialClass;
-
-    //private long industry;
-
-    //private long marriageStatus;
-
-    //private long bearStatus ;
-
     private String birthday;
 
     private String hobby;

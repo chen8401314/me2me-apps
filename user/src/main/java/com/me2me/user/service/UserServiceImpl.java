@@ -269,8 +269,6 @@ public class UserServiceImpl implements UserService {
         basicDataDto.setType(Specification.UserBasicData.MARRIAGE_STATUS.index);
         dictionaryList = userMybatisDao.getDictionary(basicDataDto);
         result.put(basicDataDto.getType(),dictionaryList);
-
-       // basicDataSuccessDto.setList(result);
         return Response.success(basicDataSuccessDto);
     }
 
@@ -294,14 +292,14 @@ public class UserServiceImpl implements UserService {
             userProfile.setBirthday(modifyUserProfileDto.getBirthday());
         }
         //修改用户爱好
-        if(StringUtils.isEmpty(modifyUserProfileDto.getHobby())){
+        if(!StringUtils.isEmpty(modifyUserProfileDto.getHobby())){
             ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();
             modifyUserHobbyDto.setUid(modifyUserProfileDto.getUid());
             modifyUserHobbyDto.setHobby(modifyUserProfileDto.getHobby());
             this.modifyUserHobby(modifyUserHobbyDto);
         }
         userMybatisDao.modifyUserProfile(userProfile);
-        modifyUserProfileDto.setAvatar(Constant.QINIU_DOMAIN  + "/" +modifyUserProfileDto.getAvatar());
+        modifyUserProfileDto.setAvatar(Constant.QINIU_DOMAIN  + "/" +userProfile.getAvatar());
         return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message,modifyUserProfileDto);
     }
 
@@ -418,7 +416,6 @@ public class UserServiceImpl implements UserService {
 
 
     public Response likes(UserLikeDto userLikeDto){
-
         UserTagsRecord userTagsRecord = new UserTagsRecord();
         userTagsRecord.setFromUid(userLikeDto.getUid());
         userTagsRecord.setToUid(userLikeDto.getCustomerId());
@@ -598,7 +595,7 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setQiniuKey(Constant.QINIU_DOMAIN);
         showUserProfileDto.setBirthday(userProfile.getBirthday());
         showUserProfileDto.setGender(userProfile.getGender());
-        showUserProfileDto.setAccount(userProfile.getUid().toString());
+        showUserProfileDto.setMeNumber(userProfile.getUid().toString());
         showUserProfileDto.setFollowedCount(userMybatisDao.getUserFollowCount(uid));
         showUserProfileDto.setFansCount(userMybatisDao.getUserFansCount(uid));
         List<UserHobby> list = userMybatisDao.getHobby(uid);

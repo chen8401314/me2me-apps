@@ -114,7 +114,7 @@ public class Users extends BaseController {
         modifyUserProfileDto.setAvatar(request.getAvatar());
         modifyUserProfileDto.setBirthday(request.getBirthday());
         modifyUserProfileDto.setHobby(request.getHobby());
-       return  userService.modifyUserProfile(modifyUserProfileDto);
+       return userService.modifyUserProfile(modifyUserProfileDto);
     }
 
     /**

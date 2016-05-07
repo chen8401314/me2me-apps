@@ -21,13 +21,11 @@ public class ShowUserProfileDto implements BaseEntity{
 
     private int gender;
 
-    private String qiniuKey;
-
     private String avatar;
 
     private String birthday;
 
-    private String account;
+    private String meNumber;
 
     private int followedCount;
 
