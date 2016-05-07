@@ -14,7 +14,6 @@ import lombok.Setter;
 @Data
 public class ModifyUserProfileDto implements BaseEntity{
 
-    private int action;
 
     private long uid;
 
@@ -28,15 +27,15 @@ public class ModifyUserProfileDto implements BaseEntity{
 
     private long yearsId;
 
-    private long startId;
+    //private long startId;
 
-    private long socialClass;
+    //private long socialClass;
 
-    private long industry;
+    //private long industry;
 
-    private long marriageStatus;
+    //private long marriageStatus;
 
-    private long bearStatus ;
+    //private long bearStatus ;
 
     private String birthday;
 

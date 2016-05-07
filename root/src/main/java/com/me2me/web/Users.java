@@ -108,13 +108,13 @@ public class Users extends BaseController {
     public Response modifyUserProfile(ModifyUserProfileRequest request){
         ModifyUserProfileDto modifyUserProfileDto = new ModifyUserProfileDto();
         modifyUserProfileDto.setUserName(request.getUserName());
-        modifyUserProfileDto.setBearStatus(request.getBearStatus());
+        //modifyUserProfileDto.setBearStatus(request.getBearStatus());
         modifyUserProfileDto.setGender(request.getGender());
-        modifyUserProfileDto.setIndustry(request.getIndustry());
-        modifyUserProfileDto.setMarriageStatus(request.getMarriageStatus());
-        modifyUserProfileDto.setStartId(request.getStartId());
+        //modifyUserProfileDto.setIndustry(request.getIndustry());
+       // modifyUserProfileDto.setMarriageStatus(request.getMarriageStatus());
+        //modifyUserProfileDto.setStartId(request.getStartId());
         modifyUserProfileDto.setNickName(request.getNickName());
-        modifyUserProfileDto.setSocialClass(request.getSocialClass());
+        //modifyUserProfileDto.setSocialClass(request.getSocialClass());
         modifyUserProfileDto.setYearsId(request.getYearsId());
         modifyUserProfileDto.setUid(request.getUid());
         modifyUserProfileDto.setAvatar(request.getAvatar());
