@@ -183,9 +183,9 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setTitle(content.getTitle());
             squareDataElement.setTag(content.getFeeling());
             ContentTags contentTags = contentMybatisDao.getContentTags(content.getFeeling());
-            squareDataElement.setTid(contentTags.getId());
+            // squareDataElement.setTid(contentTags.getId());
             squareDataElement.setType(content.getType());
-            squareDataElement.setIsLike(isLike(uid,content.getId(),contentTags.getId()));
+            // squareDataElement.setIsLike(isLike(uid,content.getId(),contentTags.getId()));
             squareDataElement.setCreateTime(content.getCreateTime());
             if(!StringUtils.isEmpty(content.getConverImage())) {
                 squareDataElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
@@ -193,10 +193,10 @@ public class ContentServiceImpl implements ContentService {
                 squareDataElement.setCoverImage("");
             }
             ContentUserLikesCount c = new ContentUserLikesCount();
-            c.setTid(contentTags.getId());
+            // c.setTid(contentTags.getId());
             c.setCid(content.getId());
-            int likesCount = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTags.getId());
-            squareDataElement.setLikeCount(likesCount);
+            // int likesCount = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTags.getId());
+            // squareDataElement.setLikeCount(likesCount);
             squareDataElement.setHotValue(content.getHotValue());
             if(!StringUtils.isEmpty(content.getThumbnail())) {
                 squareDataElement.setThumbnail(Constant.QINIU_DOMAIN + "/" + content.getThumbnail());
