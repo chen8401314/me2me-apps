@@ -79,5 +79,8 @@ public class ShowAttentionDto implements BaseEntity {
 
         //直播是否收藏 0未收藏 1已收藏
         private int favorite;
+
+        // 图片数量
+        private int imageCount;
     }
 }

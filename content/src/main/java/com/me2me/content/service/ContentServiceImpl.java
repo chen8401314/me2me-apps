@@ -912,6 +912,11 @@ public class ContentServiceImpl implements ContentService {
                 int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
                 contentElement.setLiveStatus(status);
             }
+            if(content.getType() == Specification.ArticleType.ORIGIN.index){
+                //获取内容图片数量
+                int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
+                contentElement.setImageCount(imageCounts);
+            }
             int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
             //直播是否收藏
             contentElement.setFavorite(favorite);
@@ -955,6 +960,11 @@ public class ContentServiceImpl implements ContentService {
             {
                 int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
                 contentElement.setLiveStatus(status);
+            }
+            if(content.getType() == Specification.ArticleType.ORIGIN.index){
+                //获取内容图片数量
+                int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
+                contentElement.setImageCount(imageCounts);
             }
             int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
             //直播是否收藏
