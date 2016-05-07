@@ -27,7 +27,6 @@ public class Contents extends BaseController {
     @Autowired
     private ContentService contentService;
 
-
     /**
      * 精选接口(已废)
      * @return
@@ -144,19 +143,6 @@ public class Contents extends BaseController {
     }
 
     /**
-     * 感受列表（已废）
-     * @return
-     */
-    @RequestMapping(value = "/getContentFeeling",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public Response getContentFeeling(ContentFeelingRequest request){
-        if(request.getSinceId() == -1){
-            request.setSinceId(Integer.MAX_VALUE);
-        }
-        return contentService.getContentFeeling(request.getCid(),request.getSinceId());
-    }
-
-    /**
      * 用户资料卡
      * @param request
      * @return
@@ -234,5 +220,17 @@ public class Contents extends BaseController {
         return contentService.createReview(reviewDto);
     }
 
+    /**
+     * 文章评论接口
+     * @return
+     */
+    @RequestMapping(value = "/reviewList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response review(ReviewListRequest request){
+        if(request.getSinceId() == -1){
+            request.setSinceId(Integer.MAX_VALUE);
+        }
+        return contentService.reviewList(request.getCid(),request.getSinceId());
+    }
 
 }

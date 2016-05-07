@@ -34,7 +34,7 @@ public class UserInfoDto implements BaseEntity{
 
         private int gender;
 
-        private String mid;
+        private String meNumber;
 
         private int isFollow;
     }
@@ -42,7 +42,11 @@ public class UserInfoDto implements BaseEntity{
     @Data
     public static class ContentElement implements BaseEntity{
 
-        private long tid;
+        private List<ReviewElement> reviews = Lists.newArrayList();
+
+        public static ReviewElement createElement(){
+            return new ReviewElement();
+        }
 
         private long cid;
 
@@ -60,24 +64,27 @@ public class UserInfoDto implements BaseEntity{
 
         private int personCount;
 
-        private int hotValue;
-
         private Long forwardCid;
 
         private Integer type;
 
-        private String forwardTitle;
-
-        private String forwardUrl;
-
         private Integer contentType;
 
-        private String thumbnail;
+        @Data
+        public static class ReviewElement implements BaseEntity{
 
-        private Integer authorization;
+            private long uid;
 
+            private String nickName;
 
+            private String avatar;
 
+            private Date createTime;
+
+            private String review;
+
+        }
 
     }
+
 }

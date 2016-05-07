@@ -57,8 +57,6 @@ public class SquareDataDto implements BaseEntity {
         //点赞数
         private int likeCount;
 
-        private int hotValue;
-
         // 小编文章标题
         private String title;
 

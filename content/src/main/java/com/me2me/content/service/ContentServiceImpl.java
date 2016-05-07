@@ -95,22 +95,17 @@ public class ContentServiceImpl implements ContentService {
             contentDataElement.setNickName(userProfile.getNickName());
             contentDataElement.setContent(content.getContent());
             contentDataElement.setTitle(content.getTitle());
-            contentDataElement.setFeeling(content.getFeeling());
+            contentDataElement.setTag(content.getFeeling());
             ContentTags contentTags = contentMybatisDao.getContentTags(content.getFeeling());
             contentDataElement.setTid(contentTags.getId());
             contentDataElement.setType(content.getType());
-            contentDataElement.setIsLike(isLike(uid,content.getId(),contentTags.getId()));
             contentDataElement.setCreateTime(content.getCreateTime());
             if(!StringUtils.isEmpty(content.getConverImage())) {
                 contentDataElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
             }else{
                 contentDataElement.setCoverImage("");
             }
-            ContentUserLikesCount c = new ContentUserLikesCount();
-            c.setTid(contentTags.getId());
-            c.setCid(content.getId());
-            int likesCount = contentMybatisDao.getContentUserLikesCount(content.getId(),contentTags.getId());
-            contentDataElement.setLikeCount(likesCount);
+            contentDataElement.setLikeCount(content.getLikeCount());
             contentDataElement.setHotValue(content.getHotValue());
             if(!StringUtils.isEmpty(content.getThumbnail())) {
                 contentDataElement.setThumbnail(Constant.QINIU_DOMAIN + "/" + content.getThumbnail());
@@ -126,32 +121,7 @@ public class ContentServiceImpl implements ContentService {
             contentDataElement.setIsFollowed(follow);
             //如果是直播需要一个直播状态，当前用户是否收藏
             setLiveStatusAndFavorite(uid, content, contentDataElement);
-            //设置数量
-            List<LoadAllFeelingDto> list  = contentMybatisDao.loadAllFeeling(content.getId(),Integer.MAX_VALUE);
-            int i = 0;
-            for (LoadAllFeelingDto loadAllFeelingDto : list) {
-                //只展示3条感受
-                if (i > 3) {
-                    break;
-                }
-                LikeDto likeDto = new LikeDto();
-                likeDto.setCid(loadAllFeelingDto.getCid());
-                likeDto.setUid(loadAllFeelingDto.getUid());
-                //likeDto.setCustomerId(uid);
-                //likeDto.setTid(loadAllFeelingDto.getTid());
-                ContentUserLikes contentUserLikes = contentMybatisDao.getContentUserLike(likeDto);
-                ShowContentListDto.ContentDataElement.TagElement tagElement = contentDataElement.createElement();
-                if (contentUserLikes == null) {
-                    tagElement.setIsLike(Specification.IsLike.UNLIKE.index);
-                } else {
-                    tagElement.setIsLike(Specification.IsLike.LIKE.index);
-                }
-                int likeCount = contentMybatisDao.getContentUserLikesCount(content.getId(), loadAllFeelingDto.getTid());
-                tagElement.setLikeCount(likeCount);
-                tagElement.setTag(loadAllFeelingDto.getTag());
-                contentDataElement.getTags().add(tagElement);
-                i++;
-            }
+
             result.add(contentDataElement);
         }
         return result;
@@ -173,7 +143,6 @@ public class ContentServiceImpl implements ContentService {
             SquareDataDto.SquareDataElement squareDataElement = SquareDataDto.createElement();
             squareDataElement.setId(content.getId());
             squareDataElement.setUid(content.getUid());
-            squareDataElement.setForwardCid(content.getForwardCid());
             UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
             squareDataElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             squareDataElement.setNickName(userProfile.getNickName());
@@ -187,10 +156,8 @@ public class ContentServiceImpl implements ContentService {
             }else{
                 squareDataElement.setCoverImage("");
             }
-            squareDataElement.setHotValue(content.getHotValue());
             squareDataElement.setContentType(content.getContentType());
-            long contentUid = content.getUid();
-            int follow = userService.isFollow(contentUid,uid);
+            int follow = userService.isFollow(content.getUid(),uid);
             squareDataElement.setIsFollowed(follow);
             //如果是直播需要一个直播状态
             if(content.getType() == Specification.ArticleType.LIVE.index) {
@@ -200,6 +167,7 @@ public class ContentServiceImpl implements ContentService {
                 int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
                 //直播是否收藏
                 squareDataElement.setFavorite(favorite);
+                squareDataElement.setForwardCid(content.getForwardCid());
             }
             squareDataElement.setLikeCount(content.getLikeCount());
             squareDataElement.setReviewCount(content.getReviewCount());
@@ -477,10 +445,6 @@ public class ContentServiceImpl implements ContentService {
         return Response.failure(ResponseStatus.CONTENT_DELETE_SUCCESS.status,ResponseStatus.CONTENT_DELETE_SUCCESS.message);
     }
 
-    private int isLike(long uid, long cid,long tid) {
-        return contentMybatisDao.isLike(uid,cid,tid);
-    }
-
     @Override
     public Response getContentDetail(long id ,long uid) {
         ContentDetailDto contentDetailDto = new ContentDetailDto();
@@ -528,39 +492,39 @@ public class ContentServiceImpl implements ContentService {
         return Response.success(squareDataDto);
     }
 
-    @Override
-    public Response getContentFeeling(long cid, int sinceId) {
-        /**
-         * 1. 文章
-         2. 该文章被多少次转载
-         3. 取出转载内容 + 转载tag
-         */
-        ContentAllFeelingDto contentAllFeelingDto = new ContentAllFeelingDto();
-        List<ContentTagLikes> list = contentMybatisDao.getForwardContents(cid);
-        for(ContentTagLikes contentTagLike : list){
-            Content content = contentMybatisDao.getContentById(contentTagLike.getCid());
-            ContentAllFeelingDto.ContentAllFeelingElement contentAllFeelingElement = ContentAllFeelingDto.createElement();
-            // 转载内容
-            if(content.getForwardCid()>0){
-                contentAllFeelingElement.setType(Specification.IsForward.FORWARD.index);
-                contentAllFeelingElement.setContent(content.getContent());
-            }else{
-                contentAllFeelingElement.setType(Specification.IsForward.NATIVE.index);
-                contentAllFeelingElement.setContent("");
-            }
-            UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
-            contentAllFeelingElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-            contentAllFeelingElement.setTid(contentTagLike.getTagId());
-            contentAllFeelingElement.setNickName(userProfile.getNickName());
-            int likeCount = contentMybatisDao.getContentUserLikesCount(contentTagLike.getCid(),contentTagLike.getTagId());
-            contentAllFeelingElement.setLikesCount(likeCount);
-            contentAllFeelingElement.setCid(contentTagLike.getCid());
-            contentAllFeelingElement.setTag(content.getFeeling());
-            contentAllFeelingDto.getResults().add(contentAllFeelingElement);
-        }
-        return Response.success(contentAllFeelingDto);
-
-    }
+//   @Override
+//    public Response getContentFeeling(long cid, int sinceId) {
+//        /**
+//         * 1. 文章
+//         2. 该文章被多少次转载
+//         3. 取出转载内容 + 转载tag
+//         */
+//        ContentAllFeelingDto contentAllFeelingDto = new ContentAllFeelingDto();
+//        List<ContentTagLikes> list = contentMybatisDao.getForwardContents(cid);
+//        for(ContentTagLikes contentTagLike : list){
+//            Content content = contentMybatisDao.getContentById(contentTagLike.getCid());
+//            ContentAllFeelingDto.ContentAllFeelingElement contentAllFeelingElement = ContentAllFeelingDto.createElement();
+//            // 转载内容
+//            if(content.getForwardCid()>0){
+//                contentAllFeelingElement.setType(Specification.IsForward.FORWARD.index);
+//                contentAllFeelingElement.setContent(content.getContent());
+//            }else{
+//                contentAllFeelingElement.setType(Specification.IsForward.NATIVE.index);
+//                contentAllFeelingElement.setContent("");
+//            }
+//            UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+//            contentAllFeelingElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+//            contentAllFeelingElement.setTid(contentTagLike.getTagId());
+//            contentAllFeelingElement.setNickName(userProfile.getNickName());
+//            int likeCount = contentMybatisDao.getContentUserLikesCount(contentTagLike.getCid(),contentTagLike.getTagId());
+//            contentAllFeelingElement.setLikesCount(likeCount);
+//            contentAllFeelingElement.setCid(contentTagLike.getCid());
+//            contentAllFeelingElement.setTag(content.getFeeling());
+//            contentAllFeelingDto.getResults().add(contentAllFeelingElement);
+//        }
+//        return Response.success(contentAllFeelingDto);
+//
+//    }
 
     @Override
     public ContentH5Dto getContent(long id) {
@@ -602,25 +566,29 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setContent(content.getContent());
             contentElement.setCid(content.getId());
             contentElement.setCreateTime(content.getCreateTime());
-            contentElement.setHotValue(content.getHotValue());
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setReviewCount(content.getReviewCount());
             contentElement.setPersonCount(content.getPersonCount());
-            contentElement.setAuthorization(content.getAuthorization());
             contentElement.setContentType(content.getContentType());
             contentElement.setForwardCid(content.getForwardCid());
-            contentElement.setForwardUrl(content.getForwardUrl());
-            contentElement.setThumbnail(content.getThumbnail());
             contentElement.setType(content.getType());
-            contentElement.setForwardTitle(content.getForwardTitle());
             ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
             if(contentImage != null) {
                 contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
             }else{
                 contentElement.setCoverImage("");
             }
-            ContentTags contentTags =  contentMybatisDao.getContentTags(content.getFeeling());
-            contentElement.setTid(contentTags.getId());
+            UserInfoDto.ContentElement.ReviewElement reviewElement = UserInfoDto.ContentElement.createElement();
+            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+            for(ContentReview contentReview : contentReviewList){
+                reviewElement.setUid(contentReview.getUid());
+                UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
+                reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+                reviewElement.setNickName(user.getNickName());
+                reviewElement.setCreateTime(contentReview.getCreateTime());
+                reviewElement.setReview(contentReview.getReview());
+                contentElement.getReviews().add(reviewElement);
+            }
             userInfoDto.getContentElementList().add(contentElement);
         }
         return Response.success(userInfoDto);
@@ -1010,6 +978,24 @@ public class ContentServiceImpl implements ContentService {
         }
         showUGCDetailsDto.setImages(images.toString());
         return Response.success(showUGCDetailsDto);
+    }
+
+    @Override
+    public Response reviewList(long cid, long sinceId) {
+        ContentReviewDto contentReviewDto = new ContentReviewDto();
+        List<ContentReview> list = contentMybatisDao.getContentReviewByCid(cid,sinceId);
+        for(ContentReview contentReview : list){
+            ContentReviewDto.ReviewElement reviewElement = ContentReviewDto.createElement();
+            reviewElement.setUid(contentReview.getUid());
+            reviewElement.setReview(contentReview.getReview());
+            reviewElement.setCreateTime(contentReview.getCreateTime());
+            UserProfile userProfile = userService.getUserProfileByUid(contentReview.getUid());
+            reviewElement.setNickName(userProfile.getNickName());
+            reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            contentReviewDto.getReviews().add(reviewElement);
+
+        }
+        return Response.success(contentReviewDto);
     }
 
     private void optionContent(int action, long id) {

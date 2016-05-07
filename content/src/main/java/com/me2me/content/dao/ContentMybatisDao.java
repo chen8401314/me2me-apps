@@ -31,16 +31,7 @@ public class ContentMybatisDao {
     private ContentImageMapper contentImageMapper;
 
     @Autowired
-    private ContentUserLikesMapper contentUserLikesMapper;
-
-    @Autowired
     private ContentTagsMapper contentTagsMapper;
-
-    @Autowired
-    private ContentTagLikesMapper contentTagLikesMapper;
-
-    @Autowired
-    private ContentUserLikesCountMapper contentUserLikesCountMapper;
 
     @Autowired
     private HighQualityContentMapper highQualityContentMapper;
@@ -67,26 +58,8 @@ public class ContentMybatisDao {
         contentImageMapper.insertSelective(contentImage);
     }
 
-    public void createContentUserLikes(ContentUserLikes contentUserLikes){
-        contentUserLikesMapper.insertSelective(contentUserLikes);
-    }
-
     public Content getContentById(long id){
         return contentMapper.selectByPrimaryKey(id);
-    }
-
-    public ContentUserLikes getContentUserLike(LikeDto likeDto){
-        ContentUserLikesExample example = new ContentUserLikesExample();
-        ContentUserLikesExample.Criteria criteria = example.createCriteria();
-        criteria.andCidEqualTo(likeDto.getCid());
-        criteria.andUidEqualTo(likeDto.getUid());
-        //criteria.andTagIdEqualTo(likeDto.getTid());
-        List<ContentUserLikes> list = contentUserLikesMapper.selectByExample(example);
-        return list.size() > 0 ? list.get(0) : null;
-    }
-
-    public void deleteUserLikes(long id){
-        contentUserLikesMapper.deleteByPrimaryKey(id);
     }
 
     public void updateContentById(Content content){
@@ -104,19 +77,6 @@ public class ContentMybatisDao {
             contentTags.setId(list.get(0).getId());
         }
     }
-    public void createContentTagLikes(ContentTagLikes contentTagLikes ){
-        contentTagLikesMapper.insertSelective(contentTagLikes);
-    }
-
-    public int isLike(long uid,long cid ,long tid){
-        ContentUserLikesExample example = new ContentUserLikesExample();
-        ContentUserLikesExample.Criteria criteria = example.createCriteria();
-        criteria.andCidEqualTo(cid);
-        criteria.andUidEqualTo(uid);
-        criteria.andTagIdEqualTo(tid);
-        List list = contentUserLikesMapper.selectByExample(example);
-        return  (list != null && list.size() > 0 ) ? 1 : 0 ;
-    }
 
     public List<Content>myPublish(long uid,int sinceId) {
         Map<String,Object> map = Maps.newHashMap();
@@ -125,13 +85,14 @@ public class ContentMybatisDao {
         return contentMapper.loadMyPublishData(map);
     }
 
+    /*
     public List<LoadAllFeelingDto>loadAllFeeling(long cid , int sinceId) {
         Map<String,Object> map = new HashMap<String,Object>();
         map.put("cid",cid);
         map.put("sinceId",sinceId);
         List<LoadAllFeelingDto> result = contentUserLikesMapper.loadAllFeeling(map);
         return result;
-    }
+    }*/
 
     public List<ContentTagsDetails> getContentTagsDetails(long cid , long sinceId) {
         ContentTagsDetailsExample example = new ContentTagsDetailsExample();
@@ -173,34 +134,6 @@ public class ContentMybatisDao {
        return contentTagsMapper.selectByPrimaryKey(tid);
     }
 
-    public void addContentUserLikesCount(ContentUserLikesCount contentUserLikesCount){
-        contentUserLikesCountMapper.insertSelective(contentUserLikesCount);
-    }
-
-    public void likeTagCount(ContentUserLikesCount contentUserLikesCount){
-        ContentUserLikesCountExample example = new ContentUserLikesCountExample();
-        ContentUserLikesCountExample.Criteria criteria = example.createCriteria();
-        criteria.andCidEqualTo(contentUserLikesCount.getCid());
-        criteria.andTidEqualTo(contentUserLikesCount.getTid());
-        List<ContentUserLikesCount> likesCounts = contentUserLikesCountMapper.selectByExample(example);
-        if(likesCounts != null && likesCounts.size() >0){
-            contentUserLikesCount.setLikecount(likesCounts.get(0).getLikecount() + contentUserLikesCount.getLikecount());
-            contentUserLikesCount.setId(likesCounts.get(0).getId());
-            contentUserLikesCountMapper.updateByPrimaryKey(contentUserLikesCount);
-        }else{
-            contentUserLikesCountMapper.insert(contentUserLikesCount);
-        }
-
-    }
-
-    public int getContentUserLikesCount(long cid ,long tid){
-        ContentUserLikesCountExample example = new ContentUserLikesCountExample();
-        ContentUserLikesCountExample.Criteria criteria = example.createCriteria();
-        criteria.andCidEqualTo(cid);
-        criteria.andTidEqualTo(tid);
-        List<ContentUserLikesCount> likesCounts = contentUserLikesCountMapper.selectByExample(example);
-        return (likesCounts != null && likesCounts.size() >0) ? likesCounts.get(0).getLikecount() : 0;
-    }
 
     public void createHighQualityContent(HighQualityContent highQualityContent){
         highQualityContentMapper.insertSelective(highQualityContent);
@@ -227,10 +160,6 @@ public class ContentMybatisDao {
         criteria.andForwardCidEqualTo(cid);
         List<Content> list = contentMapper.selectByExampleWithBLOBs(example);
         return  (list != null && list.size() >0) ? list.get(0) : null;
-    }
-
-    public List<ContentTagLikes> getForwardContents(long cid){
-        return contentTagLikesMapper.getContentTagTimeline(cid);
     }
 
     public List<Content> loadSelectedData(int sinceId){
@@ -323,7 +252,7 @@ public class ContentMybatisDao {
     }
 
     public void createReview(ContentReview review){
-        contentReviewMapper.insert(review);
+        contentReviewMapper.insertSelective(review);
     }
 
     public List<Content> getContentByTopicId(long topicId){
@@ -332,5 +261,22 @@ public class ContentMybatisDao {
         criteria.andForwardCidEqualTo(topicId);
         criteria.andTypeEqualTo(Specification.ArticleType.LIVE.index);
         return contentMapper.selectByExample(example);
+    }
+
+    public List<ContentReview> getContentReviewByCid(long cid,long sinceId){
+        ContentReviewExample example = new ContentReviewExample();
+        ContentReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(cid);
+        criteria.andIdLessThan(sinceId);
+        example.setOrderByClause(" create_time desc limit 10 ");
+        return contentReviewMapper.selectByExample(example);
+    }
+
+    public List<ContentReview> getContentReviewTop3ByCid(long cid){
+        ContentReviewExample example = new ContentReviewExample();
+        ContentReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(cid);
+        example.setOrderByClause(" create_time desc limit 3 ");
+        return contentReviewMapper.selectByExample(example);
     }
 }

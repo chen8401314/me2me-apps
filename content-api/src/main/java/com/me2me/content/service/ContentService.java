@@ -77,7 +77,7 @@ public interface ContentService {
      * @param cid
      * @return
      */
-    Response getContentFeeling(long cid, int sinceId);
+   // Response getContentFeeling(long cid, int sinceId);
 
     /**
      * 根据内容id，返回内容信息给H5
@@ -139,4 +139,6 @@ public interface ContentService {
     Content getContentByTopicId(long topicId);
 
     Response showUGCDetails(long id);
+
+    Response reviewList(long cid,long sinceId);
 }
