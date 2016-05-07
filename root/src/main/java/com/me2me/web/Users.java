@@ -1,21 +1,15 @@
 package com.me2me.web;
 
-import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.web.Response;
 import com.me2me.user.dto.*;
-import com.me2me.user.model.UserProfile;
-import com.me2me.user.model.UserTags;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -114,16 +108,17 @@ public class Users extends BaseController {
     public Response modifyUserProfile(ModifyUserProfileRequest request){
         ModifyUserProfileDto modifyUserProfileDto = new ModifyUserProfileDto();
         modifyUserProfileDto.setUserName(request.getUserName());
-        modifyUserProfileDto.setBearStatus(request.getBearStatus());
+        //modifyUserProfileDto.setBearStatus(request.getBearStatus());
         modifyUserProfileDto.setGender(request.getGender());
-        modifyUserProfileDto.setIndustry(request.getIndustry());
-        modifyUserProfileDto.setMarriageStatus(request.getMarriageStatus());
-        modifyUserProfileDto.setStartId(request.getStartId());
+        //modifyUserProfileDto.setIndustry(request.getIndustry());
+       // modifyUserProfileDto.setMarriageStatus(request.getMarriageStatus());
+        //modifyUserProfileDto.setStartId(request.getStartId());
         modifyUserProfileDto.setNickName(request.getNickName());
-        modifyUserProfileDto.setSocialClass(request.getSocialClass());
+        //modifyUserProfileDto.setSocialClass(request.getSocialClass());
         modifyUserProfileDto.setYearsId(request.getYearsId());
         modifyUserProfileDto.setUid(request.getUid());
         modifyUserProfileDto.setAvatar(request.getAvatar());
+        modifyUserProfileDto.setHobby(request.getHobby());
        return  userService.modifyUserProfile(modifyUserProfileDto);
     }
 
@@ -234,8 +229,8 @@ public class Users extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/userNotice",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response userNotice(UserNoticeRequest request){
-        if(request.getSinceId() <= 10){
-            request.setSinceId(10);
+        if(request.getSinceId() == -1){
+            request.setSinceId(Integer.MAX_VALUE);
         }
         UserNoticeDto userNoticeDto = new UserNoticeDto();
         userNoticeDto.setUid(request.getUid());

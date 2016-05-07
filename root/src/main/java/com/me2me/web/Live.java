@@ -101,7 +101,7 @@ public class Live extends BaseController {
     }
 
     /**
-     *  获取所有正在直播列表
+     *  获取所有正在直播列表(废弃)
      * @param request
      * @return
      */

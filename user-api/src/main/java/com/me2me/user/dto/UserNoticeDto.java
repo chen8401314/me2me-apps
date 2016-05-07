@@ -13,6 +13,6 @@ public class UserNoticeDto implements BaseEntity {
 
     private long uid;
 
-    private int sinceId ;
+    private long sinceId ;
 
 }
