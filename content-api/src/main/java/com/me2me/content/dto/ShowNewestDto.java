@@ -81,5 +81,26 @@ public class ShowNewestDto implements BaseEntity{
 
         // 图片数量
         private int imageCount;
+
+        private List<ReviewElement> reviews = Lists.newArrayList();
+
+        public static ReviewElement createElement(){
+            return new ReviewElement();
+        }
+
+        @Data
+        public static class ReviewElement implements BaseEntity{
+
+            private long uid;
+
+            private String nickName;
+
+            private String avatar;
+
+            private Date createTime;
+
+            private String review;
+
+        }
     }
 }

@@ -578,9 +578,9 @@ public class ContentServiceImpl implements ContentService {
             }else{
                 contentElement.setCoverImage("");
             }
-            UserInfoDto.ContentElement.ReviewElement reviewElement = UserInfoDto.ContentElement.createElement();
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
             for(ContentReview contentReview : contentReviewList){
+                UserInfoDto.ContentElement.ReviewElement reviewElement = UserInfoDto.ContentElement.createElement();
                 reviewElement.setUid(contentReview.getUid());
                 UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
                 reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
@@ -771,6 +771,17 @@ public class ContentServiceImpl implements ContentService {
             hottestContentElement.setReviewCount(content.getReviewCount());
             hottestContentElement.setTitle(content.getTitle());
             hottestContentElement.setCreateTime(content.getCreateTime());
+            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+            for(ContentReview contentReview : contentReviewList){
+                ShowHottestDto.HottestContentElement.ReviewElement reviewElement = ShowHottestDto.HottestContentElement.createElement();
+                reviewElement.setUid(contentReview.getUid());
+                UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
+                reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+                reviewElement.setNickName(user.getNickName());
+                reviewElement.setCreateTime(contentReview.getCreateTime());
+                reviewElement.setReview(contentReview.getReview());
+                hottestContentElement.getReviews().add(reviewElement);
+            }
             //系统文章不包含，用户信息
             if(content.getType() == Specification.ArticleType.SYSTEM.index){
 
@@ -857,6 +868,17 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setReviewCount(content.getReviewCount());
             contentElement.setPersonCount(content.getPersonCount());
+            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+            for(ContentReview contentReview : contentReviewList){
+                ShowNewestDto.ContentElement.ReviewElement reviewElement = ShowNewestDto.ContentElement.createElement();
+                reviewElement.setUid(contentReview.getUid());
+                UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
+                reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+                reviewElement.setNickName(user.getNickName());
+                reviewElement.setCreateTime(contentReview.getCreateTime());
+                reviewElement.setReview(contentReview.getReview());
+                contentElement.getReviews().add(reviewElement);
+            }
             showNewestDto.getNewestData().add(contentElement);
         }
         return Response.success(showNewestDto);
@@ -907,6 +929,17 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setReviewCount(content.getReviewCount());
             contentElement.setPersonCount(content.getPersonCount());
             showAttentionDto.getAttentionData().add(contentElement);
+            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+            for(ContentReview contentReview : contentReviewList){
+                ShowAttentionDto.ContentElement.ReviewElement reviewElement = ShowAttentionDto.ContentElement.createElement();
+                reviewElement.setUid(contentReview.getUid());
+                UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
+                reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+                reviewElement.setNickName(user.getNickName());
+                reviewElement.setCreateTime(contentReview.getCreateTime());
+                reviewElement.setReview(contentReview.getReview());
+                contentElement.getReviews().add(reviewElement);
+            }
         }
         return Response.success(showAttentionDto);
     }
