@@ -36,10 +36,6 @@
         <property name="prefix" value="/WEB-INF/jsp"/>
         <property name="suffix" value=".jsp"/>
     </bean>
-    <!--<mvc:default-servlet-handler/>-->
-    <!-- 静态资源映射 -->
-    <!-- <mvc:resources mapping="/static/**" location="/static/" cache-period="31536000"/>-->
-
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="10485760" />
     </bean>
@@ -47,23 +43,6 @@
     <mvc:interceptors>
         <mvc:interceptor>
             <mvc:mapping path="/**"/>
-            <!--&lt;!&ndash;白名单接口&ndash;&gt;-->
-            <!--<mvc:exclude-mapping path="/api/user/login"/>-->
-            <!--<mvc:exclude-mapping path="/api/user/signUp"/>-->
-            <!--<mvc:exclude-mapping path="/api/user/findEncrypt"/>-->
-            <!--<mvc:exclude-mapping path="/api/user/verify"/>-->
-            <!--<mvc:exclude-mapping path="/api/user/getBasicDataByType"/>-->
-
-            <!--&lt;!&ndash;斌哥接口通道&ndash;&gt;-->
-            <!--<mvc:exclude-mapping path="/api/console/showContents"/>-->
-            <!--<mvc:exclude-mapping path="/api/console/showActivity"/>-->
-            <!--<mvc:exclude-mapping path="/api/content/publish"/>-->
-            <!--<mvc:exclude-mapping path="/api/console/createActivity"/>-->
-            <!--<mvc:exclude-mapping path="/api/console/option"/>-->
-            <!--<mvc:exclude-mapping path="/api/console/createActivityNotice"/>-->
-            <!--<mvc:exclude-mapping path="/api/console/showDetails"/>-->
-            <!--<mvc:exclude-mapping path="/api/console/bindAccount"/>-->
-            <!--&lt;!&ndash; end &ndash;&gt;-->
             <bean class="com.me2me.web.handler.AccessSecurityHandler"/>
         </mvc:interceptor>
     </mvc:interceptors>

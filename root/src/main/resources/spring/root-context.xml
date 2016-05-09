@@ -19,7 +19,6 @@
         <import resource="classpath:spring/search-context.xml"/>
     </beans>
     <beans profile="product">
-        <import resource="classpath:spring/mysql-context.xml"/>
         <import resource="classpath:spring/root-dubbo-consumer.xml"/>
     </beans>
 </beans>

@@ -18,13 +18,13 @@ import java.io.Serializable;
  * 该接口必须实现序列化接口的实体类作为泛型实际参数
  * @param <T>
  */
-public class Response<T extends Serializable>  {
+public class Response<T extends Serializable> implements BaseEntity  {
 
     private static final String DEFAULT_MESSAGE_SUCCESS = "ok";
 
     private static final String DEFAULT_MESSAGE_FAILURE = "failure";
 
-    private static final int DEDFAULT_CODE_SUCCESS = 200;
+    private static final int DEFAULT_CODE_SUCCESS = 200;
 
     private static final int DEFAULT_CODE_FAILURE = 500;
 
@@ -59,7 +59,7 @@ public class Response<T extends Serializable>  {
      * @return
      */
     public static <T extends BaseEntity> Response success(T data){
-        Response response =  new Response(DEDFAULT_CODE_SUCCESS,DEFAULT_MESSAGE_SUCCESS,data);
+        Response response =  new Response(DEFAULT_CODE_SUCCESS,DEFAULT_MESSAGE_SUCCESS,data);
         response.refreshAccessToken();
         return response;
     }
@@ -68,8 +68,8 @@ public class Response<T extends Serializable>  {
      * 系统默认成功
      * @return
      */
-    public static <T extends BaseEntity> Response success(){
-        Response response =  new Response(DEDFAULT_CODE_SUCCESS,DEFAULT_MESSAGE_SUCCESS);
+    public static Response success(){
+        Response response =  new Response(DEFAULT_CODE_SUCCESS,DEFAULT_MESSAGE_SUCCESS);
         response.refreshAccessToken();
         return response;
     }
@@ -103,7 +103,7 @@ public class Response<T extends Serializable>  {
      * @param message
      * @return
      */
-    public static <T extends BaseEntity> Response success(int code,String message){
+    public static Response success(int code,String message){
         Response response =  new Response(code,message);
         response.refreshAccessToken();
         return response;

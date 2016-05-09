@@ -42,6 +42,9 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <properties>
+                <mode>dev</mode>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>
@@ -94,6 +97,9 @@
         <!--测试环境-->
         <profile>
             <id>test</id>
+            <properties>
+                <mode>test</mode>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>
@@ -135,6 +141,9 @@
         <!--生产环境-->
         <profile>
             <id>product</id>
+            <properties>
+                <mode>product</mode>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>
