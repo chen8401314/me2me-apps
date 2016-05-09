@@ -8,5 +8,8 @@
     <dubbo:registry address="#{app.dubboRegistry}"/>
 
     <dubbo:reference interface="com.me2me.user.service.UserService" id="userService"/>
+
+    <dubbo:reference interface="com.me2me.content.service.ContentService" id="contentService"/>
+
     
 </beans>
