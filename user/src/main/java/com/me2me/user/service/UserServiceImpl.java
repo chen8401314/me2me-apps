@@ -487,6 +487,7 @@ public class UserServiceImpl implements UserService {
             userFollowDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFollowDto.getAvatar());
             int followMe = this.isFollow(followParamsDto.getSourceUid(),userFollowDto.getUid());
             userFollowDto.setIsFollowMe(followMe);
+            userFollowDto.setIsFollowed(1);
         }
         showUserFollowDto.setResult(list);
         return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message,showUserFollowDto);

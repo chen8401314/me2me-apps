@@ -11,7 +11,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public class Bootstrap {
     public static void main(String[] args) throws InterruptedException {
-        final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:spring/live-dubbo-provider.xml","classpath:spring/live-dubbo-consumer.xml");
+        final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:spring/search-dubbo-provider.xml","classpath:spring/search-dubbo-consumer.xml");
         ctx.start();
         Runtime.getRuntime().addShutdownHook(new Thread(){
             @Override
