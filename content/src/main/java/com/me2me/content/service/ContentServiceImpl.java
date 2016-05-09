@@ -650,6 +650,7 @@ public class ContentServiceImpl implements ContentService {
             ContentTagsDetails contentTagsDetails = new ContentTagsDetails();
             contentTagsDetails.setTid(contentTags.getId());
             contentTagsDetails.setCid(content.getId());
+            contentTagsDetails.setCid(content.getUid());
             contentMybatisDao.createContentTagsDetails(contentTagsDetails);
         }
     }
