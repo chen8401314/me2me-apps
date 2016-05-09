@@ -515,7 +515,7 @@ public class UserServiceImpl implements UserService {
         user.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
         user.setGender(userProfile.getGender());
         user.setUid(userProfile.getUid());
-        user.setIsFollow(isFollow(targetUid,sourceUid));
+        user.setIsFollowed(isFollow(targetUid,sourceUid));
         return Response.success(user);
     }
 
@@ -608,5 +608,14 @@ public class UserServiceImpl implements UserService {
         return userMybatisDao.getApplicationSecurityByAppId(appId);
     }
 
+    @Override
+    public int getFansCount(long uid){
+        return userMybatisDao.getUserFansCount(uid);
+    }
+
+    @Override
+    public int getFollowCount(long uid){
+        return userMybatisDao.getUserFollowCount(uid);
+    }
 
 }

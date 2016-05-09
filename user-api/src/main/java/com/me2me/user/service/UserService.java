@@ -154,4 +154,8 @@ public interface UserService {
 
     ApplicationSecurity getApplicationSecurityByAppId(String appId);
 
+    int getFollowCount(long uid);
+
+    int getFansCount(long uid);
+
 }
