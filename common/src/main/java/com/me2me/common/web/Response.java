@@ -18,7 +18,7 @@ import java.io.Serializable;
  * 该接口必须实现序列化接口的实体类作为泛型实际参数
  * @param <T>
  */
-public class Response<T extends Serializable>  {
+public class Response<T extends Serializable> implements BaseEntity  {
 
     private static final String DEFAULT_MESSAGE_SUCCESS = "ok";
 
