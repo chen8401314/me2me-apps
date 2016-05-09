@@ -68,7 +68,7 @@ public class Response<T extends Serializable> implements BaseEntity  {
      * 系统默认成功
      * @return
      */
-    public static <T extends BaseEntity> Response success(){
+    public static Response success(){
         Response response =  new Response(DEFAULT_CODE_SUCCESS,DEFAULT_MESSAGE_SUCCESS);
         response.refreshAccessToken();
         return response;
@@ -103,7 +103,7 @@ public class Response<T extends Serializable> implements BaseEntity  {
      * @param message
      * @return
      */
-    public static <T extends BaseEntity> Response success(int code,String message){
+    public static Response success(int code,String message){
         Response response =  new Response(code,message);
         response.refreshAccessToken();
         return response;
