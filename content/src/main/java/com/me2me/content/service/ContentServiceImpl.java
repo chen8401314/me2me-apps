@@ -771,6 +771,7 @@ public class ContentServiceImpl implements ContentService {
             hottestContentElement.setReviewCount(content.getReviewCount());
             hottestContentElement.setTitle(content.getTitle());
             hottestContentElement.setCreateTime(content.getCreateTime());
+            hottestContentElement.setIsLike(isLike(content.getId(),uid));
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
             for(ContentReview contentReview : contentReviewList){
                 ShowHottestDto.HottestContentElement.ReviewElement reviewElement = ShowHottestDto.HottestContentElement.createElement();
@@ -843,6 +844,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setContent(content.getContent());
             contentElement.setType(content.getType());
             contentElement.setTitle(content.getTitle());
+            contentElement.setIsLike(isLike(content.getId(),uid));
             String cover = content.getConverImage();
             if(!StringUtils.isEmpty(cover)) {
                 contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
@@ -903,6 +905,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setType(content.getType());
             contentElement.setTitle(content.getTitle());
             contentElement.setForwardCid(content.getForwardCid());
+            contentElement.setIsLike(isLike(content.getId(),uid));
             String cover =  content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
                 contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
@@ -1042,6 +1045,14 @@ public class ContentServiceImpl implements ContentService {
             HighQualityContent temp = contentMybatisDao.getHQuantityByCid(id);
             contentMybatisDao.removeHighQualityContent(temp.getId());
         }
+    }
+
+    /**
+     * 判断当前人是否给当前文章点赞过 0 未点赞 1点赞
+     * @return
+     */
+    public int isLike(long cid,long uid){
+       return contentMybatisDao.isLike(cid,uid);
     }
 
 }

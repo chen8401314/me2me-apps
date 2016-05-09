@@ -82,6 +82,9 @@ public class ShowNewestDto implements BaseEntity{
         // 图片数量
         private int imageCount;
 
+        //是否点过赞
+        private int isLike;
+
         private List<ReviewElement> reviews = Lists.newArrayList();
 
         public static ReviewElement createElement(){

@@ -83,6 +83,8 @@ public class ShowAttentionDto implements BaseEntity {
         // 图片数量
         private int imageCount;
 
+        private int isLike;
+
         private List<ReviewElement> reviews = Lists.newArrayList();
 
         public static ReviewElement createElement(){
