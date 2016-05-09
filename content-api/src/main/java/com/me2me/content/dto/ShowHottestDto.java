@@ -119,5 +119,28 @@ public class ShowHottestDto implements BaseEntity {
 
         private Date createTime;
 
+        private int isLike;
+
+        private List<ReviewElement> reviews = Lists.newArrayList();
+
+        public static ReviewElement createElement(){
+            return new ReviewElement();
+        }
+
+        @Data
+        public static class ReviewElement implements BaseEntity{
+
+            private long uid;
+
+            private String nickName;
+
+            private String avatar;
+
+            private Date createTime;
+
+            private String review;
+
+        }
+
     }
 }

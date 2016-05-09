@@ -279,4 +279,13 @@ public class ContentMybatisDao {
         example.setOrderByClause(" create_time desc limit 3 ");
         return contentReviewMapper.selectByExample(example);
     }
+
+    public int isLike(long cid, long uid){
+        ContentTagsDetailsExample example = new ContentTagsDetailsExample();
+        ContentTagsDetailsExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(cid);
+        criteria.andUidEqualTo(uid);
+        int count = contentTagsDetailsMapper.countByExample(example);
+        return  count > 0 ? 1 : 0;
+    }
 }

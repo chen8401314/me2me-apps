@@ -578,9 +578,9 @@ public class ContentServiceImpl implements ContentService {
             }else{
                 contentElement.setCoverImage("");
             }
-            UserInfoDto.ContentElement.ReviewElement reviewElement = UserInfoDto.ContentElement.createElement();
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
             for(ContentReview contentReview : contentReviewList){
+                UserInfoDto.ContentElement.ReviewElement reviewElement = UserInfoDto.ContentElement.createElement();
                 reviewElement.setUid(contentReview.getUid());
                 UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
                 reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
@@ -771,6 +771,18 @@ public class ContentServiceImpl implements ContentService {
             hottestContentElement.setReviewCount(content.getReviewCount());
             hottestContentElement.setTitle(content.getTitle());
             hottestContentElement.setCreateTime(content.getCreateTime());
+            hottestContentElement.setIsLike(isLike(content.getId(),uid));
+            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+            for(ContentReview contentReview : contentReviewList){
+                ShowHottestDto.HottestContentElement.ReviewElement reviewElement = ShowHottestDto.HottestContentElement.createElement();
+                reviewElement.setUid(contentReview.getUid());
+                UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
+                reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+                reviewElement.setNickName(user.getNickName());
+                reviewElement.setCreateTime(contentReview.getCreateTime());
+                reviewElement.setReview(contentReview.getReview());
+                hottestContentElement.getReviews().add(reviewElement);
+            }
             //系统文章不包含，用户信息
             if(content.getType() == Specification.ArticleType.SYSTEM.index){
 
@@ -832,6 +844,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setContent(content.getContent());
             contentElement.setType(content.getType());
             contentElement.setTitle(content.getTitle());
+            contentElement.setIsLike(isLike(content.getId(),uid));
             String cover = content.getConverImage();
             if(!StringUtils.isEmpty(cover)) {
                 contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
@@ -857,6 +870,17 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setReviewCount(content.getReviewCount());
             contentElement.setPersonCount(content.getPersonCount());
+            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+            for(ContentReview contentReview : contentReviewList){
+                ShowNewestDto.ContentElement.ReviewElement reviewElement = ShowNewestDto.ContentElement.createElement();
+                reviewElement.setUid(contentReview.getUid());
+                UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
+                reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+                reviewElement.setNickName(user.getNickName());
+                reviewElement.setCreateTime(contentReview.getCreateTime());
+                reviewElement.setReview(contentReview.getReview());
+                contentElement.getReviews().add(reviewElement);
+            }
             showNewestDto.getNewestData().add(contentElement);
         }
         return Response.success(showNewestDto);
@@ -881,6 +905,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setType(content.getType());
             contentElement.setTitle(content.getTitle());
             contentElement.setForwardCid(content.getForwardCid());
+            contentElement.setIsLike(isLike(content.getId(),uid));
             String cover =  content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
                 contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
@@ -907,6 +932,17 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setReviewCount(content.getReviewCount());
             contentElement.setPersonCount(content.getPersonCount());
             showAttentionDto.getAttentionData().add(contentElement);
+            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+            for(ContentReview contentReview : contentReviewList){
+                ShowAttentionDto.ContentElement.ReviewElement reviewElement = ShowAttentionDto.ContentElement.createElement();
+                reviewElement.setUid(contentReview.getUid());
+                UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
+                reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+                reviewElement.setNickName(user.getNickName());
+                reviewElement.setCreateTime(contentReview.getCreateTime());
+                reviewElement.setReview(contentReview.getReview());
+                contentElement.getReviews().add(reviewElement);
+            }
         }
         return Response.success(showAttentionDto);
     }
@@ -1009,6 +1045,14 @@ public class ContentServiceImpl implements ContentService {
             HighQualityContent temp = contentMybatisDao.getHQuantityByCid(id);
             contentMybatisDao.removeHighQualityContent(temp.getId());
         }
+    }
+
+    /**
+     * 判断当前人是否给当前文章点赞过 0 未点赞 1点赞
+     * @return
+     */
+    public int isLike(long cid,long uid){
+       return contentMybatisDao.isLike(cid,uid);
     }
 
 }
