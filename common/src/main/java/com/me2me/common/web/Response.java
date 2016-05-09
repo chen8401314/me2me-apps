@@ -24,7 +24,7 @@ public class Response<T extends Serializable> implements BaseEntity  {
 
     private static final String DEFAULT_MESSAGE_FAILURE = "failure";
 
-    private static final int DEDFAULT_CODE_SUCCESS = 200;
+    private static final int DEFAULT_CODE_SUCCESS = 200;
 
     private static final int DEFAULT_CODE_FAILURE = 500;
 
@@ -59,7 +59,7 @@ public class Response<T extends Serializable> implements BaseEntity  {
      * @return
      */
     public static <T extends BaseEntity> Response success(T data){
-        Response response =  new Response(DEDFAULT_CODE_SUCCESS,DEFAULT_MESSAGE_SUCCESS,data);
+        Response response =  new Response(DEFAULT_CODE_SUCCESS,DEFAULT_MESSAGE_SUCCESS,data);
         response.refreshAccessToken();
         return response;
     }
@@ -69,7 +69,7 @@ public class Response<T extends Serializable> implements BaseEntity  {
      * @return
      */
     public static <T extends BaseEntity> Response success(){
-        Response response =  new Response(DEDFAULT_CODE_SUCCESS,DEFAULT_MESSAGE_SUCCESS);
+        Response response =  new Response(DEFAULT_CODE_SUCCESS,DEFAULT_MESSAGE_SUCCESS);
         response.refreshAccessToken();
         return response;
     }
