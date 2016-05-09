@@ -218,13 +218,13 @@ public interface Specification {
     }
 
     /**
-     * 是否点过赞
+     * 点赞操作
      */
     enum IsLike{
 
-        UNLIKE("未点赞",0),
+        LIKE("点赞",0),
 
-        LIKE("点赞",1);
+        UNLIKE("取消点赞",1);
 
 
         public final String name;
