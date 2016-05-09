@@ -17,5 +17,5 @@
 
     <import resource="mysql-context.xml"/>
 
-    <import resource="live-context.xml"/>
+    <import resource="search-context.xml"/>
 </beans>
