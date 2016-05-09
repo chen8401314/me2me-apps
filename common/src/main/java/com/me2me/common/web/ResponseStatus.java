@@ -165,7 +165,7 @@ public enum  ResponseStatus {
 
     NICK_NAME_REQUIRE_UNIQUE("用户昵称必须唯一","nick name require unique",50023),
 
-    CONTENT_LIKES_ERROR("用户点赞错误","content likes error",20024),
+    CONTENT_LIKES_ERROR("用户点赞内容不存在","content likes error",50024),
 
 
 

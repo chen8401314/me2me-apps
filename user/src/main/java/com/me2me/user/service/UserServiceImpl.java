@@ -108,10 +108,12 @@ public class UserServiceImpl implements UserService {
                 loginSuccessDto.setUserName(user.getUserName());
                 loginSuccessDto.setNickName(userProfile.getNickName());
                 loginSuccessDto.setGender(userProfile.getGender());
-                loginSuccessDto.setUserNo("");
+                loginSuccessDto.setMeNumber("");
                 loginSuccessDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
                 loginSuccessDto.setToken(userToken.getToken());
                 loginSuccessDto.setYearId(userProfile.getYearsId());
+                loginSuccessDto.setFansCount(userMybatisDao.getUserFansCount(user.getUid()));
+                loginSuccessDto.setFollowedCount(userMybatisDao.getUserFollowCount(user.getUid()));
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status,ResponseStatus.USER_LOGIN_SUCCESS.message,loginSuccessDto);
             }else{
                 // 用户密码不正确
