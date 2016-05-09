@@ -60,4 +60,25 @@ public class ContentDetailDto implements BaseEntity {
 
     }
 
+    private List<ReviewElement> reviews = Lists.newArrayList();
+
+    public static ReviewElement createReviewElement(){
+        return new ReviewElement();
+    }
+
+    @Data
+    public static class ReviewElement implements BaseEntity{
+
+        private long uid;
+
+        private String nickName;
+
+        private String avatar;
+
+        private Date createTime;
+
+        private String review;
+
+    }
+
 }
