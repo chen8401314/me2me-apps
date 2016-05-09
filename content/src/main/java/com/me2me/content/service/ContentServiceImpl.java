@@ -471,7 +471,7 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setLikeCount(content.getLikeCount());
         contentDetailDto.setCreateTime(content.getCreateTime());
         contentDetailDto.setId(content.getId());
-        // 获取感受标签前5条
+        // 获取感受
         List<ContentTagsDetails> list  = contentMybatisDao.getContentTagsDetails(content.getId(),Integer.MAX_VALUE);
         for (ContentTagsDetails contentTagsDetails : list){
             ContentDetailDto.ContentTagElement contentTagElement = ContentDetailDto.createElement();
@@ -480,6 +480,18 @@ public class ContentServiceImpl implements ContentService {
             contentDetailDto.getTags().add(contentTagElement);
 
         }
+        List<ContentReview> reviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+        for(ContentReview review :reviewList){
+            ContentDetailDto.ReviewElement reviewElement = ContentDetailDto.createReviewElement();
+            reviewElement.setUid(review.getUid());
+            reviewElement.setCreateTime(review.getCreateTime());
+            reviewElement.setReview(review.getReview());
+            UserProfile user = userService.getUserProfileByUid(review.getUid());
+            reviewElement.setAvatar(user.getAvatar());
+            reviewElement.setNickName(user.getNickName());
+            contentDetailDto.getReviews().add(reviewElement);
+        }
+
         return Response.success(contentDetailDto);
     }
 
