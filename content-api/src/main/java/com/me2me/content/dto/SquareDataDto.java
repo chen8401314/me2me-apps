@@ -84,6 +84,8 @@ public class SquareDataDto implements BaseEntity {
         //是否收藏
         private int favorite;
 
+        private int imageCount;
+
         }
 
 }

@@ -179,6 +179,8 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setPersonCount(content.getPersonCount());
             squareDataElement.setFavoriteCount(content.getFavoriteCount());
             squareDataElement.setRights(content.getRights());
+            int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
+            squareDataElement.setImageCount(imageCounts);
             squareDataDto.getResults().add(squareDataElement);
         }
     }
