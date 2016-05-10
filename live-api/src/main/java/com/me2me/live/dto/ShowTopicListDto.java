@@ -25,6 +25,8 @@ public class ShowTopicListDto implements BaseEntity{
     @Data
     public static  class ShowTopicElement implements BaseEntity{
 
+        private long cid;
+
         private long topicId;
 
         private String title;

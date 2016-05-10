@@ -281,19 +281,19 @@ public class ContentServiceImpl implements ContentService {
             return Response.failure(ResponseStatus.CONTENT_LIKES_ERROR.status,ResponseStatus.CONTENT_LIKES_ERROR.message);
         }else{
             ContentLikesDetails contentLikesDetails = new ContentLikesDetails();
+            contentLikesDetails.setUid(likeDto.getUid());
+            contentLikesDetails.setCid(likeDto.getCid());
             //点赞
             if(likeDto.getAction() == Specification.IsLike.LIKE.index){
                 content.setLikeCount(content.getLikeCount() +1);
                 contentMybatisDao.updateContentById(content);
-                //记录点赞流水
-                contentLikesDetails.setUid(likeDto.getUid());
-                contentLikesDetails.setCid(likeDto.getCid());
                 contentMybatisDao.createContentLikesDetails(contentLikesDetails);
                 remind(content,likeDto.getUid(),Specification.UserNoticeType.LIKE.index);
                 return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
             }else{
                 content.setLikeCount(content.getLikeCount() -1);
                 contentMybatisDao.updateContentById(content);
+
                 contentMybatisDao.deleteContentLikesDetails(contentLikesDetails);
                 return Response.success(ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.message);
             }
