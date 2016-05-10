@@ -482,6 +482,7 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
         contentDetailDto.setHotValue(content.getHotValue());
         contentDetailDto.setLikeCount(content.getLikeCount());
+        contentDetailDto.setReviewCount(content.getReviewCount());
         contentDetailDto.setCreateTime(content.getCreateTime());
         contentDetailDto.setId(content.getId());
         // 获取感受

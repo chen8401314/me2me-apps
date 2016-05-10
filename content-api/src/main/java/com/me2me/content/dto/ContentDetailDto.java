@@ -32,6 +32,8 @@ public class ContentDetailDto implements BaseEntity {
 
     private int likeCount;
 
+    private int reviewCount;
+
     private Date createTime;
 
     private int isLike;
