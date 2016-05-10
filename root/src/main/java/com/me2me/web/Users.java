@@ -342,4 +342,12 @@ public class Users extends BaseController {
         return userService.getUserProfile(request.getUid());
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/init",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public void init(UserProfileRequest request){
+        userService.initUserNumber();
+        System.out.println("init data success ... ");
+    }
+
+
 }

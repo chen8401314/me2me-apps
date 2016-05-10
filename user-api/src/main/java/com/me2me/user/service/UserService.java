@@ -158,4 +158,6 @@ public interface UserService {
 
     int getFansCount(long uid);
 
+    void initUserNumber();
+
 }
