@@ -8,6 +8,7 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.core.event.ApplicationEventBus;
+import com.me2me.user.dao.OldUserJdbcDao;
 import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.dto.*;
 import com.me2me.user.event.VerifyEvent;
@@ -16,6 +17,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -34,6 +39,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMybatisDao userMybatisDao;
+
+    @Autowired
+    private OldUserJdbcDao oldUserJdbcDao;
 
 
 
@@ -96,6 +104,8 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public Response login(UserLoginDto userLoginDto) {
+        //老用户转到新系统中来
+        oldUserJdbcDao.moveOldUser2Apps(userLoginDto.getUserName(),userLoginDto.getEncrypt());
         User user = userMybatisDao.getUserByUserName(userLoginDto.getUserName());
         if(user != null){
             String salt = user.getSalt();
@@ -144,6 +154,7 @@ public class UserServiceImpl implements UserService {
         }else if(verifyDto.getAction() == Specification.VerifyAction.FIND_MY_ENCRYPT.index){
             // 找回密码
             // 判断用户是否已经注册过该手机
+            oldUserJdbcDao.moveOldUser2Apps(verifyDto.getMobile(),"123456");
             User user = userMybatisDao.getUserByUserName(verifyDto.getMobile());
             if(user!=null){
                 applicationEventBus.post(new VerifyEvent(verifyDto.getMobile(),null));
