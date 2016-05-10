@@ -618,21 +618,24 @@ public class UserServiceImpl implements UserService {
         return userMybatisDao.getUserFansCount(uid);
     }
 
+    /**
+     * 该方法暂时注释掉，未来等用户量超出上限再开启
+     */
     @Override
     public void initUserNumber() {
-        List<Integer> list = Lists.newArrayList();
-        List<Integer> container = Lists.newArrayList();
-        for(int i = 80000000;i<90000000;i++){
-            list.add(i);
-        }
-        Collections.shuffle(list);
-        for(int i = 0;i<list.size();i++){
-            container.add(list.get(i));
-            if(i%10000==0){
-                userInitJdbcDao.batchInsertMeNumber(container);
-                container.clear();
-            }
-        }
+//        List<Integer> list = Lists.newArrayList();
+//        List<Integer> container = Lists.newArrayList();
+//        for(int i = 80000000;i<90000000;i++){
+//            list.add(i);
+//        }
+//        Collections.shuffle(list);
+//        for(int i = 0;i<list.size();i++){
+//            container.add(list.get(i));
+//            if(i%10000==0){
+//                userInitJdbcDao.batchInsertMeNumber(container);
+//                container.clear();
+//            }
+//        }
     }
 
     @Override
