@@ -60,6 +60,8 @@ public class UserInfoDto implements BaseEntity{
 
         private String content ;
 
+        private String title;
+
         private Date createTime;
 
         private int likeCount;

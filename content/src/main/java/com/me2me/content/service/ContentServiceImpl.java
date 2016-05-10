@@ -579,6 +579,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setTag(content.getFeeling());
             contentElement.setContent(content.getContent());
             contentElement.setCid(content.getId());
+            contentElement.setTitle(content.getTitle());
             contentElement.setCreateTime(content.getCreateTime());
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setReviewCount(content.getReviewCount());
@@ -1044,6 +1045,7 @@ public class ContentServiceImpl implements ContentService {
             UserProfile userProfile = userService.getUserProfileByUid(contentReview.getUid());
             reviewElement.setNickName(userProfile.getNickName());
             reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            reviewElement.setId(contentReview.getId());
             contentReviewDto.getReviews().add(reviewElement);
 
         }

@@ -25,15 +25,17 @@ public class ContentReviewDto implements BaseEntity {
     @Data
     public static class ReviewElement implements BaseEntity{
 
-    private long uid;
+        private long id;
 
-    private String nickName;
+        private long uid;
 
-    private String avatar;
+        private String nickName;
 
-    private Date createTime;
+        private String avatar;
 
-    private String review;
+        private Date createTime;
+
+        private String review;
 
     }
 
