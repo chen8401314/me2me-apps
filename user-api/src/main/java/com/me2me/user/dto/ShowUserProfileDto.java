@@ -33,7 +33,7 @@ public class ShowUserProfileDto implements BaseEntity{
 
     private String userName;
 
-    private String userToken;
+    private String token;
 
     private List<Hobby> hobbyList = Lists.newArrayList();
 

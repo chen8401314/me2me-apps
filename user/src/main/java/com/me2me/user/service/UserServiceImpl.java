@@ -604,7 +604,7 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setGender(userProfile.getGender());
         showUserProfileDto.setUserName(userProfile.getMobile());
         UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
-        showUserProfileDto.setUserToken(userToken.getToken());
+        showUserProfileDto.setToken(userToken.getToken());
         showUserProfileDto.setMeNumber(userMybatisDao.getUserNoByUid(userProfile.getUid()).getMeNumber().toString());
         showUserProfileDto.setFollowedCount(userMybatisDao.getUserFollowCount(uid));
         showUserProfileDto.setFansCount(userMybatisDao.getUserFansCount(uid));
