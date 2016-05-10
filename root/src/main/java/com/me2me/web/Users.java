@@ -349,5 +349,33 @@ public class Users extends BaseController {
         System.out.println("init data success ... ");
     }
 
+    /**
+     * 前台获取版本信息
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/versionControl",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response versionControl(VersionControlRequest request){
+        String version = request.getVersion();
+        int platform = request.getPlatform();
+        return userService.versionControl(version,platform);
+    }
+
+    /**
+     * 后台添加版本信息
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/updateVersion",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response updateVersion(UpdateVersionRequest request){
+        VersionDto controlDto = new VersionDto();
+        controlDto.setUpdateUrl(request.getUpdateUrl());
+        controlDto.setVersion(request.getVersion());
+        controlDto.setPlatform(request.getPlatform());
+        controlDto.setUpdateDescription(request.getUpdateDescription());
+        return userService.updateVersion(controlDto);
+    }
 
 }

@@ -393,4 +393,20 @@ public interface Specification {
         }
     }
 
+    enum VersionStatus{
+
+        NEWEST("最新",0),
+
+        UPDATE("需更新",1);
+
+        public final String name;
+
+        public final int index;
+
+        VersionStatus(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
 }

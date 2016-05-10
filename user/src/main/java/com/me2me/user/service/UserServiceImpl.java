@@ -42,7 +42,6 @@ public class UserServiceImpl implements UserService {
     private OldUserJdbcDao oldUserJdbcDao;
 
 
-
     /**
      * 用户注册
      * @param userSignUpDto
@@ -643,6 +642,31 @@ public class UserServiceImpl implements UserService {
 //                container.clear();
 //            }
 //        }
+    }
+
+    @Override
+    public Response versionControl(String version,int platform) {
+        VersionControlDto versionControlDto = new VersionControlDto();
+        VersionControl control = userMybatisDao.getVersion(version,platform);
+        VersionControl versionControl = userMybatisDao.getNewestVersion(platform);
+        versionControlDto.setId(versionControl.getId());
+        versionControlDto.setUpdateDescription(versionControl.getUpdateDescription());
+        versionControlDto.setUpdateTime(versionControl.getUpdateTime());
+        versionControlDto.setPlatform(versionControl.getPlatform());
+        versionControlDto.setVersion(versionControl.getVersion());
+        versionControlDto.setUpdateUrl(versionControl.getUpdateUrl());
+        if(control == null ||!control.equals(versionControl)){
+            versionControlDto.setIsUpdate(Specification.VersionStatus.UPDATE.index);
+        }else{
+            versionControlDto.setIsUpdate(Specification.VersionStatus.NEWEST.index);
+        }
+        return Response.success(versionControlDto);
+    }
+
+    @Override
+    public Response updateVersion(VersionDto versionDto) {
+        userMybatisDao.updateVersion(versionDto);
+        return Response.success(ResponseStatus.VERSION_UPDATE_SUCCESS.status,ResponseStatus.VERSION_UPDATE_SUCCESS.message);
     }
 
     @Override

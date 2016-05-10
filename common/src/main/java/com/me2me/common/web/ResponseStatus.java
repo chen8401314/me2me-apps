@@ -105,6 +105,8 @@ public enum  ResponseStatus {
 
     CONTENT_REVIEW_SUCCESS("评论成功","content review success",20046),
 
+    VERSION_UPDATE_SUCCESS("版本已更新","version update success",20047),
+
 
 
 

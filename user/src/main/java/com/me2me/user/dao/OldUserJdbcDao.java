@@ -54,8 +54,8 @@ public class OldUserJdbcDao {
                     userProfile.setUid(user.getUid());
                     userProfile.setAvatar(Constant.DEFAULT_AVATAR);
                     userProfile.setMobile(mobile);
-                    String nickName = map.get("user_NickName").toString();
-                    String user_Gender = map.get("user_Gender").toString();
+                    String nickName = map.get("user_NickName")== null ? "metome" :map.get("user_NickName").toString();
+                    String user_Gender = map.get("user_Gender")== null ? "10" : map.get("user_Gender").toString();
                     List<UserProfile> userProfileList = userMybatisDao.getByNickName(nickName);
                     if (userProfileList != null && userProfileList.size() > 0) {
                         userProfile.setNickName(nickName + 1);

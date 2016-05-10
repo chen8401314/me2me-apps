@@ -160,4 +160,8 @@ public interface UserService {
 
     void initUserNumber();
 
+    Response versionControl(String version,int platform);
+
+    Response updateVersion(VersionDto versionDto);
+
 }

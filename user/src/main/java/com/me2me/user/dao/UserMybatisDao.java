@@ -64,6 +64,10 @@ public class UserMybatisDao {
 
     @Autowired
     private UserNoMapper userNoMapper;
+
+    @Autowired
+    private VersionControlMapper controlMapper;
+
     /**
      * 保存用户注册信息
      * @param user
@@ -387,5 +391,34 @@ public class UserMybatisDao {
 
     public UserNo getUserNoByUid(long uid){
         return userNoMapper.selectByPrimaryKey(uid);
+    }
+
+    public VersionControl getNewestVersion(int platform){
+        VersionControlExample example = new VersionControlExample();
+        VersionControlExample.Criteria criteria = example.createCriteria();
+        criteria.andPlatformEqualTo(platform);
+        example.setOrderByClause(" order by update_time desc ");
+        List<VersionControl> list =  controlMapper.selectByExample(example);
+        return  (list != null &&list.size() > 0) ? list.get(0) : null;
+    }
+
+    public VersionControl getVersion(String version,int platform){
+        VersionControlExample example = new VersionControlExample();
+        VersionControlExample.Criteria criteria = example.createCriteria();
+        criteria.andVersionEqualTo(version);
+        criteria.andPlatformEqualTo(platform);
+        List<VersionControl> list =  controlMapper.selectByExample(example);
+        return  (list != null &&list.size() > 0) ? list.get(0) : null;
+
+    }
+
+    public void updateVersion(VersionDto versionDto){
+        VersionControl versionControl = new VersionControl();
+        versionControl.setUpdateDescription(versionDto.getUpdateDescription());
+        versionControl.setPlatform(versionDto.getPlatform());
+        versionControl.setUpdateUrl(versionDto.getUpdateUrl());
+        versionControl.setVersion(versionDto.getVersion());
+        controlMapper.insertSelective(versionControl);
+
     }
 }
