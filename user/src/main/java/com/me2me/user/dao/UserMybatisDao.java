@@ -61,6 +61,9 @@ public class UserMybatisDao {
 
     @Autowired
     private ApplicationSecurityMapper applicationSecurityMapper;
+
+    @Autowired
+    private UserNoMapper userNoMapper;
     /**
      * 保存用户注册信息
      * @param user
@@ -380,5 +383,9 @@ public class UserMybatisDao {
         criteria.andAppIdEqualTo(appId);
         List<ApplicationSecurity> list = applicationSecurityMapper.selectByExample(example);
         return list!=null&&list.size()>0?list.get(0):null;
+    }
+
+    public UserNo getUserNoByUid(long uid){
+        return userNoMapper.selectByPrimaryKey(uid);
     }
 }

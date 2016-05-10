@@ -14,7 +14,6 @@ import com.me2me.user.dto.*;
 import com.me2me.user.event.VerifyEvent;
 import com.me2me.user.model.*;
 import com.me2me.user.model.Dictionary;
-import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -78,7 +77,8 @@ public class UserServiceImpl implements UserService {
         signUpSuccessDto.setToken(SecurityUtils.getToken());
         signUpSuccessDto.setUid(user.getUid());
         signUpSuccessDto.setNickName(userProfile.getNickName());
-        signUpSuccessDto.setUserNo("");
+        // 设置userNo
+        signUpSuccessDto.setMeNumber(userMybatisDao.getUserNoByUid(user.getUid()).getMeNumber().toString());
         signUpSuccessDto.setAvatar(userProfile.getAvatar());
         // 保存用户token信息
         UserToken userToken = new UserToken();
@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
                 loginSuccessDto.setUserName(user.getUserName());
                 loginSuccessDto.setNickName(userProfile.getNickName());
                 loginSuccessDto.setGender(userProfile.getGender());
-                loginSuccessDto.setMeNumber("");
+                loginSuccessDto.setMeNumber(userMybatisDao.getUserNoByUid(user.getUid()).getMeNumber().toString());
                 loginSuccessDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
                 loginSuccessDto.setToken(userToken.getToken());
                 loginSuccessDto.setYearId(userProfile.getYearsId());
@@ -596,7 +596,7 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
         showUserProfileDto.setBirthday(userProfile.getBirthday());
         showUserProfileDto.setGender(userProfile.getGender());
-        showUserProfileDto.setMeNumber(userProfile.getUid().toString());
+        showUserProfileDto.setMeNumber(userMybatisDao.getUserNoByUid(userProfile.getUid()).getMeNumber().toString());
         showUserProfileDto.setFollowedCount(userMybatisDao.getUserFollowCount(uid));
         showUserProfileDto.setFansCount(userMybatisDao.getUserFansCount(uid));
         List<UserHobby> list = userMybatisDao.getHobby(uid);
