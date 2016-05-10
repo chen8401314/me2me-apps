@@ -20,8 +20,6 @@ public class ContentDetailDto implements BaseEntity {
 
     private long uid;
 
-    private long tid;
-
     private String feeling;
 
     private String avatar;
