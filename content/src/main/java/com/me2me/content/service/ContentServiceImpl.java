@@ -21,6 +21,7 @@ import com.plusnet.search.content.api.ContentRecommendService;
 import com.plusnet.search.content.domain.ContentTO;
 import com.plusnet.search.content.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -48,6 +49,9 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private ContentRecommendService contentRecommendService;
 
+    @Value("#{app.recommend_domain}")
+    private String recommendDomain;
+
     @Override
     public Response recommend(long uid) {
         RecommendRequest recommendRequest = new RecommendRequest();
@@ -65,8 +69,7 @@ public class ContentServiceImpl implements ContentService {
             RecommendContentDto.RecommendElement element = recommendContentDto.createElement();
             element.setTitle(contentTO.getTitle());
             element.setCoverImage(contentTO.getCover());
-            // todo is hard
-            element.setLinkUrl(Constant.RECOMMEND_DOMAIN+contentTO.getUrl());
+            element.setLinkUrl(recommendDomain+contentTO.getUrl());
             element.setType(0);
             recommendContentDto.getResult().add(element);
         }
@@ -218,13 +221,13 @@ public class ContentServiceImpl implements ContentService {
             // 参与活动入口
             activityService.joinActivity(contentDto.getContent(),contentDto.getUid());
         }else if(content.getType() == Specification.ArticleType.FORWARD.index){
-            // 转载文章
-            long forwardCid = contentDto.getForwardCid();
-            Content forwardContent = contentMybatisDao.getContentById(forwardCid);
-            content.setForwardCid(forwardCid);
-            content.setForwardUrl(Constant.FORWARD_URL_TEST+forwardCid);
-            content.setForwardTitle(forwardContent.getTitle());
-            content.setThumbnail(forwardContent.getConverImage());
+            // 转载文章(暂未启用)
+//            long forwardCid = contentDto.getForwardCid();
+//            Content forwardContent = contentMybatisDao.getContentById(forwardCid);
+//            content.setForwardCid(forwardCid);
+//            content.setForwardUrl(contentDetailPage+forwardCid);
+//            content.setForwardTitle(forwardContent.getTitle());
+//            content.setThumbnail(forwardContent.getConverImage());
         }else if(content.getType() == Specification.ArticleType.LIVE.index){
             content.setForwardCid(contentDto.getForwardCid());
         }
