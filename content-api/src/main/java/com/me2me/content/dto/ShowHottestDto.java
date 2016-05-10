@@ -102,6 +102,12 @@ public class ShowHottestDto implements BaseEntity {
         //评论数
         private int reviewCount;
 
+        //参与人数
+        private int personCount;
+
+        //直播收藏人数
+        private int favoriteCount;
+
         //是否关注
         private int isFollowed;
 
@@ -110,9 +116,6 @@ public class ShowHottestDto implements BaseEntity {
 
         //类型 5 系统 3 活动 0 原生
         private int type;
-
-        //参与人数
-        private int personCount;
 
         //直播是否收藏
         private int favorite;

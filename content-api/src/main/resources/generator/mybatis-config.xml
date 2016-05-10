@@ -44,6 +44,6 @@
         <!--<table tableName="mobile_article" domainObjectName="MobileArticle"/>-->
         <!--<table tableName="content_tags_details" domainObjectName="ContentTagsDetails"/>-->
         <!--<table tableName="content_review" domainObjectName="ContentReview"/>-->
-        <table tableName="content_likes_details" domainObjectName="ContentLikesDetails"/>
+        <table tableName="content" domainObjectName="Content"/>
     </context>
 </generatorConfiguration>

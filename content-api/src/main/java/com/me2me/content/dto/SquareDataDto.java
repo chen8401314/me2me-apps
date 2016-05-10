@@ -72,6 +72,9 @@ public class SquareDataDto implements BaseEntity {
         //直播参与人数
         private int personCount;
 
+        //直播收藏人数
+        private int favoriteCount;
+
         //公开权限 0 仅自己 1 公开
         private int rights;
 

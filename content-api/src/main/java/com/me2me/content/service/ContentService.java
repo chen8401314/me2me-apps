@@ -141,4 +141,7 @@ public interface ContentService {
     Response showUGCDetails(long id);
 
     Response reviewList(long cid,long sinceId);
+
+    void updateContentById(Content content);
+
 }

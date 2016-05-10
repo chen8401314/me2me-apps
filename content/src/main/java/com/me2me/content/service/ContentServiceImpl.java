@@ -177,6 +177,7 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setLikeCount(content.getLikeCount());
             squareDataElement.setReviewCount(content.getReviewCount());
             squareDataElement.setPersonCount(content.getPersonCount());
+            squareDataElement.setFavoriteCount(content.getFavoriteCount());
             squareDataElement.setRights(content.getRights());
             squareDataDto.getResults().add(squareDataElement);
         }
@@ -483,6 +484,8 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setHotValue(content.getHotValue());
         contentDetailDto.setLikeCount(content.getLikeCount());
         contentDetailDto.setReviewCount(content.getReviewCount());
+        contentDetailDto.setFavoriteCount(content.getFavoriteCount());
+        contentDetailDto.setPersonCount(content.getPersonCount());
         contentDetailDto.setCreateTime(content.getCreateTime());
         contentDetailDto.setId(content.getId());
         // 获取感受
@@ -598,6 +601,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setReviewCount(content.getReviewCount());
             contentElement.setPersonCount(content.getPersonCount());
+            contentElement.setFavoriteCount(content.getFavoriteCount());
             contentElement.setContentType(content.getContentType());
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
@@ -835,6 +839,7 @@ public class ContentServiceImpl implements ContentService {
                 hottestContentElement.setIsFollowed(follow);
 
                 hottestContentElement.setPersonCount(content.getPersonCount());
+                hottestContentElement.setFavoriteCount(content.getFavoriteCount());
             //原生
             }else if(content.getType() == Specification.ArticleType.ORIGIN.index){
                 hottestContentElement.setUid(content.getUid());
@@ -901,6 +906,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setReviewCount(content.getReviewCount());
             contentElement.setPersonCount(content.getPersonCount());
+            contentElement.setFavoriteCount(content.getFavoriteCount());
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
             for(ContentReview contentReview : contentReviewList){
                 ShowNewestDto.ContentElement.ReviewElement reviewElement = ShowNewestDto.ContentElement.createElement();
@@ -962,6 +968,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setReviewCount(content.getReviewCount());
             contentElement.setPersonCount(content.getPersonCount());
+            contentElement.setFavoriteCount(content.getFavoriteCount());
             showAttentionDto.getAttentionData().add(contentElement);
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
             for(ContentReview contentReview : contentReviewList){
@@ -1064,6 +1071,11 @@ public class ContentServiceImpl implements ContentService {
 
         }
         return Response.success(contentReviewDto);
+    }
+
+    @Override
+    public void updateContentById(Content content) {
+        contentMybatisDao.updateContentById(content);
     }
 
     private void optionContent(int action, long id) {

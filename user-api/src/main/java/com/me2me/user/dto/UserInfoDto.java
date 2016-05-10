@@ -70,6 +70,8 @@ public class UserInfoDto implements BaseEntity{
 
         private int personCount;
 
+        private int favoriteCount;
+
         private Long forwardCid;
 
         private Integer type;
