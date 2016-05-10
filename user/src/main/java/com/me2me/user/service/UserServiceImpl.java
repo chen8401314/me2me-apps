@@ -602,6 +602,9 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
         showUserProfileDto.setBirthday(userProfile.getBirthday());
         showUserProfileDto.setGender(userProfile.getGender());
+        showUserProfileDto.setUserName(userProfile.getMobile());
+        UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
+        showUserProfileDto.setUserToken(userToken.getToken());
         showUserProfileDto.setMeNumber(userMybatisDao.getUserNoByUid(userProfile.getUid()).getMeNumber().toString());
         showUserProfileDto.setFollowedCount(userMybatisDao.getUserFollowCount(uid));
         showUserProfileDto.setFansCount(userMybatisDao.getUserFansCount(uid));

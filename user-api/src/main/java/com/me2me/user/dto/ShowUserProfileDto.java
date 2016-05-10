@@ -31,6 +31,10 @@ public class ShowUserProfileDto implements BaseEntity{
 
     private int fansCount;
 
+    private String userName;
+
+    private String userToken;
+
     private List<Hobby> hobbyList = Lists.newArrayList();
 
     public Hobby createHobby(){ return new Hobby();}
