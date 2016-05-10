@@ -9,22 +9,17 @@ import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.user.dao.OldUserJdbcDao;
+import com.me2me.user.dao.UserInitJdbcDao;
 import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.dto.*;
 import com.me2me.user.event.VerifyEvent;
 import com.me2me.user.model.*;
+import com.me2me.user.model.Dictionary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -39,6 +34,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private UserMybatisDao userMybatisDao;
+
+    @Autowired
+    private UserInitJdbcDao userInitJdbcDao;
 
     @Autowired
     private OldUserJdbcDao oldUserJdbcDao;
@@ -83,7 +81,8 @@ public class UserServiceImpl implements UserService {
         signUpSuccessDto.setToken(SecurityUtils.getToken());
         signUpSuccessDto.setUid(user.getUid());
         signUpSuccessDto.setNickName(userProfile.getNickName());
-        signUpSuccessDto.setUserNo("");
+        // 设置userNo
+        signUpSuccessDto.setMeNumber(userMybatisDao.getUserNoByUid(user.getUid()).getMeNumber().toString());
         signUpSuccessDto.setAvatar(userProfile.getAvatar());
         // 保存用户token信息
         UserToken userToken = new UserToken();
@@ -118,7 +117,7 @@ public class UserServiceImpl implements UserService {
                 loginSuccessDto.setUserName(user.getUserName());
                 loginSuccessDto.setNickName(userProfile.getNickName());
                 loginSuccessDto.setGender(userProfile.getGender());
-                loginSuccessDto.setMeNumber("");
+                loginSuccessDto.setMeNumber(userMybatisDao.getUserNoByUid(user.getUid()).getMeNumber().toString());
                 loginSuccessDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
                 loginSuccessDto.setToken(userToken.getToken());
                 loginSuccessDto.setYearId(userProfile.getYearsId());
@@ -207,9 +206,9 @@ public class UserServiceImpl implements UserService {
         }else{
             User user = userMybatisDao.getUserByUserName(findEncryptDto.getUserName());
             if(user != null){
-                    user.setEncrypt(SecurityUtils.md5(findEncryptDto.getFirstEncrypt(),user.getSalt()));
-                    userMybatisDao.modifyUser(user);
-                    return Response.success(ResponseStatus.USER_FIND_ENCRYPT_SUCCESS.status, ResponseStatus.USER_FIND_ENCRYPT_SUCCESS.message);
+                user.setEncrypt(SecurityUtils.md5(findEncryptDto.getFirstEncrypt(),user.getSalt()));
+                userMybatisDao.modifyUser(user);
+                return Response.success(ResponseStatus.USER_FIND_ENCRYPT_SUCCESS.status, ResponseStatus.USER_FIND_ENCRYPT_SUCCESS.message);
             }else {
                 return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
             }
@@ -604,7 +603,7 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
         showUserProfileDto.setBirthday(userProfile.getBirthday());
         showUserProfileDto.setGender(userProfile.getGender());
-        showUserProfileDto.setMeNumber(userProfile.getUid().toString());
+        showUserProfileDto.setMeNumber(userMybatisDao.getUserNoByUid(userProfile.getUid()).getMeNumber().toString());
         showUserProfileDto.setFollowedCount(userMybatisDao.getUserFollowCount(uid));
         showUserProfileDto.setFansCount(userMybatisDao.getUserFansCount(uid));
         List<UserHobby> list = userMybatisDao.getHobby(uid);
@@ -626,9 +625,31 @@ public class UserServiceImpl implements UserService {
         return userMybatisDao.getUserFansCount(uid);
     }
 
+    /**
+     * 该方法暂时注释掉，未来等用户量超出上限再开启
+     */
+    @Override
+    public void initUserNumber() {
+//        List<Integer> list = Lists.newArrayList();
+//        List<Integer> container = Lists.newArrayList();
+//        for(int i = 80000000;i<90000000;i++){
+//            list.add(i);
+//        }
+//        Collections.shuffle(list);
+//        for(int i = 0;i<list.size();i++){
+//            container.add(list.get(i));
+//            if(i%10000==0){
+//                userInitJdbcDao.batchInsertMeNumber(container);
+//                container.clear();
+//            }
+//        }
+    }
+
     @Override
     public int getFollowCount(long uid){
         return userMybatisDao.getUserFollowCount(uid);
     }
+
+
 
 }

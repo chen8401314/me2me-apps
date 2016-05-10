@@ -21,4 +21,8 @@ public class BaseJdbcDao {
         return this.jdbcTemplate.queryForList(sql,params);
     }
 
+    public void execute(String sql){
+        this.jdbcTemplate.execute(sql);
+    }
+
 }
