@@ -436,6 +436,7 @@ public class ContentServiceImpl implements ContentService {
         ContentTagsDetails contentTagsDetails = new ContentTagsDetails();
         contentTagsDetails.setTid(contentTags.getId());
         contentTagsDetails.setCid(writeTagDto.getCid());
+        contentTagsDetails.setUid(writeTagDto.getUid());
         contentMybatisDao.createContentTagsDetails(contentTagsDetails);
         Content content = contentMybatisDao.getContentById(writeTagDto.getCid());
         //添加贴标签提醒
