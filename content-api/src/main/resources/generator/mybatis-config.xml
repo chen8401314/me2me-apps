@@ -42,7 +42,8 @@
         <!--<table tableName="content" domainObjectName="Content"/>-->
         <!--<table tableName="high_quality_content" domainObjectName="HighQualityContent"/>-->
         <!--<table tableName="mobile_article" domainObjectName="MobileArticle"/>-->
-        <table tableName="content_tags_details" domainObjectName="ContentTagsDetails"/>
+        <!--<table tableName="content_tags_details" domainObjectName="ContentTagsDetails"/>-->
         <!--<table tableName="content_review" domainObjectName="ContentReview"/>-->
+        <table tableName="content_likes_details" domainObjectName="ContentLikesDetails"/>
     </context>
 </generatorConfiguration>

@@ -42,6 +42,9 @@ public class ContentMybatisDao {
     @Autowired
     private ContentReviewMapper contentReviewMapper;
 
+    @Autowired
+    private ContentLikesDetailsMapper contentLikesDetailsMapper;
+
     public List<Content> loadSquareData(int sinceId){
         return contentMapper.loadSquareData(sinceId);
     }
@@ -281,11 +284,23 @@ public class ContentMybatisDao {
     }
 
     public int isLike(long cid, long uid){
-        ContentTagsDetailsExample example = new ContentTagsDetailsExample();
-        ContentTagsDetailsExample.Criteria criteria = example.createCriteria();
+        ContentLikesDetailsExample example = new ContentLikesDetailsExample();
+        ContentLikesDetailsExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(cid);
         criteria.andUidEqualTo(uid);
-        int count = contentTagsDetailsMapper.countByExample(example);
+        int count = contentLikesDetailsMapper.countByExample(example);
         return  count > 0 ? 1 : 0;
+    }
+
+    public void createContentLikesDetails(ContentLikesDetails contentLikesDetails){
+        contentLikesDetailsMapper.insertSelective(contentLikesDetails);
+    }
+
+    public void deleteContentLikesDetails(ContentLikesDetails contentLikesDetails){
+        ContentLikesDetailsExample example = new ContentLikesDetailsExample();
+        ContentLikesDetailsExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(contentLikesDetails.getCid());
+        criteria.andUidEqualTo(contentLikesDetails.getUid());
+        contentLikesDetailsMapper.deleteByExample(example);
     }
 }

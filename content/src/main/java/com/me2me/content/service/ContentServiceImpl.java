@@ -9,6 +9,7 @@ import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.*;
+import com.me2me.content.mapper.ContentLikesDetailsMapper;
 import com.me2me.content.model.*;
 import com.me2me.user.dto.UserInfoDto;
 import com.me2me.user.model.UserNotice;
@@ -48,6 +49,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private ContentRecommendService contentRecommendService;
+
 
     @Value("#{app.recommend_domain}")
     private String recommendDomain;
@@ -278,19 +280,26 @@ public class ContentServiceImpl implements ContentService {
         if(content == null){
             return Response.failure(ResponseStatus.CONTENT_LIKES_ERROR.status,ResponseStatus.CONTENT_LIKES_ERROR.message);
         }else{
+            ContentLikesDetails contentLikesDetails = new ContentLikesDetails();
             //点赞
             if(likeDto.getAction() == Specification.IsLike.LIKE.index){
                 content.setLikeCount(content.getLikeCount() +1);
                 contentMybatisDao.updateContentById(content);
+                //记录点赞流水
+                contentLikesDetails.setUid(likeDto.getUid());
+                contentLikesDetails.setCid(likeDto.getCid());
+                contentMybatisDao.createContentLikesDetails(contentLikesDetails);
+                remind(content,likeDto.getUid(),Specification.UserNoticeType.LIKE.index);
                 return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
             }else{
                 content.setLikeCount(content.getLikeCount() -1);
                 contentMybatisDao.updateContentById(content);
-                remind(content,likeDto.getUid(),Specification.UserNoticeType.LIKE.index);
+                contentMybatisDao.deleteContentLikesDetails(contentLikesDetails);
                 return Response.success(ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.message);
             }
         }
     }
+
 
     private void remind(Content content ,long uid ,int type){
         UserProfile userProfile = userService.getUserProfileByUid(uid);
