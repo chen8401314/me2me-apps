@@ -579,6 +579,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setTag(content.getFeeling());
             contentElement.setContent(content.getContent());
             contentElement.setCid(content.getId());
+            contentElement.setTitle(content.getTitle());
             contentElement.setCreateTime(content.getCreateTime());
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setReviewCount(content.getReviewCount());
