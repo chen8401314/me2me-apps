@@ -9,7 +9,6 @@ import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.*;
-import com.me2me.content.mapper.ContentLikesDetailsMapper;
 import com.me2me.content.model.*;
 import com.me2me.user.dto.UserInfoDto;
 import com.me2me.user.model.UserNotice;
@@ -1098,6 +1097,7 @@ public class ContentServiceImpl implements ContentService {
      * 判断当前人是否给当前文章点赞过 0 未点赞 1点赞
      * @return
      */
+    @Override
     public int isLike(long cid,long uid){
        return contentMybatisDao.isLike(cid,uid);
     }

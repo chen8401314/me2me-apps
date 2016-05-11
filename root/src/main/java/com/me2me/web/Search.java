@@ -1,10 +1,6 @@
 package com.me2me.web;
 
 import com.me2me.common.web.Response;
-import com.me2me.live.dto.CreateLiveDto;
-import com.me2me.live.dto.GetLiveTimeLineDto;
-import com.me2me.live.dto.SpeakDto;
-import com.me2me.live.service.LiveService;
 import com.me2me.search.service.SearchService;
 import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;

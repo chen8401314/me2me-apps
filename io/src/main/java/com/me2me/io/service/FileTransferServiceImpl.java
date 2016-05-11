@@ -7,7 +7,6 @@ import com.qiniu.util.Auth;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.concurrent.TimeUnit;
 
 /**
  * 上海拙心网络科技有限公司出品

@@ -443,7 +443,9 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public Response follow(FollowDto followDto) {
-
+        if(followDto.getSourceUid() == followDto.getTargetUid()){
+            return Response.failure(ResponseStatus.CAN_NOT_FOLLOW_YOURSELF.status,ResponseStatus.CAN_NOT_FOLLOW_YOURSELF.message);
+        }
         // 判断目标对象是否存在
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(followDto.getTargetUid());
         if(userProfile==null){

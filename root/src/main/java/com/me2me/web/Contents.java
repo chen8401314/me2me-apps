@@ -221,7 +221,7 @@ public class Contents extends BaseController {
     }
 
     /**
-     * 文章评论接口
+     * 文章评论列表
      * @return
      */
     @RequestMapping(value = "/reviewList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)

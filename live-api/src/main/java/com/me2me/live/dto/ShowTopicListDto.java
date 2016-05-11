@@ -53,6 +53,8 @@ public class ShowTopicListDto implements BaseEntity{
 
         private int likeCount;
 
+        private int isLike;
+
         private int personCount;
 
         private int favorite;

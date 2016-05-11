@@ -3,11 +3,7 @@ package com.me2me.content.service;
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.Content;
-import com.plusnet.search.content.RecommendRequest;
-import com.plusnet.search.content.RecommendResponse;
 
-import java.util.List;
-import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -143,5 +139,7 @@ public interface ContentService {
     Response reviewList(long cid,long sinceId);
 
     void updateContentById(Content content);
+
+    int isLike(long cid,long uid);
 
 }

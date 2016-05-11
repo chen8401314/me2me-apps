@@ -174,6 +174,7 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setPersonCount(content.getPersonCount());
                 showTopicElement.setReviewCount(content.getReviewCount());
                 showTopicElement.setCid(content.getId());
+                showTopicElement.setIsLike(contentService.isLike(content.getId(),uid));
             }
             //判断是否收藏了
             LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid,topic.getId());

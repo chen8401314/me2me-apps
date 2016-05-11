@@ -2,10 +2,7 @@ package com.me2me.web;
 
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.web.Response;
-import com.me2me.content.dto.EditorContentDto;
 import com.me2me.content.service.ContentService;
-import com.me2me.user.dto.UserSignUpDto;
-import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -68,7 +65,7 @@ public class Home extends BaseController {
     }
 
     /**
-     * 用户日记，直播，活动
+     * 用户日记，直播
      * @param request
      * @return
      */

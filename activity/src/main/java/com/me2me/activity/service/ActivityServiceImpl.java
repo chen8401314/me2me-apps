@@ -2,8 +2,6 @@ package com.me2me.activity.service;
 
 import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dto.*;
-import com.me2me.activity.model.Activity;
-import com.me2me.activity.model.ActivityExample;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.model.UserActivity;
 import com.me2me.common.Constant;
@@ -15,9 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.Date;
 import java.util.List;
-import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

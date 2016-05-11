@@ -169,6 +169,8 @@ public enum  ResponseStatus {
 
     CONTENT_LIKES_ERROR("用户点赞内容不存在","content likes error",50024),
 
+    CAN_NOT_FOLLOW_YOURSELF("自己不能关注自己","can not follow yourself",50025),
+
 
 
 

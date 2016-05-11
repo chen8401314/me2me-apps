@@ -118,7 +118,7 @@ public class Users extends BaseController {
     }
 
     /**
-     * 修改用户爱好
+     * 修改用户爱好（废弃）
      * @param request
      * @return
      */
@@ -146,7 +146,7 @@ public class Users extends BaseController {
 
     /**
      * 获取用户基础数据
-     * 全量接口
+     * 全量接口（废弃）
      */
     @ResponseBody
     @RequestMapping(value = "/getBasicData",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
@@ -175,7 +175,7 @@ public class Users extends BaseController {
 
 
     /**
-     * 贴标签
+     * 贴标签（废弃）
      * @param request
      * @return
      */
@@ -190,7 +190,7 @@ public class Users extends BaseController {
     }
 
     /**
-     * 获取用户标签列表
+     * 获取用户标签列表（废弃）
      * @param request
      * @return
      */
@@ -202,7 +202,7 @@ public class Users extends BaseController {
     }
 
     /**
-     * 获取用户标签点赞
+     * 获取用户标签点赞（废弃）
      * @param request
      * @return
      */
