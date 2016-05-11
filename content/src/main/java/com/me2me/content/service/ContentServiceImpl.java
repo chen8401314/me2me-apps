@@ -591,6 +591,7 @@ public class ContentServiceImpl implements ContentService {
         userInfoDto.getUser().setGender(userProfile.getGender());
         userInfoDto.getUser().setUid(userProfile.getUid());
         userInfoDto.getUser().setIsFollowed(userService.isFollow(targetUid,sourceUid));
+        userInfoDto.getUser().setIsFollowMe(userService.isFollow(sourceUid,targetUid));
         userInfoDto.getUser().setFollowedCount(userService.getFollowCount(targetUid));
         userInfoDto.getUser().setFansCount(userService.getFansCount(targetUid));
         for (Content content : list){

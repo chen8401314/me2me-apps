@@ -38,6 +38,8 @@ public class UserInfoDto implements BaseEntity{
 
         private int isFollowed;
 
+        private int isFollowMe;
+
         private int followedCount;
 
         private int fansCount;
