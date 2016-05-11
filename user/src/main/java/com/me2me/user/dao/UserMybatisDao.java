@@ -421,4 +421,8 @@ public class UserMybatisDao {
         controlMapper.insertSelective(versionControl);
 
     }
+
+    public Dictionary getDictionaryById(long id){
+        return dictionaryMapper.selectByPrimaryKey(id);
+    }
 }

@@ -290,7 +290,7 @@ public class Users extends BaseController {
     @RequestMapping(value = "/showFans",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response showFans(ShowFansRequest request){
         FansParamsDto fansParamsDto = new FansParamsDto();
-        fansParamsDto.setTargetUid(request.getUid());
+        fansParamsDto.setTargetUid(request.getCustomerId());
         if(request.getSinceId()==-1) {
             fansParamsDto.setSinceId(Integer.MAX_VALUE);
         }else{
@@ -308,7 +308,7 @@ public class Users extends BaseController {
     @RequestMapping(value = "/showFollows",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response showFollows(ShowFansRequest request){
         FollowParamsDto followParamsDto = new FollowParamsDto();
-        followParamsDto.setSourceUid(request.getUid());
+        followParamsDto.setSourceUid(request.getCustomerId());
         if(request.getSinceId()==-1) {
             followParamsDto.setSinceId(Integer.MAX_VALUE);
         }else{
