@@ -344,8 +344,8 @@ public class Users extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "/init",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public void init(UserProfileRequest request){
-        userService.initUserNumber();
+    public void init(ActivityRequest request){
+        userService.initUserNumber(request.getSinceId());
         System.out.println("init data success ... ");
     }
 

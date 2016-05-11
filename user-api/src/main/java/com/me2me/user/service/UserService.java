@@ -158,7 +158,7 @@ public interface UserService {
 
     int getFansCount(long uid);
 
-    void initUserNumber();
+    void initUserNumber(int limit);
 
     Response versionControl(String version,int platform);
 

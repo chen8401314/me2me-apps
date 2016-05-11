@@ -635,20 +635,32 @@ public class UserServiceImpl implements UserService {
      * 该方法暂时注释掉，未来等用户量超出上限再开启
      */
     @Override
-    public void initUserNumber() {
-//        List<Integer> list = Lists.newArrayList();
-//        List<Integer> container = Lists.newArrayList();
-//        for(int i = 80000000;i<90000000;i++){
-//            list.add(i);
-//        }
-//        Collections.shuffle(list);
-//        for(int i = 0;i<list.size();i++){
-//            container.add(list.get(i));
-//            if(i%10000==0){
-//                userInitJdbcDao.batchInsertMeNumber(container);
-//                container.clear();
-//            }
-//        }
+    public void initUserNumber(int limit) {
+        List<Integer> list = Lists.newArrayList();
+        List<Integer> container = Lists.newArrayList();
+        int start = 0;
+        int end = 0;
+        if(limit == 0){
+            start = 10000000;
+            end =30000000;
+        }else if(limit == 1){
+            start = 30000000;
+            end =60000000;
+        } else if(limit == 2){
+            start = 60000000;
+            end =90000000;
+        }
+        for(int i = start;i<end;i++){
+            list.add(i);
+        }
+        Collections.shuffle(list);
+        for(int i = 0;i<list.size();i++){
+            container.add(list.get(i));
+            if(i%10000==0){
+                userInitJdbcDao.batchInsertMeNumber(container);
+                container.clear();
+            }
+        }
     }
 
     @Override
