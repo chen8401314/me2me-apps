@@ -15,4 +15,8 @@ public class ShowFansRequest extends Request {
     @Setter
     private int sinceId;
 
+    @Getter
+    @Setter
+    private long customerId;
+
 }

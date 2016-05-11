@@ -612,6 +612,8 @@ public class UserServiceImpl implements UserService {
         for (UserHobby userHobby : list){
             ShowUserProfileDto.Hobby hobby = showUserProfileDto.createHobby();
             hobby.setHobby(userHobby.getHobby());
+            Dictionary dictionary =  userMybatisDao.getDictionaryById(userHobby.getHobby());
+            hobby.setValue(dictionary.getValue());
             showUserProfileDto.getHobbyList().add(hobby);
         }
         return  Response.success(showUserProfileDto);

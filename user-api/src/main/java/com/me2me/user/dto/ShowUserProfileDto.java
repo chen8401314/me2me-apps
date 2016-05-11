@@ -44,5 +44,7 @@ public class ShowUserProfileDto implements BaseEntity{
 
         private long hobby;
 
+        private String value;
+
     }
 }
