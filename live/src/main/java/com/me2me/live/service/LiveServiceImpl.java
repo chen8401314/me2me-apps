@@ -173,6 +173,7 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLikeCount(content.getLikeCount());
                 showTopicElement.setPersonCount(content.getPersonCount());
                 showTopicElement.setReviewCount(content.getReviewCount());
+                showTopicElement.setFavoriteCount(content.getFavoriteCount());
                 showTopicElement.setCid(content.getId());
                 showTopicElement.setIsLike(contentService.isLike(content.getId(),uid));
             }
