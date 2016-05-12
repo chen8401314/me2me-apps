@@ -339,8 +339,8 @@ public class ContentServiceImpl implements ContentService {
             userTips.setCount(1);
             userService.createUserTips(userTips);
         }else{
-            userTips.setCount(tips.getCount()+1);
-            userService.modifyUserTips(userTips);
+            tips.setCount(tips.getCount()+1);
+            userService.modifyUserTips(tips);
         }
     }
 
@@ -590,6 +590,7 @@ public class ContentServiceImpl implements ContentService {
         userInfoDto.getUser().setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
         userInfoDto.getUser().setGender(userProfile.getGender());
         userInfoDto.getUser().setUid(userProfile.getUid());
+        userInfoDto.getUser().setMeNumber(userService.getUserNoByUid(sourceUid));
         userInfoDto.getUser().setIsFollowed(userService.isFollow(targetUid,sourceUid));
         userInfoDto.getUser().setIsFollowMe(userService.isFollow(sourceUid,targetUid));
         userInfoDto.getUser().setFollowedCount(userService.getFollowCount(targetUid));

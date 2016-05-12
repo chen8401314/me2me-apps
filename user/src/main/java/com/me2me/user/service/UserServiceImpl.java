@@ -693,6 +693,11 @@ public class UserServiceImpl implements UserService {
         return userMybatisDao.getUserFollowCount(uid);
     }
 
+    @Override
+    public String getUserNoByUid(long uid){
+        return userMybatisDao.getUserNoByUid(uid).getMeNumber().toString();
+    }
+
 
 
 }

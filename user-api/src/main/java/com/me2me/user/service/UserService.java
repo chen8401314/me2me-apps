@@ -164,4 +164,6 @@ public interface UserService {
 
     Response updateVersion(VersionDto versionDto);
 
+    String getUserNoByUid(long uid);
+
 }
