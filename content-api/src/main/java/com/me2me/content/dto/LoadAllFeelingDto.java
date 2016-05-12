@@ -1,5 +1,6 @@
 package com.me2me.content.dto;
 
+import com.me2me.common.web.BaseEntity;
 import lombok.Data;
 
 /**
@@ -9,7 +10,7 @@ import lombok.Data;
  * Time :14:00
  */
 @Data
-public class LoadAllFeelingDto {
+public class LoadAllFeelingDto implements BaseEntity{
 
     private String tag;
 

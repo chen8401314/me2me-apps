@@ -1,5 +1,6 @@
 package com.me2me.user.dto;
 
+import com.me2me.common.web.BaseEntity;
 import lombok.Data;
 
 /**
@@ -9,7 +10,7 @@ import lombok.Data;
  * Time :17:00
  */
 @Data
-public class ModifyUserHobbyDto {
+public class ModifyUserHobbyDto implements BaseEntity{
 
 
     private long uid ;
