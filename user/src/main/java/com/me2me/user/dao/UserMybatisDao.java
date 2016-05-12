@@ -425,4 +425,16 @@ public class UserMybatisDao {
     public Dictionary getDictionaryById(long id){
         return dictionaryMapper.selectByPrimaryKey(id);
     }
+
+    public UserNotice getUserNotice(UserNotice userNotice){
+        UserNoticeExample example = new UserNoticeExample();
+        UserNoticeExample.Criteria criteria = example.createCriteria();
+        criteria.andNoticeTypeEqualTo(userNotice.getNoticeType());
+        criteria.andFromUidEqualTo(userNotice.getFromUid());
+        criteria.andToUidEqualTo(userNotice.getToUid());
+        criteria.andCidEqualTo(userNotice.getCid());
+        List<UserNotice> userNotices = userNoticeMapper.selectByExample(example);
+        return (userNotices != null && userNotices.size() > 0) ? userNotices.get(0) : null;
+
+    }
 }

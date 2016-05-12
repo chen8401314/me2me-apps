@@ -346,17 +346,32 @@ public class ContentServiceImpl implements ContentService {
             userNotice.setTag("");
         }
         userNotice.setReadStatus(type);
-        userService.createUserNotice(userNotice);
+        UserNotice notice = userService.getUserNotice(userNotice);
+        if(userNotice.getNoticeType() == Specification.UserNoticeType.LIKE.index) {
+            if ( notice == null) {
+                userService.createUserNotice(userNotice);
+            }
+        }else {
+            userService.createUserNotice(userNotice);
+        }
         UserTips userTips = new UserTips();
         userTips.setUid(content.getUid());
         userTips.setType(type);
         UserTips tips  =  userService.getUserTips(userTips);
         if(tips == null){
             userTips.setCount(1);
-            userService.createUserTips(userTips);
+            if(userNotice.getNoticeType() == Specification.UserNoticeType.LIKE.index) {
+                if ( notice == null) {
+                    userService.createUserTips(userTips);
+                }
+            }
         }else{
             tips.setCount(tips.getCount()+1);
-            userService.modifyUserTips(tips);
+            if(userNotice.getNoticeType() == Specification.UserNoticeType.LIKE.index) {
+                if ( notice == null) {
+                    userService.modifyUserTips(tips);
+                }
+            }
         }
     }
 

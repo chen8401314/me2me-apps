@@ -166,4 +166,6 @@ public interface UserService {
 
     String getUserNoByUid(long uid);
 
+    UserNotice getUserNotice(UserNotice userNotice);
+
 }
