@@ -50,6 +50,11 @@ public class ContentDetailDto implements BaseEntity {
 
     private int contentType;
 
+    //是否关注
+    private int isFollowed;
+
+    private int isFollowMe;
+
 
     private List<ContentTagElement> tags = Lists.newArrayList();
 

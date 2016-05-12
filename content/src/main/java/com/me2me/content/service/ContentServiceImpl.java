@@ -500,6 +500,8 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setPersonCount(content.getPersonCount());
         contentDetailDto.setCreateTime(content.getCreateTime());
         contentDetailDto.setId(content.getId());
+        contentDetailDto.setIsFollowed(userService.isFollow(content.getUid(),uid));
+        contentDetailDto.setIsFollowMe(userService.isFollow(uid,content.getUid()));
         // 获取感受
         List<ContentTagsDetails> list  = contentMybatisDao.getContentTagsDetails(content.getId(),Integer.MAX_VALUE);
         for (ContentTagsDetails contentTagsDetails : list){
