@@ -590,7 +590,7 @@ public class ContentServiceImpl implements ContentService {
         userInfoDto.getUser().setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
         userInfoDto.getUser().setGender(userProfile.getGender());
         userInfoDto.getUser().setUid(userProfile.getUid());
-        userInfoDto.getUser().setMeNumber(userService.getUserNoByUid(sourceUid));
+        userInfoDto.getUser().setMeNumber(userService.getUserNoByUid(targetUid));
         userInfoDto.getUser().setIsFollowed(userService.isFollow(targetUid,sourceUid));
         userInfoDto.getUser().setIsFollowMe(userService.isFollow(sourceUid,targetUid));
         userInfoDto.getUser().setFollowedCount(userService.getFollowCount(targetUid));
