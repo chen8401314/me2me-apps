@@ -172,7 +172,8 @@ public class LiveServiceImpl implements LiveService {
             if(content != null) {
                 showTopicElement.setLikeCount(content.getLikeCount());
                 showTopicElement.setPersonCount(content.getPersonCount());
-                showTopicElement.setReviewCount(content.getReviewCount());
+                showTopicElement.setReviewCount(liveMybatisDao.countFragment(content.getForwardCid()));
+                //showTopicElement.setReviewCount(content.getReviewCount());
                 showTopicElement.setFavoriteCount(content.getFavoriteCount());
                 showTopicElement.setCid(content.getId());
                 showTopicElement.setIsLike(contentService.isLike(content.getId(),uid));
@@ -294,5 +295,12 @@ public class LiveServiceImpl implements LiveService {
         liveMybatisDao.deleteLiveFavorite(liveFavorite);
         return Response.success(ResponseStatus.LIVE_SIGN_OUT_SUCCESS.status,ResponseStatus.LIVE_SIGN_OUT_SUCCESS.message);
     }
+
+
+    @Override
+    public int countFragment(long topicId){
+        return liveMybatisDao.countFragment(topicId);
+    }
+
 
 }

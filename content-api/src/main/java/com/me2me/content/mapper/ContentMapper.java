@@ -140,4 +140,6 @@ public interface ContentMapper {
     List<Content> loadHottestContent(int sinceId);
 
     List<Content> loadNewestContent(int sinceId);
+
+    int countFragment(long topicId);
 }

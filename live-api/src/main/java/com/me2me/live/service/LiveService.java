@@ -77,4 +77,5 @@ public interface LiveService {
      */
     Response signOutLive(long uid, long topicId);
 
+    int countFragment(long topicId);
 }

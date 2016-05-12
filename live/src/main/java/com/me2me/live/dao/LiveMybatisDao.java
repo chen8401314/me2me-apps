@@ -126,4 +126,11 @@ public class LiveMybatisDao {
         liveFavoriteMapper.deleteByPrimaryKey(liveFavorite.getId());
     }
 
+    public int countFragment(long topicId){
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        return topicFragmentMapper.countByExample(example);
+    }
+
 }
