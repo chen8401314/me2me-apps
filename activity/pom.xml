@@ -98,6 +98,7 @@
                         <configuration>
                             <repositoryLayout>flat</repositoryLayout>
                             <repositoryName>lib</repositoryName>
+                            <logsDirectory>logs</logsDirectory>
                             <includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
                             <copyConfigurationDirectory>src/main/resources</copyConfigurationDirectory>
                             <target>${project.build.directory}</target>
