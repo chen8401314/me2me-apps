@@ -335,6 +335,8 @@ public class ContentServiceImpl implements ContentService {
         userNotice.setLikeCount(0);
         if(type == Specification.UserNoticeType.REVIEW.index){
             userNotice.setReview(review);
+        }else{
+            userNotice.setReview("");
         }
         userNotice.setReadStatus(type);
         userService.createUserNotice(userNotice);
