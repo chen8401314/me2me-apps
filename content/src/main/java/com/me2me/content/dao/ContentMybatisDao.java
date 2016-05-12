@@ -193,6 +193,10 @@ public class ContentMybatisDao {
         }else{
             // UGC
             criteria.andTypeEqualTo(Specification.ArticleType.ORIGIN.index);
+            ContentExample.Criteria criteria2 = example.createCriteria();
+            criteria2.andTypeEqualTo(Specification.ArticleType.LIVE.index);
+            criteria.andStatusNotEqualTo(1);
+            example.or(criteria2);
         }
     }
 
