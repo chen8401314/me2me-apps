@@ -47,6 +47,8 @@ public class ShowUserNoticeDto implements BaseEntity {
         private Date createTime;
 
         private long cid;
+
+        private String review;
     }
 
 

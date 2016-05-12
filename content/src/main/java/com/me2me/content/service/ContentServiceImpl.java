@@ -290,10 +290,14 @@ public class ContentServiceImpl implements ContentService {
                 content.setLikeCount(content.getLikeCount() +1);
                 contentMybatisDao.updateContentById(content);
                 contentMybatisDao.createContentLikesDetails(contentLikesDetails);
-                remind(content,likeDto.getUid(),Specification.UserNoticeType.LIKE.index);
+                remind(content,likeDto.getUid(),Specification.UserNoticeType.LIKE.index,null);
                 return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
             }else{
-                content.setLikeCount(content.getLikeCount() -1);
+                if((content.getLikeCount() -1) < 0){
+                    content.setLikeCount(0);
+                }else{
+                    content.setLikeCount(content.getLikeCount() -1);
+                }
                 contentMybatisDao.updateContentById(content);
 
                 contentMybatisDao.deleteContentLikesDetails(contentLikesDetails);
@@ -303,7 +307,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
 
-    private void remind(Content content ,long uid ,int type){
+    private void remind(Content content ,long uid ,int type,String review){
         UserProfile userProfile = userService.getUserProfileByUid(uid);
         UserProfile customerProfile = userService.getUserProfileByUid(content.getUid());
         ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
@@ -329,18 +333,21 @@ public class ContentServiceImpl implements ContentService {
         }
         userNotice.setToUid(customerProfile.getUid());
         userNotice.setLikeCount(0);
+        if(type == Specification.UserNoticeType.REVIEW.index){
+            userNotice.setReview(review);
+        }
         userNotice.setReadStatus(type);
         userService.createUserNotice(userNotice);
         UserTips userTips = new UserTips();
         userTips.setUid(content.getUid());
-        userTips.setType(Specification.UserTipsType.LIKE.index);
+        userTips.setType(type);
         UserTips tips  =  userService.getUserTips(userTips);
         if(tips == null){
             userTips.setCount(1);
             userService.createUserTips(userTips);
         }else{
-            userTips.setCount(tips.getCount()+1);
-            userService.modifyUserTips(userTips);
+            tips.setCount(tips.getCount()+1);
+            userService.modifyUserTips(tips);
         }
     }
 
@@ -441,7 +448,7 @@ public class ContentServiceImpl implements ContentService {
         contentMybatisDao.createContentTagsDetails(contentTagsDetails);
         Content content = contentMybatisDao.getContentById(writeTagDto.getCid());
         //添加贴标签提醒
-        remind(content,writeTagDto.getUid(),Specification.UserNoticeType.TAG.index);
+        remind(content,writeTagDto.getUid(),Specification.UserNoticeType.TAG.index,null);
         //打标签的时候文章热度+1
         content.setHotValue(content.getHotValue()+1);
         contentMybatisDao.updateContentById(content);
@@ -590,6 +597,7 @@ public class ContentServiceImpl implements ContentService {
         userInfoDto.getUser().setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
         userInfoDto.getUser().setGender(userProfile.getGender());
         userInfoDto.getUser().setUid(userProfile.getUid());
+        userInfoDto.getUser().setMeNumber(userService.getUserNoByUid(targetUid));
         userInfoDto.getUser().setIsFollowed(userService.isFollow(targetUid,sourceUid));
         userInfoDto.getUser().setIsFollowMe(userService.isFollow(sourceUid,targetUid));
         userInfoDto.getUser().setFollowedCount(userService.getFollowCount(targetUid));
@@ -1000,7 +1008,7 @@ public class ContentServiceImpl implements ContentService {
         content.setReviewCount(content.getReviewCount() +1);
         contentMybatisDao.updateContentById(content);
         //添加提醒
-        remind(content,reviewDto.getUid(),Specification.UserNoticeType.REVIEW.index);
+        remind(content,reviewDto.getUid(),Specification.UserNoticeType.REVIEW.index,reviewDto.getReview());
         return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
     }
 

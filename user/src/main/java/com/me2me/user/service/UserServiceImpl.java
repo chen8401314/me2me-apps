@@ -348,6 +348,7 @@ public class UserServiceImpl implements UserService {
             userNoticeElement.setSummary(userNotice.getSummary());
             userNoticeElement.setToUid(userNotice.getToUid());
             userNoticeElement.setCid(userNotice.getCid());
+            userNoticeElement.setReview(userNotice.getReview());
             showUserNoticeDto.getUserNoticeList().add(userNoticeElement);
         }
         return Response.success(ResponseStatus.GET_USER_NOTICE_SUCCESS.status,ResponseStatus.GET_USER_NOTICE_SUCCESS.message,showUserNoticeDto);
@@ -503,7 +504,7 @@ public class UserServiceImpl implements UserService {
             userFollowDto.setIsFollowed(1);
         }
         showUserFollowDto.setResult(list);
-        return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message,showUserFollowDto);
+        return Response.success(ResponseStatus.SHOW_USER_FOLLOW_LIST_SUCCESS.status, ResponseStatus.SHOW_USER_FOLLOW_LIST_SUCCESS.message,showUserFollowDto);
     }
 
     public int isFollow(long targetUid,long sourceUid){
@@ -691,6 +692,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public int getFollowCount(long uid){
         return userMybatisDao.getUserFollowCount(uid);
+    }
+
+    @Override
+    public String getUserNoByUid(long uid){
+        return userMybatisDao.getUserNoByUid(uid).getMeNumber().toString();
     }
 
 
