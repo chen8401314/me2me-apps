@@ -503,7 +503,7 @@ public class UserServiceImpl implements UserService {
             userFollowDto.setIsFollowed(1);
         }
         showUserFollowDto.setResult(list);
-        return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message,showUserFollowDto);
+        return Response.success(ResponseStatus.SHOW_USER_FOLLOW_LIST_SUCCESS.status, ResponseStatus.SHOW_USER_FOLLOW_LIST_SUCCESS.message,showUserFollowDto);
     }
 
     public int isFollow(long targetUid,long sourceUid){
