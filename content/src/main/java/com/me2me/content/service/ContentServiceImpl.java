@@ -308,7 +308,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
 
-    private void remind(Content content ,long uid ,int type,String review){
+    private void remind(Content content ,long uid ,int type,String arg){
         UserProfile userProfile = userService.getUserProfileByUid(uid);
         UserProfile customerProfile = userService.getUserProfileByUid(content.getUid());
         ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
@@ -335,9 +335,14 @@ public class ContentServiceImpl implements ContentService {
         userNotice.setToUid(customerProfile.getUid());
         userNotice.setLikeCount(0);
         if(type == Specification.UserNoticeType.REVIEW.index){
-            userNotice.setReview(review);
-        }else{
+            userNotice.setReview(arg);
+            userNotice.setTag("");
+        }else if(type == Specification.UserNoticeType.TAG.index){
             userNotice.setReview("");
+            userNotice.setTag(arg);
+        }else if(type == Specification.UserNoticeType.LIKE.index){
+            userNotice.setReview("");
+            userNotice.setTag("");
         }
         userNotice.setReadStatus(type);
         userService.createUserNotice(userNotice);
@@ -451,7 +456,7 @@ public class ContentServiceImpl implements ContentService {
         contentMybatisDao.createContentTagsDetails(contentTagsDetails);
         Content content = contentMybatisDao.getContentById(writeTagDto.getCid());
         //添加贴标签提醒
-        remind(content,writeTagDto.getUid(),Specification.UserNoticeType.TAG.index,null);
+        remind(content,writeTagDto.getUid(),Specification.UserNoticeType.TAG.index,writeTagDto.getTag());
         //打标签的时候文章热度+1
         content.setHotValue(content.getHotValue()+1);
         contentMybatisDao.updateContentById(content);
