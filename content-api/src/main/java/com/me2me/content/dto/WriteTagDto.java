@@ -1,5 +1,6 @@
 package com.me2me.content.dto;
 
+import com.me2me.common.web.BaseEntity;
 import lombok.Data;
 
 /**
@@ -9,7 +10,7 @@ import lombok.Data;
  * Time :15:26
  */
 @Data
-public class WriteTagDto {
+public class WriteTagDto implements BaseEntity{
 
     private String tag;
 
