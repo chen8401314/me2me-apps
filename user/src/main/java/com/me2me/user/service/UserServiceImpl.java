@@ -348,6 +348,7 @@ public class UserServiceImpl implements UserService {
             userNoticeElement.setSummary(userNotice.getSummary());
             userNoticeElement.setToUid(userNotice.getToUid());
             userNoticeElement.setCid(userNotice.getCid());
+            userNoticeElement.setReview(userNotice.getReview());
             showUserNoticeDto.getUserNoticeList().add(userNoticeElement);
         }
         return Response.success(ResponseStatus.GET_USER_NOTICE_SUCCESS.status,ResponseStatus.GET_USER_NOTICE_SUCCESS.message,showUserNoticeDto);
