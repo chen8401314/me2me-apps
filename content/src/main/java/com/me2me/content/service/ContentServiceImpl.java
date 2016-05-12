@@ -293,7 +293,11 @@ public class ContentServiceImpl implements ContentService {
                 remind(content,likeDto.getUid(),Specification.UserNoticeType.LIKE.index);
                 return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
             }else{
-                content.setLikeCount(content.getLikeCount() -1);
+                if((content.getLikeCount() -1) < 0){
+                    content.setLikeCount(0);
+                }else{
+                    content.setLikeCount(content.getLikeCount() -1);
+                }
                 contentMybatisDao.updateContentById(content);
 
                 contentMybatisDao.deleteContentLikesDetails(contentLikesDetails);
