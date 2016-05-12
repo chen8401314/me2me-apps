@@ -314,14 +314,14 @@ public class ContentServiceImpl implements ContentService {
         ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
         UserNotice userNotice = new UserNotice();
         userNotice.setFromNickName(userProfile.getNickName());
-        userNotice.setFromAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
+        userNotice.setFromAvatar(userProfile.getAvatar());
         userNotice.setFromUid(userProfile.getUid());
         userNotice.setToNickName(customerProfile.getNickName());
         userNotice.setNoticeType(type);
         userNotice.setReadStatus(userNotice.getReadStatus());
         userNotice.setCid(content.getId());
         if(contentImage != null){
-            userNotice.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
+            userNotice.setCoverImage(contentImage.getImage());
             userNotice.setSummary("");
         }else{
             userNotice.setCoverImage("");
