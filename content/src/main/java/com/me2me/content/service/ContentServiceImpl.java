@@ -347,12 +347,16 @@ public class ContentServiceImpl implements ContentService {
         }
         userNotice.setReadStatus(type);
         UserNotice notice = userService.getUserNotice(userNotice);
-        if(userNotice.getNoticeType() == Specification.UserNoticeType.LIKE.index) {
-            if ( notice == null) {
+        //非直播才提醒
+        if(content.getType() != Specification.ArticleType.LIVE.index) {
+            //点赞时候只提醒一次
+            if (userNotice.getNoticeType() == Specification.UserNoticeType.LIKE.index) {
+                if (notice == null) {
+                    userService.createUserNotice(userNotice);
+                }
+            } else {
                 userService.createUserNotice(userNotice);
             }
-        }else {
-            userService.createUserNotice(userNotice);
         }
         UserTips userTips = new UserTips();
         userTips.setUid(content.getUid());
@@ -360,16 +364,24 @@ public class ContentServiceImpl implements ContentService {
         UserTips tips  =  userService.getUserTips(userTips);
         if(tips == null){
             userTips.setCount(1);
-            if(userNotice.getNoticeType() == Specification.UserNoticeType.LIKE.index) {
-                if ( notice == null) {
-                    userService.createUserTips(userTips);
+            //非直播才提醒
+            if(content.getType() != Specification.ArticleType.LIVE.index) {
+                //点赞时候只提醒一次
+                if (userNotice.getNoticeType() == Specification.UserNoticeType.LIKE.index) {
+                    if (notice == null) {
+                        userService.createUserTips(userTips);
+                    }
                 }
             }
         }else{
             tips.setCount(tips.getCount()+1);
-            if(userNotice.getNoticeType() == Specification.UserNoticeType.LIKE.index) {
-                if ( notice == null) {
-                    userService.modifyUserTips(tips);
+            //非直播才提醒
+            if(content.getType() != Specification.ArticleType.LIVE.index) {
+                //点赞时候只提醒一次
+                if (userNotice.getNoticeType() == Specification.UserNoticeType.LIKE.index) {
+                    if (notice == null) {
+                        userService.modifyUserTips(tips);
+                    }
                 }
             }
         }
