@@ -307,4 +307,8 @@ public class ContentMybatisDao {
         criteria.andUidEqualTo(contentLikesDetails.getUid());
         contentLikesDetailsMapper.deleteByExample(example);
     }
+
+    public int countFragment(long topicId){
+        return contentMapper.countFragment(topicId);
+    }
 }

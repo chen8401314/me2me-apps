@@ -702,6 +702,10 @@ public class UserServiceImpl implements UserService {
         return userMybatisDao.getUserNoByUid(uid).getMeNumber().toString();
     }
 
+    @Override
+    public UserNotice getUserNotice(UserNotice userNotice) {
+        return userMybatisDao.getUserNotice(userNotice);
+    }
 
 
 }

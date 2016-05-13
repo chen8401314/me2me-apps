@@ -104,7 +104,7 @@ public class ActivityMybatisDao {
     public boolean isEnd(long id) {
         ActivityExample example = new ActivityExample();
         ActivityExample.Criteria criteria = example.createCriteria();
-        criteria.andEndTimeLessThan(new Date());
+        criteria.andEndTimeGreaterThan(new Date());
         criteria.andIdEqualTo(id);
         List<ActivityWithBLOBs> list = activityMapper.selectByExampleWithBLOBs(example);
         return list!=null&&list.size()>0?true:false;

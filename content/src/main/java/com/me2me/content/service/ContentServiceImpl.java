@@ -155,6 +155,7 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setTag(content.getFeeling());
             squareDataElement.setType(content.getType());
             squareDataElement.setCreateTime(content.getCreateTime());
+            squareDataElement.setReviewCount(content.getReviewCount());
             if(!StringUtils.isEmpty(content.getConverImage())) {
                 squareDataElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
             }else{
@@ -172,9 +173,9 @@ public class ContentServiceImpl implements ContentService {
                 //直播是否收藏
                 squareDataElement.setFavorite(favorite);
                 squareDataElement.setForwardCid(content.getForwardCid());
+                squareDataElement.setReviewCount(contentMybatisDao.countFragment(content.getForwardCid()));
             }
             squareDataElement.setLikeCount(content.getLikeCount());
-            squareDataElement.setReviewCount(content.getReviewCount());
             squareDataElement.setPersonCount(content.getPersonCount());
             squareDataElement.setFavoriteCount(content.getFavoriteCount());
             squareDataElement.setRights(content.getRights());
@@ -308,7 +309,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
 
-    private void remind(Content content ,long uid ,int type,String review){
+    private void remind(Content content ,long uid ,int type,String arg){
         UserProfile userProfile = userService.getUserProfileByUid(uid);
         UserProfile customerProfile = userService.getUserProfileByUid(content.getUid());
         ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
@@ -335,22 +336,54 @@ public class ContentServiceImpl implements ContentService {
         userNotice.setToUid(customerProfile.getUid());
         userNotice.setLikeCount(0);
         if(type == Specification.UserNoticeType.REVIEW.index){
-            userNotice.setReview(review);
-        }else{
+            userNotice.setReview(arg);
+            userNotice.setTag("");
+        }else if(type == Specification.UserNoticeType.TAG.index){
             userNotice.setReview("");
+            userNotice.setTag(arg);
+        }else if(type == Specification.UserNoticeType.LIKE.index){
+            userNotice.setReview("");
+            userNotice.setTag("");
         }
         userNotice.setReadStatus(type);
-        userService.createUserNotice(userNotice);
+        UserNotice notice = userService.getUserNotice(userNotice);
+        //非直播才提醒
+        if(content.getType() != Specification.ArticleType.LIVE.index) {
+            //点赞时候只提醒一次
+            if (userNotice.getNoticeType() == Specification.UserNoticeType.LIKE.index) {
+                if (notice == null) {
+                    userService.createUserNotice(userNotice);
+                }
+            } else {
+                userService.createUserNotice(userNotice);
+            }
+        }
         UserTips userTips = new UserTips();
         userTips.setUid(content.getUid());
         userTips.setType(type);
         UserTips tips  =  userService.getUserTips(userTips);
         if(tips == null){
             userTips.setCount(1);
-            userService.createUserTips(userTips);
+            //非直播才提醒
+            if(content.getType() != Specification.ArticleType.LIVE.index) {
+                //点赞时候只提醒一次
+                if (userNotice.getNoticeType() == Specification.UserNoticeType.LIKE.index) {
+                    if (notice == null) {
+                        userService.createUserTips(userTips);
+                    }
+                }
+            }
         }else{
             tips.setCount(tips.getCount()+1);
-            userService.modifyUserTips(tips);
+            //非直播才提醒
+            if(content.getType() != Specification.ArticleType.LIVE.index) {
+                //点赞时候只提醒一次
+                if (userNotice.getNoticeType() == Specification.UserNoticeType.LIKE.index) {
+                    if (notice == null) {
+                        userService.modifyUserTips(tips);
+                    }
+                }
+            }
         }
     }
 
@@ -451,7 +484,7 @@ public class ContentServiceImpl implements ContentService {
         contentMybatisDao.createContentTagsDetails(contentTagsDetails);
         Content content = contentMybatisDao.getContentById(writeTagDto.getCid());
         //添加贴标签提醒
-        remind(content,writeTagDto.getUid(),Specification.UserNoticeType.TAG.index,null);
+        remind(content,writeTagDto.getUid(),Specification.UserNoticeType.TAG.index,writeTagDto.getTag());
         //打标签的时候文章热度+1
         content.setHotValue(content.getHotValue()+1);
         contentMybatisDao.updateContentById(content);
@@ -839,6 +872,7 @@ public class ContentServiceImpl implements ContentService {
 
            //直播 直播状态
             }else if(content.getType() == Specification.ArticleType.LIVE.index){
+                hottestContentElement.setReviewCount(contentMybatisDao.countFragment(content.getForwardCid()));
                 hottestContentElement.setUid(content.getUid());
                 hottestContentElement.setForwardCid(content.getForwardCid());
                 //查询直播状态
@@ -898,6 +932,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setTitle(content.getTitle());
             contentElement.setIsLike(isLike(content.getId(),uid));
             String cover = content.getConverImage();
+            contentElement.setReviewCount(content.getReviewCount());
             if(!StringUtils.isEmpty(cover)) {
                 contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
             }
@@ -907,6 +942,7 @@ public class ContentServiceImpl implements ContentService {
                 //查询直播状态
                 int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
                 contentElement.setLiveStatus(status);
+                contentElement.setReviewCount(contentMybatisDao.countFragment(content.getForwardCid()));
             }
             if(content.getType() == Specification.ArticleType.ORIGIN.index){
                 //获取内容图片数量
@@ -920,7 +956,6 @@ public class ContentServiceImpl implements ContentService {
             int follow = userService.isFollow(content.getUid(),uid);
             contentElement.setIsFollowed(follow);
             contentElement.setLikeCount(content.getLikeCount());
-            contentElement.setReviewCount(content.getReviewCount());
             contentElement.setPersonCount(content.getPersonCount());
             contentElement.setFavoriteCount(content.getFavoriteCount());
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
@@ -959,6 +994,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setTitle(content.getTitle());
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setIsLike(isLike(content.getId(),uid));
+            contentElement.setReviewCount(content.getReviewCount());
             String cover =  content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
                 contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
@@ -969,6 +1005,7 @@ public class ContentServiceImpl implements ContentService {
             {
                 int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
                 contentElement.setLiveStatus(status);
+                contentElement.setReviewCount(contentMybatisDao.countFragment(content.getForwardCid()));
             }
             if(content.getType() == Specification.ArticleType.ORIGIN.index){
                 //获取内容图片数量
@@ -982,7 +1019,6 @@ public class ContentServiceImpl implements ContentService {
             int follow = userService.isFollow(content.getUid(),uid);
             contentElement.setIsFollowed(follow);
             contentElement.setLikeCount(content.getLikeCount());
-            contentElement.setReviewCount(content.getReviewCount());
             contentElement.setPersonCount(content.getPersonCount());
             contentElement.setFavoriteCount(content.getFavoriteCount());
             showAttentionDto.getAttentionData().add(contentElement);
@@ -1114,6 +1150,12 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public int isLike(long cid,long uid){
        return contentMybatisDao.isLike(cid,uid);
+    }
+
+
+    @Override
+    public int countFragment(long topicId){
+        return contentMybatisDao.countFragment(topicId);
     }
 
 }
