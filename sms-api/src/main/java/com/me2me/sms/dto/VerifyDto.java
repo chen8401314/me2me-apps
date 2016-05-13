@@ -1,4 +1,4 @@
-package com.me2me.user.dto;
+package com.me2me.sms.dto;
 
 import com.me2me.common.web.BaseEntity;
 import lombok.Data;

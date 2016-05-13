@@ -1,11 +1,9 @@
-package com.me2me.user.listener;
+package com.me2me.sms.listener;
 
 import com.google.common.eventbus.Subscribe;
 import com.me2me.common.sms.YunXinSms;
 import com.me2me.core.event.ApplicationEventBus;
-import com.me2me.user.event.VerifyEvent;
-import lombok.Getter;
-import lombok.Setter;
+import com.me2me.sms.event.VerifyEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

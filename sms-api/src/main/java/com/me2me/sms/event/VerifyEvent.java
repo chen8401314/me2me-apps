@@ -1,5 +1,6 @@
-package com.me2me.user.event;
+package com.me2me.sms.event;
 
+import com.me2me.common.web.BaseEntity;
 import lombok.Data;
 
 /**
@@ -8,7 +9,7 @@ import lombok.Data;
  * Date: 2016/3/23.
  */
 @Data
-public class VerifyEvent {
+public class VerifyEvent implements BaseEntity {
 
     public VerifyEvent(String mobile,String verifyCode){
         this.mobile = mobile;

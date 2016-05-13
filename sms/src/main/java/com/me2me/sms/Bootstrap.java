@@ -1,8 +1,5 @@
-package com.me2me.user;
+package com.me2me.sms;
 
-import com.google.common.eventbus.AsyncEventBus;
-import com.google.common.eventbus.EventBus;
-import com.me2me.user.dao.UserMybatisDao;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.util.concurrent.CountDownLatch;
@@ -14,7 +11,7 @@ import java.util.concurrent.CountDownLatch;
  */
 public class Bootstrap {
     public static void main(String[] args) throws InterruptedException {
-        final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:spring/user-dubbo-provider.xml","classpath:spring/user-dubbo-consumer.xml");
+        final ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:spring/sms-dubbo-provider.xml");
         ctx.start();
         Runtime.getRuntime().addShutdownHook(new Thread(){
             @Override

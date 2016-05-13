@@ -1,6 +1,7 @@
 package com.me2me.user.service;
 
 import com.me2me.common.web.Response;
+import com.me2me.sms.dto.VerifyDto;
 import com.me2me.user.dto.*;
 import com.me2me.user.model.*;
 

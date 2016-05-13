@@ -3,16 +3,15 @@ package com.me2me.user.service;
 import com.google.common.collect.Lists;
 import com.me2me.common.Constant;
 import com.me2me.common.security.SecurityUtils;
-import com.me2me.common.sms.YunXinSms;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
-import com.me2me.core.event.ApplicationEventBus;
+import com.me2me.sms.dto.VerifyDto;
+import com.me2me.sms.service.SmsService;
 import com.me2me.user.dao.OldUserJdbcDao;
 import com.me2me.user.dao.UserInitJdbcDao;
 import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.dto.*;
-import com.me2me.user.event.VerifyEvent;
 import com.me2me.user.model.*;
 import com.me2me.user.model.Dictionary;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +29,6 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
 
     @Autowired
-    private ApplicationEventBus applicationEventBus;
-
-    @Autowired
     private UserMybatisDao userMybatisDao;
 
     @Autowired
@@ -40,6 +36,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private OldUserJdbcDao oldUserJdbcDao;
+
+    @Autowired
+    private SmsService smsService;
 
 
     /**
@@ -140,10 +139,13 @@ public class UserServiceImpl implements UserService {
      */
     public Response verify(VerifyDto verifyDto) {
         if(verifyDto.getAction() == Specification.VerifyAction.GET.index){
-            applicationEventBus.post(new VerifyEvent(verifyDto.getMobile(),null));
+            // 发送校验码
+            smsService.send(verifyDto);
             return Response.success(ResponseStatus.USER_VERIFY_GET_SUCCESS.status,ResponseStatus.USER_VERIFY_GET_SUCCESS.message);
         }else if(verifyDto.getAction() == Specification.VerifyAction.CHECK.index){
-            boolean result = YunXinSms.verify(verifyDto.getMobile(),verifyDto.getVerifyCode());
+            // boolean result = YunXinSms.verify(verifyDto.getMobile(),verifyDto.getVerifyCode());
+            // 验证校验码
+            boolean result = smsService.verify(verifyDto);
             if(result) {
                 return Response.success(ResponseStatus.USER_VERIFY_CHECK_SUCCESS.status, ResponseStatus.USER_VERIFY_CHECK_SUCCESS.message);
             }else{
@@ -155,7 +157,8 @@ public class UserServiceImpl implements UserService {
             oldUserJdbcDao.moveOldUser2Apps(verifyDto.getMobile(),"123456");
             User user = userMybatisDao.getUserByUserName(verifyDto.getMobile());
             if(user!=null){
-                applicationEventBus.post(new VerifyEvent(verifyDto.getMobile(),null));
+                // applicationEventBus.post(new VerifyEvent(verifyDto.getMobile(),null));
+                smsService.send(verifyDto);
                 return Response.success(ResponseStatus.USER_VERIFY_GET_SUCCESS.status,ResponseStatus.USER_VERIFY_GET_SUCCESS.message);
             }else{
                 return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);

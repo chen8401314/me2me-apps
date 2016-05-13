@@ -17,6 +17,7 @@
         <import resource="classpath:spring/live-context.xml"/>
         <import resource="classpath:spring/activity-context.xml"/>
         <import resource="classpath:spring/search-context.xml"/>
+        <import resource="classpath:spring/sms-context.xml"/>
     </beans>
     <beans profile="product">
         <import resource="classpath:spring/root-dubbo-consumer.xml"/>

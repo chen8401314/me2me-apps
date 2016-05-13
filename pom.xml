@@ -28,6 +28,8 @@
         <module>activity</module>
         <module>search-api</module>
         <module>search</module>
+        <module>sms-api</module>
+        <module>sms</module>
     </modules>
 
     <properties>
