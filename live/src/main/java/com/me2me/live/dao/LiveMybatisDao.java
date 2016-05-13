@@ -81,6 +81,7 @@ public class LiveMybatisDao {
         TopicExample.Criteria criteriaOr = example.createCriteria();
         if(topics != null && topics.size() > 0) {
             criteriaOr.andIdLessThan(sinceId);
+            criteriaOr.andUidNotEqualTo(uid);
             criteriaOr.andIdIn(topics);
             example.or(criteriaOr);
         }
