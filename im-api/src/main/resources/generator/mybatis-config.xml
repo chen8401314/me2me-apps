@@ -9,7 +9,7 @@
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
                         connectionURL="jdbc:mysql://10.47.125.111:3306/apps"
                         userId="me2me"
-                        password="1q2w_3e4r">
+                        password="Sp@Metro#79">
         </jdbcConnection>
 
         <javaTypeResolver >

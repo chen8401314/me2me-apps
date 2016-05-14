@@ -7,9 +7,9 @@
 
     <context id="MySqlTables" targetRuntime="MyBatis3">
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://192.168.89.103:3306/apps"
-                        userId="plAdmin"
-                        password="1q2w_3e4r">
+                        connectionURL="jdbc:mysql://192.168.89.80:3306/apps"
+                        userId="me2me"
+                        password="Sp@Metro#79">
         </jdbcConnection>
 
         <javaTypeResolver >
@@ -31,8 +31,8 @@
 
         <!--<table tableName="topic" domainObjectName="Topic"/> -->
         <!--<table tableName="topic_fragment" domainObjectName="TopicFragment"/>-->
-        <!--<table tableName="live_favorite" domainObjectName="LiveFavorite"/>-->
-        <table tableName="live_cpi" domainObjectName="LiveCpi"/>
+        <table tableName="live_favorite" domainObjectName="LiveFavorite"/>
+        <!--<table tableName="live_cpi" domainObjectName="LiveCpi"/>-->
 
 
     </context>
