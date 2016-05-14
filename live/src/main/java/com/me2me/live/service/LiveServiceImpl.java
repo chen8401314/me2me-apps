@@ -160,7 +160,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setCreateTime(topic.getCreateTime());
             showTopicElement.setTopicId(topic.getId());
             showTopicElement.setStatus(topic.getStatus());
-            TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId());
+            TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId(),topic.getUid());
             if(topicFragment != null) {
                 showTopicElement.setLastContentType(topicFragment.getContentType());
                 showTopicElement.setLastFragment(topicFragment.getFragment());

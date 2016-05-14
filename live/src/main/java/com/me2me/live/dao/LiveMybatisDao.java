@@ -47,10 +47,11 @@ public class LiveMybatisDao {
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
 
-    public TopicFragment getLastTopicFragment(long topicId ){
+    public TopicFragment getLastTopicFragment(long topicId,long uid ){
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
+        criteria.andUidEqualTo(uid);
         example.setOrderByClause("id desc limit 1 ");
         List<TopicFragment> topicFragmentList = topicFragmentMapper.selectByExampleWithBLOBs(example);
         return (topicFragmentList != null && topicFragmentList.size() > 0) ? topicFragmentList.get(0) : null;
