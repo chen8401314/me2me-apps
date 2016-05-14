@@ -296,12 +296,12 @@ public class ContentServiceImpl implements ContentService {
                     contentMybatisDao.createContentLikesDetails(contentLikesDetails);
                     remind(content, likeDto.getUid(), Specification.UserNoticeType.LIKE.index, null);
                 }else{
-                    return Response.failure(ResponseStatus.CONTENT_USER_LIKES_ALREADY.status,ResponseStatus.CONTENT_USER_LIKES_ALREADY.message);
+                    return Response.success(ResponseStatus.CONTENT_USER_LIKES_ALREADY.status,ResponseStatus.CONTENT_USER_LIKES_ALREADY.message);
                 }
                 return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
             }else{
                 if(details == null) {
-                    Response.failure(ResponseStatus.CONTENT_USER_LIKES_CANCEL_ALREADY.status,ResponseStatus.CONTENT_USER_LIKES_CANCEL_ALREADY.message);
+                    Response.success(ResponseStatus.CONTENT_USER_LIKES_CANCEL_ALREADY.status,ResponseStatus.CONTENT_USER_LIKES_CANCEL_ALREADY.message);
                 }else {
                     if ((content.getLikeCount() - 1) < 0) {
                         content.setLikeCount(0);

@@ -107,6 +107,10 @@ public enum  ResponseStatus {
 
     VERSION_UPDATE_SUCCESS("版本已更新","version update success",20047),
 
+    CONTENT_USER_LIKES_ALREADY("不能重复点赞","content user likes already",20048),
+
+    CONTENT_USER_LIKES_CANCEL_ALREADY("不能重复取消点赞","content user likes cancel already",20049),
+
 
 
 
@@ -171,9 +175,6 @@ public enum  ResponseStatus {
 
     CAN_NOT_FOLLOW_YOURSELF("自己不能关注自己","can not follow yourself",50025),
 
-    CONTENT_USER_LIKES_ALREADY("不能重复点赞","content user likes already",50026),
-
-    CONTENT_USER_LIKES_CANCEL_ALREADY("不能重复取消点赞","content user likes cancel already",50026),
 
 
 
