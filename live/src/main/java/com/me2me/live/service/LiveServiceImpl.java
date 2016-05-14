@@ -302,5 +302,20 @@ public class LiveServiceImpl implements LiveService {
         return liveMybatisDao.countFragment(topicId);
     }
 
+    @Override
+    public Response getFavoriteList(long topicId) {
+        ShowFavoriteListFto showFavoriteListFto = new ShowFavoriteListFto();
+        List<LiveFavorite> liveFavoriteList = liveMybatisDao.getFavoriteList(topicId);
+        for (LiveFavorite liveFavorite : liveFavoriteList){
+            ShowFavoriteListFto.FavoriteUser favoriteUser = ShowFavoriteListFto.createElement();
+            UserProfile userProfile = userService.getUserProfileByUid(liveFavorite.getUid());
+            favoriteUser.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            favoriteUser.setUid(userProfile.getUid());
+            favoriteUser.setNickName(userProfile.getNickName());
+            showFavoriteListFto.getLiveElements().add(favoriteUser);
+        }
+        return  Response.success(showFavoriteListFto);
+    }
+
 
 }

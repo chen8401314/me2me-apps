@@ -149,4 +149,16 @@ public class Live extends BaseController {
         return liveService.signOutLive(request.getUid(),request.getTopicId());
     }
 
+    /**
+     * 退出直播
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/favoriteList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response favoriteList(FavoriteListRequest request){
+        return liveService.getFavoriteList(request.getTopicId());
+    }
+
+
 }

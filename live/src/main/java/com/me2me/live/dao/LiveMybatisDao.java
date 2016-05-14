@@ -135,4 +135,12 @@ public class LiveMybatisDao {
         return topicFragmentMapper.countByExample(example);
     }
 
+     public List<LiveFavorite> getFavoriteList(long topicId){
+         LiveFavoriteExample example = new LiveFavoriteExample();
+         LiveFavoriteExample.Criteria criteria = example.createCriteria();
+         criteria.andTopicIdEqualTo(topicId);
+         example.setOrderByClause(" id asc limit 20");
+         return liveFavoriteMapper.selectByExample(example);
+     }
+
 }
