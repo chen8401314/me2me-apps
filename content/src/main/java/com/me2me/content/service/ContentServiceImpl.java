@@ -354,7 +354,7 @@ public class ContentServiceImpl implements ContentService {
             userNotice.setReview("");
             userNotice.setTag("");
         }
-        userNotice.setReadStatus(type);
+        userNotice.setReadStatus(0);
         UserNotice notice = userService.getUserNotice(userNotice);
         //非直播才提醒
         if(content.getType() != Specification.ArticleType.LIVE.index) {
@@ -380,6 +380,8 @@ public class ContentServiceImpl implements ContentService {
                     if (notice == null) {
                         userService.createUserTips(userTips);
                     }
+                }else {
+                    userService.createUserTips(userTips);
                 }
             }
         }else{
@@ -391,6 +393,8 @@ public class ContentServiceImpl implements ContentService {
                     if (notice == null) {
                         userService.modifyUserTips(tips);
                     }
+                }else {
+                    userService.modifyUserTips(tips);
                 }
             }
         }
