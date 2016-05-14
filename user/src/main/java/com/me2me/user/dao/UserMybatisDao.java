@@ -397,7 +397,7 @@ public class UserMybatisDao {
         VersionControlExample example = new VersionControlExample();
         VersionControlExample.Criteria criteria = example.createCriteria();
         criteria.andPlatformEqualTo(platform);
-        example.setOrderByClause(" order by update_time desc ");
+        example.setOrderByClause(" update_time desc ");
         List<VersionControl> list =  controlMapper.selectByExample(example);
         return  (list != null &&list.size() > 0) ? list.get(0) : null;
     }

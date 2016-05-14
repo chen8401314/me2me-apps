@@ -76,7 +76,7 @@ public class ActivityMybatisDao {
         ActivityExample.Criteria criteria = example.createCriteria();
         criteria.andStatusEqualTo(Specification.ActivityStatus.NORMAL.index);
         criteria.andIdLessThan(sinceId);
-        example.setOrderByClause(" order by id desc limit 10 ");
+        example.setOrderByClause(" id desc limit 10 ");
         return activityMapper.selectByExampleWithBLOBs(example);
     }
 
