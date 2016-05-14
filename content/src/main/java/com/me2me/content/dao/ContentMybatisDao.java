@@ -308,6 +308,15 @@ public class ContentMybatisDao {
         contentLikesDetailsMapper.deleteByExample(example);
     }
 
+    public ContentLikesDetails getContentLikesDetails(ContentLikesDetails contentLikesDetails){
+        ContentLikesDetailsExample example = new ContentLikesDetailsExample();
+        ContentLikesDetailsExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(contentLikesDetails.getCid());
+        criteria.andUidEqualTo(contentLikesDetails.getUid());
+        List<ContentLikesDetails> list = contentLikesDetailsMapper.selectByExample(example);
+        return list != null &&list.size() > 0 ? list.get(0) :null;
+    }
+
     public int countFragment(long topicId){
         return contentMapper.countFragment(topicId);
     }

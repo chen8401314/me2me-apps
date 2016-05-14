@@ -288,21 +288,30 @@ public class ContentServiceImpl implements ContentService {
             contentLikesDetails.setUid(likeDto.getUid());
             contentLikesDetails.setCid(likeDto.getCid());
             //点赞
+            ContentLikesDetails details = contentMybatisDao.getContentLikesDetails(contentLikesDetails);
             if(likeDto.getAction() == Specification.IsLike.LIKE.index){
-                content.setLikeCount(content.getLikeCount() +1);
-                contentMybatisDao.updateContentById(content);
-                contentMybatisDao.createContentLikesDetails(contentLikesDetails);
-                remind(content,likeDto.getUid(),Specification.UserNoticeType.LIKE.index,null);
+                if(details == null) {
+                    content.setLikeCount(content.getLikeCount() + 1);
+                    contentMybatisDao.updateContentById(content);
+                    contentMybatisDao.createContentLikesDetails(contentLikesDetails);
+                    remind(content, likeDto.getUid(), Specification.UserNoticeType.LIKE.index, null);
+                }else{
+                    return Response.failure(ResponseStatus.CONTENT_USER_LIKES_ALREADY.status,ResponseStatus.CONTENT_USER_LIKES_ALREADY.message);
+                }
                 return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
             }else{
-                if((content.getLikeCount() -1) < 0){
-                    content.setLikeCount(0);
-                }else{
-                    content.setLikeCount(content.getLikeCount() -1);
-                }
-                contentMybatisDao.updateContentById(content);
+                if(details == null) {
+                    Response.failure(ResponseStatus.CONTENT_USER_LIKES_CANCEL_ALREADY.status,ResponseStatus.CONTENT_USER_LIKES_CANCEL_ALREADY.message);
+                }else {
+                    if ((content.getLikeCount() - 1) < 0) {
+                        content.setLikeCount(0);
+                    } else {
+                        content.setLikeCount(content.getLikeCount() - 1);
+                    }
+                    contentMybatisDao.updateContentById(content);
 
-                contentMybatisDao.deleteContentLikesDetails(contentLikesDetails);
+                    contentMybatisDao.deleteContentLikesDetails(contentLikesDetails);
+                }
                 return Response.success(ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.message);
             }
         }
