@@ -304,15 +304,15 @@ public class LiveServiceImpl implements LiveService {
 
     @Override
     public Response getFavoriteList(long topicId) {
-        ShowFavoriteListFto showFavoriteListFto = new ShowFavoriteListFto();
+        ShowFavoriteListDto showFavoriteListFto = new ShowFavoriteListDto();
         List<LiveFavorite> liveFavoriteList = liveMybatisDao.getFavoriteList(topicId);
         for (LiveFavorite liveFavorite : liveFavoriteList){
-            ShowFavoriteListFto.FavoriteUser favoriteUser = ShowFavoriteListFto.createElement();
+            ShowFavoriteListDto.FavoriteUser favoriteUser = ShowFavoriteListDto.createElement();
             UserProfile userProfile = userService.getUserProfileByUid(liveFavorite.getUid());
             favoriteUser.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             favoriteUser.setUid(userProfile.getUid());
             favoriteUser.setNickName(userProfile.getNickName());
-            showFavoriteListFto.getLiveElements().add(favoriteUser);
+            showFavoriteListFto.getUserElements().add(favoriteUser);
         }
         return  Response.success(showFavoriteListFto);
     }

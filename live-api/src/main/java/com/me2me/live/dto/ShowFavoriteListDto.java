@@ -13,7 +13,7 @@ import java.util.List;
  * Time :14:19
  */
 @Data
-public class ShowFavoriteListFto implements BaseEntity {
+public class ShowFavoriteListDto implements BaseEntity {
 
     private  List<FavoriteUser> userElements = Lists.newArrayList();
 
