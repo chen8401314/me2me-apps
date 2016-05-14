@@ -15,7 +15,7 @@ import java.util.List;
 @Data
 public class ShowFavoriteListFto implements BaseEntity {
 
-    private  List<FavoriteUser> liveElements = Lists.newArrayList();
+    private  List<FavoriteUser> favoriteUserElements = Lists.newArrayList();
 
     public static FavoriteUser createElement(){
         return new FavoriteUser();
