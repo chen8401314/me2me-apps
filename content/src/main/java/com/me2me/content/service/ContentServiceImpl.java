@@ -73,8 +73,14 @@ public class ContentServiceImpl implements ContentService {
             RecommendContentDto.RecommendElement element = recommendContentDto.createElement();
             element.setTitle(contentTO.getTitle());
             element.setCoverImage(contentTO.getCover());
-            element.setLinkUrl(recommendDomain+contentTO.getUrl());
-            element.setType(0);
+            if(!contentTO.getUrl().startsWith("http://")) {
+                element.setLinkUrl(recommendDomain + contentTO.getUrl());
+                element.setType(0);
+            }else{
+                element.setLinkUrl(contentTO.getUrl());
+                element.setType(1);
+            }
+
             recommendContentDto.getResult().add(element);
         }
         return Response.success(recommendContentDto);
