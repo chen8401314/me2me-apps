@@ -303,7 +303,9 @@ public class ContentServiceImpl implements ContentService {
                     content.setLikeCount(content.getLikeCount() + 1);
                     contentMybatisDao.updateContentById(content);
                     contentMybatisDao.createContentLikesDetails(contentLikesDetails);
-                    remind(content, likeDto.getUid(), Specification.UserNoticeType.LIKE.index, null);
+                    if(likeDto.getUid() != content.getUid()) {
+                        remind(content, likeDto.getUid(), Specification.UserNoticeType.LIKE.index, null);
+                    }
                 }else{
                     return Response.success(ResponseStatus.CONTENT_USER_LIKES_ALREADY.status,ResponseStatus.CONTENT_USER_LIKES_ALREADY.message);
                 }
