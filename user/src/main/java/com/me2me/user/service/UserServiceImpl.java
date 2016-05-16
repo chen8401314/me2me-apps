@@ -713,7 +713,7 @@ public class UserServiceImpl implements UserService {
         String result = "";
         for (UserHobby userHobby : list){
             Dictionary dictionary =  userMybatisDao.getDictionaryById(userHobby.getHobby());
-            if(dictionary != null && StringUtils.isEmpty(dictionary.getValue())) {
+            if(dictionary != null && !StringUtils.isEmpty(dictionary.getValue())) {
                 result += dictionary.getValue() + ",";
             }
         }
