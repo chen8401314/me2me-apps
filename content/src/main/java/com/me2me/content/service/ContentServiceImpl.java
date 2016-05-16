@@ -11,6 +11,7 @@ import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.*;
 import com.me2me.user.dto.UserInfoDto;
+import com.me2me.user.model.UserHobby;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
@@ -62,6 +63,8 @@ public class ContentServiceImpl implements ContentService {
         user.setMobilePhone(userProfile.getMobile());
         user.setSex(userProfile.getGender().toString());
         user.setUserName(userProfile.getNickName());
+        String hobbies = userService.getUserHobbyByUid(uid);
+        user.setInterests(hobbies);
         recommendRequest.setUserId(userProfile.getUid().toString());
         RecommendResponse recommendResponse =  contentRecommendService.recommend(recommendRequest);
         RecommendContentDto recommendContentDto = new RecommendContentDto();
