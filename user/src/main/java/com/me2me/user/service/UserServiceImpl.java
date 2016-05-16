@@ -707,5 +707,10 @@ public class UserServiceImpl implements UserService {
         return userMybatisDao.getUserNotice(userNotice);
     }
 
+    @Override
+    public List<UserHobby> getUserHobbyByUid(long uid){
+        return userMybatisDao.getHobby(uid);
+    }
+
 
 }
