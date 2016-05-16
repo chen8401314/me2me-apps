@@ -169,6 +169,6 @@ public interface UserService {
 
     UserNotice getUserNotice(UserNotice userNotice);
 
-    List<UserHobby> getUserHobbyByUid(long uid);
+    String getUserHobbyByUid(long uid);
 
 }

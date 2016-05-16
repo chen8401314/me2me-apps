@@ -708,8 +708,16 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<UserHobby> getUserHobbyByUid(long uid){
-        return userMybatisDao.getHobby(uid);
+    public String getUserHobbyByUid(long uid){
+        List<UserHobby> list = userMybatisDao.getHobby(uid);
+        String result = "";
+        for (UserHobby userHobby : list){
+            Dictionary dictionary =  userMybatisDao.getDictionaryById(userHobby.getHobby());
+            if(dictionary != null && StringUtils.isEmpty(dictionary.getValue())) {
+                result += dictionary.getValue() + ",";
+            }
+        }
+        return result.length() > 0 ? result.substring(0,result.length()-1) : result;
     }
 
 
