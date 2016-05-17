@@ -277,7 +277,6 @@ public class Users extends BaseController {
     public Response follow(UserFollowRequest request){
         FollowDto followDto = new FollowDto();
         followDto.setAction(request.getAction());
-        followDto.setSourceUid(request.getUid());
         followDto.setTargetUid(request.getTargetUid());
         return userService.follow(followDto);
     }
@@ -292,6 +291,7 @@ public class Users extends BaseController {
     public Response showFans(ShowFansRequest request){
         FansParamsDto fansParamsDto = new FansParamsDto();
         fansParamsDto.setTargetUid(request.getCustomerId());
+        fansParamsDto.setUid(request.getUid());
         if(request.getSinceId()==-1) {
             fansParamsDto.setSinceId(Integer.MAX_VALUE);
         }else{
@@ -310,6 +310,7 @@ public class Users extends BaseController {
     public Response showFollows(ShowFansRequest request){
         FollowParamsDto followParamsDto = new FollowParamsDto();
         followParamsDto.setSourceUid(request.getCustomerId());
+        followParamsDto.setUid(request.getUid());
         if(request.getSinceId()==-1) {
             followParamsDto.setSinceId(Integer.MAX_VALUE);
         }else{

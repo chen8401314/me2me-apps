@@ -15,4 +15,6 @@ public class FollowParamsDto implements BaseEntity {
 
     private long sourceUid;
 
+    private long uid;
+
 }

@@ -15,4 +15,6 @@ public class FansParamsDto implements BaseEntity {
 
     private long targetUid;
 
+    private long uid;
+
 }

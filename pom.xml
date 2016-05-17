@@ -30,6 +30,8 @@
         <module>search</module>
         <module>sms-api</module>
         <module>sms</module>
+        <module>article</module>
+        <module>article-api</module>
     </modules>
 
     <properties>

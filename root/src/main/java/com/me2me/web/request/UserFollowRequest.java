@@ -20,4 +20,6 @@ public class UserFollowRequest extends Request {
     @Setter
     private int action;
 
+
+
 }
