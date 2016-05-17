@@ -487,9 +487,9 @@ public class UserServiceImpl implements UserService {
         List<UserFansDto> list = userMybatisDao.getFans(fansParamsDto);
         for(UserFansDto userFansDto : list){
             userFansDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFansDto.getAvatar());
-            int followed = this.isFollow(userFansDto.getUid(),fansParamsDto.getTargetUid());
-            userFansDto.setIsFollowed(followed);
-            userFansDto.setIsFollowMe(1);
+            int followMe = this.isFollow(userFansDto.getUid(),fansParamsDto.getTargetUid());
+            userFansDto.setIsFollowed(1);
+            userFansDto.setIsFollowMe(followMe);
         }
         ShowUserFansDto showUserFansDto = new ShowUserFansDto();
         showUserFansDto.setResult(list);
