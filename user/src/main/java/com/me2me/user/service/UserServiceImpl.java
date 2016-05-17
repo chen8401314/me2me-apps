@@ -495,9 +495,6 @@ public class UserServiceImpl implements UserService {
             }else {
                 userFansDto.setIsFollowMe(1);
             }
-            int followMe = this.isFollow(userFansDto.getUid(),fansParamsDto.getTargetUid());
-            userFansDto.setIsFollowed(1);
-            userFansDto.setIsFollowMe(followMe);
         }
         ShowUserFansDto showUserFansDto = new ShowUserFansDto();
         showUserFansDto.setResult(list);
