@@ -397,7 +397,9 @@ public interface Specification {
 
         NEWEST("最新",0),
 
-        UPDATE("需更新",1);
+        UPDATE("需更新",1),
+
+        FORCE_UPDATE("强制更新",2);
 
         public final String name;
 

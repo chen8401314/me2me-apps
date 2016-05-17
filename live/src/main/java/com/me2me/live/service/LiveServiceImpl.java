@@ -231,7 +231,7 @@ public class LiveServiceImpl implements LiveService {
             if(topic.getStatus() == Specification.LiveStatus.LIVING.index) {
                 topic.setStatus(Specification.LiveStatus.OVER.index);
                 liveMybatisDao.updateTopic(topic);
-                return Response.success(ResponseStatus.USER_FINISH_LIVE_SUCCESS.status, ResponseStatus.GET_USER_TAGS_SUCCESS.message);
+                return Response.success(ResponseStatus.USER_FINISH_LIVE_SUCCESS.status, ResponseStatus.USER_FINISH_LIVE_SUCCESS.message);
             }else{
                 return Response.success(ResponseStatus.USER_LIVE_IS_OVER.status, ResponseStatus.USER_LIVE_IS_OVER.message);
             }
