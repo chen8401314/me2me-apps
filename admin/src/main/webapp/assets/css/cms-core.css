@@ -101,9 +101,8 @@ input, select {
     vertical-align:middle;
 }
 
-.debug{border:1px solid red;height: 100px;}
 
-.ue-index{background: #ECE5D8;}
+.ue-index{background: #eeeeee;}
 
 .nav li{
     font-size:18px;
@@ -116,7 +115,7 @@ input, select {
     font-family: "微软雅黑";
 }
 .ue-main{
-    background: #ffffff;
+    /*background: #ffffff;*/
 }
 .page-title{
     padding: 15px;
@@ -147,3 +146,86 @@ input, select {
 .ue-rank{
 
 }
+.ladding-title{
+    color:#503E2C;
+    font-family: "微软雅黑";
+    padding: 10px;
+    margin:0;
+    background: #000000;
+    font-size:24px;
+}
+.main-content{
+    padding:15px;
+}
+.ue-sidebar{
+    padding:15px;
+}
+.ue-article{
+    background: #ffffff;
+}
+.ue-widget{
+    background: #ffffff;
+}
+.ue-ladding-box{
+    padding: 15px;
+}
+.ue-ladding{
+    background: #EEEEEE;
+    padding:1px;
+}
+.ue-image{
+    position: relative;
+    padding:10px;
+    background: #ffffff;
+}
+.ue-description{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    text-align: center;
+    padding:0;
+    margin:0;
+    color:white;
+
+}
+.col-4-cell{
+    padding:10px;
+}
+.image-thumb , .ue-image-thumb span{
+    width:225px;
+}
+.ue-image-thumb{
+    background: #ffffff;
+    padding: 10px;
+    position: relative;
+}
+.ue-image-thumb span{
+    display: inline-block;
+    position: absolute;
+    background: #000000;
+    opacity: 0.8;
+    bottom: 10px;
+    left: 10px;
+    padding:10px;
+}
+.ue-image-thumb span a{
+    color:#ffffff;
+}
+.row{background: #EEEEEE}
+.top-bang{
+    padding:15px;
+}
+.top-bang ul li{
+    margin:5px;
+    /*padding:5px;*/
+    padding-bottom:5px;
+}
+.dz{
+    float:left;
+}
+.copyright{
+    background: #000000;
+    padding:15px;
+    color:#ffffff;
+}
+

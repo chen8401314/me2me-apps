@@ -1,524 +1,301 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:include="fragments/header">
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>笑林杂谈</title>
+    <meta name="description" content="笑林杂谈是个提供搞笑、段子、美女、热舞、性感、街拍、自拍、笑话的内容平台。" />
+    <meta name="keywords" content="搞笑,段子,美女,热舞,性感,街拍,自拍,笑话">
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="/favicon.ico"/>
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="//cdn.bootcss.com/highlight.js/8.5/styles/monokai_sublime.min.css"/>
+    <link href="//cdn.bootcss.com/magnific-popup.js/1.0.0/magnific-popup.min.css" rel="stylesheet"/>
+    <link rel="stylesheet" type="text/css" href="assets/css/screen.css?v=82931f6358" />
+    <link rel="canonical" href="http://www.51nick.com/" />
+    <meta name="referrer" content="origin" />
+    <script type="text/javascript" src="/shared/ghost-url.min.js?v=82931f6358"></script>
 </head>
-<body class="page-body">
-<div class="settings-pane">
-
-    <a href="#" data-toggle="settings-pane" data-animate="true">
-        &times;
-    </a>
-
-    <div class="settings-pane-inner">
-
+<body class="home-template">
+<!-- start navigation -->
+<nav class="navbar navbar-default">
+    <div class="container">
         <div class="row">
-
-            <div class="col-md-4">
-
-                <div class="user-info">
-
-                    <div class="user-image">
-                        <a href="extra-profile.html">
-                            <img src="/assets/images/user-2.png" class="img-responsive img-circle" />
-                        </a>
-                    </div>
-
-                    <div class="user-details">
-
-                        <h3>
-                            <a href="extra-profile.html">哥骄傲</a>
-
-                            <!-- Available statuses: is-online, is-idle, is-busy and is-offline -->
-                            <span class="user-status is-online"></span>
-                        </h3>
-
-                        <p class="user-title">道长</p>
-
-                        <div class="user-links">
-                            <a href="extra-profile.html" class="btn btn-primary">Edit Profile</a>
-                            <a href="extra-profile.html" class="btn btn-success">Upgrade</a>
+            <div class="col-sm-12">
+                <div class="navbar-header">
+                        <span class="nav-toggle-button collapsed" data-toggle="collapse" data-target="#main-menu">
+                        <span class="sr-only">Toggle navigation</span>
+                        <i class="fa fa-bars"></i>
+                        </span>
+                    <a class="navbar-brand" href="#">笑林杂谈</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="nav navbar-nav">
+                        <li class="active" role="presentation"><a href="/">首页</a></li>
+                        <li class="dropdown">
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">热门 <b class="caret"></b></a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a href="#">24小时</a>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a href="#">一周</a>
+                                </li>
+                                <li class="divider"></li>
+                                <li>
+                                    <a href="#">一个月</a>
+                                </li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#">趣图</a>
+                        </li>
+                        <li>
+                            <a href="#">段子</a>
+                        </li>
+                        <li>
+                            <a href="#">妹子</a>
+                        </li>
+                        <li>
+                            <a href="#">街拍</a>
+                        </li>
+                        <li>
+                            <a href="#">热舞</a>
+                        </li>
+                    </ul>
+                    <!--<form class="navbar-form navbar-left" role="search">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="搜索">
                         </div>
+                        <button type="submit" class="btn btn-white">去火星</button>
+                    </form>
+                    <ul class="nav navbar-nav navbar-right">
+                        <li>
+                            <a href="#">登录</a>
+                        </li>
+                        <li>
+                            <a href="#">注册</a>
+                        </li>
+                    </ul>-->
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+<!-- end navigation -->
 
+
+<!-- start site's main content area -->
+<section class="content-wrap">
+    <div class="container">
+        <div class="row">
+
+            <main class="col-md-8 main-content">
+
+                <article id=97 class="post">
+
+                    <div class="post-head">
+                        <h1 class="post-title"><a href="#">绝对让你爆笑</a></h1>
+                        <div class="post-meta">
+                            <span class="author">作者：<a href="/author/wangsai/">王赛</a></span> &bull;
+                            <time class="post-date" datetime="2016年4月28日星期四上午10点14分" title="2016年4月28日星期四上午10点14分">2016年4月28日</time>
+                        </div>
+                    </div>
+                    <div class="featured-media">
+                        <a href="/ghost-zhuo-mian-ban-app-geng-xin-neng-gou-tong-shi-guan-li-duo-ge-ghost-bo-ke/"><img class="img-responsive" src="img/10251358673922612.jpg" alt="Ghost 桌面版 APP 正式发布，能同时管理多个 Ghost 博客"></a>
+                    </div>
+                    <div class="post-content">
+                        <p>今天的国家会议中心，张灯结彩，星光熠熠。电灯泡的发明者、中国人民的好基友托马斯·爱迪生，在这里亲切接见了中国移动互联网大佬一行，并发表了题为“乔布斯是我的转世”的重要讲话。</p>
+                    </div>
+                    <div class="post-permalink">
+                        <a href="/ghost-zhuo-mian-ban-app-geng-xin-neng-gou-tong-shi-guan-li-duo-ge-ghost-bo-ke/" class="btn btn-default">阅读全文</a>
                     </div>
 
+                    <footer class="post-footer clearfix">
+                        <div class="pull-left tag-list">
+                            <i class="fa fa-folder-open-o"></i>
+
+                        </div>
+                        <div class="pull-right share">
+                        </div>
+                    </footer>
+                </article>
+                <nav class="pagination" role="navigation">
+                    <span class="page-number">第 1 页 &frasl; 共 8 页</span>
+                    <a class="older-posts" href="/page/2/"><i class="fa fa-angle-right"></i></a>
+                </nav>
+
+
+            </main>
+
+            <aside class="col-md-4 sidebar">
+                <!-- start widget -->
+                <!-- end widget -->
+
+                <!-- start tag cloud widget -->
+                <div class="widget">
+                    <h4 class="title">阅读排行榜</h4>
+                    <div class="content community">
+                        <p><span class="label label-danger">1</span> <a href="#">大姨妈的现代生活</a></p>
+                        <p><span class="label label-danger">2</span> <a href="#">大姨妈的现代生活</a></p>
+                        <p><span class="label label-danger">3</span> <a href="#">大姨妈的现代生活</a></p>
+                    </div>
                 </div>
+                <!-- end tag cloud widget -->
 
-            </div>
-
-            <div class="col-md-8 link-blocks-env">
-
-                <div class="links-block left-sep">
-                    <h4>
-                        <span>Notifications</span>
-                    </h4>
-
-                    <ul class="list-unstyled">
-                        <li>
-                            <input type="checkbox" class="cbr cbr-primary" checked="checked" id="sp-chk1" />
-                            <label for="sp-chk1">Messages</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" class="cbr cbr-primary" checked="checked" id="sp-chk2" />
-                            <label for="sp-chk2">Events</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" class="cbr cbr-primary" checked="checked" id="sp-chk3" />
-                            <label for="sp-chk3">Updates</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" class="cbr cbr-primary" checked="checked" id="sp-chk4" />
-                            <label for="sp-chk4">Server Uptime</label>
-                        </li>
-                    </ul>
+                <!-- start widget -->
+                <div class="widget">
+                    <h4 class="title">热门推荐</h4>
+                    <div class="content download">
+                        <a href="/download/" class="">fdsfds</a>
+                    </div>
                 </div>
+                <!-- end widget -->
 
-                <div class="links-block left-sep">
-                    <h4>
-                        <a href="#">
-                            <span>Help Desk</span>
-                        </a>
-                    </h4>
-
-                    <ul class="list-unstyled">
-                        <li>
-                            <a href="#">
-                                <i class="fa-angle-right"></i>
-                                Support Center
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i class="fa-angle-right"></i>
-                                Submit a Ticket
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i class="fa-angle-right"></i>
-                                Domains Protocol
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i class="fa-angle-right"></i>
-                                Terms of Service
-                            </a>
-                        </li>
-                    </ul>
+                <!-- start tag cloud widget -->
+                <div class="widget">
+                    <h4 class="title">笑林标签</h4>
+                    <div class="content tag-cloud">
+                        <a href="/tag/jquery/">jQuery</a>
+                        <a href="/tag/ghost-0-7-ban-ben/">Ghost 0.7 版本</a>
+                        <a href="/tag/opensource/">开源</a>
+                        <a href="/tag/zhu-shou-han-shu/">助手函数</a>
+                        <a href="/tag/tag-cloud/">标签云</a>
+                        <a href="/tag/navigation/">导航</a>
+                        <a href="/tag/customize-page/">自定义页面</a>
+                        <a href="/tag/static-page/">静态页面</a>
+                        <a href="/tag/roon-io/">Roon.io</a>
+                        <a href="/tag/configuration/">配置文件</a>
+                        <a href="/tag/upyun/">又拍云存储</a>
+                        <a href="/tag/upload/">上传</a>
+                        <a href="/tag/handlebars/">Handlebars</a>
+                        <a href="/tag/email/">邮件</a>
+                        <a href="/tag/shortcut/">快捷键</a>
+                        <a href="/tag/yong-hu-zhi-nan/">用户指南</a>
+                        <a href="/tag/theme-market/">主题市场</a>
+                        <a href="/tag/release/">新版本发布</a>
+                        <a href="/tag-cloud/">...</a>
+                    </div>
                 </div>
+                <!-- end tag cloud widget -->
 
-            </div>
+                <!-- start widget -->
+                <!-- end widget -->
+
+                <!-- start widget -->
+                <!-- end widget -->                </aside>
 
         </div>
-
     </div>
+</section>
 
-</div>
-<div class="copyrights">拙心网络科技有限公司</div>
-<div class="page-container">
-    <div class="sidebar-menu toggle-others fixed">
-
-        <div class="sidebar-menu-inner">
-
-            <header class="logo-env">
-
-                <!-- logo -->
-                <div class="logo">
-                    <a href="dashboard-1.html" class="logo-expanded">
-                        <img src="/assets/images/logo@2x.png" width="80" alt="" />
-                    </a>
-
-                    <a href="dashboard-1.html" class="logo-collapsed">
-                        <img src="/assets/images/logo-collapsed@2x.png" width="40" alt="" />
-                    </a>
-                </div>
-
-                <!-- This will toggle the mobile menu and will be visible only on mobile devices -->
-                <div class="mobile-menu-toggle visible-xs">
-                    <a href="#" data-toggle="user-info-menu">
-                        <i class="fa-bell-o"></i>
-                        <span class="badge badge-success">7</span>
-                    </a>
-
-                    <a href="#" data-toggle="mobile-menu">
-                        <i class="fa-bars"></i>
-                    </a>
-                </div>
-
-                <!-- This will open the popup with user profile settings, you can use for any purpose, just be creative -->
-                <div class="settings-icon">
-                    <a href="#" data-toggle="settings-pane" data-animate="true">
-                        <i class="linecons-cog"></i>
-                    </a>
-                </div>
-
-
-            </header>
-
-            <th:block th:include="fragments/menu"></th:block>
-        </div>
-
-    </div>
-
-    <div class="main-content">
-
-        <!-- User Info, Notifications and Menu Bar -->
-        <nav class="navbar user-info-navbar" role="navigation">
-
-            <!-- Left links for user info navbar -->
-            <ul class="user-info-menu left-links list-inline list-unstyled">
-
-                <li class="hidden-sm hidden-xs">
-                    <a href="#" data-toggle="sidebar">
-                        <i class="fa-bars"></i>
-                    </a>
-                </li>
-
-                <li class="dropdown hover-line">
-                    <a href="#" data-toggle="dropdown">
-                        <i class="fa-envelope-o"></i>
-                        <span class="badge badge-green">15</span>
-                    </a>
-
-                    <ul class="dropdown-menu messages">
-                        <li>
-
-                            <ul class="dropdown-menu-list list-unstyled ps-scrollbar">
-
-                                <li class="active"><!-- "active" class means message is unread -->
-                                    <a href="#">
-											<span class="line">
-												<strong>Luc Chartier</strong>
-												<span class="light small">- yesterday</span>
-											</span>
-
-											<span class="line desc small">
-												This ain’t our first item, it is the best of the rest.
-											</span>
-                                    </a>
-                                </li>
-
-                                <li class="active">
-                                    <a href="#">
-											<span class="line">
-												<strong>Salma Nyberg</strong>
-												<span class="light small">- 2 days ago</span>
-											</span>
-
-											<span class="line desc small">
-												Oh he decisively impression attachment friendship so if everything.
-											</span>
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a href="#">
-											<span class="line">
-												Hayden Cartwright
-												<span class="light small">- a week ago</span>
-											</span>
-
-											<span class="line desc small">
-												Whose her enjoy chief new young. Felicity if ye required likewise so doubtful.
-											</span>
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a href="#">
-											<span class="line">
-												Sandra Eberhardt
-												<span class="light small">- 16 days ago</span>
-											</span>
-
-											<span class="line desc small">
-												On so attention necessary at by provision otherwise existence direction.
-											</span>
-                                    </a>
-                                </li>
-
-                                <!-- Repeated -->
-
-                                <li class="active"><!-- "active" class means message is unread -->
-                                    <a href="#">
-											<span class="line">
-												<strong>Luc Chartier</strong>
-												<span class="light small">- yesterday</span>
-											</span>
-
-											<span class="line desc small">
-												This ain’t our first item, it is the best of the rest.
-											</span>
-                                    </a>
-                                </li>
-
-                                <li class="active">
-                                    <a href="#">
-											<span class="line">
-												<strong>Salma Nyberg</strong>
-												<span class="light small">- 2 days ago</span>
-											</span>
-
-											<span class="line desc small">
-												Oh he decisively impression attachment friendship so if everything.
-											</span>
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a href="#">
-											<span class="line">
-												Hayden Cartwright
-												<span class="light small">- a week ago</span>
-											</span>
-
-											<span class="line desc small">
-												Whose her enjoy chief new young. Felicity if ye required likewise so doubtful.
-											</span>
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a href="#">
-											<span class="line">
-												Sandra Eberhardt
-												<span class="light small">- 16 days ago</span>
-											</span>
-
-											<span class="line desc small">
-												On so attention necessary at by provision otherwise existence direction.
-											</span>
-                                    </a>
-                                </li>
-
-                            </ul>
-
-                        </li>
-
-                        <li class="external">
-                            <a href="blank-sidebar.html">
-                                <span>All Messages</span>
-                                <i class="fa-link-ext"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li class="dropdown hover-line">
-                    <a href="#" data-toggle="dropdown">
-                        <i class="fa-bell-o"></i>
-                        <span class="badge badge-purple">7</span>
-                    </a>
-
-                    <ul class="dropdown-menu notifications">
-                        <li class="top">
-                            <p class="small">
-                                <a href="#" class="pull-right">Mark all Read</a>
-                                You have <strong>3</strong> new notifications.
-                            </p>
-                        </li>
-
-                        <li>
-                            <ul class="dropdown-menu-list list-unstyled ps-scrollbar">
-                                <li class="active notification-success">
-                                    <a href="#">
-                                        <i class="fa-user"></i>
-
-											<span class="line">
-												<strong>New user registered</strong>
-											</span>
-
-											<span class="line small time">
-												30 seconds ago
-											</span>
-                                    </a>
-                                </li>
-
-                                <li class="active notification-secondary">
-                                    <a href="#">
-                                        <i class="fa-lock"></i>
-
-											<span class="line">
-												<strong>Privacy settings have been changed</strong>
-											</span>
-
-											<span class="line small time">
-												3 hours ago
-											</span>
-                                    </a>
-                                </li>
-
-                                <li class="notification-primary">
-                                    <a href="#">
-                                        <i class="fa-thumbs-up"></i>
-
-											<span class="line">
-												<strong>Someone special liked this</strong>
-											</span>
-
-											<span class="line small time">
-												2 minutes ago
-											</span>
-                                    </a>
-                                </li>
-
-                                <li class="notification-danger">
-                                    <a href="#">
-                                        <i class="fa-calendar"></i>
-
-											<span class="line">
-												John cancelled the event
-											</span>
-
-											<span class="line small time">
-												9 hours ago
-											</span>
-                                    </a>
-                                </li>
-
-                                <li class="notification-info">
-                                    <a href="#">
-                                        <i class="fa-database"></i>
-
-											<span class="line">
-												The server is status is stable
-											</span>
-
-											<span class="line small time">
-												yesterday at 10:30am
-											</span>
-                                    </a>
-                                </li>
-
-                                <li class="notification-warning">
-                                    <a href="#">
-                                        <i class="fa-envelope-o"></i>
-
-											<span class="line">
-												New comments waiting approval
-											</span>
-
-											<span class="line small time">
-												last week
-											</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-
-                        <li class="external">
-                            <a href="#">
-                                <span>View all notifications</span>
-                                <i class="fa-link-ext"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-            </ul>
-
-
-            <!-- Right links for user info navbar -->
-            <ul class="user-info-menu right-links list-inline list-unstyled">
-
-                <li class="search-form"><!-- You can add "always-visible" to show make the search input visible -->
-
-                    <form method="get" action="extra-search.html">
-                        <input type="text" name="s" class="form-control search-field" placeholder="Type to search..." />
-
-                        <button type="submit" class="btn btn-link">
-                            <i class="linecons-search"></i>
-                        </button>
-                    </form>
-
-                </li>
-
-                <li class="dropdown user-profile">
-                    <a href="#" data-toggle="dropdown">
-                        <img src="/assets/images/user-4.png" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
-							<span>
-								Arlind Nushi
-								<i class="fa-angle-down"></i>
-							</span>
-                    </a>
-
-                    <ul class="dropdown-menu user-profile-menu list-unstyled">
-                        <li>
-                            <a href="#edit-profile">
-                                <i class="fa-edit"></i>
-                                New Post
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#settings">
-                                <i class="fa-wrench"></i>
-                                Settings
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#profile">
-                                <i class="fa-user"></i>
-                                Profile
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#help">
-                                <i class="fa-info"></i>
-                                Help
-                            </a>
-                        </li>
-                        <li class="last">
-                            <a href="extra-lockscreen.html">
-                                <i class="fa-lock"></i>
-                                Logout
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li>
-                    <a href="#" data-toggle="chat">
-                        <i class="fa-comments-o"></i>
-                    </a>
-                </li>
-
-            </ul>
-
-        </nav>
+<footer class="main-footer">
+    <div class="container">
         <div class="row">
-        </div>
-        <div class="row">
-        </div>
-        <footer class="main-footer sticky footer-type-1">
-
-            <div class="footer-inner">
-
-                <!-- Add your copyright text here -->
-                <div class="footer-text">
-                    &copy; 2016
-                    <strong>MAO</strong>
-                    拙心网络科技有限公司
+            <div class="col-sm-4">
+                <div class="widget">
+                    <h4 class="title">最新文章</h4>
+                    <div class="content recent-post">
+                        <div class="recent-single-post">
+                            <a href="/ghost-zhuo-mian-ban-app-geng-xin-neng-gou-tong-shi-guan-li-duo-ge-ghost-bo-ke/" class="post-title">Ghost 桌面版 APP 正式发布，能同时管理多个 Ghost 博客</a>
+                            <div class="date">2016年4月28日</div>
+                        </div>
+                        <div class="recent-single-post">
+                            <a href="/install-nodejs-of-latest-version-in-ubuntu-and-debian/" class="post-title">为 Ubuntu 和 Debian 安装最新版本的 Node.js</a>
+                            <div class="date">2016年3月23日</div>
+                        </div>
+                        <div class="recent-single-post">
+                            <a href="/ghost-0-7-4-released/" class="post-title">Ghost 0.7.4 正式发布</a>
+                            <div class="date">2015年12月29日</div>
+                        </div>
+                    </div>
                 </div>
-
-
-                <!-- Go to Top Link, just add rel="go-top" to any link to add this functionality -->
-                <div class="go-up">
-
-                    <a href="#" rel="go-top">
-                        <i class="fa-angle-up"></i>
-                    </a>
-
-                </div>
-
             </div>
 
-        </footer>
+            <div class="col-sm-4">
+                <div class="widget">
+                    <h4 class="title">标签云</h4>
+                    <div class="content tag-cloud">
+                        <a href="/tag/about-ghost/">Ghost</a>
+                        <a href="/tag/release/">新版本发布</a>
+                        <a href="/tag/javascript/">JavaScript</a>
+                        <a href="/tag/promise/">Promise</a>
+                        <a href="/tag/zhuti/">主题</a>
+                        <a href="/tag/nodejs/">Node.js</a>
+                        <a href="/tag/mysql/">MySQL</a>
+                        <a href="/tag/nginx/">Nginx</a>
+                        <a href="/tag/aliyun-ecs/">阿里云服务器</a>
+                        <a href="/tag/ubuntu/">Ubuntu</a>
+                        <a href="/tag/ghost-in-depth/">深度玩转 Ghost</a>
+                        <a href="/tag/theme/">Theme</a>
+                        <a href="/tag/markdown/">Markdown</a>
+                        <a href="/tag/proxy/">反向代理</a>
+                        <a href="/tag/apache/">Apache</a>
+
+                        <a href="/tag-cloud/">...</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-sm-4">
+                <div class="widget">
+                    <h4 class="title">合作伙伴</h4>
+                    <div class="content tag-cloud friend-links">
+                        <a href="http://www.bootcss.com" title="Bootstrap中文网" onclick="_hmt.push(['_trackEvent', 'link', 'click', 'bootcsscom'])" target="_blank">Bootstrap中文网</a>
+                        <a href="http://www.bootcdn.cn" title="开放CDN服务" onclick="_hmt.push(['_trackEvent', 'link', 'click', 'bootcdncn'])" target="_blank">开放CDN服务</a>
+                        <a href="http://www.gruntjs.net" title="Grunt中文网" onclick="_hmt.push(['_trackEvent', 'link', 'click', 'gruntjsnet'])" target="_blank">Grunt中文网</a>
+                        <a href="http://www.gulpjs.com.cn/" title="Gulp中文网" onclick="_hmt.push(['_trackEvent', 'link', 'click', 'gulpjscomcn'])" target="_blank">Gulp中文网</a>
+                        <hr>
+                        <a href="http://lodashjs.com/" title="Lodash中文文档" onclick="_hmt.push(['_trackEvent', 'link', 'click', 'lodashjscom'])" target="_blank">Lodash中文文档</a>
+                        <a href="http://www.jquery123.com/" title="jQuery中文文档" onclick="_hmt.push(['_trackEvent', 'link', 'click', 'jquery123com'])" target="_blank">jQuery中文文档</a>
+                        <hr>
+                        <a href="http://www.aliyun.com/" title="阿里云" onclick="_hmt.push(['_trackEvent', 'link', 'click', 'aliyun'])" target="_blank">阿里云</a>
+                        <hr>
+                        <a href="https://www.upyun.com/" title="又拍云" onclick="_hmt.push(['_trackEvent', 'link', 'click', 'upyun'])" target="_blank">又拍云</a>
+                        <a href="http://www.ucloud.cn/" title="UCloud" onclick="_hmt.push(['_trackEvent', 'link', 'click', 'ucloud'])" target="_blank">UCloud</a>
+                        <a href="http://www.qiniu.com/" title="七牛云存储" onclick="_hmt.push(['_trackEvent', 'link', 'click', 'qiniu'])" target="_blank">七牛云存储</a>
+                    </div>
+                </div></div>
+        </div>
+    </div>
+</footer>
+
+<div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <span>Copyright &copy; <a href="http://www.ghostchina.com/">Ghost中文网</a></span> |
+                <span><a href="http://www.miibeian.gov.cn/" target="_blank">京ICP备11008151号</a></span> |
+                <span>京公网安备11010802014853</span>
+            </div>
+        </div>
     </div>
 </div>
-<div class="page-loading-overlay">
-    <div class="loader-2"></div>
-</div>
-<th:block th:include="fragments/scripts"></th:block>
+
+<a href="#" id="back-to-top"><i class="fa fa-angle-up"></i></a>
+
+<script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="//cdn.bootcss.com/fitvids/1.1.0/jquery.fitvids.min.js"></script>
+<script src="//cdn.bootcss.com/highlight.js/8.5/highlight.min.js"></script>
+<script src="//cdn.bootcss.com/magnific-popup.js/1.0.0/jquery.magnific-popup.min.js"></script>
+<script src="/assets/js/main.js?v=82931f6358"></script>
+<script>
+    $(function(){
+        $('.post-content img').each(function(item){
+            var src = $(this).attr('src');
+
+            $(this).wrap('<a href="' + src + '" class="mfp-zoom" style="display:block;"></a>');
+        });
+
+        /*$('.post-content').magnificPopup({
+         delegate: 'a',
+         type: 'image'
+         });*/
+    });
+</script>
 </body>
 </html>
