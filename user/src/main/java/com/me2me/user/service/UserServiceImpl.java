@@ -340,9 +340,10 @@ public class UserServiceImpl implements UserService {
             }else{
                 userNoticeElement.setCoverImage("");
             }
-            userNoticeElement.setFromAvatar(Constant.QINIU_DOMAIN + "/" + userNotice.getFromAvatar());
+            UserProfile userProfile = getUserProfileByUid(userNotice.getFromUid());
+            userNoticeElement.setFromAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             userNoticeElement.setNoticeType(userNotice.getNoticeType());
-            userNoticeElement.setFromNickName(userNotice.getFromNickName());
+            userNoticeElement.setFromNickName(userProfile.getNickName());
             userNoticeElement.setFromUid(userNotice.getFromUid());
             userNoticeElement.setReadStatus(userNotice.getReadStatus());
             userNoticeElement.setToNickName(userNotice.getToNickName());
@@ -487,10 +488,10 @@ public class UserServiceImpl implements UserService {
         List<UserFansDto> list = userMybatisDao.getFans(fansParamsDto);
         for(UserFansDto userFansDto : list){
             userFansDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFansDto.getAvatar());
-            int followMe = this.isFollow(fansParamsDto.getTargetUid(),userFansDto.getUid());
+            int followMe = this.isFollow(fansParamsDto.getUid(),userFansDto.getUid());
             userFansDto.setIsFollowMe(followMe);
             if(fansParamsDto.getUid()!=fansParamsDto.getTargetUid()){
-                int followed = this.isFollow(userFansDto.getUid(),fansParamsDto.getTargetUid());
+                int followed = this.isFollow(userFansDto.getUid(),fansParamsDto.getUid());
                 userFansDto.setIsFollowed(followed);
             }else {
                 userFansDto.setIsFollowed(1);
@@ -507,10 +508,10 @@ public class UserServiceImpl implements UserService {
         ShowUserFollowDto showUserFollowDto = new ShowUserFollowDto();
         for(UserFollowDto userFollowDto : list){
             userFollowDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFollowDto.getAvatar());
-            int followMe = this.isFollow(followParamsDto.getSourceUid(),userFollowDto.getUid());
+            int followMe = this.isFollow(followParamsDto.getUid(),userFollowDto.getUid());
             userFollowDto.setIsFollowMe(followMe);
             if(followParamsDto.getUid()!=followParamsDto.getSourceUid()){
-                int followed = this.isFollow(followParamsDto.getUid(),followParamsDto.getSourceUid());
+                int followed = this.isFollow(userFollowDto.getUid(),followParamsDto.getUid());
                 userFollowDto.setIsFollowed(followed);
             }else {
                 userFollowDto.setIsFollowed(1);
