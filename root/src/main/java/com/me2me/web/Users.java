@@ -278,6 +278,7 @@ public class Users extends BaseController {
         FollowDto followDto = new FollowDto();
         followDto.setAction(request.getAction());
         followDto.setTargetUid(request.getTargetUid());
+        followDto.setSourceUid(request.getUid());
         return userService.follow(followDto);
     }
 
