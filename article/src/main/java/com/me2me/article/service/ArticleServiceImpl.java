@@ -1,5 +1,6 @@
 package com.me2me.article.service;
 import com.me2me.article.dao.ArticleMybatisDao;
+import com.me2me.article.dto.ArticleDetailDto;
 import com.me2me.article.dto.ArticleTimelineDto;
 import com.me2me.article.dto.CreateArticleDto;
 import com.me2me.article.model.Article;
@@ -34,6 +35,7 @@ public class ArticleServiceImpl implements ArticleService {
         for(Article article : list){
             ArticleTimelineDto.ArticleTimelineElement element = articleTimelineDto.createElement();
             element.setAuthor("小编");
+            element.setId(article.getId());
             element.setTitle(article.getArticleTitle());
             if(article.getArticleContent().length()>200){
                 element.setContent(article.getArticleContent().substring(0,200) + "...");
@@ -69,5 +71,17 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public List<ArticleType> getArticleTypes() {
         return articleMybatisDao.loadArticleTypes();
+    }
+
+    @Override
+    public ArticleDetailDto getArticleById(long id) {
+        ArticleDetailDto articleDetailDto = new ArticleDetailDto();
+        Article article = articleMybatisDao.loadArticleById(id);
+        articleDetailDto.setContent(article.getArticleContent());
+        articleDetailDto.setThumb(article.getArticleThumb());
+        articleDetailDto.setTitle(article.getArticleTitle());
+        articleDetailDto.setAuthor("小编");
+        articleDetailDto.setCreateTime(article.getCreateTime());
+        return articleDetailDto;
     }
 }

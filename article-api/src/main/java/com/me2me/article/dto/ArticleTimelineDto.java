@@ -25,6 +25,8 @@ public class ArticleTimelineDto implements BaseEntity {
     @Data
     public class ArticleTimelineElement implements BaseEntity{
 
+        private long id;
+
         private String title;
 
         private String thumb;

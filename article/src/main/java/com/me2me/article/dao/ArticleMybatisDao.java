@@ -40,4 +40,8 @@ public class ArticleMybatisDao {
         return articleTypeMapper.selectByExample(example);
     }
 
+    public Article loadArticleById(long id){
+        return articleMapper.selectByPrimaryKey(id);
+    }
+
 }
