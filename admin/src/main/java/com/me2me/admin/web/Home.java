@@ -16,7 +16,7 @@ import org.springframework.web.servlet.ModelAndView;
  * Author: 赵朋扬
  * Date: 2016/3/25.
  */
-@RequestMapping("/home")
+// @RequestMapping("/home")
 @Controller
 public class Home {
 
@@ -29,7 +29,7 @@ public class Home {
         return viewName;
     }
 
-    @RequestMapping(value = "/index")
+    @RequestMapping(value = "/")
     public ModelAndView index(TimelineRequest request){
         ModelAndView mv = new ModelAndView("index");
         ArticleTimelineDto content = articleService.timeline(request.getSinceId());

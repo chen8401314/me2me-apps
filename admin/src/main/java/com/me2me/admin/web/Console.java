@@ -60,6 +60,7 @@ public class Console  {
                 content.setContent(cx);
             }
             mv.addObject("root",content);
+            mv.addObject("share",request.getShared());
         }else{
             mv.setViewName("error");
         }
@@ -72,6 +73,7 @@ public class Console  {
         ActivityH5Dto content = activityService.getActivityH5(request.getId());
         if(content!=null) {
             mv.addObject("root",content);
+            mv.addObject("share",request.getShared());
         }else{
             mv.setViewName("error");
         }
