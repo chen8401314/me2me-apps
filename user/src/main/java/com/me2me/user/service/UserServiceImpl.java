@@ -511,7 +511,6 @@ public class UserServiceImpl implements UserService {
             userFollowDto.setIsFollowMe(followMe);
             int followed = this.isFollow(userFollowDto.getUid(),followParamsDto.getUid());
             userFollowDto.setIsFollowed(followed);
-
         }
         showUserFollowDto.setResult(list);
         return Response.success(ResponseStatus.SHOW_USER_FOLLOW_LIST_SUCCESS.status, ResponseStatus.SHOW_USER_FOLLOW_LIST_SUCCESS.message,showUserFollowDto);
