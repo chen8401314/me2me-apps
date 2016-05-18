@@ -493,12 +493,8 @@ public class UserServiceImpl implements UserService {
             userFansDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFansDto.getAvatar());
             int followMe = this.isFollow(fansParamsDto.getUid(),userFansDto.getUid());
             userFansDto.setIsFollowMe(followMe);
-            if(fansParamsDto.getUid()!=fansParamsDto.getTargetUid()){
-                int followed = this.isFollow(userFansDto.getUid(),fansParamsDto.getUid());
-                userFansDto.setIsFollowed(followed);
-            }else {
-                userFansDto.setIsFollowed(1);
-            }
+            int followed = this.isFollow(userFansDto.getUid(),fansParamsDto.getUid());
+            userFansDto.setIsFollowed(followed);
         }
         ShowUserFansDto showUserFansDto = new ShowUserFansDto();
         showUserFansDto.setResult(list);
@@ -513,12 +509,9 @@ public class UserServiceImpl implements UserService {
             userFollowDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFollowDto.getAvatar());
             int followMe = this.isFollow(followParamsDto.getUid(),userFollowDto.getUid());
             userFollowDto.setIsFollowMe(followMe);
-            if(followParamsDto.getUid()!=followParamsDto.getSourceUid()){
-                int followed = this.isFollow(userFollowDto.getUid(),followParamsDto.getUid());
-                userFollowDto.setIsFollowed(followed);
-            }else {
-                userFollowDto.setIsFollowed(1);
-            }
+            int followed = this.isFollow(userFollowDto.getUid(),followParamsDto.getUid());
+            userFollowDto.setIsFollowed(followed);
+
         }
         showUserFollowDto.setResult(list);
         return Response.success(ResponseStatus.SHOW_USER_FOLLOW_LIST_SUCCESS.status, ResponseStatus.SHOW_USER_FOLLOW_LIST_SUCCESS.message,showUserFollowDto);
