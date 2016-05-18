@@ -1,9 +1,9 @@
 package com.me2me.admin.web;
 
+import com.me2me.admin.web.request.LoginRequest;
 import com.me2me.admin.web.request.TimelineRequest;
 import com.me2me.article.dto.ArticleTimelineDto;
 import com.me2me.article.service.ArticleService;
-import com.me2me.admin.web.request.ContentForwardRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,9 +16,9 @@ import org.springframework.web.servlet.ModelAndView;
  * Author: 赵朋扬
  * Date: 2016/3/25.
  */
-@RequestMapping("/home")
+@RequestMapping("/admin")
 @Controller
-public class Home {
+public class Admin {
 
     @Autowired
     private ArticleService articleService;
@@ -29,12 +29,15 @@ public class Home {
         return viewName;
     }
 
-    @RequestMapping(value = "/index")
-    public ModelAndView index(TimelineRequest request){
-        ModelAndView mv = new ModelAndView("index");
-        ArticleTimelineDto content = articleService.timeline(request.getSinceId());
-        mv.addObject("root",content);
-        return mv;
+    @RequestMapping(value = "/login")
+    public ModelAndView index(LoginRequest request){
+        ModelAndView mv = new ModelAndView("admin/index");
+        if(request.getUserName().equals("kisszpy")&&request.getEncrypt().equals("xiaolangbi1250")){
+            return mv;
+        }else{
+            mv.setViewName("error");
+            return mv;
+        }
     }
-
+    
 }
