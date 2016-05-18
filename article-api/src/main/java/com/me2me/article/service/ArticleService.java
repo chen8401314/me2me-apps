@@ -1,5 +1,6 @@
 package com.me2me.article.service;
 
+import com.me2me.article.dto.ArticleTimelineDto;
 import com.me2me.common.web.Response;
 
 /**
@@ -9,6 +10,6 @@ import com.me2me.common.web.Response;
  */
 public interface ArticleService {
 
-    Response showList(long sinceId);
+    ArticleTimelineDto timeline(long sinceId);
 
 }
