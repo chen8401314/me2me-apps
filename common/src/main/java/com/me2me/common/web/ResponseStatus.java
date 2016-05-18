@@ -175,6 +175,8 @@ public enum  ResponseStatus {
 
     CAN_NOT_FOLLOW_YOURSELF("自己不能关注自己","can not follow yourself",50025),
 
+    USER_MODIFY_ENCRYPT_THE_SAME_ERROR("老密码和新密码一样，不能修改"," user the old and new password are the same",50026),
+
 
 
 
