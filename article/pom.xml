@@ -80,7 +80,7 @@
                             <target>${project.build.directory}</target>
                             <daemons>
                                 <daemon>
-                                    <id>app-sms-service</id>
+                                    <id>app-article-service</id>
                                     <mainClass>com.me2me.article.Bootstrap</mainClass>
                                     <commandLineArguments>
                                         <commandLineArgument>start</commandLineArgument>

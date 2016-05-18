@@ -13,7 +13,7 @@
 
     <dubbo:protocol serialization="nativejava" name="dubbo" port="#{app.dubboPort}" threads="#{app.dubboThreads}" heartbeat="#{app.dubboHeartBeats}"/>
 
-    <dubbo:service interface="com.me2me.sms.service.SmsService" ref="smsServiceImpl" retries="0" timeout="20000"/>
+    <dubbo:service interface="com.me2me.article.service.ArticleService" ref="articleServiceImpl" retries="0" timeout="20000"/>
 
-    <import resource="sms-context.xml"/>
+    <import resource="article-context.xml"/>
 </beans>
