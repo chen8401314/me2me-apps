@@ -174,6 +174,9 @@ public class UserServiceImpl implements UserService {
      */
     public Response modifyEncrypt(ModifyEncryptDto modifyEncryptDto){
         String mobile = modifyEncryptDto.getUserName();
+        if(modifyEncryptDto.getOldEncrypt().equals(modifyEncryptDto.getFirstEncrypt())){
+            return Response.failure(ResponseStatus.USER_MODIFY_ENCRYPT_THE_SAME_ERROR.status,ResponseStatus.USER_MODIFY_ENCRYPT_THE_SAME_ERROR.message);
+        }
         if(userMybatisDao.getUserByUserName(mobile) == null){
             // 该用户已经注册过
             return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
