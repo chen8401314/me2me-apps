@@ -39,5 +39,10 @@ public class Admin {
             return mv;
         }
     }
+    @RequestMapping(value = "/article/manage")
+    public ModelAndView articleManage(LoginRequest request){
+        ModelAndView mv = new ModelAndView("admin/article_manage");
+        return mv;
+    }
     
 }
