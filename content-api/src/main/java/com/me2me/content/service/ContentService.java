@@ -12,7 +12,7 @@ import com.me2me.content.model.Content;
  */
 public interface ContentService {
 
-    Response recommend(long uid);
+    Response recommend(long uid,String emotion);
 
     /**
      * 精选接口

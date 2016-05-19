@@ -55,7 +55,7 @@ public class ContentServiceImpl implements ContentService {
     private String recommendDomain;
 
     @Override
-    public Response recommend(long uid) {
+    public Response recommend(long uid,String emotion) {
         RecommendRequest recommendRequest = new RecommendRequest();
         UserProfile userProfile = userService.getUserProfileByUid(uid);
         User user = new User();
@@ -66,6 +66,7 @@ public class ContentServiceImpl implements ContentService {
         String hobbies = userService.getUserHobbyByUid(uid);
         user.setInterests(hobbies);
         recommendRequest.setUserId(userProfile.getUid().toString());
+        recommendRequest.setEmotion(emotion);
         RecommendResponse recommendResponse =  contentRecommendService.recommend(recommendRequest);
         RecommendContentDto recommendContentDto = new RecommendContentDto();
         List<ContentTO> list = recommendResponse.getContents();
