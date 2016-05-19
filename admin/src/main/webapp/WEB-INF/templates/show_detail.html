@@ -29,7 +29,7 @@
                         <span class="sr-only">Toggle navigation</span>
                         <i class="fa fa-bars"></i>
                         </span>
-                    <a class="navbar-brand" href="/">笑林杂谈</a>
+                    <a class="navbar-brand" href="#">笑林杂谈</a>
                 </div>
                 <div class="collapse navbar-collapse" id="main-menu">
                     <ul class="nav navbar-nav">
@@ -78,100 +78,31 @@
 <section class="content-wrap">
     <div class="container">
         <div class="row">
-            <main class="col-md-8 main-content">
-                <th:block th:each="article:${root.elements}">
-                    <article class="post">
-                        <div class="post-head">
-                            <h1 class="post-title"><a th:href="@{/show_detail/(id=${article.id})}" th:text="${article.title}"></a></h1>
-                            <div class="post-meta">
-                                <span class="author">作者：<a href="#" th:text="${article.author}"></a></span> &bull;
-                                <time class="post-date" th:text="${#calendars.format(article.createTime,'yyyy-MM-dd HH:mm:ss')}"></time>
-                            </div>
-                        </div>
-                        <div class="featured-media">
-                            <a th:href="@{/show_detail/(id=${article.id})}"><img class="img-responsive" th:src="${article.thumb}" th:alt="${article.title}"/></a>
-                        </div>
-                        <div class="post-content">
-                            <p th:utext="${article.content}"></p>
-                        </div>
-                        <div class="post-permalink">
-                            <a th:href="@{/show_detail/(id=${article.id})}" class="btn btn-default">阅读全文</a>
-                        </div>
 
-                        <footer class="post-footer clearfix">
-                            <div class="pull-left tag-list">
-                                <i class="fa fa-folder-open-o"></i>
-                            </div>
-                            <div class="pull-right share">
-                            </div>
-                        </footer>
-                    </article>
-                </th:block>
-                <nav class="pagination" role="navigation">
-                    <span class="page-number">第 1 页 &frasl; 共 8 页</span>
-                    <a class="older-posts" href="/page/2/"><i class="fa fa-angle-right"></i></a>
-                </nav>
+            <main class="col-md-12 main-content">
 
+                <article class="post">
 
+                    <div class="post-head">
+                        <h1 class="post-title"><a href="#" th:text="${root.title}"></a></h1>
+                        <div class="post-meta">
+                            <span class="author">作者：<a href="/author/wangsai/" th:text="${root.author}"></a></span> &bull;
+                            <time class="post-date" th:text="${#calendars.format(root.createTime,'yyyy-MM-dd HH:mm:ss')}"></time>
+                        </div>
+                    </div>
+                    <div class="featured-media">
+                        <a href="#"><img class="img-responsive" th:src="${root.thumb}" th:alt="${root.title}"/></a>
+                    </div>
+                    <div class="post-content" th:utext="${root.content}"></div>
+                    <footer class="post-footer clearfix">
+                        <div class="pull-left tag-list">
+                            <i class="fa fa-folder-open-o"></i>
+                        </div>
+                        <div class="pull-right share">
+                        </div>
+                    </footer>
+                </article>
             </main>
-
-            <aside class="col-md-4 sidebar">
-                <!-- start widget -->
-                <!-- end widget -->
-
-                <!-- start tag cloud widget -->
-                <div class="widget">
-                    <h4 class="title">阅读排行榜</h4>
-                    <div class="content community">
-                        <p><span class="label label-danger">1</span> <a href="#">大姨妈的现代生活</a></p>
-                        <p><span class="label label-danger">2</span> <a href="#">大姨妈的现代生活</a></p>
-                        <p><span class="label label-danger">3</span> <a href="#">大姨妈的现代生活</a></p>
-                    </div>
-                </div>
-                <!-- end tag cloud widget -->
-
-                <!-- start widget -->
-                <div class="widget">
-                    <h4 class="title">热门推荐</h4>
-                    <div class="content download">
-                        <a href="/download/" class="">fdsfds</a>
-                    </div>
-                </div>
-                <!-- end widget -->
-
-                <!-- start tag cloud widget -->
-                <div class="widget">
-                    <h4 class="title">笑林标签</h4>
-                    <div class="content tag-cloud">
-                        <a href="/tag/jquery/">jQuery</a>
-                        <a href="/tag/ghost-0-7-ban-ben/">Ghost 0.7 版本</a>
-                        <a href="/tag/opensource/">开源</a>
-                        <a href="/tag/zhu-shou-han-shu/">助手函数</a>
-                        <a href="/tag/tag-cloud/">标签云</a>
-                        <a href="/tag/navigation/">导航</a>
-                        <a href="/tag/customize-page/">自定义页面</a>
-                        <a href="/tag/static-page/">静态页面</a>
-                        <a href="/tag/roon-io/">Roon.io</a>
-                        <a href="/tag/configuration/">配置文件</a>
-                        <a href="/tag/upyun/">又拍云存储</a>
-                        <a href="/tag/upload/">上传</a>
-                        <a href="/tag/handlebars/">Handlebars</a>
-                        <a href="/tag/email/">邮件</a>
-                        <a href="/tag/shortcut/">快捷键</a>
-                        <a href="/tag/yong-hu-zhi-nan/">用户指南</a>
-                        <a href="/tag/theme-market/">主题市场</a>
-                        <a href="/tag/release/">新版本发布</a>
-                        <a href="/tag-cloud/">...</a>
-                    </div>
-                </div>
-                <!-- end tag cloud widget -->
-
-                <!-- start widget -->
-                <!-- end widget -->
-
-                <!-- start widget -->
-                <!-- end widget -->
-            </aside>
         </div>
     </div>
 </section>
@@ -184,15 +115,15 @@
                     <h4 class="title">最新文章</h4>
                     <div class="content recent-post">
                         <div class="recent-single-post">
-                            <a href="#" class="post-title">Ghost 桌面版 APP 正式发布，能同时管理多个 Ghost 博客</a>
+                            <a href="/ghost-zhuo-mian-ban-app-geng-xin-neng-gou-tong-shi-guan-li-duo-ge-ghost-bo-ke/" class="post-title">Ghost 桌面版 APP 正式发布，能同时管理多个 Ghost 博客</a>
                             <div class="date">2016年4月28日</div>
                         </div>
                         <div class="recent-single-post">
-                            <a href="#" class="post-title">为 Ubuntu 和 Debian 安装最新版本的 Node.js</a>
+                            <a href="/install-nodejs-of-latest-version-in-ubuntu-and-debian/" class="post-title">为 Ubuntu 和 Debian 安装最新版本的 Node.js</a>
                             <div class="date">2016年3月23日</div>
                         </div>
                         <div class="recent-single-post">
-                            <a href="#" class="post-title">Ghost 0.7.4 正式发布</a>
+                            <a href="/ghost-0-7-4-released/" class="post-title">Ghost 0.7.4 正式发布</a>
                             <div class="date">2015年12月29日</div>
                         </div>
                     </div>
@@ -218,6 +149,7 @@
                         <a href="/tag/markdown/">Markdown</a>
                         <a href="/tag/proxy/">反向代理</a>
                         <a href="/tag/apache/">Apache</a>
+
                         <a href="/tag-cloud/">...</a>
                     </div>
                 </div>

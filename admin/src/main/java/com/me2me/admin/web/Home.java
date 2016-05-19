@@ -1,6 +1,8 @@
 package com.me2me.admin.web;
 
+import com.me2me.admin.web.request.ArticleDetailRequest;
 import com.me2me.admin.web.request.TimelineRequest;
+import com.me2me.article.dto.ArticleDetailDto;
 import com.me2me.article.dto.ArticleTimelineDto;
 import com.me2me.article.service.ArticleService;
 import com.me2me.admin.web.request.ContentForwardRequest;
@@ -16,7 +18,6 @@ import org.springframework.web.servlet.ModelAndView;
  * Author: 赵朋扬
  * Date: 2016/3/25.
  */
-@RequestMapping("/home")
 @Controller
 public class Home {
 
@@ -29,11 +30,19 @@ public class Home {
         return viewName;
     }
 
-    @RequestMapping(value = "/index")
+    @RequestMapping(value = "/")
     public ModelAndView index(TimelineRequest request){
         ModelAndView mv = new ModelAndView("index");
         ArticleTimelineDto content = articleService.timeline(request.getSinceId());
         mv.addObject("root",content);
+        return mv;
+    }
+
+    @RequestMapping(value = "/show_detail")
+    public ModelAndView showDetail(ArticleDetailRequest request){
+        ModelAndView mv = new ModelAndView("show_detail");
+        ArticleDetailDto article = articleService.getArticleById(request.getId());
+        mv.addObject("root",article);
         return mv;
     }
 

@@ -1,5 +1,6 @@
 package com.me2me.article.service;
 
+import com.me2me.article.dto.ArticleDetailDto;
 import com.me2me.article.dto.ArticleTimelineDto;
 import com.me2me.article.dto.CreateArticleDto;
 import com.me2me.article.model.ArticleType;
@@ -19,5 +20,7 @@ public interface ArticleService {
     void createArticle(CreateArticleDto createArticleDto);
 
     List<ArticleType> getArticleTypes();
+
+    ArticleDetailDto getArticleById(long id);
 
 }

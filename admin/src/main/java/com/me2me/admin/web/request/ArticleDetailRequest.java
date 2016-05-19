@@ -9,15 +9,10 @@ import lombok.Setter;
  * Author: 赵朋扬
  * Date: 2016/3/30.
  */
-public class ContentForwardRequest extends Request {
-
+public class ArticleDetailRequest extends Request {
 
     @Getter
     @Setter
     private long id;
-
-    @Getter
-    @Setter
-    private int shared;
 
 }
