@@ -90,9 +90,11 @@
                             <time class="post-date" th:text="${#calendars.format(root.createTime,'yyyy-MM-dd HH:mm:ss')}"></time>
                         </div>
                     </div>
-                    <div class="featured-media">
-                        <a href="#"><img class="img-responsive" th:src="${root.thumb}" th:alt="${root.title}"/></a>
-                    </div>
+                    <th:block th:if="${root.thumb ne ''}">
+                        <div class="featured-media">
+                            <a href="#"><img class="img-responsive" th:src="${root.thumb}" th:alt="${root.title}"/></a>
+                        </div>
+                    </th:block>
                     <div class="post-content" th:utext="${root.content}"></div>
                     <footer class="post-footer clearfix">
                         <div class="pull-left tag-list">
