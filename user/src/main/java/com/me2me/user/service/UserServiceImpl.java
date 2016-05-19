@@ -140,6 +140,10 @@ public class UserServiceImpl implements UserService {
     public Response verify(VerifyDto verifyDto) {
         if(verifyDto.getAction() == Specification.VerifyAction.GET.index){
             // 发送校验码
+            User user = userMybatisDao.getUserByUserName(verifyDto.getMobile());
+            if(user!=null){
+                return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
+            }
             smsService.send(verifyDto);
             return Response.success(ResponseStatus.USER_VERIFY_GET_SUCCESS.status,ResponseStatus.USER_VERIFY_GET_SUCCESS.message);
         }else if(verifyDto.getAction() == Specification.VerifyAction.CHECK.index){
