@@ -40,7 +40,7 @@ public class ShowUserProfileDto implements BaseEntity{
     public Hobby createHobby(){ return new Hobby();}
 
     @Data
-    public static class Hobby{
+    public static class Hobby implements BaseEntity{
 
         private long hobby;
 
