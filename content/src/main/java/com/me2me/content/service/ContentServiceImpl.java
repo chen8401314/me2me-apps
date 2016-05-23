@@ -567,8 +567,6 @@ public class ContentServiceImpl implements ContentService {
             if(content.getFeeling().indexOf(contentTags.getTag()) == -1) {
                 contentTagElement.setTag(contentTags.getTag());
                 contentDetailDto.getTags().add(contentTagElement);
-            }else{
-                contentDetailDto.getTags().add(contentTagElement);
             }
         }
         List<ContentReview> reviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
