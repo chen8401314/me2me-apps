@@ -3,8 +3,10 @@ package com.me2me.web;
 import com.me2me.common.web.Response;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.user.dto.*;
+import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
+import com.plusnet.search.content.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -379,6 +381,20 @@ public class Users extends BaseController {
         controlDto.setPlatform(request.getPlatform());
         controlDto.setUpdateDescription(request.getUpdateDescription());
         return userService.updateVersion(controlDto);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/getSpecialUserProfile",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getSpecialUserProfile(SpecialUserProfileRequest request){
+        UserProfile userProfile = userService.getUserProfileByUid(request.getUid());
+        SpecialUserDto userDto = new SpecialUserDto();
+        userDto.setBirthday(userProfile.getBirthday());
+        userDto.setMobilePhone(userProfile.getMobile());
+        userDto.setSex(userProfile.getGender().toString());
+        userDto.setUserName(userProfile.getNickName());
+        String hobbies = userService.getUserHobbyByUid(request.getUid());
+        userDto.setInterests(hobbies);
+        return Response.success(userDto);
     }
 
 }
