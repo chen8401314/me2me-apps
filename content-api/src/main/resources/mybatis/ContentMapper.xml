@@ -724,8 +724,8 @@
     order by c.id desc limit 10
   </select>
 
-  <select id="countFragment" resultType="java.lang.Integer">
-    select count(*)  from topic_fragment where topic_id = #{topicId,jdbcType=BIGINT}
+  <select id="countFragment" resultType="java.lang.Integer" parameterType = "com.me2me.content.dto.CountFragmentDto">
+    select count(*)  from topic_fragment where topic_id = #{topicId,jdbcType=BIGINT} and uid != #{uid,jdbcType=BIGINT}
   </select>
 
 </mapper>

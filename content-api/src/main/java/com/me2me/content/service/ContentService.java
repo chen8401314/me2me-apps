@@ -142,6 +142,6 @@ public interface ContentService {
 
     int isLike(long cid,long uid);
 
-    int countFragment(long topicId);
+    int countFragment(long topicId,long uid);
 
 }

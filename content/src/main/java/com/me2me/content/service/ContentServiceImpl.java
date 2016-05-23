@@ -11,7 +11,6 @@ import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.*;
 import com.me2me.user.dto.UserInfoDto;
-import com.me2me.user.model.UserHobby;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
@@ -183,7 +182,7 @@ public class ContentServiceImpl implements ContentService {
                 //直播是否收藏
                 squareDataElement.setFavorite(favorite);
                 squareDataElement.setForwardCid(content.getForwardCid());
-                squareDataElement.setReviewCount(contentMybatisDao.countFragment(content.getForwardCid()));
+                squareDataElement.setReviewCount(contentMybatisDao.countFragment(content.getForwardCid(),content.getUid()));
             }
             squareDataElement.setLikeCount(content.getLikeCount());
             squareDataElement.setPersonCount(content.getPersonCount());
@@ -565,7 +564,9 @@ public class ContentServiceImpl implements ContentService {
         for (ContentTagsDetails contentTagsDetails : list){
             ContentDetailDto.ContentTagElement contentTagElement = ContentDetailDto.createElement();
             ContentTags contentTags = contentMybatisDao.getContentTagsById(contentTagsDetails.getTid());
-            contentTagElement.setTag(contentTags.getTag());
+            if(content.getFeeling().indexOf(contentTags.getTag()) == -1) {
+                contentTagElement.setTag(contentTags.getTag());
+            }
             contentDetailDto.getTags().add(contentTagElement);
 
         }
@@ -579,6 +580,19 @@ public class ContentServiceImpl implements ContentService {
             reviewElement.setAvatar(user.getAvatar());
             reviewElement.setNickName(user.getNickName());
             contentDetailDto.getReviews().add(reviewElement);
+        }
+        //文章图片
+        if(content.getType() == Specification.ArticleType.ORIGIN.index){
+            List<ContentImage> contentImageList = contentMybatisDao.getContentImages(content.getId());
+            ContentDetailDto.ImageElement imageElement = ContentDetailDto.createImageElement();
+            if(contentImageList != null && contentImageList.size() > 0) {
+                for (ContentImage contentImage : contentImageList) {
+                    if(contentImage.getCover() != 1) {
+                        imageElement.setImage(contentImage.getImage());
+                    }
+                }
+            }
+
         }
 
         return Response.success(contentDetailDto);
@@ -897,7 +911,7 @@ public class ContentServiceImpl implements ContentService {
 
            //直播 直播状态
             }else if(content.getType() == Specification.ArticleType.LIVE.index){
-                hottestContentElement.setReviewCount(contentMybatisDao.countFragment(content.getForwardCid()));
+                hottestContentElement.setReviewCount(contentMybatisDao.countFragment(content.getForwardCid(),content.getUid()));
                 hottestContentElement.setUid(content.getUid());
                 hottestContentElement.setForwardCid(content.getForwardCid());
                 //查询直播状态
@@ -967,7 +981,7 @@ public class ContentServiceImpl implements ContentService {
                 //查询直播状态
                 int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
                 contentElement.setLiveStatus(status);
-                contentElement.setReviewCount(contentMybatisDao.countFragment(content.getForwardCid()));
+                contentElement.setReviewCount(contentMybatisDao.countFragment(content.getForwardCid(),content.getUid()));
             }
             if(content.getType() == Specification.ArticleType.ORIGIN.index){
                 //获取内容图片数量
@@ -1030,7 +1044,7 @@ public class ContentServiceImpl implements ContentService {
             {
                 int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
                 contentElement.setLiveStatus(status);
-                contentElement.setReviewCount(contentMybatisDao.countFragment(content.getForwardCid()));
+                contentElement.setReviewCount(contentMybatisDao.countFragment(content.getForwardCid(),content.getUid()));
             }
             if(content.getType() == Specification.ArticleType.ORIGIN.index){
                 //获取内容图片数量
@@ -1179,8 +1193,8 @@ public class ContentServiceImpl implements ContentService {
 
 
     @Override
-    public int countFragment(long topicId){
-        return contentMybatisDao.countFragment(topicId);
+    public int countFragment(long topicId ,long uid){
+        return contentMybatisDao.countFragment(topicId,uid);
     }
 
 }

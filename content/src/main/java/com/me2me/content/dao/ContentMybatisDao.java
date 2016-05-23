@@ -317,7 +317,10 @@ public class ContentMybatisDao {
         return list != null &&list.size() > 0 ? list.get(0) :null;
     }
 
-    public int countFragment(long topicId){
-        return contentMapper.countFragment(topicId);
+    public int countFragment(long topicId,long uid){
+        CountFragmentDto countFragmentDto = new CountFragmentDto();
+        countFragmentDto.setTopicId(topicId);
+        countFragmentDto.setUid(uid);
+        return contentMapper.countFragment(countFragmentDto);
     }
 }
