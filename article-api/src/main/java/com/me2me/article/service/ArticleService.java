@@ -3,6 +3,7 @@ package com.me2me.article.service;
 import com.me2me.article.dto.ArticleDetailDto;
 import com.me2me.article.dto.ArticleTimelineDto;
 import com.me2me.article.dto.CreateArticleDto;
+import com.me2me.article.dto.FeedDto;
 import com.me2me.article.model.ArticleType;
 import com.me2me.common.web.Response;
 
@@ -23,10 +24,12 @@ public interface ArticleService {
 
     ArticleDetailDto getArticleById(long id);
 
-    // 精选段子
+    // 精选段子8
 
-    // 趣图
+    // 趣图7
 
-    // 精选美图
+    // 精选美图22
+
+    FeedDto getArticleByType();
 
 }

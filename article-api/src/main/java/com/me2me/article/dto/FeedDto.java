@@ -20,6 +20,14 @@ public class FeedDto implements BaseEntity {
 
     private List<JokeDto> jokes = Lists.newArrayList();
 
+    public ImageDto createImageDto(){
+        return new ImageDto();
+    }
+
+    public JokeDto createJokeDto(){
+        return new JokeDto();
+    }
+
     @Data
     public class ImageDto implements BaseEntity{
 

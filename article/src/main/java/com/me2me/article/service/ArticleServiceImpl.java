@@ -3,6 +3,7 @@ import com.me2me.article.dao.ArticleMybatisDao;
 import com.me2me.article.dto.ArticleDetailDto;
 import com.me2me.article.dto.ArticleTimelineDto;
 import com.me2me.article.dto.CreateArticleDto;
+import com.me2me.article.dto.FeedDto;
 import com.me2me.article.model.Article;
 import com.me2me.article.model.ArticleType;
 import com.me2me.common.web.Response;
@@ -83,5 +84,36 @@ public class ArticleServiceImpl implements ArticleService {
         articleDetailDto.setAuthor("小编");
         articleDetailDto.setCreateTime(article.getCreateTime());
         return articleDetailDto;
+    }
+
+    @Override
+    public FeedDto getArticleByType() {
+        FeedDto feedDto = new FeedDto();
+        List<Article>  list = articleMybatisDao.getArticleByType(22);
+        for (Article article : list){
+            FeedDto.ImageDto imageDto = feedDto.createImageDto();
+            imageDto.setImage(article.getArticleThumb());
+            imageDto.setTitle(article.getArticleTitle());
+            imageDto.setId(article.getId());
+            feedDto.getQuImages().add(imageDto);
+        }
+        List<Article>  list2 = articleMybatisDao.getArticleByType(7);
+        for (Article article : list2){
+            FeedDto.ImageDto imageDto = feedDto.createImageDto();
+            imageDto.setImage(article.getArticleThumb());
+            imageDto.setTitle(article.getArticleTitle());
+            imageDto.setId(article.getId());
+            feedDto.getAlbums().add(imageDto);
+        }
+        List<Article>  list3 = articleMybatisDao.getArticleByType(8);
+        for (Article article : list3){
+            FeedDto.JokeDto jokeDto = feedDto.createJokeDto();
+            jokeDto.setSummary(article.getArticleContent());
+            jokeDto.setCoverImage(article.getArticleThumb());
+            jokeDto.setTitle(article.getArticleTitle());
+            jokeDto.setId(article.getId());
+            feedDto.getJokes().add(jokeDto);
+        }
+        return feedDto;
     }
 }

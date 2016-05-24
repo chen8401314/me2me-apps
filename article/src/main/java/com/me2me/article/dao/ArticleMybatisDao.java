@@ -1,5 +1,6 @@
 package com.me2me.article.dao;
 
+import com.me2me.article.dto.FeedDto;
 import com.me2me.article.mapper.ArticleMapper;
 import com.me2me.article.mapper.ArticleTypeMapper;
 import com.me2me.article.model.Article;
@@ -43,5 +44,14 @@ public class ArticleMybatisDao {
     public Article loadArticleById(long id){
         return articleMapper.selectByPrimaryKey(id);
     }
+
+    public List<Article> getArticleByType(long type){
+        ArticleExample example = new ArticleExample();
+        ArticleExample.Criteria criteria = example.createCriteria();
+        criteria.andArticleTypeEqualTo(type);
+        example.setOrderByClause(" id desc limit 15");
+        return articleMapper.selectByExample(example);
+    }
+
 
 }
