@@ -4,6 +4,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.me2me.common.web.Specification;
 import com.me2me.live.mapper.LiveFavoriteMapper;
+import com.me2me.live.mapper.LiveReadHistoryMapper;
 import com.me2me.live.mapper.TopicFragmentMapper;
 import com.me2me.live.mapper.TopicMapper;
 import com.me2me.live.model.*;
@@ -29,6 +30,10 @@ public class LiveMybatisDao {
     @Autowired
     private LiveFavoriteMapper liveFavoriteMapper;
 
+    @Autowired
+    private LiveReadHistoryMapper liveReadHistoryMapper;
+
+
 
     public void createTopic(Topic topic){
         topicMapper.insertSelective(topic);
@@ -44,6 +49,15 @@ public class LiveMybatisDao {
         criteria.andTopicIdEqualTo(topicId);
         criteria.andIdGreaterThan(sinceId);
         example.setOrderByClause("id asc limit 10 "  );
+        return topicFragmentMapper.selectByExampleWithBLOBs(example);
+    }
+
+    public List<TopicFragment> getPrevTopicFragment(long topicId,long sinceId ){
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andIdLessThan(sinceId);
+        example.setOrderByClause("id desc limit 10 "  );
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
 
@@ -142,5 +156,22 @@ public class LiveMybatisDao {
          example.setOrderByClause(" id asc limit 20");
          return liveFavoriteMapper.selectByExample(example);
      }
+
+    public LiveReadHistory getLiveReadHistory(long topicId,long uid){
+        LiveReadHistoryExample example = new LiveReadHistoryExample();
+        LiveReadHistoryExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andUidEqualTo(uid);
+        List<LiveReadHistory> liveReadHistories =  liveReadHistoryMapper.selectByExample(example);
+        return (liveReadHistories != null && liveReadHistories.size() > 0) ?liveReadHistories.get(0) : null ;
+    }
+
+    public void createLiveReadHistory(long topicId,long uid){
+        LiveReadHistory liveReadHistory = new LiveReadHistory();
+        liveReadHistory.setTopicId(topicId);
+        liveReadHistory.setUid(uid);
+        liveReadHistoryMapper.insertSelective(liveReadHistory);
+
+    }
 
 }

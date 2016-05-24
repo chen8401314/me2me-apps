@@ -31,8 +31,8 @@
 
         <!--<table tableName="topic" domainObjectName="Topic"/> -->
         <!--<table tableName="topic_fragment" domainObjectName="TopicFragment"/>-->
-        <table tableName="live_favorite" domainObjectName="LiveFavorite"/>
-        <!--<table tableName="live_cpi" domainObjectName="LiveCpi"/>-->
+        <!--<table tableName="live_favorite" domainObjectName="LiveFavorite"/>-->
+        <table tableName="live_read_history" domainObjectName="LiveReadHistory"/>
 
 
     </context>

@@ -38,6 +38,8 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
 
     private static List<String> INTERNAL_WHITE_LIST = Lists.newArrayList();
 
+    private static List<String> TRUST_REQUEST_LIST = Lists.newArrayList();
+
     static {
         WHITE_LIST.add("/api/user/login");
         WHITE_LIST.add("/api/user/signUp");
@@ -55,12 +57,18 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         INTERNAL_WHITE_LIST.add("/api/console/showDetails");
         INTERNAL_WHITE_LIST.add("/api/console/bindAccount");
         INTERNAL_WHITE_LIST.add("/api/io/getQiniuAccessToken");
-        INTERNAL_WHITE_LIST.add("/api/user/getSpecialUserProfile");
+
+        TRUST_REQUEST_LIST.add("/api/user/getSpecialUserProfile");
+
+
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String is_skip = request.getParameter("is_skip");
+        if(TRUST_REQUEST_LIST.contains(request.getRequestURI())){
+            is_skip = "ok";
+        }
         if(!"ok".equals(is_skip)){
             if(!INTERNAL_WHITE_LIST.contains(request.getRequestURI())) {
                 String value = request.getParameter("security");

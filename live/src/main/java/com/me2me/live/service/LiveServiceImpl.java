@@ -1,5 +1,6 @@
 package com.me2me.live.service;
 
+import com.google.common.collect.Lists;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -62,6 +63,33 @@ public class LiveServiceImpl implements LiveService {
     public Response getLiveTimeline(GetLiveTimeLineDto getLiveTimeLineDto) {
         LiveTimeLineDto liveTimeLineDto = new LiveTimeLineDto();
         List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(),getLiveTimeLineDto.getSinceId());
+        buildLiveTimeLine(getLiveTimeLineDto, liveTimeLineDto, fragmentList);
+        return Response.success(ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.status,ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.message,liveTimeLineDto);
+    }
+
+    @Override
+    public Response liveTimeline(GetLiveTimeLineDto getLiveTimeLineDto) {
+        LiveTimeLineDto liveTimeLineDto = new LiveTimeLineDto();
+        //判断进入直播是否是第一次
+        LiveReadHistory liveReadHistory = liveMybatisDao.getLiveReadHistory(getLiveTimeLineDto.getTopicId(),getLiveTimeLineDto.getUid());
+        List<TopicFragment> fragmentList = Lists.newArrayList();
+        if(getLiveTimeLineDto.getDirection() == Specification.LiveTimeLineDirection.FIRST.index) {
+            if (liveReadHistory == null) {
+                fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId());
+                liveMybatisDao.createLiveReadHistory(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getUid());
+            } else {
+                fragmentList = liveMybatisDao.getPrevTopicFragment(getLiveTimeLineDto.getTopicId(), Integer.MAX_VALUE);
+            }
+        }else if(getLiveTimeLineDto.getDirection() == Specification.LiveTimeLineDirection.NEXT.index){
+            fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId());
+        }else if(getLiveTimeLineDto.getDirection() == Specification.LiveTimeLineDirection.PREV.index){
+            fragmentList = liveMybatisDao.getPrevTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId());
+        }
+        buildLiveTimeLine(getLiveTimeLineDto, liveTimeLineDto, fragmentList);
+        return Response.success(ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.status,ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.message,liveTimeLineDto);
+    }
+
+    private void buildLiveTimeLine(GetLiveTimeLineDto getLiveTimeLineDto, LiveTimeLineDto liveTimeLineDto, List<TopicFragment> fragmentList) {
         for(TopicFragment topicFragment : fragmentList){
             long uid = topicFragment.getUid();
             UserProfile userProfile = userService.getUserProfileByUid(uid);
@@ -82,7 +110,6 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setFragmentId(topicFragment.getId());
             liveTimeLineDto.getLiveElements().add(liveElement);
         }
-        return Response.success(ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.status,ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.message,liveTimeLineDto);
     }
 
     @Override

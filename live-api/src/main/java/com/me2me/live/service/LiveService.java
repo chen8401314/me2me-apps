@@ -80,4 +80,6 @@ public interface LiveService {
     int countFragment(long topicId);
 
     Response getFavoriteList(long topicId);
+
+    Response liveTimeline(GetLiveTimeLineDto getLiveTimeLineDto);
 }
