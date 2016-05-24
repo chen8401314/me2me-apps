@@ -284,9 +284,8 @@ pre {
 }
 .post .post-head .post-title {
     margin: 0;
-    font-size: 1.5em;
+    font-size: 2.5em;
     line-height: 1em;
-    font-weight: bold;
 }
 .post .post-head .post-title a {
     color: #303030;
@@ -895,23 +894,35 @@ pre {
     font-size: 18px;
 }
 
-.featured-media-left,.post-content-left{
-    float:left;
+.active{
+    border-bottom: 2px solid #e67e22;
+    border-bottom: -2px;
 }
 
-.featured-media-left{
-    width:300px;
-}
-.post-content-overflow{
-    overflow: hidden;
-}
-.shadow {
-    -moz-box-shadow: 3px 3px 4px #000;
-    -webkit-box-shadow: 3px 3px 4px #000;
-    box-shadow: 3px 3px 4px #000;
-    /* For IE 8 */
-    -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#000000')";
-    /* For IE 5.5 - 7 */
-    filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#000000');
+
+.qt p,.jxmeitu p{
+    text-align: center;
 }
 
+.qt img{
+    width:203px;
+    height:132px;
+}
+
+.dz img{
+    width: 140px;
+    height: 105px;
+    margin-right: 15px;
+}
+.dz p{
+    line-height: 26px;
+    font-size: 14px;
+    overflow:hidden; text-overflow:ellipsis;
+    color: #777;
+    height: 105px;
+    text-indent: 2em;
+}
+.dz h5{
+    font-family: "微软雅黑";
+    font-weight: bold;
+}

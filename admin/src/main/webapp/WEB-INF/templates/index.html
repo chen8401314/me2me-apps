@@ -33,9 +33,9 @@
                 </div>
                 <div class="collapse navbar-collapse" id="main-menu">
                     <ul class="nav navbar-nav">
-                        <li class="active" role="presentation"><a href="/">首页</a></li>
+                        <li class="active" role="presentation"><a href="/"><i class="fa fa-home"></i> 首页</a></li>
                         <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">热门 <b class="caret"></b></a>
+                            <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-fire"></i> 热门 <b class="caret"></b></a>
                             <ul class="dropdown-menu">
                                 <li>
                                     <a href="#">24小时</a>
@@ -51,19 +51,19 @@
                             </ul>
                         </li>
                         <li>
-                            <a href="#">趣图</a>
+                            <a href="#"><i class="fa fa-image"></i> 趣图</a>
                         </li>
                         <li>
-                            <a href="#">段子</a>
+                            <a href="#"><i class="fa fa-file-text"></i> 段子</a>
                         </li>
                         <li>
-                            <a href="#">妹子</a>
+                            <a href="#"><i class="fa fa-venus"></i> 妹子</a>
                         </li>
                         <li>
-                            <a href="#">街拍</a>
+                            <a href="#"><i class="fa fa-camera-retro"></i> 街拍</a>
                         </li>
                         <li>
-                            <a href="#">热舞</a>
+                            <a href="#"><i class="fa fa-play-circle"></i> 热舞</a>
                         </li>
                     </ul>
                 </div>
@@ -79,40 +79,139 @@
     <div class="container">
         <div class="row">
             <main class="col-md-8 main-content">
-                <th:block th:each="article:${root.elements}">
-                    <article class="post">
-                        <div class="post-head">
-                            <h1 class="post-title"><a th:href="@{/show_detail/(id=${article.id})}" th:text="${article.title}"></a></h1>
-                            <div class="post-meta">
-                                <span class="author">作者：<a href="#" th:text="${article.author}"></a></span> &bull;
-                                <time class="post-date" th:text="${#calendars.format(article.createTime,'yyyy-MM-dd HH:mm:ss')}"></time>
+                <div class="widget post">
+                    <h4 class="title">精选段子<a href="#" class="pull-right">更多</a></h4>
+                    <div class="content dz">
+                        <h5>2016年世界海军排名 中日差距越来越大</h5>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <img src="img/001uAJWPgy71x0NRkeZ19.jpg" class="thumbnail img-responsive"/>
+                            </div>
+                            <div class="col-md-9">
+                                <p>
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                </p>
                             </div>
                         </div>
-                        <div class="featured-media">
-                            <a th:href="@{/show_detail/(id=${article.id})}"><img class="img-responsive" th:src="${article.thumb}" th:alt="${article.title}"/></a>
-                        </div>
-                        <div class="post-content">
-                            <p th:utext="${article.content}"></p>
-                        </div>
-                        <div class="post-permalink">
-                            <a th:href="@{/show_detail/(id=${article.id})}" class="btn btn-default">阅读全文</a>
-                        </div>
-
-                        <footer class="post-footer clearfix">
-                            <div class="pull-left tag-list">
-                                <i class="fa fa-folder-open-o"></i>
+                    </div>
+                    <div class="content dz">
+                        <h5>2016年世界海军排名 中日差距越来越大</h5>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <img src="img/001uAJWPgy71x0NRkeZ19.jpg" class="thumbnail img-responsive"/>
                             </div>
-                            <div class="pull-right share">
+                            <div class="col-md-9">
+                                <p>
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                </p>
                             </div>
-                        </footer>
-                    </article>
-                </th:block>
-                <nav class="pagination" role="navigation">
-                    <span class="page-number">第 1 页 &frasl; 共 8 页</span>
-                    <a class="older-posts" href="/page/2/"><i class="fa fa-angle-right"></i></a>
-                </nav>
+                        </div>
+                    </div>
+                    <div class="content dz">
+                        <h5>2016年世界海军排名 中日差距越来越大</h5>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <img src="img/001uAJWPgy71x0NRkeZ19.jpg" class="thumbnail img-responsive"/>
+                            </div>
+                            <div class="col-md-9">
+                                <p>
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                    西班牙海军，是西班牙国家武装力量的海上组成部分，其历史可追溯至中世纪晚期，是一支历史悠久的海军，亦为世界上为数不多的蓝水海军之一。
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="widget post">
+                    <h4 class="title">趣图 <a href="#" class="pull-right">更多</a></h4>
+                    <div class="row qt">
+                        <div class="col-sm-4">
+                            <img src="http://www.zbjuran.com/uploads/allimg/160518/2-16051Q15054404.jpg"  class="img-responsive thumbnail"/>
+                            <p><a href="#">防火防盗防闺蜜</a></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <img src="http://www.zbjuran.com/uploads/allimg/160422/2-160422144932M4.gif"  class="img-responsive thumbnail"/>
+                            <p><a href="#">防火防盗防闺蜜</a></p>
+                        </div>
+                        <div class="col-sm-4">
+                            <img src="http://www.zbjuran.com/uploads/allimg/160518/2-16051Q15054404.jpg"  class="img-responsive thumbnail"/>
+                            <p><a href="#">防火防盗防闺蜜</a></p>
+                        </div>
+                    </div>
+                </div>
 
 
+                <div class="widget post">
+                    <h4 class="title">精选美图<a href="#" class="pull-right">更多</a></h4>
+                    <div class="content jxmeitu">
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img src="http://7xqznu.com1.z0.glb.clouddn.com//0-6fcYWp3.jpg" class="img-responsive thumbnail" />
+                                <p><a href="#">性感美女程彤颜极致诱惑高清大图</a></p>
+                            </div>
+                            <div class="col-sm-4">
+                                <img src="http://7xqznu.com1.z0.glb.clouddn.com//0-kEJKAM0.jpg" class="img-responsive thumbnail" />
+                                <p><a href="#">美女乳神Eva_茜茜性感撩人写真</a></p>
+                            </div>
+                            <div class="col-sm-4">
+                                <img src="http://7xqznu.com1.z0.glb.clouddn.com//0-hz0qMCo.jpg" class="img-responsive thumbnail" />
+                                <p><a href="#">性感蕾丝美女程彤颜室内诱惑写真</a></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img src="http://7xqznu.com1.z0.glb.clouddn.com//0-6fcYWp3.jpg" class="img-responsive thumbnail" />
+                                <p><a href="#">性感美女程彤颜极致诱惑高清大图</a></p>
+                            </div>
+                            <div class="col-sm-4">
+                                <img src="http://7xqznu.com1.z0.glb.clouddn.com//0-kEJKAM0.jpg" class="img-responsive thumbnail" />
+                                <p><a href="#">美女乳神Eva_茜茜性感撩人写真</a></p>
+                            </div>
+                            <div class="col-sm-4">
+                                <img src="http://7xqznu.com1.z0.glb.clouddn.com//0-hz0qMCo.jpg" class="img-responsive thumbnail" />
+                                <p><a href="#">性感蕾丝美女程彤颜室内诱惑写真</a></p>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-4">
+                                <img src="http://7xqznu.com1.z0.glb.clouddn.com//0-6fcYWp3.jpg" class="img-responsive thumbnail" />
+                                <p><a href="#">性感美女程彤颜极致诱惑高清大图</a></p>
+                            </div>
+                            <div class="col-sm-4">
+                                <img src="http://7xqznu.com1.z0.glb.clouddn.com//0-kEJKAM0.jpg" class="img-responsive thumbnail" />
+                                <p><a href="#">美女乳神Eva_茜茜性感撩人写真</a></p>
+                            </div>
+                            <div class="col-sm-4">
+                                <img src="http://7xqznu.com1.z0.glb.clouddn.com//0-hz0qMCo.jpg" class="img-responsive thumbnail" />
+                                <p><a href="#">性感蕾丝美女程彤颜室内诱惑写真</a></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </main>
 
             <aside class="col-md-4 sidebar">
@@ -133,8 +232,10 @@
                 <!-- start widget -->
                 <div class="widget">
                     <h4 class="title">热门推荐</h4>
-                    <div class="content download">
-                        <a href="/download/" class="">fdsfds</a>
+                    <div class="content community">
+                        <p><span class="label label-danger">1</span> <a href="#">大姨妈的现代生活</a></p>
+                        <p><span class="label label-danger">2</span> <a href="#">大姨妈的现代生活</a></p>
+                        <p><span class="label label-danger">3</span> <a href="#">大姨妈的现代生活</a></p>
                     </div>
                 </div>
                 <!-- end widget -->

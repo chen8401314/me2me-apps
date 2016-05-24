@@ -32,6 +32,9 @@ public class Home {
 
     @RequestMapping(value = "/")
     public ModelAndView index(TimelineRequest request){
+        // 精选段子10条
+        // 趣图 15条
+        // 精选图片 15条
         ModelAndView mv = new ModelAndView("index");
         ArticleTimelineDto content = articleService.timeline(request.getSinceId());
         mv.addObject("root",content);

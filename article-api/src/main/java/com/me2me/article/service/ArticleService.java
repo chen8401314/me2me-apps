@@ -23,4 +23,10 @@ public interface ArticleService {
 
     ArticleDetailDto getArticleById(long id);
 
+    // 精选段子
+
+    // 趣图
+
+    // 精选美图
+
 }
