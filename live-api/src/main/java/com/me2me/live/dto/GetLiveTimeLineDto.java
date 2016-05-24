@@ -18,4 +18,6 @@ public class GetLiveTimeLineDto implements BaseEntity {
 
     private long uid;
 
+    private int direction;
+
 }

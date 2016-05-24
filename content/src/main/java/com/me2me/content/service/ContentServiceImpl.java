@@ -330,6 +330,9 @@ public class ContentServiceImpl implements ContentService {
 
 
     private void remind(Content content ,long uid ,int type,String arg){
+        if(content.getUid() == uid){
+            return;
+        }
         UserProfile userProfile = userService.getUserProfileByUid(uid);
         UserProfile customerProfile = userService.getUserProfileByUid(content.getUid());
         ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
@@ -692,6 +695,30 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setContentType(content.getContentType());
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
+            String cover =  content.getConverImage();
+            if(!StringUtils.isEmpty(cover)){
+                contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
+            }
+            contentElement.setTag(content.getFeeling());
+            //查询直播状态
+            if(content.getType() == Specification.ArticleType.LIVE.index)
+            {
+                int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
+                contentElement.setLiveStatus(status);
+                contentElement.setReviewCount(contentMybatisDao.countFragment(content.getForwardCid(),content.getUid()));
+            }
+            if(content.getType() == Specification.ArticleType.ORIGIN.index){
+                //获取内容图片数量
+                int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
+                contentElement.setImageCount(imageCounts);
+            }
+            int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), sourceUid);
+            //直播是否收藏
+            contentElement.setFavorite(favorite);
+            contentElement.setIsLike(isLike(content.getId(),sourceUid));
+            contentElement.setLikeCount(content.getLikeCount());
+            contentElement.setPersonCount(content.getPersonCount());
+            contentElement.setFavoriteCount(content.getFavoriteCount());
             ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
             if(contentImage != null) {
                 contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());

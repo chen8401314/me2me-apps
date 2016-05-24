@@ -393,7 +393,7 @@ public interface Specification {
         }
     }
 
-    enum VersionStatus{
+    public enum VersionStatus{
 
         NEWEST("最新",0),
 
@@ -406,6 +406,24 @@ public interface Specification {
         public final int index;
 
         VersionStatus(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    public enum LiveTimeLineDirection{
+
+        FIRST("第一次",0),
+
+        NEXT("下一页",1),
+
+        PREV("上一页",2);
+
+        public final String name;
+
+        public final int index;
+
+        LiveTimeLineDirection(String name,int index){
             this.name = name;
             this.index = index;
         }

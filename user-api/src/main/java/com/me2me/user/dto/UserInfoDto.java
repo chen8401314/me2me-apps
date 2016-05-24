@@ -80,6 +80,14 @@ public class UserInfoDto implements BaseEntity{
 
         private Integer contentType;
 
+        private int liveStatus;
+
+        private int imageCount;
+
+        private int favorite;
+
+        private int isLike;
+
         @Data
         public static class ReviewElement implements BaseEntity{
 

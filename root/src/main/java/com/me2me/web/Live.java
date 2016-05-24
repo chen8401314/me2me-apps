@@ -58,6 +58,21 @@ public class Live extends BaseController {
     }
 
     /**
+     * 获取消息列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/timeline",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response timeline(LiveTimelineRequest request){
+        GetLiveTimeLineDto getLiveTimeLineDto = new GetLiveTimeLineDto();
+        getLiveTimeLineDto.setSinceId(request.getSinceId());
+        getLiveTimeLineDto.setTopicId(request.getTopicId());
+        getLiveTimeLineDto.setUid(request.getUid());
+        return liveService.liveTimeline(getLiveTimeLineDto);
+    }
+
+    /**
      * 直播发话
      * @param request
      * @return
