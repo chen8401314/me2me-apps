@@ -586,9 +586,9 @@ public class ContentServiceImpl implements ContentService {
         //文章图片
         if(content.getType() == Specification.ArticleType.ORIGIN.index){
             List<ContentImage> contentImageList = contentMybatisDao.getContentImages(content.getId());
-            ContentDetailDto.ImageElement imageElement = ContentDetailDto.createImageElement();
             if(contentImageList != null && contentImageList.size() > 0) {
                 for (ContentImage contentImage : contentImageList) {
+                    ContentDetailDto.ImageElement imageElement = ContentDetailDto.createImageElement();
                     if(contentImage.getCover() != 1) {
                         imageElement.setImage(contentImage.getImage());
                         contentDetailDto.getImages().add(imageElement);
