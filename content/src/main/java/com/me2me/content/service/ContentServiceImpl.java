@@ -60,10 +60,11 @@ public class ContentServiceImpl implements ContentService {
         User user = new User();
         user.setBirthday(userProfile.getBirthday());
         user.setMobilePhone(userProfile.getMobile());
-        user.setSex(userProfile.getGender().toString());
+        user.setSex(userProfile.getGender()==0?"女":"男");
         user.setUserName(userProfile.getNickName());
         String hobbies = userService.getUserHobbyByUid(uid);
         user.setInterests(hobbies);
+        recommendRequest.setUser(user);
         recommendRequest.setUserId(userProfile.getUid().toString());
         recommendRequest.setEmotion(emotion);
         RecommendResponse recommendResponse =  contentRecommendService.recommend(recommendRequest);
