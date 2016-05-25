@@ -590,7 +590,7 @@ public class ContentServiceImpl implements ContentService {
                 for (ContentImage contentImage : contentImageList) {
                     ContentDetailDto.ImageElement imageElement = ContentDetailDto.createImageElement();
                     if(contentImage.getCover() != 1) {
-                        imageElement.setImage(contentImage.getImage());
+                        imageElement.setImage(Constant.QINIU_DOMAIN  + "/" +contentImage.getImage());
                         contentDetailDto.getImages().add(imageElement);
                     }
                 }
