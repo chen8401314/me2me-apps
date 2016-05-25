@@ -688,7 +688,7 @@ public class UserServiceImpl implements UserService {
         versionControlDto.setPlatform(versionControl.getPlatform());
         versionControlDto.setVersion(versionControl.getVersion());
         versionControlDto.setUpdateUrl(versionControl.getUpdateUrl());
-        if(control == null ||!control.equals(versionControl)){
+        if(control == null ||!control.getVersion().equals(versionControl.getVersion())){
             versionControlDto.setIsUpdate(Specification.VersionStatus.UPDATE.index);
         }else{
             versionControlDto.setIsUpdate(Specification.VersionStatus.NEWEST.index);
