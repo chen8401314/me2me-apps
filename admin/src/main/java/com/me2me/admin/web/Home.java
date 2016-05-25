@@ -4,6 +4,7 @@ import com.me2me.admin.web.request.ArticleDetailRequest;
 import com.me2me.admin.web.request.TimelineRequest;
 import com.me2me.article.dto.ArticleDetailDto;
 import com.me2me.article.dto.ArticleTimelineDto;
+import com.me2me.article.dto.FeedDto;
 import com.me2me.article.service.ArticleService;
 import com.me2me.admin.web.request.ContentForwardRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,8 @@ public class Home {
         // 趣图 15条
         // 精选图片 15条
         ModelAndView mv = new ModelAndView("index");
-        ArticleTimelineDto content = articleService.timeline(request.getSinceId());
-        mv.addObject("root",content);
+        FeedDto feedDto = articleService.getArticleByType();
+        mv.addObject("root",feedDto);
         return mv;
     }
 

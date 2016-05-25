@@ -89,7 +89,7 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public FeedDto getArticleByType() {
         FeedDto feedDto = new FeedDto();
-        List<Article>  list = articleMybatisDao.getArticleByType(22);
+        List<Article>  list = articleMybatisDao.getArticleByType(7);
         for (Article article : list){
             FeedDto.ImageDto imageDto = feedDto.createImageDto();
             imageDto.setImage(article.getArticleThumb());
@@ -97,7 +97,7 @@ public class ArticleServiceImpl implements ArticleService {
             imageDto.setId(article.getId());
             feedDto.getQuImages().add(imageDto);
         }
-        List<Article>  list2 = articleMybatisDao.getArticleByType(7);
+        List<Article>  list2 = articleMybatisDao.getArticleByType(22);
         for (Article article : list2){
             FeedDto.ImageDto imageDto = feedDto.createImageDto();
             imageDto.setImage(article.getArticleThumb());
