@@ -199,7 +199,7 @@ public class LiveServiceImpl implements LiveService {
             if(content != null) {
                 showTopicElement.setLikeCount(content.getLikeCount());
                 showTopicElement.setPersonCount(content.getPersonCount());
-                showTopicElement.setReviewCount(liveMybatisDao.countFragment(content.getForwardCid()));
+                showTopicElement.setReviewCount(liveMybatisDao.countFragment(content.getForwardCid(),content.getUid()));
                 //showTopicElement.setReviewCount(content.getReviewCount());
                 showTopicElement.setFavoriteCount(content.getFavoriteCount());
                 showTopicElement.setCid(content.getId());
@@ -325,8 +325,8 @@ public class LiveServiceImpl implements LiveService {
 
 
     @Override
-    public int countFragment(long topicId){
-        return liveMybatisDao.countFragment(topicId);
+    public int countFragment(long topicId,long uid){
+        return liveMybatisDao.countFragment(topicId,uid);
     }
 
     @Override
