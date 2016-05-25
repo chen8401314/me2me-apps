@@ -591,6 +591,7 @@ public class ContentServiceImpl implements ContentService {
                 for (ContentImage contentImage : contentImageList) {
                     if(contentImage.getCover() != 1) {
                         imageElement.setImage(contentImage.getImage());
+                        contentDetailDto.getImages().add(imageElement);
                     }
                 }
             }
