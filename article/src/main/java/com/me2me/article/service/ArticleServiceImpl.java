@@ -116,4 +116,14 @@ public class ArticleServiceImpl implements ArticleService {
         }
         return feedDto;
     }
+
+    @Override
+    public List<Article> getArticleTop10() {
+        return  articleMybatisDao.getArticleTop10();
+    }
+
+    @Override
+    public List<Article> getHotArticle10() {
+        return articleMybatisDao.getHotArticle10();
+    }
 }

@@ -1,5 +1,6 @@
 package com.me2me.article.dao;
 
+import com.google.common.collect.Lists;
 import com.me2me.article.dto.FeedDto;
 import com.me2me.article.mapper.ArticleMapper;
 import com.me2me.article.mapper.ArticleTypeMapper;
@@ -53,5 +54,16 @@ public class ArticleMybatisDao {
         return articleMapper.selectByExampleWithBLOBs(example);
     }
 
+    public List<Article> getArticleTop10(){
+        ArticleExample example = new ArticleExample();
+        example.setOrderByClause(" rand() limit 10");
+        return articleMapper.selectByExampleWithBLOBs(example);
+    }
+
+    public List<Article> getHotArticle10(){
+        ArticleExample example = new ArticleExample();
+        example.setOrderByClause(" rand() limit 10");
+        return articleMapper.selectByExampleWithBLOBs(example);
+    }
 
 }
