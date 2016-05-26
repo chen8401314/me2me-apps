@@ -26,7 +26,7 @@
                 <div class="navbar-header">
                         <span class="nav-toggle-button collapsed" data-toggle="collapse" data-target="#main-menu">
                         <span class="sr-only">Toggle navigation</span>
-                        <i class="fa fa-bars"></i>
+                        <i class="fa fa-bars pull-right"></i>
                         </span>
                     <a class="navbar-brand" href="#">笑林杂谈</a>
                 </div>
@@ -82,7 +82,7 @@
                     <div class="post-head">
                         <h1 class="post-title"><a href="#" th:text="${root.title}"></a></h1>
                         <div class="post-meta">
-                            <span class="author">作者：<a href="/author/wangsai/" th:text="${root.author}"></a></span> &bull;
+                            <span class="author">作者：<a href="javascript:void(0);" th:text="${root.author}"></a></span> &bull;
                             <time class="post-date" th:text="${#calendars.format(root.createTime,'yyyy-MM-dd HH:mm:ss')}"></time>
                         </div>
                     </div>
@@ -97,6 +97,10 @@
                             <i class="fa fa-folder-open-o"></i>
                         </div>
                         <div class="pull-right share">
+                            <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone"></a><a href="#" class="bds_tsina" data-cmd="tsina"></a><a href="#" class="bds_tqq" data-cmd="tqq"></a><a href="#" class="bds_renren" data-cmd="renren"></a><a href="#" class="bds_weixin" data-cmd="weixin"></a></div>
+                            <script>
+                                window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdPic":"","bdStyle":"0","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
+                            </script>
                         </div>
                     </footer>
                 </article>
@@ -146,55 +150,55 @@
     </div>
 </section>
 
-<footer class="main-footer">
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-4">
-                <div class="widget">
-                    <h4 class="title">最新文章</h4>
-                    <div class="content recent-post">
-                        <div class="recent-single-post">
-                            <a href="#" class="post-title">建设中...</a>
-                            <div class="date">2016年4月28日</div>
-                        </div>
-                        <div class="recent-single-post">
-                            <a href="#" class="post-title">建设中...</a>
-                            <div class="date">2016年3月23日</div>
-                        </div>
-                        <div class="recent-single-post">
-                            <a href="#" class="post-title">建设中...</a>
-                            <div class="date">2015年12月29日</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!--<footer class="main-footer">-->
+    <!--<div class="container">-->
+        <!--<div class="row">-->
+            <!--<div class="col-sm-4">-->
+                <!--<div class="widget">-->
+                    <!--<h4 class="title">最新文章</h4>-->
+                    <!--<div class="content recent-post">-->
+                        <!--<div class="recent-single-post">-->
+                            <!--<a href="#" class="post-title">建设中...</a>-->
+                            <!--<div class="date">2016年4月28日</div>-->
+                        <!--</div>-->
+                        <!--<div class="recent-single-post">-->
+                            <!--<a href="#" class="post-title">建设中...</a>-->
+                            <!--<div class="date">2016年3月23日</div>-->
+                        <!--</div>-->
+                        <!--<div class="recent-single-post">-->
+                            <!--<a href="#" class="post-title">建设中...</a>-->
+                            <!--<div class="date">2015年12月29日</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
 
-            <div class="col-sm-4">
-                <div class="widget">
-                    <h4 class="title">标签云</h4>
-                    <div class="content tag-cloud">
-                        <a href="#">建设中...</a>
-                    </div>
-                </div>
-            </div>
+            <!--<div class="col-sm-4">-->
+                <!--<div class="widget">-->
+                    <!--<h4 class="title">标签云</h4>-->
+                    <!--<div class="content tag-cloud">-->
+                        <!--<a href="#">建设中...</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
 
-            <div class="col-sm-4">
-                <div class="widget">
-                    <h4 class="title">合作伙伴</h4>
-                    <div class="content tag-cloud friend-links">
-                        <a href="http://www.lieqi.com" title="猎奇网" target="_blank">猎奇网</a>
-                        <hr/>
-                        <a href="http://www.chinaz.com/" title="站长之家" target="_blank">站长之家</a>
-                        <hr/>
-                        <a href="http://www.taohuaan.net/" title="桃花庵" target="_blank">桃花庵</a>
-                        <hr/>
-                        <a href="http://www.zhainandao.com/" title="宅男岛" target="_blank">宅男岛</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
+            <!--<div class="col-sm-4">-->
+                <!--<div class="widget">-->
+                    <!--<h4 class="title">合作伙伴</h4>-->
+                    <!--<div class="content tag-cloud friend-links">-->
+                        <!--<a href="http://www.lieqi.com" title="猎奇网" target="_blank">猎奇网</a>-->
+                        <!--<hr/>-->
+                        <!--<a href="http://www.chinaz.com/" title="站长之家" target="_blank">站长之家</a>-->
+                        <!--<hr/>-->
+                        <!--<a href="http://www.taohuaan.net/" title="桃花庵" target="_blank">桃花庵</a>-->
+                        <!--<hr/>-->
+                        <!--<a href="http://www.zhainandao.com/" title="宅男岛" target="_blank">宅男岛</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</footer>-->
 
 <div class="copyright">
     <div class="container">

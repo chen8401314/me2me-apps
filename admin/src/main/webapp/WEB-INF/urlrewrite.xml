@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE urlrewrite PUBLIC "-//tuckey.org//DTD UrlRewrite 3.2//EN" "\\urlrewrite3.2.dtd">
+<urlrewrite>
+    <rule>
+        <note>rewrite</note>
+        <from>^/thread-(.*).html</from>
+        <to type="forward">/show_detail?id=$1</to>
+    </rule>
+</urlrewrite>

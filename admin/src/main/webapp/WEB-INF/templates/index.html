@@ -89,7 +89,7 @@
                                 </div>
                                 <div class="col-md-9">
                                     <p th:utext="${article.summary}"></p>
-                                    <span><a th:href="@{/show_detail/(id=${article.id})}" class="btn btn-default pull-right">阅读全文</a></span>
+                                    <span><a th:href="'thread-' + ${article.id}+'.html'" class="btn btn-default pull-right">阅读全文</a></span>
                                 </div>
                             </div>
                         </div>
@@ -103,7 +103,7 @@
                             <th:block th:each="quImage:${root.quImages}">
                             <div class="col-sm-4">
                                 <img th:src="${quImage.image}"  class="img-responsive thumbnail"/>
-                                <p><a th:href="@{/show_detail/(id=${quImage.id})}" th:text="${quImage.title}"></a></p>
+                                <p><a th:href="'thread-' + ${quImage.id}+'.html'" th:text="${quImage.title}"></a></p>
                             </div>
                             </th:block>
                         </div>
@@ -118,7 +118,7 @@
                             <th:block th:each="album:${root.albums}">
                                 <div class="col-sm-4">
                                     <img th:src="${album.image}" class="img-responsive thumbnail" />
-                                    <p><a th:href="@{/show_detail/(id=${album.id})}" th:text="${album.title}"></a></p>
+                                    <p><a th:href="'thread-' + ${album.id}+'.html'" th:text="${album.title}"></a></p>
                                 </div>
                             </th:block>
                         </div>
@@ -171,55 +171,55 @@
     </div>
 </section>
 
-<footer class="main-footer">
-    <div class="container">
-        <div class="row">
-            <div class="col-sm-4">
-                <div class="widget">
-                    <h4 class="title">最新文章</h4>
-                    <div class="content recent-post">
-                        <div class="recent-single-post">
-                            <a href="#" class="post-title">建设中...</a>
-                            <div class="date">2016年4月28日</div>
-                        </div>
-                        <div class="recent-single-post">
-                            <a href="#" class="post-title">建设中...</a>
-                            <div class="date">2016年3月23日</div>
-                        </div>
-                        <div class="recent-single-post">
-                            <a href="#" class="post-title">建设中...</a>
-                            <div class="date">2015年12月29日</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<!--<footer class="main-footer">-->
+    <!--<div class="container">-->
+        <!--<div class="row">-->
+            <!--<div class="col-sm-4">-->
+                <!--<div class="widget">-->
+                    <!--<h4 class="title">最新文章</h4>-->
+                    <!--<div class="content recent-post">-->
+                        <!--<div class="recent-single-post">-->
+                            <!--<a href="#" class="post-title">建设中...</a>-->
+                            <!--<div class="date">2016年4月28日</div>-->
+                        <!--</div>-->
+                        <!--<div class="recent-single-post">-->
+                            <!--<a href="#" class="post-title">建设中...</a>-->
+                            <!--<div class="date">2016年3月23日</div>-->
+                        <!--</div>-->
+                        <!--<div class="recent-single-post">-->
+                            <!--<a href="#" class="post-title">建设中...</a>-->
+                            <!--<div class="date">2015年12月29日</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
 
-            <div class="col-sm-4">
-                <div class="widget">
-                    <h4 class="title">标签云</h4>
-                    <div class="content tag-cloud">
-                        <a href="#">建设中...</a>
-                    </div>
-                </div>
-            </div>
+            <!--<div class="col-sm-4">-->
+                <!--<div class="widget">-->
+                    <!--<h4 class="title">标签云</h4>-->
+                    <!--<div class="content tag-cloud">-->
+                        <!--<a href="#">建设中...</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
 
-            <div class="col-sm-4">
-                <div class="widget">
-                    <h4 class="title">合作伙伴</h4>
-                    <div class="content tag-cloud friend-links">
-                        <a href="http://www.lieqi.com" title="猎奇网" target="_blank">猎奇网</a>
-                        <hr/>
-                        <a href="http://www.chinaz.com/" title="站长之家" target="_blank">站长之家</a>
-                        <hr/>
-                        <a href="http://www.taohuaan.net/" title="桃花庵" target="_blank">桃花庵</a>
-                        <hr/>
-                        <a href="http://www.zhainandao.com/" title="宅男岛" target="_blank">宅男岛</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</footer>
+            <!--<div class="col-sm-4">-->
+                <!--<div class="widget">-->
+                    <!--<h4 class="title">合作伙伴</h4>-->
+                    <!--<div class="content tag-cloud friend-links">-->
+                        <!--<a href="http://www.lieqi.com" title="猎奇网" target="_blank">猎奇网</a>-->
+                        <!--<hr/>-->
+                        <!--<a href="http://www.chinaz.com/" title="站长之家" target="_blank">站长之家</a>-->
+                        <!--<hr/>-->
+                        <!--<a href="http://www.taohuaan.net/" title="桃花庵" target="_blank">桃花庵</a>-->
+                        <!--<hr/>-->
+                        <!--<a href="http://www.zhainandao.com/" title="宅男岛" target="_blank">宅男岛</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</footer>-->
 
 <div class="copyright">
     <div class="container">
