@@ -173,7 +173,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <warSourceExcludes>src/main/resource/generator</warSourceExcludes>
-                    <warName>${project.name}</warName>
+                    <warName>ROOT</warName>
                     <!-- 激活spring profile -->
                     <webResources>
                         <resource>

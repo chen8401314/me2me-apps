@@ -39,6 +39,7 @@ public class Home {
         ModelAndView mv = new ModelAndView("index");
         FeedDto feedDto = articleService.getArticleByType();
         mv.addObject("root",feedDto);
+        mv.addObject("aside",null);
         return mv;
     }
 
