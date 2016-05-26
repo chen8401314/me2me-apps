@@ -132,9 +132,14 @@
                 <div class="widget">
                     <h4 class="title">阅读排行榜</h4>
                     <div class="content community">
-                        <p><span class="label label-danger">1</span> <a href="#">大姨妈的现代生活</a></p>
-                        <p><span class="label label-danger">2</span> <a href="#">大姨妈的现代生活</a></p>
-                        <p><span class="label label-danger">3</span> <a href="#">大姨妈的现代生活</a></p>
+                        <th:block th:each="t:${topTen}">
+                            <th:block th:if="${tStat.index} gt 2">
+                                <p><span  class="label label-warning" th:text="${tStat.index}+1"></span> <a th:href="'thread-' + ${t.id}+'.html'" th:text="${t.articleTitle}" target="_blank"></a></p>
+                            </th:block>
+                            <th:block th:if="${tStat.index} lt 3">
+                                <p><span class="label label-danger" th:text="${tStat.index}+1"></span> <a th:href="'thread-' + ${t.id}+'.html'" th:text="${t.articleTitle}" target="_blank"></a></p>
+                            </th:block>
+                        </th:block>
                     </div>
                 </div>
                 <!-- end tag cloud widget -->
@@ -143,20 +148,25 @@
                 <div class="widget">
                     <h4 class="title">热门推荐</h4>
                     <div class="content community">
-                        <p><span class="label label-danger">1</span> <a href="#">大姨妈的现代生活</a></p>
-                        <p><span class="label label-danger">2</span> <a href="#">大姨妈的现代生活</a></p>
-                        <p><span class="label label-danger">3</span> <a href="#">大姨妈的现代生活</a></p>
+                        <th:block th:each="t:${hotTen}">
+                            <th:block th:if="${tStat.index} gt 2">
+                                <p><span  class="label label-warning" th:text="${tStat.index}+1"></span> <a th:href="'thread-' + ${t.id}+'.html'" th:text="${t.articleTitle}" target="_blank"></a></p>
+                            </th:block>
+                            <th:block th:if="${tStat.index} lt 3">
+                                <p><span class="label label-danger" th:text="${tStat.index}+1"></span> <a th:href="'thread-' + ${t.id}+'.html'" th:text="${t.articleTitle}" target="_blank"></a></p>
+                            </th:block>
+                        </th:block>
                     </div>
                 </div>
                 <!-- end widget -->
 
                 <!-- start tag cloud widget -->
-                <div class="widget">
-                    <h4 class="title">笑林标签</h4>
-                    <div class="content tag-cloud">
-                        <a href="#">建设中...</a>
-                    </div>
-                </div>
+                <!--<div class="widget">-->
+                    <!--<h4 class="title">笑林标签</h4>-->
+                    <!--<div class="content tag-cloud">-->
+                        <!--<a href="#">建设中...</a>-->
+                    <!--</div>-->
+                <!--</div>-->
                 <!-- end tag cloud widget -->
 
                 <!-- start widget -->

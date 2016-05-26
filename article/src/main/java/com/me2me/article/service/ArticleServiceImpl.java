@@ -126,4 +126,9 @@ public class ArticleServiceImpl implements ArticleService {
     public List<Article> getHotArticle10() {
         return articleMybatisDao.getHotArticle10();
     }
+
+    @Override
+    public List<Article> getGuess10() {
+        return articleMybatisDao.getGuess10();
+    }
 }

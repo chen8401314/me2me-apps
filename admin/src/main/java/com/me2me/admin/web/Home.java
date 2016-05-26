@@ -5,6 +5,7 @@ import com.me2me.admin.web.request.TimelineRequest;
 import com.me2me.article.dto.ArticleDetailDto;
 import com.me2me.article.dto.ArticleTimelineDto;
 import com.me2me.article.dto.FeedDto;
+import com.me2me.article.model.Article;
 import com.me2me.article.service.ArticleService;
 import com.me2me.admin.web.request.ContentForwardRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+
+import java.util.List;
 
 
 /**
@@ -39,7 +42,10 @@ public class Home {
         ModelAndView mv = new ModelAndView("index");
         FeedDto feedDto = articleService.getArticleByType();
         mv.addObject("root",feedDto);
-        mv.addObject("aside",null);
+        List<Article> topTen = articleService.getArticleTop10();
+        List<Article> hotTen = articleService.getHotArticle10();
+        mv.addObject("topTen",topTen);
+        mv.addObject("hotTen",hotTen);
         return mv;
     }
 
@@ -48,6 +54,8 @@ public class Home {
         ModelAndView mv = new ModelAndView("show_detail");
         ArticleDetailDto article = articleService.getArticleById(request.getId());
         mv.addObject("root",article);
+        List<Article> guessTen = articleService.getGuess10();
+        mv.addObject("guessTen",guessTen);
         return mv;
     }
 

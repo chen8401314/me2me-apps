@@ -38,4 +38,6 @@ public interface ArticleService {
 
     List<Article> getHotArticle10();
 
+    List<Article> getGuess10();
+
 }

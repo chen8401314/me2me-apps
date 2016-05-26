@@ -66,4 +66,10 @@ public class ArticleMybatisDao {
         return articleMapper.selectByExampleWithBLOBs(example);
     }
 
+    public List<Article> getGuess10(){
+        ArticleExample example = new ArticleExample();
+        example.setOrderByClause(" rand() limit 10");
+        return articleMapper.selectByExampleWithBLOBs(example);
+    }
+
 }
