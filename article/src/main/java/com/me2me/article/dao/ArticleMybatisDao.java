@@ -2,12 +2,10 @@ package com.me2me.article.dao;
 
 import com.google.common.collect.Lists;
 import com.me2me.article.dto.FeedDto;
+import com.me2me.article.mapper.AlbumImageMapper;
 import com.me2me.article.mapper.ArticleMapper;
 import com.me2me.article.mapper.ArticleTypeMapper;
-import com.me2me.article.model.Article;
-import com.me2me.article.model.ArticleExample;
-import com.me2me.article.model.ArticleType;
-import com.me2me.article.model.ArticleTypeExample;
+import com.me2me.article.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -26,6 +24,9 @@ public class ArticleMybatisDao {
 
     @Autowired
     private ArticleTypeMapper articleTypeMapper;
+
+    @Autowired
+    private AlbumImageMapper albumImageMapper;
 
     public List<Article> articleTimeline(){
         ArticleExample example = new ArticleExample();
@@ -74,6 +75,13 @@ public class ArticleMybatisDao {
         ArticleExample example = new ArticleExample();
         example.setOrderByClause(" rand() limit 10");
         return articleMapper.selectByExampleWithBLOBs(example);
+    }
+
+    public List<AlbumImage> showAlbumImagesByAlbumId(long albumId) {
+        AlbumImageExample example = new AlbumImageExample();
+        AlbumImageExample.Criteria criteria = example.createCriteria();
+        criteria.andAlbumIdEqualTo(albumId);
+        return albumImageMapper.selectByExample(example);
     }
 
 }

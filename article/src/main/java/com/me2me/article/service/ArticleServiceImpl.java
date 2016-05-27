@@ -5,6 +5,7 @@ import com.me2me.article.dto.ArticleTimelineDto;
 import com.me2me.article.dto.CreateArticleDto;
 import com.me2me.article.dto.FeedDto;
 import com.me2me.article.model.AlbumImage;
+import com.me2me.article.model.AlbumImageExample;
 import com.me2me.article.model.Article;
 import com.me2me.article.model.ArticleType;
 import com.me2me.common.web.Response;
@@ -136,6 +137,6 @@ public class ArticleServiceImpl implements ArticleService {
 
     @Override
     public List<AlbumImage> showAlbumImagesByAlbumId(long albumId) {
-        return null;
+        return articleMybatisDao.showAlbumImagesByAlbumId(albumId);
     }
 }
