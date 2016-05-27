@@ -693,7 +693,7 @@ public class UserServiceImpl implements UserService {
         }else{
             versionControlDto.setIsUpdate(Specification.VersionStatus.NEWEST.index);
         }
-        if((versionControl.getForceUpdate() == 1) && (!control.getVersion().equals(versionControl.getVersion()))){
+        if((versionControl.getForceUpdate() == 1) && (control != null && !control.getVersion().equals(versionControl.getVersion()))){
             versionControlDto.setIsUpdate(Specification.VersionStatus.FORCE_UPDATE.index);
         }
         return Response.success(versionControlDto);
