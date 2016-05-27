@@ -4,6 +4,7 @@ import com.me2me.article.dto.ArticleDetailDto;
 import com.me2me.article.dto.ArticleTimelineDto;
 import com.me2me.article.dto.CreateArticleDto;
 import com.me2me.article.dto.FeedDto;
+import com.me2me.article.model.AlbumImage;
 import com.me2me.article.model.Article;
 import com.me2me.article.model.ArticleType;
 import com.me2me.common.web.Response;
@@ -39,5 +40,13 @@ public interface ArticleService {
     List<Article> getHotArticle10();
 
     List<Article> getGuess10();
+
+    /**
+     * 获取影集列表
+     * @param albumId
+     * @return
+     */
+    List<AlbumImage> showAlbumImagesByAlbumId(long albumId);
+
 
 }

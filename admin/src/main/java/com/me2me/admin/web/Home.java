@@ -56,6 +56,8 @@ public class Home {
         mv.addObject("root",article);
         List<Article> guessTen = articleService.getGuess10();
         mv.addObject("guessTen",guessTen);
+
+        mv.addObject("albumImages",null);
         return mv;
     }
 

@@ -50,7 +50,11 @@ public class ArticleMybatisDao {
         ArticleExample example = new ArticleExample();
         ArticleExample.Criteria criteria = example.createCriteria();
         criteria.andArticleTypeEqualTo(type);
-        example.setOrderByClause(" id desc limit 15");
+        if(type==7) {
+            example.setOrderByClause(" id desc limit 3");
+        }else{
+            example.setOrderByClause(" id desc limit 15");
+        }
         return articleMapper.selectByExampleWithBLOBs(example);
     }
 

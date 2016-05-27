@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title th:text="'笑林杂谈_'+${root.title}"></title>
+    <title th:text="${root.title}+'笑林杂谈_'"></title>
     <meta name="description" content="笑林杂谈是个提供搞笑、段子、美女、热舞、性感、街拍、自拍、笑话的内容平台。" />
     <meta name="keywords" content="搞笑,段子,美女,热舞,性感,街拍,自拍,笑话"/>
     <meta name="HandheldFriendly" content="True" />
@@ -84,10 +84,19 @@
                             <time class="post-date" th:text="${#calendars.format(root.createTime,'yyyy-MM-dd HH:mm:ss')}"></time>
                         </div>
                     </div>
-                    <th:block th:if="${root.thumb ne ''}">
-                        <div class="featured-media">
-                            <a href="#"><img class="img-responsive" th:src="${root.thumb}" th:alt="${root.title}"/></a>
-                        </div>
+                    <th:block th:if="${root.articleType eq 22}">
+                        <th:block th:each="">
+                            <div class="featured-media">
+                                <a href="#"><img class="img-responsive" th:src="${root.thumb}" th:alt="${root.title}"/></a>
+                            </div>
+                        </th:block>
+                    </th:block>
+                    <th:block th:if="${root.articleType ne 22}">
+                        <th:block th:if="${root.thumb ne ''}">
+                            <div class="featured-media">
+                                <a href="#"><img class="img-responsive" th:src="${root.thumb}" th:alt="${root.title}"/></a>
+                            </div>
+                        </th:block>
                     </th:block>
                     <div class="post-content" th:utext="${root.content}"></div>
                     <footer class="post-footer clearfix">
@@ -99,7 +108,11 @@
                             <script>
                                 window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdPic":"","bdStyle":"0","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
                             </script>
-                        </div>
+                            <!-- JiaThis Button BEGIN -->
+                            <div class="jiathis_style_m"></div>
+                            <script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_m.js" charset="utf-8"></script>
+                            <!-- JiaThis Button END -->
+                            </div>
                     </footer>
                 </article>
             </main>
