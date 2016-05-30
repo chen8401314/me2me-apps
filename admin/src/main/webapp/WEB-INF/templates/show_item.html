@@ -38,16 +38,39 @@
                 </div>
                 <div class="collapse navbar-collapse" id="main-menu">
                     <ul class="nav navbar-nav">
-                        <li class="active" role="presentation"><a href="/"><i class="fa fa-home"></i> 首页</a></li>
-                        <li>
-                            <a href="/item-7-1.html"><i class="fa fa-image"></i> 搞笑图片</a>
-                        </li>
-                        <li>
-                            <a href="/item-8-1.html"><i class="fa fa-file-text"></i> 精选段子</a>
-                        </li>
-                        <li>
-                            <a href="/item-22-1.html"><i class="fa fa-venus"></i> 美女图片</a>
-                        </li>
+                        <li role="presentation"><a href="/"><i class="fa fa-home"></i> 首页</a></li>
+                        <th:block th:if="${type eq 7}">
+                            <li class="active">
+                                <a href="/item-7-1.html"><i class="fa fa-image"></i> 搞笑图片</a>
+                            </li>
+                        </th:block>
+                        <th:block th:if="${type ne 7}">
+                            <li>
+                                <a href="/item-7-1.html"><i class="fa fa-image"></i> 搞笑图片</a>
+                            </li>
+                        </th:block>
+
+                        <th:block th:if="${type eq 8}">
+                            <li class="active">
+                                <a href="/item-8-1.html"><i class="fa fa-file-text"></i> 精选段子</a>
+                            </li>
+                        </th:block>
+                        <th:block th:if="${type ne 8}">
+                            <li>
+                                <a href="/item-8-1.html"><i class="fa fa-file-text"></i> 精选段子</a>
+                            </li>
+                        </th:block>
+
+                        <th:block th:if="${type eq 22}">
+                            <li class="active">
+                                <a href="/item-22-1.html"><i class="fa fa-image"></i> 美女图片</a>
+                            </li>
+                        </th:block>
+                        <th:block th:if="${type ne 22}">
+                            <li>
+                                <a href="/item-22-1.html"><i class="fa fa-image"></i> 美女图片</a>
+                            </li>
+                        </th:block>
                         <li>
                             <a href="#"><i class="fa fa-camera-retro"></i> 街拍</a>
                         </li>
