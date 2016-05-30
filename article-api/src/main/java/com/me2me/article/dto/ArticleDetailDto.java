@@ -27,4 +27,6 @@ public class ArticleDetailDto implements BaseEntity {
 
     private long type;
 
+    private long id;
+
 }

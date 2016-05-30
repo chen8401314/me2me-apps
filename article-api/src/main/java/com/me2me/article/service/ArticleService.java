@@ -7,6 +7,7 @@ import com.me2me.article.dto.FeedDto;
 import com.me2me.article.model.AlbumImage;
 import com.me2me.article.model.Article;
 import com.me2me.article.model.ArticleType;
+import com.me2me.common.page.Page;
 import com.me2me.common.web.Response;
 
 import java.util.List;
@@ -47,6 +48,12 @@ public interface ArticleService {
      * @return
      */
     List<AlbumImage> showAlbumImagesByAlbumId(long albumId);
+
+
+    Page<Article> showItemByType(int currentPage,long type);
+
+
+
 
 
 }

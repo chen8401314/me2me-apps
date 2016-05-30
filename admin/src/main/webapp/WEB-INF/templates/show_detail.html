@@ -26,41 +26,25 @@
                         <span class="sr-only">Toggle navigation</span>
                         <i class="fa fa-bars pull-right"></i>
                         </span>
-                    <a class="navbar-brand" href="#">笑林杂谈</a>
+                    <a class="navbar-brand" href="/">笑林杂谈</a>
                 </div>
                 <div class="collapse navbar-collapse" id="main-menu">
                     <ul class="nav navbar-nav">
-                        <li class="active" role="presentation"><a href="/">首页</a></li>
-                        <li class="dropdown">
-                            <a href="#" class="dropdown-toggle" data-toggle="dropdown">热门 <b class="caret"></b></a>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a href="#">24小时</a>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <a href="#">一周</a>
-                                </li>
-                                <li class="divider"></li>
-                                <li>
-                                    <a href="#">一个月</a>
-                                </li>
-                            </ul>
+                        <li class="active" role="presentation"><a href="/"><i class="fa fa-home"></i> 首页</a></li>
+                        <li>
+                            <a href="/item-7-1.html"><i class="fa fa-image"></i> 搞笑图片</a>
                         </li>
                         <li>
-                            <a href="#">趣图</a>
+                            <a href="/item-8-1.html"><i class="fa fa-file-text"></i> 精选段子</a>
                         </li>
                         <li>
-                            <a href="#">段子</a>
+                            <a href="/item-22-1.html"><i class="fa fa-venus"></i> 美女图片</a>
                         </li>
                         <li>
-                            <a href="#">妹子</a>
+                            <a href="#"><i class="fa fa-camera-retro"></i> 街拍</a>
                         </li>
                         <li>
-                            <a href="#">街拍</a>
-                        </li>
-                        <li>
-                            <a href="#">热舞</a>
+                            <a href="#"><i class="fa fa-play-circle"></i> 热舞</a>
                         </li>
                     </ul>
                 </div>
@@ -84,17 +68,17 @@
                             <time class="post-date" th:text="${#calendars.format(root.createTime,'yyyy-MM-dd HH:mm:ss')}"></time>
                         </div>
                     </div>
-                    <th:block th:if="${root.articleType eq 22}">
-                        <th:block th:each="">
+                    <th:block th:if="${root.type eq 22}">
+                        <th:block th:each="albumImage:${albumImages}">
                             <div class="featured-media">
-                                <a href="#"><img class="img-responsive" th:src="${root.thumb}" th:alt="${root.title}"/></a>
+                                <a href="#"><img class="img-responsive thumbnail" th:src="${albumImage.imageUrl}" th:alt="${root.title}"/></a>
                             </div>
                         </th:block>
                     </th:block>
-                    <th:block th:if="${root.articleType ne 22}">
+                    <th:block th:if="${root.type ne 22}">
                         <th:block th:if="${root.thumb ne ''}">
                             <div class="featured-media">
-                                <a href="#"><img class="img-responsive" th:src="${root.thumb}" th:alt="${root.title}"/></a>
+                                <a href="#"><img class="img-responsive thumbnail" th:src="${root.thumb}" th:alt="${root.title}"/></a>
                             </div>
                         </th:block>
                     </th:block>
@@ -104,13 +88,21 @@
                             <i class="fa fa-folder-open-o"></i>
                         </div>
                         <div class="pull-right share">
-                            <div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone"></a><a href="#" class="bds_tsina" data-cmd="tsina"></a><a href="#" class="bds_tqq" data-cmd="tqq"></a><a href="#" class="bds_renren" data-cmd="renren"></a><a href="#" class="bds_weixin" data-cmd="weixin"></a></div>
-                            <script>
-                                window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdPic":"","bdStyle":"0","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];
-                            </script>
+                            <!--<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone"></a><a href="#" class="bds_tsina" data-cmd="tsina"></a><a href="#" class="bds_tqq" data-cmd="tqq"></a><a href="#" class="bds_renren" data-cmd="renren"></a><a href="#" class="bds_weixin" data-cmd="weixin"></a></div>-->
+                            <!--<script>-->
+                                <!--window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdPic":"","bdStyle":"0","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];-->
+                            <!--</script>-->
                             <!-- JiaThis Button BEGIN -->
-                            <div class="jiathis_style_m"></div>
-                            <script type="text/javascript" src="http://v3.jiathis.com/code/jiathis_m.js" charset="utf-8"></script>
+                            <div class="jiathis_style_24x24">
+                                <a class="jiathis_button_qzone"></a>
+                                <a class="jiathis_button_tsina"></a>
+                                <a class="jiathis_button_tqq"></a>
+                                <a class="jiathis_button_weixin"></a>
+                                <a class="jiathis_button_renren"></a>
+                                <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
+                                <a class="jiathis_counter_style"></a>
+                            </div>
+                            <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
                             <!-- JiaThis Button END -->
                             </div>
                     </footer>
