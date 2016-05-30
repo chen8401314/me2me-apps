@@ -32,19 +32,19 @@
                     <ul class="nav navbar-nav">
                         <li class="active" role="presentation"><a href="/"><i class="fa fa-home"></i> 首页</a></li>
                         <li>
-                            <a href="/item-7-1.html"><i class="fa fa-image"></i> 搞笑图片</a>
+                            <a href="/item-7-1.html" target="_blank"><i class="fa fa-image"></i> 搞笑图片</a>
                         </li>
                         <li>
-                            <a href="/item-8-1.html"><i class="fa fa-file-text"></i> 精选段子</a>
+                            <a href="/item-8-1.html" target="_blank"><i class="fa fa-file-text"></i> 精选段子</a>
                         </li>
                         <li>
-                            <a href="/item-22-1.html"><i class="fa fa-venus"></i> 美女图片</a>
+                            <a href="/item-22-1.html" target="_blank"><i class="fa fa-venus"></i> 美女图片</a>
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-camera-retro"></i> 街拍</a>
+                            <a href="#" target="_blank"><i class="fa fa-camera-retro"></i> 街拍</a>
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-play-circle"></i> 热舞</a>
+                            <a href="/item-23-1.html" target="_blank"><i class="fa fa-play-circle"></i> 性感热舞</a>
                         </li>
                     </ul>
                 </div>
@@ -61,7 +61,7 @@
         <div class="row">
             <main class="col-md-8 main-content">
                 <div class="widget post">
-                    <h4 class="title">精选段子<a href="/item-8-1.html" class="pull-right">更多</a></h4>
+                    <h4 class="title">精选段子<a href="/item-8-1.html" class="pull-right" target="_blank">更多</a></h4>
                     <th:block th:each="article:${root.jokes}">
                         <div class="content dz">
                             <h5 th:text="${article.title}"></h5>
@@ -79,7 +79,7 @@
                 </div>
 
                 <div class="widget post">
-                    <h4 class="title">搞笑图片 <a href="/item-7-1.html" class="pull-right">更多</a></h4>
+                    <h4 class="title">搞笑图片 <a href="/item-7-1.html" class="pull-right" target="_blank">更多</a></h4>
 
                         <div class="row qt">
                             <th:block th:each="quImage:${root.quImages}">
@@ -94,7 +94,7 @@
 
 
                 <div class="widget post">
-                    <h4 class="title">精选美图<a href="/item-22-1.html" class="pull-right">更多</a></h4>
+                    <h4 class="title">精选美图<a href="/item-22-1.html" class="pull-right" target="_blank">更多</a></h4>
                     <div class="content jxmeitu">
                         <div class="row">
                             <th:block th:each="album:${root.albums}">

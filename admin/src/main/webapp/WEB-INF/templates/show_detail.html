@@ -44,7 +44,7 @@
                             <a href="#"><i class="fa fa-camera-retro"></i> 街拍</a>
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-play-circle"></i> 热舞</a>
+                            <a href="/item-23-1.html"><i class="fa fa-play-circle"></i> 热舞</a>
                         </li>
                     </ul>
                 </div>
@@ -75,14 +75,33 @@
                             </div>
                         </th:block>
                     </th:block>
-                    <th:block th:if="${root.type ne 22}">
+                    <th:block th:if="${root.type ne 22 and root.type ne 23}">
                         <th:block th:if="${root.thumb ne ''}">
                             <div class="featured-media">
                                 <a href="#"><img class="img-responsive thumbnail" th:src="${root.thumb}" th:alt="${root.title}"/></a>
                             </div>
                         </th:block>
                     </th:block>
-                    <div class="post-content" th:utext="${root.content}"></div>
+                    <th:block th:if="${root.type eq 23}">
+                        <div class="featured-media">
+                            <div id="playvideo" typeid="youku" th:attr="sid=${root.content}" channel="true" th:attrappend="pic=${root.thumb}"></div>
+                            <script>
+                                var playvideo=document.getElementById("playvideo");
+                                playvideo.style.height=playvideo.offsetWidth+"px";
+
+                                window.onload=function(){
+                                    createVideo({id:"playvideo",autoplay:false,qqchannel:true});//单个直接调用。autoplay为false时可省略autoplay:false
+                                }
+                                window.onresize=function(){
+                                    playvideo.style.height=playvideo.offsetWidth+"px";
+                                };
+                            </script>
+                        </div>
+                        <div class="post-content"></div>
+                    </th:block>
+                    <th:block th:if="${root.type ne 23}">
+                        <div class="post-content" th:utext="${root.content}"></div>
+                    </th:block>
                     <footer class="post-footer clearfix">
                         <div class="pull-left tag-list">
                             <i class="fa fa-folder-open-o"></i>
@@ -193,6 +212,7 @@
 <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script src="//cdn.bootcss.com/fitvids/1.1.0/jquery.fitvids.min.js"></script>
 <script src="/assets/js/main.js?v=82931f6358"></script>
+<script src="/assets/js/play-video.1.0.4.min.js"></script>
 <script>
     $(function(){
         $('.post-content img').each(function(item){

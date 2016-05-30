@@ -12,6 +12,9 @@
     <th:block th:if="${type eq 22}">
         <title>笑林杂谈_美女图库</title>
     </th:block>
+    <th:block th:if="${type eq 23}">
+        <title>笑林杂谈_性感热舞</title>
+    </th:block>
     <meta name="description" content="笑林杂谈是个提供搞笑、段子、美女、热舞、性感、街拍、自拍、笑话的内容平台。" />
     <meta name="keywords" content="搞笑,段子,美女,热舞,性感,街拍,自拍,笑话"/>
     <meta name="HandheldFriendly" content="True" />
@@ -41,41 +44,41 @@
                         <li role="presentation"><a href="/"><i class="fa fa-home"></i> 首页</a></li>
                         <th:block th:if="${type eq 7}">
                             <li class="active">
-                                <a href="/item-7-1.html"><i class="fa fa-image"></i> 搞笑图片</a>
+                                <a href="/item-7-1.html" target="_blank"><i class="fa fa-image"></i> 搞笑图片</a>
                             </li>
                         </th:block>
                         <th:block th:if="${type ne 7}">
                             <li>
-                                <a href="/item-7-1.html"><i class="fa fa-image"></i> 搞笑图片</a>
+                                <a href="/item-7-1.html" target="_blank"><i class="fa fa-image"></i> 搞笑图片</a>
                             </li>
                         </th:block>
 
                         <th:block th:if="${type eq 8}">
                             <li class="active">
-                                <a href="/item-8-1.html"><i class="fa fa-file-text"></i> 精选段子</a>
+                                <a href="/item-8-1.html" target="_blank"><i class="fa fa-file-text"></i> 精选段子</a>
                             </li>
                         </th:block>
                         <th:block th:if="${type ne 8}">
                             <li>
-                                <a href="/item-8-1.html"><i class="fa fa-file-text"></i> 精选段子</a>
+                                <a href="/item-8-1.html" target="_blank"><i class="fa fa-file-text"></i> 精选段子</a>
                             </li>
                         </th:block>
 
                         <th:block th:if="${type eq 22}">
                             <li class="active">
-                                <a href="/item-22-1.html"><i class="fa fa-image"></i> 美女图片</a>
+                                <a href="/item-22-1.html" target="_blank"><i class="fa fa-image"></i> 美女图片</a>
                             </li>
                         </th:block>
                         <th:block th:if="${type ne 22}">
                             <li>
-                                <a href="/item-22-1.html"><i class="fa fa-image"></i> 美女图片</a>
+                                <a href="/item-22-1.html" target="_blank"><i class="fa fa-venus"></i> 美女图片</a>
                             </li>
                         </th:block>
                         <li>
-                            <a href="#"><i class="fa fa-camera-retro"></i> 街拍</a>
+                            <a href="#" target="_blank"><i class="fa fa-camera-retro"></i> 街拍</a>
                         </li>
                         <li>
-                            <a href="#"><i class="fa fa-play-circle"></i> 热舞</a>
+                            <a href="/item-23-1.html" target="_blank"><i class="fa fa-play-circle"></i> 热舞</a>
                         </li>
                     </ul>
                 </div>
@@ -131,6 +134,17 @@
                                     </div>
                                 </th:block>
                             </div>
+                        </div>
+                    </th:block>
+                    <th:block th:if="${type eq 23}">
+                        <h4 class="title">性感热舞</h4>
+                        <div class="row qt">
+                            <th:block th:each="feed:${root.result}">
+                                <div class="col-sm-4">
+                                    <img th:src="${feed.articleThumb}"  class="img-responsive thumbnail"/>
+                                    <p><a th:href="'thread-' + ${feed.id}+'.html'" th:text="${feed.articleTitle}"></a></p>
+                                </div>
+                            </th:block>
                         </div>
                     </th:block>
                 </div>
