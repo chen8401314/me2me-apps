@@ -5,7 +5,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <title th:text="${root.title}+'笑林杂谈_'"></title>
     <meta name="description" content="笑林杂谈是个提供搞笑、段子、美女、热舞、性感、街拍、自拍、笑话的内容平台。" />
-    <meta name="keywords" content="搞笑,段子,美女,热舞,性感,街拍,自拍,笑话"/>
     <meta name="HandheldFriendly" content="True" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="shortcut icon" th:href="@{/assets/favicon.ico}"/>
@@ -14,6 +13,15 @@
     <link rel="stylesheet" type="text/css" th:href="@{/assets/css/screen.css}"/>
     <link rel="canonical" href="http://www.51nick.com/" />
     <meta name="referrer" content="origin" />
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?21468f6c6496786553ae4208f434f18f";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
 </head>
 <body class="home-template">
 <!-- start navigation -->
@@ -43,9 +51,16 @@
                         <li>
                             <a href="#"><i class="fa fa-camera-retro"></i> 街拍</a>
                         </li>
-                        <li>
-                            <a href="/item-23-1.html"><i class="fa fa-play-circle"></i> 热舞</a>
-                        </li>
+                        <th:block th:if="${type eq 23}">
+                            <li class="active">
+                                <a href="/item-23-1.html" target="_blank"><i class="fa fa-play-circle"></i> 性感热舞</a>
+                            </li>
+                        </th:block>
+                        <th:block th:if="${type ne 23}">
+                            <li>
+                                <a href="/item-23-1.html" target="_blank"><i class="fa fa-play-circle"></i> 性感热舞</a>
+                            </li>
+                        </th:block>
                     </ul>
                 </div>
             </div>
