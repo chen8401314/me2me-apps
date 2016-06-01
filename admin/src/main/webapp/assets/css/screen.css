@@ -898,6 +898,9 @@ pre {
     border-bottom: 2px solid #e67e22;
     border-bottom: -2px;
 }
+.active i{
+    color:#e67e22;
+}
 
 
 .qt p,.jxmeitu p{

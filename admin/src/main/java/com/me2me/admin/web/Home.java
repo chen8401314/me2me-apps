@@ -1,13 +1,16 @@
 package com.me2me.admin.web;
 
 import com.me2me.admin.web.request.ArticleDetailRequest;
+import com.me2me.admin.web.request.ShowItemRequest;
 import com.me2me.admin.web.request.TimelineRequest;
 import com.me2me.article.dto.ArticleDetailDto;
 import com.me2me.article.dto.ArticleTimelineDto;
 import com.me2me.article.dto.FeedDto;
+import com.me2me.article.model.AlbumImage;
 import com.me2me.article.model.Article;
 import com.me2me.article.service.ArticleService;
 import com.me2me.admin.web.request.ContentForwardRequest;
+import com.me2me.common.page.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -56,9 +59,24 @@ public class Home {
         mv.addObject("root",article);
         List<Article> guessTen = articleService.getGuess10();
         mv.addObject("guessTen",guessTen);
-
-        mv.addObject("albumImages",null);
+        if(article.getType()==22) {
+            List<AlbumImage> albumImages = articleService.showAlbumImagesByAlbumId(article.getId());
+            mv.addObject("albumImages", albumImages);
+        }
         return mv;
     }
+
+    @RequestMapping(value = "/show_item")
+    public ModelAndView showItem(ShowItemRequest request){
+        ModelAndView mv = new ModelAndView("show_item");
+        Page<Article> page= articleService.showItemByType(request.getCurrentPage(),request.getType());
+        mv.addObject("root",page);
+        mv.addObject("type",request.getType());
+        List<Article> guessTen = articleService.getGuess10();
+        mv.addObject("guessTen",guessTen);
+        return mv;
+    }
+
+
 
 }

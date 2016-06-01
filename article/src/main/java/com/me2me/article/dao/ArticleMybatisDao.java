@@ -6,6 +6,7 @@ import com.me2me.article.mapper.AlbumImageMapper;
 import com.me2me.article.mapper.ArticleMapper;
 import com.me2me.article.mapper.ArticleTypeMapper;
 import com.me2me.article.model.*;
+import com.me2me.common.page.Page;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -83,5 +84,21 @@ public class ArticleMybatisDao {
         criteria.andAlbumIdEqualTo(albumId);
         return albumImageMapper.selectByExample(example);
     }
+
+    public Page<Article> showArticleByPage(int currentPage,int pageSize,long type){
+        ArticleExample example = new ArticleExample();
+        ArticleExample.Criteria criteria = example.createCriteria();
+        criteria.andArticleTypeEqualTo(type);
+        example.setOrderByClause("id desc limit " + ((currentPage -1)*pageSize) + ", " + pageSize);
+        List<Article> result = articleMapper.selectByExampleWithBLOBs(example);
+        example.setOrderByClause("");
+        long totalRecord = articleMapper.countByExample(example);
+        Page<Article> page =  new Page(totalRecord,pageSize,currentPage);
+        page.setResult(result);
+        return page;
+    }
+
+
+
 
 }

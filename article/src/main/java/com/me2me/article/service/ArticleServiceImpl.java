@@ -8,6 +8,7 @@ import com.me2me.article.model.AlbumImage;
 import com.me2me.article.model.AlbumImageExample;
 import com.me2me.article.model.Article;
 import com.me2me.article.model.ArticleType;
+import com.me2me.common.page.Page;
 import com.me2me.common.web.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -86,6 +87,7 @@ public class ArticleServiceImpl implements ArticleService {
         articleDetailDto.setAuthor("小编");
         articleDetailDto.setCreateTime(article.getCreateTime());
         articleDetailDto.setType(article.getArticleType());
+        articleDetailDto.setId(article.getId());
         return articleDetailDto;
     }
 
@@ -138,5 +140,11 @@ public class ArticleServiceImpl implements ArticleService {
     @Override
     public List<AlbumImage> showAlbumImagesByAlbumId(long albumId) {
         return articleMybatisDao.showAlbumImagesByAlbumId(albumId);
+    }
+
+    @Override
+    public Page<Article> showItemByType(int currentPage,long type) {
+        // 每页显示20条数据
+        return articleMybatisDao.showArticleByPage(currentPage,20,type);
     }
 }

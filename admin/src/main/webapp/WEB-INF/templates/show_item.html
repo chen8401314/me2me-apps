@@ -3,7 +3,18 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <title th:text="${root.title}+'笑林杂谈_'"></title>
+    <th:block th:if="${type eq 8}">
+        <title>笑话大全_爆笑笑话大全_幽默笑话_经典笑话_笑林杂谈</title>
+    </th:block>
+    <th:block th:if="${type eq 7}">
+        <title>搞笑动态图片笑死人_动态图片_动态搞笑图片_搞笑gif动态图片_笑林杂谈</title>
+    </th:block>
+    <th:block th:if="${type eq 22}">
+        <title>美女图片大全_性感美女_美女写真_丝袜美腿_唯美写真_高清美女_模特美女_笑林杂谈</title>
+    </th:block>
+    <th:block th:if="${type eq 23}">
+        <title>美女视频_性感热舞短片_美女自拍_笑林杂谈</title>
+    </th:block>
     <meta name="description" content="笑林杂谈是个提供搞笑、段子、美女、热舞、性感、街拍、自拍、笑话的内容平台。" />
     <meta name="HandheldFriendly" content="True" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -38,19 +49,43 @@
                 </div>
                 <div class="collapse navbar-collapse" id="main-menu">
                     <ul class="nav navbar-nav">
-                        <li class="active" role="presentation"><a href="/"><i class="fa fa-home"></i> 首页</a></li>
+                        <li role="presentation"><a href="/"><i class="fa fa-home"></i> 首页</a></li>
+                        <th:block th:if="${type eq 7}">
+                            <li class="active">
+                                <a href="/item-7-1.html" target="_blank"><i class="fa fa-image"></i> 搞笑图片</a>
+                            </li>
+                        </th:block>
+                        <th:block th:if="${type ne 7}">
+                            <li>
+                                <a href="/item-7-1.html" target="_blank"><i class="fa fa-image"></i> 搞笑图片</a>
+                            </li>
+                        </th:block>
+
+                        <th:block th:if="${type eq 8}">
+                            <li class="active">
+                                <a href="/item-8-1.html" target="_blank"><i class="fa fa-file-text"></i> 精选段子</a>
+                            </li>
+                        </th:block>
+                        <th:block th:if="${type ne 8}">
+                            <li>
+                                <a href="/item-8-1.html" target="_blank"><i class="fa fa-file-text"></i> 精选段子</a>
+                            </li>
+                        </th:block>
+
+                        <th:block th:if="${type eq 22}">
+                            <li class="active">
+                                <a href="/item-22-1.html" target="_blank"><i class="fa fa-image"></i> 美女图片</a>
+                            </li>
+                        </th:block>
+                        <th:block th:if="${type ne 22}">
+                            <li>
+                                <a href="/item-22-1.html" target="_blank"><i class="fa fa-venus"></i> 美女图片</a>
+                            </li>
+                        </th:block>
                         <li>
-                            <a href="/item-7-1.html"><i class="fa fa-image"></i> 搞笑图片</a>
+                            <a href="#" target="_blank"><i class="fa fa-camera-retro"></i> 街拍</a>
                         </li>
-                        <li>
-                            <a href="/item-8-1.html"><i class="fa fa-file-text"></i> 精选段子</a>
-                        </li>
-                        <li>
-                            <a href="/item-22-1.html"><i class="fa fa-venus"></i> 美女图片</a>
-                        </li>
-                        <li>
-                            <a href="#"><i class="fa fa-camera-retro"></i> 街拍</a>
-                        </li>
+
                         <th:block th:if="${type eq 23}">
                             <li class="active">
                                 <a href="/item-23-1.html" target="_blank"><i class="fa fa-play-circle"></i> 性感热舞</a>
@@ -75,72 +110,73 @@
     <div class="container">
         <div class="row">
             <main class="col-md-8 main-content">
-                <article class="post">
-                    <div class="post-head">
-                        <h1 class="post-title"><a href="#" th:text="${root.title}"></a></h1>
-                        <div class="post-meta">
-                            <span class="author">作者：<a href="javascript:void(0);" th:text="${root.author}"></a></span> &bull;
-                            <time class="post-date" th:text="${#calendars.format(root.createTime,'yyyy-MM-dd HH:mm:ss')}"></time>
-                        </div>
-                    </div>
-                    <th:block th:if="${root.type eq 22}">
-                        <th:block th:each="albumImage:${albumImages}">
-                            <div class="featured-media">
-                                <a href="#"><img class="img-responsive thumbnail" th:src="${albumImage.imageUrl}" th:alt="${root.title}"/></a>
+                <div class="widget post">
+                    <th:block th:if="${type eq 8}">
+                        <h4 class="title">精选段子</h4>
+                        <th:block th:each="feed:${root.result}">
+                            <div class="content dz">
+                                <h5 th:text="${feed.articleTitle}"></h5>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <img th:src="${feed.articleThumb}" class="thumbnail img-responsive"/>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <p th:utext="${feed.articleContent}"></p>
+                                        <span><a th:href="'thread-' + ${feed.id}+'.html'" class="btn btn-default pull-right">阅读全文</a></span>
+                                    </div>
+                                </div>
                             </div>
                         </th:block>
                     </th:block>
-                    <th:block th:if="${root.type ne 22 and root.type ne 23}">
-                        <th:block th:if="${root.thumb ne ''}">
-                            <div class="featured-media">
-                                <a href="#"><img class="img-responsive thumbnail" th:src="${root.thumb}" th:alt="${root.title}"/></a>
-                            </div>
-                        </th:block>
-                    </th:block>
-                    <th:block th:if="${root.type eq 23}">
-                        <div class="featured-media">
-                            <div id="playvideo" typeid="youku" th:attr="sid=${root.content}" channel="true" th:attrappend="pic=${root.thumb}"></div>
-                            <script>
-                                var playvideo=document.getElementById("playvideo");
-                                playvideo.style.height=playvideo.offsetWidth+"px";
-
-                                window.onload=function(){
-                                    createVideo({id:"playvideo",autoplay:false,qqchannel:true});//单个直接调用。autoplay为false时可省略autoplay:false
-                                }
-                                window.onresize=function(){
-                                    playvideo.style.height=playvideo.offsetWidth+"px";
-                                };
-                            </script>
+                    <th:block th:if="${type eq 7}">
+                        <h4 class="title">搞笑图片</h4>
+                        <div class="row qt">
+                            <th:block th:each="feed:${root.result}">
+                                <div class="col-sm-4">
+                                    <img th:src="${feed.articleThumb}"  class="img-responsive thumbnail"/>
+                                    <p><a th:href="'thread-' + ${feed.id}+'.html'" th:text="${feed.articleTitle}"></a></p>
+                                </div>
+                            </th:block>
                         </div>
-                        <div class="post-content"></div>
                     </th:block>
-                    <th:block th:if="${root.type ne 23}">
-                        <div class="post-content" th:utext="${root.content}"></div>
-                    </th:block>
-                    <footer class="post-footer clearfix">
-                        <div class="pull-left tag-list">
-                            <i class="fa fa-folder-open-o"></i>
+                    <th:block th:if="${type eq 22}">
+                        <h4 class="title">美女图库</h4>
+                        <div class="content jxmeitu">
+                            <div class="row">
+                                <th:block th:each="feed:${root.result}">
+                                    <div class="col-sm-4">
+                                        <img th:src="${feed.articleThumb}" class="img-responsive thumbnail" />
+                                        <p><a th:href="'thread-' + ${feed.id}+'.html'" th:text="${feed.articleTitle}"></a></p>
+                                    </div>
+                                </th:block>
+                            </div>
                         </div>
-                        <div class="pull-right share">
-                            <!--<div class="bdsharebuttonbox"><a href="#" class="bds_more" data-cmd="more"></a><a href="#" class="bds_qzone" data-cmd="qzone"></a><a href="#" class="bds_tsina" data-cmd="tsina"></a><a href="#" class="bds_tqq" data-cmd="tqq"></a><a href="#" class="bds_renren" data-cmd="renren"></a><a href="#" class="bds_weixin" data-cmd="weixin"></a></div>-->
-                            <!--<script>-->
-                                <!--window._bd_share_config={"common":{"bdSnsKey":{},"bdText":"","bdMini":"2","bdPic":"","bdStyle":"0","bdSize":"16"},"share":{},"image":{"viewList":["qzone","tsina","tqq","renren","weixin"],"viewText":"分享到：","viewSize":"16"},"selectShare":{"bdContainerClass":null,"bdSelectMiniList":["qzone","tsina","tqq","renren","weixin"]}};with(document)0[(getElementsByTagName('head')[0]||body).appendChild(createElement('script')).src='http://bdimg.share.baidu.com/static/api/js/share.js?v=89860593.js?cdnversion='+~(-new Date()/36e5)];-->
-                            <!--</script>-->
-                            <!-- JiaThis Button BEGIN -->
-                            <div class="jiathis_style_24x24">
-                                <a class="jiathis_button_qzone"></a>
-                                <a class="jiathis_button_tsina"></a>
-                                <a class="jiathis_button_tqq"></a>
-                                <a class="jiathis_button_weixin"></a>
-                                <a class="jiathis_button_renren"></a>
-                                <a href="http://www.jiathis.com/share" class="jiathis jiathis_txt jtico jtico_jiathis" target="_blank"></a>
-                                <a class="jiathis_counter_style"></a>
-                            </div>
-                            <script type="text/javascript" src="http://v3.jiathis.com/code/jia.js" charset="utf-8"></script>
-                            <!-- JiaThis Button END -->
-                            </div>
-                    </footer>
-                </article>
+                    </th:block>
+                    <th:block th:if="${type eq 23}">
+                        <h4 class="title">性感热舞</h4>
+                        <div class="row qt">
+                            <th:block th:each="feed:${root.result}">
+                                <div class="col-sm-4">
+                                    <img th:src="${feed.articleThumb}"  class="img-responsive thumbnail"/>
+                                    <p><a th:href="'thread-' + ${feed.id}+'.html'" th:text="${feed.articleTitle}"></a></p>
+                                </div>
+                            </th:block>
+                        </div>
+                    </th:block>
+                </div>
+                <nav class="pagination" role="navigation">
+                    <a th:href="'item-'+${type}+'-1.html'"><span class="page-number">首页</span></a>
+                    <th:block th:if="${root.currentPage ne 1}">
+                        <a th:href="'item-'+${type}+'-' + ${root.currentPage-1}+'.html'"><span class="page-number">上一页</span></a>
+                    </th:block>
+                    <th:block th:each="page : ${#numbers.sequence(root.pageIndex.startIndex,root.pageIndex.endIndex)}">
+                        <a th:href="'item-'+${type}+'-' + ${page}+'.html'"><span class="page-number" th:text="${page}"></span></a>
+                    </th:block>
+                    <th:block th:if="${root.currentPage ne root.totalPage}">
+                        <a th:href="'item-'+${type}+'-' + ${root.currentPage+1}+'.html'"><span class="page-number">下一页</span></a>
+                    </th:block>
+                    <a th:href="'item-'+${type}+'-' + ${root.totalPage}+'.html'"><span class="page-number">尾页</span></a>
+                </nav>
             </main>
             <aside class="col-md-4 sidebar">
                 <!-- start widget -->
@@ -227,7 +263,6 @@
 <script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
 <script src="//cdn.bootcss.com/fitvids/1.1.0/jquery.fitvids.min.js"></script>
 <script src="/assets/js/main.js?v=82931f6358"></script>
-<script src="/assets/js/play-video.1.0.4.min.js"></script>
 <script>
     $(function(){
         $('.post-content img').each(function(item){
