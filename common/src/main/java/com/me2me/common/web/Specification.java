@@ -156,7 +156,7 @@ public interface Specification {
 
         LIKE("点赞",1),
 
-        REVIEW("点赞",2);
+        REVIEW("评论",2);
 
         public final String name;
         public final int index;
@@ -406,6 +406,24 @@ public interface Specification {
         public final int index;
 
         VersionStatus(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    public enum PushMessageType{
+
+        LIKE("点赞",0),
+
+        TAG("贴标",1),
+
+        REVIEW("评论",2);
+
+        public final String name;
+
+        public final int index;
+
+        PushMessageType(String name,int index){
             this.name = name;
             this.index = index;
         }
