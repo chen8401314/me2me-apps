@@ -3,9 +3,7 @@ package com.me2me.sms.service;
 
 import com.me2me.sms.dto.PushLogDto;
 import com.me2me.sms.dto.PushMessageAndroidDto;
-import com.me2me.sms.dto.PushMessageDto;
 import com.me2me.sms.dto.PushMessageIosDto;
-import org.json.JSONObject;
 
 /**
  * 上海拙心网络科技有限公司出品
