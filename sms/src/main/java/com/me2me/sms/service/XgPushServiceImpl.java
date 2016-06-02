@@ -35,7 +35,6 @@ public class XgPushServiceImpl implements XgPushService {
         Message message = buildMessage(pushMessageAndroidDto);
         XingeApp xinge = new XingeApp(ACCESS_ID, SECRET_KEY);
         JSONObject ret = xinge.pushSingleDevice(pushMessageAndroidDto.getToken(),message);
-        System.out.print("********************************************************"+ret);
         return getPushLogDto(pushMessageAndroidDto, ret);
     }
 
