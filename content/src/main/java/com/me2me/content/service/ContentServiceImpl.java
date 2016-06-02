@@ -10,7 +10,11 @@ import com.me2me.common.web.Specification;
 import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.*;
+
+import com.me2me.sms.dto.PushMessageDto;
+import com.me2me.sms.service.XgPushService;
 import com.me2me.user.dto.UserInfoDto;
+import com.me2me.user.model.UserDevice;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
@@ -48,6 +52,9 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private ContentRecommendService contentRecommendService;
+
+    @Autowired
+    private XgPushService xgPushService;
 
 
     @Value("#{app.recommend_domain}")
@@ -415,6 +422,7 @@ public class ContentServiceImpl implements ContentService {
         }
     }
 
+
     /**
      * 点赞
      * @return
@@ -516,6 +524,8 @@ public class ContentServiceImpl implements ContentService {
         //打标签的时候文章热度+1
         content.setHotValue(content.getHotValue()+1);
         contentMybatisDao.updateContentById(content);
+        //添加提醒 UGC贴标签
+        userService.push(content.getUid(),writeTagDto.getUid(),Specification.PushMessageType.TAG.index,content.getTitle());
         return Response.success(ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.status,ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.message);
     }
 
@@ -1117,6 +1127,8 @@ public class ContentServiceImpl implements ContentService {
         contentMybatisDao.updateContentById(content);
         //添加提醒
         remind(content,reviewDto.getUid(),Specification.UserNoticeType.REVIEW.index,reviewDto.getReview());
+        //自己的日记被评论提醒
+        userService.push(content.getUid(),reviewDto.getUid(),Specification.PushMessageType.REVIEW.index,content.getTitle());
         return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
     }
 
@@ -1202,6 +1214,16 @@ public class ContentServiceImpl implements ContentService {
             // UGC置热
             HighQualityContent highQualityContent = new HighQualityContent();
             highQualityContent.setCid(id);
+            //自己发布的被置热
+            Content content = contentMybatisDao.getContentById(id);
+            //UGC置热
+            if(content.getType() == Specification.ArticleType.ORIGIN.index) {
+                userService.push(content.getUid(), content.getUid(), Specification.PushMessageType.HOTTEST.index, content.getTitle());
+            //直播置热
+            }else if(content.getType() == Specification.ArticleType.LIVE.index){
+                userService.push(content.getUid(), content.getUid(), Specification.PushMessageType.LIVE_HOTTEST.index, content.getTitle());
+            }
+
             contentMybatisDao.createHighQualityContent(highQualityContent);
         }else{
             // 取消置热

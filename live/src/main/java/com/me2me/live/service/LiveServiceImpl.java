@@ -12,6 +12,7 @@ import com.me2me.content.service.ContentService;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.*;
 import com.me2me.live.model.*;
+import com.me2me.user.model.UserFollow;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +45,11 @@ public class LiveServiceImpl implements LiveService {
         topic.setUid(createLiveDto.getUid());
         topic.setStatus(Specification.LiveStatus.LIVING.index);
         liveMybatisDao.createTopic(topic);
+        List<UserFollow> list = userService.getFans(createLiveDto.getUid());
+        for(UserFollow userFollow : list) {
+            //主播发言提醒关注的人
+            userService.push(userFollow.getSourceUid(),createLiveDto.getUid(),Specification.PushMessageType.LIVE.index,createLiveDto.getTitle());
+        }
         //创建直播之后添加到我的UGC
         ContentDto contentDto = new ContentDto();
         contentDto.setContent(createLiveDto.getTitle());
@@ -122,29 +128,21 @@ public class LiveServiceImpl implements LiveService {
         topicFragment.setType(speakDto.getType());
         topicFragment.setTopicId(speakDto.getTopicId());
         liveMybatisDao.createTopicFragment(topicFragment);
-        //直播贴标签，粉丝贴标签，点赞处理
-        //主播贴标
-        // TODO: 2016/4/25 贴标签和点赞时候保存数量
-        if(speakDto.getType() == Specification.LiveSpeakType.ANCHORWRITETAG.index){
-            WriteTagDto writeTagDto = new WriteTagDto();
-            writeTagDto.setTag(speakDto.getFragment());
-          //  writeTagDto.setCid();
-            //保存标签
-           // contentService.writeTag(writeTagDto);
-            //更新标签数量
-
-        //粉丝贴标
+        //提醒
+        Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
+        if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHORWRITETAG.index){
+            List<LiveFavorite> list = liveMybatisDao.getFavoriteList(speakDto.getTopicId());
+            for(LiveFavorite liveFavorite : list) {
+                //主播发言提醒关注的人
+                userService.push(liveFavorite.getUid(),topic.getUid(),Specification.PushMessageType.LIVE.index,topic.getTitle());
+            }
         }else if(speakDto.getType() == Specification.LiveSpeakType.FANSWRITETAG.index){
-            //保存标签
-            WriteTagDto writeTagDto = new WriteTagDto();
-            //保存标签
-           // contentService.writeTag(writeTagDto);
-        //点赞
-        }else if(speakDto.getType() == Specification.LiveSpeakType.LIKES.index){
-            //更新点赞的数量
-
+            //粉丝贴标提醒
+            userService.push(topic.getUid(),speakDto.getUid(),Specification.PushMessageType.LIVE_TAG.index,topic.getTitle());
+        }else if(speakDto.getType() == Specification.LiveSpeakType.FANS.index){
+            //粉丝发言提醒
+            userService.push(topic.getUid(),speakDto.getUid(),Specification.PushMessageType.LIVE_REVIEW.index,topic.getTitle());
         }
-
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status,ResponseStatus.USER_SPEAK_SUCCESS.message);
     }
 

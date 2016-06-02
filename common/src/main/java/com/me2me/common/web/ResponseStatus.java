@@ -111,6 +111,8 @@ public enum  ResponseStatus {
 
     CONTENT_USER_LIKES_CANCEL_ALREADY("不能重复取消点赞","content user likes cancel already",20049),
 
+    SET_USER_EXCELLENT_SUCCESS("大V设置成功","set user excellent success",20050),
+
 
 
 

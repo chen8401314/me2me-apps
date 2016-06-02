@@ -1,8 +1,10 @@
 package com.me2me.sms.service;
 
 
+import com.me2me.sms.dto.PushLogDto;
+import com.me2me.sms.dto.PushMessageAndroidDto;
 import com.me2me.sms.dto.PushMessageDto;
-import com.me2me.sms.dto.PushMessageDtoIos;
+import com.me2me.sms.dto.PushMessageIosDto;
 import org.json.JSONObject;
 
 /**
@@ -17,34 +19,25 @@ public interface XgPushService {
      * 单个设备推送
      * @return
      */
-    JSONObject pushSingleDevice(PushMessageDto pushMessageDto);
+    PushLogDto pushSingleDevice(PushMessageAndroidDto pushMessageAndroidDto);
 
     /**
      * 所有设备推送
      * @return
      */
-    JSONObject pushAllDevice(PushMessageDto pushMessageDto);
+    PushLogDto pushAllDevice(PushMessageAndroidDto pushMessageAndroidDto);
 
     /**
      * ios单个设备推送
      * @return
      */
-    JSONObject pushSingleDeviceIOS(PushMessageDtoIos pushMessageDtoIos);
+    PushLogDto pushSingleDeviceIOS(PushMessageIosDto pushMessageIosDto);
 
     /**
      * ios所有设备推送
      * @return
      */
-    JSONObject pushAllDeviceIOS(PushMessageDtoIos pushMessageDtoIos);
+    PushLogDto pushAllDeviceIOS(PushMessageIosDto pushMessageIosDto);
 
-    /**
-     * 查询推送状态
-     */
-    JSONObject queryPushStatus();
 
-    /**
-     * 查询设备数量
-     * @return
-     */
-    JSONObject queryDeviceCount();
 }

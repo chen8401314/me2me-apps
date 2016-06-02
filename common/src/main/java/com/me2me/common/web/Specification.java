@@ -417,7 +417,21 @@ public interface Specification {
 
         TAG("贴标",1),
 
-        REVIEW("评论",2);
+        LIVE_TAG("贴标",2),
+
+        REVIEW("评论",3),
+
+        LIVE_REVIEW("评论",4),
+
+        LIVE("关注的人开播",5),
+
+        FOLLOW("关注",6),
+
+        HOTTEST("上最热",7),
+
+        LIVE_HOTTEST("上最热",8),
+
+        UPDATE("收藏的直播有更新",9);
 
         public final String name;
 
@@ -442,6 +456,23 @@ public interface Specification {
         public final int index;
 
         LiveTimeLineDirection(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    public enum DevicePlatform{
+
+        ANDROID("Android",0),
+
+        IOS("Ios",1);
+
+
+        public final String name;
+
+        public final int index;
+
+        DevicePlatform(String name,int index){
             this.name = name;
             this.index = index;
         }

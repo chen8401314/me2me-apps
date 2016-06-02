@@ -6,8 +6,9 @@ import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
-import com.me2me.sms.dto.VerifyDto;
+import com.me2me.sms.dto.*;
 import com.me2me.sms.service.SmsService;
+import com.me2me.sms.service.XgPushService;
 import com.me2me.user.dao.OldUserJdbcDao;
 import com.me2me.user.dao.UserInitJdbcDao;
 import com.me2me.user.dao.UserMybatisDao;
@@ -39,6 +40,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private SmsService smsService;
+
+    @Autowired
+    private XgPushService xgPushService;
 
 
     /**
@@ -88,6 +92,13 @@ public class UserServiceImpl implements UserService {
         userToken.setToken(signUpSuccessDto.getToken());
         userMybatisDao.createUserToken(userToken);
         signUpSuccessDto.setToken(userToken.getToken());
+        //保存用户的设备token和用户平台信息
+        UserDevice device = new UserDevice();
+        device.setDeviceNo(userSignUpDto.getDeviceNo());
+        device.setPlatform(userSignUpDto.getPlatform());
+        device.setOs(userSignUpDto.getOs());
+        device.setUid(user.getUid());
+        userMybatisDao.updateUserDevice(device);
         // 获取默认值给前端
         UserProfile up = userMybatisDao.getUserProfileByUid(user.getUid());
         signUpSuccessDto.setGender(up.getGender());
@@ -121,6 +132,13 @@ public class UserServiceImpl implements UserService {
                 loginSuccessDto.setYearId(userProfile.getYearsId());
                 loginSuccessDto.setFansCount(userMybatisDao.getUserFansCount(user.getUid()));
                 loginSuccessDto.setFollowedCount(userMybatisDao.getUserFollowCount(user.getUid()));
+                //保存用户的设备token和用户平台信息
+                UserDevice device = new UserDevice();
+                device.setDeviceNo(userLoginDto.getDeviceNo());
+                device.setPlatform(userLoginDto.getPlatform());
+                device.setOs(userLoginDto.getOs());
+                device.setUid(user.getUid());
+                userMybatisDao.updateUserDevice(device);
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status,ResponseStatus.USER_LOGIN_SUCCESS.message,loginSuccessDto);
             }else{
                 // 用户密码不正确
@@ -477,6 +495,8 @@ public class UserServiceImpl implements UserService {
                 return Response.failure(ResponseStatus.CAN_NOT_DUPLICATE_FOLLOW.status,ResponseStatus.CAN_NOT_DUPLICATE_FOLLOW.message);
             }
             userMybatisDao.createFollow(userFollow);
+            //关注提醒
+            push(followDto.getTargetUid(),followDto.getSourceUid(),Specification.PushMessageType.FOLLOW.index,null);
             return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message);
         }else if(followDto.getAction()==Specification.UserFollowAction.UN_FOLLOW.index){
             // 取消关注
@@ -732,6 +752,94 @@ public class UserServiceImpl implements UserService {
             }
         }
         return result.length() > 0 ? result.substring(0,result.length()-1) : result;
+    }
+
+    @Override
+    public UserDevice getUserDevice(long uid) {
+        return userMybatisDao.getUserDevice(uid);
+    }
+
+
+    /**
+     * 提醒
+     * @param targetUid
+     * @param sourceUid
+     * @param type
+     * @param title
+     */
+    @Override
+    public void push(long targetUid ,long sourceUid ,int type,String title){
+        if(targetUid == sourceUid){
+            return;
+        }
+        UserProfile userProfile = getUserProfileByUid(sourceUid);
+        UserDevice device = getUserDevice(targetUid);
+        PushMessageDto pushMessageDto = new PushMessageDto();
+        pushMessageDto.setToken(device.getDeviceNo());
+        pushMessageDto.setDevicePlatform(device.getPlatform());
+            //直播贴标
+        if(type == Specification.PushMessageType.LIVE_TAG.index) {
+            pushMessageDto.setContent("你的直播:" + title + "收到了1个新感受");
+            //日记被贴标
+        }else if(type == Specification.PushMessageType.TAG.index){
+            pushMessageDto.setContent("你的日记:" + title + "收到了1个新感受");
+            //直播回复
+        } else if(type == Specification.PushMessageType.LIVE_REVIEW.index ){
+            pushMessageDto.setContent(userProfile.getNickName() + "评论了你的直播:" + title);
+            //日记被评论
+        }else if (type == Specification.ArticleType.ORIGIN.index) {
+            pushMessageDto.setContent(userProfile.getNickName() + "评论了你的日记:" + title);
+            //直播置热
+        }else if(type == Specification.PushMessageType.LIVE_HOTTEST.index){
+            pushMessageDto.setContent("你的直播：" + title + "上热点啦！");
+            //UGC置热
+        }else if(type == Specification.PushMessageType.HOTTEST.index){
+            pushMessageDto.setContent("你的日记：" + title + "上热点啦！");
+            //被人关注
+        }else if(type == Specification.PushMessageType.FOLLOW.index){
+            pushMessageDto.setContent(userProfile.getNickName()+"关注了你");
+            //收藏的直播主播更新了
+        }else if(type == Specification.PushMessageType.UPDATE.index){
+            pushMessageDto.setContent("你订阅的直播：" + title + "更新了");
+            //你关注的直播有了新的更新了
+        }else if(type == Specification.PushMessageType.LIVE.index){
+            pushMessageDto.setContent("你关注的主播"+userProfile.getNickName()+"有了新直播：" + title);
+        }
+        if(device.getPlatform() == 1) {
+            PushMessageAndroidDto pushMessageAndroidDto = new PushMessageAndroidDto();
+            pushMessageAndroidDto.setTitle(pushMessageDto.getContent());
+            pushMessageAndroidDto.setToken(device.getDeviceNo());
+            pushMessageAndroidDto.setMessageType(type);
+            pushMessageAndroidDto.setContent(pushMessageDto.getContent());
+            PushLogDto pushLogDto = xgPushService.pushSingleDevice(pushMessageAndroidDto);
+            if(pushLogDto != null) {
+                pushLogDto.setMeaageType(type);
+                userMybatisDao.createPushLog(pushLogDto);
+            }
+        }else{
+            PushMessageIosDto pushMessageIosDto = new PushMessageIosDto();
+            pushMessageIosDto.setTitle(pushMessageDto.getContent());
+            pushMessageIosDto.setToken(device.getDeviceNo());
+            pushMessageIosDto.setContent(pushMessageDto.getContent());
+            PushLogDto pushLogDto = xgPushService.pushSingleDeviceIOS(pushMessageIosDto);
+            if(pushLogDto != null) {
+                pushLogDto.setMeaageType(type);
+                userMybatisDao.createPushLog(pushLogDto);
+            }
+        }
+    }
+
+    @Override
+    public List<UserFollow> getFans(long uid) {
+        return userMybatisDao.getUserFollow(uid);
+    }
+
+    @Override
+    public Response setUserExcellent(long uid) {
+        UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+        userProfile.setExcellent(1);
+        userMybatisDao.modifyUserProfile(userProfile);
+        return Response.success(ResponseStatus.SET_USER_EXCELLENT_SUCCESS.status,ResponseStatus.SET_USER_EXCELLENT_SUCCESS.message);
     }
 
 

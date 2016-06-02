@@ -171,4 +171,12 @@ public interface UserService {
 
     String getUserHobbyByUid(long uid);
 
+    UserDevice getUserDevice(long uid);
+
+    void push(long targetUid ,long sourceUid ,int type,String title);
+
+    List<UserFollow> getFans(long uid);
+
+    Response setUserExcellent(long uid);
+
 }

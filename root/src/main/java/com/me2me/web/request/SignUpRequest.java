@@ -39,5 +39,17 @@ public class SignUpRequest extends Request{
     @Setter
     private String nickName;
 
+    @Getter
+    @Setter
+    private String deviceNo;
+
+    @Getter
+    @Setter
+    private int platform;
+
+    @Getter
+    @Setter
+    private String os;
+
 
 }

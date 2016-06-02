@@ -13,7 +13,7 @@ import java.util.Map;
  * Time :13:45
  */
 @Data
-public class PushMessageDtoIos implements BaseEntity {
+public class PushMessageIosDto implements BaseEntity {
 
     private String title;
 

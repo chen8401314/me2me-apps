@@ -49,7 +49,8 @@
         <!--<table tableName="user_tags_record" domainObjectName="UserTagsRecord" />-->
         <!--<table tableName="application_security" domainObjectName="ApplicationSecurity" />-->
         <!--<table tableName="user_no" domainObjectName="UserNo" />-->
-        <table tableName="version_control" domainObjectName="VersionControl" />
+        <!--<table tableName="user_device" domainObjectName="UserDevice" />-->
+        <table tableName="xinge_push_log" domainObjectName="XingePushLog" />
 
     </context>
 </generatorConfiguration>

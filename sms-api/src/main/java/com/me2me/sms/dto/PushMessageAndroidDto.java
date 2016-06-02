@@ -13,7 +13,7 @@ import java.util.Map;
  * Time :17:59
  */
 @Data
-public class PushMessageDto implements BaseEntity{
+public class PushMessageAndroidDto implements BaseEntity{
 
     //标题
     private String title;
@@ -24,10 +24,8 @@ public class PushMessageDto implements BaseEntity{
     //token
     private String token;
 
-    //消息类型
-    private int type;
+    //消息类型 1 message 2 notification 0 ids传0
+    private int messageType;
 
-    //设备类型 1 Android 2 ios
-    private int devicePlatform ;
 
 }

@@ -1,17 +1,16 @@
 package com.me2me.sms.service;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.me2me.common.web.Specification;
+import com.me2me.sms.dto.PushLogDto;
+import com.me2me.sms.dto.PushMessageAndroidDto;
 import com.me2me.sms.dto.PushMessageDto;
-import com.me2me.sms.dto.PushMessageDtoIos;
+import com.me2me.sms.dto.PushMessageIosDto;
 import com.tencent.xinge.*;
 import org.json.JSONObject;
+import org.springframework.stereotype.Service;
 
-import java.math.BigInteger;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -19,6 +18,7 @@ import java.util.Map;
  * Date: 2016/5/30
  * Time :16:37
  */
+@Service
 public class XgPushServiceImpl implements XgPushService {
 
     private static final String SECRET_KEY = "735da3540ee6dfa534e3549e8367c46f";
@@ -36,76 +36,82 @@ public class XgPushServiceImpl implements XgPushService {
     private static final int BADGE_IOS = 1;
 
     @Override
-    public JSONObject pushSingleDevice(PushMessageDto pushMessageDto) {
-        Message message = buildMessage(pushMessageDto);
+    public PushLogDto pushSingleDevice(PushMessageAndroidDto pushMessageAndroidDto) {
+        Message message = buildMessage(pushMessageAndroidDto);
         XingeApp xinge = new XingeApp(ACCESS_ID, SECRET_KEY);
-        JSONObject ret = xinge.pushSingleDevice(pushMessageDto.getToken(),message);
-        return ret;
+        JSONObject ret = xinge.pushSingleDevice(pushMessageAndroidDto.getToken(),message);
+        System.out.print("********************************************************"+ret);
+        return getPushLogDto(pushMessageAndroidDto, ret);
     }
 
     @Override
-    public JSONObject pushAllDevice(PushMessageDto pushMessageDto) {
-        Message message = buildMessage(pushMessageDto);
+    public PushLogDto pushAllDevice(PushMessageAndroidDto pushMessageAndroidDto) {
+        Message message = buildMessage(pushMessageAndroidDto);
         XingeApp xinge = new XingeApp(ACCESS_ID, SECRET_KEY);
         JSONObject ret = xinge.pushAllDevice(0, message);
-        return (ret);
+        return getPushLogDto(pushMessageAndroidDto, ret);
+    }
+
+    private PushLogDto getPushLogDto(PushMessageAndroidDto pushMessageAndroidDto, JSONObject ret) {
+        int result = ret.getInt("ret_code");
+        if(result != 0){
+            PushLogDto pushLogDto = new PushLogDto();
+            pushLogDto.setContent(pushMessageAndroidDto.getContent());
+            pushLogDto.setRetCode(result);
+            return pushLogDto;
+        }else{
+            return null;
+        }
     }
 
     @Override
-    public JSONObject pushSingleDeviceIOS(PushMessageDtoIos pushMessageDtoIos) {
-        MessageIOS message = buildMessageIOS(pushMessageDtoIos);
+    public PushLogDto pushSingleDeviceIOS(PushMessageIosDto pushMessageIosDto) {
+        MessageIOS message = buildMessageIOS(pushMessageIosDto);
         XingeApp xinge = new XingeApp(ACCESS_ID_IOS, SECRET_KEY_IOS);
-        JSONObject ret = xinge.pushSingleDevice(pushMessageDtoIos.getToken(), message, XingeApp.IOSENV_DEV);
-        return (ret);
+        JSONObject ret = xinge.pushSingleDevice(pushMessageIosDto.getToken(), message, XingeApp.IOSENV_DEV);
+        return getPushLogIosDto(pushMessageIosDto, ret);
+    }
+
+    private PushLogDto getPushLogIosDto(PushMessageIosDto pushMessageIosDto, JSONObject ret) {
+        int result = ret.getInt("ret_code");
+        if(result != 0){
+            PushLogDto pushLogDto = new PushLogDto();
+            pushLogDto.setContent(pushMessageIosDto.getContent());
+            pushLogDto.setRetCode(result);
+            return pushLogDto;
+        }else{
+            return null;
+        }
     }
 
     @Override
-    public JSONObject pushAllDeviceIOS(PushMessageDtoIos pushMessageDtoIos)  {
-        MessageIOS message = buildMessageIOS(pushMessageDtoIos);
+    public PushLogDto pushAllDeviceIOS(PushMessageIosDto pushMessageIosDto)  {
+        MessageIOS message = buildMessageIOS(pushMessageIosDto);
         XingeApp xinge = new XingeApp(ACCESS_ID_IOS, SECRET_KEY_IOS);
         JSONObject ret = xinge.pushAllDevice(0,message,XingeApp.IOSENV_DEV);
-        return (ret);
+        return getPushLogIosDto(pushMessageIosDto, ret);
     }
 
-    @Override
-    public JSONObject queryPushStatus() {
-        List<String> pushIdList = Lists.newArrayList();
-        pushIdList.add("390");
-        pushIdList.add("389");
-        XingeApp xinge = new XingeApp(ACCESS_ID, SECRET_KEY);
-        JSONObject ret = xinge.queryPushStatus(pushIdList);
-        return (ret);
-
-    }
-
-    @Override
-    public JSONObject queryDeviceCount() {
-        XingeApp xinge = new XingeApp(ACCESS_ID, SECRET_KEY);
-        JSONObject ret = xinge.queryDeviceCount();
-        return (ret);
-    }
-
-    private Message buildMessage(PushMessageDto pushMessageDto) {
+    private Message buildMessage(PushMessageAndroidDto pushMessageAndroidDto) {
         Message message = new Message();
-        message.setTitle(pushMessageDto.getTitle());
-        message.setContent(pushMessageDto.getContent());
-        message.setType(pushMessageDto.getMessageType());
+        message.setContent(pushMessageAndroidDto.getContent());
+        message.setType(Message.TYPE_NOTIFICATION);
         message.setExpireTime(EXPIRE_TIME);
-        message.setCustom(pushMessageDto.getCustom());
         message.setStyle(new Style(1,1,0,1,0));
         return message;
     }
 
-    private MessageIOS buildMessageIOS(PushMessageDtoIos pushMessageDtoIos) {
+    private MessageIOS buildMessageIOS(PushMessageIosDto pushMessageIosDto) {
         MessageIOS message = new MessageIOS();
         message.setExpireTime(EXPIRE_TIME_IOS);
-        message.setAlert(pushMessageDtoIos.getContent());
+        message.setAlert(pushMessageIosDto.getContent());
         message.setBadge(BADGE_IOS);
         TimeInterval acceptTime = new TimeInterval(0,0,23,59);
         message.addAcceptTime(acceptTime);
-        message.setCustom(pushMessageDtoIos.getCustom());
+        message.setCustom(pushMessageIosDto.getCustom());
         return message;
     }
+
 
 
     public static void main(String[] args) {
@@ -114,15 +120,14 @@ public class XgPushServiceImpl implements XgPushService {
 //        list.add(new TagTokenPair("dandan","c242772fa7ff6d3bf93fecba2b220dcf6c176cd70a2ae6994b5ac0b104beaea1"));
 //       / app.BatchSetTag(list);
         XgPushServiceImpl push = new XgPushServiceImpl();
-        for (int i = 0 ;i <= 1 ;i++ ) {
-            PushMessageDto pushMessageDto = new PushMessageDto();
+        for (int i = 0 ;i <= 100 ;i++ ) {
+            PushMessageAndroidDto pushMessageDto = new PushMessageAndroidDto();
             pushMessageDto.setTitle("messageTile" +i);
             pushMessageDto.setContent("借酒消愁愁更愁，买根黄瓜抹点油." +i);
             pushMessageDto.setToken("5948d751e20f5b1e46edaec58feaa5ef3ba35128");
             pushMessageDto.setMessageType(Message.TYPE_NOTIFICATION);
-            pushMessageDto.getCustom().put("type",Specification.PushMessageType.LIKE.index);
-            pushMessageDto.getCustom().put("typeName",Specification.PushMessageType.LIKE.name);
-            System.out.println(push.pushSingleDevice(pushMessageDto));
+            push.pushSingleDevice(pushMessageDto);
+            System.out.println();
         }
 
 //        for (int i = 0 ;i <= 10 ;i++ ) {

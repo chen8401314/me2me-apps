@@ -6,7 +6,6 @@ import com.me2me.user.dto.*;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
-import com.plusnet.search.content.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -39,6 +38,9 @@ public class Users extends BaseController {
         userSignUpDto.setStar(request.getStart());
         userSignUpDto.setEncrypt(request.getEncrypt());
         userSignUpDto.setNickName(request.getNickName());
+        userSignUpDto.setDeviceNo(request.getDeviceNo());
+        userSignUpDto.setPlatform(request.getPlatform());
+        userSignUpDto.setOs(request.getOs());
         return userService.signUp(userSignUpDto);
     }
 
@@ -52,6 +54,9 @@ public class Users extends BaseController {
         UserLoginDto userLoginDto = new UserLoginDto();
         userLoginDto.setUserName(request.getUserName());
         userLoginDto.setEncrypt(request.getEncrypt());
+        userLoginDto.setOs(request.getOs());
+        userLoginDto.setPlatform(request.getPlatform());
+        userLoginDto.setDeviceNo(request.getDeviceNo());
         return userService.login(userLoginDto);
     }
 
@@ -395,6 +400,12 @@ public class Users extends BaseController {
         String hobbies = userService.getUserHobbyByUid(request.getUid());
         userDto.setInterests(hobbies);
         return Response.success(userDto);
+    }
+
+    @ResponseBody
+    @RequestMapping(value = "/userExcellent",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response userExcellent(UserExcellentRequest request){
+        return userService.setUserExcellent(request.getUid());
     }
 
 }

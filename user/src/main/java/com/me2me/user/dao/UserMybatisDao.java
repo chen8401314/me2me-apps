@@ -2,6 +2,7 @@ package com.me2me.user.dao;
 
 import com.me2me.common.web.Specification;
 import com.me2me.core.security.*;
+import com.me2me.sms.dto.PushLogDto;
 import com.me2me.user.dto.*;
 import com.me2me.user.mapper.*;
 import com.me2me.user.model.*;
@@ -67,6 +68,12 @@ public class UserMybatisDao {
 
     @Autowired
     private VersionControlMapper controlMapper;
+
+    @Autowired
+    private UserDeviceMapper userDeviceMapper;
+
+    @Autowired
+    private XingePushLogMapper xingePushLogMapper;
 
     /**
      * 保存用户注册信息
@@ -435,6 +442,32 @@ public class UserMybatisDao {
         criteria.andCidEqualTo(userNotice.getCid());
         List<UserNotice> userNotices = userNoticeMapper.selectByExample(example);
         return (userNotices != null && userNotices.size() > 0) ? userNotices.get(0) : null;
+    }
 
+    public UserDevice getUserDevice(long uid){
+        UserDeviceExample example = new UserDeviceExample();
+        UserDeviceExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        List<UserDevice> list = userDeviceMapper.selectByExample(example);
+        return (list != null && list.size() > 0) ? list.get(0) : null;
+    }
+    public void updateUserDevice(UserDevice userDevice){
+        UserDevice device = getUserDevice(userDevice.getUid());
+       if(device != null){
+           device.setDeviceNo(userDevice.getDeviceNo());
+           device.setOs(userDevice.getOs());
+           device.setPlatform(userDevice.getPlatform());
+           userDeviceMapper.updateByPrimaryKey(device);
+       }else {
+           userDeviceMapper.insertSelective(userDevice);
+       }
+    }
+
+    public void createPushLog(PushLogDto pushLogDto){
+        XingePushLog pushLog = new XingePushLog();
+        pushLog.setContent(pushLogDto.getContent());
+        pushLog.setMessageType(pushLogDto.getMeaageType());
+        pushLog.setRetCode(pushLogDto.getRetCode());
+        xingePushLogMapper.insert(pushLog);
     }
 }
