@@ -774,57 +774,59 @@ public class UserServiceImpl implements UserService {
         }
         UserProfile userProfile = getUserProfileByUid(sourceUid);
         UserDevice device = getUserDevice(targetUid);
-        PushMessageDto pushMessageDto = new PushMessageDto();
-        pushMessageDto.setToken(device.getDeviceNo());
-        pushMessageDto.setDevicePlatform(device.getPlatform());
+        if(device != null) {
+            PushMessageDto pushMessageDto = new PushMessageDto();
+            pushMessageDto.setToken(device.getDeviceNo());
+            pushMessageDto.setDevicePlatform(device.getPlatform());
             //直播贴标
-        if(type == Specification.PushMessageType.LIVE_TAG.index) {
-            pushMessageDto.setContent("你的直播:" + title + "收到了1个新感受");
-            //日记被贴标
-        }else if(type == Specification.PushMessageType.TAG.index){
-            pushMessageDto.setContent("你的日记:" + title + "收到了1个新感受");
-            //直播回复
-        } else if(type == Specification.PushMessageType.LIVE_REVIEW.index ){
-            pushMessageDto.setContent(userProfile.getNickName() + "评论了你的直播:" + title);
-            //日记被评论
-        }else if (type == Specification.ArticleType.ORIGIN.index) {
-            pushMessageDto.setContent(userProfile.getNickName() + "评论了你的日记:" + title);
-            //直播置热
-        }else if(type == Specification.PushMessageType.LIVE_HOTTEST.index){
-            pushMessageDto.setContent("你的直播：" + title + "上热点啦！");
-            //UGC置热
-        }else if(type == Specification.PushMessageType.HOTTEST.index){
-            pushMessageDto.setContent("你的日记：" + title + "上热点啦！");
-            //被人关注
-        }else if(type == Specification.PushMessageType.FOLLOW.index){
-            pushMessageDto.setContent(userProfile.getNickName()+"关注了你");
-            //收藏的直播主播更新了
-        }else if(type == Specification.PushMessageType.UPDATE.index){
-            pushMessageDto.setContent("你订阅的直播：" + title + "更新了");
-            //你关注的直播有了新的更新了
-        }else if(type == Specification.PushMessageType.LIVE.index){
-            pushMessageDto.setContent("你关注的主播"+userProfile.getNickName()+"有了新直播：" + title);
-        }
-        if(device.getPlatform() == 1) {
-            PushMessageAndroidDto pushMessageAndroidDto = new PushMessageAndroidDto();
-            pushMessageAndroidDto.setTitle(pushMessageDto.getContent());
-            pushMessageAndroidDto.setToken(device.getDeviceNo());
-            pushMessageAndroidDto.setMessageType(type);
-            pushMessageAndroidDto.setContent(pushMessageDto.getContent());
-            PushLogDto pushLogDto = xgPushService.pushSingleDevice(pushMessageAndroidDto);
-            if(pushLogDto != null) {
-                pushLogDto.setMeaageType(type);
-                userMybatisDao.createPushLog(pushLogDto);
+            if (type == Specification.PushMessageType.LIVE_TAG.index) {
+                pushMessageDto.setContent("你的直播:" + title + "收到了1个新感受");
+                //日记被贴标
+            } else if (type == Specification.PushMessageType.TAG.index) {
+                pushMessageDto.setContent("你的日记:" + title + "收到了1个新感受");
+                //直播回复
+            } else if (type == Specification.PushMessageType.LIVE_REVIEW.index) {
+                pushMessageDto.setContent(userProfile.getNickName() + "评论了你的直播:" + title);
+                //日记被评论
+            } else if (type == Specification.ArticleType.ORIGIN.index) {
+                pushMessageDto.setContent(userProfile.getNickName() + "评论了你的日记:" + title);
+                //直播置热
+            } else if (type == Specification.PushMessageType.LIVE_HOTTEST.index) {
+                pushMessageDto.setContent("你的直播：" + title + "上热点啦！");
+                //UGC置热
+            } else if (type == Specification.PushMessageType.HOTTEST.index) {
+                pushMessageDto.setContent("你的日记：" + title + "上热点啦！");
+                //被人关注
+            } else if (type == Specification.PushMessageType.FOLLOW.index) {
+                pushMessageDto.setContent(userProfile.getNickName() + "关注了你");
+                //收藏的直播主播更新了
+            } else if (type == Specification.PushMessageType.UPDATE.index) {
+                pushMessageDto.setContent("你订阅的直播：" + title + "更新了");
+                //你关注的直播有了新的更新了
+            } else if (type == Specification.PushMessageType.LIVE.index) {
+                pushMessageDto.setContent("你关注的主播" + userProfile.getNickName() + "有了新直播：" + title);
             }
-        }else{
-            PushMessageIosDto pushMessageIosDto = new PushMessageIosDto();
-            pushMessageIosDto.setTitle(pushMessageDto.getContent());
-            pushMessageIosDto.setToken(device.getDeviceNo());
-            pushMessageIosDto.setContent(pushMessageDto.getContent());
-            PushLogDto pushLogDto = xgPushService.pushSingleDeviceIOS(pushMessageIosDto);
-            if(pushLogDto != null) {
-                pushLogDto.setMeaageType(type);
-                userMybatisDao.createPushLog(pushLogDto);
+            if (device.getPlatform() == 1) {
+                PushMessageAndroidDto pushMessageAndroidDto = new PushMessageAndroidDto();
+                pushMessageAndroidDto.setTitle(pushMessageDto.getContent());
+                pushMessageAndroidDto.setToken(device.getDeviceNo());
+                pushMessageAndroidDto.setMessageType(type);
+                pushMessageAndroidDto.setContent(pushMessageDto.getContent());
+                PushLogDto pushLogDto = xgPushService.pushSingleDevice(pushMessageAndroidDto);
+                if (pushLogDto != null) {
+                    pushLogDto.setMeaageType(type);
+                    userMybatisDao.createPushLog(pushLogDto);
+                }
+            } else {
+                PushMessageIosDto pushMessageIosDto = new PushMessageIosDto();
+                pushMessageIosDto.setTitle(pushMessageDto.getContent());
+                pushMessageIosDto.setToken(device.getDeviceNo());
+                pushMessageIosDto.setContent(pushMessageDto.getContent());
+                PushLogDto pushLogDto = xgPushService.pushSingleDeviceIOS(pushMessageIosDto);
+                if (pushLogDto != null) {
+                    pushLogDto.setMeaageType(type);
+                    userMybatisDao.createPushLog(pushLogDto);
+                }
             }
         }
     }
