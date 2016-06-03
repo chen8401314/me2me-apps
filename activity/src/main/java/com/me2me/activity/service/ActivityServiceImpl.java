@@ -164,7 +164,10 @@ public class ActivityServiceImpl implements ActivityService {
             activityH5Dto.setTitle(activityWithBLOBs.getActivityTitle());
             activityH5Dto.setCoverImage(Constant.QINIU_DOMAIN + "/" + activityWithBLOBs.getActivityCover());
         }
-
+        UserProfile userProfile = userService.getUserProfileByUid(activityWithBLOBs.getUid());
+        activityH5Dto.setNickName(userProfile.getNickName());
+        activityH5Dto.setPublishTime(activityWithBLOBs.getCreateTime());
+        activityH5Dto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
         return activityH5Dto;
     }
 

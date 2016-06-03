@@ -23,6 +23,12 @@ public class ActivityH5Dto implements BaseEntity{
     //活动封面
     private String coverImage;
 
+    private Date publishTime;
+
+    private String nickName;
+
+    private String avatar;
+
 
 
 
