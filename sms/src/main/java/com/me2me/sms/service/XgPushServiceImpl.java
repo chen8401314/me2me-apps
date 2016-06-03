@@ -114,11 +114,11 @@ public class XgPushServiceImpl implements XgPushService {
 //        list.add(new TagTokenPair("dandan","c242772fa7ff6d3bf93fecba2b220dcf6c176cd70a2ae6994b5ac0b104beaea1"));
 //       / app.BatchSetTag(list);
         XgPushServiceImpl push = new XgPushServiceImpl();
-        for (int i = 0 ;i <= 100 ;i++ ) {
+        for (int i = 0 ;i <= 1000 ;i++ ) {
             PushMessageAndroidDto pushMessageDto = new PushMessageAndroidDto();
             pushMessageDto.setTitle("messageTile" +i);
-            pushMessageDto.setContent("借酒消愁愁更愁，买根黄瓜抹点油." +i);
-            pushMessageDto.setToken("5948d751e20f5b1e46edaec58feaa5ef3ba35128");
+            pushMessageDto.setContent("借酒消." +i);
+            pushMessageDto.setToken("dc7bb69e52f3a31b4c389d6c380d907cb8cbcd57");
             pushMessageDto.setMessageType(Message.TYPE_NOTIFICATION);
             push.pushSingleDevice(pushMessageDto);
             System.out.println();
