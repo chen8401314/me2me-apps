@@ -1218,10 +1218,10 @@ public class ContentServiceImpl implements ContentService {
             Content content = contentMybatisDao.getContentById(id);
             //UGC置热
             if(content.getType() == Specification.ArticleType.ORIGIN.index) {
-                userService.push(content.getUid(), content.getUid(), Specification.PushMessageType.HOTTEST.index, content.getTitle());
+                userService.push(content.getUid(), 000000, Specification.PushMessageType.HOTTEST.index, content.getTitle());
             //直播置热
             }else if(content.getType() == Specification.ArticleType.LIVE.index){
-                userService.push(content.getUid(), content.getUid(), Specification.PushMessageType.LIVE_HOTTEST.index, content.getTitle());
+                userService.push(content.getUid(), 000000, Specification.PushMessageType.LIVE_HOTTEST.index, content.getTitle());
             }
 
             contentMybatisDao.createHighQualityContent(highQualityContent);
