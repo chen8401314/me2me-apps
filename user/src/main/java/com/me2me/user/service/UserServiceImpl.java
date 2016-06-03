@@ -833,7 +833,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserFollow> getFans(long uid) {
-        return userMybatisDao.getUserFollow(uid);
+        return userMybatisDao.getUserFans(uid);
     }
 
     @Override
@@ -843,6 +843,4 @@ public class UserServiceImpl implements UserService {
         userMybatisDao.modifyUserProfile(userProfile);
         return Response.success(ResponseStatus.SET_USER_EXCELLENT_SUCCESS.status,ResponseStatus.SET_USER_EXCELLENT_SUCCESS.message);
     }
-
-
 }

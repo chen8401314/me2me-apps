@@ -367,6 +367,13 @@ public class UserMybatisDao {
         return userFollowMapper.selectByExample(example);
     }
 
+    public List<UserFollow> getUserFans(long uid){
+        UserFollowExample example = new UserFollowExample();
+        UserFollowExample.Criteria criteria =  example.createCriteria();
+        criteria.andTargetUidEqualTo(uid);
+        return userFollowMapper.selectByExample(example);
+    }
+
     public int getUserFollowCount(long uid){
         UserFollowExample example = new UserFollowExample();
         UserFollowExample.Criteria criteria =  example.createCriteria();
