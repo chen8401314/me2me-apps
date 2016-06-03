@@ -811,7 +811,6 @@ public class UserServiceImpl implements UserService {
                 pushMessageAndroidDto.setTitle(pushMessageDto.getContent());
                 pushMessageAndroidDto.setToken(device.getDeviceNo());
                 pushMessageAndroidDto.setMessageType(type);
-                pushMessageAndroidDto.setTitle("米汤友情提示");
                 pushMessageAndroidDto.setContent(pushMessageDto.getContent());
                 PushLogDto pushLogDto = xgPushService.pushSingleDevice(pushMessageAndroidDto);
                 if (pushLogDto != null) {
@@ -822,7 +821,6 @@ public class UserServiceImpl implements UserService {
                 PushMessageIosDto pushMessageIosDto = new PushMessageIosDto();
                 pushMessageIosDto.setTitle(pushMessageDto.getContent());
                 pushMessageIosDto.setToken(device.getDeviceNo());
-                pushMessageIosDto.setTitle("米汤友情提示");
                 pushMessageIosDto.setContent(pushMessageDto.getContent());
                 PushLogDto pushLogDto = xgPushService.pushSingleDeviceIOS(pushMessageIosDto);
                 if (pushLogDto != null) {
