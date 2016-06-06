@@ -144,4 +144,6 @@ public interface ContentService {
 
     int countFragment(long topicId,long uid);
 
+    Response publish2(ContentDto contentDto);
+
 }

@@ -1,5 +1,7 @@
 package com.me2me.content.widget;
 
+import com.me2me.common.web.Response;
+
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 赵朋扬
@@ -7,8 +9,8 @@ package com.me2me.content.widget;
  */
 public class PublishUGC implements Publish {
 
-    public void publish(){
-
+    public Response publish(){
+        return null;
     }
 
 }
