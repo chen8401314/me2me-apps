@@ -7,7 +7,7 @@ package com.me2me.core.cache;
  */
 public interface Cache {
 
-    void set(String key,String value);
+    void sadd(String key,String value);
 
     String get(String key);
 

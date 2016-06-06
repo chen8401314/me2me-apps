@@ -24,8 +24,8 @@ public class RedisCache extends CacheProvider {
     }
 
     @Override
-    public void set(String key, String value) {
-        getResource().set(key,value);
+    public void sadd(String key, String value) {
+        getResource().sadd(key,value);
     }
 
     @Override
