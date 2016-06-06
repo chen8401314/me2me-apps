@@ -63,6 +63,7 @@ public class XgPushServiceImpl implements XgPushService {
         MessageIOS message = buildMessageIOS(pushMessageIosDto);
         XingeApp xinge = new XingeApp(ACCESS_ID_IOS, SECRET_KEY_IOS);
         JSONObject ret = xinge.pushSingleDevice(pushMessageIosDto.getToken(), message, XingeApp.IOSENV_DEV);
+        System.out.print(ret);
         return getPushLogIosDto(pushMessageIosDto, ret);
     }
 
@@ -114,23 +115,25 @@ public class XgPushServiceImpl implements XgPushService {
 //        list.add(new TagTokenPair("dandan","c242772fa7ff6d3bf93fecba2b220dcf6c176cd70a2ae6994b5ac0b104beaea1"));
 //       / app.BatchSetTag(list);
         XgPushServiceImpl push = new XgPushServiceImpl();
-        for (int i = 0 ;i <= 1000 ;i++ ) {
+        for (int i = 0 ;i <= 1 ;i++ ) {
             PushMessageAndroidDto pushMessageDto = new PushMessageAndroidDto();
             pushMessageDto.setTitle("messageTile" +i);
             pushMessageDto.setContent("借酒消." +i);
-            pushMessageDto.setToken("dc7bb69e52f3a31b4c389d6c380d907cb8cbcd57");
+            //pushMessageDto.setToken("12f5ebc2b33728c446d8a649d5f6788f0711fbbc");
+            pushMessageDto.setToken("5948d751e20f5b1e46edaec58feaa5ef3ba35128");
             pushMessageDto.setMessageType(Message.TYPE_NOTIFICATION);
             push.pushSingleDevice(pushMessageDto);
-            System.out.println();
+            System.out.println(i);
         }
 
-//        for (int i = 0 ;i <= 10 ;i++ ) {
-//            PushMessageDtoIos pushMessageDto = new PushMessageDtoIos();
+//        for (int i = 0 ;i <= 1 ;i++ ) {
+//            PushMessageIosDto pushMessageDto = new PushMessageIosDto();
 //            pushMessageDto.setTitle("messageTile" +i);
 //            pushMessageDto.setContent("借酒消愁愁更愁，买根黄瓜抹点油." +i);
-//            pushMessageDto.setToken("c242772fa7ff6d3bf93fecba2b220dcf6c176cd70a2ae6994b5ac0b104beaea1");
+//            //pushMessageDto.setToken("c242772fa7ff6d3bf93fecba2b220dcf6c176cd70a2ae6994b5ac0b104beaea1");
+//            pushMessageDto.setToken("5231f01ba563ed1045bfe1628f9838464d966877f11ec4f754accf804bd5bd24");
 //
-//            System.out.println(push.pushSingleDeviceIOS(pushMessageDto));
+//           System.out.println(push.pushSingleDeviceIOS(pushMessageDto));
 //        }
 
     }

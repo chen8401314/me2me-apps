@@ -120,7 +120,7 @@ public class LiveMybatisDao {
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andIdLessThan(sinceId);
-        criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
+        criteria.andStatusEqualTo(Specification.LiveStatus.LIVING.index);
         example.setOrderByClause("id desc,status asc limit 10");
         return topicMapper.selectByExample(example);
     }
@@ -173,6 +173,15 @@ public class LiveMybatisDao {
         liveReadHistory.setUid(uid);
         liveReadHistoryMapper.insertSelective(liveReadHistory);
 
+    }
+
+    public List<TopicFragment> getBarrage(long topicId,long topId ,long bottomId ){
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andTopIdGreaterThanOrEqualTo(topicId);
+        criteria.andTopIdLessThanOrEqualTo(bottomId);
+        return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
 
 }

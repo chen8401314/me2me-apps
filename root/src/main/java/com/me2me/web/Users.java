@@ -408,4 +408,8 @@ public class Users extends BaseController {
         return userService.setUserExcellent(request.getUid());
     }
 
+    public Response logOut(UserExcellentRequest request){
+        return null;
+    }
+
 }

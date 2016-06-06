@@ -87,6 +87,8 @@ public class Live extends BaseController {
         speakDto.setFragmentImage(request.getFragmentImage());
         speakDto.setUid(request.getUid());
         speakDto.setTopicId(request.getTopicId());
+        speakDto.setTopId(request.getTopId());
+        speakDto.setBottomId(request.getBottomId());
         return liveService.speak(speakDto);
     }
 

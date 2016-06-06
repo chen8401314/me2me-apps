@@ -24,6 +24,12 @@ public class LiveTimeLineDto implements BaseEntity {
         return new LiveElement();
     }
 
+    private List<BarrageElement> barrageElements = Lists.newArrayList();
+
+    public static BarrageElement createBarrageElement(){
+        return new BarrageElement();
+    }
+
     @Data
     public static class LiveElement implements BaseEntity {
 
@@ -46,6 +52,19 @@ public class LiveTimeLineDto implements BaseEntity {
         private String fragmentImage;
 
         private String avatar;
+
+    }
+
+    @Data
+    public static class BarrageElement implements BaseEntity {
+
+        private long topId;
+
+        private long bottomId;
+
+        private int type;
+
+        private String content;
 
     }
 

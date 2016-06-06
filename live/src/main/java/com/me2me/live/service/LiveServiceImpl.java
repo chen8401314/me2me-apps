@@ -70,6 +70,15 @@ public class LiveServiceImpl implements LiveService {
         LiveTimeLineDto liveTimeLineDto = new LiveTimeLineDto();
         List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(),getLiveTimeLineDto.getSinceId());
         buildLiveTimeLine(getLiveTimeLineDto, liveTimeLineDto, fragmentList);
+        List<TopicFragment> barrageList = liveMybatisDao.getBarrage(getLiveTimeLineDto.getTopicId(),fragmentList.get(0).getId(),fragmentList.get(fragmentList.size()-1).getBottomId());
+        LiveTimeLineDto.BarrageElement barrageElement = LiveTimeLineDto.createBarrageElement();
+        for (TopicFragment topicFragment : barrageList){
+            barrageElement.setTopId(topicFragment.getTopId());
+            barrageElement.setBottomId(topicFragment.getBottomId());
+            barrageElement.setContent(topicFragment.getFragment());
+            barrageElement.setType(topicFragment.getContentType());
+            liveTimeLineDto.getBarrageElements().add(barrageElement);
+        }
         return Response.success(ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.status,ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.message,liveTimeLineDto);
     }
 
@@ -134,7 +143,7 @@ public class LiveServiceImpl implements LiveService {
             List<LiveFavorite> list = liveMybatisDao.getFavoriteList(speakDto.getTopicId());
             for(LiveFavorite liveFavorite : list) {
                 //主播发言提醒关注的人
-                userService.push(liveFavorite.getUid(),topic.getUid(),Specification.PushMessageType.LIVE.index,topic.getTitle());
+                userService.push(liveFavorite.getUid(),topic.getUid(),Specification.PushMessageType.UPDATE.index,topic.getTitle());
             }
         }else if(speakDto.getType() == Specification.LiveSpeakType.FANSWRITETAG.index){
             //粉丝贴标提醒

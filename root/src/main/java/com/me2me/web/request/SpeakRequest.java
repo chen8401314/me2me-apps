@@ -31,4 +31,12 @@ public class SpeakRequest extends Request{
     @Getter
     @Setter
     private String fragment;
+
+    @Getter
+    @Setter
+    private long topId;
+
+    @Getter
+    @Setter
+    private long bottomId;
 }

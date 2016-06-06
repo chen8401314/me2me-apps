@@ -27,4 +27,8 @@ public class SpeakDto implements BaseEntity{
     private long uid;
 
     private long topicId;
+
+    private long topId;
+
+    private long bottomId;
 }
