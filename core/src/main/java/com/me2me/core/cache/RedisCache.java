@@ -1,5 +1,6 @@
 package com.me2me.core.cache;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
@@ -17,8 +18,14 @@ public class RedisCache extends CacheProvider {
 
     private static JedisPool jedisPool = null;
 
+    @Value("#{app.redis_server}")
+    private String redisServer;
+
+    @Value("#{app.redis_port}")
+    private int redisPort;
+
     public RedisCache(){
-        jedisPool = new JedisPool("192.168.89.79",6379);
+        jedisPool = new JedisPool(redisServer,redisPort);
     }
 
     public Jedis getResource(){
