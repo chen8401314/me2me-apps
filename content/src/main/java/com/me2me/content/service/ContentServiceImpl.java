@@ -11,6 +11,8 @@ import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.*;
 
+import com.me2me.content.widget.PublishContentAdapter;
+import com.me2me.content.widget.PublishFactory;
 import com.me2me.sms.dto.PushMessageDto;
 import com.me2me.sms.service.XgPushService;
 import com.me2me.user.dto.UserInfoDto;
@@ -223,6 +225,11 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    public Response publish2(ContentDto contentDto) {
+         return new PublishContentAdapter(PublishFactory.getInstance(contentDto.getType())).execute();
+    }
+
+    @Override
     public Response publish(ContentDto contentDto) {
         CreateContentSuccessDto createContentSuccessDto = new CreateContentSuccessDto();
         String coverImage = "" ;
@@ -288,7 +295,7 @@ public class ContentServiceImpl implements ContentService {
             createContentSuccessDto.setCoverImage("");
         }
         return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
-}
+    }
 
 
     /**
