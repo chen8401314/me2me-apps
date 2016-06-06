@@ -72,7 +72,8 @@ public class Contents extends BaseController {
         contentDto.setRights(request.getRights());
         if(contentDto.getType()!=2) {
             // 用户UGC入口
-            return contentService.publish(contentDto);
+           // return contentService.publish(contentDto);
+            return contentService.publish2(contentDto);
         }else{
             // 小编发布入口
             return contentService.editorPublish(contentDto);

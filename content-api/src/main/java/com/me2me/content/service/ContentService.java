@@ -3,6 +3,7 @@ package com.me2me.content.service;
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.Content;
+import com.me2me.content.model.ContentImage;
 
 
 /**
@@ -145,5 +146,11 @@ public interface ContentService {
     int countFragment(long topicId,long uid);
 
     Response publish2(ContentDto contentDto);
+
+    void createTag(ContentDto contentDto, Content content);
+
+    void createContent(Content content);
+
+    void createContentImage(ContentImage contentImage);
 
 }

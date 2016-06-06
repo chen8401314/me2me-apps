@@ -839,7 +839,7 @@ public class UserServiceImpl implements UserService {
 //                }
 //            }
 //        }
-        new MessageNotificationAdapter(MessageNotificationFactory.getInstance(Specification.PushMessageType.LIVE_TAG.index)).notice();
+        new MessageNotificationAdapter(MessageNotificationFactory.getInstance(Specification.PushMessageType.LIVE_TAG.index)).notice(title,targetUid,sourceUid);
     }
 
     @Override

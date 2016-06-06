@@ -13,8 +13,8 @@ public class MessageNotificationAdapter {
         this.target = target;
     }
 
-    public void notice(){
-        this.target.notice();
+    public void notice(String content, long targetUid, long sourceUid){
+        this.target.notice(content,targetUid,sourceUid);
     }
 
 

@@ -8,12 +8,12 @@ import com.me2me.user.model.UserProfile;
  * Date: 2016/6/6
  * Time :17:39
  */
-public class LiveReviewMessageNotification extends AbstractMessageNotification implements MessageNotification {
+public class LiveMessageNotification extends AbstractMessageNotification implements MessageNotification {
 
     @Override
     public void notice(String title, long targetUid, long sourceUid) {
         UserProfile userProfile = userService.getUserProfileByUid(sourceUid);
-        String content = TEMPLATE_LIVE_REVIEW.replace("${title}",title).replace("${nickName}",userProfile.getNickName());
+        String content = TEMPLATE_LIVE.replace("${title}",title).replace("${nickName}",userProfile.getNickName());
         super.notice(content,targetUid,sourceUid);
     }
 }

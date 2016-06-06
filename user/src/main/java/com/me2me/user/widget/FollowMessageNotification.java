@@ -1,6 +1,7 @@
 package com.me2me.user.widget;
 
 import com.me2me.user.model.UserProfile;
+import org.springframework.stereotype.Component;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -8,12 +9,13 @@ import com.me2me.user.model.UserProfile;
  * Date: 2016/6/6
  * Time :17:39
  */
-public class LiveReviewMessageNotification extends AbstractMessageNotification implements MessageNotification {
+@Component
+public class FollowMessageNotification extends AbstractMessageNotification implements MessageNotification {
 
     @Override
     public void notice(String title, long targetUid, long sourceUid) {
         UserProfile userProfile = userService.getUserProfileByUid(sourceUid);
-        String content = TEMPLATE_LIVE_REVIEW.replace("${title}",title).replace("${nickName}",userProfile.getNickName());
+        String content = TEMPLATE_FOLLOW.replace("${nickName}",userProfile.getNickName());
         super.notice(content,targetUid,sourceUid);
     }
 }

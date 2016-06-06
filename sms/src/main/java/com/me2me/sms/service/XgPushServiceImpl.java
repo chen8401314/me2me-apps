@@ -35,7 +35,7 @@ public class XgPushServiceImpl implements XgPushService {
         Message message = buildMessage(pushMessageAndroidDto);
         XingeApp xinge = new XingeApp(ACCESS_ID, SECRET_KEY);
         JSONObject ret = xinge.pushSingleDevice(pushMessageAndroidDto.getToken(),message);
-        return getPushLogDto(pushMessageAndroidDto, ret);
+        return getPushLog(pushMessageAndroidDto.getContent(), ret);
     }
 
     @Override
@@ -43,14 +43,14 @@ public class XgPushServiceImpl implements XgPushService {
         Message message = buildMessage(pushMessageAndroidDto);
         XingeApp xinge = new XingeApp(ACCESS_ID, SECRET_KEY);
         JSONObject ret = xinge.pushAllDevice(0, message);
-        return getPushLogDto(pushMessageAndroidDto, ret);
+        return getPushLog(pushMessageAndroidDto.getContent(), ret);
     }
 
-    private PushLogDto getPushLogDto(PushMessageAndroidDto pushMessageAndroidDto, JSONObject ret) {
+    private PushLogDto getPushLog(String content, JSONObject ret) {
         int result = ret.getInt("ret_code");
         if(result != 0){
             PushLogDto pushLogDto = new PushLogDto();
-            pushLogDto.setContent(pushMessageAndroidDto.getContent());
+            pushLogDto.setContent(content);
             pushLogDto.setRetCode(result);
             return pushLogDto;
         }else{
@@ -64,19 +64,7 @@ public class XgPushServiceImpl implements XgPushService {
         XingeApp xinge = new XingeApp(ACCESS_ID_IOS, SECRET_KEY_IOS);
         JSONObject ret = xinge.pushSingleDevice(pushMessageIosDto.getToken(), message, XingeApp.IOSENV_DEV);
         System.out.print(ret);
-        return getPushLogIosDto(pushMessageIosDto, ret);
-    }
-
-    private PushLogDto getPushLogIosDto(PushMessageIosDto pushMessageIosDto, JSONObject ret) {
-        int result = ret.getInt("ret_code");
-        if(result != 0){
-            PushLogDto pushLogDto = new PushLogDto();
-            pushLogDto.setContent(pushMessageIosDto.getContent());
-            pushLogDto.setRetCode(result);
-            return pushLogDto;
-        }else{
-            return null;
-        }
+        return getPushLog(pushMessageIosDto.getContent(), ret);
     }
 
     @Override
@@ -84,7 +72,7 @@ public class XgPushServiceImpl implements XgPushService {
         MessageIOS message = buildMessageIOS(pushMessageIosDto);
         XingeApp xinge = new XingeApp(ACCESS_ID_IOS, SECRET_KEY_IOS);
         JSONObject ret = xinge.pushAllDevice(0,message,XingeApp.IOSENV_DEV);
-        return getPushLogIosDto(pushMessageIosDto, ret);
+        return getPushLog(pushMessageIosDto.getContent(), ret);
     }
 
     private Message buildMessage(PushMessageAndroidDto pushMessageAndroidDto) {

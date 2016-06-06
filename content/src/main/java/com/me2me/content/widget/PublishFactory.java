@@ -1,5 +1,7 @@
 package com.me2me.content.widget;
 
+import com.me2me.core.SpringContextHolder;
+
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 赵朋扬
@@ -14,7 +16,7 @@ public class PublishFactory {
         }else if(type==2){
             instance = new PublishLive();
         }else if(type==3){
-            instance = new PublishUGC();
+            instance = SpringContextHolder.getBean(PublishUGC.class);
         }else{
             throw new RuntimeException("参数非法....");
         }

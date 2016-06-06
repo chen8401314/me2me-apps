@@ -21,11 +21,11 @@ import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
-import com.plusnet.search.content.RecommendRequest;
-import com.plusnet.search.content.RecommendResponse;
-import com.plusnet.search.content.api.ContentRecommendService;
-import com.plusnet.search.content.domain.ContentTO;
-import com.plusnet.search.content.domain.User;
+//import com.plusnet.search.content.RecommendRequest;
+//import com.plusnet.search.content.RecommendResponse;
+//import com.plusnet.search.content.api.ContentRecommendService;
+//import com.plusnet.search.content.domain.ContentTO;
+//import com.plusnet.search.content.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -52,8 +52,8 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private ActivityService activityService;
 
-    @Autowired
-    private ContentRecommendService contentRecommendService;
+//    @Autowired
+//    private ContentRecommendService contentRecommendService;
 
     @Autowired
     private XgPushService xgPushService;
@@ -64,36 +64,36 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response recommend(long uid,String emotion) {
-        RecommendRequest recommendRequest = new RecommendRequest();
-        UserProfile userProfile = userService.getUserProfileByUid(uid);
-        User user = new User();
-        user.setBirthday(userProfile.getBirthday());
-        user.setMobilePhone(userProfile.getMobile());
-        user.setSex(userProfile.getGender()==0?"女":"男");
-        user.setUserName(userProfile.getNickName());
-        String hobbies = userService.getUserHobbyByUid(uid);
-        user.setInterests(hobbies);
-        recommendRequest.setUser(user);
-        recommendRequest.setUserId(userProfile.getUid().toString());
-        recommendRequest.setEmotion(emotion);
-        RecommendResponse recommendResponse =  contentRecommendService.recommend(recommendRequest);
-        RecommendContentDto recommendContentDto = new RecommendContentDto();
-        List<ContentTO> list = recommendResponse.getContents();
-        for(ContentTO contentTO : list){
-            RecommendContentDto.RecommendElement element = recommendContentDto.createElement();
-            element.setTitle(contentTO.getTitle());
-            element.setCoverImage(contentTO.getCover());
-            if(!contentTO.getUrl().startsWith("http://")) {
-                element.setLinkUrl(recommendDomain + contentTO.getUrl());
-                element.setType(0);
-            }else{
-                element.setLinkUrl(contentTO.getUrl());
-                element.setType(1);
-            }
-
-            recommendContentDto.getResult().add(element);
-        }
-        return Response.success(recommendContentDto);
+//        RecommendRequest recommendRequest = new RecommendRequest();
+//        UserProfile userProfile = userService.getUserProfileByUid(uid);
+//        User user = new User();
+//        user.setBirthday(userProfile.getBirthday());
+//        user.setMobilePhone(userProfile.getMobile());
+//        user.setSex(userProfile.getGender()==0?"女":"男");
+//        user.setUserName(userProfile.getNickName());
+//        String hobbies = userService.getUserHobbyByUid(uid);
+//        user.setInterests(hobbies);
+//        recommendRequest.setUser(user);
+//        recommendRequest.setUserId(userProfile.getUid().toString());
+//        recommendRequest.setEmotion(emotion);
+//        RecommendResponse recommendResponse =  contentRecommendService.recommend(recommendRequest);
+//        RecommendContentDto recommendContentDto = new RecommendContentDto();
+//        List<ContentTO> list = recommendResponse.getContents();
+//        for(ContentTO contentTO : list){
+//            RecommendContentDto.RecommendElement element = recommendContentDto.createElement();
+//            element.setTitle(contentTO.getTitle());
+//            element.setCoverImage(contentTO.getCover());
+//            if(!contentTO.getUrl().startsWith("http://")) {
+//                element.setLinkUrl(recommendDomain + contentTO.getUrl());
+//                element.setType(0);
+//            }else{
+//                element.setLinkUrl(contentTO.getUrl());
+//                element.setType(1);
+//            }
+//
+//            recommendContentDto.getResult().add(element);
+//        }
+        return Response.success();
 
     }
 
@@ -226,7 +226,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response publish2(ContentDto contentDto) {
-         return new PublishContentAdapter(PublishFactory.getInstance(contentDto.getType())).execute();
+         return new PublishContentAdapter(PublishFactory.getInstance(contentDto.getType())).execute(contentDto);
     }
 
     @Override
@@ -794,7 +794,7 @@ public class ContentServiceImpl implements ContentService {
         return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
     }
 
-    private void createTag(ContentDto contentDto, Content content) {
+    public void createTag(ContentDto contentDto, Content content) {
         if(!StringUtils.isEmpty(contentDto.getFeeling()) && contentDto.getFeeling().contains(";")){
             String[] tags = contentDto.getFeeling().split(";");
             for(String t : tags) {
@@ -817,6 +817,16 @@ public class ContentServiceImpl implements ContentService {
             contentTagsDetails.setUid(content.getUid());
             contentMybatisDao.createContentTagsDetails(contentTagsDetails);
         }
+    }
+
+    @Override
+    public void createContent(Content content) {
+        contentMybatisDao.createContent(content);
+    }
+
+    @Override
+    public void createContentImage(ContentImage contentImage) {
+        contentMybatisDao.createContentImage(contentImage);
     }
 
     @Override

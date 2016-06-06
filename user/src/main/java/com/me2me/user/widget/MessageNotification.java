@@ -11,6 +11,17 @@ import com.me2me.sms.dto.PushMessageIosDto;
  */
 public interface MessageNotification {
 
+    static final String TEMPLATE_LIVE_TAG = "你的直播：${title}收到了1个新感受";
+    static final String TEMPLATE_TAG = "你的日记：${title}收到了1个新感受";
+    static final String TEMPLATE_LIVE_REVIEW = "${nickName}评论了你的直播：${title}";
+    static final String TEMPLATE_REVIEW = "${nickName}评论了你的日记：${title}";
+    static final String TEMPLATE_LIVE_HOTTEST = "你的直播：${title}上热点啦！";
+    static final String TEMPLATE_HOTTEST = "你的日记：${title}上热点啦！";
+    static final String TEMPLATE_FOLLOW= "${nickName}关注了你";
+    static final String TEMPLATE_UPDATES = "你订阅的直播：${title}更新了";
+    static final String TEMPLATE_LIVE = "你关注的主播${nickName}有了新直播：${title}";
+
+
     /**
      * 消息提醒接口
      */
