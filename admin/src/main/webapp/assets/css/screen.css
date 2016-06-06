@@ -910,6 +910,10 @@ pre {
     text-overflow:ellipsis;
 }
 
+.jxmeitu img{
+    width:206px;
+}
+
 .qt img{
     width:203px;
     height:132px;
