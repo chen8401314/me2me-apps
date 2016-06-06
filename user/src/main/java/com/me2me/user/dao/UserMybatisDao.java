@@ -466,7 +466,7 @@ public class UserMybatisDao {
            device.setPlatform(userDevice.getPlatform());
            userDeviceMapper.updateByPrimaryKey(device);
        }else {
-           if(userDevice.getDeviceNo() == null || "".equals(userDevice.getDeviceNo())) {
+           if(!StringUtils.isEmpty(userDevice.getDeviceNo())) {
                userDeviceMapper.insertSelective(userDevice);
            }
        }
