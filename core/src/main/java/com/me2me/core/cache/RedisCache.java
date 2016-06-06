@@ -5,6 +5,8 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 
+import java.util.Set;
+
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 赵朋扬
@@ -31,5 +33,10 @@ public class RedisCache extends CacheProvider {
     @Override
     public String get(String key) {
         return getResource().get(key);
+    }
+
+    @Override
+    public Set<String> smembers(String key) {
+        return getResource().smembers(key);
     }
 }
