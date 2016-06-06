@@ -822,7 +822,7 @@ public class UserServiceImpl implements UserService {
 //                pushMessageAndroidDto.setToken(device.getDeviceNo());
 //                pushMessageAndroidDto.setMessageType(type);
 //                pushMessageAndroidDto.setContent(pushMessageDto.getContent());
-//                PushLogDto pushLogDto = xgPushService.pushSingleDevice(pushMessageAndroidDto);
+//              PushLogDto pushLogDto = xgPushService.pushSingleDevice(pushMessageAndroidDto);
 //                if (pushLogDto != null) {
 //                    pushLogDto.setMeaageType(type);
 //                    userMybatisDao.createPushLog(pushLogDto);
@@ -853,5 +853,10 @@ public class UserServiceImpl implements UserService {
         userProfile.setExcellent(1);
         userMybatisDao.modifyUserProfile(userProfile);
         return Response.success(ResponseStatus.SET_USER_EXCELLENT_SUCCESS.status,ResponseStatus.SET_USER_EXCELLENT_SUCCESS.message);
+    }
+
+    @Override
+    public void createPushLog(PushLogDto pushLogDto) {
+        userMybatisDao.createPushLog(pushLogDto);
     }
 }

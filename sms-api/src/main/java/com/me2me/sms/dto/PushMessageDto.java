@@ -30,4 +30,5 @@ public class PushMessageDto implements BaseEntity{
     //设备类型 1 Android 2 ios
     private int devicePlatform ;
 
+
 }
