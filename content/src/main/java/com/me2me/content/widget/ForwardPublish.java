@@ -11,6 +11,7 @@ import com.me2me.content.dto.ContentDto;
 public class ForwardPublish extends AbstractPublish implements Publish {
 
     public Response publish(ContentDto contentDto){
-        return super.publish(contentDto);
+        //// TODO: 2016/6/6 转发逻辑待定
+        return null;
     }
 }
