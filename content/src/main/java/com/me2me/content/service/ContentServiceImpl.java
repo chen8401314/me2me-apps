@@ -13,10 +13,8 @@ import com.me2me.content.model.*;
 
 import com.me2me.content.widget.PublishContentAdapter;
 import com.me2me.content.widget.PublishFactory;
-import com.me2me.sms.dto.PushMessageDto;
 import com.me2me.sms.service.XgPushService;
 import com.me2me.user.dto.UserInfoDto;
-import com.me2me.user.model.UserDevice;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
