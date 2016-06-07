@@ -468,9 +468,9 @@ public interface Specification {
 
     public enum DevicePlatform{
 
-        ANDROID("Android",0),
+        ANDROID("Android",1),
 
-        IOS("Ios",1);
+        IOS("Ios",2);
 
 
         public final String name;
@@ -478,6 +478,41 @@ public interface Specification {
         public final int index;
 
         DevicePlatform(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+
+    public enum LikesType{
+
+        CONTENT("原生UGC",1),
+
+        LIVE("直播",2),
+
+        ARTICLE("系统文章",3);
+
+        public final String name;
+
+        public final int index;
+
+        LikesType(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    public enum ReviewType{
+
+        CONTENT("原生UGC",1),
+
+        ARTICLE("直播",2);
+
+        public final String name;
+
+        public final int index;
+
+        ReviewType(String name,int index){
             this.name = name;
             this.index = index;
         }

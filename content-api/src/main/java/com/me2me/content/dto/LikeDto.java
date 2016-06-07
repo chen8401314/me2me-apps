@@ -18,5 +18,7 @@ public class LikeDto implements BaseEntity {
 
     private int action;
 
+    private int type;
+
 
 }

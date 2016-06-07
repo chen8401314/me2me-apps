@@ -11,8 +11,8 @@ import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.*;
 
-import com.me2me.content.widget.PublishContentAdapter;
-import com.me2me.content.widget.PublishFactory;
+import com.me2me.content.model.ContentReview;
+import com.me2me.content.widget.*;
 import com.me2me.sms.service.XgPushService;
 import com.me2me.user.dto.UserInfoDto;
 import com.me2me.user.model.UserNotice;
@@ -341,7 +341,35 @@ public class ContentServiceImpl implements ContentService {
         }
     }
 
+    /**
+     * 点赞
+     * @return
+     */
+    @Override
+    public Response like2(LikeDto likeDto) {
+        return new LikeAdapter(LikesFactory.getInstance(likeDto.getType())).execute(likeDto);
+    }
 
+    @Override
+    public void createArticleLike(LikeDto likeDto) {
+        contentMybatisDao.createArticleLike(likeDto);
+    }
+
+    @Override
+    public void createArticleReview(ReviewDto reviewDto) {
+        contentMybatisDao.createArticleReview(reviewDto);
+    }
+
+    @Override
+    public void createReview2(ReviewDto review) {
+        ContentReview contentReview = new ContentReview();
+        contentReview.setUid(review.getUid());
+        contentReview.setCid(review.getCid());
+        contentReview.setReview(review.getReview());
+        contentMybatisDao.createReview(contentReview);
+    }
+
+    @Override
     public void remind(Content content ,long uid ,int type,String arg){
         if(content.getUid() == uid){
             return;
@@ -1151,7 +1179,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response createReview(ReviewDto reviewDto) {
-        ContentReview review = new ContentReview();
+      /*  ContentReview review = new ContentReview();
         review.setReview(reviewDto.getReview());
         review.setCid(reviewDto.getCid());
         review.setUid(reviewDto.getUid());
@@ -1165,6 +1193,8 @@ public class ContentServiceImpl implements ContentService {
         //自己的日记被评论提醒
         userService.push(content.getUid(),reviewDto.getUid(),Specification.PushMessageType.REVIEW.index,content.getTitle());
         return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
+    */
+        return new ReviewAdapter(ReviewFactory.getInstance(reviewDto.getType())).execute(reviewDto);
     }
 
     @Override

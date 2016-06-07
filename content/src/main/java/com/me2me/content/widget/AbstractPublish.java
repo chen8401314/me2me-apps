@@ -1,6 +1,5 @@
 package com.me2me.content.widget;
 
-import com.me2me.activity.service.ActivityService;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;

@@ -45,6 +45,12 @@ public class ContentMybatisDao {
     @Autowired
     private ContentLikesDetailsMapper contentLikesDetailsMapper;
 
+    @Autowired
+    private ArticleLikesDetailsMapper articleLikesDetailsMapper;
+
+    @Autowired
+    private ArticleReviewMapper articleReviewMapper;
+
     public List<Content> loadSquareData(int sinceId){
         return contentMapper.loadSquareData(sinceId);
     }
@@ -322,5 +328,20 @@ public class ContentMybatisDao {
         countFragmentDto.setTopicId(topicId);
         countFragmentDto.setUid(uid);
         return contentMapper.countFragment(countFragmentDto);
+    }
+
+    public void createArticleLike(LikeDto likeDto){
+        ArticleLikesDetails articleLikesDetails = new ArticleLikesDetails();
+        articleLikesDetails.setArticleId(likeDto.getCid());
+        articleLikesDetails.setUid(likeDto.getUid());
+        articleLikesDetailsMapper.insertSelective(articleLikesDetails);
+    }
+
+    public void createArticleReview(ReviewDto reviewDto){
+        ArticleReview review = new ArticleReview();
+        review.setArticleId(reviewDto.getCid());
+        review.setReview(reviewDto.getReview());
+        review.setUid(reviewDto.getUid());
+        articleReviewMapper.insertSelective(review);
     }
 }

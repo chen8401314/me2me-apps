@@ -1,16 +1,16 @@
 package com.me2me.content.widget;
 
 import com.me2me.common.web.Response;
-import com.me2me.content.dto.LikeDto;
+import com.me2me.content.dto.ReviewDto;
 
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 代宝磊
  * Date: 2016/6/7
- * Time :13:03
+ * Time :17:44
  */
-public interface Likes {
+public interface Review {
 
-    Response likes(LikeDto likeDto);
+    Response createReview(ReviewDto reviewDto);
 
 }

@@ -164,5 +164,13 @@ public interface ContentService {
 
     void deleteContentLikesDetails(ContentLikesDetails contentLikesDetails);
 
+    Response like2(LikeDto likeDto);
+
+    void createArticleLike(LikeDto likeDto);
+
+    void createArticleReview(ReviewDto reviewDto);
+
+    void createReview2(ReviewDto review);
+
 
 }

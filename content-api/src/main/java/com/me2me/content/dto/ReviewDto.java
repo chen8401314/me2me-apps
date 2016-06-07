@@ -19,4 +19,6 @@ public class ReviewDto implements BaseEntity{
     private long cid;
 
     private String review;
+
+    private int type;
 }

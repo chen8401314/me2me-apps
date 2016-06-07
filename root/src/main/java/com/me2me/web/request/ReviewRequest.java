@@ -23,4 +23,8 @@ public class ReviewRequest extends Request{
     @Getter
     @Setter
     private String review;
+
+    @Setter
+    @Getter
+    private int type;
 }

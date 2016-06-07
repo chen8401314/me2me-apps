@@ -19,4 +19,8 @@ public class LikeRequest  extends Request {
     @Getter
     @Setter
     private int action;
+
+    @Getter
+    @Setter
+    private int type;
 }
