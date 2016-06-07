@@ -172,5 +172,6 @@ public interface ContentService {
 
     void createReview2(ReviewDto review);
 
+    Response getArticleComments(long id);
 
 }

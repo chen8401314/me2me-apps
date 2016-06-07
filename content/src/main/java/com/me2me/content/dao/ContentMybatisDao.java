@@ -344,4 +344,18 @@ public class ContentMybatisDao {
         review.setUid(reviewDto.getUid());
         articleReviewMapper.insertSelective(review);
     }
+
+    public List<ArticleLikesDetails> getArticleLikesDetails(long id){
+        ArticleLikesDetailsExample example = new ArticleLikesDetailsExample();
+        ArticleLikesDetailsExample.Criteria criteria = example.createCriteria();
+        criteria.andArticleIdEqualTo(id);
+        return articleLikesDetailsMapper.selectByExample(example);
+    }
+
+    public List<ArticleReview> getArticleReviews(long id){
+        ArticleReviewExample example = new ArticleReviewExample();
+        ArticleReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andArticleIdEqualTo(id);
+        return articleReviewMapper.selectByExample(example);
+    }
 }

@@ -9,8 +9,10 @@ import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.*;
+import com.me2me.content.mapper.ArticleReviewMapper;
 import com.me2me.content.model.*;
 
+import com.me2me.content.model.ArticleReview;
 import com.me2me.content.model.ContentReview;
 import com.me2me.content.widget.*;
 import com.me2me.sms.service.XgPushService;
@@ -367,6 +369,13 @@ public class ContentServiceImpl implements ContentService {
         contentReview.setCid(review.getCid());
         contentReview.setReview(review.getReview());
         contentMybatisDao.createReview(contentReview);
+    }
+
+    @Override
+    public Response getArticleComments(long id) {
+        List<ArticleLikesDetails> articleLikesDetails =  contentMybatisDao.getArticleLikesDetails(id);
+        List<ArticleReview> articleReviews =contentMybatisDao.getArticleReviews(id);
+        return Response.success();
     }
 
     @Override

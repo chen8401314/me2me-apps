@@ -235,4 +235,10 @@ public class Contents extends BaseController {
         return contentService.reviewList(request.getCid(),request.getSinceId());
     }
 
+    @RequestMapping(value = "/getArticleComments",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response getArticleComments(ArticleCommentsRequest request){
+        return contentService.getArticleComments(request.getId());
+    }
+
 }

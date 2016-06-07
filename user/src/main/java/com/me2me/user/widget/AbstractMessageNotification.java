@@ -25,6 +25,9 @@ public class AbstractMessageNotification {
     protected UserService userService;
 
     public void notice(String content, long targetUid, long sourceUid){
+        if(targetUid == sourceUid ){
+            return;
+        }
         UserDevice device = userService.getUserDevice(targetUid);
         if(device != null) {
             PushMessageDto pushMessageDto = new PushMessageDto();
