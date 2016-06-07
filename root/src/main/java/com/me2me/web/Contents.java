@@ -92,7 +92,7 @@ public class Contents extends BaseController {
         likeDto.setCid(request.getCid());
         likeDto.setAction(request.getAction());
         likeDto.setType(request.getType());
-        return contentService.like(likeDto);
+        return contentService.like2(likeDto);
     }
 
     /**
@@ -219,7 +219,7 @@ public class Contents extends BaseController {
         reviewDto.setUid(request.getUid());
         reviewDto.setCid(request.getCid());
         reviewDto.setReview(request.getReview());
-        reviewDto.setType(1);
+        reviewDto.setType(request.getType() == 0 ? 1: request.getType());
         return contentService.createReview(reviewDto);
     }
 
