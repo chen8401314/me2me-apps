@@ -496,7 +496,7 @@ public class UserServiceImpl implements UserService {
         userFollow.setSourceUid(followDto.getSourceUid());
         userFollow.setTargetUid(followDto.getTargetUid());
         // 判断是否已经关注过了
-        if(followDto.getAction()==Specification.UserFollowAction.FOLLOW.index) {
+        if(followDto.getAction() == Specification.UserFollowAction.FOLLOW.index) {
             // 创建关注
             if(userMybatisDao.getUserFollow(followDto.getSourceUid(),followDto.getTargetUid()) != null){
                 return Response.failure(ResponseStatus.CAN_NOT_DUPLICATE_FOLLOW.status,ResponseStatus.CAN_NOT_DUPLICATE_FOLLOW.message);

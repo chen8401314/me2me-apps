@@ -111,7 +111,7 @@ public interface Specification {
 
         ORIGIN("原生",0),
 
-        FORWARD("转载",1),
+        FORWARD_UGC("转发UGC",1),
 
         EDITOR("小编",2),
 
@@ -119,7 +119,12 @@ public interface Specification {
 
         ACTIVITY("活动",4),
 
-        SYSTEM("系统",5);
+        SYSTEM("系统",5),
+
+        FORWARD_LIVE("转发直播",6),
+
+        FORWARD_ARTICLE("转啊系统文章",7);
+
 
         public final String name;
 

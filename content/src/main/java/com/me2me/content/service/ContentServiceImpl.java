@@ -248,7 +248,7 @@ public class ContentServiceImpl implements ContentService {
             // 原生文章
             // 参与活动入口
             activityService.joinActivity(contentDto.getContent(),contentDto.getUid());
-        }else if(content.getType() == Specification.ArticleType.FORWARD.index){
+        }else if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
             // 转载文章(暂未启用)
 //            long forwardCid = contentDto.getForwardCid();
 //            Content forwardContent = contentMybatisDao.getContentById(forwardCid);
@@ -342,7 +342,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
 
-    private void remind(Content content ,long uid ,int type,String arg){
+    public void remind(Content content ,long uid ,int type,String arg){
         if(content.getUid() == uid){
             return;
         }
@@ -425,6 +425,11 @@ public class ContentServiceImpl implements ContentService {
                 }
             }
         }
+    }
+
+    @Override
+    public void deleteContentLikesDetails(ContentLikesDetails contentLikesDetails) {
+        contentMybatisDao.deleteContentLikesDetails(contentLikesDetails);
     }
 
 
@@ -825,6 +830,21 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public void createContentImage(ContentImage contentImage) {
         contentMybatisDao.createContentImage(contentImage);
+    }
+
+    @Override
+    public Content getContentById(long id) {
+        return contentMybatisDao.getContentById(id);
+    }
+
+    @Override
+    public ContentLikesDetails getContentLikesDetails(ContentLikesDetails contentLikesDetails) {
+        return  contentMybatisDao.getContentLikesDetails(contentLikesDetails);
+    }
+
+    @Override
+    public void createContentLikesDetails(ContentLikesDetails contentLikesDetails) {
+        contentMybatisDao.createContentLikesDetails(contentLikesDetails);
     }
 
     @Override
