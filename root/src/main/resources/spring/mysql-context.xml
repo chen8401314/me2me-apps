@@ -13,6 +13,7 @@
         <property name="initialSize" value="#{app.jdbcInitialSize}" />
         <property name="maxWait" value="#{app.jdbcMaxWait}" />
         <property name="minIdle" value="#{app.jdbcMinIdle}" />
+        <property name="defaultAutoCommit" value="false"/>
         <property name="timeBetweenEvictionRunsMillis" value="3000" />
         <property name="minEvictableIdleTimeMillis" value="300000" />
         <property name="validationQuery" value="SELECT 'x'" />
