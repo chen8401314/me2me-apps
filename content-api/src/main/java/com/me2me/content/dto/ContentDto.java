@@ -37,6 +37,8 @@ public class ContentDto implements BaseEntity {
 
     private int rights;
 
+    private String forWardUrl;
+
 
 
 }

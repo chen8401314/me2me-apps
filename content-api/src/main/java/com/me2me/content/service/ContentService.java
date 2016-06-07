@@ -4,6 +4,7 @@ import com.me2me.common.web.Response;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.Content;
 import com.me2me.content.model.ContentImage;
+import com.me2me.content.model.ContentLikesDetails;
 
 
 /**
@@ -152,5 +153,16 @@ public interface ContentService {
     void createContent(Content content);
 
     void createContentImage(ContentImage contentImage);
+
+    Content getContentById(long id);
+
+    ContentLikesDetails getContentLikesDetails(ContentLikesDetails contentLikesDetails);
+
+    void createContentLikesDetails(ContentLikesDetails contentLikesDetails);
+
+    void remind(Content content ,long uid ,int type,String arg);
+
+    void deleteContentLikesDetails(ContentLikesDetails contentLikesDetails);
+
 
 }

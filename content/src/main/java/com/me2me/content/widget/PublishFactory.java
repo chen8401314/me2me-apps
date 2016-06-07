@@ -16,7 +16,7 @@ public class PublishFactory {
             instance = SpringContextHolder.getBean(PublishUGC.class);
         }else if(type == Specification.ArticleType.LIVE.index){
             instance = SpringContextHolder.getBean(PublishLive.class);
-        }else if(type == Specification.ArticleType.FORWARD.index){
+        }else if(type == Specification.ArticleType.FORWARD_ARTICLE.index){
             instance = SpringContextHolder.getBean(ForwardPublish.class);
         }else{
             throw new RuntimeException("参数非法....");
