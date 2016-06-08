@@ -17,14 +17,10 @@ public class RedisCache extends CacheProvider {
 
     private static JedisPool jedisPool = null;
 
-    @Value("#{app.redis_server}")
-    private String redisServer;
 
-    @Value("#{app.redis_port}")
-    private int redisPort;
 
     public RedisCache(){
-        jedisPool = new JedisPool(redisServer,redisPort);
+//        jedisPool = new JedisPool(redisServer,redisPort);
     }
 
     public Jedis getResource(){
