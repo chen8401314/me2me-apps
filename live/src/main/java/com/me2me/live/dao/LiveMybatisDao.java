@@ -179,7 +179,7 @@ public class LiveMybatisDao {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
-        criteria.andTopIdGreaterThanOrEqualTo(topicId);
+        criteria.andTopIdGreaterThanOrEqualTo(topId);
         criteria.andTopIdLessThanOrEqualTo(bottomId);
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }

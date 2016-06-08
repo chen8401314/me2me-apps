@@ -352,10 +352,12 @@ public class ContentMybatisDao {
         return articleLikesDetailsMapper.selectByExample(example);
     }
 
-    public List<ArticleReview> getArticleReviews(long id){
+    public List<ArticleReview> getArticleReviews(long id ,long sinceId){
         ArticleReviewExample example = new ArticleReviewExample();
         ArticleReviewExample.Criteria criteria = example.createCriteria();
         criteria.andArticleIdEqualTo(id);
+        criteria.andIdLessThan(sinceId);
+        example.setOrderByClause(" id desc limit 10 ");
         return articleReviewMapper.selectByExample(example);
     }
 }

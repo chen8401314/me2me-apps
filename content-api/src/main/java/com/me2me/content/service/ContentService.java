@@ -174,4 +174,6 @@ public interface ContentService {
 
     Response getArticleComments(long id);
 
+    Response getArticleReview(long id, long sinceId);
+
 }

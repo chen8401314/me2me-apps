@@ -70,14 +70,16 @@ public class LiveServiceImpl implements LiveService {
         LiveTimeLineDto liveTimeLineDto = new LiveTimeLineDto();
         List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(),getLiveTimeLineDto.getSinceId());
         buildLiveTimeLine(getLiveTimeLineDto, liveTimeLineDto, fragmentList);
-        List<TopicFragment> barrageList = liveMybatisDao.getBarrage(getLiveTimeLineDto.getTopicId(),fragmentList.get(0).getId(),fragmentList.get(fragmentList.size()-1).getBottomId());
-        LiveTimeLineDto.BarrageElement barrageElement = LiveTimeLineDto.createBarrageElement();
-        for (TopicFragment topicFragment : barrageList){
-            barrageElement.setTopId(topicFragment.getTopId());
-            barrageElement.setBottomId(topicFragment.getBottomId());
-            barrageElement.setContent(topicFragment.getFragment());
-            barrageElement.setType(topicFragment.getContentType());
-            liveTimeLineDto.getBarrageElements().add(barrageElement);
+        if(fragmentList.size() > 0) {
+            List<TopicFragment> barrageList = liveMybatisDao.getBarrage(getLiveTimeLineDto.getTopicId(), fragmentList.get(0).getId(), fragmentList.get(fragmentList.size() - 1).getId());
+            LiveTimeLineDto.BarrageElement barrageElement = LiveTimeLineDto.createBarrageElement();
+            for (TopicFragment topicFragment : barrageList) {
+                barrageElement.setTopId(topicFragment.getTopId());
+                barrageElement.setBottomId(topicFragment.getBottomId());
+                barrageElement.setContent(topicFragment.getFragment());
+                barrageElement.setType(topicFragment.getContentType());
+                liveTimeLineDto.getBarrageElements().add(barrageElement);
+            }
         }
         return Response.success(ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.status,ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.message,liveTimeLineDto);
     }

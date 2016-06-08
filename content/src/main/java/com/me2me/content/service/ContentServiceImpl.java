@@ -373,9 +373,26 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response getArticleComments(long id) {
+        ShowArticleCommentsDto showArticleCommentsDto = new ShowArticleCommentsDto();
         List<ArticleLikesDetails> articleLikesDetails =  contentMybatisDao.getArticleLikesDetails(id);
-        List<ArticleReview> articleReviews =contentMybatisDao.getArticleReviews(id);
-        return Response.success();
+        List<ArticleReview> articleReviews = contentMybatisDao.getArticleReviews(id ,Integer.MAX_VALUE);
+        if(articleReviews.size() > 3) {
+            articleReviews = articleReviews.subList(0,2);
+        }
+        showArticleCommentsDto.setLikeCount(articleLikesDetails.size());
+        showArticleCommentsDto.setReviewCunt(articleReviews.size());
+        for(ArticleReview articleReview : articleReviews) {
+            ShowArticleCommentsDto.ReviewElement reviewElement = ShowArticleCommentsDto.createElement();
+            reviewElement.setUid(articleReview.getUid());
+            reviewElement.setCreateTime(articleReview.getCreateTime());
+            reviewElement.setReview(articleReview.getReview());
+            UserProfile userProfile = userService.getUserProfileByUid(articleReview.getUid());
+            reviewElement.setNickName(userProfile.getNickName());
+            reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar() );
+            showArticleCommentsDto.getReviews().add(reviewElement);
+        }
+
+        return Response.success(showArticleCommentsDto);
     }
 
     @Override
@@ -1319,6 +1336,24 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public int countFragment(long topicId ,long uid){
         return contentMybatisDao.countFragment(topicId,uid);
+    }
+
+
+    @Override
+    public Response getArticleReview(long id, long sinceId) {
+        ShowArticleReviewDto showArticleReviewDto = new ShowArticleReviewDto();
+        List<ArticleReview> articleReviews = contentMybatisDao.getArticleReviews(id ,sinceId);
+        for(ArticleReview articleReview : articleReviews) {
+            ShowArticleReviewDto.ReviewElement reviewElement = ShowArticleReviewDto.createElement();
+            reviewElement.setUid(articleReview.getUid());
+            reviewElement.setCreateTime(articleReview.getCreateTime());
+            reviewElement.setReview(articleReview.getReview());
+            UserProfile userProfile = userService.getUserProfileByUid(articleReview.getUid());
+            reviewElement.setNickName(userProfile.getNickName());
+            reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar() );
+            showArticleReviewDto.getReviews().add(reviewElement);
+        }
+        return Response.success(showArticleReviewDto);
     }
 
 }
