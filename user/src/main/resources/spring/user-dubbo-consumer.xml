@@ -9,4 +9,7 @@
 
     <dubbo:reference interface="com.me2me.sms.service.SmsService" id="smsService"/>
 
+    <dubbo:reference interface="com.me2me.sms.service.XgPushService" id="xgPushService"/>
+
+
 </beans>
