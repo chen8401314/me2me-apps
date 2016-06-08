@@ -6,10 +6,8 @@ import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
-import com.me2me.core.cache.RedisCache;
 import com.me2me.sms.dto.*;
 import com.me2me.sms.service.SmsService;
-import com.me2me.sms.service.XgPushService;
 import com.me2me.user.dao.OldUserJdbcDao;
 import com.me2me.user.dao.UserInitJdbcDao;
 import com.me2me.user.dao.UserMybatisDao;
@@ -44,11 +42,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private SmsService smsService;
 
-    @Autowired
-    private XgPushService xgPushService;
-
-    @Autowired
-    private RedisCache redisCache;
 
 
     /**
