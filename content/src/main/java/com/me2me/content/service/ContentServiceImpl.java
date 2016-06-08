@@ -13,7 +13,6 @@ import com.me2me.content.model.*;
 import com.me2me.content.model.ArticleReview;
 import com.me2me.content.model.ContentReview;
 import com.me2me.content.widget.*;
-import com.me2me.sms.service.XgPushService;
 import com.me2me.user.dto.UserInfoDto;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
@@ -52,10 +51,6 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private ContentRecommendService contentRecommendService;
-
-    @Autowired
-    private XgPushService xgPushService;
-
 
     @Value("#{app.recommend_domain}")
     private String recommendDomain;
