@@ -5,6 +5,7 @@ import com.me2me.sms.dto.PushMessageAndroidDto;
 import com.me2me.sms.dto.PushMessageIosDto;
 import com.tencent.xinge.*;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,29 +17,32 @@ import org.springframework.stereotype.Service;
 @Service
 public class XgPushServiceImpl implements XgPushService {
 
-    //private static final String SECRET_KEY = "735da3540ee6dfa534e3549e8367c46f";
+    private static final String SECRET_KEY = "735da3540ee6dfa534e3549e8367c46f";
 
-    private static final String SECRET_KEY = "f918d18b3a2a6fcd4940c51b09001095";
-
-
-    //private static final String SECRET_KEY_IOS = "1a4120d4fc7cfa4dde4705f0d2f14c4a";
-
-    private static final String SECRET_KEY_IOS = "f18275d8ed27a934a053a15ad1d4658f";
+    //private static final String SECRET_KEY = "f918d18b3a2a6fcd4940c51b09001095";
 
 
-    //private static final long ACCESS_ID = 2100199603L;
+    private static final String SECRET_KEY_IOS = "1a4120d4fc7cfa4dde4705f0d2f14c4a";
 
-    private static final long ACCESS_ID = 2100202664L;
+    //private static final String SECRET_KEY_IOS = "f18275d8ed27a934a053a15ad1d4658f";
 
-    //private static final long ACCESS_ID_IOS = 2200199604L;
 
-    private static final long ACCESS_ID_IOS = 2200202665L;
+    private static final long ACCESS_ID = 2100199603L;
+
+    //private static final long ACCESS_ID = 2100202664L;
+
+    private static final long ACCESS_ID_IOS = 2200199604L;
+
+    //private static final long ACCESS_ID_IOS = 2200202665L;
 
     private static final int EXPIRE_TIME = 86400;
 
     private static final int EXPIRE_TIME_IOS = 86400;
 
     private static final int BADGE_IOS = 1;
+
+    @Value("#{app.IOS_PUSH_ENV}")
+    private String IOS_PUSH_ENV;
 
     @Override
     public PushLogDto pushSingleDevice(PushMessageAndroidDto pushMessageAndroidDto) {
@@ -73,8 +77,12 @@ public class XgPushServiceImpl implements XgPushService {
     public PushLogDto pushSingleDeviceIOS(PushMessageIosDto pushMessageIosDto) {
         MessageIOS message = buildMessageIOS(pushMessageIosDto);
         XingeApp xinge = new XingeApp(ACCESS_ID_IOS, SECRET_KEY_IOS);
-        JSONObject ret = xinge.pushSingleDevice(pushMessageIosDto.getToken(), message, XingeApp.IOSENV_PROD);
-        System.out.print(ret);
+        JSONObject ret = null;
+        if(IOS_PUSH_ENV.equals("product")){
+            ret = xinge.pushSingleDevice(pushMessageIosDto.getToken(), message,XingeApp.IOSENV_PROD);
+        }else{
+            ret = xinge.pushSingleDevice(pushMessageIosDto.getToken(), message,XingeApp.IOSENV_DEV);
+        }
         return getPushLog(pushMessageIosDto.getContent(), ret);
     }
 
@@ -82,7 +90,12 @@ public class XgPushServiceImpl implements XgPushService {
     public PushLogDto pushAllDeviceIOS(PushMessageIosDto pushMessageIosDto)  {
         MessageIOS message = buildMessageIOS(pushMessageIosDto);
         XingeApp xinge = new XingeApp(ACCESS_ID_IOS, SECRET_KEY_IOS);
-        JSONObject ret = xinge.pushAllDevice(0,message,XingeApp.IOSENV_DEV);
+        JSONObject ret = null;
+        if(IOS_PUSH_ENV.equals("product")){
+            ret = xinge.pushAllDevice(0,message,XingeApp.IOSENV_PROD);
+        }else{
+            ret = xinge.pushAllDevice(0,message,XingeApp.IOSENV_DEV);
+        }
         return getPushLog(pushMessageIosDto.getContent(), ret);
     }
 
