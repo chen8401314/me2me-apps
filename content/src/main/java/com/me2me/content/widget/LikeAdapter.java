@@ -2,7 +2,6 @@ package com.me2me.content.widget;
 
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.LikeDto;
-import lombok.Setter;
 import org.springframework.stereotype.Component;
 
 /**
