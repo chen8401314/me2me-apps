@@ -6,6 +6,7 @@ import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.core.SpringContextHolder;
 import com.me2me.sms.dto.*;
 import com.me2me.sms.service.SmsService;
 import com.me2me.user.dao.OldUserJdbcDao;
@@ -760,6 +761,9 @@ public class UserServiceImpl implements UserService {
     }
 
 
+    @Autowired
+    private MessageNotificationAdapter messageNotificationAdapter;
+
     /**
      * 提醒
      * @param targetUid
@@ -832,7 +836,11 @@ public class UserServiceImpl implements UserService {
 //                }
 //            }
 //        }
-        new MessageNotificationAdapter(MessageNotificationFactory.getInstance(type)).notice(title,targetUid,sourceUid);
+        // new MessageNotificationAdapter(MessageNotificationFactory.getInstance(type)).notice(title,targetUid,sourceUid);
+        // fix by peter
+        // MessageNotificationAdapter messageNotificationAdapter = SpringContextHolder.getBean(MessageNotificationAdapter.class);
+        messageNotificationAdapter.setType(type);
+        messageNotificationAdapter.notice(title,targetUid,sourceUid);
     }
 
     @Override
