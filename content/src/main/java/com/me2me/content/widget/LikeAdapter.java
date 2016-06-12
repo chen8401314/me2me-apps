@@ -1,12 +1,8 @@
 package com.me2me.content.widget;
 
-import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
-import com.me2me.common.web.ResponseStatus;
-import com.me2me.common.web.Specification;
 import com.me2me.content.dto.LikeDto;
 import lombok.Setter;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
 /**
@@ -16,25 +12,10 @@ import org.springframework.stereotype.Component;
  * Time :13:35
  */
 @Component
-public class LikeAdapter implements InitializingBean {
-
-    private Likes target;
-
-    @Setter
-    private int type;
+public class LikeAdapter {
 
     public Response execute(LikeDto likeDto){
-        try {
-            afterPropertiesSet();
-            return target.likes(likeDto);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status,ResponseStatus.ILLEGAL_REQUEST.message);
+        return LikesFactory.getInstance(likeDto.getType()).likes(likeDto);
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        this.target = LikesFactory.getInstance(type);
-    }
 }
