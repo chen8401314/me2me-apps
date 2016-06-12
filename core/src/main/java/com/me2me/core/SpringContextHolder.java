@@ -3,6 +3,7 @@ package com.me2me.core;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 /**
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Component;
  * Author: 赵朋扬
  * Date: 2016/6/6.
  */
+@Lazy(false)
 @Component
 public class SpringContextHolder implements ApplicationContextAware {
 

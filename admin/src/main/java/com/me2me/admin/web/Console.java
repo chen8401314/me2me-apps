@@ -6,6 +6,7 @@ import com.me2me.admin.web.request.ContentForwardRequest;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentH5Dto;
 import com.me2me.content.service.ContentService;
+import com.plusnet.common.util.StringEscapeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -53,7 +54,7 @@ public class Console  {
             if (content.getType() != Specification.ArticleType.EDITOR.index) {
                 // 处理特殊字符
                 String cx = content.getContent();
-//                cx = StringEscapeUtil.escapeHtml(cx);
+                cx = StringEscapeUtil.escapeHtml(cx);
                 cx = cx.replace("\n", "<br/>");
                 content.setContent(cx);
             }

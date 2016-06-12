@@ -14,6 +14,7 @@ public class BaseController {
     @ExceptionHandler(RuntimeException.class)
     @ResponseBody
     public Response init(RuntimeException e){
+        e.printStackTrace();
         return Response.failure(e.getMessage());
     }
 

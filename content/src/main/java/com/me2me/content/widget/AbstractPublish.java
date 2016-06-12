@@ -23,6 +23,7 @@ public class AbstractPublish {
     protected ContentService contentService;
 
     public Response publish(ContentDto contentDto) {
+        System.out.println("abstract publish start .....");
         CreateContentSuccessDto createContentSuccessDto = new CreateContentSuccessDto();
         String coverImage = "" ;
         Content content = new Content();
