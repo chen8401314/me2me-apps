@@ -32,6 +32,8 @@
         <module>sms</module>
         <module>article</module>
         <module>article-api</module>
+        <module>cache-api</module>
+        <module>cache</module>
     </modules>
 
     <properties>
