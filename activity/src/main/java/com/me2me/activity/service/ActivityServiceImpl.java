@@ -9,6 +9,7 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -23,6 +24,7 @@ import java.util.regex.Pattern;
  * Date: 2016/4/27.
  */
 @Service
+@Slf4j
 public class ActivityServiceImpl implements ActivityService {
 
     @Autowired
@@ -49,6 +51,7 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public Response showActivity(int page, int pageSize,String keyword) {
+        log.info("show activity ... start ");
         ShowActivityDto showActivityDto = new ShowActivityDto();
         List<ActivityWithBLOBs> list = activityMybatisDao.showActivity(page,pageSize,keyword);
         for(ActivityWithBLOBs activity : list){
@@ -71,7 +74,8 @@ public class ActivityServiceImpl implements ActivityService {
         showActivityDto.setTotal(activityMybatisDao.total(keyword));
         int totalPage = (activityMybatisDao.total(keyword) + pageSize - 1)/pageSize;
         showActivityDto.setTotalPage(totalPage);
-        return Response.success(200,"数据加载成功！",showActivityDto);
+        log.info("show activity ... end ");
+        return Response.success(showActivityDto);
     }
 
     @Override
