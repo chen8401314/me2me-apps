@@ -2,7 +2,11 @@ package com.me2me.cache;
 
 import com.google.common.eventbus.AsyncEventBus;
 import com.google.common.eventbus.EventBus;
+import com.me2me.cache.service.CacheService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.core.env.StandardEnvironment;
 
 import java.util.concurrent.CountDownLatch;
 
@@ -23,5 +27,11 @@ public class Bootstrap {
 //        });
 //        CountDownLatch countDownLatch = new CountDownLatch(1);
 //        countDownLatch.await();
+
+        ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:spring/cache-context.xml");
+        CacheService cacheService = ctx.getBean(CacheService.class);
+        cacheService.set("fdsfd","fdsfds");
+
+
     }
 }
