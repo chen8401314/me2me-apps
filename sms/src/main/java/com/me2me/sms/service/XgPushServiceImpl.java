@@ -44,6 +44,7 @@ public class XgPushServiceImpl implements XgPushService {
     @Value("#{app.IOS_PUSH_ENV}")
     private String IOS_PUSH_ENV;
 
+
     @Override
     public PushLogDto pushSingleDevice(PushMessageAndroidDto pushMessageAndroidDto) {
         Message message = buildMessage(pushMessageAndroidDto);
@@ -131,7 +132,8 @@ public class XgPushServiceImpl implements XgPushService {
             PushMessageAndroidDto pushMessageDto = new PushMessageAndroidDto();
             pushMessageDto.setTitle("xinge test new" +i);
             pushMessageDto.setContent("xinge test new" +i);
-            //pushMessageDto.setToken("12f5ebc2b33728c446d8a649d5f6788f0711fbbc");
+            //pushMessageDto.setToken("
+            // ");
             pushMessageDto.setToken("5948d751e20f5b1e46edaec58feaa5ef3ba35128");
             pushMessageDto.setMessageType(Message.TYPE_NOTIFICATION);
             push.pushSingleDevice(pushMessageDto);

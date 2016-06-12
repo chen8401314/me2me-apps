@@ -20,7 +20,12 @@ public class MessageNotificationAdapter implements InitializingBean {
 
 
     public void notice(String content, long targetUid, long sourceUid){
-        this.target.notice(content,targetUid,sourceUid);
+        try {
+            afterPropertiesSet();
+            this.target.notice(content,targetUid,sourceUid);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 

@@ -15,4 +15,6 @@ public class Constant {
 
     public static final String RECOMMEND_DOMAIN = "http://192.168.89.105";
 
+    public static final String ENV_PUSH_PROD = "product";
+
 }
