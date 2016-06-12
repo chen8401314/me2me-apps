@@ -52,6 +52,12 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private ContentRecommendService contentRecommendService;
 
+    @Autowired
+    private PublishContentAdapter publishContentAdapter;
+
+    @Autowired
+    private LikeAdapter likeAdapter;
+
     @Value("#{app.recommend_domain}")
     private String recommendDomain;
 
@@ -218,7 +224,9 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response publish2(ContentDto contentDto) {
-         return new PublishContentAdapter(PublishFactory.getInstance(contentDto.getType())).execute(contentDto);
+      //   return new PublishContentAdapter(PublishFactory.getInstance(contentDto.getType())).execute(contentDto);
+        publishContentAdapter.setType(contentDto.getType());
+        return publishContentAdapter.execute(contentDto);
     }
 
     @Override
@@ -341,7 +349,9 @@ public class ContentServiceImpl implements ContentService {
      */
     @Override
     public Response like2(LikeDto likeDto) {
-        return new LikeAdapter(LikesFactory.getInstance(likeDto.getType())).execute(likeDto);
+//        return new LikeAdapter(LikesFactory.getInstance(likeDto.getType())).execute(likeDto);
+        likeAdapter.setType(likeDto.getType());
+        return likeAdapter.execute(likeDto);
     }
 
     @Override
