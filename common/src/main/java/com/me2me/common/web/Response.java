@@ -137,8 +137,6 @@ public class Response<T extends Serializable> implements BaseEntity  {
     }
 
     public void refreshAccessToken(){
-        String accessToken = this.getAccessToken();
-        // put to redis cache
         this.accessToken = SecurityUtils.getAccessToken();
     }
 

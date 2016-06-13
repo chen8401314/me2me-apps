@@ -1,5 +1,7 @@
 package com.me2me.cache.service;
 
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -8,5 +10,14 @@ import org.springframework.stereotype.Service;
  * Date: 2016/6/12.
  */
 @Service
+@Slf4j
 public class CacheServiceImpl implements CacheService {
+
+    @Value("#{app.logRoot}")
+    private String logRoot;
+
+    @Override
+    public void set(String key, String value) {
+        log.info("set members ... ");
+    }
 }

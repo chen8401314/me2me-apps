@@ -6,4 +6,7 @@ package com.me2me.cache.service;
  * Date: 2016/6/12.
  */
 public interface CacheService {
+
+    void set(String key,String value);
+
 }
