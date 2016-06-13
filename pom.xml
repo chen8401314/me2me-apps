@@ -34,6 +34,8 @@
         <module>article-api</module>
         <module>cache-api</module>
         <module>cache</module>
+        <module>monitor-api</module>
+        <module>monitor</module>
     </modules>
 
     <properties>
