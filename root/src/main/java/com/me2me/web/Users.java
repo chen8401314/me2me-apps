@@ -408,8 +408,10 @@ public class Users extends BaseController {
         return userService.setUserExcellent(request.getUid());
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/logout",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response logout(LogoutRequest request){
-        return null;
+        return userService.logout(request.getUid());
     }
 
 }
