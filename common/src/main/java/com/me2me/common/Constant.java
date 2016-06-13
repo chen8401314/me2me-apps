@@ -17,4 +17,6 @@ public class Constant {
 
     public static final String ENV_PUSH_PROD = "product";
 
+    public static final String OLD_USER_ENCRYPT = "123456";
+
 }

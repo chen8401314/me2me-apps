@@ -115,6 +115,11 @@ public enum  ResponseStatus {
 
     LOGOUT_SUCCESS("退出成功","logout success",20051),
 
+    FORWARD_SUCCESS("转发成功","user publish article success",20052),
+
+
+
+
 
 
 
@@ -181,7 +186,7 @@ public enum  ResponseStatus {
 
     USER_MODIFY_ENCRYPT_THE_SAME_ERROR("老密码和新密码一样，不能修改"," user the old and new password are the same",50026),
 
-
+    FORWARD_CONTENT_NOT_EXISTS("转发的原内容不存在","forward content not exists",20027),
 
 
 
