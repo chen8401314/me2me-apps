@@ -13,11 +13,14 @@ import com.me2me.content.model.*;
 import com.me2me.content.model.ArticleReview;
 import com.me2me.content.model.ContentReview;
 import com.me2me.content.widget.*;
+import com.me2me.core.event.ApplicationEventBus;
+import com.me2me.monitor.event.MonitorEvent;
 import com.me2me.user.dto.UserInfoDto;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
+import com.plusnet.forecast.domain.ForecastContent;
 import com.plusnet.search.content.RecommendRequest;
 import com.plusnet.search.content.RecommendResponse;
 import com.plusnet.search.content.api.ContentRecommendService;
@@ -64,6 +67,9 @@ public class ContentServiceImpl implements ContentService {
     @Value("#{app.recommend_domain}")
     private String recommendDomain;
 
+    @Autowired
+    private ApplicationEventBus applicationEventBus;
+
     @Override
     public Response recommend(long uid,String emotion) {
         RecommendRequest recommendRequest = new RecommendRequest();
@@ -80,8 +86,9 @@ public class ContentServiceImpl implements ContentService {
         recommendRequest.setEmotion(emotion);
         RecommendResponse recommendResponse =  contentRecommendService.recommend(recommendRequest);
         RecommendContentDto recommendContentDto = new RecommendContentDto();
-        List<ContentTO> list = recommendResponse.getContents();
-        for(ContentTO contentTO : list){
+        List<ForecastContent> list = recommendResponse.getContents();
+        for(ForecastContent forecastContent : list){
+            ContentTO contentTO = forecastContent.getContent();
             RecommendContentDto.RecommendElement element = recommendContentDto.createElement();
             element.setTitle(contentTO.getTitle());
             element.setCoverImage(contentTO.getCover());
@@ -326,6 +333,7 @@ public class ContentServiceImpl implements ContentService {
                 }else{
                     return Response.success(ResponseStatus.CONTENT_USER_LIKES_ALREADY.status,ResponseStatus.CONTENT_USER_LIKES_ALREADY.message);
                 }
+                applicationEventBus.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LIKE.index,0,likeDto.getUid()));
                 return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
             }else{
                 if(details == null) {
@@ -340,6 +348,7 @@ public class ContentServiceImpl implements ContentService {
 
                     contentMybatisDao.deleteContentLikesDetails(contentLikesDetails);
                 }
+                applicationEventBus.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.UN_LIKE.index,0,likeDto.getUid()));
                 return Response.success(ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.message);
             }
         }
@@ -593,6 +602,7 @@ public class ContentServiceImpl implements ContentService {
         contentMybatisDao.updateContentById(content);
         //添加提醒 UGC贴标签
         userService.push(content.getUid(),writeTagDto.getUid(),Specification.PushMessageType.TAG.index,content.getTitle());
+        applicationEventBus.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FEELING_TAG.index,0,writeTagDto.getUid()));
         return Response.success(ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.status,ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.message);
     }
 
@@ -675,7 +685,7 @@ public class ContentServiceImpl implements ContentService {
             }
 
         }
-
+        applicationEventBus.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.CONTENT_VIEW.index,0,uid));
         return Response.success(contentDetailDto);
     }
 
@@ -1074,6 +1084,7 @@ public class ContentServiceImpl implements ContentService {
             }
             hottestDto.getHottestContentData().add(hottestContentElement);
         }
+        applicationEventBus.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.HOTTEST.index,0,uid));
         return Response.success(hottestDto);
     }
 
@@ -1140,6 +1151,7 @@ public class ContentServiceImpl implements ContentService {
             }
             showNewestDto.getNewestData().add(contentElement);
         }
+        applicationEventBus.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.NEWEST.index,0,uid));
         return Response.success(showNewestDto);
     }
 
@@ -1203,6 +1215,7 @@ public class ContentServiceImpl implements ContentService {
                 contentElement.getReviews().add(reviewElement);
             }
         }
+        applicationEventBus.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW_LIST.index,0,uid));
         return Response.success(showAttentionDto);
     }
 
@@ -1224,6 +1237,7 @@ public class ContentServiceImpl implements ContentService {
         return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
     */
         //return new ReviewAdapter(ReviewFactory.getInstance(reviewDto.getType())).execute(reviewDto);
+        applicationEventBus.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REVIEW.index,0,reviewDto.getUid()));
         return reviewAdapter.execute(reviewDto);
     }
 

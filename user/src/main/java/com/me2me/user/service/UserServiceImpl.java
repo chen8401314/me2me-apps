@@ -6,6 +6,8 @@ import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.core.event.ApplicationEventBus;
+import com.me2me.monitor.event.MonitorEvent;
 import com.me2me.sms.dto.*;
 import com.me2me.sms.service.SmsService;
 import com.me2me.user.dao.OldUserJdbcDao;
@@ -42,6 +44,10 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private SmsService smsService;
+
+    @Autowired
+    private ApplicationEventBus applicationEventBus;
+
 
     /**
      * 用户注册
@@ -110,6 +116,7 @@ public class UserServiceImpl implements UserService {
         signUpSuccessDto.setGender(up.getGender());
         signUpSuccessDto.setYearId(up.getYearsId());
         log.info("signUp end ...");
+        applicationEventBus.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
 
@@ -153,6 +160,7 @@ public class UserServiceImpl implements UserService {
                 userMybatisDao.updateUserDevice(device);
                 log.info("update user device success");
                 log.info("login end ...");
+                applicationEventBus.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LOGIN.index,0,user.getUid()));
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status,ResponseStatus.USER_LOGIN_SUCCESS.message,loginSuccessDto);
             }else{
                 log.info("user password error");
@@ -522,6 +530,7 @@ public class UserServiceImpl implements UserService {
             userMybatisDao.createFollow(userFollow);
             //关注提醒
             push(followDto.getTargetUid(),followDto.getSourceUid(),Specification.PushMessageType.FOLLOW.index,null);
+            applicationEventBus.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW.index,0,followDto.getSourceUid()));
             return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message);
         }else if(followDto.getAction()==Specification.UserFollowAction.UN_FOLLOW.index){
             // 取消关注
@@ -529,6 +538,7 @@ public class UserServiceImpl implements UserService {
             if(ufw!=null) {
                 userMybatisDao.deleteFollow(ufw.getId());
             }
+            applicationEventBus.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.UN_FOLLOW.index,0,followDto.getSourceUid()));
             return Response.success(ResponseStatus.USER_CANCEL_FOLLOW_SUCCESS.status, ResponseStatus.USER_CANCEL_FOLLOW_SUCCESS.message);
         }else{
             return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status,ResponseStatus.ILLEGAL_REQUEST.message);
@@ -742,6 +752,7 @@ public class UserServiceImpl implements UserService {
         }else{
             versionControlDto.setIsUpdate(Specification.VersionStatus.NEWEST.index);
         }
+        applicationEventBus.post(new MonitorEvent(Specification.MonitorType.BOOT.index,Specification.MonitorAction.BOOT.index,0,0));
         return Response.success(versionControlDto);
     }
 

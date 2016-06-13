@@ -522,4 +522,48 @@ public interface Specification {
         }
     }
 
+    public enum MonitorAction{
+        BOOT(0,"用户启动"),
+        LOGIN(1,"用户登录"),
+        REGISTER(2,"用户注册"),
+        CONTENT_VIEW(3,"用户浏览"),
+        CONTENT_PUBLISH(4,"发布内容"),
+        LIVE_PUBLISH(5,"发布直播"),
+        LIKE(6,"用户点赞"),
+        UN_LIKE(7,"用取消点赞"),
+        REVIEW(8,"用户评论"),
+        FEELING_TAG(9,"添加感受标签"),
+        FOLLOW(10,"关注"),
+        UN_FOLLOW(11,"取消关注"),
+        FORWARD(12,"转发内容"),
+        HOTTEST(13,"热门"),
+        NEWEST(14,"最新"),
+        FOLLOW_LIST(15,"关注文章");
+
+        public int index;
+
+        public String name;
+
+        MonitorAction(int index,String name){
+            this.index = index;
+            this.name = name;
+        }
+
+    };
+
+    public enum MonitorType{
+        BOOT(0,"启动访问"),
+        ACTION(1,"行为监控");
+
+        public int index;
+
+        public String name;
+
+        MonitorType(int index,String name){
+            this.index = index;
+            this.name = name;
+        }
+
+    };
+
 }
