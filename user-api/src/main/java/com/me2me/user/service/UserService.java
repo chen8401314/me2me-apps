@@ -182,4 +182,6 @@ public interface UserService {
 
     void createPushLog(PushLogDto pushLogDto);
 
+    Response logout(long uid);
+
 }

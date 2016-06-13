@@ -479,4 +479,11 @@ public class UserMybatisDao {
         pushLog.setRetCode(pushLogDto.getRetCode());
         xingePushLogMapper.insert(pushLog);
     }
+
+    public void logout(long uid){
+        UserDeviceExample example = new UserDeviceExample();
+        UserDeviceExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        userDeviceMapper.deleteByExample(example);
+    }
 }

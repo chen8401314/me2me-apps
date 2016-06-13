@@ -860,4 +860,10 @@ public class UserServiceImpl implements UserService {
     public void createPushLog(PushLogDto pushLogDto) {
         userMybatisDao.createPushLog(pushLogDto);
     }
+
+    @Override
+    public Response logout(long uid) {
+        userMybatisDao.logout(uid);
+        return Response.success(ResponseStatus.LOGOUT_SUCCESS.status,ResponseStatus.LOGOUT_SUCCESS.message);
+    }
 }
