@@ -36,6 +36,8 @@ public class ForwardPublishArticle extends AbstractPublish implements Publish {
         content.setThumbnail(contentDto.getImageUrls());
         content.setConverImage(contentDto.getImageUrls());
         content.setType(contentDto.getType());
+        content.setContentType(contentDto.getContentType());
+        content.setUid(contentDto.getUid());
         content.setRights(contentDto.getRights());
         contentService.createContent(content);
         createContentSuccessDto.setContent(content.getContent());
