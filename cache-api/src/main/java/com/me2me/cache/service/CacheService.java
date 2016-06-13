@@ -7,6 +7,7 @@ package com.me2me.cache.service;
  */
 public interface CacheService {
 
+
     void set(String key,String value);
 
 }
