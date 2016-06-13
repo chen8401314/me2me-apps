@@ -113,6 +113,8 @@ public enum  ResponseStatus {
 
     SET_USER_EXCELLENT_SUCCESS("大V设置成功","set user excellent success",20050),
 
+    LOGOUT_SUCCESS("退出成功","logout success",20051),
+
 
 
 
