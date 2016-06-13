@@ -17,8 +17,16 @@ public class PublishFactory {
         }else if(type == Specification.ArticleType.LIVE.index){
             instance = SpringContextHolder.getBean(PublishLive.class);
         }else if(type == Specification.ArticleType.FORWARD_ARTICLE.index){
-            instance = SpringContextHolder.getBean(ForwardPublish.class);
-        }else{
+            instance = SpringContextHolder.getBean(ForwardPublishArticle.class);
+        }else if(type == Specification.ArticleType.FORWARD_UGC.index){
+            instance = SpringContextHolder.getBean(ForwardPublishUGC.class);
+        }else if (type == Specification.ArticleType.FORWARD_LIVE.index){
+            instance = SpringContextHolder.getBean(ForwardPublishLive.class);
+        }else if(type == Specification.ArticleType.FORWARD_ACTIVITY.index){
+            instance = SpringContextHolder.getBean(ForwardPublishActivity.class);
+        } else if(type == Specification.ArticleType.FORWARD_SYSTEM.index){
+            instance = SpringContextHolder.getBean(ForwardPublishSystem.class);
+        } else{
             throw new RuntimeException("参数非法....");
         }
         return instance;

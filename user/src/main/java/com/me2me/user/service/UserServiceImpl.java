@@ -6,7 +6,6 @@ import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
-import com.me2me.core.SpringContextHolder;
 import com.me2me.sms.dto.*;
 import com.me2me.sms.service.SmsService;
 import com.me2me.user.dao.OldUserJdbcDao;
@@ -16,7 +15,7 @@ import com.me2me.user.dto.*;
 import com.me2me.user.model.*;
 import com.me2me.user.model.Dictionary;
 import com.me2me.user.widget.MessageNotificationAdapter;
-import com.me2me.user.widget.MessageNotificationFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -29,6 +28,7 @@ import java.util.*;
  * Date: 2016/2/26.
  */
 @Service
+@Slf4j
 public class UserServiceImpl implements UserService {
 
     @Autowired
@@ -43,22 +43,24 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private SmsService smsService;
 
-
-
     /**
      * 用户注册
      * @param userSignUpDto
      * @return
      */
     public Response signUp(UserSignUpDto userSignUpDto) {
+        log.info("signUp start ...");
         // 校验手机号码是否注册
         String mobile = userSignUpDto.getMobile();
+        log.info("mobile:" + mobile );
         if(userMybatisDao.getUserByUserName(mobile)!=null){
             // 该用户已经注册过
+            log.info("mobile:" + mobile + " is already register");
             return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
         }
         // 检查用户名是否重复
         if(!this.existsNickName(userSignUpDto.getNickName())){
+            log.info("nickname:" + userSignUpDto.getNickName() + " is already used");
             return Response.failure(ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.status,ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.message);
         }
 
@@ -72,12 +74,14 @@ public class UserServiceImpl implements UserService {
         user.setStatus(Specification.UserStatus.NORMAL.index);
         user.setUserName(userSignUpDto.getMobile());
         userMybatisDao.createUser(user);
+        log.info("user is create");
         UserProfile userProfile = new UserProfile();
         userProfile.setUid(user.getUid());
         userProfile.setAvatar(Constant.DEFAULT_AVATAR);
         userProfile.setMobile(userSignUpDto.getMobile());
         userProfile.setNickName(userSignUpDto.getNickName());
         userMybatisDao.createUserProfile(userProfile);
+        log.info("userProfile is create");
         signUpSuccessDto.setUserName(user.getUserName());
         // 获取用户token
         signUpSuccessDto.setToken(SecurityUtils.getToken());
@@ -91,6 +95,7 @@ public class UserServiceImpl implements UserService {
         userToken.setUid(user.getUid());
         userToken.setToken(signUpSuccessDto.getToken());
         userMybatisDao.createUserToken(userToken);
+        log.info("userToken is create");
         signUpSuccessDto.setToken(userToken.getToken());
         //保存用户的设备token和用户平台信息
         UserDevice device = new UserDevice();
@@ -99,10 +104,12 @@ public class UserServiceImpl implements UserService {
         device.setOs(userSignUpDto.getOs());
         device.setUid(user.getUid());
         userMybatisDao.updateUserDevice(device);
+        log.info("userDevice is create");
         // 获取默认值给前端
         UserProfile up = userMybatisDao.getUserProfileByUid(user.getUid());
         signUpSuccessDto.setGender(up.getGender());
         signUpSuccessDto.setYearId(up.getYearsId());
+        log.info("signUp end ...");
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
 
@@ -112,16 +119,19 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public Response login(UserLoginDto userLoginDto) {
-      //  redisCache.sadd("login",userLoginDto.getUserName());
+        log.info("login start ...");
         //老用户转到新系统中来
         oldUserJdbcDao.moveOldUser2Apps(userLoginDto.getUserName(),userLoginDto.getEncrypt());
+        log.info("deal with old user ");
         User user = userMybatisDao.getUserByUserName(userLoginDto.getUserName());
         if(user != null){
             String salt = user.getSalt();
             if(SecurityUtils.md5(userLoginDto.getEncrypt(),salt).equals(user.getEncrypt())){
                 // 则用户登录成功
                 UserProfile userProfile = userMybatisDao.getUserProfileByUid(user.getUid());
+                log.info("get userProfile success");
                 UserToken userToken = userMybatisDao.getUserTokenByUid(user.getUid());
+                log.info("get userToken success");
                 LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
                 loginSuccessDto.setUid(user.getUid());
                 loginSuccessDto.setUserName(user.getUserName());
@@ -129,6 +139,7 @@ public class UserServiceImpl implements UserService {
                 loginSuccessDto.setGender(userProfile.getGender());
                 loginSuccessDto.setMeNumber(userMybatisDao.getUserNoByUid(user.getUid()).getMeNumber().toString());
                 loginSuccessDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
+                log.info("user avatar :" +loginSuccessDto.getAvatar());
                 loginSuccessDto.setToken(userToken.getToken());
                 loginSuccessDto.setYearId(userProfile.getYearsId());
                 loginSuccessDto.setFansCount(userMybatisDao.getUserFansCount(user.getUid()));
@@ -140,13 +151,18 @@ public class UserServiceImpl implements UserService {
                 device.setOs(userLoginDto.getOs());
                 device.setUid(user.getUid());
                 userMybatisDao.updateUserDevice(device);
+                log.info("update user device success");
+                log.info("login end ...");
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status,ResponseStatus.USER_LOGIN_SUCCESS.message,loginSuccessDto);
             }else{
+                log.info("user password error");
                 // 用户密码不正确
                 return Response.failure(ResponseStatus.USER_PASSWORD_ERROR.status,ResponseStatus.USER_PASSWORD_ERROR.message);
             }
 
         }else{
+            log.info("user not exists");
+            //用户不存在
             return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
         }
     }
@@ -157,36 +173,43 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public Response verify(VerifyDto verifyDto) {
+        log.info("verify start ...");
         if(verifyDto.getAction() == Specification.VerifyAction.GET.index){
             // 发送校验码
             User user = userMybatisDao.getUserByUserName(verifyDto.getMobile());
             if(user!=null){
+                log.info("user mobile duplicate");
                 return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
             }
             smsService.send(verifyDto);
+            log.info("user signUp get verify code success");
             return Response.success(ResponseStatus.USER_VERIFY_GET_SUCCESS.status,ResponseStatus.USER_VERIFY_GET_SUCCESS.message);
         }else if(verifyDto.getAction() == Specification.VerifyAction.CHECK.index){
-            // boolean result = YunXinSms.verify(verifyDto.getMobile(),verifyDto.getVerifyCode());
             // 验证校验码
             boolean result = smsService.verify(verifyDto);
             if(result) {
+                log.info("user verify check success");
                 return Response.success(ResponseStatus.USER_VERIFY_CHECK_SUCCESS.status, ResponseStatus.USER_VERIFY_CHECK_SUCCESS.message);
             }else{
+                log.info("user verify check error");
                 return Response.failure(ResponseStatus.USER_VERIFY_CHECK_ERROR.status,ResponseStatus.USER_VERIFY_CHECK_ERROR.message);
             }
         }else if(verifyDto.getAction() == Specification.VerifyAction.FIND_MY_ENCRYPT.index){
             // 找回密码
             // 判断用户是否已经注册过该手机
-            oldUserJdbcDao.moveOldUser2Apps(verifyDto.getMobile(),"123456");
+            log.info("find my encrypt");
+            oldUserJdbcDao.moveOldUser2Apps(verifyDto.getMobile(),Constant.OLD_USER_ENCRYPT);
             User user = userMybatisDao.getUserByUserName(verifyDto.getMobile());
             if(user!=null){
-                // applicationEventBus.post(new VerifyEvent(verifyDto.getMobile(),null));
                 smsService.send(verifyDto);
+                log.info("user verify get success");
                 return Response.success(ResponseStatus.USER_VERIFY_GET_SUCCESS.status,ResponseStatus.USER_VERIFY_GET_SUCCESS.message);
             }else{
+                log.info("user not exists");
                 return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
             }
         }
+        log.info("user verify times over");
         return Response.failure(ResponseStatus.USER_VERIFY_ERROR.status,ResponseStatus.USER_VERIFY_ERROR.message);
     }
 
@@ -196,6 +219,7 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public Response modifyEncrypt(ModifyEncryptDto modifyEncryptDto){
+        log.info("modifyEncrypt start ...");
         String mobile = modifyEncryptDto.getUserName();
         if(modifyEncryptDto.getOldEncrypt().equals(modifyEncryptDto.getFirstEncrypt())){
             return Response.failure(ResponseStatus.USER_MODIFY_ENCRYPT_THE_SAME_ERROR.status,ResponseStatus.USER_MODIFY_ENCRYPT_THE_SAME_ERROR.message);

@@ -123,7 +123,11 @@ public interface Specification {
 
         FORWARD_LIVE("转发直播",6),
 
-        FORWARD_ARTICLE("转啊系统文章",7);
+        FORWARD_ACTIVITY("转发活动",7),
+
+        FORWARD_SYSTEM("转发小编文章",8),
+
+        FORWARD_ARTICLE("转发系统文章",9);
 
 
         public final String name;
