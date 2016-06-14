@@ -1,7 +1,8 @@
 package com.me2me.monitor.service;
 
-import com.me2me.monitor.MonitorService;
+import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.monitor.dao.MonitorMybatisDao;
+import com.me2me.monitor.event.MonitorEvent;
 import com.me2me.monitor.model.AccessTrack;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +20,16 @@ public class MonitorServiceImpl implements MonitorService {
     @Autowired
     private MonitorMybatisDao monitorMybatisDao;
 
+    @Autowired
+    private ApplicationEventBus applicationEventBus;
+
     @Override
     public void mark(AccessTrack accessTrack) {
         monitorMybatisDao.save(accessTrack);
+    }
+
+    @Override
+    public void post(MonitorEvent monitorEvent) {
+        applicationEventBus.post(monitorEvent);
     }
 }

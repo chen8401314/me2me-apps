@@ -2,7 +2,7 @@ package com.me2me.monitor.listener;
 
 import com.google.common.eventbus.Subscribe;
 import com.me2me.core.event.ApplicationEventBus;
-import com.me2me.monitor.MonitorService;
+import com.me2me.monitor.service.MonitorService;
 import com.me2me.monitor.event.MonitorEvent;
 import com.me2me.monitor.model.AccessTrack;
 import org.springframework.beans.factory.annotation.Autowired;

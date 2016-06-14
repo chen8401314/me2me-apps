@@ -7,7 +7,7 @@ import com.me2me.content.dto.LikeDto;
 import com.me2me.content.model.Content;
 import com.me2me.content.model.ContentLikesDetails;
 import com.me2me.content.service.ContentService;
-import com.me2me.core.event.ApplicationEventBus;
+import com.me2me.monitor.service.MonitorService;
 import com.me2me.monitor.event.MonitorEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,7 +23,7 @@ public class AbstractLikes {
     protected ContentService contentService;
 
     @Autowired
-    private ApplicationEventBus applicationEventBus;
+    private MonitorService monitorService;
 
     public Response likes(LikeDto likeDto) {
         Content content = contentService.getContentById(likeDto.getCid());
@@ -46,7 +46,7 @@ public class AbstractLikes {
                 }else{
                     return Response.success(ResponseStatus.CONTENT_USER_LIKES_ALREADY.status,ResponseStatus.CONTENT_USER_LIKES_ALREADY.message);
                 }
-                applicationEventBus.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LIKE.index,0,likeDto.getUid()));
+                monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LIKE.index,0,likeDto.getUid()));
                 return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
             }else{
                 if(details == null) {
@@ -61,7 +61,7 @@ public class AbstractLikes {
 
                     contentService.deleteContentLikesDetails(contentLikesDetails);
                 }
-                applicationEventBus.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.UN_LIKE.index,0,likeDto.getUid()));
+                monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.UN_LIKE.index,0,likeDto.getUid()));
                 return Response.success(ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.message);
             }
         }
