@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigInteger;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,11 +104,12 @@ public class ContentMybatisDao {
         return result;
     }*/
 
-    public List<ContentTagsDetails> getContentTagsDetails(long cid , long sinceId) {
+    public List<ContentTagsDetails> getContentTagsDetails(long cid , Date createTime, long sinceId) {
         ContentTagsDetailsExample example = new ContentTagsDetailsExample();
         ContentTagsDetailsExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(cid);
         criteria.andIdLessThan(sinceId);
+        criteria.andCreateTimeNotEqualTo(createTime);
         example.setOrderByClause(" create_time desc ");
         return contentTagsDetailsMapper.selectByExample(example);
     }

@@ -4,21 +4,15 @@ import com.me2me.common.web.Request;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Date;
-
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 代宝磊
- * Date: 2016/4/13
- * Time :17:59
+ * Date: 2016/6/13
+ * Time :19:19
  */
-public class GetLivesRequest extends Request{
+public class LiveCoverRequest extends Request{
 
     @Getter
     @Setter
-    private long sinceId;
-
-    @Getter
-    @Setter
-    private Date updateTime;
+    private long topicId;
 }

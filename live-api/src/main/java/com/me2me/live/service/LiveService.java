@@ -5,6 +5,8 @@ import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
 import com.me2me.live.dto.SpeakDto;
 
+import java.util.Date;
+
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 赵朋扬
@@ -46,6 +48,14 @@ public interface LiveService {
     Response getLives(long uid,long sinceId);
 
     /**
+     * 按时间倒序排列
+     * @param uid
+     * @param updateTime
+     * @return
+     */
+    Response getLives(long uid,Date updateTime);
+
+    /**
      * 关注/取消关注我参与的直播
      * @param uid
      * @param topicId
@@ -82,4 +92,8 @@ public interface LiveService {
     Response getFavoriteList(long topicId);
 
     Response liveTimeline(GetLiveTimeLineDto getLiveTimeLineDto);
+
+    Response liveCover(long topicId);
+
+    Response liveTimelineBarrage(GetLiveTimeLineDto getLiveTimeLineDto);
 }

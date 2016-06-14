@@ -16,6 +16,7 @@ public class LiveLikes extends AbstractLikes implements Likes {
     @Override
     public Response likes(LikeDto likeDto) {
         //创建直播点赞，弹幕
+
         return super.likes(likeDto);
     }
 }

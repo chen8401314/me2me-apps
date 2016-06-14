@@ -18,6 +18,7 @@ import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -70,17 +71,6 @@ public class LiveServiceImpl implements LiveService {
         LiveTimeLineDto liveTimeLineDto = new LiveTimeLineDto();
         List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(),getLiveTimeLineDto.getSinceId());
         buildLiveTimeLine(getLiveTimeLineDto, liveTimeLineDto, fragmentList);
-        if(fragmentList.size() > 0) {
-            List<TopicFragment> barrageList = liveMybatisDao.getBarrage(getLiveTimeLineDto.getTopicId(), fragmentList.get(0).getId(), fragmentList.get(fragmentList.size() - 1).getId());
-            LiveTimeLineDto.BarrageElement barrageElement = LiveTimeLineDto.createBarrageElement();
-            for (TopicFragment topicFragment : barrageList) {
-                barrageElement.setTopId(topicFragment.getTopId());
-                barrageElement.setBottomId(topicFragment.getBottomId());
-                barrageElement.setContent(topicFragment.getFragment());
-                barrageElement.setType(topicFragment.getContentType());
-                liveTimeLineDto.getBarrageElements().add(barrageElement);
-            }
-        }
         return Response.success(ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.status,ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.message,liveTimeLineDto);
     }
 
@@ -104,6 +94,42 @@ public class LiveServiceImpl implements LiveService {
         }
         buildLiveTimeLine(getLiveTimeLineDto, liveTimeLineDto, fragmentList);
         return Response.success(ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.status,ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.message,liveTimeLineDto);
+    }
+
+    @Override
+    public Response liveCover(long topicId) {
+        LiveCoverDto liveCoverDto = new LiveCoverDto();
+        Topic topic = liveMybatisDao.getTopicById(topicId);
+        liveCoverDto.setTitle(topic.getTitle());
+        liveCoverDto.setCreateTime(topic.getCreateTime());
+        liveCoverDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
+        UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
+        liveCoverDto.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
+        liveCoverDto.setNickName(userProfile.getNickName());
+        liveCoverDto.setUid(topic.getUid());
+        liveCoverDto.setLastUpdateTime(topic.getUpdateTime());
+        liveCoverDto.setReviewCount(liveMybatisDao.countFragment(topic.getId(),topic.getUid()));
+        liveCoverDto.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(),topic.getUid()));
+        return Response.success(ResponseStatus.GET_LIVE_COVER_SUCCESS.status,ResponseStatus.GET_LIVE_COVER_SUCCESS.message,liveCoverDto);
+    }
+
+    @Override
+    public Response liveTimelineBarrage(GetLiveTimeLineDto getLiveTimeLineDto) {
+        /*LiveTimeLineBarrageDto liveTimeLineBarrageDto = new LiveTimeLineBarrageDto();
+        List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(),getLiveTimeLineDto.getSinceId());
+        buildLiveTimeLine(getLiveTimeLineDto, liveTimeLineBarrageDto, fragmentList);
+        if(fragmentList.size() > 0) {
+            List<TopicBarrage> barrageList = liveMybatisDao.getBarrage(getLiveTimeLineDto.getTopicId(), fragmentList.get(0).getId(), fragmentList.get(fragmentList.size() - 1).getId());
+            LiveTimeLineBarrageDto.BarrageElement barrageElement = LiveTimeLineBarrageDto.createBarrageElement();
+            for (TopicBarrage topicBarrage : barrageList) {
+                barrageElement.setTopId(topicBarrage.getTopId());
+                barrageElement.setBottomId(topicBarrage.getBottomId());
+                barrageElement.setContent(topicBarrage.getFragment());
+                barrageElement.setType(topicBarrage.getContentType());
+                liveTimeLineBarrageDto.getBarrageElements().add(barrageElement);
+            }
+        }*/
+        return null;
     }
 
     private void buildLiveTimeLine(GetLiveTimeLineDto getLiveTimeLineDto, LiveTimeLineDto liveTimeLineDto, List<TopicFragment> fragmentList) {
@@ -132,15 +158,31 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response speak(SpeakDto speakDto) {
         TopicFragment topicFragment = new TopicFragment();
+        TopicBarrage topicBarrage = new TopicBarrage();
         topicFragment.setFragmentImage(speakDto.getFragmentImage());
         topicFragment.setFragment(speakDto.getFragment());
         topicFragment.setUid(speakDto.getUid());
         topicFragment.setContentType(speakDto.getContentType());
         topicFragment.setType(speakDto.getType());
         topicFragment.setTopicId(speakDto.getTopicId());
+        topicBarrage.setBottomId(speakDto.getBottomId());
+        topicBarrage.setTopId(speakDto.getTopId());
         liveMybatisDao.createTopicFragment(topicFragment);
+        topicBarrage.setFragmentImage(speakDto.getFragmentImage());
+        topicBarrage.setFragment(speakDto.getFragment());
+        topicBarrage.setBottomId(speakDto.getBottomId());
+        topicBarrage.setTopicId(speakDto.getTopicId());
+        topicBarrage.setTopId(speakDto.getTopId());
+        topicBarrage.setContentType(speakDto.getContentType());
+        topicBarrage.setType(speakDto.getType());
+        topicFragment.setUid(speakDto.getUid());
+        //保存弹幕
+        liveMybatisDao.createTopicBarrage(topicBarrage);
         //提醒
         Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
+        //直播发言时候更新直播更新时间
+        topic.setUpdateTime(new Date());
+        liveMybatisDao.updateTopic(topic);
         if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHORWRITETAG.index){
             List<LiveFavorite> list = liveMybatisDao.getFavoriteList(speakDto.getTopicId());
             for(LiveFavorite liveFavorite : list) {
@@ -180,6 +222,19 @@ public class LiveServiceImpl implements LiveService {
     public Response getLives(long uid,long sinceId) {
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
         List<Topic> topicList = liveMybatisDao.getLives(sinceId);
+        builder(uid, showTopicListDto, topicList);
+        return Response.success(ResponseStatus.GET_LIVES_SUCCESS.status,ResponseStatus.GET_LIVES_SUCCESS.message,showTopicListDto);
+    }
+
+    /**
+     * 获取所有正在直播列表
+     * @param uid
+     * @return
+     */
+    @Override
+    public Response getLives(long uid,Date updateTime) {
+        ShowTopicListDto showTopicListDto = new ShowTopicListDto();
+        List<Topic> topicList = liveMybatisDao.getLives(updateTime);
         builder(uid, showTopicListDto, topicList);
         return Response.success(ResponseStatus.GET_LIVES_SUCCESS.status,ResponseStatus.GET_LIVES_SUCCESS.message,showTopicListDto);
     }

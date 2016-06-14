@@ -641,14 +641,12 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setIsFollowed(userService.isFollow(content.getUid(),uid));
         contentDetailDto.setIsFollowMe(userService.isFollow(uid,content.getUid()));
         // 获取感受
-        List<ContentTagsDetails> list  = contentMybatisDao.getContentTagsDetails(content.getId(),Integer.MAX_VALUE);
+        List<ContentTagsDetails> list  = contentMybatisDao.getContentTagsDetails(content.getId(),content.getCreateTime(),Integer.MAX_VALUE);
         for (ContentTagsDetails contentTagsDetails : list){
             ContentDetailDto.ContentTagElement contentTagElement = ContentDetailDto.createElement();
             ContentTags contentTags = contentMybatisDao.getContentTagsById(contentTagsDetails.getTid());
-            if(content.getFeeling().indexOf(contentTags.getTag()) == -1) {
-                contentTagElement.setTag(contentTags.getTag());
-                contentDetailDto.getTags().add(contentTagElement);
-            }
+            contentTagElement.setTag(contentTags.getTag());
+            contentDetailDto.getTags().add(contentTagElement);
         }
         List<ContentReview> reviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
         for(ContentReview review :reviewList){
