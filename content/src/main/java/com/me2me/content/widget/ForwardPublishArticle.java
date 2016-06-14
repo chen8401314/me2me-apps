@@ -1,20 +1,17 @@
 package com.me2me.content.widget;
 
-import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentDto;
 import com.me2me.content.dto.CreateContentSuccessDto;
 import com.me2me.content.model.Content;
-import com.me2me.content.model.ContentImage;
 import com.me2me.content.service.ContentService;
-import com.me2me.core.event.ApplicationEventBus;
+import com.me2me.monitor.service.MonitorService;
 import com.me2me.monitor.event.MonitorEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -29,7 +26,7 @@ public class ForwardPublishArticle extends AbstractPublish implements Publish {
     private ContentService contentService;
 
     @Autowired
-    private ApplicationEventBus applicationEventBus;
+    private MonitorService monitorService;
 
     public Response publish(ContentDto contentDto){
         log.info("forwardPublishArticle start ...");
@@ -55,7 +52,7 @@ public class ForwardPublishArticle extends AbstractPublish implements Publish {
         createContentSuccessDto.setForwardCid(content.getForwardCid());
         createContentSuccessDto.setCoverImage(content.getConverImage());
         log.info("forwardPublishArticle end ...");
-        applicationEventBus.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FORWARD.index,0,contentDto.getUid()));
+        monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FORWARD.index,0,contentDto.getUid()));
         return Response.success(ResponseStatus.FORWARD_SUCCESS.status,ResponseStatus.FORWARD_SUCCESS.message,createContentSuccessDto);
     }
 }

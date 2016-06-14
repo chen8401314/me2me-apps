@@ -1,5 +1,6 @@
-package com.me2me.monitor;
+package com.me2me.monitor.service;
 
+import com.me2me.monitor.event.MonitorEvent;
 import com.me2me.monitor.model.AccessTrack;
 
 /**
@@ -10,5 +11,7 @@ import com.me2me.monitor.model.AccessTrack;
 public interface MonitorService {
 
     void mark(AccessTrack accessTrack);
+
+    void post(MonitorEvent monitorEvent);
 
 }

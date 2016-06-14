@@ -79,7 +79,7 @@
                             <target>${project.build.directory}</target>
                             <daemons>
                                 <daemon>
-                                    <id>app-live-service</id>
+                                    <id>app-monitor-service</id>
                                     <mainClass>com.me2me.monitor.Bootstrap</mainClass>
                                     <commandLineArguments>
                                         <commandLineArgument>start</commandLineArgument>

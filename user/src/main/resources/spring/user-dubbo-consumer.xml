@@ -11,5 +11,6 @@
 
     <dubbo:reference interface="com.me2me.sms.service.XgPushService" id="xgPushService"/>
 
+    <dubbo:reference interface="com.me2me.monitor.service.MonitorService" id="monitorService"/>
 
 </beans>

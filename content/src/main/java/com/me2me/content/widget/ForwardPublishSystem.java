@@ -7,7 +7,7 @@ import com.me2me.content.dto.ContentDto;
 import com.me2me.content.dto.CreateContentSuccessDto;
 import com.me2me.content.model.Content;
 import com.me2me.content.service.ContentService;
-import com.me2me.core.event.ApplicationEventBus;
+import com.me2me.monitor.service.MonitorService;
 import com.me2me.monitor.event.MonitorEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class ForwardPublishSystem extends AbstractPublish implements Publish {
     private ContentService contentService;
 
     @Autowired
-    private ApplicationEventBus applicationEventBus;
+    private MonitorService monitorService;
 
     public Response publish(ContentDto contentDto){
         log.info("forwardPublishSystem start ...");
@@ -57,7 +57,7 @@ public class ForwardPublishSystem extends AbstractPublish implements Publish {
         createContentSuccessDto.setForwardCid(content.getForwardCid());
         createContentSuccessDto.setCoverImage(content.getConverImage());
         log.info("forwardPublishSystem end ...");
-        applicationEventBus.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FORWARD.index,0,contentDto.getUid()));
+        monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FORWARD.index,0,contentDto.getUid()));
         return Response.success(ResponseStatus.FORWARD_SUCCESS.status,ResponseStatus.FORWARD_SUCCESS.message,createContentSuccessDto);
     }
 }

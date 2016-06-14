@@ -11,4 +11,7 @@
 
     <dubbo:reference interface="com.me2me.activity.service.ActivityService" id="activityService"/>
 
+    <dubbo:reference interface="com.me2me.monitor.service.MonitorService" id="monitorService"/>
+
+
 </beans>
