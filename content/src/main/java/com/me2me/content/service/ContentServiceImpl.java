@@ -183,6 +183,8 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setType(content.getType());
             squareDataElement.setCreateTime(content.getCreateTime());
             squareDataElement.setReviewCount(content.getReviewCount());
+            squareDataElement.setForwardTitle(content.getForwardTitle());
+            squareDataElement.setForwardUrl(content.getForwardUrl());
             if(!StringUtils.isEmpty(content.getConverImage())) {
                 if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
                     squareDataElement.setCoverImage(content.getConverImage());
