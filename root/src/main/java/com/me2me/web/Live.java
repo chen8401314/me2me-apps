@@ -5,20 +5,20 @@ import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.service.LiveService;
+import com.me2me.web.editor.LiveUpdateTimePropertyEditor;
 import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.validation.DataBinder;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.support.WebRequestDataBinder;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -153,13 +153,20 @@ public class Live extends BaseController {
     @RequestMapping(value = "/getLives",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getLives(GetLivesRequest request){
-        return liveService.getLives(request.getUid(),request.getUpdateTime());
+        long updateTime = request.getUpdateTime();
+        if(updateTime==0){
+            // 小宝看你怎么处理
+        }else{
+            request.setUpdateTime2(new Date(updateTime));
+        }
+        return liveService.getLives(request.getUid(),request.getUpdateTime2());
     }
 
-    @InitBinder
-    public void initBinder(WebDataBinder binder) {
-        binder.registerCustomEditor(GetLivesRequest.class,"updateTime",new LiveUpdateTimePropertyEditor());
-    }
+//    @InitBinder
+//    public void initBinder(DataBinder binder) {
+//        binder.registerCustomEditor(GetLivesRequest.class,"updateTime",new LiveUpdateTimePropertyEditor());
+//    }
+
 
     /**
      * 获取我关注和我自己的直播列表
