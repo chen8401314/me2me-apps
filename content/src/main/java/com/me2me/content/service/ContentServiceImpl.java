@@ -184,7 +184,11 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setCreateTime(content.getCreateTime());
             squareDataElement.setReviewCount(content.getReviewCount());
             if(!StringUtils.isEmpty(content.getConverImage())) {
-                squareDataElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
+                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
+                    squareDataElement.setCoverImage(content.getConverImage());
+                }else {
+                    squareDataElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
+                }
             }else{
                 squareDataElement.setCoverImage("");
             }
