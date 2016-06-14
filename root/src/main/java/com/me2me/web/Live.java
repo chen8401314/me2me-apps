@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -148,6 +149,9 @@ public class Live extends BaseController {
     @RequestMapping(value = "/getLives",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getLives(GetLivesRequest request){
+        if(request.getUpdateTime() == null){
+            request.setUpdateTime(new Date());
+        }
         return liveService.getLives(request.getUid(),request.getUpdateTime());
     }
 
