@@ -204,7 +204,7 @@ public class LiveMybatisDao {
         criteria.andTopIdGreaterThanOrEqualTo(topId);
         criteria.andTopIdLessThanOrEqualTo(bottomId);
         criteria.andIdGreaterThanOrEqualTo(sinceId);
-        example.setOrderByClause(" id asc limit 20 ");
+        example.setOrderByClause("id asc limit 20 ");
         return topicBarrageMapper.selectByExampleWithBLOBs(example);
     }
 

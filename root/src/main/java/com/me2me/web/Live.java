@@ -69,7 +69,7 @@ public class Live extends BaseController {
         liveBarrageDto.setSinceId(request.getSinceId());
         liveBarrageDto.setTopicId(request.getTopicId());
         liveBarrageDto.setUid(request.getUid());
-        liveBarrageDto.setTopicId(request.getTopId());
+        liveBarrageDto.setTopId(request.getTopId());
         liveBarrageDto.setBottomId(request.getBottomId());
         return liveService.barrage(liveBarrageDto);
     }
