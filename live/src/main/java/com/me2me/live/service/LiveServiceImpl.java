@@ -6,7 +6,6 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentDto;
-import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.model.Content;
 import com.me2me.content.service.ContentService;
 import com.me2me.live.dao.LiveMybatisDao;
