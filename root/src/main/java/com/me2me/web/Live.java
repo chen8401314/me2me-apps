@@ -158,8 +158,6 @@ public class Live extends BaseController {
 
     @InitBinder
     public void initBinder(WebDataBinder binder) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        dateFormat.setLenient(false);
         binder.registerCustomEditor(GetLivesRequest.class,"updateTime",new LiveUpdateTimePropertyEditor());
     }
 
