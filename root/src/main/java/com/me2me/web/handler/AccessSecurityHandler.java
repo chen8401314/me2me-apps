@@ -58,6 +58,7 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         INTERNAL_WHITE_LIST.add("/api/console/showDetails");
         INTERNAL_WHITE_LIST.add("/api/console/bindAccount");
         INTERNAL_WHITE_LIST.add("/api/io/getQiniuAccessToken");
+        INTERNAL_WHITE_LIST.add("/api/monitor/report");
 
         TRUST_REQUEST_LIST.add("/api/user/getSpecialUserProfile");
 

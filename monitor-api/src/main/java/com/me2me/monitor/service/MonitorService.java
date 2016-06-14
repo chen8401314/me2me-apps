@@ -1,5 +1,7 @@
 package com.me2me.monitor.service;
 
+import com.me2me.common.web.Response;
+import com.me2me.monitor.dto.MonitorReportDto;
 import com.me2me.monitor.event.MonitorEvent;
 import com.me2me.monitor.model.AccessTrack;
 
@@ -13,5 +15,7 @@ public interface MonitorService {
     void mark(AccessTrack accessTrack);
 
     void post(MonitorEvent monitorEvent);
+
+    Response loadReport(MonitorReportDto monitorReportDto);
 
 }

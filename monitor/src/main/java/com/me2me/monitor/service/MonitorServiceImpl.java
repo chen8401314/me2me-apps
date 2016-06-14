@@ -1,7 +1,9 @@
 package com.me2me.monitor.service;
 
+import com.me2me.common.web.Response;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.monitor.dao.MonitorMybatisDao;
+import com.me2me.monitor.dto.MonitorReportDto;
 import com.me2me.monitor.event.MonitorEvent;
 import com.me2me.monitor.model.AccessTrack;
 import lombok.extern.slf4j.Slf4j;
@@ -31,5 +33,10 @@ public class MonitorServiceImpl implements MonitorService {
     @Override
     public void post(MonitorEvent monitorEvent) {
         applicationEventBus.post(monitorEvent);
+    }
+
+    @Override
+    public Response loadReport(MonitorReportDto monitorReportDto) {
+        return null;
     }
 }
