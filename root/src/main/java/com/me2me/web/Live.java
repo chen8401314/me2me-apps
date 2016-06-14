@@ -153,7 +153,7 @@ public class Live extends BaseController {
             Calendar calendar = Calendar.getInstance();
             request.setUpdateTime(calendar.getTimeInMillis());
         }
-        return liveService.getLives(request.getUid(),request.getUpdateTime());
+        return liveService.getLivesByUpdateTime(request.getUid(),request.getUpdateTime());
     }
 
 //    @InitBinder
