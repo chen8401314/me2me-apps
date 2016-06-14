@@ -22,8 +22,5 @@ public class GetLivesRequest extends Request{
     @Setter
     private long updateTime;
 
-    @Getter
-    @Setter
-    private Date updateTime2;
 
 }

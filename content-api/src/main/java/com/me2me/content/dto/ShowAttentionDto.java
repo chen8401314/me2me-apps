@@ -88,6 +88,10 @@ public class ShowAttentionDto implements BaseEntity {
 
         private int isLike;
 
+        private String forwardUrl;
+
+        private String forwardTitle;
+
         private List<ReviewElement> reviews = Lists.newArrayList();
 
         public static ReviewElement createElement(){

@@ -1024,7 +1024,11 @@ public class ContentServiceImpl implements ContentService {
             hottestContentElement.setType(content.getType());
             String cover = content.getConverImage();
             if(!StringUtils.isEmpty(cover)) {
-                hottestContentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
+                if(content.getType() == Specification.ArticleType.FORWARD_SYSTEM.index){
+                    hottestContentElement.setCoverImage(cover);
+                }else {
+                    hottestContentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
+                }
             }
             hottestContentElement.setId(content.getId());
             hottestContentElement.setContent(content.getContent());
@@ -1033,6 +1037,8 @@ public class ContentServiceImpl implements ContentService {
             hottestContentElement.setTitle(content.getTitle());
             hottestContentElement.setCreateTime(content.getCreateTime());
             hottestContentElement.setIsLike(isLike(content.getId(),uid));
+            hottestContentElement.setForwardUrl(content.getForwardUrl());
+            hottestContentElement.setForwardTitle(content.getForwardTitle());
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
             for(ContentReview contentReview : contentReviewList){
                 ShowHottestDto.HottestContentElement.ReviewElement reviewElement = ShowHottestDto.HottestContentElement.createElement();
@@ -1112,7 +1118,11 @@ public class ContentServiceImpl implements ContentService {
             String cover = content.getConverImage();
             contentElement.setReviewCount(content.getReviewCount());
             if(!StringUtils.isEmpty(cover)) {
-                contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
+                if(content.getType() == Specification.ArticleType.FORWARD_SYSTEM.index){
+                    contentElement.setCoverImage(cover);
+                }else {
+                    contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
+                }
             }
             contentElement.setTag(content.getFeeling());
             contentElement.setForwardCid(content.getForwardCid());
@@ -1136,6 +1146,8 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setPersonCount(content.getPersonCount());
             contentElement.setFavoriteCount(content.getFavoriteCount());
+            contentElement.setForwardUrl(content.getForwardUrl());
+            contentElement.setForwardTitle(content.getForwardTitle());
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
             for(ContentReview contentReview : contentReviewList){
                 ShowNewestDto.ContentElement.ReviewElement reviewElement = ShowNewestDto.ContentElement.createElement();
@@ -1176,7 +1188,11 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setReviewCount(content.getReviewCount());
             String cover =  content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
-                contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
+                if(content.getType() == Specification.ArticleType.FORWARD_SYSTEM.index){
+                    contentElement.setCoverImage(cover);
+                }else {
+                    contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
+                }
             }
             contentElement.setTag(content.getFeeling());
             //查询直播状态
@@ -1200,6 +1216,8 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setPersonCount(content.getPersonCount());
             contentElement.setFavoriteCount(content.getFavoriteCount());
+            contentElement.setForwardTitle(content.getForwardTitle());
+            contentElement.setForwardUrl(content.getForwardUrl());
             showAttentionDto.getAttentionData().add(contentElement);
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
             for(ContentReview contentReview : contentReviewList){

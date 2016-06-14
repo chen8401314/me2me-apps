@@ -8,6 +8,8 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
+
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 代宝磊
@@ -127,17 +129,21 @@ public class XgPushServiceImpl implements XgPushService {
 //        List<TagTokenPair> list = Lists.newArrayList();
 //        list.add(new TagTokenPair("dandan","c242772fa7ff6d3bf93fecba2b220dcf6c176cd70a2ae6994b5ac0b104beaea1"));
 //       / app.BatchSetTag(list);
-        XgPushServiceImpl push = new XgPushServiceImpl();
-        for (int i = 0 ;i <= 1 ;i++ ) {
-            PushMessageAndroidDto pushMessageDto = new PushMessageAndroidDto();
-            pushMessageDto.setTitle("xinge test new" +i);
-            pushMessageDto.setContent("xinge test new" +i);
-            //pushMessageDto.setToken("
-            // ");
-            pushMessageDto.setToken("5948d751e20f5b1e46edaec58feaa5ef3ba35128");
-            pushMessageDto.setMessageType(Message.TYPE_NOTIFICATION);
-            push.pushSingleDevice(pushMessageDto);
-        }
+//        XgPushServiceImpl push = new XgPushServiceImpl();
+//        for (int i = 0 ;i <= 1 ;i++ ) {
+//            PushMessageAndroidDto pushMessageDto = new PushMessageAndroidDto();
+//            pushMessageDto.setTitle("xinge test new" +i);
+//            pushMessageDto.setContent("xinge test new" +i);
+//            //pushMessageDto.setToken("
+//            // ");
+//            pushMessageDto.setToken("5948d751e20f5b1e46edaec58feaa5ef3ba35128");
+//            pushMessageDto.setMessageType(Message.TYPE_NOTIFICATION);
+//            push.pushSingleDevice(pushMessageDto);
+//        }
+        Calendar calendar = Calendar.getInstance();
+        System.out.print(calendar.getTime());
+            calendar.getTimeInMillis();
+
 
 //        for (int i = 0 ;i <= 1 ;i++ ) {
 //            PushMessageIosDto pushMessageDto = new PushMessageIosDto();

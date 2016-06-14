@@ -39,6 +39,8 @@ public class ContentDto implements BaseEntity {
 
     private String forWardUrl;
 
+    private String forwardTitle;
+
     private String coverImage;
 
 

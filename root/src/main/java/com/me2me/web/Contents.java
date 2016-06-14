@@ -65,12 +65,14 @@ public class Contents extends BaseController {
         contentDto.setContent(request.getContent());
         contentDto.setFeeling(request.getFeeling());
         contentDto.setContentType(request.getContentType());
-        contentDto.setForwardCid(request.getForwardCid());
         contentDto.setImageUrls(request.getImageUrls());
         contentDto.setType(request.getType());
         contentDto.setTitle(request.getTitle());
         contentDto.setRights(request.getRights());
         contentDto.setCoverImage(request.getCoverImage());
+        contentDto.setForwardCid(request.getForwardCid());
+        contentDto.setForWardUrl(request.getForwardUrl());
+        contentDto.setForwardTitle(request.getForwardTitle());
         if(contentDto.getType()!=2) {
             // 用户UGC入口
            // return contentService.publish(contentDto);

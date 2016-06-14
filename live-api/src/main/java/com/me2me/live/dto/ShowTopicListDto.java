@@ -61,6 +61,10 @@ public class ShowTopicListDto implements BaseEntity{
 
         private int favoriteCount;
 
+        private Date updateTime;
+
+        private int isFollowed;
+
         private  List<Tags> tags  =  Lists.newArrayList();
 
         public static Tags createTags(){
