@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.core.env.StandardEnvironment;
 
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -30,8 +31,9 @@ public class Bootstrap {
 
         ClassPathXmlApplicationContext ctx = new ClassPathXmlApplicationContext("classpath:spring/cache-context.xml");
         CacheService cacheService = ctx.getBean(CacheService.class);
-        cacheService.set("fdsfd","fdsfds");
-
-
+        cacheService.flushDB();
+        cacheService.sadd("uids","123131321213");
+        Set<String> set = cacheService.smembers("uids");
+        cacheService.expire("uids",30);
     }
 }

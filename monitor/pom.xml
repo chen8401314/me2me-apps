@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>user</artifactId>
+    <artifactId>monitor</artifactId>
 
 
     <dependencies>
@@ -19,6 +19,7 @@
             <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
+
     <!--开发环境-->
     <profiles>
         <profile>
@@ -29,17 +30,7 @@
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>user-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.me2me</groupId>
-                    <artifactId>sms</artifactId>
-                    <version>1.0-SNAPSHOT</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.me2me</groupId>
-                    <artifactId>monitor</artifactId>
+                    <artifactId>monitor-api</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
             </dependencies>
@@ -53,16 +44,6 @@
         <profile>
             <id>test</id>
             <dependencies>
-                <dependency>
-                    <groupId>com.me2me</groupId>
-                    <artifactId>user-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.me2me</groupId>
-                    <artifactId>monitor-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
-                </dependency>
             </dependencies>
             <build>
                 <filters>
@@ -74,16 +55,6 @@
         <profile>
             <id>product</id>
             <dependencies>
-                <dependency>
-                    <groupId>com.me2me</groupId>
-                    <artifactId>user-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.me2me</groupId>
-                    <artifactId>sms-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
-                </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>monitor-api</artifactId>
@@ -108,8 +79,8 @@
                             <target>${project.build.directory}</target>
                             <daemons>
                                 <daemon>
-                                    <id>app-user-service</id>
-                                    <mainClass>com.me2me.user.Bootstrap</mainClass>
+                                    <id>app-live-service</id>
+                                    <mainClass>com.me2me.monitor.Bootstrap</mainClass>
                                     <commandLineArguments>
                                         <commandLineArgument>start</commandLineArgument>
                                     </commandLineArguments>
@@ -148,13 +119,13 @@
                                     <jvmSettings>
                                         <initialMemorySize>1024M</initialMemorySize>
                                         <maxMemorySize>1024M</maxMemorySize>
-            <!--                            <systemProperties>
-                                                <systemProperty>java.security.policy=conf/policy.all</systemProperty>
-                                                <systemProperty>com.sun.management.jmxremote</systemProperty>
-                                                <systemProperty>com.sun.management.jmxremote.port=8999</systemProperty>
-                                                <systemProperty>com.sun.management.jmxremote.authenticate=false</systemProperty>
-                                                <systemProperty>com.sun.management.jmxremote.ssl=false</systemProperty>
-                                            </systemProperties>   -->
+                                        <!--                            <systemProperties>
+                                                                            <systemProperty>java.security.policy=conf/policy.all</systemProperty>
+                                                                            <systemProperty>com.sun.management.jmxremote</systemProperty>
+                                                                            <systemProperty>com.sun.management.jmxremote.port=8999</systemProperty>
+                                                                            <systemProperty>com.sun.management.jmxremote.authenticate=false</systemProperty>
+                                                                            <systemProperty>com.sun.management.jmxremote.ssl=false</systemProperty>
+                                                                        </systemProperties>   -->
                                         <extraArguments>
                                             <extraArgument>-server</extraArgument>
                                         </extraArguments>

@@ -46,7 +46,7 @@ public class CacheServiceImpl implements CacheService {
         poolConfig.setMaxIdle(maxIdle);
         JedisPool jedisPool = new JedisPool(poolConfig,host,port,timeout);
         this.jedisTemplate.setJedisPool(jedisPool);
-        log.info("init redis pool ... ");
+        log.info("init redis pool from server {} at port {} ",host,port);
     }
 
     @Override
@@ -58,4 +58,76 @@ public class CacheServiceImpl implements CacheService {
             }
         });
     }
+
+    @Override
+    public void sadd(final String key, final String ... values) {
+        jedisTemplate.execute(new JedisTemplate.JedisAction() {
+            @Override
+            public void action(Jedis jedis) {
+                jedis.sadd(key,values);
+            }
+        });
+    }
+
+    @Override
+    public Set<String> smembers(final String key){
+        return jedisTemplate.execute(new JedisTemplate.JedisActionResult() {
+            @Override
+            public <T> T actionResult(Jedis jedis) {
+                return (T) jedis.smembers(key);
+            }
+        });
+    }
+
+    @Override
+    public void flushDB() {
+        jedisTemplate.execute(new JedisTemplate.JedisAction() {
+            @Override
+            public void action(Jedis jedis) {
+                jedis.flushDB();
+            }
+        });
+    }
+
+    @Override
+    public void lPush(final String key, final String ... value) {
+        jedisTemplate.execute(new JedisTemplate.JedisAction() {
+            @Override
+            public void action(Jedis jedis) {
+                jedis.lpush(key,value);
+            }
+        });
+    }
+
+    @Override
+    public void rPush(final String key, final String... value) {
+        jedisTemplate.execute(new JedisTemplate.JedisAction() {
+            @Override
+            public void action(Jedis jedis) {
+                jedis.rpush(key, value);
+            }
+        });
+    }
+
+    @Override
+    public String lPop(final String key) {
+        return jedisTemplate.execute(new JedisTemplate.JedisActionResult() {
+            @Override
+            public <T> T actionResult(Jedis jedis) {
+                return (T) jedis.lpop(key);
+            }
+        });
+    }
+
+    @Override
+    public void expire(final String key, final int timeout) {
+        jedisTemplate.execute(new JedisTemplate.JedisAction() {
+            @Override
+            public void action(Jedis jedis) {
+                jedis.expire(key, timeout);
+            }
+        });
+    }
+
+
 }

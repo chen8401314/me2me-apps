@@ -9,32 +9,24 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>content-api</artifactId>
-
-
+    <artifactId>monitor-api</artifactId>
     <dependencies>
         <dependency>
             <groupId>com.me2me</groupId>
             <artifactId>common</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
-        <dependency>
-            <groupId>com.plusnet.search</groupId>
-            <artifactId>search-api</artifactId>
-            <version>1.2.9</version>
-        </dependency>
     </dependencies>
-
     <profiles>
         <profile>
             <id>dev</id>
-            <!--<activation>-->
-            <!--<activeByDefault>true</activeByDefault>-->
-            <!--</activation>-->
+            <activation>
+            <activeByDefault>true</activeByDefault>
+            </activation>
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>user-api</artifactId>
+                    <artifactId>common</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
             </dependencies>
