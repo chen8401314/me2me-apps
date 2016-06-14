@@ -125,14 +125,14 @@ public class LiveServiceImpl implements LiveService {
             barrageElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             barrageElement.setNickName(userProfile.getNickName());
             if(barrageElement.getContentType() == Specification.LiveContent.TEXT.index) {
-                barrageElement.setFragment(barrageElement.getFragment());
+                barrageElement.setFragment(barrage.getFragment());
             }else if(barrageElement.getContentType() == Specification.LiveContent.IMAGE.index){
-                barrageElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + barrageElement.getFragmentImage());
+                barrageElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + barrage.getFragmentImage());
             }
-            barrageElement.setCreateTime(barrageElement.getCreateTime());
-            barrageElement.setType(barrageElement.getType());
-            barrageElement.setContentType(barrageElement.getContentType());
-            barrageElement.setId(barrageElement.getId());
+            barrageElement.setCreateTime(barrage.getCreateTime());
+            barrageElement.setType(barrage.getType());
+            barrageElement.setContentType(barrage.getContentType());
+            barrageElement.setId(barrage.getId());
             showBarrageDto.getBarrageElements().add(barrageElement);
         }
         return Response.success(ResponseStatus.GET_LIVE_BARRAGE_SUCCESS.status,ResponseStatus.GET_LIVE_BARRAGE_SUCCESS.message,showBarrageDto);
