@@ -5,18 +5,13 @@ import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.service.LiveService;
-import com.me2me.web.editor.LiveUpdateTimePropertyEditor;
 import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.DataBinder;
-import org.springframework.web.bind.WebDataBinder;
-import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.support.WebRequestDataBinder;
 
 import java.util.Date;
 
@@ -155,7 +150,7 @@ public class Live extends BaseController {
     public Response getLives(GetLivesRequest request){
         long updateTime = request.getUpdateTime();
         if(updateTime==0){
-            // 小宝看你怎么处理
+            request.setUpdateTime2(new Date());
         }else{
             request.setUpdateTime2(new Date(updateTime));
         }
@@ -166,7 +161,6 @@ public class Live extends BaseController {
 //    public void initBinder(DataBinder binder) {
 //        binder.registerCustomEditor(GetLivesRequest.class,"updateTime",new LiveUpdateTimePropertyEditor());
 //    }
-
 
     /**
      * 获取我关注和我自己的直播列表
