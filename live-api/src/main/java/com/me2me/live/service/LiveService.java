@@ -1,6 +1,7 @@
 package com.me2me.live.service;
 
 import com.me2me.common.web.Response;
+import com.me2me.live.dto.BarrageDto;
 import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
 import com.me2me.live.dto.SpeakDto;
@@ -95,5 +96,5 @@ public interface LiveService {
 
     Response liveCover(long topicId);
 
-    Response liveTimelineBarrage(GetLiveTimeLineDto getLiveTimeLineDto);
+    Response barrage(BarrageDto barrageDto);
 }
