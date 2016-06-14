@@ -62,6 +62,21 @@ public class Live extends BaseController {
      * @param request
      * @return
      */
+    @RequestMapping(value = "/liveTimelineBarrage",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response liveTimelineBarrage(LiveTimelineRequest request){
+        GetLiveTimeLineDto getLiveTimeLineDto = new GetLiveTimeLineDto();
+        getLiveTimeLineDto.setSinceId(request.getSinceId());
+        getLiveTimeLineDto.setTopicId(request.getTopicId());
+        getLiveTimeLineDto.setUid(request.getUid());
+        return liveService.liveTimelineBarrage(getLiveTimeLineDto);
+    }
+
+    /**
+     * 获取消息列表
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/timeline",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response timeline(LiveTimelineRequest request){
@@ -120,13 +135,20 @@ public class Live extends BaseController {
      * @param request
      * @return
      */
-    @RequestMapping(value = "/getLives",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+   /* @RequestMapping(value = "/getLives",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getLives(GetLivesRequest request){
         if(request.getSinceId() == -1){
             request.setSinceId(Long.MAX_VALUE);
         }
         return liveService.getLives(request.getUid(),request.getSinceId());
+    }*/
+
+
+    @RequestMapping(value = "/getLives",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response getLives(GetLivesRequest request){
+        return liveService.getLives(request.getUid(),request.getUpdateTime());
     }
 
     /**
@@ -176,6 +198,18 @@ public class Live extends BaseController {
     public Response favoriteList(FavoriteListRequest request){
         return liveService.getFavoriteList(request.getTopicId());
     }
+
+    /**
+     * 直播封面接口
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/liveCover",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response favoriteList(LiveCoverRequest request){
+        return liveService.liveCover(request.getTopicId());
+    }
+
 
 
 }

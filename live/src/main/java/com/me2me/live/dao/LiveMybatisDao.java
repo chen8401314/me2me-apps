@@ -3,14 +3,12 @@ package com.me2me.live.dao;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.me2me.common.web.Specification;
-import com.me2me.live.mapper.LiveFavoriteMapper;
-import com.me2me.live.mapper.LiveReadHistoryMapper;
-import com.me2me.live.mapper.TopicFragmentMapper;
-import com.me2me.live.mapper.TopicMapper;
+import com.me2me.live.mapper.*;
 import com.me2me.live.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -32,6 +30,9 @@ public class LiveMybatisDao {
 
     @Autowired
     private LiveReadHistoryMapper liveReadHistoryMapper;
+
+    @Autowired
+    private TopicBarrageMapper topicBarrageMapper;
 
 
 
@@ -121,7 +122,16 @@ public class LiveMybatisDao {
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andIdLessThan(sinceId);
         criteria.andStatusEqualTo(Specification.LiveStatus.LIVING.index);
-        example.setOrderByClause("id desc,status asc limit 10");
+        example.setOrderByClause("updateTime desc limit 10");
+        return topicMapper.selectByExample(example);
+    }
+
+    public List<Topic> getLives(Date updateTime){
+        TopicExample example = new TopicExample();
+        TopicExample.Criteria criteria = example.createCriteria();
+        criteria.andUpdateTimeLessThan(updateTime);
+        criteria.andStatusEqualTo(Specification.LiveStatus.LIVING.index);
+        example.setOrderByClause("updateTime desc limit 10");
         return topicMapper.selectByExample(example);
     }
 
@@ -150,6 +160,14 @@ public class LiveMybatisDao {
         return topicFragmentMapper.countByExample(example);
     }
 
+    public int countFragmentByUid(long topicId,long uid ){
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andUidEqualTo(uid);
+        return topicFragmentMapper.countByExample(example);
+    }
+
      public List<LiveFavorite> getFavoriteList(long topicId){
          LiveFavoriteExample example = new LiveFavoriteExample();
          LiveFavoriteExample.Criteria criteria = example.createCriteria();
@@ -175,13 +193,17 @@ public class LiveMybatisDao {
 
     }
 
-    public List<TopicFragment> getBarrage(long topicId,long topId ,long bottomId ){
-        TopicFragmentExample example = new TopicFragmentExample();
-        TopicFragmentExample.Criteria criteria = example.createCriteria();
+    public void createTopicBarrage(TopicBarrage topicBarrage){
+        topicBarrageMapper.insertSelective(topicBarrage);
+    }
+
+    public List<TopicBarrage> getBarrage(long topicId,long topId ,long bottomId ){
+        TopicBarrageExample example = new TopicBarrageExample();
+        TopicBarrageExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andTopIdGreaterThanOrEqualTo(topId);
         criteria.andTopIdLessThanOrEqualTo(bottomId);
-        return topicFragmentMapper.selectByExampleWithBLOBs(example);
+        return topicBarrageMapper.selectByExampleWithBLOBs(example);
     }
 
 }
