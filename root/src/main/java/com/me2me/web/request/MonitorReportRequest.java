@@ -41,4 +41,11 @@ public class MonitorReportRequest extends Request{
     @Setter
     private int channel;
 
+    /**
+     * 行为类型
+     */
+    @Getter
+    @Setter
+    private int actionType;
+
 }

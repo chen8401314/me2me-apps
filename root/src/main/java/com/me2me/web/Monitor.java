@@ -26,13 +26,14 @@ public class Monitor extends BaseController {
     private MonitorService monitorService;
 
     @ResponseBody
-    @RequestMapping(method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value="/report",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response report(MonitorReportRequest monitorReportRequest){
         MonitorReportDto monitorReportDto = new MonitorReportDto();
         monitorReportDto.setChannel(monitorReportRequest.getChannel());
         monitorReportDto.setType(monitorReportRequest.getChannel());
         monitorReportDto.setStartDate(monitorReportRequest.getStartDate());
         monitorReportDto.setEndDate(monitorReportRequest.getEndDate());
+        monitorReportDto.setActionType(monitorReportRequest.getActionType());
         return monitorService.loadReport(monitorReportDto);
     }
 
