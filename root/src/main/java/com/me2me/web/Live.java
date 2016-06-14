@@ -66,7 +66,7 @@ public class Live extends BaseController {
      */
     @RequestMapping(value = "/barrage",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response liveTimelineBarrage(BarrageRequest request){
+    public Response barrage(BarrageRequest request){
         BarrageDto barrageDto = new BarrageDto();
         barrageDto.setSinceId(request.getSinceId());
         barrageDto.setTopicId(request.getTopicId());
