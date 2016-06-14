@@ -114,7 +114,7 @@ public class LiveServiceImpl implements LiveService {
     }
 
     @Override
-    public Response barrage(BarrageDto barrageDto) {
+    public Response barrage(LiveBarrageDto barrageDto) {
         ShowBarrageDto showBarrageDto = new ShowBarrageDto();
         List<TopicBarrage> topicBarrages = liveMybatisDao.getBarrage(barrageDto.getTopicId(),barrageDto.getSinceId(),barrageDto.getTopId(),barrageDto.getBottomId());
         for(TopicBarrage barrage :topicBarrages){

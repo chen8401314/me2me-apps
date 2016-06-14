@@ -1,9 +1,9 @@
 package com.me2me.web;
 
 import com.me2me.common.web.Response;
-import com.me2me.live.dto.BarrageDto;
 import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
+import com.me2me.live.dto.LiveBarrageDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.service.LiveService;
 import com.me2me.web.request.*;
@@ -67,13 +67,13 @@ public class Live extends BaseController {
     @RequestMapping(value = "/barrage",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response barrage(BarrageRequest request){
-        BarrageDto barrageDto = new BarrageDto();
-        barrageDto.setSinceId(request.getSinceId());
-        barrageDto.setTopicId(request.getTopicId());
-        barrageDto.setUid(request.getUid());
-        barrageDto.setTopicId(request.getTopId());
-        barrageDto.setBottomId(request.getBottomId());
-        return liveService.barrage(barrageDto);
+        LiveBarrageDto liveBarrageDto = new LiveBarrageDto();
+        liveBarrageDto.setSinceId(request.getSinceId());
+        liveBarrageDto.setTopicId(request.getTopicId());
+        liveBarrageDto.setUid(request.getUid());
+        liveBarrageDto.setTopicId(request.getTopId());
+        liveBarrageDto.setBottomId(request.getBottomId());
+        return liveService.barrage(liveBarrageDto);
     }
 
     /**
