@@ -88,6 +88,10 @@ public class ShowNewestDto implements BaseEntity{
         //是否点过赞
         private int isLike;
 
+        private String forwardUrl;
+
+        private String forwardTitle;
+
         private List<ReviewElement> reviews = Lists.newArrayList();
 
         public static ReviewElement createElement(){
