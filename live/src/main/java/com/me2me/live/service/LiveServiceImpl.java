@@ -6,7 +6,6 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentDto;
-import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.model.Content;
 import com.me2me.content.service.ContentService;
 import com.me2me.live.dao.LiveMybatisDao;
@@ -115,22 +114,28 @@ public class LiveServiceImpl implements LiveService {
     }
 
     @Override
-    public Response liveTimelineBarrage(GetLiveTimeLineDto getLiveTimeLineDto) {
-        /*LiveTimeLineBarrageDto liveTimeLineBarrageDto = new LiveTimeLineBarrageDto();
-        List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(),getLiveTimeLineDto.getSinceId());
-        buildLiveTimeLine(getLiveTimeLineDto, liveTimeLineBarrageDto, fragmentList);
-        if(fragmentList.size() > 0) {
-            List<TopicBarrage> barrageList = liveMybatisDao.getBarrage(getLiveTimeLineDto.getTopicId(), fragmentList.get(0).getId(), fragmentList.get(fragmentList.size() - 1).getId());
-            LiveTimeLineBarrageDto.BarrageElement barrageElement = LiveTimeLineBarrageDto.createBarrageElement();
-            for (TopicBarrage topicBarrage : barrageList) {
-                barrageElement.setTopId(topicBarrage.getTopId());
-                barrageElement.setBottomId(topicBarrage.getBottomId());
-                barrageElement.setContent(topicBarrage.getFragment());
-                barrageElement.setType(topicBarrage.getContentType());
-                liveTimeLineBarrageDto.getBarrageElements().add(barrageElement);
+    public Response barrage(LiveBarrageDto barrageDto) {
+        ShowBarrageDto showBarrageDto = new ShowBarrageDto();
+        List<TopicBarrage> topicBarrages = liveMybatisDao.getBarrage(barrageDto.getTopicId(),barrageDto.getSinceId(),barrageDto.getTopId(),barrageDto.getBottomId());
+        for(TopicBarrage barrage :topicBarrages){
+            long uid = barrage.getUid();
+            UserProfile userProfile = userService.getUserProfileByUid(uid);
+            ShowBarrageDto.BarrageElement barrageElement = ShowBarrageDto.createElement();
+            barrageElement.setUid(uid);
+            barrageElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            barrageElement.setNickName(userProfile.getNickName());
+            if(barrageElement.getContentType() == Specification.LiveContent.TEXT.index) {
+                barrageElement.setFragment(barrage.getFragment());
+            }else if(barrageElement.getContentType() == Specification.LiveContent.IMAGE.index){
+                barrageElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + barrage.getFragmentImage());
             }
-        }*/
-        return null;
+            barrageElement.setCreateTime(barrage.getCreateTime());
+            barrageElement.setType(barrage.getType());
+            barrageElement.setContentType(barrage.getContentType());
+            barrageElement.setId(barrage.getId());
+            showBarrageDto.getBarrageElements().add(barrageElement);
+        }
+        return Response.success(ResponseStatus.GET_LIVE_BARRAGE_SUCCESS.status,ResponseStatus.GET_LIVE_BARRAGE_SUCCESS.message,showBarrageDto);
     }
 
     private void buildLiveTimeLine(GetLiveTimeLineDto getLiveTimeLineDto, LiveTimeLineDto liveTimeLineDto, List<TopicFragment> fragmentList) {

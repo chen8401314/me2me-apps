@@ -86,6 +86,10 @@ public class SquareDataDto implements BaseEntity {
 
         private int imageCount;
 
+        private String forwardUrl;
+
+        private String forwardTitle;
+
         }
 
 }

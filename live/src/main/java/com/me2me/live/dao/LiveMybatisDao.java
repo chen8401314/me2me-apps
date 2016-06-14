@@ -197,12 +197,14 @@ public class LiveMybatisDao {
         topicBarrageMapper.insertSelective(topicBarrage);
     }
 
-    public List<TopicBarrage> getBarrage(long topicId,long topId ,long bottomId ){
+    public List<TopicBarrage> getBarrage(long topicId,long sinceId, long topId ,long bottomId ){
         TopicBarrageExample example = new TopicBarrageExample();
         TopicBarrageExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andTopIdGreaterThanOrEqualTo(topId);
         criteria.andTopIdLessThanOrEqualTo(bottomId);
+        criteria.andIdGreaterThanOrEqualTo(sinceId);
+        example.setOrderByClause("id asc limit 20 ");
         return topicBarrageMapper.selectByExampleWithBLOBs(example);
     }
 

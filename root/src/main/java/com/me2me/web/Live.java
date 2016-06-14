@@ -3,6 +3,7 @@ package com.me2me.web;
 import com.me2me.common.web.Response;
 import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
+import com.me2me.live.dto.LiveBarrageDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.service.LiveService;
 import com.me2me.web.request.*;
@@ -12,9 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -63,14 +62,16 @@ public class Live extends BaseController {
      * @param request
      * @return
      */
-    @RequestMapping(value = "/liveTimelineBarrage",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/barrage",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response liveTimelineBarrage(LiveTimelineRequest request){
-        GetLiveTimeLineDto getLiveTimeLineDto = new GetLiveTimeLineDto();
-        getLiveTimeLineDto.setSinceId(request.getSinceId());
-        getLiveTimeLineDto.setTopicId(request.getTopicId());
-        getLiveTimeLineDto.setUid(request.getUid());
-        return liveService.liveTimelineBarrage(getLiveTimeLineDto);
+    public Response barrage(BarrageRequest request){
+        LiveBarrageDto liveBarrageDto = new LiveBarrageDto();
+        liveBarrageDto.setSinceId(request.getSinceId());
+        liveBarrageDto.setTopicId(request.getTopicId());
+        liveBarrageDto.setUid(request.getUid());
+        liveBarrageDto.setTopId(request.getTopId());
+        liveBarrageDto.setBottomId(request.getBottomId());
+        return liveService.barrage(liveBarrageDto);
     }
 
     /**
