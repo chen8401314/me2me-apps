@@ -176,7 +176,7 @@ public class LiveServiceImpl implements LiveService {
         topicBarrage.setTopId(speakDto.getTopId());
         topicBarrage.setContentType(speakDto.getContentType());
         topicBarrage.setType(speakDto.getType());
-        topicFragment.setUid(speakDto.getUid());
+        topicBarrage.setUid(speakDto.getUid());
         //保存弹幕
         liveMybatisDao.createTopicBarrage(topicBarrage);
         //提醒
