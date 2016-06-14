@@ -29,11 +29,11 @@
             <property name="enableSubPackages" value="true" />
         </javaClientGenerator>
 
-        <!--<table tableName="topic" domainObjectName="Topic"/>-->
+        <table tableName="topic" domainObjectName="Topic"/>
         <!--<table tableName="topic_fragment" domainObjectName="TopicFragment"/>-->
         <!--<table tableName="live_favorite" domainObjectName="LiveFavorite"/>-->
         <!--<table tableName="live_read_history" domainObjectName="LiveReadHistory"/>-->
-        <table tableName="topic_barrage" domainObjectName="TopicBarrage"/>
+        <!--<table tableName="topic_barrage" domainObjectName="TopicBarrage"/>-->
 
 
     </context>

@@ -53,7 +53,7 @@ public interface LiveService {
      * @param updateTime
      * @return
      */
-    Response getLives(long uid,Date updateTime);
+    Response getLivesByUpdateTime(long uid,long updateTime);
 
     /**
      * 关注/取消关注我参与的直播

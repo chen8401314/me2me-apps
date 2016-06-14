@@ -122,16 +122,16 @@ public class LiveMybatisDao {
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andIdLessThan(sinceId);
         criteria.andStatusEqualTo(Specification.LiveStatus.LIVING.index);
-        example.setOrderByClause("update_time desc limit 10");
+        example.setOrderByClause(" id desc limit 10 ");
         return topicMapper.selectByExample(example);
     }
 
-    public List<Topic> getLives(Date updateTime){
+    public List<Topic> getLivesByUpdateTime(long updateTime){
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
-        criteria.andUpdateTimeLessThanOrEqualTo(updateTime);
+        criteria.andLongTimeLessThanOrEqualTo(updateTime);
         criteria.andStatusEqualTo(Specification.LiveStatus.LIVING.index);
-        example.setOrderByClause("update_time desc limit 10");
+        example.setOrderByClause(" long_time desc limit 10 ");
         return topicMapper.selectByExample(example);
     }
 

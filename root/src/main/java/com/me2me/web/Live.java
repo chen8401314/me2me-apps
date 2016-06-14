@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.Calendar;
 import java.util.Date;
 
 /**
@@ -148,13 +149,11 @@ public class Live extends BaseController {
     @RequestMapping(value = "/getLives",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getLives(GetLivesRequest request){
-        long updateTime = request.getUpdateTime();
-        if(updateTime==0){
-            request.setUpdateTime2(new Date());
-        }else{
-            request.setUpdateTime2(new Date(updateTime));
+        if(request.getUpdateTime() == 0){
+            Calendar calendar = Calendar.getInstance();
+            request.setUpdateTime(calendar.getTimeInMillis());
         }
-        return liveService.getLives(request.getUid(),request.getUpdateTime2());
+        return liveService.getLives(request.getUid(),request.getUpdateTime());
     }
 
 //    @InitBinder

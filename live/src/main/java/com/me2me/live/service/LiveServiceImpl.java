@@ -18,6 +18,7 @@ import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -181,7 +182,9 @@ public class LiveServiceImpl implements LiveService {
         //提醒
         Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
         //直播发言时候更新直播更新时间
-        topic.setUpdateTime(new Date());
+        Calendar calendar = Calendar.getInstance();
+        topic.setUpdateTime(calendar.getTime());
+        topic.setLongTime(calendar.getTimeInMillis());
         liveMybatisDao.updateTopic(topic);
         if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHORWRITETAG.index){
             List<LiveFavorite> list = liveMybatisDao.getFavoriteList(speakDto.getTopicId());
@@ -232,9 +235,9 @@ public class LiveServiceImpl implements LiveService {
      * @return
      */
     @Override
-    public Response getLives(long uid,Date updateTime) {
+    public Response getLivesByUpdateTime(long uid,long updateTime) {
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
-        List<Topic> topicList = liveMybatisDao.getLives(updateTime);
+        List<Topic> topicList = liveMybatisDao.getLivesByUpdateTime(updateTime);
         builder(uid, showTopicListDto, topicList);
         return Response.success(ResponseStatus.GET_LIVES_SUCCESS.status,ResponseStatus.GET_LIVES_SUCCESS.message,showTopicListDto);
     }
