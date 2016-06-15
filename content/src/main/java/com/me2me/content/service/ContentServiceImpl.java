@@ -114,7 +114,7 @@ public class ContentServiceImpl implements ContentService {
 
 
 
-    public Response articleLike(ArticleLikeDto articleLikeDto) {
+    /*public Response articleLike(ArticleLikeDto articleLikeDto) {
         ArticleLikesDetails articleLikesDetails = new ArticleLikesDetails();
         articleLikesDetails.setUid(articleLikeDto.getUid());
         articleLikesDetails.setArticleId(articleLikeDto.getCid());
@@ -129,7 +129,7 @@ public class ContentServiceImpl implements ContentService {
             monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.UN_LIKE.index, 0, articleLikeDto.getUid()));
             return Response.success(ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.message);
         }
-    }
+    }*/
 
 
     @Override
@@ -397,8 +397,8 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public void createArticleLike(ArticleLikeDto articleLikeDto) {
-        contentMybatisDao.createArticleLike(articleLikeDto);
+    public void createArticleLike(LikeDto likeDto) {
+        contentMybatisDao.createArticleLike(likeDto);
     }
 
     @Override

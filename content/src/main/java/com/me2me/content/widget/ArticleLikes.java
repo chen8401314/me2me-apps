@@ -20,10 +20,11 @@ public class ArticleLikes extends AbstractLikes implements Likes {
     @Autowired
     private ContentStatusServiceProxyBean contentStatusServiceProxyBean;
 
-    public Response likes(ArticleLikeDto articleLikeDto) {
-        contentService.createArticleLike(articleLikeDto);
+    @Override
+    public Response likes(LikeDto likeDto) {
+        contentService.createArticleLike(likeDto);
         ContentStatService contentStatService = contentStatusServiceProxyBean.getTarget();
-        contentStatService.thumbsUp(articleLikeDto.getUid()+"",articleLikeDto.getCid());
+        contentStatService.thumbsUp(likeDto.getUid()+"",likeDto.getCid());
         return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
     }
 }

@@ -352,10 +352,10 @@ public class ContentMybatisDao {
         return contentMapper.countFragment(countFragmentDto);
     }
 
-    public void createArticleLike(ArticleLikeDto articleLikeDto){
+    public void createArticleLike(LikeDto likeDto){
         ArticleLikesDetails articleLikesDetails = new ArticleLikesDetails();
-        articleLikesDetails.setArticleId(articleLikeDto.getCid());
-        articleLikesDetails.setUid(articleLikeDto.getUid());
+        articleLikesDetails.setArticleId(likeDto.getCid());
+        articleLikesDetails.setUid(likeDto.getUid());
         articleLikesDetailsMapper.insertSelective(articleLikesDetails);
     }
 
