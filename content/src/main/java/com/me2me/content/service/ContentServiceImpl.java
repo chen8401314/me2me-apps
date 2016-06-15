@@ -1061,7 +1061,7 @@ public class ContentServiceImpl implements ContentService {
             hottestContentElement.setType(content.getType());
             String cover = content.getConverImage();
             if(!StringUtils.isEmpty(cover)) {
-                if(content.getType() == Specification.ArticleType.FORWARD_SYSTEM.index){
+                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
                     hottestContentElement.setCoverImage(cover);
                 }else {
                     hottestContentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
@@ -1155,7 +1155,7 @@ public class ContentServiceImpl implements ContentService {
             String cover = content.getConverImage();
             contentElement.setReviewCount(content.getReviewCount());
             if(!StringUtils.isEmpty(cover)) {
-                if(content.getType() == Specification.ArticleType.FORWARD_SYSTEM.index){
+                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
                     contentElement.setCoverImage(cover);
                 }else {
                     contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
@@ -1225,7 +1225,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setReviewCount(content.getReviewCount());
             String cover =  content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
-                if(content.getType() == Specification.ArticleType.FORWARD_SYSTEM.index){
+                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
                     contentElement.setCoverImage(cover);
                 }else {
                     contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
