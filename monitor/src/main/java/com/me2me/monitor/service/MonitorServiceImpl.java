@@ -3,6 +3,7 @@ package com.me2me.monitor.service;
 import com.me2me.common.web.Response;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.monitor.dao.MonitorMybatisDao;
+import com.me2me.monitor.dto.LoadReportDto;
 import com.me2me.monitor.dto.MonitorReportDto;
 import com.me2me.monitor.event.MonitorEvent;
 import com.me2me.monitor.model.AccessTrack;
@@ -37,6 +38,9 @@ public class MonitorServiceImpl implements MonitorService {
 
     @Override
     public Response loadReport(MonitorReportDto monitorReportDto) {
-        return null;
+        int counter = monitorMybatisDao.getReport(monitorReportDto);
+        LoadReportDto loadReportDto = new LoadReportDto();
+        loadReportDto.setCounter(counter);
+        return Response.success(loadReportDto);
     }
 }
