@@ -512,7 +512,9 @@ public interface Specification {
 
         CONTENT("原生UGC",1),
 
-        ARTICLE("直播",2);
+        ARTICLE("系统文章",2),
+
+        ACTIVITY("活动",3);
 
         public final String name;
 
