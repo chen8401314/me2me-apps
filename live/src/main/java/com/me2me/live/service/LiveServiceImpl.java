@@ -341,7 +341,8 @@ public class LiveServiceImpl implements LiveService {
             TopicBarrage topicBarrage = new TopicBarrage();
             topicBarrage.setBottomId(bottomId);
             topicBarrage.setTopicId(topicId);
-            topicBarrage.setTopId(bottomId);
+            topicBarrage.setTopId(topId);
+            topicBarrage.setContentType(0);
             topicBarrage.setType(Specification.LiveSpeakType.SUBSCRIBED.index);
             topicBarrage.setUid(uid);
             //保存弹幕
