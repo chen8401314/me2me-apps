@@ -72,12 +72,15 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private MonitorService monitorService;
 
+    @Autowired
+    private ContentRecommendService contentRecommendService;
+
     @Bean
-    private ContentRecommendService getContentRecommendService(){
+    ContentRecommendService contentRecommendService(){
         HttpInvokerProxyFactoryBean factoryBean = new HttpInvokerProxyFactoryBean();
         factoryBean.setServiceUrl(recommendDomain);
         factoryBean.setServiceInterface(ContentRecommendService.class);
-        return (ContentRecommendService) factoryBean.getObject();
+        return (ContentRecommendService) factoryBean;
     }
 
     @Override
@@ -94,7 +97,7 @@ public class ContentServiceImpl implements ContentService {
         recommendRequest.setUser(user);
         recommendRequest.setUserId(userProfile.getUid().toString());
         recommendRequest.setEmotion(emotion);
-        RecommendResponse recommendResponse =  getContentRecommendService().recommend(recommendRequest);
+        RecommendResponse recommendResponse =  contentRecommendService.recommend(recommendRequest);
         RecommendContentDto recommendContentDto = new RecommendContentDto();
         List<ForecastContent> list = recommendResponse.getContents();
         for(ForecastContent forecastContent : list){
