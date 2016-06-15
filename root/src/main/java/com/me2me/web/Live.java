@@ -129,7 +129,7 @@ public class Live extends BaseController {
     @RequestMapping(value = "/setLive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response setLive(SetLiveRequest request){
-        return liveService.setLive(request.getUid(),request.getTopicId());
+        return liveService.setLive(request.getUid(),request.getTopicId(),request.getTopId(),request.getBottomId());
     }
 
     /**

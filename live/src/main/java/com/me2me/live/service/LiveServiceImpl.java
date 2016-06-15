@@ -45,6 +45,8 @@ public class LiveServiceImpl implements LiveService {
         topic.setLiveImage(createLiveDto.getLiveImage());
         topic.setUid(createLiveDto.getUid());
         topic.setStatus(Specification.LiveStatus.LIVING.index);
+        Calendar calendar = Calendar.getInstance();
+        topic.setLongTime(calendar.getTimeInMillis());
         liveMybatisDao.createTopic(topic);
         List<UserFollow> list = userService.getFans(createLiveDto.getUid());
         for(UserFollow userFollow : list) {
@@ -259,7 +261,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setCreateTime(topic.getCreateTime());
             showTopicElement.setTopicId(topic.getId());
             showTopicElement.setStatus(topic.getStatus());
-            showTopicElement.setUpdateTime(topic.getUpdateTime());
+            showTopicElement.setUpdateTime(topic.getLongTime());
             showTopicElement.setIsFollowed(userService.isFollow(topic.getUid(),uid));
             TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId(),topic.getUid());
             if(topicFragment != null) {
@@ -297,7 +299,7 @@ public class LiveServiceImpl implements LiveService {
      * @return
      */
     @Override
-    public Response setLive(long uid, long topicId) {
+    public Response setLive(long uid, long topicId,long topId,long bottomId) {
         LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid,topicId);
         Content content = contentService.getContentByTopicId(topicId);
         if(liveFavorite != null){
@@ -314,6 +316,15 @@ public class LiveServiceImpl implements LiveService {
             liveFavorite.setTopicId(topicId);
             liveFavorite.setUid(uid);
             liveMybatisDao.createLiveFavorite(liveFavorite);
+            //保存弹幕
+            TopicBarrage topicBarrage = new TopicBarrage();
+            topicBarrage.setBottomId(bottomId);
+            topicBarrage.setTopicId(topicId);
+            topicBarrage.setTopId(bottomId);
+            topicBarrage.setType(Specification.LiveSpeakType.SUBSCRIBED.index);
+            topicBarrage.setUid(uid);
+            //保存弹幕
+            liveMybatisDao.createTopicBarrage(topicBarrage);
             content.setFavoriteCount(content.getFavoriteCount()+1);
             contentService.updateContentById(content);
             return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status,ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);

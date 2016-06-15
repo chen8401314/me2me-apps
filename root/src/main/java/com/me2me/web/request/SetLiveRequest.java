@@ -19,4 +19,12 @@ public class SetLiveRequest extends Request {
     @Getter
     @Setter
     private long topicId;
+
+    @Getter
+    @Setter
+    private long topId;
+
+    @Getter
+    @Setter
+    private long bottomId;
 }

@@ -295,7 +295,9 @@ public interface Specification {
 
         FANSWRITETAG("粉丝贴标",4),
 
-        LIKES("点赞",5);
+        LIKES("点赞",5),
+
+        SUBSCRIBED ("订阅",5);
 
         public final String name;
         public final int index;

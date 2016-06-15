@@ -166,7 +166,7 @@ public interface ContentService {
 
     Response like2(LikeDto likeDto);
 
-    void createArticleLike(LikeDto likeDto);
+    void createArticleLike(ArticleLikeDto articleLikeDto);
 
     void createArticleReview(ReviewDto reviewDto);
 
