@@ -69,6 +69,9 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private ContentRecommendServiceProxyBean contentRecommendServiceProxyBean;
 
+    @Autowired
+    private WriteTagAdapter writeTagAdapter;
+
     @Value("#{app.recommend_domain}")
     private String recommendDomain;
 
@@ -633,6 +636,10 @@ public class ContentServiceImpl implements ContentService {
         userService.push(content.getUid(),writeTagDto.getUid(),Specification.PushMessageType.TAG.index,content.getTitle());
         monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FEELING_TAG.index,0,writeTagDto.getUid()));
         return Response.success(ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.status,ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.message);
+    }
+
+    public Response writeTag2(WriteTagDto writeTagDto) {
+        return writeTagAdapter.execute(writeTagDto);
     }
 
     @Override
@@ -1418,6 +1425,21 @@ public class ContentServiceImpl implements ContentService {
             showArticleReviewDto.getReviews().add(reviewElement);
         }
         return Response.success(showArticleReviewDto);
+    }
+
+    @Override
+    public void createTag(ContentTags contentTags) {
+        contentMybatisDao.createTag(contentTags);
+    }
+
+    @Override
+    public void createContentTagsDetails(ContentTagsDetails contentTagsDetails) {
+        contentMybatisDao.createContentTagsDetails(contentTagsDetails);
+    }
+
+    @Override
+    public void createContentArticleDetails(ArticleTagsDetails articleTagsDetails) {
+        contentMybatisDao.createContentArticleDetails(articleTagsDetails);
     }
 
 }

@@ -52,6 +52,9 @@ public class ContentMybatisDao {
     @Autowired
     private ArticleReviewMapper articleReviewMapper;
 
+    @Autowired
+    private ArticleTagsDetailsMapper articleTagsDetailsMapper;
+
     public List<Content> loadSquareData(int sinceId){
         return contentMapper.loadSquareData(sinceId);
     }
@@ -378,5 +381,9 @@ public class ContentMybatisDao {
         criteria.andIdLessThan(sinceId);
         example.setOrderByClause(" id desc limit 10 ");
         return articleReviewMapper.selectByExample(example);
+    }
+
+    public void createContentArticleDetails(ArticleTagsDetails articleTagsDetails){
+        articleTagsDetailsMapper.insert(articleTagsDetails);
     }
 }

@@ -26,7 +26,7 @@ public class ArticleReview implements Review{
     public Response createReview(ReviewDto reviewDto) {
         contentService.createArticleReview(reviewDto);
         ContentStatService contentStatService = contentStatusServiceProxyBean.getTarget();
-        contentStatService.thumbsUp(reviewDto.getUid()+"",reviewDto.getCid());
+        contentStatService.comments(reviewDto.getUid()+"",reviewDto.getCid());
         return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
     }
 }

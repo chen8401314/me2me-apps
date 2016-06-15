@@ -572,4 +572,22 @@ public interface Specification {
 
     };
 
+    public enum WriteTagType{
+
+        CONTENT("原生内容",1),
+
+        ARTICLE("系统文章",2),
+
+        ACTIVITY("活动",3);
+
+        public final String name;
+
+        public final int index;
+
+        WriteTagType(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
 }

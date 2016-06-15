@@ -2,9 +2,7 @@ package com.me2me.content.service;
 
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.*;
-import com.me2me.content.model.Content;
-import com.me2me.content.model.ContentImage;
-import com.me2me.content.model.ContentLikesDetails;
+import com.me2me.content.model.*;
 
 
 /**
@@ -175,5 +173,11 @@ public interface ContentService {
     Response getArticleComments(long id);
 
     Response getArticleReview(long id, long sinceId);
+
+    void createTag(ContentTags contentTags);
+
+    void createContentTagsDetails(ContentTagsDetails contentTagsDetails);
+
+    void createContentArticleDetails(ArticleTagsDetails articleTagsDetails);
 
 }

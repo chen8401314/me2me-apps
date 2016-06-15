@@ -21,4 +21,6 @@ public class WriteTagDto implements BaseEntity{
     private long tagId;
 
     private long customerId;
+
+    private int type;
 }
