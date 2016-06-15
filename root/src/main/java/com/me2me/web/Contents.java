@@ -94,7 +94,7 @@ public class Contents extends BaseController {
         likeDto.setUid(request.getUid());
         likeDto.setCid(request.getCid());
         likeDto.setAction(request.getAction());
-        likeDto.setType(request.getType());
+        likeDto.setType(request.getType() == 0 ? 1 :request.getType());
         return contentService.like2(likeDto);
     }
 
