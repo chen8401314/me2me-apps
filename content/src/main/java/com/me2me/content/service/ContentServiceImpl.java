@@ -28,6 +28,8 @@ import com.plusnet.search.content.domain.ContentTO;
 import com.plusnet.search.content.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -52,8 +54,8 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private ActivityService activityService;
 
-    @Autowired
-    private ContentRecommendService contentRecommendService;
+//    @Autowired
+//    private ContentRecommendService contentRecommendService;
 
     @Autowired
     private PublishContentAdapter publishContentAdapter;
@@ -70,6 +72,14 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private MonitorService monitorService;
 
+    @Bean
+    private ContentRecommendService getContentRecommendService(){
+        HttpInvokerProxyFactoryBean factoryBean = new HttpInvokerProxyFactoryBean();
+        factoryBean.setServiceUrl(recommendDomain);
+        factoryBean.setServiceInterface(ContentRecommendService.class);
+        return (ContentRecommendService) factoryBean.getObject();
+    }
+
     @Override
     public Response recommend(long uid,String emotion) {
         RecommendRequest recommendRequest = new RecommendRequest();
@@ -84,7 +94,7 @@ public class ContentServiceImpl implements ContentService {
         recommendRequest.setUser(user);
         recommendRequest.setUserId(userProfile.getUid().toString());
         recommendRequest.setEmotion(emotion);
-        RecommendResponse recommendResponse =  contentRecommendService.recommend(recommendRequest);
+        RecommendResponse recommendResponse =  getContentRecommendService().recommend(recommendRequest);
         RecommendContentDto recommendContentDto = new RecommendContentDto();
         List<ForecastContent> list = recommendResponse.getContents();
         for(ForecastContent forecastContent : list){
