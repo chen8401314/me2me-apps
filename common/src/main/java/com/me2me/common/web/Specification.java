@@ -496,7 +496,9 @@ public interface Specification {
 
         LIVE("直播",2),
 
-        ARTICLE("系统文章",3);
+        ARTICLE("系统文章",3),
+
+        ACTIVITY("活动",4);
 
         public final String name;
 
