@@ -41,6 +41,7 @@ public class Users extends BaseController {
         userSignUpDto.setDeviceNo(request.getDeviceNo());
         userSignUpDto.setPlatform(request.getPlatform());
         userSignUpDto.setOs(request.getOs());
+        userSignUpDto.setIntroduced(request.getIntroduced());
         return userService.signUp(userSignUpDto);
     }
 
@@ -122,6 +123,7 @@ public class Users extends BaseController {
         modifyUserProfileDto.setAvatar(request.getAvatar());
         modifyUserProfileDto.setBirthday(request.getBirthday());
         modifyUserProfileDto.setHobby(request.getHobby());
+        modifyUserProfileDto.setIntroduced(request.getIntroduced());
        return userService.modifyUserProfile(modifyUserProfileDto);
     }
 

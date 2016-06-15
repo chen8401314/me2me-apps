@@ -26,6 +26,8 @@ public class UserSignUpDto implements BaseEntity {
     private int platform;
 
     private String os;
+
+    private String introduced;
     
 
 }

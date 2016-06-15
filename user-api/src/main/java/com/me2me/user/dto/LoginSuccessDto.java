@@ -31,4 +31,6 @@ public class LoginSuccessDto implements BaseEntity {
 
     private int fansCount;
 
+    private String introduced;
+
 }

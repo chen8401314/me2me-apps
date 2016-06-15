@@ -86,6 +86,7 @@ public class UserServiceImpl implements UserService {
         userProfile.setAvatar(Constant.DEFAULT_AVATAR);
         userProfile.setMobile(userSignUpDto.getMobile());
         userProfile.setNickName(userSignUpDto.getNickName());
+        userProfile.setIntroduced(userSignUpDto.getIntroduced());
         userMybatisDao.createUserProfile(userProfile);
         log.info("userProfile is create");
         signUpSuccessDto.setUserName(user.getUserName());
@@ -96,6 +97,7 @@ public class UserServiceImpl implements UserService {
         // 设置userNo
         signUpSuccessDto.setMeNumber(userMybatisDao.getUserNoByUid(user.getUid()).getMeNumber().toString());
         signUpSuccessDto.setAvatar(userProfile.getAvatar());
+        signUpSuccessDto.setIntroduced(userProfile.getIntroduced());
         // 保存用户token信息
         UserToken userToken = new UserToken();
         userToken.setUid(user.getUid());
@@ -103,6 +105,7 @@ public class UserServiceImpl implements UserService {
         userMybatisDao.createUserToken(userToken);
         log.info("userToken is create");
         signUpSuccessDto.setToken(userToken.getToken());
+
         //保存用户的设备token和用户平台信息
         UserDevice device = new UserDevice();
         device.setDeviceNo(userSignUpDto.getDeviceNo());
@@ -151,6 +154,7 @@ public class UserServiceImpl implements UserService {
                 loginSuccessDto.setYearId(userProfile.getYearsId());
                 loginSuccessDto.setFansCount(userMybatisDao.getUserFansCount(user.getUid()));
                 loginSuccessDto.setFollowedCount(userMybatisDao.getUserFollowCount(user.getUid()));
+                loginSuccessDto.setIntroduced(userProfile.getIntroduced());
                 //保存用户的设备token和用户平台信息
                 UserDevice device = new UserDevice();
                 device.setDeviceNo(userLoginDto.getDeviceNo());
@@ -360,6 +364,7 @@ public class UserServiceImpl implements UserService {
         userProfile.setGender(modifyUserProfileDto.getGender());
         userProfile.setBirthday(modifyUserProfileDto.getBirthday());
         userProfile.setAvatar(modifyUserProfileDto.getAvatar());
+        userProfile.setIntroduced(modifyUserProfileDto.getIntroduced());
         //修改用户爱好
         if(!StringUtils.isEmpty(modifyUserProfileDto.getHobby())){
             ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();

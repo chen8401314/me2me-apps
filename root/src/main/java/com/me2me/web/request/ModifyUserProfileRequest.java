@@ -40,4 +40,8 @@ public class ModifyUserProfileRequest extends Request{
     @Setter
     private String hobby;
 
+    @Getter
+    @Setter
+    private String introduced;
+
 }
