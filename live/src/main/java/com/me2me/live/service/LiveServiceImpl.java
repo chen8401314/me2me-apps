@@ -6,6 +6,8 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentDto;
+import com.me2me.content.dto.LikeDto;
+import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.model.Content;
 import com.me2me.content.service.ContentService;
 import com.me2me.live.dao.LiveMybatisDao;
@@ -187,6 +189,25 @@ public class LiveServiceImpl implements LiveService {
         //保存弹幕
         liveMybatisDao.createTopicBarrage(topicBarrage);
         //提醒
+        if(speakDto.getType() == Specification.LiveSpeakType.LIKES.index) {
+            LikeDto likeDto = new LikeDto();
+            //点赞
+            Content content =contentService.getContentByTopicId(speakDto.getTopicId());
+            likeDto.setCid(content.getId());
+            likeDto.setAction(0);
+            likeDto.setUid(speakDto.getUid());
+            likeDto.setType(Specification.LikesType.LIVE.index);
+            contentService.like2(likeDto);
+        }else if(speakDto.getType() == Specification.LiveSpeakType.FANSWRITETAG.index){
+            //贴标
+            Content content =contentService.getContentByTopicId(speakDto.getTopicId());
+            WriteTagDto writeTagDto = new WriteTagDto();
+            writeTagDto.setType(Specification.WriteTagType.CONTENT.index);
+            writeTagDto.setUid(speakDto.getUid());
+            writeTagDto.setCid(content.getId());
+            writeTagDto.setTag(speakDto.getFragment());
+            contentService.writeTag(writeTagDto);
+        }
         Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
         //直播发言时候更新直播更新时间
         Calendar calendar = Calendar.getInstance();

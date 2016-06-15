@@ -297,7 +297,7 @@ public interface Specification {
 
         LIKES("点赞",5),
 
-        SUBSCRIBED ("订阅",5);
+        SUBSCRIBED ("订阅",6);
 
         public final String name;
         public final int index;
