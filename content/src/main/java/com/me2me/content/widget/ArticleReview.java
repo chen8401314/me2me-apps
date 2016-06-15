@@ -4,6 +4,7 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.content.dto.ReviewDto;
 import com.me2me.content.service.ContentService;
+import com.plusnet.search.content.api.ContentStatService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -19,8 +20,13 @@ public class ArticleReview implements Review{
     @Autowired
     private ContentService contentService;
 
+    @Autowired
+    private ContentStatusServiceProxyBean contentStatusServiceProxyBean;
+
     public Response createReview(ReviewDto reviewDto) {
         contentService.createArticleReview(reviewDto);
+        ContentStatService contentStatService = contentStatusServiceProxyBean.getTarget();
+        contentStatService.thumbsUp(reviewDto.getUid()+"",reviewDto.getCid());
         return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
     }
 }

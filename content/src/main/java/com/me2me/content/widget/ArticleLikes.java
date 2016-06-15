@@ -1,7 +1,11 @@
 package com.me2me.content.widget;
 
 import com.me2me.common.web.Response;
+import com.me2me.common.web.ResponseStatus;
+import com.me2me.content.dto.ArticleLikeDto;
 import com.me2me.content.dto.LikeDto;
+import com.plusnet.search.content.api.ContentStatService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 /**
@@ -13,9 +17,13 @@ import org.springframework.stereotype.Component;
 @Component
 public class ArticleLikes extends AbstractLikes implements Likes {
 
+    @Autowired
+    private ContentStatusServiceProxyBean contentStatusServiceProxyBean;
 
-    public Response likes(LikeDto likeDto) {
-        contentService.createArticleLike(likeDto);
-        return null;
+    public Response likes(ArticleLikeDto articleLikeDto) {
+        contentService.createArticleLike(articleLikeDto);
+        ContentStatService contentStatService = contentStatusServiceProxyBean.getTarget();
+        contentStatService.thumbsUp(articleLikeDto.getUid()+"",articleLikeDto.getCid());
+        return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
     }
 }

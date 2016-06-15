@@ -85,7 +85,7 @@ public class LiveMybatisDao {
         return (list != null && list.size() > 0) ? list.get(0) : null;
     }
     public void updateTopic(Topic topic){
-        topicMapper.updateByPrimaryKey(topic);
+        topicMapper.updateByPrimaryKeySelective(topic);
     }
 
     public List<Topic> getMyLives(long uid ,long sinceId ,List<Long> topics){

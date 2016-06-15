@@ -62,7 +62,7 @@ public interface LiveService {
      * @param topicId
      * @return
      */
-    Response setLive(long uid,long topicId);
+    Response setLive(long uid,long topicId,long topId,long bottomId);
 
     /**
      * 结束自己当前直播

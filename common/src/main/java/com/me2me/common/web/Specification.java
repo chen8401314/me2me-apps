@@ -295,7 +295,9 @@ public interface Specification {
 
         FANSWRITETAG("粉丝贴标",4),
 
-        LIKES("点赞",5);
+        LIKES("点赞",5),
+
+        SUBSCRIBED ("订阅",5);
 
         public final String name;
         public final int index;
@@ -510,7 +512,9 @@ public interface Specification {
 
         CONTENT("原生UGC",1),
 
-        ARTICLE("直播",2);
+        ARTICLE("系统文章",2),
+
+        ACTIVITY("活动",3);
 
         public final String name;
 

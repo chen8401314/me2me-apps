@@ -72,6 +72,9 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private ContentRecommendServiceProxyBean contentRecommendServiceProxyBean;
 
+    @Autowired
+    private ContentStatusServiceProxyBean contentStatusServiceProxyBean;
+
     @Value("#{app.recommend_domain}")
     private String recommendDomain;
 
@@ -109,6 +112,25 @@ public class ContentServiceImpl implements ContentService {
             recommendContentDto.getResult().add(element);
         }
         return Response.success(recommendContentDto);
+    }
+
+
+
+    public Response articleLike(ArticleLikeDto articleLikeDto) {
+        ArticleLikesDetails articleLikesDetails = new ArticleLikesDetails();
+        articleLikesDetails.setUid(articleLikeDto.getUid());
+        articleLikesDetails.setArticleId(articleLikeDto.getCid());
+        //点赞
+        ArticleLikesDetails details = contentMybatisDao.getArticleLikesDetails(articleLikesDetails);
+        if(articleLikeDto.getAction() == Specification.IsLike.LIKE.index){
+            contentMybatisDao.createArticleLike(articleLikeDto);
+            monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LIKE.index,0,articleLikeDto.getUid()));
+            return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
+        }else {
+            contentMybatisDao.deleteArticleLikesDetails(details);
+            monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.UN_LIKE.index, 0, articleLikeDto.getUid()));
+            return Response.success(ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.message);
+        }
     }
 
 
@@ -377,8 +399,8 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public void createArticleLike(LikeDto likeDto) {
-        contentMybatisDao.createArticleLike(likeDto);
+    public void createArticleLike(ArticleLikeDto articleLikeDto) {
+        contentMybatisDao.createArticleLike(articleLikeDto);
     }
 
     @Override

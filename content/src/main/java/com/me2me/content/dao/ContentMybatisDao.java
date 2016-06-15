@@ -325,6 +325,23 @@ public class ContentMybatisDao {
         return list != null &&list.size() > 0 ? list.get(0) :null;
     }
 
+    public ArticleLikesDetails getArticleLikesDetails(ArticleLikesDetails articleLikesDetails){
+        ArticleLikesDetailsExample example = new ArticleLikesDetailsExample();
+        ArticleLikesDetailsExample.Criteria criteria = example.createCriteria();
+        criteria.andArticleIdEqualTo(articleLikesDetails.getArticleId());
+        criteria.andUidEqualTo(articleLikesDetails.getUid());
+        List<ArticleLikesDetails> list = articleLikesDetailsMapper.selectByExample(example);
+        return list != null &&list.size() > 0 ? list.get(0) :null;
+    }
+
+    public void deleteArticleLikesDetails(ArticleLikesDetails articleLikesDetails){
+        ArticleLikesDetailsExample example = new ArticleLikesDetailsExample();
+        ArticleLikesDetailsExample.Criteria criteria = example.createCriteria();
+        criteria.andArticleIdEqualTo(articleLikesDetails.getArticleId());
+        criteria.andUidEqualTo(articleLikesDetails.getUid());
+        articleLikesDetailsMapper.deleteByExample(example);
+    }
+
     public int countFragment(long topicId,long uid){
         CountFragmentDto countFragmentDto = new CountFragmentDto();
         countFragmentDto.setTopicId(topicId);
@@ -332,10 +349,10 @@ public class ContentMybatisDao {
         return contentMapper.countFragment(countFragmentDto);
     }
 
-    public void createArticleLike(LikeDto likeDto){
+    public void createArticleLike(ArticleLikeDto articleLikeDto){
         ArticleLikesDetails articleLikesDetails = new ArticleLikesDetails();
-        articleLikesDetails.setArticleId(likeDto.getCid());
-        articleLikesDetails.setUid(likeDto.getUid());
+        articleLikesDetails.setArticleId(articleLikeDto.getCid());
+        articleLikesDetails.setUid(articleLikeDto.getUid());
         articleLikesDetailsMapper.insertSelective(articleLikesDetails);
     }
 
