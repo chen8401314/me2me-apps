@@ -79,6 +79,7 @@ public class ContentServiceImpl implements ContentService {
     private String recommendDomain;
 
 
+
     @Override
     public Response recommend(long uid,String emotion) {
         RecommendRequest recommendRequest = new RecommendRequest();
