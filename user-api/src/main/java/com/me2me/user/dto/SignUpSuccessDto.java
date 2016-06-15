@@ -27,4 +27,6 @@ public class SignUpSuccessDto implements BaseEntity {
 
     private long yearId;
 
+    private String introduced;
+
 }

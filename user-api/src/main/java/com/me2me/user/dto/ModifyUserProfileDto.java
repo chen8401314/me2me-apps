@@ -30,4 +30,6 @@ public class ModifyUserProfileDto implements BaseEntity{
     private String birthday;
 
     private String hobby;
+
+    private String introduced;
 }
