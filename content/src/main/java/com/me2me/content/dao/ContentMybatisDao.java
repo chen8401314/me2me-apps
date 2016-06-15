@@ -294,7 +294,7 @@ public class ContentMybatisDao {
         ContentReviewExample example = new ContentReviewExample();
         ContentReviewExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(cid);
-        example.setOrderByClause(" create_time desc limit 3 ");
+        example.setOrderByClause(" create_time desc limit 20 ");
         return contentReviewMapper.selectByExample(example);
     }
 
