@@ -23,13 +23,10 @@ import com.me2me.user.service.UserService;
 import com.plusnet.forecast.domain.ForecastContent;
 import com.plusnet.search.content.RecommendRequest;
 import com.plusnet.search.content.RecommendResponse;
-import com.plusnet.search.content.api.ContentRecommendService;
 import com.plusnet.search.content.domain.ContentTO;
 import com.plusnet.search.content.domain.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -71,9 +68,6 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private ContentRecommendServiceProxyBean contentRecommendServiceProxyBean;
-
-    @Autowired
-    private ContentStatusServiceProxyBean contentStatusServiceProxyBean;
 
     @Value("#{app.recommend_domain}")
     private String recommendDomain;
