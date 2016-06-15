@@ -129,7 +129,7 @@ public class LiveMybatisDao {
     public List<Topic> getLivesByUpdateTime(long updateTime){
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
-        criteria.andLongTimeLessThanOrEqualTo(updateTime);
+        criteria.andLongTimeLessThan(updateTime);
         criteria.andStatusEqualTo(Specification.LiveStatus.LIVING.index);
         example.setOrderByClause(" long_time desc limit 10 ");
         return topicMapper.selectByExample(example);
