@@ -72,7 +72,7 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private ContentRecommendServiceProxyBean contentRecommendServiceProxyBean;
 
-    @Value("#{app.recommendDomain}")
+    @Value("#{app.recommend_domain}")
     private String recommendDomain;
 
 
