@@ -75,7 +75,6 @@ public class Contents extends BaseController {
         contentDto.setForwardTitle(request.getForwardTitle());
         if(contentDto.getType()!=2) {
             // 用户UGC入口
-           // return contentService.publish(contentDto);
             return contentService.publish2(contentDto);
         }else{
             // 小编发布入口
@@ -94,7 +93,8 @@ public class Contents extends BaseController {
         likeDto.setUid(request.getUid());
         likeDto.setCid(request.getCid());
         likeDto.setAction(request.getAction());
-        likeDto.setType(request.getType() == 0 ? 1 :request.getType());
+        //兼容老版本
+        likeDto.setType(request.getType() == 0 ? 1 : request.getType());
         return contentService.like2(likeDto);
     }
 
@@ -110,7 +110,8 @@ public class Contents extends BaseController {
         writeTagDto.setTag(request.getTag());
         writeTagDto.setUid(request.getUid());
         writeTagDto.setCustomerId(request.getCustomerId());
-        return contentService.writeTag(writeTagDto);
+        writeTagDto.setType(request.getType());
+        return contentService.writeTag2(writeTagDto);
     }
 
     /**
@@ -143,7 +144,6 @@ public class Contents extends BaseController {
     @RequestMapping(value = "/getContentDetail",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getContentDetail(ContentDetailRequest request){
-
         return contentService.getContentDetail(request.getId(),request.getUid());
     }
 
@@ -200,7 +200,7 @@ public class Contents extends BaseController {
     }
 
     /**
-     * 活动列表接口
+     * 活动列表接口（已废弃）
      * @param request
      * @return
      */
@@ -222,6 +222,7 @@ public class Contents extends BaseController {
         reviewDto.setUid(request.getUid());
         reviewDto.setCid(request.getCid());
         reviewDto.setReview(request.getReview());
+        //兼容老版本
         reviewDto.setType(request.getType() == 0 ? 1: request.getType());
         return contentService.createReview(reviewDto);
     }
@@ -239,6 +240,11 @@ public class Contents extends BaseController {
         return contentService.reviewList(request.getCid(),request.getSinceId());
     }
 
+    /**
+     * 老徐文章内容评论贴标
+     * @param request
+     * @return
+     */
     @RequestMapping(value = "/getArticleComments",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getArticleComments(ArticleCommentsRequest request){

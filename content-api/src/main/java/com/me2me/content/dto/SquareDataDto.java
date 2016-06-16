@@ -2,10 +2,7 @@ package com.me2me.content.dto;
 
 import com.google.common.collect.Lists;
 import com.me2me.common.web.BaseEntity;
-import com.me2me.content.model.Content;
 import lombok.Data;
-
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 

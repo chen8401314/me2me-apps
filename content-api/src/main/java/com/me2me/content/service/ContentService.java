@@ -180,4 +180,6 @@ public interface ContentService {
 
     void createContentArticleDetails(ArticleTagsDetails articleTagsDetails);
 
+    Response writeTag2(WriteTagDto writeTagDto);
+
 }

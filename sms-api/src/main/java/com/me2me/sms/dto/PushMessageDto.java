@@ -1,10 +1,7 @@
 package com.me2me.sms.dto;
 
-import com.google.common.collect.Maps;
 import com.me2me.common.web.BaseEntity;
 import lombok.Data;
-
-import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品

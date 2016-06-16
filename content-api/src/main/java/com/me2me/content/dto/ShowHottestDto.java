@@ -108,6 +108,9 @@ public class ShowHottestDto implements BaseEntity {
         //直播收藏人数
         private int favoriteCount;
 
+        //文章阅读数量
+        private int readCount;
+
         //是否关注
         private int isFollowed;
 

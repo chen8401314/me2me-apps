@@ -1,7 +1,6 @@
 package com.me2me.web.editor;
 
 import org.springframework.beans.propertyeditors.PropertiesEditor;
-
 import java.util.Date;
 
 

@@ -59,7 +59,7 @@ public class UserServiceImpl implements UserService {
         // 校验手机号码是否注册
         String mobile = userSignUpDto.getMobile();
         log.info("mobile:" + mobile );
-        if(userMybatisDao.getUserByUserName(mobile)!=null){
+        if(userMybatisDao.getUserByUserName(mobile) != null){
             // 该用户已经注册过
             log.info("mobile:" + mobile + " is already register");
             return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
@@ -232,27 +232,28 @@ public class UserServiceImpl implements UserService {
      */
     public Response modifyEncrypt(ModifyEncryptDto modifyEncryptDto){
         log.info("modifyEncrypt start ...");
-        String mobile = modifyEncryptDto.getUserName();
         if(modifyEncryptDto.getOldEncrypt().equals(modifyEncryptDto.getFirstEncrypt())){
+            log.info("user the old and new password are the same ");
             return Response.failure(ResponseStatus.USER_MODIFY_ENCRYPT_THE_SAME_ERROR.status,ResponseStatus.USER_MODIFY_ENCRYPT_THE_SAME_ERROR.message);
         }
-        if(userMybatisDao.getUserByUserName(mobile) == null){
-            // 该用户已经注册过
-            return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
-        }
         if(!modifyEncryptDto.getFirstEncrypt().equals(modifyEncryptDto.getSecondEncrypt())) {
+            log.info("user the two passwords are not the same");
             return Response.failure(ResponseStatus.USER_MODIFY_ENCRYPT_PASSWORD_NOT_SAME_ERROR.status,ResponseStatus.USER_MODIFY_ENCRYPT_PASSWORD_NOT_SAME_ERROR.message);
         }else{
             User user = userMybatisDao.getUserByUserName(modifyEncryptDto.getUserName());
             if(user != null){
                 if(!SecurityUtils.md5(modifyEncryptDto.getOldEncrypt(),user.getSalt()).equals(user.getEncrypt())){
+                    log.info("user old password error");
                     return Response.failure(ResponseStatus.USER_PASSWORD_ERROR.status,ResponseStatus.USER_PASSWORD_ERROR.message);
                 }else{
                     user.setEncrypt(SecurityUtils.md5(modifyEncryptDto.getFirstEncrypt(),user.getSalt()));
                     userMybatisDao.modifyUser(user);
+                    log.info("user modifyEncrypt success");
+                    log.info("modifyEncrypt end ...");
                     return Response.success(ResponseStatus.USER_MODIFY_ENCRYPT_SUCCESS.status, ResponseStatus.USER_MODIFY_ENCRYPT_SUCCESS.message);
                 }
             }else {
+                log.info("user not exists");
                 return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
             }
         }
@@ -264,16 +265,20 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public Response retrieveEncrypt(FindEncryptDto findEncryptDto){
-
+        log.info("retrieveEncrypt start ...");
         if(!findEncryptDto.getFirstEncrypt().equals(findEncryptDto.getSecondEncrypt())) {
+            log.info("user find encrypt password not same error");
             return Response.failure(ResponseStatus.USER_FIND_ENCRYPT_PASSWORD_NOT_SAME_ERROR.status,ResponseStatus.USER_FIND_ENCRYPT_PASSWORD_NOT_SAME_ERROR.message);
         }else{
             User user = userMybatisDao.getUserByUserName(findEncryptDto.getUserName());
             if(user != null){
                 user.setEncrypt(SecurityUtils.md5(findEncryptDto.getFirstEncrypt(),user.getSalt()));
                 userMybatisDao.modifyUser(user);
+                log.info("user find encrypt success");
+                log.info("retrieveEncrypt end ...");
                 return Response.success(ResponseStatus.USER_FIND_ENCRYPT_SUCCESS.status, ResponseStatus.USER_FIND_ENCRYPT_SUCCESS.message);
             }else {
+                log.info("user is not exists");
                 return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
             }
         }
@@ -307,7 +312,9 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public Response getBasicDataByType(BasicDataDto basicDataDto){
+        log.info("getBasicDataByType start ... type = " + basicDataDto.getType());
         DictionaryType dictionaryType = userMybatisDao.getDictionaryType(basicDataDto);
+        log.info("type name is :" + dictionaryType.getName());
         List<Dictionary> dictionaryList = userMybatisDao.getDictionary(basicDataDto);
         BasicDataSuccessDto basicDataSuccessDto = new BasicDataSuccessDto();
         BasicDataSuccessDto.BasicDataSuccessElement basicDataSuccess = BasicDataSuccessDto.createElement();
@@ -315,6 +322,8 @@ public class UserServiceImpl implements UserService {
         basicDataSuccess.setType(dictionaryType.getName());
         basicDataSuccess.setList(dictionaryList);
         basicDataSuccessDto.getResults().add(basicDataSuccess);
+        log.info("get type data success");
+        log.info("getBasicDataByType end ...");
         return Response.success(basicDataSuccessDto);
     }
 
@@ -354,9 +363,11 @@ public class UserServiceImpl implements UserService {
      * @return
      */
     public Response modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto){
+        log.info("modifyUserProfile start ...");
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(modifyUserProfileDto.getUid());
-        if(modifyUserProfileDto.getNickName()!=null) {
+        if(modifyUserProfileDto.getNickName() != null) {
             if (!this.existsNickName(modifyUserProfileDto.getNickName())) {
+                log.info("nick name require unique");
                 return Response.failure(ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.status, ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.message);
             }
         }
@@ -371,8 +382,11 @@ public class UserServiceImpl implements UserService {
             modifyUserHobbyDto.setUid(modifyUserProfileDto.getUid());
             modifyUserHobbyDto.setHobby(modifyUserProfileDto.getHobby());
             this.modifyUserHobby(modifyUserHobbyDto);
+            log.info("modify user hobby");
         }
         userMybatisDao.modifyUserProfile(userProfile);
+        log.info("user modify profile success");
+        log.info("modifyUserProfile end ...");
         return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message);
     }
 
@@ -392,8 +406,10 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response getUserNotice(UserNoticeDto userNoticeDto){
+        log.info("getUserNotice start ...");
         ShowUserNoticeDto showUserNoticeDto = new ShowUserNoticeDto();
         List<UserNotice> list = userMybatisDao.userNotice(userNoticeDto);
+        log.info("getUserNotice data success");
         for (UserNotice userNotice : list){
             ShowUserNoticeDto.UserNoticeElement userNoticeElement = new ShowUserNoticeDto.UserNoticeElement();
             userNoticeElement.setId(userNotice.getId());
@@ -418,6 +434,7 @@ public class UserServiceImpl implements UserService {
             userNoticeElement.setReview(userNotice.getReview());
             showUserNoticeDto.getUserNoticeList().add(userNoticeElement);
         }
+        log.info("getUserNotice end ...");
         return Response.success(ResponseStatus.GET_USER_NOTICE_SUCCESS.status,ResponseStatus.GET_USER_NOTICE_SUCCESS.message,showUserNoticeDto);
     }
 
@@ -511,17 +528,16 @@ public class UserServiceImpl implements UserService {
     }
     @Override
     public Response follow(FollowDto followDto) {
+        log.info("follow start ...");
+        log.info("sourceUid :" + followDto.getSourceUid() + "targetUid :" + followDto.getTargetUid());
         if(followDto.getSourceUid() == followDto.getTargetUid()){
             return Response.failure(ResponseStatus.CAN_NOT_FOLLOW_YOURSELF.status,ResponseStatus.CAN_NOT_FOLLOW_YOURSELF.message);
         }
         // 判断目标对象是否存在
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(followDto.getTargetUid());
-        if(userProfile==null){
+        if(userProfile == null){
+            log.info("target user not exists");
             return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
-        }
-
-        if(followDto.getSourceUid()==followDto.getTargetUid()){
-            return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status,ResponseStatus.ILLEGAL_REQUEST.message);
         }
         UserFollow userFollow = new UserFollow();
         userFollow.setSourceUid(followDto.getSourceUid());
@@ -530,29 +546,39 @@ public class UserServiceImpl implements UserService {
         if(followDto.getAction() == Specification.UserFollowAction.FOLLOW.index) {
             // 创建关注
             if(userMybatisDao.getUserFollow(followDto.getSourceUid(),followDto.getTargetUid()) != null){
+                log.info("can't duplicate follow");
                 return Response.failure(ResponseStatus.CAN_NOT_DUPLICATE_FOLLOW.status,ResponseStatus.CAN_NOT_DUPLICATE_FOLLOW.message);
             }
             userMybatisDao.createFollow(userFollow);
+            log.info("follow success");
             //关注提醒
             push(followDto.getTargetUid(),followDto.getSourceUid(),Specification.PushMessageType.FOLLOW.index,null);
+            log.info("follow push success");
             monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW.index,0,followDto.getSourceUid()));
+            log.info("monitor success");
+            log.info("follow end ...");
             return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message);
         }else if(followDto.getAction()==Specification.UserFollowAction.UN_FOLLOW.index){
             // 取消关注
+            log.info("cancel follow");
             UserFollow ufw = userMybatisDao.getUserFollow(followDto.getSourceUid(),followDto.getTargetUid());
             if(ufw!=null) {
                 userMybatisDao.deleteFollow(ufw.getId());
             }
             monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.UN_FOLLOW.index,0,followDto.getSourceUid()));
+            log.info("monitor success");
             return Response.success(ResponseStatus.USER_CANCEL_FOLLOW_SUCCESS.status, ResponseStatus.USER_CANCEL_FOLLOW_SUCCESS.message);
         }else{
+            log.info("illegal request");
             return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status,ResponseStatus.ILLEGAL_REQUEST.message);
         }
     }
 
     @Override
     public Response getFans(FansParamsDto fansParamsDto) {
+        log.info("getFans start ...");
         List<UserFansDto> list = userMybatisDao.getFans(fansParamsDto);
+        log.info("getFans getData success");
         for(UserFansDto userFansDto : list){
             userFansDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFansDto.getAvatar());
             int followMe = this.isFollow(fansParamsDto.getUid(),userFansDto.getUid());
@@ -562,12 +588,15 @@ public class UserServiceImpl implements UserService {
         }
         ShowUserFansDto showUserFansDto = new ShowUserFansDto();
         showUserFansDto.setResult(list);
+        log.info("getFans end ...");
         return Response.success(ResponseStatus.SHOW_USER_FANS_LIST_SUCCESS.status, ResponseStatus.SHOW_USER_FANS_LIST_SUCCESS.message,showUserFansDto);
     }
 
     @Override
     public Response getFollows(FollowParamsDto followParamsDto) {
+        log.info("getFollows start ...");
         List<UserFollowDto> list = userMybatisDao.getFollows(followParamsDto);
+        log.info("getFollows getData success");
         ShowUserFollowDto showUserFollowDto = new ShowUserFollowDto();
         for(UserFollowDto userFollowDto : list){
             userFollowDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFollowDto.getAvatar());
@@ -577,6 +606,7 @@ public class UserServiceImpl implements UserService {
             userFollowDto.setIsFollowed(followed);
         }
         showUserFollowDto.setResult(list);
+        log.info("getFollows end ...");
         return Response.success(ResponseStatus.SHOW_USER_FOLLOW_LIST_SUCCESS.status, ResponseStatus.SHOW_USER_FOLLOW_LIST_SUCCESS.message,showUserFollowDto);
     }
 
@@ -671,7 +701,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response getUserProfile(long uid) {
+        log.info("getUserProfile start ...");
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+        log.info("getUserProfile getUserData success . uid : " + uid);
         ShowUserProfileDto showUserProfileDto = new ShowUserProfileDto();
         showUserProfileDto.setUid(userProfile.getUid());
         showUserProfileDto.setNickName(userProfile.getNickName());
@@ -680,12 +712,18 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setGender(userProfile.getGender());
         showUserProfileDto.setUserName(userProfile.getMobile());
         UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
+        log.info("get userToken success ");
         showUserProfileDto.setToken(userToken.getToken());
         showUserProfileDto.setMeNumber(userMybatisDao.getUserNoByUid(userProfile.getUid()).getMeNumber().toString());
+        log.info("get meNumber success ");
         showUserProfileDto.setFollowedCount(userMybatisDao.getUserFollowCount(uid));
+        log.info("get followedCount success ");
         showUserProfileDto.setFansCount(userMybatisDao.getUserFansCount(uid));
+        log.info("get fansCount success ");
         showUserProfileDto.setIntroduced(userProfile.getIntroduced());
+        log.info("get introduced success ");
         List<UserHobby> list = userMybatisDao.getHobby(uid);
+        log.info("get userHobby success ");
         for (UserHobby userHobby : list){
             ShowUserProfileDto.Hobby hobby = showUserProfileDto.createHobby();
             hobby.setHobby(userHobby.getHobby());
@@ -693,6 +731,7 @@ public class UserServiceImpl implements UserService {
             hobby.setValue(dictionary.getValue());
             showUserProfileDto.getHobbyList().add(hobby);
         }
+        log.info("getUserProfile end ...");
         return  Response.success(showUserProfileDto);
     }
 
@@ -905,6 +944,24 @@ public class UserServiceImpl implements UserService {
     @Override
     public Response logout(long uid) {
         userMybatisDao.logout(uid);
+        log.info("logout success + uid = " + uid);
         return Response.success(ResponseStatus.LOGOUT_SUCCESS.status,ResponseStatus.LOGOUT_SUCCESS.message);
+    }
+
+    @Override
+    public Response getSpecialUserProfile(long uid) {
+        log.info("getSpecialUserProfile start ... uid = " + uid);
+        UserProfile userProfile = getUserProfileByUid(uid);
+        log.info("getSpecialUserProfile get userProfile success ");
+        SpecialUserDto userDto = new SpecialUserDto();
+        userDto.setBirthday(userProfile.getBirthday());
+        userDto.setMobilePhone(userProfile.getMobile());
+        userDto.setSex(userProfile.getGender().toString());
+        userDto.setUserName(userProfile.getNickName());
+        String hobbies = getUserHobbyByUid(uid);
+        log.info("getSpecialUserProfile get hobby success ");
+        userDto.setInterests(hobbies);
+        log.info("getSpecialUserProfile end ");
+        return Response.success(userDto);
     }
 }

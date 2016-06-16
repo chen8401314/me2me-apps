@@ -2,6 +2,7 @@ package com.me2me.content.widget;
 
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.WriteTagDto;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 /**
@@ -11,9 +12,11 @@ import org.springframework.stereotype.Component;
  * Time :16:44
  */
 @Component
+@Slf4j
 public class ActivityWriteTag extends AbstractWriteTag implements WriteTag{
 
     public Response writeTag(WriteTagDto writeTagDto) {
+        log.info("ActivityWriteTag writeTag ");
         return super.writeTag(writeTagDto);
     }
 }

@@ -184,4 +184,6 @@ public interface UserService {
 
     Response logout(long uid);
 
+    Response getSpecialUserProfile(long uid);
+
 }

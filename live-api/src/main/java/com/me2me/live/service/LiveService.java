@@ -6,8 +6,6 @@ import com.me2me.live.dto.GetLiveTimeLineDto;
 import com.me2me.live.dto.LiveBarrageDto;
 import com.me2me.live.dto.SpeakDto;
 
-import java.util.Date;
-
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 赵朋扬
@@ -15,13 +13,11 @@ import java.util.Date;
  */
 public interface LiveService {
 
-
     /**
      * 创建直播
      * @return
      */
     Response createLive(CreateLiveDto createLiveDto);
-
 
     /**
      * 获取直播时间线(轮询机制)

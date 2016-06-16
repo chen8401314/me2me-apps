@@ -25,6 +25,7 @@ import com.plusnet.search.content.RecommendRequest;
 import com.plusnet.search.content.RecommendResponse;
 import com.plusnet.search.content.domain.ContentTO;
 import com.plusnet.search.content.domain.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -39,8 +40,8 @@ import java.util.List;
  * Date: 2016/3/22.
  */
 @Service
+@Slf4j
 public class ContentServiceImpl implements ContentService {
-
 
     @Autowired
     private ContentMybatisDao contentMybatisDao;
@@ -50,9 +51,6 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private ActivityService activityService;
-
-//    @Autowired
-//    private ContentRecommendService contentRecommendService;
 
     @Autowired
     private PublishContentAdapter publishContentAdapter;
@@ -111,26 +109,6 @@ public class ContentServiceImpl implements ContentService {
         }
         return Response.success(recommendContentDto);
     }
-
-
-
-    /*public Response articleLike(ArticleLikeDto articleLikeDto) {
-        ArticleLikesDetails articleLikesDetails = new ArticleLikesDetails();
-        articleLikesDetails.setUid(articleLikeDto.getUid());
-        articleLikesDetails.setArticleId(articleLikeDto.getCid());
-        //点赞
-        ArticleLikesDetails details = contentMybatisDao.getArticleLikesDetails(articleLikesDetails);
-        if(articleLikeDto.getAction() == Specification.IsLike.LIKE.index){
-            contentMybatisDao.createArticleLike(articleLikeDto);
-            monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LIKE.index,0,articleLikeDto.getUid()));
-            return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
-        }else {
-            contentMybatisDao.deleteArticleLikesDetails(details);
-            monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.UN_LIKE.index, 0, articleLikeDto.getUid()));
-            return Response.success(ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.message);
-        }
-    }*/
-
 
     @Override
     public Response highQuality(int sinceId,long uid) {
@@ -196,11 +174,13 @@ public class ContentServiceImpl implements ContentService {
     }
 
     private void buildDatas(SquareDataDto squareDataDto, List<Content> contents, long uid) {
+        log.info("buildDatas ...");
         for(Content content : contents){
             SquareDataDto.SquareDataElement squareDataElement = SquareDataDto.createElement();
             squareDataElement.setId(content.getId());
             squareDataElement.setUid(content.getUid());
             UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+            log.info(" get userProfile success");
             squareDataElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             squareDataElement.setNickName(userProfile.getNickName());
             squareDataElement.setContent(content.getContent());
@@ -211,6 +191,7 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setReviewCount(content.getReviewCount());
             squareDataElement.setForwardTitle(content.getForwardTitle());
             squareDataElement.setForwardUrl(content.getForwardUrl());
+            squareDataElement.setForwardCid(content.getForwardCid());
             if(!StringUtils.isEmpty(content.getConverImage())) {
                 if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
                     squareDataElement.setCoverImage(content.getConverImage());
@@ -222,11 +203,13 @@ public class ContentServiceImpl implements ContentService {
             }
             squareDataElement.setContentType(content.getContentType());
             int follow = userService.isFollow(content.getUid(),uid);
+            log.info(" get isFollow success");
             squareDataElement.setIsFollowed(follow);
             //如果是直播需要一个直播状态
             if(content.getType() == Specification.ArticleType.LIVE.index) {
                 //查询直播状态
                 int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
+                log.info(" get live status success");
                 squareDataElement.setLiveStatus(status);
                 int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
                 //直播是否收藏
@@ -240,12 +223,11 @@ public class ContentServiceImpl implements ContentService {
             squareDataElement.setRights(content.getRights());
             squareDataElement.setIsLike(isLike(content.getId(),uid));
             int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
+            log.info(" get imageCounts success");
             squareDataElement.setImageCount(imageCounts);
             squareDataDto.getResults().add(squareDataElement);
         }
     }
-
-
 
     @Override
     public Response square(int sinceId,long uid) {
@@ -255,9 +237,7 @@ public class ContentServiceImpl implements ContentService {
         if(Integer.MAX_VALUE == sinceId) {
             list = contentMybatisDao.loadActivityData(sinceId);
         }
-
         List<Content> contents = contentMybatisDao.loadSquareData(sinceId);
-
         showContentListDto.getActivityData().addAll(buildData(list,uid));
         showContentListDto.getSquareData().addAll(buildData(contents,uid));
         //buildDatas(squareDataDto, contents,uid);
@@ -266,12 +246,13 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response publish2(ContentDto contentDto) {
-      //   return new PublishContentAdapter(PublishFactory.getInstance(contentDto.getType())).execute(contentDto);
+        log.info("publish start ...");
         return publishContentAdapter.execute(contentDto);
     }
 
     @Override
     public Response publish(ContentDto contentDto) {
+        log.info("live publish");
         CreateContentSuccessDto createContentSuccessDto = new CreateContentSuccessDto();
         String coverImage = "" ;
         Content content = new Content();
@@ -338,7 +319,6 @@ public class ContentServiceImpl implements ContentService {
         return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
     }
 
-
     /**
      * 点赞
      * @return
@@ -392,7 +372,6 @@ public class ContentServiceImpl implements ContentService {
      */
     @Override
     public Response like2(LikeDto likeDto) {
-//        return new LikeAdapter(LikesFactory.getInstance(likeDto.getType())).execute(likeDto);
         return likeAdapter.execute(likeDto);
     }
 
@@ -417,6 +396,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response getArticleComments(long id) {
+        log.info("getArticleComments start ...");
         ShowArticleCommentsDto showArticleCommentsDto = new ShowArticleCommentsDto();
         List<ArticleLikesDetails> articleLikesDetails =  contentMybatisDao.getArticleLikesDetails(id);
         List<ArticleReview> articleReviews = contentMybatisDao.getArticleReviews(id ,Integer.MAX_VALUE);
@@ -435,7 +415,6 @@ public class ContentServiceImpl implements ContentService {
             reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar() );
             showArticleCommentsDto.getReviews().add(reviewElement);
         }
-
         return Response.success(showArticleCommentsDto);
     }
 
@@ -529,7 +508,6 @@ public class ContentServiceImpl implements ContentService {
     public void deleteContentLikesDetails(ContentLikesDetails contentLikesDetails) {
         contentMybatisDao.deleteContentLikesDetails(contentLikesDetails);
     }
-
 
     /**
      * 点赞
@@ -644,18 +622,23 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response deleteContent(long id) {
+        log.info("deleteContent start ...");
         Content content = contentMybatisDao.getContentById(id);
         content.setStatus(Specification.ContentStatus.DELETE.index);
+        log.info("content status delete");
         contentMybatisDao.updateContentById(content);
         //直播删除
         if(content.getType() == Specification.ArticleType.LIVE.index) {
             contentMybatisDao.deleteTopicById(content.getForwardCid());
+            log.info("topic delete");
         }
+        log.info("deleteContent end ...");
         return Response.failure(ResponseStatus.CONTENT_DELETE_SUCCESS.status,ResponseStatus.CONTENT_DELETE_SUCCESS.message);
     }
 
     @Override
     public Response getContentDetail(long id ,long uid) {
+        log.info("getContentDetail start ...");
         ContentDetailDto contentDetailDto = new ContentDetailDto();
         Content content = contentMybatisDao.getContentById(id);
         if(content == null){
@@ -663,6 +646,7 @@ public class ContentServiceImpl implements ContentService {
         }else if(content.getStatus() == Specification.ContentStatus.DELETE.index){
             return Response.failure(ResponseStatus.DATA_IS_DELETE.status,ResponseStatus.DATA_IS_DELETE.message);
         }
+        log.info("get content data success");
         contentDetailDto.setFeeling(content.getFeeling());
         contentDetailDto.setType(content.getType());
         contentDetailDto.setUid(content.getUid());
@@ -675,6 +659,7 @@ public class ContentServiceImpl implements ContentService {
             contentDetailDto.setCoverImage(Constant.QINIU_DOMAIN  + "/" + content.getConverImage());
         }
         UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+        log.info("get userProfile data success");
         contentDetailDto.setNickName(userProfile.getNickName());
         contentDetailDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
         contentDetailDto.setHotValue(content.getHotValue());
@@ -688,6 +673,7 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setIsFollowMe(userService.isFollow(uid,content.getUid()));
         // 获取感受
         List<ContentTagsDetails> list  = contentMybatisDao.getContentTagsDetails(content.getId(),content.getCreateTime(),Integer.MAX_VALUE);
+        log.info("get contentTagDetail success");
         for (ContentTagsDetails contentTagsDetails : list){
             ContentDetailDto.ContentTagElement contentTagElement = ContentDetailDto.createElement();
             ContentTags contentTags = contentMybatisDao.getContentTagsById(contentTagsDetails.getTid());
@@ -695,6 +681,7 @@ public class ContentServiceImpl implements ContentService {
             contentDetailDto.getTags().add(contentTagElement);
         }
         List<ContentReview> reviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+        log.info("get content review success");
         for(ContentReview review :reviewList){
             ContentDetailDto.ReviewElement reviewElement = ContentDetailDto.createReviewElement();
             reviewElement.setUid(review.getUid());
@@ -708,6 +695,7 @@ public class ContentServiceImpl implements ContentService {
         //文章图片
         if(content.getType() == Specification.ArticleType.ORIGIN.index){
             List<ContentImage> contentImageList = contentMybatisDao.getContentImages(content.getId());
+            log.info("get contentImage success");
             if(contentImageList != null && contentImageList.size() > 0) {
                 for (ContentImage contentImage : contentImageList) {
                     ContentDetailDto.ImageElement imageElement = ContentDetailDto.createImageElement();
@@ -720,15 +708,23 @@ public class ContentServiceImpl implements ContentService {
 
         }
         monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.CONTENT_VIEW.index,0,uid));
+        log.info("monitor log");
+        //阅读数量+1
+        content.setReadCount(content.getReadCount()+1);
+        contentMybatisDao.updateContentById(content);
+        log.info("update readCount success");
+        log.info("getContentDetail end ...");
         return Response.success(contentDetailDto);
     }
 
-
     @Override
     public Response myPublish(long uid ,int sinceId) {
+        log.info("myPublish start ...");
         SquareDataDto squareDataDto = new SquareDataDto();
         List<Content> contents = contentMybatisDao.myPublish(uid,sinceId);
+        log.info("myPublish getData ...");
         buildDatas(squareDataDto, contents, uid);
+        log.info("myPublish end ...");
         return Response.success(squareDataDto);
     }
 
@@ -788,12 +784,18 @@ public class ContentServiceImpl implements ContentService {
         contentH5Dto.setTitle(content.getTitle());
         contentH5Dto.setType(content.getType());
         contentH5Dto.setContent(content.getContent());
+        //记录阅读数量+1
+        content.setReadCount(content.getReadCount()+1);
+        contentMybatisDao.updateContentById(content);
         return contentH5Dto;
     }
 
     public Response getUserData(long targetUid,long sourceUid){
+        log.info("getUserData start ...targetUid = " + targetUid + " sourceUid = "+ sourceUid);
         UserProfile userProfile = userService.getUserProfileByUid(targetUid);
+        log.info("get userData success ");
         List<Content> list = contentMybatisDao.myPublish(targetUid,Integer.MAX_VALUE);
+        log.info("get user content success ");
         UserInfoDto userInfoDto = new UserInfoDto();
         userInfoDto.getUser().setNickName(userProfile.getNickName());
         userInfoDto.getUser().setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
@@ -837,6 +839,7 @@ public class ContentServiceImpl implements ContentService {
                 contentElement.setImageCount(imageCounts);
             }
             int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), sourceUid);
+            log.info("get content favorite success");
             //直播是否收藏
             contentElement.setFavorite(favorite);
             contentElement.setIsLike(isLike(content.getId(),sourceUid));
@@ -850,6 +853,7 @@ public class ContentServiceImpl implements ContentService {
                 contentElement.setCoverImage("");
             }
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+            log.info("get content review success");
             for(ContentReview contentReview : contentReviewList){
                 UserInfoDto.ContentElement.ReviewElement reviewElement = UserInfoDto.ContentElement.createElement();
                 reviewElement.setUid(contentReview.getUid());
@@ -862,12 +866,13 @@ public class ContentServiceImpl implements ContentService {
             }
             userInfoDto.getContentElementList().add(contentElement);
         }
+        log.info("getUserData end ...");
         return Response.success(userInfoDto);
     }
 
-
     @Override
     public Response editorPublish(ContentDto contentDto) {
+        log.info("editorPublish start ...");
         CreateContentSuccessDto createContentSuccessDto = new CreateContentSuccessDto();
         Content content = new Content();
         content.setUid(contentDto.getUid());
@@ -879,27 +884,29 @@ public class ContentServiceImpl implements ContentService {
         content.setContentType(contentDto.getContentType());
         content.setStatus(Specification.ContentStatus.RECOVER.index);
         contentMybatisDao.createContent(content);
+        log.info("content create success");
         //保存标签
         createTag(contentDto, content);
-        Content c = contentMybatisDao.getContentById(content.getId());
-        createContentSuccessDto.setContent(c.getContent());
-        createContentSuccessDto.setCreateTime(c.getCreateTime());
-        createContentSuccessDto.setUid(c.getUid());
-        createContentSuccessDto.setId(c.getId());
-        createContentSuccessDto.setFeeling(c.getFeeling());
-        createContentSuccessDto.setType(c.getType());
-        createContentSuccessDto.setContentType(c.getContentType());
-        createContentSuccessDto.setForwardCid(c.getForwardCid());
-        createContentSuccessDto.setCoverImage(c.getConverImage());
-
+        log.info("contentTag create success");
+        createContentSuccessDto.setContent(content.getContent());
+        createContentSuccessDto.setCreateTime(content.getCreateTime());
+        createContentSuccessDto.setUid(content.getUid());
+        createContentSuccessDto.setId(content.getId());
+        createContentSuccessDto.setFeeling(content.getFeeling());
+        createContentSuccessDto.setType(content.getType());
+        createContentSuccessDto.setContentType(content.getContentType());
+        createContentSuccessDto.setForwardCid(content.getForwardCid());
+        createContentSuccessDto.setCoverImage(content.getConverImage());
 //        // 内容自动加精
 //        HighQualityContent hdc = new HighQualityContent();
 //        hdc.setCid(c.getId());
 //        contentMybatisDao.createHighQualityContent(hdc);
+        log.info("editorPublish end ...");
         return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
     }
 
     public void createTag(ContentDto contentDto, Content content) {
+        log.info("createTag start ...");
         if(!StringUtils.isEmpty(contentDto.getFeeling()) && contentDto.getFeeling().contains(";")){
             String[] tags = contentDto.getFeeling().split(";");
             for(String t : tags) {
@@ -912,6 +919,7 @@ public class ContentServiceImpl implements ContentService {
                 contentTagsDetails.setUid(content.getUid());
                 contentMybatisDao.createContentTagsDetails(contentTagsDetails);
             }
+            log.info("create tag and tagDetail success");
         }else{
             ContentTags contentTags = new ContentTags();
             contentTags.setTag(contentDto.getFeeling());
@@ -921,6 +929,7 @@ public class ContentServiceImpl implements ContentService {
             contentTagsDetails.setCid(content.getId());
             contentTagsDetails.setUid(content.getUid());
             contentMybatisDao.createContentTagsDetails(contentTagsDetails);
+            log.info("create tag and tagDetail success");
         }
     }
 
@@ -978,6 +987,7 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response modifyRights(int rights,long cid,long uid){
+        log.info("modifyRights start ...");
         Content content = contentMybatisDao.getContentById(cid);
         if(content == null){
             return Response.failure(ResponseStatus.CONTENT_IS_NOT_EXIST.status,ResponseStatus.CONTENT_IS_NOT_EXIST.message);
@@ -987,6 +997,7 @@ public class ContentServiceImpl implements ContentService {
         }
         content.setRights(rights);
         contentMybatisDao.updateContentById(content);
+        log.info("modifyRights end ...");
         return Response.success(ResponseStatus.CONTENT_IS_PUBLIC_MODIFY_SUCCESS.status,ResponseStatus.CONTENT_IS_PUBLIC_MODIFY_SUCCESS.message);
     }
 
@@ -1032,10 +1043,12 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response getHottest(int sinceId,long uid){
+        log.info("getHottest start ...");
         ShowHottestDto hottestDto = new ShowHottestDto();
         //活动
         if(sinceId == Integer.MAX_VALUE) {
             List<ActivityWithBLOBs> activityList = activityService.getActivityTop5();
+            log.info("getActivityTop5 success ");
             for (ActivityWithBLOBs activity : activityList) {
                 ShowHottestDto.ActivityElement activityElement = ShowHottestDto.createActivityElement();
                 activityElement.setTitle(activity.getActivityHashTitle());
@@ -1056,6 +1069,7 @@ public class ContentServiceImpl implements ContentService {
         }
         //内容
         List<Content> contentList = contentMybatisDao.getHottestContent(sinceId);
+        log.info("getHottestContent success");
         for(Content content : contentList){
             ShowHottestDto.HottestContentElement hottestContentElement = ShowHottestDto.createHottestContentElement();
             hottestContentElement.setType(content.getType());
@@ -1076,7 +1090,9 @@ public class ContentServiceImpl implements ContentService {
             hottestContentElement.setIsLike(isLike(content.getId(),uid));
             hottestContentElement.setForwardUrl(content.getForwardUrl());
             hottestContentElement.setForwardTitle(content.getForwardTitle());
+            hottestContentElement.setReadCount(content.getReadCount());
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+            log.info("getContentReviewTop3ByCid success");
             for(ContentReview contentReview : contentReviewList){
                 ShowHottestDto.HottestContentElement.ReviewElement reviewElement = ShowHottestDto.HottestContentElement.createElement();
                 reviewElement.setUid(contentReview.getUid());
@@ -1125,7 +1141,9 @@ public class ContentServiceImpl implements ContentService {
             }
             hottestDto.getHottestContentData().add(hottestContentElement);
         }
+        log.info("monitor");
         monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.HOTTEST.index,0,uid));
+        log.info("getHottest end ...");
         return Response.success(hottestDto);
     }
 
@@ -1137,8 +1155,10 @@ public class ContentServiceImpl implements ContentService {
      */
     @Override
     public Response getNewest(int sinceId, long uid) {
+        log.info("getNewest start ...");
         ShowNewestDto showNewestDto = new ShowNewestDto();
         List<Content> newestList = contentMybatisDao.getNewest(sinceId);
+        log.info("getNewest data success ");
         for(Content content : newestList){
             ShowNewestDto.ContentElement contentElement = ShowNewestDto.createElement();
             contentElement.setId(content.getId());
@@ -1154,6 +1174,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setIsLike(isLike(content.getId(),uid));
             String cover = content.getConverImage();
             contentElement.setReviewCount(content.getReviewCount());
+            contentElement.setReadCount(content.getReadCount());
             if(!StringUtils.isEmpty(cover)) {
                 if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
                     contentElement.setCoverImage(cover);
@@ -1186,6 +1207,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+            log.info("content review data success");
             for(ContentReview contentReview : contentReviewList){
                 ShowNewestDto.ContentElement.ReviewElement reviewElement = ShowNewestDto.ContentElement.createElement();
                 reviewElement.setUid(contentReview.getUid());
@@ -1199,15 +1221,19 @@ public class ContentServiceImpl implements ContentService {
             showNewestDto.getNewestData().add(contentElement);
         }
         monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.NEWEST.index,0,uid));
+        log.info("monitor");
         return Response.success(showNewestDto);
     }
 
     @Override
     public Response getAttention(int sinceId, long uid) {
+        log.info("getAttention start ...");
         ShowAttentionDto showAttentionDto = new ShowAttentionDto();
         //获取此人关注的人是列表
         List<Long> list = userService.getFollowList(uid);
+        log.info("get user follow");
         List<Content> attentionList = contentMybatisDao.getAttention(sinceId ,list);
+        log.info("getAttention data");
         for(Content content : attentionList){
             ShowAttentionDto.ContentElement contentElement = showAttentionDto.createElement();
             contentElement.setId(content.getId());
@@ -1223,6 +1249,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setIsLike(isLike(content.getId(),uid));
             contentElement.setReviewCount(content.getReviewCount());
+            contentElement.setReadCount(content.getReadCount());
             String cover =  content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
                 if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
@@ -1257,6 +1284,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setForwardUrl(content.getForwardUrl());
             showAttentionDto.getAttentionData().add(contentElement);
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+            log.info("getContentReviewTop3ByCid data success");
             for(ContentReview contentReview : contentReviewList){
                 ShowAttentionDto.ContentElement.ReviewElement reviewElement = ShowAttentionDto.ContentElement.createElement();
                 reviewElement.setUid(contentReview.getUid());
@@ -1269,11 +1297,13 @@ public class ContentServiceImpl implements ContentService {
             }
         }
         monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW_LIST.index,0,uid));
+        log.info("monitor");
         return Response.success(showAttentionDto);
     }
 
     @Override
     public Response createReview(ReviewDto reviewDto) {
+        log.info("createReview start ...");
       /*  ContentReview review = new ContentReview();
         review.setReview(reviewDto.getReview());
         review.setCid(reviewDto.getCid());
@@ -1291,6 +1321,7 @@ public class ContentServiceImpl implements ContentService {
     */
         //return new ReviewAdapter(ReviewFactory.getInstance(reviewDto.getType())).execute(reviewDto);
         monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REVIEW.index,0,reviewDto.getUid()));
+        log.info("createReview monitor success");
         return reviewAdapter.execute(reviewDto);
     }
 
@@ -1349,8 +1380,10 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response reviewList(long cid, long sinceId) {
+        log.info("reviewList start ...");
         ContentReviewDto contentReviewDto = new ContentReviewDto();
         List<ContentReview> list = contentMybatisDao.getContentReviewByCid(cid,sinceId);
+        log.info("reviewList getcontentReview success");
         for(ContentReview contentReview : list){
             ContentReviewDto.ReviewElement reviewElement = ContentReviewDto.createElement();
             reviewElement.setUid(contentReview.getUid());
@@ -1363,6 +1396,7 @@ public class ContentServiceImpl implements ContentService {
             contentReviewDto.getReviews().add(reviewElement);
 
         }
+        log.info("reviewList end ...");
         return Response.success(contentReviewDto);
     }
 
@@ -1403,12 +1437,10 @@ public class ContentServiceImpl implements ContentService {
        return contentMybatisDao.isLike(cid,uid);
     }
 
-
     @Override
     public int countFragment(long topicId ,long uid){
         return contentMybatisDao.countFragment(topicId,uid);
     }
-
 
     @Override
     public Response getArticleReview(long id, long sinceId) {

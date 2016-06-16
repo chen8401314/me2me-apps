@@ -132,7 +132,7 @@ public class UserMybatisDao {
 
 
     public void modifyUser(User user){
-        userMapper.updateByPrimaryKey(user);
+        userMapper.updateByPrimaryKeySelective(user);
 
     }
 

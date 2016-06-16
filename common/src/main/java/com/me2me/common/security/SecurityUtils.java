@@ -2,9 +2,7 @@ package com.me2me.common.security;
 
 import com.google.common.base.Charsets;
 import org.apache.shiro.crypto.hash.Md5Hash;
-
 import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 import java.util.UUID;
 

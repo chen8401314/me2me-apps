@@ -1,16 +1,11 @@
 package com.me2me.cache.service;
 
-import com.google.common.collect.Sets;
 import com.me2me.core.cache.JedisTemplate;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.*;
-
 import javax.annotation.PostConstruct;
 import java.util.Set;
 

@@ -1,19 +1,13 @@
 package com.me2me.content.dao;
 
 import com.google.common.collect.Maps;
-import com.me2me.activity.model.ActivityWithBLOBs;
-import com.me2me.common.Constant;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.*;
 import com.me2me.content.mapper.*;
 import com.me2me.content.model.*;
-import com.me2me.user.model.UserFollow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.math.BigInteger;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,7 +70,7 @@ public class ContentMybatisDao {
     }
 
     public void updateContentById(Content content){
-        contentMapper.updateByPrimaryKey(content);
+        contentMapper.updateByPrimaryKeySelective(content);
     }
 
     public void createTag(ContentTags contentTags){
@@ -379,7 +373,7 @@ public class ContentMybatisDao {
         ArticleReviewExample.Criteria criteria = example.createCriteria();
         criteria.andArticleIdEqualTo(id);
         criteria.andIdLessThan(sinceId);
-        example.setOrderByClause(" id desc limit 10 ");
+        example.setOrderByClause(" id desc limit 20 ");
         return articleReviewMapper.selectByExample(example);
     }
 

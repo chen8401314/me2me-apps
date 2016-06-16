@@ -31,7 +31,7 @@
 
 
         <!--<table tableName="user" domainObjectName="User"/>-->
-        <!--<table tableName="content" domainObjectName="Content"/>-->
+        <table tableName="content" domainObjectName="Content"/>
         <!--<table tableName="content_image" domainObjectName="ContentImage"/>-->
         <!-- <table tableName="content_user_likes" domainObjectName="ContentUserLikes"/>-->
         <!-- <table tableName="content_tags" domainObjectName="ContentTags"/> -->
@@ -47,6 +47,6 @@
         <!--<table tableName="content" domainObjectName="Content"/>-->
         <!--<table tableName="article_likes_details" domainObjectName="ArticleLikesDetails"/>-->
         <!--<table tableName="article_review" domainObjectName="ArticleReview"/>-->
-        <table tableName="article_tags_details" domainObjectName="ArticleTagsDetails"/>
+        <!--<table tableName="article_tags_details" domainObjectName="ArticleTagsDetails"/>-->
     </context>
 </generatorConfiguration>

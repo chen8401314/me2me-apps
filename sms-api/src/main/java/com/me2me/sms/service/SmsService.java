@@ -1,8 +1,6 @@
 package com.me2me.sms.service;
 
-import com.me2me.common.web.Response;
 import com.me2me.sms.dto.VerifyDto;
-import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 上海拙心网络科技有限公司出品

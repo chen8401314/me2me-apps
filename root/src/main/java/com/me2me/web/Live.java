@@ -75,7 +75,7 @@ public class Live extends BaseController {
     }
 
     /**
-     * 获取消息列表
+     * 获取消息列表(不用)
      * @param request
      * @return
      */
@@ -120,7 +120,6 @@ public class Live extends BaseController {
         return liveService.finishMyLive(request.getUid(),request.getTopicId());
     }
 
-
     /**
      *  关注，取消关注
      * @param request
@@ -133,20 +132,10 @@ public class Live extends BaseController {
     }
 
     /**
-     *  获取所有正在直播列表(废弃)
+     * 获取所有正在直播列表
      * @param request
      * @return
      */
-   /* @RequestMapping(value = "/getLives",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public Response getLives(GetLivesRequest request){
-        if(request.getSinceId() == -1){
-            request.setSinceId(Long.MAX_VALUE);
-        }
-        return liveService.getLives(request.getUid(),request.getSinceId());
-    }*/
-
-
     @RequestMapping(value = "/getLives",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getLives(GetLivesRequest request){
@@ -156,11 +145,6 @@ public class Live extends BaseController {
         }
         return liveService.getLivesByUpdateTime(request.getUid(),request.getUpdateTime());
     }
-
-//    @InitBinder
-//    public void initBinder(DataBinder binder) {
-//        binder.registerCustomEditor(GetLivesRequest.class,"updateTime",new LiveUpdateTimePropertyEditor());
-//    }
 
     /**
      * 获取我关注和我自己的直播列表
@@ -200,7 +184,7 @@ public class Live extends BaseController {
     }
 
     /**
-     * 退出直播
+     * 订阅的直播列表
      * @param request
      * @return
      */

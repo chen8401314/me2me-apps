@@ -58,8 +58,9 @@ public class ForwardPublishSystem extends AbstractPublish implements Publish {
         createContentSuccessDto.setCoverImage(content.getConverImage());
         createContentSuccessDto.setForwardTitle(content.getForwardTitle());
         createContentSuccessDto.setForwardUrl(content.getForwardUrl());
-        log.info("forwardPublishSystem end ...");
         monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FORWARD.index,0,contentDto.getUid()));
+        log.info("monitor ForwardPublishSystem ");
+        log.info("forwardPublishSystem end ...");
         return Response.success(ResponseStatus.FORWARD_SUCCESS.status,ResponseStatus.FORWARD_SUCCESS.message,createContentSuccessDto);
     }
 }
