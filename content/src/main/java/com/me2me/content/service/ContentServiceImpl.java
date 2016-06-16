@@ -637,7 +637,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public Response getContentDetail(long id ,long uid) {
+    public Response contentDetail(long id ,long uid) {
         log.info("getContentDetail start ...");
         ContentDetailDto contentDetailDto = new ContentDetailDto();
         Content content = contentMybatisDao.getContentById(id);

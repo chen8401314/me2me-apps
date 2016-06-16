@@ -144,7 +144,7 @@ public class Contents extends BaseController {
     @RequestMapping(value = "/getContentDetail",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getContentDetail(ContentDetailRequest request){
-        return contentService.getContentDetail(request.getId(),request.getUid());
+        return contentService.contentDetail(request.getId(),request.getUid());
     }
 
     /**
