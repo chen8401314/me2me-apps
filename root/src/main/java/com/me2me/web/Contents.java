@@ -237,7 +237,7 @@ public class Contents extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.reviewList(request.getCid(),request.getSinceId());
+        return contentService.reviewList(request.getCid(),request.getSinceId(),request.getType());
     }
 
     /**

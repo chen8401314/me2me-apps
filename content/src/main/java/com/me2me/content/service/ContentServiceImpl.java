@@ -1379,11 +1379,16 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public Response reviewList(long cid, long sinceId) {
+    public Response reviewList(long cid, long sinceId,int type) {
         log.info("reviewList start ...");
         ContentReviewDto contentReviewDto = new ContentReviewDto();
-        List<ContentReview> list = contentMybatisDao.getContentReviewByCid(cid,sinceId);
-        log.info("reviewList getcontentReview success");
+        List<ContentReview> list = null;
+        if(type == Specification.ArticleType.SYSTEM.index){
+            list = contentMybatisDao.getArticleReviewByCid(cid,sinceId);
+        }else{
+            list = contentMybatisDao.getContentReviewByCid(cid,sinceId);
+        }
+        log.info("reviewList get contentReview success");
         for(ContentReview contentReview : list){
             ContentReviewDto.ReviewElement reviewElement = ContentReviewDto.createElement();
             reviewElement.setUid(contentReview.getUid());

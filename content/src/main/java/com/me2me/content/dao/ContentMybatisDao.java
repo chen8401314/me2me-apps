@@ -1,5 +1,6 @@
 package com.me2me.content.dao;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.*;
@@ -280,8 +281,28 @@ public class ContentMybatisDao {
         ContentReviewExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(cid);
         criteria.andIdLessThan(sinceId);
-        example.setOrderByClause(" create_time desc limit 10 ");
+        example.setOrderByClause(" create_time desc limit 20 ");
         return contentReviewMapper.selectByExample(example);
+    }
+
+    public List<ContentReview> getArticleReviewByCid(long cid,long sinceId){
+        List<ContentReview> result = Lists.newArrayList();
+        ArticleReviewExample example = new ArticleReviewExample();
+        ArticleReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andArticleIdEqualTo(cid);
+        criteria.andIdLessThan(sinceId);
+        example.setOrderByClause(" create_time desc limit 20 ");
+        List<ArticleReview> list = articleReviewMapper.selectByExample(example);
+        for(ArticleReview articleReview : list){
+            ContentReview contentReview = new ContentReview();
+            contentReview.setId(articleReview.getId());
+            contentReview.setCid(articleReview.getArticleId());
+            contentReview.setCreateTime(articleReview.getCreateTime());
+            contentReview.setReview(articleReview.getReview());
+            contentReview.setUid(articleReview.getUid());
+            result.add(contentReview);
+        }
+        return result;
     }
 
     public List<ContentReview> getContentReviewTop3ByCid(long cid){
