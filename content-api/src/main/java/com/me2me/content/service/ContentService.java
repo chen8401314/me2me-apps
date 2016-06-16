@@ -79,7 +79,7 @@ public interface ContentService {
      * 根据内容id，返回内容信息给H5
      * @param id
      */
-    ContentH5Dto getContent(long id);
+    ContentH5Dto contentH5(long id);
 
     /**
      *

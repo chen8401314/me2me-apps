@@ -763,7 +763,7 @@ public class ContentServiceImpl implements ContentService {
 //    }
 
     @Override
-    public ContentH5Dto getContent(long id) {
+    public ContentH5Dto contentH5(long id) {
         ContentH5Dto contentH5Dto = new ContentH5Dto();
         Content content = contentMybatisDao.getContentById(id);
         if(content ==null){
