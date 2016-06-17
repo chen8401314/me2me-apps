@@ -40,19 +40,14 @@ public class AbstractLikes {
             //点赞
             ContentLikesDetails details = contentService.getContentLikesDetails(contentLikesDetails);
             if(likeDto.getAction() == Specification.IsLike.LIKE.index){
-                if(details == null) {
-                    content.setLikeCount(content.getLikeCount() + 1);
-                    contentService.updateContentById(content);
-                    contentService.createContentLikesDetails(contentLikesDetails);
-                    if(likeDto.getUid() != content.getUid()) {
-                        contentService.remind(content, likeDto.getUid(), Specification.UserNoticeType.LIKE.index, null);
-                        log.info("content like push success");
-                    }
-                    log.info("content like success");
-                }else{
-                    log.info("content user likes already");
-                    return Response.success(ResponseStatus.CONTENT_USER_LIKES_ALREADY.status,ResponseStatus.CONTENT_USER_LIKES_ALREADY.message);
+                content.setLikeCount(content.getLikeCount() + 1);
+                contentService.updateContentById(content);
+                contentService.createContentLikesDetails(contentLikesDetails);
+                if(likeDto.getUid() != content.getUid()) {
+                    contentService.remind(content, likeDto.getUid(), Specification.UserNoticeType.LIKE.index, null);
+                    log.info("content like push success");
                 }
+                log.info("content like success");
                 monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LIKE.index,0,likeDto.getUid()));
                 log.info("content like monitor success");
                 return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
