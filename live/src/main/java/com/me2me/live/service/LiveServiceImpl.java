@@ -183,7 +183,7 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response speak(SpeakDto speakDto) {
         log.info("speak start ...");
-        if(speakDto.getType() != Specification.LiveSpeakType.LIKES.index &&speakDto.getType() !=Specification.LiveSpeakType.FANS_WRITE_TAG.index ) {
+        if(speakDto.getType() != Specification.LiveSpeakType.LIKES.index &&speakDto.getType() !=Specification.LiveSpeakType.SUBSCRIBED.index ) {
             TopicFragment topicFragment = new TopicFragment();
             topicFragment.setFragmentImage(speakDto.getFragmentImage());
             topicFragment.setFragment(speakDto.getFragment());
