@@ -23,6 +23,7 @@ import com.me2me.user.service.UserService;
 import com.plusnet.forecast.domain.ForecastContent;
 import com.plusnet.search.content.RecommendRequest;
 import com.plusnet.search.content.RecommendResponse;
+import com.plusnet.search.content.api.ContentStatService;
 import com.plusnet.search.content.domain.ContentTO;
 import com.plusnet.search.content.domain.User;
 import lombok.extern.slf4j.Slf4j;
@@ -69,6 +70,9 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private WriteTagAdapter writeTagAdapter;
+
+    @Autowired
+    private ContentStatusServiceProxyBean contentStatusServiceProxyBean;
 
     @Value("#{app.recommend_domain}")
     private String recommendDomain;
@@ -395,7 +399,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public Response getArticleComments(long id) {
+    public Response getArticleComments(long uid ,long id) {
         log.info("getArticleComments start ...");
         ShowArticleCommentsDto showArticleCommentsDto = new ShowArticleCommentsDto();
         List<ArticleLikesDetails> articleLikesDetails =  contentMybatisDao.getArticleLikesDetails(id);
@@ -424,6 +428,8 @@ public class ContentServiceImpl implements ContentService {
             likeElement.setNickName(user.getNickName());
             showArticleCommentsDto.getLikeElements().add(likeElement);
         }
+        ContentStatService contentStatService = contentStatusServiceProxyBean.getTarget();
+        contentStatService.read(uid+"",id);
         return Response.success(showArticleCommentsDto);
     }
 

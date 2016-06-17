@@ -20,6 +20,8 @@ public class ShowArticleCommentsDto implements BaseEntity{
 
     private int reviewCunt;
 
+    private int readCount;
+
     private List<ReviewElement> reviews = Lists.newArrayList();
 
     public static ReviewElement createElement(){
