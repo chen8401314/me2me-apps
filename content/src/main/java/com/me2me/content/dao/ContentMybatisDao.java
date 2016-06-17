@@ -409,4 +409,11 @@ public class ContentMybatisDao {
         return contentLikesDetailsMapper.selectByExample(example);
     }
 
+    public List<ArticleTagsDetails> getArticleTagsDetails(long id){
+        ArticleTagsDetailsExample example = new ArticleTagsDetailsExample();
+        ArticleTagsDetailsExample.Criteria criteria = example.createCriteria();
+        criteria.andArticleIdEqualTo(id);
+        return articleTagsDetailsMapper.selectByExample(example);
+    }
+
 }

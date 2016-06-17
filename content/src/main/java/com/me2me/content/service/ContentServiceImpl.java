@@ -404,9 +404,6 @@ public class ContentServiceImpl implements ContentService {
         ShowArticleCommentsDto showArticleCommentsDto = new ShowArticleCommentsDto();
         List<ArticleLikesDetails> articleLikesDetails =  contentMybatisDao.getArticleLikesDetails(id);
         List<ArticleReview> articleReviews = contentMybatisDao.getArticleReviews(id ,Integer.MAX_VALUE);
-        if(articleReviews.size() > 3) {
-            articleReviews = articleReviews.subList(0,2);
-        }
         showArticleCommentsDto.setLikeCount(articleLikesDetails.size());
         showArticleCommentsDto.setReviewCunt(articleReviews.size());
         for(ArticleReview articleReview : articleReviews) {
@@ -419,14 +416,20 @@ public class ContentServiceImpl implements ContentService {
             reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar() );
             showArticleCommentsDto.getReviews().add(reviewElement);
         }
-        List<ArticleLikesDetails> details = contentMybatisDao.getArticleLikesDetails(id);
-        for(ArticleLikesDetails likesDetails : details){
+        for(ArticleLikesDetails likesDetails : articleLikesDetails){
             ShowArticleCommentsDto.LikeElement likeElement = ShowArticleCommentsDto.createLikeElement();
             likeElement.setUid(likesDetails.getUid());
             UserProfile user = userService.getUserProfileByUid(likesDetails.getUid());
             likeElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
             likeElement.setNickName(user.getNickName());
             showArticleCommentsDto.getLikeElements().add(likeElement);
+        }
+        List<ArticleTagsDetails> detailsList = contentMybatisDao.getArticleTagsDetails(id);
+        for(ArticleTagsDetails tagsDetails : detailsList){
+            ShowArticleCommentsDto.ContentTagElement contentTagElement = ShowArticleCommentsDto.createContentTagElement();
+            ContentTags contentTags = contentMybatisDao.getContentTagsById(tagsDetails.getTid());
+            contentTagElement.setTag(contentTags.getTag());
+            showArticleCommentsDto.getTags().add(contentTagElement);
         }
         ContentStatService contentStatService = contentStatusServiceProxyBean.getTarget();
         contentStatService.read(uid+"",id);

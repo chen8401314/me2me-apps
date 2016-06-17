@@ -55,4 +55,17 @@ public class ShowArticleCommentsDto implements BaseEntity{
 
         private String avatar;
     }
+
+    private List<ContentTagElement> tags = Lists.newArrayList();
+
+    public static ContentTagElement createContentTagElement(){
+        return new ContentTagElement();
+    }
+
+    @Data
+    public static class ContentTagElement implements BaseEntity {
+
+        private String tag;
+
+    }
 }
