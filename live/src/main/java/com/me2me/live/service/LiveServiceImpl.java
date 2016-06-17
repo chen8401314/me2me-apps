@@ -9,12 +9,15 @@ import com.me2me.content.dto.ContentDto;
 import com.me2me.content.dto.LikeDto;
 import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.model.Content;
+import com.me2me.content.model.ContentImage;
 import com.me2me.content.service.ContentService;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.*;
 import com.me2me.live.model.*;
 import com.me2me.user.model.UserFollow;
+import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
+import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -213,7 +216,7 @@ public class LiveServiceImpl implements LiveService {
             likeDto.setUid(speakDto.getUid());
             likeDto.setType(Specification.LikesType.LIVE.index);
             contentService.like2(likeDto);
-        }else if(speakDto.getType() == Specification.LiveSpeakType.FANSWRITETAG.index){
+        }else if(speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index){
             //贴标
             Content content = contentService.getContentByTopicId(speakDto.getTopicId());
             WriteTagDto writeTagDto = new WriteTagDto();
@@ -232,24 +235,78 @@ public class LiveServiceImpl implements LiveService {
             liveMybatisDao.updateTopic(topic);
             log.info("updateTopic updateTime");
         }
-        if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHORWRITETAG.index){
+        if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index){
             List<LiveFavorite> list = liveMybatisDao.getFavoriteList(speakDto.getTopicId());
             for(LiveFavorite liveFavorite : list) {
                 //主播发言提醒关注的人
                 userService.push(liveFavorite.getUid(),topic.getUid(),Specification.PushMessageType.UPDATE.index,topic.getTitle());
                 log.info("update push");
             }
-        }else if(speakDto.getType() == Specification.LiveSpeakType.FANSWRITETAG.index){
+        }else if(speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index){
             //粉丝贴标提醒
+            Topic live = liveMybatisDao.getTopicById(speakDto.getTopicId());
+            liveRemind(live.getUid(), speakDto.getUid() ,Specification.LiveSpeakType.FANS_WRITE_TAG.index ,speakDto.getTopicId(),speakDto.getFragment());
             userService.push(topic.getUid(),speakDto.getUid(),Specification.PushMessageType.LIVE_TAG.index,topic.getTitle());
             log.info("live tag push");
         }else if(speakDto.getType() == Specification.LiveSpeakType.FANS.index){
             //粉丝发言提醒
+            Topic live = liveMybatisDao.getTopicById(speakDto.getTopicId());
+            liveRemind(live.getUid(), speakDto.getUid() ,Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
             userService.push(topic.getUid(),speakDto.getUid(),Specification.PushMessageType.LIVE_REVIEW.index,topic.getTitle());
             log.info("live review push");
         }
         log.info("speak end ...");
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status,ResponseStatus.USER_SPEAK_SUCCESS.message);
+    }
+
+    private void liveRemind(long targetUid, long sourceUid ,int type ,long cid,String fragment ){
+        if(targetUid == sourceUid){
+            return;
+        }
+        UserProfile userProfile = userService.getUserProfileByUid(targetUid);
+        UserProfile customerProfile = userService.getUserProfileByUid(sourceUid);
+        UserNotice userNotice = new UserNotice();
+        userNotice.setFromNickName(userProfile.getNickName());
+        userNotice.setFromAvatar(userProfile.getAvatar());
+        userNotice.setFromUid(userProfile.getUid());
+        userNotice.setToNickName(customerProfile.getNickName());
+        userNotice.setReadStatus(userNotice.getReadStatus());
+        userNotice.setCid(cid);
+        userNotice.setCoverImage("");
+        if(fragment.length() > 50) {
+            userNotice.setSummary(fragment.substring(0,50));
+        }else{
+            userNotice.setSummary(fragment);
+        }
+
+        userNotice.setToUid(customerProfile.getUid());
+        userNotice.setLikeCount(0);
+        if(type == Specification.LiveSpeakType.FANS_WRITE_TAG.index){
+            userNotice.setReview(fragment);
+            userNotice.setTag("");
+            userNotice.setNoticeType(Specification.UserNoticeType.LIVE_TAG.index);
+        }else if(type == Specification.LiveSpeakType.FANS.index){
+            userNotice.setReview(fragment);
+            userNotice.setTag("");
+            userNotice.setNoticeType(Specification.UserNoticeType.LIVE_REVIEW.index);
+        }
+        userNotice.setReadStatus(0);
+        userService.createUserNotice(userNotice);
+        UserTips userTips = new UserTips();
+        userTips.setUid(targetUid);
+        if(type == Specification.LiveSpeakType.FANS_WRITE_TAG.index){
+            userTips.setType(Specification.UserNoticeType.LIVE_TAG.index);
+        }else if(type == Specification.LiveSpeakType.FANS.index){
+            userTips.setType(Specification.UserNoticeType.LIVE_REVIEW.index);
+        }
+        UserTips tips  =  userService.getUserTips(userTips);
+        if(tips == null){
+            userTips.setCount(1);
+            userService.createUserTips(userTips);
+        }else{
+            tips.setCount(tips.getCount()+1);
+              userService.modifyUserTips(tips);
+        }
     }
 
     /**
