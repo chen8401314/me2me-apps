@@ -415,6 +415,15 @@ public class ContentServiceImpl implements ContentService {
             reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar() );
             showArticleCommentsDto.getReviews().add(reviewElement);
         }
+        List<ArticleLikesDetails> details = contentMybatisDao.getArticleLikesDetails(id);
+        for(ArticleLikesDetails likesDetails : details){
+            ShowArticleCommentsDto.LikeElement likeElement = ShowArticleCommentsDto.createLikeElement();
+            likeElement.setUid(likesDetails.getUid());
+            UserProfile user = userService.getUserProfileByUid(likesDetails.getUid());
+            likeElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+            likeElement.setNickName(user.getNickName());
+            showArticleCommentsDto.getLikeElements().add(likeElement);
+        }
         return Response.success(showArticleCommentsDto);
     }
 
@@ -688,9 +697,19 @@ public class ContentServiceImpl implements ContentService {
             reviewElement.setCreateTime(review.getCreateTime());
             reviewElement.setReview(review.getReview());
             UserProfile user = userService.getUserProfileByUid(review.getUid());
-            reviewElement.setAvatar(user.getAvatar());
+            reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
             reviewElement.setNickName(user.getNickName());
             contentDetailDto.getReviews().add(reviewElement);
+        }
+        //点赞top30
+        List<ContentLikesDetails> contentLikesDetailsList = contentMybatisDao.getContentLikesDetails(id);
+        for(ContentLikesDetails contentLikesDetails : contentLikesDetailsList){
+            ContentDetailDto.LikeElement likeElement = ContentDetailDto.createLikeElement();
+            likeElement.setUid(contentLikesDetails.getUid());
+            UserProfile user = userService.getUserProfileByUid(contentLikesDetails.getUid());
+            likeElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+            likeElement.setNickName(user.getNickName());
+            contentDetailDto.getLikeElements().add(likeElement);
         }
         //文章图片
         if(content.getType() == Specification.ArticleType.ORIGIN.index){

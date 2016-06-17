@@ -401,4 +401,12 @@ public class ContentMybatisDao {
     public void createContentArticleDetails(ArticleTagsDetails articleTagsDetails){
         articleTagsDetailsMapper.insert(articleTagsDetails);
     }
+
+    public List<ContentLikesDetails> getContentLikesDetails(long id){
+        ContentLikesDetailsExample example = new ContentLikesDetailsExample();
+        ContentLikesDetailsExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(id);
+        return contentLikesDetailsMapper.selectByExample(example);
+    }
+
 }
