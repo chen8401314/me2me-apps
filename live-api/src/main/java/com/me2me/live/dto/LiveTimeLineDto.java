@@ -16,8 +16,6 @@ import java.util.List;
 @Data
 public class LiveTimeLineDto implements BaseEntity {
 
-
-
     private  List<LiveElement> liveElements = Lists.newArrayList();
 
     public static LiveElement createElement(){
@@ -46,6 +44,8 @@ public class LiveTimeLineDto implements BaseEntity {
         private String fragmentImage;
 
         private String avatar;
+
+        private long id;
 
     }
 

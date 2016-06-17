@@ -159,6 +159,7 @@ public class LiveServiceImpl implements LiveService {
             UserProfile userProfile = userService.getUserProfileByUid(uid);
             LiveTimeLineDto.LiveElement liveElement = LiveTimeLineDto.createElement();
             liveElement.setUid(uid);
+            liveElement.setId(topicFragment.getId());
             liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             liveElement.setNickName(userProfile.getNickName());
             if(topicFragment.getContentType() == Specification.LiveContent.TEXT.index) {
