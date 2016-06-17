@@ -183,18 +183,20 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response speak(SpeakDto speakDto) {
         log.info("speak start ...");
-        TopicFragment topicFragment = new TopicFragment();
-        TopicBarrage topicBarrage = new TopicBarrage();
-        topicFragment.setFragmentImage(speakDto.getFragmentImage());
-        topicFragment.setFragment(speakDto.getFragment());
-        topicFragment.setUid(speakDto.getUid());
-        topicFragment.setContentType(speakDto.getContentType());
-        topicFragment.setType(speakDto.getType());
-        topicFragment.setTopicId(speakDto.getTopicId());
-        topicBarrage.setBottomId(speakDto.getBottomId());
-        topicBarrage.setTopId(speakDto.getTopId());
-        liveMybatisDao.createTopicFragment(topicFragment);
+        if(speakDto.getType() != Specification.LiveSpeakType.LIKES.index &&speakDto.getType() !=Specification.LiveSpeakType.FANS_WRITE_TAG.index ) {
+            TopicFragment topicFragment = new TopicFragment();
+            topicFragment.setFragmentImage(speakDto.getFragmentImage());
+            topicFragment.setFragment(speakDto.getFragment());
+            topicFragment.setUid(speakDto.getUid());
+            topicFragment.setContentType(speakDto.getContentType());
+            topicFragment.setType(speakDto.getType());
+            topicFragment.setTopicId(speakDto.getTopicId());
+            topicFragment.setBottomId(speakDto.getBottomId());
+            topicFragment.setTopId(speakDto.getTopId());
+            liveMybatisDao.createTopicFragment(topicFragment);
+        }
         log.info("createTopicFragment success");
+        TopicBarrage topicBarrage = new TopicBarrage();
         topicBarrage.setFragmentImage(speakDto.getFragmentImage());
         topicBarrage.setFragment(speakDto.getFragment());
         topicBarrage.setBottomId(speakDto.getBottomId());
