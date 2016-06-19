@@ -822,7 +822,7 @@ public class ContentServiceImpl implements ContentService {
         log.info("getUserData start ...targetUid = " + targetUid + " sourceUid = "+ sourceUid);
         UserProfile userProfile = userService.getUserProfileByUid(targetUid);
         log.info("get userData success ");
-        List<Content> list = contentMybatisDao.myPublish(targetUid,10);
+        List<Content> list = contentMybatisDao.myPublish(targetUid,Integer.MAX_VALUE);
         log.info("get user content success ");
         UserInfoDto userInfoDto = new UserInfoDto();
         userInfoDto.getUser().setNickName(userProfile.getNickName());
