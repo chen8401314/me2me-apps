@@ -822,7 +822,7 @@ public class ContentServiceImpl implements ContentService {
         log.info("getUserData start ...targetUid = " + targetUid + " sourceUid = "+ sourceUid);
         UserProfile userProfile = userService.getUserProfileByUid(targetUid);
         log.info("get userData success ");
-        List<Content> list = contentMybatisDao.myPublish(targetUid,Integer.MAX_VALUE);
+        List<Content> list = contentMybatisDao.myPublish(targetUid,10);
         log.info("get user content success ");
         UserInfoDto userInfoDto = new UserInfoDto();
         userInfoDto.getUser().setNickName(userProfile.getNickName());
@@ -849,6 +849,9 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setContentType(content.getContentType());
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
+            contentElement.setReadCount(content.getReadCount());
+            contentElement.setForwardUrl(content.getForwardUrl());
+            contentElement.setForwardTile(content.getForwardTitle());
             String cover =  content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
                 contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
