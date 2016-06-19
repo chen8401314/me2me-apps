@@ -851,10 +851,14 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setType(content.getType());
             contentElement.setReadCount(content.getReadCount());
             contentElement.setForwardUrl(content.getForwardUrl());
-            contentElement.setForwardTile(content.getForwardTitle());
+            contentElement.setForwardTitle(content.getForwardTitle());
             String cover =  content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
-                contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
+                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
+                    contentElement.setCoverImage(cover);
+                }else {
+                    contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
+                }
             }
             contentElement.setTag(content.getFeeling());
             //查询直播状态

@@ -90,7 +90,7 @@ public class UserInfoDto implements BaseEntity{
 
         private int isLike;
 
-        private String forwardTile;
+        private String forwardTitle;
 
         private String forwardUrl;
 
