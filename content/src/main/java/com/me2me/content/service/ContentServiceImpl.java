@@ -406,6 +406,7 @@ public class ContentServiceImpl implements ContentService {
         List<ArticleReview> articleReviews = contentMybatisDao.getArticleReviews(id ,Integer.MAX_VALUE);
         showArticleCommentsDto.setLikeCount(articleLikesDetails.size());
         showArticleCommentsDto.setReviewCunt(articleReviews.size());
+        showArticleCommentsDto.setIsLike(0);
         for(ArticleReview articleReview : articleReviews) {
             ShowArticleCommentsDto.ReviewElement reviewElement = ShowArticleCommentsDto.createElement();
             reviewElement.setUid(articleReview.getUid());
@@ -423,6 +424,9 @@ public class ContentServiceImpl implements ContentService {
             likeElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
             likeElement.setNickName(user.getNickName());
             showArticleCommentsDto.getLikeElements().add(likeElement);
+            if(likesDetails.getUid() == uid){
+                showArticleCommentsDto.setIsLike(1);
+            }
         }
         List<ArticleTagsDetails> detailsList = contentMybatisDao.getArticleTagsDetails(id);
         for(ArticleTagsDetails tagsDetails : detailsList){
