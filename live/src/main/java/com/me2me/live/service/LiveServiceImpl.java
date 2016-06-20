@@ -274,7 +274,8 @@ public class LiveServiceImpl implements LiveService {
         userNotice.setToNickName(customerProfile.getNickName());
         userNotice.setReadStatus(userNotice.getReadStatus());
         userNotice.setCid(cid);
-        userNotice.setCoverImage("");
+        Topic topic =liveMybatisDao.getTopicById(cid);
+        userNotice.setCoverImage(topic.getLiveImage());
         if(fragment.length() > 50) {
             userNotice.setSummary(fragment.substring(0,50));
         }else{
