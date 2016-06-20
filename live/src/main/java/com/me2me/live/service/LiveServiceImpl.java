@@ -265,8 +265,8 @@ public class LiveServiceImpl implements LiveService {
         if(targetUid == sourceUid){
             return;
         }
-        UserProfile userProfile = userService.getUserProfileByUid(targetUid);
-        UserProfile customerProfile = userService.getUserProfileByUid(sourceUid);
+        UserProfile userProfile = userService.getUserProfileByUid(sourceUid);
+        UserProfile customerProfile = userService.getUserProfileByUid(targetUid);
         UserNotice userNotice = new UserNotice();
         userNotice.setFromNickName(userProfile.getNickName());
         userNotice.setFromAvatar(userProfile.getAvatar());
