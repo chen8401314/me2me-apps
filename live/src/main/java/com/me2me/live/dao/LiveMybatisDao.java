@@ -202,7 +202,7 @@ public class LiveMybatisDao {
         criteria.andTopicIdEqualTo(topicId);
         criteria.andTopIdGreaterThanOrEqualTo(topId);
         criteria.andTopIdLessThanOrEqualTo(bottomId);
-        criteria.andIdGreaterThanOrEqualTo(sinceId);
+        criteria.andIdGreaterThan(sinceId);
         example.setOrderByClause("id asc limit 20 ");
         return topicBarrageMapper.selectByExampleWithBLOBs(example);
     }
