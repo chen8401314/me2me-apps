@@ -1107,10 +1107,19 @@ public class ContentServiceImpl implements ContentService {
             }
         }
         // 置顶内容
-        List<Content> contentTopList =
+        List<Content> contentTopList = contentMybatisDao.getHottestTopsContent();
+        builderContent(uid,contentTopList,hottestDto.getTops());
         //内容
         List<Content> contentList = contentMybatisDao.getHottestContent(sinceId);
         log.info("getHottestContent success");
+        builderContent(uid, contentList,hottestDto.getHottestContentData());
+        log.info("monitor");
+        monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.HOTTEST.index,0,uid));
+        log.info("getHottest end ...");
+        return Response.success(hottestDto);
+    }
+
+    private void builderContent(long uid,List<Content> contentList, List<ShowHottestDto.HottestContentElement> container) {
         for(Content content : contentList){
             ShowHottestDto.HottestContentElement hottestContentElement = ShowHottestDto.createHottestContentElement();
             hottestContentElement.setType(content.getType());
@@ -1180,12 +1189,8 @@ public class ContentServiceImpl implements ContentService {
                 int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
                 hottestContentElement.setImageCount(imageCounts);
             }
-            hottestDto.getHottestContentData().add(hottestContentElement);
+            container.add(hottestContentElement);
         }
-        log.info("monitor");
-        monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.HOTTEST.index,0,uid));
-        log.info("getHottest end ...");
-        return Response.success(hottestDto);
     }
 
     /**

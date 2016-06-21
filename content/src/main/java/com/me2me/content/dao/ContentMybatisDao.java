@@ -232,8 +232,8 @@ public class ContentMybatisDao {
         return contentMapper.loadHottestContent(sinceId);
     }
 
-    public List<Content> getHottestTopsContent(int sinceId){
-        return contentMapper.loadHottestContent(sinceId);
+    public List<Content> getHottestTopsContent(){
+        return contentMapper.loadHottestTopsContent();
     }
 
     public int getContentImageCount(long cid){
