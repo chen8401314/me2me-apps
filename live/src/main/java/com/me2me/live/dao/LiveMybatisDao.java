@@ -205,13 +205,14 @@ public class LiveMybatisDao {
         return topicBarrageMapper.selectByExampleWithBLOBsDistinct(topicBarrage);
     }
 
-    public TopicBarrage getBarrage(long topicId, long topId ,long bottomId, int type ){
+    public TopicBarrage getBarrage(long topicId, long topId ,long bottomId, int type ,long uid ){
         TopicBarrageExample example = new TopicBarrageExample();
         TopicBarrageExample.Criteria criteria =example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andTopIdEqualTo(topId);
         criteria.andBottomIdEqualTo(bottomId);
         criteria.andTypeEqualTo(type);
+        criteria.andUidEqualTo(uid);
         List<TopicBarrage> topicBarrages = topicBarrageMapper.selectByExampleWithBLOBs(example);
         return com.me2me.common.utils.Lists.getSingle(topicBarrages);
     }
