@@ -206,5 +206,17 @@ public class Live extends BaseController {
     }
 
 
+    /**
+     * 根据cid获取直播信息
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/getLiveMyCid",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response getLiveByCid(GetLiveByCidRequest request){
+        return liveService.getLiveByCid(request.getCid(),request.getUid());
+    }
+
+
 
 }

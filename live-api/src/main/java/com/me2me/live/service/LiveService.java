@@ -93,4 +93,6 @@ public interface LiveService {
     Response liveCover(long topicId);
 
     Response barrage(LiveBarrageDto barrageDto);
+
+    Response getLiveByCid(long cid,long uid);
 }

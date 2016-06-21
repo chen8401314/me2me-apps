@@ -156,6 +156,37 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(ResponseStatus.GET_LIVE_BARRAGE_SUCCESS.status,ResponseStatus.GET_LIVE_BARRAGE_SUCCESS.message,showBarrageDto);
     }
 
+    @Override
+    public Response getLiveByCid(long cid,long uid) {
+        ShowLiveDto showLiveDto = new ShowLiveDto();
+        Content content = contentService.getContentById(cid);
+        UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+        Topic topic = liveMybatisDao.getTopicById(content.getForwardCid());
+        showLiveDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
+        showLiveDto.setUid(content.getUid());
+        showLiveDto.setNickName(userProfile.getNickName());
+        showLiveDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+        showLiveDto.setCreateTime(topic.getCreateTime());
+        showLiveDto.setUpdateTime(topic.getLongTime());
+        showLiveDto.setFavoriteCount(content.getFavoriteCount());
+        showLiveDto.setLikeCount(content.getLikeCount());
+        showLiveDto.setPersonCount(content.getPersonCount());
+        showLiveDto.setTopicId(topic.getId());
+        LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid,topic.getId());
+        if(liveFavorite != null){
+            showLiveDto.setFavorite(Specification.LiveFavorite.FAVORITE.index);
+        }else{
+            showLiveDto.setFavorite(Specification.LiveFavorite.NORMAL.index);
+        }
+        showLiveDto.setCid(content.getId());
+        showLiveDto.setIsFollowed(userService.isFollow(topic.getUid(),uid));
+        showLiveDto.setReviewCount(liveMybatisDao.countFragment(content.getForwardCid(),content.getUid()));
+        showLiveDto.setTitle(topic.getTitle());
+        showLiveDto.setStatus(topic.getStatus());
+        showLiveDto.setIsLike(contentService.isLike(content.getId(),uid));
+        return Response.success(showLiveDto);
+    }
+
     private void buildLiveTimeLine(GetLiveTimeLineDto getLiveTimeLineDto, LiveTimeLineDto liveTimeLineDto, List<TopicFragment> fragmentList) {
         for(TopicFragment topicFragment : fragmentList){
             long uid = topicFragment.getUid();
