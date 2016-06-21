@@ -464,15 +464,18 @@ public class LiveServiceImpl implements LiveService {
             liveFavorite.setUid(uid);
             liveMybatisDao.createLiveFavorite(liveFavorite);
             //保存弹幕
-            TopicBarrage topicBarrage = new TopicBarrage();
-            topicBarrage.setBottomId(bottomId);
-            topicBarrage.setTopicId(topicId);
-            topicBarrage.setTopId(topId);
-            topicBarrage.setContentType(0);
-            topicBarrage.setType(Specification.LiveSpeakType.SUBSCRIBED.index);
-            topicBarrage.setUid(uid);
-            //保存弹幕
-            liveMybatisDao.createTopicBarrage(topicBarrage);
+            TopicBarrage barrage = liveMybatisDao.getBarrage(topicId,topId,bottomId,Specification.LiveSpeakType.SUBSCRIBED.index,uid);
+            if(barrage == null) {
+                TopicBarrage topicBarrage = new TopicBarrage();
+                topicBarrage.setBottomId(bottomId);
+                topicBarrage.setTopicId(topicId);
+                topicBarrage.setTopId(topId);
+                topicBarrage.setContentType(0);
+                topicBarrage.setType(Specification.LiveSpeakType.SUBSCRIBED.index);
+                topicBarrage.setUid(uid);
+                //保存弹幕
+                liveMybatisDao.createTopicBarrage(topicBarrage);
+            }
             content.setFavoriteCount(content.getFavoriteCount()+1);
             contentService.updateContentById(content);
             log.info("setLive end ...");
