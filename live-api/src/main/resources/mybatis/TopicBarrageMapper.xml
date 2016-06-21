@@ -452,7 +452,7 @@
         and bottom_id &lt;= #{bottomId,jdbcType=BIGINT}
       </if>
       <if test="id != null" >
-        and id &gt;= #{id,jdbcType=BIGINT}
+        and id &gt;#{id,jdbcType=BIGINT}
       </if>
       order by id asc limit 20
   </select>
