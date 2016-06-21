@@ -211,7 +211,7 @@ public class Live extends BaseController {
      * @param request
      * @return
      */
-    @RequestMapping(value = "/getLiveMyCid",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/getLiveByCid",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getLiveByCid(GetLiveByCidRequest request){
         return liveService.getLiveByCid(request.getCid(),request.getUid());
