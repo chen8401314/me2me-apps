@@ -18,7 +18,7 @@ public class ShowArticleCommentsDto implements BaseEntity{
 
     private int likeCount;
 
-    private int reviewCunt;
+    private int reviewCount;
 
     private int readCount;
 

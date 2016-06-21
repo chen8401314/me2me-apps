@@ -405,7 +405,7 @@ public class ContentServiceImpl implements ContentService {
         List<ArticleLikesDetails> articleLikesDetails =  contentMybatisDao.getArticleLikesDetails(id);
         List<ArticleReview> articleReviews = contentMybatisDao.getArticleReviews(id ,Integer.MAX_VALUE);
         showArticleCommentsDto.setLikeCount(articleLikesDetails.size());
-        showArticleCommentsDto.setReviewCunt(articleReviews.size());
+        showArticleCommentsDto.setReviewCount(articleReviews.size());
         showArticleCommentsDto.setIsLike(0);
         for(ArticleReview articleReview : articleReviews) {
             ShowArticleCommentsDto.ReviewElement reviewElement = ShowArticleCommentsDto.createElement();
