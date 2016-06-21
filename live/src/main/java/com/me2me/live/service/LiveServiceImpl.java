@@ -159,11 +159,11 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response getLiveByCid(long cid,long uid) {
         ShowLiveDto showLiveDto = new ShowLiveDto();
-        Content content = contentService.getContentById(cid);
-        UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
-        Topic topic = liveMybatisDao.getTopicById(content.getForwardCid());
+        UserProfile userProfile = userService.getUserProfileByUid(uid);
+        Topic topic = liveMybatisDao.getTopicById(cid);
+        Content content =contentService.getContentByTopicId(cid);
         showLiveDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
-        showLiveDto.setUid(content.getUid());
+        showLiveDto.setUid(topic.getUid());
         showLiveDto.setNickName(userProfile.getNickName());
         showLiveDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
         showLiveDto.setCreateTime(topic.getCreateTime());
