@@ -11,18 +11,11 @@ import com.me2me.core.exception.UidAndTokenNotMatchException;
 import com.me2me.user.model.ApplicationSecurity;
 import com.me2me.user.model.UserToken;
 import com.me2me.user.service.UserService;
-import com.me2me.web.
-        JsonSecurity;
-import com.qiniu.util.Json;
+import com.me2me.web.JsonSecurity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
-
-import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.util.List;
 
 /**

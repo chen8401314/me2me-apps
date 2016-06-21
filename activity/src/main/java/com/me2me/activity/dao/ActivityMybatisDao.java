@@ -3,14 +3,10 @@ package com.me2me.activity.dao;
 import com.google.common.base.Strings;
 import com.me2me.activity.mapper.ActivityMapper;
 import com.me2me.activity.mapper.UserActivityMapper;
-import com.me2me.activity.model.Activity;
 import com.me2me.activity.model.ActivityExample;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.model.UserActivity;
 import com.me2me.common.web.Specification;
-import com.me2me.user.dto.*;
-import com.me2me.user.mapper.*;
-import com.me2me.user.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 

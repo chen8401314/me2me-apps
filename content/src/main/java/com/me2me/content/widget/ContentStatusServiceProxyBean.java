@@ -1,6 +1,5 @@
 package com.me2me.content.widget;
 
-import com.plusnet.search.content.api.ContentRecommendService;
 import com.plusnet.search.content.api.ContentStatService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.remoting.httpinvoker.HttpInvokerProxyFactoryBean;

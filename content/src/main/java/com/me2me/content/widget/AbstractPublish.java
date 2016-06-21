@@ -8,6 +8,7 @@ import com.me2me.content.dto.CreateContentSuccessDto;
 import com.me2me.content.model.Content;
 import com.me2me.content.model.ContentImage;
 import com.me2me.content.service.ContentService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
 
@@ -17,13 +18,14 @@ import org.springframework.util.StringUtils;
  * Date: 2016/6/6
  * Time :21:23
  */
+@Slf4j
 public class AbstractPublish {
 
     @Autowired
     protected ContentService contentService;
 
     public Response publish(ContentDto contentDto) {
-        System.out.println("abstract publish start .....");
+        log.info("abstract publish start .....");
         CreateContentSuccessDto createContentSuccessDto = new CreateContentSuccessDto();
         String coverImage = "" ;
         Content content = new Content();
@@ -44,8 +46,10 @@ public class AbstractPublish {
         content.setForwardCid(contentDto.getForwardCid());
         //保存内容
         contentService.createContent(content);
+        log.info("create content success");
         //创建标签
         contentService.createTag(contentDto,content);
+        log.info("create tag success");
         if(!StringUtils.isEmpty(contentDto.getImageUrls())){
             String[] images = contentDto.getImageUrls().split(";");
             // 保存用户图片集合
@@ -58,6 +62,7 @@ public class AbstractPublish {
                 contentImage.setImage(image);
                 contentService.createContentImage(contentImage);
             }
+            log.info("create content images success");
         }
         createContentSuccessDto.setContent(content.getContent());
         createContentSuccessDto.setCreateTime(content.getCreateTime());
@@ -72,6 +77,7 @@ public class AbstractPublish {
         }else{
             createContentSuccessDto.setCoverImage("");
         }
+        log.info("abstract publish end .....");
         return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
     }
 }

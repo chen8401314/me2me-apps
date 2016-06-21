@@ -4,7 +4,6 @@ import com.google.common.collect.Lists;
 import com.me2me.common.web.BaseEntity;
 import lombok.Data;
 
-import java.util.Date;
 import java.util.List;
 
 /**

@@ -20,6 +20,10 @@ public class ShowArticleCommentsDto implements BaseEntity{
 
     private int reviewCunt;
 
+    private int readCount;
+
+    private int isLike;
+
     private List<ReviewElement> reviews = Lists.newArrayList();
 
     public static ReviewElement createElement(){
@@ -27,19 +31,43 @@ public class ShowArticleCommentsDto implements BaseEntity{
     }
 
     @Data
-    public static class ReviewElement implements BaseEntity{
+    public static class ReviewElement extends LikeElement implements BaseEntity{
 
         private long id;
+
+        private Date createTime;
+
+        private String review;
+
+    }
+
+
+    private List<LikeElement> likeElements = Lists.newArrayList();
+
+    public static LikeElement createLikeElement(){
+        return new LikeElement();
+    }
+
+    @Data
+    public static class LikeElement implements BaseEntity{
 
         private long uid;
 
         private String nickName;
 
         private String avatar;
+    }
 
-        private Date createTime;
+    private List<ContentTagElement> tags = Lists.newArrayList();
 
-        private String review;
+    public static ContentTagElement createContentTagElement(){
+        return new ContentTagElement();
+    }
+
+    @Data
+    public static class ContentTagElement implements BaseEntity {
+
+        private String tag;
 
     }
 }

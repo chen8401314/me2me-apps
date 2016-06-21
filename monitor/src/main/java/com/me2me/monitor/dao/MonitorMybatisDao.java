@@ -3,7 +3,6 @@ package com.me2me.monitor.dao;
 import com.me2me.monitor.dto.MonitorReportDto;
 import com.me2me.monitor.mapper.AccessTrackMapper;
 import com.me2me.monitor.model.AccessTrack;
-import com.me2me.monitor.model.AccessTrackExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;

@@ -3,7 +3,6 @@ package com.me2me.web;
 import com.me2me.common.web.Response;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.user.dto.*;
-import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -128,7 +127,7 @@ public class Users extends BaseController {
     }
 
     /**
-     * 修改用户爱好（废弃）
+     * 修改用户爱好（暂未启用）
      * @param request
      * @return
      */
@@ -141,10 +140,9 @@ public class Users extends BaseController {
         return userService.modifyUserHobby(modifyUserHobbyDto);
     }
 
-
     /**
      * 获取用户基础数据
-     * 感觉意义不是很大 推荐用全量接口
+     *
      */
     @ResponseBody
     @RequestMapping(value = "/getBasicDataByType",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
@@ -156,7 +154,7 @@ public class Users extends BaseController {
 
     /**
      * 获取用户基础数据
-     * 全量接口（废弃）
+     * 全量接口（暂未启用）
      */
     @ResponseBody
     @RequestMapping(value = "/getBasicData",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
@@ -165,7 +163,7 @@ public class Users extends BaseController {
     }
 
     /**
-     * 第三方登录
+     * 第三方登录（暂未启用）
      */
     @ResponseBody
     @RequestMapping(value = "/thirdPartAuth",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
@@ -173,16 +171,14 @@ public class Users extends BaseController {
         return null;
     }
 
-
     /**
-     * 收藏夹
+     * 收藏夹（废弃）
      */
     @ResponseBody
     @RequestMapping(value = "/favorite",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response favorite(ThirdPartAuthRequest request){
         return null;
     }
-
 
     /**
      * 贴标签（废弃）
@@ -207,7 +203,6 @@ public class Users extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/showUserTags",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response showUserTags(GetTagRequest request){
-
         return userService.showUserTags(request.getUid());
     }
 
@@ -329,16 +324,14 @@ public class Users extends BaseController {
         return userService.getFollows(followParamsDto);
     }
 
-
     /**
-     * 用户关注列表
+     * 用户关注列表(暂未启用)
      * @param request
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "/getUser",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getUser(UserRequest request){
-
         return userService.getUser(request.getTargetUid(),request.getUid());
     }
 
@@ -350,7 +343,6 @@ public class Users extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getUserProfile",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getUserProfile(UserProfileRequest request){
-
         return userService.getUserProfile(request.getUid());
     }
 
@@ -358,7 +350,6 @@ public class Users extends BaseController {
     @RequestMapping(value = "/init",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public void init(ActivityRequest request){
         userService.initUserNumber(request.getSinceId());
-        System.out.println("init data success ... ");
     }
 
     /**
@@ -390,26 +381,33 @@ public class Users extends BaseController {
         return userService.updateVersion(controlDto);
     }
 
+    /**
+     * 给老徐提供查询人员信息接口
+     * @param request
+     * @return
+     */
     @ResponseBody
     @RequestMapping(value = "/getSpecialUserProfile",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getSpecialUserProfile(SpecialUserProfileRequest request){
-        UserProfile userProfile = userService.getUserProfileByUid(request.getUid());
-        SpecialUserDto userDto = new SpecialUserDto();
-        userDto.setBirthday(userProfile.getBirthday());
-        userDto.setMobilePhone(userProfile.getMobile());
-        userDto.setSex(userProfile.getGender().toString());
-        userDto.setUserName(userProfile.getNickName());
-        String hobbies = userService.getUserHobbyByUid(request.getUid());
-        userDto.setInterests(hobbies);
-        return Response.success(userDto);
+        return userService.getSpecialUserProfile(request.getUid());
     }
 
+    /**
+     * 后台设置大V接口
+     * @param request
+     * @return
+     */
     @ResponseBody
     @RequestMapping(value = "/userExcellent",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response userExcellent(UserExcellentRequest request){
         return userService.setUserExcellent(request.getUid());
     }
 
+    /**
+     * 退出接口
+     * @param request
+     * @return
+     */
     @ResponseBody
     @RequestMapping(value = "/logout",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response logout(LogoutRequest request){

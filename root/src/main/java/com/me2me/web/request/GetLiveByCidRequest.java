@@ -7,20 +7,12 @@ import lombok.Setter;
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 代宝磊
- * Date: 2016/5/7
- * Time :17:35
+ * Date: 2016/6/21
+ * Time :10:21
  */
-public class ReviewListRequest extends Request{
+public class GetLiveByCidRequest extends Request{
 
-    @Getter
     @Setter
+    @Getter
     private long cid;
-
-    @Getter
-    @Setter
-    private long sinceId;
-
-    @Getter
-    @Setter
-    private int type;
 }

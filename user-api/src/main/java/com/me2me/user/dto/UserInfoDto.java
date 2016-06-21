@@ -90,6 +90,12 @@ public class UserInfoDto implements BaseEntity{
 
         private int isLike;
 
+        private String forwardTitle;
+
+        private String forwardUrl;
+
+        private int readCount;
+
         @Data
         public static class ReviewElement implements BaseEntity{
 

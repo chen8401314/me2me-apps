@@ -2,7 +2,6 @@ package com.me2me.content.widget;
 
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
-import com.me2me.content.dto.ArticleLikeDto;
 import com.me2me.content.dto.LikeDto;
 import com.plusnet.search.content.api.ContentStatService;
 import org.springframework.beans.factory.annotation.Autowired;

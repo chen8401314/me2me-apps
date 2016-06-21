@@ -70,6 +70,9 @@ public class ShowNewestDto implements BaseEntity{
         //直播参与人数
         private int personCount;
 
+        //文章阅读数量
+        private int readCount;
+
         //直播收藏人数
         private int favoriteCount;
 

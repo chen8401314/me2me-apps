@@ -5,8 +5,6 @@ import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 赵朋扬

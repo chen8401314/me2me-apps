@@ -2,8 +2,6 @@ package com.me2me.user.dto;
 
 import com.me2me.common.web.BaseEntity;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * 上海拙心网络科技有限公司出品

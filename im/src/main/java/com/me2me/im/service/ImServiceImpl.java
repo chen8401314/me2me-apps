@@ -5,7 +5,6 @@ import com.me2me.common.web.ResponseStatus;
 import com.me2me.im.dao.ImMybatisDao;
 import com.me2me.im.dto.*;
 import com.me2me.im.model.Friend;
-import com.me2me.im.model.FriendExample;
 import com.me2me.im.model.Group;
 import com.me2me.im.model.GroupMember;
 import org.springframework.beans.factory.annotation.Autowired;

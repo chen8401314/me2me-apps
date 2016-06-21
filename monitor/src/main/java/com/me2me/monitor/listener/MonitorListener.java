@@ -7,7 +7,6 @@ import com.me2me.monitor.event.MonitorEvent;
 import com.me2me.monitor.model.AccessTrack;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import javax.annotation.PostConstruct;
 import java.util.Date;
 

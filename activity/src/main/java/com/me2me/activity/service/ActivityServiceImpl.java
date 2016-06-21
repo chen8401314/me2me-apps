@@ -85,8 +85,10 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public Response getActivity(int sinceId,long uid) {
+        log.info("getActivity start ...");
         ShowActivitiesDto showActivitiesDto = new ShowActivitiesDto();
         List<ActivityWithBLOBs> list = activityMybatisDao.getActivity(sinceId);
+        log.info("getActivity data success");
         for(ActivityWithBLOBs activity : list){
             ShowActivitiesDto.ActivityElement activityElement = ShowActivitiesDto.createActivityElement();
             activityElement.setUid(activity.getUid());
@@ -103,6 +105,7 @@ public class ActivityServiceImpl implements ActivityService {
             activityElement.setIsFollowed(userService.isFollow(activity.getUid(),uid));
             showActivitiesDto.getActivityData().add(activityElement);
         }
+        log.info("getActivity end ...");
         return Response.success(showActivitiesDto);
     }
 

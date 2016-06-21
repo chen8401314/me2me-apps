@@ -58,7 +58,7 @@ public interface ContentService {
      * @param id
      * @return
      */
-    Response getContentDetail(long id,long uid);
+    Response contentDetail(long id,long uid);
 
     /**
      * 我发布的内容列表
@@ -79,7 +79,7 @@ public interface ContentService {
      * 根据内容id，返回内容信息给H5
      * @param id
      */
-    ContentH5Dto getContent(long id);
+    ContentH5Dto contentH5(long id);
 
     /**
      *
@@ -136,7 +136,7 @@ public interface ContentService {
 
     Response showUGCDetails(long id);
 
-    Response reviewList(long cid,long sinceId);
+    Response reviewList(long cid,long sinceId,int type);
 
     void updateContentById(Content content);
 
@@ -170,7 +170,7 @@ public interface ContentService {
 
     void createReview2(ReviewDto review);
 
-    Response getArticleComments(long id);
+    Response getArticleComments(long uid,long id);
 
     Response getArticleReview(long id, long sinceId);
 
@@ -179,5 +179,7 @@ public interface ContentService {
     void createContentTagsDetails(ContentTagsDetails contentTagsDetails);
 
     void createContentArticleDetails(ArticleTagsDetails articleTagsDetails);
+
+    Response writeTag2(WriteTagDto writeTagDto);
 
 }

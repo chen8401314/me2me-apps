@@ -6,6 +6,7 @@ import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentDto;
 import com.me2me.monitor.service.MonitorService;
 import com.me2me.monitor.event.MonitorEvent;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Component;
  * Date: 2016/6/6.
  */
 @Component
+@Slf4j
 public class PublishUGC extends AbstractPublish implements Publish {
 
     @Autowired
@@ -27,8 +29,11 @@ public class PublishUGC extends AbstractPublish implements Publish {
 
     @Override
     public Response publish(ContentDto contentDto) {
+        log.info("PublishUGC publish");
         activityService.joinActivity(contentDto.getContent(),contentDto.getUid());
+        log.info("join Activity");
         monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.CONTENT_PUBLISH.index,0,contentDto.getUid()));
+        log.info("monitor PublishUGC ");
         return super.publish(contentDto);
     }
 

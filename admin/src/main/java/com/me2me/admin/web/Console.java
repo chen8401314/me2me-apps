@@ -49,7 +49,7 @@ public class Console  {
     @RequestMapping(value = "/forward")
     public ModelAndView forward(ContentForwardRequest request){
         ModelAndView mv = new ModelAndView("forward");
-        ContentH5Dto content = contentService.getContent(request.getId());
+        ContentH5Dto content = contentService.contentH5(request.getId());
         if(content!=null) {
             if (content.getType() != Specification.ArticleType.EDITOR.index) {
                 // 处理特殊字符

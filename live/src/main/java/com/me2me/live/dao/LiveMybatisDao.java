@@ -1,6 +1,5 @@
 package com.me2me.live.dao;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.me2me.common.web.Specification;
 import com.me2me.live.mapper.*;
@@ -203,7 +202,7 @@ public class LiveMybatisDao {
         criteria.andTopicIdEqualTo(topicId);
         criteria.andTopIdGreaterThanOrEqualTo(topId);
         criteria.andTopIdLessThanOrEqualTo(bottomId);
-        criteria.andIdGreaterThanOrEqualTo(sinceId);
+        criteria.andIdGreaterThan(sinceId);
         example.setOrderByClause("id asc limit 20 ");
         return topicBarrageMapper.selectByExampleWithBLOBs(example);
     }

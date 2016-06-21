@@ -1,19 +1,14 @@
 package com.me2me.content.dao;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.me2me.activity.model.ActivityWithBLOBs;
-import com.me2me.common.Constant;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.*;
 import com.me2me.content.mapper.*;
 import com.me2me.content.model.*;
-import com.me2me.user.model.UserFollow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
-import java.math.BigInteger;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -76,7 +71,7 @@ public class ContentMybatisDao {
     }
 
     public void updateContentById(Content content){
-        contentMapper.updateByPrimaryKey(content);
+        contentMapper.updateByPrimaryKeySelective(content);
     }
 
     public void createTag(ContentTags contentTags){
@@ -286,8 +281,28 @@ public class ContentMybatisDao {
         ContentReviewExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(cid);
         criteria.andIdLessThan(sinceId);
-        example.setOrderByClause(" create_time desc limit 10 ");
+        example.setOrderByClause(" create_time desc limit 20 ");
         return contentReviewMapper.selectByExample(example);
+    }
+
+    public List<ContentReview> getArticleReviewByCid(long cid,long sinceId){
+        List<ContentReview> result = Lists.newArrayList();
+        ArticleReviewExample example = new ArticleReviewExample();
+        ArticleReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andArticleIdEqualTo(cid);
+        criteria.andIdLessThan(sinceId);
+        example.setOrderByClause(" create_time desc limit 20 ");
+        List<ArticleReview> list = articleReviewMapper.selectByExample(example);
+        for(ArticleReview articleReview : list){
+            ContentReview contentReview = new ContentReview();
+            contentReview.setId(articleReview.getId());
+            contentReview.setCid(articleReview.getArticleId());
+            contentReview.setCreateTime(articleReview.getCreateTime());
+            contentReview.setReview(articleReview.getReview());
+            contentReview.setUid(articleReview.getUid());
+            result.add(contentReview);
+        }
+        return result;
     }
 
     public List<ContentReview> getContentReviewTop3ByCid(long cid){
@@ -379,11 +394,26 @@ public class ContentMybatisDao {
         ArticleReviewExample.Criteria criteria = example.createCriteria();
         criteria.andArticleIdEqualTo(id);
         criteria.andIdLessThan(sinceId);
-        example.setOrderByClause(" id desc limit 10 ");
+        example.setOrderByClause(" id desc limit 20 ");
         return articleReviewMapper.selectByExample(example);
     }
 
     public void createContentArticleDetails(ArticleTagsDetails articleTagsDetails){
         articleTagsDetailsMapper.insert(articleTagsDetails);
     }
+
+    public List<ContentLikesDetails> getContentLikesDetails(long id){
+        ContentLikesDetailsExample example = new ContentLikesDetailsExample();
+        ContentLikesDetailsExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(id);
+        return contentLikesDetailsMapper.selectByExample(example);
+    }
+
+    public List<ArticleTagsDetails> getArticleTagsDetails(long id){
+        ArticleTagsDetailsExample example = new ArticleTagsDetailsExample();
+        ArticleTagsDetailsExample.Criteria criteria = example.createCriteria();
+        criteria.andArticleIdEqualTo(id);
+        return articleTagsDetailsMapper.selectByExample(example);
+    }
+
 }

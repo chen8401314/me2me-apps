@@ -165,7 +165,11 @@ public interface Specification {
 
         LIKE("点赞",1),
 
-        REVIEW("评论",2);
+        REVIEW("评论",2),
+
+        LIVE_TAG("直播贴标",3),
+
+        LIVE_REVIEW("直播回复",4);
 
         public final String name;
         public final int index;
@@ -291,9 +295,9 @@ public interface Specification {
 
         FORWARD("转发",2),
 
-        ANCHORWRITETAG("主播贴标",3),
+        ANCHOR_WRITE_TAG("主播贴标",3),
 
-        FANSWRITETAG("粉丝贴标",4),
+        FANS_WRITE_TAG("粉丝贴标",4),
 
         LIKES("点赞",5),
 
