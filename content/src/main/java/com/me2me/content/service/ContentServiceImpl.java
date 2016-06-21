@@ -1106,6 +1106,8 @@ public class ContentServiceImpl implements ContentService {
                 hottestDto.getActivityData().add(activityElement);
             }
         }
+        // 置顶内容
+        List<Content> contentTopList =
         //内容
         List<Content> contentList = contentMybatisDao.getHottestContent(sinceId);
         log.info("getHottestContent success");

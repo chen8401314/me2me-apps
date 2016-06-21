@@ -19,6 +19,9 @@ public class ShowHottestDto implements BaseEntity {
     //活动
     private List<ActivityElement> activityData = Lists.newArrayList();
 
+    // 最热内容项目前为5条数据
+    private List<HottestContentElement> tops = Lists.newArrayList();
+
     public static ActivityElement createActivityElement(){
         return new ActivityElement();
     }
