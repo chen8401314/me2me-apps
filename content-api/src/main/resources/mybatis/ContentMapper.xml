@@ -748,7 +748,7 @@
     select
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
     c.thumbnail, c.hot_value, c.like_count, c.review_count,c.person_count,c.favorite_count, c.read_count, c.authorization, c.create_time, c.status,c.content
-    from content c  right join high_quality_content h on c.id = h.cid  where c.id &lt; #{sinceId} and c.status != 1 and c.isTop = 0
+    from content c  right join high_quality_content h on c.id = h.cid  where c.id &lt; #{sinceId} and c.status != 1 and c.is_top = 0
     order by c.id desc limit 10
   </select>
 
@@ -756,7 +756,7 @@
     select
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
     c.thumbnail, c.hot_value, c.like_count, c.review_count,c.person_count,c.favorite_count, c.read_count, c.authorization, c.create_time, c.status,c.content
-    from content c  right join high_quality_content h on c.id = h.cid  where c.isTop = 1 and c.status != 1
+    from content c  right join high_quality_content h on c.id = h.cid  where c.is_top = 1 and c.status != 1
     order by c.id desc limit 5
   </select>
 

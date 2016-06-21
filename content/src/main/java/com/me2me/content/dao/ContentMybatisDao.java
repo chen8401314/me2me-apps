@@ -102,6 +102,10 @@ public class ContentMybatisDao {
         return result;
     }*/
 
+    public void modifyPGCById(Content content){
+        contentMapper.updateByPrimaryKeyWithBLOBs(content);
+    }
+
     public List<ContentTagsDetails> getContentTagsDetails(long cid , Date createTime, long sinceId) {
         ContentTagsDetailsExample example = new ContentTagsDetailsExample();
         ContentTagsDetailsExample.Criteria criteria = example.createCriteria();

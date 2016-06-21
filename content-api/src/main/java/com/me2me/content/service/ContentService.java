@@ -182,4 +182,5 @@ public interface ContentService {
 
     Response writeTag2(WriteTagDto writeTagDto);
 
+    Response modifyPGC(ContentDto contentDto);
 }
