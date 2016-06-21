@@ -59,4 +59,8 @@ public class PGCModifyRequest extends Request {
     @Setter
     private String coverImage;
 
+    @Getter
+    @Setter
+    private int isTop;
+
 }

@@ -19,4 +19,8 @@ public class ShowUGCDetailsDto implements BaseEntity {
 
     private String content;
 
+    private String feelings;
+
+    private String title;
+
 }

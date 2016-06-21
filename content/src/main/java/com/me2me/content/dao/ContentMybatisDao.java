@@ -103,7 +103,7 @@ public class ContentMybatisDao {
     }*/
 
     public void modifyPGCById(Content content){
-        contentMapper.updateByPrimaryKeyWithBLOBs(content);
+        contentMapper.updateByPrimaryKeySelective(content);
     }
 
     public List<ContentTagsDetails> getContentTagsDetails(long cid , Date createTime, long sinceId) {

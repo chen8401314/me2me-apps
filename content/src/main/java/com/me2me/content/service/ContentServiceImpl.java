@@ -651,6 +651,7 @@ public class ContentServiceImpl implements ContentService {
         content.setFeeling(contentDto.getFeeling());
         content.setConverImage(contentDto.getCoverImage());
         content.setContent(contentDto.getContent());
+        content.setIsTop(contentDto.getIsTop());
         contentMybatisDao.modifyPGCById(content);
         return showUGCDetails(contentDto.getId());
     }
@@ -1423,6 +1424,8 @@ public class ContentServiceImpl implements ContentService {
         showUGCDetailsDto.setId(content.getId());
         showUGCDetailsDto.setCover(Constant.QINIU_DOMAIN  + "/" +content.getConverImage());
         showUGCDetailsDto.setContent(content.getContent());
+        showUGCDetailsDto.setTitle(content.getTitle());
+        showUGCDetailsDto.setFeelings(content.getFeeling());
         List<ContentImage> contentImages = contentMybatisDao.getContentImages(id);
         StringBuilder images = new StringBuilder();
 

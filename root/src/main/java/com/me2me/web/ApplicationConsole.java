@@ -153,6 +153,7 @@ public class ApplicationConsole extends BaseController {
     public Response modify(PGCModifyRequest request){
         ContentDto contentDto = new ContentDto();
         contentDto.setUid(request.getUid());
+        contentDto.setId(request.getId());
         contentDto.setContent(request.getContent());
         contentDto.setFeeling(request.getFeeling());
         contentDto.setContentType(request.getContentType());
@@ -164,6 +165,7 @@ public class ApplicationConsole extends BaseController {
         contentDto.setForwardCid(request.getForwardCid());
         contentDto.setForWardUrl(request.getForwardUrl());
         contentDto.setForwardTitle(request.getForwardTitle());
+        contentDto.setIsTop(request.getIsTop());
         return contentService.modifyPGC(contentDto);
     }
 
