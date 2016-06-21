@@ -5,6 +5,7 @@ import com.me2me.activity.dto.CreateActivityNoticeDto;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.web.Response;
+import com.me2me.content.dto.ContentDto;
 import com.me2me.content.dto.EditorContentDto;
 import com.me2me.content.service.ContentService;
 import com.me2me.user.dto.*;
@@ -141,6 +142,29 @@ public class ApplicationConsole extends BaseController {
     @ResponseBody
     public Response showDetails(ShowDetailsRequest request){
         return contentService.showUGCDetails(request.getId());
+    }
+
+    /**
+     * 运营操作接口
+     * @return
+     */
+    @RequestMapping(value = "/modify",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response modify(PGCModifyRequest request){
+        ContentDto contentDto = new ContentDto();
+        contentDto.setUid(request.getUid());
+        contentDto.setContent(request.getContent());
+        contentDto.setFeeling(request.getFeeling());
+        contentDto.setContentType(request.getContentType());
+        contentDto.setImageUrls(request.getImageUrls());
+        contentDto.setType(request.getType());
+        contentDto.setTitle(request.getTitle());
+        contentDto.setRights(request.getRights());
+        contentDto.setCoverImage(request.getCoverImage());
+        contentDto.setForwardCid(request.getForwardCid());
+        contentDto.setForWardUrl(request.getForwardUrl());
+        contentDto.setForwardTitle(request.getForwardTitle());
+        return contentService.modifyPGC(contentDto);
     }
 
 
