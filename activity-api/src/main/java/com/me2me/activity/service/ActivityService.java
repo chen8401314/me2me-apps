@@ -1,5 +1,6 @@
 package com.me2me.activity.service;
 
+import com.me2me.activity.dto.ActivityDto;
 import com.me2me.activity.dto.ActivityH5Dto;
 import com.me2me.activity.dto.CreateActivityDto;
 import com.me2me.activity.dto.CreateActivityNoticeDto;
@@ -38,4 +39,6 @@ public interface ActivityService {
     void joinActivity(String content,long uid);
 
     ActivityH5Dto getActivityH5(long id);
+
+    ActivityDto getActivity(long id);
 }
