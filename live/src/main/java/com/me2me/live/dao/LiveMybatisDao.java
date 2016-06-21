@@ -197,14 +197,23 @@ public class LiveMybatisDao {
     }
 
     public List<TopicBarrage> getBarrage(long topicId,long sinceId, long topId ,long bottomId ){
+        TopicBarrage topicBarrage = new TopicBarrage();
+        topicBarrage.setTopId(topicId);
+        topicBarrage.setTopId(topId);
+        topicBarrage.setBottomId(bottomId);
+        topicBarrage.setId(sinceId);
+        return topicBarrageMapper.selectByExampleWithBLOBsDistinct(topicBarrage);
+    }
+
+    public TopicBarrage getBarrage(long topicId, long topId ,long bottomId, int type ){
         TopicBarrageExample example = new TopicBarrageExample();
-        TopicBarrageExample.Criteria criteria = example.createCriteria();
+        TopicBarrageExample.Criteria criteria =example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
-        criteria.andTopIdGreaterThanOrEqualTo(topId);
-        criteria.andTopIdLessThanOrEqualTo(bottomId);
-        criteria.andIdGreaterThan(sinceId);
-        example.setOrderByClause("id asc limit 20 ");
-        return topicBarrageMapper.selectByExampleWithBLOBs(example);
+        criteria.andTopIdEqualTo(topId);
+        criteria.andBottomIdEqualTo(bottomId);
+        criteria.andTypeEqualTo(type);
+        List<TopicBarrage> topicBarrages = topicBarrageMapper.selectByExampleWithBLOBs(example);
+        return com.me2me.common.utils.Lists.getSingle(topicBarrages);
     }
 
 }

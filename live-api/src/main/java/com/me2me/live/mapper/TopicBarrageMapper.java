@@ -117,4 +117,6 @@ public interface TopicBarrageMapper {
      * @mbggenerated Mon Jun 13 20:49:32 CST 2016
      */
     int updateByPrimaryKey(TopicBarrage record);
+
+    List<TopicBarrage> selectByExampleWithBLOBsDistinct(TopicBarrage topicBarrage);
 }
