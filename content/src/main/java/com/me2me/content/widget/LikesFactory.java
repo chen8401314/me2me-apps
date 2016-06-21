@@ -19,7 +19,10 @@ public class LikesFactory {
             instance = SpringContextHolder.getBean(LiveLikes.class);
         }else if(type == Specification.LikesType.ARTICLE.index){
             instance = SpringContextHolder.getBean(ArticleLikes.class);
-        }else{
+        }else if(type == Specification.LikesType.ACTIVITY.index){
+            instance = SpringContextHolder.getBean(ArticleLikes.class);
+        }
+        else{
             throw new RuntimeException("参数非法....");
         }
         return instance;

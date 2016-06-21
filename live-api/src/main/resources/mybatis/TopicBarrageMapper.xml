@@ -439,11 +439,11 @@
   </update>
 
   <select id="selectByExampleWithBLOBsDistinct" resultMap="ResultMapWithBLOBs" parameterType="com.me2me.live.model.TopicBarrage" >
-    select max(id) as id , topic_id, uid, fragment_image, type, content_type, top_id, bottom_id
+    select max(id) as id , topic_id, uid, fragment,fragment_image, type, content_type, top_id, bottom_id
     from
       topic_barrage
     group by
-      topic_id, uid, fragment_image, type, content_type, top_id, bottom_id
+      topic_id, uid,fragment, fragment_image, type, content_type, top_id, bottom_id
       HAVING
       <if test="topId != null" >
         top_id &gt;= #{topId,jdbcType=BIGINT}
