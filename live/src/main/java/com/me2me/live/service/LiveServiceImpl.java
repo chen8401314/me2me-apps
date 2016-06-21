@@ -214,7 +214,7 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response speak(SpeakDto speakDto) {
         log.info("speak start ...");
-        if(speakDto.getType() != Specification.LiveSpeakType.LIKES.index &&speakDto.getType() !=Specification.LiveSpeakType.SUBSCRIBED.index ) {
+        if(speakDto.getType() != Specification.LiveSpeakType.LIKES.index &&speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index ) {
             TopicFragment topicFragment = new TopicFragment();
             topicFragment.setFragmentImage(speakDto.getFragmentImage());
             topicFragment.setFragment(speakDto.getFragment());
@@ -237,7 +237,12 @@ public class LiveServiceImpl implements LiveService {
         topicBarrage.setType(speakDto.getType());
         topicBarrage.setUid(speakDto.getUid());
         //保存弹幕
-        liveMybatisDao.createTopicBarrage(topicBarrage);
+        TopicBarrage barrage = liveMybatisDao.getBarrage(speakDto.getTopicId(),speakDto.getTopId(),speakDto.getBottomId(),speakDto.getType());
+        if(barrage == null) {
+            liveMybatisDao.createTopicBarrage(topicBarrage);
+        }else if(speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index){
+            liveMybatisDao.createTopicBarrage(topicBarrage);
+        }
         log.info("createTopicBarrage success");
         //提醒
         if(speakDto.getType() == Specification.LiveSpeakType.LIKES.index) {

@@ -414,4 +414,12 @@ public class Users extends BaseController {
         return userService.logout(request.getUid());
     }
 
+
+
+    @ResponseBody
+    @RequestMapping(value = "/circle",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response circle(CircleRequest request){
+        return userService.logout(request.getUid());
+    }
+
 }

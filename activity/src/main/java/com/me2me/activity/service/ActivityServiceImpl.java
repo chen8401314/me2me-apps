@@ -178,6 +178,11 @@ public class ActivityServiceImpl implements ActivityService {
         return activityH5Dto;
     }
 
+    @Override
+    public ActivityDto getActivity(long id) {
+        return null;
+    }
+
     public static void main(String[] args) {
         Pattern pattern = Pattern.compile("(.*)(#.{0,128}#)(.*)");
         Matcher matcher = pattern.matcher("#中国人#");
