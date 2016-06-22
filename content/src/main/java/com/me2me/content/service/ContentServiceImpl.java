@@ -644,14 +644,18 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response modifyPGC(ContentDto contentDto) {
-        Content content =  contentMybatisDao.getContentById(contentDto.getId());
-        content.setUid(contentDto.getUid());
-        createTag(contentDto, content);
-        content.setTitle(contentDto.getTitle());
-        content.setFeeling(contentDto.getFeeling());
-        content.setConverImage(contentDto.getCoverImage());
-        content.setContent(contentDto.getContent());
-        content.setIsTop(contentDto.getIsTop());
+        Content content = contentMybatisDao.getContentById(contentDto.getId());
+        if(contentDto.getAction()==1){
+            // 是否置顶
+            content.setIsTop(contentDto.getIsTop());
+        }else {
+            content.setUid(contentDto.getUid());
+            createTag(contentDto, content);
+            content.setTitle(contentDto.getTitle());
+            content.setFeeling(contentDto.getFeeling());
+            content.setConverImage(contentDto.getCoverImage());
+            content.setContent(contentDto.getContent());
+        }
         contentMybatisDao.modifyPGCById(content);
         return showUGCDetails(contentDto.getId());
     }
@@ -1122,7 +1126,7 @@ public class ContentServiceImpl implements ContentService {
             }
         }
         // 置顶内容
-        if(sinceId==-1) {
+        if(sinceId==Integer.MAX_VALUE) {
             List<Content> contentTopList = contentMybatisDao.getHottestTopsContent();
             builderContent(uid, contentTopList, hottestDto.getTops());
         }

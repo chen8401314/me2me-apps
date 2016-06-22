@@ -41,6 +41,8 @@ public class ContentDto implements BaseEntity {
 
     private String coverImage;
 
+    private int action;
+
     private int isTop;
 
 
