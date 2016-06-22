@@ -238,9 +238,9 @@ public class LiveServiceImpl implements LiveService {
         topicBarrage.setUid(speakDto.getUid());
         //保存弹幕
         TopicBarrage barrage = liveMybatisDao.getBarrage(speakDto.getTopicId(),speakDto.getTopId(),speakDto.getBottomId(),speakDto.getType(),speakDto.getUid());
-        if(barrage == null) {
+        if(barrage == null && speakDto.getType() != Specification.LiveSpeakType.ANCHOR.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index ) {
             liveMybatisDao.createTopicBarrage(topicBarrage);
-        }else if(speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index){
+        }else if(speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index){
             liveMybatisDao.createTopicBarrage(topicBarrage);
         }
         log.info("createTopicBarrage success");
