@@ -644,14 +644,18 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response modifyPGC(ContentDto contentDto) {
-        Content content =  contentMybatisDao.getContentById(contentDto.getId());
-        content.setUid(contentDto.getUid());
-        createTag(contentDto, content);
-        content.setTitle(contentDto.getTitle());
-        content.setFeeling(contentDto.getFeeling());
-        content.setConverImage(contentDto.getCoverImage());
-        content.setContent(contentDto.getContent());
-        content.setIsTop(contentDto.getIsTop());
+        Content content = contentMybatisDao.getContentById(contentDto.getId());
+        if(contentDto.getIsTop()==1){
+            // 置顶操作
+            content.setIsTop(contentDto.getIsTop());
+        }else {
+            content.setUid(contentDto.getUid());
+            createTag(contentDto, content);
+            content.setTitle(contentDto.getTitle());
+            content.setFeeling(contentDto.getFeeling());
+            content.setConverImage(contentDto.getCoverImage());
+            content.setContent(contentDto.getContent());
+        }
         contentMybatisDao.modifyPGCById(content);
         return showUGCDetails(contentDto.getId());
     }
