@@ -166,6 +166,7 @@ public class ApplicationConsole extends BaseController {
         contentDto.setForWardUrl(request.getForwardUrl());
         contentDto.setForwardTitle(request.getForwardTitle());
         contentDto.setIsTop(request.getIsTop());
+        contentDto.setAction(request.getAction());
         return contentService.modifyPGC(contentDto);
     }
 

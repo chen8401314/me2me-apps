@@ -645,8 +645,8 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public Response modifyPGC(ContentDto contentDto) {
         Content content = contentMybatisDao.getContentById(contentDto.getId());
-        if(contentDto.getIsTop()==1){
-            // 置顶操作
+        if(contentDto.getAction()==1){
+            // 是否置顶
             content.setIsTop(contentDto.getIsTop());
         }else {
             content.setUid(contentDto.getUid());

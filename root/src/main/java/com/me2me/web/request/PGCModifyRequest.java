@@ -61,6 +61,10 @@ public class PGCModifyRequest extends Request {
 
     @Getter
     @Setter
+    private int action;
+
+    @Getter
+    @Setter
     private int isTop;
 
 }
