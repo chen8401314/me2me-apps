@@ -1126,7 +1126,7 @@ public class ContentServiceImpl implements ContentService {
             }
         }
         // 置顶内容
-        if(sinceId==-1) {
+        if(sinceId==Integer.MAX_VALUE) {
             List<Content> contentTopList = contentMybatisDao.getHottestTopsContent();
             builderContent(uid, contentTopList, hottestDto.getTops());
         }
