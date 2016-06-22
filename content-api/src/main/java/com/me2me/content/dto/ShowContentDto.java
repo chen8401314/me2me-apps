@@ -43,7 +43,7 @@ public class ShowContentDto implements BaseEntity {
         private boolean isHot;
 
         // 是否置顶
-        private boolean isTop;
+        private int topped;
 
         // for pgc
         private long uid;

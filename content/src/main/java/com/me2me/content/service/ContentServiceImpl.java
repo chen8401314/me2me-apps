@@ -1076,6 +1076,7 @@ public class ContentServiceImpl implements ContentService {
             element.setNickName(userProfile.getNickName());
             element.setTitle(content.getTitle());
             element.setId(content.getId());
+            element.setTopped(content.getIsTop());
             HighQualityContent highQualityContent = contentMybatisDao.getHQuantityByCid(content.getId());
             if(highQualityContent!=null) {
                 element.setHot(true);
