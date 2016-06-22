@@ -1091,7 +1091,7 @@ public class ContentServiceImpl implements ContentService {
             element.setContent(content.getContent());
             showContentDto.getResult().add(element);
         }
-        return Response.success(200,"数据获取成功",showContentDto);
+        return Response.success(showContentDto);
     }
 
     @Override
