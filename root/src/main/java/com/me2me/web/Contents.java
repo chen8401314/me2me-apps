@@ -110,7 +110,7 @@ public class Contents extends BaseController {
         writeTagDto.setTag(request.getTag());
         writeTagDto.setUid(request.getUid());
         writeTagDto.setCustomerId(request.getCustomerId());
-        writeTagDto.setType(request.getType());
+        writeTagDto.setType(request.getType() == 0 ? 1 : request.getType());
         return contentService.writeTag2(writeTagDto);
     }
 
