@@ -151,6 +151,7 @@ public class UserMybatisDao {
         DictionaryExample example = new DictionaryExample();
         DictionaryExample.Criteria criteria = example.createCriteria();
         criteria.andTidEqualTo(basicDataDto.getType());
+        example.setOrderByClause(" sort asc ");
         return dictionaryMapper.selectByExample(example);
     }
 
