@@ -301,7 +301,11 @@ public interface Specification {
 
         LIKES("点赞",5),
 
-        SUBSCRIBED ("订阅",6);
+        SUBSCRIBED ("订阅",6),
+
+        SHARE ("分享",7),
+
+        FOLLOW ("关注",8);
 
         public final String name;
         public final int index;
