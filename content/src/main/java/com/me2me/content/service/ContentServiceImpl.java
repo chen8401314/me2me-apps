@@ -930,7 +930,6 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public Response editorPublish(ContentDto contentDto) {
         log.info("editorPublish start ...");
-        CreateContentSuccessDto createContentSuccessDto = new CreateContentSuccessDto();
         Content content = new Content();
         content.setUid(contentDto.getUid());
         content.setContent(contentDto.getContent());
@@ -945,21 +944,8 @@ public class ContentServiceImpl implements ContentService {
         //保存标签
         createTag(contentDto, content);
         log.info("contentTag create success");
-        createContentSuccessDto.setContent(content.getContent());
-        createContentSuccessDto.setCreateTime(content.getCreateTime());
-        createContentSuccessDto.setUid(content.getUid());
-        createContentSuccessDto.setId(content.getId());
-        createContentSuccessDto.setFeeling(content.getFeeling());
-        createContentSuccessDto.setType(content.getType());
-        createContentSuccessDto.setContentType(content.getContentType());
-        createContentSuccessDto.setForwardCid(content.getForwardCid());
-        createContentSuccessDto.setCoverImage(content.getConverImage());
-//        // 内容自动加精
-//        HighQualityContent hdc = new HighQualityContent();
-//        hdc.setCid(c.getId());
-//        contentMybatisDao.createHighQualityContent(hdc);
         log.info("editorPublish end ...");
-        return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
+        return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message);
     }
 
     public void createTag(ContentDto contentDto, Content content) {
