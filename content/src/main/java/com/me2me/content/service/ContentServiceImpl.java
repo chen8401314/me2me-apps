@@ -660,6 +660,14 @@ public class ContentServiceImpl implements ContentService {
         return showUGCDetails(contentDto.getId());
     }
 
+    /**
+     * 机器点赞
+     */
+    @Override
+    public void robotLikes() {
+        
+    }
+
     @Override
     public Response deleteContent(long id) {
         log.info("deleteContent start ...");
