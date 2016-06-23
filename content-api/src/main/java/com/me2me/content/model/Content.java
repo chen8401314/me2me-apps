@@ -1,7 +1,6 @@
 package com.me2me.content.model;
 
 import com.me2me.common.web.BaseEntity;
-import com.sun.xml.internal.rngom.parse.host.Base;
 
 import java.util.Date;
 
