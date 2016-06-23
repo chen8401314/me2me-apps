@@ -16,6 +16,7 @@ public interface MonitorService {
 
     void post(MonitorEvent monitorEvent);
 
-    Response loadReport(MonitorReportDto monitorReportDto);
+    Response loadBootReport(MonitorReportDto monitorReportDto);
 
+    Response loadActionReport(MonitorReportDto monitorReportDto);
 }

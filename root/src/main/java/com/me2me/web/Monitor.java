@@ -23,16 +23,42 @@ public class Monitor extends BaseController {
     @Autowired
     private MonitorService monitorService;
 
+    /**
+     * 启动次数
+     * @param monitorReportRequest
+     * @return
+     */
     @ResponseBody
     @RequestMapping(value="/report",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response report(MonitorReportRequest monitorReportRequest){
         MonitorReportDto monitorReportDto = new MonitorReportDto();
         monitorReportDto.setChannel(monitorReportRequest.getChannel());
-        monitorReportDto.setType(monitorReportRequest.getChannel());
+        monitorReportDto.setType(monitorReportRequest.getType());
         monitorReportDto.setStartDate(monitorReportRequest.getStartDate());
         monitorReportDto.setEndDate(monitorReportRequest.getEndDate());
         monitorReportDto.setActionType(monitorReportRequest.getActionType());
-        return monitorService.loadReport(monitorReportDto);
+        if(monitorReportDto.getType()==0) {
+            return monitorService.loadBootReport(monitorReportDto);
+        }else {
+            return monitorService.loadActionReport(monitorReportDto);
+        }
     }
+
+//    /**
+//     * 行为数据报告
+//     * @param monitorReportRequest
+//     * @return
+//     */
+//    @ResponseBody
+//    @RequestMapping(value="/actionReport",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+//    public Response actionReport(MonitorReportRequest monitorReportRequest){
+//        MonitorReportDto monitorReportDto = new MonitorReportDto();
+//        monitorReportDto.setChannel(monitorReportRequest.getChannel());
+//        monitorReportDto.setType(monitorReportRequest.getChannel());
+//        monitorReportDto.setStartDate(monitorReportRequest.getStartDate());
+//        monitorReportDto.setEndDate(monitorReportRequest.getEndDate());
+//        monitorReportDto.setActionType(monitorReportRequest.getActionType());
+//        return monitorService.loadActionReport(monitorReportDto);
+//    }
 
 }
