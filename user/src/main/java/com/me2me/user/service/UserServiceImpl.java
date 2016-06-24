@@ -968,4 +968,8 @@ public class UserServiceImpl implements UserService {
         log.info("getSpecialUserProfile end ");
         return Response.success(userDto);
     }
+
+    public List<User> getRobots(int limit){
+        return userMybatisDao.getRobots(limit);
+    }
 }

@@ -188,4 +188,6 @@ public interface UserService {
 
     UserProfile getUserByNickName(String nickName);
 
+    List<User> getRobots(int limit);
+
 }
