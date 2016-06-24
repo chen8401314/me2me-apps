@@ -404,7 +404,7 @@ public class ApplicationConsole extends BaseController {
     @ResponseBody
     public Response kingTopic(TopicCountRequest request){
         KingTopic kingTopic = new KingTopic();
-        kingTopic.setUid(request.getUid());
+        kingTopic.setUid(request.getKingUid());
         kingTopic.setReviewCount(request.getReviewCount());
         kingTopic.setLikeCount(request.getLikeCount());
         kingTopic.setEndDate(request.getEndDate());

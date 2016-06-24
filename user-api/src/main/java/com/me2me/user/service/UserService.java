@@ -186,4 +186,6 @@ public interface UserService {
 
     Response getSpecialUserProfile(long uid);
 
+    UserProfile getUserByNickName(String nickName);
+
 }

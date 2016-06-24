@@ -671,22 +671,28 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public Response kingTopic(KingTopic kingTopic) {
         ShowKingTopicDto showKingTopicDto = new ShowKingTopicDto();
-        UserProfile userProfile = userService.getUserProfileByUid(kingTopic.getUid());
-        List<ResultKingTopicDto> list = contentMybatisDao.kingTopic(kingTopic);
-        for(ResultKingTopicDto topicDto : list){
-            ShowKingTopicDto.KingTopicElement element = showKingTopicDto.createKingTopicElement();
-            element.setLikeCount(topicDto.getLikeCount());
-            element.setUid(topicDto.getUid());
-            element.setReviewCount(topicDto.getReviewCount());
-            element.setCreateTime(topicDto.getCreateTime());
-            element.setTitle(topicDto.getTitle());
-            element.setTopicId(topicDto.getTopicId());
-            element.setNickName(userProfile.getNickName());
-            element.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-            element.setCoverImage(Constant.QINIU_DOMAIN + "/" + topicDto.getCoverImage());
-            showKingTopicDto.getResult().add(element);
+        String nickName = kingTopic.getNickName();
+        UserProfile userProfile = null;
+        if(!StringUtils.isEmpty(nickName)) {
+            userProfile = userService.getUserByNickName(nickName);
+            kingTopic.setUid(userProfile.getUid());
         }
-        return Response.success(showKingTopicDto);
+            List<ResultKingTopicDto> list = contentMybatisDao.kingTopic(kingTopic);
+            for (ResultKingTopicDto topicDto : list) {
+                ShowKingTopicDto.KingTopicElement element = showKingTopicDto.createKingTopicElement();
+                element.setLikeCount(topicDto.getLikeCount());
+                element.setUid(topicDto.getUid());
+                element.setReviewCount(topicDto.getReviewCount());
+                element.setCreateTime(topicDto.getCreateTime());
+                element.setTitle(topicDto.getTitle());
+                element.setTopicId(topicDto.getTopicId());
+                userProfile = userService.getUserProfileByUid(topicDto.getUid());
+                element.setNickName(userProfile.getNickName());
+                element.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                element.setCoverImage(Constant.QINIU_DOMAIN + "/" + topicDto.getCoverImage());
+                showKingTopicDto.getResult().add(element);
+            }
+            return Response.success(showKingTopicDto);
     }
 
     @Override

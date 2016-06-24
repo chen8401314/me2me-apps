@@ -688,6 +688,10 @@ public class UserServiceImpl implements UserService {
             return true;
         }
     }
+    public UserProfile getUserByNickName(String nickName) {
+        List<UserProfile> list = userMybatisDao.getByNickName(nickName);
+        return com.me2me.common.utils.Lists.getSingle(list);
+    }
 
     @Override
     public List<Long> getFollowList(long uid) {

@@ -32,7 +32,7 @@ public class TopicCountRequest extends Request {
 
     @Getter
     @Setter
-    private long uid;
+    private long kingUid;
 
     @Getter
     @Setter
