@@ -424,4 +424,8 @@ public class ContentMybatisDao {
         return articleTagsDetailsMapper.selectByExample(example);
     }
 
+    public List<ResultKingTopicDto> kingTopic(KingTopic kingTopic){
+        return contentMapper.kingTopic(kingTopic);
+    }
+
 }

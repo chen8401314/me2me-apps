@@ -19,23 +19,23 @@ import java.util.Calendar;
 @Service
 public class XgPushServiceImpl implements XgPushService {
 
-    private static final String SECRET_KEY = "735da3540ee6dfa534e3549e8367c46f";
+    //private static final String SECRET_KEY = "735da3540ee6dfa534e3549e8367c46f";
 
-    //private static final String SECRET_KEY = "f918d18b3a2a6fcd4940c51b09001095";
-
-
-    private static final String SECRET_KEY_IOS = "1a4120d4fc7cfa4dde4705f0d2f14c4a";
-
-    //private static final String SECRET_KEY_IOS = "f18275d8ed27a934a053a15ad1d4658f";
+    private static final String SECRET_KEY = "f918d18b3a2a6fcd4940c51b09001095";
 
 
-    private static final long ACCESS_ID = 2100199603L;
+    //private static final String SECRET_KEY_IOS = "1a4120d4fc7cfa4dde4705f0d2f14c4a";
 
-    //private static final long ACCESS_ID = 2100202664L;
+    private static final String SECRET_KEY_IOS = "f18275d8ed27a934a053a15ad1d4658f";
 
-    private static final long ACCESS_ID_IOS = 2200199604L;
 
-    //private static final long ACCESS_ID_IOS = 2200202665L;
+    //private static final long ACCESS_ID = 2100199603L;
+
+    private static final long ACCESS_ID = 2100202664L;
+
+    //private static final long ACCESS_ID_IOS = 2200199604L;
+
+    private static final long ACCESS_ID_IOS = 2200202665L;
 
     private static final int EXPIRE_TIME = 86400;
 
@@ -81,10 +81,11 @@ public class XgPushServiceImpl implements XgPushService {
         MessageIOS message = buildMessageIOS(pushMessageIosDto);
         XingeApp xinge = new XingeApp(ACCESS_ID_IOS, SECRET_KEY_IOS);
         JSONObject ret = null;
-        if(IOS_PUSH_ENV.equals("product")){
+        if(("product").equals(IOS_PUSH_ENV)){
             ret = xinge.pushSingleDevice(pushMessageIosDto.getToken(), message,XingeApp.IOSENV_PROD);
         }else{
             ret = xinge.pushSingleDevice(pushMessageIosDto.getToken(), message,XingeApp.IOSENV_DEV);
+            System.out.print(ret);
         }
         return getPushLog(pushMessageIosDto.getContent(), ret);
     }
@@ -125,6 +126,7 @@ public class XgPushServiceImpl implements XgPushService {
 
 
     public static void main(String[] args) {
+        XgPushServiceImpl push = new XgPushServiceImpl();
 //        XingeApp app = new XingeApp(ACCESS_ID, SECRET_KEY);
 //        List<TagTokenPair> list = Lists.newArrayList();
 //        list.add(new TagTokenPair("dandan","c242772fa7ff6d3bf93fecba2b220dcf6c176cd70a2ae6994b5ac0b104beaea1"));
@@ -140,20 +142,18 @@ public class XgPushServiceImpl implements XgPushService {
 //            pushMessageDto.setMessageType(Message.TYPE_NOTIFICATION);
 //            push.pushSingleDevice(pushMessageDto);
 //        }
-        Calendar calendar = Calendar.getInstance();
-        System.out.print(calendar.getTime());
-            calendar.getTimeInMillis();
 
 
-//        for (int i = 0 ;i <= 1 ;i++ ) {
-//            PushMessageIosDto pushMessageDto = new PushMessageIosDto();
-//            pushMessageDto.setTitle("xinge test new" +i);
-//            pushMessageDto.setContent("xinge test new" +i);
-//            //pushMessageDto.setToken("c242772fa7ff6d3bf93fecba2b220dcf6c176cd70a2ae6994b5ac0b104beaea1");
-//            //pushMessageDto.setToken("5231f01ba563ed1045bfe1628f9838464d966877f11ec4f754accf804bd5bd24");
-//            pushMessageDto.setToken("04cbf9a31b74554f7a1a77d94ff9352f0dbc0339f312579d8378518a05886053");
-//            push.pushSingleDeviceIOS(pushMessageDto);
-//        }
+
+        for (int i = 0 ;i <= 1 ;i++ ) {
+            PushMessageIosDto pushMessageDto = new PushMessageIosDto();
+            pushMessageDto.setTitle("xinge test new" +i);
+            pushMessageDto.setContent("xinge test new" +i);
+            //pushMessageDto.setToken("c242772fa7ff6d3bf93fecba2b220dcf6c176cd70a2ae6994b5ac0b104beaea1");
+            //pushMessageDto.setToken("5231f01ba563ed1045bfe1628f9838464d966877f11ec4f754accf804bd5bd24");
+            pushMessageDto.setToken("4b0c1ddd375498328e5f35b9da5c284cfc4a4a4ca7a14512e25e02ee5ed4b68e");
+            push.pushSingleDeviceIOS(pushMessageDto);
+        }
 
     }
 }

@@ -93,4 +93,6 @@ public interface ArticleTagsDetailsMapper {
      * @mbggenerated Wed Jun 15 17:28:59 CST 2016
      */
     int updateByPrimaryKey(ArticleTagsDetails record);
+
+
 }

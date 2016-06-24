@@ -8,6 +8,7 @@ import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.ContentDto;
 import com.me2me.content.dto.EditorContentDto;
+import com.me2me.content.dto.KingTopic;
 import com.me2me.content.service.ContentService;
 import com.me2me.user.dto.*;
 import com.me2me.user.service.UserService;
@@ -394,6 +395,23 @@ public class ApplicationConsole extends BaseController {
         return Response.success();
     }
 
+    /**
+     * 国王直播相关数据
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/kingTopic",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response kingTopic(TopicCountRequest request){
+        KingTopic kingTopic = new KingTopic();
+        kingTopic.setUid(request.getUid());
+        kingTopic.setReviewCount(request.getReviewCount());
+        kingTopic.setLikeCount(request.getLikeCount());
+        kingTopic.setEndDate(request.getEndDate());
+        kingTopic.setStartDate(request.getStartDate());
+        kingTopic.setNickName(request.getNickName());
+        return contentService.kingTopic(kingTopic);
 
+    }
 
 }

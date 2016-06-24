@@ -185,4 +185,6 @@ public interface ContentService {
     Response modifyPGC(ContentDto contentDto);
 
     void robotLikes();
+
+    Response kingTopic(KingTopic kingTopic);
 }
