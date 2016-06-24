@@ -680,15 +680,18 @@ public class ContentServiceImpl implements ContentService {
         for(int i = 0;i<robots.size();i++) {
             try {
                 int threadTimes = random.nextInt(180000)+60000;
+
                 Thread.sleep(threadTimes);
             } catch (InterruptedException e) {
                 e.printStackTrace();
                 log.error("robot like failure...");
                 continue;
             }
+            final  long uid = robots.get(i).getUid();
             executorService.submit(new Runnable() {
                 @Override
                 public void run() {
+                    likeDto.setUid(uid);
                     like2(likeDto);
                     log.error("robot like success...");
                 }

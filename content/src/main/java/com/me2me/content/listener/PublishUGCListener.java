@@ -42,11 +42,10 @@ public class PublishUGCListener {
     @Subscribe
     public void like(PublishUGCEvent publishUGCEvent){
         LikeDto likeDto = new LikeDto();
-        likeDto.setUid(publishUGCEvent.getUid());
         likeDto.setCid(publishUGCEvent.getCid());
         likeDto.setAction(0);
         likeDto.setType(Specification.LikesType.CONTENT.index);
-        contentService.like2(likeDto);
+        contentService.robotLikes(likeDto);
 
     }
 

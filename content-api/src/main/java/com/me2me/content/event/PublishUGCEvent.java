@@ -11,14 +11,9 @@ import lombok.Data;
 @Data
 public class PublishUGCEvent implements BaseEntity {
 
-    public PublishUGCEvent(long cid,long uid){
-        this.uid = uid;
+    public PublishUGCEvent(long cid){
         this.cid = cid;
     }
-
     private long cid;
-
-    private long uid;
-
 
 }

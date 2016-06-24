@@ -45,7 +45,7 @@ public class PublishUGC extends AbstractPublish implements Publish {
         if(response.getData() instanceof CreateContentSuccessDto){
             CreateContentSuccessDto contentSuccessDto = (CreateContentSuccessDto) response.getData();
             long cid = contentSuccessDto.getId();
-            applicationEventBus.post(new PublishUGCEvent(cid,contentDto.getUid()));
+            applicationEventBus.post(new PublishUGCEvent(cid));
         }
         return response;
     }
