@@ -772,7 +772,7 @@
     select count(*)  from topic_fragment where topic_id = #{topicId,jdbcType=BIGINT} and uid != #{uid,jdbcType=BIGINT}
   </select>
 
-  <select id="kingTopic" parameterType="com.me2me.content.dto.KingTopic" resultType="com.me2me.content.dto.ResultKingTopicDto">
+  <select id="kingTopic" parameterType="com.me2me.content.dto.KingTopicDto" resultType="com.me2me.content.dto.ResultKingTopicDto">
     select id,uid,live_image as coverImage,title as title,status as status,create_time as createTime,review_count as reviewCount,like_count as likeCount  from topic_count_view  where 1=1
     <if test="startDate != null">
       and create_time &gt;= #{startDate,jdbcType=TIMESTAMP}

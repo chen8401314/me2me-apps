@@ -145,5 +145,5 @@ public interface ContentMapper {
 
     int countFragment(CountFragmentDto countFragmentDto);
 
-    List<ResultKingTopicDto> kingTopic(KingTopic kingTopic);
+    List<ResultKingTopicDto> kingTopic(KingTopicDto kingTopic);
 }

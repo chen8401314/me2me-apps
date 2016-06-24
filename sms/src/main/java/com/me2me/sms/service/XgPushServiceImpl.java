@@ -85,7 +85,6 @@ public class XgPushServiceImpl implements XgPushService {
             ret = xinge.pushSingleDevice(pushMessageIosDto.getToken(), message,XingeApp.IOSENV_PROD);
         }else{
             ret = xinge.pushSingleDevice(pushMessageIosDto.getToken(), message,XingeApp.IOSENV_DEV);
-            System.out.print(ret);
         }
         return getPushLog(pushMessageIosDto.getContent(), ret);
     }

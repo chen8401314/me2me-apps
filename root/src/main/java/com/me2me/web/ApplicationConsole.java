@@ -8,14 +8,13 @@ import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.ContentDto;
 import com.me2me.content.dto.EditorContentDto;
-import com.me2me.content.dto.KingTopic;
+import com.me2me.content.dto.KingTopicDto;
 import com.me2me.content.service.ContentService;
 import com.me2me.user.dto.*;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.WebDataBinder;
@@ -403,7 +402,7 @@ public class ApplicationConsole extends BaseController {
     @RequestMapping(value = "/kingTopic",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response kingTopic(TopicCountRequest request){
-        KingTopic kingTopic = new KingTopic();
+        KingTopicDto kingTopic = new KingTopicDto();
         kingTopic.setUid(request.getKingUid());
         kingTopic.setReviewCount(request.getReviewCount());
         kingTopic.setLikeCount(request.getLikeCount());
