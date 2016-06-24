@@ -408,6 +408,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setStatus(topic.getStatus());
             showTopicElement.setUpdateTime(topic.getLongTime());
             showTopicElement.setIsFollowed(userService.isFollow(topic.getUid(),uid));
+            showTopicElement.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(),topic.getUid()));
             TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId(),topic.getUid());
             if(topicFragment != null) {
                 showTopicElement.setLastContentType(topicFragment.getContentType());
@@ -421,7 +422,6 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLikeCount(content.getLikeCount());
                 showTopicElement.setPersonCount(content.getPersonCount());
                 showTopicElement.setReviewCount(liveMybatisDao.countFragment(content.getForwardCid(),content.getUid()));
-                //showTopicElement.setReviewCount(content.getReviewCount());
                 showTopicElement.setFavoriteCount(content.getFavoriteCount());
                 showTopicElement.setCid(content.getId());
                 showTopicElement.setIsLike(contentService.isLike(content.getId(),uid));
