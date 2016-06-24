@@ -24,11 +24,11 @@ public class TopicCountRequest extends Request {
 
     @Getter
     @Setter
-    private Date startDate;
+    private String startDate;
 
     @Getter
     @Setter
-    private Date endDate;
+    private String endDate;
 
     @Getter
     @Setter

@@ -669,7 +669,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public Response kingTopic(KingTopic kingTopic) {
+    public Response kingTopic(KingTopicDto kingTopic) {
         ShowKingTopicDto showKingTopicDto = new ShowKingTopicDto();
         String nickName = kingTopic.getNickName();
         UserProfile userProfile = null;

@@ -186,5 +186,5 @@ public interface ContentService {
 
     void robotLikes();
 
-    Response kingTopic(KingTopic kingTopic);
+    Response kingTopic(KingTopicDto kingTopic);
 }
