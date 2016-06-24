@@ -669,6 +669,27 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    public Response kingTopic(KingTopic kingTopic) {
+        ShowKingTopicDto showKingTopicDto = new ShowKingTopicDto();
+        UserProfile userProfile = userService.getUserProfileByUid(kingTopic.getUid());
+        List<ResultKingTopicDto> list = contentMybatisDao.kingTopic(kingTopic);
+        for(ResultKingTopicDto topicDto : list){
+            ShowKingTopicDto.KingTopicElement element = showKingTopicDto.createKingTopicElement();
+            element.setLikeCount(topicDto.getLikeCount());
+            element.setUid(topicDto.getUid());
+            element.setReviewCount(topicDto.getReviewCount());
+            element.setCreateTime(topicDto.getCreateTime());
+            element.setTitle(topicDto.getTitle());
+            element.setTopicId(topicDto.getTopicId());
+            element.setNickName(userProfile.getNickName());
+            element.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            element.setCoverImage(Constant.QINIU_DOMAIN + "/" + topicDto.getCoverImage());
+            showKingTopicDto.getResult().add(element);
+        }
+        return Response.success(showKingTopicDto);
+    }
+
+    @Override
     public Response deleteContent(long id) {
         log.info("deleteContent start ...");
         Content content = contentMybatisDao.getContentById(id);

@@ -1,7 +1,6 @@
 package com.me2me.content.mapper;
 
-import com.me2me.content.dto.CountFragmentDto;
-import com.me2me.content.dto.IsFavoriteDto;
+import com.me2me.content.dto.*;
 import com.me2me.content.model.Content;
 import com.me2me.content.model.ContentExample;
 import java.util.List;
@@ -145,4 +144,6 @@ public interface ContentMapper {
     List<Content> loadNewestContent(int sinceId);
 
     int countFragment(CountFragmentDto countFragmentDto);
+
+    List<ResultKingTopicDto> kingTopic(KingTopic kingTopic);
 }

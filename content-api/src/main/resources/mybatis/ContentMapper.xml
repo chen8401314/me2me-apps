@@ -772,4 +772,23 @@
     select count(*)  from topic_fragment where topic_id = #{topicId,jdbcType=BIGINT} and uid != #{uid,jdbcType=BIGINT}
   </select>
 
+  <select id="kingTopic" parameterType="com.me2me.content.dto.KingTopic" resultType="com.me2me.content.dto.ResultKingTopicDto">
+    select id,uid,live_image as coverImage,title as title,status as status,create_time as createTime,review_count as reviewCount,like_count as likeCount  from topic_count_view  where 1=1
+    <if test="startDate != null">
+      and create_time &gt;= #{startDate,jdbcType=TIMESTAMP}
+    </if>
+    <if test="endDate != null">
+      and create_time &lt;= #{endDate,jdbcType=TIMESTAMP}
+    </if>
+    <if test="uid != 0">
+      and uid = #{uid,jdbcType=BIGINT}
+    </if>
+    <if test="reviewCount != 0">
+      and review_count &gt;= #{reviewCount,jdbcType=BIGINT}
+    </if>
+    <if test="likeCount != 0">
+      and like_count &gt;= #{likeCount,jdbcType=BIGINT}
+    </if>
+  </select>
+
 </mapper>
