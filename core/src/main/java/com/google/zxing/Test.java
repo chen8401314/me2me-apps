@@ -21,7 +21,7 @@ public class Test {
     public static void main(String[] args) {
         try {
 
-            String content = "http://me-to-me/login";
+            String content = "http://www.51nick.com";
             String path = "D:/";
 
             MultiFormatWriter multiFormatWriter = new MultiFormatWriter();

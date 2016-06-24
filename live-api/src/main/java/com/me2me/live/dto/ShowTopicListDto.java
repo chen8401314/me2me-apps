@@ -65,6 +65,10 @@ public class ShowTopicListDto implements BaseEntity{
 
         private int isFollowed;
 
+        private Date lastUpdateTime;
+
+        private int topicCount;
+
         private  List<Tags> tags  =  Lists.newArrayList();
 
         public static Tags createTags(){
