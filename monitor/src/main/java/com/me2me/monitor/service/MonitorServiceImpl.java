@@ -37,10 +37,19 @@ public class MonitorServiceImpl implements MonitorService {
     }
 
     @Override
-    public Response loadReport(MonitorReportDto monitorReportDto) {
-        int counter = monitorMybatisDao.getReport(monitorReportDto);
+    public Response loadBootReport(MonitorReportDto monitorReportDto) {
+        int counter = monitorMybatisDao.getBootReport(monitorReportDto);
         LoadReportDto loadReportDto = new LoadReportDto();
         loadReportDto.setCounter(counter);
         return Response.success(loadReportDto);
     }
+
+    @Override
+    public Response loadActionReport(MonitorReportDto monitorReportDto) {
+        int counter = monitorMybatisDao.getActionReport(monitorReportDto);
+        LoadReportDto loadReportDto = new LoadReportDto();
+        loadReportDto.setCounter(counter);
+        return Response.success(loadReportDto);
+    }
+
 }
