@@ -678,22 +678,22 @@ public class ContentServiceImpl implements ContentService {
         List<com.me2me.user.model.User> robots = userService.getRobots(limit);
         // 在3分钟之内完成点赞操作
         for(int i = 0;i<robots.size();i++) {
-            try {
-                int threadTimes = random.nextInt(180000)+60000;
 
-                Thread.sleep(threadTimes);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-                log.error("robot like failure...");
-                continue;
-            }
             final  long uid = robots.get(i).getUid();
             executorService.submit(new Runnable() {
                 @Override
                 public void run() {
-                    likeDto.setUid(uid);
-                    like2(likeDto);
-                    log.error("robot like success...");
+                    try {
+                        int threadTimes = random.nextInt(120000)+60000;
+                        Thread.sleep(threadTimes);
+                        likeDto.setUid(uid);
+                        like2(likeDto);
+                        log.error("robot like success...");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        log.error("robot like failure...");
+                    }
+
                 }
             });
         }
