@@ -970,6 +970,14 @@ public class UserServiceImpl implements UserService {
     }
 
     public List<User> getRobots(int limit){
-        return userMybatisDao.getRobots(limit);
+        List<Map<String,Object>> maps = userInitJdbcDao.getRobots(limit);
+        List users = Lists.newArrayList();
+        for(Map map : maps){
+            User user = new User();
+            Long uid = Long.valueOf(map.get("uid").toString());
+            user.setUid(uid);
+            users.add(user);
+        }
+        return users;
     }
 }

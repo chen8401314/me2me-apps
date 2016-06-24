@@ -4,6 +4,7 @@ import com.me2me.core.dao.BaseJdbcDao;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -24,6 +25,11 @@ public class UserInitJdbcDao extends BaseJdbcDao {
             }
         }
         this.execute(sql+sb.toString());
+    }
+
+    public List<Map<String,Object>> getRobots(int limit){
+        String sql = "select * from user where user_name BETWEEN '18900000200' and '18900000384' order by RAND() limit " + limit;
+        return super.query(sql);
     }
 
 }
