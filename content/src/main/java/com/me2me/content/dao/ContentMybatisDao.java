@@ -414,6 +414,7 @@ public class ContentMybatisDao {
         ContentLikesDetailsExample example = new ContentLikesDetailsExample();
         ContentLikesDetailsExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(id);
+   //     example.setOrderByClause(" create_time desc ");
         return contentLikesDetailsMapper.selectByExample(example);
     }
 
@@ -426,6 +427,14 @@ public class ContentMybatisDao {
 
     public List<ResultKingTopicDto> kingTopic(KingTopicDto kingTopic){
         return contentMapper.kingTopic(kingTopic);
+    }
+
+    public int getTopicCount(long topicId){
+        return contentMapper.getTopicCount(topicId);
+    }
+
+    public long getTopicLastUpdateTime(long topicId){
+        return contentMapper.getTopicLastUpdateTime(topicId);
     }
 
 }

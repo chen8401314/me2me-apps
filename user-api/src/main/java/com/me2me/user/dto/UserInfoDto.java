@@ -96,6 +96,10 @@ public class UserInfoDto implements BaseEntity{
 
         private int readCount;
 
+        private long lastUpdateTime;
+
+        private int topicCount;
+
         @Data
         public static class ReviewElement implements BaseEntity{
 

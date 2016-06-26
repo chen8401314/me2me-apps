@@ -18,7 +18,7 @@ public class LiveCoverDto implements BaseEntity{
 
     private Date createTime;
 
-    private Date lastUpdateTime;
+    private long lastUpdateTime;
 
     private String coverImage;
 

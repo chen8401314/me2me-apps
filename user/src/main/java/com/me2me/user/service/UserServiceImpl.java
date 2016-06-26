@@ -387,7 +387,8 @@ public class UserServiceImpl implements UserService {
         userMybatisDao.modifyUserProfile(userProfile);
         log.info("user modify profile success");
         log.info("modifyUserProfile end ...");
-        return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message);
+        modifyUserProfileDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + modifyUserProfileDto.getAvatar());
+        return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message,modifyUserProfileDto);
     }
 
     @Override

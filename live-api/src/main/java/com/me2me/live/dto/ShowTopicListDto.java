@@ -65,7 +65,7 @@ public class ShowTopicListDto implements BaseEntity{
 
         private int isFollowed;
 
-        private Date lastUpdateTime;
+        private long lastUpdateTime;
 
         private int topicCount;
 

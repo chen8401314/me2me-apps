@@ -146,4 +146,8 @@ public interface ContentMapper {
     int countFragment(CountFragmentDto countFragmentDto);
 
     List<ResultKingTopicDto> kingTopic(KingTopicDto kingTopic);
+
+    int getTopicCount(long topicId);
+
+    long getTopicLastUpdateTime(long topicId);
 }

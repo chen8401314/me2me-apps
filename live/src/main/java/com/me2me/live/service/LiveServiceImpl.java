@@ -121,7 +121,7 @@ public class LiveServiceImpl implements LiveService {
         liveCoverDto.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
         liveCoverDto.setNickName(userProfile.getNickName());
         liveCoverDto.setUid(topic.getUid());
-        liveCoverDto.setLastUpdateTime(topic.getUpdateTime());
+        liveCoverDto.setLastUpdateTime(topic.getLongTime());
         liveCoverDto.setReviewCount(liveMybatisDao.countFragment(topic.getId(),topic.getUid()));
         liveCoverDto.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(),topic.getUid()));
         log.info("liveCover end ...");
@@ -409,6 +409,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setUpdateTime(topic.getLongTime());
             showTopicElement.setIsFollowed(userService.isFollow(topic.getUid(),uid));
             showTopicElement.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(),topic.getUid()));
+            showTopicElement.setLastUpdateTime(topic.getLongTime());
             TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId(),topic.getUid());
             if(topicFragment != null) {
                 showTopicElement.setLastContentType(topicFragment.getContentType());
