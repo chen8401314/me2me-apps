@@ -792,7 +792,7 @@
   </select>
 
   <select id="getTopicCount" parameterType="java.lang.Long" resultType="java.lang.Integer" >
-    select count(id) from ttopic_fragment where topic_id = #{topicId,jdbcType=BIGINT}
+    select count(id) from topic_fragment where topic_id = #{topicId,jdbcType=BIGINT}
   </select>
 
   <select id="getTopicLastUpdateTime" parameterType="java.lang.Long" resultType="java.lang.Long" >
