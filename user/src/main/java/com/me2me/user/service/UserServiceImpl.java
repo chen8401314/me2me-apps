@@ -388,7 +388,7 @@ public class UserServiceImpl implements UserService {
         log.info("user modify profile success");
         log.info("modifyUserProfile end ...");
         modifyUserProfileDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + modifyUserProfileDto.getAvatar());
-        return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message,modifyUserProfileDto);
+        return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message);
     }
 
     @Override
