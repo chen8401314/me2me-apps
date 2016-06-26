@@ -33,6 +33,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 /**
@@ -76,6 +79,11 @@ public class ContentServiceImpl implements ContentService {
 
     @Value("#{app.recommend_domain}")
     private String recommendDomain;
+
+
+    private Random random = new Random();
+
+    private ExecutorService executorService= Executors.newFixedThreadPool(100);
 
 
 
@@ -667,8 +675,31 @@ public class ContentServiceImpl implements ContentService {
      * 机器点赞
      */
     @Override
-    public void robotLikes() {
-        
+    public void robotLikes(final LikeDto likeDto) {
+        // 获取所需要的机器人随机为3-8个
+        int limit = random.nextInt(5)+3;
+        List<com.me2me.user.model.User> robots = userService.getRobots(limit);
+        // 在3分钟之内完成点赞操作
+        for(int i = 0;i<robots.size();i++) {
+
+            final  long uid = robots.get(i).getUid();
+            executorService.submit(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        int threadTimes = random.nextInt(120000)+60000;
+                        Thread.sleep(threadTimes);
+                        likeDto.setUid(uid);
+                        like2(likeDto);
+                        log.error("robot like success...");
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        log.error("robot like failure...");
+                    }
+
+                }
+            });
+        }
     }
 
     @Override

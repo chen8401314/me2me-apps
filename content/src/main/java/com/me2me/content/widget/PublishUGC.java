@@ -4,6 +4,9 @@ import com.me2me.activity.service.ActivityService;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentDto;
+import com.me2me.content.dto.CreateContentSuccessDto;
+import com.me2me.content.event.PublishUGCEvent;
+import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.monitor.service.MonitorService;
 import com.me2me.monitor.event.MonitorEvent;
 import lombok.extern.slf4j.Slf4j;
@@ -26,6 +29,10 @@ public class PublishUGC extends AbstractPublish implements Publish {
     @Autowired
     private MonitorService monitorService;
 
+    @Autowired
+    private ApplicationEventBus applicationEventBus;
+
+
 
     @Override
     public Response publish(ContentDto contentDto) {
@@ -34,7 +41,13 @@ public class PublishUGC extends AbstractPublish implements Publish {
         log.info("join Activity");
         monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.CONTENT_PUBLISH.index,0,contentDto.getUid()));
         log.info("monitor PublishUGC ");
-        return super.publish(contentDto);
+        Response response =  super.publish(contentDto);
+        if(response.getData() instanceof CreateContentSuccessDto){
+            CreateContentSuccessDto contentSuccessDto = (CreateContentSuccessDto) response.getData();
+            long cid = contentSuccessDto.getId();
+            applicationEventBus.post(new PublishUGCEvent(cid));
+        }
+        return response;
     }
 
 }

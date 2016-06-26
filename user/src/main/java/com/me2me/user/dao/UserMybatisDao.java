@@ -487,4 +487,12 @@ public class UserMybatisDao {
         criteria.andUidEqualTo(uid);
         userDeviceMapper.deleteByExample(example);
     }
+
+    public List<User> getRobots(int limit){
+        UserExample example = new UserExample();
+        UserExample.Criteria criteria = example.createCriteria();
+        criteria.andUserNameLike("18900000%");
+        example.setOrderByClause(" uid desc rand() limit "+limit);
+        return userMapper.selectByExample(example);
+    }
 }
