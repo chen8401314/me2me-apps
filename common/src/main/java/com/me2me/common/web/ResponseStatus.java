@@ -125,7 +125,7 @@ public enum  ResponseStatus {
 
     SHOW_MEMBERS_SUCCESS("获邀请列表成功","show members success",20056),
 
-    MODIFY_CIRCLE_SUCCESS("修改社交关系chengg","modify circle success",20057),
+    MODIFY_CIRCLE_SUCCESS("修改社交关系成功","modify circle success",20057),
 
 
 
