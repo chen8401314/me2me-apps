@@ -52,4 +52,12 @@ public class MonitorServiceImpl implements MonitorService {
         return Response.success(loadReportDto);
     }
 
+    @Override
+    public Response loadActivityReport(MonitorReportDto monitorReportDto) {
+        int counter = monitorMybatisDao.getActivityReport(monitorReportDto);
+        LoadReportDto loadReportDto = new LoadReportDto();
+        loadReportDto.setCounter(counter);
+        return Response.success(loadReportDto);
+    }
+
 }

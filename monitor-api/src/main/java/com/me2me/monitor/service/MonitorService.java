@@ -19,4 +19,6 @@ public interface MonitorService {
     Response loadBootReport(MonitorReportDto monitorReportDto);
 
     Response loadActionReport(MonitorReportDto monitorReportDto);
+
+    Response loadActivityReport(MonitorReportDto monitorReportDto);
 }

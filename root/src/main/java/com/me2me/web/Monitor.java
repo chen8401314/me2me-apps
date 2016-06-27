@@ -37,10 +37,14 @@ public class Monitor extends BaseController {
         monitorReportDto.setStartDate(monitorReportRequest.getStartDate());
         monitorReportDto.setEndDate(monitorReportRequest.getEndDate());
         monitorReportDto.setActionType(monitorReportRequest.getActionType());
-        if(monitorReportDto.getType()==0) {
+        if(monitorReportDto.getType()== 0) {
             return monitorService.loadBootReport(monitorReportDto);
-        }else {
+        }else if(monitorReportDto.getType() == 1) {
             return monitorService.loadActionReport(monitorReportDto);
+        }else if(monitorReportDto.getType() == 2){
+            return monitorService.loadActivityReport(monitorReportDto);
+        }else{
+            return Response.failure("参数非法...");
         }
     }
 
