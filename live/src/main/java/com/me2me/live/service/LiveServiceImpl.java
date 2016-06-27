@@ -207,6 +207,8 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setIsFollowed(isFollow);
             liveElement.setContentType(topicFragment.getContentType());
             liveElement.setFragmentId(topicFragment.getId());
+            //// TODO: 2016/6/27  设置次人员发言时候人员圈子状态
+            liveElement.setInternalStatus(0);
             liveTimeLineDto.getLiveElements().add(liveElement);
         }
     }

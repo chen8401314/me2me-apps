@@ -47,6 +47,8 @@ public class LiveTimeLineDto implements BaseEntity {
 
         private long id;
 
+        private int internalStatus;
+
     }
 
 }

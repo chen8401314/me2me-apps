@@ -89,6 +89,8 @@ public interface ContentService {
      */
     Response getUserData(long targetUid ,long sourceUid);
 
+    Response getUserData2(long targetUid ,long sourceUid);
+
     /**
      * 小编发布接口
      * @param contentDto

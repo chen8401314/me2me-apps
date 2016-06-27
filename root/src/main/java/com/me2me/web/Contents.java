@@ -155,10 +155,20 @@ public class Contents extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "/getUserData",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response getSelectedData(UserInfoRequest request){
+    public Response getUserData(UserInfoRequest request){
         return  contentService.getUserData(request.getCustomerId(),request.getUid());
     }
 
+    /**
+     * 用户资料卡
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getUserData2",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getUserData2(UserInfoRequest request){
+        return  contentService.getUserData2(request.getCustomerId(),request.getUid());
+    }
 
     /**
      * 小编精选(已废)
