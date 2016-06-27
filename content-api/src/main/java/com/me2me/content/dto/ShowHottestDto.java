@@ -66,74 +66,7 @@ public class ShowHottestDto implements BaseEntity {
 
     //内容
     @Data
-    public static class HottestContentElement implements BaseEntity{
-
-        private long id;
-
-        private long uid;
-
-        // 原文ID
-        private long forwardCid;
-
-        //图像，系统文章没有图像,昵称 感受标签。
-        private String avatar;
-
-        //昵称
-        private String nickName;
-
-        //文章标题
-        private String title;
-
-        //感受标签，多个标签分号分开。
-        private String tag;
-
-        //文章内容图片数量
-        private int imageCount;
-
-        //小编修改的时间
-        private Date updateTime;
-
-        //内容
-        private String content;
-
-        //封面
-        private String coverImage;
-
-        //点赞数量
-        private int likeCount;
-
-        //评论数
-        private int reviewCount;
-
-        //参与人数
-        private int personCount;
-
-        //直播收藏人数
-        private int favoriteCount;
-
-        //文章阅读数量
-        private int readCount;
-
-        //是否关注
-        private int isFollowed;
-
-        //直播状态
-        private int liveStatus;
-
-        //类型 5 系统 3 活动 0 原生
-        private int type;
-
-        //直播是否收藏
-        private int favorite;
-
-        private Date createTime;
-
-        private int isLike;
-
-        private String forwardUrl;
-
-        private String forwardTitle;
-
+    public static class HottestContentElement extends BaseContentDto implements BaseEntity{
 
         private List<ReviewElement> reviews = Lists.newArrayList();
 

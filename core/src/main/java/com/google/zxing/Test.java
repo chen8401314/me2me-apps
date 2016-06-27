@@ -1,10 +1,8 @@
 package com.google.zxing;
 
-import com.google.zxing.client.j2se.MatrixToImageConfig;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
-
-import java.io.File;
+import java.nio.file.FileSystems;
 import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,17 +21,17 @@ public class Test {
 
             String content = "http://www.51nick.com";
             String path = "D:/";
+            String filePath = "D://";
+            String fileName = "zxing.png";
 
             MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
-
+            String format = "png";// 图像类型
             Map hints = new HashMap();
             hints.put(EncodeHintType.CHARACTER_SET, "UTF-8");
             BitMatrix bitMatrix = multiFormatWriter.encode(content, BarcodeFormat.QR_CODE, 400, 400,hints);
-            File file1 = new File(path,"me2me.jpg");
-            Path path1 = null;
-            MatrixToImageWriter.writeToFile(bitMatrix, "jpg", file1);
-            MatrixToImageWriter.writeToPath(bitMatrix,content,path1,new MatrixToImageConfig());
-
+            Path path1 = FileSystems.getDefault().getPath(filePath, fileName);
+            MatrixToImageWriter.writeToPath(bitMatrix, format, path1);
+            System.out.println("输出成功.");
         } catch (Exception e) {
             e.printStackTrace();
         }

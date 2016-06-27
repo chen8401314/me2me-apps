@@ -54,8 +54,9 @@ public class Home extends BaseController {
 
 
 
-    /**(暂时用，下来版本就不用了)
+    /**
      * 专属（老徐那边的数据接口）
+     * 兼容2.0.3版本使用
      * @return
      */
     @RequestMapping(value = "/special",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)

@@ -791,4 +791,12 @@
     </if>
   </select>
 
+  <select id="getTopicCount" parameterType="java.lang.Long" resultType="java.lang.Integer" >
+    select count(id) from topic_fragment where topic_id = #{topicId,jdbcType=BIGINT}
+  </select>
+
+  <select id="getTopicLastUpdateTime" parameterType="java.lang.Long" resultType="java.lang.Long" >
+    select long_time from topic where id = #{topicId,jdbcType=BIGINT}
+  </select>
+
 </mapper>

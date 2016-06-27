@@ -73,7 +73,7 @@ public class Contents extends BaseController {
         contentDto.setForwardCid(request.getForwardCid());
         contentDto.setForWardUrl(request.getForwardUrl());
         contentDto.setForwardTitle(request.getForwardTitle());
-        if(contentDto.getType()!=2) {
+        if(contentDto.getType() != 2) {
             // 用户UGC入口
             return contentService.publish2(contentDto);
         }else{
@@ -110,6 +110,7 @@ public class Contents extends BaseController {
         writeTagDto.setTag(request.getTag());
         writeTagDto.setUid(request.getUid());
         writeTagDto.setCustomerId(request.getCustomerId());
+        //兼容老版本
         writeTagDto.setType(request.getType() == 0 ? 1 : request.getType());
         return contentService.writeTag2(writeTagDto);
     }
@@ -241,7 +242,7 @@ public class Contents extends BaseController {
     }
 
     /**
-     * 老徐文章内容评论贴标
+     * 老徐文章内容评论贴标点赞
      * @param request
      * @return
      */
