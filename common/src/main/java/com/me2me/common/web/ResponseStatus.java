@@ -121,6 +121,12 @@ public enum  ResponseStatus {
 
     GET_LIVE_BARRAGE_SUCCESS("直播弹幕获取成功","get live barrage success",20054),
 
+    SHOW_MEMBER_CONSOLE_SUCCESS("获取成员列表成功","show member console success",20055),
+
+    SHOW_MEMBERS_SUCCESS("获邀请列表成功","show members success",20056),
+
+    MODIFY_CIRCLE_SUCCESS("修改社交关系chengg","modify circle success",20057),
+
 
 
 

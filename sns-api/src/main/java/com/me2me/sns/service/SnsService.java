@@ -14,20 +14,20 @@ public interface SnsService {
      * 获取成员列表
      * @return
      */
-    Response showMemberConsole(long owner);
+    Response showMemberConsole(long owner,long topicId ,long sinceId);
 
 
     /**
      * 邀请列表
      * @return
      */
-    Response showMembers();
+    Response showMembers(long owner,long topicId ,long sinceId);
 
 
     /**
      * 修改社交关系
      * @return
      */
-    Response modifyCircle();
+    Response modifyCircle(long owner,long topicId,long memberUid,int action);
 
 }

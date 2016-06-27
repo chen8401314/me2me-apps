@@ -16,6 +16,8 @@ import java.util.List;
 @Data
 public class ShowTopicListDto implements BaseEntity{
 
+    private int inactiveLiveCount;
+
     private List<ShowTopicElement> showTopicElements = Lists.newArrayList();
 
     public static ShowTopicElement createShowTopicElement(){

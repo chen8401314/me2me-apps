@@ -598,5 +598,36 @@ public class LiveServiceImpl implements LiveService {
         return  Response.success(showFavoriteListFto);
     }
 
+    /**
+     * 获取我关注的直播，和我的直播列表
+     * @param uid
+     * @return
+     */
+    @Override
+    public Response getMyLivesByUpdateTime(long uid ,long updateTime) {
+        log.info("getMyLives start ...");
+        ShowTopicListDto showTopicListDto = new ShowTopicListDto();
+        List<Long> topics = liveMybatisDao.getTopicId(uid);
+        List<Topic> topicList = liveMybatisDao.getMyLivesByUpdateTime(uid ,updateTime ,topics);
+        log.info("getMyLives data success");
+        builder(uid, showTopicListDto, topicList);
+        log.info("getMyLives start ...");
+        int inactiveLiveCount = liveMybatisDao.getInactiveLiveCount(uid,topics);
+        showTopicListDto.setInactiveLiveCount(inactiveLiveCount);
+        return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status,ResponseStatus.GET_MY_LIVE_SUCCESS.message,showTopicListDto);
+    }
+
+    @Override
+    public Response getInactiveLive(long uid) {
+        log.info("getInactiveLive start ...");
+        ShowTopicListDto showTopicListDto = new ShowTopicListDto();
+        List<Long> topics = liveMybatisDao.getTopicId(uid);
+        List<Topic> topicList = liveMybatisDao.getInactiveLive(uid ,topics);
+        log.info("getInactiveLive data success");
+        builder(uid, showTopicListDto, topicList);
+        log.info("getInactiveLive end ...");
+        return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status,ResponseStatus.GET_MY_LIVE_SUCCESS.message,showTopicListDto);
+    }
+
 
 }

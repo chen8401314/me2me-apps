@@ -7,6 +7,7 @@ import com.me2me.live.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -102,6 +103,41 @@ public class LiveMybatisDao {
         }
         example.setOrderByClause("id desc, status asc limit 10" );
         return topicMapper.selectByExample(example);
+    }
+
+    public List<Topic> getMyLivesByUpdateTime(long uid ,long updateTime ,List<Long> topics){
+        TopicExample example = new TopicExample();
+        TopicExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andLongTimeLessThan(updateTime);
+        criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
+        TopicExample.Criteria criteriaOr = example.createCriteria();
+        if(topics != null && topics.size() > 0) {
+            criteriaOr.andLongTimeLessThan(updateTime);
+            criteriaOr.andUidNotEqualTo(uid);
+            criteriaOr.andIdIn(topics);
+            example.or(criteriaOr);
+        }
+        //最后更新时间降序排列
+        example.setOrderByClause("long_time desc limit 10" );
+        return topicMapper.selectByExample(example);
+    }
+
+    public int getInactiveLiveCount(long uid , List<Long> topics){
+        TopicExample example = new TopicExample();
+        TopicExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE,-3);
+        criteria.andLongTimeLessThan(calendar.getTimeInMillis());
+        TopicExample.Criteria criteriaOr = example.createCriteria();
+        if(topics != null && topics.size() > 0) {
+            criteriaOr.andUidNotEqualTo(uid);
+            criteriaOr.andIdIn(topics);
+            example.or(criteriaOr);
+        }
+        return topicMapper.countByExample(example);
     }
 
     public List<Long> getTopicId(long uid){
@@ -226,6 +262,26 @@ public class LiveMybatisDao {
         criteria.andUidEqualTo(uid);
         List<TopicBarrage> topicBarrages = topicBarrageMapper.selectByExampleWithBLOBs(example);
         return com.me2me.common.utils.Lists.getSingle(topicBarrages);
+    }
+
+    public List<Topic> getInactiveLive(long uid,List<Long> topics){
+        TopicExample example = new TopicExample();
+        TopicExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, -3);
+        criteria.andLongTimeLessThan(calendar.getTimeInMillis());
+        criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
+        TopicExample.Criteria criteriaOr = example.createCriteria();
+        if(topics != null && topics.size() > 0) {
+            criteriaOr.andLongTimeLessThan(calendar.getTimeInMillis());
+            criteriaOr.andUidNotEqualTo(uid);
+            criteriaOr.andIdIn(topics);
+            example.or(criteriaOr);
+        }
+        //最后更新时间降序排列
+        example.setOrderByClause("long_time desc limit 10" );
+        return topicMapper.selectByExample(example);
     }
 
 }

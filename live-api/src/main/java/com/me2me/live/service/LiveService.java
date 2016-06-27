@@ -95,4 +95,12 @@ public interface LiveService {
     Response barrage(LiveBarrageDto barrageDto);
 
     Response getLiveByCid(long cid,long uid);
+
+    /**
+     * 获取直播列表按时间线
+     * @return
+     */
+    Response getMyLivesByUpdateTime(long uid,long updateTime);
+
+    Response getInactiveLive(long uid);
 }

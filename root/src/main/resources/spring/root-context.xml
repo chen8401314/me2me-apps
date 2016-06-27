@@ -19,6 +19,7 @@
         <import resource="classpath:spring/search-context.xml"/>
         <import resource="classpath:spring/sms-context.xml"/>
         <import resource="classpath:spring/monitor-context.xml"/>
+        <import resource="classpath:spring/sns-context.xml"/>
     </beans>
     <beans profile="product">
         <import resource="classpath:spring/root-dubbo-consumer.xml"/>

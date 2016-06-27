@@ -160,6 +160,17 @@ public class Live extends BaseController {
         return liveService.getMyLives(request.getUid(),request.getSinceId());
     }
 
+    /**
+     * 获取我关注和我自己的直播列表 (按主播最后的更新时间)
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/getMyLivesByUpdateTime",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response getMyLivesByUpdateTime(GetMyLivesRequest request){
+        return liveService.getMyLivesByUpdateTime(request.getUid(),request.getUpdateTime());
+    }
+
 
     /**
      * 完结的直播移除
@@ -215,6 +226,17 @@ public class Live extends BaseController {
     @ResponseBody
     public Response getLiveByCid(GetLiveByCidRequest request){
         return liveService.getLiveByCid(request.getCid(),request.getUid());
+    }
+
+    /**
+     * 根据cid获取直播信息
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/inactiveLive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response getInactiveLive(InactiveLiveRequest request){
+        return liveService.getInactiveLive(request.getUid());
     }
 
 

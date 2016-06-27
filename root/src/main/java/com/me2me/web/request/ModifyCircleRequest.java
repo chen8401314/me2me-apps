@@ -7,16 +7,20 @@ import lombok.Setter;
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 代宝磊
- * Date: 2016/4/13
- * Time :18:00
+ * Date: 2016/6/27
+ * Time :16:56
  */
-public class GetMyLivesRequest extends Request{
+public class ModifyCircleRequest extends Request{
 
-    @Setter
     @Getter
-    private long sinceId;
+    @Setter
+    private int action;
 
-    @Setter
     @Getter
-    private long updateTime;
+    @Setter
+    private long memberUid;
+
+    @Getter
+    @Setter
+    private long topicId;
 }
