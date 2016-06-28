@@ -18,6 +18,8 @@ public class ShowTopicListDto implements BaseEntity{
 
     private int inactiveLiveCount;
 
+    private String liveTitle;
+
     private List<ShowTopicElement> showTopicElements = Lists.newArrayList();
 
     public static ShowTopicElement createShowTopicElement(){

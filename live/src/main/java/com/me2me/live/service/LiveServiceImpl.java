@@ -620,6 +620,10 @@ public class LiveServiceImpl implements LiveService {
         log.info("getMyLives start ...");
         int inactiveLiveCount = liveMybatisDao.getInactiveLiveCount(uid,topics);
         showTopicListDto.setInactiveLiveCount(inactiveLiveCount);
+        List<Topic> live = liveMybatisDao.getInactiveLive(uid ,topics,updateTime);
+        if(live.size() > 0) {
+            showTopicListDto.setLiveTitle(live.get(0).getTitle());
+        }
         return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status,ResponseStatus.GET_MY_LIVE_SUCCESS.message,showTopicListDto);
     }
 
