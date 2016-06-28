@@ -67,6 +67,9 @@ public class Sns extends BaseController {
     @RequestMapping(value = "/getCircleByType",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getCircleByType(GetCircleByTypeRequest request){
+        if(request.getSinceId() < 0){
+            request.setSinceId(1);
+        }
         return snsService.getCircleByType(request.getUid(),request.getTopicId(),request.getSinceId(),request.getType());
     }
 
