@@ -610,8 +610,8 @@ public class LiveServiceImpl implements LiveService {
         log.info("getMyLives start ...");
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
         List<Long> topics = liveMybatisDao.getTopicId(uid);
+        Calendar calendar = Calendar.getInstance();
         if(updateTime == 0){
-            Calendar calendar = Calendar.getInstance();
             updateTime = calendar.getTimeInMillis();
         }
         List<Topic> topicList = liveMybatisDao.getMyLivesByUpdateTime(uid ,updateTime ,topics);
@@ -620,7 +620,8 @@ public class LiveServiceImpl implements LiveService {
         log.info("getMyLives start ...");
         int inactiveLiveCount = liveMybatisDao.getInactiveLiveCount(uid,topics);
         showTopicListDto.setInactiveLiveCount(inactiveLiveCount);
-        List<Topic> live = liveMybatisDao.getInactiveLive(uid ,topics,updateTime);
+        calendar.add(Calendar.DAY_OF_YEAR, -3);
+        List<Topic> live = liveMybatisDao.getInactiveLive(uid ,topics,calendar.getTimeInMillis());
         if(live.size() > 0) {
             showTopicListDto.setLiveTitle(live.get(0).getTitle());
         }

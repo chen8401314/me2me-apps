@@ -2,6 +2,7 @@ package com.me2me.web;
 
 import com.me2me.common.web.Response;
 import com.me2me.sns.service.SnsService;
+import com.me2me.web.request.GetCircleByTypeRequest;
 import com.me2me.web.request.ModifyCircleRequest;
 import com.me2me.web.request.ShowMemberConsoleRequest;
 import com.me2me.web.request.ShowMembersRequest;
@@ -56,6 +57,17 @@ public class Sns extends BaseController {
     @ResponseBody
     public Response modifyCircle(ModifyCircleRequest request){
         return snsService.modifyCircle(request.getUid(),request.getTopicId(),request.getMemberUid(),request.getAction());
+    }
+
+    /**
+     * 获取个圈子成员
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/getCircleByType",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response getCircleByType(GetCircleByTypeRequest request){
+        return snsService.getCircleByType(request.getUid(),request.getTopicId(),request.getSinceId(),request.getType());
     }
 
 }

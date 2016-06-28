@@ -287,8 +287,8 @@
   <select id="getSnsCircle" resultType="com.me2me.sns.dto.SnsCircleDto" parameterType="com.me2me.sns.dto.GetSnsCircleDto" >
     select u.uid as uid,u.nick_name as nickName,u.avatar as avatar,u.introduced,c.internal_status  from user_profile u
     left join sns_circle c on u.uid = c.uid
-    where c.owner = #{uid,jdbcType=BIGINT}
-order by convert(u.nick_name USING gbk) COLLATE gbk_chinese_ci limit 0,10
+    where c.owner = #{uid,jdbcType=BIGINT} and c.internal_status = #{type,jdbcType=INTEGER}
+    order by convert(u.nick_name USING gbk) COLLATE gbk_chinese_ci limit #{sinceId,jdbcType=INTEGER},10
 
 
   </select>

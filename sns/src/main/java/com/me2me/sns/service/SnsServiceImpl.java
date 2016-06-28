@@ -5,8 +5,7 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.sns.dao.SnsMybatisDao;
-import com.me2me.sns.dto.ShowMemberConsoleDto;
-import com.me2me.sns.dto.ShowMembersDto;
+import com.me2me.sns.dto.*;
 import com.me2me.sns.model.SnsCircle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -66,6 +65,21 @@ public class SnsServiceImpl implements SnsService {
         user.setIntroduced("我是一个小小宝");
         showMembersDto.getMembers().add(user);
         return Response.success(ResponseStatus.SHOW_MEMBERS_SUCCESS.status,ResponseStatus.SHOW_MEMBERS_SUCCESS.message,showMembersDto);
+    }
+
+    @Override
+    public Response getCircleByType(long owner, long topicId, long sinceId,int type) {
+        ShowSnsCircleDto showSnsCircleDto = new ShowSnsCircleDto();
+        GetSnsCircleDto dto = new GetSnsCircleDto();
+        dto.setUid(owner);
+        dto.setSinceId(sinceId);
+        dto.setTopicId(topicId);
+        dto.setType(type);
+        List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto);
+        for(SnsCircleDto snsCircleDto : list){
+
+        }
+        return null;
     }
 
     @Override
