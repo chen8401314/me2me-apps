@@ -3,9 +3,15 @@ package com.me2me.sns.service;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
+import com.me2me.common.web.Specification;
+import com.me2me.sns.dao.SnsMybatisDao;
 import com.me2me.sns.dto.ShowMemberConsoleDto;
 import com.me2me.sns.dto.ShowMembersDto;
+import com.me2me.sns.model.SnsCircle;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -15,10 +21,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class SnsServiceImpl implements SnsService {
 
+    @Autowired
+    private SnsMybatisDao snsMybatisDao;
 
     @Override
     public Response showMemberConsole(long owner,long topicId ,long sinceId) {
         ShowMemberConsoleDto showMemberConsoleDto = new ShowMemberConsoleDto();
+        List<SnsCircle> coreList = snsMybatisDao.getSnsCircle(owner,topicId,sinceId, Specification.SnsCircle.CORE.index);
+        List<SnsCircle> inList = snsMybatisDao.getSnsCircle(owner,topicId,sinceId, Specification.SnsCircle.IN.index);
+        List<SnsCircle> outList = snsMybatisDao.getSnsCircle(owner,topicId,sinceId, Specification.SnsCircle.OUT.index);
         showMemberConsoleDto.setMembers(100000000);
         ShowMemberConsoleDto.UserElement user = showMemberConsoleDto.createUserElement();
         user.setUid(315);

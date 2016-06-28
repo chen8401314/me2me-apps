@@ -1,5 +1,7 @@
 package com.me2me.sns.mapper;
 
+import com.me2me.sns.dto.GetSnsCircleDto;
+import com.me2me.sns.dto.SnsCircleDto;
 import com.me2me.sns.model.SnsCircle;
 import com.me2me.sns.model.SnsCircleExample;
 import java.util.List;
@@ -93,4 +95,6 @@ public interface SnsCircleMapper {
      * @mbggenerated Mon Jun 27 15:11:26 CST 2016
      */
     int updateByPrimaryKey(SnsCircle record);
+
+    List<SnsCircleDto> getSnsCircle(GetSnsCircleDto getSnsCircleDto);
 }
