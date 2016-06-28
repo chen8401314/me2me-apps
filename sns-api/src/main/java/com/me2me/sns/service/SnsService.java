@@ -21,7 +21,7 @@ public interface SnsService {
      * 邀请列表
      * @return
      */
-    Response showMembers(long owner,long topicId ,long sinceId);
+    Response showMembers(long owner,long topicId ,long sinceId,int type);
 
 
     /**

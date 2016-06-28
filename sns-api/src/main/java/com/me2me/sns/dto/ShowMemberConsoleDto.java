@@ -29,7 +29,7 @@ public class ShowMemberConsoleDto implements BaseEntity {
 
     private List<UserElement> outCircle = Lists.newArrayList();
 
-    public UserElement createUserElement(){
+    public static UserElement createUserElement(){
         return new UserElement();
     }
 
