@@ -72,14 +72,22 @@ public class SnsServiceImpl implements SnsService {
         ShowSnsCircleDto showSnsCircleDto = new ShowSnsCircleDto();
         GetSnsCircleDto dto = new GetSnsCircleDto();
         dto.setUid(owner);
-        dto.setSinceId(sinceId);
+        dto.setSinceId((sinceId-1)*10);
         dto.setTopicId(topicId);
         dto.setType(type);
         List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto);
-        for(SnsCircleDto snsCircleDto : list){
+        for(SnsCircleDto circleDto : list){
+            ShowSnsCircleDto.SnsCircleElement snsCircleElement = showSnsCircleDto.createElement();
+            snsCircleElement.setUid(circleDto.getUid());
+            snsCircleElement.setAvatar(Constant.QINIU_DOMAIN + "/" + circleDto.getAvatar());
+            snsCircleElement.setIntroduced(circleDto.getIntroduced());
+            snsCircleElement.setNickName(circleDto.getNickName());
+            snsCircleElement.setInternalStatus(circleDto.getInternalStatus());
+            showSnsCircleDto.getCircleElements().add(snsCircleElement);
 
         }
-        return null;
+        showSnsCircleDto.setCircleCount(snsMybatisDao.getSnsCircleCount(dto));
+        return Response.success(showSnsCircleDto);
     }
 
     @Override

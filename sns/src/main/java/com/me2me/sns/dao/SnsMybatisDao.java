@@ -38,5 +38,10 @@ public class SnsMybatisDao {
 
     }
 
+    public int getSnsCircleCount(GetSnsCircleDto getSnsCircleDto){
+        return snsCircleMapper.getSnsCircleCount(getSnsCircleDto);
+
+    }
+
 
 }

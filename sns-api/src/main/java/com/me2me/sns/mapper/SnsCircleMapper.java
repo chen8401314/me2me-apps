@@ -97,4 +97,6 @@ public interface SnsCircleMapper {
     int updateByPrimaryKey(SnsCircle record);
 
     List<SnsCircleDto> getSnsCircle(GetSnsCircleDto getSnsCircleDto);
+
+    int getSnsCircleCount(GetSnsCircleDto getSnsCircleDto);
 }
