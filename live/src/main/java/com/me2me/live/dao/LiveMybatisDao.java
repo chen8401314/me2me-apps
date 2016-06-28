@@ -110,10 +110,14 @@ public class LiveMybatisDao {
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
         criteria.andLongTimeLessThan(updateTime);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -3);
+        criteria.andLongTimeGreaterThan(calendar.getTimeInMillis());
         criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
         TopicExample.Criteria criteriaOr = example.createCriteria();
         if(topics != null && topics.size() > 0) {
             criteriaOr.andLongTimeLessThan(updateTime);
+            criteriaOr.andLongTimeGreaterThan(calendar.getTimeInMillis());
             criteriaOr.andUidNotEqualTo(uid);
             criteriaOr.andIdIn(topics);
             example.or(criteriaOr);
@@ -129,12 +133,13 @@ public class LiveMybatisDao {
         criteria.andUidEqualTo(uid);
         criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE,-3);
+        calendar.add(Calendar.DAY_OF_YEAR,-3);
         criteria.andLongTimeLessThan(calendar.getTimeInMillis());
         TopicExample.Criteria criteriaOr = example.createCriteria();
         if(topics != null && topics.size() > 0) {
             criteriaOr.andUidNotEqualTo(uid);
             criteriaOr.andIdIn(topics);
+            criteriaOr.andLongTimeLessThan(calendar.getTimeInMillis());
             example.or(criteriaOr);
         }
         return topicMapper.countByExample(example);
@@ -268,6 +273,8 @@ public class LiveMybatisDao {
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
+        criteria.andLongTimeLessThan(updateTime);
+        criteria.andUidEqualTo(uid);
         TopicExample.Criteria criteriaOr = example.createCriteria();
         if(topics != null && topics.size() > 0) {
             criteriaOr.andLongTimeLessThan(updateTime);
@@ -276,7 +283,7 @@ public class LiveMybatisDao {
             example.or(criteriaOr);
         }
         //最后更新时间降序排列
-        example.setOrderByClause("long_time desc limit 10" );
+        example.setOrderByClause(" long_time desc limit 10" );
         return topicMapper.selectByExample(example);
     }
 
