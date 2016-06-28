@@ -102,5 +102,5 @@ public interface LiveService {
      */
     Response getMyLivesByUpdateTime(long uid,long updateTime);
 
-    Response getInactiveLive(long uid);
+    Response getInactiveLive(long uid,long updateTime);
 }

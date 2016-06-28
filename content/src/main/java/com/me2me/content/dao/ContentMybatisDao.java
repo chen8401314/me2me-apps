@@ -437,4 +437,13 @@ public class ContentMybatisDao {
         return contentMapper.getTopicLastUpdateTime(topicId);
     }
 
+    public List<Content>myPublishByType(MyPublishDto myPublishDto) {
+        return contentMapper.loadMyPublishDataByType(myPublishDto);
+    }
+
+    public int countMyPublishByType(MyPublishDto myPublishDto) {
+        return contentMapper.countMyPublishByType(myPublishDto);
+    }
+
+
 }

@@ -7,22 +7,16 @@ import lombok.Setter;
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 代宝磊
- * Date: 2016/3/28
- * Time :16:41
+ * Date: 2016/6/28
+ * Time :10:59
  */
-public class MyPublishContentRequest extends Request {
-
+public class MyPublishUGCRequest extends Request {
 
     @Getter
     @Setter
     private int sinceId;
 
-    @Setter
     @Getter
+    @Setter
     private long customerId;
-
-    @Setter
-    @Getter
-    private int type;
-
 }

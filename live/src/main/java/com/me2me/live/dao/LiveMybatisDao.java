@@ -264,17 +264,13 @@ public class LiveMybatisDao {
         return com.me2me.common.utils.Lists.getSingle(topicBarrages);
     }
 
-    public List<Topic> getInactiveLive(long uid,List<Long> topics){
+    public List<Topic> getInactiveLive(long uid,List<Long> topics,long updateTime){
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
-        criteria.andUidEqualTo(uid);
-        Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DATE, -3);
-        criteria.andLongTimeLessThan(calendar.getTimeInMillis());
         criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
         TopicExample.Criteria criteriaOr = example.createCriteria();
         if(topics != null && topics.size() > 0) {
-            criteriaOr.andLongTimeLessThan(calendar.getTimeInMillis());
+            criteriaOr.andLongTimeLessThan(updateTime);
             criteriaOr.andUidNotEqualTo(uid);
             criteriaOr.andIdIn(topics);
             example.or(criteriaOr);
@@ -283,5 +279,7 @@ public class LiveMybatisDao {
         example.setOrderByClause("long_time desc limit 10" );
         return topicMapper.selectByExample(example);
     }
+
+
 
 }

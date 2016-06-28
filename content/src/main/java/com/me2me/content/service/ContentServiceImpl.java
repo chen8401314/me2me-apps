@@ -731,6 +731,84 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    public Response myPublishByType(long uid, int sinceId, int type) {
+        MyPublishDto dto = new MyPublishDto();
+        dto.setType(type);
+        dto.setSinceId(sinceId);
+        dto.setUid(uid);
+        ShowMyPublishDto showMyPublishDto = new ShowMyPublishDto();
+        List<Content> contents = contentMybatisDao.myPublishByType(dto);
+        for (Content content : contents){
+            ShowMyPublishDto.MyPublishElement contentElement = ShowMyPublishDto.createElement();
+            contentElement.setTag(content.getFeeling());
+            contentElement.setContent(content.getContent());
+            contentElement.setId(content.getId());
+            contentElement.setTitle(content.getTitle());
+            contentElement.setCreateTime(content.getCreateTime());
+            contentElement.setLikeCount(content.getLikeCount());
+            contentElement.setReviewCount(content.getReviewCount());
+            contentElement.setPersonCount(content.getPersonCount());
+            contentElement.setFavoriteCount(content.getFavoriteCount());
+            contentElement.setContentType(content.getContentType());
+            contentElement.setForwardCid(content.getForwardCid());
+            contentElement.setType(content.getType());
+            contentElement.setReadCount(content.getReadCount());
+            contentElement.setForwardUrl(content.getForwardUrl());
+            contentElement.setForwardTitle(content.getForwardTitle());
+            String cover = content.getConverImage();
+            if(!StringUtils.isEmpty(cover)){
+                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
+                    contentElement.setCoverImage(cover);
+                }else {
+                    contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
+                }
+            }
+            contentElement.setTag(content.getFeeling());
+            //查询直播状态
+            if(type == Specification.ArticleType.LIVE.index) {
+                contentElement.setLiveStatus(contentMybatisDao.getTopicStatus(content.getForwardCid()));
+                int reviewCount = contentMybatisDao.countFragment(content.getForwardCid(),content.getUid());
+                contentElement.setReviewCount(reviewCount);
+                contentElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
+                contentElement.setTopicCount(contentMybatisDao.getTopicCount(content.getForwardCid()) - reviewCount);
+            }
+            if(content.getType() == Specification.ArticleType.ORIGIN.index){
+                //获取内容图片数量
+                int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
+                contentElement.setImageCount(imageCounts);
+            }
+            int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
+            log.info("get content favorite success");
+            //直播是否收藏
+            contentElement.setFavorite(favorite);
+            contentElement.setIsLike(isLike(content.getId(),uid));
+            contentElement.setLikeCount(content.getLikeCount());
+            contentElement.setPersonCount(content.getPersonCount());
+            contentElement.setFavoriteCount(content.getFavoriteCount());
+            ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
+            if(contentImage != null) {
+                contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
+            }else{
+                contentElement.setCoverImage("");
+            }
+            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+            log.info("get content review success");
+            for(ContentReview contentReview : contentReviewList){
+                ShowMyPublishDto.MyPublishElement.ReviewElement reviewElement = ShowMyPublishDto.MyPublishElement.createReviewElement();
+                reviewElement.setUid(contentReview.getUid());
+                UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
+                reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+                reviewElement.setNickName(user.getNickName());
+                reviewElement.setCreateTime(contentReview.getCreateTime());
+                reviewElement.setReview(contentReview.getReview());
+                contentElement.getReviews().add(reviewElement);
+            }
+            showMyPublishDto.getMyPublishElements().add(contentElement);
+        }
+        return Response.success(showMyPublishDto);
+    }
+
+    @Override
     public Response deleteContent(long id) {
         log.info("deleteContent start ...");
         Content content = contentMybatisDao.getContentById(id);
@@ -1002,12 +1080,19 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response getUserData2(long targetUid,long sourceUid){
+        UserInfoDto2 userInfoDto = new UserInfoDto2();
         log.info("getUserData2 start ...targetUid = " + targetUid + " sourceUid = "+ sourceUid);
         UserProfile userProfile = userService.getUserProfileByUid(targetUid);
         log.info("get getUserData2 success ");
-        List<Content> list = contentMybatisDao.myPublish(targetUid,Integer.MAX_VALUE);
+       // List<Content> list = contentMybatisDao.myPublish(targetUid,Integer.MAX_VALUE);
+        MyPublishDto dto = new MyPublishDto();
+        dto.setUid(targetUid);
+        dto.setSinceId(Integer.MAX_VALUE);
+        dto.setType(Specification.ArticleType.ORIGIN.index);
+        //非直播文章
+        List<Content> contents = contentMybatisDao.myPublishByType(dto);
+        userInfoDto.setContentCount(contentMybatisDao.countMyPublishByType(dto));
         log.info("get user content success ");
-        UserInfoDto2 userInfoDto = new UserInfoDto2();
         userInfoDto.getUser().setNickName(userProfile.getNickName());
         userInfoDto.getUser().setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
         userInfoDto.getUser().setGender(userProfile.getGender());
@@ -1018,7 +1103,18 @@ public class ContentServiceImpl implements ContentService {
         userInfoDto.getUser().setFollowedCount(userService.getFollowCount(targetUid));
         userInfoDto.getUser().setFansCount(userService.getFansCount(targetUid));
         userInfoDto.getUser().setIntroduced(userProfile.getIntroduced());
-        for (Content content : list){
+        buildUserData(sourceUid, contents,Specification.ArticleType.ORIGIN.index,userInfoDto);
+        //直播
+        dto.setType(Specification.ArticleType.LIVE.index);
+        List<Content> lives = contentMybatisDao.myPublishByType(dto);
+        buildUserData(sourceUid, lives,Specification.ArticleType.LIVE.index,userInfoDto);
+        userInfoDto.setLiveCount(contentMybatisDao.countMyPublishByType(dto));
+        log.info("getUserData end ...");
+        return Response.success(userInfoDto);
+    }
+
+    private void buildUserData(long sourceUid, List<Content> contents,int type,UserInfoDto2 userInfoDto) {
+        for (Content content : contents){
             UserInfoDto2.ContentElement contentElement = UserInfoDto2.createElement();
             contentElement.setTag(content.getFeeling());
             contentElement.setContent(content.getContent());
@@ -1035,7 +1131,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setReadCount(content.getReadCount());
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
-            String cover =  content.getConverImage();
+            String cover = content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
                 if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
                     contentElement.setCoverImage(cover);
@@ -1045,8 +1141,7 @@ public class ContentServiceImpl implements ContentService {
             }
             contentElement.setTag(content.getFeeling());
             //查询直播状态
-            if(content.getType() == Specification.ArticleType.LIVE.index)
-            {
+            if(type == Specification.ArticleType.LIVE.index) {
                 contentElement.setLiveStatus(contentMybatisDao.getTopicStatus(content.getForwardCid()));
                 int reviewCount = contentMybatisDao.countFragment(content.getForwardCid(),content.getUid());
                 contentElement.setReviewCount(reviewCount);
@@ -1084,14 +1179,12 @@ public class ContentServiceImpl implements ContentService {
                 reviewElement.setReview(contentReview.getReview());
                 contentElement.getReviews().add(reviewElement);
             }
-            if(content.getType() == Specification.ArticleType.LIVE.index) {
-                userInfoDto.getContentElementList().add(contentElement);
-            }else{
+            if(type == Specification.ArticleType.LIVE.index){
                 userInfoDto.getLiveElementList().add(contentElement);
+            }else{
+                userInfoDto.getContentElementList().add(contentElement);
             }
         }
-        log.info("getUserData end ...");
-        return Response.success(userInfoDto);
     }
 
     @Override

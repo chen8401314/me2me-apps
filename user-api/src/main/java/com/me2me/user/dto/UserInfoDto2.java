@@ -16,6 +16,10 @@ import java.util.List;
 @Data
 public class UserInfoDto2 implements BaseEntity{
 
+    private int contentCount;
+
+    private int liveCount;
+
     private User user = new User();
 
     private List<ContentElement> contentElementList = Lists.newArrayList();

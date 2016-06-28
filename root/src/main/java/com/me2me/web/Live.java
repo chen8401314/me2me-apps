@@ -229,14 +229,14 @@ public class Live extends BaseController {
     }
 
     /**
-     * 根据cid获取直播信息
+     * 获取三天之前的直播列表
      * @param request
      * @return
      */
     @RequestMapping(value = "/inactiveLive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getInactiveLive(InactiveLiveRequest request){
-        return liveService.getInactiveLive(request.getUid());
+        return liveService.getInactiveLive(request.getUid(),request.getUpdateTime());
     }
 
 

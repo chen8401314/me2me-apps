@@ -150,4 +150,9 @@ public interface ContentMapper {
     int getTopicCount(long topicId);
 
     long getTopicLastUpdateTime(long topicId);
+
+    List<Content>loadMyPublishDataByType(MyPublishDto dto);
+
+    int countMyPublishByType(MyPublishDto dto);
+
 }

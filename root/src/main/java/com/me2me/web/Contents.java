@@ -262,4 +262,18 @@ public class Contents extends BaseController {
         return contentService.getArticleComments(request.getUid(),request.getId());
     }
 
+    /**
+     * 用户日记列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/myPublishByType",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response myPublishByType(MyPublishContentRequest request){
+        if(request.getSinceId() == -1){
+            request.setSinceId(Integer.MAX_VALUE);
+        }
+        return contentService.myPublishByType(request.getCustomerId(),request.getSinceId(),request.getType());
+    }
+
 }
