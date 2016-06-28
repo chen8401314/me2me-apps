@@ -2,7 +2,6 @@ package com.me2me.config;
 
 import com.alibaba.fastjson.support.spring.FastJsonHttpMessageConverter;
 import com.google.common.base.Charsets;
-import com.me2me.web.handler.AccessSecurityHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -12,7 +11,6 @@ import org.springframework.web.accept.ContentNegotiationManager;
 import org.springframework.web.accept.ContentNegotiationManagerFactoryBean;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import org.springframework.web.servlet.view.JstlView;
@@ -30,11 +28,13 @@ import java.util.Properties;
 @EnableWebMvc
 public class SpringBootMvcConfig extends WebMvcConfigurerAdapter {
 
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new AccessSecurityHandler()).addPathPatterns("/**");
-        super.addInterceptors(registry);
-    }
+
+//    @Override
+//    public void addInterceptors(InterceptorRegistry registry) {
+//        AccessSecurityHandler accessSecurityHandler = new AccessSecurityHandler();
+//        registry.addInterceptor(accessSecurityHandler).addPathPatterns("/**");
+//        super.addInterceptors(registry);
+//    }
 
     @Override
     public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
