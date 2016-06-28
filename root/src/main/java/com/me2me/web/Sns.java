@@ -45,7 +45,7 @@ public class Sns extends BaseController {
     @RequestMapping(value = "/showMembers",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response showMembers(ShowMembersRequest request){
-        return snsService.showMembers(request.getUid(),request.getTopicId(),request.getSinceId());
+        return snsService.showMembers(request.getUid(),request.getTopicId(),request.getSinceId(),request.getType());
     }
 
     /**

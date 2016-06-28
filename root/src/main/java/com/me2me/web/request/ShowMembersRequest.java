@@ -20,4 +20,8 @@ public class ShowMembersRequest extends Request{
     @Setter
     private long topicId;
 
+    @Getter
+    @Setter
+    private int type;
+
 }
