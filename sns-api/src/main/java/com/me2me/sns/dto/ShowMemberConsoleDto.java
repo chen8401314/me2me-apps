@@ -17,6 +17,12 @@ public class ShowMemberConsoleDto implements BaseEntity {
 
     private int members;
 
+    private int coreCircleMembers;
+
+    private int inCircleMembers;
+
+    private int outCircleMembers;
+
     private List<UserElement> coreCircle = Lists.newArrayList();
 
     private List<UserElement> inCircle = Lists.newArrayList();

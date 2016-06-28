@@ -30,4 +30,6 @@ public interface SnsService {
      */
     Response modifyCircle(long owner,long topicId,long memberUid,int action);
 
+    Response getCircleByType(long owner, long topicId, long sinceId,int type);
+
 }

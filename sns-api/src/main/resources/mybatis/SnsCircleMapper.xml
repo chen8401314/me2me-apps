@@ -283,4 +283,19 @@
       create_time = #{createTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="getSnsCircle" resultType="com.me2me.sns.dto.SnsCircleDto" parameterType="com.me2me.sns.dto.GetSnsCircleDto" >
+    select u.uid as uid,u.nick_name as nickName,u.avatar as avatar,u.introduced,c.internal_status as internalStatus from user_profile u
+    left join sns_circle c on u.uid = c.uid
+    where c.owner = #{uid,jdbcType=BIGINT} and c.internal_status = #{type,jdbcType=INTEGER}
+    and u.uid not in (select uid from live_favorite_delete where topic_id = #{topicId,jdbcType=BIGINT} )
+    order by convert(u.nick_name USING gbk) COLLATE gbk_chinese_ci limit #{sinceId,jdbcType=INTEGER},10
+  </select>
+
+  <select id="getSnsCircleCount" resultType="java.lang.Integer" parameterType="com.me2me.sns.dto.GetSnsCircleDto" >
+    select count(*)  from user_profile u
+    left join sns_circle c on u.uid = c.uid
+    where c.owner = #{uid,jdbcType=BIGINT} and c.internal_status = #{type,jdbcType=INTEGER}
+  </select>
+
 </mapper>

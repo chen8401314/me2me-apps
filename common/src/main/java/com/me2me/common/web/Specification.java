@@ -598,4 +598,23 @@ public interface Specification {
         }
     }
 
+
+    public enum SnsCircle{
+
+        CORE("核心圈",2),
+
+        IN("圈内",1),
+
+        OUT("圈外",0);
+
+        public final String name;
+
+        public final int index;
+
+        SnsCircle(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
 }
