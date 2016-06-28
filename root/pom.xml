@@ -214,26 +214,26 @@
                     <executable>true</executable>
                 </configuration>
             </plugin>
-            <!--<plugin>-->
-                <!--<groupId>org.apache.maven.plugins</groupId>-->
-                <!--<artifactId>maven-war-plugin</artifactId>-->
-                <!--<configuration>-->
-                    <!--<warSourceExcludes>src/main/resource/generator</warSourceExcludes>-->
-                    <!--<warName>${project.name}</warName>-->
-                    <!--&lt;!&ndash; 激活spring profile &ndash;&gt;-->
-                    <!--<webResources>-->
-                        <!--<resource>-->
-                            <!--<filtering>true</filtering>-->
-                            <!--<directory>src/main/webapp</directory>-->
-                            <!--<includes>-->
-                                <!--<include>**/web.xml</include>-->
-                            <!--</includes>-->
-                        <!--</resource>-->
-                    <!--</webResources>-->
-                    <!--<warSourceDirectory>src/main/webapp</warSourceDirectory>-->
-                    <!--<webXml>src/main/webapp/WEB-INF/web.xml</webXml>-->
-                <!--</configuration>-->
-            <!--</plugin>-->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <warSourceExcludes>src/main/resource/generator</warSourceExcludes>
+                    <warName>${project.name}</warName>
+                    <!-- 激活spring profile -->
+                    <webResources>
+                        <resource>
+                            <filtering>true</filtering>
+                            <directory>src/main/webapp</directory>
+                            <includes>
+                                <include>**/web.xml</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+                    <warSourceDirectory>src/main/webapp</warSourceDirectory>
+                    <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+                </configuration>
+            </plugin>
         </plugins>
     </build>
 </project>
