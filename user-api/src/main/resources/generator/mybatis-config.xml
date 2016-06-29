@@ -31,7 +31,7 @@
 
 
         <!--<table tableName="user" domainObjectName="User"/>-->
-        <table tableName="user_profile" domainObjectName="UserProfile"/>
+        <!--<table tableName="user_profile" domainObjectName="UserProfile"/>-->
         <!--<table tableName="dictionary" domainObjectName="Dictionary"/>-->
         <!--<table tableName="dictionary_type" domainObjectName="DictionaryType"/>-->
         <!--<table tableName="address" domainObjectName="Address"/>-->
@@ -43,7 +43,7 @@
         <!--<table tableName="user_content_tags" domainObjectName="UserContentTags"/>-->
         <!--<table tableName="user_tags_details" domainObjectName="UserTagsDetails" />-->
         <!--<table tableName="user_tags_record" domainObjectName="UserTagsRecord" />-->
-        <!--<table tableName="user_notice" domainObjectName="UserNotice" />-->
+        <table tableName="user_notice" domainObjectName="UserNotice" />
         <!--<table tableName="user_tips" domainObjectName="UserTips" />-->
         <!--<table tableName="user_report" domainObjectName="UserReport" />-->
         <!--<table tableName="user_tags_record" domainObjectName="UserTagsRecord" />-->

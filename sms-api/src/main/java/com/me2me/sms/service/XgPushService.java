@@ -37,4 +37,5 @@ public interface XgPushService {
     PushLogDto pushAllDeviceIOS(PushMessageIosDto pushMessageIosDto);
 
 
+
 }
