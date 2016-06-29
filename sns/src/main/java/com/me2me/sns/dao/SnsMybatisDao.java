@@ -1,5 +1,6 @@
 package com.me2me.sns.dao;
 
+import com.me2me.common.utils.Lists;
 import com.me2me.sns.dto.GetSnsCircleDto;
 import com.me2me.sns.dto.SnsCircleDto;
 import com.me2me.sns.mapper.SnsCircleMapper;
@@ -27,7 +28,6 @@ public class SnsMybatisDao {
         SnsCircleExample.Criteria criteria = example.createCriteria();
         criteria.andOwnerEqualTo(uid);
         criteria.andInternalStatusEqualTo(type);
-        //// TODO: 2016/6/28
         return snsCircleMapper.selectByExample(example);
 
     }
@@ -43,5 +43,31 @@ public class SnsMybatisDao {
 
     }
 
+    public void createSnsCircle(long uid ,int internalStatus,long owner){
+        SnsCircle snsCircle = new SnsCircle();
+        snsCircle.setUid(uid);
+        snsCircle.setInternalStatus(internalStatus);
+        snsCircle.setOwner(owner);
+        snsCircleMapper.insertSelective(snsCircle);
+    }
+
+    public void deleteSnsCircle(long uid ,long owner){
+        SnsCircleExample example = new SnsCircleExample();
+        SnsCircleExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andOwnerEqualTo(owner);
+        snsCircleMapper.deleteByExample(example);
+    }
+
+    public void updateSnsCircle(long uid ,long owner ,int internalStatus){
+        SnsCircleExample example = new SnsCircleExample();
+        SnsCircleExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andOwnerEqualTo(owner);
+        List<SnsCircle> list = snsCircleMapper.selectByExample(example);
+        SnsCircle snsCircle = Lists.getSingle(list);
+        snsCircle.setInternalStatus(internalStatus);
+        snsCircleMapper.updateByPrimaryKeySelective(snsCircle);
+    }
 
 }
