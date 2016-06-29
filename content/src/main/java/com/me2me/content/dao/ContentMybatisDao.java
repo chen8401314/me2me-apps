@@ -453,4 +453,13 @@ public class ContentMybatisDao {
     }
 
 
+    public AtReview getAtReview(long reviewId, int type){
+        AtReviewExample example = new AtReviewExample();
+        AtReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andReviewIdEqualTo(reviewId);
+        criteria.andReviewTypeEqualTo(type);
+        List<AtReview> list = atReviewMapper.selectByExample(example);
+        return com.me2me.common.utils.Lists.getSingle(list);
+    }
+
 }

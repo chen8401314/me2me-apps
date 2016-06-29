@@ -880,6 +880,7 @@ public class ContentServiceImpl implements ContentService {
             reviewElement.setNickName(user.getNickName());
             contentDetailDto.getReviews().add(reviewElement);
         }
+
         //点赞top30
         List<ContentLikesDetails> contentLikesDetailsList = contentMybatisDao.getContentLikesDetails(id);
         for(ContentLikesDetails contentLikesDetails : contentLikesDetailsList){
@@ -1460,6 +1461,7 @@ public class ContentServiceImpl implements ContentService {
                 //获取内容图片数量
                 int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
                 hottestContentElement.setImageCount(imageCounts);
+
             }
             container.add(hottestContentElement);
         }
@@ -1811,4 +1813,5 @@ public class ContentServiceImpl implements ContentService {
         contentMybatisDao.createAtReview(atReview);
         return Response.success(ResponseStatus.AT_REVIEW_SUCCESS.status,ResponseStatus.AT_REVIEW_SUCCESS.message);
     }
+
 }

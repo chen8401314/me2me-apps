@@ -27,4 +27,8 @@ public class ReviewRequest extends Request{
     @Setter
     @Getter
     private int type;
+    
+    @Setter
+    @Getter
+    private int isAt;
 }

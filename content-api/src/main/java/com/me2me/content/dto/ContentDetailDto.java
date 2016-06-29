@@ -96,6 +96,35 @@ public class ContentDetailDto implements BaseEntity {
 
     }
 
+//    @Data
+//    public static class AtReviewElement implements BaseEntity{
+//
+//        private long fromUid;
+//
+//        private String fromNickName;
+//
+//        private String fromAvatar;
+//
+//        private long reviewId;
+//
+//        private long toUid;
+//
+//        private String toNickName;
+//
+//        private String toAvatar;
+//
+//        private String review;
+//
+//        private Date createTime;
+//
+//    }
+//
+//    private List<AtReviewElement> atReviewElements = Lists.newArrayList();
+//
+//    public static AtReviewElement createAtReviewElement(){
+//        return new AtReviewElement();
+//    }
+
     private List<LikeElement> likeElements = Lists.newArrayList();
 
     public static LikeElement createLikeElement(){

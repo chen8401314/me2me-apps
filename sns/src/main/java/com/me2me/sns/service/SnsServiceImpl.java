@@ -109,6 +109,18 @@ public class SnsServiceImpl implements SnsService {
         dto.setAction(action);
         //关注
         userService.follow(dto);
+        int isFollow = userService.isFollow(topic.getUid(),uid);
+        int internalStatus = 0;
+        if(isFollow == 1){
+            internalStatus = 1;
+        }
+        //关注
+        if(action == 0) {
+            snsMybatisDao.createSnsCircle(uid,internalStatus,topic.getUid());
+            //取消关注取消圈子信息
+        }else if(action == 1){
+            snsMybatisDao.deleteSnsCircle(uid,topic.getUid());
+        }
         liveService.setLive2(uid, topicId, topId, bottomId, action);
         return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status,ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
     }
@@ -125,12 +137,18 @@ public class SnsServiceImpl implements SnsService {
             liveService.setLive2(sourceUid, topic.getId(), 0, 0,action);
         }
         //关注
+        if(action == 0) {
+            snsMybatisDao.createSnsCircle(sourceUid,0,targetUid);
+            //取消关注取消圈子信息
+        }else if(action == 1){
+            snsMybatisDao.deleteSnsCircle(sourceUid,targetUid);
+        }
         return userService.follow(followDto);
     }
 
     @Override
-    public Response modifyCircle(long owner,long topicId ,long uid,int action) {
-
+    public Response modifyCircle(long owner,long topicId ,long uid,int internalStatus) {
+        snsMybatisDao.updateSnsCircle(uid ,owner ,internalStatus);
         return Response.success(ResponseStatus.MODIFY_CIRCLE_SUCCESS.status,ResponseStatus.MODIFY_CIRCLE_SUCCESS.message);
     }
 }
