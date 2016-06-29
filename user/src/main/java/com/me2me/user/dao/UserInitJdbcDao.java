@@ -32,4 +32,15 @@ public class UserInitJdbcDao extends BaseJdbcDao {
         return super.query(sql);
     }
 
+
+    public List<Map<String,Object>> getUserNoticeCounter(String value){
+        String sql = "SELECT to_uid as uid,count(to_uid) as counter from user_notice where push_status = 0 and notice_type in ("+value+") group by to_uid";
+        return super.query(sql);
+    }
+
+    public List<Map<String,Object>> getUserNoticeList(String value){
+        String sql = "SELECT id from user_notice where push_status = 0 and notice_type in ("+value+")";
+        return super.query(sql);
+    }
+
 }

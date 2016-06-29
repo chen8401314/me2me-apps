@@ -190,4 +190,6 @@ public interface UserService {
 
     List<User> getRobots(int limit);
 
+    void pushMessage();
+
 }

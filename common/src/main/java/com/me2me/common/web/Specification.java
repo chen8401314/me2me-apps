@@ -655,4 +655,20 @@ public interface Specification {
         }
     }
 
+    public enum PushStatus{
+
+        UN_PUSHED("未推送",0),
+
+        PUSHED("已推送",1);
+
+        public final String name;
+
+        public final int index;
+
+        PushStatus(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
 }

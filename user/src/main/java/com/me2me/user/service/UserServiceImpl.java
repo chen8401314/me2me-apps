@@ -1,5 +1,6 @@
 package com.me2me.user.service;
 
+import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.me2me.common.Constant;
 import com.me2me.common.security.SecurityUtils;
@@ -10,6 +11,7 @@ import com.me2me.monitor.service.MonitorService;
 import com.me2me.monitor.event.MonitorEvent;
 import com.me2me.sms.dto.*;
 import com.me2me.sms.service.SmsService;
+import com.me2me.sms.service.XgPushService;
 import com.me2me.user.dao.OldUserJdbcDao;
 import com.me2me.user.dao.UserInitJdbcDao;
 import com.me2me.user.dao.UserMybatisDao;
@@ -47,6 +49,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private MonitorService monitorService;
+
+    @Autowired
+    private XgPushService xgPushService;
 
 
     /**
@@ -982,5 +987,47 @@ public class UserServiceImpl implements UserService {
             users.add(user);
         }
         return users;
+    }
+    @Override
+    public void pushMessage() {
+        // 自己发布的日记被评论
+        // 自己发布的日记被贴了标签
+        // 自己的直播被评论
+        // 有用户关注了自己
+        // 关注的主播有了新直播
+        // 订阅的直播主播有更新
+        List<Map<String,Object>> list =  userInitJdbcDao.getUserNoticeCounter("3,4,1,2,6,5,9");
+        List<Map<String,Object>> updateList = userInitJdbcDao.getUserNoticeList("3,4,1,2,6,5,9");
+        for(Map map : list){
+            // 获取用户push_token
+            int counter = Integer.valueOf(map.get("counter").toString());
+            long uid = Long.valueOf(map.get("uid").toString());
+            System.out.println(uid);
+            UserDevice userDevice = userMybatisDao.getUserDevice(uid);
+            if(userDevice==null) {
+                continue;
+            }
+            int platform = userDevice.getPlatform();
+            if(platform == Specification.DevicePlatform.ANDROID.index){
+                // android
+                PushMessageAndroidDto message = new PushMessageAndroidDto();
+                message.setToken(userDevice.getDeviceNo());
+                message.setContent("你有"+counter+"条新消息！");
+                xgPushService.pushSingleDevice(message);
+            }else if(platform == Specification.DevicePlatform.IOS.index){
+                // ios
+                PushMessageIosDto message = new PushMessageIosDto();
+                message.setContent("你有"+counter+"条新消息！");
+                message.setToken(userDevice.getDeviceNo());
+                xgPushService.pushSingleDeviceIOS(message);
+            }
+        }
+        // 更新推送状态
+        for(Map map : updateList){
+            Long id = Long.valueOf(map.get("id").toString());
+            UserNotice userNotice = userMybatisDao.getUserNoticeById(id);
+            userNotice.setPushStatus(Specification.PushStatus.PUSHED.index);
+            userMybatisDao.updateUserNoticePushStatus(userNotice);
+        }
     }
 }

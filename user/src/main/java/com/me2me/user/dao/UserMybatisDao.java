@@ -452,6 +452,14 @@ public class UserMybatisDao {
         return (userNotices != null && userNotices.size() > 0) ? userNotices.get(0) : null;
     }
 
+    public UserNotice getUserNoticeById(long noticeId){
+        return userNoticeMapper.selectByPrimaryKey(noticeId);
+    }
+
+    public void updateUserNoticePushStatus(UserNotice userNotice){
+        userNoticeMapper.updateByPrimaryKeySelective(userNotice);
+    }
+
     public UserDevice getUserDevice(long uid){
         UserDeviceExample example = new UserDeviceExample();
         UserDeviceExample.Criteria criteria = example.createCriteria();
