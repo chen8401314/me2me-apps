@@ -7,7 +7,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>root</artifactId>
-    <packaging>jar</packaging>
+    <packaging>war</packaging>
 
     <dependencies>
         <!--<dependency>-->
@@ -26,6 +26,7 @@
             <groupId>org.eclipse.jetty</groupId>
             <artifactId>jetty-servlet</artifactId>
             <version>9.2.14.v20151106</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>com.me2me</groupId>
