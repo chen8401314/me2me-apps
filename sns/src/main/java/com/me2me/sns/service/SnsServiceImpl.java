@@ -58,12 +58,7 @@ public class SnsServiceImpl implements SnsService {
     public Response showMembers(long owner,long topicId ,long sinceId,int type) {
         ShowMembersDto showMembersDto = new ShowMembersDto();
         ShowMembersDto.UserElement user = showMembersDto.createUserElement();
-        user.setUid(315);
-        user.setAvatar(Constant.QINIU_DOMAIN + "/" + "FpXdLCD5Nhos0NbWPaLHcegzAiMe");
-        user.setNickName("小小宝");
-        user.setInternalStatus(0);
-        user.setIntroduced("我是一个小小宝");
-        showMembersDto.getMembers().add(user);
+        //List<SnsCircleDto> list = snsMybatisDao.
         return Response.success(ResponseStatus.SHOW_MEMBERS_SUCCESS.status,ResponseStatus.SHOW_MEMBERS_SUCCESS.message,showMembersDto);
     }
 
@@ -92,6 +87,7 @@ public class SnsServiceImpl implements SnsService {
 
     @Override
     public Response modifyCircle(long owner,long topicId ,long uid,int action) {
+
         return Response.success(ResponseStatus.MODIFY_CIRCLE_SUCCESS.status,ResponseStatus.MODIFY_CIRCLE_SUCCESS.message);
     }
 }

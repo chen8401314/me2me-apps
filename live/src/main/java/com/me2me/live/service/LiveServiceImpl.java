@@ -14,6 +14,7 @@ import com.me2me.content.service.ContentService;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.*;
 import com.me2me.live.model.*;
+import com.me2me.user.dto.FollowDto;
 import com.me2me.user.model.UserFollow;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
@@ -484,6 +485,32 @@ public class LiveServiceImpl implements LiveService {
             log.info("setLive end ...");
             return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status,ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
         }
+    }
+
+    /**
+     * 关注，取消关注
+     * @param uid
+     * @param topicId
+     * @return
+     */
+    @Override
+    public Response setLive2(long uid, long topicId,long topId,long bottomId,int action) {
+        setLive(uid, topicId, topId, bottomId);//关注操作
+        //关注主播
+        FollowDto dto = new FollowDto();
+        dto.setAction(action);
+        dto.setSourceUid(uid);
+        Topic topic = liveMybatisDao.getTopicById(topicId);
+        dto.setTargetUid(topic.getUid());
+        userService.follow(dto);
+        //订阅该主播所有直播
+        if(action == Specification.Favorite.FAVORITE.index) {
+            List<Topic> topicList = liveMybatisDao.getMyTopic(topic.getUid());
+            for (Topic myTopic : topicList) {
+                setLive(uid, myTopic.getId(), 0, 0);
+            }
+        }
+        return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status,ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
     }
 
     /**

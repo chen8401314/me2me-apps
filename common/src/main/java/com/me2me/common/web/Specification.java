@@ -617,4 +617,40 @@ public interface Specification {
         }
     }
 
+    public enum Favorite{
+
+        FAVORITE("订阅",1),
+
+        CANCEL_FAVORITE("取消订阅",2);
+
+        public final String name;
+
+        public final int index;
+
+        Favorite(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    public enum ModifyCircleType{
+
+        CORE_CIRCLE("邀请核心圈",1),
+
+        IN_CIRCLE("邀请圈内",2),
+
+        CANCEL_CORE_CIRCLE("踢出核心",1),
+
+        CANCEL_IN_CIRCLE("踢出圈内",2);
+
+        public final String name;
+
+        public final int index;
+
+        ModifyCircleType(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
 }

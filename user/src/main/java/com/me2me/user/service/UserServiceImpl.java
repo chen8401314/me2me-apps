@@ -554,11 +554,12 @@ public class UserServiceImpl implements UserService {
             //关注提醒
             push(followDto.getTargetUid(),followDto.getSourceUid(),Specification.PushMessageType.FOLLOW.index,null);
             log.info("follow push success");
+            //// TODO: 2016/6/28 关注之后默认订阅所有直播 
             monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW.index,0,followDto.getSourceUid()));
             log.info("monitor success");
             log.info("follow end ...");
             return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message);
-        }else if(followDto.getAction()==Specification.UserFollowAction.UN_FOLLOW.index){
+        }else if(followDto.getAction() == Specification.UserFollowAction.UN_FOLLOW.index){
             // 取消关注
             log.info("cancel follow");
             UserFollow ufw = userMybatisDao.getUserFollow(followDto.getSourceUid(),followDto.getTargetUid());
@@ -567,6 +568,7 @@ public class UserServiceImpl implements UserService {
             }
             monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.UN_FOLLOW.index,0,followDto.getSourceUid()));
             log.info("monitor success");
+            //// TODO: 2016/6/28 取关，取消所有直播订阅
             return Response.success(ResponseStatus.USER_CANCEL_FOLLOW_SUCCESS.status, ResponseStatus.USER_CANCEL_FOLLOW_SUCCESS.message);
         }else{
             log.info("illegal request");

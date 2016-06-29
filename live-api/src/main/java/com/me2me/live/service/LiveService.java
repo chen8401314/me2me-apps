@@ -60,6 +60,9 @@ public interface LiveService {
      */
     Response setLive(long uid,long topicId,long topId,long bottomId);
 
+
+    Response setLive2(long uid,long topicId,long topId,long bottomId,int action);
+
     /**
      * 结束自己当前直播
      * @param uid

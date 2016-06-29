@@ -41,4 +41,10 @@ public interface ActivityService {
     ActivityH5Dto getActivityH5(long id);
 
     ActivityDto getActivity(long id);
+
+    void createActivityReview(long id,long uid,String review);
+
+    void createActivityTagsDetails(long id,long uid,long tid);
+
+    void createActivityLikesDetails(long id,long uid);
 }

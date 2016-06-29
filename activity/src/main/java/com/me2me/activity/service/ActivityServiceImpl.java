@@ -2,8 +2,7 @@ package com.me2me.activity.service;
 
 import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dto.*;
-import com.me2me.activity.model.ActivityWithBLOBs;
-import com.me2me.activity.model.UserActivity;
+import com.me2me.activity.model.*;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
@@ -181,6 +180,33 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public ActivityDto getActivity(long id) {
         return null;
+    }
+
+    @Override
+    public void createActivityReview(long id, long uid, String review) {
+        ActivityReview activityReview = new ActivityReview();
+        activityReview.setActivityId(id);
+        activityReview.setReview(review);
+        activityReview.setUid(uid);
+        activityMybatisDao.createActivityReview(activityReview);
+    }
+
+    @Override
+    public void createActivityTagsDetails(long id, long uid, long tid) {
+        ActivityTagsDetails activityTagsDetails = new ActivityTagsDetails();
+        activityTagsDetails.setUid(uid);
+        activityTagsDetails.setActivityId(id);
+        activityTagsDetails.setTid(tid);
+        activityMybatisDao.createActivityTagsDetails(activityTagsDetails);
+    }
+
+    @Override
+    public void createActivityLikesDetails(long id, long uid) {
+        ActivityLikesDetails activityLikesDetails = new ActivityLikesDetails();
+        activityLikesDetails.setUid(uid);
+        activityLikesDetails.setActicityId(id);
+        activityMybatisDao.createActivityLikesDetails(activityLikesDetails);
+
     }
 
     public static void main(String[] args) {

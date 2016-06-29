@@ -132,6 +132,17 @@ public class Live extends BaseController {
     }
 
     /**
+     *  关注，取消关注
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/setLive2",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response setLive2(SetLiveRequest request){
+        return liveService.setLive2(request.getUid(),request.getTopicId(),request.getTopId(),request.getBottomId(),request.getAction());
+    }
+
+    /**
      * 获取所有正在直播列表
      * @param request
      * @return

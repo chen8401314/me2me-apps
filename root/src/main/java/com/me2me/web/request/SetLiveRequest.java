@@ -27,4 +27,8 @@ public class SetLiveRequest extends Request {
     @Getter
     @Setter
     private long bottomId;
+
+    @Getter
+    @Setter
+    private int action;
 }
