@@ -645,7 +645,7 @@ public class ContentServiceImpl implements ContentService {
         content.setHotValue(content.getHotValue()+1);
         contentMybatisDao.updateContentById(content);
         //添加提醒 UGC贴标签
-        userService.push(content.getUid(),writeTagDto.getUid(),Specification.PushMessageType.TAG.index,content.getTitle());
+        //userService.push(content.getUid(),writeTagDto.getUid(),Specification.PushMessageType.TAG.index,content.getTitle());
         monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FEELING_TAG.index,0,writeTagDto.getUid()));
         return Response.success(ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.status,ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.message);
     }
@@ -1635,7 +1635,7 @@ public class ContentServiceImpl implements ContentService {
         //添加提醒
         remind(content,reviewDto.getUid(),Specification.UserNoticeType.REVIEW.index,reviewDto.getReview());
         //自己的日记被评论提醒
-        userService.push(content.getUid(),reviewDto.getUid(),Specification.PushMessageType.REVIEW.index,content.getTitle());
+        //userService.push(content.getUid(),reviewDto.getUid(),Specification.PushMessageType.REVIEW.index,content.getTitle());
         return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
     */
         //return new ReviewAdapter(ReviewFactory.getInstance(reviewDto.getType())).execute(reviewDto);
