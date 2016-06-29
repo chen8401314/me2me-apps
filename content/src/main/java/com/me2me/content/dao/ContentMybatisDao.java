@@ -50,6 +50,9 @@ public class ContentMybatisDao {
     @Autowired
     private ArticleTagsDetailsMapper articleTagsDetailsMapper;
 
+    @Autowired
+    private AtReviewMapper atReviewMapper;
+
     public List<Content> loadSquareData(int sinceId){
         return contentMapper.loadSquareData(sinceId);
     }
@@ -443,6 +446,10 @@ public class ContentMybatisDao {
 
     public int countMyPublishByType(MyPublishDto myPublishDto) {
         return contentMapper.countMyPublishByType(myPublishDto);
+    }
+
+    public void createAtReview(AtReview atReview){
+        atReviewMapper.insertSelective(atReview);
     }
 
 

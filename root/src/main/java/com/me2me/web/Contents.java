@@ -1,10 +1,7 @@
 package com.me2me.web;
 
 import com.me2me.common.web.Response;
-import com.me2me.content.dto.ContentDto;
-import com.me2me.content.dto.LikeDto;
-import com.me2me.content.dto.ReviewDto;
-import com.me2me.content.dto.WriteTagDto;
+import com.me2me.content.dto.*;
 import com.me2me.content.service.ContentService;
 import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -274,6 +271,21 @@ public class Contents extends BaseController {
             request.setSinceId(Integer.MAX_VALUE);
         }
         return contentService.myPublishByType(request.getCustomerId(),request.getSinceId(),request.getType());
+    }
+
+    /**
+     * 用户日记列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/atReview",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response atReview(AtReviewRequest request){
+        AtReviewDto atReviewDto = new AtReviewDto();
+        atReviewDto.setReviewId(request.getReviewId());
+        atReviewDto.setReview(request.getReview());
+        atReviewDto.setFromUid(request.getUid());
+        return contentService.createAtReview(atReviewDto);
     }
 
 }

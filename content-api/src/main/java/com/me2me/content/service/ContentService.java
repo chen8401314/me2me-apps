@@ -10,7 +10,7 @@ import com.me2me.content.model.*;
  * Author: 赵朋扬
  * Date: 2016/3/22.
  */
-public interface ContentService {
+public interface ContentService{
 
     Response recommend(long uid,String emotion);
 
@@ -191,5 +191,7 @@ public interface ContentService {
     Response kingTopic(KingTopicDto kingTopic);
 
     Response myPublishByType(long uid ,int sinceId ,int type);
+
+    Response createAtReview(AtReviewDto atReviewDto);
 
 }
