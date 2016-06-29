@@ -5,6 +5,9 @@ import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
 import com.me2me.live.dto.LiveBarrageDto;
 import com.me2me.live.dto.SpeakDto;
+import com.me2me.live.model.Topic;
+
+import java.util.List;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -60,6 +63,9 @@ public interface LiveService {
      */
     Response setLive(long uid,long topicId,long topId,long bottomId);
 
+
+    Response setLive2(long uid,long topicId,long topId,long bottomId,int action);
+
     /**
      * 结束自己当前直播
      * @param uid
@@ -103,4 +109,8 @@ public interface LiveService {
     Response getMyLivesByUpdateTime(long uid,long updateTime);
 
     Response getInactiveLive(long uid,long updateTime);
+
+    Topic getTopicById(long topicId);
+
+    List<Topic> getTopicList(long uid);
 }

@@ -23,4 +23,5 @@ public class ModifyCircleRequest extends Request{
     @Getter
     @Setter
     private long topicId;
+
 }

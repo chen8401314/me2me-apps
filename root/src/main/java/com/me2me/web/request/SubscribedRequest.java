@@ -7,10 +7,11 @@ import lombok.Setter;
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 代宝磊
- * Date: 2016/4/13
- * Time :17:57
+ * Date: 2016/6/29
+ * Time :14:27
  */
-public class SetLiveRequest extends Request {
+public class SubscribedRequest extends Request{
+
 
     @Getter
     @Setter

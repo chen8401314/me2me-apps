@@ -287,6 +287,21 @@ public class LiveMybatisDao {
         return topicMapper.selectByExample(example);
     }
 
+    public List<Topic> getMyTopic(long uid){
+        TopicExample example = new TopicExample();
+        TopicExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
+        return topicMapper.selectByExample(example);
+    }
+
+    public void deleteLiveFavoriteByUid(long uid,long topicId){
+        LiveFavoriteExample example = new LiveFavoriteExample();
+        LiveFavoriteExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTopicIdEqualTo(topicId);
+        liveFavoriteMapper.deleteByExample(example);
+    }
 
 
 }

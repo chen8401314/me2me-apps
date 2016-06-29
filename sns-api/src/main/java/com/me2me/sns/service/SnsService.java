@@ -32,4 +32,8 @@ public interface SnsService {
 
     Response getCircleByType(long owner, long topicId, long sinceId,int type);
 
+    Response subscribed(long uid,long topicId,long topId,long bottomId,int action);
+
+    Response follow(int action,long targetUid,long sourceUid);
+
 }

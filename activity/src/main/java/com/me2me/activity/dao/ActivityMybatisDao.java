@@ -1,11 +1,8 @@
 package com.me2me.activity.dao;
 
 import com.google.common.base.Strings;
-import com.me2me.activity.mapper.ActivityMapper;
-import com.me2me.activity.mapper.UserActivityMapper;
-import com.me2me.activity.model.ActivityExample;
-import com.me2me.activity.model.ActivityWithBLOBs;
-import com.me2me.activity.model.UserActivity;
+import com.me2me.activity.mapper.*;
+import com.me2me.activity.model.*;
 import com.me2me.common.web.Specification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -26,6 +23,15 @@ public class ActivityMybatisDao {
 
     @Autowired
     private UserActivityMapper userActivityMapper;
+
+    @Autowired
+    private ActivityReviewMapper activityReviewMapper;
+
+    @Autowired
+    private ActivityTagsDetailsMapper activityTagsDetailsMapper;
+
+    @Autowired
+    private ActivityLikesDetailsMapper activityLikesDetailsMapper;
 
 
     public void saveActivity(ActivityWithBLOBs activity){
@@ -104,5 +110,31 @@ public class ActivityMybatisDao {
         criteria.andIdEqualTo(id);
         List<ActivityWithBLOBs> list = activityMapper.selectByExampleWithBLOBs(example);
         return list!=null&&list.size()>0?true:false;
+    }
+
+    public void createActivityReview(ActivityReview activityReview){
+        activityReviewMapper.insertSelective(activityReview);
+    }
+
+    public void createActivityTagsDetails(ActivityTagsDetails activityTagsDetails){
+        activityTagsDetailsMapper.insertSelective(activityTagsDetails);
+    }
+
+    public void createActivityLikesDetails(ActivityLikesDetails activityLikesDetails){
+        activityLikesDetailsMapper.insertSelective(activityLikesDetails);
+    }
+
+    public int getLikeCount(long id){
+        ActivityLikesDetailsExample example = new ActivityLikesDetailsExample();
+        ActivityLikesDetailsExample.Criteria criteria = example.createCriteria();
+        criteria.andActicityIdEqualTo(id);
+        return activityLikesDetailsMapper.countByExample(example);
+    }
+
+    public int getReviewCount(long id){
+        ActivityReviewExample example = new ActivityReviewExample();
+        ActivityReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andActivityIdEqualTo(id);
+        return activityReviewMapper.countByExample(example);
     }
 }

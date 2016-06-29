@@ -17,6 +17,8 @@ public class ReviewFactory {
             instance = SpringContextHolder.getBean(ContentReview.class);
         }else if(type == Specification.ReviewType.ARTICLE.index){
             instance = SpringContextHolder.getBean(ArticleReview.class);
+        }else if(type == Specification.ReviewType.ACTIVITY.index){
+            instance = SpringContextHolder.getBean(ActivityReview.class);
         }else{
             throw new RuntimeException("参数非法....");
         }

@@ -20,7 +20,7 @@ public class LikesFactory {
         }else if(type == Specification.LikesType.ARTICLE.index){
             instance = SpringContextHolder.getBean(ArticleLikes.class);
         }else if(type == Specification.LikesType.ACTIVITY.index){
-            instance = SpringContextHolder.getBean(ArticleLikes.class);
+            instance = SpringContextHolder.getBean(ActivityLikes.class);
         }
         else{
             throw new RuntimeException("参数非法....");

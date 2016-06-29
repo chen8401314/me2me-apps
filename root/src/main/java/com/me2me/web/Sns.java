@@ -1,11 +1,11 @@
 package com.me2me.web;
 
 import com.me2me.common.web.Response;
+import com.me2me.live.service.LiveService;
 import com.me2me.sns.service.SnsService;
-import com.me2me.web.request.GetCircleByTypeRequest;
-import com.me2me.web.request.ModifyCircleRequest;
-import com.me2me.web.request.ShowMemberConsoleRequest;
-import com.me2me.web.request.ShowMembersRequest;
+import com.me2me.user.dto.FollowDto;
+import com.me2me.user.service.UserService;
+import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -71,6 +71,33 @@ public class Sns extends BaseController {
             request.setSinceId(1);
         }
         return snsService.getCircleByType(request.getUid(),request.getTopicId(),request.getSinceId(),request.getType());
+    }
+
+
+    /**
+     * 订阅
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/subscribed",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response subscribed(SubscribedRequest request) {
+        return snsService.subscribed(request.getUid(),request.getTopicId(),request.getTopId(),request.getBottomId(),request.getAction());
+    }
+
+    /**
+     * 用户关注|取消关注
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/follow",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response follow(UserFollowRequest request){
+        FollowDto followDto = new FollowDto();
+        followDto.setAction(request.getAction());
+        followDto.setTargetUid(request.getTargetUid());
+        followDto.setSourceUid(request.getUid());
+        return snsService.follow(request.getAction(),request.getTargetUid(),request.getUid());
     }
 
 }

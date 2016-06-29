@@ -4,9 +4,13 @@ import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.live.model.Topic;
+import com.me2me.live.service.LiveService;
 import com.me2me.sns.dao.SnsMybatisDao;
 import com.me2me.sns.dto.*;
 import com.me2me.sns.model.SnsCircle;
+import com.me2me.user.dto.FollowDto;
+import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +26,12 @@ public class SnsServiceImpl implements SnsService {
 
     @Autowired
     private SnsMybatisDao snsMybatisDao;
+
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private LiveService liveService;
 
     @Override
     public Response showMemberConsole(long owner,long topicId ,long sinceId) {
@@ -58,12 +68,7 @@ public class SnsServiceImpl implements SnsService {
     public Response showMembers(long owner,long topicId ,long sinceId,int type) {
         ShowMembersDto showMembersDto = new ShowMembersDto();
         ShowMembersDto.UserElement user = showMembersDto.createUserElement();
-        user.setUid(315);
-        user.setAvatar(Constant.QINIU_DOMAIN + "/" + "FpXdLCD5Nhos0NbWPaLHcegzAiMe");
-        user.setNickName("小小宝");
-        user.setInternalStatus(0);
-        user.setIntroduced("我是一个小小宝");
-        showMembersDto.getMembers().add(user);
+        //List<SnsCircleDto> list = snsMybatisDao.
         return Response.success(ResponseStatus.SHOW_MEMBERS_SUCCESS.status,ResponseStatus.SHOW_MEMBERS_SUCCESS.message,showMembersDto);
     }
 
@@ -91,7 +96,41 @@ public class SnsServiceImpl implements SnsService {
     }
 
     @Override
+    public Response subscribed(long uid,long topicId, long topId, long bottomId, int action) {
+        Topic topic = liveService.getTopicById(topicId);
+        List<Topic> list = liveService.getTopicList(topic.getUid());
+        for(Topic live : list){
+            //订阅所有直播
+            liveService.setLive2(uid,live.getId(),0,0,action);
+        }
+        FollowDto dto = new FollowDto();
+        dto.setSourceUid(uid);
+        dto.setTargetUid(topic.getUid());
+        dto.setAction(action);
+        //关注
+        userService.follow(dto);
+        liveService.setLive2(uid, topicId, topId, bottomId, action);
+        return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status,ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
+    }
+
+    @Override
+    public Response follow(int action, long targetUid, long sourceUid) {
+        FollowDto followDto = new FollowDto();
+        followDto.setSourceUid(sourceUid);
+        followDto.setTargetUid(targetUid);
+        followDto.setAction(action);
+        List<Topic> list = liveService.getTopicList(targetUid);
+        for (Topic topic : list) {
+            //订阅所有直播
+            liveService.setLive2(sourceUid, topic.getId(), 0, 0,action);
+        }
+        //关注
+        return userService.follow(followDto);
+    }
+
+    @Override
     public Response modifyCircle(long owner,long topicId ,long uid,int action) {
+
         return Response.success(ResponseStatus.MODIFY_CIRCLE_SUCCESS.status,ResponseStatus.MODIFY_CIRCLE_SUCCESS.message);
     }
 }

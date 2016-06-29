@@ -434,23 +434,25 @@ public interface Specification {
 
         LIKE("点赞",0),
 
-        TAG("贴标",1),
+        TAG("日记贴标",1),
 
-        LIVE_TAG("贴标",2),
+        LIVE_TAG("直播贴标",2),
 
         REVIEW("评论",3),
 
-        LIVE_REVIEW("评论",4),
+        LIVE_REVIEW("直播评论",4),
 
         LIVE("关注的人开播",5),
 
         FOLLOW("关注",6),
 
-        HOTTEST("上最热",7),
+        HOTTEST("日记上最热",7),
 
-        LIVE_HOTTEST("上最热",8),
+        LIVE_HOTTEST("直播上最热",8),
 
-        UPDATE("收藏的直播有更新",9);
+        UPDATE("收藏的直播有更新",9),
+
+        AT("有人@我",10);
 
         public final String name;
 
@@ -612,6 +614,42 @@ public interface Specification {
         public final int index;
 
         SnsCircle(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    public enum Favorite{
+
+        FAVORITE("订阅",1),
+
+        CANCEL_FAVORITE("取消订阅",2);
+
+        public final String name;
+
+        public final int index;
+
+        Favorite(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    public enum ModifyCircleType{
+
+        CORE_CIRCLE("邀请核心圈",1),
+
+        IN_CIRCLE("邀请圈内",2),
+
+        CANCEL_CORE_CIRCLE("踢出核心",1),
+
+        CANCEL_IN_CIRCLE("踢出圈内",2);
+
+        public final String name;
+
+        public final int index;
+
+        ModifyCircleType(String name,int index){
             this.name = name;
             this.index = index;
         }
