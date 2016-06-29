@@ -141,6 +141,9 @@ public class ActivityServiceImpl implements ActivityService {
             String hashTitle = matcher.group(2);
             // 获取hash title
             ActivityWithBLOBs activityWithBLOBs = activityMybatisDao.getActivityByHashTitle(hashTitle);
+            if(activityWithBLOBs==null){
+                return;
+            }
             // 判断当前活动是否过期
             if(activityMybatisDao.isEnd(activityWithBLOBs.getId())) {
                 activityWithBLOBs.setPersonTimes(activityWithBLOBs.getPersonTimes() + 1);
