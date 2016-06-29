@@ -85,9 +85,9 @@ public enum  ResponseStatus {
 
     GET_LIVES_SUCCESS("获取直播列表成功","get lives success",20036),
 
-    SET_LIVE_FAVORITE_SUCCESS("关注成功","set live favorite success",20037),
+    SET_LIVE_FAVORITE_SUCCESS("订阅成功","set live favorite success",20037),
 
-    CANCEL_LIVE_FAVORITE_SUCCESS("取消关注成功","cancel live favorite success",20038),
+    CANCEL_LIVE_FAVORITE_SUCCESS("取消订阅成功","cancel live favorite success",20038),
 
     USER_FOLLOW_SUCCESS("关注成功","user follow success",20039),
 

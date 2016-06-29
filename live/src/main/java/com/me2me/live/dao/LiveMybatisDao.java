@@ -34,6 +34,9 @@ public class LiveMybatisDao {
     @Autowired
     private TopicBarrageMapper topicBarrageMapper;
 
+    @Autowired
+    private LiveFavoriteDeleteMapper liveFavoriteDeleteMapper;
+
 
 
     public void createTopic(Topic topic){
@@ -301,6 +304,21 @@ public class LiveMybatisDao {
         criteria.andUidEqualTo(uid);
         criteria.andTopicIdEqualTo(topicId);
         liveFavoriteMapper.deleteByExample(example);
+    }
+
+    public void createFavoriteDelete(long uid,long topicId){
+        LiveFavoriteDelete liveFavoriteDelete = new LiveFavoriteDelete();
+        liveFavoriteDelete.setUid(uid);
+        liveFavoriteDelete.setTopicId(topicId);
+        liveFavoriteDeleteMapper.insertSelective(liveFavoriteDelete);
+    }
+
+    public void deleteFavoriteDelete(long uid,long topicId){
+        LiveFavoriteDeleteExample example = new LiveFavoriteDeleteExample();
+        LiveFavoriteDeleteExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTopicIdEqualTo(topicId);
+        liveFavoriteDeleteMapper.deleteByExample(example);
     }
 
 

@@ -504,6 +504,7 @@ public class LiveServiceImpl implements LiveService {
                 liveFavorite.setTopicId(topicId);
                 liveFavorite.setUid(uid);
                 liveMybatisDao.createLiveFavorite(liveFavorite);
+                liveMybatisDao.deleteFavoriteDelete(uid,topicId);
                 //保存弹幕
                 TopicBarrage barrage = liveMybatisDao.getBarrage(topicId, topId, bottomId, Specification.LiveSpeakType.SUBSCRIBED.index, uid);
                 if (barrage == null) {
@@ -525,6 +526,7 @@ public class LiveServiceImpl implements LiveService {
         } else if (action == 1) {
             if (liveFavorite != null) {
                 liveMybatisDao.deleteLiveFavorite(liveFavorite);
+                liveMybatisDao.createFavoriteDelete(uid,topicId);
                 if ((content.getFavoriteCount() - 1) < 0) {
                     content.setFavoriteCount(0);
                 } else {

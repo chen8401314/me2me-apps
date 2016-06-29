@@ -296,6 +296,7 @@
     select count(*)  from user_profile u
     left join sns_circle c on u.uid = c.uid
     where c.owner = #{uid,jdbcType=BIGINT} and c.internal_status = #{type,jdbcType=INTEGER}
+    and u.uid in (select uid from live_favorite_delete where topic_id = #{topicId,jdbcType=BIGINT} )
   </select>
 
 </mapper>
