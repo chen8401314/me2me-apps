@@ -47,4 +47,8 @@ public interface ActivityService {
     void createActivityTagsDetails(long id,long uid,long tid);
 
     void createActivityLikesDetails(long id,long uid);
+
+    int getLikeCount(long id);
+
+    int getReviewCount(long id);
 }

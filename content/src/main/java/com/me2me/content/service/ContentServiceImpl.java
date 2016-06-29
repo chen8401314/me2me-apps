@@ -1368,6 +1368,8 @@ public class ContentServiceImpl implements ContentService {
                 int follow = userService.isFollow(activity.getUid(), uid);
                 activityElement.setIsFollowed(follow);
                 activityElement.setId(activity.getId());
+                activityElement.setReviewCount(activityService.getReviewCount(activity.getId()));
+                activityElement.setLikeCount(activityService.getLikeCount(activity.getId()));
                 hottestDto.getActivityData().add(activityElement);
             }
         }

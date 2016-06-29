@@ -209,6 +209,16 @@ public class ActivityServiceImpl implements ActivityService {
 
     }
 
+    @Override
+    public int getLikeCount(long id) {
+        return activityMybatisDao.getLikeCount(id);
+    }
+
+    @Override
+    public int getReviewCount(long id) {
+        return activityMybatisDao.getReviewCount(id);
+    }
+
     public static void main(String[] args) {
         Pattern pattern = Pattern.compile("(.*)(#.{0,128}#)(.*)");
         Matcher matcher = pattern.matcher("#中国人#");

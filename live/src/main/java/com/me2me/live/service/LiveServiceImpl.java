@@ -495,22 +495,47 @@ public class LiveServiceImpl implements LiveService {
      */
     @Override
     public Response setLive2(long uid, long topicId,long topId,long bottomId,int action) {
-        setLive(uid, topicId, topId, bottomId);//关注操作
-        //关注主播
-        FollowDto dto = new FollowDto();
-        dto.setAction(action);
-        dto.setSourceUid(uid);
-        Topic topic = liveMybatisDao.getTopicById(topicId);
-        dto.setTargetUid(topic.getUid());
-        userService.follow(dto);
-        //订阅该主播所有直播
-        if(action == Specification.Favorite.FAVORITE.index) {
-            List<Topic> topicList = liveMybatisDao.getMyTopic(topic.getUid());
-            for (Topic myTopic : topicList) {
-                setLive(uid, myTopic.getId(), 0, 0);
+        log.info("setLive2 start ...");
+        LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid, topicId);
+        Content content = contentService.getContentByTopicId(topicId);
+        if (action == 0) {
+            if (liveFavorite == null) {
+                liveFavorite = new LiveFavorite();
+                liveFavorite.setTopicId(topicId);
+                liveFavorite.setUid(uid);
+                liveMybatisDao.createLiveFavorite(liveFavorite);
+                //保存弹幕
+                TopicBarrage barrage = liveMybatisDao.getBarrage(topicId, topId, bottomId, Specification.LiveSpeakType.SUBSCRIBED.index, uid);
+                if (barrage == null) {
+                    TopicBarrage topicBarrage = new TopicBarrage();
+                    topicBarrage.setBottomId(bottomId);
+                    topicBarrage.setTopicId(topicId);
+                    topicBarrage.setTopId(topId);
+                    topicBarrage.setContentType(0);
+                    topicBarrage.setType(Specification.LiveSpeakType.SUBSCRIBED.index);
+                    topicBarrage.setUid(uid);
+                    //保存弹幕
+                    liveMybatisDao.createTopicBarrage(topicBarrage);
+                }
+                content.setFavoriteCount(content.getFavoriteCount() + 1);
+                contentService.updateContentById(content);
+                log.info("setLive2 end ...");
             }
+            return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
+        } else if (action == 1) {
+            if (liveFavorite != null) {
+                liveMybatisDao.deleteLiveFavorite(liveFavorite);
+                if ((content.getFavoriteCount() - 1) < 0) {
+                    content.setFavoriteCount(0);
+                } else {
+                    content.setFavoriteCount(content.getFavoriteCount() - 1);
+                }
+                contentService.updateContentById(content);
+                log.info("setLive end ...");
+            }
+            return Response.success(ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.message);
         }
-        return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status,ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
+        return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status,ResponseStatus.ILLEGAL_REQUEST.message);
     }
 
     /**
@@ -672,5 +697,17 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status,ResponseStatus.GET_MY_LIVE_SUCCESS.message,showTopicListDto);
     }
 
+    public Topic getTopicById(long topicId){
+        return liveMybatisDao.getTopicById(topicId);
+    }
+
+    public List<Topic> getTopicList(long uid) {
+        return liveMybatisDao.getMyTopic(uid);
+    }
+
+
+    public void deleteLiveFavoriteByUid(long uid,long topicId){
+       liveMybatisDao.deleteLiveFavoriteByUid(uid,topicId);
+    }
 
 }

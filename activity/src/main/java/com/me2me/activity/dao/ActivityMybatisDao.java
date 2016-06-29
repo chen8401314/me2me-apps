@@ -123,4 +123,18 @@ public class ActivityMybatisDao {
     public void createActivityLikesDetails(ActivityLikesDetails activityLikesDetails){
         activityLikesDetailsMapper.insertSelective(activityLikesDetails);
     }
+
+    public int getLikeCount(long id){
+        ActivityLikesDetailsExample example = new ActivityLikesDetailsExample();
+        ActivityLikesDetailsExample.Criteria criteria = example.createCriteria();
+        criteria.andActicityIdEqualTo(id);
+        return activityLikesDetailsMapper.countByExample(example);
+    }
+
+    public int getReviewCount(long id){
+        ActivityReviewExample example = new ActivityReviewExample();
+        ActivityReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andActivityIdEqualTo(id);
+        return activityReviewMapper.countByExample(example);
+    }
 }
