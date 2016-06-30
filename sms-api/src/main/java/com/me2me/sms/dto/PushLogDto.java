@@ -16,6 +16,6 @@ public class PushLogDto implements BaseEntity{
 
     private String content;
 
-    private int meaageType;
+    private int messageType;
 
 }

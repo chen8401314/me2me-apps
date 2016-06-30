@@ -15,8 +15,8 @@ public class MessageNotificationAdapter {
     private int type;
 
 
-    public void notice(String content, long targetUid, long sourceUid){
-        MessageNotificationFactory.getInstance(type).notice(content,targetUid,sourceUid);
+    public void notice(String content, long targetUid, long sourceUid,int type){
+        MessageNotificationFactory.getInstance(type).notice(content,targetUid,sourceUid,type);
     }
 
 }

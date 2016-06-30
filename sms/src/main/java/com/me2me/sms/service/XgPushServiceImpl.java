@@ -1,12 +1,16 @@
 package com.me2me.sms.service;
 
+import com.google.common.collect.Maps;
 import com.me2me.sms.dto.PushLogDto;
 import com.me2me.sms.dto.PushMessageAndroidDto;
 import com.me2me.sms.dto.PushMessageIosDto;
+import com.sun.javafx.collections.MappingChange;
 import com.tencent.xinge.*;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 
 /**
@@ -105,6 +109,9 @@ public class XgPushServiceImpl implements XgPushService {
         message.setContent(pushMessageAndroidDto.getContent());
         message.setType(Message.TYPE_NOTIFICATION);
         message.setExpireTime(EXPIRE_TIME);
+        Map<String,Object> map = Maps.newHashMap();
+        map.put("messageType",pushMessageAndroidDto.getMessageType());
+        message.setCustom(map);
         message.setStyle(new Style(1,1,0,1,0));
         return message;
     }
@@ -114,9 +121,11 @@ public class XgPushServiceImpl implements XgPushService {
         message.setExpireTime(EXPIRE_TIME_IOS);
         message.setAlert(pushMessageIosDto.getContent());
         message.setBadge(BADGE_IOS);
+        Map<String,Object> map = Maps.newHashMap();
+        map.put("messageType",pushMessageIosDto.getMessageType());
+        message.setCustom(map);
         TimeInterval acceptTime = new TimeInterval(0,0,23,59);
         message.addAcceptTime(acceptTime);
-        message.setCustom(pushMessageIosDto.getCustom());
         return message;
     }
 

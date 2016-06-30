@@ -13,9 +13,9 @@ import org.springframework.stereotype.Component;
 public class LiveMessageNotification extends AbstractMessageNotification implements MessageNotification {
 
     @Override
-    public void notice(String title, long targetUid, long sourceUid) {
+    public void notice(String title, long targetUid, long sourceUid,int type) {
         UserProfile userProfile = userService.getUserProfileByUid(sourceUid);
         String content = TEMPLATE_LIVE.replace("${title}",title).replace("${nickName}",userProfile.getNickName());
-        super.notice(content,targetUid,sourceUid);
+        super.notice(content,targetUid,sourceUid,type);
     }
 }

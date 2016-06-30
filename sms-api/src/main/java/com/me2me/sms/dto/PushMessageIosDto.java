@@ -21,6 +21,6 @@ public class PushMessageIosDto implements BaseEntity {
 
     private String token;
 
-    private Map<String,Object> custom = Maps.newHashMap();
+    private int messageType;
 
 }

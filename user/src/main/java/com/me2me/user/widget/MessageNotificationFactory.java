@@ -39,6 +39,8 @@ public class MessageNotificationFactory {
             //你关注的直播有了新的更新了
         } else if (type == Specification.PushMessageType.LIVE.index) {
             instance = SpringContextHolder.getBean(LiveMessageNotification.class);
+        } else if (type == Specification.PushMessageType.AT.index) {
+            instance = SpringContextHolder.getBean(AtMessageNotification.class);
         }
         return instance;
     }

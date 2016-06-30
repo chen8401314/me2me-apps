@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 public class UpdateMessageNotification extends AbstractMessageNotification implements MessageNotification {
 
     @Override
-    public void notice(String title, long targetUid, long sourceUid) {
+    public void notice(String title, long targetUid, long sourceUid,int type) {
         String content = TEMPLATE_UPDATES.replace("${title}",title);
-        super.notice(content,targetUid,sourceUid);
+        super.notice(content,targetUid,sourceUid,type);
     }
 }

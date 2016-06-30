@@ -24,7 +24,7 @@ public class AbstractMessageNotification {
     @Autowired
     protected UserService userService;
 
-    public void notice(String content, long targetUid, long sourceUid){
+    public void notice(String content, long targetUid, long sourceUid,int type){
         if(targetUid == sourceUid ){
             return;
         }
@@ -34,15 +34,16 @@ public class AbstractMessageNotification {
             pushMessageDto.setToken(device.getDeviceNo());
             pushMessageDto.setDevicePlatform(device.getPlatform());
             pushMessageDto.setContent(content);
+            pushMessageDto.setType(type);
             if (device.getPlatform() == 1) {
                 PushMessageAndroidDto pushMessageAndroidDto = new PushMessageAndroidDto();
                 pushMessageAndroidDto.setTitle(pushMessageDto.getContent());
                 pushMessageAndroidDto.setToken(device.getDeviceNo());
-                pushMessageAndroidDto.setMessageType(Specification.PushMessageType.LIVE_TAG.index);
+                pushMessageAndroidDto.setMessageType(type);
                 pushMessageAndroidDto.setContent(pushMessageDto.getContent());
                 PushLogDto pushLogDto = xgPushService.pushSingleDevice(pushMessageAndroidDto);
                 if (pushLogDto != null) {
-                    pushLogDto.setMeaageType(Specification.PushMessageType.LIVE_TAG.index);
+                    pushLogDto.setMessageType(type);
                     userService.createPushLog(pushLogDto);
                 }
             } else {
@@ -50,9 +51,10 @@ public class AbstractMessageNotification {
                 pushMessageIosDto.setTitle(pushMessageDto.getContent());
                 pushMessageIosDto.setToken(device.getDeviceNo());
                 pushMessageIosDto.setContent(pushMessageDto.getContent());
+                pushMessageIosDto.setMessageType(type);
                 PushLogDto pushLogDto = xgPushService.pushSingleDeviceIOS(pushMessageIosDto);
                 if (pushLogDto != null) {
-                    pushLogDto.setMeaageType(Specification.PushMessageType.LIVE_TAG.index);
+                    pushLogDto.setMessageType(type);
                     userService.createPushLog(pushLogDto);
                 }
             }

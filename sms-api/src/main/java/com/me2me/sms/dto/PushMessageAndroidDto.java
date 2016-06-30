@@ -21,7 +21,6 @@ public class PushMessageAndroidDto implements BaseEntity{
     //token
     private String token;
 
-    //消息类型 1 message 2 notification 0 ids传0
     private int messageType;
 
 
