@@ -41,6 +41,7 @@ public class PublishUGC extends AbstractPublish implements Publish {
         log.info("join Activity");
         monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.CONTENT_PUBLISH.index,0,contentDto.getUid()));
         log.info("monitor PublishUGC ");
+        contentDto.setTitle("");
         Response response =  super.publish(contentDto);
         if(response.getData() instanceof CreateContentSuccessDto){
             CreateContentSuccessDto contentSuccessDto = (CreateContentSuccessDto) response.getData();
