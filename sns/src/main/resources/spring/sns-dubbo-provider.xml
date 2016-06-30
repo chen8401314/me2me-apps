@@ -17,5 +17,5 @@
 
     <import resource="mysql-context.xml"/>
 
-    <import resource="user-context.xml"/>
+    <import resource="sns-context.xml"/>
 </beans>
