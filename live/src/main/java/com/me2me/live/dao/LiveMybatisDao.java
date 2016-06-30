@@ -51,7 +51,7 @@ public class LiveMybatisDao {
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andIdGreaterThan(sinceId);
-        example.setOrderByClause("id asc limit 10 "  );
+        example.setOrderByClause("id asc limit 100 "  );
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
 
