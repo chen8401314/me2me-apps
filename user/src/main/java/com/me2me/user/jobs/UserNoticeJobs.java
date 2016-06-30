@@ -19,9 +19,10 @@ public class UserNoticeJobs {
     private UserService userService;
 
     // @Scheduled(cron = "0 * */1 * * ?")
-    @Scheduled(cron = "0 0 */1 * * ?")
+    @Scheduled(cron = "* */15 * * * ?")
     public void push(){
-        userService.pushMessage();
+        System.out.println("fdsfds");
+        // userService.pushMessage();
     }
 
 }
