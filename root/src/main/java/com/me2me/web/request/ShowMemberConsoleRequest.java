@@ -12,10 +12,6 @@ import lombok.Setter;
  */
 public class ShowMemberConsoleRequest extends Request {
 
-    @Getter
-    @Setter
-    private long sinceId;
-
     @Setter
     @Getter
     private long topicId;

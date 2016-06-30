@@ -38,7 +38,7 @@ public class SnsServiceImpl implements SnsService {
         ShowMemberConsoleDto showMemberConsoleDto = new ShowMemberConsoleDto();
         GetSnsCircleDto dto = new GetSnsCircleDto();
         dto.setUid(owner);
-        dto.setSinceId((sinceId-1)*10);
+        dto.setSinceId(0);
         dto.setTopicId(topicId);
         dto.setType(Specification.SnsCircle.IN.index);
         List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto);
