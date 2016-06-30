@@ -1,6 +1,5 @@
 package com.me2me.user.service;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Lists;
 import com.me2me.common.Constant;
 import com.me2me.common.security.SecurityUtils;

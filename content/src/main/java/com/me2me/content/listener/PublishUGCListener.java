@@ -6,14 +6,10 @@ import com.me2me.content.dto.LikeDto;
 import com.me2me.content.event.PublishUGCEvent;
 import com.me2me.content.service.ContentService;
 import com.me2me.core.event.ApplicationEventBus;
-import com.me2me.monitor.event.MonitorEvent;
-import com.me2me.monitor.model.AccessTrack;
-import com.me2me.monitor.service.MonitorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.Date;
 
 /**
  * 上海拙心网络科技有限公司出品

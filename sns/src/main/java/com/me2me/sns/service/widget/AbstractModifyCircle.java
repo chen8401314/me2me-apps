@@ -1,6 +1,5 @@
 package com.me2me.sns.service.widget;
 
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 上海拙心网络科技有限公司出品

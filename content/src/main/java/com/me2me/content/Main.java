@@ -1,10 +1,7 @@
 package com.me2me.content;
 
-import sun.nio.ch.ThreadPool;
 
 import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 /**
  * 上海拙心网络科技有限公司出品

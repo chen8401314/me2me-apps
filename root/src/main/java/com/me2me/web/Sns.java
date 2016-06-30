@@ -1,10 +1,8 @@
 package com.me2me.web;
 
 import com.me2me.common.web.Response;
-import com.me2me.live.service.LiveService;
 import com.me2me.sns.service.SnsService;
 import com.me2me.user.dto.FollowDto;
-import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

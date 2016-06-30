@@ -1,7 +1,5 @@
 package com.me2me.article.dao;
 
-import com.google.common.collect.Lists;
-import com.me2me.article.dto.FeedDto;
 import com.me2me.article.mapper.AlbumImageMapper;
 import com.me2me.article.mapper.ArticleMapper;
 import com.me2me.article.mapper.ArticleTypeMapper;

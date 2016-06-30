@@ -7,7 +7,6 @@ package com.me2me.common.web;
  */
 
 import com.me2me.common.security.SecurityUtils;
-import com.me2me.common.utils.CommonUtils;
 import lombok.Getter;
 import lombok.Setter;
 

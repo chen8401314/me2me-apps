@@ -1,8 +1,5 @@
 package com.me2me.user.widget;
 
-import com.me2me.sms.dto.PushMessageAndroidDto;
-import com.me2me.sms.dto.PushMessageDto;
-import com.me2me.sms.dto.PushMessageIosDto;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -20,7 +17,7 @@ public interface MessageNotification {
     static final String TEMPLATE_FOLLOW= "${nickName}关注了你";
     static final String TEMPLATE_UPDATES = "你订阅的直播：${title}更新了";
     static final String TEMPLATE_LIVE = "你关注的主播${nickName}有了新直播：${title}";
-    static final String TEMPLATE_AT = "用户昵称${nickName}了你";
+    static final String TEMPLATE_AT = "用户昵称${nickName}@了你";
 
 
     /**

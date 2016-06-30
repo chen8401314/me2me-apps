@@ -1,7 +1,5 @@
 package com.me2me.sns.service.widget;
 
-import com.me2me.common.web.Specification;
-import com.me2me.core.SpringContextHolder;
 
 /**
  * 上海拙心网络科技有限公司出品

@@ -1,7 +1,6 @@
 package com.me2me.user.dao;
 
 import com.me2me.common.web.Specification;
-import com.me2me.core.security.*;
 import com.me2me.sms.dto.PushLogDto;
 import com.me2me.user.dto.*;
 import com.me2me.user.mapper.*;

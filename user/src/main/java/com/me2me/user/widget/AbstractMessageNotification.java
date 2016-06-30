@@ -1,6 +1,5 @@
 package com.me2me.user.widget;
 
-import com.me2me.common.web.Specification;
 import com.me2me.sms.dto.PushLogDto;
 import com.me2me.sms.dto.PushMessageAndroidDto;
 import com.me2me.sms.dto.PushMessageDto;
