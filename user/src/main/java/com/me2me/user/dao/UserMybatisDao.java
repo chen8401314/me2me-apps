@@ -484,7 +484,7 @@ public class UserMybatisDao {
     public void createPushLog(PushLogDto pushLogDto){
         XingePushLog pushLog = new XingePushLog();
         pushLog.setContent(pushLogDto.getContent());
-        pushLog.setMessageType(pushLogDto.getMeaageType());
+        pushLog.setMessageType(pushLogDto.getMessageType());
         pushLog.setRetCode(pushLogDto.getRetCode());
         xingePushLogMapper.insert(pushLog);
     }
