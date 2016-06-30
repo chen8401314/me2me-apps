@@ -99,4 +99,6 @@ public interface SnsCircleMapper {
     List<SnsCircleDto> getSnsCircle(GetSnsCircleDto getSnsCircleDto);
 
     int getSnsCircleCount(GetSnsCircleDto getSnsCircleDto);
+
+    List<SnsCircleDto> getSnsCircleMember(GetSnsCircleDto getSnsCircleDto);
 }

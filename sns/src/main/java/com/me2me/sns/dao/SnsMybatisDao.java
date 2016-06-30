@@ -32,7 +32,6 @@ public class SnsMybatisDao {
 
     }
 
-
     public List<SnsCircleDto> getSnsCircle(GetSnsCircleDto getSnsCircleDto){
         return snsCircleMapper.getSnsCircle(getSnsCircleDto);
 
@@ -77,6 +76,11 @@ public class SnsMybatisDao {
         SnsCircle snsCircle = Lists.getSingle(list);
         snsCircle.setInternalStatus(internalStatus);
         snsCircleMapper.updateByPrimaryKeySelective(snsCircle);
+    }
+
+    public List<SnsCircleDto> getSnsCircleMember(GetSnsCircleDto getSnsCircleDto){
+        return snsCircleMapper.getSnsCircleMember(getSnsCircleDto);
+
     }
 
 }

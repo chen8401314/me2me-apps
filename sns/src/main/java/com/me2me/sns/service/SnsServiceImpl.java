@@ -8,7 +8,6 @@ import com.me2me.live.model.Topic;
 import com.me2me.live.service.LiveService;
 import com.me2me.sns.dao.SnsMybatisDao;
 import com.me2me.sns.dto.*;
-import com.me2me.sns.model.SnsCircle;
 import com.me2me.user.dto.FollowDto;
 import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -67,8 +66,21 @@ public class SnsServiceImpl implements SnsService {
     @Override
     public Response showMembers(long owner,long topicId ,long sinceId,int type) {
         ShowMembersDto showMembersDto = new ShowMembersDto();
-        ShowMembersDto.UserElement user = showMembersDto.createUserElement();
-        //List<SnsCircleDto> list = snsMybatisDao.
+        GetSnsCircleDto dto = new GetSnsCircleDto();
+        dto.setUid(owner);
+        dto.setSinceId((sinceId-1)*10);
+        dto.setTopicId(topicId);
+        dto.setType(type);
+        List<SnsCircleDto> list = snsMybatisDao.getSnsCircleMember(dto);
+        for(SnsCircleDto circleDto : list){
+            ShowMembersDto.UserElement userElement = showMembersDto.createUserElement();
+            userElement.setUid(circleDto.getUid());
+            userElement.setAvatar(Constant.QINIU_DOMAIN + "/" + circleDto.getAvatar());
+            userElement.setIntroduced(circleDto.getIntroduced());
+            userElement.setNickName(circleDto.getNickName());
+            userElement.setInternalStatus(circleDto.getInternalStatus());
+            showMembersDto.getMembers().add(userElement);
+        }
         return Response.success(ResponseStatus.SHOW_MEMBERS_SUCCESS.status,ResponseStatus.SHOW_MEMBERS_SUCCESS.message,showMembersDto);
     }
 
