@@ -34,7 +34,7 @@ public class SnsServiceImpl implements SnsService {
     private LiveService liveService;
 
     @Override
-    public Response showMemberConsole(long owner,long topicId ,long sinceId) {
+    public Response showMemberConsole(long owner,long topicId) {
         ShowMemberConsoleDto showMemberConsoleDto = new ShowMemberConsoleDto();
         GetSnsCircleDto dto = new GetSnsCircleDto();
         dto.setUid(owner);

@@ -14,7 +14,7 @@ public interface SnsService {
      * 获取成员列表
      * @return
      */
-    Response showMemberConsole(long owner,long topicId ,long sinceId);
+    Response showMemberConsole(long owner,long topicId);
 
 
     /**

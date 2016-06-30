@@ -34,7 +34,7 @@ public class Sns extends BaseController {
     @RequestMapping(value = "/showMemberConsole",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response showMemberConsole(ShowMemberConsoleRequest request){
-        return snsService.showMemberConsole(request.getUid(),request.getTopicId(),request.getSinceId());
+        return snsService.showMemberConsole(request.getUid(),request.getTopicId());
     }
 
     /**
