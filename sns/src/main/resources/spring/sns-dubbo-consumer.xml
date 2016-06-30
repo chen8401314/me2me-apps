@@ -7,10 +7,12 @@
 
     <dubbo:registry address="#{app.dubboRegistry}"/>
 
-    <dubbo:reference interface="com.me2me.sms.service.SmsService" id="smsService"/>
+    <dubbo:reference interface="com.me2me.user.service.UserService" id="userService"/>
 
-    <dubbo:reference interface="com.me2me.sms.service.XgPushService" id="xgPushService"/>
+    <dubbo:reference interface="com.me2me.live.service.LiveService" id="liveService"/>
 
-    <dubbo:reference interface="com.me2me.monitor.service.MonitorService" id="monitorService"/>
+
+
+
 
 </beans>

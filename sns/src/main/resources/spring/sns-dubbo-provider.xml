@@ -13,7 +13,7 @@
 
     <dubbo:protocol serialization="nativejava" name="dubbo" port="#{app.dubboPort}" threads="#{app.dubboThreads}" heartbeat="#{app.dubboHeartBeats}"/>
 
-    <dubbo:service interface="com.me2me.user.service.UserService" ref="userServiceImpl" retries="0" timeout="20000"/>
+    <dubbo:service interface="com.me2me.sns.service.SnsService" ref="snsServiceImpl" retries="0" timeout="20000"/>
 
     <import resource="mysql-context.xml"/>
 
