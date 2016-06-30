@@ -1,6 +1,5 @@
 package com.me2me.user.jobs;
 
-import com.me2me.sms.service.XgPushService;
 import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
