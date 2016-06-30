@@ -307,7 +307,7 @@
       and u.uid not in (select uid from live_favorite_delete where topic_id = #{topicId,jdbcType=BIGINT} )
     </if>
     <if test="type == 0" >
-      and u.uid  in (select uid from live_favorite_delete where topic_id = #{topicId,jdbcType=BIGINT} )
+      and u.uid in (select uid from live_favorite_delete where topic_id = #{topicId,jdbcType=BIGINT} )
     </if>
      order by convert(u.nick_name USING gbk) COLLATE gbk_chinese_ci limit #{sinceId,jdbcType=INTEGER},10
   </select>
