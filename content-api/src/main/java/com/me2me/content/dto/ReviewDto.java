@@ -23,4 +23,6 @@ public class ReviewDto implements BaseEntity{
     private int type;
 
     private int isAt;
+
+    private long atUid;
 }

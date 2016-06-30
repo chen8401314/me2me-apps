@@ -103,7 +103,16 @@ public class SnsServiceImpl implements SnsService {
             showSnsCircleDto.getCircleElements().add(snsCircleElement);
 
         }
-        showSnsCircleDto.setCircleCount(snsMybatisDao.getSnsCircleCount(dto));
+        dto.setType(Specification.SnsCircle.IN.index);
+        int inCount = snsMybatisDao.getSnsCircleCount(dto);
+        dto.setType(Specification.SnsCircle.OUT.index);
+        int outCount = snsMybatisDao.getSnsCircleCount(dto);
+        dto.setType(Specification.SnsCircle.CORE.index);
+        int coreCount = snsMybatisDao.getSnsCircleCount(dto);
+        showSnsCircleDto.setMembers(inCount + outCount + coreCount);
+        showSnsCircleDto.setCoreCircleMembers(coreCount);
+        showSnsCircleDto.setInCircleMembers(inCount);
+        showSnsCircleDto.setOutCircleMembers(outCount);
         return Response.success(showSnsCircleDto);
     }
 

@@ -15,7 +15,13 @@ import java.util.List;
 @Data
 public class ShowSnsCircleDto implements BaseEntity{
 
-    private int circleCount;
+    private int members;
+
+    private int coreCircleMembers;
+
+    private int inCircleMembers;
+
+    private int outCircleMembers;
 
     private List<SnsCircleElement> circleElements = Lists.newArrayList();
 

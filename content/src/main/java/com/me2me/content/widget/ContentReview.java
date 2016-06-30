@@ -40,7 +40,7 @@ public class ContentReview implements Review{
         log.info("remind success");
         //自己的日记被评论提醒
         if(reviewDto.getIsAt() == 1) {
-            userService.push(content.getUid(), reviewDto.getUid(), Specification.PushMessageType.REVIEW.index, content.getTitle());
+            userService.push(reviewDto.getAtUid(), reviewDto.getUid(), Specification.PushMessageType.REVIEW.index, content.getTitle());
         }
         log.info("push success");
         return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);

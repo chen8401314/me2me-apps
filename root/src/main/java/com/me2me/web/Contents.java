@@ -231,6 +231,7 @@ public class Contents extends BaseController {
         reviewDto.setCid(request.getCid());
         reviewDto.setReview(request.getReview());
         reviewDto.setIsAt(request.getIsAt());
+        reviewDto.setAtUid(request.getAtUid());
         //兼容老版本
         reviewDto.setType(request.getType() == 0 ? 1 : request.getType());
         return contentService.createReview(reviewDto);
