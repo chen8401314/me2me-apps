@@ -929,7 +929,7 @@ public class UserServiceImpl implements UserService {
         // fix by peter
         // MessageNotificationAdapter messageNotificationAdapter = SpringContextHolder.getBean(MessageNotificationAdapter.class);
         messageNotificationAdapter.setType(type);
-        messageNotificationAdapter.notice(title,targetUid,sourceUid);
+        messageNotificationAdapter.notice(title,targetUid,sourceUid,type);
     }
 
     @Override
