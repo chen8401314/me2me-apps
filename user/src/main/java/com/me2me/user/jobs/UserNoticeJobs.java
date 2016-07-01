@@ -1,7 +1,9 @@
 package com.me2me.user.jobs;
 
 import com.me2me.user.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -13,16 +15,18 @@ import org.springframework.stereotype.Component;
  */
 @Component
 @EnableScheduling
+@Slf4j
 public class UserNoticeJobs {
 
     @Autowired
     private UserService userService;
 
-    // @Scheduled(cron = "0 * */1 * * ?")
-    @Scheduled(cron = "* */15 * * * ?")
+    @Scheduled(fixedDelay = 1000*60*15)
+    @Async("false")
     public void push(){
-        System.out.println("fdsfds");
-        // userService.pushMessage();
+        log.info("execute schedule by user notice jobs ... ");
+        userService.pushMessage();
+        log.info("push message by jobs end ... ");
     }
 
 }
