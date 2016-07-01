@@ -7,6 +7,7 @@ cp -r ./io/target/jsw/app-io-service C:/Users/pc308/Desktop/apps
 cp -r ./user/target/jsw/app-user-service C:/Users/pc308/Desktop/apps
 cp -r ./sms/target/jsw/app-sms-service C:/Users/pc308/Desktop/apps
 cp -r ./monitor/target/jsw/app-monitor-service C:/Users/pc308/Desktop/apps
+cp -r ./sns/target/jsw/app-sns-service C:/Users/pc308/Desktop/apps
 
 echo '##############################################################'
 echo '#                            success                         #'

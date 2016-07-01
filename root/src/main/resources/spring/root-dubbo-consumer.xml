@@ -23,4 +23,6 @@
 
     <dubbo:reference interface="com.me2me.monitor.service.MonitorService" id="monitorService"/>
 
+    <dubbo:reference interface="com.me2me.sns.service.SnsService" id="snsService"/>
+
 </beans>

@@ -118,8 +118,8 @@
                             <target>${project.build.directory}</target>
                             <daemons>
                                 <daemon>
-                                    <id>app-user-service</id>
-                                    <mainClass>com.me2me.user.Bootstrap</mainClass>
+                                    <id>app-sns-service</id>
+                                    <mainClass>com.me2me.sns.Bootstrap</mainClass>
                                     <commandLineArguments>
                                         <commandLineArgument>start</commandLineArgument>
                                     </commandLineArguments>
