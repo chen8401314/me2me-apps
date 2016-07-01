@@ -35,13 +35,6 @@ public class MonitorReportRequest extends Request{
     private int type;
 
     /**
-     * 渠道
-     */
-    @Getter
-    @Setter
-    private int channel;
-
-    /**
      * 行为类型
      */
     @Getter
