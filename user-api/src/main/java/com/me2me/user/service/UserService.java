@@ -192,4 +192,6 @@ public interface UserService {
 
     void pushMessage();
 
+    void genQRcode();
+
 }

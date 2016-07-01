@@ -6,6 +6,8 @@ import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.core.QRCodeUtil;
+import com.me2me.io.service.FileTransferService;
 import com.me2me.monitor.service.MonitorService;
 import com.me2me.monitor.event.MonitorEvent;
 import com.me2me.sms.dto.*;
@@ -51,6 +53,10 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private XgPushService xgPushService;
+
+    @Autowired
+    private FileTransferService fileTransferService;
+
 
 
     /**
@@ -1025,5 +1031,10 @@ public class UserServiceImpl implements UserService {
             userNotice.setPushStatus(Specification.PushStatus.PUSHED.index);
             userMybatisDao.updateUserNoticePushStatus(userNotice);
         }
+    }
+
+    @Override
+    public void genQRcode() {
+
     }
 }

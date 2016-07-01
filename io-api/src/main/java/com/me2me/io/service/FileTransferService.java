@@ -22,4 +22,5 @@ public interface FileTransferService {
      */
     Response getQiniuAccessToken();
 
+
 }
