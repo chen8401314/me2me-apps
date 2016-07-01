@@ -1162,12 +1162,12 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setPersonCount(content.getPersonCount());
             contentElement.setFavoriteCount(content.getFavoriteCount());
-            ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
-            if(contentImage != null) {
-                contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
-            }else{
-                contentElement.setCoverImage("");
-            }
+//            ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
+//            if(contentImage != null) {
+//                contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
+//            }else{
+//                contentElement.setCoverImage("");
+//            }
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
             log.info("get content review success");
             for(ContentReview contentReview : contentReviewList){
