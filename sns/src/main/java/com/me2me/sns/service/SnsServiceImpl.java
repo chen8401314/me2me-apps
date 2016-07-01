@@ -153,14 +153,14 @@ public class SnsServiceImpl implements SnsService {
         followDto.setTargetUid(targetUid);
         followDto.setAction(action);
         List<Topic> list = liveService.getTopicList(targetUid);
+        //关注,订阅所有直播/取消所有直播订阅
         for (Topic topic : list) {
-            //订阅所有直播
             liveService.setLive2(sourceUid, topic.getId(), 0, 0,action);
         }
-        //关注
+        //关注，默认加到圈外人
         if(action == 0) {
             snsMybatisDao.createSnsCircle(sourceUid,0,targetUid);
-            //取消关注取消圈子信息
+            //取消关注，取消圈子信息
         }else if(action == 1){
             snsMybatisDao.deleteSnsCircle(sourceUid,targetUid);
         }

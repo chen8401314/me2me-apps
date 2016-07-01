@@ -524,15 +524,15 @@ public class LiveServiceImpl implements LiveService {
         } else if (action == 1) {
             if (liveFavorite != null) {
                 liveMybatisDao.deleteLiveFavorite(liveFavorite);
-                liveMybatisDao.createFavoriteDelete(uid,topicId);
-                if ((content.getFavoriteCount() - 1) < 0) {
-                    content.setFavoriteCount(0);
-                } else {
-                    content.setFavoriteCount(content.getFavoriteCount() - 1);
-                }
-                contentService.updateContentById(content);
-                log.info("setLive end ...");
             }
+            liveMybatisDao.createFavoriteDelete(uid,topicId);
+            if ((content.getFavoriteCount() - 1) < 0) {
+                content.setFavoriteCount(0);
+            } else {
+                content.setFavoriteCount(content.getFavoriteCount() - 1);
+            }
+            contentService.updateContentById(content);
+            log.info("setLive end ...");
             return Response.success(ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.message);
         }
         return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status,ResponseStatus.ILLEGAL_REQUEST.message);
