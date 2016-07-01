@@ -34,6 +34,9 @@ public abstract class Request {
     @Getter
     @Setter
     private String nonce;
+    @Getter
+    @Setter
+    private String channel;
 
 
 }
