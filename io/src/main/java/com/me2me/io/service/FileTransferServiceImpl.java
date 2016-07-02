@@ -8,6 +8,7 @@ import com.qiniu.common.QiniuException;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
 import lombok.Data;
+import org.apache.http.HttpResponse;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
@@ -51,7 +52,7 @@ public class FileTransferServiceImpl implements FileTransferService{
         return Response.success(ResponseStatus.GET_QINIU_TOKEN_SUCCESS.status,ResponseStatus.GET_QINIU_TOKEN_SUCCESS.message,qiniuAccessTokenDto);
     }
 
-    public void upload(byte[] data, String key){
+    public String upload(byte[] data, String key){
         //上传到七牛后保存的文件名
         Auth auth = Auth.create(ACCESS_KEY,SECRET_KEY);
         String token = auth.uploadToken(BUCKET);
@@ -61,25 +62,13 @@ public class FileTransferServiceImpl implements FileTransferService{
         } catch (QiniuException e) {
             e.printStackTrace();
         }
+        return  null;
     }
 
-    public QiniuFile download(String domain,String key) throws IOException {
-        String resourceUrl = domain +"/" + key;
+    public byte[] download(String domain,String key) throws IOException {
+        String resourceUrl = domain + "/" + key;
         Connection.Response response = Jsoup.connect(resourceUrl).timeout(DEFAULT_TIME_OUT).ignoreContentType(true).execute();
-        String fileName = resourceUrl.substring(resourceUrl.lastIndexOf("/"));
-        QiniuFile qiniuFile = new QiniuFile();
-        qiniuFile.setFileName(fileName);
-        qiniuFile.setStreams(response.bodyAsBytes());
-        return qiniuFile;
-
-    }
-
-    @Data
-    public class QiniuFile implements BaseEntity{
-
-        private String fileName;
-
-        private byte[] streams;
+        return response.bodyAsBytes();
     }
 
 }

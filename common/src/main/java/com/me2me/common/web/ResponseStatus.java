@@ -127,6 +127,8 @@ public enum  ResponseStatus {
 
     MODIFY_CIRCLE_SUCCESS("修改社交关系成功","modify circle success",20057),
 
+    QRCODE_SUCCESS("获取二维码成功","qrcode success",20058),
+
 
 
 

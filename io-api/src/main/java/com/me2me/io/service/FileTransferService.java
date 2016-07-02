@@ -3,6 +3,8 @@ package com.me2me.io.service;
 import com.me2me.common.web.Response;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 赵朋扬
@@ -21,6 +23,13 @@ public interface FileTransferService {
      * @return
      */
     Response getQiniuAccessToken();
+
+
+    String upload(byte[] data, String key);
+
+
+    byte[] download(String domain,String key) throws IOException;
+
 
 
 }

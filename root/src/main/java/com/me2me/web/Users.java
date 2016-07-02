@@ -422,4 +422,10 @@ public class Users extends BaseController {
         return userService.logout(request.getUid());
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/qrcoe",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response circle(QrCodeRequest request){
+        return userService.genQRcode(request.getUid());
+    }
+
 }
