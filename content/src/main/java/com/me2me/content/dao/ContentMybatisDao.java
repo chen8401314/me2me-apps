@@ -410,7 +410,7 @@ public class ContentMybatisDao {
     }
 
     public void createContentArticleDetails(ArticleTagsDetails articleTagsDetails){
-        articleTagsDetailsMapper.insert(articleTagsDetails);
+        articleTagsDetailsMapper.insertSelective(articleTagsDetails);
     }
 
     public List<ContentLikesDetails> getContentLikesDetails(long id){

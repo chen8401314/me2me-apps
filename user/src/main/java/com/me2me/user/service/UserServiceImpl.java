@@ -3,7 +3,6 @@ package com.me2me.user.service;
 import com.google.common.collect.Lists;
 import com.me2me.common.Constant;
 import com.me2me.common.security.SecurityUtils;
-import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -25,10 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
-import sun.security.util.KeyUtil;
 
 import java.awt.image.BufferedImage;
-import java.awt.image.DataBufferByte;
 import java.util.*;
 
 /**

@@ -191,7 +191,7 @@ public class UserMybatisDao {
      * 更新用户标签详情
      */
     public void updateUserTagDetail(UserTagsDetails userTagsDetails){
-        userTagsDetailsMapper.updateByPrimaryKey(userTagsDetails);
+        userTagsDetailsMapper.updateByPrimaryKeySelective(userTagsDetails);
     }
 
     public UserTagsDetails getUserTagByTidAndUid(long tid,long uid){
@@ -222,7 +222,7 @@ public class UserMybatisDao {
         details.setTid(tagId);
         details.setUid(pasteTagDto.getFromUid());
         details.setFrequency(1L);
-        userTagsDetailsMapper.insert(details);
+        userTagsDetailsMapper.insertSelective(details);
     }
 
     /**
@@ -234,7 +234,7 @@ public class UserMybatisDao {
         UserTagsRecord record = new UserTagsRecord();
         record.setFromUid(fromUserId);
         record.setToUid(toUserId);
-        userTagsRecordMapper.insert(record);
+        userTagsRecordMapper.insertSelective(record);
     }
 
     public List<UserNotice> userNotice(UserNoticeDto userNoticeDto){
@@ -472,7 +472,7 @@ public class UserMybatisDao {
            device.setDeviceNo(userDevice.getDeviceNo());
            device.setOs(userDevice.getOs());
            device.setPlatform(userDevice.getPlatform());
-           userDeviceMapper.updateByPrimaryKey(device);
+           userDeviceMapper.updateByPrimaryKeySelective(device);
        }else {
            if(!StringUtils.isEmpty(userDevice.getDeviceNo())) {
                userDeviceMapper.insertSelective(userDevice);
@@ -485,7 +485,7 @@ public class UserMybatisDao {
         pushLog.setContent(pushLogDto.getContent());
         pushLog.setMessageType(pushLogDto.getMessageType());
         pushLog.setRetCode(pushLogDto.getRetCode());
-        xingePushLogMapper.insert(pushLog);
+        xingePushLogMapper.insertSelective(pushLog);
     }
 
     public void logout(long uid){
