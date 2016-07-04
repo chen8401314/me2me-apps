@@ -1058,4 +1058,76 @@ public class UserServiceImpl implements UserService {
         }
         return Response.success(ResponseStatus.QRCODE_SUCCESS.status,ResponseStatus.QRCODE_SUCCESS.message,qrCodeDto);
     }
+
+    @Override
+    public Response refereeSignUp(UserRefereeSignUpDto userDto) {
+        log.info("refereeSignUp start ...");
+        // 校验手机号码是否注册
+        String mobile = userDto.getMobile();
+        log.info("mobile:" + mobile );
+        if(userMybatisDao.getUserByUserName(mobile) != null){
+            // 该用户已经注册过
+            log.info("mobile:" + mobile + " is already register");
+            return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
+        }
+        // 检查用户名是否重复
+        if(!this.existsNickName(userDto.getNickName())){
+            log.info("nickname:" + userDto.getNickName() + " is already used");
+            return Response.failure(ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.status,ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.message);
+        }
+
+//        SignUpSuccessDto signUpSuccessDto = new SignUpSuccessDto();
+        User user = new User();
+        String salt = SecurityUtils.getMask();
+        user.setEncrypt(SecurityUtils.md5(userDto.getEncrypt(),salt));
+        user.setSalt(salt);
+        user.setCreateTime(new Date());
+        user.setUpdateTime(new Date());
+        user.setStatus(Specification.UserStatus.NORMAL.index);
+        user.setUserName(userDto.getMobile());
+        userMybatisDao.createUser(user);
+        log.info("user is create");
+        UserProfile userProfile = new UserProfile();
+        userProfile.setUid(user.getUid());
+        userProfile.setAvatar(Constant.DEFAULT_AVATAR);
+        userProfile.setMobile(userDto.getMobile());
+        userProfile.setNickName(userDto.getNickName());
+        userProfile.setIntroduced(userDto.getIntroduced());
+        userProfile.setIsActivate(Specification.UserActivate.UN_ACTIVATED.index);
+        userProfile.setRefereeUid(userDto.getRefereeUid());
+        userMybatisDao.createUserProfile(userProfile);
+        log.info("userProfile is create");
+//        signUpSuccessDto.setUserName(user.getUserName());
+//        // 获取用户token
+//        signUpSuccessDto.setToken(SecurityUtils.getToken());
+//        signUpSuccessDto.setUid(user.getUid());
+//        signUpSuccessDto.setNickName(userProfile.getNickName());
+//        // 设置userNo
+//        signUpSuccessDto.setMeNumber(userMybatisDao.getUserNoByUid(user.getUid()).getMeNumber().toString());
+//        signUpSuccessDto.setAvatar(userProfile.getAvatar());
+//        signUpSuccessDto.setIntroduced(userProfile.getIntroduced());
+        // 保存用户token信息
+        UserToken userToken = new UserToken();
+        userToken.setUid(user.getUid());
+        userToken.setToken(SecurityUtils.getToken());
+        userMybatisDao.createUserToken(userToken);
+        log.info("userToken is create");
+//        signUpSuccessDto.setToken(userToken.getToken());
+
+//        保存用户的设备token和用户平台信息
+//        UserDevice device = new UserDevice();
+//        device.setDeviceNo(userSignUpDto.getDeviceNo());
+//        device.setPlatform(userSignUpDto.getPlatform());
+//        device.setOs(userSignUpDto.getOs());
+//        device.setUid(user.getUid());
+//        userMybatisDao.updateUserDevice(device);
+//        log.info("userDevice is create");
+        // 获取默认值给前端
+//        UserProfile up = userMybatisDao.getUserProfileByUid(user.getUid());
+//        signUpSuccessDto.setGender(up.getGender());
+//        signUpSuccessDto.setYearId(up.getYearsId());
+        log.info("refereeSignUp end ...");
+        //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
+        return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message);
+    }
 }

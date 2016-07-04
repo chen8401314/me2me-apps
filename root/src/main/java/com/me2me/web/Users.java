@@ -428,4 +428,21 @@ public class Users extends BaseController {
         return userService.genQRcode(request.getUid());
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/refereeSignUp",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response refereeSignUp(RefereeSignUpRequest request){
+        UserRefereeSignUpDto userRefereeSignUpDto = new UserRefereeSignUpDto();
+        userRefereeSignUpDto.setMobile(request.getMobile());
+        userRefereeSignUpDto.setGender(request.getGender());
+        userRefereeSignUpDto.setStar(request.getStart());
+        userRefereeSignUpDto.setEncrypt(request.getEncrypt());
+        userRefereeSignUpDto.setNickName(request.getNickName());
+        userRefereeSignUpDto.setDeviceNo(request.getDeviceNo());
+        userRefereeSignUpDto.setPlatform(request.getPlatform());
+        userRefereeSignUpDto.setOs(request.getOs());
+        userRefereeSignUpDto.setIntroduced(request.getIntroduced());
+        userRefereeSignUpDto.setRefereeUid(request.getRefereeUid());
+        return userService.refereeSignUp(userRefereeSignUpDto);
+    }
+
 }
