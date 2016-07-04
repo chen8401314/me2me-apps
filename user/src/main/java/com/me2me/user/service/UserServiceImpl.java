@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.awt.image.BufferedImage;
+//import java.awt.image.BufferedImage;
 import java.util.*;
 
 /**
@@ -55,8 +55,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private XgPushService xgPushService;
 
-//    @Autowired
-    private FileTransferService fileTransferService;
+    @Autowired
+   private FileTransferService fileTransferService;
 
 
 
@@ -151,6 +151,11 @@ public class UserServiceImpl implements UserService {
                 // 则用户登录成功
                 UserProfile userProfile = userMybatisDao.getUserProfileByUid(user.getUid());
                 log.info("get userProfile success");
+                //判断用户是否是未激活状态
+                if(userProfile.getIsActivate() == Specification.UserActivate.UN_ACTIVATED.index){
+                    userProfile.setIsActivate(Specification.UserActivate.ACTIVATED.index);
+                    userMybatisDao.modifyUserProfile(userProfile);
+                }
                 UserToken userToken = userMybatisDao.getUserTokenByUid(user.getUid());
                 log.info("get userToken success");
                 LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
@@ -1040,9 +1045,11 @@ public class UserServiceImpl implements UserService {
         QRCodeDto qrCodeDto = new QRCodeDto();
         try {
             UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
-            byte[] avatar = fileTransferService.download(Constant.QINIU_DOMAIN, userProfile.getAvatar());
-            BufferedImage bufferedImage = QRCodeUtil.getQR_CODEBufferedImage();
-            byte[] image = QRCodeUtil.addLogo_QRCode(bufferedImage,avatar);
+            //有用户头像的二维码
+//            byte[] avatar = fileTransferService.download(Constant.QINIU_DOMAIN, userProfile.getAvatar());
+//            BufferedImage bufferedImage = QRCodeUtil.getQR_CODEBufferedImage();
+//            byte[] image = QRCodeUtil.addLogo_QRCode(bufferedImage,avatar);
+            byte[] image = QRCodeUtil.getQR_CODEByte();
             String key = UUID.randomUUID().toString();
             fileTransferService.upload(image,key);
             qrCodeDto.setQrCodeUrl(Constant.QINIU_DOMAIN + "/" + key);
