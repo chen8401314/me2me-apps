@@ -133,6 +133,18 @@ public class QRCodeUtil {
     }
 
 
+    public static byte[] getQR_CODEByte(){
+        BufferedImage bufferedImage = getQR_CODEBufferedImage(content, BarcodeFormat.QR_CODE, width, height, getDecodeHintType());
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try {
+            ImageIO.write(bufferedImage,"png",os);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return os.toByteArray();
+    }
+
+
     public static class LogoConfig {
         // logo默认边框宽度
         public static final int DEFAULT_BORDER = 2;

@@ -735,7 +735,7 @@
       and c.id &lt; #{sinceId}
     </if>
     and c.status != 1 and c.uid = #{uid,jdbcType=BIGINT}
-    order by c.id desc limit 10
+    order by t.long_time desc limit 10
   </select>
 
   <select id="countMyPublishByType" parameterType="com.me2me.content.dto.MyPublishDto" resultType="java.lang.Integer">
