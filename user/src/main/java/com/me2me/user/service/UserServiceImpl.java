@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private XgPushService xgPushService;
 
-    @Autowired
+//    @Autowired
     private FileTransferService fileTransferService;
 
 
