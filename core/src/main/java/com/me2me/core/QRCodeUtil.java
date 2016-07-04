@@ -16,7 +16,6 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Map;
 
 /**
@@ -27,9 +26,9 @@ import java.util.Map;
  */
 public class QRCodeUtil {
 
-    private static final int height = 300;
+    private static final int height = 400;
 
-    private static final int width = 300;
+    private static final int width = 400;
 
     private static final String content = "http://www.51nick.com";
 
@@ -114,7 +113,7 @@ public class QRCodeUtil {
             // 开始利用二维码数据创建Bitmap图片，分别设为黑（0xFFFFFFFF）白（0xFF000000）两色
             for (int x = 0; x < w; x++) {
                 for (int y = 0; y < h; y++) {
-                    image.setRGB(x, y, bm.get(x, y) ? 0xFF000000 : 0xFFCCDDEE);
+                    image.setRGB(x, y, bm.get(x, y) ? 0xFFFFFFFF : 0xFF000000);
                 }
             }
         }
