@@ -162,6 +162,8 @@ public interface ContentService{
 
     void remind(Content content ,long uid ,int type,String arg);
 
+    void remind(Content content ,long uid ,int type,String arg,long atUid);
+
     void deleteContentLikesDetails(ContentLikesDetails contentLikesDetails);
 
     Response like2(LikeDto likeDto);

@@ -14,10 +14,6 @@ public class ReviewRequest extends Request{
 
     @Getter
     @Setter
-    private long uid;
-
-    @Getter
-    @Setter
     private long cid;
 
     @Getter

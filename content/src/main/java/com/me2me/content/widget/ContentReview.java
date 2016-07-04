@@ -42,7 +42,8 @@ public class ContentReview implements Review{
         if(reviewDto.getIsAt() == 1) {
             //兼容老版本
             if(reviewDto.getAtUid() != 0) {
-                userService.push(reviewDto.getAtUid(), reviewDto.getUid(), Specification.PushMessageType.AT.index, content.getTitle());
+                contentService.remind(content,reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index,reviewDto.getReview(),reviewDto.getAtUid());
+                userService.push(reviewDto.getAtUid(), reviewDto.getUid(), Specification.PushMessageType.AT.index, reviewDto.getReview());
             }
         }
         log.info("push success");

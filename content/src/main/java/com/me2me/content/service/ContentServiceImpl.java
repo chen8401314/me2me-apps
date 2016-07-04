@@ -539,6 +539,53 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
+    public void remind(Content content, long uid, int type, String arg, long atUid) {
+        if(atUid == uid){
+            return;
+        }
+        UserProfile userProfile = userService.getUserProfileByUid(uid);
+        UserProfile customerProfile = userService.getUserProfileByUid(atUid);
+        String contentImage = content.getConverImage();
+        UserNotice userNotice = new UserNotice();
+        userNotice.setFromNickName(userProfile.getNickName());
+        userNotice.setFromAvatar(userProfile.getAvatar());
+        userNotice.setFromUid(userProfile.getUid());
+        userNotice.setToNickName(customerProfile.getNickName());
+        userNotice.setNoticeType(type);
+        userNotice.setReadStatus(userNotice.getReadStatus());
+        userNotice.setCid(content.getId());
+        if(!StringUtils.isEmpty(contentImage)){
+            userNotice.setCoverImage(contentImage);
+            userNotice.setSummary("");
+        }else{
+            userNotice.setCoverImage("");
+            if(content.getContent().length() > 50) {
+                userNotice.setSummary(content.getContent().substring(0,50));
+            }else{
+                userNotice.setSummary(content.getContent());
+            }
+
+        }
+        userNotice.setToUid(atUid);
+        userNotice.setLikeCount(0);
+        userNotice.setReview(arg);
+        userNotice.setTag("");
+        userNotice.setReadStatus(0);
+        userService.createUserNotice(userNotice);
+        UserTips userTips = new UserTips();
+        userTips.setUid(atUid);
+        userTips.setType(type);
+        UserTips tips  =  userService.getUserTips(userTips);
+        if(tips == null){
+            userTips.setCount(1);
+            userService.createUserTips(userTips);
+        }else{
+            tips.setCount(tips.getCount()+1);
+            userService.modifyUserTips(tips);
+        }
+    }
+
+    @Override
     public void deleteContentLikesDetails(ContentLikesDetails contentLikesDetails) {
         contentMybatisDao.deleteContentLikesDetails(contentLikesDetails);
     }
