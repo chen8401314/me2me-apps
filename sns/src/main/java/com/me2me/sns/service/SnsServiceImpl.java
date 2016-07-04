@@ -119,30 +119,28 @@ public class SnsServiceImpl implements SnsService {
     @Override
     public Response subscribed(long uid,long topicId, long topId, long bottomId, int action) {
         Topic topic = liveService.getTopicById(topicId);
-        List<Topic> list = liveService.getTopicList(topic.getUid());
-        for(Topic live : list){
-            //订阅所有直播
-            liveService.setLive2(uid,live.getId(),0,0,action);
-        }
-        FollowDto dto = new FollowDto();
-        dto.setSourceUid(uid);
-        dto.setTargetUid(topic.getUid());
-        dto.setAction(action);
-        //关注
-        userService.follow(dto);
-        int isFollow = userService.isFollow(topic.getUid(),uid);
-        int internalStatus = 0;
-        if(isFollow == 1){
-            internalStatus = 1;
-        }
-        //关注
         if(action == 0) {
+            List<Topic> list = liveService.getTopicList(topic.getUid());
+            for (Topic live : list) {
+                liveService.setLive2(uid, live.getId(), 0, 0, action);
+            }
+            FollowDto dto = new FollowDto();
+            dto.setSourceUid(uid);
+            dto.setTargetUid(topic.getUid());
+            dto.setAction(action);
+            //关注
+            userService.follow(dto);
+            //保存圈子关系
+            int isFollow = userService.isFollow(topic.getUid(),uid);
+            int internalStatus = 0;
+            if(isFollow == 1){
+                internalStatus = 1;
+            }
             snsMybatisDao.createSnsCircle(uid,internalStatus,topic.getUid());
-            //取消关注取消圈子信息
         }else if(action == 1){
-            snsMybatisDao.deleteSnsCircle(uid,topic.getUid());
+            //取消该直播的关注
+            liveService.setLive2(uid, topicId, 0, 0, action);
         }
-        liveService.setLive2(uid, topicId, topId, bottomId, action);
         return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status,ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
     }
 
@@ -159,7 +157,14 @@ public class SnsServiceImpl implements SnsService {
         }
         //关注，默认加到圈外人
         if(action == 0) {
-            snsMybatisDao.createSnsCircle(sourceUid,0,targetUid);
+            // 判断人员关系
+            int isFollow = userService.isFollow(targetUid,sourceUid);
+            int internalStatus = 0;
+            if(isFollow == 1){
+                internalStatus = 1;
+                snsMybatisDao.updateSnsCircle(targetUid,sourceUid,internalStatus);
+            }
+            snsMybatisDao.createSnsCircle(sourceUid,internalStatus,targetUid);
             //取消关注，取消圈子信息
         }else if(action == 1){
             snsMybatisDao.deleteSnsCircle(sourceUid,targetUid);

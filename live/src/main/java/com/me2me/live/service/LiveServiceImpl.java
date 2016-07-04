@@ -58,6 +58,8 @@ public class LiveServiceImpl implements LiveService {
         for(UserFollow userFollow : list) {
             //主播发言提醒关注的人
             //userService.push(userFollow.getSourceUid(),createLiveDto.getUid(),Specification.PushMessageType.LIVE.index,createLiveDto.getTitle());
+            //主播的粉丝强制订阅
+            setLive2(userFollow.getSourceUid(),topic.getId(),0,0,0);
         }
         //创建直播之后添加到我的UGC
         ContentDto contentDto = new ContentDto();
