@@ -246,7 +246,7 @@ public class UserMybatisDao {
         return  userNoticeMapper.selectByExample(example);
     }
     public void createUserNotice(UserNotice userNotice){
-        userNoticeMapper.insert(userNotice);
+        userNoticeMapper.insertSelective(userNotice);
     }
 
     public List<UserTips> getUserTips(long uid){
