@@ -3,7 +3,6 @@ package com.me2me.user.service;
 import com.google.common.collect.Lists;
 import com.me2me.common.Constant;
 import com.me2me.common.security.SecurityUtils;
-import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -58,7 +57,7 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private XgPushService xgPushService;
 
-    @Autowired
+//    @Autowired
     private FileTransferService fileTransferService;
 
 
