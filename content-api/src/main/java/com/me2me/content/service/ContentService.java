@@ -190,7 +190,7 @@ public interface ContentService{
 
     Response kingTopic(KingTopicDto kingTopic);
 
-    Response myPublishByType(long uid ,int sinceId ,int type);
+    Response myPublishByType(long uid ,int sinceId ,int type,long updateTime);
 
     Response createAtReview(AtReviewDto atReviewDto);
 

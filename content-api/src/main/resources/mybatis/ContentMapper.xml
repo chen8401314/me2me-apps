@@ -728,14 +728,19 @@
     <if test="type == 0">
      and c.type != 3
     </if>
-    <if test="updateTime != 0">
+    <if test="type == 3">
       and t.long_time &lt; #{updateTime,jdbcType=BIGINT}
     </if>
-    <if test="sinceId != 0">
+    <if test="type != 3">
       and c.id &lt; #{sinceId}
     </if>
     and c.status != 1 and c.uid = #{uid,jdbcType=BIGINT}
+    <if test="type == 3 ">
     order by t.long_time desc limit 10
+    </if>
+    <if test="type != 3 ">
+      order by c.id desc limit 10
+    </if>
   </select>
 
   <select id="countMyPublishByType" parameterType="com.me2me.content.dto.MyPublishDto" resultType="java.lang.Integer">

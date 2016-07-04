@@ -731,11 +731,12 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public Response myPublishByType(long uid, int sinceId, int type) {
+    public Response myPublishByType(long uid, int sinceId, int type,long updateTime) {
         MyPublishDto dto = new MyPublishDto();
         dto.setType(type);
         dto.setSinceId(sinceId);
         dto.setUid(uid);
+        dto.setUpdateTime(updateTime);
         ShowMyPublishDto showMyPublishDto = new ShowMyPublishDto();
         List<Content> contents = contentMybatisDao.myPublishByType(dto);
         for (Content content : contents){
