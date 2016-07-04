@@ -37,6 +37,8 @@ public class ShowUserProfileDto implements BaseEntity{
 
     private String introduced;
 
+    private int isPromoter;
+
     private List<Hobby> hobbyList = Lists.newArrayList();
 
     public Hobby createHobby(){ return new Hobby();}

@@ -726,6 +726,7 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setBirthday(userProfile.getBirthday());
         showUserProfileDto.setGender(userProfile.getGender());
         showUserProfileDto.setUserName(userProfile.getMobile());
+        showUserProfileDto.setIsPromoter(userProfile.getIsPromoter());
         UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
         log.info("get userToken success ");
         showUserProfileDto.setToken(userToken.getToken());
