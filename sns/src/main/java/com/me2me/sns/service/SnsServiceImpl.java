@@ -165,7 +165,7 @@ public class SnsServiceImpl implements SnsService {
         if(action == 0) {
             // 判断人员关系
             int isFollow = userService.isFollow(targetUid,sourceUid);
-            log.info(isFollow+"follow");
+            log.info("isFollow ：" + isFollow);
             int internalStatus = 0;
             if(isFollow == 1){
                 internalStatus = 1;
