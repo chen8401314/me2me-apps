@@ -170,9 +170,6 @@ public class SnsServiceImpl implements SnsService {
             if(isFollow == 1 ){
                 internalStatus = 1;
                 snsMybatisDao.updateSnsCircle(sourceUid,targetUid,internalStatus);
-            }else if(isFollow == 0){
-                internalStatus = 0;
-                snsMybatisDao.updateSnsCircle(sourceUid,targetUid,internalStatus);
             }
             snsMybatisDao.createSnsCircle(sourceUid,internalStatus,targetUid);
             //取消关注，取消圈子信息
