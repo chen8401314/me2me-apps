@@ -142,7 +142,7 @@ public class SnsServiceImpl implements SnsService {
             if(isFollow == 1){
                 internalStatus = 1;
             }
-            snsMybatisDao.createSnsCircle(uid,internalStatus,topic.getUid());
+            snsMybatisDao.createSnsCircle(uid,topic.getUid(),internalStatus);
         }else if(action == 1){
             //取消该直播的关注
             liveService.setLive2(uid, topicId, 0, 0, action);
@@ -164,17 +164,28 @@ public class SnsServiceImpl implements SnsService {
         }
         //关注，默认加到圈外人
         if(action == 0) {
-            // 判断人员关系
+            // 判断人员关系,
+            // 1如果他是我的粉丝则为相互圈内人
+            //2.如果他妹关注我，我是她的圈外人
             int isFollow = userService.isFollow(sourceUid,targetUid);
             int internalStatus = 0;
             if(isFollow == 1 ){
                 internalStatus = 1;
                 snsMybatisDao.updateSnsCircle(sourceUid,targetUid,internalStatus);
+                snsMybatisDao.createSnsCircle(targetUid,sourceUid,internalStatus);
+            }else{
+                snsMybatisDao.createSnsCircle(sourceUid,targetUid,internalStatus);
             }
-            snsMybatisDao.createSnsCircle(sourceUid,internalStatus,targetUid);
             //取消关注，取消圈子信息
         }else if(action == 1){
+            //如果是取消关注，如果他是我粉丝，我不是他圈子里的人，他是我的圈外人
             snsMybatisDao.deleteSnsCircle(sourceUid,targetUid);
+            // 判断人员关系
+            int isFollow = userService.isFollow(sourceUid,targetUid);
+            int internalStatus = 0;
+            if(isFollow == 1 ){
+                snsMybatisDao.updateSnsCircle(targetUid,sourceUid,internalStatus);
+            }
         }
         return response;
     }

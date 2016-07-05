@@ -42,7 +42,7 @@ public class SnsMybatisDao {
 
     }
 
-    public void createSnsCircle(long uid ,int internalStatus,long owner){
+    public void createSnsCircle(long uid ,long owner,int internalStatus){
         SnsCircleExample example = new SnsCircleExample();
         SnsCircleExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
