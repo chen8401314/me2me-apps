@@ -33,6 +33,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
@@ -1155,6 +1156,8 @@ public class ContentServiceImpl implements ContentService {
         buildUserData(sourceUid, contents,Specification.ArticleType.ORIGIN.index,userInfoDto);
         //直播
         dto.setType(Specification.ArticleType.LIVE.index);
+        Calendar calendar = Calendar.getInstance();
+        dto.setUpdateTime(calendar.getTimeInMillis());
         List<Content> lives = contentMybatisDao.myPublishByType(dto);
         buildUserData(sourceUid, lives,Specification.ArticleType.LIVE.index,userInfoDto);
         userInfoDto.setLiveCount(contentMybatisDao.countMyPublishByType(dto));
