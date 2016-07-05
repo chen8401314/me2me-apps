@@ -10,6 +10,7 @@ import com.me2me.sns.dao.SnsMybatisDao;
 import com.me2me.sns.dto.*;
 import com.me2me.user.dto.FollowDto;
 import com.me2me.user.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,6 +22,7 @@ import java.util.List;
  * Date: 2016/6/27.
  */
 @Service
+@Slf4j
 public class SnsServiceImpl implements SnsService {
 
     @Autowired
@@ -64,14 +66,18 @@ public class SnsServiceImpl implements SnsService {
     }
 
     @Override
-    public Response showMembers(long owner,long topicId ,long sinceId,int type) {
+    public Response showMembers(GetSnsCircleDto dto) {
+        log.info("showMembers start ...");
         ShowMembersDto showMembersDto = new ShowMembersDto();
-        GetSnsCircleDto dto = new GetSnsCircleDto();
-        dto.setUid(owner);
-        dto.setSinceId((sinceId-1)*10);
-        dto.setTopicId(topicId);
-        dto.setType(type);
         List<SnsCircleDto> list = snsMybatisDao.getSnsCircleMember(dto);
+        log.info("showMembers get data");
+        buildMembers(showMembersDto, list);
+        log.info("showMembers build data");
+        log.info("showMembers end ...");
+        return Response.success(ResponseStatus.SHOW_MEMBERS_SUCCESS.status,ResponseStatus.SHOW_MEMBERS_SUCCESS.message,showMembersDto);
+    }
+
+    private void buildMembers(ShowMembersDto showMembersDto, List<SnsCircleDto> list) {
         for(SnsCircleDto circleDto : list){
             ShowMembersDto.UserElement userElement = showMembersDto.createUserElement();
             userElement.setUid(circleDto.getUid());
@@ -81,28 +87,14 @@ public class SnsServiceImpl implements SnsService {
             userElement.setInternalStatus(circleDto.getInternalStatus());
             showMembersDto.getMembers().add(userElement);
         }
-        return Response.success(ResponseStatus.SHOW_MEMBERS_SUCCESS.status,ResponseStatus.SHOW_MEMBERS_SUCCESS.message,showMembersDto);
     }
 
     @Override
-    public Response getCircleByType(long owner, long topicId, long sinceId,int type) {
+    public Response getCircleByType(GetSnsCircleDto dto) {
+        log.info("getCircleByType start ...");
         ShowSnsCircleDto showSnsCircleDto = new ShowSnsCircleDto();
-        GetSnsCircleDto dto = new GetSnsCircleDto();
-        dto.setUid(owner);
-        dto.setSinceId((sinceId - 1) * 10);
-        dto.setTopicId(topicId);
-        dto.setType(type);
         List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto);
-        for(SnsCircleDto circleDto : list){
-            ShowSnsCircleDto.SnsCircleElement snsCircleElement = showSnsCircleDto.createElement();
-            snsCircleElement.setUid(circleDto.getUid());
-            snsCircleElement.setAvatar(Constant.QINIU_DOMAIN + "/" + circleDto.getAvatar());
-            snsCircleElement.setIntroduced(circleDto.getIntroduced());
-            snsCircleElement.setNickName(circleDto.getNickName());
-            snsCircleElement.setInternalStatus(circleDto.getInternalStatus());
-            showSnsCircleDto.getCircleElements().add(snsCircleElement);
-
-        }
+        buildSnsCircle(showSnsCircleDto, list);
         dto.setType(Specification.SnsCircle.IN.index);
         int inCount = snsMybatisDao.getSnsCircleCount(dto);
         dto.setType(Specification.SnsCircle.OUT.index);
@@ -113,7 +105,21 @@ public class SnsServiceImpl implements SnsService {
         showSnsCircleDto.setCoreCircleMembers(coreCount);
         showSnsCircleDto.setInCircleMembers(inCount);
         showSnsCircleDto.setOutCircleMembers(outCount);
+        log.info("getCircleByType start ...");
         return Response.success(showSnsCircleDto);
+    }
+
+    private void buildSnsCircle(ShowSnsCircleDto showSnsCircleDto, List<SnsCircleDto> list) {
+        for(SnsCircleDto circleDto : list){
+            ShowSnsCircleDto.SnsCircleElement snsCircleElement = showSnsCircleDto.createElement();
+            snsCircleElement.setUid(circleDto.getUid());
+            snsCircleElement.setAvatar(Constant.QINIU_DOMAIN + "/" + circleDto.getAvatar());
+            snsCircleElement.setIntroduced(circleDto.getIntroduced());
+            snsCircleElement.setNickName(circleDto.getNickName());
+            snsCircleElement.setInternalStatus(circleDto.getInternalStatus());
+            showSnsCircleDto.getCircleElements().add(snsCircleElement);
+
+        }
     }
 
     @Override
@@ -159,10 +165,10 @@ public class SnsServiceImpl implements SnsService {
         if(action == 0) {
             // 判断人员关系
             int isFollow = userService.isFollow(targetUid,sourceUid);
+            log.info(isFollow+"follow");
             int internalStatus = 0;
             if(isFollow == 1){
                 internalStatus = 1;
-                snsMybatisDao.updateSnsCircle(targetUid,sourceUid,internalStatus);
             }
             snsMybatisDao.createSnsCircle(sourceUid,internalStatus,targetUid);
             //取消关注，取消圈子信息

@@ -488,7 +488,7 @@ public class LiveServiceImpl implements LiveService {
     }
 
     /**
-     * 关注，取消关注
+     * 订阅取消订阅
      * @param uid
      * @param topicId
      * @return
