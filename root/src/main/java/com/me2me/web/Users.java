@@ -445,4 +445,10 @@ public class Users extends BaseController {
         return userService.refereeSignUp(userRefereeSignUpDto);
     }
 
+    @ResponseBody
+    @RequestMapping(value = "/getUserProfile4H5",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getUserProfile4H5(GetUserProfile4H5Request request){
+        return userService.getUserProfile4H5(request.getUid());
+    }
+
 }

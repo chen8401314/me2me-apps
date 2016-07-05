@@ -1133,4 +1133,15 @@ public class UserServiceImpl implements UserService {
         //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message);
     }
+
+    @Override
+    public Response getUserProfile4H5(long uid) {
+        UserProfile4H5Dto dto = new UserProfile4H5Dto();
+        UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+        dto.setUid(uid);
+        dto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+        dto.setNickName(userProfile.getNickName());
+        dto.setSummary(userProfile.getIntroduced());
+        return Response.success(dto);
+    }
 }
