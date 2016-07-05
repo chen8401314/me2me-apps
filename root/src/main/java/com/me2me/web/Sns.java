@@ -75,7 +75,7 @@ public class Sns extends BaseController {
         getSnsCircleDto.setTopicId(request.getTopicId());
         getSnsCircleDto.setUid(request.getUid());
         getSnsCircleDto.setType(request.getType());
-        getSnsCircleDto.setSinceId(request.getSinceId());
+        getSnsCircleDto.setSinceId((request.getSinceId()-1)*10);
         return snsService.getCircleByType(getSnsCircleDto);
     }
 
