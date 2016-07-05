@@ -165,12 +165,14 @@ public class SnsServiceImpl implements SnsService {
         //关注，默认加到圈外人
         if(action == 0) {
             // 判断人员关系
-            int isFollow = userService.isFollow(targetUid,sourceUid);
-            log.info("isFollow ：" + isFollow);
+            int isFollow = userService.isFollow(sourceUid,targetUid);
             int internalStatus = 0;
-            if(isFollow == 1){
+            if(isFollow == 1 ){
                 internalStatus = 1;
-                snsMybatisDao.updateSnsCircle(targetUid,sourceUid,internalStatus);
+                snsMybatisDao.updateSnsCircle(sourceUid,targetUid,internalStatus);
+            }else if(isFollow == 0){
+                internalStatus = 0;
+                snsMybatisDao.updateSnsCircle(sourceUid,targetUid,internalStatus);
             }
             snsMybatisDao.createSnsCircle(sourceUid,internalStatus,targetUid);
             //取消关注，取消圈子信息
