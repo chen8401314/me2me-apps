@@ -156,6 +156,7 @@ public class SnsServiceImpl implements SnsService {
         followDto.setSourceUid(sourceUid);
         followDto.setTargetUid(targetUid);
         followDto.setAction(action);
+        Response response = userService.follow(followDto);
         List<Topic> list = liveService.getTopicList(targetUid);
         //关注,订阅所有直播/取消所有直播订阅
         for (Topic topic : list) {
@@ -169,13 +170,14 @@ public class SnsServiceImpl implements SnsService {
             int internalStatus = 0;
             if(isFollow == 1){
                 internalStatus = 1;
+                snsMybatisDao.updateSnsCircle(targetUid,sourceUid,internalStatus);
             }
             snsMybatisDao.createSnsCircle(sourceUid,internalStatus,targetUid);
             //取消关注，取消圈子信息
         }else if(action == 1){
             snsMybatisDao.deleteSnsCircle(sourceUid,targetUid);
         }
-        return userService.follow(followDto);
+        return response;
     }
 
     @Override

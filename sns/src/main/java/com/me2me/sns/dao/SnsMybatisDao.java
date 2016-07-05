@@ -74,8 +74,16 @@ public class SnsMybatisDao {
         criteria.andOwnerEqualTo(owner);
         List<SnsCircle> list = snsCircleMapper.selectByExample(example);
         SnsCircle snsCircle = Lists.getSingle(list);
-        snsCircle.setInternalStatus(internalStatus);
-        snsCircleMapper.updateByPrimaryKeySelective(snsCircle);
+        if(snsCircle != null) {
+            snsCircle.setInternalStatus(internalStatus);
+            snsCircleMapper.updateByPrimaryKeySelective(snsCircle);
+        }else{
+            snsCircle = new SnsCircle();
+            snsCircle.setInternalStatus(internalStatus);
+            snsCircle.setUid(uid);
+            snsCircle.setOwner(owner);
+            snsCircleMapper.insertSelective(snsCircle);
+        }
     }
 
     public List<SnsCircleDto> getSnsCircleMember(GetSnsCircleDto getSnsCircleDto){
