@@ -721,38 +721,36 @@
     <if test="type == 3">
      left join topic t on c.forward_cid = t.id
     </if>
-    where 1=1
-    <if test="type != 0">
-     and c.type = #{type,jdbcType=INTEGER}
-    </if>
+    where  c.status = 0  and c.uid = #{uid,jdbcType=BIGINT}
     <if test="type == 0">
      and c.type != 3
     </if>
     <if test="type == 3">
+      and c.type = 3
+    </if>
+    <if test="type == 3">
       and t.long_time &lt; #{updateTime,jdbcType=BIGINT}
     </if>
-    <if test="type != 3">
+    <if test="type == 0">
       and c.id &lt; #{sinceId}
     </if>
-    and c.status != 1 and c.uid = #{uid,jdbcType=BIGINT}
     <if test="type == 3 ">
     order by t.long_time desc limit 10
     </if>
-    <if test="type != 3 ">
+    <if test="type == 0 ">
       order by c.id desc limit 10
     </if>
   </select>
 
   <select id="countMyPublishByType" parameterType="com.me2me.content.dto.MyPublishDto" resultType="java.lang.Integer">
     select count(*)
-    from content c  where 1=1
-    <if test="type != 0">
-      and c.type = #{type,jdbcType=INTEGER}
+    from content c  where c.status = 0 and c.uid =  #{uid,jdbcType=BIGINT}
+    <if test="type == 3">
+      and c.type = 3
     </if>
     <if test="type == 0">
       and c.type != 3
     </if>
-    and c.status != 1 and c.uid =  #{uid,jdbcType=BIGINT}
   </select>
 
   <select id="loadSelectedData" resultMap="ResultMapWithBLOBs">
