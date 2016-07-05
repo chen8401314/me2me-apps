@@ -718,7 +718,7 @@
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
     c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.authorization, c.create_time, c.status,c.content,c.rights
     from content c
-    <if test="updateTime != 0">
+    <if test="type == 3">
      left join topic t on c.forward_cid = t.id
     </if>
     where 1=1
