@@ -1078,8 +1078,6 @@ public class UserServiceImpl implements UserService {
             log.info("nickname:" + userDto.getNickName() + " is already used");
             return Response.failure(ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.status,ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.message);
         }
-
-//        SignUpSuccessDto signUpSuccessDto = new SignUpSuccessDto();
         User user = new User();
         String salt = SecurityUtils.getMask();
         user.setEncrypt(SecurityUtils.md5(userDto.getEncrypt(),salt));
@@ -1100,37 +1098,14 @@ public class UserServiceImpl implements UserService {
         userProfile.setRefereeUid(userDto.getRefereeUid());
         userMybatisDao.createUserProfile(userProfile);
         log.info("userProfile is create");
-//        signUpSuccessDto.setUserName(user.getUserName());
-//        // 获取用户token
-//        signUpSuccessDto.setToken(SecurityUtils.getToken());
-//        signUpSuccessDto.setUid(user.getUid());
-//        signUpSuccessDto.setNickName(userProfile.getNickName());
-//        // 设置userNo
-//        signUpSuccessDto.setMeNumber(userMybatisDao.getUserNoByUid(user.getUid()).getMeNumber().toString());
-//        signUpSuccessDto.setAvatar(userProfile.getAvatar());
-//        signUpSuccessDto.setIntroduced(userProfile.getIntroduced());
         // 保存用户token信息
         UserToken userToken = new UserToken();
         userToken.setUid(user.getUid());
         userToken.setToken(SecurityUtils.getToken());
         userMybatisDao.createUserToken(userToken);
         log.info("userToken is create");
-//        signUpSuccessDto.setToken(userToken.getToken());
-
-//        保存用户的设备token和用户平台信息
-//        UserDevice device = new UserDevice();
-//        device.setDeviceNo(userSignUpDto.getDeviceNo());
-//        device.setPlatform(userSignUpDto.getPlatform());
-//        device.setOs(userSignUpDto.getOs());
-//        device.setUid(user.getUid());
-//        userMybatisDao.updateUserDevice(device);
-//        log.info("userDevice is create");
-        // 获取默认值给前端
-//        UserProfile up = userMybatisDao.getUserProfileByUid(user.getUid());
-//        signUpSuccessDto.setGender(up.getGender());
-//        signUpSuccessDto.setYearId(up.getYearsId());
         log.info("refereeSignUp end ...");
-        //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
+        monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message);
     }
 

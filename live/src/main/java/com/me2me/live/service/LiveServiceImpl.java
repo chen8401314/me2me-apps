@@ -53,14 +53,6 @@ public class LiveServiceImpl implements LiveService {
         Calendar calendar = Calendar.getInstance();
         topic.setLongTime(calendar.getTimeInMillis());
         liveMybatisDao.createTopic(topic);
-        List<UserFollow> list = userService.getFans(createLiveDto.getUid());
-        log.info("user fans data ");
-        for(UserFollow userFollow : list) {
-            //主播发言提醒关注的人
-            //userService.push(userFollow.getSourceUid(),createLiveDto.getUid(),Specification.PushMessageType.LIVE.index,createLiveDto.getTitle());
-            //主播的粉丝强制订阅
-            setLive2(userFollow.getSourceUid(),topic.getId(),0,0,0);
-        }
         //创建直播之后添加到我的UGC
         ContentDto contentDto = new ContentDto();
         contentDto.setContent(createLiveDto.getTitle());
@@ -73,6 +65,14 @@ public class LiveServiceImpl implements LiveService {
         contentDto.setContentType(Specification.ContentType.TEXT.index);
         contentDto.setRights(Specification.ContentRights.EVERY.index);
         contentService.publish(contentDto);
+        List<UserFollow> list = userService.getFans(createLiveDto.getUid());
+        log.info("user fans data ");
+        for(UserFollow userFollow : list) {
+            //主播发言提醒关注的人
+            //userService.push(userFollow.getSourceUid(),createLiveDto.getUid(),Specification.PushMessageType.LIVE.index,createLiveDto.getTitle());
+            //主播的粉丝强制订阅
+            setLive2(userFollow.getSourceUid(),topic.getId(),0,0,0);
+        }
         log.info("createLive end ...");
         return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status,ResponseStatus.USER_CREATE_LIVE_SUCCESS.message);
     }
