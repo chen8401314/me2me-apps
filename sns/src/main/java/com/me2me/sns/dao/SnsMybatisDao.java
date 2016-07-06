@@ -50,7 +50,8 @@ public class SnsMybatisDao {
         List<SnsCircle> list = snsCircleMapper.selectByExample(example);
         SnsCircle snsCircle = Lists.getSingle(list);
         if(snsCircle != null){
-            return;
+            snsCircle.setInternalStatus(internalStatus);
+            snsCircleMapper.updateByPrimaryKeySelective(snsCircle);
         }
         snsCircle = new SnsCircle();
         snsCircle.setUid(uid);
