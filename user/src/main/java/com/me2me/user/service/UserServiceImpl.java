@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 //import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImage;
 import java.util.*;
 
 /**
@@ -1110,13 +1111,13 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response getUserProfile4H5(long uid) {
+    public UserProfile4H5Dto getUserProfile4H5(long uid) {
         UserProfile4H5Dto dto = new UserProfile4H5Dto();
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
         dto.setUid(uid);
         dto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
         dto.setNickName(userProfile.getNickName());
         dto.setSummary(userProfile.getIntroduced());
-        return Response.success(dto);
+        return dto;
     }
 }

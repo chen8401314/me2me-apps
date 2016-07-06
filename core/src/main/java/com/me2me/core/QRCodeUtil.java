@@ -12,10 +12,7 @@ import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.Map;
 
 /**
@@ -173,6 +170,14 @@ public class QRCodeUtil {
 
         public int getLogoPart() {
             return logoPart;
+        }
+    }
+    public static void main(String[] args) throws WriterException{
+        BufferedImage image = getQR_CODEBufferedImage(content,BarcodeFormat.QR_CODE, width, height, getDecodeHintType());
+        try {
+            ImageIO.write(image,"a.png",new FileOutputStream(new File("D://aaaaaa.png")));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
