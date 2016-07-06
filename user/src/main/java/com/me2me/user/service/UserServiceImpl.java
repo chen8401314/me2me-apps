@@ -1011,8 +1011,8 @@ public class UserServiceImpl implements UserService {
         // 有用户关注了自己
         // 关注的主播有了新直播
         // 订阅的直播主播有更新
-        List<Map<String,Object>> list =  userInitJdbcDao.getUserNoticeCounter("3,4,1,2,6,5,9");
-        List<Map<String,Object>> updateList = userInitJdbcDao.getUserNoticeList("3,4,1,2,6,5,9");
+        List<Map<String,Object>> list =  userInitJdbcDao.getUserNoticeCounter("3,4,0,2,6,5,9");
+        List<Map<String,Object>> updateList = userInitJdbcDao.getUserNoticeList("3,4,0,2,6,5,9");
         for(Map map : list){
             // 获取用户push_token
             int counter = Integer.valueOf(map.get("counter").toString());
