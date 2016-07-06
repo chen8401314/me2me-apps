@@ -43,4 +43,9 @@ public class UserInitJdbcDao extends BaseJdbcDao {
         return super.query(sql);
     }
 
+    public int getContentCount(long uid){
+        String sql = "select count(*) from content where uid = " + uid;
+        return super.count(sql);
+    }
+
 }

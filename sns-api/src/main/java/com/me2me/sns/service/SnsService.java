@@ -32,7 +32,7 @@ public interface SnsService {
      * 获取成员列表
      * @return
      */
-    Response getCircleByType(GetSnsCircleDto getSnsCircleDto);
+    Response circleByType(GetSnsCircleDto getSnsCircleDto);
 
     /**
      *订阅

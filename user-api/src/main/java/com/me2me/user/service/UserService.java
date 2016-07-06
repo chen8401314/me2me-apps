@@ -198,4 +198,6 @@ public interface UserService {
 
     UserProfile4H5Dto getUserProfile4H5(long uid);
 
+    Response getRefereeProfile(long uid);
+
 }

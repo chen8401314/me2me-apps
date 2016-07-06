@@ -90,7 +90,9 @@ public class SnsServiceImpl implements SnsService {
     }
 
     @Override
-    public Response getCircleByType(GetSnsCircleDto dto) {
+    public Response circleByType(GetSnsCircleDto dto) {
+        //先把自己加到核心
+        snsMybatisDao.createSnsCircle(dto.getUid(),dto.getUid(),Specification.SnsCircle.CORE.index);
         log.info("getCircleByType start ...");
         ShowSnsCircleDto showSnsCircleDto = new ShowSnsCircleDto();
         List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto);
@@ -118,7 +120,6 @@ public class SnsServiceImpl implements SnsService {
             snsCircleElement.setNickName(circleDto.getNickName());
             snsCircleElement.setInternalStatus(circleDto.getInternalStatus());
             showSnsCircleDto.getCircleElements().add(snsCircleElement);
-
         }
     }
 
@@ -166,7 +167,7 @@ public class SnsServiceImpl implements SnsService {
         if(action == 0) {
             // 判断人员关系,
             // 1如果他是我的粉丝则为相互圈内人
-            //2.如果他妹关注我，我是她的圈外人
+            //2.如果他不是我的粉丝，我是他的圈外人
             int isFollow = userService.isFollow(sourceUid,targetUid);
             int internalStatus = 0;
             if(isFollow == 1 ){
@@ -194,39 +195,21 @@ public class SnsServiceImpl implements SnsService {
     public Response modifyCircle(long owner,long topicId ,long uid,int action) {
         if(action  == 0) {
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
-            //订阅此直播
-            liveService.setLive2(uid, topicId, 0, 0,action);
+            //关注此人
+            follow(0,uid,owner);
         }else if(action == 1){
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.CORE.index);
             //关注此人
-            FollowDto followDto = new FollowDto();
-            followDto.setSourceUid(owner);
-            followDto.setTargetUid(uid);
-            followDto.setAction(0);
-            List<Topic> list = liveService.getTopicList(uid);
-            for (Topic topic : list) {
-                //订阅所有直播
-                liveService.setLive2(owner, topic.getId(), 0, 0,0);
-            }
-            return userService.follow(followDto);
+            follow(0,uid,owner);
         }else if(action == 2){
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
         }else if(action == 3){
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
             //取消关注此人，取消此人直播的订阅
-            FollowDto followDto = new FollowDto();
-            followDto.setSourceUid(owner);
-            followDto.setTargetUid(uid);
-            followDto.setAction(1);
-            List<Topic> list = liveService.getTopicList(uid);
-            for (Topic topic : list) {
-                //订阅所有直播
-                liveService.setLive2(owner, topic.getId(), 0, 0,1);
-            }
-            userService.follow(followDto);
+            follow(1,uid,owner);
         }else if(action == 4){
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
-            liveService.setLive2(uid, topicId, 0, 0,action);
+            liveService.setLive2(uid, topicId, 0, 0,0);
         }
         return Response.success(ResponseStatus.MODIFY_CIRCLE_SUCCESS.status,ResponseStatus.MODIFY_CIRCLE_SUCCESS.message);
     }

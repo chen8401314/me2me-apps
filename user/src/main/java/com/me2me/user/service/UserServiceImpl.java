@@ -22,6 +22,7 @@ import com.me2me.user.model.Dictionary;
 import com.me2me.user.widget.MessageNotificationAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -58,6 +59,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
    private FileTransferService fileTransferService;
+
+    @Value("#{app.reg_web}")
+    private String reg_web;
 
 
 
@@ -1048,12 +1052,7 @@ public class UserServiceImpl implements UserService {
     public Response genQRcode(long uid) {
         QRCodeDto qrCodeDto = new QRCodeDto();
         try {
-            UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
-            //有用户头像的二维码
-//            byte[] avatar = fileTransferService.download(Constant.QINIU_DOMAIN, userProfile.getAvatar());
-//            BufferedImage bufferedImage = QRCodeUtil.getQR_CODEBufferedImage();
-//            byte[] image = QRCodeUtil.addLogo_QRCode(bufferedImage,avatar);
-            byte[] image = QRCodeUtil.getQR_CODEByte();
+            byte[] image = QRCodeUtil.encode(reg_web + uid);
             String key = UUID.randomUUID().toString();
             fileTransferService.upload(image,key);
             qrCodeDto.setQrCodeUrl(Constant.QINIU_DOMAIN + "/" + key);
@@ -1119,5 +1118,27 @@ public class UserServiceImpl implements UserService {
         dto.setNickName(userProfile.getNickName());
         dto.setSummary(userProfile.getIntroduced());
         return dto;
+    }
+
+    @Override
+    public Response getRefereeProfile(long uid) {
+        UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+        RefereeProfileDto dto = new RefereeProfileDto();
+        //查询邀请人数
+        dto.setRefereeCount(userMybatisDao.getRefereeCount(uid));
+        //查询发布文章数
+        dto.setContentCount(userInitJdbcDao.getContentCount(uid));
+        //显示粉丝数
+        dto.setFansCount(userMybatisDao.getFansCount(uid));
+        dto.setUid(uid);
+        dto.setIntroduced(userProfile.getIntroduced());
+        dto.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
+        dto.setNickName(userProfile.getNickName());
+        dto.setRegUrl(reg_web+uid);
+//        byte[] image = QRCodeUtil.encode(reg_web + uid);
+//        String key = UUID.randomUUID().toString();
+//        fileTransferService.upload(image,key);
+//        dto.setQrCodeUrl(Constant.QINIU_DOMAIN + "/" + key);
+        return Response.success(dto);
     }
 }
