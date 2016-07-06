@@ -1048,12 +1048,7 @@ public class UserServiceImpl implements UserService {
     public Response genQRcode(long uid) {
         QRCodeDto qrCodeDto = new QRCodeDto();
         try {
-            UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
-            //有用户头像的二维码
-//            byte[] avatar = fileTransferService.download(Constant.QINIU_DOMAIN, userProfile.getAvatar());
-//            BufferedImage bufferedImage = QRCodeUtil.getQR_CODEBufferedImage();
-//            byte[] image = QRCodeUtil.addLogo_QRCode(bufferedImage,avatar);
-            byte[] image = QRCodeUtil.getQR_CODEByte();
+            byte[] image = QRCodeUtil.encode(uid);
             String key = UUID.randomUUID().toString();
             fileTransferService.upload(image,key);
             qrCodeDto.setQrCodeUrl(Constant.QINIU_DOMAIN + "/" + key);
