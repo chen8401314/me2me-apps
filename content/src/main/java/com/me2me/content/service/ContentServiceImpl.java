@@ -736,7 +736,7 @@ public class ContentServiceImpl implements ContentService {
                 @Override
                 public void run() {
                     try {
-                        int threadTimes = random.nextInt(120000)+60000;
+                        int threadTimes = random.nextInt(60000*20)+60000;
                         Thread.sleep(threadTimes);
                         likeDto.setUid(uid);
                         like2(likeDto);
