@@ -52,6 +52,7 @@ public class SnsMybatisDao {
         if(snsCircle != null){
             snsCircle.setInternalStatus(internalStatus);
             snsCircleMapper.updateByPrimaryKeySelective(snsCircle);
+            return;
         }
         snsCircle = new SnsCircle();
         snsCircle.setUid(uid);
