@@ -417,7 +417,7 @@ public class ContentMybatisDao {
         ContentLikesDetailsExample example = new ContentLikesDetailsExample();
         ContentLikesDetailsExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(id);
-   //     example.setOrderByClause(" create_time desc ");
+        example.setOrderByClause(" create_time desc ");
         return contentLikesDetailsMapper.selectByExample(example);
     }
 
