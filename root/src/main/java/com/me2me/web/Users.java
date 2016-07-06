@@ -465,4 +465,10 @@ public class Users extends BaseController {
 //        return userService.getUserProfile4H5(request.getUid());
 //    }
 
+    @ResponseBody
+    @RequestMapping(value = "/getRefereeProfile",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getRefereeProfile(UserProfileRequest request){
+        return userService.getRefereeProfile(request.getUid());
+    }
+
 }

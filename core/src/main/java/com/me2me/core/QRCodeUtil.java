@@ -9,6 +9,7 @@ import com.google.zxing.WriterException;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -29,7 +30,6 @@ public class QRCodeUtil {
 
     private static final int width = 400;
 
-    private static String content = "http://www.51nick.com";
 
     /**
      * 设置二维码的格式参数
@@ -62,12 +62,6 @@ public class QRCodeUtil {
             e.printStackTrace();
         }
        return null;
-    }
-
-
-    public static byte[] encode(long uid) {
-        content = content + "?" +uid;
-        return encode(content);
     }
 }
 

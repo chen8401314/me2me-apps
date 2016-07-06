@@ -166,7 +166,7 @@ public class SnsServiceImpl implements SnsService {
         if(action == 0) {
             // 判断人员关系,
             // 1如果他是我的粉丝则为相互圈内人
-            //2.如果他妹关注我，我是她的圈外人
+            //2.如果他不是我的粉丝，我是他的圈外人
             int isFollow = userService.isFollow(sourceUid,targetUid);
             int internalStatus = 0;
             if(isFollow == 1 ){

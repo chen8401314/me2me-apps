@@ -502,4 +502,19 @@ public class UserMybatisDao {
         example.setOrderByClause(" uid desc rand() limit "+limit);
         return userMapper.selectByExample(example);
     }
+
+    public int getRefereeCount(long uid){
+        UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andRefereeUidEqualTo(uid);
+        return userProfileMapper.countByExample(example);
+    }
+
+    public int getFansCount(long uid){
+        UserFollowExample example = new UserFollowExample();
+        UserFollowExample.Criteria criteria = example.createCriteria();
+        criteria.andTargetUidEqualTo(uid);
+        return userFollowMapper.countByExample(example);
+    }
+
 }
