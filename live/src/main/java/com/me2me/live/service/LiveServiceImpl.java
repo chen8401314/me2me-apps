@@ -210,7 +210,6 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setIsFollowed(isFollow);
             liveElement.setContentType(topicFragment.getContentType());
             liveElement.setFragmentId(topicFragment.getId());
-            liveElement.setInternalStatus(userService.getUserInternalStatus(uid,getLiveTimeLineDto.getUid()));
             liveTimeLineDto.getLiveElements().add(liveElement);
         }
     }
