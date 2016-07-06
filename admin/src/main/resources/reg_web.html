@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta charset="utf-8" />
+		<meta charset="utf-8"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link type="text/css" rel="stylesheet" href="css/bootstrap.css" />
+		<link href="//cdn.bootcss.com/bootstrap-validator/0.5.3/css/bootstrapValidator.css" rel="stylesheet"/>
+		<script src="js/jquery-1.11.1.min.js"></script>
+		<script type="text/javascript" src="js/bootstrap.min.js" ></script>
+		
+		<title>用户中心</title>
+		<style type="text/css">
+			.out-box{
+				padding:0px;
+				max-width: 657px;
+			}
+			.input-box{
+				padding:15px;
+			}
+			.form-control{
+				border:none;
+				border-radius: 0;
+			}
+			.btn-sign-up{
+				width:100%;
+				border-radius: 0;
+				font-weight: bold;
+				background: #F2C186;
+				color:#FFFFFF;
+			}
+			.banner{
+				position:relative;
+			}
+			.banner .btn-info{
+				background: #000000 !important;
+				border:1px solid #ffffff !important;
+			}
+			.btn-logout{
+				position: absolute;
+				bottom:20px;
+				right:20px;
+				background: #000000;
+				border:1px solid #ffffff;
+				opacity: .5;
+			}
+			.user-info{
+				padding-left:20px;
+				position:relative;
+			}
+			.user-avatar{
+				position:relative;
+			}
+			.user-info .avatar{
+				width:100px;
+				height:100px;
+				border-radius: 5px;
+				border:2px solid #ffffff;
+				position: absolute;
+				top:-20px;
+			}
+			.user-info .user-summary{
+				white-space:nowrap; 
+				text-overflow:ellipsis; 
+				-o-text-overflow:ellipsis; 
+				overflow: hidden;
+				color:#082441;
+				font-size:16px;
+			}
+			.span-text{
+				color:#EF8C12;
+			}
+			.text-nick-name{
+				color:#082441;
+				font-size:22px;
+			}
+			.btn-verify{
+				background: #FFFFFF;
+				border:none;
+				cursor: pointer;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container out-box">
+			<div class="banner">
+				<img src="img/banner.png" class="img-responsive"/>
+				<button type="button" class="btn btn-info btn-single btn-logout">退出登录</button>	
+			</div>
+			<div class="user-info row">
+				<div class="user-avatar col-xs-3">
+					<th:img src=""/>
+					<img class="img-responsive avatar" src="http://cdn.me-to-me.com/ac9b8cde-52fd-470a-8ba7-dd975b265e8e"/>
+				</div>
+				<div class="col-xs-9">
+					<th:h3 class="text-nick-name">${userProfile.nickName}</th:h3>
+					<h3 class="text-nick-name">带头大哥</h3>
+					<p class="user-summary">个人简介个人简介个人简介个人简介个人简介个人简介个人简介个人简介个人简介个人简介</p>
+					<p><span class="span-text">带头大哥</span> 邀请您加入me2me</p>
+				</div>
+				<div class="row">
+					<form role="form" action="#" class="form-horizontal">
+						<div class="form-group">
+							<input type="text" class="form-control" name="mobile" placeholder="请输入手机号">
+						</div>
+						<div class="form-group">
+							<div class="input-group">
+								<input type="text" style="max-width:200px;" class="form-control" name="code" placeholder="请输入验证码">
+								<span class="input-group-addon btn-verify pull-left" disabled="false" id="verify">获取验证码</span>
+							</div>
+						</div>
+						<div class="form-group">
+							<input type="text" class="form-control" name="nickName" placeholder="请输入昵称">
+						</div>
+						<div class="form-group">
+							<input type="password" class="form-control" name="encrypt" placeholder="请输入密码">
+						</div>
+						<div class="form-group">
+							<button type="submit" class="btn btn-single btn-sign-up">注册</button>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+		<script src="//cdn.bootcss.com/bootstrap-validator/0.5.3/js/bootstrapValidator.min.js"></script>
+<!--		<script src="//cdn.bootcss.com/bootstrap-validator/0.5.3/js/language/zh_CN.min.js"></script>-->
+		<script>
+			var countdown=60; 
+			function settime(obj) {
+			    if (countdown == 0) {
+			        obj.setAttribute("disabled",false);    
+			        if(obj.getAttribute('disabled')=='false'){
+			    
+			        	$(obj).bind('click',function(){
+			        		settime(obj);
+			        	});
+			        }
+			        $(obj).text("获取验证码"); 
+			        countdown = 60; 
+			        return;
+			    } else { 
+			        obj.setAttribute("disabled", true); 
+			        if(obj.getAttribute('disabled')=='true'){
+			        	$(obj).unbind('click');
+			        }
+			        $(obj).text("重新发送(" + countdown + ")");
+			        countdown--; 
+			    } 
+			setTimeout(function() { 
+			    settime(obj) }
+			    ,1000);
+			}
+
+			$('.btn-sign-up').mouseover(function(){
+				$(this).css({'background':'#EF8C12'});
+			}).mouseout(function(){
+				$(this).css({'background':'#F2C186'});
+			});
+			$('#verify').click(function(){
+				settime(this);
+			});
+			
+			// 非空校验
+			 $('form').bootstrapValidator({
+
+　　　　　　　　message: 'This value is not valid',
+		            　feedbackIcons: {
+		                　　　　　　　　valid: 'glyphicon glyphicon-ok',
+		                　　　　　　　　invalid: 'glyphicon glyphicon-remove',
+		                　　　　　　　　validating: 'glyphicon glyphicon-refresh'
+		            　　　　　　　　   },
+		            fields: {
+		                mobile: {
+		                    message: '用户名验证失败',
+		                    validators: {
+		                        notEmpty: {
+		                            message: '手机号码不能为空'
+		                        }
+		                    }
+		                },
+		                code: {
+		                    validators: {
+		                        notEmpty: {
+		                            message: '验证码不能为空'
+		                        }
+		                    }
+		                },		                
+		                nickName: {
+		                    validators: {
+		                        notEmpty: {
+		                            message: '昵称不能为空'
+		                        }
+		                    }
+		                },		                
+		                encrypt: {
+		                    validators: {
+		                        notEmpty: {
+		                            message: '密码不能为空'
+		                        }
+		                    }
+		                }
+		            }
+		        });
+		</script>
+	</body>
+</html>

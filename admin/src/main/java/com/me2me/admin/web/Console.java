@@ -7,6 +7,8 @@ import com.me2me.admin.web.request.RegisterRequest;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentH5Dto;
 import com.me2me.content.service.ContentService;
+import com.me2me.user.dto.UserProfile4H5Dto;
+import com.me2me.user.dto.UserRefereeSignUpDto;
 import com.me2me.user.service.UserService;
 import com.plusnet.common.util.StringEscapeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +16,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -86,14 +90,31 @@ public class Console  {
 
     @RequestMapping(value = "/reg_web")
     public ModelAndView reg_web(RegisterRequest request){
-        ModelAndView mv = new ModelAndView("activity_detail");
-        ActivityH5Dto content = userService(request.getId());
+        ModelAndView mv = new ModelAndView("reg_web");
+        UserProfile4H5Dto content = userService.getUserProfile4H5(request.getUid());
         if(content!=null) {
-            mv.addObject("root",content);
-            mv.addObject("share",request.getShared());
+            mv.addObject("userProfile",content);
         }else{
             mv.setViewName("error");
         }
         return mv;
+    }
+
+    @RequestMapping(value = "/signUp")
+    public String signUp(RegisterRequest request, HttpServletRequest httpServletRequest){
+        UserRefereeSignUpDto dto = new UserRefereeSignUpDto();
+        dto.setMobile(request.getMobile());
+        dto.setEncrypt(request.getEncrypt());
+        dto.setRefereeUid(request.getUid());
+        dto.setNickName(request.getNickName());
+        userService.refereeSignUp(dto);
+        String value = httpServletRequest.getHeader("User-Agent");
+        System.out.println(value);
+        if(value.contains("iPhone")){
+            return "redirect:https://itunes.apple.com/app/id1041252113";
+        }else{
+            return "redirect:http://sj.qq.com/myapp/detail.htm?apkName=com.mao.zx.metome";
+        }
+
     }
 }
