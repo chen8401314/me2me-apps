@@ -3,9 +3,11 @@ package com.me2me.admin.web;
 import com.me2me.activity.dto.ActivityH5Dto;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.admin.web.request.ContentForwardRequest;
+import com.me2me.admin.web.request.RegisterRequest;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentH5Dto;
 import com.me2me.content.service.ContentService;
+import com.me2me.user.service.UserService;
 import com.plusnet.common.util.StringEscapeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,6 +31,9 @@ public class Console  {
 
     @Autowired
     private ActivityService activityService;
+
+    @Autowired
+    private UserService userService;
 
     @RequestMapping(value = "/data")
     public ModelAndView data(){
@@ -70,6 +75,19 @@ public class Console  {
     public ModelAndView activity_detail(ContentForwardRequest request){
         ModelAndView mv = new ModelAndView("activity_detail");
         ActivityH5Dto content = activityService.getActivityH5(request.getId());
+        if(content!=null) {
+            mv.addObject("root",content);
+            mv.addObject("share",request.getShared());
+        }else{
+            mv.setViewName("error");
+        }
+        return mv;
+    }
+
+    @RequestMapping(value = "/reg_web")
+    public ModelAndView reg_web(RegisterRequest request){
+        ModelAndView mv = new ModelAndView("activity_detail");
+        ActivityH5Dto content = userService(request.getId());
         if(content!=null) {
             mv.addObject("root",content);
             mv.addObject("share",request.getShared());
