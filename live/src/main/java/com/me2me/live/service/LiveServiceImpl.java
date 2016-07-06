@@ -210,6 +210,8 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setIsFollowed(isFollow);
             liveElement.setContentType(topicFragment.getContentType());
             liveElement.setFragmentId(topicFragment.getId());
+            Topic topic = liveMybatisDao.getTopicById(getLiveTimeLineDto.getTopicId());
+            liveElement.setInternalStatus(userService.getUserInternalStatus(uid,topic.getUid()));
             liveTimeLineDto.getLiveElements().add(liveElement);
         }
     }
@@ -527,11 +529,13 @@ public class LiveServiceImpl implements LiveService {
             if (liveFavorite != null) {
                 liveMybatisDao.deleteLiveFavorite(liveFavorite);
             }
-            liveMybatisDao.createFavoriteDelete(uid,topicId);
-            if ((content.getFavoriteCount() - 1) < 0) {
-                content.setFavoriteCount(0);
-            } else {
-                content.setFavoriteCount(content.getFavoriteCount() - 1);
+            if(liveMybatisDao.getFavoriteDelete(uid, topicId) != null) {
+                liveMybatisDao.createFavoriteDelete(uid, topicId);
+                if ((content.getFavoriteCount() - 1) < 0) {
+                    content.setFavoriteCount(0);
+                } else {
+                    content.setFavoriteCount(content.getFavoriteCount() - 1);
+                }
             }
             contentService.updateContentById(content);
             log.info("setLive end ...");
