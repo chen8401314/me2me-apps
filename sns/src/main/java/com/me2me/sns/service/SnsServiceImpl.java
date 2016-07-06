@@ -91,6 +91,8 @@ public class SnsServiceImpl implements SnsService {
 
     @Override
     public Response getCircleByType(GetSnsCircleDto dto) {
+        //先把自己加到核心
+        snsMybatisDao.createSnsCircle(dto.getUid(),dto.getUid(),Specification.SnsCircle.CORE.index);
         log.info("getCircleByType start ...");
         ShowSnsCircleDto showSnsCircleDto = new ShowSnsCircleDto();
         List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto);
@@ -118,7 +120,6 @@ public class SnsServiceImpl implements SnsService {
             snsCircleElement.setNickName(circleDto.getNickName());
             snsCircleElement.setInternalStatus(circleDto.getInternalStatus());
             showSnsCircleDto.getCircleElements().add(snsCircleElement);
-
         }
     }
 
