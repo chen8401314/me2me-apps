@@ -83,4 +83,9 @@ public class OldUserJdbcDao {
         log.info("moveOldUser2Apps end ...");
     }
 
+
+    public int getUserInternalStatus(long uid, long owner) {
+        String caseSql = " select internal_status from sns_circle  where uid = " + uid + " and owner = " + owner;
+        return Integer.parseInt(jdbcTemplate.queryForMap(caseSql).get("internal_status").toString());
+    }
 }

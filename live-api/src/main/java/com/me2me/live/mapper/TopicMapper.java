@@ -93,4 +93,6 @@ public interface TopicMapper {
      * @mbggenerated Tue Jun 14 15:13:58 CST 2016
      */
     int updateByPrimaryKey(Topic record);
+
+    int getUserInternalStatus(String caseSql);
 }
