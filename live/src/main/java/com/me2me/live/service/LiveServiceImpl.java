@@ -151,6 +151,8 @@ public class LiveServiceImpl implements LiveService {
             barrageElement.setType(barrage.getType());
             barrageElement.setContentType(barrage.getContentType());
             barrageElement.setId(barrage.getId());
+            Topic topic = liveMybatisDao.getTopicById(barrageDto.getTopicId());
+            barrageElement.setInternalStatus(userService.getUserInternalStatus(uid,topic.getUid()));
             showBarrageDto.getBarrageElements().add(barrageElement);
         }
         log.info("barrage end ...");
@@ -208,8 +210,7 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setIsFollowed(isFollow);
             liveElement.setContentType(topicFragment.getContentType());
             liveElement.setFragmentId(topicFragment.getId());
-            //// TODO: 2016/6/27  设置次人员发言时候人员圈子状态
-            liveElement.setInternalStatus(0);
+            liveElement.setInternalStatus(userService.getUserInternalStatus(uid,getLiveTimeLineDto.getUid()));
             liveTimeLineDto.getLiveElements().add(liveElement);
         }
     }

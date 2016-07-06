@@ -26,8 +26,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-//import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImage;
 import java.util.*;
 
 /**
@@ -1140,5 +1138,10 @@ public class UserServiceImpl implements UserService {
 //        fileTransferService.upload(image,key);
 //        dto.setQrCodeUrl(Constant.QINIU_DOMAIN + "/" + key);
         return Response.success(dto);
+    }
+
+    @Override
+    public int getUserInternalStatus(long uid, long owner) {
+        return  oldUserJdbcDao.getUserInternalStatus(uid,owner);
     }
 }

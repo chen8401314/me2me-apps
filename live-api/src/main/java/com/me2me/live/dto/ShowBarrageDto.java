@@ -47,6 +47,8 @@ public class ShowBarrageDto implements BaseEntity{
 
         private long bottomId;
 
+        private int internalStatus;
+
     }
 
 }

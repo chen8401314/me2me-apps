@@ -200,4 +200,6 @@ public interface UserService {
 
     Response getRefereeProfile(long uid);
 
+    int getUserInternalStatus(long uid,long owner);
+
 }
