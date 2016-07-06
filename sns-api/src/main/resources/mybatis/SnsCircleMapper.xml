@@ -303,6 +303,9 @@
     select u.uid as uid,u.nick_name as nickName,u.avatar as avatar,u.introduced from user_profile u
     left join sns_circle s on u.uid = s.uid
     where s.owner = #{uid,jdbcType=BIGINT}
+    <if test="type == 0" >
+      and c.internal_status = #{type,jdbcType=INTEGER}
+    </if>
     and u.uid in (select uid from live_favorite_delete where topic_id = #{topicId,jdbcType=BIGINT} )
     order by convert(u.nick_name USING gbk) COLLATE gbk_chinese_ci limit #{sinceId,jdbcType=INTEGER},10
   </select>
