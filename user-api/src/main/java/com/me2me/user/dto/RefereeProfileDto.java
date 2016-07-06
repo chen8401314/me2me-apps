@@ -25,4 +25,8 @@ public class RefereeProfileDto implements BaseEntity{
     private int refereeCount;
 
     private int fansCount;
+
+    private String regUrl;
+
+    private String qrCodeUrl;
 }

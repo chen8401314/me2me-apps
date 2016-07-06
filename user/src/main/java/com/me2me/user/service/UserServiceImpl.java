@@ -1052,7 +1052,7 @@ public class UserServiceImpl implements UserService {
     public Response genQRcode(long uid) {
         QRCodeDto qrCodeDto = new QRCodeDto();
         try {
-            byte[] image = QRCodeUtil.encode(reg_web+uid);
+            byte[] image = QRCodeUtil.encode(reg_web + uid);
             String key = UUID.randomUUID().toString();
             fileTransferService.upload(image,key);
             qrCodeDto.setQrCodeUrl(Constant.QINIU_DOMAIN + "/" + key);
@@ -1134,6 +1134,11 @@ public class UserServiceImpl implements UserService {
         dto.setIntroduced(userProfile.getIntroduced());
         dto.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
         dto.setNickName(userProfile.getNickName());
+        dto.setRegUrl(reg_web+uid);
+        byte[] image = QRCodeUtil.encode(reg_web + uid);
+        String key = UUID.randomUUID().toString();
+        fileTransferService.upload(image,key);
+        dto.setQrCodeUrl(Constant.QINIU_DOMAIN + "/" + key);
         return Response.success(dto);
     }
 }
