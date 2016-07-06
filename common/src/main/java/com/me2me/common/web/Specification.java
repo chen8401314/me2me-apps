@@ -671,4 +671,20 @@ public interface Specification {
         }
     }
 
+    public enum UserActivate{
+
+        UN_ACTIVATED("未激活",0),
+
+        ACTIVATED("激活",1);
+
+        public final String name;
+
+        public final int index;
+
+        UserActivate(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
 }

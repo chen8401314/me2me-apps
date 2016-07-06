@@ -260,6 +260,11 @@ public class Users extends BaseController {
         return userService.cleanUserTips(request.getUid());
     }
 
+    /**
+     * 举报接口
+     * @param request
+     * @return
+     */
     @ResponseBody
     @RequestMapping(value = "/userReport",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response userReport(UserReportRequest request){
@@ -346,6 +351,10 @@ public class Users extends BaseController {
         return userService.getUserProfile(request.getUid());
     }
 
+    /**
+     * 初始化me号
+     * @param request
+     */
     @ResponseBody
     @RequestMapping(value = "/init",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public void init(ActivityRequest request){
@@ -360,13 +369,11 @@ public class Users extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/versionControl",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response versionControl(VersionControlRequest request){
-        String version = request.getVersion();
-        int platform = request.getPlatform();
-        return userService.versionControl(version,platform);
+        return userService.versionControl(request.getVersion(),request.getPlatform());
     }
 
     /**
-     * 后台添加版本信息
+     * 后台添加版本信息(运营使用，暂未启用)
      * @param request
      * @return
      */
@@ -393,7 +400,7 @@ public class Users extends BaseController {
     }
 
     /**
-     * 后台设置大V接口
+     * 后台设置大V接口(运营使用，暂未启用)
      * @param request
      * @return
      */
@@ -414,18 +421,48 @@ public class Users extends BaseController {
         return userService.logout(request.getUid());
     }
 
-
-
-    @ResponseBody
-    @RequestMapping(value = "/circle",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response circle(CircleRequest request){
-        return userService.logout(request.getUid());
-    }
-
+    /**
+     * s生成推广二维码
+     * @param request
+     * @return
+     */
     @ResponseBody
     @RequestMapping(value = "/qrcoe",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response circle(QrCodeRequest request){
         return userService.genQRcode(request.getUid());
+    }
+
+    /**
+     * 推广用户注册
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/refereeSignUp",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response refereeSignUp(RefereeSignUpRequest request){
+        UserRefereeSignUpDto userRefereeSignUpDto = new UserRefereeSignUpDto();
+        userRefereeSignUpDto.setMobile(request.getMobile());
+        userRefereeSignUpDto.setGender(request.getGender());
+        userRefereeSignUpDto.setStar(request.getStart());
+        userRefereeSignUpDto.setEncrypt(request.getEncrypt());
+        userRefereeSignUpDto.setNickName(request.getNickName());
+        userRefereeSignUpDto.setDeviceNo(request.getDeviceNo());
+        userRefereeSignUpDto.setPlatform(request.getPlatform());
+        userRefereeSignUpDto.setOs(request.getOs());
+        userRefereeSignUpDto.setIntroduced(request.getIntroduced());
+        userRefereeSignUpDto.setRefereeUid(request.getRefereeUid());
+        return userService.refereeSignUp(userRefereeSignUpDto);
+    }
+
+    /**
+     * 推广页面获取用户信息
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getUserProfile4H5",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getUserProfile4H5(GetUserProfile4H5Request request){
+        return userService.getUserProfile4H5(request.getUid());
     }
 
 }

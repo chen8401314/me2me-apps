@@ -42,7 +42,7 @@ public class SnsMybatisDao {
 
     }
 
-    public void createSnsCircle(long uid ,int internalStatus,long owner){
+    public void createSnsCircle(long uid ,long owner,int internalStatus){
         SnsCircleExample example = new SnsCircleExample();
         SnsCircleExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
@@ -74,8 +74,16 @@ public class SnsMybatisDao {
         criteria.andOwnerEqualTo(owner);
         List<SnsCircle> list = snsCircleMapper.selectByExample(example);
         SnsCircle snsCircle = Lists.getSingle(list);
-        snsCircle.setInternalStatus(internalStatus);
-        snsCircleMapper.updateByPrimaryKeySelective(snsCircle);
+        if(snsCircle != null) {
+            snsCircle.setInternalStatus(internalStatus);
+            snsCircleMapper.updateByPrimaryKeySelective(snsCircle);
+        }else{
+            snsCircle = new SnsCircle();
+            snsCircle.setInternalStatus(internalStatus);
+            snsCircle.setUid(uid);
+            snsCircle.setOwner(owner);
+            snsCircleMapper.insertSelective(snsCircle);
+        }
     }
 
     public List<SnsCircleDto> getSnsCircleMember(GetSnsCircleDto getSnsCircleDto){

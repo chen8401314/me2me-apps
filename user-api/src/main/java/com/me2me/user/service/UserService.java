@@ -194,4 +194,8 @@ public interface UserService {
 
     Response genQRcode(long uid);
 
+    Response refereeSignUp(UserRefereeSignUpDto userRefereeSignUpDto);
+
+    Response getUserProfile4H5(long uid);
+
 }

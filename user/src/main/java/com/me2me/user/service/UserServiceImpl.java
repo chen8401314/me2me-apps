@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.awt.image.BufferedImage;
+//import java.awt.image.BufferedImage;
 import java.util.*;
 
 /**
@@ -55,8 +55,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private XgPushService xgPushService;
 
-//    @Autowired
-    private FileTransferService fileTransferService;
+    @Autowired
+   private FileTransferService fileTransferService;
 
 
 
@@ -151,6 +151,11 @@ public class UserServiceImpl implements UserService {
                 // 则用户登录成功
                 UserProfile userProfile = userMybatisDao.getUserProfileByUid(user.getUid());
                 log.info("get userProfile success");
+                //判断用户是否是未激活状态
+                if(userProfile.getIsActivate() == Specification.UserActivate.UN_ACTIVATED.index){
+                    userProfile.setIsActivate(Specification.UserActivate.ACTIVATED.index);
+                    userMybatisDao.modifyUserProfile(userProfile);
+                }
                 UserToken userToken = userMybatisDao.getUserTokenByUid(user.getUid());
                 log.info("get userToken success");
                 LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
@@ -726,6 +731,7 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setBirthday(userProfile.getBirthday());
         showUserProfileDto.setGender(userProfile.getGender());
         showUserProfileDto.setUserName(userProfile.getMobile());
+        showUserProfileDto.setIsPromoter(userProfile.getIsPromoter());
         UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
         log.info("get userToken success ");
         showUserProfileDto.setToken(userToken.getToken());
@@ -797,6 +803,9 @@ public class UserServiceImpl implements UserService {
         VersionControlDto versionControlDto = new VersionControlDto();
         VersionControl control = userMybatisDao.getVersion(version,platform);
         VersionControl versionControl = userMybatisDao.getNewestVersion(platform);
+        if(version.compareTo(versionControl.getVersion()) > 1){
+            return Response.success(versionControlDto);
+        }
         versionControlDto.setId(versionControl.getId());
         versionControlDto.setUpdateDescription(versionControl.getUpdateDescription());
         versionControlDto.setUpdateTime(versionControl.getUpdateTime());
@@ -1039,9 +1048,11 @@ public class UserServiceImpl implements UserService {
         QRCodeDto qrCodeDto = new QRCodeDto();
         try {
             UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
-            byte[] avatar = fileTransferService.download(Constant.QINIU_DOMAIN, userProfile.getAvatar());
-            BufferedImage bufferedImage = QRCodeUtil.getQR_CODEBufferedImage();
-            byte[] image = QRCodeUtil.addLogo_QRCode(bufferedImage,avatar);
+            //有用户头像的二维码
+//            byte[] avatar = fileTransferService.download(Constant.QINIU_DOMAIN, userProfile.getAvatar());
+//            BufferedImage bufferedImage = QRCodeUtil.getQR_CODEBufferedImage();
+//            byte[] image = QRCodeUtil.addLogo_QRCode(bufferedImage,avatar);
+            byte[] image = QRCodeUtil.getQR_CODEByte();
             String key = UUID.randomUUID().toString();
             fileTransferService.upload(image,key);
             qrCodeDto.setQrCodeUrl(Constant.QINIU_DOMAIN + "/" + key);
@@ -1049,5 +1060,63 @@ public class UserServiceImpl implements UserService {
             e.printStackTrace();
         }
         return Response.success(ResponseStatus.QRCODE_SUCCESS.status,ResponseStatus.QRCODE_SUCCESS.message,qrCodeDto);
+    }
+
+    @Override
+    public Response refereeSignUp(UserRefereeSignUpDto userDto) {
+        log.info("refereeSignUp start ...");
+        // 校验手机号码是否注册
+        String mobile = userDto.getMobile();
+        log.info("mobile:" + mobile );
+        if(userMybatisDao.getUserByUserName(mobile) != null){
+            // 该用户已经注册过
+            log.info("mobile:" + mobile + " is already register");
+            return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
+        }
+        // 检查用户名是否重复
+        if(!this.existsNickName(userDto.getNickName())){
+            log.info("nickname:" + userDto.getNickName() + " is already used");
+            return Response.failure(ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.status,ResponseStatus.NICK_NAME_REQUIRE_UNIQUE.message);
+        }
+        User user = new User();
+        String salt = SecurityUtils.getMask();
+        user.setEncrypt(SecurityUtils.md5(userDto.getEncrypt(),salt));
+        user.setSalt(salt);
+        user.setCreateTime(new Date());
+        user.setUpdateTime(new Date());
+        user.setStatus(Specification.UserStatus.NORMAL.index);
+        user.setUserName(userDto.getMobile());
+        userMybatisDao.createUser(user);
+        log.info("user is create");
+        UserProfile userProfile = new UserProfile();
+        userProfile.setUid(user.getUid());
+        userProfile.setAvatar(Constant.DEFAULT_AVATAR);
+        userProfile.setMobile(userDto.getMobile());
+        userProfile.setNickName(userDto.getNickName());
+        userProfile.setIntroduced(userDto.getIntroduced());
+        userProfile.setIsActivate(Specification.UserActivate.UN_ACTIVATED.index);
+        userProfile.setRefereeUid(userDto.getRefereeUid());
+        userMybatisDao.createUserProfile(userProfile);
+        log.info("userProfile is create");
+        // 保存用户token信息
+        UserToken userToken = new UserToken();
+        userToken.setUid(user.getUid());
+        userToken.setToken(SecurityUtils.getToken());
+        userMybatisDao.createUserToken(userToken);
+        log.info("userToken is create");
+        log.info("refereeSignUp end ...");
+        monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
+        return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message);
+    }
+
+    @Override
+    public Response getUserProfile4H5(long uid) {
+        UserProfile4H5Dto dto = new UserProfile4H5Dto();
+        UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+        dto.setUid(uid);
+        dto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+        dto.setNickName(userProfile.getNickName());
+        dto.setSummary(userProfile.getIntroduced());
+        return Response.success(dto);
     }
 }

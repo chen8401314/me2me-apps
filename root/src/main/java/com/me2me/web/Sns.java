@@ -1,6 +1,7 @@
 package com.me2me.web;
 
 import com.me2me.common.web.Response;
+import com.me2me.sns.dto.GetSnsCircleDto;
 import com.me2me.sns.service.SnsService;
 import com.me2me.user.dto.FollowDto;
 import com.me2me.web.request.*;
@@ -25,7 +26,7 @@ public class Sns extends BaseController {
     private SnsService snsService;
 
     /**
-     * 获取成员列表
+     * 获取成员列表(废弃)
      * @param request
      * @return
      */
@@ -43,7 +44,12 @@ public class Sns extends BaseController {
     @RequestMapping(value = "/showMembers",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response showMembers(ShowMembersRequest request){
-        return snsService.showMembers(request.getUid(),request.getTopicId(),request.getSinceId(),request.getType());
+        GetSnsCircleDto getSnsCircleDto = new GetSnsCircleDto();
+        getSnsCircleDto.setType(request.getType());
+        getSnsCircleDto.setUid(request.getUid());
+        getSnsCircleDto.setSinceId((request.getSinceId()-1)*10);
+        getSnsCircleDto.setTopicId(request.getTopicId());
+        return snsService.showMembers(getSnsCircleDto);
     }
 
     /**
@@ -65,10 +71,12 @@ public class Sns extends BaseController {
     @RequestMapping(value = "/getCircleByType",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getCircleByType(GetCircleByTypeRequest request){
-        if(request.getSinceId() < 0){
-            request.setSinceId(1);
-        }
-        return snsService.getCircleByType(request.getUid(),request.getTopicId(),request.getSinceId(),request.getType());
+        GetSnsCircleDto getSnsCircleDto = new GetSnsCircleDto();
+        getSnsCircleDto.setTopicId(request.getTopicId());
+        getSnsCircleDto.setUid(request.getUid());
+        getSnsCircleDto.setType(request.getType());
+        getSnsCircleDto.setSinceId((request.getSinceId()-1)*10);
+        return snsService.getCircleByType(getSnsCircleDto);
     }
 
 

@@ -162,6 +162,8 @@ public interface ContentService{
 
     void remind(Content content ,long uid ,int type,String arg);
 
+    void remind(Content content ,long uid ,int type,String arg,long atUid);
+
     void deleteContentLikesDetails(ContentLikesDetails contentLikesDetails);
 
     Response like2(LikeDto likeDto);
@@ -190,7 +192,7 @@ public interface ContentService{
 
     Response kingTopic(KingTopicDto kingTopic);
 
-    Response myPublishByType(long uid ,int sinceId ,int type);
+    Response myPublishByType(long uid ,int sinceId ,int type,long updateTime);
 
     Response createAtReview(AtReviewDto atReviewDto);
 
