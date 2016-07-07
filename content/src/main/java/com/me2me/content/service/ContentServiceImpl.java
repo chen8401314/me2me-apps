@@ -1183,6 +1183,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setReadCount(content.getReadCount());
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
+            contentElement.setUid(content.getUid());
             String cover = content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
                 if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){

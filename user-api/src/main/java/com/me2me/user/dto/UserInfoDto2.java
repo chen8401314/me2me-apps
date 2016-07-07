@@ -65,6 +65,8 @@ public class UserInfoDto2 implements BaseEntity{
 
         private long cid;
 
+        private long uid;
+
         private String tag;
 
         private String coverImage;
