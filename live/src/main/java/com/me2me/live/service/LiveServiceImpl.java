@@ -716,4 +716,14 @@ public class LiveServiceImpl implements LiveService {
         return liveMybatisDao.getMyTopic4Follow(uid);
     }
 
+    @Override
+    public void deleteFavoriteDelete(long uid,long topicId){
+        liveMybatisDao.deleteFavoriteDelete(uid, topicId);
+    }
+
+    @Override
+    public void createFavoriteDelete(long uid,long topicId){
+        liveMybatisDao.createFavoriteDelete(uid, topicId);
+    }
+
 }

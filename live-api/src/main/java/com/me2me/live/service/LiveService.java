@@ -115,4 +115,8 @@ public interface LiveService {
     List<Topic> getTopicList(long uid);
 
     List<Topic> getMyTopic4Follow(long uid);
+
+    void createFavoriteDelete(long uid,long topicId);
+
+    void deleteFavoriteDelete(long uid,long topicId);
 }
