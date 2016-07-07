@@ -474,6 +474,11 @@ public class UserServiceImpl implements UserService {
             userTips.setCount(0);
             userMybatisDao.modifyUserTips(userTips);
         }
+        List<UserNotice> userNotices = userMybatisDao.getUserNotice(uid);
+        for(UserNotice userNotice : userNotices) {
+            userNotice.setPushStatus(Specification.PushStatus.PUSHED.index);
+            userMybatisDao.updateUserNoticePushStatus(userNotice);
+        }
         return Response.success(ResponseStatus.CLEAN_USER_TIPS_SUCCESS.status,ResponseStatus.CLEAN_USER_TIPS_SUCCESS.message);
     }
 

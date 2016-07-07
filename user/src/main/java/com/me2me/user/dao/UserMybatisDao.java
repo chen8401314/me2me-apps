@@ -517,4 +517,12 @@ public class UserMybatisDao {
         return userFollowMapper.countByExample(example);
     }
 
+    public List<UserNotice> getUserNotice(long uid){
+        UserNoticeExample example = new UserNoticeExample();
+        UserNoticeExample.Criteria criteria = example.createCriteria();
+        criteria.andToUidEqualTo(uid);
+        criteria.andPushStatusEqualTo(Specification.PushStatus.UN_PUSHED.index);
+        return  userNoticeMapper.selectByExample(example);
+    }
+
 }
