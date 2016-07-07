@@ -4,6 +4,7 @@ import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.Topic;
 import com.me2me.live.service.LiveService;
 import com.me2me.sns.dao.SnsMybatisDao;
@@ -197,11 +198,13 @@ public class SnsServiceImpl implements SnsService {
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
             //关注此人
             follow(0,uid,owner);
+            liveService.setLive2(uid,topicId,0,0,0);
             liveService.deleteFavoriteDelete(uid,topicId);
         }else if(action == 1){
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.CORE.index);
             //关注此人
             follow(0,uid,owner);
+            liveService.setLive2(uid,topicId,0,0,0);
             liveService.deleteFavoriteDelete(uid,topicId);
         }else if(action == 2){
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
