@@ -1056,12 +1056,19 @@ public class UserServiceImpl implements UserService {
     public Response genQRcode(long uid) {
         QRCodeDto qrCodeDto = new QRCodeDto();
         try {
-            byte[] image = QRCodeUtil.encode(reg_web + uid);
-            String key = UUID.randomUUID().toString();
-            fileTransferService.upload(image,key);
-            qrCodeDto.setQrCodeUrl(Constant.QINIU_DOMAIN + "/" + key);
+            UserProfile userProfile = getUserProfileByUid(uid);
+            if(StringUtils.isEmpty(userProfile.getQrcode())) {
+                byte[] image = QRCodeUtil.encode(reg_web + uid);
+                String key = UUID.randomUUID().toString();
+                fileTransferService.upload(image, key);
+                qrCodeDto.setQrCodeUrl(Constant.QINIU_DOMAIN + "/" + key);
+                userProfile.setQrcode(key);
+                userMybatisDao.modifyUserProfile(userProfile);
+            }else{
+                qrCodeDto.setQrCodeUrl(Constant.QINIU_DOMAIN + "/" + userProfile.getQrcode());
+            }
         }catch (Exception e){
-            e.printStackTrace();
+            return Response.failure(ResponseStatus.QRCODE_FAILURE.status,ResponseStatus.QRCODE_FAILURE.message);
         }
         return Response.success(ResponseStatus.QRCODE_SUCCESS.status,ResponseStatus.QRCODE_SUCCESS.message,qrCodeDto);
     }

@@ -274,20 +274,4 @@ public class Contents extends BaseController {
         }
         return contentService.myPublishByType(request.getCustomerId(),request.getSinceId(),request.getType(),request.getUpdateTime());
     }
-
-    /**
-     * 用户日记列表(废弃)
-     * @param request
-     * @return
-     */
-    @RequestMapping(value = "/atReview",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseBody
-    public Response atReview(AtReviewRequest request){
-        AtReviewDto atReviewDto = new AtReviewDto();
-        atReviewDto.setReviewId(request.getReviewId());
-        atReviewDto.setReview(request.getReview());
-        atReviewDto.setFromUid(request.getUid());
-        return contentService.createAtReview(atReviewDto);
-    }
-
 }
