@@ -186,6 +186,7 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
     }
 
     private long getChannel(String channel){
+        // todo provider cache for basic data
         BasicDataDto basicDataDto = new BasicDataDto();
         basicDataDto.setType(5);
         BasicDataSuccessDto basicDataSuccessDto = (BasicDataSuccessDto) userService.getBasicDataByType(basicDataDto).getData();
