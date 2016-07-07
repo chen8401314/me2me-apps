@@ -473,6 +473,7 @@ public class UserServiceImpl implements UserService {
         for(UserTips userTips : list){
             userTips.setCount(0);
             userMybatisDao.modifyUserTips(userTips);
+            // update usernotice
         }
         List<UserNotice> userNotices = userMybatisDao.getUserNotice(uid);
         for(UserNotice userNotice : userNotices) {
