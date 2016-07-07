@@ -36,7 +36,7 @@ public abstract class Request {
     private String nonce;
     @Getter
     @Setter
-    private int channel;
+    private String channel;
 
 
 }

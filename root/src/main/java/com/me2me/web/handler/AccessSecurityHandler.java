@@ -5,13 +5,17 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.web.Response;
+import com.me2me.common.web.Specification;
 import com.me2me.core.exception.AccessSignNotMatchException;
 import com.me2me.core.exception.AppIdException;
 import com.me2me.core.exception.TokenNullException;
 import com.me2me.core.exception.UidAndTokenNotMatchException;
+import com.me2me.monitor.event.MonitorEvent;
+import com.me2me.monitor.service.MonitorService;
 import com.me2me.user.dto.BasicDataDto;
 import com.me2me.user.dto.BasicDataSuccessDto;
 import com.me2me.user.model.ApplicationSecurity;
+import com.me2me.user.model.Dictionary;
 import com.me2me.user.model.UserToken;
 import com.me2me.user.service.UserService;
 import com.me2me.web.JsonSecurity;
@@ -30,6 +34,9 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private MonitorService monitorService;
 
     private static List<String> WHITE_LIST = Lists.newArrayList();
 
@@ -117,15 +124,28 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         if(MONITOR_INTERCEPTOR_URLS.contains(request.getRequestURI())){
             // 开启拦截
             long uid = Long.valueOf(request.getParameter("uid"));
-            BasicDataDto basicDataDto = new BasicDataDto();
-            basicDataDto.setType(5);
-            BasicDataSuccessDto basicDataSuccessDto = (BasicDataSuccessDto) userService.getBasicDataByType(basicDataDto).getData();
             String channel = request.getParameter("channel");
-            List<BasicDataSuccessDto.BasicDataSuccessElement> list = basicDataSuccessDto.getResults();
-            for(BasicDataSuccessDto.BasicDataSuccessElement element : list){
-
+            int channelInt = (int) getChannel(channel);
+            if(request.getRequestURI().equals("/api/user/signUp")) {
+                monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.REGISTER.index, channelInt, uid));
             }
         }
 
+    }
+
+    private long getChannel(String channel){
+        BasicDataDto basicDataDto = new BasicDataDto();
+        basicDataDto.setType(5);
+        BasicDataSuccessDto basicDataSuccessDto = (BasicDataSuccessDto) userService.getBasicDataByType(basicDataDto).getData();
+        List<BasicDataSuccessDto.BasicDataSuccessElement> list = basicDataSuccessDto.getResults();
+        for(BasicDataSuccessDto.BasicDataSuccessElement element : list){
+            List<Dictionary> dictionaries = element.getList();
+            for(Dictionary dictionary : dictionaries){
+                if(dictionary.getValue().equals(channel)){
+                    return dictionary.getId();
+                }
+            }
+        }
+       return -1;
     }
 }
