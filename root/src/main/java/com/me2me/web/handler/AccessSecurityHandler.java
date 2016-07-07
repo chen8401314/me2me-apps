@@ -4,10 +4,13 @@ import com.alibaba.dubbo.common.json.JSON;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.me2me.common.security.SecurityUtils;
+import com.me2me.common.web.Response;
 import com.me2me.core.exception.AccessSignNotMatchException;
 import com.me2me.core.exception.AppIdException;
 import com.me2me.core.exception.TokenNullException;
 import com.me2me.core.exception.UidAndTokenNotMatchException;
+import com.me2me.user.dto.BasicDataDto;
+import com.me2me.user.dto.BasicDataSuccessDto;
 import com.me2me.user.model.ApplicationSecurity;
 import com.me2me.user.model.UserToken;
 import com.me2me.user.service.UserService;
@@ -34,6 +37,8 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
 
     private static List<String> TRUST_REQUEST_LIST = Lists.newArrayList();
 
+    private static List<String> MONITOR_INTERCEPTOR_URLS = Lists.newArrayList();
+
     static {
         WHITE_LIST.add("/api/user/login");
         WHITE_LIST.add("/api/user/signUp");
@@ -56,6 +61,10 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         INTERNAL_WHITE_LIST.add("/api/console/kingTopic");
 
         TRUST_REQUEST_LIST.add("/api/user/getSpecialUserProfile");
+
+
+        // 初始化拦截URL
+        MONITOR_INTERCEPTOR_URLS.add("/api/content/getUserData2");
 
 
     }
@@ -100,5 +109,23 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         }else{
             return true;
         }
+    }
+
+    @Override
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+        // super.afterCompletion(request, response, handler, ex);
+        if(MONITOR_INTERCEPTOR_URLS.contains(request.getRequestURI())){
+            // 开启拦截
+            long uid = Long.valueOf(request.getParameter("uid"));
+            BasicDataDto basicDataDto = new BasicDataDto();
+            basicDataDto.setType(5);
+            BasicDataSuccessDto basicDataSuccessDto = (BasicDataSuccessDto) userService.getBasicDataByType(basicDataDto).getData();
+            String channel = request.getParameter("channel");
+            List<BasicDataSuccessDto.BasicDataSuccessElement> list = basicDataSuccessDto.getResults();
+            for(BasicDataSuccessDto.BasicDataSuccessElement element : list){
+
+            }
+        }
+
     }
 }
