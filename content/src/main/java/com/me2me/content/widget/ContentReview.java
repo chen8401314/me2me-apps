@@ -35,16 +35,17 @@ public class ContentReview implements Review{
         content.setReviewCount(content.getReviewCount() +1);
         contentService.updateContentById(content);
         log.info("update reviewCount");
-        //添加提醒
-        contentService.remind(content,reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index,reviewDto.getReview());
         log.info("remind success");
         //自己的日记被评论提醒
         if(reviewDto.getIsAt() == 1) {
             //兼容老版本
             if(reviewDto.getAtUid() != 0) {
-                //contentService.remind(content,reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index,reviewDto.getReview(),reviewDto.getAtUid());
+                contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview(), reviewDto.getAtUid());
                 userService.push(reviewDto.getAtUid(), reviewDto.getUid(), Specification.PushMessageType.AT.index, reviewDto.getReview());
             }
+        }else{
+            //添加提醒
+            contentService.remind(content,reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index,reviewDto.getReview());
         }
         log.info("push success");
         return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);

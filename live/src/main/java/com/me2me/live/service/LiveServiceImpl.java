@@ -529,7 +529,7 @@ public class LiveServiceImpl implements LiveService {
             if (liveFavorite != null) {
                 liveMybatisDao.deleteLiveFavorite(liveFavorite);
             }
-            if(liveMybatisDao.getFavoriteDelete(uid, topicId) != null) {
+            if(liveMybatisDao.getFavoriteDelete(uid, topicId) == null) {
                 liveMybatisDao.createFavoriteDelete(uid, topicId);
                 if ((content.getFavoriteCount() - 1) < 0) {
                     content.setFavoriteCount(0);
@@ -711,9 +711,19 @@ public class LiveServiceImpl implements LiveService {
         return liveMybatisDao.getMyTopic(uid);
     }
 
+    @Override
+    public List<Topic> getMyTopic4Follow(long uid) {
+        return liveMybatisDao.getMyTopic4Follow(uid);
+    }
 
-    public void deleteLiveFavoriteByUid(long uid,long topicId){
-       liveMybatisDao.deleteLiveFavoriteByUid(uid,topicId);
+    @Override
+    public void deleteFavoriteDelete(long uid,long topicId){
+        liveMybatisDao.deleteFavoriteDelete(uid, topicId);
+    }
+
+    @Override
+    public void createFavoriteDelete(long uid,long topicId){
+        liveMybatisDao.createFavoriteDelete(uid, topicId);
     }
 
 }

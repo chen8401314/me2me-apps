@@ -158,7 +158,7 @@ public class SnsServiceImpl implements SnsService {
         followDto.setTargetUid(targetUid);
         followDto.setAction(action);
         Response response = userService.follow(followDto);
-        List<Topic> list = liveService.getTopicList(targetUid);
+        List<Topic> list = liveService.getMyTopic4Follow(targetUid);
         //关注,订阅所有直播/取消所有直播订阅
         for (Topic topic : list) {
             liveService.setLive2(sourceUid, topic.getId(), 0, 0,action);
@@ -197,10 +197,12 @@ public class SnsServiceImpl implements SnsService {
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
             //关注此人
             follow(0,uid,owner);
+            liveService.deleteFavoriteDelete(uid,topicId);
         }else if(action == 1){
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.CORE.index);
             //关注此人
             follow(0,uid,owner);
+            liveService.deleteFavoriteDelete(uid,topicId);
         }else if(action == 2){
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
         }else if(action == 3){
@@ -210,6 +212,7 @@ public class SnsServiceImpl implements SnsService {
         }else if(action == 4){
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
             liveService.setLive2(uid, topicId, 0, 0,0);
+            liveService.deleteFavoriteDelete(uid,topicId);
         }
         return Response.success(ResponseStatus.MODIFY_CIRCLE_SUCCESS.status,ResponseStatus.MODIFY_CIRCLE_SUCCESS.message);
     }
