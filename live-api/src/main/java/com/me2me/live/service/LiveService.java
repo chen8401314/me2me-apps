@@ -113,4 +113,6 @@ public interface LiveService {
     Topic getTopicById(long topicId);
 
     List<Topic> getTopicList(long uid);
+
+    List<Topic> getMyTopic4Follow(long uid);
 }

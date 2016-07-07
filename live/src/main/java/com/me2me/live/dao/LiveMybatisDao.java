@@ -329,4 +329,11 @@ public class LiveMybatisDao {
         liveFavoriteDeleteMapper.deleteByExample(example);
     }
 
+    public List<Topic> getMyTopic4Follow(long uid){
+        TopicExample example = new TopicExample();
+        TopicExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        return topicMapper.selectByExample(example);
+    }
+
 }

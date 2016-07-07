@@ -158,7 +158,7 @@ public class SnsServiceImpl implements SnsService {
         followDto.setTargetUid(targetUid);
         followDto.setAction(action);
         Response response = userService.follow(followDto);
-        List<Topic> list = liveService.getTopicList(targetUid);
+        List<Topic> list = liveService.getMyTopic4Follow(targetUid);
         //关注,订阅所有直播/取消所有直播订阅
         for (Topic topic : list) {
             liveService.setLive2(sourceUid, topic.getId(), 0, 0,action);
