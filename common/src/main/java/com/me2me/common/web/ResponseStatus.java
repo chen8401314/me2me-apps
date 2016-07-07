@@ -198,10 +198,9 @@ public enum  ResponseStatus {
 
     USER_MODIFY_ENCRYPT_THE_SAME_ERROR("老密码和新密码一样，不能修改"," user the old and new password are the same",50026),
 
-    FORWARD_CONTENT_NOT_EXISTS("转发的原内容不存在","forward content not exists",20027),
+    FORWARD_CONTENT_NOT_EXISTS("转发的原内容不存在","forward content not exists",50027),
 
-
-    AT_REVIEW_SUCCESS("at回复成功","at function success",20030),
+    QRCODE_FAILURE("获取二维码失败","qrcode failure",50028),
 
 
 

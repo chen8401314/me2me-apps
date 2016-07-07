@@ -194,6 +194,5 @@ public interface ContentService{
 
     Response myPublishByType(long uid ,int sinceId ,int type,long updateTime);
 
-    Response createAtReview(AtReviewDto atReviewDto);
 
 }

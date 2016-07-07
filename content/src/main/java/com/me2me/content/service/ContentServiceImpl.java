@@ -1854,16 +1854,5 @@ public class ContentServiceImpl implements ContentService {
         contentMybatisDao.createContentArticleDetails(articleTagsDetails);
     }
 
-    @Override
-    public Response createAtReview(AtReviewDto atReviewDto) {
-        AtReview atReview = new AtReview();
-        atReview.setFromUid(atReviewDto.getFromUid());
-        atReview.setToUid(atReviewDto.getToUid());
-        atReview.setReview(atReviewDto.getReview());
-        atReview.setReviewType(0);
-        atReview.setReviewId(atReviewDto.getReviewId());
-        contentMybatisDao.createAtReview(atReview);
-        return Response.success(ResponseStatus.AT_REVIEW_SUCCESS.status,ResponseStatus.AT_REVIEW_SUCCESS.message);
-    }
 
 }
