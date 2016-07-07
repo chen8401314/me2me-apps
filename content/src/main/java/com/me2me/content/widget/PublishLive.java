@@ -24,7 +24,7 @@ public class PublishLive extends AbstractPublish implements Publish {
     @Override
     public Response publish(ContentDto contentDto) {
         log.info("PublishLive publish");
-        monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LIVE_PUBLISH.index,0,contentDto.getUid()));
+        //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LIVE_PUBLISH.index,0,contentDto.getUid()));
         log.info("monitor PublishUGC ");
         return super.publish(contentDto);
     }

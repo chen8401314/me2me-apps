@@ -276,7 +276,7 @@ public class Contents extends BaseController {
     }
 
     /**
-     * 用户日记列表
+     * 用户日记列表(废弃)
      * @param request
      * @return
      */

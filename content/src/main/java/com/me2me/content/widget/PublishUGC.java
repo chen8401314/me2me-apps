@@ -39,7 +39,7 @@ public class PublishUGC extends AbstractPublish implements Publish {
         log.info("PublishUGC publish");
         activityService.joinActivity(contentDto.getContent(),contentDto.getUid());
         log.info("join Activity");
-        monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.CONTENT_PUBLISH.index,0,contentDto.getUid()));
+        //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.CONTENT_PUBLISH.index,0,contentDto.getUid()));
         log.info("monitor PublishUGC ");
         contentDto.setTitle("");
         Response response =  super.publish(contentDto);

@@ -146,7 +146,7 @@ public class SnsServiceImpl implements SnsService {
             }
             snsMybatisDao.createSnsCircle(uid,topic.getUid(),internalStatus);
         }else if(action == 1){
-            //取消该直播的关注
+            //取消该直播的订阅
             liveService.setLive2(uid, topicId, 0, 0, action);
         }
         return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status,ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);

@@ -71,7 +71,19 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
 
 
         // 初始化拦截URL
-        MONITOR_INTERCEPTOR_URLS.add("/api/content/getUserData2");
+        MONITOR_INTERCEPTOR_URLS.add("/api/user/login");
+        MONITOR_INTERCEPTOR_URLS.add("/api/user/signUp");
+        MONITOR_INTERCEPTOR_URLS.add("/api/user/follow");
+        MONITOR_INTERCEPTOR_URLS.add("/api/user/versionControl");
+        MONITOR_INTERCEPTOR_URLS.add("/api/content/publish");
+        MONITOR_INTERCEPTOR_URLS.add("/api/content/likes");
+        MONITOR_INTERCEPTOR_URLS.add("/api/content/writeTag");
+        MONITOR_INTERCEPTOR_URLS.add("/api/content/getContentDetail");
+        MONITOR_INTERCEPTOR_URLS.add("/api/content/review");
+        MONITOR_INTERCEPTOR_URLS.add("/api/home/hottest");
+        MONITOR_INTERCEPTOR_URLS.add("/api/home/newest");
+        MONITOR_INTERCEPTOR_URLS.add("/api/home/attention");
+
 
 
     }
@@ -123,12 +135,52 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         // super.afterCompletion(request, response, handler, ex);
         if(MONITOR_INTERCEPTOR_URLS.contains(request.getRequestURI())){
             // 开启拦截
-            long uid = Long.valueOf(request.getParameter("uid"));
+            long uid = Long.valueOf(request.getParameter("uid") == null ? "0" : request.getParameter("uid") );
             String channel = request.getParameter("channel");
             int channelInt = (int) getChannel(channel);
-            if(request.getRequestURI().equals("/api/user/signUp")) {
+            if("/api/user/login".equals(request.getRequestURI())) {
+                monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.LOGIN.index, channelInt, uid));
+            }else if("/api/user/signUp".equals(request.getRequestURI())){
                 monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.REGISTER.index, channelInt, uid));
+            }else if("/api/user/follow".equals(request.getRequestURI())){
+                if(request.getParameter("action").equals("0")){
+                    monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.FOLLOW.index, channelInt, uid));
+                }else {
+                    monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.UN_FOLLOW.index, channelInt, uid));
+                }
+            } else if("/api/user/versionControl".equals(request.getRequestURI())){
+                monitorService.post(new MonitorEvent(Specification.MonitorType.BOOT.index, Specification.MonitorAction.BOOT.index, channelInt, uid));
+            } else if("/api/content/publish".equals(request.getRequestURI())){
+                if(request.getParameter("type").equals("0")){
+                    monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.CONTENT_PUBLISH.index, channelInt, uid));
+                }else if(request.getParameter("type").equals("3")){
+                    monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.LIVE_PUBLISH.index, channelInt, uid));
+                }else if(request.getParameter("type").equals("1")||request.getParameter("type").equals("6")||request.getParameter("type").equals("7")||request.getParameter("type").equals("8")||request.getParameter("type").equals("9")){
+                    monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.FORWARD.index, channelInt, uid));
+                }
+            } else if("/api/content/likes".equals(request.getRequestURI())){
+                if(request.getParameter("action").equals("0")) {
+                    monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.LIKE.index, channelInt, uid));
+                }else{
+                    monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.UN_LIKE.index, channelInt, uid));
+                }
+            }else if("/api/content/writeTag".equals(request.getRequestURI())){
+                monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.FEELING_TAG.index, channelInt, uid));
+            }else if("/api/content/getContentDetail".equals(request.getRequestURI())){
+                monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.CONTENT_VIEW.index, channelInt, uid));
+            }else if("/api/content/review".equals(request.getRequestURI())){
+                monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.REVIEW.index, channelInt, uid));
+            }else if("/api/home/hottest".equals(request.getRequestURI())){
+                monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.HOTTEST.index, channelInt, uid));
+            }else if("/api/home/newest".equals(request.getRequestURI())){
+                monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.NEWEST.index, channelInt, uid));
+            }else if("/api/home/attention".equals(request.getRequestURI())){
+                monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index, Specification.MonitorAction.FOLLOW_LIST.index, channelInt, uid));
             }
+
+
+
+
         }
 
     }

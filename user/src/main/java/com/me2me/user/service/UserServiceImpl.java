@@ -133,7 +133,7 @@ public class UserServiceImpl implements UserService {
         signUpSuccessDto.setGender(up.getGender());
         signUpSuccessDto.setYearId(up.getYearsId());
         log.info("signUp end ...");
-        monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
+        //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
 
@@ -183,7 +183,7 @@ public class UserServiceImpl implements UserService {
                 userMybatisDao.updateUserDevice(device);
                 log.info("update user device success");
                 log.info("login end ...");
-                monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LOGIN.index,0,user.getUid()));
+                //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LOGIN.index,0,user.getUid()));
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status,ResponseStatus.USER_LOGIN_SUCCESS.message,loginSuccessDto);
             }else{
                 log.info("user password error");
@@ -578,7 +578,7 @@ public class UserServiceImpl implements UserService {
             //关注提醒
             push(followDto.getTargetUid(),followDto.getSourceUid(),Specification.PushMessageType.FOLLOW.index,null);
             log.info("follow push success");
-            monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW.index,0,followDto.getSourceUid()));
+            //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW.index,0,followDto.getSourceUid()));
             log.info("monitor success");
             log.info("follow end ...");
             return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message);
@@ -589,8 +589,8 @@ public class UserServiceImpl implements UserService {
             if(ufw!=null) {
                 userMybatisDao.deleteFollow(ufw.getId());
             }
-            monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.UN_FOLLOW.index,0,followDto.getSourceUid()));
-            log.info("monitor success");
+            //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.UN_FOLLOW.index,0,followDto.getSourceUid()));
+            //log.info("monitor success");
             return Response.success(ResponseStatus.USER_CANCEL_FOLLOW_SUCCESS.status, ResponseStatus.USER_CANCEL_FOLLOW_SUCCESS.message);
         }else{
             log.info("illegal request");
@@ -829,7 +829,7 @@ public class UserServiceImpl implements UserService {
         }else{
             versionControlDto.setIsUpdate(Specification.VersionStatus.NEWEST.index);
         }
-        monitorService.post(new MonitorEvent(Specification.MonitorType.BOOT.index,Specification.MonitorAction.BOOT.index,0,0));
+        //monitorService.post(new MonitorEvent(Specification.MonitorType.BOOT.index,Specification.MonitorAction.BOOT.index,0,0));
         return Response.success(versionControlDto);
     }
 
@@ -1108,7 +1108,6 @@ public class UserServiceImpl implements UserService {
         userMybatisDao.createUserToken(userToken);
         log.info("userToken is create");
         log.info("refereeSignUp end ...");
-        monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message);
     }
 

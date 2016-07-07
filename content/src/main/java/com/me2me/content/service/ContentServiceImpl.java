@@ -362,7 +362,7 @@ public class ContentServiceImpl implements ContentService {
                 }else{
                     return Response.success(ResponseStatus.CONTENT_USER_LIKES_ALREADY.status,ResponseStatus.CONTENT_USER_LIKES_ALREADY.message);
                 }
-                monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LIKE.index,0,likeDto.getUid()));
+                //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LIKE.index,0,likeDto.getUid()));
                 return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
             }else{
                 if(details == null) {
@@ -377,7 +377,7 @@ public class ContentServiceImpl implements ContentService {
 
                     contentMybatisDao.deleteContentLikesDetails(contentLikesDetails);
                 }
-                monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.UN_LIKE.index,0,likeDto.getUid()));
+                //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.UN_LIKE.index,0,likeDto.getUid()));
                 return Response.success(ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_CANCEL_LIKES_SUCCESS.message);
             }
         }
@@ -694,7 +694,7 @@ public class ContentServiceImpl implements ContentService {
         contentMybatisDao.updateContentById(content);
         //添加提醒 UGC贴标签
         //userService.push(content.getUid(),writeTagDto.getUid(),Specification.PushMessageType.TAG.index,content.getTitle());
-        monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FEELING_TAG.index,0,writeTagDto.getUid()));
+        //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FEELING_TAG.index,0,writeTagDto.getUid()));
         return Response.success(ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.status,ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.message);
     }
 
@@ -955,7 +955,7 @@ public class ContentServiceImpl implements ContentService {
             }
 
         }
-        monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.CONTENT_VIEW.index,0,uid));
+        //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.CONTENT_VIEW.index,0,uid));
         log.info("monitor log");
         //阅读数量+1
         content.setReadCount(content.getReadCount()+1);
@@ -1435,8 +1435,8 @@ public class ContentServiceImpl implements ContentService {
         List<Content> contentList = contentMybatisDao.getHottestContent(sinceId);
         log.info("getHottestContent success");
         builderContent(uid, contentList,hottestDto.getHottestContentData());
-        log.info("monitor");
-        monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.HOTTEST.index,0,uid));
+        //log.info("monitor");
+        //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.HOTTEST.index,0,uid));
         log.info("getHottest end ...");
         return Response.success(hottestDto);
     }
@@ -1587,8 +1587,8 @@ public class ContentServiceImpl implements ContentService {
             }
             showNewestDto.getNewestData().add(contentElement);
         }
-        monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.NEWEST.index,0,uid));
-        log.info("monitor");
+        //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.NEWEST.index,0,uid));
+        //log.info("monitor");
         return Response.success(showNewestDto);
     }
 
@@ -1669,7 +1669,7 @@ public class ContentServiceImpl implements ContentService {
                 contentElement.getReviews().add(reviewElement);
             }
         }
-        monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW_LIST.index,0,uid));
+        //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW_LIST.index,0,uid));
         log.info("monitor");
         return Response.success(showAttentionDto);
     }
@@ -1693,7 +1693,7 @@ public class ContentServiceImpl implements ContentService {
         return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
     */
         //return new ReviewAdapter(ReviewFactory.getInstance(reviewDto.getType())).execute(reviewDto);
-        monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REVIEW.index,0,reviewDto.getUid()));
+        //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REVIEW.index,0,reviewDto.getUid()));
         log.info("createReview monitor success");
         return reviewAdapter.execute(reviewDto);
     }
