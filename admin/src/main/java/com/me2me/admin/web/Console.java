@@ -4,6 +4,7 @@ import com.me2me.activity.dto.ActivityH5Dto;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.admin.web.request.ContentForwardRequest;
 import com.me2me.admin.web.request.RegisterRequest;
+import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentH5Dto;
 import com.me2me.content.service.ContentService;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -101,19 +103,20 @@ public class Console  {
     }
 
     @RequestMapping(value = "/signUp")
-    public String signUp(RegisterRequest request, HttpServletRequest httpServletRequest){
+    @ResponseBody
+    public Response signUp(RegisterRequest request, HttpServletRequest httpServletRequest){
         UserRefereeSignUpDto dto = new UserRefereeSignUpDto();
         dto.setMobile(request.getMobile());
         dto.setEncrypt(request.getEncrypt());
         dto.setRefereeUid(request.getUid());
         dto.setNickName(request.getNickName());
-        userService.refereeSignUp(dto);
+        // userService.refereeSignUp(dto);
         String value = httpServletRequest.getHeader("User-Agent");
         System.out.println(value);
         if(value.contains("iPhone")){
-            return "redirect:https://itunes.apple.com/app/id1041252113";
+            return Response.success(200,"iphone");
         }else{
-            return "redirect:http://sj.qq.com/myapp/detail.htm?apkName=com.mao.zx.metome";
+            return Response.success(200,"android");
         }
 
     }
