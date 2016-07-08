@@ -41,4 +41,5 @@ public class MonitorReportRequest extends Request{
     @Setter
     private int actionType;
 
+
 }
