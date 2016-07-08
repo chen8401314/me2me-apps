@@ -36,6 +36,7 @@
         <module>cache</module>
         <module>monitor-api</module>
         <module>monitor</module>
+        <module>config-center</module>
     </modules>
     <name>${project.artifactId}</name>
     <description>the parent project of mysites</description>

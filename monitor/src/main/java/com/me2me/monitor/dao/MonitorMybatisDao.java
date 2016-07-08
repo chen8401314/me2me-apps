@@ -53,6 +53,18 @@ public class MonitorMybatisDao {
         return Integer.valueOf(counter.get(0).get("counter").toString());
     }
 
+    public int getRegisterReport(MonitorReportDto monitorReportDto){
+        List<Map<String,Object>> counter = jdbcTemplate.queryForList(
+                "select count(uid) as counter from access_track " +
+                        "where create_time > ? and create_time < ? and type = ? and channel = ? and action_type = ? "
+                ,monitorReportDto.getStartDate(),
+                monitorReportDto.getEndDate(),
+                monitorReportDto.getType(),
+                monitorReportDto.getChannel(),
+                monitorReportDto.getActionType());
+        return Integer.valueOf(counter.get(0).get("counter").toString());
+    }
+
     public int getActivityReport(MonitorReportDto monitorReportDto){
         List<Map<String,Object>> counter = jdbcTemplate.queryForList(
                 "select count(distinct uid) as counter from access_track " +
