@@ -139,7 +139,7 @@ public class SnsServiceImpl implements SnsService {
             //关注
             userService.follow(dto);
             //保存圈子关系
-            int isFollow = userService.isFollow(topic.getUid(),uid);
+            int isFollow = userService.isFollow(uid,topic.getUid());
             int internalStatus = 0;
             if(isFollow == 1){
                 internalStatus = 1;
