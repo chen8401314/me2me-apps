@@ -1548,8 +1548,11 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             contentElement.setNickName(userProfile.getNickName());
             contentElement.setCreateTime(content.getCreateTime());
-            if(content.getType() == Specification.ArticleType.FORWARD_UGC.index || content.getType() == Specification.ArticleType.FORWARD_LIVE.index ||content.getType() == Specification.ArticleType.FORWARD_ACTIVITY.index || content.getType() == Specification.ArticleType.FORWARD_SYSTEM.index || content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
-                contentElement.setContent(content.getContent());
+            String contents = content.getContent();
+            if(contents.length() > 90){
+                contentElement.setContent(contents.substring(0,90));
+            }else{
+                contentElement.setContent(contents);
             }
             contentElement.setType(content.getType());
             contentElement.setTitle(content.getTitle());
