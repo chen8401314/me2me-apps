@@ -8,6 +8,7 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentH5Dto;
 import com.me2me.content.service.ContentService;
+import com.me2me.sms.dto.VerifyDto;
 import com.me2me.user.dto.UserProfile4H5Dto;
 import com.me2me.user.dto.UserRefereeSignUpDto;
 import com.me2me.user.service.UserService;
@@ -110,14 +111,35 @@ public class Console  {
         dto.setEncrypt(request.getEncrypt());
         dto.setRefereeUid(request.getUid());
         dto.setNickName(request.getNickName());
-        // userService.refereeSignUp(dto);
-        String value = httpServletRequest.getHeader("User-Agent");
-        System.out.println(value);
-        if(value.contains("iPhone")){
-            return Response.success(200,"iphone");
-        }else{
-            return Response.success(200,"android");
+        String code = request.getCode();
+
+        // 服务端校验逻辑
+        VerifyDto verifyDto = new VerifyDto();
+        verifyDto.setMobile(request.getMobile());
+        verifyDto.setAction(1);
+        verifyDto.setVerifyCode(code);
+        if(!(verify(verifyDto).getCode()+"").startsWith("200")){
+            return Response.failure(500,"验证码错误!");
         }
 
+        Response response =  userService.refereeSignUp(dto);
+        String status = response.getCode()+"";
+        if(status.startsWith("200")){
+            String value = httpServletRequest.getHeader("User-Agent");
+            if(value.contains("iPhone")){
+                return Response.success(200,"iphone");
+            }else{
+                return Response.success(200,"android");
+            }
+        }else{
+            return Response.failure(500,response.getMessage());
+        }
+
+    }
+
+    @RequestMapping(value = "/verify")
+    @ResponseBody
+    public Response verify(VerifyDto verifyDto){
+        return userService.verify(verifyDto);
     }
 }
