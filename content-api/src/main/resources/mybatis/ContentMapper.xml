@@ -748,6 +748,9 @@
   <select id="countMyPublishByType" parameterType="com.me2me.content.dto.MyPublishDto" resultType="java.lang.Integer">
     select count(*)
     from content c  where c.status = 0 and c.uid =  #{uid,jdbcType=BIGINT}
+    <if test="isOwner == 0">
+      and c.rights = 1
+    </if>
     <if test="type == 3">
       and c.type = 3
     </if>
