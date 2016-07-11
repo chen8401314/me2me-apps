@@ -197,7 +197,9 @@ public class ContentServiceImpl implements ContentService {
             log.info(" get userProfile success");
             squareDataElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             squareDataElement.setNickName(userProfile.getNickName());
-            squareDataElement.setContent(content.getContent());
+            if(content.getType() == Specification.ArticleType.FORWARD_UGC.index || content.getType() == Specification.ArticleType.FORWARD_LIVE.index ||content.getType() == Specification.ArticleType.FORWARD_ACTIVITY.index || content.getType() == Specification.ArticleType.FORWARD_SYSTEM.index || content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
+                squareDataElement.setContent(content.getContent());
+            }
             squareDataElement.setTitle(content.getTitle());
             squareDataElement.setTag(content.getFeeling());
             squareDataElement.setType(content.getType());
@@ -790,7 +792,9 @@ public class ContentServiceImpl implements ContentService {
         for (Content content : contents){
             ShowMyPublishDto.MyPublishElement contentElement = ShowMyPublishDto.createElement();
             contentElement.setTag(content.getFeeling());
-            contentElement.setContent(content.getContent());
+            if(content.getType() == Specification.ArticleType.FORWARD_UGC.index || content.getType() == Specification.ArticleType.FORWARD_LIVE.index ||content.getType() == Specification.ArticleType.FORWARD_ACTIVITY.index || content.getType() == Specification.ArticleType.FORWARD_SYSTEM.index || content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
+                contentElement.setContent(content.getContent());
+            }
             contentElement.setId(content.getId());
             contentElement.setTitle(content.getTitle());
             contentElement.setCreateTime(content.getCreateTime());
@@ -1169,7 +1173,9 @@ public class ContentServiceImpl implements ContentService {
         for (Content content : contents){
             UserInfoDto2.ContentElement contentElement = UserInfoDto2.createElement();
             contentElement.setTag(content.getFeeling());
-            contentElement.setContent(content.getContent());
+            if(content.getType() == Specification.ArticleType.FORWARD_UGC.index || content.getType() == Specification.ArticleType.FORWARD_LIVE.index ||content.getType() == Specification.ArticleType.FORWARD_ACTIVITY.index || content.getType() == Specification.ArticleType.FORWARD_SYSTEM.index || content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
+                contentElement.setContent(content.getContent());
+            }
             contentElement.setCid(content.getId());
             contentElement.setTitle(content.getTitle());
             contentElement.setCreateTime(content.getCreateTime());
@@ -1542,7 +1548,9 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             contentElement.setNickName(userProfile.getNickName());
             contentElement.setCreateTime(content.getCreateTime());
-            contentElement.setContent(content.getContent());
+            if(content.getType() == Specification.ArticleType.FORWARD_UGC.index || content.getType() == Specification.ArticleType.FORWARD_LIVE.index ||content.getType() == Specification.ArticleType.FORWARD_ACTIVITY.index || content.getType() == Specification.ArticleType.FORWARD_SYSTEM.index || content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
+                contentElement.setContent(content.getContent());
+            }
             contentElement.setType(content.getType());
             contentElement.setTitle(content.getTitle());
             contentElement.setIsLike(isLike(content.getId(),uid));
@@ -1623,7 +1631,9 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             contentElement.setNickName(userProfile.getNickName());
             contentElement.setCreateTime(content.getCreateTime());
-            contentElement.setContent(content.getContent());
+            if(content.getType() == Specification.ArticleType.FORWARD_UGC.index || content.getType() == Specification.ArticleType.FORWARD_LIVE.index ||content.getType() == Specification.ArticleType.FORWARD_ACTIVITY.index || content.getType() == Specification.ArticleType.FORWARD_SYSTEM.index || content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
+                contentElement.setContent(content.getContent());
+            }
             contentElement.setType(content.getType());
             contentElement.setTitle(content.getTitle());
             contentElement.setForwardCid(content.getForwardCid());
