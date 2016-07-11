@@ -242,7 +242,7 @@ public class UserMybatisDao {
         UserNoticeExample.Criteria criteria = example.createCriteria();
         criteria.andToUidEqualTo(userNoticeDto.getUid());
         criteria.andIdLessThan(userNoticeDto.getSinceId());
-        example.setOrderByClause("create_time desc limit 10 ");
+        example.setOrderByClause("id desc limit 10 ");
         return  userNoticeMapper.selectByExample(example);
     }
     public void createUserNotice(UserNotice userNotice){
@@ -523,6 +523,14 @@ public class UserMybatisDao {
         criteria.andToUidEqualTo(uid);
         criteria.andPushStatusEqualTo(Specification.PushStatus.UN_PUSHED.index);
         return  userNoticeMapper.selectByExample(example);
+    }
+
+    public List<UserFansDto> getFansOrderByNickName(FansParamsDto fansParamsDto){
+        return userFollowMapper.getFansOrderByNickName(fansParamsDto);
+    }
+
+    public List<UserFollowDto> getFollowsOrderByNickName(FollowParamsDto followParamsDto){
+        return userFollowMapper.getFollowsOrderByNickName(followParamsDto);
     }
 
 }

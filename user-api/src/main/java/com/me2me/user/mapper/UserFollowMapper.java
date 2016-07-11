@@ -101,4 +101,8 @@ public interface UserFollowMapper {
     List<UserFansDto> getFans(FansParamsDto fansParamsDto);
 
     List<UserFollowDto> getFollows(FollowParamsDto followParamsDto);
+
+    List<UserFansDto> getFansOrderByNickName(FansParamsDto fansParamsDto);
+
+    List<UserFollowDto> getFollowsOrderByNickName(FollowParamsDto followParamsDto);
 }

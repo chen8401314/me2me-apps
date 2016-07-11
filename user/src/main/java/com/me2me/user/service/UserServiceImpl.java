@@ -1156,4 +1156,40 @@ public class UserServiceImpl implements UserService {
     public int getUserInternalStatus(long uid, long owner) {
         return  oldUserJdbcDao.getUserInternalStatus(uid,owner);
     }
+
+    @Override
+    public Response getFansOrderByNickName(FansParamsDto fansParamsDto) {
+        log.info("getFans start ...");
+        List<UserFansDto> list = userMybatisDao.getFansOrderByNickName(fansParamsDto);
+        log.info("getFans getData success");
+        for(UserFansDto userFansDto : list){
+            userFansDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFansDto.getAvatar());
+            int followMe = this.isFollow(fansParamsDto.getUid(),userFansDto.getUid());
+            userFansDto.setIsFollowMe(followMe);
+            int followed = this.isFollow(userFansDto.getUid(),fansParamsDto.getUid());
+            userFansDto.setIsFollowed(followed);
+        }
+        ShowUserFansDto showUserFansDto = new ShowUserFansDto();
+        showUserFansDto.setResult(list);
+        log.info("getFans end ...");
+        return Response.success(ResponseStatus.SHOW_USER_FANS_LIST_SUCCESS.status, ResponseStatus.SHOW_USER_FANS_LIST_SUCCESS.message,showUserFansDto);
+    }
+
+    @Override
+    public Response getFollowsOrderByNickName(FollowParamsDto followParamsDto) {
+        log.info("getFollowsOrderByNickName start ...");
+        List<UserFollowDto> list = userMybatisDao.getFollowsOrderByNickName(followParamsDto);
+        log.info("getFollowsOrderByNickName getData success");
+        ShowUserFollowDto showUserFollowDto = new ShowUserFollowDto();
+        for(UserFollowDto userFollowDto : list){
+            userFollowDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFollowDto.getAvatar());
+            int followMe = this.isFollow(followParamsDto.getUid(),userFollowDto.getUid());
+            userFollowDto.setIsFollowMe(followMe);
+            int followed = this.isFollow(userFollowDto.getUid(),followParamsDto.getUid());
+            userFollowDto.setIsFollowed(followed);
+        }
+        showUserFollowDto.setResult(list);
+        log.info("getFollowsOrderByNickName end ...");
+        return Response.success(ResponseStatus.SHOW_USER_FOLLOW_LIST_SUCCESS.status, ResponseStatus.SHOW_USER_FOLLOW_LIST_SUCCESS.message,showUserFollowDto);
+    }
 }

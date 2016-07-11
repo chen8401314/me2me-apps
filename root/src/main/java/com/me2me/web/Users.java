@@ -330,6 +330,42 @@ public class Users extends BaseController {
     }
 
     /**
+     * 用户粉丝列表
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/showFans2",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response showFans2(ShowFansRequest request){
+        FansParamsDto fansParamsDto = new FansParamsDto();
+        fansParamsDto.setTargetUid(request.getCustomerId());
+        fansParamsDto.setUid(request.getUid());
+        if(request.getSinceId() <1) {
+           request.setSinceId(1);
+        }
+        fansParamsDto.setSinceId((request.getSinceId() - 1) * 10);
+        return userService.getFansOrderByNickName(fansParamsDto);
+    }
+
+    /**
+     * 用户关注列表
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/showFollows2",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response showFollows2(ShowFansRequest request){
+        FollowParamsDto followParamsDto = new FollowParamsDto();
+        followParamsDto.setSourceUid(request.getCustomerId());
+        followParamsDto.setUid(request.getUid());
+        if(request.getSinceId() < 1) {
+            request.setSinceId(1);
+        }
+        followParamsDto.setSinceId((request.getSinceId() - 1) * 10);
+        return userService.getFollowsOrderByNickName(followParamsDto);
+    }
+
+    /**
      * 用户关注列表(暂未启用)
      * @param request
      * @return
