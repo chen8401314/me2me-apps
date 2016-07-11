@@ -202,4 +202,8 @@ public interface UserService {
 
     int getUserInternalStatus(long uid,long owner);
 
+    Response getFansOrderByNickName(FansParamsDto fansParamsDto);
+
+    Response getFollowsOrderByNickName(FollowParamsDto followParamsDto);
+
 }

@@ -525,4 +525,12 @@ public class UserMybatisDao {
         return  userNoticeMapper.selectByExample(example);
     }
 
+    public List<UserFansDto> getFansOrderByNickName(FansParamsDto fansParamsDto){
+        return userFollowMapper.getFansOrderByNickName(fansParamsDto);
+    }
+
+    public List<UserFollowDto> getFollowsOrderByNickName(FollowParamsDto followParamsDto){
+        return userFollowMapper.getFollowsOrderByNickName(followParamsDto);
+    }
+
 }
