@@ -37,6 +37,8 @@
         <module>monitor-api</module>
         <module>monitor</module>
         <module>config-center</module>
+        <module>message-channel-api</module>
+        <module>message-channel</module>
     </modules>
     <name>${project.artifactId}</name>
     <description>the parent project of mysites</description>
