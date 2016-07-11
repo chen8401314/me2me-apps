@@ -1149,6 +1149,11 @@ public class ContentServiceImpl implements ContentService {
         dto.setUid(targetUid);
         dto.setSinceId(Integer.MAX_VALUE);
         dto.setType(Specification.ArticleType.ORIGIN.index);
+        if(targetUid == sourceUid) {
+            dto.setIsOwner(1);
+        }else {
+            dto.setIsOwner(0);
+        }
         //非直播文章
         List<Content> contents = contentMybatisDao.myPublishByType(dto);
         userInfoDto.setContentCount(contentMybatisDao.countMyPublishByType(dto));

@@ -722,6 +722,9 @@
      left join topic t on c.forward_cid = t.id
     </if>
     where  c.status = 0  and c.uid = #{uid,jdbcType=BIGINT}
+    <if test="isOwner == 0">
+      and c.rights = 1
+    </if>
     <if test="type == 0">
      and c.type != 3
     </if>
