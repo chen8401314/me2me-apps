@@ -1454,7 +1454,9 @@ public class ContentServiceImpl implements ContentService {
                 }
             }
             hottestContentElement.setId(content.getId());
-            hottestContentElement.setContent(content.getContent());
+            if(content.getType() == Specification.ArticleType.FORWARD_UGC.index || content.getType() == Specification.ArticleType.FORWARD_LIVE.index ||content.getType() == Specification.ArticleType.FORWARD_ACTIVITY.index || content.getType() == Specification.ArticleType.FORWARD_SYSTEM.index || content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
+                hottestContentElement.setContent(content.getContent());
+            }
             hottestContentElement.setLikeCount(content.getLikeCount());
             hottestContentElement.setReviewCount(content.getReviewCount());
             hottestContentElement.setTitle(content.getTitle());
