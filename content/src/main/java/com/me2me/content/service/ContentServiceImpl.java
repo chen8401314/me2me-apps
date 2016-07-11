@@ -197,8 +197,11 @@ public class ContentServiceImpl implements ContentService {
             log.info(" get userProfile success");
             squareDataElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             squareDataElement.setNickName(userProfile.getNickName());
-            if(content.getType() == Specification.ArticleType.FORWARD_UGC.index || content.getType() == Specification.ArticleType.FORWARD_LIVE.index ||content.getType() == Specification.ArticleType.FORWARD_ACTIVITY.index || content.getType() == Specification.ArticleType.FORWARD_SYSTEM.index || content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
-                squareDataElement.setContent(content.getContent());
+            String contentStr = content.getContent();
+            if(contentStr.length() > 100){
+                squareDataElement.setContent(contentStr.substring(0,100));
+            }else{
+                squareDataElement.setContent(contentStr);
             }
             squareDataElement.setTitle(content.getTitle());
             squareDataElement.setTag(content.getFeeling());
@@ -792,8 +795,11 @@ public class ContentServiceImpl implements ContentService {
         for (Content content : contents){
             ShowMyPublishDto.MyPublishElement contentElement = ShowMyPublishDto.createElement();
             contentElement.setTag(content.getFeeling());
-            if(content.getType() == Specification.ArticleType.FORWARD_UGC.index || content.getType() == Specification.ArticleType.FORWARD_LIVE.index ||content.getType() == Specification.ArticleType.FORWARD_ACTIVITY.index || content.getType() == Specification.ArticleType.FORWARD_SYSTEM.index || content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
-                contentElement.setContent(content.getContent());
+            String contentStr = content.getContent();
+            if(contentStr.length() > 100){
+                contentElement.setContent(contentStr.substring(0,100));
+            }else{
+                contentElement.setContent(contentStr);
             }
             contentElement.setId(content.getId());
             contentElement.setTitle(content.getTitle());
@@ -1173,8 +1179,11 @@ public class ContentServiceImpl implements ContentService {
         for (Content content : contents){
             UserInfoDto2.ContentElement contentElement = UserInfoDto2.createElement();
             contentElement.setTag(content.getFeeling());
-            if(content.getType() == Specification.ArticleType.FORWARD_UGC.index || content.getType() == Specification.ArticleType.FORWARD_LIVE.index ||content.getType() == Specification.ArticleType.FORWARD_ACTIVITY.index || content.getType() == Specification.ArticleType.FORWARD_SYSTEM.index || content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
-                contentElement.setContent(content.getContent());
+            String contentStr = content.getContent();
+            if(contentStr.length() > 100){
+                contentElement.setContent(contentStr.substring(0,100));
+            }else{
+                contentElement.setContent(contentStr);
             }
             contentElement.setCid(content.getId());
             contentElement.setTitle(content.getTitle());
@@ -1460,8 +1469,11 @@ public class ContentServiceImpl implements ContentService {
                 }
             }
             hottestContentElement.setId(content.getId());
-            if(content.getType() == Specification.ArticleType.FORWARD_UGC.index || content.getType() == Specification.ArticleType.FORWARD_LIVE.index ||content.getType() == Specification.ArticleType.FORWARD_ACTIVITY.index || content.getType() == Specification.ArticleType.FORWARD_SYSTEM.index || content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
-                hottestContentElement.setContent(content.getContent());
+            String contentStr = content.getContent();
+            if(contentStr.length() > 100){
+                hottestContentElement.setContent(contentStr.substring(0,100));
+            }else{
+                hottestContentElement.setContent(contentStr);
             }
             hottestContentElement.setLikeCount(content.getLikeCount());
             hottestContentElement.setReviewCount(content.getReviewCount());
@@ -1548,11 +1560,11 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             contentElement.setNickName(userProfile.getNickName());
             contentElement.setCreateTime(content.getCreateTime());
-            String contents = content.getContent();
-            if(contents.length() > 90){
-                contentElement.setContent(contents.substring(0,90));
+            String contentStr = content.getContent();
+            if(contentStr.length() > 100){
+                contentElement.setContent(contentStr.substring(0,100));
             }else{
-                contentElement.setContent(contents);
+                contentElement.setContent(contentStr);
             }
             contentElement.setType(content.getType());
             contentElement.setTitle(content.getTitle());
@@ -1634,8 +1646,11 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             contentElement.setNickName(userProfile.getNickName());
             contentElement.setCreateTime(content.getCreateTime());
-            if(content.getType() == Specification.ArticleType.FORWARD_UGC.index || content.getType() == Specification.ArticleType.FORWARD_LIVE.index ||content.getType() == Specification.ArticleType.FORWARD_ACTIVITY.index || content.getType() == Specification.ArticleType.FORWARD_SYSTEM.index || content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
-                contentElement.setContent(content.getContent());
+            String contentStr = content.getContent();
+            if(contentStr.length() > 100){
+                contentElement.setContent(contentStr.substring(0,100));
+            }else{
+                contentElement.setContent(contentStr);
             }
             contentElement.setType(content.getType());
             contentElement.setTitle(content.getTitle());
