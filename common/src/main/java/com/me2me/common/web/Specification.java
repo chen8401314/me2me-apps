@@ -305,7 +305,13 @@ public interface Specification {
 
         SHARE ("分享",7),
 
-        FOLLOW ("关注",8);
+        FOLLOW ("关注",8),
+
+        INVITED("邀请",9),
+
+        AT("有人@",10),
+
+        ANCHOR_AT("主播@",10);
 
         public final String name;
         public final int index;

@@ -39,4 +39,12 @@ public class SpeakRequest extends Request{
     @Getter
     @Setter
     private long bottomId;
+
+    @Getter
+    @Setter
+    private int isAt;
+
+    @Getter
+    @Setter
+    private long atUid;
 }

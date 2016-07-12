@@ -507,6 +507,7 @@ public class UserMybatisDao {
         UserProfileExample example = new UserProfileExample();
         UserProfileExample.Criteria criteria = example.createCriteria();
         criteria.andRefereeUidEqualTo(uid);
+        criteria.andIsActivateEqualTo(Specification.UserActivate.ACTIVATED.index);
         return userProfileMapper.countByExample(example);
     }
 

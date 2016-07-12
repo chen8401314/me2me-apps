@@ -6,6 +6,7 @@ import com.me2me.live.dto.GetLiveTimeLineDto;
 import com.me2me.live.dto.LiveBarrageDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.model.Topic;
+import com.me2me.live.model.TopicFragment;
 
 import java.util.List;
 
@@ -119,4 +120,6 @@ public interface LiveService {
     void createFavoriteDelete(long uid,long topicId);
 
     void deleteFavoriteDelete(long uid,long topicId);
+
+    TopicFragment getLastTopicFragmentByUid(long topicId, long uid);
 }

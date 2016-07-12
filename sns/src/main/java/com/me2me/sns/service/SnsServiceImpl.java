@@ -4,12 +4,15 @@ import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.Topic;
+import com.me2me.live.model.TopicFragment;
 import com.me2me.live.service.LiveService;
 import com.me2me.sns.dao.SnsMybatisDao;
 import com.me2me.sns.dto.*;
 import com.me2me.user.dto.FollowDto;
+import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -200,6 +203,7 @@ public class SnsServiceImpl implements SnsService {
             follow(0,uid,owner);
             liveService.setLive2(uid,topicId,0,0,0);
             liveService.deleteFavoriteDelete(uid,topicId);
+            createFragment(owner, topicId, uid);
         }else if(action == 1){
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.CORE.index);
             //关注此人
@@ -208,6 +212,7 @@ public class SnsServiceImpl implements SnsService {
             liveService.deleteFavoriteDelete(uid,topicId);
         }else if(action == 2){
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
+            createFragment(owner, topicId, uid);
         }else if(action == 3){
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
             //取消关注此人，取消此人直播的订阅
@@ -216,7 +221,23 @@ public class SnsServiceImpl implements SnsService {
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
             liveService.setLive2(uid, topicId, 0, 0,0);
             liveService.deleteFavoriteDelete(uid,topicId);
+            createFragment(owner, topicId, uid);
         }
         return Response.success(ResponseStatus.MODIFY_CIRCLE_SUCCESS.status,ResponseStatus.MODIFY_CIRCLE_SUCCESS.message);
+    }
+
+    private void createFragment(long owner, long topicId, long uid) {
+        SpeakDto speakDto = new SpeakDto();
+        speakDto.setUid(owner);
+        speakDto.setType(Specification.LiveSpeakType.INVITED.index);
+        TopicFragment fragment = liveService.getLastTopicFragmentByUid(topicId,owner);
+        speakDto.setBottomId(fragment.getId());
+        speakDto.setTopId(fragment.getId());
+        speakDto.setContentType(Specification.LiveContent.TEXT.index);
+        UserProfile userProfile = userService.getUserProfileByUid(owner);
+        UserProfile fans = userService.getUserProfileByUid(uid);
+        speakDto.setFragment("国王" + userProfile.getNickName() + "邀请了" + fans.getNickName()+"加入此直播");
+        speakDto.setTopicId(topicId);
+        liveService.speak(speakDto);
     }
 }

@@ -71,7 +71,7 @@ public class LiveServiceImpl implements LiveService {
             //主播发言提醒关注的人
             //userService.push(userFollow.getSourceUid(),createLiveDto.getUid(),Specification.PushMessageType.LIVE.index,createLiveDto.getTitle());
             //主播的粉丝强制订阅
-            setLive2(userFollow.getSourceUid(),topic.getId(),0,0,0);
+            setLive3(userFollow.getSourceUid(),topic.getId());
         }
         log.info("createLive end ...");
         return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status,ResponseStatus.USER_CREATE_LIVE_SUCCESS.message);
@@ -243,9 +243,9 @@ public class LiveServiceImpl implements LiveService {
         topicBarrage.setUid(speakDto.getUid());
         //保存弹幕
         TopicBarrage barrage = liveMybatisDao.getBarrage(speakDto.getTopicId(),speakDto.getTopId(),speakDto.getBottomId(),speakDto.getType(),speakDto.getUid());
-        if(barrage == null && speakDto.getType() != Specification.LiveSpeakType.ANCHOR.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index ) {
+        if(barrage == null && speakDto.getType() != Specification.LiveSpeakType.ANCHOR.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR_AT.index) {
             liveMybatisDao.createTopicBarrage(topicBarrage);
-        }else if(speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index){
+        }else if(speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR_AT.index){
             liveMybatisDao.createTopicBarrage(topicBarrage);
         }
         log.info("createTopicBarrage success");
@@ -297,6 +297,8 @@ public class LiveServiceImpl implements LiveService {
             liveRemind(live.getUid(), speakDto.getUid() ,Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
             //userService.push(topic.getUid(),speakDto.getUid(),Specification.PushMessageType.LIVE_REVIEW.index,topic.getTitle());
             log.info("live review push");
+        }else if(speakDto.getType() == Specification.LiveSpeakType.AT.index){
+            userService.push(topic.getUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
         }
         log.info("speak end ...");
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status,ResponseStatus.USER_SPEAK_SUCCESS.message);
@@ -366,7 +368,7 @@ public class LiveServiceImpl implements LiveService {
         List<Topic> topicList = liveMybatisDao.getMyLives(uid ,sinceId ,topics);
         log.info("getMyLives data success");
         builder(uid, showTopicListDto, topicList);
-        log.info("getMyLives start ...");
+        log.info("getMyLives end ...");
         return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status,ResponseStatus.GET_MY_LIVE_SUCCESS.message,showTopicListDto);
     }
 
@@ -545,6 +547,29 @@ public class LiveServiceImpl implements LiveService {
     }
 
     /**
+     * 订阅取消订阅
+     * @param uid
+     * @param topicId
+     * @return
+     */
+    private Response setLive3(long uid, long topicId) {
+        log.info("setLive3 start ...");
+        LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid, topicId);
+        Content content = contentService.getContentByTopicId(topicId);
+        if (liveFavorite == null) {
+            liveFavorite = new LiveFavorite();
+            liveFavorite.setTopicId(topicId);
+            liveFavorite.setUid(uid);
+            liveMybatisDao.createLiveFavorite(liveFavorite);
+            liveMybatisDao.deleteFavoriteDelete(uid,topicId);
+            content.setFavoriteCount(content.getFavoriteCount() + 1);
+            contentService.updateContentById(content);
+            log.info("setLive3 end ...");
+        }
+        return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
+    }
+
+    /**
      * 结束自己的直播
      * @param topicId
      * @return
@@ -683,6 +708,16 @@ public class LiveServiceImpl implements LiveService {
         if(live.size() > 0) {
             showTopicListDto.setLiveTitle(live.get(0).getTitle());
         }
+        //获取所有更新中直播主笔的信息
+        List<Topic> list =  liveMybatisDao.getLives(Long.MAX_VALUE);
+        for(Topic topic : list){
+            ShowTopicListDto.UpdateLives updateLives = ShowTopicListDto.createUpdateLivesElement();
+            UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
+            updateLives.setUid(userProfile.getUid());
+            updateLives.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            showTopicListDto.getUpdateLives().add(updateLives);
+        }
+        showTopicListDto.setLiveCount(liveMybatisDao.countLives());
         return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status,ResponseStatus.GET_MY_LIVE_SUCCESS.message,showTopicListDto);
     }
 
@@ -719,6 +754,17 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public void deleteFavoriteDelete(long uid,long topicId){
         liveMybatisDao.deleteFavoriteDelete(uid, topicId);
+    }
+
+    @Override
+    public TopicFragment getLastTopicFragmentByUid(long topicId,long uid) {
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andTypeEqualTo(Specification.LiveSpeakType.ANCHOR.index);
+        example.setOrderByClause(" order by id desc limit 1");
+        return liveMybatisDao.getLastTopicFragmentByUid(topicId, uid);
     }
 
     @Override

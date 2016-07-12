@@ -20,10 +20,18 @@ public class ShowTopicListDto implements BaseEntity{
 
     private String liveTitle;
 
+    private int liveCount;
+
     private List<ShowTopicElement> showTopicElements = Lists.newArrayList();
 
     public static ShowTopicElement createShowTopicElement(){
         return new ShowTopicElement();
+    }
+
+    private List<UpdateLives> updateLives = Lists.newArrayList();
+
+    public static UpdateLives createUpdateLivesElement(){
+        return new UpdateLives();
     }
 
     @Data
@@ -91,5 +99,13 @@ public class ShowTopicListDto implements BaseEntity{
             private long cid;
         }
 
+    }
+
+    @Data
+    public static class UpdateLives implements BaseEntity{
+
+        private long uid;
+
+        private String avatar;
     }
 }

@@ -158,7 +158,7 @@ public class Live extends BaseController {
     }
 
     /**
-     * 获取我关注和我自己的直播列表
+     * 获取我关注和我自己的直播列表(老版本)
      * @param request
      * @return
      */
@@ -217,7 +217,7 @@ public class Live extends BaseController {
     }
 
     /**
-     * 直播封面接口
+     * 直播封面接口（废弃）
      * @param request
      * @return
      */

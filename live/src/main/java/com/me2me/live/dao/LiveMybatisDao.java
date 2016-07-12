@@ -73,6 +73,16 @@ public class LiveMybatisDao {
         List<TopicFragment> topicFragmentList = topicFragmentMapper.selectByExampleWithBLOBs(example);
         return (topicFragmentList != null && topicFragmentList.size() > 0) ? topicFragmentList.get(0) : null;
     }
+    public TopicFragment getLastTopicFragmentByUid(long topicId,long uid ){
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andUidEqualTo(uid);
+        criteria.andTypeEqualTo(Specification.LiveSpeakType.ANCHOR.index);
+        example.setOrderByClause("id desc limit 1 ");
+        List<TopicFragment> topicFragmentList = topicFragmentMapper.selectByExampleWithBLOBs(example);
+        return (topicFragmentList != null && topicFragmentList.size() > 0) ? topicFragmentList.get(0) : null;
+    }
 
     public void createTopicFragment(TopicFragment topicFragment){
         topicFragmentMapper.insertSelective(topicFragment);
@@ -105,6 +115,13 @@ public class LiveMybatisDao {
         }
         example.setOrderByClause("id desc, status asc limit 10" );
         return topicMapper.selectByExample(example);
+    }
+
+    public int countLives(){
+        TopicExample example = new TopicExample();
+        TopicExample.Criteria criteria = example.createCriteria();
+        criteria.andStatusNotEqualTo(Specification.LiveStatus.LIVING.index);
+        return topicMapper.countByExample(example);
     }
 
     public List<Topic> getMyLivesByUpdateTime(long uid ,long updateTime ,List<Long> topics){
