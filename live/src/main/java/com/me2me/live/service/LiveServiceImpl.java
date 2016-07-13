@@ -203,7 +203,7 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setNickName(userProfile.getNickName());
             liveElement.setFragment(topicFragment.getFragment());
             String fragmentImage = topicFragment.getFragmentImage();
-            if(StringUtils.isEmpty(fragmentImage)) {
+            if(!StringUtils.isEmpty(fragmentImage)) {
                 liveElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
             }
             liveElement.setCreateTime(topicFragment.getCreateTime());
