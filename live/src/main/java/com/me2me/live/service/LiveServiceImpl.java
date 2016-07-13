@@ -21,6 +21,8 @@ import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import java.util.Calendar;
 import java.util.List;
 
@@ -199,13 +201,10 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setId(topicFragment.getId());
             liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             liveElement.setNickName(userProfile.getNickName());
-            if(topicFragment.getContentType() == Specification.LiveContent.TEXT.index) {
-                liveElement.setFragment(topicFragment.getFragment());
-            }else if(topicFragment.getContentType() == Specification.LiveContent.IMAGE.index){
-                liveElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + topicFragment.getFragmentImage());
-            }else {
-                liveElement.setFragment(topicFragment.getFragment());
-                liveElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + topicFragment.getFragmentImage());
+            liveElement.setFragment(topicFragment.getFragment());
+            String cover = topicFragment.getFragmentImage();
+            if(StringUtils.isEmpty(cover)) {
+                liveElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + cover);
             }
             liveElement.setCreateTime(topicFragment.getCreateTime());
             liveElement.setType(topicFragment.getType());
