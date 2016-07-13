@@ -199,8 +199,14 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setId(topicFragment.getId());
             liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             liveElement.setNickName(userProfile.getNickName());
-            liveElement.setFragment(topicFragment.getFragment());
-            liveElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + topicFragment.getFragmentImage());
+            if(topicFragment.getContentType() == Specification.LiveContent.TEXT.index) {
+                liveElement.setFragment(topicFragment.getFragment());
+            }else if(topicFragment.getContentType() == Specification.LiveContent.IMAGE.index){
+                liveElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + topicFragment.getFragmentImage());
+            }else {
+                liveElement.setFragment(topicFragment.getFragment());
+                liveElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + topicFragment.getFragmentImage());
+            }
             liveElement.setCreateTime(topicFragment.getCreateTime());
             liveElement.setType(topicFragment.getType());
             int isFollow = userService.isFollow(topicFragment.getUid(),getLiveTimeLineDto.getUid());
