@@ -770,6 +770,32 @@ public class LiveServiceImpl implements LiveService {
     }
 
     @Override
+    public Live4H5Dto getLive4H5(long id) {
+        List<TopicFragment> list = liveMybatisDao.getTopicFragment(id);
+        Topic topic = liveMybatisDao.getTopicById(id);
+        Live4H5Dto live4H5Dto = new Live4H5Dto();
+        live4H5Dto.getLive().setTitle(topic.getTitle());
+        live4H5Dto.getLive().setCreateTime(topic.getCreateTime());
+        live4H5Dto.getLive().setCover(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
+        UserProfile user = userService.getUserProfileByUid(topic.getUid());
+        live4H5Dto.getLive().setNickName(user.getNickName());
+        live4H5Dto.getLive().setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+        for(TopicFragment topicFragment : list){
+            Live4H5Dto.Fragment fragment = Live4H5Dto.createFragment();
+            fragment.setType(topicFragment.getType());
+            fragment.setCreateTime(topicFragment.getCreateTime());
+            fragment.setContentType(topicFragment.getContentType());
+            UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
+            fragment.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            fragment.setNickName(userProfile.getNickName());
+            fragment.setFragment(topicFragment.getFragment());
+            fragment.setFragmentImage(topicFragment.getFragmentImage());
+            live4H5Dto.getFragments().add(fragment);
+        }
+        return live4H5Dto;
+    }
+
+    @Override
     public void createFavoriteDelete(long uid,long topicId){
         liveMybatisDao.createFavoriteDelete(uid, topicId);
     }

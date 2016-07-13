@@ -1,10 +1,7 @@
 package com.me2me.live.service;
 
 import com.me2me.common.web.Response;
-import com.me2me.live.dto.CreateLiveDto;
-import com.me2me.live.dto.GetLiveTimeLineDto;
-import com.me2me.live.dto.LiveBarrageDto;
-import com.me2me.live.dto.SpeakDto;
+import com.me2me.live.dto.*;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicFragment;
 
@@ -122,4 +119,6 @@ public interface LiveService {
     void deleteFavoriteDelete(long uid,long topicId);
 
     TopicFragment getLastTopicFragmentByUid(long topicId, long uid);
+
+    Live4H5Dto getLive4H5(long id);
 }

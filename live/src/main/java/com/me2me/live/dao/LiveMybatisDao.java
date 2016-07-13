@@ -353,4 +353,12 @@ public class LiveMybatisDao {
         return topicMapper.selectByExample(example);
     }
 
+    public List<TopicFragment> getTopicFragment(long topicId){
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        example.setOrderByClause("id asc "  );
+        return topicFragmentMapper.selectByExampleWithBLOBs(example);
+    }
+
 }
