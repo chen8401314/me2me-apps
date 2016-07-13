@@ -298,7 +298,9 @@ public class LiveServiceImpl implements LiveService {
             //userService.push(topic.getUid(),speakDto.getUid(),Specification.PushMessageType.LIVE_REVIEW.index,topic.getTitle());
             log.info("live review push");
         }else if(speakDto.getType() == Specification.LiveSpeakType.AT.index){
-            userService.push(topic.getUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
+            userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
+        }else if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index){
+            userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
         }
         log.info("speak end ...");
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status,ResponseStatus.USER_SPEAK_SUCCESS.message);

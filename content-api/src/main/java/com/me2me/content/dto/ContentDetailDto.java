@@ -55,6 +55,8 @@ public class ContentDetailDto implements BaseEntity {
 
     private int isFollowMe;
 
+    private int readCount;
+
     private List<ImageElement> images = Lists.newArrayList();
 
     public static ImageElement createImageElement(){

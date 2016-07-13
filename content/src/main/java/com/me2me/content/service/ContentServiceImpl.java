@@ -901,6 +901,7 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setContentType(content.getContentType());
         contentDetailDto.setTitle(content.getTitle());
         contentDetailDto.setIsLike(isLike(content.getId(),uid));
+        contentDetailDto.setReadCount(content.getReadCount());
         String cover = content.getConverImage();
         if(!StringUtils.isEmpty(cover)) {
             contentDetailDto.setCoverImage(Constant.QINIU_DOMAIN  + "/" + content.getConverImage());
