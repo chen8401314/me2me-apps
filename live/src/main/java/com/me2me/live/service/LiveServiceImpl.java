@@ -202,9 +202,9 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             liveElement.setNickName(userProfile.getNickName());
             liveElement.setFragment(topicFragment.getFragment());
-            String cover = topicFragment.getFragmentImage();
-            if(StringUtils.isEmpty(cover)) {
-                liveElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + cover);
+            String fragmentImage = topicFragment.getFragmentImage();
+            if(StringUtils.isEmpty(fragmentImage)) {
+                liveElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
             }
             liveElement.setCreateTime(topicFragment.getCreateTime());
             liveElement.setType(topicFragment.getType());
