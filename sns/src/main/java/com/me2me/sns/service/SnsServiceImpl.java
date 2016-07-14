@@ -231,8 +231,13 @@ public class SnsServiceImpl implements SnsService {
         speakDto.setUid(owner);
         speakDto.setType(Specification.LiveSpeakType.INVITED.index);
         TopicFragment fragment = liveService.getLastTopicFragmentByUid(topicId,owner);
-        speakDto.setBottomId(fragment.getId());
-        speakDto.setTopId(fragment.getId());
+        if(fragment != null) {
+            speakDto.setBottomId(fragment.getId());
+            speakDto.setTopId(fragment.getId());
+        }else{
+            speakDto.setBottomId(0);
+            speakDto.setTopId(0);
+        }
         speakDto.setContentType(Specification.LiveContent.TEXT.index);
         UserProfile userProfile = userService.getUserProfileByUid(owner);
         UserProfile fans = userService.getUserProfileByUid(uid);
