@@ -148,6 +148,7 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         String temp = request.getParameter("channel");
         int channel = (int) getChannel(temp);
         Set<String> boots = Sets.newConcurrentHashSet();
+        boots.add("/api/user/versionControl");
         if(boots.contains(uri)){
             MonitorEvent monitorEvent = new MonitorEvent(Specification.MonitorType.BOOT.index,Specification.MonitorAction.BOOT.index,channel,uid);
             return monitorEvent;
@@ -164,6 +165,13 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
             MonitorEvent monitorEvent = new MonitorEvent(Specification.MonitorType.ACTION.index,actionUri.get(uri),channel,uid);
             return monitorEvent;
         }
+    }
+
+    public static void main(String[] args) {
+        Map<String,Integer> actionUri = Maps.newConcurrentMap();
+        Integer value = actionUri.get("fds");
+        new MonitorEvent(0,value,0,9);
+
     }
 
 

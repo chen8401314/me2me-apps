@@ -8,6 +8,7 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentH5Dto;
 import com.me2me.content.service.ContentService;
+import com.me2me.live.service.LiveService;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.user.dto.UserProfile4H5Dto;
 import com.me2me.user.dto.UserRefereeSignUpDto;
@@ -35,6 +36,9 @@ public class Console  {
 
     @Autowired
     private ContentService contentService;
+
+    @Autowired
+    private LiveService liveService;
 
     @Autowired
     private ActivityService activityService;
@@ -142,4 +146,11 @@ public class Console  {
     public Response verify(VerifyDto verifyDto){
         return userService.verify(verifyDto);
     }
+    @RequestMapping(value = "/share_live")
+    @ResponseBody
+    public Response shareLive(VerifyDto verifyDto){
+        // return liveService.verify(verifyDto);
+        return null;
+    }
+
 }
