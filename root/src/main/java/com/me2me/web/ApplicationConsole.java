@@ -410,4 +410,15 @@ public class ApplicationConsole extends BaseController {
 
     }
 
+    /**
+     * 国王直播相关数据
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/promoter",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response promoter(PromoterRequest request){
+        return userService.getPromoter(request.getNickName(),request.getStartDate(),request.getEndDate());
+    }
+
 }

@@ -93,4 +93,6 @@ public interface UserProfileMapper {
      * @mbggenerated Fri Jul 08 11:37:33 CST 2016
      */
     int updateByPrimaryKey(UserProfile record);
+
+    int getRefereeCount(UserProfile record);
 }

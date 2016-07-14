@@ -1192,4 +1192,20 @@ public class UserServiceImpl implements UserService {
         log.info("getFollowsOrderByNickName end ...");
         return Response.success(ResponseStatus.SHOW_USER_FOLLOW_LIST_SUCCESS.status, ResponseStatus.SHOW_USER_FOLLOW_LIST_SUCCESS.message,showUserFollowDto);
     }
+
+    @Override
+    public Response getPromoter(String nickName,String startDate,String endDate) {
+        PromoterDto dto = new PromoterDto();
+        List<UserProfile> list = userMybatisDao.getPromoter(nickName);
+        for(UserProfile userProfile : list){
+            PromoterDto.PromoterElement promoterElement = PromoterDto.createElement();
+            promoterElement.setUid(userProfile.getUid());
+            promoterElement.setNickName(userProfile.getNickName());
+            promoterElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            promoterElement.setActivateCount(userMybatisDao.getRefereeCount(userProfile.getUid(),startDate,endDate));
+            promoterElement.setRefereeCount(userMybatisDao.getUnactivatedCount(userProfile.getUid(),startDate,endDate));
+            dto.getPromoterElementList().add(promoterElement);
+        }
+        return Response.success(dto);
+    }
 }

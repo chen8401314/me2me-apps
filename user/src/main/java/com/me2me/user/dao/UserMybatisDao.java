@@ -10,6 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -532,6 +536,62 @@ public class UserMybatisDao {
 
     public List<UserFollowDto> getFollowsOrderByNickName(FollowParamsDto followParamsDto){
         return userFollowMapper.getFollowsOrderByNickName(followParamsDto);
+    }
+
+    public List<UserProfile> getPromoter(String nickName){
+        UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andIsPromoterEqualTo(1);
+        if(!StringUtils.isEmpty(nickName)) {
+            criteria.andNickNameEqualTo(nickName);
+        }
+        return userProfileMapper.selectByExample(example);
+    }
+
+    public int getUnactivatedCount(long uid,String startDate,String endDate){
+        UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andRefereeUidEqualTo(uid);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        if(!StringUtils.isEmpty(startDate)) {
+            try {
+                criteria.andCreateTimeGreaterThan(sdf.parse(startDate));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        if(!StringUtils.isEmpty(endDate)) {
+            try {
+                criteria.andCreateTimeLessThan(sdf.parse(startDate));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        criteria.andIsActivateEqualTo(Specification.UserActivate.UN_ACTIVATED.index);
+        return userProfileMapper.countByExample(example);
+    }
+
+    public int getRefereeCount(long uid,String startDate,String endDate){
+        UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andRefereeUidEqualTo(uid);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+        if(!StringUtils.isEmpty(startDate)) {
+            try {
+                criteria.andCreateTimeGreaterThan(sdf.parse(startDate));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        if(!StringUtils.isEmpty(endDate)) {
+            try {
+                criteria.andCreateTimeLessThan(sdf.parse(startDate));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+        }
+        criteria.andIsActivateEqualTo(Specification.UserActivate.ACTIVATED.index);
+        return userProfileMapper.countByExample(example);
     }
 
 }

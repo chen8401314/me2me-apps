@@ -206,4 +206,6 @@ public interface UserService {
 
     Response getFollowsOrderByNickName(FollowParamsDto followParamsDto);
 
+    Response getPromoter(String nickNam,String startDate,String endDate);
+
 }
