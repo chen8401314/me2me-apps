@@ -413,6 +413,7 @@ public class ContentServiceImpl implements ContentService {
         contentReview.setUid(review.getUid());
         contentReview.setCid(review.getCid());
         contentReview.setReview(review.getReview());
+        contentReview.setAtUid(review.getAtUid());
         contentMybatisDao.createReview(contentReview);
     }
 
@@ -1809,6 +1810,11 @@ public class ContentServiceImpl implements ContentService {
             reviewElement.setNickName(userProfile.getNickName());
             reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             reviewElement.setId(contentReview.getId());
+            if(contentReview.getAtUid() != 0) {
+                UserProfile atUser = userService.getUserProfileByUid(contentReview.getAtUid());
+                reviewElement.setAtNickName(atUser.getNickName());
+                reviewElement.setAtUid(atUser.getUid());
+            }
             contentReviewDto.getReviews().add(reviewElement);
 
         }

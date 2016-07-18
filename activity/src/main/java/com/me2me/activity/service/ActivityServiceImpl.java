@@ -186,11 +186,12 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public void createActivityReview(long id, long uid, String review) {
+    public void createActivityReview(long id, long uid, String review,long atUid) {
         ActivityReview activityReview = new ActivityReview();
         activityReview.setActivityId(id);
         activityReview.setReview(review);
         activityReview.setUid(uid);
+        activityReview.setAtUid(atUid);
         activityMybatisDao.createActivityReview(activityReview);
     }
 

@@ -24,7 +24,7 @@ public class ActivityReview implements Review{
     @Override
     public Response createReview(ReviewDto reviewDto) {
         log.info("ActivityService createReview");
-        activityService.createActivityReview(reviewDto.getId(),reviewDto.getUid(),reviewDto.getReview());
+        activityService.createActivityReview(reviewDto.getId(),reviewDto.getUid(),reviewDto.getReview(),reviewDto.getAtUid());
         log.info("create review success");
         return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
     }

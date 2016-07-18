@@ -4,6 +4,7 @@ import com.me2me.activity.service.ActivityService;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.content.dto.LikeDto;
+import com.me2me.content.model.ContentLikesDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,13 @@ public class ActivityLikes extends AbstractLikes implements Likes{
 
     @Override
     public Response likes(LikeDto likeDto) {
+        ContentLikesDetails contentLikesDetails = new ContentLikesDetails();
+        contentLikesDetails.setUid(likeDto.getUid());
+        contentLikesDetails.setCid(likeDto.getCid());
+        ContentLikesDetails contentLikes = contentService.getContentLikesDetails(contentLikesDetails);
+        if(contentLikes != null){
+            return Response.success(ResponseStatus.CONTENT_USER_LIKES_ALREADY.status,ResponseStatus.CONTENT_USER_LIKES_ALREADY.message);
+        }
         activityService.createActivityLikesDetails(likeDto.getCid(),likeDto.getUid());
         return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
     }

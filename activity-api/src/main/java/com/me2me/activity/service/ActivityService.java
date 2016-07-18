@@ -42,7 +42,7 @@ public interface ActivityService {
 
     ActivityDto getActivity(long id);
 
-    void createActivityReview(long id,long uid,String review);
+    void createActivityReview(long id,long uid,String review,long atUid);
 
     void createActivityTagsDetails(long id,long uid,long tid);
 

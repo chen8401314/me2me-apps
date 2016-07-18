@@ -214,6 +214,11 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setFragmentId(topicFragment.getId());
             Topic topic = liveMybatisDao.getTopicById(getLiveTimeLineDto.getTopicId());
             liveElement.setInternalStatus(userService.getUserInternalStatus(uid,topic.getUid()));
+            if(topicFragment.getAtUid() != 0){
+                UserProfile atUser = userService.getUserProfileByUid(topicFragment.getAtUid());
+                liveElement.setAtUid(atUser.getUid());
+                liveElement.setAtNickName(atUser.getNickName());
+            }
             liveTimeLineDto.getLiveElements().add(liveElement);
         }
     }
@@ -231,12 +236,16 @@ public class LiveServiceImpl implements LiveService {
             topicFragment.setTopicId(speakDto.getTopicId());
             topicFragment.setBottomId(speakDto.getBottomId());
             topicFragment.setTopId(speakDto.getTopId());
+            topicFragment.setAtUid(speakDto.getAtUid());
             liveMybatisDao.createTopicFragment(topicFragment);
         }
         log.info("createTopicFragment success");
         TopicBarrage topicBarrage = new TopicBarrage();
         topicBarrage.setFragmentImage(speakDto.getFragmentImage());
-        topicBarrage.setFragment(speakDto.getFragment());
+        if(speakDto.getType() == Specification.LiveSpeakType.AT.index) {
+            UserProfile atUser = userService.getUserProfileByUid(speakDto.getAtUid());
+            topicBarrage.setFragment("@"+atUser.getNickName()+" "+speakDto.getFragment());
+        }
         topicBarrage.setBottomId(speakDto.getBottomId());
         topicBarrage.setTopicId(speakDto.getTopicId());
         topicBarrage.setTopId(speakDto.getTopId());
