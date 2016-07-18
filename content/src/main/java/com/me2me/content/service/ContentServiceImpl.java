@@ -942,6 +942,9 @@ public class ContentServiceImpl implements ContentService {
             UserProfile user = userService.getUserProfileByUid(review.getUid());
             reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
             reviewElement.setNickName(user.getNickName());
+            UserProfile atUser = userService.getUserProfileByUid(review.getAtUid());
+            reviewElement.setAtUid(atUser.getUid());
+            reviewElement.setAtNickName(atUser.getNickName());
             contentDetailDto.getReviews().add(reviewElement);
         }
 

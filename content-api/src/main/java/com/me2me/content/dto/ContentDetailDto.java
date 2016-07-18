@@ -96,6 +96,10 @@ public class ContentDetailDto implements BaseEntity {
 
         private String review;
 
+        private long atUid;
+
+        private String atNickName;
+
     }
 
 //    @Data
