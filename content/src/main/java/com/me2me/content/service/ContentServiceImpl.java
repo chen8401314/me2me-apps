@@ -433,7 +433,10 @@ public class ContentServiceImpl implements ContentService {
             reviewElement.setReview(articleReview.getReview());
             UserProfile userProfile = userService.getUserProfileByUid(articleReview.getUid());
             reviewElement.setNickName(userProfile.getNickName());
-            reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar() );
+            reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            UserProfile atUser = userService.getUserProfileByUid(articleReview.getAtUid());
+            reviewElement.setAtUid(atUser.getUid());
+            reviewElement.setAtNickName(atUser.getNickName());
             showArticleCommentsDto.getReviews().add(reviewElement);
         }
         for(ArticleLikesDetails likesDetails : articleLikesDetails){
