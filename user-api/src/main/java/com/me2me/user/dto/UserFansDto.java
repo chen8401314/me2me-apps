@@ -20,4 +20,6 @@ public class UserFansDto implements BaseEntity {
     private int isFollowed;
 
     private int isFollowMe;
+
+    private String introduced;
 }

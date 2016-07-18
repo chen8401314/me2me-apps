@@ -610,6 +610,8 @@ public class UserServiceImpl implements UserService {
             userFansDto.setIsFollowMe(followMe);
             int followed = this.isFollow(userFansDto.getUid(),fansParamsDto.getUid());
             userFansDto.setIsFollowed(followed);
+            UserProfile userProfile = userMybatisDao.getUserProfileByUid(userFansDto.getUid());
+            userFansDto.setIntroduced(userProfile.getIntroduced());
         }
         ShowUserFansDto showUserFansDto = new ShowUserFansDto();
         showUserFansDto.setResult(list);
@@ -629,6 +631,8 @@ public class UserServiceImpl implements UserService {
             userFollowDto.setIsFollowMe(followMe);
             int followed = this.isFollow(userFollowDto.getUid(),followParamsDto.getUid());
             userFollowDto.setIsFollowed(followed);
+            UserProfile userProfile = userMybatisDao.getUserProfileByUid(userFollowDto.getUid());
+            userFollowDto.setIntroduced(userProfile.getIntroduced());
         }
         showUserFollowDto.setResult(list);
         log.info("getFollows end ...");
