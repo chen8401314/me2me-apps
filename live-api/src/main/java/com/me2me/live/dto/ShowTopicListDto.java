@@ -81,6 +81,8 @@ public class ShowTopicListDto implements BaseEntity{
 
         private int topicCount;
 
+        private int isUpdate;
+
         private  List<Tags> tags  =  Lists.newArrayList();
 
         public static Tags createTags(){

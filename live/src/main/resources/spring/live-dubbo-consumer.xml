@@ -10,4 +10,6 @@
     <dubbo:reference interface="com.me2me.user.service.UserService" id="userService"/>
 
     <dubbo:reference interface="com.me2me.content.service.ContentService" id="contentService"/>
+
+    <dubbo:reference interface="com.me2me.cache.service.CacheService" id="cacheService"/>
 </beans>

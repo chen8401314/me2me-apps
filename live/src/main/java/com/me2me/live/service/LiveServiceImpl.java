@@ -1,6 +1,7 @@
 package com.me2me.live.service;
 
 import com.google.common.collect.Lists;
+import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -10,6 +11,7 @@ import com.me2me.content.dto.LikeDto;
 import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.model.Content;
 import com.me2me.content.service.ContentService;
+import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.*;
 import com.me2me.live.model.*;
@@ -25,6 +27,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -43,6 +46,9 @@ public class LiveServiceImpl implements LiveService {
 
     @Autowired
     private ContentService contentService;
+
+    @Autowired
+    private CacheService cacheService;
 
     @Override
     public Response createLive(CreateLiveDto createLiveDto) {
@@ -226,6 +232,14 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response speak(SpeakDto speakDto) {
         log.info("speak start ...");
+        //如果是主播发言更新cache
+        if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index ||speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index ){
+            List<LiveFavorite> liveFavorites = liveMybatisDao.getFavoriteList(speakDto.getTopicId());
+            for(LiveFavorite liveFavorite : liveFavorites) {
+                MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(liveFavorite.getUid(), liveFavorite.getTopicId() + "", "1");
+                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+            }
+        }
         if(speakDto.getType() != Specification.LiveSpeakType.LIKES.index &&speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index  && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {
             TopicFragment topicFragment = new TopicFragment();
             topicFragment.setFragmentImage(speakDto.getFragmentImage());
@@ -430,6 +444,9 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setIsFollowed(userService.isFollow(topic.getUid(),uid));
             showTopicElement.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(),topic.getUid()));
             showTopicElement.setLastUpdateTime(topic.getLongTime());
+            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topic.getId()+"","0");
+            String isUpdate = cacheService.hGet(cacheModel.getKey(),topic.getId()+"");
+            showTopicElement.setIsUpdate(Integer.parseInt(isUpdate));
             TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId(),topic.getUid());
             if(topicFragment != null) {
                 showTopicElement.setLastContentType(topicFragment.getContentType());
@@ -711,6 +728,14 @@ public class LiveServiceImpl implements LiveService {
             updateTime = calendar.getTimeInMillis();
         }
         List<Topic> topicList = liveMybatisDao.getMyLivesByUpdateTime(uid ,updateTime ,topics);
+        //初始化cache
+        for(Topic topic : topicList) {
+            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topic.getId()+"","0");
+            String isUpdate = cacheService.hGet(cacheModel.getKey(),topic.getId()+"");
+           if(StringUtils.isEmpty(isUpdate)) {
+               cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+           }
+        }
         log.info("getMyLives data success");
         builder(uid, showTopicListDto, topicList);
         log.info("getMyLives start ...");
