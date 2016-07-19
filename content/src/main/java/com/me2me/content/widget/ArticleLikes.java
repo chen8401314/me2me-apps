@@ -2,6 +2,7 @@ package com.me2me.content.widget;
 
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
+import com.me2me.common.web.Specification;
 import com.me2me.content.dto.LikeDto;
 import com.me2me.content.model.ContentLikesDetails;
 import com.plusnet.search.content.api.ContentStatService;
@@ -26,7 +27,7 @@ public class ArticleLikes extends AbstractLikes implements Likes {
         contentLikesDetails.setUid(likeDto.getUid());
         contentLikesDetails.setCid(likeDto.getCid());
         ContentLikesDetails contentLikes = contentService.getContentLikesDetails(contentLikesDetails);
-        if(contentLikes != null){
+        if(contentLikes != null && likeDto.getType() == Specification.IsLike.LIKE.index){
             return Response.success(ResponseStatus.CONTENT_USER_LIKES_ALREADY.status,ResponseStatus.CONTENT_USER_LIKES_ALREADY.message);
         }
         contentService.createArticleLike(likeDto);
