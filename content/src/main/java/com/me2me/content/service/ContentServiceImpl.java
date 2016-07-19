@@ -413,6 +413,7 @@ public class ContentServiceImpl implements ContentService {
         contentReview.setUid(review.getUid());
         contentReview.setCid(review.getCid());
         contentReview.setReview(review.getReview());
+        contentReview.setAtUid(review.getAtUid());
         contentMybatisDao.createReview(contentReview);
     }
 
@@ -432,7 +433,10 @@ public class ContentServiceImpl implements ContentService {
             reviewElement.setReview(articleReview.getReview());
             UserProfile userProfile = userService.getUserProfileByUid(articleReview.getUid());
             reviewElement.setNickName(userProfile.getNickName());
-            reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar() );
+            reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            UserProfile atUser = userService.getUserProfileByUid(articleReview.getAtUid());
+            reviewElement.setAtUid(atUser.getUid());
+            reviewElement.setAtNickName(atUser.getNickName());
             showArticleCommentsDto.getReviews().add(reviewElement);
         }
         for(ArticleLikesDetails likesDetails : articleLikesDetails){
@@ -938,6 +942,9 @@ public class ContentServiceImpl implements ContentService {
             UserProfile user = userService.getUserProfileByUid(review.getUid());
             reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
             reviewElement.setNickName(user.getNickName());
+            UserProfile atUser = userService.getUserProfileByUid(review.getAtUid());
+            reviewElement.setAtUid(atUser.getUid());
+            reviewElement.setAtNickName(atUser.getNickName());
             contentDetailDto.getReviews().add(reviewElement);
         }
 
@@ -1809,6 +1816,11 @@ public class ContentServiceImpl implements ContentService {
             reviewElement.setNickName(userProfile.getNickName());
             reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             reviewElement.setId(contentReview.getId());
+            if(contentReview.getAtUid() != 0) {
+                UserProfile atUser = userService.getUserProfileByUid(contentReview.getAtUid());
+                reviewElement.setAtNickName(atUser.getNickName());
+                reviewElement.setAtUid(atUser.getUid());
+            }
             contentReviewDto.getReviews().add(reviewElement);
 
         }

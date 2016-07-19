@@ -30,11 +30,11 @@
         </javaClientGenerator>
 
         <!--<table tableName="topic" domainObjectName="Topic"/>-->
-        <!--<table tableName="topic_fragment" domainObjectName="TopicFragment"/>-->
+        <table tableName="topic_fragment" domainObjectName="TopicFragment"/>
         <!--<table tableName="live_favorite" domainObjectName="LiveFavorite"/>-->
         <!--<table tableName="live_read_history" domainObjectName="LiveReadHistory"/>-->
         <!--<table tableName="topic_barrage" domainObjectName="TopicBarrage"/>-->
-        <table tableName="live_favorite_delete" domainObjectName="LiveFavoriteDelete"/>
+        <!--<table tableName="live_favorite_delete" domainObjectName="LiveFavoriteDelete"/>-->
 
 
     </context>

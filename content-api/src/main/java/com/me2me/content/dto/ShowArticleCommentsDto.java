@@ -39,6 +39,10 @@ public class ShowArticleCommentsDto implements BaseEntity{
 
         private String review;
 
+        private String atNickName;
+
+        private long atUid;
+
     }
 
 

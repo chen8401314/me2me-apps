@@ -311,6 +311,7 @@ public class ContentMybatisDao {
             contentReview.setCreateTime(articleReview.getCreateTime());
             contentReview.setReview(articleReview.getReview());
             contentReview.setUid(articleReview.getUid());
+            contentReview.setAtUid(articleReview.getAtUid());
             result.add(contentReview);
         }
         return result;
@@ -390,6 +391,7 @@ public class ContentMybatisDao {
         review.setArticleId(reviewDto.getCid());
         review.setReview(reviewDto.getReview());
         review.setUid(reviewDto.getUid());
+        review.setAtUid(reviewDto.getAtUid());
         articleReviewMapper.insertSelective(review);
     }
 

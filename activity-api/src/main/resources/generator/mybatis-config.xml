@@ -35,8 +35,8 @@
         <!--<table tableName="activity" domainObjectName="Activity"/>-->
         <!--<table tableName="user_activity" domainObjectName="UserActivity"/>-->
         <table tableName="activity_review" domainObjectName="ActivityReview"/>
-        <table tableName="activity_tags_details" domainObjectName="ActivityTagsDetails"/>
-        <table tableName="activity_likes_details" domainObjectName="ActivityLikesDetails"/>
+        <!--<table tableName="activity_tags_details" domainObjectName="ActivityTagsDetails"/>-->
+        <!--<table tableName="activity_likes_details" domainObjectName="ActivityLikesDetails"/>-->
 
     </context>
 </generatorConfiguration>

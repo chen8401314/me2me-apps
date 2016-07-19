@@ -7,8 +7,6 @@ import com.me2me.content.dto.LikeDto;
 import com.me2me.content.model.Content;
 import com.me2me.content.model.ContentLikesDetails;
 import com.me2me.content.service.ContentService;
-import com.me2me.monitor.service.MonitorService;
-import com.me2me.monitor.event.MonitorEvent;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -23,9 +21,6 @@ public class AbstractLikes {
 
     @Autowired
     protected ContentService contentService;
-
-    @Autowired
-    private MonitorService monitorService;
 
     public Response likes(LikeDto likeDto) {
         log.info(" AbstractLikes likes start ...");
