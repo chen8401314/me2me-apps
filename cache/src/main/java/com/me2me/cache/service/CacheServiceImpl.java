@@ -134,5 +134,32 @@ public class CacheServiceImpl implements CacheService {
         });
     }
 
+    public void hSet(final String key,final String field,final String value){
+        jedisTemplate.execute(new JedisTemplate.JedisAction() {
+            @Override
+            public void action(Jedis jedis) {
+                jedis.hset(key, field,value);
+            }
+        });
+    }
 
+    @Override
+    public String hGet(final String key, final String field) {
+        return jedisTemplate.execute(new JedisTemplate.JedisActionResult() {
+            @Override
+            public <T> T actionResult(Jedis jedis) {
+                return (T) jedis.hget(key,field);
+            }
+        });
+    }
+
+    @Override
+    public void hDel(final String key, final String ... field) {
+        jedisTemplate.execute(new JedisTemplate.JedisAction() {
+            @Override
+            public void action(Jedis jedis) {
+                jedis.hdel(key, field);
+            }
+        });
+    }
 }

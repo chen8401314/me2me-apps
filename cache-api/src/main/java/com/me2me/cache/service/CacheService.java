@@ -61,4 +61,16 @@ public interface CacheService {
      */
     void expire(String key,int timeout);
 
+    /**
+     * map操作
+     * @param key
+     * @param field
+     * @param value
+     */
+    void hSet(String key,String field,String value);
+
+    String hGet(String key,String field);
+
+    void hDel(String key,String... field);
+
 }
