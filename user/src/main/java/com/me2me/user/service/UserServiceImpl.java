@@ -1,6 +1,7 @@
 package com.me2me.user.service;
 
 import com.google.common.collect.Lists;
+import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.web.Response;
@@ -8,8 +9,6 @@ import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.core.QRCodeUtil;
 import com.me2me.io.service.FileTransferService;
-import com.me2me.monitor.service.MonitorService;
-import com.me2me.monitor.event.MonitorEvent;
 import com.me2me.sms.dto.*;
 import com.me2me.sms.service.SmsService;
 import com.me2me.sms.service.XgPushService;
@@ -50,17 +49,18 @@ public class UserServiceImpl implements UserService {
     private SmsService smsService;
 
     @Autowired
-    private MonitorService monitorService;
-
-    @Autowired
     private XgPushService xgPushService;
 
     @Autowired
    private FileTransferService fileTransferService;
 
+    @Autowired
+    private CacheService cacheService;
+
     @Value("#{app.reg_web}")
     private String reg_web;
 
+    private static final String POWER_KEY = "power:key";
 
 
     /**
@@ -745,6 +745,10 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setGender(userProfile.getGender());
         showUserProfileDto.setUserName(userProfile.getMobile());
         showUserProfileDto.setIsPromoter(userProfile.getIsPromoter());
+        Set<String> powerKeys = cacheService.smembers(POWER_KEY);
+        if(powerKeys.contains(uid + "")) {
+            showUserProfileDto.setPower(1);
+        }
         UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
         log.info("get userToken success ");
         showUserProfileDto.setToken(userToken.getToken());

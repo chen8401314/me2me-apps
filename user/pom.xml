@@ -49,6 +49,11 @@
                     <artifactId>monitor</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>cache</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
             </dependencies>
             <build>
                 <filters>
@@ -94,6 +99,11 @@
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>monitor-api</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>cache-api</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
             </dependencies>
