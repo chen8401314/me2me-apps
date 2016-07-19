@@ -444,26 +444,8 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setIsFollowed(userService.isFollow(topic.getUid(),uid));
             showTopicElement.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(),topic.getUid()));
             showTopicElement.setLastUpdateTime(topic.getLongTime());
-            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topic.getId()+"","0");
-            String isUpdate = cacheService.hGet(cacheModel.getKey(),topic.getId()+"");
-            showTopicElement.setIsUpdate(Integer.parseInt(isUpdate));
             TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId(),topic.getUid());
-            if(topicFragment != null) {
-                showTopicElement.setLastContentType(topicFragment.getContentType());
-                showTopicElement.setLastFragment(topicFragment.getFragment());
-                showTopicElement.setLastFragmentImage(topicFragment.getFragmentImage());
-            }else{
-                showTopicElement.setLastContentType(-1);
-            }
-            Content content = contentService.getContentByTopicId(topic.getId());
-            if(content != null) {
-                showTopicElement.setLikeCount(content.getLikeCount());
-                showTopicElement.setPersonCount(content.getPersonCount());
-                showTopicElement.setReviewCount(liveMybatisDao.countFragment(content.getForwardCid(),content.getUid()));
-                showTopicElement.setFavoriteCount(content.getFavoriteCount());
-                showTopicElement.setCid(content.getId());
-                showTopicElement.setIsLike(contentService.isLike(content.getId(),uid));
-            }
+            afterProcess(uid, topic, showTopicElement, topicFragment);
             //判断是否收藏了
             LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid,topic.getId());
             if(liveFavorite != null){
@@ -473,6 +455,61 @@ public class LiveServiceImpl implements LiveService {
             }
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
+    }
+
+    private void builderWithCache(long uid, ShowTopicListDto showTopicListDto, List<Topic> topicList) {
+        for(Topic topic : topicList){
+            ShowTopicListDto.ShowTopicElement showTopicElement = ShowTopicListDto.createShowTopicElement();
+            showTopicElement.setUid(topic.getUid());
+            showTopicElement.setCoverImage(Constant.QINIU_DOMAIN  + "/" + topic.getLiveImage());
+            showTopicElement.setTitle(topic.getTitle());
+            UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
+            showTopicElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar() );
+            showTopicElement.setNickName(userProfile.getNickName());
+            showTopicElement.setCreateTime(topic.getCreateTime());
+            showTopicElement.setTopicId(topic.getId());
+            showTopicElement.setStatus(topic.getStatus());
+            showTopicElement.setUpdateTime(topic.getLongTime());
+            showTopicElement.setIsFollowed(userService.isFollow(topic.getUid(),uid));
+            showTopicElement.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(),topic.getUid()));
+            showTopicElement.setLastUpdateTime(topic.getLongTime());
+            processCache(uid,topic,showTopicElement);
+            TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId(),topic.getUid());
+            afterProcess(uid, topic, showTopicElement, topicFragment);
+            //判断是否收藏了
+            LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid,topic.getId());
+            if(liveFavorite != null){
+                showTopicElement.setFavorite(Specification.LiveFavorite.FAVORITE.index);
+            }else{
+                showTopicElement.setFavorite(Specification.LiveFavorite.NORMAL.index);
+            }
+            showTopicListDto.getShowTopicElements().add(showTopicElement);
+        }
+    }
+
+    private void afterProcess(long uid, Topic topic, ShowTopicListDto.ShowTopicElement showTopicElement, TopicFragment topicFragment) {
+        if(topicFragment != null) {
+            showTopicElement.setLastContentType(topicFragment.getContentType());
+            showTopicElement.setLastFragment(topicFragment.getFragment());
+            showTopicElement.setLastFragmentImage(topicFragment.getFragmentImage());
+        }else{
+            showTopicElement.setLastContentType(-1);
+        }
+        Content content = contentService.getContentByTopicId(topic.getId());
+        if(content != null) {
+            showTopicElement.setLikeCount(content.getLikeCount());
+            showTopicElement.setPersonCount(content.getPersonCount());
+            showTopicElement.setReviewCount(liveMybatisDao.countFragment(content.getForwardCid(),content.getUid()));
+            showTopicElement.setFavoriteCount(content.getFavoriteCount());
+            showTopicElement.setCid(content.getId());
+            showTopicElement.setIsLike(contentService.isLike(content.getId(),uid));
+        }
+    }
+
+    private void processCache(long uid, Topic topic, ShowTopicListDto.ShowTopicElement showTopicElement) {
+        MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topic.getId()+"","0");
+        String isUpdate = cacheService.hGet(cacheModel.getKey(),topic.getId()+"");
+        showTopicElement.setIsUpdate(Integer.parseInt(isUpdate));
     }
 
     /**
@@ -503,21 +540,25 @@ public class LiveServiceImpl implements LiveService {
             liveMybatisDao.createLiveFavorite(liveFavorite);
             //保存弹幕
             TopicBarrage barrage = liveMybatisDao.getBarrage(topicId,topId,bottomId,Specification.LiveSpeakType.SUBSCRIBED.index,uid);
-            if(barrage == null) {
-                TopicBarrage topicBarrage = new TopicBarrage();
-                topicBarrage.setBottomId(bottomId);
-                topicBarrage.setTopicId(topicId);
-                topicBarrage.setTopId(topId);
-                topicBarrage.setContentType(0);
-                topicBarrage.setType(Specification.LiveSpeakType.SUBSCRIBED.index);
-                topicBarrage.setUid(uid);
-                //保存弹幕
-                liveMybatisDao.createTopicBarrage(topicBarrage);
-            }
+            saveBarrage(uid, topicId, topId, bottomId, barrage);
             content.setFavoriteCount(content.getFavoriteCount()+1);
             contentService.updateContentById(content);
             log.info("setLive end ...");
             return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status,ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
+        }
+    }
+
+    private void saveBarrage(long uid, long topicId, long topId, long bottomId, TopicBarrage barrage) {
+        if(barrage == null) {
+            TopicBarrage topicBarrage = new TopicBarrage();
+            topicBarrage.setBottomId(bottomId);
+            topicBarrage.setTopicId(topicId);
+            topicBarrage.setTopId(topId);
+            topicBarrage.setContentType(0);
+            topicBarrage.setType(Specification.LiveSpeakType.SUBSCRIBED.index);
+            topicBarrage.setUid(uid);
+            //保存弹幕
+            liveMybatisDao.createTopicBarrage(topicBarrage);
         }
     }
 
@@ -541,17 +582,7 @@ public class LiveServiceImpl implements LiveService {
                 liveMybatisDao.deleteFavoriteDelete(uid,topicId);
                 //保存弹幕
                 TopicBarrage barrage = liveMybatisDao.getBarrage(topicId, topId, bottomId, Specification.LiveSpeakType.SUBSCRIBED.index, uid);
-                if (barrage == null) {
-                    TopicBarrage topicBarrage = new TopicBarrage();
-                    topicBarrage.setBottomId(bottomId);
-                    topicBarrage.setTopicId(topicId);
-                    topicBarrage.setTopId(topId);
-                    topicBarrage.setContentType(0);
-                    topicBarrage.setType(Specification.LiveSpeakType.SUBSCRIBED.index);
-                    topicBarrage.setUid(uid);
-                    //保存弹幕
-                    liveMybatisDao.createTopicBarrage(topicBarrage);
-                }
+                saveBarrage(uid, topicId, topId, bottomId, barrage);
                 content.setFavoriteCount(content.getFavoriteCount() + 1);
                 contentService.updateContentById(content);
                 log.info("setLive2 end ...");
@@ -737,7 +768,7 @@ public class LiveServiceImpl implements LiveService {
            }
         }
         log.info("getMyLives data success");
-        builder(uid, showTopicListDto, topicList);
+        builderWithCache(uid, showTopicListDto, topicList);
         log.info("getMyLives start ...");
         int inactiveLiveCount = liveMybatisDao.getInactiveLiveCount(uid,topics);
         showTopicListDto.setInactiveLiveCount(inactiveLiveCount);
