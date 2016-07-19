@@ -28,7 +28,7 @@ public class MySubscribeCacheModel implements BaseEntity {
     private String value;
 
     public MySubscribeCacheModel(long uid,String field,String value){
-        this.key = KEY_PREFIX+uid;
+        this.key = KEY_PREFIX + uid;
         this.field = field;
         this.value = value;
     }
