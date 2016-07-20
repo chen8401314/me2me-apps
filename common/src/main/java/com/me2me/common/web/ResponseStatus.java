@@ -129,6 +129,12 @@ public enum  ResponseStatus {
 
     QRCODE_SUCCESS("获取二维码成功","qrcode success",20058),
 
+    HIGH_QUALITY_CONTENT_SUCCESS("置热成功","high quality content success",20059),
+
+    HIGH_QUALITY_CONTENT_CANCEL_SUCCESS("取消置热成功","high quality content cancel success",20060),
+
+    HIGH_QUALITY_CONTENT_YET("取消置热成功","high quality content YET",20061),
+
 
 
 

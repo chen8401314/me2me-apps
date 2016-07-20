@@ -1752,15 +1752,15 @@ public class ContentServiceImpl implements ContentService {
         // 活动 2
         if(optionAction==0 || optionAction==1){
             // UGC操作
-            optionContent(action,id);
+           return optionContent(action,id);
         }else if(optionAction==2){
             // 活动操作
-            optionActivity(action, id);
+           return optionActivity(action, id);
         }
-        return Response.success();
+        return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status,ResponseStatus.ILLEGAL_REQUEST.message);
     }
 
-    private void optionActivity(int action, long id) {
+    private Response optionActivity(int action, long id) {
         ActivityWithBLOBs activity = activityService.loadActivityById(id);
         if(action==1){
             // 取消置热
@@ -1769,6 +1769,7 @@ public class ContentServiceImpl implements ContentService {
             activity.setStatus(1);
         }
         activityService.modifyActivity(activity);
+        return Response.success(ResponseStatus.HIGH_QUALITY_CONTENT_SUCCESS.status,ResponseStatus.HIGH_QUALITY_CONTENT_SUCCESS.message);
     }
 
     @Override
@@ -1837,7 +1838,7 @@ public class ContentServiceImpl implements ContentService {
         contentMybatisDao.updateContentById(content);
     }
 
-    private void optionContent(int action, long id) {
+    private Response optionContent(int action, long id) {
         if(action==1){
             // UGC置热
             HighQualityContent highQualityContent = new HighQualityContent();
@@ -1847,7 +1848,7 @@ public class ContentServiceImpl implements ContentService {
             //UGC置热
             HighQualityContent qualityContent = contentMybatisDao.getHQuantityByCid(id);
             if(qualityContent != null){
-                return;
+                return Response.success(ResponseStatus.HIGH_QUALITY_CONTENT_YET.status,ResponseStatus.HIGH_QUALITY_CONTENT_YET.message);
             }
             if(content.getType() == Specification.ArticleType.ORIGIN.index) {
                 userService.push(content.getUid(), 000000, Specification.PushMessageType.HOTTEST.index, content.getTitle());
@@ -1857,10 +1858,12 @@ public class ContentServiceImpl implements ContentService {
             }
 
             contentMybatisDao.createHighQualityContent(highQualityContent);
+            return Response.success(ResponseStatus.HIGH_QUALITY_CONTENT_SUCCESS.status,ResponseStatus.HIGH_QUALITY_CONTENT_SUCCESS.message);
         }else{
             // 取消置热
             HighQualityContent temp = contentMybatisDao.getHQuantityByCid(id);
             contentMybatisDao.removeHighQualityContent(temp.getId());
+            return Response.success(ResponseStatus.HIGH_QUALITY_CONTENT_CANCEL_SUCCESS.status,ResponseStatus.HIGH_QUALITY_CONTENT_CANCEL_SUCCESS.message);
         }
     }
 
