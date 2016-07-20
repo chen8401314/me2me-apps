@@ -923,6 +923,10 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setId(content.getId());
         contentDetailDto.setIsFollowed(userService.isFollow(content.getUid(),uid));
         contentDetailDto.setIsFollowMe(userService.isFollow(uid,content.getUid()));
+        HighQualityContent qualityContent = contentMybatisDao.getHQuantityByCid(id);
+        if(qualityContent != null) {
+            contentDetailDto.setIsHot(1);
+        }
         // 获取感受
         List<ContentTagsDetails> list  = contentMybatisDao.getContentTagsDetails(content.getId(),content.getCreateTime(),Integer.MAX_VALUE);
         log.info("get contentTagDetail success");
@@ -1841,6 +1845,10 @@ public class ContentServiceImpl implements ContentService {
             //自己发布的被置热
             Content content = contentMybatisDao.getContentById(id);
             //UGC置热
+            HighQualityContent qualityContent = contentMybatisDao.getHQuantityByCid(id);
+            if(qualityContent != null){
+                return;
+            }
             if(content.getType() == Specification.ArticleType.ORIGIN.index) {
                 userService.push(content.getUid(), 000000, Specification.PushMessageType.HOTTEST.index, content.getTitle());
             //直播置热
