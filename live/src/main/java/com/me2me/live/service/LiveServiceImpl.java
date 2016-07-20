@@ -258,12 +258,7 @@ public class LiveServiceImpl implements LiveService {
         log.info("createTopicFragment success");
         TopicBarrage topicBarrage = new TopicBarrage();
         topicBarrage.setFragmentImage(speakDto.getFragmentImage());
-        if(speakDto.getType() == Specification.LiveSpeakType.AT.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index) {
-            UserProfile atUser = userService.getUserProfileByUid(speakDto.getAtUid());
-            topicBarrage.setFragment("@"+atUser.getNickName()+" "+speakDto.getFragment());
-        }else{
-            topicBarrage.setFragment(speakDto.getFragment());
-        }
+        topicBarrage.setFragment(speakDto.getFragment());
         topicBarrage.setBottomId(speakDto.getBottomId());
         topicBarrage.setTopicId(speakDto.getTopicId());
         topicBarrage.setTopId(speakDto.getTopId());
