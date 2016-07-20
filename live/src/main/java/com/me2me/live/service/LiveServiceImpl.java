@@ -584,10 +584,16 @@ public class LiveServiceImpl implements LiveService {
                 liveMybatisDao.deleteFavoriteDelete(uid,topicId);
                 //保存弹幕
                 TopicBarrage barrage = liveMybatisDao.getBarrage(topicId, topId, bottomId, Specification.LiveSpeakType.SUBSCRIBED.index, uid);
-                saveBarrage(uid, topicId, topId, bottomId, barrage);
-                content.setFavoriteCount(content.getFavoriteCount() + 1);
-                contentService.updateContentById(content);
-                log.info("setLive2 end ...");
+                if(barrage != null){
+                    content.setFavoriteCount(content.getFavoriteCount() + 1);
+                    contentService.updateContentById(content);
+                    return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
+                }else {
+                    saveBarrage(uid, topicId, topId, bottomId, barrage);
+                    content.setFavoriteCount(content.getFavoriteCount() + 1);
+                    contentService.updateContentById(content);
+                    log.info("setLive2 end ...");
+                }
             }
             return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
         } else if (action == 1) {
