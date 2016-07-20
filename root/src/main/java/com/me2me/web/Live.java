@@ -106,6 +106,7 @@ public class Live extends BaseController {
         speakDto.setTopicId(request.getTopicId());
         speakDto.setTopId(request.getTopId());
         speakDto.setBottomId(request.getBottomId());
+        speakDto.setAtUid(request.getAtUid());
         return liveService.speak(speakDto);
     }
 
