@@ -311,7 +311,9 @@ public interface Specification {
 
         AT("有人@",10),
 
-        ANCHOR_AT("主播@",10);
+        ANCHOR_AT("主播@",11),
+
+        VIDEO("视频",12);
 
         public final String name;
         public final int index;
