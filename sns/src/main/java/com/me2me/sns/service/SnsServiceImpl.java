@@ -243,6 +243,7 @@ public class SnsServiceImpl implements SnsService {
         UserProfile fans = userService.getUserProfileByUid(uid);
         speakDto.setFragment("国王" + userProfile.getNickName() + "邀请了" + fans.getNickName()+"加入此直播");
         speakDto.setTopicId(topicId);
+        speakDto.setType(Specification.LiveSpeakType.INVITED.index);
         liveService.speak(speakDto);
     }
 }
