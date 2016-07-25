@@ -777,9 +777,9 @@ public class LiveServiceImpl implements LiveService {
         for(Topic topic : topicList) {
             MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topic.getId()+"","0");
             String isUpdate = cacheService.hGet(cacheModel.getKey(),topic.getId()+"");
-           if(StringUtils.isEmpty(isUpdate)) {
-               cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-           }
+            if(StringUtils.isEmpty(isUpdate)) {
+                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+            }
         }
         log.info("getMyLives data success");
         builderWithCache(uid, showTopicListDto, topicList);
@@ -874,6 +874,46 @@ public class LiveServiceImpl implements LiveService {
             live4H5Dto.getFragments().add(fragment);
         }
         return live4H5Dto;
+    }
+
+    @Override
+    public Response getLiveTimeline2(GetLiveTimeLineDto2 getLiveTimeLineDto) {
+        LiveTimeLineDto2 liveTimeLineDto = new LiveTimeLineDto2();
+        log.info("getLiveTimeline2 start ...");
+        MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(getLiveTimeLineDto.getUid(), getLiveTimeLineDto.getTopicId() + "", "0");
+        cacheService.hSet(cacheModel.getKey(), cacheModel.getField(),cacheModel.getValue());
+        Topic topic = liveMybatisDao.getTopicById(getLiveTimeLineDto.getTopicId());
+        List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragmentByMode(getLiveTimeLineDto.getTopicId(),getLiveTimeLineDto.getSinceId(),topic.getUid());
+        log.info("get getLiveTimeline2 data");
+        buildTimeLine2(getLiveTimeLineDto, liveTimeLineDto, topic, fragmentList);
+        log.info("buildLiveTimeLine2 success");
+        return Response.success(ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.status,ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.message,liveTimeLineDto);
+    }
+
+    private void buildTimeLine2(GetLiveTimeLineDto2 getLiveTimeLineDto, LiveTimeLineDto2 liveTimeLineDto, Topic topic, List<TopicFragment> fragmentList) {
+        long uid = topic.getUid();
+        UserProfile userProfile = userService.getUserProfileByUid(uid);
+        for(TopicFragment topicFragment : fragmentList){
+            LiveTimeLineDto2.LiveElement liveElement = LiveTimeLineDto2.createElement();
+            liveElement.setUid(uid);
+            liveElement.setNickName(userProfile.getNickName());
+            liveElement.setFragment(topicFragment.getFragment());
+            String fragmentImage = topicFragment.getFragmentImage();
+            if(!StringUtils.isEmpty(fragmentImage)) {
+                liveElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+            }
+            liveElement.setCreateTime(topicFragment.getCreateTime());
+            liveElement.setType(topicFragment.getType());
+            int isFollow = userService.isFollow(topicFragment.getUid(),getLiveTimeLineDto.getUid());
+            liveElement.setIsFollowed(isFollow);
+            liveElement.setContentType(topicFragment.getContentType());
+            liveElement.setFragmentId(topicFragment.getId());
+            liveElement.setInternalStatus(userService.getUserInternalStatus(uid,topic.getUid()));
+
+
+            liveElement.setReviewCount(0);
+            liveTimeLineDto.getLiveElements().add(liveElement);
+        }
     }
 
     @Override

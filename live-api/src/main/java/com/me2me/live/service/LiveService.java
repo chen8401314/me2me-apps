@@ -121,4 +121,6 @@ public interface LiveService {
     TopicFragment getLastTopicFragmentByUid(long topicId, long uid);
 
     Live4H5Dto getLive4H5(long id);
+
+    Response getLiveTimeline2(GetLiveTimeLineDto2 getLiveTimeLineDto);
 }

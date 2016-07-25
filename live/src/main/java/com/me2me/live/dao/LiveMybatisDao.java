@@ -55,6 +55,17 @@ public class LiveMybatisDao {
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
 
+    public List<TopicFragment> getTopicFragmentByMode(long topicId,long sinceId,long uid){
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andIdGreaterThan(sinceId);
+        criteria.andUidEqualTo(uid);
+        criteria.andTypeNotEqualTo(Specification.LiveSpeakType.ANCHOR_AT.index);
+        example.setOrderByClause("id asc limit 50 "  );
+        return topicFragmentMapper.selectByExampleWithBLOBs(example);
+    }
+
     public List<TopicFragment> getPrevTopicFragment(long topicId,long sinceId ){
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
@@ -181,7 +192,7 @@ public class LiveMybatisDao {
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andIdLessThan(sinceId);
         criteria.andStatusEqualTo(Specification.LiveStatus.LIVING.index);
-        example.setOrderByClause(" id desc limit 10 ");
+        example.setOrderByClause(" long_time desc limit 10 ");
         return topicMapper.selectByExample(example);
     }
 
