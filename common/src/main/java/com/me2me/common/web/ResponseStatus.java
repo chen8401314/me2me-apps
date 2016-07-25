@@ -208,6 +208,8 @@ public enum  ResponseStatus {
 
     QRCODE_FAILURE("获取二维码失败","qrcode failure",50028),
 
+    NO_RIGHTS_TO_LIKE("作者已经将该内容设置为私有您无权限操作","no rights to likes",50029),
+
 
 
 
