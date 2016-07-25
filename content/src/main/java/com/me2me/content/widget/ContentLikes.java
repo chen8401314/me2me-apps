@@ -22,7 +22,7 @@ public class ContentLikes extends AbstractLikes implements Likes {
     @Override
     public Response likes(LikeDto likeDto) {
         Content content = contentService.getContentById(likeDto.getCid());
-        if(content.getRights()!= Specification.ContentRights.SELF.index){
+        if(content.getRights()!= Specification.ContentRights.SELF.index && content.getStatus()!=Specification.ContentStatus.DELETE.index){
             ContentLikesDetails contentLikesDetails = new ContentLikesDetails();
             contentLikesDetails.setUid(likeDto.getUid());
             contentLikesDetails.setCid(likeDto.getCid());
