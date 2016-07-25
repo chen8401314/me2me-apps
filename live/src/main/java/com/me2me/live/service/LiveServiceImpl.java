@@ -300,7 +300,7 @@ public class LiveServiceImpl implements LiveService {
             writeTagDto.setUid(speakDto.getUid());
             writeTagDto.setCid(content.getId());
             writeTagDto.setTag(speakDto.getFragment());
-            contentService.writeTag(writeTagDto);
+            contentService.writeTag2(writeTagDto);
         }
         Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
         //直播发言时候更新直播更新时间
@@ -321,13 +321,13 @@ public class LiveServiceImpl implements LiveService {
         }else if(speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index){
             //粉丝贴标提醒
             Topic live = liveMybatisDao.getTopicById(speakDto.getTopicId());
-            liveRemind(live.getUid(), speakDto.getUid() ,Specification.LiveSpeakType.FANS_WRITE_TAG.index ,speakDto.getTopicId(),speakDto.getFragment());
+            //liveRemind(live.getUid(), speakDto.getUid() ,Specification.LiveSpeakType.FANS_WRITE_TAG.index ,speakDto.getTopicId(),speakDto.getFragment());
             //userService.push(topic.getUid(),speakDto.getUid(),Specification.PushMessageType.LIVE_TAG.index,topic.getTitle());
             log.info("live tag push");
         }else if(speakDto.getType() == Specification.LiveSpeakType.FANS.index){
             //粉丝发言提醒
             Topic live = liveMybatisDao.getTopicById(speakDto.getTopicId());
-            liveRemind(live.getUid(), speakDto.getUid() ,Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
+            //liveRemind(live.getUid(), speakDto.getUid() ,Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
             //userService.push(topic.getUid(),speakDto.getUid(),Specification.PushMessageType.LIVE_REVIEW.index,topic.getTitle());
             log.info("live review push");
         }else if(speakDto.getType() == Specification.LiveSpeakType.AT.index){
