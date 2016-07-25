@@ -25,4 +25,7 @@
 
     <dubbo:reference interface="com.me2me.sns.service.SnsService" id="snsService"/>
 
+    <dubbo:reference interface="com.me2me.cache.service.CacheService" id="cacheService"/>
+
+
 </beans>
