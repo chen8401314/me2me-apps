@@ -781,6 +781,7 @@ public class LiveServiceImpl implements LiveService {
             MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topic.getId()+"","0");
             String isUpdate = cacheService.hGet(cacheModel.getKey(),topic.getId()+"");
             if(StringUtils.isEmpty(isUpdate)) {
+                log.info("cache key {} , cache topic id {},cache value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
                 cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
             }
         }
