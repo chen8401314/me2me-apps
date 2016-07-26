@@ -746,8 +746,10 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setUserName(userProfile.getMobile());
         showUserProfileDto.setIsPromoter(userProfile.getIsPromoter());
         Set<String> powerKeys = cacheService.smembers(POWER_KEY);
-        if(powerKeys.contains(uid + "")) {
-            showUserProfileDto.setPower(1);
+        if(powerKeys!=null && !powerKeys.isEmpty()) {
+            if (powerKeys.contains(uid + "")) {
+                showUserProfileDto.setPower(1);
+            }
         }
         UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
         log.info("get userToken success ");
