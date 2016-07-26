@@ -1,10 +1,7 @@
 package com.me2me.web;
 
 import com.me2me.common.web.Response;
-import com.me2me.live.dto.CreateLiveDto;
-import com.me2me.live.dto.GetLiveTimeLineDto;
-import com.me2me.live.dto.LiveBarrageDto;
-import com.me2me.live.dto.SpeakDto;
+import com.me2me.live.dto.*;
 import com.me2me.live.service.LiveService;
 import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -56,6 +53,22 @@ public class Live extends BaseController {
         getLiveTimeLineDto.setUid(request.getUid());
         return liveService.getLiveTimeline(getLiveTimeLineDto);
     }
+
+    /**
+     * 获取消息列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/liveTimeline2",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response liveTimeline2(LiveTimeline2Request request){
+        GetLiveTimeLineDto2 getLiveTimeLineDto = new GetLiveTimeLineDto2();
+        getLiveTimeLineDto.setSinceId(request.getSinceId());
+        getLiveTimeLineDto.setTopicId(request.getTopicId());
+        getLiveTimeLineDto.setUid(request.getUid());
+        return liveService.getLiveTimeline2(getLiveTimeLineDto);
+    }
+
 
     /**
      * 获取弹幕息列表

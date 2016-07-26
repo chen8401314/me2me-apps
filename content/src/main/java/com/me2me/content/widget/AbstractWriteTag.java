@@ -41,8 +41,10 @@ public class AbstractWriteTag {
         contentService.createContentTagsDetails(contentTagsDetails);
         Content content = contentService.getContentById(writeTagDto.getCid());
         //添加贴标签提醒
-        contentService. remind(content,writeTagDto.getUid(), Specification.UserNoticeType.TAG.index,writeTagDto.getTag());
-        //打标签的时候文章热度+1
+        if(content.getType() != Specification.ArticleType.LIVE.index) {
+            contentService.remind(content, writeTagDto.getUid(), Specification.UserNoticeType.TAG.index, writeTagDto.getTag());
+        }
+            //打标签的时候文章热度+1
         content.setHotValue(content.getHotValue()+1);
         contentService.updateContentById(content);
         //userService.push(content.getUid(),writeTagDto.getUid(),Specification.PushMessageType.TAG.index,content.getTitle());
