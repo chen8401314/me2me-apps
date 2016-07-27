@@ -423,7 +423,10 @@ public class ApplicationConsole extends BaseController {
 
     @RequestMapping(value = "/getPhoto",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response getPhoto(MyPublishContentRequest request){
+    public Response getPhoto(GetLivesRequest request){
+        if(request.getSinceId() == -1){
+            request.setSinceId(Long.MAX_VALUE);
+        }
         return userService.getPhoto(request.getSinceId());
     }
 
