@@ -339,8 +339,45 @@ public class LiveServiceImpl implements LiveService {
             userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
         }
         log.info("speak end ...");
+        //2.0.7
+        //直播信息保存
+        saveLiveDisplayData(speakDto);
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status,ResponseStatus.USER_SPEAK_SUCCESS.message);
     }
+
+    private void saveLiveDisplayData(SpeakDto speakDto){
+            //直播文字，图片，视频，音频，感受--主要信息表
+        if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.VIDEO.index || speakDto.getType() == Specification.LiveSpeakType.SOUND.index){
+                liveMybatisDao.createLiveDisplayFragment(speakDto);
+            //评论数据表：主播@,圈内人@，圈内人发言，圈内人感受
+        }else if(speakDto.getMode() == Specification.LiveMode.COMMON.index){
+            if(speakDto.getType() != Specification.LiveSpeakType.ANCHOR.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index && speakDto.getType() != Specification.LiveSpeakType.VIDEO.index && speakDto.getType() != Specification.LiveSpeakType.SOUND.index) {
+                liveMybatisDao.createLiveDisplayReview(speakDto);
+            }
+            //弹幕数据：圈外人，游客 ：发言，感受，订阅，点赞，分享，要求
+        }else if(speakDto.getMode() == Specification.LiveMode.SENIOR.index){
+            //高级模式：主播@显示评论区
+            if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index ) {
+                liveMybatisDao.createLiveDisplayReview(speakDto);
+                //如果是非主播@则判断是否是圈内人，圈内人显示在评论区，非圈内人显示在弹幕
+            }else if(speakDto.getType() == Specification.LiveSpeakType.AT.index || speakDto.getType() == Specification.LiveSpeakType.FANS.index || speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index){
+                //判断时候是圈内人,如果是圈内人是评论，则是弹幕
+                Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
+                int isFollow = userService.isFollow(speakDto.getUid(),topic.getUid());
+                int isFollow2 = userService.isFollow(topic.getUid(),speakDto.getUid());
+                LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(speakDto.getUid(), speakDto.getTopicId());
+                    if(isFollow == 1 && isFollow2 == 1 && liveFavorite != null){
+                        liveMybatisDao.createLiveDisplayReview(speakDto);
+                    }else{
+                        liveMybatisDao.createLiveDisplayBarrage(speakDto);
+                    }
+            }else{
+                liveMybatisDao.createLiveDisplayBarrage(speakDto);
+            }
+        }
+    }
+
+
 
     private void liveRemind(long targetUid, long sourceUid ,int type ,long cid,String fragment ){
         if(targetUid == sourceUid){
@@ -355,7 +392,7 @@ public class LiveServiceImpl implements LiveService {
         userNotice.setToNickName(customerProfile.getNickName());
         userNotice.setReadStatus(userNotice.getReadStatus());
         userNotice.setCid(cid);
-        Topic topic =liveMybatisDao.getTopicById(cid);
+        Topic topic = liveMybatisDao.getTopicById(cid);
         userNotice.setCoverImage(topic.getLiveImage());
         if(fragment.length() > 50) {
             userNotice.setSummary(fragment.substring(0,50));
@@ -890,6 +927,27 @@ public class LiveServiceImpl implements LiveService {
         log.info("get getLiveTimeline2 data");
         buildTimeLine2(getLiveTimeLineDto, liveTimeLineDto, topic, fragmentList);
         log.info("buildLiveTimeLine2 success");
+        List<TopicFragment> reviewList = liveMybatisDao.getTopicReviewByMode(getLiveTimeLineDto.getTopicId(),getLiveTimeLineDto.getSinceId(),topic.getUid());
+        for(TopicFragment topicFragment : reviewList){
+            LiveTimeLineDto2.LastElement lastElement = LiveTimeLineDto2.createLastElement();
+            UserProfile userProfile = userService.getUserProfileByUid(topicFragment.getUid());
+            lastElement.setUid(userProfile.getUid());
+            lastElement.setNickName(userProfile.getNickName());
+            lastElement.setFragment(topicFragment.getFragment());
+            String fragmentImage = topicFragment.getFragmentImage();
+            if(!StringUtils.isEmpty(fragmentImage)) {
+                lastElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+            }
+            lastElement.setCreateTime(topicFragment.getCreateTime());
+            lastElement.setType(topicFragment.getType());
+            int isFollow = userService.isFollow(topicFragment.getUid(),getLiveTimeLineDto.getUid());
+            lastElement.setIsFollowed(isFollow);
+            lastElement.setContentType(topicFragment.getContentType());
+            lastElement.setFragmentId(topicFragment.getId());
+            lastElement.setInternalStatus(userService.getUserInternalStatus(userProfile.getUid(),topic.getUid()));
+            liveTimeLineDto.getLastElements().add(lastElement);
+        }
+
         return Response.success(ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.status,ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.message,liveTimeLineDto);
     }
 
@@ -912,8 +970,6 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setContentType(topicFragment.getContentType());
             liveElement.setFragmentId(topicFragment.getId());
             liveElement.setInternalStatus(userService.getUserInternalStatus(uid,topic.getUid()));
-
-
             liveElement.setReviewCount(0);
             liveTimeLineDto.getLiveElements().add(liveElement);
         }

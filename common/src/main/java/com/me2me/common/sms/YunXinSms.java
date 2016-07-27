@@ -135,7 +135,7 @@ public class YunXinSms {
     }
 
     public static void main(String[] args)  {
-        String[] mobileList = new String[]{"18698589577","18202149850","18221006454"};
+        String[] mobileList = new String[]{"18616336525","15618552389","18221006454"};
 //"18621848116","15821376667","18629601696","13818695402","13601932249","18616336525"};
 //        for (String s : mobileList) {
 //            System.out.println(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));

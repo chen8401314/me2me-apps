@@ -48,4 +48,9 @@ public class UserInitJdbcDao extends BaseJdbcDao {
         return super.count(sql);
     }
 
+    public List<Map<String, Object>> getPhoto(long sinceId) {
+        String sql = "select id , avatar as imageUrl from user_profile where id > "+ sinceId +" order by id desc limit 10 ";
+        return super.query(sql);
+    }
+
 }

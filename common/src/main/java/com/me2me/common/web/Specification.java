@@ -313,7 +313,11 @@ public interface Specification {
 
         ANCHOR_AT("主播@",11),
 
-        VIDEO("视频",12);
+        VIDEO("视频",12),
+
+        SOUND("语音",13),
+
+        ANCHOR_RED_BAGS("国王收红包",14);
 
         public final String name;
         public final int index;
@@ -690,6 +694,22 @@ public interface Specification {
         public final int index;
 
         UserActivate(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    public enum LiveMode{
+
+        COMMON("普通模式",0),
+
+        SENIOR("高级模式",1);
+
+        public final String name;
+
+        public final int index;
+
+        LiveMode(String name,int index){
             this.name = name;
             this.index = index;
         }

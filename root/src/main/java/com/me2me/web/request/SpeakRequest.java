@@ -47,4 +47,9 @@ public class SpeakRequest extends Request{
     @Getter
     @Setter
     private long atUid;
+
+
+    @Getter
+    @Setter
+    private int mode;
 }

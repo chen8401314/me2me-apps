@@ -2,6 +2,7 @@ package com.me2me.live.dao;
 
 import com.google.common.collect.Lists;
 import com.me2me.common.web.Specification;
+import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.mapper.*;
 import com.me2me.live.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,14 @@ public class LiveMybatisDao {
     @Autowired
     private LiveFavoriteDeleteMapper liveFavoriteDeleteMapper;
 
+    @Autowired
+    private LiveDisplayBarrageMapper liveDisplayBarrageMapper;
+
+    @Autowired
+    private LiveDisplayFragmentMapper liveDisplayFragmentMapper;
+
+    @Autowired
+    private  LiveDisplayReviewMapper liveDisplayReviewMapper;
 
 
     public void createTopic(Topic topic){
@@ -62,7 +71,20 @@ public class LiveMybatisDao {
         criteria.andIdGreaterThan(sinceId);
         criteria.andUidEqualTo(uid);
         criteria.andTypeNotEqualTo(Specification.LiveSpeakType.ANCHOR_AT.index);
-        example.setOrderByClause("id asc limit 50 "  );
+        example.setOrderByClause("id asc limit 10 "  );
+        return topicFragmentMapper.selectByExampleWithBLOBs(example);
+    }
+
+    public List<TopicFragment> getTopicReviewByMode(long topicId,long sinceId,long uid){
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andIdGreaterThan(sinceId);
+        criteria.andUidNotEqualTo(uid);
+        TopicFragmentExample.Criteria criteria2 = example.createCriteria();
+        criteria2.andTypeEqualTo(Specification.LiveSpeakType.ANCHOR_AT.index);
+        example.or(criteria2);
+        example.setOrderByClause("id asc limit 30 "  );
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
 
@@ -370,6 +392,33 @@ public class LiveMybatisDao {
         criteria.andTopicIdEqualTo(topicId);
         example.setOrderByClause("id asc "  );
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
+    }
+
+    public void createLiveDisplayFragment(SpeakDto speakDto){
+        LiveDisplayFragment displayFragment = new LiveDisplayFragment();
+        displayFragment.setUid(speakDto.getUid());
+        displayFragment.setFragment(speakDto.getFragment());
+        displayFragment.setFragmentImage(speakDto.getFragmentImage());
+        displayFragment.setTopicId(speakDto.getTopicId());
+        displayFragment.setType(speakDto.getType());
+        liveDisplayFragmentMapper.insertSelective(displayFragment);
+    }
+
+    public void createLiveDisplayReview(SpeakDto speakDto){
+        LiveDisplayReview displayReview = new LiveDisplayReview();
+        displayReview.setUid(speakDto.getUid());
+        displayReview.setReview(speakDto.getFragment());
+        displayReview.setTopicId(speakDto.getTopicId());
+        displayReview.setType(speakDto.getType());
+        liveDisplayReviewMapper.insertSelective(displayReview);
+    }
+
+    public void createLiveDisplayBarrage(SpeakDto speakDto){
+        LiveDisplayBarrage displayBarrage = new LiveDisplayBarrage();
+        displayBarrage.setUid(speakDto.getUid());
+        displayBarrage.setBarrage(speakDto.getFragment());
+        displayBarrage.setTopicId(speakDto.getTopicId());
+        liveDisplayBarrageMapper.insertSelective(displayBarrage);
     }
 
 }

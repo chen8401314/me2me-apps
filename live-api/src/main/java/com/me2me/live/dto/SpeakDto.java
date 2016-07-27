@@ -32,4 +32,6 @@ public class SpeakDto implements BaseEntity{
 
     private long atUid;
 
+    private int mode;
+
 }

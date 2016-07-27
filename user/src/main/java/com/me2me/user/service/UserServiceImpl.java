@@ -1220,4 +1220,16 @@ public class UserServiceImpl implements UserService {
         }
         return Response.success(dto);
     }
+
+    @Override
+    public Response getPhoto(long sinceId) {
+        PhotoDto dto = new PhotoDto();
+        List<Map<String, Object>> list = userInitJdbcDao.getPhoto(sinceId);
+        for(Map<String,Object> map : list){
+            PhotoDto.Photo photo = PhotoDto.create();
+            photo.setId(Long.valueOf(map.get("id").toString()));
+            photo.setImageUrl(map.get("imageUrl").toString());
+        }
+        return Response.success(dto);
+    }
 }

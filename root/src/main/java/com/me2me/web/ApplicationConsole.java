@@ -421,4 +421,10 @@ public class ApplicationConsole extends BaseController {
         return userService.getPromoter(request.getNickName(),request.getStartDate(),request.getEndDate());
     }
 
+    @RequestMapping(value = "/getPhoto",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response getPhoto(MyPublishContentRequest request){
+        return userService.getPhoto(request.getSinceId());
+    }
+
 }

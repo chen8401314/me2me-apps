@@ -208,4 +208,6 @@ public interface UserService {
 
     Response getPromoter(String nickNam,String startDate,String endDate);
 
+    Response getPhoto(long sinceId);
+
 }
