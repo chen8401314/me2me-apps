@@ -746,8 +746,10 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setUserName(userProfile.getMobile());
         showUserProfileDto.setIsPromoter(userProfile.getIsPromoter());
         Set<String> powerKeys = cacheService.smembers(POWER_KEY);
-        if(powerKeys.contains(uid + "")) {
-            showUserProfileDto.setPower(1);
+        if(powerKeys!=null && !powerKeys.isEmpty()) {
+            if (powerKeys.contains(uid + "")) {
+                showUserProfileDto.setPower(1);
+            }
         }
         UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
         log.info("get userToken success ");
@@ -1031,9 +1033,9 @@ public class UserServiceImpl implements UserService {
             // 获取用户push_token
             int counter = Integer.valueOf(map.get("counter").toString());
             long uid = Long.valueOf(map.get("uid").toString());
-            System.out.println(uid);
             UserDevice userDevice = userMybatisDao.getUserDevice(uid);
-            if(userDevice==null) {
+            if(userDevice==null || StringUtils.isEmpty(userDevice.getDeviceNo())) {
+                log.warn("current uid {} user device not find .",uid);
                 continue;
             }
             int platform = userDevice.getPlatform();
@@ -1042,12 +1044,14 @@ public class UserServiceImpl implements UserService {
                 PushMessageAndroidDto message = new PushMessageAndroidDto();
                 message.setToken(userDevice.getDeviceNo());
                 message.setContent("你有"+counter+"条新消息！");
+                log.info("push message for android uid is {} and message count {}",uid,counter);
                 xgPushService.pushSingleDevice(message);
             }else if(platform == Specification.DevicePlatform.IOS.index){
                 // ios
                 PushMessageIosDto message = new PushMessageIosDto();
                 message.setContent("你有"+counter+"条新消息！");
                 message.setToken(userDevice.getDeviceNo());
+                log.info("push message for ios uid is {} and message count {}",uid,counter);
                 xgPushService.pushSingleDeviceIOS(message);
             }
         }

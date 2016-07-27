@@ -17,7 +17,6 @@ import org.springframework.stereotype.Component;
 @Component
 @EnableScheduling
 @Slf4j
-@Profile("product")
 public class UserNoticeJobs {
 
     @Autowired
