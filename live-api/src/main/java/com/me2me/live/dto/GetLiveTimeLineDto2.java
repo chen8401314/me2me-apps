@@ -23,4 +23,6 @@ public class GetLiveTimeLineDto2  implements BaseEntity{
     private int first;
 
     private int mode;
+
+    private int forms;
 }

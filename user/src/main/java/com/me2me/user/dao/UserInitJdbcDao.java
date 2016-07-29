@@ -49,7 +49,7 @@ public class UserInitJdbcDao extends BaseJdbcDao {
     }
 
     public List<Map<String, Object>> getPhoto(long sinceId) {
-        String sql = "select id , avatar as imageUrl from user_profile where id < "+ sinceId +" order by id desc limit 10 ";
+        String sql = "select id , image as imageUrl,cid as title from content_image where id < "+ sinceId +" order by id desc limit 100 ";
         return super.query(sql);
     }
 

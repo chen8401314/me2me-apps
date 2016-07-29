@@ -37,6 +37,8 @@ public class SearchDto implements BaseEntity {
 
         private int isFollowMe;
 
+        private String introduced;
+
     }
 
 }

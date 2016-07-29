@@ -421,4 +421,14 @@ public class LiveMybatisDao {
         liveDisplayBarrageMapper.insertSelective(displayBarrage);
     }
 
+    public List<LiveDisplayFragment> getDisPlayFragmentByMode(long topicId,long sinceId,long uid){
+        LiveDisplayFragmentExample example = new LiveDisplayFragmentExample();
+        LiveDisplayFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andIdGreaterThan(sinceId);
+        criteria.andUidEqualTo(uid);
+        example.setOrderByClause("id asc limit 10 "  );
+        return liveDisplayFragmentMapper.selectByExample(example);
+    }
+
 }

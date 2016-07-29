@@ -581,6 +581,7 @@ public interface Specification {
 
     public enum MonitorType{
         BOOT(0,"启动访问"),
+
         ACTION(1,"行为监控");
 
         public int index;
@@ -710,6 +711,22 @@ public interface Specification {
         public final int index;
 
         LiveMode(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    public enum LiveFist{
+
+        YES("第一次",0),
+
+        NOT("非第一次",1);
+
+        public final String name;
+
+        public final int index;
+
+        LiveFist(String name,int index){
             this.name = name;
             this.index = index;
         }

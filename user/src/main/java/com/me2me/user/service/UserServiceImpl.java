@@ -681,6 +681,7 @@ public class UserServiceImpl implements UserService {
             element.setIsFollowed(follow);
             int followMe = this.isFollow(uid,userProfile.getUid());
             element.setIsFollowMe(followMe);
+            element.setIntroduced(userProfile.getIntroduced());
             searchDto.getResult().add(element);
         }
         return Response.success(searchDto);
@@ -1232,7 +1233,9 @@ public class UserServiceImpl implements UserService {
         for(Map<String,Object> map : list){
             PhotoDto.Photo photo = PhotoDto.create();
             photo.setId(Long.valueOf(map.get("id").toString()));
-            photo.setImageUrl(map.get("imageUrl").toString());
+            photo.setImageUrl(Constant.QINIU_DOMAIN + "/"+map.get("imageUrl").toString());
+            photo.setTitle(map.get("title").toString());
+            dto.getResult().add(photo);
         }
         return Response.success(dto);
     }

@@ -304,7 +304,7 @@ public class LiveServiceImpl implements LiveService {
         }
         Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
         //直播发言时候更新直播更新时间
-        if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index) {
+        if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.VIDEO.index || speakDto.getType() == Specification.LiveSpeakType.SOUND.index) {
             Calendar calendar = Calendar.getInstance();
             topic.setUpdateTime(calendar.getTime());
             topic.setLongTime(calendar.getTimeInMillis());
@@ -348,17 +348,20 @@ public class LiveServiceImpl implements LiveService {
     private void saveLiveDisplayData(SpeakDto speakDto){
             //直播文字，图片，视频，音频，感受--主要信息表
         if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.VIDEO.index || speakDto.getType() == Specification.LiveSpeakType.SOUND.index){
-                liveMybatisDao.createLiveDisplayFragment(speakDto);
+            liveMybatisDao.createLiveDisplayFragment(speakDto);
+            return;
             //评论数据表：主播@,圈内人@，圈内人发言，圈内人感受
         }else if(speakDto.getMode() == Specification.LiveMode.COMMON.index){
             if(speakDto.getType() != Specification.LiveSpeakType.ANCHOR.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index && speakDto.getType() != Specification.LiveSpeakType.VIDEO.index && speakDto.getType() != Specification.LiveSpeakType.SOUND.index) {
                 liveMybatisDao.createLiveDisplayReview(speakDto);
+                return;
             }
             //弹幕数据：圈外人，游客 ：发言，感受，订阅，点赞，分享，要求
         }else if(speakDto.getMode() == Specification.LiveMode.SENIOR.index){
             //高级模式：主播@显示评论区
             if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index ) {
                 liveMybatisDao.createLiveDisplayReview(speakDto);
+                return;
                 //如果是非主播@则判断是否是圈内人，圈内人显示在评论区，非圈内人显示在弹幕
             }else if(speakDto.getType() == Specification.LiveSpeakType.AT.index || speakDto.getType() == Specification.LiveSpeakType.FANS.index || speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index){
                 //判断时候是圈内人,如果是圈内人是评论，则是弹幕
@@ -368,11 +371,14 @@ public class LiveServiceImpl implements LiveService {
                 LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(speakDto.getUid(), speakDto.getTopicId());
                     if(isFollow == 1 && isFollow2 == 1 && liveFavorite != null){
                         liveMybatisDao.createLiveDisplayReview(speakDto);
+                        return;
                     }else{
                         liveMybatisDao.createLiveDisplayBarrage(speakDto);
+                        return;
                     }
             }else{
                 liveMybatisDao.createLiveDisplayBarrage(speakDto);
+                return;
             }
         }
     }
@@ -919,14 +925,20 @@ public class LiveServiceImpl implements LiveService {
 
     @Override
     public Response getLiveTimeline2(GetLiveTimeLineDto2 getLiveTimeLineDto) {
+        if(getLiveTimeLineDto.getFirst() == Specification.LiveFist.YES.index){
+            if(getLiveTimeLineDto.getMode() == Specification.LiveMode.COMMON.index){
+
+            }
+
+        }
         LiveTimeLineDto2 liveTimeLineDto = new LiveTimeLineDto2();
         log.info("getLiveTimeline2 start ...");
         MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(getLiveTimeLineDto.getUid(), getLiveTimeLineDto.getTopicId() + "", "0");
         cacheService.hSet(cacheModel.getKey(), cacheModel.getField(),cacheModel.getValue());
         Topic topic = liveMybatisDao.getTopicById(getLiveTimeLineDto.getTopicId());
-        List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragmentByMode(getLiveTimeLineDto.getTopicId(),getLiveTimeLineDto.getSinceId(),topic.getUid());
+        List<LiveDisplayFragment> fragmentList = liveMybatisDao.getDisPlayFragmentByMode(getLiveTimeLineDto.getTopicId(),getLiveTimeLineDto.getSinceId(),topic.getUid());
         log.info("get getLiveTimeline2 data");
-        buildTimeLine2(getLiveTimeLineDto, liveTimeLineDto, topic, fragmentList);
+       // buildTimeLine2(getLiveTimeLineDto, liveTimeLineDto, topic, fragmentList);
         log.info("buildLiveTimeLine2 success");
         List<TopicFragment> reviewList = liveMybatisDao.getTopicReviewByMode(getLiveTimeLineDto.getTopicId(),getLiveTimeLineDto.getSinceId(),topic.getUid());
         for(TopicFragment topicFragment : reviewList){

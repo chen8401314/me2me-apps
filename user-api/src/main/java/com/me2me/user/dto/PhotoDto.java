@@ -26,6 +26,8 @@ public class PhotoDto implements BaseEntity {
 
         private long id;
 
+        private String title;
+
         private String imageUrl;
     }
 }

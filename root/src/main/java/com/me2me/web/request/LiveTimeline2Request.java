@@ -31,4 +31,8 @@ public class LiveTimeline2Request extends Request{
     @Getter
     @Setter
     private int mode;
+
+    @Getter
+    @Setter
+    private int forms;
 }
