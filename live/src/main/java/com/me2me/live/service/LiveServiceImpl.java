@@ -139,6 +139,10 @@ public class LiveServiceImpl implements LiveService {
         liveCoverDto.setReviewCount(liveMybatisDao.countFragment(topic.getId(),topic.getUid()));
         liveCoverDto.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(),topic.getUid()));
         log.info("liveCover end ...");
+        //添加直播阅读数
+        Content content = contentService.getContentByTopicId(topicId);
+        content.setReadCount(content.getReadCount() + 1);
+        contentService.updateContentById(content);
         return Response.success(ResponseStatus.GET_LIVE_COVER_SUCCESS.status,ResponseStatus.GET_LIVE_COVER_SUCCESS.message,liveCoverDto);
     }
 
@@ -517,6 +521,8 @@ public class LiveServiceImpl implements LiveService {
             }else{
                 showTopicElement.setFavorite(Specification.LiveFavorite.NORMAL.index);
             }
+            Content content = contentService.getContentByTopicId(topic.getId());
+            showTopicElement.setReadCount(content.getReadCount());
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
     }
@@ -547,6 +553,9 @@ public class LiveServiceImpl implements LiveService {
             }else{
                 showTopicElement.setFavorite(Specification.LiveFavorite.NORMAL.index);
             }
+            //直播阅读数
+            Content content = contentService.getContentByTopicId(topic.getId());
+            showTopicElement.setReadCount(content.getReadCount());
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
     }

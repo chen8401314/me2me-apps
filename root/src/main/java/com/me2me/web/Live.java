@@ -236,7 +236,7 @@ public class Live extends BaseController {
     }
 
     /**
-     * 直播封面接口（废弃）
+     * 直播封面接口（调用时候直播阅读数+1）
      * @param request
      * @return
      */
