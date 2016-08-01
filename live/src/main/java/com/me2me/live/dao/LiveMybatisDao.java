@@ -404,6 +404,18 @@ public class LiveMybatisDao {
         liveDisplayFragmentMapper.insertSelective(displayFragment);
     }
 
+    public void updateLiveDisplayFragment(SpeakDto speakDto){
+        LiveDisplayFragmentExample example = new LiveDisplayFragmentExample();
+        liveDisplayFragmentMapper.selectByExample(example);
+        LiveDisplayFragment displayFragment = new LiveDisplayFragment();
+        displayFragment.setUid(speakDto.getUid());
+        displayFragment.setFragment(speakDto.getFragment());
+        displayFragment.setFragmentImage(speakDto.getFragmentImage());
+        displayFragment.setTopicId(speakDto.getTopicId());
+        displayFragment.setType(speakDto.getType());
+        liveDisplayFragmentMapper.insertSelective(displayFragment);
+    }
+
     public void createLiveDisplayReview(SpeakDto speakDto){
         LiveDisplayReview displayReview = new LiveDisplayReview();
         displayReview.setUid(speakDto.getUid());
@@ -429,6 +441,16 @@ public class LiveMybatisDao {
         criteria.andUidEqualTo(uid);
         example.setOrderByClause("id asc limit 10 "  );
         return liveDisplayFragmentMapper.selectByExample(example);
+    }
+
+    public TopicBarrage getTopicBarrageByTopicId(long topicId,long uid){
+        TopicBarrageExample example = new TopicBarrageExample();
+        TopicBarrageExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andUidEqualTo(uid);
+        criteria.andTypeEqualTo(Specification.LiveSpeakType.LIKES.index);
+        List<TopicBarrage> list = topicBarrageMapper.selectByExample(example);
+        return com.me2me.common.utils.Lists.getSingle(list);
     }
 
 }

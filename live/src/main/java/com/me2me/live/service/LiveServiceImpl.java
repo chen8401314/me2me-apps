@@ -80,6 +80,9 @@ public class LiveServiceImpl implements LiveService {
             //userService.push(userFollow.getSourceUid(),createLiveDto.getUid(),Specification.PushMessageType.LIVE.index,createLiveDto.getTitle());
             //主播的粉丝强制订阅
             setLive3(userFollow.getSourceUid(),topic.getId());
+            //所有订阅的人显示有红点
+            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(userFollow.getSourceUid(), topic.getId() + "", "1");
+            cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
         }
         log.info("createLive end ...");
         return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status,ResponseStatus.USER_CREATE_LIVE_SUCCESS.message);
@@ -241,6 +244,13 @@ public class LiveServiceImpl implements LiveService {
                 MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(liveFavorite.getUid(), liveFavorite.getTopicId() + "", "1");
                 cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
             }
+        }else{
+            Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
+            List<UserFollow> list = userService.getFans(topic.getUid());
+            for(UserFollow userFollow : list) {
+                MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(userFollow.getSourceUid(), topic.getId() + "", "1");
+                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+            }
         }
         if(speakDto.getType() != Specification.LiveSpeakType.LIKES.index &&speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index  && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {
             TopicFragment topicFragment = new TopicFragment();
@@ -272,7 +282,7 @@ public class LiveServiceImpl implements LiveService {
                liveMybatisDao.createTopicBarrage(topicBarrage);
            }
         }else{
-            if(speakDto.getType() == Specification.LiveSpeakType.SUBSCRIBED.index || speakDto.getType() == Specification.LiveSpeakType.FANS.index || speakDto.getType() == Specification.LiveSpeakType.FORWARD.index || speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.LIKES.index || speakDto.getType() == Specification.LiveSpeakType.SHARE.index ||speakDto.getType() == Specification.LiveSpeakType.AT.index ){
+            if(speakDto.getType() == Specification.LiveSpeakType.SUBSCRIBED.index || speakDto.getType() == Specification.LiveSpeakType.FANS.index || speakDto.getType() == Specification.LiveSpeakType.FORWARD.index || speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.SHARE.index ||speakDto.getType() == Specification.LiveSpeakType.AT.index ){
                 liveMybatisDao.createTopicBarrage(topicBarrage);
             }
         }
@@ -286,7 +296,7 @@ public class LiveServiceImpl implements LiveService {
         if(speakDto.getType() == Specification.LiveSpeakType.LIKES.index) {
             LikeDto likeDto = new LikeDto();
             //点赞
-            Content content =contentService.getContentByTopicId(speakDto.getTopicId());
+            Content content = contentService.getContentByTopicId(speakDto.getTopicId());
             likeDto.setCid(content.getId());
             likeDto.setAction(0);
             likeDto.setUid(speakDto.getUid());
@@ -332,7 +342,7 @@ public class LiveServiceImpl implements LiveService {
             log.info("live review push");
         }else if(speakDto.getType() == Specification.LiveSpeakType.AT.index){
             //Topic live = liveMybatisDao.getTopicById(speakDto.getTopicId());
-            liveRemind(topic.getUid(), speakDto.getUid() ,Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
+            liveRemind(speakDto.getAtUid() , speakDto.getUid() ,Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
             userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
         }else if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index){
             liveRemind(speakDto.getUid() ,topic.getUid(),Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
