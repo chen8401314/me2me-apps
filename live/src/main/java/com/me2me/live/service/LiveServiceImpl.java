@@ -490,6 +490,14 @@ public class LiveServiceImpl implements LiveService {
         log.info("getLivesByUpdateTime start ...");
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
         List<Topic> topicList = liveMybatisDao.getLivesByUpdateTime(updateTime);
+        for(Topic topic : topicList) {
+            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topic.getId()+"","0");
+            String isUpdate = cacheService.hGet(cacheModel.getKey(),topic.getId()+"");
+            if(StringUtils.isEmpty(isUpdate)) {
+                log.info("cache key {} , cache topic id {},cache value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
+                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+            }
+        }
         log.info("getLivesByUpdateTime data success");
         builder(uid, showTopicListDto, topicList);
         log.info("getLivesByUpdateTime end ...");
