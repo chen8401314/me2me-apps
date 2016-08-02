@@ -250,6 +250,7 @@ public class LiveServiceImpl implements LiveService {
                 log.info("speak by master start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
                 cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
             }
+            //粉丝有留言提醒主播
         }else{
             Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
             MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(topic.getUid(), topic.getId() + "", "1");
