@@ -1,6 +1,7 @@
 package com.me2me.user.service;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.security.SecurityUtils;
@@ -1030,6 +1031,7 @@ public class UserServiceImpl implements UserService {
         // 订阅的直播主播有更新
         List<Map<String,Object>> list =  userInitJdbcDao.getUserNoticeCounter("3,4,0,2,6,5,9");
         List<Map<String,Object>> updateList = userInitJdbcDao.getUserNoticeList("3,4,0,2,6,5,9");
+        Set<Long> skippedUids = Sets.newConcurrentHashSet();
         for(Map map : list){
             // 获取用户push_token
             int counter = Integer.valueOf(map.get("counter").toString());
@@ -1037,6 +1039,7 @@ public class UserServiceImpl implements UserService {
             UserDevice userDevice = userMybatisDao.getUserDevice(uid);
             if(userDevice==null || StringUtils.isEmpty(userDevice.getDeviceNo())) {
                 log.warn("current uid {} user device not find .",uid);
+                skippedUids.add(uid);
                 continue;
             }
             int platform = userDevice.getPlatform();
@@ -1060,6 +1063,10 @@ public class UserServiceImpl implements UserService {
         for(Map map : updateList){
             Long id = Long.valueOf(map.get("id").toString());
             UserNotice userNotice = userMybatisDao.getUserNoticeById(id);
+            Long uid = userNotice.getToUid();
+            if(skippedUids.contains(uid)){
+                continue;
+            }
             userNotice.setPushStatus(Specification.PushStatus.PUSHED.index);
             userMybatisDao.updateUserNoticePushStatus(userNotice);
         }
