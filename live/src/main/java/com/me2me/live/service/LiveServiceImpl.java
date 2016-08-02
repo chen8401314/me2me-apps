@@ -247,6 +247,7 @@ public class LiveServiceImpl implements LiveService {
             List<LiveFavorite> liveFavorites = liveMybatisDao.getFavoriteList(speakDto.getTopicId());
             for(LiveFavorite liveFavorite : liveFavorites) {
                 MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(liveFavorite.getUid(), liveFavorite.getTopicId() + "", "1");
+                log.info("speak:0 start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
                 cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
             }
         }else{
@@ -254,6 +255,7 @@ public class LiveServiceImpl implements LiveService {
             List<UserFollow> list = userService.getFans(topic.getUid());
             for(UserFollow userFollow : list) {
                 MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(userFollow.getSourceUid(), topic.getId() + "", "1");
+                log.info("speak:1 start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
                 cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
             }
         }
