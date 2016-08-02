@@ -5,6 +5,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.Assert;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.exceptions.JedisConnectionException;
+import redis.clients.jedis.exceptions.JedisDataException;
 import redis.clients.jedis.exceptions.JedisException;
 
 /**
@@ -44,22 +46,9 @@ public class JedisTemplate {
     public void execute(JedisAction action){
         Jedis jedis = null;
         boolean broken = false;
-        jedis = getJedis(jedis, broken);
-        log.debug("execute redis no action solution.");
-        action.action(jedis);
-    }
-
-    public <T> T execute(JedisActionResult action){
-        Jedis jedis = null;
-        boolean broken = false;
-        jedis = getJedis(jedis, broken);
-        log.debug("execute redis action result solution.");
-        return action.actionResult(jedis);
-    }
-
-    private Jedis getJedis(Jedis jedis, boolean broken) {
         try {
             jedis = jedisPool.getResource();
+            action.action(jedis);
         }catch (JedisException exception){
             log.error("jedis can't connection form server");
             broken = true;
@@ -72,8 +61,47 @@ public class JedisTemplate {
                 jedisPool.returnResource(jedis);
             }
         }
-        return jedis;
+        log.debug("execute redis no action solution.");
+        action.action(jedis);
     }
+
+    public <T> T execute(JedisActionResult action){
+        Jedis jedis = null;
+        boolean broken = false;
+        try {
+            jedis = jedisPool.getResource();
+            return action.actionResult(jedis);
+        }catch (JedisException exception){
+            log.error("jedis can't connection form server");
+            broken = handleJedisException(exception);
+            throw exception;
+        }finally {
+            Assert.notNull(jedis,"this resource is not null");
+            if(broken) {
+                jedisPool.returnBrokenResource(jedis);
+            }else{
+                log.debug("return resource for redis");
+                jedisPool.returnResource(jedis);
+            }
+        }
+    }
+
+    protected boolean handleJedisException(JedisException jedisException) {
+        if(jedisException instanceof JedisConnectionException){
+            log.error("Jedis can not connect the server");
+        }else if(jedisException instanceof JedisDataException){
+            if((jedisException.getMessage() != null) && (jedisException.getMessage().indexOf("READONLY") != -1)){
+                log.error("Redis connect are read-only slaver!");
+            }else{
+                return false;
+            }
+        }else{
+            log.error("Jedis exception happen.", jedisException);
+        }
+        return true;
+    }
+
+
 
     public void set(final String key, final String value){
         execute(new JedisAction() {
