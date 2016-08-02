@@ -31,4 +31,6 @@ public class LiveCoverDto implements BaseEntity{
     private int topicCount;
 
     private int reviewCount;
+
+    private int internalStatus;
 }

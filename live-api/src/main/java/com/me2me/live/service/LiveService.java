@@ -94,7 +94,7 @@ public interface LiveService {
 
     Response liveTimeline(GetLiveTimeLineDto getLiveTimeLineDto);
 
-    Response liveCover(long topicId);
+    Response liveCover(long topicId,long uid);
 
     Response barrage(LiveBarrageDto barrageDto);
 

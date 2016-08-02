@@ -124,7 +124,7 @@ public class LiveServiceImpl implements LiveService {
     }
 
     @Override
-    public Response liveCover(long topicId) {
+    public Response liveCover(long topicId,long uid) {
         log.info("liveCover start ...");
         LiveCoverDto liveCoverDto = new LiveCoverDto();
         Topic topic = liveMybatisDao.getTopicById(topicId);
@@ -138,6 +138,7 @@ public class LiveServiceImpl implements LiveService {
         liveCoverDto.setLastUpdateTime(topic.getLongTime());
         liveCoverDto.setReviewCount(liveMybatisDao.countFragment(topic.getId(),topic.getUid()));
         liveCoverDto.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(),topic.getUid()));
+        liveCoverDto.setInternalStatus(userService.getUserInternalStatus(uid,topic.getUid()));
         log.info("liveCover end ...");
         //添加直播阅读数
         Content content = contentService.getContentByTopicId(topicId);
@@ -318,7 +319,7 @@ public class LiveServiceImpl implements LiveService {
         }
         Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
         //直播发言时候更新直播更新时间
-        if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.VIDEO.index || speakDto.getType() == Specification.LiveSpeakType.SOUND.index) {
+        if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.VIDEO.index || speakDto.getType() == Specification.LiveSpeakType.SOUND.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index) {
             Calendar calendar = Calendar.getInstance();
             topic.setUpdateTime(calendar.getTime());
             topic.setLongTime(calendar.getTimeInMillis());
@@ -349,13 +350,13 @@ public class LiveServiceImpl implements LiveService {
             liveRemind(speakDto.getAtUid() , speakDto.getUid() ,Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
             userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
         }else if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index){
-            liveRemind(speakDto.getUid() ,topic.getUid(),Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
+            liveRemind(speakDto.getAtUid() ,topic.getUid(),Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
             userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
         }
         log.info("speak end ...");
         //2.0.7
         //直播信息保存
-        saveLiveDisplayData(speakDto);
+        //saveLiveDisplayData(speakDto);
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status,ResponseStatus.USER_SPEAK_SUCCESS.message);
     }
 

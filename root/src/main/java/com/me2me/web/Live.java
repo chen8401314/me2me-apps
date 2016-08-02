@@ -243,7 +243,7 @@ public class Live extends BaseController {
     @RequestMapping(value = "/liveCover",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response favoriteList(LiveCoverRequest request){
-        return liveService.liveCover(request.getTopicId());
+        return liveService.liveCover(request.getTopicId(),request.getUid());
     }
 
 
