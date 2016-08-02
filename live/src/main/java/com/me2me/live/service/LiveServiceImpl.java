@@ -244,7 +244,7 @@ public class LiveServiceImpl implements LiveService {
         log.info("speak start ...");
         //如果是主播发言更新cache
         if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index ||speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index ){
-            List<LiveFavorite> liveFavorites = liveMybatisDao.getFavoriteList(speakDto.getTopicId());
+            List<LiveFavorite> liveFavorites = liveMybatisDao.getFavoriteAll(speakDto.getTopicId());
             for(LiveFavorite liveFavorite : liveFavorites) {
                 MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(liveFavorite.getUid(), liveFavorite.getTopicId() + "", "1");
                 log.info("speak by master start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());

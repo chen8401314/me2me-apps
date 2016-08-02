@@ -268,6 +268,14 @@ public class LiveMybatisDao {
          return liveFavoriteMapper.selectByExample(example);
      }
 
+    public List<LiveFavorite> getFavoriteAll(long topicId){
+        LiveFavoriteExample example = new LiveFavoriteExample();
+        LiveFavoriteExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        return liveFavoriteMapper.selectByExample(example);
+    }
+
+
     public LiveReadHistory getLiveReadHistory(long topicId,long uid){
         LiveReadHistoryExample example = new LiveReadHistoryExample();
         LiveReadHistoryExample.Criteria criteria = example.createCriteria();
