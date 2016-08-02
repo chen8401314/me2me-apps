@@ -252,12 +252,9 @@ public class LiveServiceImpl implements LiveService {
             }
         }else{
             Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
-            List<UserFollow> list = userService.getFans(topic.getUid());
-            for(UserFollow userFollow : list) {
-                MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(userFollow.getSourceUid(), topic.getId() + "", "1");
-                log.info("speak by other start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
-                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-            }
+            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(topic.getUid(), topic.getId() + "", "1");
+            log.info("speak by other start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
+            cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
         }
         if(speakDto.getType() != Specification.LiveSpeakType.LIKES.index &&speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index  && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {
             TopicFragment topicFragment = new TopicFragment();
