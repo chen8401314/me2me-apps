@@ -350,13 +350,13 @@ public class LiveServiceImpl implements LiveService {
             liveRemind(speakDto.getAtUid() , speakDto.getUid() ,Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
             userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
         }else if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index){
-            liveRemind(speakDto.getUid() ,topic.getUid(),Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
+            liveRemind(speakDto.getAtUid() ,topic.getUid(),Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
             userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
         }
         log.info("speak end ...");
         //2.0.7
         //直播信息保存
-        saveLiveDisplayData(speakDto);
+        //saveLiveDisplayData(speakDto);
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status,ResponseStatus.USER_SPEAK_SUCCESS.message);
     }
 
