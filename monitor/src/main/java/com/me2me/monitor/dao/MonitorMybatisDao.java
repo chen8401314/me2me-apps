@@ -33,7 +33,7 @@ public class MonitorMybatisDao {
         List<Map<String,Object>> counter = jdbcTemplate.queryForList(
                 "select count(1) as counter from access_track " +
                         "where create_time > ? and create_time < ? " +
-                        "and type = ? and channel = ? ",
+                        "and type = ? "+(monitorReportDto.getChannel()==0 ? "" : " and channel = ? ")+"",
                 monitorReportDto.getStartDate(),
                 monitorReportDto.getEndDate(),
                 monitorReportDto.getType(),
@@ -44,7 +44,7 @@ public class MonitorMybatisDao {
     public int getActionReport(MonitorReportDto monitorReportDto){
         List<Map<String,Object>> counter = jdbcTemplate.queryForList(
                 "select count(distinct uid) as counter from access_track " +
-                        "where create_time > ? and create_time < ? and type = ? and channel = ? and action_type = ? "
+                        "where create_time > ? and create_time < ? and type = ? and "+(monitorReportDto.getChannel()==0 ? "" : " and channel = ? ")+" and action_type = ? "
                 ,monitorReportDto.getStartDate(),
                 monitorReportDto.getEndDate(),
                 monitorReportDto.getType(),
@@ -56,7 +56,7 @@ public class MonitorMybatisDao {
     public int getRegisterReport(MonitorReportDto monitorReportDto){
         List<Map<String,Object>> counter = jdbcTemplate.queryForList(
                 "select count(uid) as counter from access_track " +
-                        "where create_time > ? and create_time < ? and type = ? and channel = ? and action_type = ? "
+                        "where create_time > ? and create_time < ? and type = ? and "+(monitorReportDto.getChannel()==0 ? "" : " and channel = ? ")+" and action_type = ? "
                 ,monitorReportDto.getStartDate(),
                 monitorReportDto.getEndDate(),
                 monitorReportDto.getType(),
@@ -68,7 +68,7 @@ public class MonitorMybatisDao {
     public int getActivityReport(MonitorReportDto monitorReportDto){
         List<Map<String,Object>> counter = jdbcTemplate.queryForList(
                 "select count(distinct uid) as counter from access_track " +
-                        "where create_time > ? and create_time < ? and type <> 0 and channel = ?"
+                        "where create_time > ? and create_time < ? and type <> 0 and "+(monitorReportDto.getChannel()==0 ? "" : " and channel = ? ")+""
                 ,monitorReportDto.getStartDate(),
                 monitorReportDto.getEndDate(),
                 monitorReportDto.getChannel());
