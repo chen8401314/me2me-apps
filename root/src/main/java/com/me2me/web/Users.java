@@ -103,6 +103,7 @@ public class Users extends BaseController {
         verifyDto.setAction(request.getAction());
         verifyDto.setMobile(request.getMobile());
         verifyDto.setVerifyCode(request.getVerifyCode());
+        verifyDto.setChannel(request.getChannel());
         return userService.verify(verifyDto);
     }
 

@@ -3,6 +3,7 @@ package com.me2me.sms.listener;
 import com.google.common.eventbus.Subscribe;
 import com.me2me.common.sms.YunXinSms;
 import com.me2me.core.event.ApplicationEventBus;
+import com.me2me.sms.channel.MessageChannel;
 import com.me2me.sms.event.VerifyEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,10 +20,12 @@ public class VerifyCodeListener {
 
     private final ApplicationEventBus applicationEventBus;
 
+    private final MessageChannel messageChannel;
 
     @Autowired
-    public VerifyCodeListener(ApplicationEventBus applicationEventBus){
+    public VerifyCodeListener(ApplicationEventBus applicationEventBus,MessageChannel messageChannel){
         this.applicationEventBus = applicationEventBus;
+        this.messageChannel = messageChannel;
     }
 
     @PostConstruct
@@ -32,7 +35,7 @@ public class VerifyCodeListener {
 
     @Subscribe
     public void send(VerifyEvent verifyEvent){
-        YunXinSms.sendSms(verifyEvent.getMobile());
+        messageChannel.send(verifyEvent.getChannel(),verifyEvent.getVerifyCode(),verifyEvent.getMobile());
     }
 
 

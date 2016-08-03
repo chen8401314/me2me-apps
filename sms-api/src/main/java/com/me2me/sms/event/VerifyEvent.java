@@ -16,8 +16,14 @@ public class VerifyEvent implements BaseEntity {
         this.verifyCode = verifyCode;
     }
 
+    /**
+     * 通道： 1 短信 2 语音
+     */
+    private int channel;
+
     private String mobile;
 
     private String verifyCode;
+
 
 }
