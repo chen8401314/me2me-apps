@@ -33,22 +33,22 @@ public class MonitorMybatisDao {
         List<Map<String,Object>> counter = jdbcTemplate.queryForList(
                 "select count(1) as counter from access_track " +
                         "where create_time > ? and create_time < ? " +
-                        "and type = ? "+(monitorReportDto.getChannel()==0 ? "" : " and channel = ? ")+"",
+                        "and type = ? "+(monitorReportDto.getChannel()==0 ? "1=?" : " and channel = ? ")+"",
                 monitorReportDto.getStartDate(),
                 monitorReportDto.getEndDate(),
                 monitorReportDto.getType(),
-                monitorReportDto.getChannel());
+                monitorReportDto.getChannel()==0?1:monitorReportDto.getChannel());
         return Integer.valueOf(counter.get(0).get("counter").toString());
     }
 
     public int getActionReport(MonitorReportDto monitorReportDto){
         List<Map<String,Object>> counter = jdbcTemplate.queryForList(
                 "select count(distinct uid) as counter from access_track " +
-                        "where create_time > ? and create_time < ? and type = ? and "+(monitorReportDto.getChannel()==0 ? "" : " and channel = ? ")+" and action_type = ? "
+                        "where create_time > ? and create_time < ? and type = ? and "+(monitorReportDto.getChannel()==0 ? "1=?" : " and channel = ? ")+" and action_type = ? "
                 ,monitorReportDto.getStartDate(),
                 monitorReportDto.getEndDate(),
                 monitorReportDto.getType(),
-                monitorReportDto.getChannel(),
+                monitorReportDto.getChannel()==0?1:monitorReportDto.getChannel(),
                 monitorReportDto.getActionType());
         return Integer.valueOf(counter.get(0).get("counter").toString());
     }
@@ -56,11 +56,11 @@ public class MonitorMybatisDao {
     public int getRegisterReport(MonitorReportDto monitorReportDto){
         List<Map<String,Object>> counter = jdbcTemplate.queryForList(
                 "select count(uid) as counter from access_track " +
-                        "where create_time > ? and create_time < ? and type = ? and "+(monitorReportDto.getChannel()==0 ? "" : " and channel = ? ")+" and action_type = ? "
+                        "where create_time > ? and create_time < ? and type = ? and "+(monitorReportDto.getChannel()==0 ? "1=?" : " and channel = ? ")+" and action_type = ? "
                 ,monitorReportDto.getStartDate(),
                 monitorReportDto.getEndDate(),
                 monitorReportDto.getType(),
-                monitorReportDto.getChannel(),
+                monitorReportDto.getChannel()==0?1:monitorReportDto.getChannel(),
                 monitorReportDto.getActionType());
         return Integer.valueOf(counter.get(0).get("counter").toString());
     }
@@ -68,47 +68,10 @@ public class MonitorMybatisDao {
     public int getActivityReport(MonitorReportDto monitorReportDto){
         List<Map<String,Object>> counter = jdbcTemplate.queryForList(
                 "select count(distinct uid) as counter from access_track " +
-                        "where create_time > ? and create_time < ? and type <> 0 and "+(monitorReportDto.getChannel()==0 ? "" : " and channel = ? ")+""
+                        "where create_time > ? and create_time < ? and type <> 0 and "+(monitorReportDto.getChannel()==0 ? "1=?" : " and channel = ? ")+""
                 ,monitorReportDto.getStartDate(),
                 monitorReportDto.getEndDate(),
-                monitorReportDto.getChannel());
+                monitorReportDto.getChannel()==0?1:monitorReportDto.getChannel());
         return Integer.valueOf(counter.get(0).get("counter").toString());
     }
-
-//    public int getReport(MonitorReportDto monitorReportDto){
-//        String actionTypeQuery = "";
-//        Object[] params = new Object[]{
-//                monitorReportDto.getStartDate(),
-//                monitorReportDto.getEndDate(),
-//                monitorReportDto.getType(),
-//                monitorReportDto.getChannel()
-//        };
-//        if(monitorReportDto.getActionType()!=1){
-//            actionTypeQuery +="and action_type = ? ";
-//            params = new Object[]{
-//                    monitorReportDto.getStartDate(),
-//                    monitorReportDto.getEndDate(),
-//                    monitorReportDto.getType(),
-//                    monitorReportDto.getChannel(),
-//                    monitorReportDto.getActionType()
-//            };
-//        }
-//        if(monitorReportDto.getType()!=0) {
-//            // 日活规则
-//            List<Map<String,Object>> counter = jdbcTemplate.queryForList(
-//                    "select count(distinct uid) as counter from access_track " +
-//                            "where create_time > ? and create_time < ? " +
-//                            "and type = ? and channel = ? "+actionTypeQuery
-//                    ,params);
-//            return Integer.valueOf(counter.get(0).get("counter").toString());
-//        }else{
-//            // 启动次数
-//            List<Map<String,Object>> counter = jdbcTemplate.queryForList(
-//                    "select count(1) as counter from access_track " +
-//                            "where create_time > ? and create_time < ? and type = ? and channel = ? "+actionTypeQuery
-//                    ,params);
-//            return Integer.valueOf(counter.get(0).get("counter").toString());
-//        }
-//    }
-
 }
