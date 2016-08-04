@@ -18,6 +18,21 @@ public interface CacheService {
     void set(String key,String value);
 
     /**
+     * 设置一个key并设置他的ttl
+     * @param key
+     * @param value
+     * @param timeout
+     */
+    void setex(String key,String value,int timeout);
+
+    /**
+     * 获取普通键值对值
+     * @param key
+     * @return
+     */
+    String get(String key);
+
+    /**
      * set集合操作
      * @param key
      * @param values

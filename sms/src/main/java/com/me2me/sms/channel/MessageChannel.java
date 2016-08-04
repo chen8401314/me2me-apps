@@ -59,11 +59,12 @@ public class MessageChannel {
         HashMap<String,Object> result = null;
         if(channel==ChannelType.NORMAL_SMS.index){
             // 短信验证
-            messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobile,"1",new String[]{code,"5"});
+            result = messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobile,"1",new String[]{code,"5"});
         }else if(channel==ChannelType.VOICE_SMS.index){
             // 语音验证
-            messageClient.getCcpRestSDK().voiceVerify(code,mobile,"",VOICE_DISPLAY_TIMES,"","","");
+            result = messageClient.getCcpRestSDK().voiceVerify(code,mobile,"021-54070708",VOICE_DISPLAY_TIMES,"","","");
         }
+        System.out.println("send message result :"+result);
     }
 
 

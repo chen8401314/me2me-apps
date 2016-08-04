@@ -24,7 +24,7 @@ public class SmsServiceImpl implements SmsService {
      */
     @Override
     public void send(VerifyDto verifyDto){
-        applicationEventBus.post(new VerifyEvent(verifyDto.getMobile(),null));
+        applicationEventBus.post(new VerifyEvent(verifyDto.getMobile(),verifyDto.getVerifyCode(),verifyDto.getChannel()));
     }
 
     /**
