@@ -123,4 +123,6 @@ public interface LiveService {
     Live4H5Dto getLive4H5(long id);
 
     Response getLiveTimeline2(GetLiveTimeLineDto2 getLiveTimeLineDto);
+
+    Response cleanUpdate(long uid);
 }

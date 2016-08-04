@@ -214,7 +214,7 @@ public class LiveMybatisDao {
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andIdLessThan(sinceId);
         criteria.andStatusEqualTo(Specification.LiveStatus.LIVING.index);
-        example.setOrderByClause(" long_time desc limit 10 ");
+        example.setOrderByClause(" long_time desc limit 20 ");
         return topicMapper.selectByExample(example);
     }
 

@@ -11,6 +11,7 @@ import com.me2me.content.dto.LikeDto;
 import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.model.Content;
 import com.me2me.content.service.ContentService;
+import com.me2me.live.cache.MyLivesStatusModel;
 import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.*;
@@ -50,6 +51,8 @@ public class LiveServiceImpl implements LiveService {
     @Autowired
     private CacheService cacheService;
 
+    private static final String MY_LIVES_STATUS = "my:lives:status:";
+
     @Override
     public Response createLive(CreateLiveDto createLiveDto) {
         log.info("createLive start ...");
@@ -85,7 +88,9 @@ public class LiveServiceImpl implements LiveService {
             cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
         }
         log.info("createLive end ...");
-        return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status,ResponseStatus.USER_CREATE_LIVE_SUCCESS.message);
+        SpeakDto speakDto = new SpeakDto();
+        speakDto.setTopicId(topic.getId());
+        return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status,ResponseStatus.USER_CREATE_LIVE_SUCCESS.message,speakDto);
     }
 
     @Override
@@ -246,8 +251,14 @@ public class LiveServiceImpl implements LiveService {
         if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index ||speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index ){
             List<LiveFavorite> liveFavorites = liveMybatisDao.getFavoriteAll(speakDto.getTopicId());
             for(LiveFavorite liveFavorite : liveFavorites) {
+                MyLivesStatusModel livesStatusModel = new MyLivesStatusModel(liveFavorite.getUid(),"1");
+                cacheService.hSet(livesStatusModel.getKey(),livesStatusModel.getField(),"1");
                 MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(liveFavorite.getUid(), liveFavorite.getTopicId() + "", "1");
                 log.info("speak by master start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
+                String isUpdate = cacheService.hGet(cacheModel.getKey(), cacheModel.getField());
+                if(!StringUtils.isEmpty(isUpdate) && isUpdate.equals("1")){
+                    continue;
+                }
                 cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
             }
             //粉丝有留言提醒主播
@@ -876,6 +887,11 @@ public class LiveServiceImpl implements LiveService {
             showTopicListDto.getUpdateLives().add(updateLives);
         }
         showTopicListDto.setLiveCount(liveMybatisDao.countLives());
+        MyLivesStatusModel myLivesStatusModel = new MyLivesStatusModel(uid,"0");
+        String isUpdate = cacheService.hGet(myLivesStatusModel.getKey(),myLivesStatusModel.getField());
+        if(!StringUtils.isEmpty(isUpdate)) {
+            showTopicListDto.setIsUpdate(1);
+        }
         return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status,ResponseStatus.GET_MY_LIVE_SUCCESS.message,showTopicListDto);
     }
 
@@ -1021,4 +1037,10 @@ public class LiveServiceImpl implements LiveService {
         liveMybatisDao.createFavoriteDelete(uid, topicId);
     }
 
+
+    public Response cleanUpdate(long uid){
+        MyLivesStatusModel myLivesStatusModel = new MyLivesStatusModel(uid,"0");
+        cacheService.hSet(myLivesStatusModel.getKey(),myLivesStatusModel.getField(),"0");
+        return Response.success();
+    }
 }

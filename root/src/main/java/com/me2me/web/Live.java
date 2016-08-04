@@ -269,6 +269,18 @@ public class Live extends BaseController {
         return liveService.getInactiveLive(request.getUid(),request.getUpdateTime());
     }
 
+    /**
+     * 获取三天之前的直播列表
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/cleanUpdate",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response cleanUpdate(InactiveLiveRequest request){
+        return liveService.cleanUpdate(request.getUid());
+    }
+
+
 
 
 }

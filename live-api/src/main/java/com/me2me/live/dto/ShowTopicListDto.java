@@ -22,6 +22,8 @@ public class ShowTopicListDto implements BaseEntity{
 
     private int liveCount;
 
+    private int isUpdate;
+
     private List<ShowTopicElement> showTopicElements = Lists.newArrayList();
 
     public static ShowTopicElement createShowTopicElement(){
