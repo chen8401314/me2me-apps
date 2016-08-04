@@ -31,19 +31,20 @@ public class MessageClient {
     @Getter
     private CCPRestSDK ccpRestSDK;
 
-//    @PostConstruct
-//    public void init(){
-//        String restUrl = this.restUrl;
-//        String serverUrl = restUrl.split(":")[0];
-//        String port = restUrl.split(":")[1];
-//        ccpRestSDK = new CCPRestSDK();
-//        ccpRestSDK.init(serverUrl,port);
-//        ccpRestSDK.setAccount(accountId,authToken);
-//        ccpRestSDK.setAppId(appId);
-//
-//        ccpRestSmsSDK.init(serverUrl,port);
-//        ccpRestSmsSDK.setAccount(accountId,authToken);
-//        ccpRestSmsSDK.setAppId(appId);
-//    }
+    @PostConstruct
+    public void init(){
+        String restUrl = this.restUrl;
+        String serverUrl = restUrl.split(":")[0];
+        String port = restUrl.split(":")[1];
+        ccpRestSDK = new CCPRestSDK();
+        ccpRestSDK.init(serverUrl,port);
+        ccpRestSDK.setAccount(accountId,authToken);
+        ccpRestSDK.setAppId(appId);
+
+        ccpRestSmsSDK = new CCPRestSmsSDK();
+        ccpRestSmsSDK.init(serverUrl,port);
+        ccpRestSmsSDK.setAccount(accountId,authToken);
+        ccpRestSmsSDK.setAppId(appId);
+    }
 
 }

@@ -24,4 +24,8 @@ public class VerifyRequest extends Request{
     @Getter
     @Setter
     private String verifyCode;
+
+    @Getter
+    @Setter
+    private int channel;
 }

@@ -18,4 +18,6 @@ public class VerifyDto implements BaseEntity {
 
     private String mobile;
 
+    private int channel;
+
 }
