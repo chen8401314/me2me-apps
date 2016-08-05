@@ -47,7 +47,7 @@ public class VerifyCodeListener {
     /**
      * 每日发送验证码上线次数为10次
      */
-    private static final int SEND_MESSAGE_LIMIT = 10;
+    private static final int SEND_MESSAGE_LIMIT = 20;
 
     @Autowired
     public VerifyCodeListener(ApplicationEventBus applicationEventBus,
