@@ -11,9 +11,10 @@ import lombok.Data;
 @Data
 public class VerifyEvent implements BaseEntity {
 
-    public VerifyEvent(String mobile,String verifyCode){
+    public VerifyEvent(String mobile,String verifyCode,int channel){
         this.mobile = mobile;
         this.verifyCode = verifyCode;
+        this.channel = channel;
     }
 
     /**

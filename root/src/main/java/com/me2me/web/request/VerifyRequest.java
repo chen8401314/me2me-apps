@@ -27,5 +27,5 @@ public class VerifyRequest extends Request{
 
     @Getter
     @Setter
-    private int channel;
+    private int channelAdapter;
 }
