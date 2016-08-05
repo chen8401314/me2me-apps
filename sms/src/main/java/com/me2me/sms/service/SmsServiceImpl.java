@@ -3,6 +3,7 @@ import com.google.common.base.Splitter;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.sms.YunXinSms;
 import com.me2me.core.event.ApplicationEventBus;
+import com.me2me.sms.channel.MessageChannel;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.event.VerifyEvent;
 import com.me2me.sms.listener.VerifyCodeListener;
@@ -48,7 +49,10 @@ public class SmsServiceImpl implements SmsService {
      */
     @Override
     public boolean verify(VerifyDto verifyDto) {
-        // return YunXinSms.verify(verifyDto.getMobile(),verifyDto.getVerifyCode());
+        // 网易云信通道验证
+        if(verifyDto.getChannel()== MessageChannel.ChannelType.NET_CLOUD_SMS.index) {
+            return YunXinSms.verify(verifyDto.getMobile(), verifyDto.getVerifyCode());
+        }
         // 获取redis中的数据
         String verifyCodeAndSendTimeMillis = cacheService.get(VERIFY_PREFIX+verifyDto.getMobile());
         if(!StringUtils.isEmpty(verifyCodeAndSendTimeMillis)){

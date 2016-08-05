@@ -2,6 +2,8 @@ package com.me2me.sms.channel;
 
 import com.cloopen.rest.sdk.CCPRestSDK;
 import com.cloopen.rest.sdk.CCPRestSmsSDK;
+import com.me2me.common.sms.YunXinSms;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,6 +16,7 @@ import java.util.HashMap;
  * Date: 2016/8/2.
  */
 @Component
+@Slf4j
 public class MessageChannel {
 
     @Autowired
@@ -24,7 +27,9 @@ public class MessageChannel {
     public enum ChannelType{
         NORMAL_SMS(1,"短信验证方式"),
 
-        VOICE_SMS(2,"语音验证方式");
+        VOICE_SMS(2,"语音验证方式"),
+
+        NET_CLOUD_SMS(3,"网易云信");
 
         public int index;
 
@@ -63,8 +68,11 @@ public class MessageChannel {
         }else if(channel==ChannelType.VOICE_SMS.index){
             // 语音验证
             result = messageClient.getCcpRestSDK().voiceVerify(code,mobile,"021-54070708",VOICE_DISPLAY_TIMES,"","","");
+        }else if(channel==ChannelType.NET_CLOUD_SMS.index){
+            boolean sendResult = YunXinSms.sendSms(mobile);
+            log.info("yun xin sms send result {}",sendResult);
         }
-        System.out.println("send message result :"+result);
+        log.info("short message send result {}",result);
     }
 
 

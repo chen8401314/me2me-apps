@@ -1,6 +1,8 @@
 package com.me2me.web;
 
 import com.me2me.common.web.Response;
+import com.me2me.sms.exception.SendMessageLimitException;
+import com.me2me.sms.exception.SendMessageTimeException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -14,7 +16,9 @@ public class BaseController {
     @ExceptionHandler(RuntimeException.class)
     @ResponseBody
     public Response init(RuntimeException e){
-        e.printStackTrace();
+        if(e instanceof SendMessageLimitException || e instanceof SendMessageTimeException){
+            return Response.success(20094,e.getMessage());
+        }
         return Response.failure(e.getMessage());
     }
 
