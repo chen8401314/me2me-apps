@@ -502,14 +502,14 @@ public class LiveServiceImpl implements LiveService {
         log.info("getLivesByUpdateTime start ...");
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
         List<Topic> topicList = liveMybatisDao.getLivesByUpdateTime(updateTime);
-        for(Topic topic : topicList) {
-            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topic.getId()+"","0");
-            String isUpdate = cacheService.hGet(cacheModel.getKey(),topic.getId()+"");
-            if(StringUtils.isEmpty(isUpdate)) {
-                log.info("cache key {} , cache topic id {},cache value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
-                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-            }
-        }
+//        for(Topic topic : topicList) {
+//            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topic.getId()+"","0");
+//            String isUpdate = cacheService.hGet(cacheModel.getKey(),topic.getId()+"");
+//            if(StringUtils.isEmpty(isUpdate)) {
+//                log.info("cache key {} , cache topic id {},cache value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
+//                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+//            }
+//        }
         log.info("getLivesByUpdateTime data success");
         builder(uid, showTopicListDto, topicList);
         log.info("getLivesByUpdateTime end ...");
@@ -858,15 +858,15 @@ public class LiveServiceImpl implements LiveService {
             updateTime = calendar.getTimeInMillis();
         }
         List<Topic> topicList = liveMybatisDao.getMyLivesByUpdateTime(uid ,updateTime ,topics);
-        //初始化cache
-        for(Topic topic : topicList) {
-            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topic.getId()+"","0");
-            String isUpdate = cacheService.hGet(cacheModel.getKey(),topic.getId()+"");
-            if(StringUtils.isEmpty(isUpdate)) {
-                log.info("cache key {} , cache topic id {},cache value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
-                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-            }
-        }
+//        //初始化cache
+//        for(Topic topic : topicList) {
+//            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topic.getId()+"","0");
+//            String isUpdate = cacheService.hGet(cacheModel.getKey(),topic.getId()+"");
+//            if(StringUtils.isEmpty(isUpdate)) {
+//                log.info("cache key {} , cache topic id {},cache value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
+//                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+//            }
+//        }
         log.info("getMyLives data success");
         builderWithCache(uid, showTopicListDto, topicList);
         log.info("getMyLives start ...");
