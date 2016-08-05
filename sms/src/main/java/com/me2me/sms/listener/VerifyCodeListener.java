@@ -71,6 +71,7 @@ public class VerifyCodeListener {
             verifyEvent.setVerifyCode(verifyCode);
             if (checkSendLimit(verifyEvent.getMobile())) {
                 this.cacheService.setex(VERIFY_PREFIX + verifyEvent.getMobile(), verifyCode + "@" + System.currentTimeMillis(), 30 * 60);
+                messageChannel.send(verifyEvent.getChannel(),verifyEvent.getVerifyCode(),verifyEvent.getMobile());
             } else {
                 throw new SendMessageLimitException("手机验证码次数超过上限，每日只能发送" + SEND_MESSAGE_LIMIT + "次短信");
             }
@@ -81,7 +82,9 @@ public class VerifyCodeListener {
                 long sendTime = Long.parseLong(splitter.splitToList(verifyCodeAndSendTimeMillis).get(1));
                 if (System.currentTimeMillis() - sendTime > TimeUnit.MINUTES.toMillis(1)) {
                     if (checkSendLimit(verifyEvent.getMobile())) {
+                        verifyEvent.setVerifyCode(verifyCode);
                         this.cacheService.setex(VERIFY_PREFIX + verifyEvent.getMobile(), verifyCode + "@" + System.currentTimeMillis(), 30 * 60);
+                        messageChannel.send(verifyEvent.getChannel(),verifyEvent.getVerifyCode(),verifyEvent.getMobile());
                     } else {
                         throw new SendMessageLimitException("手机验证码次数超过上限，每日只能发送" + SEND_MESSAGE_LIMIT + "次短信");
                     }
