@@ -5,6 +5,7 @@ import com.me2me.common.sms.YunXinSms;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.event.VerifyEvent;
+import com.me2me.sms.listener.VerifyCodeListener;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -28,13 +29,17 @@ public class SmsServiceImpl implements SmsService {
 
     private Splitter splitter = Splitter.on("@").trimResults();
 
+    @Autowired
+    private VerifyCodeListener verifyCodeListener;
+
     /**
      * 发送验证码
      * @param verifyDto
      */
     @Override
     public void send(VerifyDto verifyDto){
-        applicationEventBus.post(new VerifyEvent(verifyDto.getMobile(),verifyDto.getVerifyCode(),verifyDto.getChannel()));
+        // applicationEventBus.post(new VerifyEvent(verifyDto.getMobile(),verifyDto.getVerifyCode(),verifyDto.getChannel()));
+        verifyCodeListener.send(new VerifyEvent(verifyDto.getMobile(),verifyDto.getVerifyCode(),verifyDto.getChannel()));
     }
 
     /**

@@ -9,6 +9,7 @@ import com.me2me.sms.channel.MessageChannel;
 import com.me2me.sms.event.VerifyEvent;
 import com.me2me.sms.exception.SendMessageLimitException;
 import com.me2me.sms.exception.SendMessageTimeException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -22,6 +23,7 @@ import java.util.concurrent.TimeUnit;
  * Date: 2016/3/23.
  */
 @Component
+@Slf4j
 public class VerifyCodeListener {
 
     private final ApplicationEventBus applicationEventBus;
@@ -73,6 +75,7 @@ public class VerifyCodeListener {
                 this.cacheService.setex(VERIFY_PREFIX + verifyEvent.getMobile(), verifyCode + "@" + System.currentTimeMillis(), 30 * 60);
                 messageChannel.send(verifyEvent.getChannel(),verifyEvent.getVerifyCode(),verifyEvent.getMobile());
             } else {
+                log.error("手机验证码次数超过上限，每日只能发送" + SEND_MESSAGE_LIMIT + "次短信");
                 throw new SendMessageLimitException("手机验证码次数超过上限，每日只能发送" + SEND_MESSAGE_LIMIT + "次短信");
             }
         } else {
@@ -85,12 +88,14 @@ public class VerifyCodeListener {
                         verifyEvent.setVerifyCode(verifyCode);
                         this.cacheService.setex(VERIFY_PREFIX + verifyEvent.getMobile(), verifyCode + "@" + System.currentTimeMillis(), 30 * 60);
                         messageChannel.send(verifyEvent.getChannel(),verifyEvent.getVerifyCode(),verifyEvent.getMobile());
-                    } else {
-                        throw new SendMessageLimitException("手机验证码次数超过上限，每日只能发送" + SEND_MESSAGE_LIMIT + "次短信");
                     }
+                }else {
+                    log.error("每分钟只能发送一次验证码");
+                    throw new SendMessageLimitException("每分钟只能发送一次验证码");
                 }
-
-
+            }else{
+                log.error("手机验证码次数超过上限，每日只能发送" + SEND_MESSAGE_LIMIT + "次短信");
+                throw new SendMessageLimitException("手机验证码次数超过上限，每日只能发送" + SEND_MESSAGE_LIMIT + "次短信");
             }
         }
     }
