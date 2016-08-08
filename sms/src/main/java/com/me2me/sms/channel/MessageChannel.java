@@ -69,6 +69,7 @@ public class MessageChannel {
             // 语音验证
             result = messageClient.getCcpRestSDK().voiceVerify(code,mobile,"021-54070708",VOICE_DISPLAY_TIMES,"","","");
         }else if(channel==ChannelType.NET_CLOUD_SMS.index){
+            // 网易云信
             boolean sendResult = YunXinSms.sendSms(mobile);
             log.info("yun xin sms send result {}",sendResult);
         }
