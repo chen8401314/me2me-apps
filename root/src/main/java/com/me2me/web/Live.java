@@ -281,6 +281,18 @@ public class Live extends BaseController {
     }
 
 
+    /**
+     * 获取直播详情的二维码
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/liveQrcode",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response liveQrcode(LiveQrcodeRequest request){
+        return liveService.genQRcode(request.getTopicId());
+    }
+
+
 
 
 }

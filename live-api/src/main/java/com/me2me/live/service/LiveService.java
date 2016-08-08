@@ -125,4 +125,6 @@ public interface LiveService {
     Response getLiveTimeline2(GetLiveTimeLineDto2 getLiveTimeLineDto);
 
     Response cleanUpdate(long uid);
+
+    Response genQRcode(long topicId);
 }

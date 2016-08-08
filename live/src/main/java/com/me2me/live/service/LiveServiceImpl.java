@@ -11,6 +11,8 @@ import com.me2me.content.dto.LikeDto;
 import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.model.Content;
 import com.me2me.content.service.ContentService;
+import com.me2me.core.QRCodeUtil;
+import com.me2me.io.service.FileTransferService;
 import com.me2me.live.cache.MyLivesStatusModel;
 import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.dao.LiveMybatisDao;
@@ -23,12 +25,14 @@ import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -51,7 +55,12 @@ public class LiveServiceImpl implements LiveService {
     @Autowired
     private CacheService cacheService;
 
-    private static final String MY_LIVES_STATUS = "my:lives:status:";
+    @Autowired
+    private FileTransferService fileTransferService;
+
+    @Value("#{app.live_web}")
+    private String live_web;
+
 
     @Override
     public Response createLive(CreateLiveDto createLiveDto) {
@@ -892,7 +901,9 @@ public class LiveServiceImpl implements LiveService {
         MyLivesStatusModel myLivesStatusModel = new MyLivesStatusModel(uid,"0");
         String isUpdate = cacheService.hGet(myLivesStatusModel.getKey(),myLivesStatusModel.getField());
         if(!StringUtils.isEmpty(isUpdate)) {
-            showTopicListDto.setIsUpdate(1);
+            showTopicListDto.setIsUpdate(Integer.parseInt(isUpdate));
+        }else{
+            showTopicListDto.setIsUpdate(0);
         }
         return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status,ResponseStatus.GET_MY_LIVE_SUCCESS.message,showTopicListDto);
     }
@@ -1044,5 +1055,26 @@ public class LiveServiceImpl implements LiveService {
         MyLivesStatusModel myLivesStatusModel = new MyLivesStatusModel(uid,"0");
         cacheService.hSet(myLivesStatusModel.getKey(),myLivesStatusModel.getField(),"0");
         return Response.success();
+    }
+
+    @Override
+    public Response genQRcode(long TopicId) {
+        LiveQRCodeDto liveQRCodeDto = new LiveQRCodeDto();
+        try {
+            Topic topic = getTopicById(TopicId);
+            if(StringUtils.isEmpty(topic.getQrcode())) {
+                byte[] image = QRCodeUtil.encode(live_web + TopicId);
+                String key = UUID.randomUUID().toString();
+                fileTransferService.upload(image, key);
+                liveQRCodeDto.setLiveQrCodeUrl(Constant.QINIU_DOMAIN + "/" + key);
+                topic.setQrcode(key);
+                liveMybatisDao.updateTopic(topic);
+            }else{
+                liveQRCodeDto.setLiveQrCodeUrl(Constant.QINIU_DOMAIN + "/" + topic.getQrcode());
+            }
+        }catch (Exception e){
+            return Response.failure(ResponseStatus.QRCODE_FAILURE.status,ResponseStatus.QRCODE_FAILURE.message);
+        }
+        return Response.success(ResponseStatus.QRCODE_SUCCESS.status,ResponseStatus.QRCODE_SUCCESS.message,liveQRCodeDto);
     }
 }
