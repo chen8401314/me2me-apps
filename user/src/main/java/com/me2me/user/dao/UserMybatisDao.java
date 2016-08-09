@@ -78,6 +78,9 @@ public class UserMybatisDao {
     @Autowired
     private XingePushLogMapper xingePushLogMapper;
 
+    @Autowired
+    private JpushTokenMapper jpushTokenMapper;
+
     /**
      * 保存用户注册信息
      * @param user
@@ -592,6 +595,21 @@ public class UserMybatisDao {
         }
         criteria.andIsActivateEqualTo(Specification.UserActivate.ACTIVATED.index);
         return userProfileMapper.countByExample(example);
+    }
+
+    public void createJpushToken(JpushToken jpushToken){
+        jpushTokenMapper.insertSelective(jpushToken);
+    }
+
+    public List<JpushToken> getJpushToken(long uid){
+        JpushTokenExample example = new JpushTokenExample();
+        JpushTokenExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        return jpushTokenMapper.selectByExample(example);
+    }
+
+    public void refreshJpushToken(JpushToken jpushToken){
+        jpushTokenMapper.updateByPrimaryKeySelective(jpushToken);
     }
 
 }

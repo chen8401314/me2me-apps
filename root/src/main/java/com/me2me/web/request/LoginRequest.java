@@ -32,4 +32,8 @@ public class LoginRequest extends Request {
     @Setter
     private String os;
 
+    @Getter
+    @Setter
+    private String jPushToken;
+
 }

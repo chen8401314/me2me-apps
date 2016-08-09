@@ -51,6 +51,11 @@
                     <artifactId>xinge-api</artifactId>
                     <version>1.1.7</version>
                 </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>jpush-cilent</artifactId>
+                    <version>3.2.9</version>
+                </dependency>
             </dependencies>
             <build>
                 <filters>

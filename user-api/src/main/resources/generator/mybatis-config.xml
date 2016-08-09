@@ -31,7 +31,7 @@
 
 
         <!--<table tableName="user" domainObjectName="User"/>-->
-        <table tableName="user_profile" domainObjectName="UserProfile"/>
+        <!--<table tableName="user_profile" domainObjectName="UserProfile"/>-->
         <!--<table tableName="dictionary" domainObjectName="Dictionary"/>-->
         <!--<table tableName="dictionary_type" domainObjectName="DictionaryType"/>-->
         <!--<table tableName="address" domainObjectName="Address"/>-->
@@ -51,6 +51,7 @@
         <!--<table tableName="user_no" domainObjectName="UserNo" />-->
         <!--<table tableName="user_device" domainObjectName="UserDevice" />-->
         <!--<table tableName="xinge_push_log" domainObjectName="XingePushLog" />-->
+        <table tableName="jpush_token" domainObjectName="JpushToken"/>
 
     </context>
 </generatorConfiguration>

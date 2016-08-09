@@ -59,6 +59,7 @@ public class Users extends BaseController {
         userLoginDto.setOs(request.getOs());
         userLoginDto.setPlatform(request.getPlatform());
         userLoginDto.setDeviceNo(request.getDeviceNo());
+        userLoginDto.setJPushToken(request.getJPushToken());
         return userService.login(userLoginDto);
     }
 

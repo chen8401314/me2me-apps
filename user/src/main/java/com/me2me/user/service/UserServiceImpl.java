@@ -12,6 +12,7 @@ import com.me2me.common.web.Specification;
 import com.me2me.core.QRCodeUtil;
 import com.me2me.io.service.FileTransferService;
 import com.me2me.sms.dto.*;
+import com.me2me.sms.service.JPushService;
 import com.me2me.sms.service.SmsService;
 import com.me2me.sms.service.XgPushService;
 import com.me2me.user.dao.OldUserJdbcDao;
@@ -63,6 +64,9 @@ public class UserServiceImpl implements UserService {
     private String reg_web;
 
     private static final String POWER_KEY = "power:key";
+
+    @Autowired
+    private JPushService jPushService;
 
 
     /**
@@ -183,6 +187,23 @@ public class UserServiceImpl implements UserService {
                 device.setOs(userLoginDto.getOs());
                 device.setUid(user.getUid());
                 userMybatisDao.updateUserDevice(device);
+                // 保存极光推送
+                if(!StringUtils.isEmpty(userLoginDto.getJPushToken())) {
+                    // 判断当前用户是否存在JpushToken,如果存在，并且相同我们不做处理，否则修改
+                    List<JpushToken> jpushTokens = userMybatisDao.getJpushToken(user.getUid());
+                    if(jpushTokens!=null&&jpushTokens.size()>0){
+                        // 更新当前JpushToken
+                        JpushToken jpushToken = jpushTokens.get(0);
+                        jpushToken.setJpushToken(userLoginDto.getJPushToken());
+                        userMybatisDao.refreshJpushToken(jpushToken);
+                    }else {
+                        // 系统兼容扩展
+                        JpushToken jpushToken = new JpushToken();
+                        jpushToken.setJpushToken(userLoginDto.getJPushToken());
+                        jpushToken.setUid(user.getUid());
+                        userMybatisDao.createJpushToken(jpushToken);
+                    }
+                }
                 log.info("update user device success");
                 log.info("login end ...");
                 //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LOGIN.index,0,user.getUid()));
@@ -1043,6 +1064,7 @@ public class UserServiceImpl implements UserService {
                 skippedUids.add(uid);
                 continue;
             }
+            // 老版本信鸽推送
             int platform = userDevice.getPlatform();
             if(platform == Specification.DevicePlatform.ANDROID.index){
                 // android
@@ -1058,6 +1080,12 @@ public class UserServiceImpl implements UserService {
                 message.setToken(userDevice.getDeviceNo());
                 log.info("push message for ios uid is {} and message count {}",uid,counter);
                 xgPushService.pushSingleDeviceIOS(message);
+            }
+            // 新版本极光推送
+            // 获取极光推送token
+            List<JpushToken> jpushTokens = userMybatisDao.getJpushToken(uid);
+            for(JpushToken jpushToken : jpushTokens) {
+                jPushService.payloadById(jpushToken.getJpushToken(),"你有"+counter+"条新消息！");
             }
         }
         // 更新推送状态
