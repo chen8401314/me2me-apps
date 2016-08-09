@@ -600,7 +600,16 @@ public class UserServiceImpl implements UserService {
             userMybatisDao.createFollow(userFollow);
             log.info("follow success");
             //关注提醒
-            push(followDto.getTargetUid(),followDto.getSourceUid(),Specification.PushMessageType.FOLLOW.index,null);
+            //push(followDto.getTargetUid(),followDto.getSourceUid(),Specification.PushMessageType.FOLLOW.index,null);
+            //更换信鸽推送为极光推动
+            JpushToken jpushToken = getJpushTokeByUid(followDto.getTargetUid());
+            if(jpushToken == null){
+                //兼容老版本，如果客户端没有更新则还走信鸽push
+                push(followDto.getTargetUid(),followDto.getSourceUid(),Specification.PushMessageType.FOLLOW.index,null);
+            }else {
+                UserProfile sourceUser = getUserProfileByUid(followDto.getSourceUid());
+                jPushService.payloadById(jpushToken.getJpushToken(), sourceUser.getNickName() + "关注了你！");
+            }
             log.info("follow push success");
             //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW.index,0,followDto.getSourceUid()));
             log.info("monitor success");
