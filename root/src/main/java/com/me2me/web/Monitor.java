@@ -47,22 +47,4 @@ public class Monitor extends BaseController {
             return Response.failure("参数非法...");
         }
     }
-
-//    /**
-//     * 行为数据报告
-//     * @param monitorReportRequest
-//     * @return
-//     */
-//    @ResponseBody
-//    @RequestMapping(value="/actionReport",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-//    public Response actionReport(MonitorReportRequest monitorReportRequest){
-//        MonitorReportDto monitorReportDto = new MonitorReportDto();
-//        monitorReportDto.setChannel(Integer.valueOf(monitorReportRequest.getChannel()));
-//        monitorReportDto.setType(Integer.valueOf(monitorReportRequest.getChannel()));
-//        monitorReportDto.setStartDate(monitorReportRequest.getStartDate());
-//        monitorReportDto.setEndDate(monitorReportRequest.getEndDate());
-//        monitorReportDto.setActionType(monitorReportRequest.getActionType());
-//        return monitorService.loadActionReport(monitorReportDto);
-//    }
-
 }
