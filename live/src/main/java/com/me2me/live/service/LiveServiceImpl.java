@@ -18,10 +18,8 @@ import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.*;
 import com.me2me.live.model.*;
-import com.me2me.user.model.UserFollow;
-import com.me2me.user.model.UserNotice;
-import com.me2me.user.model.UserProfile;
-import com.me2me.user.model.UserTips;
+import com.me2me.sms.service.JPushService;
+import com.me2me.user.model.*;
 import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,6 +55,9 @@ public class LiveServiceImpl implements LiveService {
 
     @Autowired
     private FileTransferService fileTransferService;
+
+    @Autowired
+    private JPushService jPushService;
 
     @Value("#{app.live_web}")
     private String live_web;
@@ -368,10 +369,29 @@ public class LiveServiceImpl implements LiveService {
         }else if(speakDto.getType() == Specification.LiveSpeakType.AT.index){
             //Topic live = liveMybatisDao.getTopicById(speakDto.getTopicId());
             liveRemind(speakDto.getAtUid() , speakDto.getUid() ,Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
-            userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
+            //更换信鸽推送为极光推送
+            //userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
+            JpushToken jpushToken = userService.getJpushTokeByUid(speakDto.getAtUid());
+            if(jpushToken == null){
+                //兼容老版本，如果客户端没有更新则还走信鸽push
+                userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
+            }else {
+                UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
+                jPushService.payloadById(jpushToken.getJpushToken(), userProfile.getNickName() + "@了你");
+            }
         }else if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index){
             liveRemind(speakDto.getAtUid() ,topic.getUid(),Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
-            userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
+            //userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
+            //更换信鸽推送为极光推送
+            JpushToken jpushToken = userService.getJpushTokeByUid(speakDto.getAtUid());
+            if(jpushToken == null){
+                //兼容老版本，如果客户端没有更新则还走信鸽push
+                userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
+            }else {
+                UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
+                jPushService.payloadById(jpushToken.getJpushToken(), userProfile.getNickName() + "@了你");
+            }
+
         }
         log.info("speak end ...");
         //2.0.7

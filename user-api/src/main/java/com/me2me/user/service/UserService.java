@@ -210,6 +210,8 @@ public interface UserService {
 
     Response getPhoto(long sinceId);
 
+    JpushToken getJpushTokeByUid(long uid);
+
 
 
 }

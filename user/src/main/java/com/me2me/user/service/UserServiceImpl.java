@@ -1275,4 +1275,10 @@ public class UserServiceImpl implements UserService {
         }
         return Response.success(dto);
     }
+
+    @Override
+    public JpushToken getJpushTokeByUid(long uid) {
+        List<JpushToken> jpushTokens = userMybatisDao.getJpushToken(uid);
+        return com.me2me.common.utils.Lists.getSingle(jpushTokens);
+    }
 }

@@ -13,10 +13,10 @@ import com.me2me.content.model.*;
 import com.me2me.content.model.ArticleReview;
 import com.me2me.content.model.ContentReview;
 import com.me2me.content.widget.*;
-import com.me2me.monitor.service.MonitorService;
-import com.me2me.monitor.event.MonitorEvent;
+import com.me2me.sms.service.JPushService;
 import com.me2me.user.dto.UserInfoDto;
 import com.me2me.user.dto.UserInfoDto2;
+import com.me2me.user.model.JpushToken;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
@@ -68,9 +68,6 @@ public class ContentServiceImpl implements ContentService {
     private ReviewAdapter reviewAdapter;
 
     @Autowired
-    private MonitorService monitorService;
-
-    @Autowired
     private ContentRecommendServiceProxyBean contentRecommendServiceProxyBean;
 
     @Autowired
@@ -78,6 +75,9 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private ContentStatusServiceProxyBean contentStatusServiceProxyBean;
+
+    @Autowired
+    private JPushService jPushService;
 
     @Value("#{app.recommend_domain}")
     private String recommendDomain;
@@ -1851,10 +1851,26 @@ public class ContentServiceImpl implements ContentService {
                 return Response.success(ResponseStatus.HIGH_QUALITY_CONTENT_YET.status,ResponseStatus.HIGH_QUALITY_CONTENT_YET.message);
             }
             if(content.getType() == Specification.ArticleType.ORIGIN.index) {
-                userService.push(content.getUid(), 000000, Specification.PushMessageType.HOTTEST.index, content.getTitle());
+                //userService.push(content.getUid(), 000000, Specification.PushMessageType.HOTTEST.index, content.getTitle());
             //直播置热
+                //信鸽推送修改为极光推送
+                JpushToken jpushToken = userService.getJpushTokeByUid(content.getUid());
+                if(jpushToken == null){
+                    //兼容老版本，如果客户端没有更新则还走信鸽push
+                    userService.push(content.getUid(), 000000, Specification.PushMessageType.HOTTEST.index, content.getTitle());
+                }else {
+                    jPushService.payloadById(jpushToken.getJpushToken(),"你的文章" + content.getTitle()+ "上热点啦！");
+                }
             }else if(content.getType() == Specification.ArticleType.LIVE.index){
-                userService.push(content.getUid(), 000000, Specification.PushMessageType.LIVE_HOTTEST.index, content.getTitle());
+                //userService.push(content.getUid(), 000000, Specification.PushMessageType.LIVE_HOTTEST.index, content.getTitle());
+                //信鸽推送修改为极光推送
+                JpushToken jpushToken = userService.getJpushTokeByUid(content.getUid());
+                if(jpushToken == null){
+                    //兼容老版本，如果客户端没有更新则还走信鸽push
+                    userService.push(content.getUid(), 000000, Specification.PushMessageType.LIVE_HOTTEST.index, content.getTitle());
+                }else {
+                    jPushService.payloadById(jpushToken.getJpushToken(),"你的直播" + content.getTitle()+ "上热点啦！");
+                }
             }
 
             contentMybatisDao.createHighQualityContent(highQualityContent);
