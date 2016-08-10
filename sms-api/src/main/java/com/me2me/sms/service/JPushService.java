@@ -26,6 +26,9 @@ public interface JPushService {
 
     void payloadByIdExtra(String regId,String message,JsonObject jsonExtra);
 
+    void payloadByIdForMessage(String regId,String message);
+
+
 
 
 

@@ -4,6 +4,7 @@ import cn.jpush.api.JPushClient;
 import cn.jpush.api.common.resp.APIConnectionException;
 import cn.jpush.api.common.resp.APIRequestException;
 import cn.jpush.api.push.PushResult;
+import cn.jpush.api.push.model.Message;
 import cn.jpush.api.push.model.Platform;
 import cn.jpush.api.push.model.PushPayload;
 import cn.jpush.api.push.model.audience.Audience;
@@ -31,12 +32,13 @@ public class JpushClientMain {
 
     // 120c83f76022301312c
     public static void main(String[] args){
+        Message message = Message.content("hello");
         JPushClient jPushClient = new JPushClient(masterSecret,appKey);
         PushPayload pushPayload = PushPayload
                 .newBuilder()
                 .setPlatform(Platform.all())
-                .setAudience(Audience.registrationId("120c83f76022301312c"))
-                .setNotification(Notification.alert("针对性推送"))
+                .setAudience(Audience.registrationId("1a0018970aa08b4fb27"))
+                .setMessage(message)
                 .build();
         JsonObject jsonExtra = new JsonObject();
         jsonExtra.addProperty("name","peter");
@@ -59,7 +61,7 @@ public class JpushClientMain {
                         .build())
                 .build();
         try {
-            jPushClient.sendPush(payload);
+            jPushClient.sendPush(pushPayload);
         } catch (APIConnectionException e) {
             e.printStackTrace();
         } catch (APIRequestException e) {
