@@ -533,7 +533,7 @@ public class ContentServiceImpl implements ContentService {
                         if(jpushToken != null) {
                             JsonObject jsonObject = new JsonObject();
                             jsonObject.addProperty("count","1");
-                            jPushService.payloadByIdExtra(jpushToken.getJpushToken(),"tips",jsonObject);
+                            jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
                         }
                     }
                 }else {
@@ -543,7 +543,7 @@ public class ContentServiceImpl implements ContentService {
                     if(jpushToken != null) {
                         JsonObject jsonObject = new JsonObject();
                         jsonObject.addProperty("count","1");
-                        jPushService.payloadByIdExtra(jpushToken.getJpushToken(),"tips",jsonObject);
+                        jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
                     }
                 }
             }
@@ -609,7 +609,7 @@ public class ContentServiceImpl implements ContentService {
             if(jpushToken != null) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("count","1");
-                jPushService.payloadByIdExtra(jpushToken.getJpushToken(),"tips",jsonObject);
+                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
             }
         }else{
             tips.setCount(tips.getCount()+1);
@@ -619,7 +619,7 @@ public class ContentServiceImpl implements ContentService {
             if(jpushToken != null) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("count","1");
-                jPushService.payloadByIdExtra(jpushToken.getJpushToken(),"tips",jsonObject);
+                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
             }
         }
     }

@@ -489,7 +489,7 @@ public class LiveServiceImpl implements LiveService {
             if(jpushToken != null) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("count","1");
-                jPushService.payloadByIdExtra(jpushToken.getJpushToken(),"tips",jsonObject);
+                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
             }
 
         }else{
@@ -500,7 +500,7 @@ public class LiveServiceImpl implements LiveService {
             if(jpushToken != null) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("count","1");
-                jPushService.payloadByIdExtra(jpushToken.getJpushToken(),"tips",jsonObject);
+                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
             }
         }
     }
