@@ -1,6 +1,7 @@
 package com.me2me.live.service;
 
 import com.google.common.collect.Lists;
+import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
@@ -27,10 +28,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.Calendar;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -73,6 +71,7 @@ public class LiveServiceImpl implements LiveService {
         topic.setStatus(Specification.LiveStatus.LIVING.index);
         Calendar calendar = Calendar.getInstance();
         topic.setLongTime(calendar.getTimeInMillis());
+        topic.setCreateTime(new Date());
         liveMybatisDao.createTopic(topic);
         //创建直播之后添加到我的UGC
         ContentDto contentDto = new ContentDto();
@@ -485,9 +484,24 @@ public class LiveServiceImpl implements LiveService {
         if(tips == null){
             userTips.setCount(1);
             userService.createUserTips(userTips);
+            //修改推送为极光推送,兼容老版本
+            JpushToken jpushToken = userService.getJpushTokeByUid(targetUid);
+            if(jpushToken != null) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("count","1");
+                jPushService.payloadByIdExtra(jpushToken.getJpushToken(),"tips",jsonObject);
+            }
+
         }else{
             tips.setCount(tips.getCount()+1);
-              userService.modifyUserTips(tips);
+            userService.modifyUserTips(tips);
+            //修改推送为极光推送,兼容老版本
+            JpushToken jpushToken = userService.getJpushTokeByUid(targetUid);
+            if(jpushToken != null) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("count","1");
+                jPushService.payloadByIdExtra(jpushToken.getJpushToken(),"tips",jsonObject);
+            }
         }
     }
 

@@ -1,6 +1,7 @@
 package com.me2me.content.service;
 
 import com.google.common.collect.Lists;
+import com.google.gson.JsonObject;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.Constant;
@@ -527,9 +528,23 @@ public class ContentServiceImpl implements ContentService {
                 if (userNotice.getNoticeType() == Specification.UserNoticeType.LIKE.index) {
                     if (notice == null) {
                         userService.createUserTips(userTips);
+                        //修改推送为极光推送,兼容老版本
+                        JpushToken jpushToken = userService.getJpushTokeByUid(content.getUid());
+                        if(jpushToken != null) {
+                            JsonObject jsonObject = new JsonObject();
+                            jsonObject.addProperty("count","1");
+                            jPushService.payloadByIdExtra(jpushToken.getJpushToken(),"tips",jsonObject);
+                        }
                     }
                 }else {
                     userService.createUserTips(userTips);
+                    //修改推送为极光推送,兼容老版本
+                    JpushToken jpushToken = userService.getJpushTokeByUid(content.getUid());
+                    if(jpushToken != null) {
+                        JsonObject jsonObject = new JsonObject();
+                        jsonObject.addProperty("count","1");
+                        jPushService.payloadByIdExtra(jpushToken.getJpushToken(),"tips",jsonObject);
+                    }
                 }
             }
         }else{
@@ -589,9 +604,23 @@ public class ContentServiceImpl implements ContentService {
         if(tips == null){
             userTips.setCount(1);
             userService.createUserTips(userTips);
+            //修改推送为极光推送,兼容老版本
+            JpushToken jpushToken = userService.getJpushTokeByUid(atUid);
+            if(jpushToken != null) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("count","1");
+                jPushService.payloadByIdExtra(jpushToken.getJpushToken(),"tips",jsonObject);
+            }
         }else{
             tips.setCount(tips.getCount()+1);
             userService.modifyUserTips(tips);
+            //修改推送为极光推送,兼容老版本
+            JpushToken jpushToken = userService.getJpushTokeByUid(atUid);
+            if(jpushToken != null) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("count","1");
+                jPushService.payloadByIdExtra(jpushToken.getJpushToken(),"tips",jsonObject);
+            }
         }
     }
 
