@@ -1,5 +1,6 @@
 package com.me2me.user.dto;
 
+import com.me2me.common.web.BaseEntity;
 import lombok.Data;
 
 /**
@@ -9,7 +10,7 @@ import lombok.Data;
  * Time :21:44
  */
 @Data
-public class BasicDataDto {
+public class BasicDataDto implements BaseEntity {
 
     private long type;
 }

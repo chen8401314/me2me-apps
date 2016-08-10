@@ -19,5 +19,24 @@ public abstract class Request {
     @Getter
     @Setter
     private String version;
+    @Getter
+    @Setter
+    private String appId;
+    @Getter
+    @Setter
+    private String secretKey;
+    @Getter
+    @Setter
+    private String sign;
+    @Getter
+    @Setter
+    private long currentTime;
+    @Getter
+    @Setter
+    private String nonce;
+    @Getter
+    @Setter
+    private String channel;
+
 
 }

@@ -6,17 +6,20 @@ import lombok.Setter;
 
 /**
  * 上海拙心网络科技有限公司出品
- * Author: 代宝磊
- * Date: 2016/3/7
- * Time :14:50
+ * Author: 赵朋扬
+ * Date: 2016/3/1.
  */
-public class SearchRequest extends Request{
+public class SearchRequest extends Request {
 
     @Getter
     @Setter
-    private int action ;
+    private String keyword;
 
     @Getter
     @Setter
-    private String parameter;
+    private int page = 1;
+
+    @Getter
+    @Setter
+    private int pageSize = 10;
 }

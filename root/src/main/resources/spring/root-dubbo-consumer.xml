@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util" xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+
+    <dubbo:application name="application-user"/>
+
+    <dubbo:registry address="#{app.dubboRegistry}"/>
+
+    <dubbo:reference interface="com.me2me.user.service.UserService" id="userService"/>
+
+    <dubbo:reference interface="com.me2me.content.service.ContentService" id="contentService"/>
+
+    <dubbo:reference interface="com.me2me.live.service.LiveService" id="liveService"/>
+
+    <dubbo:reference interface="com.me2me.io.service.FileTransferService" id="fileTransferService"/>
+
+    <dubbo:reference interface="com.me2me.search.service.SearchService" id="searchService"/>
+
+    <dubbo:reference interface="com.me2me.activity.service.ActivityService" id="activityService"/>
+
+    <dubbo:reference interface="com.me2me.monitor.service.MonitorService" id="monitorService"/>
+
+    <dubbo:reference interface="com.me2me.sns.service.SnsService" id="snsService"/>
+
+    <dubbo:reference interface="com.me2me.cache.service.CacheService" id="cacheService"/>
+
+
+</beans>

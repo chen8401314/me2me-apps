@@ -21,4 +21,13 @@ public class BaseJdbcDao {
         return this.jdbcTemplate.queryForList(sql,params);
     }
 
+    public void execute(String sql){
+        this.jdbcTemplate.execute(sql);
+    }
+
+    public int count(String sql, Object ... params){
+        return this.jdbcTemplate.queryForList(sql,params).size();
+    }
+
+
 }

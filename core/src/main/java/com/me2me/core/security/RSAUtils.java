@@ -1,6 +1,5 @@
 package com.me2me.core.security;
 
-import com.me2me.core.security.Base64Utils;
 
 import java.io.ByteArrayOutputStream;
 import java.security.Key;

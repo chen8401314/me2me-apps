@@ -40,11 +40,12 @@
 
 
 
-    <bean id="templateResolver" class="org.thymeleaf.templateresolver.ServletContextTemplateResolver">
-        <property name="prefix" value="/WEB-INF/templates/" />
+    <bean id="templateResolver" class="org.thymeleaf.templateresolver.FileTemplateResolver">
+        <property name="prefix" value="#{app.thymeleaf_home}" />
         <property name="suffix" value=".html" />
         <property name="characterEncoding" value="UTF-8"/>
         <property name="order" value="1"/>
+        <property name="cacheable" value="false"/>
         <property name="templateMode" value="HTML5" />
     </bean>
 

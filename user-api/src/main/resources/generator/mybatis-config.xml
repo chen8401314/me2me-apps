@@ -6,10 +6,10 @@
 <generatorConfiguration>
 
     <context id="MySqlTables" targetRuntime="MyBatis3">
-        <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://192.168.89.103:3306/apps"
-                        userId="plAdmin"
-                        password="1q2w_3e4r">
+    <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                    connectionURL="jdbc:mysql://192.168.89.80:3306/apps"
+                    userId="me2me"
+                    password="Sp@Metro#79">
         </jdbcConnection>
 
         <javaTypeResolver >
@@ -43,8 +43,15 @@
         <!--<table tableName="user_content_tags" domainObjectName="UserContentTags"/>-->
         <!--<table tableName="user_tags_details" domainObjectName="UserTagsDetails" />-->
         <!--<table tableName="user_tags_record" domainObjectName="UserTagsRecord" />-->
-        <table tableName="user_notice" domainObjectName="UserNotice" />
+        <!--<table tableName="user_notice" domainObjectName="UserNotice" />-->
         <!--<table tableName="user_tips" domainObjectName="UserTips" />-->
         <!--<table tableName="user_report" domainObjectName="UserReport" />-->
+        <!--<table tableName="user_tags_record" domainObjectName="UserTagsRecord" />-->
+        <!--<table tableName="application_security" domainObjectName="ApplicationSecurity" />-->
+        <!--<table tableName="user_no" domainObjectName="UserNo" />-->
+        <!--<table tableName="user_device" domainObjectName="UserDevice" />-->
+        <!--<table tableName="xinge_push_log" domainObjectName="XingePushLog" />-->
+        <table tableName="jpush_token" domainObjectName="JpushToken"/>
+
     </context>
 </generatorConfiguration>

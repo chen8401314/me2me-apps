@@ -1,5 +1,6 @@
 package com.me2me.web.request;
 
+import com.me2me.common.web.Request;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,15 +10,7 @@ import lombok.Setter;
  * Date: 2016/2/29
  * Time :11:31
  */
-public class ModifyUserProfileRequest {
-
-    @Getter
-    @Setter
-    private int action;
-
-    @Getter
-    @Setter
-    private long uid;
+public class ModifyUserProfileRequest extends Request{
 
     @Getter
     @Setter
@@ -25,7 +18,7 @@ public class ModifyUserProfileRequest {
 
     @Getter
     @Setter
-    private int gender;
+    private Integer gender;
 
     @Getter
     @Setter
@@ -33,31 +26,22 @@ public class ModifyUserProfileRequest {
 
     @Getter
     @Setter
-    private long yearsId;
-
-    @Getter
-    @Setter
-    private long startId;
-
-    @Getter
-    @Setter
-    private long socialClass;
-
-    @Getter
-    @Setter
-    private long industry;
-
-    @Getter
-    @Setter
-    private long marriageStatus;
-
-    @Getter
-    @Setter
-    private long bearStatus ;
+    private Long yearsId;
 
     @Getter
     @Setter
     private String avatar;
 
+    @Getter
+    @Setter
+    private String birthday;
+
+    @Getter
+    @Setter
+    private String hobby;
+
+    @Getter
+    @Setter
+    private String introduced;
 
 }

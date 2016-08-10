@@ -1,0 +1,231 @@
+/*
+html5doctor.com Reset Stylesheet
+v1.4.1
+2010-03-01
+Author: Richard Clark - http://richclarkdesign.com
+*/
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+abbr, address, cite, code,
+del, dfn, em, img, ins, kbd, q, samp,
+small, strong, sub, sup, var,
+b, i,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section, summary,
+time, mark, audio, video {
+    margin:0;
+    padding:0;
+    border:0;
+    outline:0;
+    font-size:100%;
+    vertical-align:baseline;
+    background:transparent;
+}
+
+body {
+    line-height:1;
+}
+
+:focus {
+    outline: 1;
+}
+
+article,aside,canvas,details,figcaption,figure,
+footer,header,hgroup,menu,nav,section,summary {
+    display:block;
+}
+
+nav ul {
+    list-style:none;
+}
+
+blockquote, q {
+    quotes:none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content:'';
+    content:none;
+}
+
+a {
+    margin:0;
+    padding:0;
+    border:0;
+    font-size:100%;
+    vertical-align:baseline;
+    background:transparent;
+}
+
+ins {
+    background-color:#ff9;
+    color:#000;
+    text-decoration:none;
+}
+
+mark {
+    background-color:#ff9;
+    color:#000;
+    font-style:italic;
+    font-weight:bold;
+}
+
+del {
+    text-decoration: line-through;
+}
+
+abbr[title], dfn[title] {
+    border-bottom:1px dotted #000;
+    cursor:help;
+}
+
+table {
+    border-collapse:collapse;
+    border-spacing:0;
+}
+
+hr {
+    display:block;
+    height:1px;
+    border:0;
+    border-top:1px solid #cccccc;
+    margin:1em 0;
+    padding:0;
+}
+
+input, select {
+    vertical-align:middle;
+}
+
+
+.ue-index{background: #eeeeee;}
+
+.nav li{
+    font-size:18px;
+    font-family: "微软雅黑";
+    color:#E0E0E0;
+}
+.logo{
+    font-weight: 700;
+    font-size:24px !important;
+    font-family: "微软雅黑";
+}
+.ue-main{
+    /*background: #ffffff;*/
+}
+.page-title{
+    padding: 15px;
+    font-size:17.5px;
+    font-family: "微软雅黑";
+    color:#503E2C;
+    font-weight: bold;
+}
+.ue-recommend-list{
+    height: auto;
+}
+.ue-recommend-list {
+    margin:0 10px;
+    padding:10px;
+    clear:both;
+}
+.ue-recommend-list-item{
+    list-style-type: none;
+    float:left;
+    width:269px;
+    margin-bottom:10px;
+}
+
+.ue-recommend-list-item a{
+    color:#503E2C;
+    font-family: "微软雅黑";
+}
+.ue-rank{
+
+}
+.ladding-title{
+    color:#503E2C;
+    font-family: "微软雅黑";
+    padding: 10px;
+    margin:0;
+    background: #000000;
+    font-size:24px;
+}
+.main-content{
+    padding:15px;
+}
+.ue-sidebar{
+    padding:15px;
+}
+.ue-article{
+    background: #ffffff;
+}
+.ue-widget{
+    background: #ffffff;
+}
+.ue-ladding-box{
+    padding: 15px;
+}
+.ue-ladding{
+    background: #EEEEEE;
+    padding:1px;
+}
+.ue-image{
+    position: relative;
+    padding:10px;
+    background: #ffffff;
+}
+.ue-description{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    text-align: center;
+    padding:0;
+    margin:0;
+    color:white;
+
+}
+.col-4-cell{
+    padding:10px;
+}
+.image-thumb , .ue-image-thumb span{
+    width:225px;
+}
+.ue-image-thumb{
+    background: #ffffff;
+    padding: 10px;
+    position: relative;
+}
+.ue-image-thumb span{
+    display: inline-block;
+    position: absolute;
+    background: #000000;
+    opacity: 0.8;
+    bottom: 10px;
+    left: 10px;
+    padding:10px;
+}
+.ue-image-thumb span a{
+    color:#ffffff;
+}
+.row{background: #EEEEEE}
+.top-bang{
+    padding:15px;
+}
+.top-bang ul li{
+    margin:5px;
+    /*padding:5px;*/
+    padding-bottom:5px;
+}
+.dz{
+    float:left;
+}
+.copyright{
+    background: #000000;
+    padding:15px;
+    color:#ffffff;
+}
+

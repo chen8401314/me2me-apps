@@ -22,25 +22,40 @@
         <module>core</module>
         <module>io-api</module>
         <module>io</module>
+        <module>live-api</module>
+        <module>live</module>
+        <module>activity-api</module>
+        <module>activity</module>
+        <module>search-api</module>
+        <module>search</module>
+        <module>sms-api</module>
+        <module>sms</module>
+        <module>article</module>
+        <module>article-api</module>
+        <module>cache-api</module>
+        <module>cache</module>
+        <module>monitor-api</module>
+        <module>monitor</module>
+        <module>config-center</module>
+        <module>message-channel-api</module>
+        <module>message-channel</module>
     </modules>
-
-    <properties>
-        <spring.version>4.2.1.RELEASE</spring.version>
-        <fastjson.version>1.2.7</fastjson.version>
-        <mysql.driver.version>5.1.35</mysql.driver.version>
-        <mybatis.version>3.3.0</mybatis.version>
-        <mybatis.spring.version>1.2.3</mybatis.spring.version>
-        <fileupload.version>1.3.1</fileupload.version>
-        <druid.version>1.0.13</druid.version>
-        <aspectjweaver.version>1.8.6</aspectjweaver.version>
-        <lombok.version>1.16.6</lombok.version>
-        <shiro.version>1.2.4</shiro.version>
-        <slf4j.version>1.7.12</slf4j.version>
-        <httpclient.version>4.5</httpclient.version>
-        <guava.version>18.0</guava.version>
-        <servlet.version>3.1.0</servlet.version>
-    </properties>
-
+    <name>${project.artifactId}</name>
+    <description>the parent project of mysites</description>
+    <url>http://www.me-to-me.com</url>
+    <inceptionYear>2016-03-15</inceptionYear>
+    <licenses>
+        <license>
+            <name>Apache 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+    <organization>
+        <name>zhuoxin network</name>
+        <url>http://www.me-to-me.com</url>
+    </organization>
     <dependencyManagement>
         <dependencies>
             <dependency>
@@ -124,11 +139,6 @@
                 <version>${shiro.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.slf4j</groupId>
-                <artifactId>slf4j-api</artifactId>
-                <version>${slf4j.version}</version>
-            </dependency>
-            <dependency>
                 <groupId>org.apache.httpcomponents</groupId>
                 <artifactId>httpclient</artifactId>
                 <version>${httpclient.version}</version>
@@ -143,8 +153,96 @@
                 <artifactId>javax.servlet-api</artifactId>
                 <version>${servlet.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>dubbo</artifactId>
+                <version>${dubbo.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.101tec</groupId>
+                <artifactId>zkclient</artifactId>
+                <version>${zkclient.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-classic</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>ch.qos.logback</groupId>
+                <artifactId>logback-core</artifactId>
+                <version>${logback.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${slf4j.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-web</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-jetty</artifactId>
+                <version>${spring.boot.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jsoup</groupId>
+                <artifactId>jsoup</artifactId>
+                <version>${jsoup.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <developers>
+        <developer>
+            <id>kisszpy</id>
+            <name>kisszpy</name>
+            <email>kisszpy@163.com</email>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+8</timezone>
+        </developer>
+        <developer>
+            <id>dbl</id>
+            <name>daibaolei</name>
+            <email>63914178@qq.com</email>
+            <roles>
+                <role>developer</role>
+            </roles>
+            <timezone>+8</timezone>
+        </developer>
+    </developers>
+    <properties>
+        <spring.version>4.2.6.RELEASE</spring.version>
+        <fastjson.version>1.2.7</fastjson.version>
+        <mysql.driver.version>5.1.35</mysql.driver.version>
+        <mybatis.version>3.3.0</mybatis.version>
+        <mybatis.spring.version>1.2.3</mybatis.spring.version>
+        <fileupload.version>1.3.1</fileupload.version>
+        <druid.version>1.0.13</druid.version>
+        <aspectjweaver.version>1.8.6</aspectjweaver.version>
+        <lombok.version>1.16.6</lombok.version>
+        <shiro.version>1.2.4</shiro.version>
+        <slf4j.version>1.7.12</slf4j.version>
+        <httpclient.version>4.5</httpclient.version>
+        <guava.version>18.0</guava.version>
+        <servlet.version>3.1.0</servlet.version>
+        <dubbo.version>2.5.3</dubbo.version>
+        <project.build.sourceencoding>UTF-8</project.build.sourceencoding>
+        <zkclient.version>0.7</zkclient.version>
+        <logback.version>1.1.3</logback.version>
+        <spring.boot.version>1.3.5.RELEASE</spring.boot.version>
+        <jsoup.version>1.9.1</jsoup.version>
+    </properties>
 
     <build>
         <plugins>

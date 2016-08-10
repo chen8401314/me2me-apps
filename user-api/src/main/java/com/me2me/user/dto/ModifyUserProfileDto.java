@@ -2,8 +2,6 @@ package com.me2me.user.dto;
 
 import com.me2me.common.web.BaseEntity;
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -14,7 +12,6 @@ import lombok.Setter;
 @Data
 public class ModifyUserProfileDto implements BaseEntity{
 
-    private int action;
 
     private long uid;
 
@@ -22,19 +19,15 @@ public class ModifyUserProfileDto implements BaseEntity{
 
     private String nickName;
 
-    private int gender;
+    private Integer gender;
 
     private String avatar;
 
-    private long yearsId;
+    private Long yearsId;
 
-    private long startId;
+    private String birthday;
 
-    private long socialClass;
+    private String hobby;
 
-    private long industry;
-
-    private long marriageStatus;
-
-    private long bearStatus ;
+    private String introduced;
 }

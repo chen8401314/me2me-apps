@@ -13,6 +13,11 @@
         <import resource="classpath:spring/im-context.xml"/>
         <import resource="classpath:spring/mysql-context.xml"/>
         <import resource="classpath:spring/content-context.xml"/>
+        <import resource="classpath:spring/activity-context.xml"/>
+        <import resource="classpath:spring/sms-context.xml"/>
+        <import resource="classpath:spring/article-context.xml"/>
+        <import resource="classpath:spring/monitor-context.xml"/>
+        <import resource="classpath:spring/io-context.xml"/>
     </beans>
     <!--<import resource="classpath:spring/user-context.xml"/>-->
     <!--<import resource="classpath:spring/im-context.xml"/>-->

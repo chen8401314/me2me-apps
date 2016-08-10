@@ -8,17 +8,15 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>root</artifactId>
     <packaging>war</packaging>
-    <name>root</name>
-    <url>http://maven.apache.org</url>
 
     <dependencies>
+        <!--<dependency>-->
+        <!--<groupId>com.alibaba</groupId>-->
+        <!--<artifactId>fastjson</artifactId>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-webmvc</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
         </dependency>
         <dependency>
             <groupId>commons-fileupload</groupId>
@@ -27,6 +25,11 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.me2me</groupId>
+            <artifactId>core</artifactId>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
@@ -37,6 +40,9 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <properties>
+                <mode>dev</mode>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>
@@ -63,6 +69,21 @@
                     <artifactId>io</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>live</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>activity</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>search</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
             </dependencies>
             <build>
                 <filters>
@@ -74,32 +95,53 @@
         <!--测试环境-->
         <profile>
             <id>test</id>
+            <properties>
+                <mode>test</mode>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>im-api</artifactId>
+                    <artifactId>im</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>user-api</artifactId>
+                    <artifactId>user</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>content-api</artifactId>
+                    <artifactId>content</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>sns-api</artifactId>
+                    <artifactId>sns</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>io</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>search</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
             </dependencies>
+            <build>
+                <filters>
+                    <filter>src/main/filter/test.properties</filter>
+                </filters>
+            </build>
         </profile>
         <!--生产环境-->
         <profile>
             <id>product</id>
+            <properties>
+                <mode>product</mode>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>
@@ -113,6 +155,11 @@
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
+                    <artifactId>live-api</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
                     <artifactId>content-api</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
@@ -121,11 +168,69 @@
                     <artifactId>sns-api</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>io-api</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>search-api</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>activity-api</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>sns-api</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>cache-api</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
             </dependencies>
+            <build>
+                <filters>
+                    <filter>src/main/filter/product.properties</filter>
+                </filters>
+            </build>
         </profile>
     </profiles>
 
     <build>
         <finalName>root</finalName>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <warSourceExcludes>src/main/resource/generator</warSourceExcludes>
+                    <warName>${project.name}</warName>
+                    <!-- 激活spring profile -->
+                    <webResources>
+                        <resource>
+                            <filtering>true</filtering>
+                            <directory>src/main/webapp</directory>
+                            <includes>
+                                <include>**/web.xml</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+                    <warSourceDirectory>src/main/webapp</warSourceDirectory>
+                    <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>

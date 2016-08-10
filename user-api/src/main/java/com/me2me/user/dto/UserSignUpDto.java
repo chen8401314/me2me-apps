@@ -21,6 +21,13 @@ public class UserSignUpDto implements BaseEntity {
 
     private String nickName;
 
+    private String deviceNo;
+
+    private int platform;
+
+    private String os;
+
+    private String introduced;
     
 
 }

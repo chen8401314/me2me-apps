@@ -15,4 +15,12 @@ public class UserLoginDto implements BaseEntity {
 
     private String encrypt;
 
+    private int platform;
+
+    private String os;
+
+    private String deviceNo;
+
+    private String jPushToken;
+
 }

@@ -1,13 +1,21 @@
 package com.me2me.io.service;
 
+import com.me2me.common.web.BaseEntity;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.io.dto.QiniuAccessTokenDto;
+import com.qiniu.common.QiniuException;
+import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
+import lombok.Data;
+import org.apache.http.HttpResponse;
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.concurrent.TimeUnit;
+import java.io.IOException;
+
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -22,6 +30,8 @@ public class FileTransferServiceImpl implements FileTransferService{
     private static final String SECRET_KEY ="9fmLV9tnplKRITWQV7QOQYANArqCNELd_SXtjwh9";
 
     private static final String BUCKET = "ifeeling";
+
+    private static int DEFAULT_TIME_OUT = 60000000;
 
 
     /**
@@ -41,4 +51,24 @@ public class FileTransferServiceImpl implements FileTransferService{
         qiniuAccessTokenDto.setExpireTime(60*1000*10);
         return Response.success(ResponseStatus.GET_QINIU_TOKEN_SUCCESS.status,ResponseStatus.GET_QINIU_TOKEN_SUCCESS.message,qiniuAccessTokenDto);
     }
+
+    public String upload(byte[] data, String key){
+        //上传到七牛后保存的文件名
+        Auth auth = Auth.create(ACCESS_KEY,SECRET_KEY);
+        String token = auth.uploadToken(BUCKET);
+        UploadManager up = new UploadManager();
+        try {
+            up.put(data,key,token);
+        } catch (QiniuException e) {
+            e.printStackTrace();
+        }
+        return  null;
+    }
+
+    public byte[] download(String domain,String key) throws IOException {
+        String resourceUrl = domain + "/" + key;
+        Connection.Response response = Jsoup.connect(resourceUrl).timeout(DEFAULT_TIME_OUT).ignoreContentType(true).execute();
+        return response.bodyAsBytes();
+    }
+
 }

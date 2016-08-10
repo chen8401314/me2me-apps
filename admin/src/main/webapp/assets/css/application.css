@@ -1,0 +1,169 @@
+*{
+    padding: 0;
+    margin: 0;
+}
+.ue-container{
+    -moz-border-radius: 10px;
+    -webkit-border-radius: 10px;
+    border-radius:10px;
+    padding-bottom: 20px;
+    padding-top:10px;
+    background: #ffffff;
+    margin:10px;
+    -webkit-transition:border linear .1s,-webkit-box-shadow linear .1s;
+    -webkit-box-shadow:0 0 8px rgba(8,36,5,0.10);
+}
+.title ,.content{
+    font-size: 18px;
+    color:#082441;
+    font-family: "Georgia", "SimSun", sans-serif;
+    padding:0 10px;
+    line-height: 26px;
+    font-style: normal !important;
+}
+.content{
+    font-size:16px;
+}
+img{
+    margin:10px 0;
+}
+.title{
+    display: block;
+}
+body{
+    background: #f4f6f9;
+}
+#DLArea {
+    padding: 5px 0px;
+    width: 100%;
+    height: 60px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 99;
+    background: rgba(0, 0, 0, 0.6);
+    background: transparent\9;
+    zoom: 1;
+    /* required for the filters */
+    -ms-filter: "progid:DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000)";
+    /* IE8 */
+    filter: progid: DXImageTransform.Microsoft.gradient(startColorstr=#99000000, endColorstr=#99000000);
+    /* IE5.5-7 */
+}
+
+#DLAreaas {
+    position: relative;
+    padding: 0px 5px 0px 62px;
+    height: 50px;
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+}
+
+#DLArealogo {
+    position: absolute;
+    left: 10px;
+    width: 36px;
+    border-radius: 5px;
+}
+
+#DLAreatitle1 {
+    margin: 0px;
+    font-size: 16px;
+    line-height: 16px;
+    padding: 6px 0px 6px 0px;
+}
+
+#DLAreatitle2 {
+    margin: 2px;
+    font-size: 10px;
+    line-height: 10px;
+    padding: 6px 0px 6px 0px;
+}
+
+#DLAreaOpen {
+    right: 50px;
+    position: absolute;
+    top: 11px;
+    width: 70px;
+    height: 28px;
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    font-size: 15px;
+    line-height: 28px;
+    text-align: center;
+    border: solid 1px #fff;
+    /*background-color: #b23636;*/
+}
+
+#DLAreacancel {
+    right: 12px;
+    position: absolute;
+    top: 11px;
+    width: 25px;
+    height: 25px;
+    color: rgb(255, 255, 255);
+    font-weight: bold;
+    font-size: 15px;
+    line-height: 28px;
+    text-align: center;
+    background-image: url('/assets/images/cancel.png');
+}
+
+#ADArea {
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+#DLAreatitle1 {
+    margin: 0px;
+    font-size: 20px;
+    line-height: 17px;
+    padding: 6px 0px 6px 0px;
+}
+
+#DLAreatitle2 {
+    margin: 2px;
+    font-size: 14px;
+    line-height: 0px;
+    padding: 6px 0px 6px 0px;
+    letter-spacing:2px;
+}
+body{
+    max-width:800px;
+    margin:0 auto;
+}
+
+.ue-activity-header{
+    height:40px;
+    margin-bottom:20px;
+}
+.ue-activity-header .avatar{
+    width:40px;height:40px;float:left;margin-left:10px;
+}
+.avatar img{
+    border-radius:5px;
+    margin:0;
+}
+.ue-activity-info-l{
+    line-height:40px;padding:0 10px;height:40px;float:left;
+}
+.ue-activity-info-r{
+    line-height:40px;padding:0 10px;height:40px;float:right;
+}
+.activity-text{
+    font-size:12px;
+    color:#082441;
+}
+.activity-text-date{
+    font-size:12px;
+    color:#aaafb5;
+}
+.title-line{
+    border-bottom: 1px solid #aaafb5;margin: 20px 10px;
+}
+.title-margin-bottom{
+    margin-bottom: 10px;
+}
+.cu-line-style{
+    height: 20px;border-bottom: 1px solid #aaafb5;margin: 0 10px 10px 10px;
+}

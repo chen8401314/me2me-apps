@@ -1,11 +1,9 @@
 package com.me2me.content.dto;
 
-import com.google.common.collect.Lists;
 import com.me2me.common.web.BaseEntity;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -34,5 +32,19 @@ public class ContentDto implements BaseEntity {
     private String title;
 
     private Date createTime;
+
+    private int rights;
+
+    private String forWardUrl;
+
+    private String forwardTitle;
+
+    private String coverImage;
+
+    private int action;
+
+    private int isTop;
+
+
 
 }

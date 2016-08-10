@@ -10,7 +10,7 @@ import lombok.Setter;
  * Date: 2016/2/29
  * Time :9:54
  */
-public class CheckVerifyRequest  extends Request {
+public class CheckVerifyRequest extends Request {
 
     @Getter
     @Setter

@@ -1,524 +1,254 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:th="http://www.thymeleaf.org" lang="en">
-<head th:include="fragments/header">
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>经典段子大全_动态搞笑图片_性感热舞视频_美女图片大全_笑林杂谈</title>
+    <meta name="description" content="笑林杂谈是个提供搞笑、段子、美女、热舞、性感、街拍、自拍、笑话的内容平台。" />
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" th:href="@{/assets/favicon.ico}"/>
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/screen.css}"/>
+    <link rel="canonical" href="http://www.51nick.com/" />
+    <meta name="referrer" content="origin" />
 </head>
-<body class="page-body">
-<div class="settings-pane">
-
-    <a href="#" data-toggle="settings-pane" data-animate="true">
-        &times;
-    </a>
-
-    <div class="settings-pane-inner">
-
+<body class="home-template">
+<!-- start navigation -->
+<nav class="navbar navbar-default">
+    <div class="container">
         <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header">
+                        <span class="nav-toggle-button collapsed" data-toggle="collapse" data-target="#main-menu">
+                        <span class="sr-only">Toggle navigation</span>
+                        <i class="fa fa-bars pull-right"></i>
+                        </span>
+                    <a class="navbar-brand" href="/">笑林杂谈</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="nav navbar-nav">
+                        <li class="active" role="presentation"><a href="/"><i class="fa fa-home"></i> 首页</a></li>
+                        <li>
+                            <a href="/item-7-1.html" target="_blank"><i class="fa fa-image"></i> 搞笑图片</a>
+                        </li>
+                        <li>
+                            <a href="/item-8-1.html" target="_blank"><i class="fa fa-file-text"></i> 精选段子</a>
+                        </li>
+                        <li>
+                            <a href="/item-22-1.html" target="_blank"><i class="fa fa-venus"></i> 美女图片</a>
+                        </li>
+                        <li>
+                            <a href="#" target="_blank"><i class="fa fa-camera-retro"></i> 街拍</a>
+                        </li>
+                        <th:block th:if="${type eq 23}">
+                            <li class="active">
+                                <a href="/item-23-1.html" target="_blank"><i class="fa fa-play-circle"></i> 性感热舞</a>
+                            </li>
+                        </th:block>
+                        <th:block th:if="${type ne 23}">
+                            <li>
+                                <a href="/item-23-1.html" target="_blank"><i class="fa fa-play-circle"></i> 性感热舞</a>
+                            </li>
+                        </th:block>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+<!-- end navigation -->
 
-            <div class="col-md-4">
 
-                <div class="user-info">
+<!-- start site's main content area -->
+<section class="content-wrap">
+    <div class="container">
+        <div class="row">
+            <main class="col-md-8 main-content">
+                <div class="widget post">
+                    <h4 class="title">精选段子<a href="/item-8-1.html" class="pull-right" target="_blank">更多</a></h4>
+                    <th:block th:each="article:${root.jokes}">
+                        <div class="content dz">
+                            <h5 th:text="${article.title}"></h5>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <img th:src="${article.coverImage}" class="thumbnail img-responsive"/>
+                                </div>
+                                <div class="col-md-9">
+                                    <p th:utext="${article.summary}"></p>
+                                    <span><a th:href="'thread-' + ${article.id}+'.html'" class="btn btn-default pull-right">阅读全文</a></span>
+                                </div>
+                            </div>
+                        </div>
+                    </th:block>
+                </div>
 
-                    <div class="user-image">
-                        <a href="extra-profile.html">
-                            <img src="/assets/images/user-2.png" class="img-responsive img-circle" />
-                        </a>
-                    </div>
+                <div class="widget post">
+                    <h4 class="title">搞笑图片 <a href="/item-7-1.html" class="pull-right" target="_blank">更多</a></h4>
 
-                    <div class="user-details">
-
-                        <h3>
-                            <a href="extra-profile.html">哥骄傲</a>
-
-                            <!-- Available statuses: is-online, is-idle, is-busy and is-offline -->
-                            <span class="user-status is-online"></span>
-                        </h3>
-
-                        <p class="user-title">道长</p>
-
-                        <div class="user-links">
-                            <a href="extra-profile.html" class="btn btn-primary">Edit Profile</a>
-                            <a href="extra-profile.html" class="btn btn-success">Upgrade</a>
+                        <div class="row qt">
+                            <th:block th:each="quImage:${root.quImages}">
+                            <div class="col-sm-4">
+                                <img th:src="${quImage.image}"  class="img-responsive thumbnail"/>
+                                <p><a th:href="'thread-' + ${quImage.id}+'.html'" th:text="${quImage.title}"></a></p>
+                            </div>
+                            </th:block>
                         </div>
 
+                </div>
+
+
+                <div class="widget post">
+                    <h4 class="title">精选美图<a href="/item-22-1.html" class="pull-right" target="_blank">更多</a></h4>
+                    <div class="content jxmeitu">
+                        <div class="row">
+                            <th:block th:each="album:${root.albums}">
+                                <div class="col-sm-4">
+                                    <img th:src="${album.image}" class="img-responsive thumbnail" />
+                                    <p><a th:href="'thread-' + ${album.id}+'.html'" th:text="${album.title}"></a></p>
+                                </div>
+                            </th:block>
+                        </div>
                     </div>
-
                 </div>
+            </main>
 
-            </div>
+            <aside class="col-md-4 sidebar">
+                <!-- start widget -->
+                <!-- end widget -->
 
-            <div class="col-md-8 link-blocks-env">
-
-                <div class="links-block left-sep">
-                    <h4>
-                        <span>Notifications</span>
-                    </h4>
-
-                    <ul class="list-unstyled">
-                        <li>
-                            <input type="checkbox" class="cbr cbr-primary" checked="checked" id="sp-chk1" />
-                            <label for="sp-chk1">Messages</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" class="cbr cbr-primary" checked="checked" id="sp-chk2" />
-                            <label for="sp-chk2">Events</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" class="cbr cbr-primary" checked="checked" id="sp-chk3" />
-                            <label for="sp-chk3">Updates</label>
-                        </li>
-                        <li>
-                            <input type="checkbox" class="cbr cbr-primary" checked="checked" id="sp-chk4" />
-                            <label for="sp-chk4">Server Uptime</label>
-                        </li>
-                    </ul>
+                <!-- start tag cloud widget -->
+                <div class="widget">
+                    <h4 class="title">阅读排行榜</h4>
+                    <div class="content community">
+                        <th:block th:each="t:${topTen}">
+                            <th:block th:if="${tStat.index} gt 2">
+                                <p><span  class="label label-warning" th:text="${tStat.index}+1"></span> <a th:href="'thread-' + ${t.id}+'.html'" th:text="${t.articleTitle}" target="_blank"></a></p>
+                            </th:block>
+                            <th:block th:if="${tStat.index} lt 3">
+                                <p><span class="label label-danger" th:text="${tStat.index}+1"></span> <a th:href="'thread-' + ${t.id}+'.html'" th:text="${t.articleTitle}" target="_blank"></a></p>
+                            </th:block>
+                        </th:block>
+                    </div>
                 </div>
+                <!-- end tag cloud widget -->
 
-                <div class="links-block left-sep">
-                    <h4>
-                        <a href="#">
-                            <span>Help Desk</span>
-                        </a>
-                    </h4>
-
-                    <ul class="list-unstyled">
-                        <li>
-                            <a href="#">
-                                <i class="fa-angle-right"></i>
-                                Support Center
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i class="fa-angle-right"></i>
-                                Submit a Ticket
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i class="fa-angle-right"></i>
-                                Domains Protocol
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#">
-                                <i class="fa-angle-right"></i>
-                                Terms of Service
-                            </a>
-                        </li>
-                    </ul>
+                <!-- start widget -->
+                <div class="widget">
+                    <h4 class="title">热门推荐</h4>
+                    <div class="content community">
+                        <th:block th:each="t:${hotTen}">
+                            <th:block th:if="${tStat.index} gt 2">
+                                <p><span  class="label label-warning" th:text="${tStat.index}+1"></span> <a th:href="'thread-' + ${t.id}+'.html'" th:text="${t.articleTitle}" target="_blank"></a></p>
+                            </th:block>
+                            <th:block th:if="${tStat.index} lt 3">
+                                <p><span class="label label-danger" th:text="${tStat.index}+1"></span> <a th:href="'thread-' + ${t.id}+'.html'" th:text="${t.articleTitle}" target="_blank"></a></p>
+                            </th:block>
+                        </th:block>
+                    </div>
                 </div>
+                <!-- end widget -->
 
-            </div>
+                <!-- start tag cloud widget -->
+                <!--<div class="widget">-->
+                    <!--<h4 class="title">笑林标签</h4>-->
+                    <!--<div class="content tag-cloud">-->
+                        <!--<a href="#">建设中...</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+                <!-- end tag cloud widget -->
 
+                <!-- start widget -->
+                <!-- end widget -->
+
+                <!-- start widget -->
+                <!-- end widget -->
+            </aside>
         </div>
-
     </div>
-
-</div>
-<div class="copyrights">拙心网络科技有限公司</div>
-<div class="page-container">
-    <div class="sidebar-menu toggle-others fixed">
-
-        <div class="sidebar-menu-inner">
-
-            <header class="logo-env">
-
-                <!-- logo -->
-                <div class="logo">
-                    <a href="dashboard-1.html" class="logo-expanded">
-                        <img src="/assets/images/logo@2x.png" width="80" alt="" />
-                    </a>
-
-                    <a href="dashboard-1.html" class="logo-collapsed">
-                        <img src="/assets/images/logo-collapsed@2x.png" width="40" alt="" />
-                    </a>
-                </div>
-
-                <!-- This will toggle the mobile menu and will be visible only on mobile devices -->
-                <div class="mobile-menu-toggle visible-xs">
-                    <a href="#" data-toggle="user-info-menu">
-                        <i class="fa-bell-o"></i>
-                        <span class="badge badge-success">7</span>
-                    </a>
-
-                    <a href="#" data-toggle="mobile-menu">
-                        <i class="fa-bars"></i>
-                    </a>
-                </div>
-
-                <!-- This will open the popup with user profile settings, you can use for any purpose, just be creative -->
-                <div class="settings-icon">
-                    <a href="#" data-toggle="settings-pane" data-animate="true">
-                        <i class="linecons-cog"></i>
-                    </a>
-                </div>
-
-
-            </header>
-
-            <th:block th:include="fragments/menu"></th:block>
-        </div>
-
-    </div>
-
-    <div class="main-content">
-
-        <!-- User Info, Notifications and Menu Bar -->
-        <nav class="navbar user-info-navbar" role="navigation">
-
-            <!-- Left links for user info navbar -->
-            <ul class="user-info-menu left-links list-inline list-unstyled">
-
-                <li class="hidden-sm hidden-xs">
-                    <a href="#" data-toggle="sidebar">
-                        <i class="fa-bars"></i>
-                    </a>
-                </li>
-
-                <li class="dropdown hover-line">
-                    <a href="#" data-toggle="dropdown">
-                        <i class="fa-envelope-o"></i>
-                        <span class="badge badge-green">15</span>
-                    </a>
-
-                    <ul class="dropdown-menu messages">
-                        <li>
-
-                            <ul class="dropdown-menu-list list-unstyled ps-scrollbar">
-
-                                <li class="active"><!-- "active" class means message is unread -->
-                                    <a href="#">
-											<span class="line">
-												<strong>Luc Chartier</strong>
-												<span class="light small">- yesterday</span>
-											</span>
-
-											<span class="line desc small">
-												This ain’t our first item, it is the best of the rest.
-											</span>
-                                    </a>
-                                </li>
-
-                                <li class="active">
-                                    <a href="#">
-											<span class="line">
-												<strong>Salma Nyberg</strong>
-												<span class="light small">- 2 days ago</span>
-											</span>
-
-											<span class="line desc small">
-												Oh he decisively impression attachment friendship so if everything.
-											</span>
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a href="#">
-											<span class="line">
-												Hayden Cartwright
-												<span class="light small">- a week ago</span>
-											</span>
-
-											<span class="line desc small">
-												Whose her enjoy chief new young. Felicity if ye required likewise so doubtful.
-											</span>
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a href="#">
-											<span class="line">
-												Sandra Eberhardt
-												<span class="light small">- 16 days ago</span>
-											</span>
-
-											<span class="line desc small">
-												On so attention necessary at by provision otherwise existence direction.
-											</span>
-                                    </a>
-                                </li>
-
-                                <!-- Repeated -->
-
-                                <li class="active"><!-- "active" class means message is unread -->
-                                    <a href="#">
-											<span class="line">
-												<strong>Luc Chartier</strong>
-												<span class="light small">- yesterday</span>
-											</span>
-
-											<span class="line desc small">
-												This ain’t our first item, it is the best of the rest.
-											</span>
-                                    </a>
-                                </li>
-
-                                <li class="active">
-                                    <a href="#">
-											<span class="line">
-												<strong>Salma Nyberg</strong>
-												<span class="light small">- 2 days ago</span>
-											</span>
-
-											<span class="line desc small">
-												Oh he decisively impression attachment friendship so if everything.
-											</span>
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a href="#">
-											<span class="line">
-												Hayden Cartwright
-												<span class="light small">- a week ago</span>
-											</span>
-
-											<span class="line desc small">
-												Whose her enjoy chief new young. Felicity if ye required likewise so doubtful.
-											</span>
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a href="#">
-											<span class="line">
-												Sandra Eberhardt
-												<span class="light small">- 16 days ago</span>
-											</span>
-
-											<span class="line desc small">
-												On so attention necessary at by provision otherwise existence direction.
-											</span>
-                                    </a>
-                                </li>
-
-                            </ul>
-
-                        </li>
-
-                        <li class="external">
-                            <a href="blank-sidebar.html">
-                                <span>All Messages</span>
-                                <i class="fa-link-ext"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li class="dropdown hover-line">
-                    <a href="#" data-toggle="dropdown">
-                        <i class="fa-bell-o"></i>
-                        <span class="badge badge-purple">7</span>
-                    </a>
-
-                    <ul class="dropdown-menu notifications">
-                        <li class="top">
-                            <p class="small">
-                                <a href="#" class="pull-right">Mark all Read</a>
-                                You have <strong>3</strong> new notifications.
-                            </p>
-                        </li>
-
-                        <li>
-                            <ul class="dropdown-menu-list list-unstyled ps-scrollbar">
-                                <li class="active notification-success">
-                                    <a href="#">
-                                        <i class="fa-user"></i>
-
-											<span class="line">
-												<strong>New user registered</strong>
-											</span>
-
-											<span class="line small time">
-												30 seconds ago
-											</span>
-                                    </a>
-                                </li>
-
-                                <li class="active notification-secondary">
-                                    <a href="#">
-                                        <i class="fa-lock"></i>
-
-											<span class="line">
-												<strong>Privacy settings have been changed</strong>
-											</span>
-
-											<span class="line small time">
-												3 hours ago
-											</span>
-                                    </a>
-                                </li>
-
-                                <li class="notification-primary">
-                                    <a href="#">
-                                        <i class="fa-thumbs-up"></i>
-
-											<span class="line">
-												<strong>Someone special liked this</strong>
-											</span>
-
-											<span class="line small time">
-												2 minutes ago
-											</span>
-                                    </a>
-                                </li>
-
-                                <li class="notification-danger">
-                                    <a href="#">
-                                        <i class="fa-calendar"></i>
-
-											<span class="line">
-												John cancelled the event
-											</span>
-
-											<span class="line small time">
-												9 hours ago
-											</span>
-                                    </a>
-                                </li>
-
-                                <li class="notification-info">
-                                    <a href="#">
-                                        <i class="fa-database"></i>
-
-											<span class="line">
-												The server is status is stable
-											</span>
-
-											<span class="line small time">
-												yesterday at 10:30am
-											</span>
-                                    </a>
-                                </li>
-
-                                <li class="notification-warning">
-                                    <a href="#">
-                                        <i class="fa-envelope-o"></i>
-
-											<span class="line">
-												New comments waiting approval
-											</span>
-
-											<span class="line small time">
-												last week
-											</span>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-
-                        <li class="external">
-                            <a href="#">
-                                <span>View all notifications</span>
-                                <i class="fa-link-ext"></i>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-            </ul>
-
-
-            <!-- Right links for user info navbar -->
-            <ul class="user-info-menu right-links list-inline list-unstyled">
-
-                <li class="search-form"><!-- You can add "always-visible" to show make the search input visible -->
-
-                    <form method="get" action="extra-search.html">
-                        <input type="text" name="s" class="form-control search-field" placeholder="Type to search..." />
-
-                        <button type="submit" class="btn btn-link">
-                            <i class="linecons-search"></i>
-                        </button>
-                    </form>
-
-                </li>
-
-                <li class="dropdown user-profile">
-                    <a href="#" data-toggle="dropdown">
-                        <img src="/assets/images/user-4.png" alt="user-image" class="img-circle img-inline userpic-32" width="28" />
-							<span>
-								Arlind Nushi
-								<i class="fa-angle-down"></i>
-							</span>
-                    </a>
-
-                    <ul class="dropdown-menu user-profile-menu list-unstyled">
-                        <li>
-                            <a href="#edit-profile">
-                                <i class="fa-edit"></i>
-                                New Post
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#settings">
-                                <i class="fa-wrench"></i>
-                                Settings
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#profile">
-                                <i class="fa-user"></i>
-                                Profile
-                            </a>
-                        </li>
-                        <li>
-                            <a href="#help">
-                                <i class="fa-info"></i>
-                                Help
-                            </a>
-                        </li>
-                        <li class="last">
-                            <a href="extra-lockscreen.html">
-                                <i class="fa-lock"></i>
-                                Logout
-                            </a>
-                        </li>
-                    </ul>
-                </li>
-
-                <li>
-                    <a href="#" data-toggle="chat">
-                        <i class="fa-comments-o"></i>
-                    </a>
-                </li>
-
-            </ul>
-
-        </nav>
+</section>
+
+<!--<footer class="main-footer">-->
+    <!--<div class="container">-->
+        <!--<div class="row">-->
+            <!--<div class="col-sm-4">-->
+                <!--<div class="widget">-->
+                    <!--<h4 class="title">最新文章</h4>-->
+                    <!--<div class="content recent-post">-->
+                        <!--<div class="recent-single-post">-->
+                            <!--<a href="#" class="post-title">建设中...</a>-->
+                            <!--<div class="date">2016年4月28日</div>-->
+                        <!--</div>-->
+                        <!--<div class="recent-single-post">-->
+                            <!--<a href="#" class="post-title">建设中...</a>-->
+                            <!--<div class="date">2016年3月23日</div>-->
+                        <!--</div>-->
+                        <!--<div class="recent-single-post">-->
+                            <!--<a href="#" class="post-title">建设中...</a>-->
+                            <!--<div class="date">2015年12月29日</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+
+            <!--<div class="col-sm-4">-->
+                <!--<div class="widget">-->
+                    <!--<h4 class="title">标签云</h4>-->
+                    <!--<div class="content tag-cloud">-->
+                        <!--<a href="#">建设中...</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+
+            <!--<div class="col-sm-4">-->
+                <!--<div class="widget">-->
+                    <!--<h4 class="title">合作伙伴</h4>-->
+                    <!--<div class="content tag-cloud friend-links">-->
+                        <!--<a href="http://www.lieqi.com" title="猎奇网" target="_blank">猎奇网</a>-->
+                        <!--<hr/>-->
+                        <!--<a href="http://www.chinaz.com/" title="站长之家" target="_blank">站长之家</a>-->
+                        <!--<hr/>-->
+                        <!--<a href="http://www.taohuaan.net/" title="桃花庵" target="_blank">桃花庵</a>-->
+                        <!--<hr/>-->
+                        <!--<a href="http://www.zhainandao.com/" title="宅男岛" target="_blank">宅男岛</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</footer>-->
+
+<div class="copyright">
+    <div class="container">
         <div class="row">
-        </div>
-        <div class="row">
-        </div>
-        <footer class="main-footer sticky footer-type-1">
-
-            <div class="footer-inner">
-
-                <!-- Add your copyright text here -->
-                <div class="footer-text">
-                    &copy; 2016
-                    <strong>MAO</strong>
-                    拙心网络科技有限公司
-                </div>
-
-
-                <!-- Go to Top Link, just add rel="go-top" to any link to add this functionality -->
-                <div class="go-up">
-
-                    <a href="#" rel="go-top">
-                        <i class="fa-angle-up"></i>
-                    </a>
-
-                </div>
-
+            <div class="col-sm-12">
+                <span>Copyright &copy; <a href="http://www.51nick.com/">笑林杂谈</a></span> |
+                <span><a href="http://www.miibeian.gov.cn/" target="_blank">陕ICP备16007303号</a></span> |
             </div>
-
-        </footer>
+        </div>
     </div>
 </div>
-<div class="page-loading-overlay">
-    <div class="loader-2"></div>
-</div>
-<th:block th:include="fragments/scripts"></th:block>
+
+<a href="#" id="back-to-top"><i class="fa fa-angle-up"></i></a>
+
+<script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="//cdn.bootcss.com/fitvids/1.1.0/jquery.fitvids.min.js"></script>
+<script src="/assets/js/main.js?v=82931f6358"></script>
+<script>
+    $(function(){
+        $('.post-content img').each(function(item){
+            var src = $(this).attr('src');
+
+            $(this).wrap('<a href="' + src + '" class="mfp-zoom" style="display:block;"></a>');
+        });
+
+        /*$('.post-content').magnificPopup({
+         delegate: 'a',
+         type: 'image'
+         });*/
+    });
+</script>
 </body>
 </html>

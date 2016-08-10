@@ -21,4 +21,12 @@ public class MyPublishContentRequest extends Request {
     @Getter
     private long customerId;
 
+    @Setter
+    @Getter
+    private int type;
+
+    @Setter
+    @Getter
+    private long updateTime;
+
 }

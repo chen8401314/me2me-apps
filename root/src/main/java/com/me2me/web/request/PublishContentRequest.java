@@ -39,6 +39,22 @@ public class PublishContentRequest extends Request {
     @Setter
     private String title;
 
+    @Getter
+    @Setter
+    private int rights;
+
+    @Getter
+    @Setter
+    private String forwardUrl;
+
+    @Getter
+    @Setter
+    private String forwardTitle;
+
+    @Getter
+    @Setter
+    private String coverImage;
+
 
 
 }
