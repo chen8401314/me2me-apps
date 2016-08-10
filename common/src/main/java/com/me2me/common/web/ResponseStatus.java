@@ -31,41 +31,116 @@ public enum  ResponseStatus {
 
     USER_MODIFY_PROFILE_SUCCESS("用户资料修改成功","user modify profile success",2008),
 
-    USER_ADD_FRIEND_SUCCESS("用户创建好友成功","user create friend success",20020),
+    USER_ADD_FRIEND_SUCCESS("用户创建好友成功","user create friend success",2009),
 
-    USER_REMOVE_FRIEND_SUCCESS("用户删除好友成功","user remove friend success",20021),
+    USER_REMOVE_FRIEND_SUCCESS("用户删除好友成功","user remove friend success",20010),
 
-    USER_CREATE_GROUP_SUCCESS("用户创建群组成功","user create group success",20022),
+    USER_CREATE_GROUP_SUCCESS("用户创建群组成功","user create group success",20011),
 
-    ADD_GROUP_MEMBER_SUCCESS("添加群成员成功","add group member success",20023),
+    ADD_GROUP_MEMBER_SUCCESS("添加群成员成功","add group member success",20012),
 
-    REMOVE_GROUP_MEMBER_SUCCESS("移除群成员成功","remove group member success",20023),
+    REMOVE_GROUP_MEMBER_SUCCESS("移除群成员成功","remove group member success",20013),
 
-    PUBLISH_ARTICLE_SUCCESS("用户发表文章成功","user publish article success",20040),
+    PUBLISH_ARTICLE_SUCCESS("用户发表文章成功","user publish article success",20014),
 
-    CONTENT_USER_LIKES_SUCCESS("用户点赞成功","content user likes success",20041),
+    CONTENT_USER_LIKES_SUCCESS("用户点赞成功","content user likes success",20015),
 
-    USER_FIND_ENCRYPT_SUCCESS("用户密码找回成功","user find encrypt success",20042),
+    USER_FIND_ENCRYPT_SUCCESS("用户密码找回成功","user find encrypt success",20016),
 
-    CONTENT_USER_CANCEL_LIKES_SUCCESS("用户取消点赞成功","content user cancel likes success",20043),
+    CONTENT_USER_CANCEL_LIKES_SUCCESS("用户取消点赞成功","content user cancel likes success",20017),
 
-    PASTE_TAG_SUCCESS("打标签成功","paste tag success",20060),
+    PASTE_TAG_SUCCESS("打标签成功","paste tag success",20018),
 
-    CONTENT_DELETE_SUCCESS("删除成功","content delete success",20043),
+    CONTENT_DELETE_SUCCESS("删除成功","content delete success",20019),
 
-    CONTENT_TAGS_LIKES_SUCCESS("标签发布成功","content tags likes success",20044),
+    CONTENT_TAGS_LIKES_SUCCESS("标签发布成功","content tags likes success",20020),
 
-    CONTENT_GET_SUCCESS("获取内容详情","content get success",20045),
+    CONTENT_GET_SUCCESS("获取内容详情","content get success",20021),
 
-    GET_QINIU_TOKEN_SUCCESS("获取七牛token成功","get qiniu token success",20050),
+    GET_QINIU_TOKEN_SUCCESS("获取七牛token成功","get qiniu token success",20022),
 
-    GET_USER_NOTICE_SUCCESS("获取用户提醒成功","get user notice success",20051),
+    GET_USER_NOTICE_SUCCESS("获取用户提醒成功","get user notice success",20024),
 
-    GET_USER_TIPS_SUCCESS("获取用户消息成功","get user tips success",20052),
+    GET_USER_TIPS_SUCCESS("获取用户消息成功","get user tips success",20025),
 
-    CLEAN_USER_TIPS_SUCCESS("清空用户消息成功","clean user tips success",20053),
+    CLEAN_USER_TIPS_SUCCESS("清空用户消息成功","clean user tips success",20026),
 
-    USER_CREATE_REPORT_SUCCESS("举报成功","user create report success",20054),
+    USER_CREATE_REPORT_SUCCESS("举报成功","user create report success",20027),
+
+    USER_CREATE_LIVE_SUCCESS("直播创建成功","user create live success",20028),
+
+    GET_LIVE_TIME_LINE_SUCCESS("获取直播信息成功","get live time line success",20029),
+
+    USER_SPEAK_SUCCESS("用户发言成功","user speak success",20030),
+
+    GET_USER_TAGS_SUCCESS("获取用户标签成功","get user tags success",20031),
+
+    USER_TAGS_LIKES_SUCCESS("点赞成功","user tags likes success",20032),
+
+    USER_TAGS_LIKES_CANCEL_SUCCESS("取消点赞成功","user tags likes cancel success",20033),
+
+    USER_FINISH_LIVE_SUCCESS("直接结束成功","user finish live success",20034),
+
+    GET_MY_LIVE_SUCCESS("获取我的直播列表成功","get my live success",20035),
+
+    GET_LIVES_SUCCESS("获取直播列表成功","get lives success",20036),
+
+    SET_LIVE_FAVORITE_SUCCESS("订阅成功","set live favorite success",20037),
+
+    CANCEL_LIVE_FAVORITE_SUCCESS("取消订阅成功","cancel live favorite success",20038),
+
+    USER_FOLLOW_SUCCESS("关注成功","user follow success",20039),
+
+    USER_CANCEL_FOLLOW_SUCCESS("取消关注成功","user follow success",20040),
+
+    SHOW_USER_FANS_LIST_SUCCESS("获取用户粉丝成功","show user fans success",20041),
+
+    SHOW_USER_FOLLOW_LIST_SUCCESS("获取用户关注成功","show user follow success",20042),
+
+    LIVE_REMOVE_SUCCESS("直播移除成功","live remove success",20043),
+
+    LIVE_SIGN_OUT_SUCCESS("直播退出成功","live sign out success",20044),
+
+    CONTENT_IS_PUBLIC_MODIFY_SUCCESS("内容权限修改成功","content is public modify success",20045),
+
+    CONTENT_REVIEW_SUCCESS("评论成功","content review success",20046),
+
+    VERSION_UPDATE_SUCCESS("版本已更新","version update success",20047),
+
+    CONTENT_USER_LIKES_ALREADY("不能重复点赞","content user likes already",20048),
+
+    CONTENT_USER_LIKES_CANCEL_ALREADY("不能重复取消点赞","content user likes cancel already",20049),
+
+    SET_USER_EXCELLENT_SUCCESS("大V设置成功","set user excellent success",20050),
+
+    LOGOUT_SUCCESS("退出成功","logout success",20051),
+
+    FORWARD_SUCCESS("转发成功","user publish article success",20052),
+
+    GET_LIVE_COVER_SUCCESS("直播封面获取成功","get live cover success",20053),
+
+    GET_LIVE_BARRAGE_SUCCESS("直播弹幕获取成功","get live barrage success",20054),
+
+    SHOW_MEMBER_CONSOLE_SUCCESS("获取成员列表成功","show member console success",20055),
+
+    SHOW_MEMBERS_SUCCESS("获邀请列表成功","show members success",20056),
+
+    MODIFY_CIRCLE_SUCCESS("修改社交关系成功","modify circle success",20057),
+
+    QRCODE_SUCCESS("获取二维码成功","qrcode success",20058),
+
+    HIGH_QUALITY_CONTENT_SUCCESS("置热成功","high quality content success",20059),
+
+    HIGH_QUALITY_CONTENT_CANCEL_SUCCESS("取消置热成功","high quality content cancel success",20060),
+
+    HIGH_QUALITY_CONTENT_YET("取消置热成功","high quality content YET",20061),
+
+
+
+
+
+
+
 
 
 
@@ -97,13 +172,69 @@ public enum  ResponseStatus {
 
     DATA_IS_DELETE("请求的数据已删除","data is delete ",50010),
 
-    USER_ADD_FRIEND_ERROR("不能自己添加自己为好友","can't add yourself",50020);
+    USER_MOBILE_NO_SIGN_UP("手机号码还未注册","user mobile no sign up",50011),
 
-    public String message;
+    FINISH_LIVE_NO_POWER("您没有权限或者直播已经结束","finish live no power",50012),
 
-    public String englishMessage;
+    USER_LIVE_IS_OVER("直接已经结束","user live is over",50013),
 
-    public int status;
+    USER_ADD_FRIEND_ERROR("不能自己添加自己为好友","can't add yourself",50014),
+
+    CAN_NOT_DUPLICATE_FOLLOW("不能重复关注","can't duplicate follow",50015),
+
+    LIVE_REMOVE_IS_NOT_OVER("直接还未结束，不能移除"," live is not over",50016),
+
+    LIVE_REMOVE_IS_NOT_YOURS("您不是直播创建人，不能移除","live is not yours",50017),
+
+    LIVE_OWNER_CAN_NOT_SIGN_OUT("自己创建的直播不能退出","live owner can not sign out",50018),
+
+    LIVE_IS_NOT_EXIST("直播不存在","live is not exist",50019),
+
+    LIVE_IS_NOT_SIGN_IN("您未参与此直播","live is not sign in",50020),
+
+    CONTENT_IS_NOT_EXIST("修改的内容不存在","content is not exist",50021),
+
+    CONTENT_IS_NOT_YOURS("该内容你无权修改","content is not yours",50022),
+
+    NICK_NAME_REQUIRE_UNIQUE("用户昵称必须唯一","nick name require unique",50023),
+
+    CONTENT_LIKES_ERROR("用户点赞内容不存在","content likes error",50024),
+
+    CAN_NOT_FOLLOW_YOURSELF("自己不能关注自己","can not follow yourself",50025),
+
+    USER_MODIFY_ENCRYPT_THE_SAME_ERROR("老密码和新密码一样，不能修改"," user the old and new password are the same",50026),
+
+    FORWARD_CONTENT_NOT_EXISTS("转发的原内容不存在","forward content not exists",50027),
+
+    QRCODE_FAILURE("获取二维码失败","qrcode failure",50028),
+
+    NO_RIGHTS_TO_LIKE("作者已经将该内容设置为私有您无权限操作","no rights to likes",50029),
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    ILLEGAL_REQUEST("非法的请求参数","illegal request",50099);
+
+    public final String message;
+
+    public final String englishMessage;
+
+    public final int status;
 
     ResponseStatus(String message,String englishMessage,int status){
         this.message = message;

@@ -33,4 +33,8 @@ public class CreateContentSuccessDto  implements BaseEntity{
     private Date createTime;
 
     private long tid;
+
+    private String forwardTitle;
+
+    private String forwardUrl;
 }

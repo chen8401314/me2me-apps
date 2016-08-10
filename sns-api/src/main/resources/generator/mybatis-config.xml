@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+
+    <context id="MySqlTables" targetRuntime="MyBatis3">
+    <jdbcConnection driverClass="com.mysql.jdbc.Driver"
+                    connectionURL="jdbc:mysql://192.168.89.80:3306/apps"
+                    userId="me2me"
+                    password="Sp@Metro#79">
+        </jdbcConnection>
+
+        <javaTypeResolver >
+            <property name="forceBigDecimals" value="false" />
+        </javaTypeResolver>
+
+        <javaModelGenerator targetPackage="com.me2me.sns.model" targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+
+        <sqlMapGenerator targetPackage="mybatis"  targetProject="src/main/resources">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+
+        <javaClientGenerator type="XMLMAPPER" targetPackage="com.me2me.sns.mapper"  targetProject="src/main/java">
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+
+
+        <!--<table tableName="user" domainObjectName="User"/>-->
+        <table tableName="sns_circle" domainObjectName="SnsCircle"/>
+        <!--<table tableName="dictionary" domainObjectName="Dictionary"/>-->
+        <!--<table tableName="dictionary_type" domainObjectName="DictionaryType"/>-->
+        <!--<table tableName="address" domainObjectName="Address"/>-->
+        <!--<table tableName="user_hobby" domainObjectName="UserHobby"/>-->
+        <!--<table tableName="user_token" domainObjectName="UserTsoken"/>-->
+        <!--<table tableName="user_device" domainObjectName="UserDevice"/>-->
+        <!--<table tableName="user_channel" domainObjectName="UserChannel"/>-->
+        <!--<table tableName="user_tags" domainObjectName="UserTags"/>-->
+        <!--<table tableName="user_content_tags" domainObjectName="UserContentTags"/>-->
+        <!--<table tableName="user_tags_details" domainObjectName="UserTagsDetails" />-->
+        <!--<table tableName="user_tags_record" domainObjectName="UserTagsRecord" />-->
+        <!--<table tableName="user_notice" domainObjectName="UserNotice" />-->
+        <!--<table tableName="user_tips" domainObjectName="UserTips" />-->
+        <!--<table tableName="user_report" domainObjectName="UserReport" />-->
+        <!--<table tableName="user_tags_record" domainObjectName="UserTagsRecord" />-->
+        <!--<table tableName="application_security" domainObjectName="ApplicationSecurity" />-->
+        <!--<table tableName="user_no" domainObjectName="UserNo" />-->
+        <!--<table tableName="user_device" domainObjectName="UserDevice" />-->
+        <!--<table tableName="xinge_push_log" domainObjectName="XingePushLog" />-->
+
+    </context>
+</generatorConfiguration>

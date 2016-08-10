@@ -20,8 +20,6 @@ public class ContentDetailDto implements BaseEntity {
 
     private long uid;
 
-    private long tid;
-
     private String feeling;
 
     private String avatar;
@@ -33,6 +31,12 @@ public class ContentDetailDto implements BaseEntity {
     private int hotValue;
 
     private int likeCount;
+
+    private int reviewCount;
+
+    private int personCount;
+
+    private int favoriteCount;
 
     private Date createTime;
 
@@ -46,28 +50,103 @@ public class ContentDetailDto implements BaseEntity {
 
     private int contentType;
 
+    //是否关注
+    private int isFollowed;
 
-    private List<ContentTop5FeelingElement> tags = Lists.newArrayList();
+    private int isFollowMe;
 
-    public static ContentTop5FeelingElement createElement(){
-        return new ContentTop5FeelingElement();
+    private int readCount;
+
+    private int isHot;
+
+    private List<ImageElement> images = Lists.newArrayList();
+
+    public static ImageElement createImageElement(){
+        return new ImageElement();
     }
 
     @Data
-    public static class ContentTop5FeelingElement implements BaseEntity {
+    public static class ImageElement implements BaseEntity {
+
+        private String image;
+
+    }
+
+    private List<ContentTagElement> tags = Lists.newArrayList();
+
+    public static ContentTagElement createElement(){
+        return new ContentTagElement();
+    }
+
+    @Data
+    public static class ContentTagElement implements BaseEntity {
 
         private String tag;
 
-        private long cid;
+    }
 
-        private long tid;
+    private List<ReviewElement> reviews = Lists.newArrayList();
 
-        private int likeCount;
+    public static ReviewElement createReviewElement(){
+        return new ReviewElement();
+    }
 
-        private int isLike;
+    @Data
+    public static class ReviewElement extends LikeElement implements BaseEntity{
+
+        private Date createTime;
+
+        private String review;
+
+        private long atUid;
+
+        private String atNickName;
+
+    }
+
+//    @Data
+//    public static class AtReviewElement implements BaseEntity{
+//
+//        private long fromUid;
+//
+//        private String fromNickName;
+//
+//        private String fromAvatar;
+//
+//        private long reviewId;
+//
+//        private long toUid;
+//
+//        private String toNickName;
+//
+//        private String toAvatar;
+//
+//        private String review;
+//
+//        private Date createTime;
+//
+//    }
+//
+//    private List<AtReviewElement> atReviewElements = Lists.newArrayList();
+//
+//    public static AtReviewElement createAtReviewElement(){
+//        return new AtReviewElement();
+//    }
+
+    private List<LikeElement> likeElements = Lists.newArrayList();
+
+    public static LikeElement createLikeElement(){
+        return new LikeElement();
+    }
+
+    @Data
+    public static class LikeElement implements BaseEntity{
 
         private long uid;
 
+        private String nickName;
+
+        private String avatar;
     }
 
 }

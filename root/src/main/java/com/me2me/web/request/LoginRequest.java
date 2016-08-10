@@ -20,4 +20,20 @@ public class LoginRequest extends Request {
     @Setter
     private String encrypt;
 
+    @Getter
+    @Setter
+    private String deviceNo;
+
+    @Getter
+    @Setter
+    private int platform;
+
+    @Getter
+    @Setter
+    private String os;
+
+    @Getter
+    @Setter
+    private String jPushToken;
+
 }

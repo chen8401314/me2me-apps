@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>米汤</title>
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+<th:block th:if="${share} eq 1">
+    <section id="DLArea">
+        <aside id="DLAreaas">
+            <img id="DLArealogo" th:src="@{/assets/images/logo.png}"/>
+            <div id="DLAreatitle1">meTome</div>
+            <div id="DLAreatitle2">经历过的，总有感受</div>
+            <a href="http://qrcode.me-to-me.com/common.html" id="DLAreaOpen">打开</a>
+            <p id="DLAreacancel"></p>
+        </aside>
+    </section>
+</th:block>
+<article class="ue-container shadow animate-shadow-1">
+    <header style="margin-top:66px;">
+        <span class="title" th:text="${root.title}">跟世界交手的每一天，你是如何做到元气满满</span>
+        <th:block th:if="${root.coverImage} ne ''">
+            <img class="img-responsive" th:src="${root.coverImage}"/>
+        </th:block>
+    </header>
+    <div class="content" th:utext="${root.content}">
+
+    </div>
+</article>
+<script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script>
+    $(function(){
+        $('img').addClass('img-responsive');
+        $('#DLAreacancel').click(function(){
+            $('#DLArea').hide();
+        });
+    });
+</script>
+</body>
+</html>

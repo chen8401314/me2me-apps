@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="zh-CN" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <th:block th:if="${type eq 8}">
+        <title>笑话大全_爆笑笑话大全_幽默笑话_经典笑话_笑林杂谈</title>
+    </th:block>
+    <th:block th:if="${type eq 7}">
+        <title>搞笑动态图片笑死人_动态图片_动态搞笑图片_搞笑gif动态图片_笑林杂谈</title>
+    </th:block>
+    <th:block th:if="${type eq 22}">
+        <title>美女图片大全_性感美女_美女写真_丝袜美腿_唯美写真_高清美女_模特美女_笑林杂谈</title>
+    </th:block>
+    <th:block th:if="${type eq 23}">
+        <title>美女视频_性感热舞短片_美女自拍_笑林杂谈</title>
+    </th:block>
+    <meta name="description" content="笑林杂谈是个提供搞笑、段子、美女、热舞、性感、街拍、自拍、笑话的内容平台。" />
+    <meta name="HandheldFriendly" content="True" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" th:href="@{/assets/favicon.ico}"/>
+    <link rel="stylesheet" href="//cdn.bootcss.com/bootstrap/3.3.4/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="//cdn.bootcss.com/font-awesome/4.3.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" type="text/css" th:href="@{/assets/css/screen.css}"/>
+    <link rel="canonical" href="http://www.51nick.com/" />
+    <meta name="referrer" content="origin" />
+    <script>
+        var _hmt = _hmt || [];
+        (function() {
+            var hm = document.createElement("script");
+            hm.src = "//hm.baidu.com/hm.js?21468f6c6496786553ae4208f434f18f";
+            var s = document.getElementsByTagName("script")[0];
+            s.parentNode.insertBefore(hm, s);
+        })();
+    </script>
+</head>
+<body class="home-template">
+<!-- start navigation -->
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="navbar-header">
+                        <span class="nav-toggle-button collapsed" data-toggle="collapse" data-target="#main-menu">
+                        <span class="sr-only">Toggle navigation</span>
+                        <i class="fa fa-bars pull-right"></i>
+                        </span>
+                    <a class="navbar-brand" href="/">笑林杂谈</a>
+                </div>
+                <div class="collapse navbar-collapse" id="main-menu">
+                    <ul class="nav navbar-nav">
+                        <li role="presentation"><a href="/"><i class="fa fa-home"></i> 首页</a></li>
+                        <th:block th:if="${type eq 7}">
+                            <li class="active">
+                                <a href="/item-7-1.html" target="_blank"><i class="fa fa-image"></i> 搞笑图片</a>
+                            </li>
+                        </th:block>
+                        <th:block th:if="${type ne 7}">
+                            <li>
+                                <a href="/item-7-1.html" target="_blank"><i class="fa fa-image"></i> 搞笑图片</a>
+                            </li>
+                        </th:block>
+
+                        <th:block th:if="${type eq 8}">
+                            <li class="active">
+                                <a href="/item-8-1.html" target="_blank"><i class="fa fa-file-text"></i> 精选段子</a>
+                            </li>
+                        </th:block>
+                        <th:block th:if="${type ne 8}">
+                            <li>
+                                <a href="/item-8-1.html" target="_blank"><i class="fa fa-file-text"></i> 精选段子</a>
+                            </li>
+                        </th:block>
+
+                        <th:block th:if="${type eq 22}">
+                            <li class="active">
+                                <a href="/item-22-1.html" target="_blank"><i class="fa fa-image"></i> 美女图片</a>
+                            </li>
+                        </th:block>
+                        <th:block th:if="${type ne 22}">
+                            <li>
+                                <a href="/item-22-1.html" target="_blank"><i class="fa fa-venus"></i> 美女图片</a>
+                            </li>
+                        </th:block>
+                        <li>
+                            <a href="#" target="_blank"><i class="fa fa-camera-retro"></i> 街拍</a>
+                        </li>
+
+                        <th:block th:if="${type eq 23}">
+                            <li class="active">
+                                <a href="/item-23-1.html" target="_blank"><i class="fa fa-play-circle"></i> 性感热舞</a>
+                            </li>
+                        </th:block>
+                        <th:block th:if="${type ne 23}">
+                            <li>
+                                <a href="/item-23-1.html" target="_blank"><i class="fa fa-play-circle"></i> 性感热舞</a>
+                            </li>
+                        </th:block>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+<!-- end navigation -->
+
+
+<!-- start site's main content area -->
+<section class="content-wrap">
+    <div class="container">
+        <div class="row">
+            <main class="col-md-8 main-content">
+                <div class="widget post">
+                    <th:block th:if="${type eq 8}">
+                        <h4 class="title">精选段子</h4>
+                        <th:block th:each="feed:${root.result}">
+                            <div class="content dz">
+                                <h5 th:text="${feed.articleTitle}"></h5>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <img th:src="${feed.articleThumb}" class="thumbnail img-responsive"/>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <p th:utext="${feed.articleContent}"></p>
+                                        <span><a th:href="'thread-' + ${feed.id}+'.html'" class="btn btn-default pull-right">阅读全文</a></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </th:block>
+                    </th:block>
+                    <th:block th:if="${type eq 7}">
+                        <h4 class="title">搞笑图片</h4>
+                        <div class="row qt">
+                            <th:block th:each="feed:${root.result}">
+                                <div class="col-sm-4">
+                                    <img th:src="${feed.articleThumb}"  class="img-responsive thumbnail"/>
+                                    <p><a th:href="'thread-' + ${feed.id}+'.html'" th:text="${feed.articleTitle}"></a></p>
+                                </div>
+                            </th:block>
+                        </div>
+                    </th:block>
+                    <th:block th:if="${type eq 22}">
+                        <h4 class="title">美女图库</h4>
+                        <div class="content jxmeitu">
+                            <div class="row">
+                                <th:block th:each="feed:${root.result}">
+                                    <div class="col-sm-4">
+                                        <img th:src="${feed.articleThumb}" class="img-responsive thumbnail" />
+                                        <p><a th:href="'thread-' + ${feed.id}+'.html'" th:text="${feed.articleTitle}"></a></p>
+                                    </div>
+                                </th:block>
+                            </div>
+                        </div>
+                    </th:block>
+                    <th:block th:if="${type eq 23}">
+                        <h4 class="title">性感热舞</h4>
+                        <div class="row qt">
+                            <th:block th:each="feed:${root.result}">
+                                <div class="col-sm-4">
+                                    <img th:src="${feed.articleThumb}"  class="img-responsive thumbnail"/>
+                                    <p><a th:href="'thread-' + ${feed.id}+'.html'" th:text="${feed.articleTitle}"></a></p>
+                                </div>
+                            </th:block>
+                        </div>
+                    </th:block>
+                </div>
+                <nav class="pagination" role="navigation">
+                    <a th:href="'item-'+${type}+'-1.html'"><span class="page-number">首页</span></a>
+                    <th:block th:if="${root.currentPage ne 1}">
+                        <a th:href="'item-'+${type}+'-' + ${root.currentPage-1}+'.html'"><span class="page-number">上一页</span></a>
+                    </th:block>
+                    <th:block th:each="page : ${#numbers.sequence(root.pageIndex.startIndex,root.pageIndex.endIndex)}">
+                        <a th:href="'item-'+${type}+'-' + ${page}+'.html'"><span class="page-number" th:text="${page}"></span></a>
+                    </th:block>
+                    <th:block th:if="${root.currentPage ne root.totalPage}">
+                        <a th:href="'item-'+${type}+'-' + ${root.currentPage+1}+'.html'"><span class="page-number">下一页</span></a>
+                    </th:block>
+                    <a th:href="'item-'+${type}+'-' + ${root.totalPage}+'.html'"><span class="page-number">尾页</span></a>
+                </nav>
+            </main>
+            <aside class="col-md-4 sidebar">
+                <!-- start widget -->
+                <!-- end widget -->
+
+                <!-- start tag cloud widget -->
+                <div class="widget">
+                    <h4 class="title">猜你喜欢</h4>
+                    <div class="content community">
+                        <th:block th:each="t:${guessTen}">
+                            <p><span  class="label label-warning" th:text="${tStat.index}+1"></span> <a th:href="'thread-' + ${t.id}+'.html'" th:text="${t.articleTitle}" target="_blank"></a></p>
+                        </th:block>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </div>
+</section>
+
+<!--<footer class="main-footer">-->
+    <!--<div class="container">-->
+        <!--<div class="row">-->
+            <!--<div class="col-sm-4">-->
+                <!--<div class="widget">-->
+                    <!--<h4 class="title">最新文章</h4>-->
+                    <!--<div class="content recent-post">-->
+                        <!--<div class="recent-single-post">-->
+                            <!--<a href="#" class="post-title">建设中...</a>-->
+                            <!--<div class="date">2016年4月28日</div>-->
+                        <!--</div>-->
+                        <!--<div class="recent-single-post">-->
+                            <!--<a href="#" class="post-title">建设中...</a>-->
+                            <!--<div class="date">2016年3月23日</div>-->
+                        <!--</div>-->
+                        <!--<div class="recent-single-post">-->
+                            <!--<a href="#" class="post-title">建设中...</a>-->
+                            <!--<div class="date">2015年12月29日</div>-->
+                        <!--</div>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+
+            <!--<div class="col-sm-4">-->
+                <!--<div class="widget">-->
+                    <!--<h4 class="title">标签云</h4>-->
+                    <!--<div class="content tag-cloud">-->
+                        <!--<a href="#">建设中...</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+
+            <!--<div class="col-sm-4">-->
+                <!--<div class="widget">-->
+                    <!--<h4 class="title">合作伙伴</h4>-->
+                    <!--<div class="content tag-cloud friend-links">-->
+                        <!--<a href="http://www.lieqi.com" title="猎奇网" target="_blank">猎奇网</a>-->
+                        <!--<hr/>-->
+                        <!--<a href="http://www.chinaz.com/" title="站长之家" target="_blank">站长之家</a>-->
+                        <!--<hr/>-->
+                        <!--<a href="http://www.taohuaan.net/" title="桃花庵" target="_blank">桃花庵</a>-->
+                        <!--<hr/>-->
+                        <!--<a href="http://www.zhainandao.com/" title="宅男岛" target="_blank">宅男岛</a>-->
+                    <!--</div>-->
+                <!--</div>-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</footer>-->
+
+<div class="copyright">
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-12">
+                <span>Copyright &copy; <a href="http://www.51nick.com/">笑林杂谈</a></span> |
+                <span><a href="http://www.miibeian.gov.cn/" target="_blank">陕ICP备16007303号</a></span> |
+            </div>
+        </div>
+    </div>
+</div>
+
+<a href="#" id="back-to-top"><i class="fa fa-angle-up"></i></a>
+
+<script src="//cdn.bootcss.com/jquery/1.11.3/jquery.min.js"></script>
+<script src="//cdn.bootcss.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="//cdn.bootcss.com/fitvids/1.1.0/jquery.fitvids.min.js"></script>
+<script src="/assets/js/main.js?v=82931f6358"></script>
+<script>
+    $(function(){
+        $('.post-content img').each(function(item){
+            var src = $(this).attr('src');
+
+            $(this).wrap('<a href="' + src + '" class="mfp-zoom" style="display:block;"></a>');
+        });
+
+        /*$('.post-content').magnificPopup({
+         delegate: 'a',
+         type: 'image'
+         });*/
+    });
+</script>
+</body>
+</html>

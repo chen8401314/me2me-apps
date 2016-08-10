@@ -23,4 +23,8 @@ public class WriteTagRequest extends Request{
     @Getter
     @Setter
     private long cid;
+
+    @Getter
+    @Setter
+    private int type;
 }

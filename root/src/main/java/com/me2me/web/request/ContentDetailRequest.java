@@ -15,4 +15,5 @@ public class ContentDetailRequest extends Request {
     @Getter
     @Setter
     private long id;
+
 }

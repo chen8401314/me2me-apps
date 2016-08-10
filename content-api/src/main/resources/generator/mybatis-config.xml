@@ -7,9 +7,9 @@
 
     <context id="MySqlTables" targetRuntime="MyBatis3">
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://192.168.89.103:3306/apps"
-                        userId="plAdmin"
-                        password="1q2w_3e4r">
+                        connectionURL="jdbc:mysql://192.168.89.80:3306/apps"
+                        userId="me2me"
+                        password="Sp@Metro#79">
         </jdbcConnection>
 
         <javaTypeResolver >
@@ -31,12 +31,22 @@
 
 
         <!--<table tableName="user" domainObjectName="User"/>-->
-        <!--<table tableName="content" domainObjectName="Content"/>-->
+        <!--<table tableName="at_review" domainObjectName="AtReview"/>-->
         <!--<table tableName="content_image" domainObjectName="ContentImage"/>-->
         <!-- <table tableName="content_user_likes" domainObjectName="ContentUserLikes"/>-->
         <!-- <table tableName="content_tags" domainObjectName="ContentTags"/> -->
         <!-- <table tableName="content_tag_likes" domainObjectName="ContentTagLikes"/> -->
-        <table tableName="content_user_likes_count" domainObjectName="ContentUserLikesCount"/>
+        <!--<table tableName="content_user_likes_count" domainObjectName="ContentUserLikesCount"/>-->
+        <!--<table tableName="content" domainObjectName="Content"/> -->
+        <!--<table tableName="content_user_likes_count" domainObjectName="ContentUserLikesCount"/>-->
+        <!--<table tableName="content" domainObjectName="Content"/>-->
         <!--<table tableName="high_quality_content" domainObjectName="HighQualityContent"/>-->
+        <!--<table tableName="mobile_article" domainObjectName="MobileArticle"/>-->
+        <!--<table tableName="content_tags_details" domainObjectName="ContentTagsDetails"/>-->
+        <table tableName="content_review" domainObjectName="ContentReview"/>
+        <!--<table tableName="content" domainObjectName="Content"/>-->
+        <!--<table tableName="article_likes_details" domainObjectName="ArticleLikesDetails"/>-->
+        <table tableName="article_review" domainObjectName="ArticleReview"/>
+        <!--<table tableName="article_tags_details" domainObjectName="ArticleTagsDetails"/>-->
     </context>
 </generatorConfiguration>

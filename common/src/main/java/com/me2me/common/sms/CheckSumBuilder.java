@@ -1,5 +1,7 @@
 package com.me2me.common.sms;
 
+import com.google.common.base.Charsets;
+
 import java.security.MessageDigest;
 
 /**
@@ -26,7 +28,7 @@ public class CheckSumBuilder {
         try {
             MessageDigest messageDigest
                     = MessageDigest.getInstance(algorithm);
-            messageDigest.update(value.getBytes());
+            messageDigest.update(value.getBytes(Charsets.UTF_8.name()));
             return getFormattedText(messageDigest.digest());
         } catch (Exception e) {
             throw new RuntimeException(e);

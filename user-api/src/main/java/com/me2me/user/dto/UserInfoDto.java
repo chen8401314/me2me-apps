@@ -34,44 +34,87 @@ public class UserInfoDto implements BaseEntity{
 
         private int gender;
 
-        private String mid;
+        private String meNumber;
+
+        private int isFollowed;
+
+        private int isFollowMe;
+
+        private int followedCount;
+
+        private int fansCount;
+
+        private String introduced;
     }
 
     @Data
     public static class ContentElement implements BaseEntity{
 
-        private long tid;
+        private List<ReviewElement> reviews = Lists.newArrayList();
+
+        public static ReviewElement createElement(){
+            return new ReviewElement();
+        }
 
         private long cid;
 
-        private String feeling;
+        private String tag;
 
         private String coverImage;
 
         private String content ;
 
+        private String title;
+
         private Date createTime;
 
         private int likeCount;
 
-        private int hotValue;
+        private int reviewCount;
+
+        private int personCount;
+
+        private int favoriteCount;
 
         private Long forwardCid;
 
         private Integer type;
 
+        private Integer contentType;
+
+        private int liveStatus;
+
+        private int imageCount;
+
+        private int favorite;
+
+        private int isLike;
+
         private String forwardTitle;
 
         private String forwardUrl;
 
-        private Integer contentType;
+        private int readCount;
 
-        private String thumbnail;
+        private long lastUpdateTime;
 
-        private Integer authorization;
+        private int topicCount;
 
+        @Data
+        public static class ReviewElement implements BaseEntity{
 
+            private long uid;
 
+            private String nickName;
+
+            private String avatar;
+
+            private Date createTime;
+
+            private String review;
+
+        }
 
     }
+
 }

@@ -29,6 +29,17 @@
             <artifactId>thymeleaf-spring4</artifactId>
             <version>2.1.4.RELEASE</version>
         </dependency>
+        <dependency>
+            <groupId>org.tuckey</groupId>
+            <artifactId>urlrewritefilter</artifactId>
+            <version>4.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.mortbay.jetty</groupId>
+            <artifactId>servlet-api-2.5</artifactId>
+            <version>6.1.14</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <profiles>
@@ -38,6 +49,9 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <properties>
+                <mode>dev</mode>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>
@@ -59,6 +73,31 @@
                     <artifactId>sns</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>activity</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>sms</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>article</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>monitor</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>io</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
             </dependencies>
             <build>
                 <filters>
@@ -70,58 +109,101 @@
         <!--测试环境-->
         <profile>
             <id>test</id>
+            <properties>
+                <mode>test</mode>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>im-api</artifactId>
+                    <artifactId>im</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>user-api</artifactId>
+                    <artifactId>user</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>content-api</artifactId>
+                    <artifactId>content</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>sns-api</artifactId>
+                    <artifactId>sms</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
             </dependencies>
+            <build>
+                <filters>
+                    <filter>src/main/filter/test.properties</filter>
+                </filters>
+            </build>
         </profile>
         <!--生产环境-->
         <profile>
             <id>product</id>
+            <properties>
+                <mode>product</mode>
+            </properties>
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>im-api</artifactId>
+                    <artifactId>im</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>user-api</artifactId>
+                    <artifactId>user</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>content-api</artifactId>
+                    <artifactId>content</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>sns-api</artifactId>
+                    <artifactId>sns</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>activity</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
             </dependencies>
+            <build>
+                <filters>
+                    <filter>src/main/filter/product.properties</filter>
+                </filters>
+            </build>
         </profile>
     </profiles>
 
     <build>
         <finalName>admin</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <configuration>
+                    <warSourceExcludes>src/main/resource/generator</warSourceExcludes>
+                    <warName>ROOT</warName>
+                    <!-- 激活spring profile -->
+                    <webResources>
+                        <resource>
+                            <filtering>true</filtering>
+                            <directory>src/main/webapp</directory>
+                            <includes>
+                                <include>**/web.xml</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+                    <warSourceDirectory>src/main/webapp</warSourceDirectory>
+                    <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+                </configuration>
+            </plugin>
+        </plugins>
     </build>
 </project>

@@ -21,10 +21,16 @@ public class LoginSuccessDto implements BaseEntity {
 
     private int gender;
 
-    private String userNo;
+    private String meNumber;
 
     private String avatar;
 
     private long yearId;
+
+    private int followedCount;
+
+    private int fansCount;
+
+    private String introduced;
 
 }

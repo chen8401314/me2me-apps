@@ -36,19 +36,15 @@
         <property name="prefix" value="/WEB-INF/jsp"/>
         <property name="suffix" value=".jsp"/>
     </bean>
-    <!--<mvc:default-servlet-handler/>-->
-    <!-- 静态资源映射 -->
-    <!-- <mvc:resources mapping="/static/**" location="/static/" cache-period="31536000"/>-->
-
     <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
         <property name="maxUploadSize" value="10485760" />
     </bean>
 
-    <!--<mvc:interceptors>-->
-        <!--<mvc:interceptor>-->
-            <!--<mvc:mapping path="/**"/>-->
-            <!--<bean class="cn.tablecloud.web.handler.CrossDomainHandler"/>-->
-        <!--</mvc:interceptor>-->
-    <!--</mvc:interceptors>-->
+    <mvc:interceptors>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.me2me.web.handler.AccessSecurityHandler"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
 
 </beans>

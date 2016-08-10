@@ -6,6 +6,7 @@ package com.me2me.common.web;
  * Date: 2016/2/26.
  */
 
+import com.me2me.common.security.SecurityUtils;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,13 +17,13 @@ import java.io.Serializable;
  * 该接口必须实现序列化接口的实体类作为泛型实际参数
  * @param <T>
  */
-public class Response<T extends Serializable>  {
+public class Response<T extends Serializable> implements BaseEntity  {
 
     private static final String DEFAULT_MESSAGE_SUCCESS = "ok";
 
     private static final String DEFAULT_MESSAGE_FAILURE = "failure";
 
-    private static final int DEDFAULT_CODE_SUCCESS = 200;
+    private static final int DEFAULT_CODE_SUCCESS = 200;
 
     private static final int DEFAULT_CODE_FAILURE = 500;
 
@@ -35,6 +36,9 @@ public class Response<T extends Serializable>  {
     @Getter
     @Setter
     private T data;
+    @Getter
+    @Setter
+    private String accessToken;
 
 
     public Response(int code,String message,T data){
@@ -54,7 +58,19 @@ public class Response<T extends Serializable>  {
      * @return
      */
     public static <T extends BaseEntity> Response success(T data){
-        return new Response(DEDFAULT_CODE_SUCCESS,DEFAULT_MESSAGE_SUCCESS,data);
+        Response response =  new Response(DEFAULT_CODE_SUCCESS,DEFAULT_MESSAGE_SUCCESS,data);
+        response.refreshAccessToken();
+        return response;
+    }
+
+    /**
+     * 系统默认成功
+     * @return
+     */
+    public static Response success(){
+        Response response =  new Response(DEFAULT_CODE_SUCCESS,DEFAULT_MESSAGE_SUCCESS);
+        response.refreshAccessToken();
+        return response;
     }
 
     /**
@@ -63,7 +79,9 @@ public class Response<T extends Serializable>  {
      * @return
      */
     public static Response failure(String message){
-        return new Response(DEFAULT_CODE_FAILURE,DEFAULT_MESSAGE_FAILURE,message);
+        Response response =  new Response(DEFAULT_CODE_FAILURE,DEFAULT_MESSAGE_FAILURE,message);
+        response.refreshAccessToken();
+        return response;
     }
 
     /**
@@ -72,7 +90,10 @@ public class Response<T extends Serializable>  {
      * @return
      */
     public static Response failure(int code,String message){
-        return new Response(code,message);
+        Response response =  new Response(code,message);
+        response.refreshAccessToken();
+        return response;
+
     }
 
     /**
@@ -81,8 +102,10 @@ public class Response<T extends Serializable>  {
      * @param message
      * @return
      */
-    public static <T extends BaseEntity> Response success(int code,String message){
-        return new Response(code,message);
+    public static Response success(int code,String message){
+        Response response =  new Response(code,message);
+        response.refreshAccessToken();
+        return response;
     }
 
     /**
@@ -93,7 +116,9 @@ public class Response<T extends Serializable>  {
      * @return
      */
     public static <T extends BaseEntity> Response success(int code,String message,T data){
-        return new Response(code,message,data);
+        Response response =  new Response(code,message,data);
+        response.refreshAccessToken();
+        return response;
     }
 
     /**
@@ -104,7 +129,14 @@ public class Response<T extends Serializable>  {
      * @return
      */
     public static <T extends BaseEntity> Response failure(int code,String message,T data){
-        return new Response(code,message,data);
+
+        Response response =  new Response(code,message,data);
+        response.refreshAccessToken();
+        return response;
+    }
+
+    public void refreshAccessToken(){
+        this.accessToken = SecurityUtils.getAccessToken();
     }
 
 
