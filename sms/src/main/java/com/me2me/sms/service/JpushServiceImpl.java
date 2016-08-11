@@ -1,8 +1,10 @@
 package com.me2me.sms.service;
 
 import cn.jpush.api.JPushClient;
+import cn.jpush.api.common.ClientConfig;
 import cn.jpush.api.common.resp.APIConnectionException;
 import cn.jpush.api.common.resp.APIRequestException;
+import cn.jpush.api.push.model.Message;
 import cn.jpush.api.push.model.Platform;
 import cn.jpush.api.push.model.PushPayload;
 import cn.jpush.api.push.model.audience.Audience;
@@ -27,11 +29,15 @@ public class JPushServiceImpl implements JPushService{
 
     private final JPushClient jPushClient;
 
+    private static final int DEFAULT_LIVE_TIME = 86400 * 10;
+
     /**
      * 初始化JPushclient
      */
     public JPushServiceImpl(){
-        this.jPushClient = new JPushClient(masterSecret,appKey);
+        ClientConfig config = ClientConfig.getInstance();
+        config.setTimeToLive(DEFAULT_LIVE_TIME);
+        this.jPushClient = new JPushClient(masterSecret,appKey,null,config);
     }
 
 
@@ -79,6 +85,24 @@ public class JPushServiceImpl implements JPushService{
                                 .incrBadge(1)
                                 .addExtra("extra",jsonExtra).build())
                         .build())
+                .build();
+        try {
+            jPushClient.sendPush(payload);
+        } catch (APIConnectionException e) {
+            e.printStackTrace();
+        } catch (APIRequestException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void payloadByIdForMessage(String regId, String message) {
+        Message platformMessage = Message.content(message);
+        PushPayload payload = PushPayload
+                .newBuilder()
+                .setPlatform(Platform.all())
+                .setAudience(Audience.registrationId(regId))
+                .setMessage(platformMessage)
                 .build();
         try {
             jPushClient.sendPush(payload);
