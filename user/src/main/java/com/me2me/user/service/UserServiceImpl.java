@@ -1077,9 +1077,7 @@ public class UserServiceImpl implements UserService {
             List<JpushToken> jpushTokens = userMybatisDao.getJpushToken(uid);
             for(JpushToken jpushToken : jpushTokens) {
                 log.info("jpush for combination message for {}",uid);
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("count",counter + "");
-                jPushService.payloadByIdExtra(jpushToken.getJpushToken(),"你有"+counter+"条新消息！",jsonObject);
+                jPushService.payloadById(jpushToken.getJpushToken(),"你有"+counter+"条新消息！");
             }
 
             UserDevice userDevice = userMybatisDao.getUserDevice(uid);
