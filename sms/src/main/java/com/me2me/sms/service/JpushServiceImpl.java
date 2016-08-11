@@ -4,6 +4,7 @@ import cn.jpush.api.JPushClient;
 import cn.jpush.api.common.ClientConfig;
 import cn.jpush.api.common.resp.APIConnectionException;
 import cn.jpush.api.common.resp.APIRequestException;
+import cn.jpush.api.push.PushResult;
 import cn.jpush.api.push.model.Message;
 import cn.jpush.api.push.model.Platform;
 import cn.jpush.api.push.model.PushPayload;
@@ -106,6 +107,32 @@ public class JPushServiceImpl implements JPushService{
                 .build();
         try {
             jPushClient.sendPush(payload);
+        } catch (APIConnectionException e) {
+            e.printStackTrace();
+        } catch (APIRequestException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void payloadById(String regId,String message, Map<String,String> extras) {
+        PushPayload payload = PushPayload
+                .newBuilder()
+                .setPlatform(Platform.all())
+                .setAudience(Audience.registrationId(regId))
+                .setNotification(Notification.android(message,"meTome",extras))
+                .build();
+        PushPayload payload2 = PushPayload
+                .newBuilder()
+                .setPlatform(Platform.all())
+                .setAudience(Audience.registrationId(regId))
+                .setNotification(Notification.ios(message,extras))
+                .build();
+        try {
+            PushResult result = jPushClient.sendPush(payload);
+            if(!result.isResultOK()){
+                jPushClient.sendPush(payload2);
+            }
         } catch (APIConnectionException e) {
             e.printStackTrace();
         } catch (APIRequestException e) {
