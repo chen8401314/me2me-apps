@@ -1071,6 +1071,14 @@ public class UserServiceImpl implements UserService {
             // 获取用户push_token
             int counter = Integer.valueOf(map.get("counter").toString());
             long uid = Long.valueOf(map.get("uid").toString());
+
+            // 新版本极光推送
+            // 获取极光推送token
+            List<JpushToken> jpushTokens = userMybatisDao.getJpushToken(uid);
+            for(JpushToken jpushToken : jpushTokens) {
+                jPushService.payloadById(jpushToken.getJpushToken(),"你有"+counter+"条新消息！");
+            }
+
             UserDevice userDevice = userMybatisDao.getUserDevice(uid);
             if(userDevice==null || StringUtils.isEmpty(userDevice.getDeviceNo())) {
                 log.warn("current uid {} user device not find .",uid);
@@ -1094,12 +1102,7 @@ public class UserServiceImpl implements UserService {
                 log.info("push message for ios uid is {} and message count {}",uid,counter);
                 xgPushService.pushSingleDeviceIOS(message);
             }
-            // 新版本极光推送
-            // 获取极光推送token
-            List<JpushToken> jpushTokens = userMybatisDao.getJpushToken(uid);
-            for(JpushToken jpushToken : jpushTokens) {
-                jPushService.payloadById(jpushToken.getJpushToken(),"你有"+counter+"条新消息！");
-            }
+
         }
         // 更新推送状态
         for(Map map : updateList){
