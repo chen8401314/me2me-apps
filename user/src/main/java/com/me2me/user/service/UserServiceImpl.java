@@ -2,6 +2,7 @@ package com.me2me.user.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.security.SecurityUtils;
@@ -608,7 +609,10 @@ public class UserServiceImpl implements UserService {
                 push(followDto.getTargetUid(),followDto.getSourceUid(),Specification.PushMessageType.FOLLOW.index,null);
             }else {
                 UserProfile sourceUser = getUserProfileByUid(followDto.getSourceUid());
-                jPushService.payloadById(jpushToken.getJpushToken(), sourceUser.getNickName() + "关注了你！");
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("content", sourceUser.getNickName() + "关注了你！");
+                jsonObject.addProperty("messageType",Specification.PushMessageType.FOLLOW.index);
+                jPushService.payloadById(jpushToken.getJpushToken(), jsonObject.toString());
             }
             log.info("follow push success");
             //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW.index,0,followDto.getSourceUid()));

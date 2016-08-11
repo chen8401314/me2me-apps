@@ -1,5 +1,6 @@
 package com.me2me.content.widget;
 
+import com.google.gson.JsonObject;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -55,7 +56,10 @@ public class ContentReview implements Review{
                     userService.push(reviewDto.getAtUid(), reviewDto.getUid(), Specification.PushMessageType.AT.index, reviewDto.getReview());
                 }else {
                     UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
-                    jPushService.payloadById(jpushToken.getJpushToken(), userProfile.getNickName() + "@了你");
+                    JsonObject jsonObject = new JsonObject();
+                    jsonObject.addProperty("content", userProfile.getNickName() + "@了你!");
+                    jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index);
+                    jPushService.payloadById(jpushToken.getJpushToken(),jsonObject.toString());
                 }
             }
             if(reviewDto.getAtUid() != content.getUid()) {
