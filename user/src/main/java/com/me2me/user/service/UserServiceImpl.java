@@ -1109,10 +1109,10 @@ public class UserServiceImpl implements UserService {
         for(Map map : updateList){
             Long id = Long.valueOf(map.get("id").toString());
             UserNotice userNotice = userMybatisDao.getUserNoticeById(id);
-            Long uid = userNotice.getToUid();
-            if(skippedUids.contains(uid)){
-                continue;
-            }
+//            Long uid = userNotice.getToUid();
+//            if(skippedUids.contains(uid)){
+//                continue;
+//            }
             userNotice.setPushStatus(Specification.PushStatus.PUSHED.index);
             userMybatisDao.updateUserNoticePushStatus(userNotice);
         }
