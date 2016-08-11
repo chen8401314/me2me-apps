@@ -27,11 +27,5 @@ public interface JPushService {
 
     void payloadByIdForMessage(String regId,String message);
 
-
-
-
-
-
-
-
+    void payloadById(String regId, String message, Map<String, String> extras);
 }
