@@ -347,24 +347,24 @@ public class LiveServiceImpl implements LiveService {
             log.info("updateTopic updateTime");
         }
         if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index){
-            List<LiveFavorite> list = liveMybatisDao.getFavoriteList(speakDto.getTopicId());
-            for(LiveFavorite liveFavorite : list) {
-                //主播发言提醒关注的人
-                //userService.push(liveFavorite.getUid(),topic.getUid(),Specification.PushMessageType.UPDATE.index,topic.getTitle());
-                log.info("update push");
-            }
+//            List<LiveFavorite> list = liveMybatisDao.getFavoriteList(speakDto.getTopicId());
+//            for(LiveFavorite liveFavorite : list) {
+//                //主播发言提醒关注的人
+//                //userService.push(liveFavorite.getUid(),topic.getUid(),Specification.PushMessageType.UPDATE.index,topic.getTitle());
+//                log.info("update push");
+//            }
         }else if(speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index){
             //粉丝贴标提醒
             //Topic live = liveMybatisDao.getTopicById(speakDto.getTopicId());
             //liveRemind(live.getUid(), speakDto.getUid() ,Specification.LiveSpeakType.FANS_WRITE_TAG.index ,speakDto.getTopicId(),speakDto.getFragment());
             //userService.push(topic.getUid(),speakDto.getUid(),Specification.PushMessageType.LIVE_TAG.index,topic.getTitle());
-            log.info("live tag push");
+            //log.info("live tag push");
         }else if(speakDto.getType() == Specification.LiveSpeakType.FANS.index){
             //粉丝发言提醒
             //Topic live = liveMybatisDao.getTopicById(speakDto.getTopicId());
             //liveRemind(live.getUid(), speakDto.getUid() ,Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
             //userService.push(topic.getUid(),speakDto.getUid(),Specification.PushMessageType.LIVE_REVIEW.index,topic.getTitle());
-            log.info("live review push");
+            //log.info("live review push");
         }else if(speakDto.getType() == Specification.LiveSpeakType.AT.index){
             //Topic live = liveMybatisDao.getTopicById(speakDto.getTopicId());
             liveRemind(speakDto.getAtUid() , speakDto.getUid() ,Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
@@ -491,23 +491,23 @@ public class LiveServiceImpl implements LiveService {
             userTips.setCount(1);
             userService.createUserTips(userTips);
             //修改推送为极光推送,兼容老版本
-            JpushToken jpushToken = userService.getJpushTokeByUid(targetUid);
-            if(jpushToken != null) {
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("count","1");
-                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
-            }
+//            JpushToken jpushToken = userService.getJpushTokeByUid(targetUid);
+//            if(jpushToken != null) {
+//                JsonObject jsonObject = new JsonObject();
+//                jsonObject.addProperty("count","1");
+//                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
+//            }
 
         }else{
             tips.setCount(tips.getCount()+1);
             userService.modifyUserTips(tips);
             //修改推送为极光推送,兼容老版本
-            JpushToken jpushToken = userService.getJpushTokeByUid(targetUid);
-            if(jpushToken != null) {
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("count","1");
-                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
-            }
+//            JpushToken jpushToken = userService.getJpushTokeByUid(targetUid);
+//            if(jpushToken != null) {
+//                JsonObject jsonObject = new JsonObject();
+//                jsonObject.addProperty("count","1");
+//                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
+//            }
         }
     }
 
