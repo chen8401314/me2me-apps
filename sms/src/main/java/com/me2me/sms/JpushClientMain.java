@@ -37,7 +37,8 @@ public class JpushClientMain {
         PushPayload pushPayload = PushPayload
                 .newBuilder()
                 .setPlatform(Platform.all())
-                .setAudience(Audience.registrationId("1a0018970aa08b4fb27"))
+                .setAudience(Audience.registrationId("1517bfd3f7c16d7fa31"))
+//                .setNotification(Notification.alert("fdsfds"))
                 .setMessage(message)
                 .build();
         JsonObject jsonExtra = new JsonObject();

@@ -380,7 +380,6 @@ public class LiveServiceImpl implements LiveService {
                 Map<String,String> extras = Maps.newConcurrentMap();
                 extras.put("messageType",Specification.PushMessageType.AT.index+"");
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("count", "1");
                 jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index+"");
                 jPushService.payloadByIdExtra(jpushToken.getJpushToken(), userProfile.getNickName() + "@了你!",jsonObject);
             }
@@ -395,7 +394,6 @@ public class LiveServiceImpl implements LiveService {
             }else {
                 UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("count","1");
                 jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index+"");
                 jPushService.payloadByIdExtra(jpushToken.getJpushToken(), userProfile.getNickName() + "@了你!",jsonObject);
             }
@@ -494,23 +492,23 @@ public class LiveServiceImpl implements LiveService {
             userTips.setCount(1);
             userService.createUserTips(userTips);
             //修改推送为极光推送,兼容老版本
-//            JpushToken jpushToken = userService.getJpushTokeByUid(targetUid);
-//            if(jpushToken != null) {
-//                JsonObject jsonObject = new JsonObject();
-//                jsonObject.addProperty("count","1");
-//                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
-//            }
+            JpushToken jpushToken = userService.getJpushTokeByUid(targetUid);
+            if(jpushToken != null) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("count","1");
+                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
+            }
 
         }else{
             tips.setCount(tips.getCount()+1);
             userService.modifyUserTips(tips);
             //修改推送为极光推送,兼容老版本
-//            JpushToken jpushToken = userService.getJpushTokeByUid(targetUid);
-//            if(jpushToken != null) {
-//                JsonObject jsonObject = new JsonObject();
-//                jsonObject.addProperty("count","1");
-//                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
-//            }
+            JpushToken jpushToken = userService.getJpushTokeByUid(targetUid);
+            if(jpushToken != null) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("count","1");
+                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
+            }
         }
     }
 
