@@ -1,6 +1,7 @@
 package com.me2me.content.service;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.service.ActivityService;
@@ -36,6 +37,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -1902,7 +1904,9 @@ public class ContentServiceImpl implements ContentService {
                     //兼容老版本，如果客户端没有更新则还走信鸽push
                     userService.push(content.getUid(), 000000, Specification.PushMessageType.HOTTEST.index, content.getTitle());
                 }else {
-                    jPushService.payloadById(jpushToken.getJpushToken(),"你的文章" + content.getTitle()+ "上热点啦！");
+                    Map<String,String> extras = Maps.newConcurrentMap();
+                    extras.put("messageType",Specification.PushMessageType.HOTTEST.index+"");
+                    jPushService.payloadById(jpushToken.getJpushToken(),"你的文章" + content.getTitle()+ "上热点啦！",extras);
                 }
             }else if(content.getType() == Specification.ArticleType.LIVE.index){
                 //userService.push(content.getUid(), 000000, Specification.PushMessageType.LIVE_HOTTEST.index, content.getTitle());
@@ -1912,7 +1916,9 @@ public class ContentServiceImpl implements ContentService {
                     //兼容老版本，如果客户端没有更新则还走信鸽push
                     userService.push(content.getUid(), 000000, Specification.PushMessageType.LIVE_HOTTEST.index, content.getTitle());
                 }else {
-                    jPushService.payloadById(jpushToken.getJpushToken(),"你的直播" + content.getTitle()+ "上热点啦！");
+                    Map<String,String> extras = Maps.newConcurrentMap();
+                    extras.put("messageType",Specification.PushMessageType.LIVE_HOTTEST.index+"");
+                    jPushService.payloadById(jpushToken.getJpushToken(),"你的直播" + content.getTitle()+ "上热点啦！",extras);
                 }
             }
 
