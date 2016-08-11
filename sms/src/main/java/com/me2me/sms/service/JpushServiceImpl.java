@@ -113,30 +113,4 @@ public class JPushServiceImpl implements JPushService{
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void payloadById(String regId,String message, Map<String,String> extras) {
-        PushPayload payload = PushPayload
-                .newBuilder()
-                .setPlatform(Platform.all())
-                .setAudience(Audience.registrationId(regId))
-                .setNotification(Notification.android(message,"meTome",extras))
-                .build();
-        PushPayload payload2 = PushPayload
-                .newBuilder()
-                .setPlatform(Platform.all())
-                .setAudience(Audience.registrationId(regId))
-                .setNotification(Notification.ios(message,extras))
-                .build();
-        try {
-            PushResult result = jPushClient.sendPush(payload);
-            if(!result.isResultOK()){
-                jPushClient.sendPush(payload2);
-            }
-        } catch (APIConnectionException e) {
-            e.printStackTrace();
-        } catch (APIRequestException e) {
-            e.printStackTrace();
-        }
-    }
 }

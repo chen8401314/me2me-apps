@@ -528,23 +528,23 @@ public class ContentServiceImpl implements ContentService {
                 if (userNotice.getNoticeType() == Specification.UserNoticeType.LIKE.index) {
                     if (notice == null) {
                         userService.createUserTips(userTips);
-//                        //修改推送为极光推送,兼容老版本
-//                        JpushToken jpushToken = userService.getJpushTokeByUid(content.getUid());
-//                        if(jpushToken != null) {
-//                            JsonObject jsonObject = new JsonObject();
-//                            jsonObject.addProperty("count","1");
-//                            jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
-//                        }
+                        //修改推送为极光推送,兼容老版本
+                        JpushToken jpushToken = userService.getJpushTokeByUid(content.getUid());
+                        if(jpushToken != null) {
+                            JsonObject jsonObject = new JsonObject();
+                            jsonObject.addProperty("count","1");
+                            jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
+                        }
                     }
                 }else {
                     userService.createUserTips(userTips);
-//                    //修改推送为极光推送,兼容老版本
-//                    JpushToken jpushToken = userService.getJpushTokeByUid(content.getUid());
-//                    if(jpushToken != null) {
-//                        JsonObject jsonObject = new JsonObject();
-//                        jsonObject.addProperty("count","1");
-//                        jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
-//                    }
+                    //修改推送为极光推送,兼容老版本
+                    JpushToken jpushToken = userService.getJpushTokeByUid(content.getUid());
+                    if(jpushToken != null) {
+                        JsonObject jsonObject = new JsonObject();
+                        jsonObject.addProperty("count","1");
+                        jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
+                    }
                 }
             }
         }else{
@@ -556,22 +556,22 @@ public class ContentServiceImpl implements ContentService {
                     if (notice == null) {
                         userService.modifyUserTips(tips);
                         //修改推送为极光推送,兼容老版本
-//                        JpushToken jpushToken = userService.getJpushTokeByUid(content.getUid());
-//                        if(jpushToken != null) {
-//                            JsonObject jsonObject = new JsonObject();
-//                            jsonObject.addProperty("count","1");
-//                            jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
-//                        }
+                        JpushToken jpushToken = userService.getJpushTokeByUid(content.getUid());
+                        if(jpushToken != null) {
+                            JsonObject jsonObject = new JsonObject();
+                            jsonObject.addProperty("count","1");
+                            jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
+                        }
                     }
                 }else {
                     userService.modifyUserTips(tips);
                     //修改推送为极光推送,兼容老版本
-//                    JpushToken jpushToken = userService.getJpushTokeByUid(content.getUid());
-//                    if(jpushToken != null) {
-//                        JsonObject jsonObject = new JsonObject();
-//                        jsonObject.addProperty("count","1");
-//                        jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
-//                    }
+                    JpushToken jpushToken = userService.getJpushTokeByUid(content.getUid());
+                    if(jpushToken != null) {
+                        JsonObject jsonObject = new JsonObject();
+                        jsonObject.addProperty("count","1");
+                        jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
+                    }
                 }
             }
         }
@@ -1903,7 +1903,6 @@ public class ContentServiceImpl implements ContentService {
                     userService.push(content.getUid(), 000000, Specification.PushMessageType.HOTTEST.index, content.getTitle());
                 }else {
                     JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("count","1");
                     jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index+"");
                     jPushService.payloadByIdExtra(jpushToken.getJpushToken(),"你的文章" + content.getTitle()+ "上热点啦！",jsonObject);
                 }
@@ -1916,7 +1915,6 @@ public class ContentServiceImpl implements ContentService {
                     userService.push(content.getUid(), 000000, Specification.PushMessageType.LIVE_HOTTEST.index, content.getTitle());
                 }else {
                     JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("count","1");
                     jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index+"");
                     jPushService.payloadByIdExtra(jpushToken.getJpushToken(),"你的直播" + content.getTitle()+ "上热点啦！",jsonObject);
                 }
