@@ -1076,6 +1076,7 @@ public class UserServiceImpl implements UserService {
             // 获取极光推送token
             List<JpushToken> jpushTokens = userMybatisDao.getJpushToken(uid);
             for(JpushToken jpushToken : jpushTokens) {
+                log.info("jpush for combination message for {}",uid);
                 jPushService.payloadById(jpushToken.getJpushToken(),"你有"+counter+"条新消息！");
             }
 
