@@ -59,9 +59,9 @@ public class ContentReview implements Review{
                     userService.push(reviewDto.getAtUid(), reviewDto.getUid(), Specification.PushMessageType.AT.index, reviewDto.getReview());
                 }else {
                     UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
-                    Map<String,String> extras = Maps.newConcurrentMap();
-                    extras.put("messageType",Specification.PushMessageType.AT.index+"");
-                    jPushService.payloadById(jpushToken.getJpushToken(),userProfile.getNickName() + "@了你!",extras);
+                    JsonObject jsonObject = new JsonObject();
+                    jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index+"");
+                    jPushService.payloadByIdExtra(jpushToken.getJpushToken(),userProfile.getNickName() + "@了你!",jsonObject);
                 }
             }
             if(reviewDto.getAtUid() != content.getUid()) {

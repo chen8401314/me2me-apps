@@ -379,7 +379,10 @@ public class LiveServiceImpl implements LiveService {
                 UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
                 Map<String,String> extras = Maps.newConcurrentMap();
                 extras.put("messageType",Specification.PushMessageType.AT.index+"");
-                jPushService.payloadById(jpushToken.getJpushToken(), userProfile.getNickName() + "@了你!",extras);
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("count", "1");
+                jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index+"");
+                jPushService.payloadByIdExtra(jpushToken.getJpushToken(), userProfile.getNickName() + "@了你!",jsonObject);
             }
         }else if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index){
             liveRemind(speakDto.getAtUid() ,topic.getUid(),Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
@@ -391,9 +394,10 @@ public class LiveServiceImpl implements LiveService {
                 userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
             }else {
                 UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
-                Map<String,String> extras = Maps.newConcurrentMap();
-                extras.put("messageType",Specification.PushMessageType.AT.index+"");
-                jPushService.payloadById(jpushToken.getJpushToken(), userProfile.getNickName() + "@了你!",extras);
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("count","1");
+                jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index+"");
+                jPushService.payloadByIdExtra(jpushToken.getJpushToken(), userProfile.getNickName() + "@了你!",jsonObject);
             }
 
         }
