@@ -612,7 +612,7 @@ public class UserServiceImpl implements UserService {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("content", sourceUser.getNickName() + "关注了你！");
                 jsonObject.addProperty("messageType",Specification.PushMessageType.FOLLOW.index);
-                jPushService.payloadById(jpushToken.getJpushToken(), jsonObject.toString());
+                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(), jsonObject.toString());
             }
             log.info("follow push success");
             //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW.index,0,followDto.getSourceUid()));
