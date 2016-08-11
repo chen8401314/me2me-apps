@@ -1,5 +1,6 @@
 package com.me2me.content.widget;
 
+import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -14,6 +15,8 @@ import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -56,10 +59,9 @@ public class ContentReview implements Review{
                     userService.push(reviewDto.getAtUid(), reviewDto.getUid(), Specification.PushMessageType.AT.index, reviewDto.getReview());
                 }else {
                     UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
-                    JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("content", userProfile.getNickName() + "@了你!");
-                    jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index);
-                    jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
+                    Map<String,String> extras = Maps.newConcurrentMap();
+                    extras.put("messageType",Specification.PushMessageType.AT.index+"");
+                    jPushService.payloadById(jpushToken.getJpushToken(),userProfile.getNickName() + "@了你!",extras);
                 }
             }
             if(reviewDto.getAtUid() != content.getUid()) {

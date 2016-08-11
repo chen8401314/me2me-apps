@@ -1,6 +1,7 @@
 package com.me2me.live.service;
 
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
@@ -376,10 +377,9 @@ public class LiveServiceImpl implements LiveService {
                 userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
             }else {
                 UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("content", userProfile.getNickName() + "@了你!");
-                jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index);
-                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(), jsonObject.toString());
+                Map<String,String> extras = Maps.newConcurrentMap();
+                extras.put("messageType",Specification.PushMessageType.AT.index+"");
+                jPushService.payloadById(jpushToken.getJpushToken(), userProfile.getNickName() + "@了你!",extras);
             }
         }else if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index){
             liveRemind(speakDto.getAtUid() ,topic.getUid(),Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
@@ -391,10 +391,9 @@ public class LiveServiceImpl implements LiveService {
                 userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
             }else {
                 UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("content", userProfile.getNickName() + "@了你!");
-                jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index);
-                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(), jsonObject.toString());
+                Map<String,String> extras = Maps.newConcurrentMap();
+                extras.put("messageType",Specification.PushMessageType.AT.index+"");
+                jPushService.payloadById(jpushToken.getJpushToken(), userProfile.getNickName() + "@了你!",extras);
             }
 
         }
