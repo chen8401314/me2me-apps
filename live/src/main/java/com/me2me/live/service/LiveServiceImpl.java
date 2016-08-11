@@ -379,7 +379,7 @@ public class LiveServiceImpl implements LiveService {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("content", userProfile.getNickName() + "@了你!");
                 jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index);
-                jPushService.payloadById(jpushToken.getJpushToken(), jsonObject.toString());
+                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(), jsonObject.toString());
             }
         }else if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index){
             liveRemind(speakDto.getAtUid() ,topic.getUid(),Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
@@ -394,7 +394,7 @@ public class LiveServiceImpl implements LiveService {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("content", userProfile.getNickName() + "@了你!");
                 jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index);
-                jPushService.payloadById(jpushToken.getJpushToken(), jsonObject.toString());
+                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(), jsonObject.toString());
             }
 
         }
