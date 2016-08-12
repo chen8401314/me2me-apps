@@ -533,7 +533,8 @@ public class ContentServiceImpl implements ContentService {
                         if(jpushToken != null) {
                             JsonObject jsonObject = new JsonObject();
                             jsonObject.addProperty("count","1");
-                            jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
+                            String alias = String.valueOf(content.getUid());
+                            jPushService.payloadByIdForMessage(alias,jsonObject.toString());
                         }
                     }
                 }else {
@@ -543,7 +544,8 @@ public class ContentServiceImpl implements ContentService {
                     if(jpushToken != null) {
                         JsonObject jsonObject = new JsonObject();
                         jsonObject.addProperty("count","1");
-                        jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
+                        String alias = String.valueOf(content.getUid());
+                        jPushService.payloadByIdForMessage(alias,jsonObject.toString());
                     }
                 }
             }
@@ -560,7 +562,8 @@ public class ContentServiceImpl implements ContentService {
                         if(jpushToken != null) {
                             JsonObject jsonObject = new JsonObject();
                             jsonObject.addProperty("count","1");
-                            jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
+                            String alias = String.valueOf(content.getUid());
+                            jPushService.payloadByIdForMessage(alias,jsonObject.toString());
                         }
                     }
                 }else {
@@ -570,7 +573,8 @@ public class ContentServiceImpl implements ContentService {
                     if(jpushToken != null) {
                         JsonObject jsonObject = new JsonObject();
                         jsonObject.addProperty("count","1");
-                        jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
+                        String alias = String.valueOf(content.getUid());
+                        jPushService.payloadByIdForMessage(alias,jsonObject.toString());
                     }
                 }
             }
@@ -623,7 +627,8 @@ public class ContentServiceImpl implements ContentService {
             if(jpushToken != null) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("count","1");
-                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
+                String alias = String.valueOf(atUid);
+                jPushService.payloadByIdForMessage(alias,jsonObject.toString());
             }
         }else{
             tips.setCount(tips.getCount()+1);
@@ -633,7 +638,8 @@ public class ContentServiceImpl implements ContentService {
             if(jpushToken != null) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("count","1");
-                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
+                String alias = String.valueOf(atUid);
+                jPushService.payloadByIdForMessage(alias,jsonObject.toString());
             }
         }
     }
@@ -1904,7 +1910,8 @@ public class ContentServiceImpl implements ContentService {
                 }else {
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index+"");
-                    jPushService.payloadByIdExtra(jpushToken.getJpushToken(),"你的文章" + content.getTitle()+ "上热点啦！",jsonObject);
+                    String alias = String.valueOf(content.getUid());
+                    jPushService.payloadByIdExtra(alias,"你的文章" + content.getTitle()+ "上热点啦！",jsonObject);
                 }
             }else if(content.getType() == Specification.ArticleType.LIVE.index){
                 //userService.push(content.getUid(), 000000, Specification.PushMessageType.LIVE_HOTTEST.index, content.getTitle());
@@ -1916,7 +1923,8 @@ public class ContentServiceImpl implements ContentService {
                 }else {
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index+"");
-                    jPushService.payloadByIdExtra(jpushToken.getJpushToken(),"你的直播" + content.getTitle()+ "上热点啦！",jsonObject);
+                    String alias = String.valueOf(content.getUid());
+                    jPushService.payloadByIdExtra(alias,"你的直播" + content.getTitle()+ "上热点啦！",jsonObject);
                 }
             }
 

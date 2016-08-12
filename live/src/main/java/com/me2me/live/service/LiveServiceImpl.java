@@ -381,7 +381,8 @@ public class LiveServiceImpl implements LiveService {
                 extras.put("messageType",Specification.PushMessageType.AT.index+"");
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index+"");
-                jPushService.payloadByIdExtra(jpushToken.getJpushToken(), userProfile.getNickName() + "@了你!",jsonObject);
+                String alias = String.valueOf(speakDto.getAtUid());
+                jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!",jsonObject);
             }
         }else if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index){
             liveRemind(speakDto.getAtUid() ,topic.getUid(),Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
@@ -395,7 +396,8 @@ public class LiveServiceImpl implements LiveService {
                 UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index+"");
-                jPushService.payloadByIdExtra(jpushToken.getJpushToken(), userProfile.getNickName() + "@了你!",jsonObject);
+                String alias = String.valueOf(speakDto.getAtUid());
+                jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!",jsonObject);
             }
 
         }
@@ -496,7 +498,8 @@ public class LiveServiceImpl implements LiveService {
             if(jpushToken != null) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("count","1");
-                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
+                String alias = String.valueOf(targetUid);
+                jPushService.payloadByIdForMessage(alias,jsonObject.toString());
             }
 
         }else{
@@ -507,7 +510,8 @@ public class LiveServiceImpl implements LiveService {
             if(jpushToken != null) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("count","1");
-                jPushService.payloadByIdForMessage(jpushToken.getJpushToken(),jsonObject.toString());
+                String alias = String.valueOf(targetUid);
+                jPushService.payloadByIdForMessage(alias,jsonObject.toString());
             }
         }
     }
