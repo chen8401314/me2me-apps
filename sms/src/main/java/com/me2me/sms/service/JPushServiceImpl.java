@@ -24,7 +24,7 @@ import java.util.Map;
  * Author: 赵朋扬
  * Date: 2016/8/9.
  */
-@Service
+@Service("jPushServiceImpl")
 public class JPushServiceImpl implements JPushService{
 
 

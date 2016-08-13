@@ -10,6 +10,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletResponse;
 import java.util.Calendar;
 
 /**
@@ -46,7 +48,8 @@ public class Live extends BaseController {
      */
     @RequestMapping(value = "/liveTimeline",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response liveTimeline(LiveTimelineRequest request){
+    public Response liveTimeline(LiveTimelineRequest request, HttpServletResponse response){
+        response.setHeader("Access-Control-Allow-Origin", "*");
         GetLiveTimeLineDto getLiveTimeLineDto = new GetLiveTimeLineDto();
         getLiveTimeLineDto.setSinceId(request.getSinceId());
         getLiveTimeLineDto.setTopicId(request.getTopicId());
