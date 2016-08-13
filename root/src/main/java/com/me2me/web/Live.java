@@ -245,7 +245,8 @@ public class Live extends BaseController {
      */
     @RequestMapping(value = "/liveCover",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response favoriteList(LiveCoverRequest request){
+    public Response liveCover(LiveCoverRequest request,HttpServletResponse response){
+        response.setHeader("Access-Control-Allow-Origin", "*");
         return liveService.liveCover(request.getTopicId(),request.getUid());
     }
 
