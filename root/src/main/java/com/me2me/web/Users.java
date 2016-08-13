@@ -1,8 +1,8 @@
 package com.me2me.web;
 
 import com.me2me.common.web.Response;
-import com.me2me.sms.channel.MessageChannel;
 import com.me2me.sms.dto.VerifyDto;
+import com.me2me.sms.service.ChannelType;
 import com.me2me.user.dto.*;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
@@ -108,7 +108,7 @@ public class Users extends BaseController {
         verifyDto.setVerifyCode(request.getVerifyCode());
         if(request.getChannelAdapter()==0){
             // 兼容老版本
-            verifyDto.setChannel(MessageChannel.ChannelType.NORMAL_SMS.index);
+            verifyDto.setChannel(ChannelType.NORMAL_SMS.index);
         }
         verifyDto.setChannel(request.getChannelAdapter());
         return userService.verify(verifyDto);
