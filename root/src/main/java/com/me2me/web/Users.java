@@ -109,8 +109,9 @@ public class Users extends BaseController {
         if(request.getChannelAdapter()==0){
             // 兼容老版本
             verifyDto.setChannel(ChannelType.NORMAL_SMS.index);
+        }else {
+            verifyDto.setChannel(request.getChannelAdapter());
         }
-        verifyDto.setChannel(request.getChannelAdapter());
         return userService.verify(verifyDto);
     }
 
