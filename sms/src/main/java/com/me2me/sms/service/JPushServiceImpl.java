@@ -24,7 +24,7 @@ import java.util.Map;
  * Author: 赵朋扬
  * Date: 2016/8/9.
  */
-@Service
+@Service("jPushServiceImpl")
 public class JPushServiceImpl implements JPushService{
 
 
@@ -54,11 +54,12 @@ public class JPushServiceImpl implements JPushService{
     }
 
     @Override
-    public void payloadById(String regId,String message) {
+    public void payloadById(String uid,String message) {
         PushPayload payload = PushPayload
                 .newBuilder()
                 .setPlatform(Platform.all())
-                .setAudience(Audience.registrationId(regId))
+                .setAudience(Audience.alias(uid))
+//                .setAudience(Audience.registrationId(regId))
                 .setNotification(Notification.alert(message))
                 .build();
         try {
@@ -71,10 +72,11 @@ public class JPushServiceImpl implements JPushService{
     }
 
     @Override
-    public void payloadByIdExtra(String regId,String message,JsonObject jsonExtra) {
+    public void payloadByIdExtra(String uid,String message,JsonObject jsonExtra) {
         PushPayload payload = PushPayload.newBuilder()
                 .setPlatform(Platform.android_ios())
-                .setAudience(Audience.registrationId(regId))
+                .setAudience(Audience.alias(uid))
+//                .setAudience(Audience.registrationId(regId))
                 .setNotification(Notification.newBuilder()
                         // android 平台
                         .setAlert(message)
@@ -97,12 +99,13 @@ public class JPushServiceImpl implements JPushService{
     }
 
     @Override
-    public void payloadByIdForMessage(String regId, String message) {
+    public void payloadByIdForMessage(String uid, String message) {
         Message platformMessage = Message.content(message);
         PushPayload payload = PushPayload
                 .newBuilder()
                 .setPlatform(Platform.all())
-                .setAudience(Audience.registrationId(regId))
+                .setAudience(Audience.alias(uid))
+//                .setAudience(Audience.registrationId(regId))
                 .setMessage(platformMessage)
                 .build();
         try {

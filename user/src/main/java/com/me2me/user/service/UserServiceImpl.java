@@ -612,7 +612,8 @@ public class UserServiceImpl implements UserService {
                 UserProfile sourceUser = getUserProfileByUid(followDto.getSourceUid());
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("messageType",Specification.PushMessageType.FOLLOW.index+"");
-                jPushService.payloadByIdExtra(jpushToken.getJpushToken(), sourceUser.getNickName() + "关注了你！",jsonObject);
+                String alias = String.valueOf(followDto.getTargetUid());
+                jPushService.payloadByIdExtra(alias, sourceUser.getNickName() + "关注了你！",jsonObject);
             }
             log.info("follow push success");
             //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW.index,0,followDto.getSourceUid()));
@@ -1077,7 +1078,8 @@ public class UserServiceImpl implements UserService {
             List<JpushToken> jpushTokens = userMybatisDao.getJpushToken(uid);
             for(JpushToken jpushToken : jpushTokens) {
                 log.info("jpush for combination message for {}",uid);
-                jPushService.payloadById(jpushToken.getJpushToken(),"你有"+counter+"条新消息！");
+                String alias = String.valueOf(uid);
+                jPushService.payloadById(alias,"你有"+counter+"条新消息！");
             }
 
             UserDevice userDevice = userMybatisDao.getUserDevice(uid);
