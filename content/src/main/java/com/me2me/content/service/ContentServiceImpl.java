@@ -248,6 +248,7 @@ public class ContentServiceImpl implements ContentService {
             int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
             log.info(" get imageCounts success");
             squareDataElement.setImageCount(imageCounts);
+            squareDataElement.setReadCount(content.getReadCount());
             squareDataDto.getResults().add(squareDataElement);
         }
     }
