@@ -260,15 +260,17 @@ public class LiveServiceImpl implements LiveService {
         //如果是主播发言更新cache
         if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index ||speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index ){
             List<LiveFavorite> liveFavorites = liveMybatisDao.getFavoriteAll(speakDto.getTopicId());
+
+            // 通知所有的订阅者
             for(LiveFavorite liveFavorite : liveFavorites) {
                 MyLivesStatusModel livesStatusModel = new MyLivesStatusModel(liveFavorite.getUid(),"1");
                 cacheService.hSet(livesStatusModel.getKey(),livesStatusModel.getField(),"1");
                 MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(liveFavorite.getUid(), liveFavorite.getTopicId() + "", "1");
                 log.info("speak by master start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
-                String isUpdate = cacheService.hGet(cacheModel.getKey(), cacheModel.getField());
-                if(!StringUtils.isEmpty(isUpdate) && isUpdate.equals("1")){
-                    continue;
-                }
+//                String isUpdate = cacheService.hGet(cacheModel.getKey(), cacheModel.getField());
+//                if(!StringUtils.isEmpty(isUpdate) && isUpdate.equals("1")){
+//                    continue;
+//                }
                 cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
             }
             //粉丝有留言提醒主播

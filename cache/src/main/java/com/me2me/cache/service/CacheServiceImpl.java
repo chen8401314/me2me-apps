@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import redis.clients.jedis.*;
 import javax.annotation.PostConstruct;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -179,6 +180,16 @@ public class CacheServiceImpl implements CacheService {
             @Override
             public void action(Jedis jedis) {
                 jedis.hdel(key, field);
+            }
+        });
+    }
+
+    @Override
+    public Map<String,String> hGetAll(final String key) {
+        return jedisTemplate.execute(new JedisTemplate.JedisActionResult() {
+            @Override
+            public <T> T actionResult(Jedis jedis) {
+                return (T) jedis.hgetAll(key);
             }
         });
     }

@@ -1,5 +1,6 @@
 package com.me2me.cache.service;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -87,5 +88,7 @@ public interface CacheService {
     String hGet(String key,String field);
 
     void hDel(String key,String... field);
+
+    Map<String,String> hGetAll(String key);
 
 }
