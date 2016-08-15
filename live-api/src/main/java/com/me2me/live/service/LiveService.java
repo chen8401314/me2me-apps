@@ -127,4 +127,6 @@ public interface LiveService {
     Response cleanUpdate(long uid);
 
     Response genQRcode(long topicId);
+
+    Response setLive3(long uid, long topicId);
 }

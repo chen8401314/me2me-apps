@@ -14,11 +14,13 @@ import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.model.Content;
 import com.me2me.content.service.ContentService;
 import com.me2me.core.QRCodeUtil;
+import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.io.service.FileTransferService;
 import com.me2me.live.cache.MyLivesStatusModel;
 import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.*;
+import com.me2me.live.event.CacheLiveEvent;
 import com.me2me.live.model.*;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.*;
@@ -58,6 +60,9 @@ public class LiveServiceImpl implements LiveService {
     @Autowired
     private JPushService jPushService;
 
+    @Autowired
+    private ApplicationEventBus applicationEventBus;
+
     @Value("#{app.live_web}")
     private String live_web;
 
@@ -86,17 +91,7 @@ public class LiveServiceImpl implements LiveService {
         contentDto.setContentType(Specification.ContentType.TEXT.index);
         contentDto.setRights(Specification.ContentRights.EVERY.index);
         contentService.publish(contentDto);
-        List<UserFollow> list = userService.getFans(createLiveDto.getUid());
-        log.info("user fans data ");
-        for(UserFollow userFollow : list) {
-            //主播发言提醒关注的人
-            //userService.push(userFollow.getSourceUid(),createLiveDto.getUid(),Specification.PushMessageType.LIVE.index,createLiveDto.getTitle());
-            //主播的粉丝强制订阅
-            setLive3(userFollow.getSourceUid(),topic.getId());
-            //所有订阅的人显示有红点
-            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(userFollow.getSourceUid(), topic.getId() + "", "1");
-            cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-        }
+        applicationEventBus.post(new CacheLiveEvent(createLiveDto.getUid(),topic.getId()));
         log.info("createLive end ...");
         SpeakDto speakDto = new SpeakDto();
         speakDto.setTopicId(topic.getId());
@@ -768,7 +763,7 @@ public class LiveServiceImpl implements LiveService {
      * @param topicId
      * @return
      */
-    private Response setLive3(long uid, long topicId) {
+    public Response setLive3(long uid, long topicId) {
         log.info("setLive3 start ...");
         LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid, topicId);
         Content content = contentService.getContentByTopicId(topicId);
