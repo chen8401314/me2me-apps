@@ -220,8 +220,9 @@ public class ContentMybatisDao {
         return contentMapper.countByExample(example);
     }
 
-    public int getTopicStatus(long topicId){
-       return contentMapper.getTopicStatus(topicId);
+    public Integer getTopicStatus(long topicId){
+       Integer result = contentMapper.getTopicStatus(topicId);
+        return  result == null ? 1 : result;
     }
 
     public void deleteTopicById(long topicId){
@@ -438,8 +439,9 @@ public class ContentMybatisDao {
         return contentMapper.getTopicCount(topicId);
     }
 
-    public long getTopicLastUpdateTime(long topicId){
-        return contentMapper.getTopicLastUpdateTime(topicId);
+    public Long getTopicLastUpdateTime(long topicId){
+        Long result = contentMapper.getTopicLastUpdateTime(topicId);
+        return result == null ? 0 : result;
     }
 
     public List<Content>myPublishByType(MyPublishDto myPublishDto) {
@@ -462,6 +464,10 @@ public class ContentMybatisDao {
         criteria.andReviewTypeEqualTo(type);
         List<AtReview> list = atReviewMapper.selectByExample(example);
         return com.me2me.common.utils.Lists.getSingle(list);
+    }
+
+    public void clearData(){
+        contentMapper.clearData();
     }
 
 }

@@ -95,6 +95,8 @@ public class LiveServiceImpl implements LiveService {
         log.info("createLive end ...");
         SpeakDto speakDto = new SpeakDto();
         speakDto.setTopicId(topic.getId());
+        //检查有没有出错的数据，如果有则删除出错数据
+        contentService.clearData();
         return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status,ResponseStatus.USER_CREATE_LIVE_SUCCESS.message,speakDto);
     }
 

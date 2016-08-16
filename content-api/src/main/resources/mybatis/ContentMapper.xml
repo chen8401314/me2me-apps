@@ -845,4 +845,8 @@
     select long_time from topic where id = #{topicId,jdbcType=BIGINT}
   </select>
 
+  <update id="clearData" >
+    update content set status = 1 where type = 3 and forward_cid not in (select id from topic) and status !=1
+  </update>
+
 </mapper>

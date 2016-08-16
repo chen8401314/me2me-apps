@@ -131,7 +131,7 @@ public interface ContentMapper {
 
     List<Content> loadActivityData(int sinceId);
 
-    int getTopicStatus(long topicId);
+    Integer getTopicStatus(long topicId);
 
     void deleteTopicById(long topicId);
 
@@ -149,10 +149,12 @@ public interface ContentMapper {
 
     int getTopicCount(long topicId);
 
-    long getTopicLastUpdateTime(long topicId);
+    Long getTopicLastUpdateTime(long topicId);
 
     List<Content>loadMyPublishDataByType(MyPublishDto dto);
 
     int countMyPublishByType(MyPublishDto dto);
+
+    void clearData();
 
 }

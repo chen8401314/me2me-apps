@@ -58,7 +58,7 @@ public class Live extends BaseController {
     }
 
     /**
-     * 获取消息列表
+     * 获取消息列表(暂未启用)
      * @param request
      * @return
      */
