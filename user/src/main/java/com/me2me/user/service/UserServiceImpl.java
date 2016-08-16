@@ -8,6 +8,7 @@ import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.utils.CommonUtils;
+import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -613,7 +614,7 @@ public class UserServiceImpl implements UserService {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("messageType",Specification.PushMessageType.FOLLOW.index+"");
                 String alias = String.valueOf(followDto.getTargetUid());
-                jPushService.payloadByIdExtra(alias, sourceUser.getNickName() + "关注了你！",jsonObject);
+                jPushService.payloadByIdExtra(alias, sourceUser.getNickName() + "关注了你！", JPushUtils.packageExtra(jsonObject));
             }
             log.info("follow push success");
             //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW.index,0,followDto.getSourceUid()));

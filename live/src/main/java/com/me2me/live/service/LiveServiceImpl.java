@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
+import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -381,7 +382,7 @@ public class LiveServiceImpl implements LiveService {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index+"");
                 String alias = String.valueOf(speakDto.getAtUid());
-                jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!",jsonObject);
+                jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
             }
         }else if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index){
             liveRemind(speakDto.getAtUid() ,topic.getUid(),Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
@@ -396,7 +397,7 @@ public class LiveServiceImpl implements LiveService {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index+"");
                 String alias = String.valueOf(speakDto.getAtUid());
-                jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!",jsonObject);
+                jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!",JPushUtils.packageExtra(jsonObject));
             }
 
         }

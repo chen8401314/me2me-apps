@@ -2,6 +2,7 @@ package com.me2me.content.widget;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
+import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -62,7 +63,7 @@ public class ContentReview implements Review{
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index+"");
                     String alias = String.valueOf(reviewDto.getAtUid());
-                    jPushService.payloadByIdExtra(alias,userProfile.getNickName() + "@了你!",jsonObject);
+                    jPushService.payloadByIdExtra(alias,userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
                 }
             }
             if(reviewDto.getAtUid() != content.getUid()) {

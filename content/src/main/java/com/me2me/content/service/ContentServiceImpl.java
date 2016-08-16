@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.Constant;
+import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -1912,7 +1913,7 @@ public class ContentServiceImpl implements ContentService {
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index+"");
                     String alias = String.valueOf(content.getUid());
-                    jPushService.payloadByIdExtra(alias,"你的文章" + content.getTitle()+ "上热点啦！",jsonObject);
+                    jPushService.payloadByIdExtra(alias,"你的文章" + content.getTitle()+ "上热点啦！", JPushUtils.packageExtra(jsonObject));
                 }
             }else if(content.getType() == Specification.ArticleType.LIVE.index){
                 //userService.push(content.getUid(), 000000, Specification.PushMessageType.LIVE_HOTTEST.index, content.getTitle());
@@ -1925,7 +1926,7 @@ public class ContentServiceImpl implements ContentService {
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index+"");
                     String alias = String.valueOf(content.getUid());
-                    jPushService.payloadByIdExtra(alias,"你的直播" + content.getTitle()+ "上热点啦！",jsonObject);
+                    jPushService.payloadByIdExtra(alias,"你的直播" + content.getTitle()+ "上热点啦！",JPushUtils.packageExtra(jsonObject));
                 }
             }
 
