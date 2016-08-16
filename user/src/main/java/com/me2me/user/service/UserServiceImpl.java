@@ -860,7 +860,7 @@ public class UserServiceImpl implements UserService {
         VersionControlDto versionControlDto = new VersionControlDto();
         VersionControl control = userMybatisDao.getVersion(version,platform);
         VersionControl versionControl = userMybatisDao.getNewestVersion(platform);
-        if(control == null || version.compareTo(versionControl.getVersion()) >= 0){
+        if(control == null || (version.compareTo(versionControl.getVersion()) >= 0 && control.getVersion().equals(versionControl.getVersion()))){
             return Response.success(versionControlDto);
         }
         versionControlDto.setId(versionControl.getId());

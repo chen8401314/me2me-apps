@@ -1986,4 +1986,9 @@ public class ContentServiceImpl implements ContentService {
     }
 
 
+    @Override
+    public void clearData() {
+        contentMybatisDao.clearData();
+    }
+
 }
