@@ -1,6 +1,7 @@
 package com.me2me.search.service;
 
 import com.me2me.common.web.Response;
+import com.me2me.common.web.Specification;
 import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,8 +18,12 @@ public class SearchServiceImpl implements SearchService {
     private UserService userService;
 
     @Override
-    public Response search(String keyword,int page,int pageSize,long uid) {
-        return userService.search(keyword,page,pageSize,uid);
+    public Response search(String keyword,int page,int pageSize,long uid,int isSearchFans) {
+        if(isSearchFans == Specification.SearchType.FANS.index){
+            return userService.searchFans(keyword, page, pageSize, uid);
+        }else {
+            return userService.search(keyword, page, pageSize, uid);
+        }
     }
 
     @Override

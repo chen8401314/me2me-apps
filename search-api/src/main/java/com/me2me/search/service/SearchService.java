@@ -9,7 +9,7 @@ import com.me2me.common.web.Response;
  */
 public interface SearchService {
 
-    Response search(String keyword,int page,int pageSize,long uid);
+    Response search(String keyword,int page,int pageSize,long uid,int isSearchFans);
 
     Response assistant(String keyword);
 

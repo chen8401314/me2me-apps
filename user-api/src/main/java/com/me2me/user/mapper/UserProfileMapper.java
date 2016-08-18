@@ -1,5 +1,6 @@
 package com.me2me.user.mapper;
 
+import com.me2me.user.dto.SearchFansDto;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserProfileExample;
 import java.util.List;
@@ -95,4 +96,8 @@ public interface UserProfileMapper {
     int updateByPrimaryKey(UserProfile record);
 
     int getRefereeCount(UserProfile record);
+
+    List<UserProfile> searchFans(SearchFansDto searchFansDto);
+
+    int countFans(SearchFansDto searchFansDto);
 }

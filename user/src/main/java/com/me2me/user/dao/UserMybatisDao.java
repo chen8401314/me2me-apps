@@ -612,4 +612,11 @@ public class UserMybatisDao {
         jpushTokenMapper.updateByPrimaryKeySelective(jpushToken);
     }
 
+    public List<UserProfile> searchFans(SearchFansDto searchFansDto){
+        return userProfileMapper.searchFans(searchFansDto);
+    }
+
+    public int totalFans(SearchFansDto searchFansDto){
+        return userProfileMapper.countFans(searchFansDto);
+    }
 }

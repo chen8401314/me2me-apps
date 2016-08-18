@@ -732,4 +732,21 @@ public interface Specification {
         }
     }
 
+
+    public enum SearchType{
+
+        ALL("所有人",0),
+
+        FANS("粉丝",1);
+
+        public final String name;
+
+        public final int index;
+
+        SearchType(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
 }

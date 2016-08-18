@@ -1301,4 +1301,32 @@ public class UserServiceImpl implements UserService {
         List<JpushToken> jpushTokens = userMybatisDao.getJpushToken(uid);
         return com.me2me.common.utils.Lists.getSingle(jpushTokens);
     }
+
+    @Override
+    public Response searchFans(String keyword, int page, int pageSize, long uid) {
+        SearchFansDto searchFansDto = new SearchFansDto();
+        searchFansDto.setNickName("%"+keyword+"%");
+        searchFansDto.setStart((page - 1) * pageSize);
+        searchFansDto.setPageSize(pageSize);
+        searchFansDto.setUid(uid);
+        SearchDto searchDto = new SearchDto();
+        searchDto.setTotalRecord(userMybatisDao.totalFans(searchFansDto));
+        int totalPage = (searchDto.getTotalRecord() + pageSize -1) / pageSize;
+        searchDto.setTotalPage(totalPage);
+        List<UserProfile> list = userMybatisDao.searchFans(searchFansDto);
+        for(UserProfile userProfile : list){
+            SearchDto.SearchElement element = searchDto.createElement();
+            element.setUid(userProfile.getUid());
+            element.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
+            element.setNickName(userProfile.getNickName());
+            int follow = this.isFollow(userProfile.getUid(),uid);
+            element.setIsFollowed(follow);
+            int followMe = this.isFollow(uid,userProfile.getUid());
+            element.setIsFollowMe(followMe);
+            element.setIntroduced(userProfile.getIntroduced());
+            searchDto.getResult().add(element);
+        }
+        return Response.success(searchDto);
+    }
+
 }

@@ -537,4 +537,20 @@
       qrcode = #{qrcode,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="searchFans" parameterType="com.me2me.user.dto.SearchFansDto" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from user_profile p
+    where  p.uid in (select s.uid from sns_circle s where s.owner = #{uid,jdbcType=BIGINT})  and  p.nick_name like #{nickName,jdbcType=VARCHAR}
+    order by convert(nick_name USING gbk) COLLATE gbk_chinese_ci limit #{start,jdbcType=INTEGER} ,#{pageSize,jdbcType=INTEGER}
+  </select>
+
+
+  <select id="countFans" parameterType="com.me2me.user.dto.SearchFansDto" resultType="java.lang.Integer">
+    select
+    count(*)
+    from user_profile p
+    where  p.uid in (select s.uid from sns_circle s where s.owner = #{uid,jdbcType=BIGINT})  and  p.nick_name like #{nickName,jdbcType=VARCHAR}
+  </select>
 </mapper>

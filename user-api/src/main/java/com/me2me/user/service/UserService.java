@@ -212,6 +212,7 @@ public interface UserService {
 
     JpushToken getJpushTokeByUid(long uid);
 
+    Response searchFans(String keyword,int page,int pageSize,long uid);
 
 
 }
