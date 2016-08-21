@@ -32,5 +32,11 @@ public class LiveCoverDto implements BaseEntity{
 
     private int reviewCount;
 
+    // 阅读数（暂时未添加）
+    private int readCount;
+
+    // 成员数（暂时未添加）
+    private int membersCount;
+
     private int internalStatus;
 }
