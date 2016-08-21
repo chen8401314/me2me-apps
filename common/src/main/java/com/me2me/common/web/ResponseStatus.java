@@ -150,6 +150,7 @@ public enum  ResponseStatus {
 
 
 
+
     USER_PASSWORD_ERROR("用户密码错误","user password error",5000),
 
     USER_NOT_EXISTS("该用户不存在","user not exists",5001),
@@ -209,6 +210,8 @@ public enum  ResponseStatus {
     QRCODE_FAILURE("获取二维码失败","qrcode failure",50028),
 
     NO_RIGHTS_TO_LIKE("作者已经将该内容设置为私有您无权限操作","no rights to likes",50029),
+
+    SNS_CORE_CIRCLE_IS_FULL("核心成员已满，无法继续邀请。","sns core circle is full",50030),
 
 
 

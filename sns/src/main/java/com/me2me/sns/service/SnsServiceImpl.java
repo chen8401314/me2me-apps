@@ -11,6 +11,7 @@ import com.me2me.live.model.TopicFragment;
 import com.me2me.live.service.LiveService;
 import com.me2me.sns.dao.SnsMybatisDao;
 import com.me2me.sns.dto.*;
+import com.me2me.sns.model.SnsCircle;
 import com.me2me.user.dto.FollowDto;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
@@ -205,11 +206,18 @@ public class SnsServiceImpl implements SnsService {
             liveService.deleteFavoriteDelete(uid,topicId);
             createFragment(owner, topicId, uid);
         }else if(action == 1){
-            snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.CORE.index);
+            //查询核心圈人数，人数不能超过10人
+            List<SnsCircle> snsCircles = snsMybatisDao.getSnsCircle(uid,topicId,0,2);
+            if(snsCircles.size() == 10){
+                return Response.failure(ResponseStatus.SNS_CORE_CIRCLE_IS_FULL.status,ResponseStatus.SNS_CORE_CIRCLE_IS_FULL.message);
+            }else {
+                snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.CORE.index);
+            }
             //关注此人
-            follow(0,uid,owner);
-            liveService.setLive2(uid,topicId,0,0,0);
-            liveService.deleteFavoriteDelete(uid,topicId);
+//            follow(0,uid,owner);
+//            liveService.setLive2(uid,topicId,0,0,0);
+//            liveService.deleteFavoriteDelete(uid,topicId);
+            //修改人员进入核心圈,不修改人员的关注，订阅关系。
         }else if(action == 2){
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
             createFragment(owner, topicId, uid);
@@ -222,6 +230,8 @@ public class SnsServiceImpl implements SnsService {
             liveService.setLive2(uid, topicId, 0, 0,0);
             liveService.deleteFavoriteDelete(uid,topicId);
             createFragment(owner, topicId, uid);
+        }else if(action == 5){
+            snsMybatisDao.deleteSnsCircle(uid, owner);
         }
         return Response.success(ResponseStatus.MODIFY_CIRCLE_SUCCESS.status,ResponseStatus.MODIFY_CIRCLE_SUCCESS.message);
     }
