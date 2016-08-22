@@ -1,5 +1,7 @@
 package com.me2me.content.widget;
 
+import com.google.gson.JsonObject;
+import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -10,6 +12,9 @@ import com.me2me.content.model.ContentTagsDetails;
 import com.me2me.content.service.ContentService;
 import com.me2me.monitor.event.MonitorEvent;
 import com.me2me.monitor.service.MonitorService;
+import com.me2me.sms.service.JPushService;
+import com.me2me.user.model.JpushToken;
+import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -30,6 +35,9 @@ public class AbstractWriteTag {
     @Autowired
     private MonitorService monitorService;
 
+    @Autowired
+    private JPushService jPushService;
+
     public Response writeTag(WriteTagDto writeTagDto) {
         ContentTags contentTags = new ContentTags();
         contentTags.setTag(writeTagDto.getTag());
@@ -42,6 +50,10 @@ public class AbstractWriteTag {
         Content content = contentService.getContentById(writeTagDto.getCid());
         //添加贴标签提醒
         if(content.getType() != Specification.ArticleType.LIVE.index) {
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("messageType",Specification.PushMessageType.TAG.index+"");
+            String alias = String.valueOf(writeTagDto.getUid());
+            jPushService.payloadByIdExtra(alias, "你发布的内容收到了新感受", JPushUtils.packageExtra(jsonObject));
             contentService.remind(content, writeTagDto.getUid(), Specification.UserNoticeType.TAG.index, writeTagDto.getTag());
         }
             //打标签的时候文章热度+1
