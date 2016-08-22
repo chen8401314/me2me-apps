@@ -159,8 +159,8 @@ public class LiveServiceImpl implements LiveService {
         liveCoverDto.setReviewCount(liveMybatisDao.countFragment(topic.getId(),topic.getUid()));
         liveCoverDto.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(),topic.getUid()));
         liveCoverDto.setInternalStatus(userService.getUserInternalStatus(uid,topic.getUid()));
-        log.info("liveCover end ...");
-        //添加直播阅读数
+
+        //添加直播阅读数log.info("liveCover end ...");
         Content content = contentService.getContentByTopicId(topicId);
         content.setReadCount(content.getReadCount() + 1);
         contentService.updateContentById(content);
