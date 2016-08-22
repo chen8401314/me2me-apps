@@ -92,11 +92,14 @@
             </build>
         </profile>
 
-        <!--测试环境-->
+        <!--生产环境-->
         <profile>
-            <id>test</id>
+            <id>prod</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <properties>
-                <mode>test</mode>
+                <mode>dev</mode>
             </properties>
             <dependencies>
                 <dependency>
@@ -126,13 +129,23 @@
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
+                    <artifactId>live</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>activity</artifactId>
+                    <version>1.0-SNAPSHOT</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
                     <artifactId>search</artifactId>
                     <version>1.0-SNAPSHOT</version>
                 </dependency>
             </dependencies>
             <build>
                 <filters>
-                    <filter>src/main/filter/test.properties</filter>
+                    <filter>src/main/filter/prod.properties</filter>
                 </filters>
             </build>
         </profile>

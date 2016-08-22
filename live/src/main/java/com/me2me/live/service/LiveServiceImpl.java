@@ -164,6 +164,14 @@ public class LiveServiceImpl implements LiveService {
         Content content = contentService.getContentByTopicId(topicId);
         content.setReadCount(content.getReadCount() + 1);
         contentService.updateContentById(content);
+        // 添加成员数量
+        liveCoverDto.setReadCount(content.getReadCount());
+        List<LiveFavorite> list = liveMybatisDao.getFavoriteAll(topicId);
+        if(list!=null&&list.size()>0) {
+            liveCoverDto.setMembersCount(list.size());
+        }else{
+            liveCoverDto.setMembersCount(0);
+        }
         return Response.success(ResponseStatus.GET_LIVE_COVER_SUCCESS.status,ResponseStatus.GET_LIVE_COVER_SUCCESS.message,liveCoverDto);
     }
 
