@@ -1,6 +1,8 @@
 package com.me2me.sns.service;
 
+import com.google.gson.JsonObject;
 import com.me2me.common.Constant;
+import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -9,10 +11,12 @@ import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.service.LiveService;
+import com.me2me.sms.service.JPushService;
 import com.me2me.sns.dao.SnsMybatisDao;
 import com.me2me.sns.dto.*;
 import com.me2me.sns.model.SnsCircle;
 import com.me2me.user.dto.FollowDto;
+import com.me2me.user.model.JpushToken;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -38,6 +42,9 @@ public class SnsServiceImpl implements SnsService {
 
     @Autowired
     private LiveService liveService;
+
+    @Autowired
+    private JPushService jPushService;
 
     @Override
     public Response showMemberConsole(long owner,long topicId) {
@@ -212,6 +219,11 @@ public class SnsServiceImpl implements SnsService {
                 return Response.failure(ResponseStatus.SNS_CORE_CIRCLE_IS_FULL.status,ResponseStatus.SNS_CORE_CIRCLE_IS_FULL.message);
             }else {
                 snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.CORE.index);
+                    UserProfile userProfile = userService.getUserProfileByUid(owner);
+                    JsonObject jsonObject = new JsonObject();
+                    jsonObject.addProperty("messageType",Specification.PushMessageType.CORE_CIRCLE.index+"");
+                    String alias = String.valueOf(uid);
+                    jPushService.payloadByIdExtra(alias,userProfile.getNickName() + "你已成为王国"+liveService.getTopicById(topicId).getTitle()+"名称的核心圈成员", JPushUtils.packageExtra(jsonObject));
             }
             //关注此人
 //            follow(0,uid,owner);
