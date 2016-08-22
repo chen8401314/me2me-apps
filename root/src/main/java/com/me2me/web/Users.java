@@ -6,7 +6,6 @@ import com.me2me.sms.service.ChannelType;
 import com.me2me.user.dto.*;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
-import com.sun.tools.internal.ws.processor.model.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
