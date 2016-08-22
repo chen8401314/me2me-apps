@@ -92,6 +92,13 @@ public class LiveServiceImpl implements LiveService {
         contentDto.setContentType(Specification.ContentType.TEXT.index);
         contentDto.setRights(Specification.ContentRights.EVERY.index);
         contentService.publish(contentDto);
+
+        UserProfile userProfile = userService.getUserProfileByUid(createLiveDto.getUid());
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("messageType",Specification.LiveSpeakType.FOLLOW.index+"");
+        String alias = String.valueOf(createLiveDto.getUid());
+        jPushService.payloadByIdExtra(alias, "你关注的国王"+userProfile.getNickName()+"建立了新王国:"+topic.getTitle(), JPushUtils.packageExtra(jsonObject));
+
         applicationEventBus.post(new CacheLiveEvent(createLiveDto.getUid(),topic.getId()));
         log.info("createLive end ...");
         SpeakDto speakDto = new SpeakDto();
@@ -278,6 +285,10 @@ public class LiveServiceImpl implements LiveService {
 //                    continue;
 //                }
                 cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+
+                String alias = String.valueOf(liveFavorite.getUid());
+                Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
+                jPushService.payloadByIdForMessage(alias,"你加入的王国:"+topic.getTitle()+"更新了");
             }
             //粉丝有留言提醒主播
         }else{
@@ -285,6 +296,13 @@ public class LiveServiceImpl implements LiveService {
             MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(topic.getUid(), topic.getId() + "", "1");
             log.info("speak by other start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
             cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+
+            UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_REVIEW.index+"");
+            String alias = String.valueOf(speakDto.getUid());
+            jPushService.payloadByIdExtra(alias, userProfile.getNickName()+"评论了你", JPushUtils.packageExtra(jsonObject));
+
         }
         if(speakDto.getType() != Specification.LiveSpeakType.LIKES.index &&speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index  && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {
             TopicFragment topicFragment = new TopicFragment();
@@ -345,6 +363,13 @@ public class LiveServiceImpl implements LiveService {
             writeTagDto.setCid(content.getId());
             writeTagDto.setTag(speakDto.getFragment());
             contentService.writeTag2(writeTagDto);
+
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_TAG.index+"");
+            String alias = String.valueOf(writeTagDto.getUid());
+            jPushService.payloadByIdExtra(alias, "你发布的内容收到了新感受", JPushUtils.packageExtra(jsonObject));
+            contentService.remind(content, writeTagDto.getUid(), Specification.UserNoticeType.LIVE_TAG.index, writeTagDto.getTag());
+
         }
         Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
         //直播发言时候更新直播更新时间

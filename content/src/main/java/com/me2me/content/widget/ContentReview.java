@@ -71,6 +71,11 @@ public class ContentReview implements Review{
             }
         }else{
             //添加提醒
+            UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("messageType",Specification.PushMessageType.REVIEW.index+"");
+            String alias = String.valueOf(reviewDto.getAtUid());
+            jPushService.payloadByIdExtra(alias,userProfile.getNickName() + "评论了你", JPushUtils.packageExtra(jsonObject));
             contentService.remind(content,reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index,reviewDto.getReview());
         }
         log.info("push success");
