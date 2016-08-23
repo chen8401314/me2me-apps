@@ -234,7 +234,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <warSourceExcludes>src/main/resource/generator</warSourceExcludes>
-                    <warName>${project.name}</warName>
+                    <warName>${project.war.name}</warName>
                     <!-- 激活spring profile -->
                     <webResources>
                         <resource>
