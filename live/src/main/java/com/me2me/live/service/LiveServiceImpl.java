@@ -449,7 +449,7 @@ public class LiveServiceImpl implements LiveService {
         //2.0.7
         //直播信息保存
         //saveLiveDisplayData(speakDto);
-        return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status,ResponseStatus.USER_SPEAK_SUCCESS.message);
+        return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status,ResponseStatus.USER_SPEAK_SUCCESS.message,speakDto);
     }
 
     private void saveLiveDisplayData(SpeakDto speakDto){

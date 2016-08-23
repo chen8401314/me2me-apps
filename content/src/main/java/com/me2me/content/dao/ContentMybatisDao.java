@@ -470,4 +470,9 @@ public class ContentMybatisDao {
         contentMapper.clearData();
     }
 
+
+    public List<Content> getHottestContentByUpdateTime(int sinceId){
+        return contentMapper.loadHottestContentByUpdateTime(sinceId);
+    }
+
 }

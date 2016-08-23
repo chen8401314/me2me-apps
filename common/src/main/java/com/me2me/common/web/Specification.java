@@ -464,7 +464,9 @@ public interface Specification {
 
         UPDATE("收藏的直播有更新",9),
 
-        AT("有人@我",10);
+        AT("有人@我",10),
+
+        CORE_CIRCLE("邀请核心圈",11);
 
         public final String name;
 
