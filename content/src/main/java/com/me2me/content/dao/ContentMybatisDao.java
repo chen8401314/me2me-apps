@@ -471,7 +471,7 @@ public class ContentMybatisDao {
     }
 
 
-    public List<Content> getHottestContentByUpdateTime(int sinceId){
+    public List<Content2Dto> getHottestContentByUpdateTime(int sinceId){
         return contentMapper.loadHottestContentByUpdateTime(sinceId);
     }
 

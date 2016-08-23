@@ -157,6 +157,6 @@ public interface ContentMapper {
 
     void clearData();
 
-    List<Content> loadHottestContentByUpdateTime(long sinceId);
+    List<Content2Dto> loadHottestContentByUpdateTime(long sinceId);
 
 }

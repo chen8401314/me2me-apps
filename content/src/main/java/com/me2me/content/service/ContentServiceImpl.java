@@ -1558,9 +1558,9 @@ public class ContentServiceImpl implements ContentService {
             builderContent(uid, contentTopList, hottestDto.getTops());
         }
         //内容
-        List<Content> contentList = contentMybatisDao.getHottestContentByUpdateTime(sinceId);
+        List<Content2Dto> contentList = contentMybatisDao.getHottestContentByUpdateTime(sinceId);
         log.info("getHottestContent success");
-        builderContent(uid, contentList,hottestDto.getHottestContentData());
+        builderContent2(uid, contentList,hottestDto.getHottestContentData());
         //log.info("monitor");
         //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.HOTTEST.index,0,uid));
         log.info("getHottest end ...");
@@ -1595,18 +1595,18 @@ public class ContentServiceImpl implements ContentService {
             hottestContentElement.setForwardUrl(content.getForwardUrl());
             hottestContentElement.setForwardTitle(content.getForwardTitle());
             hottestContentElement.setReadCount(content.getReadCount());
-            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
-            log.info("getContentReviewTop3ByCid success");
-            for(ContentReview contentReview : contentReviewList){
-                ShowHottestDto.HottestContentElement.ReviewElement reviewElement = ShowHottestDto.HottestContentElement.createElement();
-                reviewElement.setUid(contentReview.getUid());
-                UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
-                reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
-                reviewElement.setNickName(user.getNickName());
-                reviewElement.setCreateTime(contentReview.getCreateTime());
-                reviewElement.setReview(contentReview.getReview());
-                hottestContentElement.getReviews().add(reviewElement);
-            }
+//            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+//            log.info("getContentReviewTop3ByCid success");
+//            for(ContentReview contentReview : contentReviewList){
+//                ShowHottestDto.HottestContentElement.ReviewElement reviewElement = ShowHottestDto.HottestContentElement.createElement();
+//                reviewElement.setUid(contentReview.getUid());
+//                UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
+//                reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+//                reviewElement.setNickName(user.getNickName());
+//                reviewElement.setCreateTime(contentReview.getCreateTime());
+//                reviewElement.setReview(contentReview.getReview());
+//                hottestContentElement.getReviews().add(reviewElement);
+//            }
             //系统文章不包含，用户信息
             if(content.getType() == Specification.ArticleType.SYSTEM.index){
 
@@ -1650,6 +1650,91 @@ public class ContentServiceImpl implements ContentService {
             container.add(hottestContentElement);
         }
     }
+
+    private void builderContent2(long uid,List<Content2Dto> contentList, List<ShowHottestDto.HottestContentElement> container) {
+        for(Content2Dto content : contentList){
+            ShowHottestDto.HottestContentElement hottestContentElement = ShowHottestDto.createHottestContentElement();
+            hottestContentElement.setType(content.getType());
+            String cover = content.getConverImage();
+            if(!StringUtils.isEmpty(cover)) {
+                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
+                    hottestContentElement.setCoverImage(cover);
+                }else {
+                    hottestContentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
+                }
+            }
+            hottestContentElement.setId(content.getId());
+            String contentStr = content.getContent();
+            if(contentStr.length() > 100){
+                hottestContentElement.setContent(contentStr.substring(0,100));
+            }else{
+                hottestContentElement.setContent(contentStr);
+            }
+            hottestContentElement.setLikeCount(content.getLikeCount());
+            hottestContentElement.setReviewCount(content.getReviewCount());
+            hottestContentElement.setTitle(content.getTitle());
+            hottestContentElement.setCreateTime(content.getCreateTime());
+            hottestContentElement.setIsLike(isLike(content.getId(),uid));
+            hottestContentElement.setForwardUrl(content.getForwardUrl());
+            hottestContentElement.setForwardTitle(content.getForwardTitle());
+            hottestContentElement.setReadCount(content.getReadCount());
+//            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+//            log.info("getContentReviewTop3ByCid success");
+//            for(ContentReview contentReview : contentReviewList){
+//                ShowHottestDto.HottestContentElement.ReviewElement reviewElement = ShowHottestDto.HottestContentElement.createElement();
+//                reviewElement.setUid(contentReview.getUid());
+//                UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
+//                reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+//                reviewElement.setNickName(user.getNickName());
+//                reviewElement.setCreateTime(contentReview.getCreateTime());
+//                reviewElement.setReview(contentReview.getReview());
+//                hottestContentElement.getReviews().add(reviewElement);
+//            }
+            //系统文章不包含，用户信息
+            if(content.getType() == Specification.ArticleType.SYSTEM.index){
+
+                //直播 直播状态
+            }else if(content.getType() == Specification.ArticleType.LIVE.index){
+                int reviewCount = contentMybatisDao.countFragment(content.getForwardCid(),content.getUid());
+                hottestContentElement.setReviewCount(reviewCount);
+                hottestContentElement.setUid(content.getUid());
+                hottestContentElement.setForwardCid(content.getForwardCid());
+                //查询直播状态
+                int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
+                hottestContentElement.setLiveStatus(status);
+                //直播是否收藏
+                int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
+                hottestContentElement.setFavorite(favorite);
+                UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+                hottestContentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                hottestContentElement.setNickName(userProfile.getNickName());
+                hottestContentElement.setTag(content.getFeeling());
+                int follow = userService.isFollow(content.getUid(),uid);
+                hottestContentElement.setIsFollowed(follow);
+
+                hottestContentElement.setPersonCount(content.getPersonCount());
+                hottestContentElement.setFavoriteCount(content.getFavoriteCount());
+                hottestContentElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
+                hottestContentElement.setTopicCount(contentMybatisDao.getTopicCount(content.getForwardCid()) - reviewCount);
+                //原生
+            }else if(content.getType() == Specification.ArticleType.ORIGIN.index){
+                hottestContentElement.setUid(content.getUid());
+                UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+                hottestContentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                hottestContentElement.setNickName(userProfile.getNickName());
+                hottestContentElement.setTag(content.getFeeling());
+                int follow = userService.isFollow(content.getUid(),uid);
+                hottestContentElement.setIsFollowed(follow);
+                //获取内容图片数量
+                int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
+                hottestContentElement.setImageCount(imageCounts);
+
+            }
+            hottestContentElement.setSinceId(content.getHid());
+            container.add(hottestContentElement);
+        }
+    }
+
 
     /**
      * 获取最新用户日记，直播

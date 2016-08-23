@@ -74,27 +74,29 @@ public class ShowHottestDto implements BaseEntity {
     //内容
     @Data
     public static class HottestContentElement extends BaseContentDto implements BaseEntity{
+//
+//        private List<ReviewElement> reviews = Lists.newArrayList();
+//
+//        public static ReviewElement createElement(){
+//            return new ReviewElement();
+//        }
+//
+//        @Data
+//        public static class ReviewElement implements BaseEntity{
+//
+//            private long uid;
+//
+//            private String nickName;
+//
+//            private String avatar;
+//
+//            private Date createTime;
+//
+//            private String review;
+//
+//        }
 
-        private List<ReviewElement> reviews = Lists.newArrayList();
-
-        public static ReviewElement createElement(){
-            return new ReviewElement();
-        }
-
-        @Data
-        public static class ReviewElement implements BaseEntity{
-
-            private long uid;
-
-            private String nickName;
-
-            private String avatar;
-
-            private Date createTime;
-
-            private String review;
-
-        }
+        private long sinceId;
 
     }
 }
