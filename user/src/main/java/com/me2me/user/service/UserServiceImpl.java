@@ -615,6 +615,14 @@ public class UserServiceImpl implements UserService {
                 String alias = String.valueOf(followDto.getTargetUid());
                 jPushService.payloadByIdExtra(alias, sourceUser.getNickName() + "关注了你！", JPushUtils.packageExtra(jsonObject));
             }
+            //粉丝数量红点
+            log.info("follow fans add push start");
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("fansCount","1");
+            String alias = String.valueOf(followDto.getTargetUid());
+            jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+            log.info("follow fans add push end ");
+
             log.info("follow push success");
             //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW.index,0,followDto.getSourceUid()));
             log.info("monitor success");
@@ -1298,6 +1306,7 @@ public class UserServiceImpl implements UserService {
             jPushService.payloadByIdExtra(alias,"你发布的内容上热点啦!",JPushUtils.packageExtra(jsonObject));
 
         }
+        log.info("live hottest end");
 
         return Response.success(dto);
     }

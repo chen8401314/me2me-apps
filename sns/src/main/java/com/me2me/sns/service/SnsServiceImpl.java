@@ -6,6 +6,8 @@ import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.content.model.Content;
+import com.me2me.content.service.ContentService;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.model.LiveFavorite;
@@ -48,6 +50,9 @@ public class SnsServiceImpl implements SnsService {
 
     @Autowired
     private LiveMybatisDao liveMybatisDao;
+
+    @Autowired
+    private ContentService contentService;
 
     @Override
     public Response showMemberConsole(long owner,long topicId) {
@@ -181,13 +186,6 @@ public class SnsServiceImpl implements SnsService {
         //关注，默认加到圈外人
         if(action == 0) {
 
-            //xxx关注了你
-            UserProfile userProfile = userService.getUserProfileByUid(followDto.getSourceUid());
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("messageType",Specification.PushMessageType.FOLLOW.index+"");
-            String alias = String.valueOf(followDto.getSourceUid());
-            jPushService.payloadByIdExtra(alias,userProfile.getNickName() + "关注了你!", JPushUtils.packageExtra(jsonObject));
-
             // 判断人员关系,
             // 1如果他是我的粉丝则为相互圈内人
             //2.如果他不是我的粉丝，我是他的圈外人
@@ -273,10 +271,10 @@ public class SnsServiceImpl implements SnsService {
         speakDto.setTopicId(topicId);
         speakDto.setType(Specification.LiveSpeakType.INVITED.index);
 
-        String alias = String.valueOf(userProfile.getUid());
-        Topic topic = liveMybatisDao.getTopicById(topicId);
-        jPushService.payloadById(alias , userProfile.getNickName()+"邀请你加入他的王国:"+topic.getTitle());
-        jPushService.payloadById(alias , userProfile.getNickName()+"邀请你成为"+topic.getTitle()+"的核心圈成员");
+//        String alias = String.valueOf(userProfile.getUid());
+//        Topic topic = liveMybatisDao.getTopicById(topicId);
+//        jPushService.payloadById(alias , userProfile.getNickName()+"邀请你加入他的王国:"+topic.getTitle());
+//        jPushService.payloadById(alias , userProfile.getNickName()+"邀请你成为"+topic.getTitle()+"的核心圈成员");
 
         liveService.speak(speakDto);
     }

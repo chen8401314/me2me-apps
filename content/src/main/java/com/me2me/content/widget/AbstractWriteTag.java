@@ -16,6 +16,7 @@ import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.JpushToken;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -24,6 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Date: 2016/6/15
  * Time :16:55
  */
+@Slf4j
 public class AbstractWriteTag {
 
     @Autowired
@@ -50,12 +52,25 @@ public class AbstractWriteTag {
         Content content = contentService.getContentById(writeTagDto.getCid());
         //添加贴标签提醒
         if(content.getType() != Specification.ArticleType.LIVE.index) {
+            log.info("ugc tag start");
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("messageType",Specification.PushMessageType.TAG.index+"");
-            String alias = String.valueOf(writeTagDto.getUid());
+            String alias = String.valueOf(content.getUid());
             jPushService.payloadByIdExtra(alias, "你发布的内容收到了新感受", JPushUtils.packageExtra(jsonObject));
             contentService.remind(content, writeTagDto.getUid(), Specification.UserNoticeType.TAG.index, writeTagDto.getTag());
+            log.info("ugc tag end");
         }
+        else
+        {
+            log.info("live tag start");
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_TAG.index+"");
+            String alias = String.valueOf(content.getUid());
+            jPushService.payloadByIdExtra(alias, "你发布的内容收到了新感受", JPushUtils.packageExtra(jsonObject));
+            contentService.remind(content, writeTagDto.getUid(), Specification.UserNoticeType.LIVE_TAG.index, writeTagDto.getTag());
+            log.info("live tag end");
+        }
+
             //打标签的时候文章热度+1
         content.setHotValue(content.getHotValue()+1);
         contentService.updateContentById(content);
