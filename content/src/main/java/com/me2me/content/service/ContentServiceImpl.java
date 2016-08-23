@@ -16,12 +16,10 @@ import com.me2me.content.model.ArticleReview;
 import com.me2me.content.model.ContentReview;
 import com.me2me.content.widget.*;
 import com.me2me.sms.service.JPushService;
+import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.dto.UserInfoDto;
 import com.me2me.user.dto.UserInfoDto2;
-import com.me2me.user.model.JpushToken;
-import com.me2me.user.model.UserNotice;
-import com.me2me.user.model.UserProfile;
-import com.me2me.user.model.UserTips;
+import com.me2me.user.model.*;
 import com.me2me.user.service.UserService;
 import com.plusnet.forecast.domain.ForecastContent;
 import com.plusnet.search.content.RecommendRequest;
@@ -81,9 +79,11 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private JPushService jPushService;
 
+    @Autowired
+    private UserMybatisDao userMybatisDao;
+
     @Value("#{app.recommend_domain}")
     private String recommendDomain;
-
 
     private Random random = new Random();
 
