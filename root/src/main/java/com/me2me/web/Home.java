@@ -40,6 +40,19 @@ public class Home extends BaseController {
     }
 
     /**
+     * 最热（小编发布，活动轮播位,最热按照上热点事件排序）
+     * @return
+     */
+    @RequestMapping(value = "/hottest2",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response hottest2(HottestRequest request){
+        if(request.getSinceId() == -1){
+            request.setSinceId(Integer.MAX_VALUE);
+        }
+        return contentService.getHottest2(request.getSinceId(),request.getUid());
+    }
+
+    /**
      * 活动列表
      * @return
      */

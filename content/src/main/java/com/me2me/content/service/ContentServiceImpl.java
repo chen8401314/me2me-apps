@@ -16,12 +16,10 @@ import com.me2me.content.model.ArticleReview;
 import com.me2me.content.model.ContentReview;
 import com.me2me.content.widget.*;
 import com.me2me.sms.service.JPushService;
+import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.dto.UserInfoDto;
 import com.me2me.user.dto.UserInfoDto2;
-import com.me2me.user.model.JpushToken;
-import com.me2me.user.model.UserNotice;
-import com.me2me.user.model.UserProfile;
-import com.me2me.user.model.UserTips;
+import com.me2me.user.model.*;
 import com.me2me.user.service.UserService;
 import com.plusnet.forecast.domain.ForecastContent;
 import com.plusnet.search.content.RecommendRequest;
@@ -81,9 +79,11 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private JPushService jPushService;
 
+    @Autowired
+    private UserMybatisDao userMybatisDao;
+
     @Value("#{app.recommend_domain}")
     private String recommendDomain;
-
 
     private Random random = new Random();
 
@@ -1523,6 +1523,50 @@ public class ContentServiceImpl implements ContentService {
         log.info("getHottest end ...");
         return Response.success(hottestDto);
     }
+
+    @Override
+    public Response getHottest2(int sinceId,long uid){
+        log.info("getHottest2 start ...");
+        ShowHottestDto hottestDto = new ShowHottestDto();
+        //活动
+        if(sinceId == Integer.MAX_VALUE) {
+            List<ActivityWithBLOBs> activityList = activityService.getActivityTop5();
+            log.info("getActivityTop5 success ");
+            for (ActivityWithBLOBs activity : activityList) {
+                ShowHottestDto.ActivityElement activityElement = ShowHottestDto.createActivityElement();
+                activityElement.setTitle(activity.getActivityHashTitle());
+                String cover = activity.getActivityCover();
+                if(!StringUtils.isEmpty(cover)) {
+                    activityElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
+                }
+                activityElement.setUpdateTime(activity.getUpdateTime());
+                activityElement.setUid(activity.getUid());
+                UserProfile userProfile = userService.getUserProfileByUid(activity.getUid());
+                activityElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                activityElement.setNickName(userProfile.getNickName());
+                int follow = userService.isFollow(activity.getUid(), uid);
+                activityElement.setIsFollowed(follow);
+                activityElement.setId(activity.getId());
+                activityElement.setReviewCount(activityService.getReviewCount(activity.getId()));
+                activityElement.setLikeCount(activityService.getLikeCount(activity.getId()));
+                hottestDto.getActivityData().add(activityElement);
+            }
+        }
+        // 置顶内容
+        if(sinceId==Integer.MAX_VALUE) {
+            List<Content> contentTopList = contentMybatisDao.getHottestTopsContent();
+            builderContent(uid, contentTopList, hottestDto.getTops());
+        }
+        //内容
+        List<Content> contentList = contentMybatisDao.getHottestContentByUpdateTime(sinceId);
+        log.info("getHottestContent success");
+        builderContent(uid, contentList,hottestDto.getHottestContentData());
+        //log.info("monitor");
+        //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.HOTTEST.index,0,uid));
+        log.info("getHottest end ...");
+        return Response.success(hottestDto);
+    }
+
 
     private void builderContent(long uid,List<Content> contentList, List<ShowHottestDto.HottestContentElement> container) {
         for(Content content : contentList){

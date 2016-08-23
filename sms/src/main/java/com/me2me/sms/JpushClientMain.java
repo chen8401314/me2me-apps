@@ -37,7 +37,7 @@ public class JpushClientMain {
         PushPayload pushPayload = PushPayload
                 .newBuilder()
                 .setPlatform(Platform.all())
-                .setAudience(Audience.alias("1077"))
+                .setAudience(Audience.alias("297"))
 //                .setAudience(Audience.registrationId("1517bfd3f7c16d7fa31"))
                 .setNotification(Notification.alert("fdsfds"))
                 .setMessage(message)
