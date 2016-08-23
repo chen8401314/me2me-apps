@@ -197,4 +197,7 @@ public interface ContentService{
     void clearData();
 
 
+    Response getHottest2(int sinceId,long uid);
+
+
 }
