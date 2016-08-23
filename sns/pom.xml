@@ -5,7 +5,7 @@
     <parent>
         <artifactId>me2me</artifactId>
         <groupId>com.me2me</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -15,7 +15,7 @@
         <dependency>
             <groupId>com.me2me</groupId>
             <artifactId>core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
@@ -30,17 +30,17 @@
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>sns-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>user</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>live</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
             </dependencies>
             <build>
@@ -56,12 +56,12 @@
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>user-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>monitor-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
             </dependencies>
             <build>
@@ -77,27 +77,27 @@
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>user-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>sms-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>monitor-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>live-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>sns-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
             </dependencies>
             <build>
