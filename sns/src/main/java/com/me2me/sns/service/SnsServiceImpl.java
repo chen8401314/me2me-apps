@@ -276,6 +276,18 @@ public class SnsServiceImpl implements SnsService {
 //        jPushService.payloadById(alias , userProfile.getNickName()+"邀请你加入他的王国:"+topic.getTitle());
 //        jPushService.payloadById(alias , userProfile.getNickName()+"邀请你成为"+topic.getTitle()+"的核心圈成员");
 
+        //从未加入王国的状态被邀请或加入圈内/外
+//        int internalStatus = 0;
+//        List list = liveMybatisDao.getTopicId(uid);
+//        if(list==null){
+//            snsMybatisDao.createSnsCircle(owner,uid,internalStatus);
+//            String alias = String.valueOf(userProfile.getUid());
+//            Topic topic = liveMybatisDao.getTopicById(topicId);
+//            JsonObject jsonObject = new JsonObject();
+//            jsonObject.addProperty("messageType",Specification.LiveSpeakType.INVITED.index+"");
+//            jPushService.payloadByIdExtra(alias , userProfile.getNickName()+"邀请你加入他的王国:"+topic.getTitle(),JPushUtils.packageExtra(jsonObject));
+//        }
+
         liveService.speak(speakDto);
     }
 }

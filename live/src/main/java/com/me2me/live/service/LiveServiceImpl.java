@@ -382,6 +382,17 @@ public class LiveServiceImpl implements LiveService {
             writeTagDto.setTag(speakDto.getFragment());
             contentService.writeTag2(writeTagDto);
         }
+
+//        else if(speakDto.getType() == Specification.LiveSpeakType.INVITED.index) {
+//            //邀请
+//            UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
+//            String alias = String.valueOf(userProfile.getUid());
+//            Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
+//            JsonObject jsonObject = new JsonObject();
+//            jsonObject.addProperty("messageType",Specification.PushMessageType.CORE_CIRCLE.index+"");
+//            jPushService.payloadByIdExtra(alias , userProfile.getNickName()+"邀请你成为"+topic.getTitle()+"的核心圈成员", JPushUtils.packageExtra(jsonObject));
+//        }
+
         Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
         //直播发言时候更新直播更新时间
         if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.VIDEO.index || speakDto.getType() == Specification.LiveSpeakType.SOUND.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index) {
