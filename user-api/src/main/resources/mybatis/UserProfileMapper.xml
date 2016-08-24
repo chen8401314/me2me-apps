@@ -541,8 +541,9 @@
   <select id="searchFans" parameterType="com.me2me.user.dto.SearchFansDto" resultMap="BaseResultMap">
     select
     <include refid="Base_Column_List" />
-    from user_profile p
+    from user_profile p left join sns_circle s on p.uid = s.uid
     where  p.uid in (select s.uid from sns_circle s where s.owner = #{uid,jdbcType=BIGINT})  and  p.nick_name like #{nickName,jdbcType=VARCHAR}
+    and s.internal_status != 2
     order by convert(nick_name USING gbk) COLLATE gbk_chinese_ci limit #{start,jdbcType=INTEGER} ,#{pageSize,jdbcType=INTEGER}
   </select>
 
