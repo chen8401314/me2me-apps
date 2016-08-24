@@ -116,7 +116,7 @@ public class SnsServiceImpl implements SnsService {
         log.info("getCircleByType start ...");
         ShowSnsCircleDto showSnsCircleDto = new ShowSnsCircleDto();
         List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto);
-        buildSnsCircle(showSnsCircleDto, list);
+        buildSnsCircle(showSnsCircleDto, list,dto.getUid());
         dto.setType(Specification.SnsCircle.IN.index);
         int inCount = snsMybatisDao.getSnsCircleCount(dto);
         dto.setType(Specification.SnsCircle.OUT.index);
@@ -131,7 +131,7 @@ public class SnsServiceImpl implements SnsService {
         return Response.success(showSnsCircleDto);
     }
 
-    private void buildSnsCircle(ShowSnsCircleDto showSnsCircleDto, List<SnsCircleDto> list) {
+    private void buildSnsCircle(ShowSnsCircleDto showSnsCircleDto, List<SnsCircleDto> list,long uid) {
         for(SnsCircleDto circleDto : list){
             ShowSnsCircleDto.SnsCircleElement snsCircleElement = showSnsCircleDto.createElement();
             snsCircleElement.setUid(circleDto.getUid());
@@ -139,6 +139,10 @@ public class SnsServiceImpl implements SnsService {
             snsCircleElement.setIntroduced(circleDto.getIntroduced());
             snsCircleElement.setNickName(circleDto.getNickName());
             snsCircleElement.setInternalStatus(circleDto.getInternalStatus());
+            //国王放到首位
+            if(circleDto.getUid() == uid){
+                showSnsCircleDto.getCircleElements().add(0,snsCircleElement);
+            }
             showSnsCircleDto.getCircleElements().add(snsCircleElement);
         }
     }
@@ -247,7 +251,16 @@ public class SnsServiceImpl implements SnsService {
             liveService.deleteFavoriteDelete(uid,topicId);
             createFragment(owner, topicId, uid);
         }else if(action == 5){
-            snsMybatisDao.deleteSnsCircle(uid, owner);
+            //人员原来是什么样的关系，还是什么样的关系
+            int isFollow = userService.isFollow(uid,owner);
+            int isFollowMe = userService.isFollow(owner,uid);
+            if(isFollow == 1 && isFollowMe == 1){
+                snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
+            }else if(isFollow == 1 && isFollowMe == 0){
+                snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
+            }else{
+                snsMybatisDao.deleteSnsCircle(uid, owner);
+            }
         }
         return Response.success(ResponseStatus.MODIFY_CIRCLE_SUCCESS.status,ResponseStatus.MODIFY_CIRCLE_SUCCESS.message);
     }
