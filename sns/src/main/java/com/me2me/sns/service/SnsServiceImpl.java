@@ -142,8 +142,9 @@ public class SnsServiceImpl implements SnsService {
             //国王放到首位
             if(circleDto.getUid() == uid){
                 showSnsCircleDto.getCircleElements().add(0,snsCircleElement);
+            }else {
+                showSnsCircleDto.getCircleElements().add(snsCircleElement);
             }
-            showSnsCircleDto.getCircleElements().add(snsCircleElement);
         }
     }
 
