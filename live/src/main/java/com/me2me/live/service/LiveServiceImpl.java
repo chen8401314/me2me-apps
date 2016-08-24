@@ -17,6 +17,7 @@ import com.me2me.content.service.ContentService;
 import com.me2me.core.QRCodeUtil;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.io.service.FileTransferService;
+import com.me2me.live.cache.LiveLastUpdate;
 import com.me2me.live.cache.MyLivesStatusModel;
 import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.dao.LiveMybatisDao;
@@ -284,7 +285,7 @@ public class LiveServiceImpl implements LiveService {
         //如果是主播发言更新cache
         if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index ||speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index ){
             List<LiveFavorite> liveFavorites = liveMybatisDao.getFavoriteAll(speakDto.getTopicId());
-
+            LiveLastUpdate liveLastUpdate = new LiveLastUpdate(speakDto.getUid(),speakDto.getTopicId(),"1");
             // 通知所有的订阅者
             for(LiveFavorite liveFavorite : liveFavorites) {
                 MyLivesStatusModel livesStatusModel = new MyLivesStatusModel(liveFavorite.getUid(),"1");
@@ -297,15 +298,27 @@ public class LiveServiceImpl implements LiveService {
 //                }
                 cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
 
-                log.info("update live start");
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("messageType",Specification.PushMessageType.UPDATE.index+"");
-                String alias = String.valueOf(liveFavorite.getUid());
-                Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
-                jPushService.payloadByIdExtra(alias,"你加入的王国:"+topic.getTitle()+"更新了",JPushUtils.packageExtra(jsonObject));
-                log.info("update live end");
+                //如果缓存存在时间失效，推送
+                if(StringUtils.isEmpty(cacheService.hGet(liveLastUpdate.getKey(),liveLastUpdate.getField()))) {
+                    log.info("update live start");
+                    JsonObject jsonObject = new JsonObject();
+                    jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index + "");
+                    String alias = String.valueOf(speakDto.getUid());
+                    Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
+                    jPushService.payloadByIdExtra(alias, "你加入的王国:" + topic.getTitle() + "更新了", JPushUtils.packageExtra(jsonObject));
+                    log.info("update live end");
+                }
 
             }
+
+            //设置缓存时间
+            if(StringUtils.isEmpty(cacheService.hGet(liveLastUpdate.getKey(),liveLastUpdate.getField()))) {
+                log.info("set cache timeout");
+                cacheService.hSet(liveLastUpdate.getKey(), liveLastUpdate.getField(), liveLastUpdate.getValue());
+                cacheService.expire(liveLastUpdate.getKey(), 3600);
+            }
+
+
             //粉丝有留言提醒主播
         }else{
             Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
