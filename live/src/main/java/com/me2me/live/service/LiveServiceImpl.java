@@ -290,17 +290,19 @@ public class LiveServiceImpl implements LiveService {
             applicationEventBus.post(speakEvent);
             //粉丝有留言提醒主播
         }else{
-            Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
-            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(topic.getUid(), topic.getId() + "", "1");
-            log.info("speak by other start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
-            cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-            //直播回复的推送
-            if(speakDto.getType() == Specification.LiveSpeakType.FANS.index) {
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_REVIEW.index + "");
-                String alias = String.valueOf(topic.getUid());
-                UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
-                jPushService.payloadByIdExtra(alias,userProfile.getNickName()+"评论了你",JPushUtils.packageExtra(jsonObject));
+            if(speakDto.getType() != Specification.LiveSpeakType.INVITED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.FORWARD.index && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.LIKES.index) {
+                Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
+                MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(topic.getUid(), topic.getId() + "", "1");
+                log.info("speak by other start update hset cache key{} field {} value {}", cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+                //直播回复的推送
+                if (speakDto.getType() == Specification.LiveSpeakType.FANS.index) {
+                    JsonObject jsonObject = new JsonObject();
+                    jsonObject.addProperty("messageType", Specification.PushMessageType.LIVE_REVIEW.index + "");
+                    String alias = String.valueOf(topic.getUid());
+                    UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
+                    jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "评论了你", JPushUtils.packageExtra(jsonObject));
+                }
             }
         }
         if(speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index  && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {
