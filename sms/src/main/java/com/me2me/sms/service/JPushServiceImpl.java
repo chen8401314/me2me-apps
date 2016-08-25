@@ -16,6 +16,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import javassist.ClassPool;
 import javassist.CtClass;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
@@ -29,15 +30,21 @@ import java.util.Map;
  * Author: 赵朋扬
  * Date: 2016/8/9.
  */
+@Slf4j
 @Service("jPushServiceImpl")
 public class JPushServiceImpl implements JPushService{
 
     @PostConstruct
     public void init(){
-        org.apache.ibatis.javassist.ClassPool cp = org.apache.ibatis.javassist.ClassPool.getDefault();
-        org.apache.ibatis.javassist.CtClass ctClass = cp.makeClass(JsonElement.class.getName());
-        org.apache.ibatis.javassist.CtClass interfaceClass = cp.makeClass(Serializable.class.getName());
-        ctClass.addInterface(interfaceClass);
+        try {
+            ClassPool classPool = ClassPool.getDefault();
+            CtClass pageClass = classPool.get(JsonElement.class.getName());
+            pageClass.addInterface(classPool.makeInterface(Serializable.class.getName()));
+            pageClass.writeFile();
+        }catch (Exception e){
+            log.error("write file has error {}",e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     private final JPushClient jPushClient;

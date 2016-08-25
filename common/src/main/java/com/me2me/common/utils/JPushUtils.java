@@ -6,9 +6,12 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.me2me.common.web.Specification;
+import org.apache.ibatis.javassist.CannotCompileException;
 import org.apache.ibatis.javassist.ClassPool;
 import org.apache.ibatis.javassist.CtClass;
+import org.apache.ibatis.javassist.NotFoundException;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -24,5 +27,12 @@ public class JPushUtils {
 
     public static JsonObject packageExtra(JsonObject jsonObject){
         return jsonObject;
+    }
+
+    public static void main(String[] args) throws Exception {
+        ClassPool classPool = ClassPool.getDefault();
+        CtClass pageClass = classPool.get(Page.class.getName());
+        pageClass.addInterface(classPool.makeInterface(Serializable.class.getName()));
+        pageClass.writeFile();
     }
 }
