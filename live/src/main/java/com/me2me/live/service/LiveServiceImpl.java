@@ -285,40 +285,6 @@ public class LiveServiceImpl implements LiveService {
         log.info("speak start ...");
         //如果是主播发言更新cache
         if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index ||speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index ){
-//            List<LiveFavorite> liveFavorites = liveMybatisDao.getFavoriteAll(speakDto.getTopicId());
-//            LiveLastUpdate liveLastUpdate = new LiveLastUpdate(speakDto.getUid(),speakDto.getTopicId(),"1");
-//            // 通知所有的订阅者
-//            for(LiveFavorite liveFavorite : liveFavorites) {
-//                MyLivesStatusModel livesStatusModel = new MyLivesStatusModel(liveFavorite.getUid(),"1");
-//                cacheService.hSet(livesStatusModel.getKey(),livesStatusModel.getField(),"1");
-//                MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(liveFavorite.getUid(), liveFavorite.getTopicId() + "", "1");
-//                log.info("speak by master start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
-////                String isUpdate = cacheService.hGet(cacheModel.getKey(), cacheModel.getField());
-////                if(!StringUtils.isEmpty(isUpdate) && isUpdate.equals("1")){
-////                    continue;
-////                }
-//                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-//
-//                //如果缓存存在时间失效，推送
-//                if(StringUtils.isEmpty(cacheService.hGet(liveLastUpdate.getKey(),liveLastUpdate.getField()))) {
-//                    log.info("update live start");
-//                    JsonObject jsonObject = new JsonObject();
-//                    jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index + "");
-//                    String alias = String.valueOf(speakDto.getUid());
-//                    Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
-//                    jPushService.payloadByIdExtra(alias, "你加入的王国:" + topic.getTitle() + "更新了", JPushUtils.packageExtra(jsonObject));
-//                    log.info("update live end");
-//                }
-//
-//            }
-//
-//            //设置缓存时间
-//            if(StringUtils.isEmpty(cacheService.hGet(liveLastUpdate.getKey(),liveLastUpdate.getField()))) {
-//                log.info("set cache timeout");
-//                cacheService.hSet(liveLastUpdate.getKey(), liveLastUpdate.getField(), liveLastUpdate.getValue());
-//                cacheService.expire(liveLastUpdate.getKey(), 3600);
-//            }
-//
             SpeakEvent speakEvent = new SpeakEvent();
             speakEvent.setTopicId(speakDto.getTopicId());
             speakEvent.setUid(speakDto.getUid());
@@ -329,26 +295,23 @@ public class LiveServiceImpl implements LiveService {
             MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(topic.getUid(), topic.getId() + "", "1");
             log.info("speak by other start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
             cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-
-            if(speakDto.getType()!=Specification.LiveSpeakType.INVITED.index&&speakDto.getType()!=Specification.LiveSpeakType.FANS_WRITE_TAG.index)
-            {
-                //评论
-                log.info("live review start");
-                UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
+            //直播回复的推送
+            UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
+            if(speakDto.getType() == Specification.LiveSpeakType.INVITED.index ){
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_REVIEW.index+"");
-                String alias = String.valueOf(topic.getUid());
-                jPushService.payloadByIdExtra(alias, userProfile.getNickName()+"评论了你", JPushUtils.packageExtra(jsonObject));
-                log.info("live review end"+userProfile.getNickName()+"评论了你");
-            }
-            //邀请核心圈
-            else if(speakDto.getType()==Specification.LiveSpeakType.INVITED.index)
-            {
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("messageType",Specification.PushMessageType.CORE_CIRCLE.index+"");
-                UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
+                jsonObject.addProperty("messageType",Specification.PushMessageType.CORE_CIRCLE.index + "");
                 String alias = String.valueOf(speakDto.getAtUid());
-                jPushService.payloadByIdExtra(alias,userProfile.getNickName()+"邀请你成为"+topic.getTitle()+"的核心圈成员",JPushUtils.packageExtra(jsonObject));
+                jPushService.payloadByIdExtra(alias,userProfile.getNickName() + "邀请你成为" + topic.getTitle() + "的核心圈成员",JPushUtils.packageExtra(jsonObject));
+            }else if(speakDto.getType() == Specification.LiveSpeakType.FANS.index) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_REVIEW.index + "");
+                String alias = String.valueOf(speakDto.getUid());
+                jPushService.payloadByIdExtra(alias,userProfile.getNickName()+"评论了你",JPushUtils.packageExtra(jsonObject));
+            }else if(speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index){
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_TAG.index + "");
+                String alias = String.valueOf(speakDto.getUid());
+                jPushService.payloadByIdExtra(alias,"你发布的内容收到新感受",JPushUtils.packageExtra(jsonObject));
             }
         }
         if(speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index  && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {

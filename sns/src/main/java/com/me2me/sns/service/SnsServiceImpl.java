@@ -240,8 +240,8 @@ public class SnsServiceImpl implements SnsService {
 //            liveService.deleteFavoriteDelete(uid,topicId);
             //修改人员进入核心圈,不修改人员的关注，订阅关系。
             //推送被邀请的人
-            UserProfile user = userService.getUserProfileByUid(owner);
-            jPushService.payloadByIdForMessage(String.valueOf(uid),user.getNickName() + "邀请你成为王国名字的核心圈成员");
+//            UserProfile user = userService.getUserProfileByUid(owner);
+//            jPushService.payloadByIdForMessage(String.valueOf(uid),user.getNickName() + "邀请你成为王国名字的核心圈成员");
         }else if(action == 2){
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
             createFragment(owner, topicId, uid);
