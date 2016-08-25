@@ -240,8 +240,12 @@ public class SnsServiceImpl implements SnsService {
 //            liveService.deleteFavoriteDelete(uid,topicId);
             //修改人员进入核心圈,不修改人员的关注，订阅关系。
             //推送被邀请的人
-//            UserProfile user = userService.getUserProfileByUid(owner);
-//            jPushService.payloadByIdForMessage(String.valueOf(uid),user.getNickName() + "邀请你成为王国名字的核心圈成员");
+            UserProfile userProfile = userService.getUserProfileByUid(owner);
+            Topic topic = liveService.getTopicById(topicId);
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("messageType",Specification.PushMessageType.CORE_CIRCLE.index + "");
+            String alias = String.valueOf(uid);
+            jPushService.payloadByIdExtra(alias,userProfile.getNickName() + "邀请你成为" + topic.getTitle() + "的核心圈成员",JPushUtils.packageExtra(jsonObject));
         }else if(action == 2){
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
             createFragment(owner, topicId, uid);
@@ -256,8 +260,8 @@ public class SnsServiceImpl implements SnsService {
             createFragment(owner, topicId, uid);
         }else if(action == 5){
             //人员原来是什么样的关系，还是什么样的关系
-            int isFollow = userService.isFollow(uid,owner);
-            int isFollowMe = userService.isFollow(owner,uid);
+            int isFollow = userService.isFollow(owner,uid);
+            int isFollowMe = userService.isFollow(uid,owner);
             if(isFollow == 1 && isFollowMe == 1){
                 snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
             }else if(isFollow == 1 && isFollowMe == 0){
@@ -288,24 +292,6 @@ public class SnsServiceImpl implements SnsService {
         speakDto.setFragment("国王" + userProfile.getNickName() + "邀请了" + fans.getNickName()+"加入此直播");
         speakDto.setTopicId(topicId);
         speakDto.setType(Specification.LiveSpeakType.INVITED.index);
-
-//        String alias = String.valueOf(userProfile.getUid());
-//        Topic topic = liveMybatisDao.getTopicById(topicId);
-//        jPushService.payloadById(alias , userProfile.getNickName()+"邀请你加入他的王国:"+topic.getTitle());
-//        jPushService.payloadById(alias , userProfile.getNickName()+"邀请你成为"+topic.getTitle()+"的核心圈成员");
-
-        //从未加入王国的状态被邀请或加入圈内/外
-//        int internalStatus = 0;
-//        List list = liveMybatisDao.getTopicId(uid);
-//        if(list==null){
-//            snsMybatisDao.createSnsCircle(owner,uid,internalStatus);
-//            String alias = String.valueOf(userProfile.getUid());
-//            Topic topic = liveMybatisDao.getTopicById(topicId);
-//            JsonObject jsonObject = new JsonObject();
-//            jsonObject.addProperty("messageType",Specification.LiveSpeakType.INVITED.index+"");
-//            jPushService.payloadByIdExtra(alias , userProfile.getNickName()+"邀请你加入他的王国:"+topic.getTitle(),JPushUtils.packageExtra(jsonObject));
-//        }
-
         liveService.speak(speakDto);
     }
 }

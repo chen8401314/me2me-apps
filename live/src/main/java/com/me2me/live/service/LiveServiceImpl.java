@@ -297,20 +297,15 @@ public class LiveServiceImpl implements LiveService {
             cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
             //直播回复的推送
             UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
-            if(speakDto.getType() == Specification.LiveSpeakType.INVITED.index ){
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("messageType",Specification.PushMessageType.CORE_CIRCLE.index + "");
-                String alias = String.valueOf(speakDto.getAtUid());
-                jPushService.payloadByIdExtra(alias,userProfile.getNickName() + "邀请你成为" + topic.getTitle() + "的核心圈成员",JPushUtils.packageExtra(jsonObject));
-            }else if(speakDto.getType() == Specification.LiveSpeakType.FANS.index) {
+            if(speakDto.getType() == Specification.LiveSpeakType.FANS.index) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_REVIEW.index + "");
-                String alias = String.valueOf(speakDto.getUid());
+                String alias = String.valueOf(topic.getUid());
                 jPushService.payloadByIdExtra(alias,userProfile.getNickName()+"评论了你",JPushUtils.packageExtra(jsonObject));
             }else if(speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index){
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_TAG.index + "");
-                String alias = String.valueOf(speakDto.getUid());
+                String alias = String.valueOf(topic.getUid());
                 jPushService.payloadByIdExtra(alias,"你发布的内容收到新感受",JPushUtils.packageExtra(jsonObject));
             }
         }
