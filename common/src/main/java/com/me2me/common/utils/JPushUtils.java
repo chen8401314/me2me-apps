@@ -11,6 +11,7 @@ import org.apache.ibatis.javassist.*;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -27,10 +28,10 @@ public class JPushUtils {
     }
 
     public static void main(String[] args) throws Exception {
-        ClassPool classPool = ClassPool.getDefault();
-        CtClass pageClass = classPool.get(Page.class.getName());
-        pageClass.addInterface(classPool.makeInterface(Serializable.class.getName()));
-        pageClass.writeFile();
-        classPool.insertClassPath(new ClassClassPath(Page.class));
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("name",100);
+        jsonObject.addProperty("age",120);
+        jsonObject.
+
     }
 }

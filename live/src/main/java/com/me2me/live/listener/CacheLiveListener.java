@@ -1,12 +1,18 @@
 package com.me2me.live.listener;
 
 import com.google.common.eventbus.Subscribe;
+import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
+import com.me2me.common.utils.JPushUtils;
+import com.me2me.common.web.Specification;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.event.CacheLiveEvent;
+import com.me2me.live.model.Topic;
 import com.me2me.live.service.LiveService;
+import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.UserFollow;
+import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,13 +38,20 @@ public class CacheLiveListener {
 
     private final LiveService liveService;
 
+    private final JPushService jPushService;
+
 
     @Autowired
-    public CacheLiveListener(ApplicationEventBus applicationEventBus, UserService userService,CacheService cacheService,LiveService liveService){
+    public CacheLiveListener(ApplicationEventBus applicationEventBus,
+                             UserService userService,
+                             CacheService cacheService,
+                             LiveService liveService,
+                             JPushService jPushService){
         this.applicationEventBus = applicationEventBus;
         this.userService = userService;
         this.cacheService = cacheService;
         this.liveService = liveService;
+        this.jPushService = jPushService;
     }
 
     @PostConstruct
@@ -46,6 +59,10 @@ public class CacheLiveListener {
         this.applicationEventBus.register(this);
     }
 
+    /**
+     * sync process after work
+     * @param cacheLiveEvent
+     */
     @Subscribe
     public void cacheLive(CacheLiveEvent cacheLiveEvent) {
         log.info("invocation by event bus ... ");
@@ -57,7 +74,14 @@ public class CacheLiveListener {
             //所有订阅的人显示有红点
             MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(userFollow.getSourceUid(), cacheLiveEvent.getTopicId() + "", "1");
             cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+            UserProfile userProfile = userService.getUserProfileByUid(cacheLiveEvent.getUid());
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("messageType", Specification.LiveSpeakType.FOLLOW.index + "");
+            String alias = String.valueOf(userFollow.getSourceUid());
+            Topic topic = liveService.getTopicById(cacheLiveEvent.getTopicId());
+            jPushService.payloadByIdExtra(alias, "你关注的国王" + userProfile.getNickName() + "建立了新王国:" + topic.getTitle(), JPushUtils.packageExtra(jsonObject));
         }
+
     }
 
 }

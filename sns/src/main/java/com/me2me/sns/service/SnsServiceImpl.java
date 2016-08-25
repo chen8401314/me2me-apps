@@ -6,11 +6,7 @@ import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
-import com.me2me.content.model.Content;
-import com.me2me.content.service.ContentService;
-import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.SpeakDto;
-import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.service.LiveService;
@@ -48,11 +44,6 @@ public class SnsServiceImpl implements SnsService {
     @Autowired
     private JPushService jPushService;
 
-    @Autowired
-    private LiveMybatisDao liveMybatisDao;
-
-    @Autowired
-    private ContentService contentService;
 
     @Override
     public Response showMemberConsole(long owner,long topicId) {

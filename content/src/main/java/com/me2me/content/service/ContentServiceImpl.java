@@ -16,7 +16,6 @@ import com.me2me.content.model.ArticleReview;
 import com.me2me.content.model.ContentReview;
 import com.me2me.content.widget.*;
 import com.me2me.sms.service.JPushService;
-import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.dto.UserInfoDto;
 import com.me2me.user.dto.UserInfoDto2;
 import com.me2me.user.model.*;
@@ -78,9 +77,6 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private JPushService jPushService;
-
-    @Autowired
-    private UserMybatisDao userMybatisDao;
 
     @Value("#{app.recommend_domain}")
     private String recommendDomain;
