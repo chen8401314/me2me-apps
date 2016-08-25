@@ -26,7 +26,6 @@ import com.me2me.live.event.CacheLiveEvent;
 import com.me2me.live.event.SpeakEvent;
 import com.me2me.live.model.*;
 import com.me2me.sms.service.JPushService;
-import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.model.*;
 import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -67,8 +66,6 @@ public class LiveServiceImpl implements LiveService {
     @Autowired
     private ApplicationEventBus applicationEventBus;
 
-    @Autowired
-    private UserMybatisDao userMybatisDao;
 
     @Value("#{app.live_web}")
     private String live_web;
@@ -100,19 +97,6 @@ public class LiveServiceImpl implements LiveService {
         contentService.publish(contentDto);
 
         applicationEventBus.post(new CacheLiveEvent(createLiveDto.getUid(),topic.getId()));
-
-        log.info("createLive end ...");
-
-        log.info("new live start");
-        List<UserFollow> userFans = userMybatisDao.getUserFans(createLiveDto.getUid());
-        for(UserFollow userFollow : userFans) {
-            UserProfile userProfile = userService.getUserProfileByUid(createLiveDto.getUid());
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("messageType", Specification.LiveSpeakType.FOLLOW.index + "");
-            String alias = String.valueOf(userFollow.getSourceUid());
-            jPushService.payloadByIdExtra(alias, "你关注的国王" + userProfile.getNickName() + "建立了新王国:" + topic.getTitle(), JPushUtils.packageExtra(jsonObject));
-        }
-        log.info("new live end");
 
         SpeakDto speakDto = new SpeakDto();
         speakDto.setTopicId(topic.getId());
