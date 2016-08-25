@@ -12,8 +12,6 @@ import lombok.Data;
 @Data
 public class SpeakEvent implements BaseEntity {
 
-    private long uid;
-
     private long topicId;
 
 }

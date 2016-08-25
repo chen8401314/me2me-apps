@@ -60,7 +60,7 @@ public class SpeakListener {
     public void speak(SpeakEvent speakEvent) {
         log.info("SpeakEvent speak start ...");
         List<LiveFavorite> liveFavorites = liveMybatisDao.getFavoriteAll(speakEvent.getTopicId());
-        LiveLastUpdate liveLastUpdate = new LiveLastUpdate(speakEvent.getUid(),speakEvent.getTopicId(),"1");
+        LiveLastUpdate liveLastUpdate = new LiveLastUpdate(speakEvent.getTopicId(),"1");
         // 通知所有的订阅者
         for(LiveFavorite liveFavorite : liveFavorites) {
             MyLivesStatusModel livesStatusModel = new MyLivesStatusModel(liveFavorite.getUid(),"1");
@@ -73,7 +73,7 @@ public class SpeakListener {
                 log.info("update live start");
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index + "");
-                String alias = String.valueOf(speakEvent.getUid());
+                String alias = String.valueOf(liveFavorite.getUid());
                 Topic topic = liveMybatisDao.getTopicById(speakEvent.getTopicId());
                 jPushService.payloadByIdExtra(alias, "你加入的王国:" + topic.getTitle() + "更新了", JPushUtils.packageExtra(jsonObject));
                 log.info("update live end");
