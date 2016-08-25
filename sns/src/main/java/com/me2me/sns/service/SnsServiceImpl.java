@@ -234,10 +234,10 @@ public class SnsServiceImpl implements SnsService {
             }else {
                 snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.CORE.index);
             }
-            //关注此人
+//            //关注此人
 //            follow(0,uid,owner);
-//            liveService.setLive2(uid,topicId,0,0,0);
-//            liveService.deleteFavoriteDelete(uid,topicId);
+            liveService.setLive2(uid,topicId,0,0,0);
+            liveService.deleteFavoriteDelete(uid,topicId);
             //修改人员进入核心圈,不修改人员的关注，订阅关系。
             //推送被邀请的人
             UserProfile userProfile = userService.getUserProfileByUid(owner);
