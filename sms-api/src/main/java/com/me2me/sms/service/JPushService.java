@@ -23,7 +23,7 @@ public interface JPushService {
 
     void payloadById(String regId,String message);
 
-    void payloadByIdExtra(String uid,String message,JsonObject jsonObject);
+    void payloadByIdExtra(String uid,String message,Map<String,String> extraMaps);
 
     void payloadByIdForMessage(String regId,String message);
 

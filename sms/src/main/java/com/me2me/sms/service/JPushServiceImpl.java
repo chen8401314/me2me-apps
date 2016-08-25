@@ -91,7 +91,7 @@ public class JPushServiceImpl implements JPushService{
     }
 
     @Override
-    public void payloadByIdExtra(String uid,String message,JsonObject jsonObject) {
+    public void payloadByIdExtra(String uid,String message,Map<String,String> extraMaps) {
 
         PushPayload payload = PushPayload.newBuilder()
                 .setPlatform(Platform.android_ios())
@@ -101,12 +101,13 @@ public class JPushServiceImpl implements JPushService{
                         // android 平台
                         .setAlert(message)
                         .addPlatformNotification(AndroidNotification.newBuilder()
-                                .addExtra("extra",jsonObject).build())
-//                                .addExtras(extraMaps).build())
+//                                .addExtra("extra",jsonObject).build())
+                                .addExtras(extraMaps).build())
                         // ios 平台
                         .addPlatformNotification(IosNotification.newBuilder()
                                 .incrBadge(1)
-                                .addExtra("extra",jsonObject).build())
+//                                .addExtra("extra",jsonObject).build())
+                                .addExtras(extraMaps).build())
                         .build())
                 .build();
         try {
