@@ -12,10 +12,15 @@ import cn.jpush.api.push.model.audience.Audience;
 import cn.jpush.api.push.model.notification.AndroidNotification;
 import cn.jpush.api.push.model.notification.IosNotification;
 import cn.jpush.api.push.model.notification.Notification;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import javassist.ClassPool;
+import javassist.CtClass;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,6 +32,13 @@ import java.util.Map;
 @Service("jPushServiceImpl")
 public class JPushServiceImpl implements JPushService{
 
+    @PostConstruct
+    public void init(){
+        org.apache.ibatis.javassist.ClassPool cp = org.apache.ibatis.javassist.ClassPool.getDefault();
+        org.apache.ibatis.javassist.CtClass ctClass = cp.makeClass(JsonElement.class.getName());
+        org.apache.ibatis.javassist.CtClass interfaceClass = cp.makeClass(Serializable.class.getName());
+        ctClass.addInterface(interfaceClass);
+    }
 
     private final JPushClient jPushClient;
 
@@ -72,7 +84,8 @@ public class JPushServiceImpl implements JPushService{
     }
 
     @Override
-    public void payloadByIdExtra(String uid,String message,Map<String,String> extraMaps) {
+    public void payloadByIdExtra(String uid,String message,JsonObject jsonObject) {
+
         PushPayload payload = PushPayload.newBuilder()
                 .setPlatform(Platform.android_ios())
                 .setAudience(Audience.alias(uid))
@@ -81,11 +94,12 @@ public class JPushServiceImpl implements JPushService{
                         // android 平台
                         .setAlert(message)
                         .addPlatformNotification(AndroidNotification.newBuilder()
-                                .addExtras(extraMaps).build())
+                                .addExtra("extra",jsonObject).build())
+//                                .addExtras(extraMaps).build())
                         // ios 平台
                         .addPlatformNotification(IosNotification.newBuilder()
                                 .incrBadge(1)
-                                .addExtras(extraMaps).build())
+                                .addExtra("extra",jsonObject).build())
                         .build())
                 .build();
         try {

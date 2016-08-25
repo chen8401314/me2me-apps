@@ -302,6 +302,7 @@ public class LiveServiceImpl implements LiveService {
                     String alias = String.valueOf(topic.getUid());
                     UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
                     jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "评论了你", JPushUtils.packageExtra(jsonObject));
+
                 }
             }
         }
