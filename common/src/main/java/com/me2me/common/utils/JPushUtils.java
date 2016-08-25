@@ -15,9 +15,10 @@ import java.util.Map;
  */
 public class JPushUtils {
 
-    public static Map<String,Object> packageExtra(Object object){
-        Map<String,Object> map = Maps.newHashMap();
-        map.put("extra",object.toString());
+    public static Map<String,String> packageExtra(Object object){
+        Map<String,String> map = Maps.newHashMap();
+        String json = JSON.toJSONString(object);
+        map.put("extra",json);
         return map;
     }
 }
