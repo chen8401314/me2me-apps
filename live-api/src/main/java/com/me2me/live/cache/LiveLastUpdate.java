@@ -27,8 +27,8 @@ public class LiveLastUpdate implements BaseEntity {
 
     private String value;
 
-    public LiveLastUpdate(long uid,long topicId,String value){
-        this.key = KEY_PREFIX + uid;
+    public LiveLastUpdate(long topicId,String value){
+        this.key = KEY_PREFIX ;
         this.field = topicId + "";
         this.value = value;
     }

@@ -287,7 +287,6 @@ public class LiveServiceImpl implements LiveService {
         if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index ||speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index ){
             SpeakEvent speakEvent = new SpeakEvent();
             speakEvent.setTopicId(speakDto.getTopicId());
-            speakEvent.setUid(speakDto.getUid());
             applicationEventBus.post(speakEvent);
             //粉丝有留言提醒主播
         }else{
@@ -296,17 +295,12 @@ public class LiveServiceImpl implements LiveService {
             log.info("speak by other start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
             cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
             //直播回复的推送
-            UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
             if(speakDto.getType() == Specification.LiveSpeakType.FANS.index) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_REVIEW.index + "");
                 String alias = String.valueOf(topic.getUid());
+                UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
                 jPushService.payloadByIdExtra(alias,userProfile.getNickName()+"评论了你",JPushUtils.packageExtra(jsonObject));
-            }else if(speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index){
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_TAG.index + "");
-                String alias = String.valueOf(topic.getUid());
-                jPushService.payloadByIdExtra(alias,"你发布的内容收到新感受",JPushUtils.packageExtra(jsonObject));
             }
         }
         if(speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index  && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {

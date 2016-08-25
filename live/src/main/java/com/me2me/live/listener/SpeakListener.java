@@ -60,7 +60,7 @@ public class SpeakListener {
     public void speak(SpeakEvent speakEvent) {
         log.info("SpeakEvent speak start ...");
         List<LiveFavorite> liveFavorites = liveMybatisDao.getFavoriteAll(speakEvent.getTopicId());
-        LiveLastUpdate liveLastUpdate = new LiveLastUpdate(speakEvent.getUid(),speakEvent.getTopicId(),"1");
+        LiveLastUpdate liveLastUpdate = new LiveLastUpdate(speakEvent.getTopicId(),"1");
         // 通知所有的订阅者
         for(LiveFavorite liveFavorite : liveFavorites) {
             MyLivesStatusModel livesStatusModel = new MyLivesStatusModel(liveFavorite.getUid(),"1");
