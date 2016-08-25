@@ -23,6 +23,7 @@ import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.*;
 import com.me2me.live.event.CacheLiveEvent;
+import com.me2me.live.event.SpeakEvent;
 import com.me2me.live.model.*;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.dao.UserMybatisDao;
@@ -284,41 +285,44 @@ public class LiveServiceImpl implements LiveService {
         log.info("speak start ...");
         //如果是主播发言更新cache
         if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index ||speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index ){
-            List<LiveFavorite> liveFavorites = liveMybatisDao.getFavoriteAll(speakDto.getTopicId());
-            LiveLastUpdate liveLastUpdate = new LiveLastUpdate(speakDto.getUid(),speakDto.getTopicId(),"1");
-            // 通知所有的订阅者
-            for(LiveFavorite liveFavorite : liveFavorites) {
-                MyLivesStatusModel livesStatusModel = new MyLivesStatusModel(liveFavorite.getUid(),"1");
-                cacheService.hSet(livesStatusModel.getKey(),livesStatusModel.getField(),"1");
-                MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(liveFavorite.getUid(), liveFavorite.getTopicId() + "", "1");
-                log.info("speak by master start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
-//                String isUpdate = cacheService.hGet(cacheModel.getKey(), cacheModel.getField());
-//                if(!StringUtils.isEmpty(isUpdate) && isUpdate.equals("1")){
-//                    continue;
+//            List<LiveFavorite> liveFavorites = liveMybatisDao.getFavoriteAll(speakDto.getTopicId());
+//            LiveLastUpdate liveLastUpdate = new LiveLastUpdate(speakDto.getUid(),speakDto.getTopicId(),"1");
+//            // 通知所有的订阅者
+//            for(LiveFavorite liveFavorite : liveFavorites) {
+//                MyLivesStatusModel livesStatusModel = new MyLivesStatusModel(liveFavorite.getUid(),"1");
+//                cacheService.hSet(livesStatusModel.getKey(),livesStatusModel.getField(),"1");
+//                MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(liveFavorite.getUid(), liveFavorite.getTopicId() + "", "1");
+//                log.info("speak by master start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
+////                String isUpdate = cacheService.hGet(cacheModel.getKey(), cacheModel.getField());
+////                if(!StringUtils.isEmpty(isUpdate) && isUpdate.equals("1")){
+////                    continue;
+////                }
+//                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+//
+//                //如果缓存存在时间失效，推送
+//                if(StringUtils.isEmpty(cacheService.hGet(liveLastUpdate.getKey(),liveLastUpdate.getField()))) {
+//                    log.info("update live start");
+//                    JsonObject jsonObject = new JsonObject();
+//                    jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index + "");
+//                    String alias = String.valueOf(speakDto.getUid());
+//                    Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
+//                    jPushService.payloadByIdExtra(alias, "你加入的王国:" + topic.getTitle() + "更新了", JPushUtils.packageExtra(jsonObject));
+//                    log.info("update live end");
 //                }
-                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-
-                //如果缓存存在时间失效，推送
-                if(StringUtils.isEmpty(cacheService.hGet(liveLastUpdate.getKey(),liveLastUpdate.getField()))) {
-                    log.info("update live start");
-                    JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index + "");
-                    String alias = String.valueOf(speakDto.getUid());
-                    Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
-                    jPushService.payloadByIdExtra(alias, "你加入的王国:" + topic.getTitle() + "更新了", JPushUtils.packageExtra(jsonObject));
-                    log.info("update live end");
-                }
-
-            }
-
-            //设置缓存时间
-            if(StringUtils.isEmpty(cacheService.hGet(liveLastUpdate.getKey(),liveLastUpdate.getField()))) {
-                log.info("set cache timeout");
-                cacheService.hSet(liveLastUpdate.getKey(), liveLastUpdate.getField(), liveLastUpdate.getValue());
-                cacheService.expire(liveLastUpdate.getKey(), 3600);
-            }
-
-
+//
+//            }
+//
+//            //设置缓存时间
+//            if(StringUtils.isEmpty(cacheService.hGet(liveLastUpdate.getKey(),liveLastUpdate.getField()))) {
+//                log.info("set cache timeout");
+//                cacheService.hSet(liveLastUpdate.getKey(), liveLastUpdate.getField(), liveLastUpdate.getValue());
+//                cacheService.expire(liveLastUpdate.getKey(), 3600);
+//            }
+//
+            SpeakEvent speakEvent = new SpeakEvent();
+            speakEvent.setTopicId(speakDto.getTopicId());
+            speakEvent.setUid(speakDto.getUid());
+            applicationEventBus.post(speakEvent);
             //粉丝有留言提醒主播
         }else{
             Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
