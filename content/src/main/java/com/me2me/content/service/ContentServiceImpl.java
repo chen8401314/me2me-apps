@@ -538,12 +538,26 @@ public class ContentServiceImpl implements ContentService {
                             String alias = String.valueOf(content.getUid());
                             jPushService.payloadByIdForMessage(alias,jsonObject.toString());
                         }
+                        else
+                        {
+                            JsonObject jsonObject = new JsonObject();
+                            jsonObject.addProperty("count","1");
+                            String alias = String.valueOf(content.getUid());
+                            jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+                        }
                     }
                 }else {
                     userService.createUserTips(userTips);
                     //修改推送为极光推送,兼容老版本
                     JpushToken jpushToken = userService.getJpushTokeByUid(content.getUid());
                     if(jpushToken != null) {
+                        JsonObject jsonObject = new JsonObject();
+                        jsonObject.addProperty("count","1");
+                        String alias = String.valueOf(content.getUid());
+                        jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+                    }
+                    else
+                    {
                         JsonObject jsonObject = new JsonObject();
                         jsonObject.addProperty("count","1");
                         String alias = String.valueOf(content.getUid());
@@ -567,12 +581,26 @@ public class ContentServiceImpl implements ContentService {
                             String alias = String.valueOf(content.getUid());
                             jPushService.payloadByIdForMessage(alias,jsonObject.toString());
                         }
+                        else
+                        {
+                            JsonObject jsonObject = new JsonObject();
+                            jsonObject.addProperty("count","1");
+                            String alias = String.valueOf(content.getUid());
+                            jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+                        }
                     }
                 }else {
                     userService.modifyUserTips(tips);
                     //修改推送为极光推送,兼容老版本
                     JpushToken jpushToken = userService.getJpushTokeByUid(content.getUid());
                     if(jpushToken != null) {
+                        JsonObject jsonObject = new JsonObject();
+                        jsonObject.addProperty("count","1");
+                        String alias = String.valueOf(content.getUid());
+                        jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+                    }
+                    else
+                    {
                         JsonObject jsonObject = new JsonObject();
                         jsonObject.addProperty("count","1");
                         String alias = String.valueOf(content.getUid());

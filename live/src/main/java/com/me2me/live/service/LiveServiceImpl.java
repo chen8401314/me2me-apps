@@ -326,14 +326,26 @@ public class LiveServiceImpl implements LiveService {
             log.info("speak by other start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
             cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
 
-            log.info("live review start");
-            UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_REVIEW.index+"");
-            String alias = String.valueOf(topic.getUid());
-            jPushService.payloadByIdExtra(alias, userProfile.getNickName()+"评论了你", JPushUtils.packageExtra(jsonObject));
-            log.info("live review end"+userProfile.getNickName()+"评论了你");
-
+            if(speakDto.getType()!=Specification.LiveSpeakType.INVITED.index&&speakDto.getType()!=Specification.LiveSpeakType.FANS_WRITE_TAG.index)
+            {
+                //评论
+                log.info("live review start");
+                UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_REVIEW.index+"");
+                String alias = String.valueOf(topic.getUid());
+                jPushService.payloadByIdExtra(alias, userProfile.getNickName()+"评论了你", JPushUtils.packageExtra(jsonObject));
+                log.info("live review end"+userProfile.getNickName()+"评论了你");
+            }
+            //邀请核心圈
+            else if(speakDto.getType()==Specification.LiveSpeakType.INVITED.index)
+            {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("messageType",Specification.PushMessageType.CORE_CIRCLE.index+"");
+                UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
+                String alias = String.valueOf(speakDto.getAtUid());
+                jPushService.payloadByIdExtra(alias,userProfile.getNickName()+"邀请你成为"+topic.getTitle()+"的核心圈成员",JPushUtils.packageExtra(jsonObject));
+            }
         }
         if(speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index  && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {
             TopicFragment topicFragment = new TopicFragment();

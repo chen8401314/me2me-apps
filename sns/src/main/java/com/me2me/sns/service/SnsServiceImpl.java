@@ -270,6 +270,7 @@ public class SnsServiceImpl implements SnsService {
         SpeakDto speakDto = new SpeakDto();
         speakDto.setUid(owner);
         speakDto.setType(Specification.LiveSpeakType.INVITED.index);
+        speakDto.setAtUid(uid);
         TopicFragment fragment = liveService.getLastTopicFragmentByUid(topicId,owner);
         if(fragment != null) {
             speakDto.setBottomId(fragment.getId());

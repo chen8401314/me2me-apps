@@ -76,8 +76,10 @@ public class ContentReview implements Review{
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("messageType",Specification.PushMessageType.REVIEW.index+"");
             String alias = String.valueOf(content.getUid());
-            jPushService.payloadByIdExtra(alias,userProfile.getNickName() + "评论了你", JPushUtils.packageExtra(jsonObject));
-            contentService.remind(content,reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index,reviewDto.getReview());
+            if(content.getUid()!=reviewDto.getUid()) {
+                jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "评论了你", JPushUtils.packageExtra(jsonObject));
+                contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview());
+            }
             log.info("review you end");
         }
         log.info("push success");
