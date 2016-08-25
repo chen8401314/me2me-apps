@@ -6,10 +6,7 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.me2me.common.web.Specification;
-import org.apache.ibatis.javassist.CannotCompileException;
-import org.apache.ibatis.javassist.ClassPool;
-import org.apache.ibatis.javassist.CtClass;
-import org.apache.ibatis.javassist.NotFoundException;
+import org.apache.ibatis.javassist.*;
 
 import java.io.IOException;
 import java.io.Serializable;
@@ -34,5 +31,6 @@ public class JPushUtils {
         CtClass pageClass = classPool.get(Page.class.getName());
         pageClass.addInterface(classPool.makeInterface(Serializable.class.getName()));
         pageClass.writeFile();
+        classPool.insertClassPath(new ClassClassPath(Page.class));
     }
 }
