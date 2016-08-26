@@ -34,19 +34,6 @@ import java.util.Map;
 @Service("jPushServiceImpl")
 public class JPushServiceImpl implements JPushService{
 
-    @PostConstruct
-    public void init(){
-        try {
-            ClassPool classPool = ClassPool.getDefault();
-            CtClass pageClass = classPool.get(JsonElement.class.getName());
-            pageClass.addInterface(classPool.makeInterface(Serializable.class.getName()));
-            pageClass.writeFile();
-        }catch (Exception e){
-            log.error("write file has error {}",e.getMessage());
-            e.printStackTrace();
-        }
-    }
-
     private final JPushClient jPushClient;
 
     private static final int DEFAULT_LIVE_TIME = 86400 * 10;
