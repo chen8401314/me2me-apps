@@ -61,7 +61,7 @@ public class ContentReview implements Review{
                 }else {
                     UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
                     JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index+"");
+                    jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index);
                     String alias = String.valueOf(reviewDto.getAtUid());
                     jPushService.payloadByIdExtra(alias,userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
                 }
@@ -74,7 +74,7 @@ public class ContentReview implements Review{
             log.info("review you start");
             UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("messageType",Specification.PushMessageType.REVIEW.index+"");
+            jsonObject.addProperty("messageType",Specification.PushMessageType.REVIEW.index);
             String alias = String.valueOf(content.getUid());
             if(content.getUid()!=reviewDto.getUid()) {
                 jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "评论了你", JPushUtils.packageExtra(jsonObject));

@@ -611,7 +611,7 @@ public class UserServiceImpl implements UserService {
             }else {
                 UserProfile sourceUser = getUserProfileByUid(followDto.getSourceUid());
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("messageType",Specification.PushMessageType.FOLLOW.index+"");
+                jsonObject.addProperty("messageType",Specification.PushMessageType.FOLLOW.index);
                 String alias = String.valueOf(followDto.getTargetUid());
                 jPushService.payloadByIdExtra(alias, sourceUser.getNickName() + "关注了你！", JPushUtils.packageExtra(jsonObject));
             }
@@ -1299,15 +1299,12 @@ public class UserServiceImpl implements UserService {
             photo.setImageUrl(Constant.QINIU_DOMAIN + "/"+map.get("imageUrl").toString());
             photo.setTitle(map.get("title").toString());
             dto.getResult().add(photo);
-
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index+"");
+            jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index);
             String alias = String.valueOf(sinceId);
             jPushService.payloadByIdExtra(alias,"你发布的内容上热点啦!",JPushUtils.packageExtra(jsonObject));
-
         }
         log.info("live hottest end");
-
         return Response.success(dto);
     }
 

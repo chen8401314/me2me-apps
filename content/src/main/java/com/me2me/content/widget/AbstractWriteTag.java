@@ -54,7 +54,7 @@ public class AbstractWriteTag {
         if(content.getType() != Specification.ArticleType.LIVE.index) {
             log.info("ugc tag start");
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("messageType",Specification.PushMessageType.TAG.index+"");
+            jsonObject.addProperty("messageType",Specification.PushMessageType.TAG.index);
             String alias = String.valueOf(content.getUid());
             jPushService.payloadByIdExtra(alias, "你发布的内容收到了新感受", JPushUtils.packageExtra(jsonObject));
             contentService.remind(content, writeTagDto.getUid(), Specification.UserNoticeType.TAG.index, writeTagDto.getTag());
@@ -64,7 +64,7 @@ public class AbstractWriteTag {
         {
             log.info("live tag start");
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_TAG.index+"");
+            jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_TAG.index);
             String alias = String.valueOf(content.getUid());
             jPushService.payloadByIdExtra(alias, "你发布的内容收到了新感受", JPushUtils.packageExtra(jsonObject));
             contentService.remind(content, writeTagDto.getUid(), Specification.UserNoticeType.LIVE_TAG.index, writeTagDto.getTag());

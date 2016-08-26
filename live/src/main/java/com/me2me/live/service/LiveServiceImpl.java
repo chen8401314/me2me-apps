@@ -282,7 +282,7 @@ public class LiveServiceImpl implements LiveService {
                 //直播回复的推送
                 if (speakDto.getType() == Specification.LiveSpeakType.FANS.index) {
                     JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("messageType", Specification.PushMessageType.LIVE_REVIEW.index + "");
+                    jsonObject.addProperty("messageType", Specification.PushMessageType.LIVE_REVIEW.index);
                     String alias = String.valueOf(topic.getUid());
                     UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
                     jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "评论了你", JPushUtils.packageExtra(jsonObject));
@@ -389,10 +389,8 @@ public class LiveServiceImpl implements LiveService {
                 userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
             }else {
                 UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
-                Map<String,String> extras = Maps.newConcurrentMap();
-                extras.put("messageType",Specification.PushMessageType.AT.index+"");
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index+"");
+                jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index);
                 String alias = String.valueOf(speakDto.getAtUid());
                 jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
             }
@@ -407,7 +405,7 @@ public class LiveServiceImpl implements LiveService {
             }else {
                 UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index+"");
+                jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index);
                 String alias = String.valueOf(speakDto.getAtUid());
                 jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!",JPushUtils.packageExtra(jsonObject));
             }

@@ -76,7 +76,7 @@ public class CacheLiveListener {
             cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
             UserProfile userProfile = userService.getUserProfileByUid(cacheLiveEvent.getUid());
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("messageType", Specification.LiveSpeakType.FOLLOW.index + "");
+            jsonObject.addProperty("messageType", Specification.LiveSpeakType.FOLLOW.index);
             String alias = String.valueOf(userFollow.getSourceUid());
             Topic topic = liveService.getTopicById(cacheLiveEvent.getTopicId());
             jPushService.payloadByIdExtra(alias, "你关注的国王" + userProfile.getNickName() + "建立了新王国:" + topic.getTitle(), JPushUtils.packageExtra(jsonObject));

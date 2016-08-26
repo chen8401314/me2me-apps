@@ -72,7 +72,7 @@ public class SpeakListener {
             if(StringUtils.isEmpty(cacheService.hGet(liveLastUpdate.getKey(),liveLastUpdate.getField()))) {
                 log.info("update live start");
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index + "");
+                jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
                 String alias = String.valueOf(liveFavorite.getUid());
                 Topic topic = liveMybatisDao.getTopicById(speakEvent.getTopicId());
                 jPushService.payloadByIdExtra(alias, "你加入的王国:" + topic.getTitle() + "更新了", JPushUtils.packageExtra(jsonObject));

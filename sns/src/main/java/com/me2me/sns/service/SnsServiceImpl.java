@@ -234,7 +234,7 @@ public class SnsServiceImpl implements SnsService {
             UserProfile userProfile = userService.getUserProfileByUid(owner);
             Topic topic = liveService.getTopicById(topicId);
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("messageType",Specification.PushMessageType.CORE_CIRCLE.index + "");
+            jsonObject.addProperty("messageType",Specification.PushMessageType.CORE_CIRCLE.index);
             String alias = String.valueOf(uid);
             jPushService.payloadByIdExtra(alias,userProfile.getNickName() + "邀请你成为" + topic.getTitle() + "的核心圈成员",JPushUtils.packageExtra(jsonObject));
         }else if(action == 2){

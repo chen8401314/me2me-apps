@@ -2064,7 +2064,7 @@ public class ContentServiceImpl implements ContentService {
                     userService.push(content.getUid(), 000000, Specification.PushMessageType.HOTTEST.index, content.getTitle());
                 }else {
                     JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index+"");
+                    jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index);
                     String alias = String.valueOf(content.getUid());
                     jPushService.payloadByIdExtra(alias,"你的文章" + content.getTitle()+ "上热点啦！", JPushUtils.packageExtra(jsonObject));
                 }
@@ -2077,7 +2077,7 @@ public class ContentServiceImpl implements ContentService {
                     userService.push(content.getUid(), 000000, Specification.PushMessageType.LIVE_HOTTEST.index, content.getTitle());
                 }else {
                     JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index+"");
+                    jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index);
                     String alias = String.valueOf(content.getUid());
                     jPushService.payloadByIdExtra(alias,"你的直播" + content.getTitle()+ "上热点啦！",JPushUtils.packageExtra(jsonObject));
                 }
