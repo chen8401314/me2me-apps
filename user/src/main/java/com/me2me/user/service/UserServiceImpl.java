@@ -1065,6 +1065,10 @@ public class UserServiceImpl implements UserService {
         }
         return users;
     }
+
+    /**
+     * 该方法已经不用了
+     */
     @Override
     public void pushMessage() {
         // 自己发布的日记被评论
@@ -1209,8 +1213,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Response getRefereeProfile(long uid) {
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
-        RefereeProfileDto dto = new RefereeProfileDto();
         //查询邀请人数
+        RefereeProfileDto dto = new RefereeProfileDto();
         dto.setRefereeCount(userMybatisDao.getRefereeCount(uid));
         //查询发布文章数
         dto.setContentCount(userInitJdbcDao.getContentCount(uid));
