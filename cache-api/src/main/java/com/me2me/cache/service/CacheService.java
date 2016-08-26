@@ -91,4 +91,6 @@ public interface CacheService {
 
     Map<String,String> hGetAll(String key);
 
+    void hSetAll(String key,Map<String,String> stringMap);
+
 }

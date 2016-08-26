@@ -193,4 +193,14 @@ public class CacheServiceImpl implements CacheService {
             }
         });
     }
+
+    @Override
+    public void hSetAll(final String key, final Map<String, String> stringMap) {
+        jedisTemplate.execute(new JedisTemplate.JedisAction() {
+            @Override
+            public void action(Jedis jedis) {
+                jedis.hmset(key,stringMap);
+            }
+        });
+    }
 }
