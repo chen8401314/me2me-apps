@@ -4,7 +4,6 @@ import cn.jpush.api.JPushClient;
 import cn.jpush.api.common.ClientConfig;
 import cn.jpush.api.common.resp.APIConnectionException;
 import cn.jpush.api.common.resp.APIRequestException;
-import cn.jpush.api.push.PushResult;
 import cn.jpush.api.push.model.Message;
 import cn.jpush.api.push.model.Platform;
 import cn.jpush.api.push.model.PushPayload;
@@ -12,17 +11,8 @@ import cn.jpush.api.push.model.audience.Audience;
 import cn.jpush.api.push.model.notification.AndroidNotification;
 import cn.jpush.api.push.model.notification.IosNotification;
 import cn.jpush.api.push.model.notification.Notification;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import javassist.ClassPool;
-import javassist.CtClass;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-
-import javax.annotation.PostConstruct;
-import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
