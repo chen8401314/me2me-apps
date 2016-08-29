@@ -280,7 +280,8 @@ public class LiveServiceImpl implements LiveService {
                 log.info("speak by other start update hset cache key{} field {} value {}", cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
                 cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
                 //直播回复的推送
-                if (speakDto.getType() == Specification.LiveSpeakType.FANS.index) {
+                if (speakDto.getType() ==
+                        Specification.LiveSpeakType.FANS.index) {
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("messageType", Specification.PushMessageType.LIVE_REVIEW.index);
                     String alias = String.valueOf(topic.getUid());
@@ -401,11 +402,11 @@ public class LiveServiceImpl implements LiveService {
             JpushToken jpushToken = userService.getJpushTokeByUid(speakDto.getAtUid());
             if(jpushToken == null){
                 //兼容老版本，如果客户端没有更新则还走信鸽push
-                userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
+                userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.LiveSpeakType.ANCHOR_AT.index,topic.getTitle());
             }else {
                 UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
                 JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index);
+                jsonObject.addProperty("messageType",Specification.LiveSpeakType.ANCHOR_AT.index);
                 String alias = String.valueOf(speakDto.getAtUid());
                 jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!",JPushUtils.packageExtra(jsonObject));
             }
