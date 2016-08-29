@@ -213,6 +213,8 @@ public enum  ResponseStatus {
 
     SNS_CORE_CIRCLE_IS_FULL("核心成员已满，无法继续邀请。","sns core circle is full",50030),
 
+    IS_ALREADY_SNS_CORE("核心成员已满，无法继续邀请。","is already sns core",50031),
+
 
 
 

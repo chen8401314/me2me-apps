@@ -23,13 +23,12 @@ public class SnsMybatisDao {
     @Autowired
     private SnsCircleMapper snsCircleMapper;
 
-    public List<SnsCircle> getSnsCircle(long uid,long topicId,long sinceId,int type){
+    public List<SnsCircle> getSnsCircle(long uid,long topicId,int type){
         SnsCircleExample example = new SnsCircleExample();
         SnsCircleExample.Criteria criteria = example.createCriteria();
         criteria.andOwnerEqualTo(uid);
         criteria.andInternalStatusEqualTo(type);
         return snsCircleMapper.selectByExample(example);
-
     }
 
     public List<SnsCircleDto> getSnsCircle(GetSnsCircleDto getSnsCircleDto){
@@ -90,7 +89,15 @@ public class SnsMybatisDao {
 
     public List<SnsCircleDto> getSnsCircleMember(GetSnsCircleDto getSnsCircleDto){
         return snsCircleMapper.getSnsCircleMember(getSnsCircleDto);
-
     }
 
+    public SnsCircle getMySnsCircle(long uid,long topicId,long owner,int type){
+        SnsCircleExample example = new SnsCircleExample();
+        SnsCircleExample.Criteria criteria = example.createCriteria();
+        criteria.andOwnerEqualTo(owner);
+        criteria.andUidEqualTo(uid);
+        criteria.andInternalStatusEqualTo(type);
+        List<SnsCircle> list = snsCircleMapper.selectByExample(example);
+        return Lists.getSingle(list);
+    }
 }
