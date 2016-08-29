@@ -219,11 +219,16 @@ public class SnsServiceImpl implements SnsService {
             createFragment(owner, topicId, uid);
         }else if(action == 1){
             //查询核心圈人数，人数不能超过10人
-            List<SnsCircle> snsCircles = snsMybatisDao.getSnsCircle(uid,topicId,0,2);
+            List<SnsCircle> snsCircles = snsMybatisDao.getSnsCircle(owner,topicId,Specification.SnsCircle.CORE.index);
             if(snsCircles.size() == 10){
                 return Response.failure(ResponseStatus.SNS_CORE_CIRCLE_IS_FULL.status,ResponseStatus.SNS_CORE_CIRCLE_IS_FULL.message);
             }else {
-                snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.CORE.index);
+                SnsCircle snsCircle = snsMybatisDao.getMySnsCircle(uid,topicId,owner,Specification.SnsCircle.CORE.index);
+                if(snsCircle != null){
+                    return Response.failure(ResponseStatus.IS_ALREADY_SNS_CORE.status,ResponseStatus.IS_ALREADY_SNS_CORE.message);
+                }else {
+                    snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.CORE.index);
+                }
             }
 //            //关注此人
 //            follow(0,uid,owner);
