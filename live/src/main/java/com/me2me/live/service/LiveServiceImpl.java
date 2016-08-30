@@ -304,6 +304,11 @@ public class LiveServiceImpl implements LiveService {
             topicFragment.setAtUid(speakDto.getAtUid());
             liveMybatisDao.createTopicFragment(topicFragment);
         }
+        //获取最后一次发言FragmentId
+        TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(speakDto.getTopicId(),speakDto.getUid());
+        if(topicFragment!=null){
+            speakDto.setFragmentId(topicFragment.getId());
+        }
         log.info("createTopicFragment success");
         TopicBarrage topicBarrage = new TopicBarrage();
         topicBarrage.setFragmentImage(speakDto.getFragmentImage());
