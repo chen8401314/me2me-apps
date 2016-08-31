@@ -89,11 +89,26 @@ public class ContentMybatisDao {
         }
     }
 
+    //获取所有（包括UGC和直播等）
     public List<Content>myPublish(long uid,int sinceId) {
         Map<String,Object> map = Maps.newHashMap();
         map.put("uid",uid);
         map.put("sinceId",sinceId);
         return contentMapper.loadMyPublishData(map);
+    }
+
+    public List<Content>myPublishUgc(long uid,int sinceId) {
+        Map<String,Object> map = Maps.newHashMap();
+        map.put("uid",uid);
+        map.put("sinceId",sinceId);
+        return contentMapper.loadMyPublishUgcData(map);
+    }
+
+    public List<Content>myPublishLive(long uid,int sinceId) {
+        Map<String,Object> map = Maps.newHashMap();
+        map.put("uid",uid);
+        map.put("sinceId",sinceId);
+        return contentMapper.loadMyPublishLiveData(map);
     }
 
     /*
@@ -475,4 +490,11 @@ public class ContentMybatisDao {
         return contentMapper.loadHottestContentByUpdateTime(sinceId);
     }
 
+    public int getUgcCount(long uid ,long forwardCid){
+        ContentExample example = new ContentExample();
+        ContentExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andUidNotEqualTo(forwardCid);
+        return contentMapper.countByExample(example);
+    }
 }

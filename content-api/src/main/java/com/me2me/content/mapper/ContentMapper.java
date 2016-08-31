@@ -159,4 +159,8 @@ public interface ContentMapper {
 
     List<Content2Dto> loadHottestContentByUpdateTime(long sinceId);
 
+    List<Content> loadMyPublishUgcData(Map map);
+
+    List<Content> loadMyPublishLiveData(Map map);
+
 }

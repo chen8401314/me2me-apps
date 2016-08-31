@@ -123,7 +123,7 @@ public class Contents extends BaseController {
     }
 
     /**
-     * 用户发布列表接口
+     * 用户发布列表接口(0非直播/3直播)
      * @return
      */
     @RequestMapping(value = "/myPublish",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
@@ -132,7 +132,7 @@ public class Contents extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.myPublish(request.getCustomerId(),request.getSinceId());
+        return contentService.myPublish(request.getCustomerId(),request.getSinceId(),request.getType());
     }
 
     /**

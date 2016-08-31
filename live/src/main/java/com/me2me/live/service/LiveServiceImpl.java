@@ -600,6 +600,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setStatus(topic.getStatus());
             showTopicElement.setUpdateTime(topic.getLongTime());
             showTopicElement.setIsFollowed(userService.isFollow(topic.getUid(),uid));
+            showTopicElement.setIsFollowMe(userService.isFollow(uid,topic.getUid()));
             showTopicElement.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(),topic.getUid()));
             showTopicElement.setLastUpdateTime(topic.getLongTime());
             TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId(),topic.getUid());

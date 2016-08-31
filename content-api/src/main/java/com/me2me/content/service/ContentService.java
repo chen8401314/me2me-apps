@@ -66,7 +66,7 @@ public interface ContentService{
      * @param sinceId
      * @return
      */
-    Response myPublish(long uid ,int sinceId);
+    Response myPublish(long uid ,int sinceId ,int type);
 
     /**
      * 内容所有感受列表
@@ -198,6 +198,8 @@ public interface ContentService{
 
 
     Response getHottest2(int sinceId,long uid);
+
+    int getUgcCount(long uid,long forwardCid);
 
 
 }

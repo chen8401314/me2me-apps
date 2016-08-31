@@ -50,6 +50,8 @@ public class BaseContentDto implements BaseEntity{
     //是否关注
     private int isFollowed;
 
+    private int isFollowMe;
+
     // 点赞数量
     private int likeCount;
 
