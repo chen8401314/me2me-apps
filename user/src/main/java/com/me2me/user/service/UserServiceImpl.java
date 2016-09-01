@@ -12,6 +12,7 @@ import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.content.service.ContentService;
 import com.me2me.core.QRCodeUtil;
 import com.me2me.io.service.FileTransferService;
 import com.me2me.sms.dto.*;
@@ -70,6 +71,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private JPushService jPushService;
+
+    @Autowired
+    private ContentService contentService;
 
     /**
      * 用户注册
@@ -791,6 +795,8 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setGender(userProfile.getGender());
         showUserProfileDto.setUserName(userProfile.getMobile());
         showUserProfileDto.setIsPromoter(userProfile.getIsPromoter());
+        showUserProfileDto.setUgcCount(contentService.getUgcCount(uid , 0));
+        showUserProfileDto.setLiveCount(contentService.getLiveCount(uid , 0));
         Set<String> powerKeys = cacheService.smembers(POWER_KEY);
         if(powerKeys!=null && !powerKeys.isEmpty()) {
             if (powerKeys.contains(uid + "")) {

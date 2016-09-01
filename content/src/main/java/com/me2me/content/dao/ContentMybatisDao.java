@@ -494,7 +494,17 @@ public class ContentMybatisDao {
         ContentExample example = new ContentExample();
         ContentExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
-        criteria.andUidNotEqualTo(forwardCid);
+        criteria.andForwardCidEqualTo(forwardCid);
+        criteria.andStatusEqualTo(0);
+        return contentMapper.countByExample(example);
+    }
+
+    public int getLiveCount(long uid ,long forwardCid){
+        ContentExample example = new ContentExample();
+        ContentExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andForwardCidNotEqualTo(forwardCid);
+        criteria.andStatusEqualTo(0);
         return contentMapper.countByExample(example);
     }
 }

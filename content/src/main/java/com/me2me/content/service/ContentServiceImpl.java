@@ -1610,7 +1610,12 @@ public class ContentServiceImpl implements ContentService {
     //获取非直播总数
     @Override
     public int getUgcCount(long uid, long forwardCid) {
-        return contentMybatisDao.getUgcCount(uid,forwardCid);
+        return contentMybatisDao.getUgcCount(uid ,forwardCid);
+    }
+
+    @Override
+    public int getLiveCount(long uid, long forwardCid) {
+        return contentMybatisDao.getLiveCount(uid ,forwardCid);
     }
 
 
@@ -1896,6 +1901,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             contentElement.setNickName(userProfile.getNickName());
             contentElement.setCreateTime(content.getCreateTime());
+            contentElement.setRights(content.getRights());
             String contentStr = content.getContent();
             if(contentStr.length() > 100){
                 contentElement.setContent(contentStr.substring(0,100));

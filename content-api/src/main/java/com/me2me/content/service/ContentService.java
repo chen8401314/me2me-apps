@@ -201,5 +201,6 @@ public interface ContentService{
 
     int getUgcCount(long uid,long forwardCid);
 
+    int getLiveCount(long uid ,long forwardCid);
 
 }
