@@ -28,6 +28,7 @@ import com.me2me.live.model.*;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.*;
 import com.me2me.user.service.UserService;
+import com.sun.tools.internal.jxc.ap.Const;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -156,6 +157,7 @@ public class LiveServiceImpl implements LiveService {
         liveCoverDto.setReviewCount(liveMybatisDao.countFragment(topic.getId(),topic.getUid()));
         liveCoverDto.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(),topic.getUid()));
         liveCoverDto.setInternalStatus(userService.getUserInternalStatus(uid,topic.getUid()));
+        liveCoverDto.setLiveWebUrl(Constant.Live_WEB_URL+topicId);//返回直播URL地址
 
         //添加直播阅读数log.info("liveCover end ...");
         Content content = contentService.getContentByTopicId(topicId);

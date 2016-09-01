@@ -490,20 +490,20 @@ public class ContentMybatisDao {
         return contentMapper.loadHottestContentByUpdateTime(sinceId);
     }
 
-    public int getUgcCount(long uid ,long forwardCid){
+    public int getUgcCount(long uid){
         ContentExample example = new ContentExample();
         ContentExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
-        criteria.andForwardCidEqualTo(forwardCid);
+        criteria.andTypeNotBetween(3,6);
         criteria.andStatusEqualTo(0);
         return contentMapper.countByExample(example);
     }
 
-    public int getLiveCount(long uid ,long forwardCid){
+    public int getLiveCount(long uid){
         ContentExample example = new ContentExample();
         ContentExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
-        criteria.andForwardCidNotEqualTo(forwardCid);
+        criteria.andTypeBetween(3,6);
         criteria.andStatusEqualTo(0);
         return contentMapper.countByExample(example);
     }

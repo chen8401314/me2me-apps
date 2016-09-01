@@ -199,8 +199,8 @@ public interface ContentService{
 
     Response getHottest2(int sinceId,long uid);
 
-    int getUgcCount(long uid,long forwardCid);
+    int getUgcCount(long uid);
 
-    int getLiveCount(long uid ,long forwardCid);
+    int getLiveCount(long uid);
 
 }

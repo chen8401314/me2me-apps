@@ -795,8 +795,8 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setGender(userProfile.getGender());
         showUserProfileDto.setUserName(userProfile.getMobile());
         showUserProfileDto.setIsPromoter(userProfile.getIsPromoter());
-        showUserProfileDto.setUgcCount(contentService.getUgcCount(uid , 0));
-        showUserProfileDto.setLiveCount(contentService.getLiveCount(uid , 0));
+        showUserProfileDto.setUgcCount(contentService.getUgcCount(uid));
+        showUserProfileDto.setLiveCount(contentService.getLiveCount(uid));
         Set<String> powerKeys = cacheService.smembers(POWER_KEY);
         if(powerKeys!=null && !powerKeys.isEmpty()) {
             if (powerKeys.contains(uid + "")) {

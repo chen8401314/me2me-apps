@@ -17,4 +17,6 @@ public class Constant {
 
     public static final String OLD_USER_ENCRYPT = "123456";
 
+    public static final String Live_WEB_URL = "http://app2.me-to-me.com/?topicId=";
+
 }

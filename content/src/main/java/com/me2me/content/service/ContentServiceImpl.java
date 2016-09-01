@@ -1609,13 +1609,13 @@ public class ContentServiceImpl implements ContentService {
 
     //获取非直播总数
     @Override
-    public int getUgcCount(long uid, long forwardCid) {
-        return contentMybatisDao.getUgcCount(uid ,forwardCid);
+    public int getUgcCount(long uid) {
+        return contentMybatisDao.getUgcCount(uid);
     }
 
     @Override
-    public int getLiveCount(long uid, long forwardCid) {
-        return contentMybatisDao.getLiveCount(uid ,forwardCid);
+    public int getLiveCount(long uid) {
+        return contentMybatisDao.getLiveCount(uid);
     }
 
 
@@ -1729,6 +1729,7 @@ public class ContentServiceImpl implements ContentService {
             hottestContentElement.setForwardUrl(content.getForwardUrl());
             hottestContentElement.setForwardTitle(content.getForwardTitle());
             hottestContentElement.setReadCount(content.getReadCount());
+            hottestContentElement.setRights(content.getRights());
 //            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
 //            log.info("getContentReviewTop3ByCid success");
 //            for(ContentReview contentReview : contentReviewList){
@@ -1824,6 +1825,7 @@ public class ContentServiceImpl implements ContentService {
             String cover = content.getConverImage();
             contentElement.setReviewCount(content.getReviewCount());
             contentElement.setReadCount(content.getReadCount());
+            contentElement.setRights(content.getRights());
             if(!StringUtils.isEmpty(cover)) {
                 if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
                     contentElement.setCoverImage(cover);
