@@ -165,11 +165,13 @@ public interface Specification {
 
         LIKE("点赞",1),
 
-        REVIEW("评论",2),
+        REVIEW("UGC评论",2),
 
         LIVE_TAG("直播贴标",3),
 
-        LIVE_REVIEW("直播回复",4);
+        LIVE_REVIEW("直播回复",4),
+
+        UGCAT("UGC@",5);
 
         public final String name;
         public final int index;

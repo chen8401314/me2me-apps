@@ -67,7 +67,7 @@ public class ContentReview implements Review{
                 }
             }
             if(reviewDto.getAtUid() != content.getUid()) {
-                contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview());
+                contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview());
             }
         }else{
             //添加提醒
