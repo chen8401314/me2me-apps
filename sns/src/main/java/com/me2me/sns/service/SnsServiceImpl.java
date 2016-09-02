@@ -105,20 +105,45 @@ public class SnsServiceImpl implements SnsService {
         //先把自己加到核心
         snsMybatisDao.createSnsCircle(dto.getUid(),dto.getUid(),Specification.SnsCircle.CORE.index);
         log.info("getCircleByType start ...");
+        Topic topic = liveService.getTopicById(dto.getTopicId());
         ShowSnsCircleDto showSnsCircleDto = new ShowSnsCircleDto();
-        List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto);
-        buildSnsCircle(showSnsCircleDto, list,dto.getUid());
-        dto.setType(Specification.SnsCircle.IN.index);
-        int inCount = snsMybatisDao.getSnsCircleCount(dto);
-        dto.setType(Specification.SnsCircle.OUT.index);
-        int outCount = snsMybatisDao.getSnsCircleCount(dto);
-        dto.setType(Specification.SnsCircle.CORE.index);
-        int coreCount = snsMybatisDao.getSnsCircleCount(dto);
-        showSnsCircleDto.setMembers(inCount + outCount + coreCount);
-        showSnsCircleDto.setCoreCircleMembers(coreCount);
-        showSnsCircleDto.setInCircleMembers(inCount);
-        showSnsCircleDto.setOutCircleMembers(outCount);
-        log.info("getCircleByType start ...");
+        if(topic.getUid() == dto.getUid()) {
+            List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto);
+            buildSnsCircle(showSnsCircleDto, list,dto.getUid());
+            dto.setType(Specification.SnsCircle.IN.index);
+            int inCount = snsMybatisDao.getSnsCircleCount(dto);
+            dto.setType(Specification.SnsCircle.OUT.index);
+            int outCount = snsMybatisDao.getSnsCircleCount(dto);
+            dto.setType(Specification.SnsCircle.CORE.index);
+            int coreCount = snsMybatisDao.getSnsCircleCount(dto);
+            showSnsCircleDto.setMembers(inCount + outCount + coreCount);
+            showSnsCircleDto.setCoreCircleMembers(coreCount);
+            showSnsCircleDto.setInCircleMembers(inCount);
+            showSnsCircleDto.setOutCircleMembers(outCount);
+            log.info("getCircleByType start ...");
+        }
+        else{
+            GetSnsCircleDto dto2 = new GetSnsCircleDto();
+            dto2.setUid(topic.getUid());
+            dto2.setSinceId(dto.getSinceId());
+            dto2.setTopicId(dto.getTopicId());
+            dto2.setType(dto.getType());
+//            dto.setUid(topic.getUid());
+            List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto2);
+            buildSnsCircle(showSnsCircleDto, list,dto.getUid());
+            dto2.setType(Specification.SnsCircle.IN.index);
+            int inCount = snsMybatisDao.getSnsCircleCount(dto2);
+            dto2.setType(Specification.SnsCircle.OUT.index);
+            int outCount = snsMybatisDao.getSnsCircleCount(dto2);
+            dto2.setType(Specification.SnsCircle.CORE.index);
+            int coreCount = snsMybatisDao.getSnsCircleCount(dto2);
+            showSnsCircleDto.setMembers(inCount + outCount + coreCount);
+            showSnsCircleDto.setCoreCircleMembers(coreCount);
+            showSnsCircleDto.setInCircleMembers(inCount);
+            showSnsCircleDto.setOutCircleMembers(outCount);
+            log.info("getCircleByType start ...");
+        }
+
         return Response.success(showSnsCircleDto);
     }
 
