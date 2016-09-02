@@ -130,6 +130,10 @@ public class SnsServiceImpl implements SnsService {
             snsCircleElement.setIntroduced(circleDto.getIntroduced());
             snsCircleElement.setNickName(circleDto.getNickName());
             snsCircleElement.setInternalStatus(circleDto.getInternalStatus());
+            int follow = userService.isFollow(circleDto.getUid() ,uid);
+            int followMe = userService.isFollow(uid,circleDto.getUid());
+            snsCircleElement.setIsFollowed(follow);
+            snsCircleElement.setIsFollowMe(followMe);
             //国王放到首位
             if(circleDto.getUid() == uid){
                 showSnsCircleDto.getCircleElements().add(0,snsCircleElement);
