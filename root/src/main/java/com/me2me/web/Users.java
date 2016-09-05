@@ -374,7 +374,7 @@ public class Users extends BaseController {
     }
 
     /**
-     * 用户关注列表(暂未启用)
+     * 用户关注列表(在直播中启用)
      * @param request
      * @return
      */

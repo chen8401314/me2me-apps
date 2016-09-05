@@ -120,7 +120,7 @@ public class SnsServiceImpl implements SnsService {
             showSnsCircleDto.setCoreCircleMembers(coreCount);
             showSnsCircleDto.setInCircleMembers(inCount);
             showSnsCircleDto.setOutCircleMembers(outCount);
-            log.info("getCircleByType start ...");
+            log.info("getCircleByType end ...");
         }
         else{
             GetSnsCircleDto dto2 = new GetSnsCircleDto();
@@ -128,7 +128,8 @@ public class SnsServiceImpl implements SnsService {
             dto2.setSinceId(dto.getSinceId());
             dto2.setTopicId(dto.getTopicId());
             dto2.setType(dto.getType());
-//            dto.setUid(topic.getUid());
+            //先把自己加到核心
+            snsMybatisDao.createSnsCircle(dto2.getUid(),dto2.getUid(),Specification.SnsCircle.CORE.index);
             List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto2);
             buildSnsCircle(showSnsCircleDto, list,dto.getUid());
             dto2.setType(Specification.SnsCircle.IN.index);
@@ -141,7 +142,7 @@ public class SnsServiceImpl implements SnsService {
             showSnsCircleDto.setCoreCircleMembers(coreCount);
             showSnsCircleDto.setInCircleMembers(inCount);
             showSnsCircleDto.setOutCircleMembers(outCount);
-            log.info("getCircleByType start ...");
+            log.info("getCircleByType end ...");
         }
 
         return Response.success(showSnsCircleDto);

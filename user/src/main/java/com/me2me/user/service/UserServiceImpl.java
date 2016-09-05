@@ -711,6 +711,7 @@ public class UserServiceImpl implements UserService {
         user.setGender(userProfile.getGender());
         user.setUid(userProfile.getUid());
         user.setIsFollowed(isFollow(targetUid,sourceUid));
+        user.setIsFollowMe(isFollow(sourceUid,targetUid));
         return Response.success(user);
     }
 
