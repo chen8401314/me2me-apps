@@ -102,14 +102,14 @@ public class SnsServiceImpl implements SnsService {
 
     @Override
     public Response circleByType(GetSnsCircleDto dto) {
-        //先把自己加到核心
-        snsMybatisDao.createSnsCircle(dto.getUid(),dto.getUid(),Specification.SnsCircle.CORE.index);
         log.info("getCircleByType start ...");
         Topic topic = liveService.getTopicById(dto.getTopicId());
         ShowSnsCircleDto showSnsCircleDto = new ShowSnsCircleDto();
         if(topic.getUid() == dto.getUid()) {
+            //先把自己加到核心
+            snsMybatisDao.createSnsCircle(dto.getUid(),dto.getUid(),Specification.SnsCircle.CORE.index);
             List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto);
-            buildSnsCircle(showSnsCircleDto, list,dto.getUid());
+            buildSnsCircle(showSnsCircleDto, list,dto.getUid(),topic.getUid());
             dto.setType(Specification.SnsCircle.IN.index);
             int inCount = snsMybatisDao.getSnsCircleCount(dto);
             dto.setType(Specification.SnsCircle.OUT.index);
@@ -131,7 +131,7 @@ public class SnsServiceImpl implements SnsService {
             //先把自己加到核心
             snsMybatisDao.createSnsCircle(dto2.getUid(),dto2.getUid(),Specification.SnsCircle.CORE.index);
             List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto2);
-            buildSnsCircle(showSnsCircleDto, list,dto.getUid());
+            buildSnsCircle(showSnsCircleDto, list,dto.getUid(),topic.getUid());
             dto2.setType(Specification.SnsCircle.IN.index);
             int inCount = snsMybatisDao.getSnsCircleCount(dto2);
             dto2.setType(Specification.SnsCircle.OUT.index);
@@ -148,7 +148,8 @@ public class SnsServiceImpl implements SnsService {
         return Response.success(showSnsCircleDto);
     }
 
-    private void buildSnsCircle(ShowSnsCircleDto showSnsCircleDto, List<SnsCircleDto> list,long uid) {
+    //topicUid为了判断是否自己是国王
+    private void buildSnsCircle(ShowSnsCircleDto showSnsCircleDto, List<SnsCircleDto> list,long uid ,long topicUid) {
         for(SnsCircleDto circleDto : list){
             ShowSnsCircleDto.SnsCircleElement snsCircleElement = showSnsCircleDto.createElement();
             snsCircleElement.setUid(circleDto.getUid());
@@ -161,13 +162,34 @@ public class SnsServiceImpl implements SnsService {
             snsCircleElement.setIsFollowed(follow);
             snsCircleElement.setIsFollowMe(followMe);
             //国王放到首位
-            if(circleDto.getUid() == uid){
+            if(circleDto.getUid() == topicUid){
                 showSnsCircleDto.getCircleElements().add(0,snsCircleElement);
             }else {
                 showSnsCircleDto.getCircleElements().add(snsCircleElement);
             }
         }
     }
+
+//    private void buildSnsCircle(ShowSnsCircleDto showSnsCircleDto, List<SnsCircleDto> list,long uid) {
+//        for(SnsCircleDto circleDto : list){
+//            ShowSnsCircleDto.SnsCircleElement snsCircleElement = showSnsCircleDto.createElement();
+//            snsCircleElement.setUid(circleDto.getUid());
+//            snsCircleElement.setAvatar(Constant.QINIU_DOMAIN + "/" + circleDto.getAvatar());
+//            snsCircleElement.setIntroduced(circleDto.getIntroduced());
+//            snsCircleElement.setNickName(circleDto.getNickName());
+//            snsCircleElement.setInternalStatus(circleDto.getInternalStatus());
+//            int follow = userService.isFollow(circleDto.getUid() ,uid);
+//            int followMe = userService.isFollow(uid,circleDto.getUid());
+//            snsCircleElement.setIsFollowed(follow);
+//            snsCircleElement.setIsFollowMe(followMe);
+//            //国王放到首位
+//            if(circleDto.getUid() == uid){
+//                showSnsCircleDto.getCircleElements().add(0,snsCircleElement);
+//            }else {
+//                showSnsCircleDto.getCircleElements().add(snsCircleElement);
+//            }
+//        }
+//    }
 
     @Override
     public Response subscribed(long uid,long topicId, long topId, long bottomId, int action) {

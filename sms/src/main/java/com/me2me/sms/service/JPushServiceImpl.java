@@ -5,6 +5,7 @@ import cn.jpush.api.common.ClientConfig;
 import cn.jpush.api.common.resp.APIConnectionException;
 import cn.jpush.api.common.resp.APIRequestException;
 import cn.jpush.api.push.model.Message;
+import cn.jpush.api.push.model.Options;
 import cn.jpush.api.push.model.Platform;
 import cn.jpush.api.push.model.PushPayload;
 import cn.jpush.api.push.model.audience.Audience;
@@ -69,7 +70,9 @@ public class JPushServiceImpl implements JPushService{
 
     @Override
     public void payloadByIdExtra(String uid,String message,Map<String,String> extraMaps) {
-
+        //默认为false开发环境，true为生产环境
+        Options options = Options.newBuilder().setApnsProduction(false).build();
+//        Options options = Options.newBuilder().setApnsProduction(true).build();
         PushPayload payload = PushPayload.newBuilder()
                 .setPlatform(Platform.android_ios())
                 .setAudience(Audience.alias(uid))
@@ -85,7 +88,7 @@ public class JPushServiceImpl implements JPushService{
                                 .incrBadge(1)
 //                                .addExtra("extra",jsonObject).build())
                                 .addExtras(extraMaps).build())
-                        .build())
+                        .build()).setOptions(options)
                 .build();
         try {
             jPushClient.sendPush(payload);
