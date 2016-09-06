@@ -1955,12 +1955,16 @@ public class ContentServiceImpl implements ContentService {
     }
     @Override
     public Response getAttention(int sinceId, long uid) {
+        log.info("current sinceId is : " + sinceId);
         log.info("getAttention start ...");
         ShowAttentionDto showAttentionDto = new ShowAttentionDto();
         //获取此人关注的人是列表
         List<Long> list = userService.getFollowList(uid);
         log.info("get user follow");
         List<Content> attentionList = contentMybatisDao.getAttention(sinceId ,list,uid);
+        for(Content idx : attentionList){
+            System.out.println("every id is : "+idx.getId());
+        }
         log.info("getAttention data");
         for(Content content : attentionList){
             ShowAttentionDto.ContentElement contentElement = showAttentionDto.createElement();

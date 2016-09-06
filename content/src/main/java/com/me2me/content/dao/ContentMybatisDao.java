@@ -271,25 +271,28 @@ public class ContentMybatisDao {
     }
 
     public List<Content> getAttention(long sinceId , List<Long> userFollows,long meUid){
-        ContentExample example = new ContentExample();
-        ContentExample.Criteria criteria = example.createCriteria();
-        criteria.andStatusNotEqualTo(Specification.ContentStatus.DELETE.index);
-        if(userFollows != null && userFollows.size() >0) {
-            criteria.andUidIn(userFollows);
-        }else{
-            criteria.andUidEqualTo(-1L);
-        }
-        criteria.andRightsEqualTo(Specification.ContentRights.EVERY.index);
-        criteria.andIdLessThan(sinceId);
-        // 查询自己发布的UGC
-        ContentExample.Criteria criteria2 = example.createCriteria();
-        criteria2.andUidEqualTo(meUid);
-        criteria2.andStatusNotEqualTo(Specification.ContentStatus.DELETE.index);
-        example.or(criteria2);
-        example.setOrderByClause(" id desc limit 10 ");
-        return  contentMapper.selectByExampleWithBLOBs(example);
+//        ContentExample example = new ContentExample();
+//        ContentExample.Criteria criteria = example.createCriteria();
+//        criteria.andStatusNotEqualTo(Specification.ContentStatus.DELETE.index);
+//        if(userFollows != null && userFollows.size() >0) {
+//            criteria.andUidIn(userFollows);
+//        }else{
+//            criteria.andUidEqualTo(-1L);
+//        }
+//        criteria.andRightsEqualTo(Specification.ContentRights.EVERY.index);
+//        criteria.andIdLessThan(sinceId);
+//        // 查询自己发布的UGC
+//        ContentExample.Criteria criteria2 = example.createCriteria();
+//        criteria2.andUidEqualTo(meUid);
+//        criteria2.andStatusNotEqualTo(Specification.ContentStatus.DELETE.index);
+//        example.or(criteria2);
+//        example.setOrderByClause(" id desc limit 10 ");
+//        return  contentMapper.selectByExampleWithBLOBs(example);
 
-
+        Map<String,Object> params = Maps.newHashMap();
+        params.put("uid",meUid);
+        params.put("sinceId",sinceId);
+        return contentMapper.getAttention(params);
     }
 
     public void createContentTagsDetails(ContentTagsDetails contentTagsDetails){
