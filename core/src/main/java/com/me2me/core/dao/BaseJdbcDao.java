@@ -26,7 +26,7 @@ public class BaseJdbcDao {
     }
 
     public int count(String sql, Object ... params){
-        return this.jdbcTemplate.queryForList(sql,params).size();
+        return Integer.valueOf(this.jdbcTemplate.queryForList(sql,params).get(0).get("count").toString());
     }
 
 
