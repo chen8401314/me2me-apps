@@ -13,6 +13,7 @@ import cn.jpush.api.push.model.notification.AndroidNotification;
 import cn.jpush.api.push.model.notification.IosNotification;
 import cn.jpush.api.push.model.notification.Notification;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 
@@ -28,6 +29,9 @@ public class JPushServiceImpl implements JPushService{
     private final JPushClient jPushClient;
 
     private static final int DEFAULT_LIVE_TIME = 86400 * 10;
+
+    @Value("#{app.IOS_PUSH_ENV}")
+    private String env;
 
     /**
      * 初始化JPushclient
@@ -71,8 +75,12 @@ public class JPushServiceImpl implements JPushService{
     @Override
     public void payloadByIdExtra(String uid,String message,Map<String,String> extraMaps) {
         //默认为false开发环境，true为生产环境
-        Options options = Options.newBuilder().setApnsProduction(false).build();
-//        Options options = Options.newBuilder().setApnsProduction(true).build();
+        Options options;
+        if("product".equals(env)) {
+            options = Options.newBuilder().setApnsProduction(true).build();
+        }else{
+            options = Options.newBuilder().setApnsProduction(false).build();
+        }
         PushPayload payload = PushPayload.newBuilder()
                 .setPlatform(Platform.android_ios())
                 .setAudience(Audience.alias(uid))
