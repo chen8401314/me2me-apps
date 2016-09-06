@@ -270,7 +270,7 @@ public class ContentMybatisDao {
         return contentMapper.loadNewestContent(sinceId);
     }
 
-    public List<Content> getAttention(long sinceId , List<Long> userFollows){
+    public List<Content> getAttention(long sinceId , List<Long> userFollows,long meUid){
         ContentExample example = new ContentExample();
         ContentExample.Criteria criteria = example.createCriteria();
         criteria.andStatusNotEqualTo(Specification.ContentStatus.DELETE.index);
@@ -281,18 +281,11 @@ public class ContentMybatisDao {
         }
         criteria.andRightsEqualTo(Specification.ContentRights.EVERY.index);
         criteria.andIdLessThan(sinceId);
-        example.setOrderByClause(" id desc limit 10 ");
-        return  contentMapper.selectByExampleWithBLOBs(example);
-
-
-    }
-
-    public List<Content> getAttention2(long sinceId , long uid){
-        ContentExample example = new ContentExample();
-        ContentExample.Criteria criteria = example.createCriteria();
-        criteria.andStatusNotEqualTo(Specification.ContentStatus.DELETE.index);
-        criteria.andUidEqualTo(uid);
-        criteria.andIdLessThan(sinceId);
+        // 查询自己发布的UGC
+        ContentExample.Criteria criteria2 = example.createCriteria();
+        criteria2.andUidEqualTo(meUid);
+        criteria2.andStatusNotEqualTo(Specification.ContentStatus.DELETE.index);
+        example.or(criteria2);
         example.setOrderByClause(" id desc limit 10 ");
         return  contentMapper.selectByExampleWithBLOBs(example);
 

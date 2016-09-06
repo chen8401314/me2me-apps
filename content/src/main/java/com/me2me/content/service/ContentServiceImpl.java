@@ -1957,15 +1957,10 @@ public class ContentServiceImpl implements ContentService {
     public Response getAttention(int sinceId, long uid) {
         log.info("getAttention start ...");
         ShowAttentionDto showAttentionDto = new ShowAttentionDto();
-        //获取自己UGC和直播列表不加权限(仅第一次查自己的列表)
-        if(sinceId == Integer.MAX_VALUE) {
-            List<Content> myattentionList = contentMybatisDao.getAttention2(sinceId, uid);
-            getMyAttention(showAttentionDto, myattentionList, uid);
-        }
         //获取此人关注的人是列表
         List<Long> list = userService.getFollowList(uid);
         log.info("get user follow");
-        List<Content> attentionList = contentMybatisDao.getAttention(sinceId ,list);
+        List<Content> attentionList = contentMybatisDao.getAttention(sinceId ,list,uid);
         log.info("getAttention data");
         for(Content content : attentionList){
             ShowAttentionDto.ContentElement contentElement = showAttentionDto.createElement();
