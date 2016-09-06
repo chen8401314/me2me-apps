@@ -1884,13 +1884,86 @@ public class ContentServiceImpl implements ContentService {
         }
     }
 
+    //获取自己UGC和直播列表不加权限
+    private void getMyAttention(ShowAttentionDto showAttentionDto ,List<Content> contentList ,long uid){
+
+        for(Content content : contentList) {
+            ShowAttentionDto.ContentElement contentElement = showAttentionDto.createElement();
+            contentElement.setId(content.getId());
+            contentElement.setUid(content.getUid());
+            // 获取用户信息
+            UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+            contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            contentElement.setNickName(userProfile.getNickName());
+            contentElement.setCreateTime(content.getCreateTime());
+            contentElement.setRights(content.getRights());
+            String contentStr = content.getContent();
+            if (contentStr.length() > 100) {
+                contentElement.setContent(contentStr.substring(0, 100));
+            } else {
+                contentElement.setContent(contentStr);
+            }
+            contentElement.setType(content.getType());
+            contentElement.setTitle(content.getTitle());
+            contentElement.setForwardCid(content.getForwardCid());
+            contentElement.setIsLike(isLike(content.getId(), uid));
+            contentElement.setReviewCount(content.getReviewCount());
+            contentElement.setReadCount(content.getReadCount());
+            String cover = content.getConverImage();
+            if (!StringUtils.isEmpty(cover)) {
+                if (content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
+                    contentElement.setCoverImage(cover);
+                } else {
+                    contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
+                }
+            }
+            contentElement.setTag(content.getFeeling());
+            //查询直播状态
+            buildLive(content, contentElement);
+            if (content.getType() == Specification.ArticleType.ORIGIN.index) {
+                //获取内容图片数量
+                int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
+                contentElement.setImageCount(imageCounts);
+            }
+            int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
+            //直播是否收藏
+            contentElement.setFavorite(favorite);
+            //判断人员是否关注
+            int follow = userService.isFollow(content.getUid(), uid);
+            contentElement.setIsFollowed(follow);
+            int followMe = userService.isFollow(uid, content.getUid());
+            contentElement.setIsFollowMe(followMe);
+            contentElement.setLikeCount(content.getLikeCount());
+            contentElement.setPersonCount(content.getPersonCount());
+            contentElement.setFavoriteCount(content.getFavoriteCount());
+            contentElement.setForwardTitle(content.getForwardTitle());
+            contentElement.setForwardUrl(content.getForwardUrl());
+            showAttentionDto.getAttentionData().add(contentElement);
+            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+            log.info("getContentReviewTop3ByCid data success");
+            for (ContentReview contentReview : contentReviewList) {
+                ShowAttentionDto.ContentElement.ReviewElement reviewElement = ShowAttentionDto.ContentElement.createElement();
+                reviewElement.setUid(contentReview.getUid());
+                UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
+                reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+                reviewElement.setNickName(user.getNickName());
+                reviewElement.setCreateTime(contentReview.getCreateTime());
+                reviewElement.setReview(contentReview.getReview());
+                contentElement.getReviews().add(reviewElement);
+            }
+        }
+    }
     @Override
     public Response getAttention(int sinceId, long uid) {
         log.info("getAttention start ...");
         ShowAttentionDto showAttentionDto = new ShowAttentionDto();
+        //获取自己UGC和直播列表不加权限(仅第一次查自己的列表)
+        if(sinceId == Integer.MAX_VALUE) {
+            List<Content> myattentionList = contentMybatisDao.getAttention2(sinceId, uid);
+            getMyAttention(showAttentionDto, myattentionList, uid);
+        }
         //获取此人关注的人是列表
         List<Long> list = userService.getFollowList(uid);
-        list.add(uid);//获取自己所有直播和内容
         log.info("get user follow");
         List<Content> attentionList = contentMybatisDao.getAttention(sinceId ,list);
         log.info("getAttention data");

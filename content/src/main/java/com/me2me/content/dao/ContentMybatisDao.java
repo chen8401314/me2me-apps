@@ -287,6 +287,18 @@ public class ContentMybatisDao {
 
     }
 
+    public List<Content> getAttention2(long sinceId , long uid){
+        ContentExample example = new ContentExample();
+        ContentExample.Criteria criteria = example.createCriteria();
+        criteria.andStatusNotEqualTo(Specification.ContentStatus.DELETE.index);
+        criteria.andUidEqualTo(uid);
+        criteria.andIdLessThan(sinceId);
+        example.setOrderByClause(" id desc limit 10 ");
+        return  contentMapper.selectByExampleWithBLOBs(example);
+
+
+    }
+
     public void createContentTagsDetails(ContentTagsDetails contentTagsDetails){
         contentTagsDetailsMapper.insert(contentTagsDetails);
     }

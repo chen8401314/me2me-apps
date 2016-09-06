@@ -43,15 +43,15 @@ public class ContentReview implements Review{
         contentService.createReview2(reviewDto);
         Content content = contentService.getContentById(reviewDto.getCid());
         //更新评论数量
+        log.info("update reviewCount");
         content.setReviewCount(content.getReviewCount() +1);
         contentService.updateContentById(content);
-        log.info("update reviewCount");
         log.info("remind success");
         //自己的日记被评论提醒
         if(reviewDto.getIsAt() == 1) {
             //兼容老版本
             if(reviewDto.getAtUid() != 0) {
-                contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview(), reviewDto.getAtUid());
+                contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview(), reviewDto.getAtUid());
                 //更换推送为极光推送
                 //userService.push(reviewDto.getAtUid(), reviewDto.getUid(), Specification.PushMessageType.AT.index, reviewDto.getReview());
                 JpushToken jpushToken = userService.getJpushTokeByUid(reviewDto.getAtUid());
