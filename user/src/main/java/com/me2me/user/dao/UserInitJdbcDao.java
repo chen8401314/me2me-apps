@@ -48,6 +48,21 @@ public class UserInitJdbcDao extends BaseJdbcDao {
         return super.count(sql);
     }
 
+    /**
+     * 获取直播数量
+     * @param uid
+     * @return
+     */
+    public int getLiveCount(long uid) {
+        String sql = "select count(*) as count from topic where uid = ? and status <> 2" ;
+        return super.count(sql,uid);
+    }
+
+    public int getUGCount(long uid){
+        String sql = "select count(*) as count from content where uid = ? and status <> 1 and type in (0,1,8,9)" ;
+        return super.count(sql,uid);
+    }
+
     public List<Map<String, Object>> getPhoto(long sinceId) {
         String sql = "select id , image as imageUrl,cid as title from content_image where id < "+ sinceId +" order by id desc limit 100 ";
         return super.query(sql);

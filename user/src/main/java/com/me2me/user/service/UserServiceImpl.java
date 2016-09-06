@@ -1,18 +1,15 @@
 package com.me2me.user.service;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.security.SecurityUtils;
-import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
-import com.me2me.content.service.ContentService;
 import com.me2me.core.QRCodeUtil;
 import com.me2me.io.service.FileTransferService;
 import com.me2me.sms.dto.*;
@@ -72,8 +69,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private JPushService jPushService;
 
-    @Autowired
-    private ContentService contentService;
 
     /**
      * 用户注册
@@ -796,8 +791,8 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setGender(userProfile.getGender());
         showUserProfileDto.setUserName(userProfile.getMobile());
         showUserProfileDto.setIsPromoter(userProfile.getIsPromoter());
-        showUserProfileDto.setUgcCount(contentService.getUgcCount(uid));
-        showUserProfileDto.setLiveCount(contentService.getLiveCount(uid));
+        showUserProfileDto.setUgcCount(userInitJdbcDao.getUGCount(uid));
+        showUserProfileDto.setLiveCount(userInitJdbcDao.getLiveCount(uid));
         Set<String> powerKeys = cacheService.smembers(POWER_KEY);
         if(powerKeys!=null && !powerKeys.isEmpty()) {
             if (powerKeys.contains(uid + "")) {
