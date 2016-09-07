@@ -753,4 +753,25 @@ public interface Specification {
         }
     }
 
+    /**
+     * UGC和直播区分
+     */
+    enum UGCorLiveType{
+
+        UGCandLive("直播和UGC",0),
+
+        UGCList("UCG感受列表",1),
+
+        LiveList("王国列表",2);
+
+        public final String name;
+
+        public final int index;
+
+        UGCorLiveType(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
 }
