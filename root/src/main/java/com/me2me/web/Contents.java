@@ -243,7 +243,7 @@ public class Contents extends BaseController {
      */
     @RequestMapping(value = "/reviewList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response review(ReviewListRequest request){
+    public Response reviewList(ReviewListRequest request){
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }

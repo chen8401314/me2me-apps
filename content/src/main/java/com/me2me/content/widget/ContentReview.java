@@ -2,6 +2,7 @@ package com.me2me.content.widget;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
+import com.me2me.cache.service.CacheService;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -16,6 +17,7 @@ import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.util.Map;
 
@@ -38,8 +40,12 @@ public class ContentReview implements Review{
     @Autowired
     private JPushService jPushService;
 
+    @Autowired
+    private CacheService cacheService;
+
     public Response createReview(ReviewDto reviewDto) {
         log.info("ContentReview createReview start ...");
+        String isOnline = cacheService.get("version:2.1.0:online");
         contentService.createReview2(reviewDto);
         Content content = contentService.getContentById(reviewDto.getCid());
         //更新评论数量
@@ -51,7 +57,12 @@ public class ContentReview implements Review{
         if(reviewDto.getIsAt() == 1) {
             //兼容老版本
             if(reviewDto.getAtUid() != 0) {
-                contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview(), reviewDto.getAtUid());
+
+                if(isOnline.equals("1")) {
+                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview(), reviewDto.getAtUid());
+                }else{
+                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview(), reviewDto.getAtUid());
+                }
                 //更换推送为极光推送
                 //userService.push(reviewDto.getAtUid(), reviewDto.getUid(), Specification.PushMessageType.AT.index, reviewDto.getReview());
                 JpushToken jpushToken = userService.getJpushTokeByUid(reviewDto.getAtUid());
@@ -67,7 +78,11 @@ public class ContentReview implements Review{
                 }
             }
             if(reviewDto.getAtUid() != content.getUid()) {
-                contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview());
+                if(isOnline.equals("1")) {
+                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview(), reviewDto.getAtUid());
+                }else{
+                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview(), reviewDto.getAtUid());
+                }
             }
         }else{
             //添加提醒

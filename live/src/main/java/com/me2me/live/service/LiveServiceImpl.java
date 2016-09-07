@@ -391,8 +391,8 @@ public class LiveServiceImpl implements LiveService {
             //userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
             JpushToken jpushToken = userService.getJpushTokeByUid(speakDto.getAtUid());
             if(jpushToken == null){
-                //兼容老版本，如果客户端没有更新则还走信鸽push
-                userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
+                //信鸽推送已放弃，若要有推送功能请更新版本
+                // userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
             }else {
                 UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
                 JsonObject jsonObject = new JsonObject();
@@ -406,8 +406,8 @@ public class LiveServiceImpl implements LiveService {
             //更换信鸽推送为极光推送
             JpushToken jpushToken = userService.getJpushTokeByUid(speakDto.getAtUid());
             if(jpushToken == null){
-                //兼容老版本，如果客户端没有更新则还走信鸽push
-                userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.LiveSpeakType.ANCHOR_AT.index,topic.getTitle());
+                //信鸽推送已放弃，若要有推送功能请更新版本
+                // userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.LiveSpeakType.ANCHOR_AT.index,topic.getTitle());
             }else {
                 UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
                 JsonObject jsonObject = new JsonObject();
