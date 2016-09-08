@@ -925,7 +925,7 @@
     select
     <include refid="Base_Column_List" />,
     <include refid="Blob_Column_List" />
-    from content where uid = #{uid}) v where v.id &lt; #{sinceId}
+    from content where uid = #{uid} AND `status` != 1) v where v.id &lt; #{sinceId}
     order by v.id desc limit 10;
   </select>
 
