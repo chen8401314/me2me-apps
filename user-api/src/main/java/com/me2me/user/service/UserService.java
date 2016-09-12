@@ -214,5 +214,7 @@ public interface UserService {
 
     Response searchFans(String keyword,int page,int pageSize,long uid);
 
+    Response thirdPartLogin(ThirdPartSignUpDto thirdPartSignUpDto);
+
 
 }

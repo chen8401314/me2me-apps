@@ -1347,4 +1347,10 @@ public class UserServiceImpl implements UserService {
         return Response.success(searchDto);
     }
 
+    @Override
+    public Response thirdPartLogin(ThirdPartSignUpDto thirdPartSignUpDto) {
+        // TODO: 2016/9/12
+        return null;
+    }
+
 }
