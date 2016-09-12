@@ -1071,19 +1071,19 @@ public class ContentServiceImpl implements ContentService {
         SquareDataDto squareDataDto = new SquareDataDto();
         //获取所有播内容
 //        List<Content> contents = contentMybatisDao.myPublish(uid,sinceId);
-        if(type == Specification.UGCorLiveType.UGCList.index) {
+        if(type == 1) {
             log.info("myPublish ugc getData ...");
             //获取非直播内容
             List<Content> contents = contentMybatisDao.myPublishUgc(uid,sinceId);
             buildDatas(squareDataDto, contents, uid);
         }
-        else if(type == Specification.UGCorLiveType.LiveList.index){
+        else if(type == 2){
             log.info("my publish live getData ...");
             //获取直播内容
             List<Content> contents = contentMybatisDao.myPublishLive(uid,sinceId);
             buildDatas(squareDataDto, contents, uid);
         }
-        else if(type == Specification.UGCorLiveType.UGCandLive.index){
+        else if(type == 0){
             log.info("my publish ugc and live getData ...");
             //兼容2.1.0之前版本 获取UGC和直播
             List<Content> contents = contentMybatisDao.myPublish(uid,sinceId);
@@ -1812,7 +1812,6 @@ public class ContentServiceImpl implements ContentService {
         log.info("getNewest data success ");
         for(Content content : newestList){
             ShowNewestDto.ContentElement contentElement = ShowNewestDto.createElement();
-            contentElement.setContentType(content.getContentType());//区分音乐和阅读
             contentElement.setId(content.getId());
             contentElement.setUid(content.getUid());
             // 获取用户信息

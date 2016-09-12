@@ -89,5 +89,4 @@ public class BaseContentDto implements BaseEntity{
 
     private int topicCount;
 
-    private int contentType;
 }

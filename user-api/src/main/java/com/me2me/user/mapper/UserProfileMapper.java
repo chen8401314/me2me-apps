@@ -95,8 +95,6 @@ public interface UserProfileMapper {
      */
     int updateByPrimaryKey(UserProfile record);
 
-    int getRefereeCount(UserProfile record);
-
     List<UserProfile> searchFans(SearchFansDto searchFansDto);
 
     int countFans(SearchFansDto searchFansDto);
