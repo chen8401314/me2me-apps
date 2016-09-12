@@ -268,10 +268,15 @@ public class LiveServiceImpl implements LiveService {
     public Response speak(SpeakDto speakDto) {
         log.info("speak start ...");
         //如果是主播发言更新cache
-        if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index ||speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index ){
-            SpeakEvent speakEvent = new SpeakEvent();
-            speakEvent.setTopicId(speakDto.getTopicId());
-            applicationEventBus.post(speakEvent);
+        if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index ||speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index){
+            //只更新大王发言,如果是主播(大王)发言更新cache
+//            Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
+//            //小王发言更新cache（topic.getUid() == speakDto.getUid()为该王国国王 通知所有人）
+//            if(topic.getUid() == speakDto.getUid()) {
+                SpeakEvent speakEvent = new SpeakEvent();
+                speakEvent.setTopicId(speakDto.getTopicId());
+                applicationEventBus.post(speakEvent);
+//            }
             //粉丝有留言提醒主播
         }else{
             if(speakDto.getType() != Specification.LiveSpeakType.INVITED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.FORWARD.index && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.LIKES.index) {
@@ -401,7 +406,8 @@ public class LiveServiceImpl implements LiveService {
                 jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
             }
         }else if(speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index){
-            liveRemind(speakDto.getAtUid() ,topic.getUid(),Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
+//            liveRemind(speakDto.getAtUid() ,topic.getUid(),Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
+            liveRemind(speakDto.getAtUid() ,speakDto.getUid(),Specification.LiveSpeakType.FANS.index ,speakDto.getTopicId(),speakDto.getFragment());
             //userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
             //更换信鸽推送为极光推送
             JpushToken jpushToken = userService.getJpushTokeByUid(speakDto.getAtUid());
