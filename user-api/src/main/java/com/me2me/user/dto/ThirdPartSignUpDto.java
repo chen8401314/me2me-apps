@@ -10,10 +10,24 @@ import lombok.Data;
 @Data
 public class ThirdPartSignUpDto extends UserSignUpDto {
 
+    /**
+     * 第三方登录OPENID
+     */
     private String thirdPartOpenId;
 
+    /**
+     * 第三方登录token
+     */
     private String thirdPartToken;
 
+    /**
+     * 第三方头像
+     */
     private String avatar;
+
+    /**
+     * 第三方登录类型 QQ：1 ，微信： 2，新浪微博：3。
+     */
+    private int thirdPartType;
 
 }
