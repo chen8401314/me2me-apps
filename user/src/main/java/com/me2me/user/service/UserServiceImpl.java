@@ -1350,6 +1350,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public Response thirdPartLogin(ThirdPartSignUpDto thirdPartSignUpDto) {
         // TODO: 2016/9/12
+        /**
+         * user Profile third_part_bind 字段的json数据结构
+         * [
+         {
+         "thirdPartName": "qq",
+         "status": 1
+         },
+         {
+         "thirdPartName": "weixin",
+         "status": 1
+         }
+         ]
+         */
         return null;
     }
 
