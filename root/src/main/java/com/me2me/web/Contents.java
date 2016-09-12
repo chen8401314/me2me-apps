@@ -123,7 +123,7 @@ public class Contents extends BaseController {
     }
 
     /**
-     * 用户发布列表接口(0非直播/3直播)
+     * 用户发布列表接口(0为了兼容老版本/1非直播/2直播)
      * @return
      */
     @RequestMapping(value = "/myPublish",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
