@@ -515,4 +515,18 @@ public class Users extends BaseController {
         return userService.getRefereeProfile(request.getUid());
     }
 
+    /**
+     * 第三方登录接口
+     */
+    @ResponseBody
+    @RequestMapping(value = "/thirdPartLogin",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response thirdPartLogin(ThirdPartRequest request){
+        ThirdPartSignUpDto dto = new ThirdPartSignUpDto();
+        dto.setThirdPartOpenId(request.getThirdPartOpenId());
+        dto.setThirdPartToken(request.getThirdPartToken());
+        dto.setAvatar(request.getAvatar());
+        dto.setThirdPartType(request.getThirdPartType());
+        dto.setNickName(request.getNickName());
+        return userService.thirdPartLogin(dto);
+    }
 }

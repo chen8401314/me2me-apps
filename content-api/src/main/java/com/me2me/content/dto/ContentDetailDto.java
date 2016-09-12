@@ -50,6 +50,8 @@ public class ContentDetailDto implements BaseEntity {
 
     private int contentType;
 
+    private int rights;
+
     //是否关注
     private int isFollowed;
 
