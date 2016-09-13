@@ -69,6 +69,10 @@ public class CacheLiveListener {
         List<UserFollow> list = userService.getFans(cacheLiveEvent.getUid());
         log.info("get user fans ... ");
         for(UserFollow userFollow : list) {
+            //主播的粉丝强制订阅
+            liveService.setLive3(userFollow.getSourceUid(),cacheLiveEvent.getTopicId());
+        }
+        for (UserFollow userFollow : list) {
             //所有订阅的人显示有红点
             MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(userFollow.getSourceUid(), cacheLiveEvent.getTopicId() + "", "1");
             cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
@@ -79,10 +83,8 @@ public class CacheLiveListener {
             Topic topic = liveService.getTopicById(cacheLiveEvent.getTopicId());
             jPushService.payloadByIdExtra(alias, "你关注的国王" + userProfile.getNickName() + "建立了新王国:" + topic.getTitle(), JPushUtils.packageExtra(jsonObject));
         }
-        for(UserFollow userFollow : list) {
-            //主播的粉丝强制订阅
-            liveService.setLive3(userFollow.getSourceUid(),cacheLiveEvent.getTopicId());
-        }
+
+
 
 
     }
