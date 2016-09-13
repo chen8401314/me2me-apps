@@ -1,7 +1,10 @@
 package com.me2me.user.service;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
@@ -23,6 +26,7 @@ import com.me2me.user.dto.*;
 import com.me2me.user.model.*;
 import com.me2me.user.model.Dictionary;
 import com.me2me.user.widget.MessageNotificationAdapter;
+import com.qiniu.util.Json;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -1350,20 +1354,118 @@ public class UserServiceImpl implements UserService {
     @Override
     public Response thirdPartLogin(ThirdPartSignUpDto thirdPartSignUpDto) {
         // TODO: 2016/9/12
-        /**
-         * user Profile third_part_bind 字段的json数据结构
-         * [
-         {
-         "thirdPartName": "qq",
-         "status": 1
-         },
-         {
-         "thirdPartName": "weixin",
-         "status": 1
-         }
-         ]
-         */
-        return null;
+        //判断用户是否已经存在
+        LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
+        List<ThirdPartUser> users = userMybatisDao.getThirdPartUser(thirdPartSignUpDto.getThirdPartOpenId() ,thirdPartSignUpDto.getThirdPartToken());
+        if(users.size()>0){
+           UserProfile userProfile = userMybatisDao.getUserProfileByUid(users.get(0).getUid());
+           loginSuccessDto.setUid(userProfile.getUid());
+           loginSuccessDto.setGender(userProfile.getGender());
+           loginSuccessDto.setNickName(userProfile.getNickName());
+           return Response.failure(ResponseStatus.USER_EXISTS.status,ResponseStatus.USER_EXISTS.message,loginSuccessDto);
+        }
+        else{
+            buidThirdPart(thirdPartSignUpDto ,loginSuccessDto);
+        }
+        return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status,ResponseStatus.USER_LOGIN_SUCCESS.message,loginSuccessDto);
     }
+
+    //第三方登录公共方法
+    public void buidThirdPart(ThirdPartSignUpDto thirdPartSignUpDto ,LoginSuccessDto loginSuccessDto){
+        List<ThirdPartJsonDto> array = Lists.newArrayList();
+        User user = new User();
+        user.setCreateTime(new Date());
+        user.setUpdateTime(new Date());
+        String salt = SecurityUtils.getMask();
+        user.setEncrypt(SecurityUtils.md5(salt,salt));
+        user.setSalt(salt);
+        user.setStatus(0);
+        user.setUserName(thirdPartSignUpDto.getThirdPartOpenId());
+        userMybatisDao.createUser(user);
+
+        User user1 = userMybatisDao.getUserByUserName(thirdPartSignUpDto.getThirdPartOpenId());
+        UserProfile userProfile = new UserProfile();
+        userProfile.setUid(user1.getUid());
+        userProfile.setAvatar(thirdPartSignUpDto.getAvatar());
+        userProfile.setNickName(thirdPartSignUpDto.getNickName());
+        userProfile.setAvatar(thirdPartSignUpDto.getAvatar());
+        userProfile.setGender(thirdPartSignUpDto.getGender());
+        userProfile.setCreateTime(new Date());
+        if(thirdPartSignUpDto.getThirdPartOpenId().length() > 11) {
+            String openId = thirdPartSignUpDto.getThirdPartOpenId();
+            userProfile.setMobile(openId.substring(0,11));
+        }
+        //QQ
+        if(thirdPartSignUpDto.getThirdPartType() == 1) {
+            array.add(new ThirdPartJsonDto("qq", 1));
+        }//微信
+        else if(thirdPartSignUpDto.getThirdPartType() ==2) {
+            array.add(new ThirdPartJsonDto("weixin", 2));
+        }//微博
+        else if(thirdPartSignUpDto.getThirdPartType() ==3){
+            array.add(new ThirdPartJsonDto("weibo",3));
+        }
+        String thirdPartBind = JSON.toJSON(array).toString();
+        userProfile.setThirdPartBind(thirdPartBind);
+        userMybatisDao.createUserProfile(userProfile);
+
+        UserProfile userProfile1 = userMybatisDao.getUserProfileByUid(user1.getUid());
+        loginSuccessDto.setUid(userProfile1.getUid());
+        loginSuccessDto.setNickName(userProfile1.getNickName());
+        loginSuccessDto.setGender(userProfile1.getGender());
+
+        ThirdPartUser thirdPartUser = new ThirdPartUser();
+        thirdPartUser.setUid(user1.getUid());
+        thirdPartUser.setThirdPartToken(thirdPartSignUpDto.getThirdPartToken());
+        thirdPartUser.setThirdPartOpenId(thirdPartSignUpDto.getThirdPartOpenId());
+        thirdPartUser.setCreateTime(new Date());
+        thirdPartUser.setThirdPartType(thirdPartSignUpDto.getThirdPartType());
+        userMybatisDao.creatThirdPartUser(thirdPartUser);
+
+        if(!StringUtils.isEmpty(thirdPartSignUpDto.getJPushToken())) {
+            List<JpushToken> jpushTokens = userMybatisDao.getJpushToken(user1.getUid());
+            if(jpushTokens!=null&&jpushTokens.size()>0){
+                // 更新当前JpushToken
+                JpushToken jpushToken = jpushTokens.get(0);
+                jpushToken.setJpushToken(thirdPartSignUpDto.getJPushToken());
+                userMybatisDao.refreshJpushToken(jpushToken);
+            }else {
+                JpushToken jpushToken = new JpushToken();
+                jpushToken.setJpushToken(thirdPartSignUpDto.getJPushToken());
+                jpushToken.setUid(user1.getUid());
+                userMybatisDao.createJpushToken(jpushToken);
+            }
+        }
+
+    }
+
+    @Override
+    public Response activityModel(ActivityModelDto activityModelDto) {
+        activityModelDto.setActivityUrl("http://xxx");
+        return Response.success(ResponseStatus.GET_ACTIVITY_MODEL_SUCCESS.status,ResponseStatus.GET_ACTIVITY_MODEL_SUCCESS.message,activityModelDto);
+    }
+
+    /**
+     * user Profile third_part_bind 字段的json数据结构
+     * [
+     {
+     "thirdPartName": "qq",
+     "status": 1
+     },
+     {
+     "thirdPartName": "weixin",
+     "status": 2
+     }
+     ]
+     */
+//    public static void main(String[] args) {
+//        List<ThirdPartJsonDto> array = Lists.newArrayList();
+//
+//        array.add(new ThirdPartJsonDto("qq",1));
+//        array.add(new ThirdPartJsonDto("weixin",1));
+//        String value = JSON.toJSON(array).toString();
+//        System.out.println(value);
+//
+//    }
 
 }

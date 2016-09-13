@@ -216,5 +216,5 @@ public interface UserService {
 
     Response thirdPartLogin(ThirdPartSignUpDto thirdPartSignUpDto);
 
-
+    Response activityModel(ActivityModelDto activityModelDto);
 }

@@ -1,35 +1,51 @@
-package com.me2me.user.dto;
+package com.me2me.web.request;
 
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * 上海拙心网络科技有限公司出品
- * Author: 赵朋扬
- * Date: 2016/9/12.
+ * Created by pc41 on 2016/9/12.
  */
-@Data
-public class ThirdPartSignUpDto extends UserSignUpDto {
+public class ThirdPartRequest {
 
     /**
      * 第三方登录OPENID
      */
+    @Getter
+    @Setter
     private String thirdPartOpenId;
 
     /**
      * 第三方登录token
      */
+    @Getter
+    @Setter
     private String thirdPartToken;
 
     /**
      * 第三方头像
      */
+    @Getter
+    @Setter
     private String avatar;
 
     /**
      * 第三方登录类型 QQ：1 ，微信： 2，新浪微博：3。
      */
+    @Getter
+    @Setter
     private int thirdPartType;
 
+    @Getter
+    @Setter
+    private String nickName;
+
+    @Getter
+    @Setter
+    private int gender;
+
+    @Getter
+    @Setter
     private String jPushToken;
 
 }

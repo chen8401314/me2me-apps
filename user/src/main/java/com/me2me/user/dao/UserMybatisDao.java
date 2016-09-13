@@ -81,6 +81,9 @@ public class UserMybatisDao {
     @Autowired
     private JpushTokenMapper jpushTokenMapper;
 
+    @Autowired
+    private ThirdPartUserMapper thirdPartUserMapper;
+
     /**
      * 保存用户注册信息
      * @param user
@@ -618,5 +621,18 @@ public class UserMybatisDao {
 
     public int totalFans(SearchFansDto searchFansDto){
         return userProfileMapper.countFans(searchFansDto);
+    }
+
+    //新增第三方登录数据
+    public void creatThirdPartUser(ThirdPartUser thirdPartUser){
+        thirdPartUserMapper.insertSelective(thirdPartUser);
+    }
+
+    public List<ThirdPartUser> getThirdPartUser(String openId , String token){
+        ThirdPartUserExample example = new ThirdPartUserExample();
+        ThirdPartUserExample.Criteria criteria = example.createCriteria();
+        criteria.andThirdPartOpenIdEqualTo(openId);
+        criteria.andThirdPartTokenEqualTo(token);
+        return thirdPartUserMapper.selectByExample(example);
     }
 }

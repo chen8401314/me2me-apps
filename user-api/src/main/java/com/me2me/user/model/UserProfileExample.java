@@ -1395,7 +1395,7 @@ public class UserProfileExample {
             return (Criteria) this;
         }
 
-        public Criteria andRefereeUidEqualTo(Integer value) {
+        public Criteria andRefereeUidEqualTo(Long value) {
             addCriterion("referee_uid =", value, "refereeUid");
             return (Criteria) this;
         }
