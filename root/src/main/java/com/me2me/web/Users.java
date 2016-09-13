@@ -543,4 +543,20 @@ public class Users extends BaseController {
         ActivityModelDto dto = new ActivityModelDto();
         return userService.activityModel(dto);
     }
+
+    /**
+     * 检查用户名是否存在接口，判断OPENID是否存在是否还需要上传头像接口
+     */
+    @ResponseBody
+    @RequestMapping(value = "/checkNameOpenId",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response checkNickName(CheckRequest request){
+        UserNickNameDto userNickNameDto = new UserNickNameDto();
+        if(request.getNickName()!=null) {
+            userNickNameDto.setNickName(request.getNickName());
+        }else {
+            userNickNameDto.setOpenid(request.getOpenId());
+        }
+        return userService.checkNameOpenId(userNickNameDto);
+    }
+
 }

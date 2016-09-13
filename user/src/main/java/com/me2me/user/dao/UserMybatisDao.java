@@ -635,4 +635,20 @@ public class UserMybatisDao {
         criteria.andThirdPartTokenEqualTo(token);
         return thirdPartUserMapper.selectByExample(example);
     }
+
+    public List<UserProfile> checkUserNickName(String nickName){
+        UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andNickNameEqualTo(nickName);
+        return userProfileMapper.selectByExample(example);
+    }
+
+    public ThirdPartUser checkOpenId(String openId){
+        ThirdPartUserExample example = new ThirdPartUserExample();
+        ThirdPartUserExample.Criteria criteria = example.createCriteria();
+        criteria.andThirdPartOpenIdEqualTo(openId);
+        List<ThirdPartUser> thirdPartUsers = thirdPartUserMapper.selectByExample(example);
+        return thirdPartUsers!=null&&thirdPartUsers.size()>0?thirdPartUsers.get(0):null;
+    }
+
 }

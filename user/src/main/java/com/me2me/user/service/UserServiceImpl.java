@@ -1358,10 +1358,14 @@ public class UserServiceImpl implements UserService {
         LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
         List<ThirdPartUser> users = userMybatisDao.getThirdPartUser(thirdPartSignUpDto.getThirdPartOpenId() ,thirdPartSignUpDto.getThirdPartToken());
         if(users.size()>0){
-           UserProfile userProfile = userMybatisDao.getUserProfileByUid(users.get(0).getUid());
+           long uid = users.get(0).getUid();
+           UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+           UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
            loginSuccessDto.setUid(userProfile.getUid());
            loginSuccessDto.setGender(userProfile.getGender());
            loginSuccessDto.setNickName(userProfile.getNickName());
+           loginSuccessDto.setToken(userToken.getToken());
+
            return Response.failure(ResponseStatus.USER_EXISTS.status,ResponseStatus.USER_EXISTS.message,loginSuccessDto);
         }
         else{
@@ -1382,7 +1386,9 @@ public class UserServiceImpl implements UserService {
         user.setStatus(0);
         user.setUserName(thirdPartSignUpDto.getThirdPartOpenId());
         userMybatisDao.createUser(user);
+        log.info("user is create");
 
+        log.info("get user by username");
         User user1 = userMybatisDao.getUserByUserName(thirdPartSignUpDto.getThirdPartOpenId());
         UserProfile userProfile = new UserProfile();
         userProfile.setUid(user1.getUid());
@@ -1408,11 +1414,21 @@ public class UserServiceImpl implements UserService {
         String thirdPartBind = JSON.toJSON(array).toString();
         userProfile.setThirdPartBind(thirdPartBind);
         userMybatisDao.createUserProfile(userProfile);
+        log.info("UserProfile is create");
+
+        // 保存用户token信息
+        UserToken userToken1 = new UserToken();
+        userToken1.setUid(user.getUid());
+        userToken1.setToken(SecurityUtils.getToken());
+        userMybatisDao.createUserToken(userToken1);
+        log.info("userToken is create");
 
         UserProfile userProfile1 = userMybatisDao.getUserProfileByUid(user1.getUid());
+        UserToken userToken = userMybatisDao.getUserTokenByUid(user1.getUid());
         loginSuccessDto.setUid(userProfile1.getUid());
         loginSuccessDto.setNickName(userProfile1.getNickName());
         loginSuccessDto.setGender(userProfile1.getGender());
+        loginSuccessDto.setToken(userToken.getToken());
 
         ThirdPartUser thirdPartUser = new ThirdPartUser();
         thirdPartUser.setUid(user1.getUid());
@@ -1421,6 +1437,7 @@ public class UserServiceImpl implements UserService {
         thirdPartUser.setCreateTime(new Date());
         thirdPartUser.setThirdPartType(thirdPartSignUpDto.getThirdPartType());
         userMybatisDao.creatThirdPartUser(thirdPartUser);
+        log.info("ThirdPartUser is create");
 
         if(!StringUtils.isEmpty(thirdPartSignUpDto.getJPushToken())) {
             List<JpushToken> jpushTokens = userMybatisDao.getJpushToken(user1.getUid());
@@ -1441,8 +1458,27 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response activityModel(ActivityModelDto activityModelDto) {
-        activityModelDto.setActivityUrl("http://xxx");
+        activityModelDto.setActivityUrl("http://app2.me-to-me.com/?topicId=21");
         return Response.success(ResponseStatus.GET_ACTIVITY_MODEL_SUCCESS.status,ResponseStatus.GET_ACTIVITY_MODEL_SUCCESS.message,activityModelDto);
+    }
+
+    @Override
+    public Response checkNameOpenId(UserNickNameDto userNickNameDto) {
+        if(!StringUtils.isEmpty(userNickNameDto.getOpenid())) {
+            ThirdPartUser thirdPartUser = userMybatisDao.checkOpenId(userNickNameDto.getOpenid());
+            if(thirdPartUser!=null) {
+                return Response.success(ResponseStatus.USER_EXISTS.status,ResponseStatus.USER_EXISTS.message);
+            }else{
+                return  Response.success(ResponseStatus.OPENID_DONT_EXISTS.status,ResponseStatus.OPENID_DONT_EXISTS.message);
+            }
+        }else{
+            String nickName = userNickNameDto.getNickName();
+            List<UserProfile> list = userMybatisDao.checkUserNickName(nickName);
+        if(list.size()>0){
+            return Response.failure(ResponseStatus.USER_NICKNAME_EXISTS.status,ResponseStatus.USER_NICKNAME_EXISTS.message);
+        }
+        }
+        return Response.success(ResponseStatus.USER_NICKNAME_DONT_EXISTS.status,ResponseStatus.USER_NICKNAME_DONT_EXISTS.message);
     }
 
     /**
