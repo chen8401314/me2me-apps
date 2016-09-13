@@ -30,4 +30,6 @@ public class ThirdPartSignUpDto extends UserSignUpDto {
      */
     private int thirdPartType;
 
+    private String jPushToken;
+
 }

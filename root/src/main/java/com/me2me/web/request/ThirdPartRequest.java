@@ -40,4 +40,12 @@ public class ThirdPartRequest {
     @Setter
     private String nickName;
 
+    @Getter
+    @Setter
+    private int gender;
+
+    @Getter
+    @Setter
+    private String jPushToken;
+
 }

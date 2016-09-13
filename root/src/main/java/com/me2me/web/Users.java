@@ -527,6 +527,20 @@ public class Users extends BaseController {
         dto.setAvatar(request.getAvatar());
         dto.setThirdPartType(request.getThirdPartType());
         dto.setNickName(request.getNickName());
+        dto.setGender(request.getGender());
+        dto.setJPushToken(request.getJPushToken());
         return userService.thirdPartLogin(dto);
+    }
+
+    /**
+     * 广告模式接口
+     *
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/activityModel",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response activityModel(){
+        ActivityModelDto dto = new ActivityModelDto();
+        return userService.activityModel(dto);
     }
 }

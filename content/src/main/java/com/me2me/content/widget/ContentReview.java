@@ -77,13 +77,13 @@ public class ContentReview implements Review{
                     jPushService.payloadByIdExtra(alias,userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
                 }
             }
-            if(reviewDto.getAtUid() != content.getUid()) {
+//            if(reviewDto.getAtUid() != content.getUid()) {
 //                if(isOnline.equals("1")) {
-                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview(), reviewDto.getAtUid());
+//                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview(), reviewDto.getAtUid());
 //                }else{
 //                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview(), reviewDto.getAtUid());
 //                }
-            }
+//            }
         }else{
             //添加提醒
             log.info("review you start");
