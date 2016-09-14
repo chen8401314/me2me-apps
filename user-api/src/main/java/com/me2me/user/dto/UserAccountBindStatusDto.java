@@ -9,18 +9,20 @@ import lombok.Data;
  * Date: 2016/4/13.
  */
 @Data
-public class ThirdPartJsonDto implements BaseEntity {
+public class UserAccountBindStatusDto implements BaseEntity {
 
 
-    private String thirdPartName;
+    private int type;
 
+    private String name;
 
     private int status;
 
 
 
-    public ThirdPartJsonDto(String thirdPartName,int status){
-        this.thirdPartName = thirdPartName;
+    public UserAccountBindStatusDto(int type,String name,int status){
+        this.type = type;
+        this.name = name;
         this.status = status;
     }
 

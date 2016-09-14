@@ -1372,7 +1372,7 @@ public class UserServiceImpl implements UserService {
 
     //第三方登录公共方法
     public void buidThirdPart(ThirdPartSignUpDto thirdPartSignUpDto ,LoginSuccessDto loginSuccessDto){
-        List<ThirdPartJsonDto> array = Lists.newArrayList();
+        List<UserAccountBindStatusDto> array = Lists.newArrayList();
         User user = new User();
         user.setCreateTime(new Date());
         user.setUpdateTime(new Date());
@@ -1397,13 +1397,13 @@ public class UserServiceImpl implements UserService {
         }
         //QQ
         if(thirdPartSignUpDto.getThirdPartType() == 1) {
-            array.add(new ThirdPartJsonDto("qq", 1));
+            array.add(new UserAccountBindStatusDto(1,"qq", 1));
         }//微信
         else if(thirdPartSignUpDto.getThirdPartType() ==2) {
-            array.add(new ThirdPartJsonDto("weixin", 2));
+            array.add(new UserAccountBindStatusDto(2,"weixin", 1));
         }//微博
         else if(thirdPartSignUpDto.getThirdPartType() ==3){
-            array.add(new ThirdPartJsonDto("weibo",3));
+            array.add(new UserAccountBindStatusDto(3,"weibo", 1));
         }
         String thirdPartBind = JSON.toJSON(array).toString();
         userProfile.setThirdPartBind(thirdPartBind);
