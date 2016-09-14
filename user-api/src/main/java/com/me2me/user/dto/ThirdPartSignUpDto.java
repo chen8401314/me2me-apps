@@ -33,11 +33,6 @@ public class ThirdPartSignUpDto extends UserSignUpDto {
     private String jPushToken;
 
     /**
-     * 用来做数据绑定
-     */
-    private String mobile;
-
-    /**
      * 数据绑定的标识
      */
     private long uid;

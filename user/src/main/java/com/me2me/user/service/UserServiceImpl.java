@@ -1528,6 +1528,12 @@ public class UserServiceImpl implements UserService {
         String bindJsonData = userProfile.getThirdPartBind();
         List<UserAccountBindStatusDto> bindStatusDtoList = JSON.parseArray(bindJsonData,UserAccountBindStatusDto.class);
         if(!StringUtils.isEmpty(thirdPartSignUpDto.getMobile())){
+            User user = userMybatisDao.getUserByUid(thirdPartSignUpDto.getUid());
+            String salt = SecurityUtils.getMask();
+            user.setEncrypt(SecurityUtils.md5(thirdPartSignUpDto.getEncrypt(),salt));
+            user.setSalt(salt);
+            userMybatisDao.modifyUser(user);
+            userProfile.setMobile(thirdPartSignUpDto.getMobile());
             // 手机绑定
             bindStatusDtoList.add(new UserAccountBindStatusDto(Specification.ThirdPartType.MOBILE.index,Specification.ThirdPartType.MOBILE.name,1));
 

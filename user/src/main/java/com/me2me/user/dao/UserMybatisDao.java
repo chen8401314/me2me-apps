@@ -130,6 +130,7 @@ public class UserMybatisDao {
         return (users!=null&&users.size()>0)? users.get(0):null;
     }
 
+
     public User getUserByUid(long uid){
         UserExample example = new UserExample();
         UserExample.Criteria criteria = example.createCriteria();
