@@ -1,10 +1,9 @@
 package com.me2me.user.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
@@ -26,7 +25,6 @@ import com.me2me.user.dto.*;
 import com.me2me.user.model.*;
 import com.me2me.user.model.Dictionary;
 import com.me2me.user.widget.MessageNotificationAdapter;
-import com.qiniu.util.Json;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -1414,7 +1412,7 @@ public class UserServiceImpl implements UserService {
         else if(thirdPartSignUpDto.getThirdPartType() ==3){
             array.add(new UserAccountBindStatusDto(3,"weibo", 1));
         }
-        String thirdPartBind = JSON.toJSON(array).toString();
+        String thirdPartBind = JSON.toJSONString(array);
         userProfile.setThirdPartBind(thirdPartBind);
         userMybatisDao.createUserProfile(userProfile);
         log.info("UserProfile is create");
@@ -1484,6 +1482,33 @@ public class UserServiceImpl implements UserService {
         return Response.success(ResponseStatus.USER_NICKNAME_DONT_EXISTS.status,ResponseStatus.USER_NICKNAME_DONT_EXISTS.message);
     }
 
+    @Override
+    public Response bind(ThirdPartSignUpDto thirdPartSignUpDto) {
+        UserProfile userProfile = userMybatisDao.getUserProfileByUid(thirdPartSignUpDto.getUid());
+        String bindJsonData = userProfile.getThirdPartBind();
+        List<UserAccountBindStatusDto> bindStatusDtoList = JSON.parseArray(bindJsonData,UserAccountBindStatusDto.class);
+        if(!StringUtils.isEmpty(thirdPartSignUpDto.getMobile())){
+            // 手机绑定
+            bindStatusDtoList.add(new UserAccountBindStatusDto(0,"mobile",1));
+
+        }else{
+            // 第三方账号绑定(qq,weixin,weibo)
+            String thirdPartName = null;
+            if(thirdPartSignUpDto.getThirdPartType()==1){
+                thirdPartName = "qq";
+            }
+            if(thirdPartSignUpDto.getThirdPartType()==2){
+                thirdPartName = "weixin";
+            }
+            if(thirdPartSignUpDto.getThirdPartType()==3){
+                thirdPartName = "weibo";
+            }
+            bindStatusDtoList.add(new UserAccountBindStatusDto(thirdPartSignUpDto.getThirdPartType(),thirdPartName,1));
+        }
+        JSON.toJSONString(bindStatusDtoList);
+        return Response.success();
+    }
+
     /**
      * user Profile third_part_bind 字段的json数据结构
      * [
@@ -1497,14 +1522,5 @@ public class UserServiceImpl implements UserService {
      }
      ]
      */
-//    public static void main(String[] args) {
-//        List<ThirdPartJsonDto> array = Lists.newArrayList();
-//
-//        array.add(new ThirdPartJsonDto("qq",1));
-//        array.add(new ThirdPartJsonDto("weixin",1));
-//        String value = JSON.toJSON(array).toString();
-//        System.out.println(value);
-//
-//    }
 
 }

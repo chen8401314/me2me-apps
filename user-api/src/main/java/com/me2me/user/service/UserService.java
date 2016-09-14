@@ -219,4 +219,6 @@ public interface UserService {
     Response activityModel(ActivityModelDto activityModelDto);
 
     Response checkNameOpenId(UserNickNameDto userNickNameDto);
+
+    Response bind(ThirdPartSignUpDto thirdPartSignUpDto);
 }

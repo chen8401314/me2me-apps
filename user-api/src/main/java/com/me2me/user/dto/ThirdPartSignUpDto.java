@@ -26,10 +26,20 @@ public class ThirdPartSignUpDto extends UserSignUpDto {
     private String avatar;
 
     /**
-     * 第三方登录类型 QQ：1 ，微信： 2，新浪微博：3。
+     ** 第三方登录类型 QQ：1 ，微信： 2，新浪微博：3。
      */
     private int thirdPartType;
 
     private String jPushToken;
+
+    /**
+     * 用来做数据绑定
+     */
+    private String mobile;
+
+    /**
+     * 数据绑定的标识
+     */
+    private long uid;
 
 }
