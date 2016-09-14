@@ -1363,7 +1363,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response thirdPartLogin(ThirdPartSignUpDto thirdPartSignUpDto) {
-        // TODO: 2016/9/12
         //判断用户是否已经存在
         LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
         List<ThirdPartUser> users = userMybatisDao.getThirdPartUser(thirdPartSignUpDto.getThirdPartOpenId() ,thirdPartSignUpDto.getThirdPartToken());
