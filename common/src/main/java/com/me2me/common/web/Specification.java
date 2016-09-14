@@ -776,4 +776,24 @@ public interface Specification {
         }
     }
 
+    enum ThirdPartType{
+
+        MOBILE("mobile",0),
+
+        QQ("qq",1),
+
+        WEIXIN("weixin",2),
+
+        WEIBO("weibo",3);
+
+        public final String name;
+
+        public final int index;
+
+        ThirdPartType(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
 }
