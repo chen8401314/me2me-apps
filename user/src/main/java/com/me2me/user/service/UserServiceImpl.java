@@ -68,6 +68,8 @@ public class UserServiceImpl implements UserService {
 
     private static final String POWER_KEY = "power:key";
 
+    private static final String AD_KEY = "ad:url:key";
+
     @Autowired
     private JPushService jPushService;
 
@@ -1466,7 +1468,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response activityModel(ActivityModelDto activityModelDto) {
-        activityModelDto.setActivityUrl("http://app2.me-to-me.com/?topicId=21");
+        String url = cacheService.get(AD_KEY);
+        activityModelDto.setActivityUrl(url);
         return Response.success(ResponseStatus.GET_ACTIVITY_MODEL_SUCCESS.status,ResponseStatus.GET_ACTIVITY_MODEL_SUCCESS.message,activityModelDto);
     }
 
