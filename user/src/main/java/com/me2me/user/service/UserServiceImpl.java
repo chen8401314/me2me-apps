@@ -115,7 +115,7 @@ public class UserServiceImpl implements UserService {
 
         List<UserAccountBindStatusDto> array = Lists.newArrayList();
         // 添加手机绑定
-        array.add(new UserAccountBindStatusDto(0,"mobile",1));
+        array.add(new UserAccountBindStatusDto(Specification.ThirdPartType.MOBILE.index,Specification.ThirdPartType.MOBILE.name,1));
         String mobileBind = JSON.toJSONString(array);
         userProfile.setThirdPartBind(mobileBind);
 
@@ -1412,14 +1412,14 @@ public class UserServiceImpl implements UserService {
             userProfile.setMobile(openId.substring(0,11));
         }
         //QQ
-        if(thirdPartSignUpDto.getThirdPartType() == 1) {
-            array.add(new UserAccountBindStatusDto(1,"qq", 1));
+        if(thirdPartSignUpDto.getThirdPartType() == Specification.ThirdPartType.QQ.index) {
+            array.add(new UserAccountBindStatusDto(Specification.ThirdPartType.QQ.index,Specification.ThirdPartType.QQ.name, 1));
         }//微信
-        else if(thirdPartSignUpDto.getThirdPartType() ==2) {
-            array.add(new UserAccountBindStatusDto(2,"weixin", 1));
+        else if(thirdPartSignUpDto.getThirdPartType() == Specification.ThirdPartType.WEIXIN.index) {
+            array.add(new UserAccountBindStatusDto(Specification.ThirdPartType.WEIXIN.index,Specification.ThirdPartType.WEIXIN.name, 1));
         }//微博
-        else if(thirdPartSignUpDto.getThirdPartType() ==3){
-            array.add(new UserAccountBindStatusDto(3,"weibo", 1));
+        else if(thirdPartSignUpDto.getThirdPartType() == Specification.ThirdPartType.WEIBO.index){
+            array.add(new UserAccountBindStatusDto(Specification.ThirdPartType.WEIBO.index,Specification.ThirdPartType.WEIBO.name, 1));
         }
         String thirdPartBind = JSON.toJSONString(array);
         userProfile.setThirdPartBind(thirdPartBind);
@@ -1499,19 +1499,17 @@ public class UserServiceImpl implements UserService {
         List<UserAccountBindStatusDto> bindStatusDtoList = JSON.parseArray(bindJsonData,UserAccountBindStatusDto.class);
         if(!StringUtils.isEmpty(thirdPartSignUpDto.getMobile())){
             // 手机绑定
-            bindStatusDtoList.add(new UserAccountBindStatusDto(0,"mobile",1));
+            bindStatusDtoList.add(new UserAccountBindStatusDto(Specification.ThirdPartType.MOBILE.index,Specification.ThirdPartType.MOBILE.name,1));
 
         }else{
             // 第三方账号绑定(qq,weixin,weibo)
             String thirdPartName = null;
-            if(thirdPartSignUpDto.getThirdPartType()==1){
-                thirdPartName = "qq";
-            }
-            if(thirdPartSignUpDto.getThirdPartType()==2){
-                thirdPartName = "weixin";
-            }
-            if(thirdPartSignUpDto.getThirdPartType()==3){
-                thirdPartName = "weibo";
+            if(thirdPartSignUpDto.getThirdPartType()==Specification.ThirdPartType.QQ.index){
+                thirdPartName = Specification.ThirdPartType.QQ.name;
+            }else if(thirdPartSignUpDto.getThirdPartType()==Specification.ThirdPartType.WEIXIN.index){
+                thirdPartName = Specification.ThirdPartType.WEIXIN.name;
+            }else if(thirdPartSignUpDto.getThirdPartType()==Specification.ThirdPartType.WEIBO.index){
+                thirdPartName = Specification.ThirdPartType.WEIBO.name;
             }
             bindStatusDtoList.add(new UserAccountBindStatusDto(thirdPartSignUpDto.getThirdPartType(),thirdPartName,1));
         }
@@ -1520,19 +1518,5 @@ public class UserServiceImpl implements UserService {
         userMybatisDao.modifyUserProfile(userProfile);
         return Response.success();
     }
-
-    /**
-     * user Profile third_part_bind 字段的json数据结构
-     * [
-     {
-     "thirdPartName": "qq",
-     "status": 1
-     },
-     {
-     "thirdPartName": "weixin",
-     "status": 2
-     }
-     ]
-     */
 
 }
