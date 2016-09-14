@@ -112,6 +112,12 @@ public class UserServiceImpl implements UserService {
         userProfile.setMobile(userSignUpDto.getMobile());
         userProfile.setNickName(userSignUpDto.getNickName());
         userProfile.setIntroduced(userSignUpDto.getIntroduced());
+
+        List<UserAccountBindStatusDto> array = Lists.newArrayList();
+        array.add(new UserAccountBindStatusDto(0,"mobile",1));
+        String mobileBind = JSON.toJSON(array).toString();
+        userProfile.setThirdPartBind(mobileBind);
+
         userMybatisDao.createUserProfile(userProfile);
         log.info("userProfile is create");
         signUpSuccessDto.setUserName(user.getUserName());
