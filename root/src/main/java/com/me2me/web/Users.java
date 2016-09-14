@@ -559,4 +559,17 @@ public class Users extends BaseController {
         return userService.checkNameOpenId(userNickNameDto);
     }
 
+    /**
+     * 绑定接口
+     */
+    @ResponseBody
+    @RequestMapping(value = "/bind",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response bind(ThirdPartRequest request){
+        ThirdPartSignUpDto dto = new ThirdPartSignUpDto();
+        dto.setUid(request.getUid());
+        dto.setThirdPartType(request.getThirdPartType());
+        dto.setMobile(request.getMobile());
+        return userService.bind(dto);
+    }
+
 }

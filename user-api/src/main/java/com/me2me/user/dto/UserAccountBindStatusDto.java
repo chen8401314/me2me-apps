@@ -18,7 +18,9 @@ public class UserAccountBindStatusDto implements BaseEntity {
 
     private int status;
 
+    public UserAccountBindStatusDto(){
 
+    }
 
     public UserAccountBindStatusDto(int type,String name,int status){
         this.type = type;

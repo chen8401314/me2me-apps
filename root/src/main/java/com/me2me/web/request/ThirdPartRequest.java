@@ -48,4 +48,12 @@ public class ThirdPartRequest {
     @Setter
     private String jPushToken;
 
+    @Getter
+    @Setter
+    private long uid;
+
+    @Getter
+    @Setter
+    private String mobile;
+
 }
