@@ -1365,7 +1365,7 @@ public class UserServiceImpl implements UserService {
     public Response thirdPartLogin(ThirdPartSignUpDto thirdPartSignUpDto) {
         //判断用户是否已经存在
         LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
-        List<ThirdPartUser> users = userMybatisDao.getThirdPartUser(thirdPartSignUpDto.getThirdPartOpenId() ,thirdPartSignUpDto.getThirdPartToken());
+        List<ThirdPartUser> users = userMybatisDao.getThirdPartUser(thirdPartSignUpDto.getThirdPartOpenId());
         if(users.size()>0){
            long uid = users.get(0).getUid();
            UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
