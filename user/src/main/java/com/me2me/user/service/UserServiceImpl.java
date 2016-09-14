@@ -1515,7 +1515,9 @@ public class UserServiceImpl implements UserService {
             }
             bindStatusDtoList.add(new UserAccountBindStatusDto(thirdPartSignUpDto.getThirdPartType(),thirdPartName,1));
         }
-        JSON.toJSONString(bindStatusDtoList);
+        String bindJson = JSON.toJSONString(bindStatusDtoList);
+        userProfile.setThirdPartBind(bindJson);
+        userMybatisDao.modifyUserProfile(userProfile);
         return Response.success();
     }
 
