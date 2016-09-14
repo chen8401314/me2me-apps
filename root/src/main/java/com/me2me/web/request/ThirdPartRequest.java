@@ -56,4 +56,8 @@ public class ThirdPartRequest {
     @Setter
     private String mobile;
 
+    @Getter
+    @Setter
+    private String encrypt;
+
 }

@@ -570,6 +570,7 @@ public class Users extends BaseController {
         dto.setUid(request.getUid());
         dto.setThirdPartType(request.getThirdPartType());
         dto.setMobile(request.getMobile());
+        dto.setEncrypt(request.getEncrypt());
         return userService.bind(dto);
     }
 

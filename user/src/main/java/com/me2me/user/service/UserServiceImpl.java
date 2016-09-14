@@ -1530,6 +1530,7 @@ public class UserServiceImpl implements UserService {
         if(!StringUtils.isEmpty(thirdPartSignUpDto.getMobile())){
             User user = userMybatisDao.getUserByUid(thirdPartSignUpDto.getUid());
             String salt = SecurityUtils.getMask();
+            user.setUserName(thirdPartSignUpDto.getMobile());
             user.setEncrypt(SecurityUtils.md5(thirdPartSignUpDto.getEncrypt(),salt));
             user.setSalt(salt);
             userMybatisDao.modifyUser(user);
