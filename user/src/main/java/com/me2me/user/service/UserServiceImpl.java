@@ -112,8 +112,9 @@ public class UserServiceImpl implements UserService {
         userProfile.setIntroduced(userSignUpDto.getIntroduced());
 
         List<UserAccountBindStatusDto> array = Lists.newArrayList();
+        // 添加手机绑定
         array.add(new UserAccountBindStatusDto(0,"mobile",1));
-        String mobileBind = JSON.toJSON(array).toString();
+        String mobileBind = JSON.toJSONString(array);
         userProfile.setThirdPartBind(mobileBind);
 
         userMybatisDao.createUserProfile(userProfile);
