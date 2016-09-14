@@ -797,6 +797,9 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setIsPromoter(userProfile.getIsPromoter());
         showUserProfileDto.setUgcCount(userInitJdbcDao.getUGCount(uid));
         showUserProfileDto.setLiveCount(userInitJdbcDao.getLiveCount(uid));
+        if(!StringUtils.isEmpty(userProfile.getThirdPartBind())) {
+            showUserProfileDto.setThirdPartBind(userProfile.getThirdPartBind());
+        }
         Set<String> powerKeys = cacheService.smembers(POWER_KEY);
         if(powerKeys!=null && !powerKeys.isEmpty()) {
             if (powerKeys.contains(uid + "")) {
