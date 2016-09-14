@@ -1377,13 +1377,13 @@ public class UserServiceImpl implements UserService {
            return Response.failure(ResponseStatus.USER_EXISTS.status,ResponseStatus.USER_EXISTS.message,loginSuccessDto);
         }
         else{
-            buidThirdPart(thirdPartSignUpDto ,loginSuccessDto);
+            buildThirdPart(thirdPartSignUpDto ,loginSuccessDto);
         }
         return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status,ResponseStatus.USER_LOGIN_SUCCESS.message,loginSuccessDto);
     }
 
     //第三方登录公共方法
-    public void buidThirdPart(ThirdPartSignUpDto thirdPartSignUpDto ,LoginSuccessDto loginSuccessDto){
+    public void buildThirdPart(ThirdPartSignUpDto thirdPartSignUpDto ,LoginSuccessDto loginSuccessDto){
         List<UserAccountBindStatusDto> array = Lists.newArrayList();
         User user = new User();
         user.setCreateTime(new Date());
