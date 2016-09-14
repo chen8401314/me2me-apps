@@ -628,11 +628,10 @@ public class UserMybatisDao {
         thirdPartUserMapper.insertSelective(thirdPartUser);
     }
 
-    public List<ThirdPartUser> getThirdPartUser(String openId , String token){
+    public List<ThirdPartUser> getThirdPartUser(String openId){
         ThirdPartUserExample example = new ThirdPartUserExample();
         ThirdPartUserExample.Criteria criteria = example.createCriteria();
         criteria.andThirdPartOpenIdEqualTo(openId);
-        criteria.andThirdPartTokenEqualTo(token);
         return thirdPartUserMapper.selectByExample(example);
     }
 
