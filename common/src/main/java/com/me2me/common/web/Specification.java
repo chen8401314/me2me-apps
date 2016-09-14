@@ -171,7 +171,9 @@ public interface Specification {
 
         LIVE_REVIEW("直播回复",4),
 
-        UGCAT("UGC@",5);
+        UGCAT("UGC@",5),
+
+        LIVE_INVITED("圈子邀请",6);
 
         public final String name;
         public final int index;

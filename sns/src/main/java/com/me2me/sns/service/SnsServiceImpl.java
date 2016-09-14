@@ -15,7 +15,10 @@ import com.me2me.sns.dao.SnsMybatisDao;
 import com.me2me.sns.dto.*;
 import com.me2me.sns.model.SnsCircle;
 import com.me2me.user.dto.FollowDto;
+import com.me2me.user.model.JpushToken;
+import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
+import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -293,7 +296,9 @@ public class SnsServiceImpl implements SnsService {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("messageType",Specification.PushMessageType.CORE_CIRCLE.index);
             String alias = String.valueOf(uid);
-            jPushService.payloadByIdExtra(alias,userProfile.getNickName() + "邀请你成为" + topic.getTitle() + "的核心圈成员",JPushUtils.packageExtra(jsonObject));
+            String review = userProfile.getNickName() + "邀请你成为" + topic.getTitle() + "的核心圈成员";
+            jPushService.payloadByIdExtra(alias ,review ,JPushUtils.packageExtra(jsonObject));
+            snsRemind(uid ,userProfile.getUid() ,review ,topic.getId() ,Specification.UserNoticeType.LIVE_INVITED.index);
         }else if(action == 2){
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
             createFragment(owner, topicId, uid);
@@ -319,6 +324,63 @@ public class SnsServiceImpl implements SnsService {
             }
         }
         return Response.success(ResponseStatus.MODIFY_CIRCLE_SUCCESS.status,ResponseStatus.MODIFY_CIRCLE_SUCCESS.message);
+    }
+
+    public void snsRemind(long targetUid ,long sourceUid  ,String review ,long cid ,int type){
+        if(targetUid == sourceUid){
+            return;
+        }
+        UserProfile userProfile = userService.getUserProfileByUid(sourceUid);
+        UserProfile customerProfile = userService.getUserProfileByUid(targetUid);
+        UserNotice userNotice = new UserNotice();
+        userNotice.setFromNickName(userProfile.getNickName());
+        userNotice.setFromAvatar(userProfile.getAvatar());
+        userNotice.setFromUid(userProfile.getUid());
+        userNotice.setToNickName(customerProfile.getNickName());
+        userNotice.setReadStatus(userNotice.getReadStatus());
+        userNotice.setCid(cid);
+
+        Topic topic = liveService.getTopicById(cid);
+        userNotice.setCoverImage(topic.getLiveImage());
+
+        userNotice.setSummary("");
+        userNotice.setToUid(customerProfile.getUid());
+        userNotice.setLikeCount(0);
+        userNotice.setReview(review);
+        userNotice.setTag("");
+        userNotice.setNoticeType(type);
+        userNotice.setReadStatus(0);
+        userService.createUserNotice(userNotice);
+
+        UserTips userTips = new UserTips();
+        userTips.setUid(targetUid);
+        userTips.setType(type);
+        UserTips tips  =  userService.getUserTips(userTips);
+        if(tips == null){
+            userTips.setCount(1);
+            userService.createUserTips(userTips);
+            //修改推送为极光推送,兼容老版本
+            JpushToken jpushToken = userService.getJpushTokeByUid(targetUid);
+            if(jpushToken != null) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("count","1");
+                String alias = String.valueOf(targetUid);
+                jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+            }
+
+        }else{
+            tips.setCount(tips.getCount()+1);
+            userService.modifyUserTips(tips);
+            //修改推送为极光推送,兼容老版本
+            JpushToken jpushToken = userService.getJpushTokeByUid(targetUid);
+            if(jpushToken != null) {
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("count","1");
+                String alias = String.valueOf(targetUid);
+                jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+            }
+        }
+
     }
 
     private void createFragment(long owner, long topicId, long uid) {
