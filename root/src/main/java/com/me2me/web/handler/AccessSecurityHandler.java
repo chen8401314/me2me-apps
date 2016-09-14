@@ -59,6 +59,8 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         WHITE_LIST.add("/api/user/verify");
         WHITE_LIST.add("/api/user/getBasicDataByType");
         WHITE_LIST.add("/api/user/versionControl");
+        WHITE_LIST.add("/api/user/activityModel");
+        WHITE_LIST.add("/api/user/checkNameOpenId");
 
         INTERNAL_WHITE_LIST.add("/api/console/showContents");
         INTERNAL_WHITE_LIST.add("/api/console/showActivity");

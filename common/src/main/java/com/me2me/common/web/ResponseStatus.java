@@ -139,6 +139,14 @@ public enum  ResponseStatus {
 
     GET_ACTIVITY_MODEL_SUCCESS("获取广告内容成功","get activity model success",20063),
 
+    USER_NICKNAME_EXISTS("用户昵称已存在，请重新输入","user nickname exists",20064),
+
+    USER_NICKNAME_DONT_EXISTS("该用户昵称不存在，可以注册","user nickname dont exists",20065),
+
+    OPENID_DONT_EXISTS("该OPENID不存在，请上传头像","openid dont exists",20066),
+
+
+
 
 
 
