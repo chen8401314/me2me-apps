@@ -651,4 +651,14 @@ public class UserMybatisDao {
         return thirdPartUsers!=null&&thirdPartUsers.size()>0?thirdPartUsers.get(0):null;
     }
 
+    //检测第三方账号是否存在、根据openId
+    public ThirdPartUser thirdPartIsExist(String openId ,int type){
+        ThirdPartUserExample example = new ThirdPartUserExample();
+        ThirdPartUserExample.Criteria criteria = example.createCriteria();
+        criteria.andThirdPartOpenIdEqualTo(openId);
+        criteria.andThirdPartTypeEqualTo(type);
+        List<ThirdPartUser> thirdPartUsers = thirdPartUserMapper.selectByExample(example);
+        return thirdPartUsers!=null&&thirdPartUsers.size()>0?thirdPartUsers.get(0):null;
+    }
+
 }

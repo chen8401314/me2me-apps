@@ -529,7 +529,7 @@ public class Users extends BaseController {
         dto.setNickName(request.getNickName());
         dto.setGender(request.getGender());
         dto.setJPushToken(request.getJPushToken());
-        dto.setUid(request.getUid());
+//        dto.setUid(request.getUid());
         return userService.thirdPartLogin(dto);
     }
 
@@ -571,6 +571,8 @@ public class Users extends BaseController {
         dto.setThirdPartType(request.getThirdPartType());
         dto.setMobile(request.getMobile());
         dto.setEncrypt(request.getEncrypt());
+        dto.setThirdPartOpenId(request.getThirdPartOpenId());
+        dto.setThirdPartToken(request.getThirdPartToken());
         return userService.bind(dto);
     }
 

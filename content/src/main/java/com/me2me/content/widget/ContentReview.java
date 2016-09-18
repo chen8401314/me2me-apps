@@ -58,11 +58,11 @@ public class ContentReview implements Review{
             //兼容老版本
             if(reviewDto.getAtUid() != 0) {
 
-                if(isOnline.equals("1")) {
+//                if(isOnline.equals("1")) {
                     contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview(), reviewDto.getAtUid());
-                }else{
-                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview(), reviewDto.getAtUid());
-                }
+//                }else{
+//                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview(), reviewDto.getAtUid());
+//                }
                 //更换推送为极光推送
                 //userService.push(reviewDto.getAtUid(), reviewDto.getUid(), Specification.PushMessageType.AT.index, reviewDto.getReview());
                 JpushToken jpushToken = userService.getJpushTokeByUid(reviewDto.getAtUid());

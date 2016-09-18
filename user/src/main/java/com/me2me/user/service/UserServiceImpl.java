@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import sun.security.tools.keytool.Resources_sv;
 
 import java.util.*;
 
@@ -1365,12 +1366,6 @@ public class UserServiceImpl implements UserService {
     public Response thirdPartLogin(ThirdPartSignUpDto thirdPartSignUpDto) {
         // TODO: 2016/9/12
         LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
-        //如果是手机号注册去绑定第三方是同一个uid
-        if(thirdPartSignUpDto.getUid() !=0){
-            buildThirdPart2(thirdPartSignUpDto ,loginSuccessDto);
-        }else {
-            //否则
-            //判断用户是否已经存在
             List<ThirdPartUser> users = userMybatisDao.getThirdPartUser(thirdPartSignUpDto.getThirdPartOpenId());
             if (users.size() > 0) {
                 long uid = users.get(0).getUid();
@@ -1385,7 +1380,6 @@ public class UserServiceImpl implements UserService {
             } else {
                 buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
             }
-        }
         return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status,ResponseStatus.USER_LOGIN_SUCCESS.message,loginSuccessDto);
     }
 
@@ -1471,16 +1465,8 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    //手机登录绑定第三方登录方法
-    public void buildThirdPart2(ThirdPartSignUpDto thirdPartSignUpDto ,LoginSuccessDto loginSuccessDto){
-        List<UserAccountBindStatusDto> array = Lists.newArrayList();
-
-        UserProfile userProfile = userMybatisDao.getUserProfileByUid(thirdPartSignUpDto.getUid());
-        UserToken userToken = userMybatisDao.getUserTokenByUid(thirdPartSignUpDto.getUid());
-        loginSuccessDto.setUid(userProfile.getUid());
-        loginSuccessDto.setNickName(userProfile.getNickName());
-        loginSuccessDto.setGender(userProfile.getGender());
-        loginSuccessDto.setToken(userToken.getToken());
+    //第三方绑定方法
+    public void buildThirdPart2(ThirdPartSignUpDto thirdPartSignUpDto){
 
         ThirdPartUser thirdPartUser = new ThirdPartUser();
         thirdPartUser.setUid(thirdPartSignUpDto.getUid());
@@ -1490,9 +1476,6 @@ public class UserServiceImpl implements UserService {
         thirdPartUser.setThirdPartType(thirdPartSignUpDto.getThirdPartType());
         userMybatisDao.creatThirdPartUser(thirdPartUser);
         log.info("ThirdPartUser is create");
-
-        //绑定第三方登录
-        bind(thirdPartSignUpDto);
 
     }
 
@@ -1528,6 +1511,13 @@ public class UserServiceImpl implements UserService {
         String bindJsonData = userProfile.getThirdPartBind();
         List<UserAccountBindStatusDto> bindStatusDtoList = JSON.parseArray(bindJsonData,UserAccountBindStatusDto.class);
         if(!StringUtils.isEmpty(thirdPartSignUpDto.getMobile())){
+
+            //判断手机号是否注册过了，注册过了不能绑定
+            User mobile = userMybatisDao.getUserByUserName(thirdPartSignUpDto.getMobile());
+            if(mobile!=null){
+                return Response.failure(ResponseStatus.MOBILE_BIND_EXISTS.status,ResponseStatus.MOBILE_BIND_EXISTS.message);
+            }
+
             User user = userMybatisDao.getUserByUid(thirdPartSignUpDto.getUid());
             String salt = SecurityUtils.getMask();
             user.setUserName(thirdPartSignUpDto.getMobile());
@@ -1539,13 +1529,27 @@ public class UserServiceImpl implements UserService {
             bindStatusDtoList.add(new UserAccountBindStatusDto(Specification.ThirdPartType.MOBILE.index,Specification.ThirdPartType.MOBILE.name,1));
 
         }else{
+            //判断第三方账号是否存在
+            ThirdPartUser thirdUser = userMybatisDao.thirdPartIsExist(thirdPartSignUpDto.getThirdPartOpenId() ,thirdPartSignUpDto.getThirdPartType());
             // 第三方账号绑定(qq,weixin,weibo)
             String thirdPartName = null;
             if(thirdPartSignUpDto.getThirdPartType()==Specification.ThirdPartType.QQ.index){
+                if(thirdUser != null){
+                    return Response.success(ResponseStatus.QQ_BIND_EXISTS.status,ResponseStatus.QQ_BIND_EXISTS.message);
+                }
+                buildThirdPart2(thirdPartSignUpDto);
                 thirdPartName = Specification.ThirdPartType.QQ.name;
             }else if(thirdPartSignUpDto.getThirdPartType()==Specification.ThirdPartType.WEIXIN.index){
+                if(thirdUser != null){
+                    return Response.success(ResponseStatus.WEIXIN_BIND_EXISTS.status,ResponseStatus.WEIXIN_BIND_EXISTS.message);
+                }
+                buildThirdPart2(thirdPartSignUpDto);
                 thirdPartName = Specification.ThirdPartType.WEIXIN.name;
             }else if(thirdPartSignUpDto.getThirdPartType()==Specification.ThirdPartType.WEIBO.index){
+                if(thirdUser != null){
+                    return Response.success(ResponseStatus.WEIBO_BIND_EXISTS.status,ResponseStatus.WEIBO_BIND_EXISTS.message);
+                }
+                buildThirdPart2(thirdPartSignUpDto);
                 thirdPartName = Specification.ThirdPartType.WEIBO.name;
             }
             bindStatusDtoList.add(new UserAccountBindStatusDto(thirdPartSignUpDto.getThirdPartType(),thirdPartName,1));
