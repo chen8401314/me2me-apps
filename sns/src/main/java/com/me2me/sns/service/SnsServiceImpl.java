@@ -355,8 +355,9 @@ public class SnsServiceImpl implements SnsService {
             jsonObject.addProperty("messageType", Specification.PushMessageType.CORE_CIRCLE.index);
             String alias = String.valueOf(uid);
             String review = userProfile.getNickName() + "邀请你成为" + topic.getTitle() + "的核心圈成员";
+            String message = userProfile.getNickName() + "邀请我加入核心圈";
             jPushService.payloadByIdExtra(alias, review, JPushUtils.packageExtra(jsonObject));
-            snsRemind(uid, userProfile.getUid(), review, topic.getId(), Specification.UserNoticeType.LIVE_INVITED.index);
+            snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.LIVE_INVITED.index);
         } else if (action == 2) {
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
             createFragment(owner, topicId, uid);
