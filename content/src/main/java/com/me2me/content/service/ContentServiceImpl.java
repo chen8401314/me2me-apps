@@ -248,7 +248,7 @@ public class ContentServiceImpl implements ContentService {
                 int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
                 log.info(" get imageCounts success");
                 squareDataElement.setImageCount(imageCounts);
-                squareDataElement.setReadCount(content.getReadCount());
+                squareDataElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
                 squareDataDto.getResults().add(squareDataElement);
         }
     }
@@ -893,7 +893,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setContentType(content.getContentType());
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
-            contentElement.setReadCount(content.getReadCount());
+            contentElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
             String cover = content.getConverImage();
@@ -983,7 +983,7 @@ public class ContentServiceImpl implements ContentService {
         contentDetailDto.setContentType(content.getContentType());
         contentDetailDto.setTitle(content.getTitle());
         contentDetailDto.setIsLike(isLike(content.getId(),uid));
-        contentDetailDto.setReadCount(content.getReadCount());
+        contentDetailDto.setReadCount((int)Math.rint(content.getReadCount()*5.3));
         contentDetailDto.setRights(content.getRights());
         String cover = content.getConverImage();
         if(!StringUtils.isEmpty(cover)) {
@@ -1188,7 +1188,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setContentType(content.getContentType());
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
-            contentElement.setReadCount(content.getReadCount());
+            contentElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
             String cover =  content.getConverImage();
@@ -1308,7 +1308,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setContentType(content.getContentType());
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
-            contentElement.setReadCount(content.getReadCount());
+            contentElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
             contentElement.setUid(content.getUid());
@@ -1652,7 +1652,7 @@ public class ContentServiceImpl implements ContentService {
             hottestContentElement.setIsLike(isLike(content.getId(),uid));
             hottestContentElement.setForwardUrl(content.getForwardUrl());
             hottestContentElement.setForwardTitle(content.getForwardTitle());
-            hottestContentElement.setReadCount(content.getReadCount());
+            hottestContentElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
 //            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
 //            log.info("getContentReviewTop3ByCid success");
 //            for(ContentReview contentReview : contentReviewList){
@@ -1735,7 +1735,7 @@ public class ContentServiceImpl implements ContentService {
             hottestContentElement.setIsLike(isLike(content.getId(),uid));
             hottestContentElement.setForwardUrl(content.getForwardUrl());
             hottestContentElement.setForwardTitle(content.getForwardTitle());
-            hottestContentElement.setReadCount(content.getReadCount());
+            hottestContentElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
             hottestContentElement.setRights(content.getRights());
 //            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
 //            log.info("getContentReviewTop3ByCid success");
@@ -1831,7 +1831,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setIsLike(isLike(content.getId(),uid));
             String cover = content.getConverImage();
             contentElement.setReviewCount(content.getReviewCount());
-            contentElement.setReadCount(content.getReadCount());
+            contentElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
             contentElement.setRights(content.getRights());
             if(!StringUtils.isEmpty(cover)) {
                 if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
@@ -1915,7 +1915,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setIsLike(isLike(content.getId(), uid));
             contentElement.setReviewCount(content.getReviewCount());
-            contentElement.setReadCount(content.getReadCount());
+            contentElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
             String cover = content.getConverImage();
             if (!StringUtils.isEmpty(cover)) {
                 if (content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
@@ -1994,7 +1994,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setIsLike(isLike(content.getId(),uid));
             contentElement.setReviewCount(content.getReviewCount());
-            contentElement.setReadCount(content.getReadCount());
+            contentElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
             String cover =  content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
                 if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){

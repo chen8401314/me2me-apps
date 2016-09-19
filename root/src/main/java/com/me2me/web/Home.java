@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 赵朋扬
@@ -45,7 +47,8 @@ public class Home extends BaseController {
      */
     @RequestMapping(value = "/hottest2",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response hottest2(HottestRequest request){
+    public Response hottest2(HottestRequest request, HttpServletResponse response){
+        response.setHeader("Access-Control-Allow-Origin", "*");
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }

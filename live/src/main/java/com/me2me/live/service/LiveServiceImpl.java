@@ -637,7 +637,7 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setFavorite(Specification.LiveFavorite.NORMAL.index);
             }
             Content content = contentService.getContentByTopicId(topic.getId());
-            showTopicElement.setReadCount(content.getReadCount());
+            showTopicElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
     }
@@ -670,7 +670,7 @@ public class LiveServiceImpl implements LiveService {
             }
             //直播阅读数
             Content content = contentService.getContentByTopicId(topic.getId());
-            showTopicElement.setReadCount(content.getReadCount());
+            showTopicElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
     }

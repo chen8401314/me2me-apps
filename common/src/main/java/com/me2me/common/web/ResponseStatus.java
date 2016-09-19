@@ -145,6 +145,15 @@ public enum  ResponseStatus {
 
     OPENID_DONT_EXISTS("该OPENID不存在，请上传头像","openid dont exists",20066),
 
+    MOBILE_BIND_EXISTS("手机号已被注册或绑定过其他账号，请换号之后重试","mobile bind exists",20067),
+
+    WEIXIN_BIND_EXISTS("该微信号已注册或绑定过其他账号,请换号之后重试","weixin bind exists",20068),
+
+    QQ_BIND_EXISTS("该QQ号已注册或绑定过其他账号,请换号之后重试","weixin bind exists",20069),
+
+    WEIBO_BIND_EXISTS("该微博微信号已注册或绑定过其他账号,请换号之后重试","weixin bind exists",20070),
+
+
 
 
 
