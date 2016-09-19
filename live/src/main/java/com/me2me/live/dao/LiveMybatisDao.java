@@ -5,6 +5,12 @@ import com.me2me.common.web.Specification;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.mapper.*;
 import com.me2me.live.model.*;
+import com.me2me.sns.mapper.SnsCircleMapper;
+import com.me2me.sns.model.SnsCircle;
+import com.me2me.sns.model.SnsCircleExample;
+import com.me2me.user.mapper.UserProfileMapper;
+import com.me2me.user.model.UserProfile;
+import com.me2me.user.model.UserProfileExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -45,6 +51,9 @@ public class LiveMybatisDao {
 
     @Autowired
     private  LiveDisplayReviewMapper liveDisplayReviewMapper;
+
+    @Autowired
+    private SnsCircleMapper snsCircleMapper;
 
 
     public void createTopic(Topic topic){
@@ -460,5 +469,13 @@ public class LiveMybatisDao {
         List<TopicBarrage> list = topicBarrageMapper.selectByExample(example);
         return com.me2me.common.utils.Lists.getSingle(list);
     }
+    public List<SnsCircle> getCoreCircle(long uid) {
+        SnsCircleExample example = new SnsCircleExample();
+        SnsCircleExample.Criteria criteria = example.createCriteria();
+        criteria.andOwnerEqualTo(uid);
+        criteria.andInternalStatusEqualTo(Specification.SnsCircle.CORE.index);
+        return snsCircleMapper.selectByExample(example);
+    }
+
 
 }

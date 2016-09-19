@@ -2,7 +2,10 @@ package com.me2me.live.service;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.JPushUtils;
@@ -25,6 +28,7 @@ import com.me2me.live.event.CacheLiveEvent;
 import com.me2me.live.event.SpeakEvent;
 import com.me2me.live.model.*;
 import com.me2me.sms.service.JPushService;
+import com.me2me.sns.model.SnsCircle;
 import com.me2me.user.model.*;
 import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -66,6 +70,7 @@ public class LiveServiceImpl implements LiveService {
     private ApplicationEventBus applicationEventBus;
 
 
+
     @Value("#{app.live_web}")
     private String live_web;
 
@@ -81,6 +86,18 @@ public class LiveServiceImpl implements LiveService {
         Calendar calendar = Calendar.getInstance();
         topic.setLongTime(calendar.getTimeInMillis());
         topic.setCreateTime(new Date());
+        //初始化核心圈为用户的核心圈
+        List<SnsCircle> snsCircles = liveMybatisDao.getCoreCircle(createLiveDto.getUid());
+        JsonArray array = new JsonArray();
+        if(snsCircles==null||snsCircles.isEmpty()){
+            array.add(new JsonPrimitive(createLiveDto.getUid()));
+        }else {
+            for (SnsCircle sns : snsCircles) {
+                array.add(new JsonPrimitive(sns.getUid()));
+            }
+        }
+        topic.setCoreCircle(new Gson().toJson(array));
+
         liveMybatisDao.createTopic(topic);
         //创建直播之后添加到我的UGC
         ContentDto contentDto = new ContentDto();
@@ -94,6 +111,7 @@ public class LiveServiceImpl implements LiveService {
         contentDto.setContentType(Specification.ContentType.TEXT.index);
         contentDto.setRights(Specification.ContentRights.EVERY.index);
         contentService.publish(contentDto);
+
 
         applicationEventBus.post(new CacheLiveEvent(createLiveDto.getUid(),topic.getId()));
 

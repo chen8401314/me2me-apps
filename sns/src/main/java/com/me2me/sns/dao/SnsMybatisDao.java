@@ -1,11 +1,15 @@
 package com.me2me.sns.dao;
 
 import com.me2me.common.utils.Lists;
+import com.me2me.common.web.Specification;
 import com.me2me.sns.dto.GetSnsCircleDto;
 import com.me2me.sns.dto.SnsCircleDto;
 import com.me2me.sns.mapper.SnsCircleMapper;
 import com.me2me.sns.model.SnsCircle;
 import com.me2me.sns.model.SnsCircleExample;
+import com.me2me.user.mapper.UserProfileMapper;
+import com.me2me.user.model.UserProfile;
+import com.me2me.user.model.UserProfileExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -22,6 +26,8 @@ public class SnsMybatisDao {
 
     @Autowired
     private SnsCircleMapper snsCircleMapper;
+
+    private UserProfileMapper userProfileMapper;
 
     public List<SnsCircle> getSnsCircle(long uid,long topicId,int type){
         SnsCircleExample example = new SnsCircleExample();
@@ -100,4 +106,5 @@ public class SnsMybatisDao {
         List<SnsCircle> list = snsCircleMapper.selectByExample(example);
         return Lists.getSingle(list);
     }
+
 }
