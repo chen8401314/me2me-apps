@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletResponse;
+
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -141,7 +143,8 @@ public class Contents extends BaseController {
      */
     @RequestMapping(value = "/getContentDetail",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response getContentDetail(ContentDetailRequest request){
+    public Response getContentDetail(ContentDetailRequest request, HttpServletResponse response ){
+        response.setHeader("Access-Control-Allow-Origin", "*");
         return contentService.contentDetail(request.getId(),request.getUid());
     }
 
@@ -274,4 +277,5 @@ public class Contents extends BaseController {
         }
         return contentService.myPublishByType(request.getCustomerId(),request.getSinceId(),request.getType(),request.getUpdateTime());
     }
+
 }
