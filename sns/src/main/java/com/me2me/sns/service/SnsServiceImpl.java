@@ -3,20 +3,20 @@ package com.me2me.sns.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.google.gson.JsonObject;
+import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
-import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.service.LiveService;
 import com.me2me.sms.service.JPushService;
+import com.me2me.sns.dao.LiveJdbcDao;
 import com.me2me.sns.dao.SnsMybatisDao;
 import com.me2me.sns.dto.*;
-import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.dto.FollowDto;
 import com.me2me.user.model.JpushToken;
 import com.me2me.user.model.UserNotice;
@@ -24,9 +24,9 @@ import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,10 +53,11 @@ public class SnsServiceImpl implements SnsService {
     private JPushService jPushService;
 
     @Autowired
-    private LiveMybatisDao liveMybatisDao;
+    private LiveJdbcDao liveJdbcDao;
+
 
     @Autowired
-    private UserMybatisDao userMybatisDao;
+    private CacheService cacheService;
 
 
     @Override
@@ -130,7 +131,7 @@ public class SnsServiceImpl implements SnsService {
             for(int i=0;i<coreCircles.size();i++){
                 uidIn.add(coreCircles.getLong(i));
             }
-            List<UserProfile> userProfiles = userMybatisDao.getUserProfilesByUids(uidIn);
+            List<UserProfile> userProfiles = userService.getUserProfilesByUids(uidIn);
             buildCoreCircle(showSnsCircleDto, userProfiles, dto.getUid(), topic.getUid());
         } else {
             List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto);
@@ -322,6 +323,9 @@ public class SnsServiceImpl implements SnsService {
 
     @Override
     public Response modifyCircle(long owner, long topicId, long uid, int action) {
+        //兼容老版本
+        String snsOnline = cacheService.get("version:2.1.1:online");
+
         if (action == 0) {
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
             //关注此人
@@ -349,8 +353,8 @@ public class SnsServiceImpl implements SnsService {
                     return Response.failure(ResponseStatus.IS_ALREADY_SNS_CORE.status, ResponseStatus.IS_ALREADY_SNS_CORE.message);
                 } else {
                     array.add(uid);
-                    topic.setCoreCircle(array.toString());
-                    liveMybatisDao.updateTopic(topic);
+                    // 更新直播核心圈关系
+                    liveJdbcDao.updateTopic(topicId,array.toString());
                     snsMybatisDao.deleteSnsCircle(uid,owner);
                 }
             }
@@ -379,7 +383,9 @@ public class SnsServiceImpl implements SnsService {
             String review = userProfile.getNickName() + "邀请你成为" + topic.getTitle() + "的核心圈成员";
             String message = userProfile.getNickName() + "邀请我加入核心圈";
             jPushService.payloadByIdExtra(alias, review, JPushUtils.packageExtra(jsonObject));
-            snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.LIVE_INVITED.index);
+            if(snsOnline.equals("1")) {
+                snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.LIVE_INVITED.index);
+            }
         } else if (action == 2) {
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
             createFragment(owner, topicId, uid);
@@ -393,17 +399,14 @@ public class SnsServiceImpl implements SnsService {
             liveService.deleteFavoriteDelete(uid, topicId);
             createFragment(owner, topicId, uid);
         } else if (action == 5) {
-            Topic topic = liveMybatisDao.getTopicById(topicId);
+            Topic topic = liveService.getTopicById(topicId);
             JSONArray array = JSON.parseArray(topic.getCoreCircle());
             for(int i=0;i<array.size();i++){
                 if(array.getLong(i)==uid){
                     array.remove(i);
                 }
             }
-           /* JsonArray array = new JsonParser().parse(topic.getCoreCircle()).getAsJsonArray();
-            array.remove(new JsonPrimitive(uid));*/
-            topic.setCoreCircle(array.toString());
-            liveMybatisDao.updateTopic(topic);
+            liveJdbcDao.updateTopic(topicId,array.toString());
 
             //人员原来是什么样的关系，还是什么样的关系
             int isFollow = userService.isFollow(owner, uid);

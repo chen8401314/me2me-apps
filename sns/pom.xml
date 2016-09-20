@@ -39,8 +39,8 @@
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>live</artifactId>
-                    <version>${project.version}</version>
+                    <artifactId>cache</artifactId>
+                    <version>2.0.8</version>
                 </dependency>
             </dependencies>
             <build>
@@ -97,6 +97,11 @@
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>sns-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>cache-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>

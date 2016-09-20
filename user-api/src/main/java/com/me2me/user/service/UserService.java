@@ -221,4 +221,6 @@ public interface UserService {
     Response checkNameOpenId(UserNickNameDto userNickNameDto);
 
     Response bind(ThirdPartSignUpDto thirdPartSignUpDto);
+
+    List<UserProfile> getUserProfilesByUids(List<Long> uids);
 }
