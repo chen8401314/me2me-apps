@@ -138,7 +138,7 @@ public class SnsServiceImpl implements SnsService {
             buildCoreCircle(showSnsCircleDto, userProfiles, dto.getUid(), topic.getUid());
         } else {
             List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto);
-            buildSnsCircle(showSnsCircleDto, list, dto.getUid(), topic.getUid());
+            buildSnsCircle(showSnsCircleDto, list, dto.getUid(), topic.getUid(),coreCircles);
         }
         dto.setType(Specification.SnsCircle.IN.index);
         int inCount = snsMybatisDao.getSnsCircleCount(dto);
@@ -203,8 +203,10 @@ public class SnsServiceImpl implements SnsService {
 
 
     //topicUid为了判断是否自己是国王
-    private void buildSnsCircle(ShowSnsCircleDto showSnsCircleDto, List<SnsCircleDto> list, long uid, long topicUid) {
+    private void buildSnsCircle(ShowSnsCircleDto showSnsCircleDto, List<SnsCircleDto> list, long uid, long topicUid, JSONArray coreCircles) {
         for (SnsCircleDto circleDto : list) {
+            if(coreCircles.contains(circleDto.getUid()))
+                continue;
             ShowSnsCircleDto.SnsCircleElement snsCircleElement = showSnsCircleDto.createElement();
             snsCircleElement.setUid(circleDto.getUid());
             snsCircleElement.setAvatar(Constant.QINIU_DOMAIN + "/" + circleDto.getAvatar());
@@ -363,7 +365,7 @@ public class SnsServiceImpl implements SnsService {
                 }
             }*/
 //            //关注此人
-//            follow(0,uid,owner);
+            follow(0,uid,owner);
             liveService.setLive2(uid, topicId, 0, 0, 0);
             liveService.deleteFavoriteDelete(uid, topicId);
             //修改人员进入核心圈,不修改人员的关注，订阅关系。
