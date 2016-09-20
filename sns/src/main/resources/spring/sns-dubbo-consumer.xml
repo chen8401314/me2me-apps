@@ -13,6 +13,7 @@
 
     <dubbo:reference interface="com.me2me.sms.service.JPushService" id="jPushService"/>
 
+    <dubbo:reference interface="com.me2me.cache.service.CacheService" id="cacheService"/>
 
 
 
