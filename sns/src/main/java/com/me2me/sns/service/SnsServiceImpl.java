@@ -201,7 +201,7 @@ public class SnsServiceImpl implements SnsService {
     //topicUid为了判断是否自己是国王
     private void buildSnsCircle(ShowSnsCircleDto showSnsCircleDto, List<SnsCircleDto> list, long uid, long topicUid, JSONArray coreCircles) {
         for (SnsCircleDto circleDto : list) {
-            if(coreCircles.contains(circleDto.getUid()))
+            if(inCoreCircles(coreCircles,circleDto.getUid()))
                 continue;
             ShowSnsCircleDto.SnsCircleElement snsCircleElement = showSnsCircleDto.createElement();
             snsCircleElement.setUid(circleDto.getUid());
@@ -220,6 +220,14 @@ public class SnsServiceImpl implements SnsService {
                 showSnsCircleDto.getCircleElements().add(snsCircleElement);
             }
         }
+    }
+
+    private boolean inCoreCircles(JSONArray coreCircles, long uid) {
+        for(int i=0;i<coreCircles.size();i++){
+            if(coreCircles.getLong(i)==uid)
+                return true;
+        }
+        return false;
     }
 
 //    private void buildSnsCircle(ShowSnsCircleDto showSnsCircleDto, List<SnsCircleDto> list,long uid) {
