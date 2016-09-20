@@ -1,5 +1,7 @@
 package com.me2me.sns.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import com.me2me.common.Constant;
@@ -371,8 +373,10 @@ public class SnsServiceImpl implements SnsService {
             createFragment(owner, topicId, uid);
         } else if (action == 5) {
             Topic topic = liveMybatisDao.getTopicById(topicId);
-            JsonArray array = new JsonParser().parse(topic.getCoreCircle()).getAsJsonArray();
-            array.remove(new JsonPrimitive(uid));
+            JSONArray array = JSON.parseArray(topic.getCoreCircle());
+            array.remove(uid);
+           /* JsonArray array = new JsonParser().parse(topic.getCoreCircle()).getAsJsonArray();
+            array.remove(new JsonPrimitive(uid));*/
             topic.setCoreCircle(new Gson().toJson(array));
             liveMybatisDao.updateTopic(topic);
 
