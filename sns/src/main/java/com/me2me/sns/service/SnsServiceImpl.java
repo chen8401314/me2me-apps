@@ -134,7 +134,7 @@ public class SnsServiceImpl implements SnsService {
             buildCoreCircle(showSnsCircleDto, userProfiles, dto.getUid(), topic.getUid());
         } else {
             List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto);
-            buildSnsCircle(showSnsCircleDto, list, dto.getUid(), topic.getUid(),coreCircles);
+            buildSnsCircle(showSnsCircleDto, list, dto.getUid(), topic.getUid());
         }
 
 
@@ -201,10 +201,9 @@ public class SnsServiceImpl implements SnsService {
 
 
     //topicUid为了判断是否自己是国王
-    private void buildSnsCircle(ShowSnsCircleDto showSnsCircleDto, List<SnsCircleDto> list, long uid, long topicUid, JSONArray coreCircles) {
+    private void buildSnsCircle(ShowSnsCircleDto showSnsCircleDto, List<SnsCircleDto> list, long uid, long topicUid ) {
         for (SnsCircleDto circleDto : list) {
-            if(inCoreCircles(coreCircles,circleDto.getUid()))
-                continue;
+
             ShowSnsCircleDto.SnsCircleElement snsCircleElement = showSnsCircleDto.createElement();
             snsCircleElement.setUid(circleDto.getUid());
             snsCircleElement.setAvatar(Constant.QINIU_DOMAIN + "/" + circleDto.getAvatar());
