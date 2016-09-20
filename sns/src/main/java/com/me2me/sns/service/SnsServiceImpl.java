@@ -2,7 +2,7 @@ package com.me2me.sns.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.google.gson.JsonObject;
+import com.google.gson.*;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
@@ -124,17 +124,18 @@ public class SnsServiceImpl implements SnsService {
         //先把自己加到核心
 //            snsMybatisDao.createSnsCircle(dto.getUid(),dto.getUid(),Specification.SnsCircle.CORE.index);
         String coreCircle = topic.getCoreCircle();
-        JSONArray coreCircles = JSON.parseArray(coreCircle);
+        JsonArray coreCircles = new JsonParser().parse(coreCircle).getAsJsonArray();
+//        JSONArray coreCircles = JSON.parseArray(coreCircle);
         if (dto.getType() == Specification.SnsCircle.CORE.index) {
             List<Long> uidIn = new ArrayList<>();
             for(int i=0;i<coreCircles.size();i++){
-                uidIn.add(coreCircles.getLong(i));
+                uidIn.add(coreCircles.getAsLong());
             }
             List<UserProfile> userProfiles = userMybatisDao.getUserProfilesByUids(uidIn);
             buildCoreCircle(showSnsCircleDto, userProfiles, dto.getUid(), topic.getUid());
         } else {
             List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto);
-            buildSnsCircle(showSnsCircleDto, list, dto.getUid(), topic.getUid());
+            buildSnsCircle(showSnsCircleDto, list, dto.getUid(), topic.getUid(),coreCircles);
         }
         dto.setType(Specification.SnsCircle.IN.index);
         int inCount = snsMybatisDao.getSnsCircleCount(dto);
@@ -199,8 +200,10 @@ public class SnsServiceImpl implements SnsService {
 
 
     //topicUid为了判断是否自己是国王
-    private void buildSnsCircle(ShowSnsCircleDto showSnsCircleDto, List<SnsCircleDto> list, long uid, long topicUid) {
+    private void buildSnsCircle(ShowSnsCircleDto showSnsCircleDto, List<SnsCircleDto> list, long uid, long topicUid, JsonArray coreCircles) {
         for (SnsCircleDto circleDto : list) {
+            if(coreCircles.contains(new JsonPrimitive(circleDto.getUid())))
+                continue;
             ShowSnsCircleDto.SnsCircleElement snsCircleElement = showSnsCircleDto.createElement();
             snsCircleElement.setUid(circleDto.getUid());
             snsCircleElement.setAvatar(Constant.QINIU_DOMAIN + "/" + circleDto.getAvatar());
