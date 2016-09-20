@@ -176,7 +176,7 @@ public class LiveServiceImpl implements LiveService {
         content.setReadCount(content.getReadCount() + 1);
         contentService.updateContentById(content);
         // 添加成员数量
-        liveCoverDto.setReadCount(content.getReadCount());
+        liveCoverDto.setReadCount((int)Math.rint(content.getReadCount()*5.3));
         List<LiveFavorite> list = liveMybatisDao.getFavoriteAll(topicId);
         if(list!=null&&list.size()>0) {
             liveCoverDto.setMembersCount(list.size());
