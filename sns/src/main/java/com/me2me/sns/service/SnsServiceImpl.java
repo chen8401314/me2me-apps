@@ -1,7 +1,8 @@
 package com.me2me.sns.service;
 
-import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.google.gson.JsonObject;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
@@ -27,6 +28,7 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -122,9 +124,12 @@ public class SnsServiceImpl implements SnsService {
         //先把自己加到核心
 //            snsMybatisDao.createSnsCircle(dto.getUid(),dto.getUid(),Specification.SnsCircle.CORE.index);
         String coreCircle = topic.getCoreCircle();
-        JsonArray coreCircles = new JsonParser().parse(coreCircle).getAsJsonArray();
+        JSONArray coreCircles = JSON.parseArray(coreCircle);
         if (dto.getType() == Specification.SnsCircle.CORE.index) {
-            List<Long> uidIn =  new Gson().fromJson(coreCircles, new TypeToken<List<Long>>() {}.getType());
+            List<Long> uidIn = new ArrayList<>();
+            for(int i=0;i<coreCircles.size();i++){
+                uidIn.add(coreCircles.getLong(i));
+            }
             List<UserProfile> userProfiles = userMybatisDao.getUserProfilesByUids(uidIn);
             buildCoreCircle(showSnsCircleDto, userProfiles, dto.getUid(), topic.getUid());
         } else {
@@ -318,16 +323,23 @@ public class SnsServiceImpl implements SnsService {
             Topic topic = liveService.getTopicById(topicId);
             //查询核心圈人数，人数不能超过10人
             String coreCircle = StringUtils.isEmpty(topic.getCoreCircle()) ? "[" + topic.getUid() + "]" : topic.getCoreCircle();
-            JsonArray array = new JsonParser().parse(coreCircle).getAsJsonArray();
+            JSONArray array = JSON.parseArray(coreCircle);
+
             if (array.size() == 10)
                 return Response.failure(ResponseStatus.SNS_CORE_CIRCLE_IS_FULL.status, ResponseStatus.SNS_CORE_CIRCLE_IS_FULL.message);
             else {
-                JsonPrimitive element = new JsonPrimitive(uid);
-                if (array.contains(element)) {
+                boolean contain = false;
+                for(int i=0;i<array.size();i++){
+                    if(array.getLong(i)==uid){
+                        contain=true;
+                        break;
+                    }
+                }
+                if (contain) {
                     return Response.failure(ResponseStatus.IS_ALREADY_SNS_CORE.status, ResponseStatus.IS_ALREADY_SNS_CORE.message);
                 } else {
-                    array.add(element);
-                    topic.setCoreCircle(new Gson().toJson(array));
+                    array.add(uid);
+                    topic.setCoreCircle(array.toString());
                     liveMybatisDao.updateTopic(topic);
                     snsMybatisDao.deleteSnsCircle(uid,owner);
                 }
@@ -372,9 +384,15 @@ public class SnsServiceImpl implements SnsService {
             createFragment(owner, topicId, uid);
         } else if (action == 5) {
             Topic topic = liveMybatisDao.getTopicById(topicId);
-            JsonArray array = new JsonParser().parse(topic.getCoreCircle()).getAsJsonArray();
-            array.remove(new JsonPrimitive(uid));
-            topic.setCoreCircle(new Gson().toJson(array));
+            JSONArray array = JSON.parseArray(topic.getCoreCircle());
+            for(int i=0;i<array.size();i++){
+                if(array.getLong(i)==uid){
+                    array.remove(i);
+                }
+            }
+           /* JsonArray array = new JsonParser().parse(topic.getCoreCircle()).getAsJsonArray();
+            array.remove(new JsonPrimitive(uid));*/
+            topic.setCoreCircle(array.toString());
             liveMybatisDao.updateTopic(topic);
 
             //人员原来是什么样的关系，还是什么样的关系
