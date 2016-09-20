@@ -292,8 +292,9 @@ public class LiveServiceImpl implements LiveService {
                 break;
             }
         }
-        if(internalStatus==0)
-            internalStatus=userService.getUserInternalStatus(uid,topic.getUid());
+        if(internalStatus==0) {
+            internalStatus = userService.getUserInternalStatus(uid, topic.getUid());
+        }
 
         return internalStatus;
     }
