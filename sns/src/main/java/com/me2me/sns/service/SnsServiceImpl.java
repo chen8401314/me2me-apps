@@ -3,6 +3,7 @@ package com.me2me.sns.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.google.gson.JsonObject;
+import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
@@ -57,6 +58,9 @@ public class SnsServiceImpl implements SnsService {
 
     @Autowired
     private UserMybatisDao userMybatisDao;
+
+    @Autowired
+    private CacheService cacheService;
 
 
     @Override
@@ -312,6 +316,9 @@ public class SnsServiceImpl implements SnsService {
 
     @Override
     public Response modifyCircle(long owner, long topicId, long uid, int action) {
+        //兼容老版本
+        String snsOnline = cacheService.get("version:2.1.1:online");
+
         if (action == 0) {
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
             //关注此人
@@ -369,7 +376,9 @@ public class SnsServiceImpl implements SnsService {
             String review = userProfile.getNickName() + "邀请你成为" + topic.getTitle() + "的核心圈成员";
             String message = userProfile.getNickName() + "邀请我加入核心圈";
             jPushService.payloadByIdExtra(alias, review, JPushUtils.packageExtra(jsonObject));
-            snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.LIVE_INVITED.index);
+            if(snsOnline.equals("1")) {
+                snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.LIVE_INVITED.index);
+            }
         } else if (action == 2) {
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
             createFragment(owner, topicId, uid);
