@@ -120,8 +120,7 @@ public class SnsServiceImpl implements SnsService {
         log.info("getCircleByType start ...");
         Topic topic = liveService.getTopicById(dto.getTopicId());
         ShowSnsCircleDto showSnsCircleDto = new ShowSnsCircleDto();
-        if (topic.getUid() != dto.getUid())
-            dto.setUid(topic.getUid());
+
         //先把自己加到核心
 //            snsMybatisDao.createSnsCircle(dto.getUid(),dto.getUid(),Specification.SnsCircle.CORE.index);
         String coreCircle = topic.getCoreCircle();
