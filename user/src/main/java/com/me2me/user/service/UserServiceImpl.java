@@ -1558,4 +1558,9 @@ public class UserServiceImpl implements UserService {
         return Response.success();
     }
 
+    @Override
+    public List<UserProfile> getUserProfilesByUids(List<Long> uids) {
+        return userMybatisDao.getUserProfilesByUids(uids);
+    }
+
 }

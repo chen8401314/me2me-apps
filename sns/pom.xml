@@ -37,11 +37,6 @@
                     <artifactId>user</artifactId>
                     <version>${project.version}</version>
                 </dependency>
-                <dependency>
-                    <groupId>com.me2me</groupId>
-                    <artifactId>live</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
             </dependencies>
             <build>
                 <filters>
