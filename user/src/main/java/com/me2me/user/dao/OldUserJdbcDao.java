@@ -1,8 +1,11 @@
 package com.me2me.user.dao;
 
+import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import com.me2me.common.Constant;
 import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.web.Specification;
+import com.me2me.user.dto.UserAccountBindStatusDto;
 import com.me2me.user.model.User;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserToken;
@@ -70,6 +73,13 @@ public class OldUserJdbcDao {
                 } else {
                     userProfile.setGender(0);
                 }
+
+                // 添加手机绑定
+                List<UserAccountBindStatusDto> array = Lists.newArrayList();
+                array.add(new UserAccountBindStatusDto(Specification.ThirdPartType.MOBILE.index,Specification.ThirdPartType.MOBILE.name,1));
+                String mobileBind = JSON.toJSONString(array);
+                userProfile.setThirdPartBind(mobileBind);
+
                 userMybatisDao.createUserProfile(userProfile);
                 log.info("userProfile move success");
                 // 保存用户token信息
