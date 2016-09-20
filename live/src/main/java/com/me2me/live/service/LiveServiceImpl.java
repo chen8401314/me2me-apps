@@ -1,5 +1,6 @@
 package com.me2me.live.service;
 
+import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -87,16 +88,11 @@ public class LiveServiceImpl implements LiveService {
         topic.setLongTime(calendar.getTimeInMillis());
         topic.setCreateTime(new Date());
         //初始化核心圈为用户的核心圈
-        List<SnsCircle> snsCircles = liveMybatisDao.getCoreCircle(createLiveDto.getUid());
-        JsonArray array = new JsonArray();
-        if(snsCircles==null||snsCircles.isEmpty()){
-            array.add(new JsonPrimitive(createLiveDto.getUid()));
-        }else {
-            for (SnsCircle sns : snsCircles) {
-                array.add(new JsonPrimitive(sns.getUid()));
-            }
-        }
-        topic.setCoreCircle(new Gson().toJson(array));
+       // List<SnsCircle> snsCircles = liveMybatisDao.getCoreCircle(createLiveDto.getUid());
+        JSONArray array = new JSONArray();
+        array.add(createLiveDto.getUid());
+
+        topic.setCoreCircle(array.toString());
 
         liveMybatisDao.createTopic(topic);
         //创建直播之后添加到我的UGC
