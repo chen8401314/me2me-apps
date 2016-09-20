@@ -356,7 +356,7 @@ public class SnsServiceImpl implements SnsService {
                 }
             }*/
 //            //关注此人
-//            follow(0,uid,owner);
+            follow(0,uid,owner);
             liveService.setLive2(uid, topicId, 0, 0, 0);
             liveService.deleteFavoriteDelete(uid, topicId);
             //修改人员进入核心圈,不修改人员的关注，订阅关系。

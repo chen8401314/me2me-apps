@@ -274,7 +274,7 @@ public class LiveServiceImpl implements LiveService {
             int internalStatus = 0;
             for(int i=0;i<array.size();i++){
                 if(array.getLong(i)==uid){
-                    internalStatus=2;
+                    internalStatus=Specification.SnsCircle.CORE.index;
                     break;
                 }
             }
