@@ -42,6 +42,11 @@
                     <artifactId>cache</artifactId>
                     <version>2.0.8</version>
                 </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>live-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
             </dependencies>
             <build>
                 <filters>
