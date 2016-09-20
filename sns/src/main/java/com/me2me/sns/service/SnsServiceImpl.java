@@ -136,6 +136,8 @@ public class SnsServiceImpl implements SnsService {
             List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto);
             buildSnsCircle(showSnsCircleDto, list, dto.getUid(), topic.getUid(),coreCircles);
         }
+
+
         dto.setType(Specification.SnsCircle.IN.index);
         int inCount = snsMybatisDao.getSnsCircleCount(dto);
         dto.setType(Specification.SnsCircle.OUT.index);
@@ -355,6 +357,7 @@ public class SnsServiceImpl implements SnsService {
                     // 更新直播核心圈关系
                     liveJdbcDao.updateTopic(topicId,array.toString());
                     snsMybatisDao.deleteSnsCircle(uid,owner);
+                    liveService.createFavoriteDelete(uid,topicId);
                 }
             }
            /* List<SnsCircle> snsCircles = snsMybatisDao.getSnsCircle(owner,topicId,Specification.SnsCircle.CORE.index);
@@ -371,7 +374,7 @@ public class SnsServiceImpl implements SnsService {
 //            //关注此人
             follow(0,uid,owner);
             liveService.setLive2(uid, topicId, 0, 0, 0);
-            liveService.deleteFavoriteDelete(uid, topicId);
+//            liveService.deleteFavoriteDelete(uid, topicId);
             //修改人员进入核心圈,不修改人员的关注，订阅关系。
             //推送被邀请的人
             UserProfile userProfile = userService.getUserProfileByUid(owner);
