@@ -289,6 +289,7 @@
     left join sns_circle c on u.uid = c.uid
     where c.owner = #{uid,jdbcType=BIGINT} and c.internal_status = #{type,jdbcType=INTEGER}
     and u.uid not in (select uid from live_favorite_delete where topic_id = #{topicId,jdbcType=BIGINT})
+    and not FIND_IN_SET(u.uid,(select SUBSTR(core_circle FROM 2 FOR LENGTH(core_circle)-2) from topic where id=#{topicId,jdbcType=BIGINT}))
     order by convert(u.nick_name USING gbk) COLLATE gbk_chinese_ci limit #{sinceId,jdbcType=INTEGER},10
   </select>
 
@@ -297,6 +298,7 @@
     left join sns_circle c on u.uid = c.uid
     where c.owner = #{uid,jdbcType=BIGINT} and c.internal_status = #{type,jdbcType=INTEGER}
     and u.uid not in (select uid from live_favorite_delete where topic_id = #{topicId,jdbcType=BIGINT})
+    and not FIND_IN_SET(u.uid,(select SUBSTR(core_circle FROM 2 FOR LENGTH(core_circle)-2) from topic where id=#{topicId,jdbcType=BIGINT}))
   </select>
 
   <select id="getSnsCircleMember" resultType="com.me2me.sns.dto.SnsCircleDto" parameterType="com.me2me.sns.dto.GetSnsCircleDto" >
