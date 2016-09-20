@@ -177,7 +177,7 @@ public class SnsServiceImpl implements SnsService {
         return Response.success(showSnsCircleDto);
     }
 
-    private void buildCoreCircle(ShowSnsCircleDto showSnsCircleDto, List<UserProfile> userProfiles, long uid, Long topicUid) {
+    private void buildCoreCircle(ShowSnsCircleDto showSnsCircleDto, List<UserProfile> userProfiles, long uid, long topicUid) {
         for (UserProfile profile : userProfiles) {
             ShowSnsCircleDto.SnsCircleElement snsCircleElement = showSnsCircleDto.createElement();
             snsCircleElement.setUid(profile.getUid());
