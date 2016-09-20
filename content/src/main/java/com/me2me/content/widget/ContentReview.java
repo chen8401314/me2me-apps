@@ -8,8 +8,10 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ReviewDto;
+import com.me2me.content.event.ReviewEvent;
 import com.me2me.content.model.Content;
 import com.me2me.content.service.ContentService;
+import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.JpushToken;
 import com.me2me.user.model.UserProfile;
@@ -33,13 +35,8 @@ public class ContentReview implements Review{
 
     @Autowired
     private ContentService contentService;
-
     @Autowired
-    private UserService userService;
-
-    @Autowired
-    private JPushService jPushService;
-
+    private ApplicationEventBus applicationEventBus;
     @Autowired
     private CacheService cacheService;
 
@@ -54,49 +51,11 @@ public class ContentReview implements Review{
         contentService.updateContentById(content);
         log.info("remind success");
         //自己的日记被评论提醒
-        if(reviewDto.getIsAt() == 1) {
-            //兼容老版本
-            if(reviewDto.getAtUid() != 0) {
-
-//                if(isOnline.equals("1")) {
-                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview(), reviewDto.getAtUid());
-//                }else{
-//                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview(), reviewDto.getAtUid());
-//                }
-                //更换推送为极光推送
-                //userService.push(reviewDto.getAtUid(), reviewDto.getUid(), Specification.PushMessageType.AT.index, reviewDto.getReview());
-                JpushToken jpushToken = userService.getJpushTokeByUid(reviewDto.getAtUid());
-                if(jpushToken == null){
-                    //兼容老版本，如果客户端没有更新则还走信鸽push
-                    userService.push(reviewDto.getAtUid(), reviewDto.getUid(), Specification.PushMessageType.AT.index, reviewDto.getReview());
-                }else {
-                    UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
-                    JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index);
-                    String alias = String.valueOf(reviewDto.getAtUid());
-                    jPushService.payloadByIdExtra(alias,userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
-                }
-            }
-//            if(reviewDto.getAtUid() != content.getUid()) {
-//                if(isOnline.equals("1")) {
-//                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview(), reviewDto.getAtUid());
-//                }else{
-//                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview(), reviewDto.getAtUid());
-//                }
-//            }
-        }else{
-            //添加提醒
-            log.info("review you start");
-            UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("messageType",Specification.PushMessageType.REVIEW.index);
-            String alias = String.valueOf(content.getUid());
-            if(content.getUid()!=reviewDto.getUid()) {
-                jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "评论了你", JPushUtils.packageExtra(jsonObject));
-                contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview());
-            }
-            log.info("review you end");
-        }
+        ReviewEvent event = new ReviewEvent();
+        event.setContent(content);
+        event.setReviewDto(reviewDto);
+        event.setIsOnline(isOnline);
+        applicationEventBus.post(event);
         log.info("push success");
         return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
     }
