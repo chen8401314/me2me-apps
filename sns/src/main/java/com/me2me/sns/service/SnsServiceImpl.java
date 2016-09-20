@@ -2,7 +2,7 @@ package com.me2me.sns.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
-import com.google.gson.*;
+import com.google.gson.JsonObject;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
@@ -124,12 +124,11 @@ public class SnsServiceImpl implements SnsService {
         //先把自己加到核心
 //            snsMybatisDao.createSnsCircle(dto.getUid(),dto.getUid(),Specification.SnsCircle.CORE.index);
         String coreCircle = topic.getCoreCircle();
-        JsonArray coreCircles = new JsonParser().parse(coreCircle).getAsJsonArray();
-//        JSONArray coreCircles = JSON.parseArray(coreCircle);
+        JSONArray coreCircles = JSON.parseArray(coreCircle);
         if (dto.getType() == Specification.SnsCircle.CORE.index) {
             List<Long> uidIn = new ArrayList<>();
             for(int i=0;i<coreCircles.size();i++){
-                uidIn.add(coreCircles.getAsLong());
+                uidIn.add(coreCircles.getLong(i));
             }
             List<UserProfile> userProfiles = userMybatisDao.getUserProfilesByUids(uidIn);
             buildCoreCircle(showSnsCircleDto, userProfiles, dto.getUid(), topic.getUid());
@@ -200,9 +199,9 @@ public class SnsServiceImpl implements SnsService {
 
 
     //topicUid为了判断是否自己是国王
-    private void buildSnsCircle(ShowSnsCircleDto showSnsCircleDto, List<SnsCircleDto> list, long uid, long topicUid, JsonArray coreCircles) {
+    private void buildSnsCircle(ShowSnsCircleDto showSnsCircleDto, List<SnsCircleDto> list, long uid, long topicUid, JSONArray coreCircles) {
         for (SnsCircleDto circleDto : list) {
-            if(coreCircles.contains(new JsonPrimitive(circleDto.getUid())))
+            if(coreCircles.contains(circleDto.getUid()))
                 continue;
             ShowSnsCircleDto.SnsCircleElement snsCircleElement = showSnsCircleDto.createElement();
             snsCircleElement.setUid(circleDto.getUid());
