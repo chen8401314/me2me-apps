@@ -1,5 +1,6 @@
 package com.me2me.live.service;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -268,7 +269,18 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setContentType(topicFragment.getContentType());
             liveElement.setFragmentId(topicFragment.getId());
             Topic topic = liveMybatisDao.getTopicById(getLiveTimeLineDto.getTopicId());
-            liveElement.setInternalStatus(userService.getUserInternalStatus(uid,topic.getUid()));
+            String coreCircle = topic.getCoreCircle();
+            JSONArray array= JSON.parseArray(coreCircle);
+            int internalStatus = 0;
+            for(int i=0;i<array.size();i++){
+                if(array.getLong(i)==uid){
+                    internalStatus=2;
+                    break;
+                }
+            }
+            if(internalStatus==0)
+                internalStatus=userService.getUserInternalStatus(uid,topic.getUid());
+            liveElement.setInternalStatus(internalStatus);
             if(topicFragment.getAtUid() != 0){
                 UserProfile atUser = userService.getUserProfileByUid(topicFragment.getAtUid());
                 liveElement.setAtUid(atUser.getUid());
