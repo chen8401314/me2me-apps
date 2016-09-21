@@ -53,14 +53,6 @@ public class PublishUGCListener {
     }
 
     @Subscribe
-    public void like(PublishUGCEvent publishUGCEvent){
-        LikeDto likeDto = new LikeDto();
-        likeDto.setCid(publishUGCEvent.getCid());
-        likeDto.setAction(0);
-        likeDto.setType(Specification.LikesType.CONTENT.index);
-        contentService.robotLikes(likeDto);
-    }
-
     public void sendMessage(ReviewEvent reviewEvent){
         ReviewDto reviewDto = reviewEvent.getReviewDto();
         Content content = reviewEvent.getContent();
@@ -69,7 +61,7 @@ public class PublishUGCListener {
             if(reviewDto.getAtUid() != 0) {
 
                 if(reviewEvent.getIsOnline().equals("1")) {
-                contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview(), reviewDto.getAtUid());
+                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview(), reviewDto.getAtUid());
                 }else{
                     contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview(), reviewDto.getAtUid());
                 }
