@@ -63,10 +63,10 @@ public interface ContentService{
     /**
      * 我发布的内容列表
      * @param uid
-     * @param sinceId
+     * @param updateTime
      * @return
      */
-    Response myPublish(long uid ,int sinceId ,int type);
+    Response myPublish(long uid ,long updateTime ,int type ,int sinceId);
 
     /**
      * 内容所有感受列表

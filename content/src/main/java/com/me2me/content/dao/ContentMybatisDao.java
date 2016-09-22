@@ -104,10 +104,10 @@ public class ContentMybatisDao {
         return contentMapper.loadMyPublishUgcData(map);
     }
 
-    public List<Content>myPublishLive(long uid,int sinceId) {
+    public List<Content>myPublishLive(long uid,long updateTime) {
         Map<String,Object> map = Maps.newHashMap();
         map.put("uid",uid);
-        map.put("sinceId",sinceId);
+        map.put("updateTime",updateTime);
         return contentMapper.loadMyPublishLiveData(map);
     }
 

@@ -750,7 +750,7 @@
       select
   c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
   c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.authorization, c.create_time, c.status,c.content,c.rights
-  from content c  where c.status != 1 and c.uid =  #{uid,jdbcType=BIGINT} and c.id &lt; #{sinceId}
+  from content c where c.status != 1 and c.uid =  #{uid,jdbcType=BIGINT} and c.id &lt; #{sinceId}
   order by c.id desc limit 10
   </select>
 
@@ -758,16 +758,16 @@
     select
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
     c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.authorization, c.create_time, c.status,c.content,c.rights
-    from content c  where c.status != 1 and c.uid =  #{uid,jdbcType=BIGINT} and c.type in (0,1,8,9) and c.id &lt; #{sinceId}
-    order by c.id desc limit 10
+    from content c where c.status != 1 and c.uid =  #{uid,jdbcType=BIGINT} and c.type in (0,1,8,9) and c.id &lt; #{sinceId}
+    order by c.id limit 10
   </select>
 
   <select id="loadMyPublishLiveData" parameterType="Map" resultMap="ResultMapWithBLOBs">
     select
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
     c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.authorization, c.create_time, c.status,c.content,c.rights
-    from content c  where c.status != 1 and c.uid =  #{uid,jdbcType=BIGINT} and c.type in (3,6) and c.id &lt; #{sinceId}
-    order by c.id desc limit 10
+    from content c ,topic t  where c.forward_cid=t.id and c.status != 1 and c.uid =  #{uid,jdbcType=BIGINT} and c.type in (3,6) and c.id &lt; #{updateTime}
+    order by t.long_time desc limit 10
   </select>
 
   <select id="loadMyPublishDataByType" parameterType="com.me2me.content.dto.MyPublishDto" resultMap="ResultMapWithBLOBs">

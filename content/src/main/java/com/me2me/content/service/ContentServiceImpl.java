@@ -1067,7 +1067,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public Response myPublish(long uid ,int sinceId ,int type) {
+    public Response myPublish(long uid ,long updateTime ,int type ,int sinceId) {
         log.info("myPublish start ...");
         SquareDataDto squareDataDto = new SquareDataDto();
         //获取所有播内容
@@ -1081,7 +1081,7 @@ public class ContentServiceImpl implements ContentService {
         else if(type == 2){
             log.info("my publish live getData ...");
             //获取直播内容
-            List<Content> contents = contentMybatisDao.myPublishLive(uid,sinceId);
+            List<Content> contents = contentMybatisDao.myPublishLive(uid,updateTime);
             buildDatas(squareDataDto, contents, uid);
         }
         else if(type == 0){

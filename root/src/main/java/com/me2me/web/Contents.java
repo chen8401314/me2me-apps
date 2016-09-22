@@ -134,7 +134,7 @@ public class Contents extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.myPublish(request.getCustomerId(),request.getSinceId(),request.getType());
+        return contentService.myPublish(request.getCustomerId(),request.getUpdateTime(),request.getType(),request.getSinceId());
     }
 
     /**
