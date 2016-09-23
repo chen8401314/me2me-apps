@@ -136,7 +136,7 @@ public class SnsServiceImpl implements SnsService {
             buildCoreCircle(showSnsCircleDto, userProfiles, uid, topic.getUid());
         } else {
             List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto);
-            buildSnsCircle(showSnsCircleDto, list, dto.getUid(), topic.getUid());
+            buildSnsCircle(showSnsCircleDto, list, uid, topic.getUid());
         }
 
 

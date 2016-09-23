@@ -639,7 +639,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setCreateTime(topic.getCreateTime());
             showTopicElement.setTopicId(topic.getId());
             showTopicElement.setStatus(topic.getStatus());
-            showTopicElement.setUpdateTime(topic.getLongTime());
+
             showTopicElement.setIsFollowed(userService.isFollow(topic.getUid(),uid));
             showTopicElement.setIsFollowMe(userService.isFollow(uid,topic.getUid()));
             showTopicElement.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(),topic.getUid()));
@@ -697,6 +697,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setLastContentType(topicFragment.getContentType());
             showTopicElement.setLastFragment(topicFragment.getFragment());
             showTopicElement.setLastFragmentImage(topicFragment.getFragmentImage());
+            showTopicElement.setLastUpdateTime(topicFragment.getCreateTime().getTime());
         }else{
             showTopicElement.setLastContentType(-1);
         }
