@@ -119,6 +119,8 @@ public class SnsServiceImpl implements SnsService {
     public Response circleByType(GetSnsCircleDto dto) {
         log.info("getCircleByType start ...");
         Topic topic = liveService.getTopicById(dto.getTopicId());
+        long uid = dto.getUid();
+        dto.setUid(topic.getUid());
         ShowSnsCircleDto showSnsCircleDto = new ShowSnsCircleDto();
 
         //先把自己加到核心
@@ -131,7 +133,7 @@ public class SnsServiceImpl implements SnsService {
                 uidIn.add(coreCircles.getLong(i));
             }
             List<UserProfile> userProfiles = userService.getUserProfilesByUids(uidIn);
-            buildCoreCircle(showSnsCircleDto, userProfiles, dto.getUid(), topic.getUid());
+            buildCoreCircle(showSnsCircleDto, userProfiles, uid, topic.getUid());
         } else {
             List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto);
             buildSnsCircle(showSnsCircleDto, list, dto.getUid(), topic.getUid());
