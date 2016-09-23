@@ -1,5 +1,7 @@
 package com.me2me.live.dao;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
 import com.me2me.common.web.Specification;
 import com.me2me.live.dto.SpeakDto;
@@ -14,6 +16,7 @@ import com.me2me.user.model.UserProfileExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
@@ -111,6 +114,22 @@ public class LiveMybatisDao {
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andUidEqualTo(uid);
+        example.setOrderByClause("id desc limit 1 ");
+        List<TopicFragment> topicFragmentList = topicFragmentMapper.selectByExampleWithBLOBs(example);
+        return (topicFragmentList != null && topicFragmentList.size() > 0) ? topicFragmentList.get(0) : null;
+    }
+    public TopicFragment getLastTopicFragmentByCoreCircle(long topicId, String coreCircle) {
+        JSONArray array = JSON.parseArray(coreCircle);
+        List<Long> list = new ArrayList<>();
+        for(int i=0;i<array.size();i++){
+            list.add(array.getLong(i));
+        }
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andUidIn(list);
+        criteria.andTypeNotEqualTo(10);
+        criteria.andTypeNotEqualTo(11);
         example.setOrderByClause("id desc limit 1 ");
         List<TopicFragment> topicFragmentList = topicFragmentMapper.selectByExampleWithBLOBs(example);
         return (topicFragmentList != null && topicFragmentList.size() > 0) ? topicFragmentList.get(0) : null;
@@ -476,6 +495,7 @@ public class LiveMybatisDao {
         criteria.andInternalStatusEqualTo(Specification.SnsCircle.CORE.index);
         return snsCircleMapper.selectByExample(example);
     }
+
 
 
 }

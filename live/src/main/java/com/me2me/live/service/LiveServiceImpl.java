@@ -644,7 +644,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setIsFollowMe(userService.isFollow(uid,topic.getUid()));
             showTopicElement.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(),topic.getUid()));
             showTopicElement.setLastUpdateTime(topic.getLongTime());
-            TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId(),topic.getUid());
+            TopicFragment topicFragment = liveMybatisDao.getLastTopicFragmentByCoreCircle(topic.getId(),topic.getCoreCircle());
             afterProcess(uid, topic, showTopicElement, topicFragment);
             //判断是否收藏了
             LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid,topic.getId());
