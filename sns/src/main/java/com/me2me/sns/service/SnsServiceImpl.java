@@ -382,7 +382,7 @@ public class SnsServiceImpl implements SnsService {
             jsonObject.addProperty("messageType", Specification.PushMessageType.CORE_CIRCLE.index);
             String alias = String.valueOf(uid);
             String review = userProfile.getNickName() + "邀请你成为" + topic.getTitle() + "的核心圈成员";
-            String message = userProfile.getNickName() + "邀请我加入核心圈";
+            String message = "邀请我加入核心圈";
             jPushService.payloadByIdExtra(alias, review, JPushUtils.packageExtra(jsonObject));
             if(snsOnline.equals("1")) {
                 snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.LIVE_INVITED.index);
