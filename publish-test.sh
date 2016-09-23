@@ -1,4 +1,4 @@
-mvn clean package -Pproduct
+mvn clean package -Ptest
 cp -r ./activity/target/jsw/app-activity-service ~/Desktop/apps
 cp -r ./content/target/jsw/app-content-service ~/Desktop/apps
 cp -r ./live/target/jsw/app-live-service ~/Desktop/apps

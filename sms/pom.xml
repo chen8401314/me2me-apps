@@ -76,11 +76,95 @@
                     <artifactId>xinge-api</artifactId>
                     <version>1.1.7</version>
                 </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>cache-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
             </dependencies>
             <build>
                 <filters>
                     <filter>src/main/filter/test.properties</filter>
                 </filters>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>appassembler-maven-plugin</artifactId>
+                        <version>1.10</version>
+                        <configuration>
+                            <repositoryLayout>flat</repositoryLayout>
+                            <repositoryName>lib</repositoryName>
+                            <logsDirectory>logs</logsDirectory>
+                            <includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
+                            <copyConfigurationDirectory>src/main/resources</copyConfigurationDirectory>
+                            <target>${project.build.directory}</target>
+                            <daemons>
+                                <daemon>
+                                    <id>app-sms-service</id>
+                                    <mainClass>com.me2me.sms.Bootstrap</mainClass>
+                                    <commandLineArguments>
+                                        <commandLineArgument>start</commandLineArgument>
+                                    </commandLineArguments>
+                                    <platforms>
+                                        <platform>jsw</platform>
+                                    </platforms>
+                                    <generatorConfigurations>
+                                        <generatorConfiguration>
+                                            <generator>jsw</generator>
+                                            <includes>
+                                                <include>linux-x86-32</include>
+                                                <include>linux-x86-64</include>
+                                                <include>windows-x86-32</include>
+                                                <include>windows-x86-64</include>
+                                            </includes>
+                                            <configuration>
+                                                <property>
+                                                    <name>configuration.directory.in.classpath.first</name>
+                                                    <value>etc</value>
+                                                </property>
+                                                <property>
+                                                    <name>set.default.REPO_DIR</name>
+                                                    <value>lib</value>
+                                                </property>
+                                                <property>
+                                                    <name>wrapper.logfile</name>
+                                                    <value>../logs/wrapper.log</value>
+                                                </property>
+                                                <property>
+                                                    <name>run.as.user.envvar</name>
+                                                    <value>root</value>
+                                                </property>
+                                            </configuration>
+                                        </generatorConfiguration>
+                                    </generatorConfigurations>
+                                    <jvmSettings>
+                                        <initialMemorySize>1024M</initialMemorySize>
+                                        <maxMemorySize>1024M</maxMemorySize>
+                                        <!--                            <systemProperties>
+                                                                            <systemProperty>java.security.policy=conf/policy.all</systemProperty>
+                                                                            <systemProperty>com.sun.management.jmxremote</systemProperty>
+                                                                            <systemProperty>com.sun.management.jmxremote.port=8999</systemProperty>
+                                                                            <systemProperty>com.sun.management.jmxremote.authenticate=false</systemProperty>
+                                                                            <systemProperty>com.sun.management.jmxremote.ssl=false</systemProperty>
+                                                                        </systemProperties>   -->
+                                        <extraArguments>
+                                            <extraArgument>-server</extraArgument>
+                                        </extraArguments>
+                                    </jvmSettings>
+                                </daemon>
+                            </daemons>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>generate-jsw-scripts</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>generate-daemons</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
         <profile>
