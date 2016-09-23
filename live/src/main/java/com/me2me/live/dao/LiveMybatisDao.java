@@ -130,7 +130,7 @@ public class LiveMybatisDao {
         criteria.andUidIn(list);
         criteria.andTypeNotEqualTo(10);
         criteria.andTypeNotEqualTo(11);
-        example.setOrderByClause("id desc limit 1 ");
+        example.setOrderByClause("id desc limit 1");
         List<TopicFragment> topicFragmentList = topicFragmentMapper.selectByExampleWithBLOBs(example);
         return (topicFragmentList != null && topicFragmentList.size() > 0) ? topicFragmentList.get(0) : null;
     }

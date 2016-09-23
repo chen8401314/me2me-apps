@@ -639,12 +639,13 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setCreateTime(topic.getCreateTime());
             showTopicElement.setTopicId(topic.getId());
             showTopicElement.setStatus(topic.getStatus());
-
+            showTopicElement.setLastUpdateTime(topic.getLongTime());
+            showTopicElement.setUpdateTime(topic.getLongTime());
             showTopicElement.setIsFollowed(userService.isFollow(topic.getUid(),uid));
             showTopicElement.setIsFollowMe(userService.isFollow(uid,topic.getUid()));
             showTopicElement.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(),topic.getUid()));
-            showTopicElement.setLastUpdateTime(topic.getLongTime());
-            TopicFragment topicFragment = liveMybatisDao.getLastTopicFragmentByCoreCircle(topic.getId(),topic.getCoreCircle());
+
+            TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId(),topic.getUid());
             afterProcess(uid, topic, showTopicElement, topicFragment);
             //判断是否收藏了
             LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid,topic.getId());
@@ -676,7 +677,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(),topic.getUid()));
             showTopicElement.setLastUpdateTime(topic.getLongTime());
             processCache(uid,topic,showTopicElement);
-            TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId(),topic.getUid());
+            TopicFragment topicFragment = liveMybatisDao.getLastTopicFragmentByCoreCircle(topic.getId(),topic.getCoreCircle());
             afterProcess(uid, topic, showTopicElement, topicFragment);
             //判断是否收藏了
             LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid,topic.getId());
