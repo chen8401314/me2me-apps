@@ -71,6 +71,10 @@ public class PublishUGCListener {
                     userService.push(reviewDto.getAtUid(), reviewDto.getUid(), Specification.PushMessageType.AT.index, reviewDto.getReview());
                 }else {
                   jpush(reviewDto.getUid(),reviewDto.getAtUid());
+                    //如果@人和@人不是作者，则需要给作者推送一条提醒
+                    if(content.getUid()!=reviewDto.getAtUid()&&content.getUid()!=reviewDto.getUid()){
+                        jpush(reviewDto.getUid(),content.getUid());
+                    }
                 }
             }
 //            if(reviewDto.getAtUid() != content.getUid()) {
