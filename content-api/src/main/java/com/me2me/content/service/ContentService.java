@@ -66,7 +66,7 @@ public interface ContentService{
      * @param updateTime
      * @return
      */
-    Response myPublish(long uid ,long updateTime ,int type ,int sinceId);
+    Response myPublish(long uid ,long updateTime ,int type ,int sinceId ,int newType);
 
     /**
      * 内容所有感受列表

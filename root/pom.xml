@@ -92,6 +92,76 @@
             </build>
         </profile>
 
+		<!-- 测试环境 -->
+		<profile>
+            <id>test</id>
+            <properties>
+                <mode>test</mode>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>im-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>user-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>live-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>content-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>sns-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>io-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>search-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>activity-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>sns-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>cache-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>sms-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
+            <build>
+                <filters>
+                    <filter>src/main/filter/test.properties</filter>
+                </filters>
+            </build>
+        </profile>
+
         <!--生产环境-->
         <profile>
             <id>prod</id>

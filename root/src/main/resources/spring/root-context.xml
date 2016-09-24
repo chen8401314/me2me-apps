@@ -37,4 +37,7 @@
     <beans profile="product">
         <import resource="classpath:spring/root-dubbo-consumer.xml"/>
     </beans>
+    <beans profile="test">
+        <import resource="classpath:spring/root-dubbo-consumer.xml"/>
+    </beans>
 </beans>

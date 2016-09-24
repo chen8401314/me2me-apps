@@ -163,5 +163,7 @@ public interface ContentMapper {
 
     List<Content> loadMyPublishLiveData(Map map);
 
+    List<Content> loadMyPublishLiveData2(Map map);
+
     List<Content> getAttention(Map map);
 }

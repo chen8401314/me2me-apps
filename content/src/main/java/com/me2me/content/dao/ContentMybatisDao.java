@@ -111,6 +111,13 @@ public class ContentMybatisDao {
         return contentMapper.loadMyPublishLiveData(map);
     }
 
+    public List<Content>myPublishLive2(long uid,int sinceId) {
+        Map<String,Object> map = Maps.newHashMap();
+        map.put("uid",uid);
+        map.put("sinceId",sinceId);
+        return contentMapper.loadMyPublishLiveData2(map);
+    }
+
     /*
     public List<LoadAllFeelingDto>loadAllFeeling(long cid , int sinceId) {
         Map<String,Object> map = new HashMap<String,Object>();
