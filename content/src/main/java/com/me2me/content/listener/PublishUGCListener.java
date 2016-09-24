@@ -60,7 +60,7 @@ public class PublishUGCListener {
             //兼容老版本
             if(reviewDto.getAtUid() != 0) {
 
-                if(reviewEvent.getIsOnline().equals("1")) {
+                if("1".equals(reviewEvent.getIsOnline())) {
                     contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview(), reviewDto.getAtUid());
                 }else{
                     contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview(), reviewDto.getAtUid());

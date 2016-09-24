@@ -649,6 +649,7 @@ public class ContentServiceImpl implements ContentService {
             UserProfile autherProfile = userService.getUserProfileByUid(content.getUid());
             userNotice.setToUid(content.getUid());
             userNotice.setToNickName(autherProfile.getNickName());
+            userNotice.setId(null);
             userService.createUserNotice(userNotice);
         }
         UserTips userTips = new UserTips();
