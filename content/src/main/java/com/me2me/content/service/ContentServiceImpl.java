@@ -644,6 +644,13 @@ public class ContentServiceImpl implements ContentService {
         userNotice.setTag("");
         userNotice.setReadStatus(0);
         userService.createUserNotice(userNotice);
+        //如果@人和被@人都不是ugc作者，则需要给ugc作者发送一个提醒消息
+        if(content.getUid()!=atUid&&content.getUid()!=uid){
+            UserProfile autherProfile = userService.getUserProfileByUid(content.getUid());
+            userNotice.setToUid(content.getUid());
+            userNotice.setToNickName(autherProfile.getNickName());
+            userService.createUserNotice(userNotice);
+        }
         UserTips userTips = new UserTips();
         userTips.setUid(atUid);
         userTips.setType(type);
@@ -652,27 +659,31 @@ public class ContentServiceImpl implements ContentService {
             userTips.setCount(1);
             userService.createUserTips(userTips);
             //修改推送为极光推送,兼容老版本
-            JpushToken jpushToken = userService.getJpushTokeByUid(atUid);
-            if(jpushToken != null) {
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("count","1");
-                String alias = String.valueOf(atUid);
-                jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+            localJpush(atUid);
+            //如果@人和被@人都不是ugc作者，则需要给ugc作者发送一个提醒消息
+            if(content.getUid()!=atUid&&content.getUid()!=uid) {
+                localJpush(content.getUid());
             }
         }else{
             tips.setCount(tips.getCount()+1);
             userService.modifyUserTips(tips);
             //修改推送为极光推送,兼容老版本
-            JpushToken jpushToken = userService.getJpushTokeByUid(atUid);
-            if(jpushToken != null) {
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("count","1");
-                String alias = String.valueOf(atUid);
-                jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+            localJpush(atUid);
+            //如果@人和被@人都不是ugc作者，则需要给ugc作者发送一个提醒消息
+            if(content.getUid()!=atUid&&content.getUid()!=uid) {
+                localJpush(content.getUid());
             }
         }
     }
-
+private void localJpush(long toUid){
+    JpushToken jpushToken = userService.getJpushTokeByUid(toUid);
+    if(jpushToken != null) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("count","1");
+        String alias = String.valueOf(toUid);
+        jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+    }
+}
     @Override
     public void deleteContentLikesDetails(ContentLikesDetails contentLikesDetails) {
         contentMybatisDao.deleteContentLikesDetails(contentLikesDetails);
