@@ -4,9 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonObject;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Specification;
-import com.me2me.content.dto.LikeDto;
 import com.me2me.content.dto.ReviewDto;
-import com.me2me.content.event.PublishUGCEvent;
 import com.me2me.content.event.ReviewEvent;
 import com.me2me.content.model.Content;
 import com.me2me.content.service.ContentService;
@@ -72,11 +70,7 @@ public class PublishUGCListener {
                     //兼容老版本，如果客户端没有更新则还走信鸽push
                     userService.push(reviewDto.getAtUid(), reviewDto.getUid(), Specification.PushMessageType.AT.index, reviewDto.getReview());
                 }else {
-                    UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
-                    JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index);
-                    String alias = String.valueOf(reviewDto.getAtUid());
-                    jPushService.payloadByIdExtra(alias,userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
+                  jpush(reviewDto.getUid(),reviewDto.getAtUid());
                 }
             }
 //            if(reviewDto.getAtUid() != content.getUid()) {
@@ -99,6 +93,14 @@ public class PublishUGCListener {
             }
             log.info("review you end");
         }
+    }
+
+    private void jpush(long uid,long atUid) {
+        UserProfile userProfile = userService.getUserProfileByUid(uid);
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index);
+        String alias = String.valueOf(atUid);
+        jPushService.payloadByIdExtra(alias,userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
     }
 
 
