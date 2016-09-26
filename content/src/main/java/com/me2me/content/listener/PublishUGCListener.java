@@ -53,6 +53,15 @@ public class PublishUGCListener {
     }
 
     @Subscribe
+    public void like(PublishUGCEvent publishUGCEvent){
+        LikeDto likeDto = new LikeDto();
+        likeDto.setCid(publishUGCEvent.getCid());
+        likeDto.setAction(0);
+        likeDto.setType(Specification.LikesType.CONTENT.index);
+        contentService.robotLikes(likeDto);
+    }
+
+    @Subscribe
     public void sendMessage(ReviewEvent reviewEvent){
         ReviewDto reviewDto = reviewEvent.getReviewDto();
         Content content = reviewEvent.getContent();
