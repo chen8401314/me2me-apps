@@ -1293,6 +1293,46 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Response getFansOrderByTime(FansParamsDto fansParamsDto) {
+        log.info("getFans start ...");
+        List<UserFansDto> list = userMybatisDao.getFansOrderByTime(fansParamsDto);
+        log.info("getFans getData success");
+        for(UserFansDto userFansDto : list){
+            userFansDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFansDto.getAvatar());
+            int followMe = this.isFollow(fansParamsDto.getUid(),userFansDto.getUid());
+            userFansDto.setIsFollowMe(followMe);
+            int followed = this.isFollow(userFansDto.getUid(),fansParamsDto.getUid());
+            userFansDto.setIsFollowed(followed);
+            UserProfile userProfile = userMybatisDao.getUserProfileByUid(userFansDto.getUid());
+            userFansDto.setIntroduced(userProfile.getIntroduced());
+        }
+        ShowUserFansDto showUserFansDto = new ShowUserFansDto();
+        showUserFansDto.setResult(list);
+        log.info("getFans end ...");
+        return Response.success(ResponseStatus.SHOW_USER_FANS_LIST_SUCCESS.status, ResponseStatus.SHOW_USER_FANS_LIST_SUCCESS.message,showUserFansDto);
+    }
+
+    @Override
+    public Response getFollowsOrderByTime(FollowParamsDto followParamsDto) {
+        log.info("getFollowsOrderByTime start ...");
+        List<UserFollowDto> list = userMybatisDao.getFollowsOrderByTime(followParamsDto);
+        log.info("getFollowsOrderByTime getData success");
+        ShowUserFollowDto showUserFollowDto = new ShowUserFollowDto();
+        for(UserFollowDto userFollowDto : list){
+            userFollowDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userFollowDto.getAvatar());
+            int followMe = this.isFollow(followParamsDto.getUid(),userFollowDto.getUid());
+            userFollowDto.setIsFollowMe(followMe);
+            int followed = this.isFollow(userFollowDto.getUid(),followParamsDto.getUid());
+            userFollowDto.setIsFollowed(followed);
+            UserProfile userProfile = userMybatisDao.getUserProfileByUid(userFollowDto.getUid());
+            userFollowDto.setIntroduced(userProfile.getIntroduced());
+        }
+        showUserFollowDto.setResult(list);
+        log.info("getFollowsOrderByTime end ...");
+        return Response.success(ResponseStatus.SHOW_USER_FOLLOW_LIST_SUCCESS.status, ResponseStatus.SHOW_USER_FOLLOW_LIST_SUCCESS.message,showUserFollowDto);
+    }
+
+    @Override
     public Response getPromoter(String nickName,String startDate,String endDate) {
         PromoterDto dto = new PromoterDto();
         List<UserProfile> list = userMybatisDao.getPromoter(nickName);

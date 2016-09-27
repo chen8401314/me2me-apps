@@ -206,6 +206,10 @@ public interface UserService {
 
     Response getFollowsOrderByNickName(FollowParamsDto followParamsDto);
 
+    Response getFansOrderByTime(FansParamsDto fansParamsDto);
+
+    Response getFollowsOrderByTime(FollowParamsDto followParamsDto);
+
     Response getPromoter(String nickNam,String startDate,String endDate);
 
     Response getPhoto(long sinceId);

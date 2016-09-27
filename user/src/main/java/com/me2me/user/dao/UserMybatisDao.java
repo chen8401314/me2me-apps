@@ -551,6 +551,14 @@ public class UserMybatisDao {
         return userFollowMapper.getFollowsOrderByNickName(followParamsDto);
     }
 
+    public List<UserFansDto> getFansOrderByTime(FansParamsDto fansParamsDto){
+        return userFollowMapper.getFansOrderByTime(fansParamsDto);
+    }
+
+    public List<UserFollowDto> getFollowsOrderByTime(FollowParamsDto followParamsDto){
+        return userFollowMapper.getFollowsOrderByTime(followParamsDto);
+    }
+
     public List<UserProfile> getPromoter(String nickName){
         UserProfileExample example = new UserProfileExample();
         UserProfileExample.Criteria criteria = example.createCriteria();
