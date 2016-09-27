@@ -2020,6 +2020,7 @@ private void localJpush(long toUid){
                 contentElement.setContent(contentStr);
             }
             contentElement.setType(content.getType());
+            contentElement.setContentType(content.getContentType());
             contentElement.setTitle(content.getTitle());
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setIsLike(isLike(content.getId(),uid));
