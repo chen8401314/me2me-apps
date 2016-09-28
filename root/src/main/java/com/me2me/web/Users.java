@@ -576,4 +576,15 @@ public class Users extends BaseController {
         return userService.bind(dto);
     }
 
+    /**
+     * 上大V接口
+     */
+//    @ResponseBody
+//    @RequestMapping(value = "/addV",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+//    public Response addV(UserInfoRequest request){
+//        UserVDto vDto = new UserVDto();
+//        vDto.setCustomerId(request.getCustomerId());
+//        return userService.addV(vDto);
+//    }
+
 }

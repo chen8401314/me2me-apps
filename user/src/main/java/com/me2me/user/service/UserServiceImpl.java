@@ -1447,6 +1447,8 @@ public class UserServiceImpl implements UserService {
         if(thirdPartSignUpDto.getThirdPartOpenId().length() > 11) {
             String openId = thirdPartSignUpDto.getThirdPartOpenId();
             userProfile.setMobile(openId.substring(0,11));
+        }else{
+            userProfile.setMobile(thirdPartSignUpDto.getThirdPartOpenId());
         }
         //QQ
         if(thirdPartSignUpDto.getThirdPartType() == Specification.ThirdPartType.QQ.index) {
@@ -1594,6 +1596,18 @@ public class UserServiceImpl implements UserService {
         }
         String bindJson = JSON.toJSONString(bindStatusDtoList);
         userProfile.setThirdPartBind(bindJson);
+        userMybatisDao.modifyUserProfile(userProfile);
+        return Response.success();
+    }
+
+    @Override
+    public Response addV(UserVDto userVDto) {
+        UserProfile userProfile = userMybatisDao.getUserProfileByUid(userVDto.getCustomerId());
+        //判断是否是大V
+        if(userProfile.getvLv() == Specification.VipLevel.isV.index){
+            return Response.success(ResponseStatus.USER_V_EXISTS.status,ResponseStatus.USER_V_EXISTS.message);
+        }
+        userProfile.setvLv(Specification.VipLevel.isV.index);
         userMybatisDao.modifyUserProfile(userProfile);
         return Response.success();
     }

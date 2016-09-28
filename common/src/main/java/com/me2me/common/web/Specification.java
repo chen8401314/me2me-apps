@@ -796,4 +796,22 @@ public interface Specification {
         }
     }
 
+    enum VipLevel{
+
+        noV("非大V",0),
+
+        isV("是大V",1);
+
+        public final String name;
+
+        public final int index;
+
+        VipLevel(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+
+    }
+
+
 }

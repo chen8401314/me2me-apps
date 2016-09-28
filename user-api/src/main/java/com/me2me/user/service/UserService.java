@@ -226,5 +226,8 @@ public interface UserService {
 
     Response bind(ThirdPartSignUpDto thirdPartSignUpDto);
 
+    //上V接口 提供给运营
+    Response addV(UserVDto userVDto);
+
     List<UserProfile> getUserProfilesByUids(List<Long> uids);
 }
