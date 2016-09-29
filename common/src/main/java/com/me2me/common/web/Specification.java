@@ -323,7 +323,9 @@ public interface Specification {
 
         SOUND("语音",13),
 
-        ANCHOR_RED_BAGS("国王收红包",14);
+        ANCHOR_RED_BAGS("国王收红包",14),
+
+        AT_CORE_CIRCLE("@核心圈",15);
 
         public final String name;
         public final int index;
