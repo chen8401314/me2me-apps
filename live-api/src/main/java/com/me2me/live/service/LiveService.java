@@ -129,4 +129,8 @@ public interface LiveService {
     Response genQRcode(long topicId);
 
     Response setLive3(long uid, long topicId);
+
+    Response deleteLiveFragment(long topicId, long fid, long uid);
+
+    Response displayProtocol(int vLv);
 }

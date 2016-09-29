@@ -153,6 +153,8 @@ public enum  ResponseStatus {
 
     WEIBO_BIND_EXISTS("该微博微信号已注册或绑定过其他账号,请换号之后重试","weixin bind exists",20070),
 
+    TOPIC_FRAGMENT_DELETE_SUCCESS("王国发言内容删除成功","topic fragment delete success",20071),
+
 
 
 
@@ -233,7 +235,9 @@ public enum  ResponseStatus {
 
     IS_ALREADY_SNS_CORE("您已经是核心成员！","is already sns core",50031),
 
+    TOPIC_FRAGMENT_DELETE_FAILURE("王国发言内容删除失败","topic fragment delete failure",50032),
 
+    TOPIC_FRAGMENT_CAN_NOT_DELETE("只有国王能删除王国里的发言","you are not the king",50033),
 
 
 

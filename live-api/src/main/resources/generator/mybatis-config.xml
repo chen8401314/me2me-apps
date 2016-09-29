@@ -7,9 +7,9 @@
 
     <context id="MySqlTables" targetRuntime="MyBatis3">
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://114.55.87.118:3306/apps"
-                        userId="me2me"
-                        password="me2me@Sp#23_k">
+                        connectionURL="jdbc:mysql://192.168.89.103:3306/apps"
+                        userId="plAdmin"
+                        password="1q2w_3e4r">
         </jdbcConnection>
 
         <javaTypeResolver >
@@ -29,8 +29,8 @@
             <property name="enableSubPackages" value="true" />
         </javaClientGenerator>
 
-        <table tableName="topic" domainObjectName="Topic"/>
-        <!--<table tableName="topic_fragment" domainObjectName="TopicFragment"/>-->
+        <!--<table tableName="topic" domainObjectName="Topic"/>-->
+        <table tableName="topic_fragment" domainObjectName="TopicFragment"/>
         <!--<table tableName="live_favorite" domainObjectName="LiveFavorite"/>-->
         <!--<table tableName="live_read_history" domainObjectName="LiveReadHistory"/>-->
         <!--<table tableName="topic_barrage" domainObjectName="TopicBarrage"/>-->
@@ -38,6 +38,8 @@
         <!--<table tableName="live_display_barrage" domainObjectName="LiveDisplayBarrage"/>-->
         <!--<table tableName="live_display_fragment" domainObjectName="LiveDisplayFragment"/>-->
         <!--<table tableName="live_display_review" domainObjectName="LiveDisplayReview"/>-->
+        <!--<table tableName="delete_log" domainObjectName="DeleteLog"/>-->
+        <!--<table tableName="live_display_protocol" domainObjectName="LiveDisplayProtocolDto"/>-->
 
 
     </context>

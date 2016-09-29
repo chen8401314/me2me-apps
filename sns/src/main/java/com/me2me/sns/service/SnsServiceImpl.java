@@ -419,6 +419,18 @@ public class SnsServiceImpl implements SnsService {
             } else if (isFollow == 1 && isFollowMe == 0) {
                 snsMybatisDao.createSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
             }
+
+            UserProfile userProfile = userService.getUserProfileByUid(owner);
+
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("messageType", Specification.PushMessageType.REMOVE_CORE_CIRCLE.index);
+            String alias = String.valueOf(uid);
+            String review = userProfile.getNickName() + "将你从" + topic.getTitle() + "的核心圈中移除！";
+            String message = "将我从核心圈移除";
+            jPushService.payloadByIdExtra(alias, review, JPushUtils.packageExtra(jsonObject));
+            if(snsOnline.equals("1")) {
+                snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index);
+            }
         }
         return Response.success(ResponseStatus.MODIFY_CIRCLE_SUCCESS.status, ResponseStatus.MODIFY_CIRCLE_SUCCESS.message);
     }

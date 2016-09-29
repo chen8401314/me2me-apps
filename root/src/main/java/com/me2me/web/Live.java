@@ -128,6 +128,8 @@ public class Live extends BaseController {
         speakDto.setBottomId(request.getBottomId());
         speakDto.setAtUid(request.getAtUid());
         speakDto.setMode(request.getMode());
+        speakDto.setSource(request.getSource());
+        speakDto.setExtra(request.getExtra());
         return liveService.speak(speakDto);
     }
 
@@ -297,6 +299,27 @@ public class Live extends BaseController {
     }
 
 
+    /**
+     * 删除王国跟帖内容
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/delLiveFragment",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response delLiveFragment(DeleteLiveFragmentRequest request){
+        return liveService.deleteLiveFragment(request.getTopicId(),request.getFid(),request.getUid());
+    }
+
+    /**
+     * 获取显示协议
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/displayProtocol",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response displayProtocol(DisplayProtocolRequest request){
+        return liveService.displayProtocol(request.getVLv());
+    }
 
 
 }
