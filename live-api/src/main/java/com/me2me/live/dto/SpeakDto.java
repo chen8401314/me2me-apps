@@ -34,4 +34,8 @@ public class SpeakDto implements BaseEntity{
 
     private int mode;
 
+    private int source;
+
+    private String extra;
+
 }

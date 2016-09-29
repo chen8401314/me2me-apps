@@ -173,7 +173,9 @@ public interface Specification {
 
         UGCAT("UGC@",5),
 
-        LIVE_INVITED("圈子邀请",6);
+        LIVE_INVITED("圈子邀请",6),
+
+        REMOVE_SNS_CIRCLE("圈子移除",7);
 
         public final String name;
         public final int index;
@@ -321,7 +323,9 @@ public interface Specification {
 
         SOUND("语音",13),
 
-        ANCHOR_RED_BAGS("国王收红包",14);
+        ANCHOR_RED_BAGS("国王收红包",14),
+
+        AT_CORE_CIRCLE("@核心圈",15);
 
         public final String name;
         public final int index;
@@ -344,6 +348,19 @@ public interface Specification {
         public final String name;
         public final int index;
         LiveStatus(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    enum TopicFragmentStatus{
+        DISABLED("记录无效，已删除",0),
+
+        ENABLED("记录有效",1);
+
+        public final String name;
+        public final int index;
+        TopicFragmentStatus(String name,int index){
             this.name = name;
             this.index = index;
         }
@@ -470,7 +487,9 @@ public interface Specification {
 
         AT("有人@我",10),
 
-        CORE_CIRCLE("邀请核心圈",11);
+        CORE_CIRCLE("邀请核心圈",11),
+
+        REMOVE_CORE_CIRCLE(" 踢出核心圈",12);
 
         public final String name;
 
@@ -794,6 +813,35 @@ public interface Specification {
             this.name = name;
             this.index = index;
         }
+    }
+
+    enum  DeleteObjectType{
+        TOPIC_FRAGMENT("topic_frament",1);
+
+        public final String name;
+
+        public final int index;
+
+        DeleteObjectType(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    enum VipLevel{
+        COMMON("非VIP",0),
+
+        LEVEL_1("是大v",1);
+
+        public final String name;
+
+        public final int index;
+
+        VipLevel(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+
     }
 
 }

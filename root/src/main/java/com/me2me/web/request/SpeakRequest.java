@@ -52,4 +52,12 @@ public class SpeakRequest extends Request{
     @Getter
     @Setter
     private int mode;
+
+    @Getter
+    @Setter
+    private int source;
+
+    @Getter
+    @Setter
+    private String extra;
 }
