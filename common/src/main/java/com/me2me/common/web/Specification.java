@@ -472,7 +472,9 @@ public interface Specification {
 
         AT("有人@我",10),
 
-        CORE_CIRCLE("邀请核心圈",11);
+        CORE_CIRCLE("邀请核心圈",11),
+
+        REMOVE_CORE_CIRCLE("从核心圈移除",12);
 
         public final String name;
 
@@ -823,6 +825,23 @@ public interface Specification {
         public final int index;
 
         VipLevel(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+
+    }
+
+    enum TopicFragmentStatus{
+
+        ENABLED("有效",1),
+
+        DISABLED("无效已删除",0);
+
+        public final String name;
+
+        public final int index;
+
+        TopicFragmentStatus(String name,int index){
             this.name = name;
             this.index = index;
         }

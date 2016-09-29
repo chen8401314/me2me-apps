@@ -10,9 +10,6 @@ import com.me2me.live.model.*;
 import com.me2me.sns.mapper.SnsCircleMapper;
 import com.me2me.sns.model.SnsCircle;
 import com.me2me.sns.model.SnsCircleExample;
-import com.me2me.user.mapper.UserProfileMapper;
-import com.me2me.user.model.UserProfile;
-import com.me2me.user.model.UserProfileExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -531,7 +528,7 @@ public class LiveMybatisDao {
 
     public LiveDisplayProtocol getLiveDisplayProtocol(int vLv) {
         LiveDisplayProtocolExample examle = new LiveDisplayProtocolExample();
-        examle.or().andVLvEqualTo(Specification.VipLevel.COMMON.index);
+        examle.or().andVLvEqualTo(Specification.VipLevel.noV.index);
         examle.or().andVLvEqualTo(vLv);
         examle.setOrderByClause(" vlv desc limit 1");
 
