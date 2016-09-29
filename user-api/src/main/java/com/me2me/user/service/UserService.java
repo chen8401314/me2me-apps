@@ -206,6 +206,10 @@ public interface UserService {
 
     Response getFollowsOrderByNickName(FollowParamsDto followParamsDto);
 
+    Response getFansOrderByTime(FansParamsDto fansParamsDto);
+
+    Response getFollowsOrderByTime(FollowParamsDto followParamsDto);
+
     Response getPromoter(String nickNam,String startDate,String endDate);
 
     Response getPhoto(long sinceId);
@@ -221,6 +225,9 @@ public interface UserService {
     Response checkNameOpenId(UserNickNameDto userNickNameDto);
 
     Response bind(ThirdPartSignUpDto thirdPartSignUpDto);
+
+    //上V接口 提供给运营
+    Response addV(UserVDto userVDto);
 
     List<UserProfile> getUserProfilesByUids(List<Long> uids);
 }

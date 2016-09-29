@@ -210,6 +210,8 @@ public class ContentServiceImpl implements ContentService {
                 squareDataElement.setForwardTitle(content.getForwardTitle());
                 squareDataElement.setForwardUrl(content.getForwardUrl());
                 squareDataElement.setForwardCid(content.getForwardCid());
+                UserProfile profile = userService.getUserProfileByUid(uid);
+                squareDataElement.setV_lv(profile.getvLv());
                 if (!StringUtils.isEmpty(content.getConverImage())) {
                     if (content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
                         squareDataElement.setCoverImage(content.getConverImage());
@@ -428,6 +430,9 @@ public class ContentServiceImpl implements ContentService {
         showArticleCommentsDto.setLikeCount(articleLikesDetails.size());
         showArticleCommentsDto.setReviewCount(articleReviews.size());
         showArticleCommentsDto.setIsLike(0);
+        //获取用户信息取得是否大V
+        UserProfile userProfile1 = userService.getUserProfileByUid(uid);
+        showArticleCommentsDto.setV_lv(userProfile1.getvLv());
         for(ArticleReview articleReview : articleReviews) {
             ShowArticleCommentsDto.ReviewElement reviewElement = ShowArticleCommentsDto.createElement();
             reviewElement.setUid(articleReview.getUid());
@@ -997,11 +1002,15 @@ private void localJpush(long toUid){
         contentDetailDto.setIsLike(isLike(content.getId(),uid));
         contentDetailDto.setReadCount((int)Math.rint(content.getReadCount()*5.3));
         contentDetailDto.setRights(content.getRights());
+
         String cover = content.getConverImage();
         if(!StringUtils.isEmpty(cover)) {
             contentDetailDto.setCoverImage(Constant.QINIU_DOMAIN  + "/" + content.getConverImage());
         }
+
         UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+        contentDetailDto.setV_lv(userProfile.getvLv());
+
         log.info("get userProfile data success");
         contentDetailDto.setNickName(userProfile.getNickName());
         contentDetailDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
@@ -1296,6 +1305,7 @@ private void localJpush(long toUid){
         List<Content> contents = contentMybatisDao.myPublishByType(dto);
         userInfoDto.setContentCount(contentMybatisDao.countMyPublishByType(dto));
         log.info("get user content success ");
+        userInfoDto.getUser().setV_lv(userProfile.getvLv());
         userInfoDto.getUser().setNickName(userProfile.getNickName());
         userInfoDto.getUser().setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
         userInfoDto.getUser().setGender(userProfile.getGender());
@@ -1342,6 +1352,8 @@ private void localJpush(long toUid){
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
             contentElement.setUid(content.getUid());
+            UserProfile profile = userService.getUserProfileByUid(content.getUid());
+            contentElement.setV_lv(profile.getvLv());
             String cover = content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
                 if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
@@ -1843,6 +1855,8 @@ private void localJpush(long toUid){
         log.info("getNewest data success ");
         for(Content content : newestList){
             ShowNewestDto.ContentElement contentElement = ShowNewestDto.createElement();
+            UserProfile profile = userService.getUserProfileByUid(content.getUid());
+            contentElement.setV_lv(profile.getvLv());
             contentElement.setId(content.getId());
             contentElement.setUid(content.getUid());
             // 获取用户信息
@@ -2020,6 +2034,7 @@ private void localJpush(long toUid){
                 contentElement.setContent(contentStr);
             }
             contentElement.setType(content.getType());
+            contentElement.setContentType(content.getContentType());
             contentElement.setTitle(content.getTitle());
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setIsLike(isLike(content.getId(),uid));
@@ -2166,6 +2181,8 @@ private void localJpush(long toUid){
         log.info("reviewList get contentReview success");
         for(ContentReview contentReview : list){
             ContentReviewDto.ReviewElement reviewElement = ContentReviewDto.createElement();
+            UserProfile profile = userService.getUserProfileByUid(contentReview.getUid());
+            reviewElement.setV_lv(profile.getvLv());
             reviewElement.setUid(contentReview.getUid());
             reviewElement.setReview(contentReview.getReview());
             reviewElement.setCreateTime(contentReview.getCreateTime());

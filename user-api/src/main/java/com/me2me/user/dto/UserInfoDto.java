@@ -45,6 +45,8 @@ public class UserInfoDto implements BaseEntity{
         private int fansCount;
 
         private String introduced;
+
+        private int v_lv;
     }
 
     @Data

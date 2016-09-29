@@ -90,4 +90,6 @@ public class BaseContentDto implements BaseEntity{
     private int topicCount;
 
     private int contentType;
+
+    private int v_lv;
 }

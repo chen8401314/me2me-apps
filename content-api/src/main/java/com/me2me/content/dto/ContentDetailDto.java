@@ -61,6 +61,8 @@ public class ContentDetailDto implements BaseEntity {
 
     private int isHot;
 
+    private int v_lv;
+
     private List<ImageElement> images = Lists.newArrayList();
 
     public static ImageElement createImageElement(){

@@ -19,4 +19,5 @@ public class SearchFansDto implements BaseEntity {
     private int pageSize;
 
     private long uid;
+
 }

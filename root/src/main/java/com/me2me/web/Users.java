@@ -338,7 +338,7 @@ public class Users extends BaseController {
     }
 
     /**
-     * 用户粉丝列表
+     * 用户粉丝列表(根据关注时间排序)
      * @param request
      * @return
      */
@@ -352,11 +352,11 @@ public class Users extends BaseController {
            request.setSinceId(1);
         }
         fansParamsDto.setSinceId((request.getSinceId() - 1) * 10);
-        return userService.getFansOrderByNickName(fansParamsDto);
+        return userService.getFansOrderByTime(fansParamsDto);
     }
 
     /**
-     * 用户关注列表
+     * 用户关注列表(根据关注时间排序)
      * @param request
      * @return
      */
@@ -370,7 +370,7 @@ public class Users extends BaseController {
             request.setSinceId(1);
         }
         followParamsDto.setSinceId((request.getSinceId() - 1) * 10);
-        return userService.getFollowsOrderByNickName(followParamsDto);
+        return userService.getFollowsOrderByTime(followParamsDto);
     }
 
     /**
@@ -575,5 +575,16 @@ public class Users extends BaseController {
         dto.setThirdPartToken(request.getThirdPartToken());
         return userService.bind(dto);
     }
+
+    /**
+     * 上大V接口
+     */
+//    @ResponseBody
+//    @RequestMapping(value = "/addV",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+//    public Response addV(UserInfoRequest request){
+//        UserVDto vDto = new UserVDto();
+//        vDto.setCustomerId(request.getCustomerId());
+//        return userService.addV(vDto);
+//    }
 
 }

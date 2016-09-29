@@ -41,6 +41,8 @@ public class ContentReviewDto implements BaseEntity {
 
         private String atNickName;
 
+        private int v_lv;
+
     }
 
 }

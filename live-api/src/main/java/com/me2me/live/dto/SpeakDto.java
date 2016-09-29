@@ -38,4 +38,6 @@ public class SpeakDto implements BaseEntity{
 
     private String extra;
 
+    private int v_lv;
+
 }

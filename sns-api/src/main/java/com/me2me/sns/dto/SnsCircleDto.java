@@ -24,7 +24,8 @@ public class SnsCircleDto implements BaseEntity {
 
     private int isFollowed;
 
-    private  int isFollowMe;
+    private int isFollowMe;
 
+    private int v_lv;
 
 }

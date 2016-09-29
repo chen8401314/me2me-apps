@@ -323,9 +323,7 @@ public interface Specification {
 
         SOUND("语音",13),
 
-        ANCHOR_RED_BAGS("国王收红包",14),
-
-        AT_CORE_CIRCLE("@核心圈",15);
+        ANCHOR_RED_BAGS("国王收红包",14);
 
         public final String name;
         public final int index;
@@ -348,19 +346,6 @@ public interface Specification {
         public final String name;
         public final int index;
         LiveStatus(String name,int index){
-            this.name = name;
-            this.index = index;
-        }
-    }
-
-    enum TopicFragmentStatus{
-        DISABLED("记录无效，已删除",0),
-
-        ENABLED("记录有效",1);
-
-        public final String name;
-        public final int index;
-        TopicFragmentStatus(String name,int index){
             this.name = name;
             this.index = index;
         }
@@ -487,9 +472,7 @@ public interface Specification {
 
         AT("有人@我",10),
 
-        CORE_CIRCLE("邀请核心圈",11),
-
-        REMOVE_CORE_CIRCLE(" 踢出核心圈",12);
+        CORE_CIRCLE("邀请核心圈",11);
 
         public final String name;
 
@@ -828,10 +811,12 @@ public interface Specification {
         }
     }
 
-    enum VipLevel{
-        COMMON("非VIP",0),
 
-        LEVEL_1("是大v",1);
+    enum VipLevel{
+
+        noV("非大V",0),
+
+        isV("是大V",1);
 
         public final String name;
 
@@ -843,5 +828,6 @@ public interface Specification {
         }
 
     }
+
 
 }

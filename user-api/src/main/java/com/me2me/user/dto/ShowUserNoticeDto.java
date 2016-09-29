@@ -49,6 +49,10 @@ public class ShowUserNoticeDto implements BaseEntity {
         private long cid;
 
         private String review;
+
+        private int v_lv;
+
+        private int to_v_lv;
     }
 
 
