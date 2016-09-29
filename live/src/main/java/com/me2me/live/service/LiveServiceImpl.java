@@ -114,6 +114,8 @@ public class LiveServiceImpl implements LiveService {
 
         SpeakDto speakDto = new SpeakDto();
         speakDto.setTopicId(topic.getId());
+        UserProfile profile = userService.getUserProfileByUid(createLiveDto.getUid());
+        speakDto.setV_lv(profile.getvLv());
         //检查有没有出错的数据，如果有则删除出错数据
         contentService.clearData();
         return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status,ResponseStatus.USER_CREATE_LIVE_SUCCESS.message,speakDto);
@@ -172,7 +174,8 @@ public class LiveServiceImpl implements LiveService {
 
         liveCoverDto.setInternalStatus(getInternalStatus(topic,uid));
         liveCoverDto.setLiveWebUrl(Constant.Live_WEB_URL+topicId);//返回直播URL地址
-
+        UserProfile profile = userService.getUserProfileByUid(uid);
+        liveCoverDto.setV_lv(profile.getvLv());
         //添加直播阅读数log.info("liveCover end ...");
         Content content = contentService.getContentByTopicId(topicId);
         content.setReadCount(content.getReadCount() + 1);
@@ -222,6 +225,7 @@ public class LiveServiceImpl implements LiveService {
     public Response getLiveByCid(long cid,long uid) {
         ShowLiveDto showLiveDto = new ShowLiveDto();
         UserProfile userProfile = userService.getUserProfileByUid(uid);
+        showLiveDto.setV_lv(userProfile.getvLv());
         Topic topic = liveMybatisDao.getTopicById(cid);
         Content content =contentService.getContentByTopicId(cid);
         showLiveDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
@@ -260,6 +264,7 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             liveElement.setNickName(userProfile.getNickName());
             liveElement.setFragment(topicFragment.getFragment());
+            liveElement.setV_lv(userProfile.getvLv());
             String fragmentImage = topicFragment.getFragmentImage();
             if(!StringUtils.isEmpty(fragmentImage)) {
                 liveElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
@@ -630,6 +635,8 @@ public class LiveServiceImpl implements LiveService {
     private void builder(long uid, ShowTopicListDto showTopicListDto, List<Topic> topicList) {
         for(Topic topic : topicList){
             ShowTopicListDto.ShowTopicElement showTopicElement = ShowTopicListDto.createShowTopicElement();
+            UserProfile profile = userService.getUserProfileByUid(topic.getUid());
+            showTopicElement.setV_lv(profile.getvLv());
             showTopicElement.setUid(topic.getUid());
             showTopicElement.setCoverImage(Constant.QINIU_DOMAIN  + "/" + topic.getLiveImage());
             showTopicElement.setTitle(topic.getTitle());
@@ -676,6 +683,8 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setIsFollowed(userService.isFollow(topic.getUid(),uid));
             showTopicElement.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(),topic.getUid()));
             showTopicElement.setLastUpdateTime(topic.getLongTime());
+            UserProfile profile = userService.getUserProfileByUid(topic.getUid());
+            showTopicElement.setV_lv(profile.getvLv());
             processCache(uid,topic,showTopicElement);
             TopicFragment topicFragment = liveMybatisDao.getLastTopicFragmentByCoreCircle(topic.getId(),topic.getCoreCircle());
             afterProcess(uid, topic, showTopicElement, topicFragment);
@@ -950,6 +959,7 @@ public class LiveServiceImpl implements LiveService {
         for (LiveFavorite liveFavorite : liveFavoriteList){
             ShowFavoriteListDto.FavoriteUser favoriteUser = ShowFavoriteListDto.createElement();
             UserProfile userProfile = userService.getUserProfileByUid(liveFavorite.getUid());
+            favoriteUser.setV_lv(userProfile.getvLv());
             favoriteUser.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             favoriteUser.setUid(userProfile.getUid());
             favoriteUser.setNickName(userProfile.getNickName());

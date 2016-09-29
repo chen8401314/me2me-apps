@@ -107,6 +107,8 @@ public class SnsServiceImpl implements SnsService {
         for (SnsCircleDto circleDto : list) {
             ShowMembersDto.UserElement userElement = showMembersDto.createUserElement();
             userElement.setUid(circleDto.getUid());
+            UserProfile profile = userService.getUserProfileByUid(circleDto.getUid());
+            userElement.setV_lv(profile.getvLv());
             userElement.setAvatar(Constant.QINIU_DOMAIN + "/" + circleDto.getAvatar());
             userElement.setIntroduced(circleDto.getIntroduced());
             userElement.setNickName(circleDto.getNickName());
@@ -183,6 +185,7 @@ public class SnsServiceImpl implements SnsService {
     private void buildCoreCircle(ShowSnsCircleDto showSnsCircleDto, List<UserProfile> userProfiles, long uid, long topicUid) {
         for (UserProfile profile : userProfiles) {
             ShowSnsCircleDto.SnsCircleElement snsCircleElement = showSnsCircleDto.createElement();
+            snsCircleElement.setV_lv(profile.getvLv());
             snsCircleElement.setUid(profile.getUid());
             snsCircleElement.setAvatar(Constant.QINIU_DOMAIN + "/" + profile.getAvatar());
             snsCircleElement.setIntroduced(profile.getIntroduced());
@@ -207,6 +210,8 @@ public class SnsServiceImpl implements SnsService {
         for (SnsCircleDto circleDto : list) {
 
             ShowSnsCircleDto.SnsCircleElement snsCircleElement = showSnsCircleDto.createElement();
+            UserProfile profile = userService.getUserProfileByUid(circleDto.getUid());
+            snsCircleElement.setV_lv(profile.getvLv());
             snsCircleElement.setUid(circleDto.getUid());
             snsCircleElement.setAvatar(Constant.QINIU_DOMAIN + "/" + circleDto.getAvatar());
             snsCircleElement.setIntroduced(circleDto.getIntroduced());

@@ -30,6 +30,8 @@ public class SearchAssistantDto implements BaseEntity {
 
         private String avatar;
 
+        private int v_lv;
+
     }
 
 }

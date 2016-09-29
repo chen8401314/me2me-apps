@@ -52,6 +52,8 @@ public class UserInfoDto2 implements BaseEntity{
         private int fansCount;
 
         private String introduced;
+
+        private int v_lv;
     }
 
     @Data
@@ -108,6 +110,8 @@ public class UserInfoDto2 implements BaseEntity{
         private long lastUpdateTime;
 
         private int topicCount;
+
+        private int v_lv;
 
         @Data
         public static class ReviewElement implements BaseEntity{

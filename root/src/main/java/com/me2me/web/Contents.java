@@ -156,7 +156,7 @@ public class Contents extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getUserData",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getUserData(UserInfoRequest request){
-        return  contentService.getUserData(request.getCustomerId(),request.getUid());
+        return contentService.getUserData(request.getCustomerId(),request.getUid());
     }
 
     /**
@@ -167,7 +167,7 @@ public class Contents extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getUserData2",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getUserData2(UserInfoRequest request){
-        return  contentService.getUserData2(request.getCustomerId(),request.getUid());
+        return contentService.getUserData2(request.getCustomerId(),request.getUid());
     }
 
     /**

@@ -42,4 +42,6 @@ public class LiveCoverDto implements BaseEntity{
 
     //直播二维码
     private String liveWebUrl;
+
+    private int v_lv;
 }

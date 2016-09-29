@@ -8,6 +8,8 @@ import com.me2me.content.dto.CreateContentSuccessDto;
 import com.me2me.content.model.Content;
 import com.me2me.content.model.ContentImage;
 import com.me2me.content.service.ContentService;
+import com.me2me.user.model.UserProfile;
+import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
@@ -23,6 +25,9 @@ public class AbstractPublish {
 
     @Autowired
     protected ContentService contentService;
+
+    @Autowired
+    protected UserService userService;
 
     public Response publish(ContentDto contentDto) {
         log.info("abstract publish start .....");
@@ -72,6 +77,8 @@ public class AbstractPublish {
         createContentSuccessDto.setType(content.getType());
         createContentSuccessDto.setContentType(content.getContentType());
         createContentSuccessDto.setForwardCid(content.getForwardCid());
+        UserProfile profile = userService.getUserProfileByUid(contentDto.getUid());
+        createContentSuccessDto.setV_lv(profile.getvLv());
         if(!StringUtils.isEmpty(coverImage)) {
             createContentSuccessDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + coverImage);
         }else{

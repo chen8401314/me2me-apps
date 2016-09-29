@@ -180,6 +180,8 @@ public class UserServiceImpl implements UserService {
                 log.info("get userToken success");
                 LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
                 loginSuccessDto.setUid(user.getUid());
+                UserProfile profile = userMybatisDao.getUserProfileByUid(user.getUid());
+                loginSuccessDto.setV_lv(profile.getvLv());
                 loginSuccessDto.setUserName(user.getUserName());
                 loginSuccessDto.setNickName(userProfile.getNickName());
                 loginSuccessDto.setGender(userProfile.getGender());
@@ -485,6 +487,10 @@ public class UserServiceImpl implements UserService {
             userNoticeElement.setToUid(userNotice.getToUid());
             userNoticeElement.setCid(userNotice.getCid());
             userNoticeElement.setReview(userNotice.getReview());
+            UserProfile profile = userMybatisDao.getUserProfileByUid(userNotice.getFromUid());
+            userNoticeElement.setV_lv(profile.getvLv());
+            UserProfile profile1 = userMybatisDao.getUserProfileByUid(userNotice.getToUid());
+            userNoticeElement.setTo_v_lv(profile1.getvLv());
             showUserNoticeDto.getUserNoticeList().add(userNoticeElement);
         }
         log.info("getUserNotice end ...");
@@ -711,6 +717,8 @@ public class UserServiceImpl implements UserService {
     public Response getUser(long targetUid, long sourceUid){
         UserProfile userProfile =  getUserProfileByUid(targetUid);
         UserInfoDto.User user = new UserInfoDto.User();
+        UserProfile profile = userMybatisDao.getUserProfileByUid(sourceUid);
+        user.setV_lv(profile.getvLv());
         user.setNickName(userProfile.getNickName());
         user.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
         user.setGender(userProfile.getGender());
@@ -729,6 +737,7 @@ public class UserServiceImpl implements UserService {
         searchDto.setTotalPage(totalPage);
         for(UserProfile userProfile : list){
             SearchDto.SearchElement element = searchDto.createElement();
+            element.setV_lv(userProfile.getvLv());
             element.setUid(userProfile.getUid());
             element.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
             element.setNickName(userProfile.getNickName());
@@ -748,6 +757,7 @@ public class UserServiceImpl implements UserService {
         SearchAssistantDto searchAssistantDto = new SearchAssistantDto();
         for(UserProfile userProfile : list){
             SearchAssistantDto.SearchAssistantElement element = searchAssistantDto.createElement();
+            element.setV_lv(userProfile.getvLv());
             element.setUid(userProfile.getUid());
             element.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
             element.setNickName(userProfile.getNickName());
@@ -794,6 +804,8 @@ public class UserServiceImpl implements UserService {
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
         log.info("getUserProfile getUserData success . uid : " + uid);
         ShowUserProfileDto showUserProfileDto = new ShowUserProfileDto();
+        UserProfile profile = userMybatisDao.getUserProfileByUid(uid);
+        showUserProfileDto.setV_lv(profile.getvLv());
         showUserProfileDto.setUid(userProfile.getUid());
         showUserProfileDto.setNickName(userProfile.getNickName());
         showUserProfileDto.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
@@ -1240,6 +1252,7 @@ public class UserServiceImpl implements UserService {
         dto.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
         dto.setNickName(userProfile.getNickName());
         dto.setRegUrl(reg_web+uid);
+        dto.setV_lv(userProfile.getvLv());
 //        byte[] image = QRCodeUtil.encode(reg_web + uid);
 //        String key = UUID.randomUUID().toString();
 //        fileTransferService.upload(image,key);
@@ -1305,6 +1318,7 @@ public class UserServiceImpl implements UserService {
             userFansDto.setIsFollowed(followed);
             UserProfile userProfile = userMybatisDao.getUserProfileByUid(userFansDto.getUid());
             userFansDto.setIntroduced(userProfile.getIntroduced());
+            userFansDto.setV_lv(userProfile.getvLv());
         }
         ShowUserFansDto showUserFansDto = new ShowUserFansDto();
         showUserFansDto.setResult(list);
@@ -1326,6 +1340,7 @@ public class UserServiceImpl implements UserService {
             userFollowDto.setIsFollowed(followed);
             UserProfile userProfile = userMybatisDao.getUserProfileByUid(userFollowDto.getUid());
             userFollowDto.setIntroduced(userProfile.getIntroduced());
+            userFollowDto.setV_lv(userProfile.getvLv());
         }
         showUserFollowDto.setResult(list);
         log.info("getFollowsOrderByTime end ...");
@@ -1387,6 +1402,8 @@ public class UserServiceImpl implements UserService {
         List<UserProfile> list = userMybatisDao.searchFans(searchFansDto);
         for(UserProfile userProfile : list){
             SearchDto.SearchElement element = searchDto.createElement();
+            UserProfile profile = userMybatisDao.getUserProfileByUid(uid);
+            element.setV_lv(profile.getvLv());
             element.setUid(userProfile.getUid());
             element.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
             element.setNickName(userProfile.getNickName());

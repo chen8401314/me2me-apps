@@ -47,6 +47,8 @@ public class ShowUserProfileDto implements BaseEntity{
 
     private String thirdPartBind;
 
+    private int v_lv;
+
     private List<Hobby> hobbyList = Lists.newArrayList();
 
     public Hobby createHobby(){ return new Hobby();}

@@ -47,4 +47,6 @@ public class ShowLiveDto implements BaseEntity {
     private long updateTime;
 
     private int isFollowed;
+
+    private int v_lv;
 }
