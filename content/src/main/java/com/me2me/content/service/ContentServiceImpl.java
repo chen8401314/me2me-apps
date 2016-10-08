@@ -1905,6 +1905,7 @@ private void localJpush(long toUid){
             contentElement.setFavoriteCount(content.getFavoriteCount());
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
+            contentElement.setContentType(content.getContentType());
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
             log.info("content review data success");
             for(ContentReview contentReview : contentReviewList){
