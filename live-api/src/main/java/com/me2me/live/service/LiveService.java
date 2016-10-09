@@ -133,4 +133,6 @@ public interface LiveService {
     Response deleteLiveFragment(long topicId, long fid, long uid);
 
     Response displayProtocol(int vLv);
+
+    Response getRedDot(long uid,long updateTime);
 }

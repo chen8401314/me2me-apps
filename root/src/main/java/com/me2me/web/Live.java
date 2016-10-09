@@ -321,5 +321,12 @@ public class Live extends BaseController {
         return liveService.displayProtocol(request.getVLv());
     }
 
-
+    /**
+     * 打开app调用此接口获取王国更新红点
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getRedDot",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getRedDot(GetMyLivesRequest request){
+        return liveService.getRedDot(request.getUid(),request.getUpdateTime());
+    }
 }

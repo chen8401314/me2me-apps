@@ -905,7 +905,6 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(liveDisplayProtocolDto);
     }
 
-
     /**
      * 结束自己的直播
      *
@@ -1247,5 +1246,29 @@ public class LiveServiceImpl implements LiveService {
             return Response.failure(ResponseStatus.QRCODE_FAILURE.status, ResponseStatus.QRCODE_FAILURE.message);
         }
         return Response.success(ResponseStatus.QRCODE_SUCCESS.status, ResponseStatus.QRCODE_SUCCESS.message, liveQRCodeDto);
+    }
+
+    @Override
+    public Response getRedDot(long uid, long updateTime) {
+        log.info("getRedDot start ...");
+        List<Long> topics = liveMybatisDao.getTopicId(uid);
+        Calendar calendar = Calendar.getInstance();
+        if (updateTime == 0) {
+            updateTime = calendar.getTimeInMillis();
+        }
+        List<Topic> topicList = liveMybatisDao.getMyLivesByUpdateTime2(uid, updateTime, topics);
+        List reds = Lists.newArrayList();
+        for (Topic topic : topicList) {
+            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topic.getId() + "", "0");
+            String isUpdate = cacheService.hGet(cacheModel.getKey(), topic.getId() + "");
+            reds.add(isUpdate);
+        }
+        if (reds.size()>0 && reds.contains("1")) {
+            log.info("getRedDot end ...");
+            return Response.success(ResponseStatus.GET_REDDOT_SUCCESS.status ,ResponseStatus.GET_REDDOT_SUCCESS.message);
+        }else{
+            log.info("getRedDot end ...");
+            return Response.success(ResponseStatus.GET_REDDOT_FAILURE.status ,ResponseStatus.GET_REDDOT_FAILURE.message);
+        }
     }
 }

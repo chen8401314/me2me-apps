@@ -240,6 +240,9 @@ public enum  ResponseStatus {
 
     TOPIC_FRAGMENT_CAN_NOT_DELETE("只有国王能删除王国里的发言","you are not the king",50033),
 
+    GET_REDDOT_SUCCESS("获取红点成功","get reddot success",50034),
+
+    GET_REDDOT_FAILURE("获取红点失败没有更新","get reddot failure",50035),
 
 
 

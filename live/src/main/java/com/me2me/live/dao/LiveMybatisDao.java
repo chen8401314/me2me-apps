@@ -221,6 +221,28 @@ public class LiveMybatisDao {
         return topicMapper.selectByExample(example);
     }
 
+    public List<Topic> getMyLivesByUpdateTime2(long uid, long updateTime, List<Long> topics) {
+        TopicExample example = new TopicExample();
+        TopicExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andLongTimeLessThan(updateTime);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -3);
+        criteria.andLongTimeGreaterThan(calendar.getTimeInMillis());
+        criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
+        TopicExample.Criteria criteriaOr = example.createCriteria();
+        if (topics != null && topics.size() > 0) {
+            criteriaOr.andLongTimeLessThan(updateTime);
+            criteriaOr.andLongTimeGreaterThan(calendar.getTimeInMillis());
+            criteriaOr.andUidNotEqualTo(uid);
+            criteriaOr.andIdIn(topics);
+            example.or(criteriaOr);
+        }
+        //最后更新时间降序排列
+        example.setOrderByClause("long_time desc");
+        return topicMapper.selectByExample(example);
+    }
+
     public int getInactiveLiveCount(long uid, List<Long> topics) {
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
