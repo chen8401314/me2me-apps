@@ -244,7 +244,7 @@ public enum  ResponseStatus {
 
     GET_REDDOT_FAILURE("获取红点失败没有更新","get reddot failure",50035),
 
-    CONTENT_DELETE_NO_AUTH("只有国王删除自己的王国","content delete no auth",50036),
+    CONTENT_DELETE_NO_AUTH("只有国王能删除自己的王国","content delete no auth",50036),
 
 
 
