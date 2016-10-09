@@ -338,6 +338,7 @@ public class LiveServiceImpl implements LiveService {
                 }
             }
         }
+        long fid = 0;
         if (speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {
             TopicFragment topicFragment = new TopicFragment();
             topicFragment.setFragmentImage(speakDto.getFragmentImage());
@@ -351,6 +352,8 @@ public class LiveServiceImpl implements LiveService {
             topicFragment.setAtUid(speakDto.getAtUid());
             topicFragment.setSource(speakDto.getSource());
             liveMybatisDao.createTopicFragment(topicFragment);
+
+            fid = topicFragment.getId();
         }
         //获取最后一次发言FragmentId
         TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(speakDto.getTopicId(), speakDto.getUid());
@@ -367,6 +370,8 @@ public class LiveServiceImpl implements LiveService {
         topicBarrage.setContentType(speakDto.getContentType());
         topicBarrage.setType(speakDto.getType());
         topicBarrage.setUid(speakDto.getUid());
+        topicBarrage.setFid(fid);
+
         //保存弹幕
         TopicBarrage barrage = liveMybatisDao.getBarrage(speakDto.getTopicId(), speakDto.getTopId(), speakDto.getBottomId(), speakDto.getType(), speakDto.getUid());
         if (barrage == null) {
@@ -878,6 +883,18 @@ public class LiveServiceImpl implements LiveService {
                 deleteLog.setDelTime(new Date());
                 deleteLog.setType(Specification.DeleteObjectType.TOPIC_FRAGMENT.index);
                 deleteLog.setOid(fid);
+                deleteLog.setUid(uid);
+
+                liveMybatisDao.createDeleteLog(deleteLog);
+            }
+            //从topicBarrage中删除
+            TopicBarrage barrage = liveMybatisDao.getTopicBarrageByFId(fid);
+            if (barrage!=null) {
+                liveMybatisDao.deleteLiveBarrageById(barrage.getId());
+                DeleteLog deleteLog = new DeleteLog();
+                deleteLog.setDelTime(new Date());
+                deleteLog.setType(Specification.DeleteObjectType.TOPIC_BARRAGE.index);
+                deleteLog.setOid(barrage.getId());
                 deleteLog.setUid(uid);
 
                 liveMybatisDao.createDeleteLog(deleteLog);

@@ -535,4 +535,21 @@ public class LiveMybatisDao {
         List<LiveDisplayProtocol> list = liveDisplayProtocolMapper.selectByExample(examle);
         return list==null&&list.isEmpty()?null:list.get(0);
     }
+
+    public int deleteLiveBarrageById(long bid) {
+        TopicBarrage barrage = new TopicBarrage();
+        barrage.setStatus(Specification.TopicFragmentStatus.DISABLED.index);
+        barrage.setId(bid);
+
+        return topicBarrageMapper.updateByPrimaryKeySelective(barrage);
+    }
+
+    public TopicBarrage getTopicBarrageByFId(long fid) {
+        TopicBarrageExample example= new TopicBarrageExample();
+        TopicBarrageExample.Criteria criteria = example.createCriteria();
+        criteria.andFidEqualTo(fid);
+
+        List<TopicBarrage> list = topicBarrageMapper.selectByExampleWithBLOBs(example);
+        return list==null&&list.isEmpty()?null:list.get(0);
+    }
 }
