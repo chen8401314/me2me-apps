@@ -380,6 +380,7 @@ public class LiveMybatisDao {
         criteria.andTopIdGreaterThanOrEqualTo(topId);
         criteria.andBottomIdEqualTo(bottomId);
         criteria.andIdGreaterThan(sinceId);
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
         example.setOrderByClause(" id asc limit 20 ");
         return topicBarrageMapper.selectByExampleWithBLOBs(example);
     }
@@ -392,6 +393,7 @@ public class LiveMybatisDao {
         criteria.andBottomIdEqualTo(bottomId);
         criteria.andTypeEqualTo(type);
         criteria.andUidEqualTo(uid);
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
         List<TopicBarrage> topicBarrages = topicBarrageMapper.selectByExampleWithBLOBs(example);
         return com.me2me.common.utils.Lists.getSingle(topicBarrages);
     }
@@ -525,6 +527,7 @@ public class LiveMybatisDao {
         criteria.andTopicIdEqualTo(topicId);
         criteria.andUidEqualTo(uid);
         criteria.andTypeEqualTo(Specification.LiveSpeakType.LIKES.index);
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
         List<TopicBarrage> list = topicBarrageMapper.selectByExample(example);
         return com.me2me.common.utils.Lists.getSingle(list);
     }
@@ -571,7 +574,8 @@ public class LiveMybatisDao {
         TopicBarrageExample example= new TopicBarrageExample();
         TopicBarrageExample.Criteria criteria = example.createCriteria();
         criteria.andFidEqualTo(fid);
-
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
+        
         List<TopicBarrage> list = topicBarrageMapper.selectByExampleWithBLOBs(example);
         return list==null||list.isEmpty()?null:list.get(0);
     }
