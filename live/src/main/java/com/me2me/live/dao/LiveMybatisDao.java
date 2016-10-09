@@ -221,6 +221,7 @@ public class LiveMybatisDao {
         return topicMapper.selectByExample(example);
     }
 
+    //获取所有直播红点
     public List<Topic> getMyLivesByUpdateTime2(long uid, long updateTime, List<Long> topics) {
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
@@ -238,7 +239,7 @@ public class LiveMybatisDao {
             criteriaOr.andIdIn(topics);
             example.or(criteriaOr);
         }
-        //最后更新时间降序排列
+        //最后更新时间降序排列（必须获取所有的）
         example.setOrderByClause("long_time desc");
         return topicMapper.selectByExample(example);
     }
