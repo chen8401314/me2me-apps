@@ -573,6 +573,6 @@ public class LiveMybatisDao {
         criteria.andFidEqualTo(fid);
 
         List<TopicBarrage> list = topicBarrageMapper.selectByExampleWithBLOBs(example);
-        return list==null&&list.isEmpty()?null:list.get(0);
+        return list==null||list.isEmpty()?null:list.get(0);
     }
 }
