@@ -322,7 +322,7 @@ public class Live extends BaseController {
     }
 
     /**
-     * 打开app调用此接口获取王国更新红点
+     * 打开app调用此接口获取王国更新红点(未启用)
      */
     @ResponseBody
     @RequestMapping(value = "/getRedDot",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
