@@ -1770,6 +1770,9 @@ private void localJpush(long toUid){
             }else{
                 hottestContentElement.setContent(contentStr);
             }
+            UserProfile profile = userService.getUserProfileByUid(content.getUid());
+            hottestContentElement.setV_lv(profile.getvLv());
+
             hottestContentElement.setLikeCount(content.getLikeCount());
             hottestContentElement.setReviewCount(content.getReviewCount());
             hottestContentElement.setTitle(content.getTitle());
