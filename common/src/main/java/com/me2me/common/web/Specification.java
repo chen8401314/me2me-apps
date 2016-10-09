@@ -803,7 +803,9 @@ public interface Specification {
     }
 
     enum  DeleteObjectType{
-        TOPIC_FRAGMENT("topic_frament",1);
+        TOPIC_FRAGMENT("topic_frament",1),
+
+        TOPIC_BARRAGE("topic_frament",1);
 
         public final String name;
 
