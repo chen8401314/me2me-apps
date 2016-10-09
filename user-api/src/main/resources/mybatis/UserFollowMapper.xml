@@ -288,13 +288,13 @@
   </select>
 
   <select id="getFansOrderByTime" resultType="com.me2me.user.dto.UserFansDto" parameterType="com.me2me.user.dto.FansParamsDto">
-    select uid,nick_name as nickName,avatar from user_profile where uid in (select source_uid from user_follow where target_uid = #{targetUid})
-    order by create_time desc limit #{sinceId,jdbcType=INTEGER} ,10;
+    SELECT  uid,  nick_name AS nickName,  avatar , b.create_time FROM user_profile a ,(SELECT source_uid ,create_time FROM user_follow WHERE target_uid = #{targetUid}) b
+    WHERE a.uid = b. source_uid ORDER BY b.create_time DESC LIMIT #{sinceId,jdbcType=INTEGER} ,10;
   </select>
 
   <select id="getFollowsOrderByTime" resultType="com.me2me.user.dto.UserFollowDto" parameterType="com.me2me.user.dto.UserFollowDto">
-    select uid,nick_name as nickName,avatar from user_profile where uid in (select target_uid from user_follow where source_uid = #{sourceUid})
-    order by create_time desc limit  #{sinceId,jdbcType=INTEGER},10;
+    SELECT  uid,  nick_name AS nickName,  avatar , b.create_time FROM user_profile a ,(SELECT target_uid ,create_time FROM user_follow WHERE source_uid = #{sourceUid}) b
+    WHERE a.uid = b. target_uid ORDER BY b.create_time DESC LIMIT #{sinceId,jdbcType=INTEGER} ,10;
   </select>
 
 </mapper>

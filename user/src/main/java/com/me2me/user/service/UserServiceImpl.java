@@ -717,8 +717,7 @@ public class UserServiceImpl implements UserService {
     public Response getUser(long targetUid, long sourceUid){
         UserProfile userProfile =  getUserProfileByUid(targetUid);
         UserInfoDto.User user = new UserInfoDto.User();
-        UserProfile profile = userMybatisDao.getUserProfileByUid(sourceUid);
-        user.setV_lv(profile.getvLv());
+        user.setV_lv(userProfile.getvLv());
         user.setNickName(userProfile.getNickName());
         user.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
         user.setGender(userProfile.getGender());
