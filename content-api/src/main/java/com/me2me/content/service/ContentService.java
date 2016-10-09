@@ -49,9 +49,10 @@ public interface ContentService{
     /**
      * 用户发布内容删除
      * @param id
+     * @param uid
      * @return
      */
-    Response deleteContent(long id);
+    Response deleteContent(long id, long uid);
 
     /**
      * 获取内容详情

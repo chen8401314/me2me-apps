@@ -967,7 +967,7 @@ private void localJpush(long toUid){
     }
 
     @Override
-    public Response deleteContent(long id) {
+    public Response deleteContent(long id, long uid) {
         log.info("deleteContent start ...");
         Content content = contentMybatisDao.getContentById(id);
         content.setStatus(Specification.ContentStatus.DELETE.index);
@@ -975,6 +975,12 @@ private void localJpush(long toUid){
         contentMybatisDao.updateContentById(content);
         //直播删除
         if(content.getType() == Specification.ArticleType.LIVE.index) {
+            if(uid!=content.getUid()){ //只有王国自己，或者管理员能删除王国
+                UserProfile profile = userService.getUserProfileByUid(uid);
+                if(profile.getIsPromoter()!=1){
+                    return Response.failure(ResponseStatus.CONTENT_DELETE_NO_AUTH.status,ResponseStatus.CONTENT_DELETE_NO_AUTH.message);
+                }
+            }
             contentMybatisDao.deleteTopicById(content.getForwardCid());
             log.info("topic delete");
         }
