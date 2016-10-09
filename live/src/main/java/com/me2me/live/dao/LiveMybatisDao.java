@@ -575,7 +575,7 @@ public class LiveMybatisDao {
         TopicBarrageExample.Criteria criteria = example.createCriteria();
         criteria.andFidEqualTo(fid);
         criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
-        
+
         List<TopicBarrage> list = topicBarrageMapper.selectByExampleWithBLOBs(example);
         return list==null||list.isEmpty()?null:list.get(0);
     }
