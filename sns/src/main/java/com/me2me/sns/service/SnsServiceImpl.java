@@ -130,12 +130,14 @@ public class SnsServiceImpl implements SnsService {
         String coreCircle = topic.getCoreCircle();
         JSONArray coreCircles = JSON.parseArray(coreCircle);
         if (dto.getType() == Specification.SnsCircle.CORE.index) {
-            List<Long> uidIn = new ArrayList<>();
-            for(int i=0;i<coreCircles.size();i++){
-                uidIn.add(coreCircles.getLong(i));
+            if(dto.getSinceId()<2) {
+                List<Long> uidIn = new ArrayList<>();
+                for (int i = 0; i < coreCircles.size(); i++) {
+                    uidIn.add(coreCircles.getLong(i));
+                }
+                List<UserProfile> userProfiles = userService.getUserProfilesByUids(uidIn);
+                buildCoreCircle(showSnsCircleDto, userProfiles, uid, topic.getUid());
             }
-            List<UserProfile> userProfiles = userService.getUserProfilesByUids(uidIn);
-            buildCoreCircle(showSnsCircleDto, userProfiles, uid, topic.getUid());
         } else {
             List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto);
             buildSnsCircle(showSnsCircleDto, list, uid, topic.getUid());
