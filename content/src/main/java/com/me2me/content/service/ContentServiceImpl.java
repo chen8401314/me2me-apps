@@ -2029,6 +2029,8 @@ private void localJpush(long toUid){
         log.info("getAttention data");
         for(Content content : attentionList){
             ShowAttentionDto.ContentElement contentElement = showAttentionDto.createElement();
+            UserProfile profile = userService.getUserProfileByUid(content.getUid());
+            contentElement.setV_lv(profile.getvLv());
             contentElement.setId(content.getId());
             contentElement.setUid(content.getUid());
             // 获取用户信息
