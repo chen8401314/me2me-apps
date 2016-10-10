@@ -310,7 +310,7 @@ public class LiveServiceImpl implements LiveService {
     public Response speak(SpeakDto speakDto) {
         log.info("speak start ...");
         //如果是主播发言更新cache
-        if (speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index) {
+        if (speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index||speakDto.getType()==Specification.LiveSpeakType.AT_CORE_CIRCLE.index) {
             //只更新大王发言,如果是主播(大王)发言更新cache
 //            Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
 //            //小王发言更新cache（topic.getUid() == speakDto.getUid()为该王国国王 通知所有人）
