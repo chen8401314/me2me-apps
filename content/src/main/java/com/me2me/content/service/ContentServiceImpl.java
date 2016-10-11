@@ -9,6 +9,7 @@ import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.content.dao.ContentJdbcDao;
 import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.*;
@@ -84,6 +85,9 @@ public class ContentServiceImpl implements ContentService {
     private Random random = new Random();
 
     private ExecutorService executorService= Executors.newFixedThreadPool(100);
+
+    @Autowired
+    private ContentJdbcDao contentJdbcDao;
 
 
 
@@ -1671,6 +1675,11 @@ private void localJpush(long toUid){
     @Override
     public int getLiveCount(long uid) {
         return contentMybatisDao.getLiveCount(uid);
+    }
+
+    @Override
+    public void updateContentReviewCountByTid(long topicId) {
+        contentJdbcDao.updateContentReviewCountByTid(topicId);
     }
 
 

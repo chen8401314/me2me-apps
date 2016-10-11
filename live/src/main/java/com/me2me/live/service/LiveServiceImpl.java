@@ -310,7 +310,7 @@ public class LiveServiceImpl implements LiveService {
     public Response speak(SpeakDto speakDto) {
         log.info("speak start ...");
         //如果是主播发言更新cache
-        if (speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index||speakDto.getType()==Specification.LiveSpeakType.AT_CORE_CIRCLE.index) {
+        if (speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index||speakDto.getType()==Specification.LiveSpeakType.AT_CORE_CIRCLE.index||speakDto.getType()==Specification.LiveSpeakType.ANCHOR_AT.index||speakDto.getType()==Specification.LiveSpeakType.FANS.index) {
             //只更新大王发言,如果是主播(大王)发言更新cache
 //            Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
 //            //小王发言更新cache（topic.getUid() == speakDto.getUid()为该王国国王 通知所有人）
@@ -879,6 +879,8 @@ public class LiveServiceImpl implements LiveService {
             //从topicFragment中删除
             int updateRows = liveMybatisDao.deleteLiveFragmentById(fid);
             if (updateRows == 1) {
+                //将content表中review_count数量减1
+                contentService.updateContentReviewCountByTid(topicId);
                 DeleteLog deleteLog = new DeleteLog();
                 deleteLog.setDelTime(new Date());
                 deleteLog.setType(Specification.DeleteObjectType.TOPIC_FRAGMENT.index);
