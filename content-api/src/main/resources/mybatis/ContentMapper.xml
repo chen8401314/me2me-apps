@@ -880,7 +880,7 @@
   </select>
 
   <select id="countFragment" parameterType="com.me2me.content.dto.CountFragmentDto" resultType="java.lang.Integer">
-    select count(*)  from topic_fragment where topic_id = #{topicId,jdbcType=BIGINT} and uid != #{uid,jdbcType=BIGINT}
+    select count(*)  from topic_fragment where topic_id = #{topicId,jdbcType=BIGINT} and uid != #{uid,jdbcType=BIGINT} and status=1
   </select>
 
   <select id="kingTopic" parameterType="com.me2me.content.dto.KingTopicDto" resultType="com.me2me.content.dto.ResultKingTopicDto">
@@ -903,7 +903,7 @@
   </select>
 
   <select id="getTopicCount" parameterType="java.lang.Long" resultType="java.lang.Integer" >
-    select count(id) from topic_fragment where topic_id = #{topicId,jdbcType=BIGINT}
+    select count(id) from topic_fragment where topic_id = #{topicId,jdbcType=BIGINT} and status=1
   </select>
 
   <select id="getTopicLastUpdateTime" parameterType="java.lang.Long" resultType="java.lang.Long" >

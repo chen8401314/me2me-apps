@@ -879,8 +879,6 @@ public class LiveServiceImpl implements LiveService {
             //从topicFragment中删除
             int updateRows = liveMybatisDao.deleteLiveFragmentById(fid);
             if (updateRows == 1) {
-                //将content表中review_count数量减1
-                contentService.updateContentReviewCountByTid(topicId);
                 DeleteLog deleteLog = new DeleteLog();
                 deleteLog.setDelTime(new Date());
                 deleteLog.setType(Specification.DeleteObjectType.TOPIC_FRAGMENT.index);

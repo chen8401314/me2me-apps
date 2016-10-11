@@ -9,7 +9,6 @@ import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
-import com.me2me.content.dao.ContentJdbcDao;
 import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.*;
@@ -86,8 +85,6 @@ public class ContentServiceImpl implements ContentService {
 
     private ExecutorService executorService= Executors.newFixedThreadPool(100);
 
-    @Autowired
-    private ContentJdbcDao contentJdbcDao;
 
 
 
@@ -1677,10 +1674,7 @@ private void localJpush(long toUid){
         return contentMybatisDao.getLiveCount(uid);
     }
 
-    @Override
-    public void updateContentReviewCountByTid(long topicId) {
-        contentJdbcDao.updateContentReviewCountByTid(topicId);
-    }
+
 
 
     private void builderContent(long uid,List<Content> contentList, List<ShowHottestDto.HottestContentElement> container) {
@@ -1959,7 +1953,8 @@ private void localJpush(long toUid){
 
         for(Content content : contentList) {
             ShowAttentionDto.ContentElement contentElement = showAttentionDto.createElement();
-            contentElement.setId(content.getId());
+            contentElement
+                    .setId(content.getId());
             contentElement.setUid(content.getUid());
             // 获取用户信息
             UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
