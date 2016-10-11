@@ -204,4 +204,5 @@ public interface ContentService{
 
     int getLiveCount(long uid);
 
+    void updateContentReviewCountByTid(long topicId);
 }

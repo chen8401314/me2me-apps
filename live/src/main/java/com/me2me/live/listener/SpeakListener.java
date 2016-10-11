@@ -61,11 +61,16 @@ public class SpeakListener {
         log.info("SpeakEvent speak start ...");
         List<LiveFavorite> liveFavorites = liveMybatisDao.getFavoriteAll(speakEvent.getTopicId());
         LiveLastUpdate liveLastUpdate = new LiveLastUpdate(speakEvent.getTopicId(),"1");
+        //有更新时通知国王
+        Topic topic = liveMybatisDao.getTopicById(speakEvent.getTopicId());
+        MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(topic.getUid(), speakEvent.getTopicId() + "", "1");
+        log.info("speak by master start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
+        cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
         // 通知所有的订阅者
         for(LiveFavorite liveFavorite : liveFavorites) {
             MyLivesStatusModel livesStatusModel = new MyLivesStatusModel(liveFavorite.getUid(),"1");
             cacheService.hSet(livesStatusModel.getKey(),livesStatusModel.getField(),"1");
-            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(liveFavorite.getUid(), liveFavorite.getTopicId() + "", "1");
+            cacheModel = new MySubscribeCacheModel(liveFavorite.getUid(), liveFavorite.getTopicId() + "", "1");
             log.info("speak by master start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
             cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
             //如果缓存存在时间失效，推送
@@ -74,7 +79,7 @@ public class SpeakListener {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
                 String alias = String.valueOf(liveFavorite.getUid());
-                Topic topic = liveMybatisDao.getTopicById(speakEvent.getTopicId());
+
                 jPushService.payloadByIdExtra(alias, "你加入的王国:" + topic.getTitle() + "更新了", JPushUtils.packageExtra(jsonObject));
                 log.info("update live end");
             }
