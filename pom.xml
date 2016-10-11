@@ -37,6 +37,7 @@
         <module>config-center</module>
         <module>message-channel-api</module>
         <module>message-channel</module>
+        <module>operation-mgmt</module>
     </modules>
     <name>${project.artifactId}</name>
     <description>the parent project of mysites</description>
@@ -220,6 +221,7 @@
         </developer>
     </developers>
     <properties>
+    	<jetty.version>6.1.22</jetty.version>
         <spring.version>4.2.6.RELEASE</spring.version>
         <fastjson.version>1.2.7</fastjson.version>
         <mysql.driver.version>5.1.35</mysql.driver.version>
