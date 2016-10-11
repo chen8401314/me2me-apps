@@ -318,6 +318,7 @@ public class LiveServiceImpl implements LiveService {
             SpeakEvent speakEvent = new SpeakEvent();
             speakEvent.setTopicId(speakDto.getTopicId());
             speakEvent.setType(speakDto.getType());
+            speakEvent.setUid(speakDto.getUid());
             applicationEventBus.post(speakEvent);
 //            }
             //粉丝有留言提醒主播
