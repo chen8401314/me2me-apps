@@ -6,8 +6,11 @@ import com.me2me.common.web.Specification;
 import com.me2me.content.dto.*;
 import com.me2me.content.mapper.*;
 import com.me2me.content.model.*;
+
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -221,7 +224,9 @@ public class ContentMybatisDao {
             // PGC
             criteria.andTypeEqualTo(Specification.ArticleType.EDITOR.index);
             ContentExample.Criteria criteria2 = example.createCriteria();
-            criteria.andTitleLike("%"+editorContentDto.getKeyword()+"%");
+            if(StringUtils.isNotBlank(editorContentDto.getKeyword())){
+            	criteria.andTitleLike("%"+editorContentDto.getKeyword()+"%");
+            }
             criteria2.andTypeEqualTo(Specification.ArticleType.ACTIVITY.index);
             criteria.andStatusNotEqualTo(1);
             example.or(criteria2);
@@ -229,6 +234,9 @@ public class ContentMybatisDao {
             // UGC
             criteria.andTypeEqualTo(Specification.ArticleType.ORIGIN.index);
             ContentExample.Criteria criteria2 = example.createCriteria();
+            if(StringUtils.isNotBlank(editorContentDto.getKeyword())){
+            	criteria.andTitleLike("%"+editorContentDto.getKeyword()+"%");
+            }
             criteria2.andTypeEqualTo(Specification.ArticleType.LIVE.index);
             criteria.andStatusNotEqualTo(1);
             example.or(criteria2);
