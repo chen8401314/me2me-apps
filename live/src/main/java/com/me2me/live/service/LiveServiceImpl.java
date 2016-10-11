@@ -1080,6 +1080,7 @@ public class LiveServiceImpl implements LiveService {
         for (Topic topic : list) {
             ShowTopicListDto.UpdateLives updateLives = ShowTopicListDto.createUpdateLivesElement();
             UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
+            updateLives.setV_lv(userProfile.getvLv());
             updateLives.setUid(userProfile.getUid());
             updateLives.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             showTopicListDto.getUpdateLives().add(updateLives);

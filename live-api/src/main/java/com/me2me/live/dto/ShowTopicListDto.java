@@ -117,5 +117,7 @@ public class ShowTopicListDto implements BaseEntity{
         private long uid;
 
         private String avatar;
+
+        private int v_lv;
     }
 }
