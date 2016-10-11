@@ -14,4 +14,6 @@ public class SpeakEvent implements BaseEntity {
 
     private long topicId;
 
+    private int type;
+
 }

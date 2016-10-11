@@ -317,6 +317,7 @@ public class LiveServiceImpl implements LiveService {
 //            if(topic.getUid() == speakDto.getUid()) {
             SpeakEvent speakEvent = new SpeakEvent();
             speakEvent.setTopicId(speakDto.getTopicId());
+            speakEvent.setType(speakDto.getType());
             applicationEventBus.post(speakEvent);
 //            }
             //粉丝有留言提醒主播
