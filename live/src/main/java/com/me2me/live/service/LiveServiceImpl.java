@@ -225,6 +225,9 @@ public class LiveServiceImpl implements LiveService {
         UserProfile userProfile = userService.getUserProfileByUid(uid);
         showLiveDto.setV_lv(userProfile.getvLv());
         Topic topic = liveMybatisDao.getTopicById(cid);
+        if(topic==null){
+            return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
+        }
         Content content = contentService.getContentByTopicId(cid);
         showLiveDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
         showLiveDto.setUid(topic.getUid());

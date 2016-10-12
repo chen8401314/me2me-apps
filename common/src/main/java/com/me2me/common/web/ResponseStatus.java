@@ -246,6 +246,8 @@ public enum  ResponseStatus {
 
     CONTENT_DELETE_NO_AUTH("只有国王能删除自己的王国","content delete no auth",50036),
 
+    LIVE_HAS_DELETED("该王国已删除","live has deleted",50037),
+
 
 
 
