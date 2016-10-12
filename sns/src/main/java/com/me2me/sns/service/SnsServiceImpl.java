@@ -426,7 +426,7 @@ public class SnsServiceImpl implements SnsService {
             } else if (isFollow == 1 && isFollowMe == 0) {
                 snsMybatisDao.createSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
             }
-
+            liveService.deleteFavoriteDelete(uid,topicId);
             UserProfile userProfile = userService.getUserProfileByUid(owner);
 
             JsonObject jsonObject = new JsonObject();
