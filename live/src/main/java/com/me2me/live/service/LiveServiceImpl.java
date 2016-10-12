@@ -174,8 +174,6 @@ public class LiveServiceImpl implements LiveService {
 
         liveCoverDto.setInternalStatus(getInternalStatus(topic,uid));
         liveCoverDto.setLiveWebUrl(Constant.Live_WEB_URL+topicId);//返回直播URL地址
-        UserProfile profile = userService.getUserProfileByUid(uid);
-        liveCoverDto.setV_lv(profile.getvLv());
         //添加直播阅读数log.info("liveCover end ...");
         Content content = contentService.getContentByTopicId(topicId);
         content.setReadCount(content.getReadCount() + 1);
