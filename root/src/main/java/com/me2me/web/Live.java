@@ -260,7 +260,8 @@ public class Live extends BaseController {
      */
     @RequestMapping(value = "/getLiveByCid",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response getLiveByCid(GetLiveByCidRequest request){
+    public Response getLiveByCid(GetLiveByCidRequest request ,HttpServletResponse response){
+        response.setHeader("Access-Control-Allow-Origin", "*");
         return liveService.getLiveByCid(request.getCid(),request.getUid());
     }
 
