@@ -414,7 +414,7 @@ public class LiveServiceImpl implements LiveService {
         }
         Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
         //直播发言时候更新直播更新时间
-        if (speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.VIDEO.index || speakDto.getType() == Specification.LiveSpeakType.SOUND.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index) {
+        if (speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.VIDEO.index || speakDto.getType() == Specification.LiveSpeakType.SOUND.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index||speakDto.getType()==Specification.LiveSpeakType.AT_CORE_CIRCLE.index) {
             Calendar calendar = Calendar.getInstance();
             topic.setUpdateTime(calendar.getTime());
             topic.setLongTime(calendar.getTimeInMillis());
