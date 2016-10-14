@@ -1401,7 +1401,7 @@ public class UserServiceImpl implements UserService {
         List<UserProfile> list = userMybatisDao.searchFans(searchFansDto);
         for(UserProfile userProfile : list){
             SearchDto.SearchElement element = searchDto.createElement();
-            UserProfile profile = userMybatisDao.getUserProfileByUid(uid);
+            UserProfile profile = userMybatisDao.getUserProfileByUid(userProfile.getUid());
             element.setV_lv(profile.getvLv());
             element.setUid(userProfile.getUid());
             element.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
