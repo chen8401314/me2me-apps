@@ -162,7 +162,7 @@ public interface UserService {
 
     void initUserNumber(int limit);
 
-    Response versionControl(String version,int platform);
+    Response versionControl(String version,int platform,String ip,String channel,String device);
 
     Response updateVersion(VersionDto versionDto);
 

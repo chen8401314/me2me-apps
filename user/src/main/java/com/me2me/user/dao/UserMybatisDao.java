@@ -84,6 +84,9 @@ public class UserMybatisDao {
     @Autowired
     private ThirdPartUserMapper thirdPartUserMapper;
 
+    @Autowired
+    private OpenDeviceCountMapper openDeviceCountMapper;
+
     /**
      * 保存用户注册信息
      * @param user
@@ -673,6 +676,10 @@ public class UserMybatisDao {
         criteria.andThirdPartTypeEqualTo(type);
         List<ThirdPartUser> thirdPartUsers = thirdPartUserMapper.selectByExample(example);
         return thirdPartUsers!=null&&thirdPartUsers.size()>0?thirdPartUsers.get(0):null;
+    }
+
+    public void createOpenCount(OpenDeviceCount openDeviceCount){
+        openDeviceCountMapper.insertSelective(openDeviceCount);
     }
 
 }

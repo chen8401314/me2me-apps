@@ -13,6 +13,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 赵朋扬
@@ -412,8 +416,26 @@ public class Users extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "/versionControl",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response versionControl(VersionControlRequest request){
-        return userService.versionControl(request.getVersion(),request.getPlatform());
+    public Response versionControl(VersionControlRequest request ,HttpServletRequest rq){
+        //获取ipaddress信息
+        String ip = rq.getHeader("X-Forwarded-For");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
+            ip = rq.getHeader("Proxy-Client-IP");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
+            ip = rq.getHeader("WL-Proxy-Client-IP");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
+            ip = rq.getHeader("HTTP_CLIENT_IP");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
+            ip = rq.getHeader("HTTP_X_FORWARDED_FOR");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
+            ip = rq.getRemoteAddr();
+        if ("127.0.0.1".equals(ip) || "0:0:0:0:0:0:0:1".equals(ip))
+            try {
+                ip = InetAddress.getLocalHost().getHostAddress();
+            }
+            catch (UnknownHostException unknownhostexception) {
+            }
+        return userService.versionControl(request.getVersion(),request.getPlatform(),ip,request.getChannel(),request.getDevice());
     }
 
     /**

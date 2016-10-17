@@ -890,7 +890,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response versionControl(String version,int platform) {
+    public Response versionControl(String version,int platform,String ip,String channel,String device) {
+        //记录打开次数
+        log.info("ip address :" + ip);
+        log.info("add channel count start ...");
+        OpenDeviceCount openDeviceCount = new OpenDeviceCount();
+        openDeviceCount.setChannel(channel);
+        openDeviceCount.setVersion(version);
+        openDeviceCount.setDevice(device);
+        openDeviceCount.setCreatTime(new Date());
+        openDeviceCount.setIpAddress(ip);
+        openDeviceCount.setPlatform(platform);
+        userMybatisDao.createOpenCount(openDeviceCount);
+        log.info("add channel count end ...");
+
         VersionControlDto versionControlDto = new VersionControlDto();
         VersionControl control = userMybatisDao.getVersion(version,platform);
         VersionControl versionControl = userMybatisDao.getNewestVersion(platform);
