@@ -152,9 +152,10 @@ public enum  ResponseStatus {
     QQ_BIND_EXISTS("该QQ号已注册或绑定过其他账号,请换号之后重试","weixin bind exists",20069),
 
     WEIBO_BIND_EXISTS("该微博微信号已注册或绑定过其他账号,请换号之后重试","weixin bind exists",20070),
+
     USER_V_EXISTS("该用户已经是大V用户，请重新选择","user v exists",20071),
 
-    TOPIC_FRAGMENT_DELETE_SUCCESS("王国发言内容删除成功","topic fragment delete success",20071),
+    TOPIC_FRAGMENT_DELETE_SUCCESS("王国发言内容删除成功","topic fragment delete success",20072),
 
 
 
