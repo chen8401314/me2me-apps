@@ -1,33 +1,20 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head runat="server">
+<head>
     <%@include file="common/meta.jsp"%>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
     <title>ZX_IMS 2.0 - 仪表盘</title>
 
-    <!-- Bootstrap core CSS -->
     <link href="${ctx}/css/bootstrap.min.css" rel="stylesheet">
     <link href="${ctx}/css/bootstrap-reset.css" rel="stylesheet">
-    <!--external css-->
     <link href="${ctx}/assets/font-awesome/css/font-awesome.css" rel="stylesheet" />
     <link href="${ctx}/assets/jquery-easy-pie-chart/jquery.easy-pie-chart.css" rel="stylesheet" type="text/css" media="screen" />
     <link rel="stylesheet" href="${ctx}/css/owl.carousel.css" type="text/css">
-
-    <!--right slidebar-->
     <link href="${ctx}/css/slidebars.css" rel="stylesheet">
-
-    <!-- Custom styles for this template -->
-
     <link href="${ctx}/css/style.css" rel="stylesheet">
     <link href="${ctx}/css/style-responsive.css" rel="stylesheet" />
-
-    <!-- HTML5 shim and Respond.js IE8 support of HTML5 tooltipss and media queries -->
-    <!--[if lt IE 9]>
-    <script src="${ctx}/js/html5shiv.js"></script>
-    <script src="${ctx}/js/respond.min.js"></script>
-    <![endif]-->
 </head>
 
 <body>
@@ -54,7 +41,7 @@
                             <i class="fa fa-user"></i>
                         </div>
                         <div class="value">
-                            <h1 class="count"></h1>
+                            <h1 class="count">${dataObj.todayCount }</h1>
                             <p>今日活跃</p>
                         </div>
                     </section>
@@ -65,8 +52,7 @@
                             <i class="fa fa-book"></i>
                         </div>
                         <div class="value">
-                            <h1 class=" count2">
-                            </h1>
+                            <h1 class="count2">${dataObj.yesterdayCount }</h1>
                             <p>昨日活跃</p>
                         </div>
                     </section>
@@ -77,8 +63,7 @@
                             <i class="fa fa-share"></i>
                         </div>
                         <div class="value">
-                            <h1 class=" count3">
-                            </h1>
+                            <h1 class="count3">${dataObj.threedayCount }</h1>
                             <p>三日活跃</p>
                         </div>
                     </section>
@@ -89,8 +74,7 @@
                             <i class="fa fa-fire"></i>
                         </div>
                         <div class="value">
-                            <h1 class=" count4">
-                            </h1>
+                            <h1 class="count4">${dataObj.sevendayCount }</h1>
                             <p>七日活跃</p>
                         </div>
                     </section>
@@ -735,40 +719,25 @@
 <script src="${ctx}/js/owl.carousel.js"></script>
 <script src="${ctx}/js/jquery.customSelect.min.js"></script>
 <script src="${ctx}/js/respond.min.js"></script>
-
-<!--right slidebar-->
 <script src="${ctx}/js/slidebars.min.js"></script>
-
-<!--common script for all pages-->
 <script src="${ctx}/js/common-scripts.js"></script>
-
-<!--script for this page-->
 <script src="${ctx}/js/sparkline-chart.js"></script>
 <script src="${ctx}/js/easy-pie-chart.js"></script>
 <script src="${ctx}/js/count.js"></script>
+   <script>
+        $(document).ready(function () {
+            $("#owl-demo").owlCarousel({
+                navigation: true,
+                slideSpeed: 300,
+                paginationSpeed: 400,
+                singleItem: true,
+                autoPlay: true
 
-<script>
-
-    //owl carousel
-
-    $(document).ready(function () {
-        $("#owl-demo").owlCarousel({
-            navigation: true,
-            slideSpeed: 300,
-            paginationSpeed: 400,
-            singleItem: true,
-            autoPlay: true
-
+            });
         });
-    });
-
-    //custom select box
-
-    $(function () {
-        $('select.styled').customSelect();
-    });
-
-</script>
-
+        $(function () {
+            $('select.styled').customSelect();
+        });
+    </script>
 </body>
 </html>
