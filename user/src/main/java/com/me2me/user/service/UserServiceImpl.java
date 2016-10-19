@@ -1653,6 +1653,7 @@ public class UserServiceImpl implements UserService {
         thirdPartUser.setUid(thirdPartSignUpDto.getUid());
         thirdPartUser.setThirdPartToken(thirdPartSignUpDto.getThirdPartToken());
         thirdPartUser.setThirdPartOpenId(thirdPartSignUpDto.getThirdPartOpenId());
+        thirdPartUser.setThirdPartUnionid(thirdPartSignUpDto.getUnionId());
         thirdPartUser.setCreateTime(new Date());
         thirdPartUser.setThirdPartType(thirdPartSignUpDto.getThirdPartType());
         userMybatisDao.creatThirdPartUser(thirdPartUser);
@@ -1723,6 +1724,12 @@ public class UserServiceImpl implements UserService {
             }else if(thirdPartSignUpDto.getThirdPartType()==Specification.ThirdPartType.WEIXIN.index){
                 if(thirdUser != null){
                     return Response.success(ResponseStatus.WEIXIN_BIND_EXISTS.status,ResponseStatus.WEIXIN_BIND_EXISTS.message);
+                }
+                if(!StringUtils.isEmpty(thirdPartSignUpDto.getUnionId())){//新版本
+                	List<ThirdPartUser> thirdPartUser = userMybatisDao.getThirdPartUserByUnionId(thirdPartSignUpDto.getUnionId(),thirdPartSignUpDto.getThirdPartType());
+                	if(null != thirdPartUser && thirdPartUser.size() > 0){
+                		return Response.success(ResponseStatus.WEIXIN_BIND_EXISTS.status,ResponseStatus.WEIXIN_BIND_EXISTS.message);
+                	}
                 }
                 buildThirdPart2(thirdPartSignUpDto);
                 thirdPartName = Specification.ThirdPartType.WEIXIN.name;
