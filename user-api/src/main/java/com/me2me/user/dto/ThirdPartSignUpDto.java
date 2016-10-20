@@ -37,4 +37,9 @@ public class ThirdPartSignUpDto extends UserSignUpDto {
      */
     private long uid;
 
+    private String unionId;
+
+    //区分h5注册来源
+    private int h5type;
+
 }

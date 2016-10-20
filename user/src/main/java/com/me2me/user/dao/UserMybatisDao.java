@@ -646,11 +646,28 @@ public class UserMybatisDao {
         thirdPartUserMapper.insertSelective(thirdPartUser);
     }
 
-    public List<ThirdPartUser> getThirdPartUser(String openId){
+    public ThirdPartUser getThirdPartUser(String openId ,int type){
         ThirdPartUserExample example = new ThirdPartUserExample();
         ThirdPartUserExample.Criteria criteria = example.createCriteria();
         criteria.andThirdPartOpenIdEqualTo(openId);
-        return thirdPartUserMapper.selectByExample(example);
+        criteria.andStatusEqualTo(1);
+        criteria.andThirdPartTypeEqualTo(type);
+        List<ThirdPartUser> thirdPartUsers = thirdPartUserMapper.selectByExample(example);
+        return thirdPartUsers.size()>0 && thirdPartUsers !=null ?thirdPartUsers.get(0):null;
+    }
+
+    public List<ThirdPartUser> getThirdPartUserByUnionId(String unionId ,int type){
+        ThirdPartUserExample example = new ThirdPartUserExample();
+        ThirdPartUserExample.Criteria criteria = example.createCriteria();
+        criteria.andThirdPartUnionidEqualTo(unionId);
+        criteria.andStatusEqualTo(1);
+        criteria.andThirdPartTypeEqualTo(type);
+        List<ThirdPartUser> thirdPartUsers = thirdPartUserMapper.selectByExample(example);
+        return thirdPartUsers;
+    }
+
+    public void updateThirdPartUser(ThirdPartUser thirdPartUser){
+        thirdPartUserMapper.updateByPrimaryKeySelective(thirdPartUser);
     }
 
     public List<UserProfile> checkUserNickName(String nickName){

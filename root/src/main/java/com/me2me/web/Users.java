@@ -570,6 +570,8 @@ public class Users extends BaseController {
         dto.setGender(request.getGender());
         dto.setJPushToken(request.getJPushToken());
 //        dto.setUid(request.getUid());
+        dto.setUnionId(request.getUnionId());
+        dto.setH5type(request.getH5type());
         return userService.thirdPartLogin(dto);
     }
 

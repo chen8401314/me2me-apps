@@ -60,4 +60,12 @@ public class ThirdPartRequest {
     @Setter
     private String encrypt;
 
+    @Getter
+    @Setter
+    private String unionId;
+
+    @Getter
+    @Setter
+    private int h5type;
+
 }

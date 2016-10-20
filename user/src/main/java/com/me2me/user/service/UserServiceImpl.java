@@ -1428,21 +1428,121 @@ public class UserServiceImpl implements UserService {
     public Response thirdPartLogin(ThirdPartSignUpDto thirdPartSignUpDto) {
         // TODO: 2016/9/12
         LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
-            List<ThirdPartUser> users = userMybatisDao.getThirdPartUser(thirdPartSignUpDto.getThirdPartOpenId());
-            if (users.size() > 0) {
-                long uid = users.get(0).getUid();
+        ThirdPartUser users = userMybatisDao.getThirdPartUser(thirdPartSignUpDto.getThirdPartOpenId() ,thirdPartSignUpDto.getThirdPartType());
+        //兼容老版本
+        if(StringUtils.isEmpty(thirdPartSignUpDto.getUnionId())){
+            if (users !=null) {
+                long uid = users.getUid();
                 UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
                 UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
                 loginSuccessDto.setUid(userProfile.getUid());
                 loginSuccessDto.setGender(userProfile.getGender());
                 loginSuccessDto.setNickName(userProfile.getNickName());
                 loginSuccessDto.setToken(userToken.getToken());
-
-                return Response.failure(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
+                return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
             } else {
                 buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
             }
-        return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status,ResponseStatus.USER_LOGIN_SUCCESS.message,loginSuccessDto);
+            return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status, ResponseStatus.USER_LOGIN_SUCCESS.message, loginSuccessDto);
+        }
+        else{
+            if(thirdPartSignUpDto.getThirdPartType() == Specification.ThirdPartType.WEIXIN.index && thirdPartSignUpDto.getH5type() == 1){
+                List<ThirdPartUser> thirdPartUsers = userMybatisDao.getThirdPartUserByUnionId(thirdPartSignUpDto.getUnionId() ,thirdPartSignUpDto.getThirdPartType());
+                if(thirdPartUsers.size() > 0){
+                    UserProfile userProfile = userMybatisDao.getUserProfileByUid(thirdPartUsers.get(0).getUid());
+                    UserToken userToken = userMybatisDao.getUserTokenByUid(thirdPartUsers.get(0).getUid());
+                    loginSuccessDto.setUid(userProfile.getUid());
+                    loginSuccessDto.setGender(userProfile.getGender());
+                    loginSuccessDto.setNickName(userProfile.getNickName());
+                    loginSuccessDto.setToken(userToken.getToken());
+                    return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
+                }
+                //h5微信登录
+                buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
+                return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status, ResponseStatus.USER_LOGIN_SUCCESS.message, loginSuccessDto);
+            }
+            else if(users !=null && StringUtils.isEmpty(users.getThirdPartUnionid()) && thirdPartSignUpDto.getThirdPartType() == users.getThirdPartType()){
+                //如果openid用户有，unionId没有 先看有没有其他unionId和这个相同的，有把他置为失效，然后保存unionId，后返回登录信息
+                //app登录
+                List<ThirdPartUser> thirdPartUsers = userMybatisDao.getThirdPartUserByUnionId(thirdPartSignUpDto.getUnionId() ,thirdPartSignUpDto.getThirdPartType());
+                if(thirdPartUsers.size() >0){
+                    thirdPartUsers.get(0).setStatus(0);
+                    userMybatisDao.updateThirdPartUser(thirdPartUsers.get(0));
+                }
+                users.setThirdPartUnionid(thirdPartSignUpDto.getUnionId());
+                userMybatisDao.updateThirdPartUser(users);
+                ResponseThirdPartUser(users ,loginSuccessDto);
+//                long uid = users.getUid();
+//                UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+//                UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
+//                loginSuccessDto.setUid(userProfile.getUid());
+//                loginSuccessDto.setGender(userProfile.getGender());
+//                loginSuccessDto.setNickName(userProfile.getNickName());
+//                loginSuccessDto.setToken(userToken.getToken());
+                return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
+
+            } else if(users !=null && !StringUtils.isEmpty(users.getThirdPartUnionid()) && thirdPartSignUpDto.getThirdPartType() == users.getThirdPartType()){
+                //如果openid用户有，unionId有 直接登录
+                ResponseThirdPartUser(users ,loginSuccessDto);
+//                long uid = users.getUid();
+//                UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+//                UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
+//                loginSuccessDto.setUid(userProfile.getUid());
+//                loginSuccessDto.setGender(userProfile.getGender());
+//                loginSuccessDto.setNickName(userProfile.getNickName());
+//                loginSuccessDto.setToken(userToken.getToken());
+                return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
+            }
+            else if(users ==null){
+                //根据openid查询不到的话，用unionId去查 如果有 保存openId 直接返回登录信息
+                List<ThirdPartUser> thirdPartUsers = userMybatisDao.getThirdPartUserByUnionId(thirdPartSignUpDto.getUnionId(),thirdPartSignUpDto.getThirdPartType());
+                if(thirdPartUsers.size() >0) {
+                    thirdPartUsers.get(0).setThirdPartOpenId(thirdPartSignUpDto.getThirdPartOpenId());
+                    userMybatisDao.updateThirdPartUser(thirdPartUsers.get(0));
+
+                    List<ThirdPartUser> thirdPartUser = userMybatisDao.getThirdPartUserByUnionId(thirdPartSignUpDto.getUnionId(),thirdPartSignUpDto.getThirdPartType());
+                    UserProfile userProfile = userMybatisDao.getUserProfileByUid(thirdPartUser.get(0).getUid());
+                    UserToken userToken = userMybatisDao.getUserTokenByUid(thirdPartUser.get(0).getUid());
+                    loginSuccessDto.setUid(userProfile.getUid());
+                    loginSuccessDto.setGender(userProfile.getGender());
+                    loginSuccessDto.setNickName(userProfile.getNickName());
+                    loginSuccessDto.setToken(userToken.getToken());
+                    return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
+                }else{
+                    buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
+                    return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status, ResponseStatus.USER_LOGIN_SUCCESS.message, loginSuccessDto);
+                }
+
+            }
+            else{
+                if (users !=null) {
+                    ResponseThirdPartUser(users ,loginSuccessDto);
+//                    long uid = users.getUid();
+//                    UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+//                    UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
+//                    loginSuccessDto.setUid(userProfile.getUid());
+//                    loginSuccessDto.setGender(userProfile.getGender());
+//                    loginSuccessDto.setNickName(userProfile.getNickName());
+//                    loginSuccessDto.setToken(userToken.getToken());
+                    return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
+                } else {
+                    buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
+                }
+                return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status, ResponseStatus.USER_LOGIN_SUCCESS.message, loginSuccessDto);
+            }
+
+        }
+
+    }
+
+    public void ResponseThirdPartUser(ThirdPartUser users,LoginSuccessDto loginSuccessDto){
+        long uid = users.getUid();
+        UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+        UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
+        loginSuccessDto.setUid(userProfile.getUid());
+        loginSuccessDto.setGender(userProfile.getGender());
+        loginSuccessDto.setNickName(userProfile.getNickName());
+        loginSuccessDto.setToken(userToken.getToken());
     }
 
     //第三方登录公共方法
@@ -1503,14 +1603,26 @@ public class UserServiceImpl implements UserService {
         loginSuccessDto.setGender(userProfile1.getGender());
         loginSuccessDto.setToken(userToken.getToken());
 
-        ThirdPartUser thirdPartUser = new ThirdPartUser();
-        thirdPartUser.setUid(user1.getUid());
-        thirdPartUser.setThirdPartToken(thirdPartSignUpDto.getThirdPartToken());
-        thirdPartUser.setThirdPartOpenId(thirdPartSignUpDto.getThirdPartOpenId());
-        thirdPartUser.setCreateTime(new Date());
-        thirdPartUser.setThirdPartType(thirdPartSignUpDto.getThirdPartType());
-        userMybatisDao.creatThirdPartUser(thirdPartUser);
-        log.info("ThirdPartUser is create");
+        if(thirdPartSignUpDto.getH5type() ==1) {//h5微信注册openid不存数据库
+            ThirdPartUser thirdPartUser = new ThirdPartUser();
+            thirdPartUser.setUid(user1.getUid());
+            thirdPartUser.setThirdPartToken(thirdPartSignUpDto.getThirdPartToken());
+            thirdPartUser.setThirdPartUnionid(thirdPartSignUpDto.getUnionId());
+            thirdPartUser.setCreateTime(new Date());
+            thirdPartUser.setThirdPartType(thirdPartSignUpDto.getThirdPartType());
+            userMybatisDao.creatThirdPartUser(thirdPartUser);
+            log.info("ThirdPartUser is create");
+        }else{//app都正常存 openid 和 unionId都存数据库
+            ThirdPartUser thirdPartUser = new ThirdPartUser();
+            thirdPartUser.setUid(user1.getUid());
+            thirdPartUser.setThirdPartToken(thirdPartSignUpDto.getThirdPartToken());
+            thirdPartUser.setThirdPartOpenId(thirdPartSignUpDto.getThirdPartOpenId());
+            thirdPartUser.setThirdPartUnionid(thirdPartSignUpDto.getUnionId());
+            thirdPartUser.setCreateTime(new Date());
+            thirdPartUser.setThirdPartType(thirdPartSignUpDto.getThirdPartType());
+            userMybatisDao.creatThirdPartUser(thirdPartUser);
+            log.info("ThirdPartUser is create");
+        }
 
         if(!StringUtils.isEmpty(thirdPartSignUpDto.getJPushToken())) {
             List<JpushToken> jpushTokens = userMybatisDao.getJpushToken(user1.getUid());
@@ -1536,6 +1648,7 @@ public class UserServiceImpl implements UserService {
         thirdPartUser.setUid(thirdPartSignUpDto.getUid());
         thirdPartUser.setThirdPartToken(thirdPartSignUpDto.getThirdPartToken());
         thirdPartUser.setThirdPartOpenId(thirdPartSignUpDto.getThirdPartOpenId());
+        thirdPartUser.setThirdPartUnionid(thirdPartSignUpDto.getUnionId());
         thirdPartUser.setCreateTime(new Date());
         thirdPartUser.setThirdPartType(thirdPartSignUpDto.getThirdPartType());
         userMybatisDao.creatThirdPartUser(thirdPartUser);
@@ -1606,6 +1719,12 @@ public class UserServiceImpl implements UserService {
             }else if(thirdPartSignUpDto.getThirdPartType()==Specification.ThirdPartType.WEIXIN.index){
                 if(thirdUser != null){
                     return Response.success(ResponseStatus.WEIXIN_BIND_EXISTS.status,ResponseStatus.WEIXIN_BIND_EXISTS.message);
+                }
+                if(!StringUtils.isEmpty(thirdPartSignUpDto.getUnionId())){//新版本
+                	List<ThirdPartUser> thirdPartUser = userMybatisDao.getThirdPartUserByUnionId(thirdPartSignUpDto.getUnionId(),thirdPartSignUpDto.getThirdPartType());
+                	if(null != thirdPartUser && thirdPartUser.size() > 0){
+                		return Response.success(ResponseStatus.WEIXIN_BIND_EXISTS.status,ResponseStatus.WEIXIN_BIND_EXISTS.message);
+                	}
                 }
                 buildThirdPart2(thirdPartSignUpDto);
                 thirdPartName = Specification.ThirdPartType.WEIXIN.name;
