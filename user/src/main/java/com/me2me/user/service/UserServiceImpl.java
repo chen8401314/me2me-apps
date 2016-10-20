@@ -617,24 +617,19 @@ public class UserServiceImpl implements UserService {
             userMybatisDao.createFollow(userFollow);
             log.info("follow success");
             //关注提醒
-            //push(followDto.getTargetUid(),followDto.getSourceUid(),Specification.PushMessageType.FOLLOW.index,null);
-            //更换信鸽推送为极光推动
-            JpushToken jpushToken = getJpushTokeByUid(followDto.getTargetUid());
-            if(jpushToken == null){
-                //兼容老版本，如果客户端没有更新则还走信鸽push
-                push(followDto.getTargetUid(),followDto.getSourceUid(),Specification.PushMessageType.FOLLOW.index,null);
-            }else {
-                UserProfile sourceUser = getUserProfileByUid(followDto.getSourceUid());
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("messageType",Specification.PushMessageType.FOLLOW.index);
-                String alias = String.valueOf(followDto.getTargetUid());
-                jPushService.payloadByIdExtra(alias, sourceUser.getNickName() + "关注了你！", JPushUtils.packageExtra(jsonObject));
-            }
+
+            UserProfile sourceUser = getUserProfileByUid(followDto.getSourceUid());
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("messageType",Specification.PushMessageType.FOLLOW.index);
+            jsonObject.addProperty("type",Specification.PushObjectType.SNS_CIRCLE.index);
+            String alias = String.valueOf(followDto.getTargetUid());
+            jPushService.payloadByIdExtra(alias, sourceUser.getNickName() + "关注了你！", JPushUtils.packageExtra(jsonObject));
+
             //粉丝数量红点
             log.info("follow fans add push start");
-            JsonObject jsonObject = new JsonObject();
+            jsonObject = new JsonObject();
             jsonObject.addProperty("fansCount","1");
-            String alias = String.valueOf(followDto.getTargetUid());
+            alias = String.valueOf(followDto.getTargetUid());
             jPushService.payloadByIdForMessage(alias,jsonObject.toString());
             log.info("follow fans add push end ");
 

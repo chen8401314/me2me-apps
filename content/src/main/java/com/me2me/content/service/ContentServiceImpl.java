@@ -1,5 +1,8 @@
 package com.me2me.content.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.me2me.activity.model.ActivityWithBLOBs;
@@ -10,6 +13,7 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dao.ContentMybatisDao;
+import com.me2me.content.dao.LiveForContentJdbcDao;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.*;
 import com.me2me.content.model.ArticleReview;
@@ -77,6 +81,9 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private JPushService jPushService;
+
+    @Autowired
+    private LiveForContentJdbcDao liveForContentJdbcDao;
 
     @Value("#{app.recommend_domain}")
     private String recommendDomain;
@@ -419,6 +426,17 @@ public class ContentServiceImpl implements ContentService {
         contentReview.setCid(review.getCid());
         contentReview.setReview(review.getReview());
         contentReview.setAtUid(review.getAtUid());
+        long atUid = review.getAtUid();
+        if(atUid==-1){
+            JSONObject extra = JSON.parseObject(review.getExtra());
+            if(extra!=null){
+                JSONArray atArray = extra.containsKey("atArray")?extra.getJSONArray("atArray"):null;
+                if(atArray!=null&&atArray.size()>0) {
+                    contentReview.setAtUid(atArray.getLongValue(0));
+                }
+            }
+        }
+        contentReview.setExtra(review.getExtra());
         contentMybatisDao.createReview(contentReview);
     }
 
@@ -2206,6 +2224,7 @@ private void localJpush(long toUid){
             reviewElement.setNickName(userProfile.getNickName());
             reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             reviewElement.setId(contentReview.getId());
+            reviewElement.setExtra(contentReview.getExtra());
             if(contentReview.getAtUid() != 0) {
                 UserProfile atUser = userService.getUserProfileByUid(contentReview.getAtUid());
                 reviewElement.setAtNickName(atUser.getNickName());
@@ -2246,21 +2265,22 @@ private void localJpush(long toUid){
                 }else {
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index);
+                    jsonObject.addProperty("type",Specification.PushObjectType.UGC.index);
+                    jsonObject.addProperty("topicId",id);
                     String alias = String.valueOf(content.getUid());
-                    jPushService.payloadByIdExtra(alias,"你的文章" + content.getTitle()+ "上热点啦！", JPushUtils.packageExtra(jsonObject));
+                    jPushService.payloadByIdExtra(alias,"你发布的内容上热点啦！", JPushUtils.packageExtra(jsonObject));
                 }
             }else if(content.getType() == Specification.ArticleType.LIVE.index){
-                //userService.push(content.getUid(), 000000, Specification.PushMessageType.LIVE_HOTTEST.index, content.getTitle());
-                //信鸽推送修改为极光推送
-                JpushToken jpushToken = userService.getJpushTokeByUid(content.getUid());
-                if(jpushToken == null){
-                    //兼容老版本，如果客户端没有更新则还走信鸽push
-                    userService.push(content.getUid(), 000000, Specification.PushMessageType.LIVE_HOTTEST.index, content.getTitle());
-                }else {
-                    JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index);
-                    String alias = String.valueOf(content.getUid());
-                    jPushService.payloadByIdExtra(alias,"你的直播" + content.getTitle()+ "上热点啦！",JPushUtils.packageExtra(jsonObject));
+                JSONArray coreCircles = liveForContentJdbcDao.getTopicCoreCircle(content.getForwardCid());
+                if(coreCircles!=null){
+                    for(int i=0;i<coreCircles.size();i++){
+                        JsonObject jsonObject = new JsonObject();
+                        jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index);
+                        jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
+                        jsonObject.addProperty("topicId",content.getForwardCid());
+                        String alias =coreCircles.getString(i);
+                        jPushService.payloadByIdExtra(alias,content.getTitle()+ "上热点啦！",JPushUtils.packageExtra(jsonObject));
+                    }
                 }
             }
 

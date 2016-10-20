@@ -1,6 +1,10 @@
 package com.me2me.web;
 
+import com.alibaba.fastjson.JSON;
 import com.me2me.common.web.Response;
+import com.me2me.common.web.Specification;
+import com.me2me.kafka.model.ClientLog;
+import com.me2me.kafka.service.KafkaService;
 import com.me2me.live.dto.*;
 import com.me2me.live.service.LiveService;
 import com.me2me.web.request.*;
@@ -11,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Calendar;
 
@@ -26,6 +31,9 @@ public class Live extends BaseController {
 
     @Autowired
     private LiveService liveService;
+
+    @Autowired
+    private KafkaService kafkaService;
 
     /**
      * 创建直接
@@ -106,6 +114,7 @@ public class Live extends BaseController {
         getLiveTimeLineDto.setSinceId(request.getSinceId());
         getLiveTimeLineDto.setTopicId(request.getTopicId());
         getLiveTimeLineDto.setUid(request.getUid());
+        getLiveTimeLineDto.setVersion(request.getVersion());
         return liveService.liveTimeline(getLiveTimeLineDto);
     }
 
@@ -116,7 +125,7 @@ public class Live extends BaseController {
      */
     @RequestMapping(value = "/speak",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response speak(SpeakRequest request){
+    public Response speak(SpeakRequest request,HttpServletRequest req){
         SpeakDto speakDto = new SpeakDto();
         speakDto.setType(request.getType());
         speakDto.setContentType(request.getContentType());
@@ -130,9 +139,38 @@ public class Live extends BaseController {
         speakDto.setMode(request.getMode());
         speakDto.setSource(request.getSource());
         speakDto.setExtra(request.getExtra());
+
+        try {  //埋点
+            ClientLog clientLog = new ClientLog();
+
+            clientLog.setAction(Specification.ClientLogAction.LIVE_LIKES.index);
+            clientLog.setExt(Specification.ClientLogAction.LIVE_LIKES.name+":"+request.getType());
+            clientLog.setUserId(request.getUid());
+            clientLog.setChannel(request.getChannel());
+            clientLog.setVersion(request.getVersion());
+            clientLog.setUserAgent(req.getHeader("User-Agent"));
+
+            kafkaService.clientLog(clientLog);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
         return liveService.speak(speakDto);
     }
 
+    /**
+     * 修改发言内容（暂时只更新extra字段）
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/editSpeak",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response editSpeak(EditSpeakRequest request){
+        SpeakDto speakDto = new SpeakDto();
+        speakDto.setFragmentId(request.getFragmentId());
+        speakDto.setExtra(request.getExtra());
+
+        return liveService.editSpeak(speakDto);
+    }
     /**
      * 结束自己的直播
      * @param request
@@ -173,11 +211,14 @@ public class Live extends BaseController {
      */
     @RequestMapping(value = "/getLives",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response getLives(GetLivesRequest request){
+    public Response getLives(GetLivesRequest request, HttpServletRequest req){
         if(request.getUpdateTime() == 0){
             Calendar calendar = Calendar.getInstance();
             request.setUpdateTime(calendar.getTimeInMillis());
         }
+
+        //埋点
+        kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_IN_UPDATE);
         return liveService.getLivesByUpdateTime(request.getUid(),request.getUpdateTime());
     }
 
@@ -272,7 +313,10 @@ public class Live extends BaseController {
      */
     @RequestMapping(value = "/inactiveLive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response getInactiveLive(InactiveLiveRequest request){
+    public Response getInactiveLive(InactiveLiveRequest request,HttpServletRequest req){
+        //埋点
+        kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_NOT_UPDATED);
+
         return liveService.getInactiveLive(request.getUid(),request.getUpdateTime());
     }
 

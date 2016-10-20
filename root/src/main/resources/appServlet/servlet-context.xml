@@ -46,5 +46,30 @@
             <bean class="com.me2me.web.handler.AccessSecurityHandler"/>
         </mvc:interceptor>
     </mvc:interceptors>
+    <bean id="producerFactory"
+          class="com.plusnet.search.kafka.ProducerFactory" >
+        <property name="bootstrapServers" value="${bootstrap.servers}" />
+        <property name="keySerializer" value="${key.serializer}" />
+        <property name="valueSerializer" value="${value.serializer}" />
+    </bean>
+
+    <bean id="consumerFactory"
+          class="com.plusnet.search.kafka.ConsumerFactory" >
+        <property name="bootstrapServers" value="${bootstrap.servers}" />
+        <property name="zookeeperConnect" value="${zookeeper.connect}" />
+        <property name="groupId" value="${group.id}" />
+        <property name="timeout" value="${zookeeper.session.timeout.ms}" />
+        <property name="synctime" value="${zookeeper.sync.time.ms}" />
+        <property name="commitInterval" value="${auto.commit.interval.ms}" />
+        <property name="keyDeserializer" value="${key.deserializer}" />
+        <property name="valueDeserializer" value="${value.deserializer}" />
+    </bean>
+
+    <bean id="historyKafkaTemplate"
+          class="com.plusnet.search.kafka.KafkaTemplate" >
+        <property name="topic" value="history" />
+        <property name="producer" ref="producerFactory" />
+        <property name="consumer" ref="consumerFactory" />
+    </bean>
 
 </beans>

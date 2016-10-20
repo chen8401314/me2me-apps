@@ -1,6 +1,9 @@
 package com.me2me.web;
 
 import com.me2me.common.web.Response;
+import com.me2me.common.web.Specification;
+import com.me2me.kafka.model.ClientLog;
+import com.me2me.kafka.service.KafkaService;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.service.ChannelType;
 import com.me2me.user.dto.*;
@@ -29,13 +32,16 @@ public class Users extends BaseController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private KafkaService kafkaService;
+
     /**
      * 用户注册接口
      * @return
      */
     @RequestMapping(value = "/signUp",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response signUp(SignUpRequest request){
+    public Response signUp(SignUpRequest request,HttpServletRequest req){
         UserSignUpDto userSignUpDto = new UserSignUpDto();
         userSignUpDto.setMobile(request.getMobile());
         userSignUpDto.setGender(request.getGender());
@@ -46,6 +52,11 @@ public class Users extends BaseController {
         userSignUpDto.setPlatform(request.getPlatform());
         userSignUpDto.setOs(request.getOs());
         userSignUpDto.setIntroduced(request.getIntroduced());
+
+
+        //埋点
+        kafkaService.saveClientLog(request,req.getHeader("User-Agent"),Specification.ClientLogAction.REG_PAGE2_SAVE);
+
         return userService.signUp(userSignUpDto);
     }
 
@@ -104,7 +115,7 @@ public class Users extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "/verify",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response verify(VerifyRequest request){
+    public Response verify(VerifyRequest request,HttpServletRequest req){
         VerifyDto verifyDto = new VerifyDto();
         verifyDto.setAction(request.getAction());
         verifyDto.setMobile(request.getMobile());
@@ -114,6 +125,13 @@ public class Users extends BaseController {
             verifyDto.setChannel(ChannelType.NORMAL_SMS.index);
         }else {
             verifyDto.setChannel(request.getChannelAdapter());
+        }
+
+       //埋点
+        if(request.getAction()==0) {
+            kafkaService.saveClientLog(request,req.getHeader("User-Agent"),Specification.ClientLogAction.REG_PAGE1_GET_VERIFY);
+        }else{
+            kafkaService.saveClientLog(request,req.getHeader("User-Agent"),Specification.ClientLogAction.REG_PAGE1_NEXT);
         }
         return userService.verify(verifyDto);
     }
