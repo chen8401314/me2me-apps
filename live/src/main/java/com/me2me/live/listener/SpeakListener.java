@@ -1,5 +1,7 @@
 package com.me2me.live.listener;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
@@ -10,12 +12,11 @@ import com.me2me.live.cache.LiveLastUpdate;
 import com.me2me.live.cache.MyLivesStatusModel;
 import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.dao.LiveMybatisDao;
-import com.me2me.live.event.CacheLiveEvent;
 import com.me2me.live.event.SpeakEvent;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.Topic;
-import com.me2me.live.service.LiveService;
 import com.me2me.sms.service.JPushService;
+import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,14 +42,17 @@ public class SpeakListener {
 
     private final JPushService jPushService;
 
+    private final UserService userSerivce;
+
     private final LiveMybatisDao liveMybatisDao;
 
     @Autowired
-    public SpeakListener(ApplicationEventBus applicationEventBus, LiveMybatisDao liveMybatisDao, CacheService cacheService, JPushService jPushService){
+    public SpeakListener(ApplicationEventBus applicationEventBus, LiveMybatisDao liveMybatisDao, CacheService cacheService, JPushService jPushService, UserService userSerivce){
         this.applicationEventBus = applicationEventBus;
         this.cacheService = cacheService;
         this.jPushService = jPushService;
         this.liveMybatisDao = liveMybatisDao;
+        this.userSerivce = userSerivce;
     }
 
     @PostConstruct
@@ -59,38 +63,90 @@ public class SpeakListener {
     @Subscribe
     public void speak(SpeakEvent speakEvent) {
         log.info("SpeakEvent speak start ...");
+        if(speakEvent.getType()==Specification.LiveSpeakType.ANCHOR.index){
+            log.info("author speak ...");
+            authorSpeak(speakEvent);
+        }else if(speakEvent.getType()==Specification.LiveSpeakType.FANS.index){
+            log.info("fans speak ...");
+            fansSpeak(speakEvent);
+        }else if(speakEvent.getType()==Specification.LiveSpeakType.ANCHOR_AT.index){ //主播@作为主播发言
+            log.info("auchor at ...");
+            authorSpeak(speakEvent);
+        }else if(speakEvent.getType()==Specification.LiveSpeakType.AT_CORE_CIRCLE.index){//核心圈@作为主播发言
+            log.info("at core circle ...");
+            authorSpeak(speakEvent);
+        }else if(speakEvent.getType()==Specification.LiveSpeakType.AT.index){//粉丝@作为粉丝发言
+            log.info("at ...");
+            fansSpeak(speakEvent);
+        }else if(speakEvent.getType()==Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index){//主播贴标作为主播发言
+            log.info("author write tag ...");
+            authorSpeak(speakEvent);
+        }
+        log.info("SpeakEvent speak end ...");
+    }
+
+
+
+
+    private void authorSpeak(SpeakEvent speakEvent) {
         List<LiveFavorite> liveFavorites = liveMybatisDao.getFavoriteAll(speakEvent.getTopicId());
-        LiveLastUpdate liveLastUpdate = new LiveLastUpdate(speakEvent.getTopicId(),"1");
-        //有更新时通知国王
         Topic topic = liveMybatisDao.getTopicById(speakEvent.getTopicId());
-        MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(topic.getUid(), speakEvent.getTopicId() + "", "1");
-        log.info("speak by master start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
-        cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-        // 通知所有的订阅者
-        for(LiveFavorite liveFavorite : liveFavorites) {
+        MySubscribeCacheModel cacheModel= null;
+        //非国王发言着提醒国王王国更新红点
+        if(topic.getUid()!=speakEvent.getUid()){
+            cacheModel = new MySubscribeCacheModel(topic.getUid(), speakEvent.getTopicId() + "", "1");
+            cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+        }
+        LiveLastUpdate liveLastUpdate = new LiveLastUpdate(speakEvent.getTopicId(),"1");
+        for(LiveFavorite liveFavorite : liveFavorites){
             MyLivesStatusModel livesStatusModel = new MyLivesStatusModel(liveFavorite.getUid(),"1");
             cacheService.hSet(livesStatusModel.getKey(),livesStatusModel.getField(),"1");
-            cacheModel = new MySubscribeCacheModel(liveFavorite.getUid(), liveFavorite.getTopicId() + "", "1");
-            log.info("speak by master start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
-            cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+            if(liveFavorite.getUid()!=speakEvent.getUid()) {
+                cacheModel = new MySubscribeCacheModel(liveFavorite.getUid(), liveFavorite.getTopicId() + "", "1");
+                log.info("speak by master start update hset cache key{} field {} value {}", cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+            }
             //如果缓存存在时间失效，推送
-            if(StringUtils.isEmpty(cacheService.hGet(liveLastUpdate.getKey(),liveLastUpdate.getField()))&&speakEvent.getType()!=Specification.LiveSpeakType.FANS.index&&liveFavorite.getUid()!=speakEvent.getUid()) {
+            if(StringUtils.isEmpty(cacheService.hGet(liveLastUpdate.getKey(),liveLastUpdate.getField()))&&liveFavorite.getUid()!=speakEvent.getUid()) {
                 log.info("update live start");
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
+                jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
+                jsonObject.addProperty("topicId",speakEvent.getTopicId());
                 String alias = String.valueOf(liveFavorite.getUid());
 
-                jPushService.payloadByIdExtra(alias, "你加入的王国:" + topic.getTitle() + "更新了", JPushUtils.packageExtra(jsonObject));
+                jPushService.payloadByIdExtra(alias,  topic.getTitle() + "有更新", JPushUtils.packageExtra(jsonObject));
                 log.info("update live end");
             }
         }
+
         //设置缓存时间
         if(StringUtils.isEmpty(cacheService.hGet(liveLastUpdate.getKey(),liveLastUpdate.getField()))) {
             log.info("set cache timeout");
             cacheService.hSet(liveLastUpdate.getKey(), liveLastUpdate.getField(), liveLastUpdate.getValue());
             cacheService.expire(liveLastUpdate.getKey(), 3600);
         }
-        log.info("SpeakEvent speak end ...");
     }
+
+    private void fansSpeak(SpeakEvent speakEvent) {
+        Topic topic = liveMybatisDao.getTopicById(speakEvent.getTopicId());
+        JSONArray cores =JSON.parseArray(topic.getCoreCircle());
+        for(int i=0;i<cores.size();i++){
+            long cid = cores.getLongValue(i);
+            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(cid, speakEvent.getTopicId() + "", "1");
+            log.info("speak by fans start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
+            cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
+            jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
+            jsonObject.addProperty("topicId",speakEvent.getTopicId());
+            String alias = String.valueOf(cid);
+
+            jPushService.payloadByIdExtra(alias,  "有人评论了"+topic.getTitle(), JPushUtils.packageExtra(jsonObject));
+        }
+    }
+
+
 
 }

@@ -157,6 +157,8 @@ public enum  ResponseStatus {
 
     TOPIC_FRAGMENT_DELETE_SUCCESS("王国发言内容删除成功","topic fragment delete success",20072),
 
+    EDIT_TOPIC_FRAGMENT_SUCCESS("编辑王国发言内容成功","edit topic fragment success",20073),
+
 
 
 
@@ -248,6 +250,8 @@ public enum  ResponseStatus {
     CONTENT_DELETE_NO_AUTH("只有国王能删除自己的王国","content delete no auth",50036),
 
     LIVE_HAS_DELETED("该王国已删除","live has deleted",50037),
+
+    EDIT_TOPIC_FRAGMENT_FAILURE("编辑王国发言内容失败","edit topic fragment failure",50038),
 
 
 

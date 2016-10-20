@@ -75,7 +75,7 @@ public class LiveMybatisDao {
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andIdGreaterThan(sinceId);
-        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
+//        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
         example.setOrderByClause("id asc limit 50 ");
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
@@ -578,5 +578,13 @@ public class LiveMybatisDao {
 
         List<TopicBarrage> list = topicBarrageMapper.selectByExampleWithBLOBs(example);
         return list==null||list.isEmpty()?null:list.get(0);
+    }
+
+    public int updateTopFragmentById(SpeakDto speakDto) {
+        TopicFragment fragment = new TopicFragment();
+        fragment.setId(speakDto.getFragmentId());
+        fragment.setExtra(speakDto.getExtra());
+
+        return topicFragmentMapper.updateByPrimaryKeySelective(fragment);
     }
 }

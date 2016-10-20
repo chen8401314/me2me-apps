@@ -1,8 +1,10 @@
 package com.me2me.web;
 
 import com.me2me.common.web.Response;
+import com.me2me.common.web.Specification;
 import com.me2me.content.dto.*;
 import com.me2me.content.service.ContentService;
+import com.me2me.kafka.service.KafkaService;
 import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -26,6 +28,8 @@ public class Contents extends BaseController {
     @Autowired
     private ContentService contentService;
 
+    @Autowired
+    private KafkaService kafkaService;
     /**
      * 精选接口(已废)
      * @return
@@ -87,13 +91,16 @@ public class Contents extends BaseController {
      */
     @RequestMapping(value = "/likes",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response likes(LikeRequest request){
+    public Response likes(LikeRequest request,HttpServletResponse req){
         LikeDto likeDto = new LikeDto();
         likeDto.setUid(request.getUid());
         likeDto.setCid(request.getCid());
         likeDto.setAction(request.getAction());
         //兼容老版本
         likeDto.setType(request.getType() == 0 ? 1 : request.getType());
+
+        //埋点
+        kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.UGC_LIKES);
         return contentService.like2(likeDto);
     }
 
@@ -103,7 +110,7 @@ public class Contents extends BaseController {
      */
     @RequestMapping(value = "/writeTag",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response writeTag(WriteTagRequest request){
+    public Response writeTag(WriteTagRequest request,HttpServletResponse req){
         WriteTagDto writeTagDto = new WriteTagDto();
         writeTagDto.setCid(request.getCid());
         writeTagDto.setTag(request.getTag());
@@ -111,6 +118,9 @@ public class Contents extends BaseController {
         writeTagDto.setCustomerId(request.getCustomerId());
         //兼容老版本
         writeTagDto.setType(request.getType() == 0 ? 1 : request.getType());
+
+        //埋点
+        kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.UGC_FEEL);
         return contentService.writeTag2(writeTagDto);
     }
 
@@ -228,15 +238,20 @@ public class Contents extends BaseController {
      */
     @RequestMapping(value = "/review",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response review(ReviewRequest request){
+    public Response review(ReviewRequest request,HttpServletResponse req){
         ReviewDto reviewDto = new ReviewDto();
         reviewDto.setUid(request.getUid());
         reviewDto.setCid(request.getCid());
         reviewDto.setReview(request.getReview());
         reviewDto.setIsAt(request.getIsAt());
         reviewDto.setAtUid(request.getAtUid());
+        reviewDto.setExtra(request.getExtra());
         //兼容老版本
         reviewDto.setType(request.getType() == 0 ? 1 : request.getType());
+
+        //埋点
+        kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.UGC_REVIEW);
+
         return contentService.createReview(reviewDto);
     }
 

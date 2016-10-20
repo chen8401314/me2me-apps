@@ -38,7 +38,7 @@ public class AbstractLikes {
                 content.setLikeCount(content.getLikeCount() + 1);
                 contentService.updateContentById(content);
                 contentService.createContentLikesDetails(contentLikesDetails);
-                if(likeDto.getUid() != content.getUid()) {
+                if(likeDto.getUid() != content.getUid()&&content.getType()!=Specification.ArticleType.LIVE.index) {
                     contentService.remind(content, likeDto.getUid(), Specification.UserNoticeType.LIKE.index, null);
                     log.info("content like push success");
                 }

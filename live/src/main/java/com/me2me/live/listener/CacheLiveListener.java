@@ -6,6 +6,7 @@ import com.me2me.cache.service.CacheService;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Specification;
 import com.me2me.core.event.ApplicationEventBus;
+import com.me2me.live.cache.LiveLastUpdate;
 import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.event.CacheLiveEvent;
 import com.me2me.live.model.Topic;
@@ -79,13 +80,19 @@ public class CacheLiveListener {
             UserProfile userProfile = userService.getUserProfileByUid(cacheLiveEvent.getUid());
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("messageType", Specification.LiveSpeakType.FOLLOW.index);
+            jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
+            jsonObject.addProperty("topicId",cacheLiveEvent.getTopicId());
             String alias = String.valueOf(userFollow.getSourceUid());
             Topic topic = liveService.getTopicById(cacheLiveEvent.getTopicId());
-            jPushService.payloadByIdExtra(alias, "你关注的国王" + userProfile.getNickName() + "建立了新王国:" + topic.getTitle(), JPushUtils.packageExtra(jsonObject));
+            jPushService.payloadByIdExtra(alias,  userProfile.getNickName() + "新建了" + topic.getTitle(), JPushUtils.packageExtra(jsonObject));
+
+
         }
-
-
-
+        //增加缓存，当创建王国后一个小时之内的发言不再推送
+        LiveLastUpdate liveLastUpdate = new LiveLastUpdate(cacheLiveEvent.getTopicId(),"1");
+        log.info("set cache timeout");
+        cacheService.hSet(liveLastUpdate.getKey(), liveLastUpdate.getField(), liveLastUpdate.getValue());
+        cacheService.expire(liveLastUpdate.getKey(), 3600);
 
     }
 

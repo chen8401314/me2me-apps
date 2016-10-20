@@ -1,5 +1,8 @@
 package com.me2me.content.listener;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonObject;
 import com.me2me.common.utils.JPushUtils;
@@ -18,6 +21,7 @@ import com.me2me.user.service.UserService;
 import lombok.extern.java.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
 
@@ -68,24 +72,31 @@ public class PublishUGCListener {
         if(reviewDto.getIsAt() == 1) {
             //兼容老版本
             if(reviewDto.getAtUid() != 0) {
-
-                if("1".equals(reviewEvent.getIsOnline())) {
-                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview(), reviewDto.getAtUid());
-                }else{
-                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview(), reviewDto.getAtUid());
+                String extra = reviewDto.getExtra();
+                if(StringUtils.isEmpty(extra)){
+                   return;
                 }
-                //更换推送为极光推送
-                //userService.push(reviewDto.getAtUid(), reviewDto.getUid(), Specification.PushMessageType.AT.index, reviewDto.getReview());
-                JpushToken jpushToken = userService.getJpushTokeByUid(reviewDto.getAtUid());
-                if(jpushToken == null){
-                    //兼容老版本，如果客户端没有更新则还走信鸽push
-                    userService.push(reviewDto.getAtUid(), reviewDto.getUid(), Specification.PushMessageType.AT.index, reviewDto.getReview());
-                }else {
+
+                JSONObject json = JSON.parseObject(extra);
+                JSONArray array = json.containsKey("atArray")?json.getJSONArray("atArray"):null;
+                if(array==null) {
+                    return;
+                }
+                for(int i=0;i<array.size();i++) {
+                    long atUid = array.getLongValue(i);
+                    if ("1".equals(reviewEvent.getIsOnline())) {
+                        contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview(), atUid);
+                    } else {
+                        contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview(), atUid);
+                    }
+
                     UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
                     JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("messageType",Specification.PushMessageType.AT.index);
-                    String alias = String.valueOf(reviewDto.getAtUid());
-                    jPushService.payloadByIdExtra(alias,userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
+                    jsonObject.addProperty("messageType", Specification.PushMessageType.AT.index);
+                    jsonObject.addProperty("type",Specification.PushObjectType.UGC.index);
+                    jsonObject.addProperty("cid",content.getId());
+                    String alias = String.valueOf(atUid);
+                    jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
                 }
             }
 //            if(reviewDto.getAtUid() != content.getUid()) {
@@ -101,6 +112,8 @@ public class PublishUGCListener {
             UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("messageType",Specification.PushMessageType.REVIEW.index);
+            jsonObject.addProperty("type",Specification.PushObjectType.UGC.index);
+            jsonObject.addProperty("cid",content.getId());
             String alias = String.valueOf(content.getUid());
             if(content.getUid()!=reviewDto.getUid()) {
                 jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "评论了你", JPushUtils.packageExtra(jsonObject));
