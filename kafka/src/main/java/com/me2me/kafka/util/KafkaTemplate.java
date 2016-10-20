@@ -1,4 +1,4 @@
-package com.me2me.core.kafka;
+package com.me2me.kafka.util;
 
 import java.util.Arrays;
 import java.util.concurrent.ExecutorService;

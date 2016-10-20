@@ -1,4 +1,4 @@
-package com.me2me.core.kafka;
+package com.me2me.kafka.util;
 
 import java.util.Properties;
 
@@ -8,31 +8,31 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("consumerFactory")
 public class ConsumerFactory<K, V> implements FactoryBean<Consumer> {
 
-    @Value("#{app.bootstrap.servers}")
+    @Value("#{app.bootstrap_servers}")
     private String bootstrapServers;
 
-    @Value("#{app.zookeeper.connect}")
+    @Value("#{app.zookeeper_connect}")
     private String zookeeperConnect;
 
-    @Value("#{app.group.id}")
+    @Value("#{app.group_id}")
     private String groupId;
 
-    @Value("#{app.zookeeper.session.timeout.ms}")
+    @Value("#{app.zookeeper_session_timeout_ms}")
     private int timeout;
 
-    @Value("#{app.zookeeper.sync.time.ms}")
+    @Value("#{app.zookeeper_sync_time_ms}")
     private int synctime;
 
-    @Value("#{app.auto.commit.interval.ms}")
+    @Value("#{app.auto_commit_interval_ms}")
     private int commitInterval;
 
-    @Value("#{app.key.deserializer}")
+    @Value("#{app.key_deserializer}")
     private String keyDeserializer;
 
-    @Value("#{app.value.deserializer}")
+    @Value("#{app.value_deserializer}")
     private String valueDeserializer;
     
     private Consumer<K, V> consumer;

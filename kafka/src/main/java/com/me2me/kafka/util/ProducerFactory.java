@@ -1,4 +1,4 @@
-package com.me2me.core.kafka;
+package com.me2me.kafka.util;
 
 import java.util.Properties;
 
@@ -8,16 +8,16 @@ import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-@Component
+@Component("producerFactory")
 public class ProducerFactory<K, V> implements FactoryBean<Producer> {
 
-    @Value("#{app.bootstrap.servers}")
+    @Value("#{app.bootstrap_servers}")
     private String bootstrapServers;
 
-    @Value("#{app.key.deserializer}")
+    @Value("#{app.key_deserializer}")
     private String keySerializer;
 
-    @Value("#{app.value.deserializer}")
+    @Value("#{app.value_deserializer}")
     private String valueSerializer;
     
     private Producer<K, V> producer;
