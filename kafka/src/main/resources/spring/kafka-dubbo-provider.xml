@@ -17,6 +17,4 @@
 
     <import resource="kafka-context.xml"/>
 
-    <import resource="mysql-context.xml"/>
-
 </beans>
