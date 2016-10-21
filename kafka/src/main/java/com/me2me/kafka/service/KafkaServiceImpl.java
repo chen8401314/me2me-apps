@@ -32,7 +32,7 @@ public class KafkaServiceImpl implements  KafkaService{
             clientLog.setUserAgent(userAgent);
 
             log.info("client log:"+ JSON.toJSONString(clientLog));
-            kafkaTemplate.send(clientLog.getUserId()+clientLog.getLogTime(), log);
+            kafkaTemplate.send(clientLog.getUserId()+""+clientLog.getLogTime(), JSON.toJSONString(clientLog));
         }catch(Exception e){
             e.printStackTrace();
         }
@@ -42,7 +42,7 @@ public class KafkaServiceImpl implements  KafkaService{
     public void clientLog(ClientLog clientLog) {
         try {
             log.info("client log:"+ JSON.toJSONString(clientLog));
-            kafkaTemplate.send(clientLog.getUserId()+clientLog.getLogTime(), log);
+            kafkaTemplate.send(clientLog.getUserId()+""+clientLog.getLogTime(),  JSON.toJSONString(clientLog));
         }catch (Exception e){
             e.printStackTrace();
         }
