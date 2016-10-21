@@ -19,6 +19,7 @@ public class BaseController {
         if(e instanceof SendMessageLimitException || e instanceof SendMessageTimeException){
             return Response.success(20094,e.getMessage());
         }
+        e.printStackTrace();
         return Response.failure(e.getMessage());
     }
 

@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 /**
  * Created by pc188 on 2016/10/19.
+ * v2.1.3版本暂时搁置，后续整体规划
  */
 @Service
 @Slf4j
@@ -21,7 +22,7 @@ public class KafkaServiceImpl implements  KafkaService{
 
     @Override
     public void saveClientLog(Request request, String userAgent,Specification.ClientLogAction action) {
-        try {  //埋点
+        /*try {  //埋点
             ClientLog clientLog = new ClientLog();
 
             clientLog.setAction(action.index);
@@ -35,16 +36,16 @@ public class KafkaServiceImpl implements  KafkaService{
             kafkaTemplate.send(clientLog.getUserId()+""+clientLog.getLogTime(), JSON.toJSONString(clientLog));
         }catch(Exception e){
             e.printStackTrace();
-        }
+        }*/
     }
 
     @Override
     public void clientLog(ClientLog clientLog) {
-        try {
+      /*  try {
             log.info("client log:"+ JSON.toJSONString(clientLog));
             kafkaTemplate.send(clientLog.getUserId()+""+clientLog.getLogTime(),  JSON.toJSONString(clientLog));
         }catch (Exception e){
             e.printStackTrace();
-        }
+        }*/
     }
 }

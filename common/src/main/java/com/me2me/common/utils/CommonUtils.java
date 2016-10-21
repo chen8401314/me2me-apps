@@ -1,6 +1,7 @@
 package com.me2me.common.utils;
 
 import com.me2me.common.web.BaseEntity;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -46,6 +47,8 @@ public class CommonUtils {
     }
 
     public static boolean afterVersion(String currentVersion,String version){
+        if(StringUtils.isEmpty(currentVersion))
+            return false;
         String[] currentArray = currentVersion.split(".");
         String[] versionArray = version.split(".");
         for(int i=0;i<3;i++){
