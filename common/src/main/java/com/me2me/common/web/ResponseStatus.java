@@ -175,6 +175,8 @@ public enum  ResponseStatus {
 
     USER_AWARD_NOT_INFO("该用户没有中奖信息","user award not info",20081),
 
+    EDIT_TOPIC_FRAGMENT_SUCCESS("编辑王国发言内容成功","edit topic fragment success",20082),
+
 
 
 
@@ -266,6 +268,8 @@ public enum  ResponseStatus {
     CONTENT_DELETE_NO_AUTH("只有国王能删除自己的王国","content delete no auth",50036),
 
     LIVE_HAS_DELETED("该王国已删除","live has deleted",50037),
+
+    EDIT_TOPIC_FRAGMENT_FAILURE("编辑王国发言内容失败","edit topic fragment failure",50038),
 
 
 

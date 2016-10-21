@@ -2,6 +2,7 @@ package com.me2me.live.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gson.Gson;
@@ -258,10 +259,21 @@ public class LiveServiceImpl implements LiveService {
         Topic topic = liveMybatisDao.getTopicById(getLiveTimeLineDto.getTopicId());
         for (TopicFragment topicFragment : fragmentList) {
             long uid = topicFragment.getUid();
-            UserProfile userProfile = userService.getUserProfileByUid(uid);
+
             LiveTimeLineDto.LiveElement liveElement = LiveTimeLineDto.createElement();
-            liveElement.setUid(uid);
+            int status = topicFragment.getStatus();
+            liveElement.setStatus(status);
             liveElement.setId(topicFragment.getId());
+            if(status==0){
+                //2.1.3以后的版本返回已删除的记录
+                if(CommonUtils.afterVersion(getLiveTimeLineDto.getVersion(),"2.1.3")){
+                    liveTimeLineDto.getLiveElements().add(liveElement);
+                }
+                continue;
+            }
+
+            UserProfile userProfile = userService.getUserProfileByUid(uid);
+            liveElement.setUid(uid);
             liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             liveElement.setNickName(userProfile.getNickName());
             liveElement.setFragment(topicFragment.getFragment());
@@ -311,7 +323,7 @@ public class LiveServiceImpl implements LiveService {
     public Response speak(SpeakDto speakDto) {
         log.info("speak start ...");
         //如果是主播发言更新cache
-        if (speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index||speakDto.getType()==Specification.LiveSpeakType.AT_CORE_CIRCLE.index||speakDto.getType()==Specification.LiveSpeakType.ANCHOR_AT.index||speakDto.getType()==Specification.LiveSpeakType.FANS.index) {
+        if (speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index||speakDto.getType()==Specification.LiveSpeakType.AT_CORE_CIRCLE.index||speakDto.getType()==Specification.LiveSpeakType.ANCHOR_AT.index||speakDto.getType()==Specification.LiveSpeakType.FANS.index||speakDto.getType()==Specification.LiveSpeakType.AT.index) {
             //只更新大王发言,如果是主播(大王)发言更新cache
 //            Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
 //            //小王发言更新cache（topic.getUid() == speakDto.getUid()为该王国国王 通知所有人）
@@ -352,8 +364,20 @@ public class LiveServiceImpl implements LiveService {
             topicFragment.setTopicId(speakDto.getTopicId());
             topicFragment.setBottomId(speakDto.getBottomId());
             topicFragment.setTopId(speakDto.getTopId());
-            topicFragment.setAtUid(speakDto.getAtUid());
+            long atUid = speakDto.getAtUid();
+            if(atUid==-1){
+                JSONObject fragment = JSON.parseObject(speakDto.getFragment());
+                if(fragment!=null){
+                    JSONArray atArray = fragment.containsKey("atArray")?fragment.getJSONArray("atArray"):null;
+                    if(atArray!=null&&atArray.size()>0) {
+                        topicFragment.setAtUid(atArray.getLongValue(0));
+                    }
+                }
+            }else{
+                topicFragment.setAtUid(speakDto.getAtUid());
+            }
             topicFragment.setSource(speakDto.getSource());
+            topicFragment.setExtra(speakDto.getExtra());
             liveMybatisDao.createTopicFragment(topicFragment);
 
             fid = topicFragment.getId();
@@ -455,20 +479,32 @@ public class LiveServiceImpl implements LiveService {
     }
 
     private void remindAndJpushAtMessage(SpeakDto speakDto, int messageType) {
-        liveRemind(speakDto.getAtUid(), speakDto.getUid(), Specification.LiveSpeakType.FANS.index, speakDto.getTopicId(), speakDto.getFragment());
-        //更换信鸽推送为极光推送
-        //userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
-        JpushToken jpushToken = userService.getJpushTokeByUid(speakDto.getAtUid());
-        if (jpushToken == null) {
-            //信鸽推送已放弃，若要有推送功能请更新版本
-            // userService.push(speakDto.getAtUid(),speakDto.getUid(),Specification.PushMessageType.AT.index,topic.getTitle());
-        } else {
+        JSONArray atArray = null;
+        if(speakDto.getAtUid()==-1){  //atUid==-1时为多人@
+            JSONObject fragment = JSON.parseObject(speakDto.getFragment());
+            if(fragment==null)
+                return;
+            atArray = fragment.containsKey("atArray")?fragment.getJSONArray("atArray"):null;
+            if(atArray==null)
+                return;
+        }else{
+            atArray = new JSONArray();
+            atArray.add(speakDto.getAtUid());
+        }
+
+        for(int i=0;i<atArray.size();i++){
+            long atUid = atArray.getLongValue(i);
+            liveRemind(atUid, speakDto.getUid(), Specification.LiveSpeakType.FANS.index, speakDto.getTopicId(), speakDto.getFragment());
+
             UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("messageType", messageType);
-            String alias = String.valueOf(speakDto.getAtUid());
+            jsonObject.addProperty("topicId",speakDto.getTopicId());
+            jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
+            String alias = String.valueOf(atUid);
             jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
         }
+
     }
 
     private void saveLiveDisplayData(SpeakDto speakDto) {
@@ -561,6 +597,8 @@ public class LiveServiceImpl implements LiveService {
             if (jpushToken != null) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("count", "1");
+                jsonObject.addProperty("type",Specification.ArticleType.LIVE.index);
+                jsonObject.addProperty("id",cid);
                 String alias = String.valueOf(targetUid);
                 jPushService.payloadByIdForMessage(alias, jsonObject.toString());
             }
@@ -573,6 +611,8 @@ public class LiveServiceImpl implements LiveService {
             if (jpushToken != null) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("count", "1");
+                jsonObject.addProperty("type",Specification.ArticleType.LIVE.index);
+                jsonObject.addProperty("id",cid);
                 String alias = String.valueOf(targetUid);
                 jPushService.payloadByIdForMessage(alias, jsonObject.toString());
             }
@@ -1292,5 +1332,13 @@ public class LiveServiceImpl implements LiveService {
             log.info("getRedDot end ...");
             return Response.success(ResponseStatus.GET_REDDOT_FAILURE.status ,ResponseStatus.GET_REDDOT_FAILURE.message);
         }
+    }
+
+    @Override
+    public Response editSpeak(SpeakDto speakDto) {
+        log.info("edit speak start...");
+        liveMybatisDao.updateTopFragmentById(speakDto);
+        log.info("edit speak end...");
+        return Response.success(ResponseStatus.EDIT_TOPIC_FRAGMENT_SUCCESS.status,ResponseStatus.EDIT_TOPIC_FRAGMENT_SUCCESS.message);
     }
 }

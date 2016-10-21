@@ -46,7 +46,7 @@
         <table tableName="content_review" domainObjectName="ContentReview"/>
         <!--<table tableName="content" domainObjectName="Content"/>-->
         <!--<table tableName="article_likes_details" domainObjectName="ArticleLikesDetails"/>-->
-        <table tableName="article_review" domainObjectName="ArticleReview"/>
+        <!--<table tableName="article_review" domainObjectName="ArticleReview"/>-->
         <!--<table tableName="article_tags_details" domainObjectName="ArticleTagsDetails"/>-->
     </context>
 </generatorConfiguration>

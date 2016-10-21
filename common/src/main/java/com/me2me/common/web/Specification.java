@@ -852,5 +852,97 @@ public interface Specification {
 
     }
 
+    enum  ClientLogAction{
+        AD_REG("广告-注册",11),
 
+        REG_PAGE1_RETURN("注册页面-第一页-返回",21),
+
+        REG_PAGE1_GET_VERIFY("注册页面-第一页-获取验证码",22),
+
+        REG_PAGE1_GET_VERIFY_AGAIN("注册页面-第一页-重新获取",23),
+
+        REG_PAGE1_NEXT("注册页面-第一页-下一步",24),
+
+        REG_PAGE1_WEIXIN("注册页面-第一页-微信",25),
+
+        REG_PAGE1_QQ("注册页面-第一页-QQ",26),
+
+        REG_PAGE2_RETURN("注册页面-第二页-返回",31),
+
+        REG_PAGE2_SAVE("注册页面-第二页-注册",32),
+
+        HOME_SEARCH("首页-搜索",41),
+
+        LIVE_IN_UPDATE("王国-所有更新中的王国",51),
+
+        LIVE_NOT_UPDATED("王国-最近未更新的王国",52),
+
+        UGC_MORE("UGC/文章详情-右上角...",61),
+
+        UGC_REVIEW_INPUT("UGC/文章详情-评论框",62),
+
+        UGC_REVIEW("UGC/文章详情-评论",63),
+
+        UGC_SHARE_FRIEND_CIRCLE("UGC/文章详情-分享-朋友圈",641),
+
+        UGC_SHARE_WEIXIN("UGC/文章详情-分享-微信",642),
+
+        UGC_SHARE_QQ("UGC/文章详情-分享-QQ",643),
+
+        UGC_SHARE_QZONE("UGC/文章详情-分享-QQ空间",644),
+
+        UGC_SHARE_WEIBO("UGC/文章详情-分享-微博",645),
+
+        UGC_LIKES("UGC/文章详情-点赞",65),
+
+        UGC_FEEL("UGC/文章详情-感受",66),
+
+        LIVE_MEMBERS("王国详情-右上角-成员数",71),
+
+        LIVE_SPEAK_INPUT("王国详情-评论框",72),
+
+        LIVE_LIKES("王国详情-点赞",73),
+
+        LIVE_JOIN("王国详情-加入王国",74),
+
+        LIVE_OUT("王国详情-退出王国",75),
+
+        LIVE_SHARE_FRIEND_CIRCLE("王国详情-分享-朋友圈",761),
+
+        LIVE_SHARE_WEIXIN("王国详情-分享-微信",762),
+
+        LIVE_SHARE_QQ("王国详情-分享-QQ",763),
+
+        LIVE_SHARE_QZONE("王国详情-分享-QQ空间",764),
+
+        LIVE_SHARE_WEIBO("王国详情-分享-微博",765);
+
+        public final String name;
+
+        public final int index;
+
+        ClientLogAction(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    enum PushObjectType{
+
+        UGC("UGC/文章",1),
+
+        LIVE("王国/直播",2),
+
+        SNS_CIRCLE("王国成员",3);
+
+        public final String name;
+
+        public final int index;
+
+        PushObjectType(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+
+    }
 }

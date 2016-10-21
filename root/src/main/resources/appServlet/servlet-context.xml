@@ -46,5 +46,4 @@
             <bean class="com.me2me.web.handler.AccessSecurityHandler"/>
         </mvc:interceptor>
     </mvc:interceptors>
-
 </beans>

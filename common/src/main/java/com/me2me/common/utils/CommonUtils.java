@@ -44,4 +44,15 @@ public class CommonUtils {
         }
         return toData;
     }
+
+    public static boolean afterVersion(String currentVersion,String version){
+        String[] currentArray = currentVersion.split(".");
+        String[] versionArray = version.split(".");
+        for(int i=0;i<3;i++){
+            if(Integer.parseInt(currentArray[i])>Integer.parseInt(versionArray[i])){
+                return true;
+            }
+        }
+        return false;
+    }
 }

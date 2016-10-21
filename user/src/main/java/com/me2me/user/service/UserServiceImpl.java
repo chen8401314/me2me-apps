@@ -622,24 +622,19 @@ public class UserServiceImpl implements UserService {
             userMybatisDao.createFollow(userFollow);
             log.info("follow success");
             //关注提醒
-            //push(followDto.getTargetUid(),followDto.getSourceUid(),Specification.PushMessageType.FOLLOW.index,null);
-            //更换信鸽推送为极光推动
-            JpushToken jpushToken = getJpushTokeByUid(followDto.getTargetUid());
-            if(jpushToken == null){
-                //兼容老版本，如果客户端没有更新则还走信鸽push
-                push(followDto.getTargetUid(),followDto.getSourceUid(),Specification.PushMessageType.FOLLOW.index,null);
-            }else {
-                UserProfile sourceUser = getUserProfileByUid(followDto.getSourceUid());
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("messageType",Specification.PushMessageType.FOLLOW.index);
-                String alias = String.valueOf(followDto.getTargetUid());
-                jPushService.payloadByIdExtra(alias, sourceUser.getNickName() + "关注了你！", JPushUtils.packageExtra(jsonObject));
-            }
+
+            UserProfile sourceUser = getUserProfileByUid(followDto.getSourceUid());
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("messageType",Specification.PushMessageType.FOLLOW.index);
+            jsonObject.addProperty("type",Specification.PushObjectType.SNS_CIRCLE.index);
+            String alias = String.valueOf(followDto.getTargetUid());
+            jPushService.payloadByIdExtra(alias, sourceUser.getNickName() + "关注了你！", JPushUtils.packageExtra(jsonObject));
+
             //粉丝数量红点
             log.info("follow fans add push start");
-            JsonObject jsonObject = new JsonObject();
+            jsonObject = new JsonObject();
             jsonObject.addProperty("fansCount","1");
-            String alias = String.valueOf(followDto.getTargetUid());
+            alias = String.valueOf(followDto.getTargetUid());
             jPushService.payloadByIdForMessage(alias,jsonObject.toString());
             log.info("follow fans add push end ");
 
@@ -1658,6 +1653,7 @@ public class UserServiceImpl implements UserService {
         thirdPartUser.setUid(thirdPartSignUpDto.getUid());
         thirdPartUser.setThirdPartToken(thirdPartSignUpDto.getThirdPartToken());
         thirdPartUser.setThirdPartOpenId(thirdPartSignUpDto.getThirdPartOpenId());
+        thirdPartUser.setThirdPartUnionid(thirdPartSignUpDto.getUnionId());
         thirdPartUser.setCreateTime(new Date());
         thirdPartUser.setThirdPartType(thirdPartSignUpDto.getThirdPartType());
         userMybatisDao.creatThirdPartUser(thirdPartUser);
@@ -1728,6 +1724,12 @@ public class UserServiceImpl implements UserService {
             }else if(thirdPartSignUpDto.getThirdPartType()==Specification.ThirdPartType.WEIXIN.index){
                 if(thirdUser != null){
                     return Response.success(ResponseStatus.WEIXIN_BIND_EXISTS.status,ResponseStatus.WEIXIN_BIND_EXISTS.message);
+                }
+                if(!StringUtils.isEmpty(thirdPartSignUpDto.getUnionId())){//新版本
+                	List<ThirdPartUser> thirdPartUser = userMybatisDao.getThirdPartUserByUnionId(thirdPartSignUpDto.getUnionId(),thirdPartSignUpDto.getThirdPartType());
+                	if(null != thirdPartUser && thirdPartUser.size() > 0){
+                		return Response.success(ResponseStatus.WEIXIN_BIND_EXISTS.status,ResponseStatus.WEIXIN_BIND_EXISTS.message);
+                	}
                 }
                 buildThirdPart2(thirdPartSignUpDto);
                 thirdPartName = Specification.ThirdPartType.WEIXIN.name;

@@ -135,4 +135,6 @@ public interface LiveService {
     Response displayProtocol(int vLv);
 
     Response getRedDot(long uid,long updateTime);
+
+    Response editSpeak(SpeakDto speakDto);
 }

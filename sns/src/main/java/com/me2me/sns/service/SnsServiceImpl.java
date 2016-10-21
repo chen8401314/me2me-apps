@@ -9,6 +9,7 @@ import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicFragment;
@@ -368,17 +369,6 @@ public class SnsServiceImpl implements SnsService {
                     liveService.createFavoriteDelete(uid,topicId);
                 }
             }
-           /* List<SnsCircle> snsCircles = snsMybatisDao.getSnsCircle(owner,topicId,Specification.SnsCircle.CORE.index);
-            if(snsCircles.size() == 10){
-                return Response.failure(ResponseStatus.SNS_CORE_CIRCLE_IS_FULL.status,ResponseStatus.SNS_CORE_CIRCLE_IS_FULL.message);
-            }else {
-                SnsCircle snsCircle = snsMybatisDao.getMySnsCircle(uid,topicId,owner,Specification.SnsCircle.CORE.index);
-                if(snsCircle != null){
-                    return Response.failure(ResponseStatus.IS_ALREADY_SNS_CORE.status,ResponseStatus.IS_ALREADY_SNS_CORE.message);
-                }else {
-                    snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.CORE.index);
-                }
-            }*/
 //            //关注此人
             follow(0,uid,owner);
             liveService.setLive2(uid, topicId, 0, 0, 0);
@@ -389,13 +379,18 @@ public class SnsServiceImpl implements SnsService {
 
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("messageType", Specification.PushMessageType.CORE_CIRCLE.index);
+            jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
+            jsonObject.addProperty("topicId",topicId);
             String alias = String.valueOf(uid);
-            String review = userProfile.getNickName() + "邀请你成为" + topic.getTitle() + "的核心圈成员";
+            String review = "你已加入" + topic.getTitle() + "核心圈";
             String message = "邀请我加入核心圈";
             jPushService.payloadByIdExtra(alias, review, JPushUtils.packageExtra(jsonObject));
             if(snsOnline.equals("1")) {
                 snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.LIVE_INVITED.index);
             }
+            //增加列表更新红点
+            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topicId + "", "1");
+            cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
         } else if (action == 2) {
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
             createFragment(owner, topicId, uid);
@@ -431,13 +426,16 @@ public class SnsServiceImpl implements SnsService {
 
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("messageType", Specification.PushMessageType.REMOVE_CORE_CIRCLE.index);
+            jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
+            jsonObject.addProperty("topicId",topicId);
             String alias = String.valueOf(uid);
-            String review = userProfile.getNickName() + "将你从" + topic.getTitle() + "的核心圈中移除！";
+            String review = "你被移出" + topic.getTitle() + "核心圈";
             String message = "将我从核心圈移除";
             jPushService.payloadByIdExtra(alias, review, JPushUtils.packageExtra(jsonObject));
             if(snsOnline.equals("1")) {
                 snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index);
             }
+
         }
         return Response.success(ResponseStatus.MODIFY_CIRCLE_SUCCESS.status, ResponseStatus.MODIFY_CIRCLE_SUCCESS.message);
     }
