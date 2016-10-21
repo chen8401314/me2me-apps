@@ -14,10 +14,10 @@ public class ProducerFactory<K, V> implements FactoryBean<Producer> {
     @Value("#{app.bootstrap_servers}")
     private String bootstrapServers;
 
-    @Value("#{app.key_deserializer}")
+    @Value("#{app.key_serializer}")
     private String keySerializer;
 
-    @Value("#{app.value_deserializer}")
+    @Value("#{app.value_serializer}")
     private String valueSerializer;
     
     private Producer<K, V> producer;
