@@ -6,6 +6,7 @@ import com.me2me.sms.dto.VerifyDto;
 import com.me2me.user.dto.*;
 import com.me2me.user.model.*;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -73,6 +74,8 @@ public interface UserService {
     Response modifyUserProfile(ModifyUserProfileDto modifyUserProfileDto);
 
     UserProfile getUserProfileByUid(long uid);
+
+    User getUserByUidAndTime(long uid , Date startDate , Date endDate);
 
     /**
      * 找回密码

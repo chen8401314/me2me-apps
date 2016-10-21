@@ -157,6 +157,24 @@ public enum  ResponseStatus {
 
     TOPIC_FRAGMENT_DELETE_SUCCESS("王国发言内容删除成功","topic fragment delete success",20072),
 
+    RUN_OUT_OF_LOTTERY("抽奖次数已用完,分享内容可获得额外一次抽奖机会","run out of lottery",20073),
+
+    AWARD_IS_END("活动已经结束","award is end",20074),
+
+    AWARD_ISNOT_START("活动还未开始","award is not start",20075),
+
+    AWARD_ISNOT_EXISTS("该活动不存在或已停用","award is not exists",20076),
+
+    APPEASE_NOT_AWARD_TERM("不满足抽奖条件，请参阅活动规则","appease not award term",20077),
+
+    AWARD_SHARE_SUCCESS("分享成功，多一次抽奖机会","award share success",20078),
+
+    APPEASE_AWARD_TERM("满足抽奖条件，可以参加活动","appease award term",20079),
+
+    USER_AWARD_INFO("获取用户中奖信息成功","user award info",20080),
+
+    USER_AWARD_NOT_INFO("该用户没有中奖信息","user award not info",20081),
+
 
 
 

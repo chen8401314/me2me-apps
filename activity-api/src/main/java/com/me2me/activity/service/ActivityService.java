@@ -51,4 +51,14 @@ public interface ActivityService {
     int getLikeCount(long id);
 
     int getReviewCount(long id);
+
+    Response luckAward(long uid ,String ip ,int activityName ,String channel ,String version);
+
+    Response getAwardCount(long uid);
+
+    Response awardShare(long uid ,int activityName);
+
+    Response checkIsAward(long uid ,int activityName ,String channel ,String version);
+
+    Response getUserAwardInfo(long uid);
 }

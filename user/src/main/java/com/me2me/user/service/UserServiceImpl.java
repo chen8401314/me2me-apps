@@ -451,6 +451,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User getUserByUidAndTime(long uid, Date startDate, Date endDate) {
+        return userMybatisDao.getUserByUidAndTime(uid,startDate,endDate);
+    }
+
+    @Override
     public Response writeTag(PasteTagDto pasteTagDto) {
         UserTags userTag = userMybatisDao.getUserTag(pasteTagDto.getTag());
         long tagId = userMybatisDao.saveUserTag(pasteTagDto.getTag());

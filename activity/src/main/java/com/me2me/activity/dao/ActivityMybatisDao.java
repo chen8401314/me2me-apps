@@ -33,6 +33,18 @@ public class ActivityMybatisDao {
     @Autowired
     private ActivityLikesDetailsMapper activityLikesDetailsMapper;
 
+    @Autowired
+    private LuckActMapper luckActMapper;
+
+    @Autowired
+    private LuckPrizeMapper luckPrizeMapper;
+
+    @Autowired
+    private LuckCountMapper luckCountMapper;
+
+    @Autowired
+    private LuckStatusMapper luckStatusMapper;
+
 
     public void saveActivity(ActivityWithBLOBs activity){
         activityMapper.insertSelective(activity);
@@ -137,4 +149,112 @@ public class ActivityMybatisDao {
         criteria.andActivityIdEqualTo(id);
         return activityReviewMapper.countByExample(example);
     }
+
+    public void createLuckAct(LuckAct luck){
+        luckActMapper.insertSelective(luck);
+    }
+
+    public List<LuckPrize> getAllPrize(){
+        return luckPrizeMapper.selectByExample(null);
+    }
+
+    public LuckPrize getPrizeByAwardId(int awardId){
+        LuckPrizeExample example = new LuckPrizeExample();
+        LuckPrizeExample.Criteria criteria = example.createCriteria();
+        criteria.andAwardIdEqualTo(awardId);
+        List<LuckPrize> prizes = luckPrizeMapper.selectByExample(example);
+        return (prizes.size()>0&&prizes!=null)?prizes.get(0):null;
+    }
+
+    public LuckPrize getPrize1(){
+        LuckPrizeExample example = new LuckPrizeExample();
+        LuckPrizeExample.Criteria criteria = example.createCriteria();
+        criteria.andAwardIdEqualTo(1);
+        List<LuckPrize> prizes = luckPrizeMapper.selectByExample(example);
+        return (prizes.size()>0&&prizes!=null)?prizes.get(0):null;
+    }
+
+    public LuckPrize getPrize2(){
+        LuckPrizeExample example = new LuckPrizeExample();
+        LuckPrizeExample.Criteria criteria = example.createCriteria();
+        criteria.andAwardIdEqualTo(2);
+        List<LuckPrize> prizes = luckPrizeMapper.selectByExample(example);
+        return (prizes.size()>0&&prizes!=null)?prizes.get(0):null;
+    }
+
+    public LuckPrize getPrize3(){
+        LuckPrizeExample example = new LuckPrizeExample();
+        LuckPrizeExample.Criteria criteria = example.createCriteria();
+        criteria.andAwardIdEqualTo(3);
+        List<LuckPrize> prizes = luckPrizeMapper.selectByExample(example);
+        return (prizes.size()>0&&prizes!=null)?prizes.get(0):null;
+    }
+
+    public LuckPrize getPrize4(){
+        LuckPrizeExample example = new LuckPrizeExample();
+        LuckPrizeExample.Criteria criteria = example.createCriteria();
+        criteria.andAwardIdEqualTo(4);
+        List<LuckPrize> prizes = luckPrizeMapper.selectByExample(example);
+        return (prizes.size()>0&&prizes!=null)?prizes.get(0):null;
+    }
+
+    public void updatePrize(LuckPrize prize){
+        luckPrizeMapper.updateByPrimaryKeySelective(prize);
+    }
+
+    public List<LuckAct> getAllLuckAct(){
+        LuckActExample example = new LuckActExample();
+        LuckActExample.Criteria criteria = example.createCriteria();
+        return luckActMapper.selectByExample(example);
+    }
+
+    public List<LuckAct> getLuckActByToday(Date startDate ,Date endDate){
+        LuckActExample example = new LuckActExample();
+        LuckActExample.Criteria criteria = example.createCriteria();
+        criteria.andCreatTimeGreaterThan(startDate);
+        criteria.andCreatTimeLessThan(endDate);
+        criteria.andAwardIdNotEqualTo(0);
+        return luckActMapper.selectByExample(example);
+    }
+
+    public LuckAct getLuckActByAwardId(){
+        LuckActExample example = new LuckActExample();
+        LuckActExample.Criteria criteria = example.createCriteria();
+        criteria.andAwardIdNotEqualTo(0);
+        List<LuckAct> luckActs = luckActMapper.selectByExample(example);
+        return (luckActs.size()>0 && luckActs!=null)?luckActs.get(0):null;
+    }
+
+    public LuckAct getLuckActByAwardId2(long uid){
+        LuckActExample example = new LuckActExample();
+        LuckActExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andAwardIdNotEqualTo(0);
+        List<LuckAct> luckActs = luckActMapper.selectByExample(example);
+        return (luckActs.size()>0 && luckActs!=null)?luckActs.get(0):null;
+    }
+
+    public LuckCount getLuckCountByUid(long uid) {
+        LuckCountExample example = new LuckCountExample();
+        LuckCountExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        List<LuckCount> luckCounts = luckCountMapper.selectByExample(example);
+        return (luckCounts.size()>0 && luckCounts !=null)?luckCounts.get(0):null;
+    };
+
+    public void createLuckCount(LuckCount luckCount){
+        luckCountMapper.insertSelective(luckCount);
+    }
+
+    public void updateLuckCount(LuckCount luckCount){
+        luckCountMapper.updateByPrimaryKeySelective(luckCount);
+    }
+
+    public LuckStatus getLuckStatusByName(int activityName){
+        LuckStatusExample example = new LuckStatusExample();
+        LuckStatusExample.Criteria criteria = example.createCriteria();
+        criteria.andActivityNameEqualTo(activityName);
+        List<LuckStatus> luckStatuses = luckStatusMapper.selectByExample(example);
+        return (luckStatuses.size()>0 && luckStatuses !=null)?luckStatuses.get(0):null;
+    };
 }
