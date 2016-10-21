@@ -479,27 +479,31 @@ public class LiveServiceImpl implements LiveService {
     }
 
     private void remindAndJpushAtMessage(SpeakDto speakDto, int messageType) {
+        JSONArray atArray = null;
         if(speakDto.getAtUid()==-1){  //atUid==-1时为多人@
             JSONObject fragment = JSON.parseObject(speakDto.getFragment());
             if(fragment==null)
                 return;
-            JSONArray atArray = fragment.containsKey("atArray")?fragment.getJSONArray("atArray"):null;
+            atArray = fragment.containsKey("atArray")?fragment.getJSONArray("atArray"):null;
             if(atArray==null)
                 return;
-            for(int i=0;i<atArray.size();i++){
-                long atUid = atArray.getLongValue(i);
-                liveRemind(atUid, speakDto.getUid(), Specification.LiveSpeakType.FANS.index, speakDto.getTopicId(), speakDto.getFragment());
-
-                UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("messageType", messageType);
-                jsonObject.addProperty("topicId",speakDto.getTopicId());
-                jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
-                String alias = String.valueOf(atUid);
-                jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
-            }
+        }else{
+            atArray = new JSONArray();
+            atArray.add(speakDto.getAtUid());
         }
 
+        for(int i=0;i<atArray.size();i++){
+            long atUid = atArray.getLongValue(i);
+            liveRemind(atUid, speakDto.getUid(), Specification.LiveSpeakType.FANS.index, speakDto.getTopicId(), speakDto.getFragment());
+
+            UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
+            JsonObject jsonObject = new JsonObject();
+            jsonObject.addProperty("messageType", messageType);
+            jsonObject.addProperty("topicId",speakDto.getTopicId());
+            jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
+            String alias = String.valueOf(atUid);
+            jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
+        }
 
     }
 
@@ -1332,7 +1336,9 @@ public class LiveServiceImpl implements LiveService {
 
     @Override
     public Response editSpeak(SpeakDto speakDto) {
+        log.info("edit speak start...");
         liveMybatisDao.updateTopFragmentById(speakDto);
+        log.info("edit speak end...");
         return Response.success(ResponseStatus.EDIT_TOPIC_FRAGMENT_SUCCESS.status,ResponseStatus.EDIT_TOPIC_FRAGMENT_SUCCESS.message);
     }
 }

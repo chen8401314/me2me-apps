@@ -70,17 +70,19 @@ public class PublishUGCListener {
         ReviewDto reviewDto = reviewEvent.getReviewDto();
         Content content = reviewEvent.getContent();
         if(reviewDto.getIsAt() == 1) {
+            JSONArray array = null;
             //兼容老版本
             if(reviewDto.getAtUid() != 0) {
                 String extra = reviewDto.getExtra();
                 if(StringUtils.isEmpty(extra)){
-                   return;
-                }
-
-                JSONObject json = JSON.parseObject(extra);
-                JSONArray array = json.containsKey("atArray")?json.getJSONArray("atArray"):null;
-                if(array==null) {
-                    return;
+                    array = new JSONArray();
+                    array.add(reviewDto.getAtUid());
+                }else {
+                    JSONObject json = JSON.parseObject(extra);
+                    array = json.containsKey("atArray") ? json.getJSONArray("atArray") : null;
+                    if (array == null) {
+                        return;
+                    }
                 }
                 for(int i=0;i<array.size();i++) {
                     long atUid = array.getLongValue(i);
