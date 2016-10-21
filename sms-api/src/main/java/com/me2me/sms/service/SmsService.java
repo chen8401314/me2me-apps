@@ -13,4 +13,6 @@ public interface SmsService {
 
     boolean verify(VerifyDto verifyDto);
 
+    boolean sendMessage(String nickName ,String awardName ,String mobile);
+
 }

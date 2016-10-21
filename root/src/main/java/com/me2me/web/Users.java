@@ -1,9 +1,11 @@
 package com.me2me.web;
 
+import com.me2me.activity.dto.AwardDto;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.kafka.model.ClientLog;
 import com.me2me.kafka.service.KafkaService;
+import com.me2me.sms.dto.AwardXMDto;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.service.ChannelType;
 import com.me2me.user.dto.*;
@@ -134,6 +136,21 @@ public class Users extends BaseController {
             kafkaService.saveClientLog(request,req.getHeader("User-Agent"),Specification.ClientLogAction.REG_PAGE1_NEXT);
         }
         return userService.verify(verifyDto);
+    }
+
+    /**
+     * 发送中奖信息短信接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/sendAwardMessage",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response sendAwardMessage(UserAwardRequest request){
+        AwardXMDto awardXMDto = new AwardXMDto();
+        awardXMDto.setNickName(request.getNickName());
+        awardXMDto.setAwardName(request.getAwardName());
+        awardXMDto.setMobile(request.getMobile());
+        return userService.sendAwardMessage(awardXMDto);
     }
 
     /**

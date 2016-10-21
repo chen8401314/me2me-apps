@@ -271,6 +271,10 @@ public enum  ResponseStatus {
 
     EDIT_TOPIC_FRAGMENT_FAILURE("编辑王国发言内容失败","edit topic fragment failure",50038),
 
+    AWARD_MESSAGE_SUCCESS("中奖短信发送成功","award message success",50039),
+
+    AWARD_MESSAGE_FAILURE("中奖短信发送失败","award message failure",50040),
+
 
 
 

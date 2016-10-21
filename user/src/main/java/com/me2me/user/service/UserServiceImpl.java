@@ -280,6 +280,18 @@ public class UserServiceImpl implements UserService {
         return Response.failure(ResponseStatus.USER_VERIFY_ERROR.status,ResponseStatus.USER_VERIFY_ERROR.message);
     }
 
+    @Override
+    public Response sendAwardMessage(AwardXMDto awardXMDto) {
+        boolean isTrue = smsService.sendMessage(awardXMDto.getNickName(),awardXMDto.getAwardName(),awardXMDto.getMobile());
+        if(isTrue){
+            log.info("award message success");
+            return Response.success(ResponseStatus.AWARD_MESSAGE_SUCCESS.status,ResponseStatus.AWARD_MESSAGE_SUCCESS.message);
+        }else{
+            log.info("award message failure");
+            return Response.success(ResponseStatus.AWARD_MESSAGE_FAILURE.status,ResponseStatus.AWARD_MESSAGE_FAILURE.message);
+        }
+    }
+
     /**
      * 修改密码
      * @param modifyEncryptDto

@@ -1,7 +1,9 @@
 package com.me2me.common.sms;
 
 
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.google.common.collect.Lists;
 import org.apache.http.Header;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -29,6 +31,7 @@ public class YunXinSms {
 
     private static final String VERIFYCODE_URL = "https://api.netease.im/sms/verifycode.action";
     private static final String SENDCODE_URL="https://api.netease.im/sms/sendcode.action";
+    private static final String SENDTEMPLATE_URL="https://api.netease.im/sms/sendtemplate.action";
 
     /**
      * 设置请求头
@@ -62,6 +65,18 @@ public class YunXinSms {
         Map<String,String> param = new HashMap<String, String>();
         param.put("mobile",mobileNo);
         String resultCode = executeURLRequest(SENDCODE_URL,param);
+        return processResultCode(resultCode);
+    }
+
+    public static Boolean sendSms2(String nickName ,String awardName ,String mobile)  {
+        Map<String,String> param = new HashMap<String, String>();
+        param.put("templateid","3029286");
+        List list = Lists.newArrayList();
+        list.add(nickName);
+        list.add(awardName);
+        param.put("params", JSONArray.toJSONString(list));
+        param.put("mobiles","["+mobile+"]");
+        String resultCode = executeURLRequest(SENDTEMPLATE_URL,param);
         return processResultCode(resultCode);
     }
 

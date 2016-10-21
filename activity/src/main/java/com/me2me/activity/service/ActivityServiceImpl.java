@@ -230,16 +230,16 @@ public class ActivityServiceImpl implements ActivityService {
         return activityMybatisDao.getReviewCount(id);
     }
 
-//    public static void main(String[] args) {
-//        Pattern pattern = Pattern.compile("(.*)(#.{0,128}#)(.*)");
-//        Matcher matcher = pattern.matcher("#中国人#");
-//        boolean v = matcher.matches();
-//        System.out.println(v);
-//        int i = matcher.groupCount();
-//        System.out.println(i);
-//        String value = matcher.group(2);
-//        System.out.println(value);
-//    }
+    public static void main(String[] args) {
+        Pattern pattern = Pattern.compile("(.*)(#.{0,128}#)(.*)");
+        Matcher matcher = pattern.matcher("#中国人#");
+        boolean v = matcher.matches();
+        System.out.println(v);
+        int i = matcher.groupCount();
+        System.out.println(i);
+        String value = matcher.group(2);
+        System.out.println(value);
+    }
 
     @Override
     public Response luckAward(long uid ,String ip ,int activityName ,String channel ,String version) {
@@ -261,10 +261,70 @@ public class ActivityServiceImpl implements ActivityService {
         }else{
             return Response.success(ResponseStatus.AWARD_ISNOT_EXISTS.status ,ResponseStatus.AWARD_ISNOT_EXISTS.message);
         }
+
         //用户信息(在活动时间内的用户)
         User user = userService.getUserByUidAndTime(uid,startDate,endDate);
 
-        //如果当日奖品已经发出去3个了就不能再发了 否则继续发放奖品
+        Date lastDay = new Date();
+        //如果是活动最后一天
+        Boolean isTrue = isSameDate(lastDay,endDate);
+        if(isTrue){
+            if(luckStatus.getAwardStatus() == 1 && luckStatus.getChannel().equals(channel)
+                    && luckStatus.getVersion().equals(version)
+                    && user !=null && nowDate.compareTo(startDate) > 0
+                    && nowDate.compareTo(endDate) < 0){
+                //查询luckCount表是否有用户数据
+                LuckCount luckCount = activityMybatisDao.getLuckCountByUid(uid);
+                //如果luckCount表没这个用户信息的话新增一条
+                if (luckCount == null) {
+                    LuckCount count = new LuckCount();
+                    count.setNum(3);
+                    count.setCreatTime(new Date());
+                    count.setUid(uid);
+                    count.setActivityName(activityName);
+                    activityMybatisDao.createLuckCount(count);
+                }//再根据uid去查询用户信息获得次数
+                LuckCount luckCount2 = activityMybatisDao.getLuckCountByUid(uid);
+                //判断是否是第二天 是的话初始化为3次
+                Date date = luckCount2.getCreatTime();
+                if (isToday(date) == false && new Date().compareTo(date) > 0) {
+                    luckCount2.setCreatTime(new Date());
+                    luckCount2.setNum(3);
+                    activityMybatisDao.updateLuckCount(luckCount2);
+                    //更新完毕后获取最新次数信息
+                    LuckCount luckCount3 = activityMybatisDao.getLuckCountByUid(uid);
+                    if (luckCount3.getNum() > 0) {
+                        //处理抽奖通用方法
+                        return awardCommonLastDay(uid,user,luckacts,luckCount2,luck,userProfile,ip,activityName);
+                    } else {
+                        //否则返回错误信息 今天次数已经用完
+                        return Response.success(ResponseStatus.RUN_OUT_OF_LOTTERY.status, ResponseStatus.RUN_OUT_OF_LOTTERY.message);
+                    }
+                }
+                //有抽奖次数才能继续往下执行
+                if(luckCount2.getNum()>0) {
+                    return awardCommonLastDay(uid,user,luckacts,luckCount2,luck,userProfile,ip,activityName);
+                }
+                else {
+                    //否则返回错误信息 今天次数已经用完
+                    return Response.success(ResponseStatus.RUN_OUT_OF_LOTTERY.status, ResponseStatus.RUN_OUT_OF_LOTTERY.message);
+                }
+            } else if(nowDate.compareTo(startDate) < 0 ){
+                return Response.success(ResponseStatus.AWARD_ISNOT_START.status,ResponseStatus.AWARD_ISNOT_START.message);
+            }
+            else if(nowDate.compareTo(endDate) > 0){
+                //返回活动已结束
+                return Response.success(ResponseStatus.AWARD_IS_END.status,ResponseStatus.AWARD_IS_END.message);
+            }
+            else if(!luckStatus.getChannel().equals(channel) || user ==null || !luckStatus.getVersion().equals(version) ){
+                //不具备抽奖条件
+                return Response.success(ResponseStatus.APPEASE_NOT_AWARD_TERM.status,ResponseStatus.APPEASE_NOT_AWARD_TERM.message);
+            }
+            //awardStatus=0的情况下返回未开始
+            return Response.success(ResponseStatus.AWARD_ISNOT_EXISTS.status,ResponseStatus.AWARD_ISNOT_EXISTS.message);
+        }
+
+        //如果当日奖品已经发出去4个了就不能再发了 否则继续发放奖品
         //还有个逻辑就是  如果是活动最后一天了直接送奖品出去
         Date newDate = new Date();
         DateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
@@ -522,7 +582,7 @@ public class ActivityServiceImpl implements ActivityService {
 
             //获取所有奖品库存给前台
             List<LuckPrize> allPrize = activityMybatisDao.getAllPrize();
-            award2.setPrizeNumber(JSON.toJSONString(allPrize));
+//            award2.setPrizeNumber(JSON.toJSONString(allPrize));
             award2.setAvatar(userProfile.getAvatar());
             award2.setNickName(userProfile.getNickName());
             return Response.success(award2);
@@ -616,7 +676,7 @@ public class ActivityServiceImpl implements ActivityService {
 
                 //获取所有奖品库存给前台
                 List<LuckPrize> allPrize = activityMybatisDao.getAllPrize();
-                award.setPrizeNumber(JSON.toJSONString(allPrize));
+//                award.setPrizeNumber(JSON.toJSONString(allPrize));
                 award.setAvatar(userProfile.getAvatar());
                 award.setNickName(userProfile.getNickName());
                 award.setProof(proof);
@@ -639,7 +699,171 @@ public class ActivityServiceImpl implements ActivityService {
                 award2.setAwardCount(remain.getNum());
                 //获取所有奖品库存给前台
                 List<LuckPrize> allPrize = activityMybatisDao.getAllPrize();
-                award2.setPrizeNumber(JSON.toJSONString(allPrize));
+//                award2.setPrizeNumber(JSON.toJSONString(allPrize));
+                award2.setAvatar(userProfile.getAvatar());
+                award2.setNickName(userProfile.getNickName());
+                return Response.success(award2);
+            }
+        }
+    }
+
+    public Response awardCommonLastDay(long uid ,User user ,List<LuckAct> luckacts ,LuckCount luckCount2 ,LuckAct luck ,
+                                       UserProfile userProfile , String ip ,int activityName){
+        //可以抽奖
+        String proof = UUID.randomUUID().toString();
+        LuckAct luckAct = new LuckAct();
+        luckAct.setUid(uid);
+        luckAct.setMobile(user.getUserName());
+        luckAct.setProof(proof);
+        luckAct.setAvatar(userProfile.getAvatar());
+        luckAct.setNickName(userProfile.getNickName());
+        luckAct.setIpAddress(ip);
+        luckAct.setActivityName(activityName);
+
+        //查询奖品数量 1 2 3 等奖
+        List<LuckPrize> prize1 = activityMybatisDao.getPrize1Black();
+        List<LuckPrize> prize2 = activityMybatisDao.getPrize2Black();
+        List<LuckPrize> prize3 = activityMybatisDao.getPrize3Black();
+        List<LuckPrize> prize4 = activityMybatisDao.getPrize4Black();
+
+        if (luckacts.size() == 0) {
+            List<AwardDto> awards2 = new ArrayList<>();
+            awards2.add(new AwardDto(5, 0.2f, 100));
+            awards2.add(new AwardDto(6, 0.3f, 100));
+            awards2.add(new AwardDto(7, 0.4f, 100));
+            AwardDto award2 = lottery(awards2);
+            log.info("用户："+user.getUserName()+" 获得了 "+award2.id+"等奖");
+            luckAct.setAwardId(0);
+            activityMybatisDao.createLuckAct(luckAct);
+            //第一次进来用了一次机会，第一次抽奖限制了不能中奖
+            luckCount2.setNum(luckCount2.getNum() - 1);
+            activityMybatisDao.updateLuckCount(luckCount2);
+            //获取剩余次数返回给前台
+            LuckCount remain = activityMybatisDao.getLuckCountByUid(uid);
+            award2.setAwardCount(remain.getNum());
+
+            //获取所有奖品库存给前台
+            List<LuckPrize> allPrize = activityMybatisDao.getAllPrize();
+//            award2.setPrizeNumber(JSON.toJSONString(allPrize));
+            award2.setAvatar(userProfile.getAvatar());
+            award2.setNickName(userProfile.getNickName());
+            return Response.success(award2);
+        } else {
+            if (luck == null) {
+                AwardDto award = new AwardDto();
+                if (prize4.size()>0) {
+                    int num = prize4.get(0).getNumber() - 1;
+                    if (num >= 0) {
+                        prize4.get(0).setNumber(num);
+                        activityMybatisDao.updatePrize(prize4.get(0));
+                        luckAct.setAwardId(4);
+                    } else {
+                        prize4.get(0).setNumber(0);
+                        luckAct.setAwardId(0);
+                    }
+                    activityMybatisDao.createLuckAct(luckAct);
+                    //每次抽奖机会-1
+                    luckCount2.setNum(luckCount2.getNum() - 1);
+                    activityMybatisDao.updateLuckCount(luckCount2);
+                    log.info("用户："+user.getUserName()+" 获得了 4等奖");
+                    LuckPrize prize = activityMybatisDao.getPrizeByAwardId(4);
+                    award.setAwardName(prize.getAwardName());
+                    award.setId(4);
+                } else if (prize3.size() >0) {
+                    int num = prize3.get(0).getNumber() - 1;
+                    if (num >= 0) {
+                        prize3.get(0).setNumber(num);
+                        activityMybatisDao.updatePrize(prize3.get(0));
+                        luckAct.setAwardId(3);
+                    } else {
+                        prize3.get(0).setNumber(0);
+                        luckAct.setAwardId(0);
+                    }
+                    activityMybatisDao.createLuckAct(luckAct);
+                    //每次抽奖机会-1
+                    luckCount2.setNum(luckCount2.getNum() - 1);
+                    activityMybatisDao.updateLuckCount(luckCount2);
+                    log.info("用户："+user.getUserName()+" 获得了 3等奖");
+                    LuckPrize prize = activityMybatisDao.getPrizeByAwardId(3);
+                    award.setAwardName(prize.getAwardName());
+                    award.setId(3);
+                } else if (prize2.size() >0) {
+                    int num = prize2.get(0).getNumber() - 1;
+                    if (num >= 0) {
+                        prize2.get(0).setNumber(num);
+                        activityMybatisDao.updatePrize(prize2.get(0));
+                        luckAct.setAwardId(2);
+                    } else {
+                        prize2.get(0).setNumber(0);
+                        luckAct.setAwardId(0);
+                    }
+                    activityMybatisDao.createLuckAct(luckAct);
+                    //每次抽奖机会-1
+                    luckCount2.setNum(luckCount2.getNum() - 1);
+                    activityMybatisDao.updateLuckCount(luckCount2);
+                    //System.out.println("恭喜您，抽到了：" + award.id);
+                    log.info("用户："+user.getUserName()+" 获得了 2等奖");
+                    LuckPrize prize = activityMybatisDao.getPrizeByAwardId(2);
+                    award.setAwardName(prize.getAwardName());
+                    award.setId(2);
+                } else if (prize1.size() >0) {
+                    int num = prize1.get(0).getNumber() - 1;
+                    if (num >= 0) {
+                        prize1.get(0).setNumber(num);
+                        activityMybatisDao.updatePrize(prize1.get(0));
+                        luckAct.setAwardId(1);
+                    } else {
+                        prize1.get(0).setNumber(0);
+                        luckAct.setAwardId(0);
+                    }
+                    activityMybatisDao.createLuckAct(luckAct);
+                    //每次抽奖机会-1
+                    luckCount2.setNum(luckCount2.getNum() - 1);
+                    activityMybatisDao.updateLuckCount(luckCount2);
+                    log.info("用户："+user.getUserName()+" 获得了 1等奖");
+                    LuckPrize prize = activityMybatisDao.getPrizeByAwardId(1);
+                    award.setAwardName(prize.getAwardName());
+                    award.setId(1);
+                }else {//没中奖的话award_id为空
+                    luckAct.setAwardId(0);
+                    activityMybatisDao.createLuckAct(luckAct);
+                    //每次抽奖机会-1
+                    luckCount2.setNum(luckCount2.getNum() - 1);
+                    activityMybatisDao.updateLuckCount(luckCount2);
+                    log.info("用户："+user.getUserName()+" 获得了 5等奖");
+                    award.setId(5);
+                }
+                //获取剩余次数返回给前台
+                LuckCount remain = activityMybatisDao.getLuckCountByUid(uid);
+                award.setAwardCount(remain.getNum());
+
+                //获取所有奖品库存给前台
+                List<LuckPrize> allPrize = activityMybatisDao.getAllPrize();
+                //奖品所有剩余数量json
+//                award.setPrizeNumber(JSON.toJSONString(allPrize));
+                award.setAvatar(userProfile.getAvatar());
+                award.setNickName(userProfile.getNickName());
+                award.setProof(proof);
+                award.setMe_number(userService.getUserNoByUid(uid));
+                return Response.success(award);
+            }
+            else {
+                //每次抽奖机会-1
+                luckCount2.setNum(luckCount2.getNum() - 1);
+                activityMybatisDao.updateLuckCount(luckCount2);
+                //日志记录中奖过了，返回前台还是抽奖的信息，但是不会中奖
+                log.info("用户："+user.getUserName()+" 已经中奖过了，不能继续中奖");
+                List<AwardDto> awards2 = new ArrayList<>();
+                awards2.add(new AwardDto(5, 0.2f, 100));
+                awards2.add(new AwardDto(6, 0.3f, 100));
+                awards2.add(new AwardDto(7, 0.5f, 100));
+                AwardDto award2 = lottery(awards2);
+                //获取剩余次数返回给前台
+                LuckCount remain = activityMybatisDao.getLuckCountByUid(uid);
+                award2.setAwardCount(remain.getNum());
+                //获取所有奖品库存给前台
+                List<LuckPrize> allPrize = activityMybatisDao.getAllPrize();
+//                award2.setPrizeNumber(JSON.toJSONString(allPrize));
                 award2.setAvatar(userProfile.getAvatar());
                 award2.setNickName(userProfile.getNickName());
                 return Response.success(award2);

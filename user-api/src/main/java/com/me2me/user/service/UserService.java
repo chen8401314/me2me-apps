@@ -1,6 +1,7 @@
 package com.me2me.user.service;
 
 import com.me2me.common.web.Response;
+import com.me2me.sms.dto.AwardXMDto;
 import com.me2me.sms.dto.PushLogDto;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.user.dto.*;
@@ -38,6 +39,8 @@ public interface UserService {
      * @return
      */
     Response verify(VerifyDto verifyDto);
+
+    Response sendAwardMessage(AwardXMDto awardXMDto);
 
     /**
      * 用户修改密码
