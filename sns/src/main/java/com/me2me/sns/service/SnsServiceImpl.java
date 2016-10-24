@@ -333,6 +333,7 @@ public class SnsServiceImpl implements SnsService {
 
     @Override
     public Response modifyCircle(long owner, long topicId, long uid, int action) {
+        log.info("modify circle start ... action:"+action+";topicId:"+topicId);
         //兼容老版本
         String snsOnline = cacheService.get("version:2.1.1:online");
 
@@ -437,6 +438,7 @@ public class SnsServiceImpl implements SnsService {
             }
 
         }
+        log.info("modify circle end ...");
         return Response.success(ResponseStatus.MODIFY_CIRCLE_SUCCESS.status, ResponseStatus.MODIFY_CIRCLE_SUCCESS.message);
     }
 
