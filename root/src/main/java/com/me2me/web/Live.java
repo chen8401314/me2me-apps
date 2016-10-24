@@ -66,6 +66,21 @@ public class Live extends BaseController {
     }
 
     /**
+     * 获取王国消息列表，按分页
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/detail",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response getLiveDetail(LiveDetailRequest request, HttpServletResponse response){
+        response.setHeader("Access-Control-Allow-Origin", "*");
+
+        return null;
+    }
+
+
+
+    /**
      * 获取消息列表(暂未启用)
      * @param request
      * @return
