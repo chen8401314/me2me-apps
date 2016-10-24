@@ -218,7 +218,7 @@ public class Live extends BaseController {
         }
 
         //埋点
-        kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_IN_UPDATE);
+//        kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_IN_UPDATE);
         return liveService.getLivesByUpdateTime(request.getUid(),request.getUpdateTime());
     }
 
@@ -315,7 +315,7 @@ public class Live extends BaseController {
     @ResponseBody
     public Response getInactiveLive(InactiveLiveRequest request,HttpServletRequest req){
         //埋点
-        kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_NOT_UPDATED);
+//        kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_NOT_UPDATED);
 
         return liveService.getInactiveLive(request.getUid(),request.getUpdateTime());
     }

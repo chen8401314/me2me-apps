@@ -1,6 +1,7 @@
 package com.me2me.kafka.service;
 
 import com.alibaba.fastjson.JSON;
+import com.me2me.common.web.BaseEntity;
 import com.me2me.common.web.Request;
 import com.me2me.common.web.Specification;
 import com.me2me.kafka.model.ClientLog;
@@ -21,7 +22,7 @@ public class KafkaServiceImpl implements  KafkaService{
     private KafkaTemplate kafkaTemplate;
 
     @Override
-    public void saveClientLog(Request request, String userAgent,Specification.ClientLogAction action) {
+    public void saveClientLog(BaseEntity request, String userAgent, Specification.ClientLogAction action) {
         /*try {  //埋点
             ClientLog clientLog = new ClientLog();
 

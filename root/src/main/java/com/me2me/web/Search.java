@@ -35,7 +35,7 @@ public class Search extends BaseController {
     @RequestMapping(method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response search(SearchRequest searchRequest, HttpServletRequest req){
         //埋点
-        kafkaService.saveClientLog(searchRequest,req.getHeader("User-Agent"),Specification.ClientLogAction.HOME_SEARCH);
+//        kafkaService.saveClientLog(searchRequest,req.getHeader("User-Agent"),Specification.ClientLogAction.HOME_SEARCH);
 
         return searchService.search(searchRequest.getKeyword(),searchRequest.getPage(),searchRequest.getPageSize(),searchRequest.getUid(),searchRequest.getIsSearchFans());
     }

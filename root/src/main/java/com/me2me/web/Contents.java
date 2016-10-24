@@ -100,7 +100,7 @@ public class Contents extends BaseController {
         likeDto.setType(request.getType() == 0 ? 1 : request.getType());
 
         //埋点
-        kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.UGC_LIKES);
+        kafkaService.saveClientLog(likeDto,req.getHeader("User-Agent"), Specification.ClientLogAction.UGC_LIKES);
         return contentService.like2(likeDto);
     }
 
@@ -120,7 +120,7 @@ public class Contents extends BaseController {
         writeTagDto.setType(request.getType() == 0 ? 1 : request.getType());
 
         //埋点
-        kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.UGC_FEEL);
+        kafkaService.saveClientLog(writeTagDto,req.getHeader("User-Agent"), Specification.ClientLogAction.UGC_FEEL);
         return contentService.writeTag2(writeTagDto);
     }
 
@@ -250,7 +250,7 @@ public class Contents extends BaseController {
         reviewDto.setType(request.getType() == 0 ? 1 : request.getType());
 
         //埋点
-        kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.UGC_REVIEW);
+        kafkaService.saveClientLog(reviewDto,req.getHeader("User-Agent"), Specification.ClientLogAction.UGC_REVIEW);
 
         return contentService.createReview(reviewDto);
     }
