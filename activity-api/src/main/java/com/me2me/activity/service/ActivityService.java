@@ -58,7 +58,7 @@ public interface ActivityService {
 
     Response awardShare(long uid ,int activityName);
 
-    Response checkIsAward(long uid ,int activityName ,String channel ,String version);
+    Response checkIsAward(long uid ,int activityName ,String channel ,String version ,String token);
 
     Response getUserAwardInfo(long uid);
 }

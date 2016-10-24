@@ -16,7 +16,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import sun.misc.BASE64Encoder;
 
+import java.io.UnsupportedEncodingException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -389,9 +391,9 @@ public class ActivityServiceImpl implements ActivityService {
             }
             //如果数据库存在中奖情况都话，直接返回个谢谢参与什么都信息，此操作不保存数据库中
             List<AwardDto> awards2 = new ArrayList<>();
-            awards2.add(new AwardDto(5, 0.2f, 100));
-            awards2.add(new AwardDto(6, 0.3f, 100));
-            awards2.add(new AwardDto(7, 0.4f, 100));
+            awards2.add(new AwardDto(6, 0.2f, 100));
+            awards2.add(new AwardDto(7, 0.3f, 100));
+            awards2.add(new AwardDto(8, 0.4f, 100));
             AwardDto award2 = lottery(awards2);
             //如果没有抽奖机会了直接返回
             if(luckCount2.getNum() == 0){
@@ -488,7 +490,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Response checkIsAward(long uid, int activityName, String channel, String version) {
+    public Response checkIsAward(long uid, int activityName, String channel, String version ,String token) {
         //根据前台传来的活动id获取活动信息
         LuckStatus luckStatus = activityMybatisDao.getLuckStatusByName(activityName);
         //活动开始和结束时间
@@ -510,7 +512,10 @@ public class ActivityServiceImpl implements ActivityService {
                 && nowDate.compareTo(endDate) < 0){
             log.info("meet the conditions you can award");
             ActivityModelDto activityModelDto = new ActivityModelDto();
-            activityModelDto.setActivityUrl(Constant.AWARD_URL);
+            String uid1 = getBase64(Long.toString(uid));
+            String token1 = getBase64(token);
+            activityModelDto.setActivityUrl("http://webapp.me-to-me.com/web/api/awardJoin?uid="+uid1+"&&token="+token1);
+            log.info("get awardurl success");
             return Response.success(ResponseStatus.APPEASE_AWARD_TERM.status ,ResponseStatus.APPEASE_AWARD_TERM.message,activityModelDto);
         }else {
             return Response.success(ResponseStatus.APPEASE_NOT_AWARD_TERM.status, ResponseStatus.APPEASE_NOT_AWARD_TERM.message);
@@ -551,6 +556,7 @@ public class ActivityServiceImpl implements ActivityService {
         LuckPrize prize2 = activityMybatisDao.getPrize2();
         LuckPrize prize3 = activityMybatisDao.getPrize3();
         LuckPrize prize4 = activityMybatisDao.getPrize4();
+        LuckPrize prize5 = activityMybatisDao.getPrize5();
 
         //概率
         List<AwardDto> awards = new ArrayList<>();
@@ -558,16 +564,17 @@ public class ActivityServiceImpl implements ActivityService {
         awards.add(new AwardDto(2, prize2.getAwardChance(), prize2.getNumber()));
         awards.add(new AwardDto(3, prize3.getAwardChance(), prize3.getNumber()));
         awards.add(new AwardDto(4, prize4.getAwardChance(), prize4.getNumber()));
-        awards.add(new AwardDto(5, 0.2f, 100));
+        awards.add(new AwardDto(5, prize5.getAwardChance(), prize5.getNumber()));
         awards.add(new AwardDto(6, 0.3f, 100));
         awards.add(new AwardDto(7, 0.5f, 100));
+        awards.add(new AwardDto(8, 0.5f, 100));
 //        System.out.println("恭喜您，抽到了：" + lottery(awards).id);
 
         if (luckacts.size() == 0) {
             List<AwardDto> awards2 = new ArrayList<>();
-            awards2.add(new AwardDto(5, 0.2f, 100));
-            awards2.add(new AwardDto(6, 0.3f, 100));
-            awards2.add(new AwardDto(7, 0.4f, 100));
+            awards2.add(new AwardDto(6, 0.2f, 100));
+            awards2.add(new AwardDto(7, 0.3f, 100));
+            awards2.add(new AwardDto(8, 0.4f, 100));
             AwardDto award2 = lottery(awards2);
 //            System.out.println("恭喜您，抽到了：" + award2.id);
             log.info("用户："+user.getUserName()+" 获得了 "+award2.id+"等奖");
@@ -644,13 +651,13 @@ public class ActivityServiceImpl implements ActivityService {
                     LuckPrize prize = activityMybatisDao.getPrizeByAwardId(award.id);
                     award.setAwardName(prize.getAwardName());
                 } else if (award.id == 4) {
-                    int num = prize3.getNumber() - 1;
+                    int num = prize4.getNumber() - 1;
                     if (num >= 0) {
-                        prize3.setNumber(num);
-                        activityMybatisDao.updatePrize(prize3);
+                        prize4.setNumber(num);
+                        activityMybatisDao.updatePrize(prize4);
                         luckAct.setAwardId(4);
                     } else {
-                        prize3.setNumber(0);
+                        prize4.setNumber(0);
                         luckAct.setAwardId(0);
                     }
                     activityMybatisDao.createLuckAct(luckAct);
@@ -661,7 +668,26 @@ public class ActivityServiceImpl implements ActivityService {
                     log.info("用户："+user.getUserName()+" 获得了 "+award.id+"等奖");
                     LuckPrize prize = activityMybatisDao.getPrizeByAwardId(award.id);
                     award.setAwardName(prize.getAwardName());
-               }else {//没中奖的话award_id为空
+               }else if (award.id == 5) {
+                    int num = prize5.getNumber() - 1;
+                    if (num >= 0) {
+                        prize5.setNumber(num);
+                        activityMybatisDao.updatePrize(prize5);
+                        luckAct.setAwardId(5);
+                    } else {
+                        prize5.setNumber(0);
+                        luckAct.setAwardId(0);
+                    }
+                    activityMybatisDao.createLuckAct(luckAct);
+                    //每次抽奖机会-1
+                    luckCount2.setNum(luckCount2.getNum() - 1);
+                    activityMybatisDao.updateLuckCount(luckCount2);
+                    //System.out.println("恭喜您，抽到了：" + award.id);
+                    log.info("用户："+user.getUserName()+" 获得了 "+award.id+"等奖");
+                    LuckPrize prize = activityMybatisDao.getPrizeByAwardId(award.id);
+                    award.setAwardName(prize.getAwardName());
+                }
+                else {//没中奖的话award_id为空
                     luckAct.setAwardId(0);
                     activityMybatisDao.createLuckAct(luckAct);
                     //每次抽奖机会-1
@@ -690,9 +716,9 @@ public class ActivityServiceImpl implements ActivityService {
                 //日志记录中奖过了，返回前台还是抽奖的信息，但是不会中奖
                 log.info("用户："+user.getUserName()+" 已经中奖过了，不能继续中奖");
                 List<AwardDto> awards2 = new ArrayList<>();
-                awards2.add(new AwardDto(5, 0.2f, 100));
-                awards2.add(new AwardDto(6, 0.3f, 100));
-                awards2.add(new AwardDto(7, 0.5f, 100));
+                awards2.add(new AwardDto(6, 0.2f, 100));
+                awards2.add(new AwardDto(7, 0.3f, 100));
+                awards2.add(new AwardDto(8, 0.5f, 100));
                 AwardDto award2 = lottery(awards2);
                 //获取剩余次数返回给前台
                 LuckCount remain = activityMybatisDao.getLuckCountByUid(uid);
@@ -725,12 +751,13 @@ public class ActivityServiceImpl implements ActivityService {
         List<LuckPrize> prize2 = activityMybatisDao.getPrize2Black();
         List<LuckPrize> prize3 = activityMybatisDao.getPrize3Black();
         List<LuckPrize> prize4 = activityMybatisDao.getPrize4Black();
+        List<LuckPrize> prize5 = activityMybatisDao.getPrize5Black();
 
         if (luckacts.size() == 0) {
             List<AwardDto> awards2 = new ArrayList<>();
-            awards2.add(new AwardDto(5, 0.2f, 100));
-            awards2.add(new AwardDto(6, 0.3f, 100));
-            awards2.add(new AwardDto(7, 0.4f, 100));
+            awards2.add(new AwardDto(6, 0.2f, 100));
+            awards2.add(new AwardDto(7, 0.3f, 100));
+            awards2.add(new AwardDto(8, 0.4f, 100));
             AwardDto award2 = lottery(awards2);
             log.info("用户："+user.getUserName()+" 获得了 "+award2.id+"等奖");
             luckAct.setAwardId(0);
@@ -751,7 +778,25 @@ public class ActivityServiceImpl implements ActivityService {
         } else {
             if (luck == null) {
                 AwardDto award = new AwardDto();
-                if (prize4.size()>0) {
+                if (prize5.size()>0) {
+                    int num = prize5.get(0).getNumber() - 1;
+                    if (num >= 0) {
+                        prize5.get(0).setNumber(num);
+                        activityMybatisDao.updatePrize(prize5.get(0));
+                        luckAct.setAwardId(5);
+                    } else {
+                        prize5.get(0).setNumber(0);
+                        luckAct.setAwardId(0);
+                    }
+                    activityMybatisDao.createLuckAct(luckAct);
+                    //每次抽奖机会-1
+                    luckCount2.setNum(luckCount2.getNum() - 1);
+                    activityMybatisDao.updateLuckCount(luckCount2);
+                    log.info("用户："+user.getUserName()+" 获得了 5等奖");
+                    LuckPrize prize = activityMybatisDao.getPrizeByAwardId(5);
+                    award.setAwardName(prize.getAwardName());
+                    award.setId(5);
+                }else if (prize4.size()>0) {
                     int num = prize4.get(0).getNumber() - 1;
                     if (num >= 0) {
                         prize4.get(0).setNumber(num);
@@ -824,14 +869,14 @@ public class ActivityServiceImpl implements ActivityService {
                     LuckPrize prize = activityMybatisDao.getPrizeByAwardId(1);
                     award.setAwardName(prize.getAwardName());
                     award.setId(1);
-                }else {//没中奖的话award_id为空
+                }else {
                     luckAct.setAwardId(0);
                     activityMybatisDao.createLuckAct(luckAct);
                     //每次抽奖机会-1
                     luckCount2.setNum(luckCount2.getNum() - 1);
                     activityMybatisDao.updateLuckCount(luckCount2);
-                    log.info("用户："+user.getUserName()+" 获得了 5等奖");
-                    award.setId(5);
+                    log.info("用户："+user.getUserName()+" 获得了 6等奖");
+                    award.setId(6);
                 }
                 //获取剩余次数返回给前台
                 LuckCount remain = activityMybatisDao.getLuckCountByUid(uid);
@@ -854,9 +899,9 @@ public class ActivityServiceImpl implements ActivityService {
                 //日志记录中奖过了，返回前台还是抽奖的信息，但是不会中奖
                 log.info("用户："+user.getUserName()+" 已经中奖过了，不能继续中奖");
                 List<AwardDto> awards2 = new ArrayList<>();
-                awards2.add(new AwardDto(5, 0.2f, 100));
-                awards2.add(new AwardDto(6, 0.3f, 100));
-                awards2.add(new AwardDto(7, 0.5f, 100));
+                awards2.add(new AwardDto(6, 0.2f, 100));
+                awards2.add(new AwardDto(7, 0.3f, 100));
+                awards2.add(new AwardDto(8, 0.5f, 100));
                 AwardDto award2 = lottery(awards2);
                 //获取剩余次数返回给前台
                 LuckCount remain = activityMybatisDao.getLuckCountByUid(uid);
@@ -937,5 +982,20 @@ public class ActivityServiceImpl implements ActivityService {
         String start = sdf.format(newDate);
         startDate = start+" 00:00:00";
         endDate = start+" 23:59:59";
+    }
+
+    // 加密
+    public static String getBase64(String str) {
+        byte[] b = null;
+        String s = null;
+        try {
+            b = str.getBytes("utf-8");
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        if (b != null) {
+            s = new BASE64Encoder().encode(b);
+        }
+        return s;
     }
 }

@@ -198,6 +198,14 @@ public class ActivityMybatisDao {
         return (prizes.size()>0&&prizes!=null)?prizes.get(0):null;
     }
 
+    public LuckPrize getPrize5(){
+        LuckPrizeExample example = new LuckPrizeExample();
+        LuckPrizeExample.Criteria criteria = example.createCriteria();
+        criteria.andAwardIdEqualTo(5);
+        List<LuckPrize> prizes = luckPrizeMapper.selectByExample(example);
+        return (prizes.size()>0&&prizes!=null)?prizes.get(0):null;
+    }
+
     public List<LuckPrize> getPrize1Black(){
         LuckPrizeExample example = new LuckPrizeExample();
         LuckPrizeExample.Criteria criteria = example.createCriteria();
@@ -223,6 +231,13 @@ public class ActivityMybatisDao {
         LuckPrizeExample example = new LuckPrizeExample();
         LuckPrizeExample.Criteria criteria = example.createCriteria();
         criteria.andAwardIdEqualTo(4);
+        return luckPrizeMapper.selectByExample(example);
+    }
+
+    public List<LuckPrize> getPrize5Black(){
+        LuckPrizeExample example = new LuckPrizeExample();
+        LuckPrizeExample.Criteria criteria = example.createCriteria();
+        criteria.andAwardIdEqualTo(5);
         return luckPrizeMapper.selectByExample(example);
     }
 

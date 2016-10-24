@@ -80,7 +80,7 @@ public class Activity {
     @ResponseBody
     @RequestMapping(value = "/checkIsAward",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response checkIsAward(AwardRequest request){
-        return activityService.checkIsAward(request.getUid() ,request.getActivityName(),request.getChannel() ,request.getVersion());
+        return activityService.checkIsAward(request.getUid() ,request.getActivityName(),request.getChannel() ,request.getVersion() ,request.getToken());
     }
 
     /**
