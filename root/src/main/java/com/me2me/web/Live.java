@@ -75,8 +75,10 @@ public class Live extends BaseController {
         response.setHeader("Access-Control-Allow-Origin", "*");
         GetLiveDetailDto liveDetailDto = new GetLiveDetailDto();
         liveDetailDto.setTopicId(request.getTopicId());
-        liveDetailDto.setOffset(request.getOffset());
-        liveDetailDto.setPageNo(request.getPageNo());
+        int offset = request.getOffset()==0?50:request.getOffset();
+        int pageNo = request.getPageNo()==0?1:request.getPageNo();
+        liveDetailDto.setOffset(offset);
+        liveDetailDto.setPageNo(pageNo);
         liveDetailDto.setUid(request.getUid());
         return liveService.getLiveDetail(liveDetailDto);
     }

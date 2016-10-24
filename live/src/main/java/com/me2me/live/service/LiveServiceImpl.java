@@ -1340,9 +1340,65 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response getLiveDetail(GetLiveDetailDto getLiveDetailDto) {
         log.info("get live detail start ... request:"+JSON.toJSONString(getLiveDetailDto));
-        
+        log.info("get total records...");
+        int totalRecords = liveMybatisDao.countFragmentByTopicId(getLiveDetailDto.getTopicId());
 
+        LiveDetailDto liveDetailDto = new LiveDetailDto();
+        liveDetailDto.setTotalRecords(totalRecords);
+        int offset = getLiveDetailDto.getOffset();
+        int totalPages =totalRecords%offset==0?totalRecords/offset:totalRecords/offset+1;
+        liveDetailDto.setTotalPages(totalPages);
+        liveDetailDto.setPageNo(getLiveDetailDto.getPageNo());
+        log.info("get page records...");
+        List<TopicFragment> list = liveMybatisDao.getTopicFragmentForPage(getLiveDetailDto);
+
+        buildLiveDetail(getLiveDetailDto,liveDetailDto,list);
         log.info("get live detail end ...");
-        return null;
+        return  Response.success(ResponseStatus.GET_LIVE_DETAIL_SUCCESS.status, ResponseStatus.GET_LIVE_DETAIL_SUCCESS.message, liveDetailDto);
+    }
+
+    private void buildLiveDetail(GetLiveDetailDto getLiveDetailDto, LiveDetailDto liveDetailDto, List<TopicFragment> fragmentList) {
+        log.info("build live detail start ...");
+        Topic topic = liveMybatisDao.getTopicById(getLiveDetailDto.getTopicId());
+        for (TopicFragment topicFragment : fragmentList) {
+            long uid = topicFragment.getUid();
+
+            LiveDetailDto.LiveElement liveElement = LiveDetailDto.createElement();
+            int status = topicFragment.getStatus();
+            liveElement.setStatus(status);
+            liveElement.setId(topicFragment.getId());
+            if(status==0){
+                liveDetailDto.getLiveElements().add(liveElement);
+                continue;
+            }
+
+            UserProfile userProfile = userService.getUserProfileByUid(uid);
+            liveElement.setUid(uid);
+            liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            liveElement.setNickName(userProfile.getNickName());
+            liveElement.setFragment(topicFragment.getFragment());
+            liveElement.setV_lv(userProfile.getvLv());
+            String fragmentImage = topicFragment.getFragmentImage();
+            if (!StringUtils.isEmpty(fragmentImage)) {
+                liveElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+            }
+            liveElement.setCreateTime(topicFragment.getCreateTime());
+            liveElement.setType(topicFragment.getType());
+            int isFollow = userService.isFollow(topicFragment.getUid(), getLiveDetailDto.getUid());
+            liveElement.setIsFollowed(isFollow);
+            liveElement.setContentType(topicFragment.getContentType());
+            liveElement.setFragmentId(topicFragment.getId());
+            liveElement.setSource(topicFragment.getSource());
+            liveElement.setExtra(topicFragment.getExtra());
+
+            liveElement.setInternalStatus(getInternalStatus(topic, uid));
+            if (topicFragment.getAtUid() != 0) {
+                UserProfile atUser = userService.getUserProfileByUid(topicFragment.getAtUid());
+                liveElement.setAtUid(atUser.getUid());
+                liveElement.setAtNickName(atUser.getNickName());
+            }
+            liveDetailDto.getLiveElements().add(liveElement);
+        }
+        log.info("build live detail end ...");
     }
 }

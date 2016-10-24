@@ -177,6 +177,8 @@ public enum  ResponseStatus {
 
     EDIT_TOPIC_FRAGMENT_SUCCESS("编辑王国发言内容成功","edit topic fragment success",20082),
 
+    GET_LIVE_DETAIL_SUCCESS("获取王国详情成功","get live detail success",20083),
+
 
 
 
