@@ -363,7 +363,7 @@ public class ActivityServiceImpl implements ActivityService {
             Date date = luckCount2.getCreatTime();
 
             List<LuckAct> acts = activityMybatisDao.getLuckActByToday(d1,d2);
-            //如果是当天 并且当天发出的奖品不能超过3次 才能中奖
+            //如果是当天 并且当天发出的奖品不能超过4次 才能中奖
             if (isToday(date) && acts.size() < 4) {
                 if (luckCount2.getNum() > 0) {
                     //处理抽奖通用方法
@@ -510,7 +510,7 @@ public class ActivityServiceImpl implements ActivityService {
                 && nowDate.compareTo(endDate) < 0){
             log.info("meet the conditions you can award");
             ActivityModelDto activityModelDto = new ActivityModelDto();
-            activityModelDto.setActivityUrl("www.baidu.com");
+            activityModelDto.setActivityUrl(Constant.AWARD_URL);
             return Response.success(ResponseStatus.APPEASE_AWARD_TERM.status ,ResponseStatus.APPEASE_AWARD_TERM.message,activityModelDto);
         }else {
             return Response.success(ResponseStatus.APPEASE_NOT_AWARD_TERM.status, ResponseStatus.APPEASE_NOT_AWARD_TERM.message);
