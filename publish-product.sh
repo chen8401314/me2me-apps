@@ -9,6 +9,7 @@ cp -r ./cache/target/jsw/app-cache-service ~/Desktop/apps
 cp -r ./sms/target/jsw/app-sms-service ~/Desktop/apps
 cp -r ./monitor/target/jsw/app-monitor-service ~/Desktop/apps
 cp -r ./sns/target/jsw/app-sns-service ~/Desktop/apps
+cp -r ./kafka/target/jsw/app-kafka-service ~/Desktop/apps
 
 echo '##############################################################'
 echo '#                            success                         #'

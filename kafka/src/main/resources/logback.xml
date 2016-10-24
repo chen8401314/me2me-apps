@@ -2,13 +2,13 @@
 <configuration>
     <property resource="application.properties"/>
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${logRoot}/cache.log</file>
+        <file>${logRoot}/kafka.log</file>
         <encoder>
             <pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>${logRoot}/cache-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${logRoot}/kafka-%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>7</maxHistory>
         </rollingPolicy>
     </appender>

@@ -20,7 +20,7 @@ import javax.annotation.Resource;
 public class KafkaTemplate<K, V> implements InitializingBean {
     protected static Logger logger = LoggerFactory.getLogger(KafkaTemplate.class);
 
-    @Value("client_history")
+    @Value("history")
     private String topic;
 
     @Resource(name = "producerFactory")
@@ -52,9 +52,9 @@ public class KafkaTemplate<K, V> implements InitializingBean {
                     }
                 }
             }
-            
+
         });
-        
+
     }
 
     @Override

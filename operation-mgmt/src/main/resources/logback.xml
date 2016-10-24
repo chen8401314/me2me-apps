@@ -7,7 +7,7 @@
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- rollover daily -->
-            <fileNamePattern>/alidata/logs/root-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>/alidata/logs/mgmt-%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>7</maxHistory>
         </rollingPolicy>
     </appender>
