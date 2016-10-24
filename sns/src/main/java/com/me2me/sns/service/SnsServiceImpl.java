@@ -335,7 +335,7 @@ public class SnsServiceImpl implements SnsService {
     public Response modifyCircle(long owner, long topicId, long uid, int action) {
         log.info("modify circle start ... action:"+action+";topicId:"+topicId);
         //兼容老版本
-        String snsOnline = cacheService.get("version:2.1.1:online");
+//        String snsOnline = cacheService.get("version:2.1.1:online");
 
         if (action == 0) {
             snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
@@ -386,9 +386,9 @@ public class SnsServiceImpl implements SnsService {
             String review = "你已加入" + topic.getTitle() + "核心圈";
             String message = "邀请我加入核心圈";
             jPushService.payloadByIdExtra(alias, review, JPushUtils.packageExtra(jsonObject));
-            if(snsOnline.equals("1")) {
-                snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.LIVE_INVITED.index);
-            }
+//            if(snsOnline.equals("1")) {
+            snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.LIVE_INVITED.index);
+//            }
             //增加列表更新红点
             MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topicId + "", "1");
             cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
@@ -433,9 +433,9 @@ public class SnsServiceImpl implements SnsService {
             String review = "你被移出" + topic.getTitle() + "核心圈";
             String message = "将我从核心圈移除";
             jPushService.payloadByIdExtra(alias, review, JPushUtils.packageExtra(jsonObject));
-            if(snsOnline.equals("1")) {
-                snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index);
-            }
+//            if(snsOnline.equals("1")) {
+            snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index);
+//            }
 
         }
         log.info("modify circle end ...");
