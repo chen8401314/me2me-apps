@@ -110,18 +110,19 @@ public class PublishUGCListener {
 //            }
         }else{
             //添加提醒
-            log.info("review you start");
-            UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("messageType",Specification.PushMessageType.REVIEW.index);
-            jsonObject.addProperty("type",Specification.PushObjectType.UGC.index);
-            jsonObject.addProperty("cid",content.getId());
-            String alias = String.valueOf(content.getUid());
             if(content.getUid()!=reviewDto.getUid()) {
+                log.info("review you start ... from "+reviewDto.getUid()+" to "+content.getUid());
+               UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
+               JsonObject jsonObject = new JsonObject();
+               jsonObject.addProperty("messageType",Specification.PushMessageType.REVIEW.index);
+               jsonObject.addProperty("type",Specification.PushObjectType.UGC.index);
+                jsonObject.addProperty("cid",content.getId());
+               String alias = String.valueOf(content.getUid());
                 jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "评论了你", JPushUtils.packageExtra(jsonObject));
-                contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview());
+               contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview());
+
+               log.info("review you end");
             }
-            log.info("review you end");
         }
     }
 
