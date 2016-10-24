@@ -4,11 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.CommonUtils;
@@ -32,7 +28,6 @@ import com.me2me.live.event.CacheLiveEvent;
 import com.me2me.live.event.SpeakEvent;
 import com.me2me.live.model.*;
 import com.me2me.sms.service.JPushService;
-import com.me2me.sns.model.SnsCircle;
 import com.me2me.user.model.*;
 import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -106,7 +101,7 @@ public class LiveServiceImpl implements LiveService {
         contentDto.setUid(createLiveDto.getUid());
         contentDto.setType(Specification.ArticleType.LIVE.index);
         contentDto.setForwardCid(topic.getId());
-        contentDto.setContentType(Specification.ContentType.TEXT.index);
+
         contentDto.setRights(Specification.ContentRights.EVERY.index);
         contentService.publish(contentDto);
 
@@ -1340,5 +1335,14 @@ public class LiveServiceImpl implements LiveService {
         liveMybatisDao.updateTopFragmentById(speakDto);
         log.info("edit speak end...");
         return Response.success(ResponseStatus.EDIT_TOPIC_FRAGMENT_SUCCESS.status,ResponseStatus.EDIT_TOPIC_FRAGMENT_SUCCESS.message);
+    }
+
+    @Override
+    public Response getLiveDetail(GetLiveDetailDto getLiveDetailDto) {
+        log.info("get live detail start ... request:"+JSON.toJSONString(getLiveDetailDto));
+        
+
+        log.info("get live detail end ...");
+        return null;
     }
 }
