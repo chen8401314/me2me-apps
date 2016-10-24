@@ -85,7 +85,7 @@ public class Sns extends BaseController {
         getSnsCircleDto.setSinceId((request.getSinceId()-1)*10);
 
         //埋点
-        kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_MEMBERS);
+        kafkaService.saveClientLog(getSnsCircleDto,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_MEMBERS);
 
         return snsService.circleByType(getSnsCircleDto);
     }
@@ -117,9 +117,9 @@ public class Sns extends BaseController {
 
         //埋点
         if(request.getAction()==0){
-            kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_JOIN);
+            kafkaService.saveClientLog(followDto,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_JOIN);
         }else{
-            kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_OUT);
+            kafkaService.saveClientLog(followDto,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_OUT);
         }
 
         return snsService.follow(request.getAction(),request.getTargetUid(),request.getUid());

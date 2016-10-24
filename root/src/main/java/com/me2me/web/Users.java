@@ -57,7 +57,7 @@ public class Users extends BaseController {
 
 
         //埋点
-        kafkaService.saveClientLog(request,req.getHeader("User-Agent"),Specification.ClientLogAction.REG_PAGE2_SAVE);
+//        kafkaService.saveClientLog(request,req.getHeader("User-Agent"),Specification.ClientLogAction.REG_PAGE2_SAVE);
 
         return userService.signUp(userSignUpDto);
     }
@@ -130,11 +130,11 @@ public class Users extends BaseController {
         }
 
        //埋点
-        if(request.getAction()==0) {
+       /* if(request.getAction()==0) {
             kafkaService.saveClientLog(request,req.getHeader("User-Agent"),Specification.ClientLogAction.REG_PAGE1_GET_VERIFY);
         }else{
             kafkaService.saveClientLog(request,req.getHeader("User-Agent"),Specification.ClientLogAction.REG_PAGE1_NEXT);
-        }
+        }*/
         return userService.verify(verifyDto);
     }
 
