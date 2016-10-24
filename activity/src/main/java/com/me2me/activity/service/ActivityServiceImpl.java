@@ -510,7 +510,7 @@ public class ActivityServiceImpl implements ActivityService {
                 && nowDate.compareTo(endDate) < 0){
             log.info("meet the conditions you can award");
             ActivityModelDto activityModelDto = new ActivityModelDto();
-            activityModelDto.setActivityUrl("www.baidu.com");
+            activityModelDto.setActivityUrl(Constant.AWARD_URL);
             return Response.success(ResponseStatus.APPEASE_AWARD_TERM.status ,ResponseStatus.APPEASE_AWARD_TERM.message,activityModelDto);
         }else {
             return Response.success(ResponseStatus.APPEASE_NOT_AWARD_TERM.status, ResponseStatus.APPEASE_NOT_AWARD_TERM.message);
