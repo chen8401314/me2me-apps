@@ -160,20 +160,20 @@ public class Live extends BaseController {
         speakDto.setSource(request.getSource());
         speakDto.setExtra(request.getExtra());
 
-        try {  //埋点
-            ClientLog clientLog = new ClientLog();
-
-            clientLog.setAction(Specification.ClientLogAction.LIVE_LIKES.index);
-            clientLog.setExt(Specification.ClientLogAction.LIVE_LIKES.name+":"+request.getType());
-            clientLog.setUserId(request.getUid());
-            clientLog.setChannel(request.getChannel());
-            clientLog.setVersion(request.getVersion());
-            clientLog.setUserAgent(req.getHeader("User-Agent"));
-
-            kafkaService.clientLog(clientLog);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+//        try {  //埋点
+//            ClientLog clientLog = new ClientLog();
+//
+//            clientLog.setAction(Specification.ClientLogAction.LIVE_LIKES.index);
+//            clientLog.setExt(Specification.ClientLogAction.LIVE_LIKES.name+":"+request.getType());
+//            clientLog.setUserId(request.getUid());
+//            clientLog.setChannel(request.getChannel());
+//            clientLog.setVersion(request.getVersion());
+//            clientLog.setUserAgent(req.getHeader("User-Agent"));
+//
+//            kafkaService.clientLog(clientLog);
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
         return liveService.speak(speakDto);
     }
 
