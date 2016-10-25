@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
 import com.me2me.common.web.Specification;
+import com.me2me.live.dto.GetLiveDetailDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.mapper.*;
 import com.me2me.live.model.*;
@@ -586,5 +587,22 @@ public class LiveMybatisDao {
         fragment.setExtra(speakDto.getExtra());
 
         return topicFragmentMapper.updateByPrimaryKeySelective(fragment);
+    }
+
+    public int countFragmentByTopicId(long topicId) {
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+       return  topicFragmentMapper.countByExample(example);
+    }
+
+    public List<TopicFragment> getTopicFragmentForPage(GetLiveDetailDto getLiveDetailDto) {
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(getLiveDetailDto.getTopicId());
+        int pageNo = getLiveDetailDto.getPageNo();
+        String order = "id asc limit"+((pageNo-1)*getLiveDetailDto.getOffset())+","+(pageNo*getLiveDetailDto.getOffset());
+        example.setOrderByClause(order);
+        return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
 }

@@ -136,5 +136,17 @@ public interface LiveService {
 
     Response getRedDot(long uid,long updateTime);
 
+    /**
+     * 修改王国发言内容
+     * @param speakDto
+     * @return
+     */
     Response editSpeak(SpeakDto speakDto);
+
+    /**
+     * 获取王国详情，可分页
+     * @param liveDetailDto
+     * @return
+     */
+    Response getLiveDetail(GetLiveDetailDto liveDetailDto);
 }

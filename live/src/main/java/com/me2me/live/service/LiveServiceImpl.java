@@ -4,11 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.CommonUtils;
@@ -32,7 +28,6 @@ import com.me2me.live.event.CacheLiveEvent;
 import com.me2me.live.event.SpeakEvent;
 import com.me2me.live.model.*;
 import com.me2me.sms.service.JPushService;
-import com.me2me.sns.model.SnsCircle;
 import com.me2me.user.model.*;
 import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -106,7 +101,7 @@ public class LiveServiceImpl implements LiveService {
         contentDto.setUid(createLiveDto.getUid());
         contentDto.setType(Specification.ArticleType.LIVE.index);
         contentDto.setForwardCid(topic.getId());
-        contentDto.setContentType(Specification.ContentType.TEXT.index);
+
         contentDto.setRights(Specification.ContentRights.EVERY.index);
         contentService.publish(contentDto);
 
@@ -1340,5 +1335,70 @@ public class LiveServiceImpl implements LiveService {
         liveMybatisDao.updateTopFragmentById(speakDto);
         log.info("edit speak end...");
         return Response.success(ResponseStatus.EDIT_TOPIC_FRAGMENT_SUCCESS.status,ResponseStatus.EDIT_TOPIC_FRAGMENT_SUCCESS.message);
+    }
+
+    @Override
+    public Response getLiveDetail(GetLiveDetailDto getLiveDetailDto) {
+        log.info("get live detail start ... request:"+JSON.toJSONString(getLiveDetailDto));
+        log.info("get total records...");
+        int totalRecords = liveMybatisDao.countFragmentByTopicId(getLiveDetailDto.getTopicId());
+
+        LiveDetailDto liveDetailDto = new LiveDetailDto();
+        liveDetailDto.setTotalRecords(totalRecords);
+        int offset = getLiveDetailDto.getOffset();
+        int totalPages =totalRecords%offset==0?totalRecords/offset:totalRecords/offset+1;
+        liveDetailDto.setTotalPages(totalPages);
+        liveDetailDto.setPageNo(getLiveDetailDto.getPageNo());
+        log.info("get page records...");
+        List<TopicFragment> list = liveMybatisDao.getTopicFragmentForPage(getLiveDetailDto);
+
+        buildLiveDetail(getLiveDetailDto,liveDetailDto,list);
+        log.info("get live detail end ...");
+        return  Response.success(ResponseStatus.GET_LIVE_DETAIL_SUCCESS.status, ResponseStatus.GET_LIVE_DETAIL_SUCCESS.message, liveDetailDto);
+    }
+
+    private void buildLiveDetail(GetLiveDetailDto getLiveDetailDto, LiveDetailDto liveDetailDto, List<TopicFragment> fragmentList) {
+        log.info("build live detail start ...");
+        Topic topic = liveMybatisDao.getTopicById(getLiveDetailDto.getTopicId());
+        for (TopicFragment topicFragment : fragmentList) {
+            long uid = topicFragment.getUid();
+
+            LiveDetailDto.LiveElement liveElement = LiveDetailDto.createElement();
+            int status = topicFragment.getStatus();
+            liveElement.setStatus(status);
+            liveElement.setId(topicFragment.getId());
+            if(status==0){
+                liveDetailDto.getLiveElements().add(liveElement);
+                continue;
+            }
+
+            UserProfile userProfile = userService.getUserProfileByUid(uid);
+            liveElement.setUid(uid);
+            liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            liveElement.setNickName(userProfile.getNickName());
+            liveElement.setFragment(topicFragment.getFragment());
+            liveElement.setV_lv(userProfile.getvLv());
+            String fragmentImage = topicFragment.getFragmentImage();
+            if (!StringUtils.isEmpty(fragmentImage)) {
+                liveElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+            }
+            liveElement.setCreateTime(topicFragment.getCreateTime());
+            liveElement.setType(topicFragment.getType());
+            int isFollow = userService.isFollow(topicFragment.getUid(), getLiveDetailDto.getUid());
+            liveElement.setIsFollowed(isFollow);
+            liveElement.setContentType(topicFragment.getContentType());
+            liveElement.setFragmentId(topicFragment.getId());
+            liveElement.setSource(topicFragment.getSource());
+            liveElement.setExtra(topicFragment.getExtra());
+
+            liveElement.setInternalStatus(getInternalStatus(topic, uid));
+            if (topicFragment.getAtUid() != 0) {
+                UserProfile atUser = userService.getUserProfileByUid(topicFragment.getAtUid());
+                liveElement.setAtUid(atUser.getUid());
+                liveElement.setAtNickName(atUser.getNickName());
+            }
+            liveDetailDto.getLiveElements().add(liveElement);
+        }
+        log.info("build live detail end ...");
     }
 }

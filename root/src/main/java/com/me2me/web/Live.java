@@ -1,6 +1,5 @@
 package com.me2me.web;
 
-import com.alibaba.fastjson.JSON;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.kafka.model.ClientLog;
@@ -64,6 +63,27 @@ public class Live extends BaseController {
         getLiveTimeLineDto.setUid(request.getUid());
         return liveService.getLiveTimeline(getLiveTimeLineDto);
     }
+
+    /**
+     * 获取王国消息列表，按分页
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/detail",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response getLiveDetail(LiveDetailRequest request, HttpServletResponse response){
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        GetLiveDetailDto liveDetailDto = new GetLiveDetailDto();
+        liveDetailDto.setTopicId(request.getTopicId());
+        int offset = request.getOffset()==0?50:request.getOffset();
+        int pageNo = request.getPageNo()==0?1:request.getPageNo();
+        liveDetailDto.setOffset(offset);
+        liveDetailDto.setPageNo(pageNo);
+        liveDetailDto.setUid(request.getUid());
+        return liveService.getLiveDetail(liveDetailDto);
+    }
+
+
 
     /**
      * 获取消息列表(暂未启用)
@@ -140,20 +160,20 @@ public class Live extends BaseController {
         speakDto.setSource(request.getSource());
         speakDto.setExtra(request.getExtra());
 
-        try {  //埋点
-            ClientLog clientLog = new ClientLog();
-
-            clientLog.setAction(Specification.ClientLogAction.LIVE_LIKES.index);
-            clientLog.setExt(Specification.ClientLogAction.LIVE_LIKES.name+":"+request.getType());
-            clientLog.setUserId(request.getUid());
-            clientLog.setChannel(request.getChannel());
-            clientLog.setVersion(request.getVersion());
-            clientLog.setUserAgent(req.getHeader("User-Agent"));
-
-            kafkaService.clientLog(clientLog);
-        }catch(Exception e){
-            e.printStackTrace();
-        }
+//        try {  //埋点
+//            ClientLog clientLog = new ClientLog();
+//
+//            clientLog.setAction(Specification.ClientLogAction.LIVE_LIKES.index);
+//            clientLog.setExt(Specification.ClientLogAction.LIVE_LIKES.name+":"+request.getType());
+//            clientLog.setUserId(request.getUid());
+//            clientLog.setChannel(request.getChannel());
+//            clientLog.setVersion(request.getVersion());
+//            clientLog.setUserAgent(req.getHeader("User-Agent"));
+//
+//            kafkaService.clientLog(clientLog);
+//        }catch(Exception e){
+//            e.printStackTrace();
+//        }
         return liveService.speak(speakDto);
     }
 
