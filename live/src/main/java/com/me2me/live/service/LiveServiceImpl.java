@@ -593,8 +593,8 @@ public class LiveServiceImpl implements LiveService {
             if (jpushToken != null) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("count", "1");
-                jsonObject.addProperty("type",Specification.ArticleType.LIVE.index);
-                jsonObject.addProperty("id",cid);
+                jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
+                jsonObject.addProperty("topicId",cid);
                 String alias = String.valueOf(targetUid);
                 jPushService.payloadByIdForMessage(alias, jsonObject.toString());
             }
@@ -607,8 +607,8 @@ public class LiveServiceImpl implements LiveService {
             if (jpushToken != null) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("count", "1");
-                jsonObject.addProperty("type",Specification.ArticleType.LIVE.index);
-                jsonObject.addProperty("id",cid);
+                jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
+                jsonObject.addProperty("topicId",cid);
                 String alias = String.valueOf(targetUid);
                 jPushService.payloadByIdForMessage(alias, jsonObject.toString());
             }
