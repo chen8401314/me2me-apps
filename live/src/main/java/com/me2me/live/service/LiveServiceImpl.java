@@ -167,6 +167,7 @@ public class LiveServiceImpl implements LiveService {
         liveCoverDto.setLastUpdateTime(topic.getLongTime());
         liveCoverDto.setReviewCount(liveMybatisDao.countFragment(topic.getId(), topic.getUid()));
         liveCoverDto.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(), topic.getUid()));
+        liveCoverDto.setV_lv(userProfile.getvLv());
 
         liveCoverDto.setInternalStatus(getInternalStatus(topic,uid));
         liveCoverDto.setLiveWebUrl(Constant.Live_WEB_URL+topicId);//返回直播URL地址
