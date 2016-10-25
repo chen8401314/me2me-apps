@@ -601,7 +601,7 @@ public class LiveMybatisDao {
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(getLiveDetailDto.getTopicId());
         int pageNo = getLiveDetailDto.getPageNo();
-        String order = "id asc limit"+((pageNo-1)*getLiveDetailDto.getOffset())+","+(pageNo*getLiveDetailDto.getOffset());
+        String order = "id asc limit "+((pageNo-1)*getLiveDetailDto.getOffset())+","+getLiveDetailDto.getOffset();
         example.setOrderByClause(order);
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }

@@ -84,7 +84,7 @@ public class CacheLiveListener {
             jsonObject.addProperty("topicId",cacheLiveEvent.getTopicId());
             String alias = String.valueOf(userFollow.getSourceUid());
             Topic topic = liveService.getTopicById(cacheLiveEvent.getTopicId());
-            jPushService.payloadByIdExtra(alias,  userProfile.getNickName() + "新建了" + topic.getTitle(), JPushUtils.packageExtra(jsonObject));
+            jPushService.payloadByIdExtra(alias,  userProfile.getNickName() + "新建了『" + topic.getTitle()+"』", JPushUtils.packageExtra(jsonObject));
 
 
         }

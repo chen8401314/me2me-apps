@@ -84,8 +84,8 @@ public class Sns extends BaseController {
         getSnsCircleDto.setType(request.getType());
         getSnsCircleDto.setSinceId((request.getSinceId()-1)*10);
 
-        //埋点
-        kafkaService.saveClientLog(getSnsCircleDto,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_MEMBERS);
+//        //埋点
+//        kafkaService.saveClientLog(getSnsCircleDto,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_MEMBERS);
 
         return snsService.circleByType(getSnsCircleDto);
     }
