@@ -5,6 +5,7 @@ import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dto.*;
 import com.me2me.activity.model.*;
 import com.me2me.common.Constant;
+import com.me2me.common.utils.EncryUtil;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -512,9 +513,12 @@ public class ActivityServiceImpl implements ActivityService {
                 && nowDate.compareTo(endDate) < 0){
             log.info("meet the conditions you can award");
             ActivityModelDto activityModelDto = new ActivityModelDto();
-            String uid1 = getBase64(Long.toString(uid));
-            String token1 = getBase64(token);
-            activityModelDto.setActivityUrl("http://webapp.me-to-me.com/web/lottery/awardJoin?uid="+uid1+"&&token="+token1);
+            //DES加密
+            String secruityUid = EncryUtil.encrypt(Long.toString(uid));
+            String secruityToken = EncryUtil.encrypt(token);
+            System.out.println("加密后secruityUid：" + secruityUid+" secruityToken："+secruityToken);
+
+            activityModelDto.setActivityUrl("http://webapp.me-to-me.com/web/lottery/awardJoin?uid="+secruityUid+"&&token="+secruityToken);
             log.info("get awardurl success");
             return Response.success(ResponseStatus.APPEASE_AWARD_TERM.status ,ResponseStatus.APPEASE_AWARD_TERM.message,activityModelDto);
         }else {
