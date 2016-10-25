@@ -393,8 +393,6 @@ public class ActivityServiceImpl implements ActivityService {
             //如果数据库存在中奖情况都话，直接返回个谢谢参与什么都信息，此操作不保存数据库中
             List<AwardDto> awards2 = new ArrayList<>();
             awards2.add(new AwardDto(6, 0.2f, 100));
-            awards2.add(new AwardDto(7, 0.3f, 100));
-            awards2.add(new AwardDto(8, 0.4f, 100));
             AwardDto award2 = lottery(awards2);
             //如果没有抽奖机会了直接返回
             if(luckCount2.getNum() == 0){
@@ -561,6 +559,7 @@ public class ActivityServiceImpl implements ActivityService {
         LuckPrize prize3 = activityMybatisDao.getPrize3();
         LuckPrize prize4 = activityMybatisDao.getPrize4();
         LuckPrize prize5 = activityMybatisDao.getPrize5();
+        LuckPrize prize6 = activityMybatisDao.getPrize6();
 
         //概率
         List<AwardDto> awards = new ArrayList<>();
@@ -569,16 +568,14 @@ public class ActivityServiceImpl implements ActivityService {
         awards.add(new AwardDto(3, prize3.getAwardChance(), prize3.getNumber()));
         awards.add(new AwardDto(4, prize4.getAwardChance(), prize4.getNumber()));
         awards.add(new AwardDto(5, prize5.getAwardChance(), prize5.getNumber()));
-        awards.add(new AwardDto(6, 0.3f, 100));
-        awards.add(new AwardDto(7, 0.5f, 100));
-        awards.add(new AwardDto(8, 0.5f, 100));
+        awards.add(new AwardDto(6, prize6.getAwardChance(), prize6.getNumber()));
+//        awards.add(new AwardDto(7, 0.5f, 100));
+//        awards.add(new AwardDto(8, 0.5f, 100));
 //        System.out.println("恭喜您，抽到了：" + lottery(awards).id);
 
         if (luckacts.size() == 0) {
             List<AwardDto> awards2 = new ArrayList<>();
             awards2.add(new AwardDto(6, 0.2f, 100));
-            awards2.add(new AwardDto(7, 0.3f, 100));
-            awards2.add(new AwardDto(8, 0.4f, 100));
             AwardDto award2 = lottery(awards2);
 //            System.out.println("恭喜您，抽到了：" + award2.id);
             log.info("用户："+user.getUserName()+" 获得了 "+award2.id+"等奖");
@@ -721,8 +718,6 @@ public class ActivityServiceImpl implements ActivityService {
                 log.info("用户："+user.getUserName()+" 已经中奖过了，不能继续中奖");
                 List<AwardDto> awards2 = new ArrayList<>();
                 awards2.add(new AwardDto(6, 0.2f, 100));
-                awards2.add(new AwardDto(7, 0.3f, 100));
-                awards2.add(new AwardDto(8, 0.5f, 100));
                 AwardDto award2 = lottery(awards2);
                 //获取剩余次数返回给前台
                 LuckCount remain = activityMybatisDao.getLuckCountByUid(uid);
@@ -760,8 +755,6 @@ public class ActivityServiceImpl implements ActivityService {
         if (luckacts.size() == 0) {
             List<AwardDto> awards2 = new ArrayList<>();
             awards2.add(new AwardDto(6, 0.2f, 100));
-            awards2.add(new AwardDto(7, 0.3f, 100));
-            awards2.add(new AwardDto(8, 0.4f, 100));
             AwardDto award2 = lottery(awards2);
             log.info("用户："+user.getUserName()+" 获得了 "+award2.id+"等奖");
             luckAct.setAwardId(0);
@@ -904,8 +897,6 @@ public class ActivityServiceImpl implements ActivityService {
                 log.info("用户："+user.getUserName()+" 已经中奖过了，不能继续中奖");
                 List<AwardDto> awards2 = new ArrayList<>();
                 awards2.add(new AwardDto(6, 0.2f, 100));
-                awards2.add(new AwardDto(7, 0.3f, 100));
-                awards2.add(new AwardDto(8, 0.5f, 100));
                 AwardDto award2 = lottery(awards2);
                 //获取剩余次数返回给前台
                 LuckCount remain = activityMybatisDao.getLuckCountByUid(uid);
@@ -939,6 +930,10 @@ public class ActivityServiceImpl implements ActivityService {
         for (int i = 0,size = proSection.size(); i < size; i++) {
             if(randomPro >= proSection.get(i)
                     && randomPro < proSection.get(i + 1)){
+                System.out.println(randomPro);
+                System.out.println(proSection.get(i));
+                System.out.println(proSection.get(i + 1));
+                System.out.println(i);
                 return awards.get(i);
             }
         }

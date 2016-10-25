@@ -206,10 +206,19 @@ public class ActivityMybatisDao {
         return (prizes.size()>0&&prizes!=null)?prizes.get(0):null;
     }
 
+    public LuckPrize getPrize6(){
+        LuckPrizeExample example = new LuckPrizeExample();
+        LuckPrizeExample.Criteria criteria = example.createCriteria();
+        criteria.andAwardIdEqualTo(6);
+        List<LuckPrize> prizes = luckPrizeMapper.selectByExample(example);
+        return (prizes.size()>0&&prizes!=null)?prizes.get(0):null;
+    }
+
     public List<LuckPrize> getPrize1Black(){
         LuckPrizeExample example = new LuckPrizeExample();
         LuckPrizeExample.Criteria criteria = example.createCriteria();
         criteria.andAwardIdEqualTo(1);
+        criteria.andNumberNotEqualTo(0);
         return luckPrizeMapper.selectByExample(example);
     }
 
@@ -217,6 +226,7 @@ public class ActivityMybatisDao {
         LuckPrizeExample example = new LuckPrizeExample();
         LuckPrizeExample.Criteria criteria = example.createCriteria();
         criteria.andAwardIdEqualTo(2);
+        criteria.andNumberNotEqualTo(0);
         return luckPrizeMapper.selectByExample(example);
     }
 
@@ -224,6 +234,7 @@ public class ActivityMybatisDao {
         LuckPrizeExample example = new LuckPrizeExample();
         LuckPrizeExample.Criteria criteria = example.createCriteria();
         criteria.andAwardIdEqualTo(3);
+        criteria.andNumberNotEqualTo(0);
         return luckPrizeMapper.selectByExample(example);
     }
 
@@ -231,6 +242,7 @@ public class ActivityMybatisDao {
         LuckPrizeExample example = new LuckPrizeExample();
         LuckPrizeExample.Criteria criteria = example.createCriteria();
         criteria.andAwardIdEqualTo(4);
+        criteria.andNumberNotEqualTo(0);
         return luckPrizeMapper.selectByExample(example);
     }
 
@@ -238,6 +250,7 @@ public class ActivityMybatisDao {
         LuckPrizeExample example = new LuckPrizeExample();
         LuckPrizeExample.Criteria criteria = example.createCriteria();
         criteria.andAwardIdEqualTo(5);
+        criteria.andNumberNotEqualTo(0);
         return luckPrizeMapper.selectByExample(example);
     }
 
