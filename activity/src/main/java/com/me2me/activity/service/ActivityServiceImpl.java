@@ -514,7 +514,7 @@ public class ActivityServiceImpl implements ActivityService {
             ActivityModelDto activityModelDto = new ActivityModelDto();
             String uid1 = getBase64(Long.toString(uid));
             String token1 = getBase64(token);
-            activityModelDto.setActivityUrl("http://webapp.me-to-me.com/web/api/awardJoin?uid="+uid1+"&&token="+token1);
+            activityModelDto.setActivityUrl("http://webapp.me-to-me.com/web/lottery/awardJoin?uid="+uid1+"&&token="+token1);
             log.info("get awardurl success");
             return Response.success(ResponseStatus.APPEASE_AWARD_TERM.status ,ResponseStatus.APPEASE_AWARD_TERM.message,activityModelDto);
         }else {
