@@ -393,7 +393,7 @@ public class SnsServiceImpl implements SnsService {
                 jsonObject.addProperty("type", Specification.PushObjectType.LIVE.index);
                 jsonObject.addProperty("topicId", topicId);
                 String alias = String.valueOf(uid);
-                String review = "你已加入" + topic.getTitle() + "核心圈";
+                String review = "你已加入『" + topic.getTitle() + "』核心圈";
                 String message = "邀请我加入核心圈";
                 jPushService.payloadByIdExtra(alias, review, JPushUtils.packageExtra(jsonObject));
                 snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.LIVE_INVITED.index);
@@ -439,7 +439,7 @@ public class SnsServiceImpl implements SnsService {
                 jsonObject.addProperty("type", Specification.PushObjectType.LIVE.index);
                 jsonObject.addProperty("topicId", topicId);
                 String alias = String.valueOf(uid);
-                String review = "你被移出" + topic.getTitle() + "核心圈";
+                String review = "你被移出『" + topic.getTitle() + "』核心圈";
                 String message = "将我从核心圈移除";
                 jPushService.payloadByIdExtra(alias, review, JPushUtils.packageExtra(jsonObject));
 

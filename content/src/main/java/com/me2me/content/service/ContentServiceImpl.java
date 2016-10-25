@@ -2279,7 +2279,7 @@ private void localJpush(long toUid){
                         jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
                         jsonObject.addProperty("topicId",content.getForwardCid());
                         String alias =coreCircles.getString(i);
-                        jPushService.payloadByIdExtra(alias,content.getTitle()+ "上热点啦！",JPushUtils.packageExtra(jsonObject));
+                        jPushService.payloadByIdExtra(alias,"『"+content.getTitle()+ "』上热点啦！",JPushUtils.packageExtra(jsonObject));
                     }
                 }
             }
