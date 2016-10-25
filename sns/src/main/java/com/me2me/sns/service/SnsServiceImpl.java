@@ -367,7 +367,7 @@ public class SnsServiceImpl implements SnsService {
                     // 更新直播核心圈关系
                     liveJdbcDao.updateTopic(topicId,array.toString());
                     snsMybatisDao.deleteSnsCircle(uid,owner);
-                    liveService.createFavoriteDelete(uid,topicId);
+//                    liveService.createFavoriteDelete(uid,topicId);
                 }
             }
 //            //关注此人
@@ -422,7 +422,7 @@ public class SnsServiceImpl implements SnsService {
             } else if (isFollow == 1 && isFollowMe == 0) {
                 snsMybatisDao.createSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
             }
-            liveService.deleteFavoriteDelete(uid,topicId);
+//            liveService.deleteFavoriteDelete(uid,topicId);
             UserProfile userProfile = userService.getUserProfileByUid(owner);
 
             JsonObject jsonObject = new JsonObject();
