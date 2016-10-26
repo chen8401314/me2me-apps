@@ -253,7 +253,7 @@ public class ActivityServiceImpl implements ActivityService {
         //判断第一次(表是否有数据)
         List<LuckAct> luckacts = activityMybatisDao.getAllLuckAct();
         //根据awardid判断是否有中奖的(不在0内的)如果有这个人就再也不能中奖
-        LuckAct luck = activityMybatisDao.getLuckActByAwardId();
+        LuckAct luck = activityMybatisDao.getLuckActByAwardId2(uid);
         //活动开始和结束时间
         Date startDate = null;
         Date endDate = null;
