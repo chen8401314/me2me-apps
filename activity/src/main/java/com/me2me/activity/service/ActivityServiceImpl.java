@@ -541,6 +541,18 @@ public class ActivityServiceImpl implements ActivityService {
         }
     }
 
+    @Override
+    public Response getAwardStatus(int activityName) {
+        LuckStatus luckStatus = activityMybatisDao.getLuckStatusByName(activityName);
+        AwardStatusDto awardStatusDto = new AwardStatusDto();
+        if(luckStatus !=null){
+            awardStatusDto.setActivityName(luckStatus.getActivityName());
+            awardStatusDto.setChannel(luckStatus.getChannel());
+            awardStatusDto.setVersion(luckStatus.getVersion());
+        }
+        return Response.success(awardStatusDto);
+    }
+
     public Response awardCommon(long uid ,User user ,List<LuckAct> luckacts ,LuckCount luckCount2 ,LuckAct luck ,UserProfile userProfile ,String ip ,int activityName){
         //可以抽奖
         String proof = UUID.randomUUID().toString();
@@ -930,10 +942,7 @@ public class ActivityServiceImpl implements ActivityService {
         for (int i = 0,size = proSection.size(); i < size; i++) {
             if(randomPro >= proSection.get(i)
                     && randomPro < proSection.get(i + 1)){
-                System.out.println(randomPro);
-                System.out.println(proSection.get(i));
-                System.out.println(proSection.get(i + 1));
-                System.out.println(i);
+                log.info("award info randomPro: "+randomPro+" proSection.get(i): "+proSection.get(i)+" proSection.get(i + 1): "+proSection.get(i + 1)+" i: "+i);
                 return awards.get(i);
             }
         }

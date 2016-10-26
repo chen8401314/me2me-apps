@@ -94,4 +94,14 @@ public class Activity {
         return activityService.getUserAwardInfo(request.getUid());
     }
 
+    /**
+     * 获取抽奖信息(供h5使用)
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getAwardStatus",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getAwardStatus(AwardRequest request){
+        return activityService.getAwardStatus(request.getActivityName());
+    }
+
 }
