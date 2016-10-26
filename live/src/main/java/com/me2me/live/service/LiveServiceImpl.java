@@ -461,11 +461,11 @@ public class LiveServiceImpl implements LiveService {
             //userService.push(topic.getUid(),speakDto.getUid(),Specification.PushMessageType.LIVE_REVIEW.index,topic.getTitle());
             //log.info("live review push");
         } else if (speakDto.getType() == Specification.LiveSpeakType.AT.index) {
-            remindAndJpushAtMessage(speakDto, Specification.LiveSpeakType.AT.index);
+            remindAndJpushAtMessage(speakDto);
         } else if (speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index) {
-            remindAndJpushAtMessage(speakDto, Specification.LiveSpeakType.AT.index);
+            remindAndJpushAtMessage(speakDto);
         } else if (speakDto.getType() == Specification.LiveSpeakType.AT_CORE_CIRCLE.index) { //2.1.2
-            remindAndJpushAtMessage(speakDto, Specification.LiveSpeakType.AT_CORE_CIRCLE.index);
+            remindAndJpushAtMessage(speakDto);
         }
         log.info("speak end ...");
         //2.0.7
@@ -474,7 +474,7 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status, ResponseStatus.USER_SPEAK_SUCCESS.message, speakDto);
     }
 
-    private void remindAndJpushAtMessage(SpeakDto speakDto, int messageType) {
+    private void remindAndJpushAtMessage(SpeakDto speakDto) {
         JSONArray atArray = null;
         if(speakDto.getAtUid()==-1){  //atUid==-1时为多人@
             JSONObject fragment = JSON.parseObject(speakDto.getFragment());
@@ -494,7 +494,7 @@ public class LiveServiceImpl implements LiveService {
 
             UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
             JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("messageType", messageType);
+            jsonObject.addProperty("messageType", Specification.PushMessageType.AT.index);
             jsonObject.addProperty("topicId",speakDto.getTopicId());
             jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
             String alias = String.valueOf(atUid);

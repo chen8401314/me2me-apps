@@ -100,7 +100,7 @@ public class Contents extends BaseController {
         likeDto.setType(request.getType() == 0 ? 1 : request.getType());
 
         //埋点
-        kafkaService.saveClientLog(likeDto,req.getHeader("User-Agent"), Specification.ClientLogAction.UGC_LIKES);
+//        kafkaService.saveClientLog(likeDto,req.getHeader("User-Agent"), Specification.ClientLogAction.UGC_LIKES);
         return contentService.like2(likeDto);
     }
 
