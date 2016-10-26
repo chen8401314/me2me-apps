@@ -50,6 +50,14 @@ public class AbstractLikes {
                 log.info("content like success");
                 //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LIKE.index,0,likeDto.getUid()));
                 log.info("content like monitor success");
+                if(likeDto.getUid()!=content.getUid()) {
+                    JsonObject jsonObject = new JsonObject();
+                    jsonObject.addProperty("messageType", Specification.PushMessageType.LIKE.index);
+                    jsonObject.addProperty("type", Specification.PushObjectType.UGC.index);
+                    jsonObject.addProperty("cid", likeDto.getCid());
+                    String alias = String.valueOf(content.getUid());
+                    jPushService.payloadByIdForMessage(alias, jsonObject.toString());
+                }
                 return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
             }else{
                 if(details == null) {
@@ -63,14 +71,7 @@ public class AbstractLikes {
                     contentService.updateContentById(content);
 
                     contentService.deleteContentLikesDetails(contentLikesDetails);
-                    if(likeDto.getUid()!=content.getUid()) {
-                        JsonObject jsonObject = new JsonObject();
-                        jsonObject.addProperty("messageType", Specification.PushMessageType.LIKE.index);
-                        jsonObject.addProperty("type", Specification.PushObjectType.UGC.index);
-                        jsonObject.addProperty("cid", likeDto.getCid());
-                        String alias = String.valueOf(content.getUid());
-                        jPushService.payloadByIdForMessage(alias, jsonObject.toString());
-                    }
+
                     log.info("cancel like success");
                 }
                 //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.UN_LIKE.index,0,likeDto.getUid()));
