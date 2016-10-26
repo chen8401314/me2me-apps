@@ -61,4 +61,6 @@ public interface ActivityService {
     Response checkIsAward(long uid ,int activityName ,String channel ,String version ,String token);
 
     Response getUserAwardInfo(long uid);
+
+    Response getAwardStatus(int activityName);
 }
