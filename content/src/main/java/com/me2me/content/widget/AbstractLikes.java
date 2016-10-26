@@ -1,5 +1,6 @@
 package com.me2me.content.widget;
 
+import com.google.gson.JsonObject;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -7,6 +8,7 @@ import com.me2me.content.dto.LikeDto;
 import com.me2me.content.model.Content;
 import com.me2me.content.model.ContentLikesDetails;
 import com.me2me.content.service.ContentService;
+import com.me2me.sms.service.JPushService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -21,6 +23,9 @@ public class AbstractLikes {
 
     @Autowired
     protected ContentService contentService;
+
+    @Autowired
+    private JPushService jPushService;
 
     public Response likes(LikeDto likeDto) {
         log.info(" AbstractLikes likes start ...");
@@ -58,6 +63,14 @@ public class AbstractLikes {
                     contentService.updateContentById(content);
 
                     contentService.deleteContentLikesDetails(contentLikesDetails);
+                    if(likeDto.getUid()!=content.getUid()) {
+                        JsonObject jsonObject = new JsonObject();
+                        jsonObject.addProperty("messageType", Specification.PushMessageType.LIKE.index);
+                        jsonObject.addProperty("type", Specification.PushObjectType.UGC.index);
+                        jsonObject.addProperty("cid", likeDto.getCid());
+                        String alias = String.valueOf(content.getUid());
+                        jPushService.payloadByIdForMessage(alias, jsonObject.toString());
+                    }
                     log.info("cancel like success");
                 }
                 //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.UN_LIKE.index,0,likeDto.getUid()));
