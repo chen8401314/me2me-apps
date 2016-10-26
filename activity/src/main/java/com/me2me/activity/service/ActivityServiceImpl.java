@@ -234,14 +234,17 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     public static void main(String[] args) {
-        Pattern pattern = Pattern.compile("(.*)(#.{0,128}#)(.*)");
-        Matcher matcher = pattern.matcher("#中国人#");
-        boolean v = matcher.matches();
-        System.out.println(v);
-        int i = matcher.groupCount();
-        System.out.println(i);
-        String value = matcher.group(2);
-        System.out.println(value);
+//        Pattern pattern = Pattern.compile("(.*)(#.{0,128}#)(.*)");
+//        Matcher matcher = pattern.matcher("#中国人#");
+//        boolean v = matcher.matches();
+//        System.out.println(v);
+//        int i = matcher.groupCount();
+//        System.out.println(i);
+//        String value = matcher.group(2);
+//        System.out.println(value);
+        Random random = new Random();
+        float randomPro = (float)random.nextInt(2);
+        System.out.println(randomPro);
     }
 
     @Override
