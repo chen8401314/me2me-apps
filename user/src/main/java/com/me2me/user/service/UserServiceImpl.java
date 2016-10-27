@@ -1682,7 +1682,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response checkNameOpenId(UserNickNameDto userNickNameDto) {
-        if(!StringUtils.isEmpty(userNickNameDto.getOpenid())) {
+        if(userNickNameDto.getThirdPartType() == 2){//兼容新老版本 老版本是没有这个字段的 不会走这里
+            if(!StringUtils.isEmpty(userNickNameDto.getOpenid())){
+                ThirdPartUser thirdPartUser = userMybatisDao.checkOpenId(userNickNameDto.getOpenid());
+                if(thirdPartUser!=null) {
+                    return Response.success(ResponseStatus.USER_EXISTS.status,ResponseStatus.USER_EXISTS.message);
+                }else{
+                    return  Response.success(ResponseStatus.OPENID_DONT_EXISTS.status,ResponseStatus.OPENID_DONT_EXISTS.message);
+                }
+            } else if(!StringUtils.isEmpty(userNickNameDto.getUnionId())){
+                ThirdPartUser thirdPartUser = userMybatisDao.checkUnionId(userNickNameDto.getUnionId());
+                if(thirdPartUser!=null) {
+                    return Response.success(ResponseStatus.USER_EXISTS.status,ResponseStatus.USER_EXISTS.message);
+                }else{
+                    return  Response.success(ResponseStatus.OPENID_DONT_EXISTS.status,ResponseStatus.OPENID_DONT_EXISTS.message);
+                }
+            }
+        }else if(!StringUtils.isEmpty(userNickNameDto.getOpenid())) {
             ThirdPartUser thirdPartUser = userMybatisDao.checkOpenId(userNickNameDto.getOpenid());
             if(thirdPartUser!=null) {
                 return Response.success(ResponseStatus.USER_EXISTS.status,ResponseStatus.USER_EXISTS.message);
@@ -1694,7 +1710,7 @@ public class UserServiceImpl implements UserService {
             List<UserProfile> list = userMybatisDao.checkUserNickName(nickName);
         if(list.size()>0){
             return Response.failure(ResponseStatus.USER_NICKNAME_EXISTS.status,ResponseStatus.USER_NICKNAME_EXISTS.message);
-        }
+            }
         }
         return Response.success(ResponseStatus.USER_NICKNAME_DONT_EXISTS.status,ResponseStatus.USER_NICKNAME_DONT_EXISTS.message);
     }

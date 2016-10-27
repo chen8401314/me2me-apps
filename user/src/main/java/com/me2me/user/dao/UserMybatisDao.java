@@ -691,6 +691,16 @@ public class UserMybatisDao {
         ThirdPartUserExample example = new ThirdPartUserExample();
         ThirdPartUserExample.Criteria criteria = example.createCriteria();
         criteria.andThirdPartOpenIdEqualTo(openId);
+        criteria.andStatusEqualTo(1);
+        List<ThirdPartUser> thirdPartUsers = thirdPartUserMapper.selectByExample(example);
+        return thirdPartUsers!=null&&thirdPartUsers.size()>0?thirdPartUsers.get(0):null;
+    }
+
+    public ThirdPartUser checkUnionId(String unionId){
+        ThirdPartUserExample example = new ThirdPartUserExample();
+        ThirdPartUserExample.Criteria criteria = example.createCriteria();
+        criteria.andThirdPartUnionidEqualTo(unionId);
+        criteria.andStatusEqualTo(1);
         List<ThirdPartUser> thirdPartUsers = thirdPartUserMapper.selectByExample(example);
         return thirdPartUsers!=null&&thirdPartUsers.size()>0?thirdPartUsers.get(0):null;
     }

@@ -16,4 +16,12 @@ public class CheckRequest {
     @Getter
     @Setter
     private String openId;
+
+    @Getter
+    @Setter
+    private String unionId;
+
+    @Getter
+    @Setter
+    private int thirdPartType;
 }
