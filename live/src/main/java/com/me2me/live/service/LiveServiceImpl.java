@@ -285,7 +285,9 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setContentType(topicFragment.getContentType());
             liveElement.setFragmentId(topicFragment.getId());
             liveElement.setSource(topicFragment.getSource());
-            liveElement.setExtra(topicFragment.getExtra());
+            if(!StringUtils.isEmpty(topicFragment.getSource())) {
+                liveElement.setExtra(topicFragment.getExtra());
+            }
 
             liveElement.setInternalStatus(getInternalStatus(topic, uid));
             if (topicFragment.getAtUid() != 0) {
@@ -328,6 +330,18 @@ public class LiveServiceImpl implements LiveService {
             speakEvent.setTopicId(speakDto.getTopicId());
             speakEvent.setType(speakDto.getType());
             speakEvent.setUid(speakDto.getUid());
+            String atUids = "";
+            if(speakDto.getAtUid()==-1){
+                JSONObject fragment = JSON.parseObject(speakDto.getFragment());
+                if(fragment!=null){
+                    JSONArray array = fragment.containsKey("atArray")?fragment.getJSONArray("atArray"):null;
+                    atUids = array.toJSONString().replaceAll("[\\[|\\]]",",");
+                }
+            }else{
+               atUids =CommonUtils.wrapString(speakDto.getAtUid(),",");
+            }
+            speakEvent.setAtUids(atUids);
+
             applicationEventBus.post(speakEvent);
 //            }
             //粉丝有留言提醒主播

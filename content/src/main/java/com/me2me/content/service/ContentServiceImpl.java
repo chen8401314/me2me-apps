@@ -2224,7 +2224,9 @@ private void localJpush(long toUid){
             reviewElement.setNickName(userProfile.getNickName());
             reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             reviewElement.setId(contentReview.getId());
-            reviewElement.setExtra(contentReview.getExtra());
+            if(!StringUtils.isEmpty(contentReview.getExtra())) {
+                reviewElement.setExtra(contentReview.getExtra());
+            }
             if(contentReview.getAtUid() != 0) {
                 UserProfile atUser = userService.getUserProfileByUid(contentReview.getAtUid());
                 reviewElement.setAtNickName(atUser.getNickName());

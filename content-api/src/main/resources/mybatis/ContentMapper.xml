@@ -786,7 +786,11 @@
     <if test="type == 3">
      left join topic t on c.forward_cid = t.id
     </if>
-    where  c.status = 0  and c.uid = #{uid,jdbcType=BIGINT}
+    where  c.status = 0  and (c.uid = #{uid,jdbcType=BIGINT}
+    <if test="type==3">
+      or find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))
+    </if>
+    )
     <if test="isOwner == 0">
       and c.rights = 1
     </if>
@@ -795,8 +799,6 @@
     </if>
     <if test="type == 3">
       and c.type = 3
-    </if>
-    <if test="type == 3">
       and t.long_time &lt; #{updateTime,jdbcType=BIGINT}
     </if>
     <if test="type == 0">
@@ -812,7 +814,15 @@
 
   <select id="countMyPublishByType" parameterType="com.me2me.content.dto.MyPublishDto" resultType="java.lang.Integer">
     select count(*)
-    from content c  where c.status = 0 and c.uid =  #{uid,jdbcType=BIGINT}
+    from content c
+    <if test="type == 3">
+      left join topic t on c.forward_cid = t.id
+    </if>
+    where c.status = 0 and (c.uid = #{uid,jdbcType=BIGINT}
+    <if test="type==3">
+      or find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))
+    </if>
+    )
     <if test="isOwner == 0">
       and c.rights = 1
     </if>

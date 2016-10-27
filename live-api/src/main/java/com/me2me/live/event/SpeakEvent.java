@@ -1,5 +1,6 @@
 package com.me2me.live.event;
 
+import com.alibaba.fastjson.JSONArray;
 import com.me2me.common.web.BaseEntity;
 import lombok.Data;
 
@@ -17,5 +18,7 @@ public class SpeakEvent implements BaseEntity {
     private int type;
 
     private long uid;
+
+    private String atUids;
 
 }
