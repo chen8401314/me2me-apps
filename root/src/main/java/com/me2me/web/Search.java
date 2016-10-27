@@ -1,8 +1,6 @@
 package com.me2me.web;
 
 import com.me2me.common.web.Response;
-import com.me2me.common.web.Specification;
-import com.me2me.kafka.model.ClientLog;
 import com.me2me.kafka.service.KafkaService;
 import com.me2me.search.service.SearchService;
 import com.me2me.web.request.*;

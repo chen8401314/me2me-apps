@@ -4,9 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.me2me.common.web.BaseEntity;
 import com.me2me.common.web.Request;
 import com.me2me.common.web.Specification;
-import com.me2me.kafka.model.ClientLog;
+import com.me2me.kafka.model.OperateLog;
 import com.me2me.kafka.util.KafkaTemplate;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.pool2.ObjectPool;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class KafkaServiceImpl implements  KafkaService{
     private KafkaTemplate kafkaTemplate;
 
     @Override
-    public void saveClientLog(BaseEntity request, String userAgent, Specification.ClientLogAction action) {
+    public void saveClientLog(BaseEntity request, String userAgent, String action) {
         /*try {  //埋点
             ClientLog clientLog = new ClientLog();
 
@@ -41,7 +42,7 @@ public class KafkaServiceImpl implements  KafkaService{
     }
 
     @Override
-    public void clientLog(ClientLog clientLog) {
+    public void clientLog(OperateLog operateLog) {
       /*  try {
             log.info("client log:"+ JSON.toJSONString(clientLog));
             kafkaTemplate.send(clientLog.getUserId()+""+clientLog.getLogTime(),  JSON.toJSONString(clientLog));

@@ -116,11 +116,11 @@ public class Sns extends BaseController {
         followDto.setSourceUid(request.getUid());
 
         //埋点
-        if(request.getAction()==0){
-            kafkaService.saveClientLog(followDto,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_JOIN);
-        }else{
-            kafkaService.saveClientLog(followDto,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_OUT);
-        }
+//        if(request.getAction()==0){
+//            kafkaService.saveClientLog(followDto,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_JOIN);
+//        }else{
+//            kafkaService.saveClientLog(followDto,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_OUT);
+//        }
 
         return snsService.follow(request.getAction(),request.getTargetUid(),request.getUid());
     }
