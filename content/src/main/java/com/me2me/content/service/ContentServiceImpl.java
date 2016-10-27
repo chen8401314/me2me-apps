@@ -932,7 +932,9 @@ private void localJpush(long toUid){
             contentElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
+            contentElement.setUid(content.getUid());
             String cover = content.getConverImage();
+
             if(!StringUtils.isEmpty(cover)){
                 if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
                     contentElement.setCoverImage(cover);
