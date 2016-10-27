@@ -58,4 +58,8 @@ public class CommonUtils {
         }
         return false;
     }
+
+    public static String wrapString(Object str,String symbol){
+        return new StringBuilder(symbol).append(str).append(symbol).toString();
+    }
 }

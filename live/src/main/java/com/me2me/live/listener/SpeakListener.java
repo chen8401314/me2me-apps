@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
+import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Specification;
 import com.me2me.core.event.ApplicationEventBus;
@@ -107,7 +108,7 @@ public class SpeakListener {
                 cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
             }
             //如果缓存存在时间失效，推送
-            if(StringUtils.isEmpty(cacheService.hGet(liveLastUpdate.getKey(),liveLastUpdate.getField()))&&liveFavorite.getUid()!=speakEvent.getUid()) {
+            if(StringUtils.isEmpty(cacheService.hGet(liveLastUpdate.getKey(),liveLastUpdate.getField()))&&liveFavorite.getUid()!=speakEvent.getUid()&&speakEvent.getAtUids().indexOf(CommonUtils.wrapString(liveFavorite.getUid(),","))==-1) {
                 log.info("update live start");
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
@@ -133,10 +134,13 @@ public class SpeakListener {
         JSONArray cores =JSON.parseArray(topic.getCoreCircle());
         for(int i=0;i<cores.size();i++){
             long cid = cores.getLongValue(i);
+
             MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(cid, speakEvent.getTopicId() + "", "1");
             log.info("speak by fans start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
             cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-
+            if(speakEvent.getAtUids().indexOf(CommonUtils.wrapString(cid,","))>-1){
+                continue;
+            }
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
             jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
