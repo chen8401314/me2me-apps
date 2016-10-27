@@ -612,6 +612,8 @@ public class Users extends BaseController {
             userNickNameDto.setNickName(request.getNickName());
         }else {
             userNickNameDto.setOpenid(request.getOpenId());
+            userNickNameDto.setUnionId(request.getUnionId());
+            userNickNameDto.setThirdPartType(request.getThirdPartType());
         }
         return userService.checkNameOpenId(userNickNameDto);
     }
