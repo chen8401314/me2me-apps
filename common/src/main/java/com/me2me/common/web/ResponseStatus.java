@@ -179,6 +179,10 @@ public enum  ResponseStatus {
 
     GET_LIVE_DETAIL_SUCCESS("获取王国详情成功","get live detail success",20083),
 
+    GET_REDDOT_SUCCESS("获取红点成功","get reddot success",20084),
+
+    AWARD_MESSAGE_SUCCESS("中奖短信发送成功","award message success",20085),
+
 
 
 
@@ -263,8 +267,6 @@ public enum  ResponseStatus {
 
     TOPIC_FRAGMENT_CAN_NOT_DELETE("只有国王能删除王国里的发言","you are not the king",50033),
 
-    GET_REDDOT_SUCCESS("获取红点成功","get reddot success",50034),
-
     GET_REDDOT_FAILURE("获取红点失败没有更新","get reddot failure",50035),
 
     CONTENT_DELETE_NO_AUTH("只有国王能删除自己的王国","content delete no auth",50036),
@@ -272,8 +274,6 @@ public enum  ResponseStatus {
     LIVE_HAS_DELETED("该王国已删除","live has deleted",50037),
 
     EDIT_TOPIC_FRAGMENT_FAILURE("编辑王国发言内容失败","edit topic fragment failure",50038),
-
-    AWARD_MESSAGE_SUCCESS("中奖短信发送成功","award message success",50039),
 
     AWARD_MESSAGE_FAILURE("中奖短信发送失败","award message failure",50040),
 
