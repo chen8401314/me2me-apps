@@ -13,10 +13,13 @@ import com.me2me.user.dto.ActivityModelDto;
 import com.me2me.user.model.User;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
 import sun.misc.BASE64Encoder;
 
 import java.io.UnsupportedEncodingException;
@@ -1009,4 +1012,84 @@ public class ActivityServiceImpl implements ActivityService {
         }
         return s;
     }
+
+	@Override
+	public Response getWinners(int activityName) {
+		List<LuckAct> list = activityMybatisDao.getWinnersByActivityName(activityName);
+		ShowLuckActsDTO dto = new ShowLuckActsDTO();
+		if(null != list && list.size() > 0){
+			List<LuckPrize> pList = activityMybatisDao.getPrizeListByActivityName(activityName);
+			Map<String, LuckPrize> pMap = new HashMap<String, LuckPrize>();
+			if(null != pList && pList.size() > 0){
+				for(LuckPrize lp : pList){
+					pMap.put(lp.getAwardId()+"", lp);
+				}
+			}
+			LuckPrize p = null;
+			for(LuckAct la : list){
+				ShowLuckActsDTO.LuckActElement e = ShowLuckActsDTO.createLuckActElement();
+				e.setActivityName(la.getActivityName());
+				e.setActivityNameStr(getNameFromInt2String(la.getActivityName()));
+				e.setAvatar(la.getAvatar());
+				e.setAwardId(la.getAwardId());
+				e.setCreatTime(la.getCreatTime());
+				e.setIpAddress(la.getIpAddress());
+				e.setMobile(la.getMobile());
+				e.setNickName(la.getNickName());
+				e.setProof(la.getProof());
+				e.setUid(la.getUid());
+				if(la.getAwardId() > 0){
+					p = pMap.get(la.getAwardId()+"");
+					if(null != p){
+						e.setAwardName(getAwardNameFromInt2String(p.getAwardId()));
+						e.setAwardPrize(p.getAwardName());
+					}
+				}
+				dto.getResult().add(e);
+			}
+		}
+		return Response.success(dto);
+	}
+	
+	/**
+	 * 本方法暂时使用，这个抽奖活动名字以后肯定是用一张表来存储的，暂时先这样，下次有活动的时候再修改
+	 * @param i
+	 * @return
+	 */
+	private String getNameFromInt2String(int i){
+		if(i == 1){
+			return "小米活动";
+		}
+		return "未知";
+	}
+	
+	/**
+	 * 本方法暂时使用，这个抽奖活动奖品名字以后肯定是用一张表来存储的，暂时先这样，下次有活动的时候再修改
+	 * @param i
+	 * @return
+	 */
+	private String getAwardNameFromInt2String(int i){
+		if(i == 1){
+			return "一等奖";
+		}else if(i == 2){
+			return "二等奖";
+		}else if(i == 3){
+			return "三等奖";
+		}else if(i == 4){
+			return "四等奖";
+		}else if(i == 5){
+			return "五等奖";
+		}else if(i == 6){
+			return "六等奖";
+		}else if(i == 7){
+			return "七等奖";
+		}else if(i == 8){
+			return "八等奖";
+		}else if(i == 9){
+			return "九等奖";
+		}else if(i == 10){
+			return "十等奖";
+		}
+		return "未知";
+	}
 }
