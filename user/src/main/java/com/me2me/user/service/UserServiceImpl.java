@@ -1599,8 +1599,10 @@ public class UserServiceImpl implements UserService {
         userProfile.setAvatar(thirdPartSignUpDto.getAvatar());
         userProfile.setGender(thirdPartSignUpDto.getGender());
         userProfile.setCreateTime(new Date());
-        //第三方登录首次登录设置为1 下一次app登录的时候如果是1 app弹出修改昵称页面 0为不需要修改
-        userProfile.setIsClientLogin(1);
+        //第三方h5微信登录首次登录设置为1 下一次app登录的时候如果是1 app弹出修改昵称页面 0为不需要修改(默认为0)
+        if(thirdPartSignUpDto.getH5type() ==1){
+            userProfile.setIsClientLogin(1);
+        }
         if(thirdPartSignUpDto.getThirdPartOpenId().length() > 11) {
             String openId = thirdPartSignUpDto.getThirdPartOpenId();
             userProfile.setMobile(openId.substring(0,11));
