@@ -7,9 +7,9 @@
 
     <context id="MySqlTables" targetRuntime="MyBatis3">
     <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                    connectionURL="jdbc:mysql://114.55.87.118:3306/apps"
+                    connectionURL="jdbc:mysql://192.168.89.80:3306/apps"
                     userId="me2me"
-                    password="me2me@Sp#23_k">
+                    password="Sp@Metro#79">
         </jdbcConnection>
 
         <javaTypeResolver >
@@ -31,7 +31,8 @@
 
 
         <!--<table tableName="user" domainObjectName="User"/>-->
-        <!--<table tableName="user_profile" domainObjectName="UserProfile"/>-->
+        <table tableName="system_config" domainObjectName="SystemConfig"/>
+        <table tableName="user_profile" domainObjectName="UserProfile"/>
         <!--<table tableName="dictionary" domainObjectName="Dictionary"/>-->
         <!--<table tableName="dictionary_type" domainObjectName="DictionaryType"/>-->
         <!--<table tableName="address" domainObjectName="Address"/>-->
@@ -52,7 +53,7 @@
         <!--<table tableName="user_device" domainObjectName="UserDevice" />-->
         <!--<table tableName="xinge_push_log" domainObjectName="XingePushLog" />-->
         <!--<table tableName="jpush_token" domainObjectName="JpushToken"/>-->
-        <table tableName="third_part_user" domainObjectName="ThirdPartUser"/>
+        <!--<table tableName="third_part_user" domainObjectName="ThirdPartUser"/>-->
         <!--<table tableName="open_device_count" domainObjectName="OpenDeviceCount"/>-->
     </context>
 </generatorConfiguration>

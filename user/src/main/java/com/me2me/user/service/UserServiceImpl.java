@@ -120,6 +120,16 @@ public class UserServiceImpl implements UserService {
 
         userMybatisDao.createUserProfile(userProfile);
         log.info("userProfile is create");
+        //添加默认关注v2.1.4
+        SystemConfig config = userMybatisDao.getSystemConfig();
+        if(config!=null&&config.getDefaultFollow()!=0){
+            UserFollow userFollow = new UserFollow();
+            userFollow.setSourceUid(user.getUid());
+            userFollow.setTargetUid(config.getDefaultFollow());
+
+            userMybatisDao.createFollow(userFollow);
+        }
+
         signUpSuccessDto.setUserName(user.getUserName());
         // 获取用户token
         signUpSuccessDto.setToken(SecurityUtils.getToken());

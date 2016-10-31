@@ -87,6 +87,9 @@ public class UserMybatisDao {
     @Autowired
     private OpenDeviceCountMapper openDeviceCountMapper;
 
+    @Autowired
+    private SystemConfigMapper systemConfigMapper;
+
     /**
      * 保存用户注册信息
      * @param user
@@ -719,4 +722,10 @@ public class UserMybatisDao {
         openDeviceCountMapper.insertSelective(openDeviceCount);
     }
 
+    public SystemConfig getSystemConfig() {
+        SystemConfigExample example = new SystemConfigExample();
+
+        List<SystemConfig> systemConfigs =systemConfigMapper.selectByExample(example);
+        return systemConfigs.size()>0?systemConfigs.get(0):null;
+    }
 }
