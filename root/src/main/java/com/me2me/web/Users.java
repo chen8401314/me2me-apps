@@ -631,6 +631,7 @@ public class Users extends BaseController {
         dto.setEncrypt(request.getEncrypt());
         dto.setThirdPartOpenId(request.getThirdPartOpenId());
         dto.setThirdPartToken(request.getThirdPartToken());
+        dto.setUnionId(request.getUnionId());
         return userService.bind(dto);
     }
 

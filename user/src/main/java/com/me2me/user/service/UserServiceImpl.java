@@ -453,6 +453,8 @@ public class UserServiceImpl implements UserService {
         userProfile.setBirthday(modifyUserProfileDto.getBirthday());
         userProfile.setAvatar(modifyUserProfileDto.getAvatar());
         userProfile.setIntroduced(modifyUserProfileDto.getIntroduced());
+        //设置为0不需要第三方登录检查昵称了 昵称唯一
+        userProfile.setIsClientLogin(0);
         //修改用户爱好
         if(!StringUtils.isEmpty(modifyUserProfileDto.getHobby())){
             ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();
@@ -1534,6 +1536,8 @@ public class UserServiceImpl implements UserService {
                     loginSuccessDto.setGender(userProfile.getGender());
                     loginSuccessDto.setNickName(userProfile.getNickName());
                     loginSuccessDto.setToken(userToken.getToken());
+                    //h5先登录了 app未登录过 为首次登录 返回注册过了 但是值是1需要修改昵称
+                    loginSuccessDto.setIsClientLogin(userProfile.getIsClientLogin());
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 }else{
                     buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
@@ -1595,6 +1599,8 @@ public class UserServiceImpl implements UserService {
         userProfile.setAvatar(thirdPartSignUpDto.getAvatar());
         userProfile.setGender(thirdPartSignUpDto.getGender());
         userProfile.setCreateTime(new Date());
+        //第三方登录首次登录设置为1 下一次app登录的时候如果是1 app弹出修改昵称页面 0为不需要修改
+        userProfile.setIsClientLogin(1);
         if(thirdPartSignUpDto.getThirdPartOpenId().length() > 11) {
             String openId = thirdPartSignUpDto.getThirdPartOpenId();
             userProfile.setMobile(openId.substring(0,11));
@@ -1629,6 +1635,7 @@ public class UserServiceImpl implements UserService {
         loginSuccessDto.setNickName(userProfile1.getNickName());
         loginSuccessDto.setGender(userProfile1.getGender());
         loginSuccessDto.setToken(userToken.getToken());
+        loginSuccessDto.setIsClientLogin(userProfile1.getIsClientLogin());
 
         if(thirdPartSignUpDto.getH5type() ==1) {//h5微信注册openid不存数据库
             ThirdPartUser thirdPartUser = new ThirdPartUser();

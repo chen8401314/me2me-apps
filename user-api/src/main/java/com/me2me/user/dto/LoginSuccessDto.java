@@ -35,4 +35,6 @@ public class LoginSuccessDto implements BaseEntity {
 
     private int v_lv;
 
+    private int isClientLogin;
+
 }
