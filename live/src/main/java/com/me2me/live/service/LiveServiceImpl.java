@@ -1372,6 +1372,41 @@ public class LiveServiceImpl implements LiveService {
         return  Response.success(ResponseStatus.GET_LIVE_DETAIL_SUCCESS.status, ResponseStatus.GET_LIVE_DETAIL_SUCCESS.message, liveDetailDto);
     }
 
+    @Override
+    public Response getLiveUpdate(GetLiveUpdateDto getLiveUpdateDto) {
+        log.info("get live update start ... request:"+JSON.toJSONString(getLiveUpdateDto));
+        log.info("get total records...");
+        int totalRecords;
+        int updateRecords;
+        if(getLiveUpdateDto.getSinceId()>0){
+            Map<String,Long> result  = liveMybatisDao.countFragmentByTopicIdWithSince(getLiveUpdateDto);
+            totalRecords = result.get("total_records").intValue();
+            updateRecords = result.get("update_records").intValue();
+        }else {
+            totalRecords =  liveMybatisDao.countFragmentByTopicId(getLiveUpdateDto.getTopicId());
+            updateRecords = totalRecords;
+        }
+        LiveUpdateDto liveUpdateDto = new LiveUpdateDto();
+        liveUpdateDto.setTotalRecords(totalRecords);
+        int offset = getLiveUpdateDto.getOffset();
+        int totalPages =totalRecords%offset==0?totalRecords/offset:totalRecords/offset+1;
+        liveUpdateDto.setTotalPages(totalPages);
+        liveUpdateDto.setUpdateRecords(updateRecords);
+
+        int nums = totalRecords-updateRecords;
+        int startPageNo = nums/offset+1;
+        if(nums%offset>0) {
+            updateRecords -= updateRecords % offset;
+        }
+        int endPageNo = startPageNo+(updateRecords%offset==0?updateRecords/offset:updateRecords/offset+1);
+
+        liveUpdateDto.setStartPageNo(startPageNo);
+        liveUpdateDto.setEndPageNo(endPageNo>totalPages?totalPages:endPageNo);
+
+        log.info("get live update start ...");
+        return    Response.success(ResponseStatus.GET_LIVE_UPDATE_SUCCESS.status, ResponseStatus.GET_LIVE_UPDATE_SUCCESS.message, liveUpdateDto);
+    }
+
     private void buildLiveDetail(GetLiveDetailDto getLiveDetailDto, LiveDetailDto liveDetailDto, List<TopicFragment> fragmentList) {
         log.info("build live detail start ...");
         Topic topic = liveMybatisDao.getTopicById(getLiveDetailDto.getTopicId());

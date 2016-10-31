@@ -183,6 +183,8 @@ public enum  ResponseStatus {
 
     AWARD_MESSAGE_SUCCESS("中奖短信发送成功","award message success",20085),
 
+    GET_LIVE_UPDATE_SUCCESS("获取王国更新内容数量成功","get live update num success",20086),
+
 
 
 
