@@ -63,4 +63,6 @@ public interface ActivityService {
     Response getUserAwardInfo(long uid);
 
     Response getAwardStatus(int activityName);
+    
+    Response getWinners(int activityName);
 }

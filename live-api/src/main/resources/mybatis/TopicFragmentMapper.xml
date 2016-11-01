@@ -508,4 +508,11 @@
       status = #{status,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="countFragmentByTopicIdWithSince" parameterType="com.me2me.live.dto.GetLiveUpdateDto" resultType="java.util.Map">
+    select
+    count(*) total_records,count(if(f.id>#{sinceId,jdbcType=BIGINT},TRUE,NULL)) as update_records
+    from topic_fragment f
+    where  f.topic_id=#{topicId,jdbcType=BIGINT}
+  </select>
 </mapper>

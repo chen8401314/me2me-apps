@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.security.SecurityUtils;
+import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -1814,6 +1815,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public List<UserProfile> getUserProfilesByUids(List<Long> uids) {
         return userMybatisDao.getUserProfilesByUids(uids);
+    }
+
+    @Override
+    public Response gag(GagDto dto) {
+        UserGag gag = (UserGag) CommonUtils.copyDto(dto,new UserGag());
+
+        userMybatisDao.createGag(gag);
+
+        return Response.success();
     }
 
 }

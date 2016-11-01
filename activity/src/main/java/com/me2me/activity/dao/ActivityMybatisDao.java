@@ -257,6 +257,13 @@ public class ActivityMybatisDao {
     public void updatePrize(LuckPrize prize){
         luckPrizeMapper.updateByPrimaryKeySelective(prize);
     }
+    
+    public List<LuckPrize> getPrizeListByActivityName(int activityName){
+        LuckPrizeExample example = new LuckPrizeExample();
+        LuckPrizeExample.Criteria criteria = example.createCriteria();
+        criteria.andActivityNameEqualTo(activityName);
+        return luckPrizeMapper.selectByExample(example);
+    }
 
     public List<LuckAct> getAllLuckAct(){
         LuckActExample example = new LuckActExample();
@@ -288,6 +295,15 @@ public class ActivityMybatisDao {
         criteria.andAwardIdNotEqualTo(0);
         List<LuckAct> luckActs = luckActMapper.selectByExample(example);
         return (luckActs.size()>0 && luckActs!=null)?luckActs.get(0):null;
+    }
+    
+    public List<LuckAct> getWinnersByActivityName(Integer activityName){
+    	LuckActExample example = new LuckActExample();
+    	LuckActExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityNameEqualTo(activityName);
+    	criteria.andAwardIdGreaterThan(0);
+    	List<LuckAct> luckActs = luckActMapper.selectByExample(example);
+    	return luckActs;
     }
 
     public LuckCount getLuckCountByUid(long uid) {

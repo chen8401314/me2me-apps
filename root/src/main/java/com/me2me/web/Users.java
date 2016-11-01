@@ -1,5 +1,6 @@
 package com.me2me.web;
 
+import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.web.Response;
 import com.me2me.kafka.service.KafkaService;
 import com.me2me.sms.dto.AwardXMDto;
@@ -635,6 +636,16 @@ public class Users extends BaseController {
         return userService.bind(dto);
     }
 
+    /**
+     * 绑定接口
+     */
+    @ResponseBody
+    @RequestMapping(value = "/gag",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response gag(GagRequest request){
+        GagDto dto = (GagDto) CommonUtils.copyDto(request,new GagDto());
+
+        return userService.gag(dto);
+    }
     /**
      * 上大V接口
      */

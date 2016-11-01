@@ -81,6 +81,25 @@ public class Live extends BaseController {
         return liveService.getLiveDetail(liveDetailDto);
     }
 
+    /**
+     * 王国内容更新数量接口（配合王国详情接口）
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/getUpdate",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response getUpdate(LiveUpdateRequest request, HttpServletResponse response){
+        response.setHeader("Access-Control-Allow-Origin", "*");
+        GetLiveUpdateDto getLiveUpdateDto = new GetLiveUpdateDto();
+
+        int offset = request.getOffset()==0?50:request.getOffset();
+        getLiveUpdateDto.setOffset(offset);
+        getLiveUpdateDto.setTopicId(request.getTopicId());
+        getLiveUpdateDto.setSinceId(request.getSinceId());
+        return liveService.getLiveUpdate(getLiveUpdateDto);
+    }
+
+
 
 
     /**
