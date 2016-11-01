@@ -24,7 +24,9 @@ import com.me2me.user.dto.*;
 import com.me2me.user.model.*;
 import com.me2me.user.model.Dictionary;
 import com.me2me.user.widget.MessageNotificationAdapter;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -1811,5 +1813,47 @@ public class UserServiceImpl implements UserService {
     public List<UserProfile> getUserProfilesByUids(List<Long> uids) {
         return userMybatisDao.getUserProfilesByUids(uids);
     }
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Response searchPageByNickNameAndvLv(String nickName, int vLv,
+			int page, int pageSize) {
+		List<UserProfile> list =  userMybatisDao.searchByNickNameAndvLv(nickName, vLv, page, pageSize);
+		SearchUserProfileDto dto = new SearchUserProfileDto();
+		dto.setTotalRecord(userMybatisDao.totalByNickNameAndvLv(nickName, vLv));
+		int totalPage = (dto.getTotalRecord() + pageSize -1) / pageSize;
+		dto.setTotalPage(totalPage);
+		for(UserProfile u : list){
+			SearchUserProfileDto.UserProfileElement e = dto.createUserProfileElement();
+			e.setAvatar(Constant.QINIU_DOMAIN + "/" +u.getAvatar());
+			e.setCreateTime(u.getCreateTime());
+			e.setGender(u.getGender());
+			e.setMobile(u.getMobile());
+			e.setNickName(u.getNickName());
+			e.setThirdPartBind(u.getThirdPartBind());
+			e.setUid(u.getUid());
+			e.setVlv(u.getvLv());
+			e.setBirthday(u.getBirthday());
+			dto.getResult().add(e);
+        }
+        return Response.success(dto);
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Response optionV(int action, long uid) {
+		UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+		if(null != userProfile){
+			if(action == 1){//上大V
+				userProfile.setvLv(Specification.VipLevel.isV.index);
+			}else{
+				userProfile.setvLv(Specification.VipLevel.noV.index);
+			}
+			userMybatisDao.modifyUserProfile(userProfile);
+			return Response.success();
+		}else{
+			return Response.failure("user is not exists");
+		}
+	}
 
 }

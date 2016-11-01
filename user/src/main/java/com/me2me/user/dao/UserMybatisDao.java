@@ -728,4 +728,29 @@ public class UserMybatisDao {
         List<SystemConfig> systemConfigs =systemConfigMapper.selectByExample(example);
         return systemConfigs.size()>0?systemConfigs.get(0):null;
     }
+    
+    public List<UserProfile> searchByNickNameAndvLv(String nickName, int vLv, int page, int pageSize){
+    	UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria =  example.createCriteria();
+        if(null != nickName && !"".equals(nickName)){
+        	criteria.andNickNameLike("%"+nickName+"%");
+        }
+        if(vLv >= 0){
+        	criteria.andVLvEqualTo(vLv);
+        }
+        example.setOrderByClause("create_time desc limit "+((page-1)*pageSize)+", " + pageSize);
+        return userProfileMapper.selectByExample(example);
+    }
+    
+    public int totalByNickNameAndvLv(String nickName, int vLv){
+    	UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria =  example.createCriteria();
+        if(null != nickName && !"".equals(nickName)){
+        	criteria.andNickNameLike("%"+nickName+"%");
+        }
+        if(vLv >= 0){
+        	criteria.andVLvEqualTo(vLv);
+        }
+        return userProfileMapper.countByExample(example);
+    }
 }
