@@ -236,7 +236,7 @@ public interface UserService {
     Response addV(UserVDto userVDto);
 
     List<UserProfile> getUserProfilesByUids(List<Long> uids);
-    
+
     Response searchPageByNickNameAndvLv(String nickName, int vLv, int page, int pageSize);
     
     /**
@@ -246,4 +246,6 @@ public interface UserService {
      * @return
      */
     Response optionV(int action, long uid);
+
+    Response gag(GagDto dto);
 }

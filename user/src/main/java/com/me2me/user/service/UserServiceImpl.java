@@ -7,6 +7,7 @@ import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.security.SecurityUtils;
+import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -456,7 +457,7 @@ public class UserServiceImpl implements UserService {
         userProfile.setAvatar(modifyUserProfileDto.getAvatar());
         userProfile.setIntroduced(modifyUserProfileDto.getIntroduced());
         //设置为0不需要第三方登录检查昵称了 昵称唯一
-        userProfile.setIsClientLogin(0);
+//        userProfile.setIsClientLogin(0);
         //修改用户爱好
         if(!StringUtils.isEmpty(modifyUserProfileDto.getHobby())){
             ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();
@@ -1539,7 +1540,10 @@ public class UserServiceImpl implements UserService {
                     loginSuccessDto.setNickName(userProfile.getNickName());
                     loginSuccessDto.setToken(userToken.getToken());
                     //h5先登录了 app未登录过 为首次登录 返回注册过了 但是值是1需要修改昵称
-                    loginSuccessDto.setIsClientLogin(userProfile.getIsClientLogin());
+//                    loginSuccessDto.setIsClientLogin(userProfile.getIsClientLogin());
+                    //openId没有unionId有的情况 肯定是h5微信登录的 所以要修改昵称 前台检测过传来的
+                    userProfile.setNickName(thirdPartSignUpDto.getNickName());
+                    userMybatisDao.modifyUserProfile(userProfile);
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 }else{
                     buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
@@ -1602,9 +1606,9 @@ public class UserServiceImpl implements UserService {
         userProfile.setGender(thirdPartSignUpDto.getGender());
         userProfile.setCreateTime(new Date());
         //第三方h5微信登录首次登录设置为1 下一次app登录的时候如果是1 app弹出修改昵称页面 0为不需要修改(默认为0)
-        if(thirdPartSignUpDto.getH5type() ==1){
-            userProfile.setIsClientLogin(1);
-        }
+//        if(thirdPartSignUpDto.getH5type() ==1){
+//            userProfile.setIsClientLogin(1);
+//        }
         if(thirdPartSignUpDto.getThirdPartOpenId().length() > 11) {
             String openId = thirdPartSignUpDto.getThirdPartOpenId();
             userProfile.setMobile(openId.substring(0,11));
@@ -1704,22 +1708,23 @@ public class UserServiceImpl implements UserService {
     @Override
     public Response checkNameOpenId(UserNickNameDto userNickNameDto) {
         if(userNickNameDto.getThirdPartType() == 2){//兼容新老版本 老版本是没有这个字段的 不会走这里
-            if(!StringUtils.isEmpty(userNickNameDto.getOpenid())){
-                ThirdPartUser thirdPartUser = userMybatisDao.checkOpenId(userNickNameDto.getOpenid());
-                if(thirdPartUser!=null) {
+            if(!StringUtils.isEmpty(userNickNameDto.getOpenid()) && !StringUtils.isEmpty(userNickNameDto.getUnionId())){
+                ThirdPartUser thirdPartUserOpenId = userMybatisDao.checkOpenId(userNickNameDto.getOpenid());
+                ThirdPartUser thirdPartUserUnionId = userMybatisDao.checkUnionId(userNickNameDto.getUnionId());
+                if(thirdPartUserOpenId != null) {
                     return Response.success(ResponseStatus.USER_EXISTS.status,ResponseStatus.USER_EXISTS.message);
+                }else if(thirdPartUserUnionId !=null){
+                    UserProfile userProfile = userMybatisDao.getUserProfileByUid(thirdPartUserUnionId.getUid());
+                    UserProfile4H5Dto Dto = new UserProfile4H5Dto();
+                    Dto.setNickName(userProfile.getNickName());
+                    return Response.success(ResponseStatus.THIRDPARTUSER_EXISTS.status,ResponseStatus.THIRDPARTUSER_EXISTS.message,Dto);
                 }else{
-                    return  Response.success(ResponseStatus.OPENID_DONT_EXISTS.status,ResponseStatus.OPENID_DONT_EXISTS.message);
+                    return Response.success(ResponseStatus.OPENID_DONT_EXISTS.status,ResponseStatus.OPENID_DONT_EXISTS.message);
                 }
-            } else if(!StringUtils.isEmpty(userNickNameDto.getUnionId())){
-                ThirdPartUser thirdPartUser = userMybatisDao.checkUnionId(userNickNameDto.getUnionId());
-                if(thirdPartUser!=null) {
-                    return Response.success(ResponseStatus.USER_EXISTS.status,ResponseStatus.USER_EXISTS.message);
-                }else{
-                    return  Response.success(ResponseStatus.OPENID_DONT_EXISTS.status,ResponseStatus.OPENID_DONT_EXISTS.message);
-                }
+            }else{//以防出错没传openId和unionId报错
+                return Response.success(ResponseStatus.OPENID_DONT_EXISTS.status,ResponseStatus.OPENID_DONT_EXISTS.message);
             }
-        }else if(!StringUtils.isEmpty(userNickNameDto.getOpenid())) {
+        }else if(!StringUtils.isEmpty(userNickNameDto.getOpenid())) {// qq weibo weixin 老版本
             ThirdPartUser thirdPartUser = userMybatisDao.checkOpenId(userNickNameDto.getOpenid());
             if(thirdPartUser!=null) {
                 return Response.success(ResponseStatus.USER_EXISTS.status,ResponseStatus.USER_EXISTS.message);
@@ -1855,5 +1860,14 @@ public class UserServiceImpl implements UserService {
 			return Response.failure("user is not exists");
 		}
 	}
+
+    @Override
+    public Response gag(GagDto dto) {
+        UserGag gag = (UserGag) CommonUtils.copyDto(dto,new UserGag());
+
+        userMybatisDao.createGag(gag);
+
+        return Response.success();
+    }
 
 }

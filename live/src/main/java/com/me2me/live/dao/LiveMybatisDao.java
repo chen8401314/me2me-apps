@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
 import com.me2me.common.web.Specification;
 import com.me2me.live.dto.GetLiveDetailDto;
+import com.me2me.live.dto.GetLiveUpdateDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.mapper.*;
 import com.me2me.live.model.*;
@@ -17,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -604,5 +606,9 @@ public class LiveMybatisDao {
         String order = "id asc limit "+((pageNo-1)*getLiveDetailDto.getOffset())+","+getLiveDetailDto.getOffset();
         example.setOrderByClause(order);
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
+    }
+
+    public Map<String,Long> countFragmentByTopicIdWithSince(GetLiveUpdateDto getLiveUpdateDto) {
+        return topicFragmentMapper.countFragmentByTopicIdWithSince(getLiveUpdateDto);
     }
 }

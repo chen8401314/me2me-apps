@@ -80,6 +80,10 @@ public class ContentMybatisDao {
         contentMapper.updateByPrimaryKeySelective(content);
     }
 
+    public void updateContent(Content content){
+        contentMapper.updateByPrimaryKey(content);
+    }
+
     public void createTag(ContentTags contentTags){
         ContentTagsExample example = new ContentTagsExample();
         ContentTagsExample.Criteria criteria = example.createCriteria();

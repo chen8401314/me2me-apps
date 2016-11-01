@@ -1,8 +1,11 @@
 package com.me2me.live.mapper;
 
+import com.me2me.live.dto.GetLiveUpdateDto;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicFragmentExample;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface TopicFragmentMapper {
@@ -117,4 +120,6 @@ public interface TopicFragmentMapper {
      * @mbggenerated Mon Sep 26 17:20:17 CST 2016
      */
     int updateByPrimaryKey(TopicFragment record);
+
+    Map<String,Long> countFragmentByTopicIdWithSince(GetLiveUpdateDto getLiveUpdateDto);
 }

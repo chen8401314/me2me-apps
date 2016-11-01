@@ -31,8 +31,9 @@
 
 
         <!--<table tableName="user" domainObjectName="User"/>-->
-        <table tableName="system_config" domainObjectName="SystemConfig"/>
-        <table tableName="user_profile" domainObjectName="UserProfile"/>
+        <!--<table tableName="system_config" domainObjectName="SystemConfig"/>-->
+        <!--<table tableName="user_profile" domainObjectName="UserProfile"/>-->
+        <table tableName="user_gag" domainObjectName="UserGag"/>
         <!--<table tableName="dictionary" domainObjectName="Dictionary"/>-->
         <!--<table tableName="dictionary_type" domainObjectName="DictionaryType"/>-->
         <!--<table tableName="address" domainObjectName="Address"/>-->

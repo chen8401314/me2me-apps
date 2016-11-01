@@ -1,5 +1,6 @@
 package com.me2me.user.dao;
 
+import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.sms.dto.PushLogDto;
 import com.me2me.user.dto.*;
@@ -89,6 +90,9 @@ public class UserMybatisDao {
 
     @Autowired
     private SystemConfigMapper systemConfigMapper;
+
+    @Autowired
+    private UserGagMapper userGagMapper;
 
     /**
      * 保存用户注册信息
@@ -728,7 +732,7 @@ public class UserMybatisDao {
         List<SystemConfig> systemConfigs =systemConfigMapper.selectByExample(example);
         return systemConfigs.size()>0?systemConfigs.get(0):null;
     }
-    
+
     public List<UserProfile> searchByNickNameAndvLv(String nickName, int vLv, int page, int pageSize){
     	UserProfileExample example = new UserProfileExample();
         UserProfileExample.Criteria criteria =  example.createCriteria();
@@ -752,5 +756,9 @@ public class UserMybatisDao {
         	criteria.andVLvEqualTo(vLv);
         }
         return userProfileMapper.countByExample(example);
+    }
+
+    public void createGag(UserGag gag) {
+        userGagMapper.insert(gag);
     }
 }

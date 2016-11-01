@@ -149,4 +149,6 @@ public interface LiveService {
      * @return
      */
     Response getLiveDetail(GetLiveDetailDto liveDetailDto);
+
+    Response getLiveUpdate(GetLiveUpdateDto getLiveUpdateDto);
 }
