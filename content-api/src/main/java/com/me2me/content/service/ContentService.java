@@ -198,7 +198,7 @@ public interface ContentService{
     void clearData();
 
 
-    Response getHottest2(int sinceId,long uid);
+    Response Hottest2(int sinceId,long uid);
 
     int getUgcCount(long uid);
 
