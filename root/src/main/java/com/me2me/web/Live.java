@@ -89,7 +89,7 @@ public class Live extends BaseController {
     @RequestMapping(value = "/getUpdate",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getUpdate(LiveUpdateRequest request, HttpServletResponse response){
-
+        response.setHeader("Access-Control-Allow-Origin", "*");
         GetLiveUpdateDto getLiveUpdateDto = new GetLiveUpdateDto();
 
         int offset = request.getOffset()==0?50:request.getOffset();

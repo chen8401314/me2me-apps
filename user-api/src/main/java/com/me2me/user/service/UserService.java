@@ -236,4 +236,6 @@ public interface UserService {
     Response addV(UserVDto userVDto);
 
     List<UserProfile> getUserProfilesByUids(List<Long> uids);
+
+    Response gag(GagDto dto);
 }

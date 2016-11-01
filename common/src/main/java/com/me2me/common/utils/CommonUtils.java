@@ -1,6 +1,7 @@
 package com.me2me.common.utils;
 
 import com.me2me.common.web.BaseEntity;
+import com.me2me.common.web.Request;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
@@ -25,27 +26,6 @@ public class CommonUtils {
         return sb.toString();
     }
 
-    public static BaseEntity fromPojoToDto(Object fromData, BaseEntity toData) {
-        Class from = fromData.getClass();
-        Class to = toData.getClass();
-        Field[] flds = from.getDeclaredFields();
-        for(Field fld : flds){
-            try {
-                String name = fld.getName().substring(0,1).toUpperCase()+fld.getName().substring(1);
-                Method fromMethod = from.getDeclaredMethod("get"+name);
-                Method toMethod = to.getDeclaredMethod("set"+name,fld.getType());
-                toMethod.invoke(toData,fromMethod.invoke(fromData));
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-        return toData;
-    }
-
     public static boolean afterVersion(String currentVersion,String version){
         if(StringUtils.isEmpty(currentVersion))
             return false;
@@ -62,4 +42,36 @@ public class CommonUtils {
     public static String wrapString(Object str,String symbol){
         return new StringBuilder(symbol).append(str).append(symbol).toString();
     }
+
+
+
+
+    public static BaseEntity copyDto(Object from,BaseEntity to){
+        Class clzd = to.getClass();
+        Class clzr = from.getClass();
+        Field[] flds = clzd.getDeclaredFields();
+        for(Field fld : flds){
+            String name =changeFirstCharToUpper(fld.getName());
+            try {
+                clzd.getMethod("set"+name,fld.getType()).invoke(to,clzr.getMethod("get"+name).invoke(from));
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            } catch (InvocationTargetException e) {
+                e.printStackTrace();
+            } catch (NoSuchMethodException e) {
+                e.printStackTrace();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
+        return to;
+    }
+
+    public static String changeFirstCharToUpper(String str){
+        return new StringBuilder(str.substring(0,1).toUpperCase()).append(str.substring(1)).toString();
+    }
+
+
+
 }
+
