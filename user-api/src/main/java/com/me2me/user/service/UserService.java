@@ -248,4 +248,7 @@ public interface UserService {
     Response optionV(int action, long uid);
 
     Response gag(GagDto dto);
+
+
+    boolean checkGag(UserGag gag);
 }

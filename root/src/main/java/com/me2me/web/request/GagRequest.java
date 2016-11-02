@@ -10,6 +10,10 @@ import lombok.Setter;
 public class GagRequest extends Request{
     @Setter
     @Getter
+    private int action;
+
+    @Setter
+    @Getter
     private long uid;
 
     @Setter
