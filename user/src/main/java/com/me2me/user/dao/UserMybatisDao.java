@@ -733,11 +733,14 @@ public class UserMybatisDao {
         return systemConfigs.size()>0?systemConfigs.get(0):null;
     }
 
-    public List<UserProfile> searchByNickNameAndvLv(String nickName, int vLv, int page, int pageSize){
+    public List<UserProfile> searchByNickNameAndvLv(String nickName, String mobile, int vLv, int page, int pageSize){
     	UserProfileExample example = new UserProfileExample();
         UserProfileExample.Criteria criteria =  example.createCriteria();
         if(null != nickName && !"".equals(nickName)){
         	criteria.andNickNameLike("%"+nickName+"%");
+        }
+        if(null != mobile && !"".equals(mobile)){
+        	criteria.andMobileLike("%"+mobile+"%");
         }
         if(vLv >= 0){
         	criteria.andVLvEqualTo(vLv);
@@ -746,11 +749,14 @@ public class UserMybatisDao {
         return userProfileMapper.selectByExample(example);
     }
     
-    public int totalByNickNameAndvLv(String nickName, int vLv){
+    public int totalByNickNameAndvLv(String nickName, String mobile, int vLv){
     	UserProfileExample example = new UserProfileExample();
         UserProfileExample.Criteria criteria =  example.createCriteria();
         if(null != nickName && !"".equals(nickName)){
         	criteria.andNickNameLike("%"+nickName+"%");
+        }
+        if(null != mobile && !"".equals(mobile)){
+        	criteria.andMobileLike("%"+mobile+"%");
         }
         if(vLv >= 0){
         	criteria.andVLvEqualTo(vLv);

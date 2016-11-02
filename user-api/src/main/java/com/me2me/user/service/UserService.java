@@ -237,7 +237,7 @@ public interface UserService {
 
     List<UserProfile> getUserProfilesByUids(List<Long> uids);
 
-    Response searchPageByNickNameAndvLv(String nickName, int vLv, int page, int pageSize);
+    Response searchPageByNickNameAndvLv(String nickName, String mobile, int vLv, int page, int pageSize);
     
     /**
      * 操作大V

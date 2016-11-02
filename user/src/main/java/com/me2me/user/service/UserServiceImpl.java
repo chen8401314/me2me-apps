@@ -1821,11 +1821,11 @@ public class UserServiceImpl implements UserService {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Response searchPageByNickNameAndvLv(String nickName, int vLv,
+	public Response searchPageByNickNameAndvLv(String nickName, String mobile, int vLv,
 			int page, int pageSize) {
-		List<UserProfile> list =  userMybatisDao.searchByNickNameAndvLv(nickName, vLv, page, pageSize);
+		List<UserProfile> list =  userMybatisDao.searchByNickNameAndvLv(nickName, mobile, vLv, page, pageSize);
 		SearchUserProfileDto dto = new SearchUserProfileDto();
-		dto.setTotalRecord(userMybatisDao.totalByNickNameAndvLv(nickName, vLv));
+		dto.setTotalRecord(userMybatisDao.totalByNickNameAndvLv(nickName, mobile, vLv));
 		int totalPage = (dto.getTotalRecord() + pageSize -1) / pageSize;
 		dto.setTotalPage(totalPage);
 		for(UserProfile u : list){
