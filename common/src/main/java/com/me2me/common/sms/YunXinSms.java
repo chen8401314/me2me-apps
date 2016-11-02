@@ -32,6 +32,7 @@ public class YunXinSms {
     private static final String VERIFYCODE_URL = "https://api.netease.im/sms/verifycode.action";
     private static final String SENDCODE_URL="https://api.netease.im/sms/sendcode.action";
     private static final String SENDTEMPLATE_URL="https://api.netease.im/sms/sendtemplate.action";
+    private static final String SENDTEMPLATE_CODE="3029286";
 
     /**
      * 设置请求头
@@ -68,14 +69,15 @@ public class YunXinSms {
         return processResultCode(resultCode);
     }
 
-    public static Boolean sendSms2(String nickName ,String awardName ,String mobile)  {
+    public static Boolean sendSms2(String nickName ,String awardName ,String mobile ,String OperateMobile)  {
         Map<String,String> param = new HashMap<String, String>();
-        param.put("templateid","3029286");
+        param.put("templateid",SENDTEMPLATE_CODE);
         List list = Lists.newArrayList();
         list.add(nickName);
+        list.add(mobile);
         list.add(awardName);
         param.put("params", JSONArray.toJSONString(list));
-        param.put("mobiles","["+mobile+"]");
+        param.put("mobiles","["+mobile+","+OperateMobile+"]");
         String resultCode = executeURLRequest(SENDTEMPLATE_URL,param);
         return processResultCode(resultCode);
     }

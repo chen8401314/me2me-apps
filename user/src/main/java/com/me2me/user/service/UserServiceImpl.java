@@ -293,7 +293,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response sendAwardMessage(AwardXMDto awardXMDto) {
-        boolean isTrue = smsService.sendMessage(awardXMDto.getNickName(),awardXMDto.getAwardName(),awardXMDto.getMobile());
+        //运维人员手机号
+        List<Map<String, Object>> mapList = userInitJdbcDao.getLuckStatusOperateMobile();
+        Map<String, Object> map = mapList.get(0);
+        String OperateMobile = (String) map.get("operate_mobile");
+        boolean isTrue = smsService.sendMessage(awardXMDto.getNickName(),awardXMDto.getAwardName(),awardXMDto.getMobile() ,OperateMobile);
         if(isTrue){
             log.info("award message success");
             return Response.success(ResponseStatus.AWARD_MESSAGE_SUCCESS.status,ResponseStatus.AWARD_MESSAGE_SUCCESS.message);

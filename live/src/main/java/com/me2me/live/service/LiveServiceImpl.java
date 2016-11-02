@@ -971,7 +971,7 @@ public class LiveServiceImpl implements LiveService {
     public Response displayProtocol(int vLv) {
         log.info("get live display protocol start ...");
         LiveDisplayProtocol protocol = liveMybatisDao.getLiveDisplayProtocol(vLv);
-        LiveDisplayProtocolDto liveDisplayProtocolDto = (LiveDisplayProtocolDto) CommonUtils.fromPojoToDto(protocol, new LiveDisplayProtocolDto());
+        LiveDisplayProtocolDto liveDisplayProtocolDto = (LiveDisplayProtocolDto) CommonUtils.copyDto(protocol, new LiveDisplayProtocolDto());
         log.info("get live display protocol end ...");
         return Response.success(liveDisplayProtocolDto);
     }

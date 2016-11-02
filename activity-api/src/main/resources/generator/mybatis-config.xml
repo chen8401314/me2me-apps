@@ -7,9 +7,9 @@
 
     <context id="MySqlTables" targetRuntime="MyBatis3">
         <jdbcConnection driverClass="com.mysql.jdbc.Driver"
-                        connectionURL="jdbc:mysql://114.55.87.118:3306/apps"
+                        connectionURL="jdbc:mysql://192.168.89.80:3306/apps"
                         userId="me2me"
-                        password="me2me@Sp#23_k">
+                        password="Sp@Metro#79">
         </jdbcConnection>
 
         <javaTypeResolver >
@@ -40,7 +40,7 @@
         <!--<table tableName="luck_act" domainObjectName="LuckAct"/>-->
         <!--<table tableName="luck_prize" domainObjectName="LuckPrize"/>-->
         <!--<table tableName="luck_count" domainObjectName="LuckCount"/>-->
-        <!--<table tableName="luck_status" domainObjectName="LuckStatus"/>-->
+        <table tableName="luck_status" domainObjectName="LuckStatus"/>
 
     </context>
 </generatorConfiguration>
