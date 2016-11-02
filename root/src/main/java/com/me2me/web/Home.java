@@ -52,7 +52,7 @@ public class Home extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.getHottest2(request.getSinceId(),request.getUid());
+        return contentService.Hottest2(request.getSinceId(),request.getUid());
     }
 
     /**
