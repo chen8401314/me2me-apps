@@ -1052,8 +1052,9 @@ public class ActivityServiceImpl implements ActivityService {
 	}
 
     @Override
-    public Response addWinners(int activityName, String mobile, int awardId, String awardName) {
+    public Response addWinners(long uid ,int activityName, String mobile, int awardId, String awardName) {
         LuckWinners winners = new LuckWinners();
+        winners.setUid(uid);
         winners.setActivityName(activityName);
         winners.setMobile(mobile);
         winners.setAwardId(awardId);

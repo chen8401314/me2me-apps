@@ -112,6 +112,6 @@ public class Activity {
     @RequestMapping(value = "/addWinners",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response addWinners(AwardRequest request){
 
-        return activityService.addWinners(request.getActivityName() ,request.getMobile() ,request.getAwardId() ,request.getAwardName());
+        return activityService.addWinners(request.getUid() ,request.getActivityName() ,request.getMobile() ,request.getAwardId() ,request.getAwardName());
     }
 }

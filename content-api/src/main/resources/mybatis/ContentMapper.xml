@@ -759,7 +759,7 @@
   <select id="loadHighQualityData" resultMap="ResultMapWithBLOBs">
         select
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
-    c.thumbnail, c.hot_value, c.like_count,c.favorite_count, c.read_count, c.authorization, c.create_time, c.status,c.content
+    c.thumbnail, c.hot_value, c.like_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content
     from content c  right join high_quality_content h on c.id = h.cid  where c.id &lt; #{sinceId} and c.status != 1
     order by c.id desc limit 10
 </select>
@@ -767,7 +767,7 @@
   <select id="loadMyPublishData" parameterType="Map" resultMap="ResultMapWithBLOBs">
       select
   c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
-  c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.authorization, c.create_time, c.status,c.content,c.rights
+  c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights
   from content c where c.status != 1 and c.uid =  #{uid,jdbcType=BIGINT} and c.id &lt; #{sinceId}
   order by c.id desc limit 10
   </select>
@@ -775,7 +775,7 @@
   <select id="loadMyPublishUgcData" parameterType="Map" resultMap="ResultMapWithBLOBs">
     select
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
-    c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.authorization, c.create_time, c.status,c.content,c.rights
+    c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights
     from content c where c.status != 1 and c.uid =  #{uid,jdbcType=BIGINT} and c.type in (0,1,8,9) and c.id &lt; #{sinceId}
     order by c.id desc limit 10
   </select>
@@ -783,7 +783,7 @@
   <select id="loadMyPublishLiveData" parameterType="Map" resultMap="ResultMapWithBLOBs">
     select
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
-    c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.authorization, c.create_time, c.status,c.content,c.rights
+    c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights
     from content c ,topic t  where c.forward_cid=t.id and c.status != 1 and (c.uid =  #{uid,jdbcType=BIGINT} or FIND_IN_SET(#{uid,jdbcType=BIGINT},SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))) and c.type in (3,6) and t.long_time &lt; #{updateTime}
     order by t.long_time desc limit 10
   </select>
@@ -791,7 +791,7 @@
   <select id="loadMyPublishLiveData2" parameterType="Map" resultMap="ResultMapWithBLOBs">
     select
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
-    c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.authorization, c.create_time, c.status,c.content,c.rights
+    c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights
     from content c  where c.status != 1 and c.uid =  #{uid,jdbcType=BIGINT} and c.type in (3,6) and c.id &lt; #{sinceId}
     order by c.id desc limit 10
   </select>
@@ -799,7 +799,7 @@
   <select id="loadMyPublishDataByType" parameterType="com.me2me.content.dto.MyPublishDto" resultMap="ResultMapWithBLOBs">
     select
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
-    c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.authorization, c.create_time, c.status,c.content,c.rights
+    c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights
     from content c
     <if test="type == 3">
      left join topic t on c.forward_cid = t.id
@@ -886,7 +886,7 @@
   <select id="loadHottestContent" resultMap="ResultMapWithBLOBs">
     select
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
-    c.thumbnail, c.hot_value, c.like_count, c.review_count,c.person_count,c.favorite_count, c.read_count, c.authorization, c.create_time, c.status,c.content
+    c.thumbnail, c.hot_value, c.like_count, c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content
     from content c  right join high_quality_content h on c.id = h.cid  where c.id &lt; #{sinceId} and c.status != 1 and c.is_top = 0 and c.rights = 1
     order by c.id desc limit 10
   </select>
@@ -902,7 +902,7 @@
   <select id="loadNewestContent" resultMap="ResultMapWithBLOBs">
     select
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
-    c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.authorization, c.create_time, c.status,c.content,c.rights
+    c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights
     from content c  where c.id &lt; #{sinceId} and c.status != 1 and rights = 1 and (c.type = 0 or c.type = 3 or c.type = 9 or c.type = 8)
     order by c.id desc limit 10
   </select>
