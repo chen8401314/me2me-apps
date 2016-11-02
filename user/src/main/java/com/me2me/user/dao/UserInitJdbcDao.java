@@ -68,4 +68,9 @@ public class UserInitJdbcDao extends BaseJdbcDao {
         return super.query(sql);
     }
 
+    public List<Map<String, Object>> getLuckStatusOperateMobile() {
+        String sql = "select operate_mobile from luck_status ";
+        return super.query(sql);
+    }
+
 }

@@ -65,8 +65,8 @@ public class SmsServiceImpl implements SmsService {
     }
 
     @Override
-    public boolean sendMessage(String nickName ,String awardName ,String mobile) {
-        Boolean isTrue = YunXinSms.sendSms2(nickName ,awardName ,mobile);
+    public boolean sendMessage(String nickName ,String awardName ,String mobile ,String OperateMobile) {
+        Boolean isTrue = YunXinSms.sendSms2(nickName ,awardName ,mobile ,OperateMobile);
         if(isTrue){
             return true;
         }else{
