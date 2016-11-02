@@ -45,6 +45,9 @@ public class ActivityMybatisDao {
     @Autowired
     private LuckStatusMapper luckStatusMapper;
 
+    @Autowired
+    private LuckWinnersMapper luckWinnersMapper;
+
 
     public void saveActivity(ActivityWithBLOBs activity){
         activityMapper.insertSelective(activity);
@@ -329,4 +332,8 @@ public class ActivityMybatisDao {
         List<LuckStatus> luckStatuses = luckStatusMapper.selectByExample(example);
         return (luckStatuses.size()>0 && luckStatuses !=null)?luckStatuses.get(0):null;
     };
+
+    public void addWinners(LuckWinners winners){
+        luckWinnersMapper.insertSelective(winners);
+    }
 }

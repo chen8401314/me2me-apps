@@ -17,4 +17,16 @@ public class AwardRequest extends Request {
     @Setter
     private int activityName;
 
+    @Getter
+    @Setter
+    private String mobile;
+
+    @Getter
+    @Setter
+    private int awardId;
+
+    @Getter
+    @Setter
+    private String awardName;
+
 }

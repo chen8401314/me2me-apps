@@ -948,7 +948,7 @@ public class ActivityServiceImpl implements ActivityService {
         for (int i = 0,size = proSection.size(); i < size; i++) {
             if(randomPro >= proSection.get(i)
                     && randomPro < proSection.get(i + 1)){
-                log.info("award info randomPro: "+randomPro+" proSection.get(i): "+proSection.get(i)+" proSection.get(i + 1): "+proSection.get(i + 1)+" i: "+i);
+                log.info("award info randomPro: "+randomPro+" proSection.get(i): "+proSection.get(i)+" proSection.get(i + 1): "+proSection.get(i + 1)+" i: "+i ," 总数:"+proSection.get(proSection.size()-1));
                 return awards.get(i);
             }
         }
@@ -1050,8 +1050,19 @@ public class ActivityServiceImpl implements ActivityService {
 		}
 		return Response.success(dto);
 	}
-	
-	/**
+
+    @Override
+    public Response addWinners(int activityName, String mobile, int awardId, String awardName) {
+        LuckWinners winners = new LuckWinners();
+        winners.setActivityName(activityName);
+        winners.setMobile(mobile);
+        winners.setAwardId(awardId);
+        winners.setAwardName(awardName);
+        activityMybatisDao.addWinners(winners);
+        return Response.success();
+    }
+
+    /**
 	 * 本方法暂时使用，这个抽奖活动名字以后肯定是用一张表来存储的，暂时先这样，下次有活动的时候再修改
 	 * @param i
 	 * @return

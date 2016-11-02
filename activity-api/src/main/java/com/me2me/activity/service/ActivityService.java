@@ -65,4 +65,6 @@ public interface ActivityService {
     Response getAwardStatus(int activityName);
     
     Response getWinners(int activityName);
+
+    Response addWinners(int activityName ,String mobile ,int awardId ,String awardName);
 }

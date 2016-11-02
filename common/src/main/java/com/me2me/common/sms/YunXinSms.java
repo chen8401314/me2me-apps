@@ -32,7 +32,7 @@ public class YunXinSms {
     private static final String VERIFYCODE_URL = "https://api.netease.im/sms/verifycode.action";
     private static final String SENDCODE_URL="https://api.netease.im/sms/sendcode.action";
     private static final String SENDTEMPLATE_URL="https://api.netease.im/sms/sendtemplate.action";
-    private static final String SENDTEMPLATE_CODE="3029286";
+    private static final String SENDTEMPLATE_CODE="3032367";
 
     /**
      * 设置请求头
