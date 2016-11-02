@@ -1,12 +1,11 @@
 package com.me2me.common.utils;
 
 import com.me2me.common.web.BaseEntity;
-import com.me2me.common.web.Request;
+
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.Random;
 
 /**
