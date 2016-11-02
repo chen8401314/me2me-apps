@@ -269,7 +269,7 @@ public class ContentServiceImpl implements ContentService {
                     int readCountDummy = content.getReadCountDummy();
                     Random random = new Random();
                     //取1-6的随机数每次添加
-                    int value = random.nextInt(6)+1;
+                    int value = random.nextInt(6);
                     int readDummy = readCountDummy+value;
                     content.setReadCountDummy(readDummy);
                     contentMybatisDao.updateContentById(content);
@@ -2520,4 +2520,10 @@ private void localJpush(long toUid){
         contentMybatisDao.clearData();
     }
 
+    public static void main(String[] args) {
+        Random random = new Random();
+        for(int i=0 ; i<9 ;i++){
+            System.out.println(random.nextInt(5)+2);
+        }
+    }
 }

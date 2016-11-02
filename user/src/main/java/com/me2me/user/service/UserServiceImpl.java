@@ -459,7 +459,7 @@ public class UserServiceImpl implements UserService {
         userProfile.setAvatar(modifyUserProfileDto.getAvatar());
         userProfile.setIntroduced(modifyUserProfileDto.getIntroduced());
         //设置为0不需要第三方登录检查昵称了 昵称唯一
-//        userProfile.setIsClientLogin(0);
+        userProfile.setIsClientLogin(0);
         //修改用户爱好
         if(!StringUtils.isEmpty(modifyUserProfileDto.getHobby())){
             ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();
@@ -1543,7 +1543,7 @@ public class UserServiceImpl implements UserService {
                     loginSuccessDto.setToken(userToken.getToken());
                     //h5先登录了 app未登录过 为首次登录 返回注册过了 但是值是1需要修改昵称
 //                    loginSuccessDto.setIsClientLogin(userProfile.getIsClientLogin());
-                    //openId没有unionId有的情况 肯定是h5微信登录的 所以要修改昵称 前台检测过传来的
+//                    openId没有unionId有的情况 肯定是h5微信登录过的 所以要修改昵称 前台检测过传来的
                     userProfile.setNickName(thirdPartSignUpDto.getNickName());
                     userMybatisDao.modifyUserProfile(userProfile);
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
@@ -1608,9 +1608,9 @@ public class UserServiceImpl implements UserService {
         userProfile.setGender(thirdPartSignUpDto.getGender());
         userProfile.setCreateTime(new Date());
         //第三方h5微信登录首次登录设置为1 下一次app登录的时候如果是1 app弹出修改昵称页面 0为不需要修改(默认为0)
-//        if(thirdPartSignUpDto.getH5type() ==1){
-//            userProfile.setIsClientLogin(1);
-//        }
+        if(thirdPartSignUpDto.getH5type() ==1){
+            userProfile.setIsClientLogin(1);
+        }
         if(thirdPartSignUpDto.getThirdPartOpenId().length() > 11) {
             String openId = thirdPartSignUpDto.getThirdPartOpenId();
             userProfile.setMobile(openId.substring(0,11));
@@ -1709,21 +1709,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response checkNameOpenId(UserNickNameDto userNickNameDto) {
-        if(userNickNameDto.getThirdPartType() == 2){//兼容新老版本 老版本是没有这个字段的 不会走这里
+        if(userNickNameDto.getThirdPartType() == 2){//兼容新老版本 老版本是没有这个字段的 不会走这里(只有微信会传unionId)
             if(!StringUtils.isEmpty(userNickNameDto.getOpenid()) && !StringUtils.isEmpty(userNickNameDto.getUnionId())){
                 ThirdPartUser thirdPartUserOpenId = userMybatisDao.checkOpenId(userNickNameDto.getOpenid());
                 ThirdPartUser thirdPartUserUnionId = userMybatisDao.checkUnionId(userNickNameDto.getUnionId());
-                if(thirdPartUserOpenId != null) {
+                if(thirdPartUserOpenId != null && thirdPartUserUnionId != null) {//同一用户
+                   UserProfile userProfile = userMybatisDao.getUserProfileByUid(thirdPartUserUnionId.getUid());
+                    if(userProfile.getIsClientLogin() == 1) {//h5登录过需要检查昵称
+                        UserProfile4H5Dto Dto = new UserProfile4H5Dto();
+                        Dto.setNickName(userProfile.getNickName());
+                        return Response.success(ResponseStatus.THIRDPARTUSER_EXISTS.status,ResponseStatus.THIRDPARTUSER_EXISTS.message,Dto);
+                    }
                     return Response.success(ResponseStatus.USER_EXISTS.status,ResponseStatus.USER_EXISTS.message);
-                }else if(thirdPartUserUnionId !=null){
+                }else if(thirdPartUserOpenId != null && thirdPartUserUnionId == null){//app老用户登陆过 返回注册过 h5没登陆过不需要检查 老用户检查过昵称的
+                    return Response.success(ResponseStatus.USER_EXISTS.status,ResponseStatus.USER_EXISTS.message);
+                }else if(thirdPartUserOpenId == null && thirdPartUserUnionId !=null){
                     UserProfile userProfile = userMybatisDao.getUserProfileByUid(thirdPartUserUnionId.getUid());
-                    UserProfile4H5Dto Dto = new UserProfile4H5Dto();
-                    Dto.setNickName(userProfile.getNickName());
-                    return Response.success(ResponseStatus.THIRDPARTUSER_EXISTS.status,ResponseStatus.THIRDPARTUSER_EXISTS.message,Dto);
-                }else{
-                    return Response.success(ResponseStatus.OPENID_DONT_EXISTS.status,ResponseStatus.OPENID_DONT_EXISTS.message);
+                    if(userProfile.getIsClientLogin() == 1) {//h5登录过需要检查昵称
+                        UserProfile4H5Dto Dto = new UserProfile4H5Dto();
+                        Dto.setNickName(userProfile.getNickName());
+                        return Response.success(ResponseStatus.THIRDPARTUSER_EXISTS.status,ResponseStatus.THIRDPARTUSER_EXISTS.message,Dto);
+                    }
+                    return Response.success(ResponseStatus.USER_EXISTS.status,ResponseStatus.USER_EXISTS.message);
+                }else {//都为空的情况下提示不存在 无该用户
+                    return Response.success(ResponseStatus.OPENID_DONT_EXISTS.status, ResponseStatus.OPENID_DONT_EXISTS.message);
                 }
-            }else{//以防出错没传openId和unionId报错
+            }
+            else{//以防出错没传openId和unionId报错
                 return Response.success(ResponseStatus.OPENID_DONT_EXISTS.status,ResponseStatus.OPENID_DONT_EXISTS.message);
             }
         }else if(!StringUtils.isEmpty(userNickNameDto.getOpenid())) {// qq weibo weixin 老版本
