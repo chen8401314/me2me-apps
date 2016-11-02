@@ -40,7 +40,7 @@
         <!--<table tableName="luck_act" domainObjectName="LuckAct"/>-->
         <!--<table tableName="luck_prize" domainObjectName="LuckPrize"/>-->
         <!--<table tableName="luck_count" domainObjectName="LuckCount"/>-->
-        <table tableName="luck_status" domainObjectName="LuckStatus"/>
-
+        <!--<table tableName="luck_status" domainObjectName="LuckStatus"/>-->
+        <!--<table tableName="luck_winners" domainObjectName="LuckWinners"/>-->
     </context>
 </generatorConfiguration>

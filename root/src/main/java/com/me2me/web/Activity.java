@@ -104,4 +104,13 @@ public class Activity {
         return activityService.getAwardStatus(request.getActivityName());
     }
 
+    /**
+     * 记录中奖用户信息(供h5使用)
+     * @return
+     */
+//    @ResponseBody
+//    @RequestMapping(value = "/addWinners",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+//    public Response addWinners(AwardRequest request){
+//        return activityService.getAwardStatus(request.getActivityName());
+//    }
 }
