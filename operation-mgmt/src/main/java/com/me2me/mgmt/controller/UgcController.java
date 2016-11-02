@@ -13,6 +13,7 @@ import com.me2me.content.dto.EditorContentDto;
 import com.me2me.content.dto.ShowContentDto;
 import com.me2me.content.service.ContentService;
 import com.me2me.mgmt.request.KeywordPageRequest;
+import com.me2me.mgmt.syslog.SystemControllerLog;
 
 @Controller
 @RequestMapping("/ugc")
@@ -23,6 +24,7 @@ public class UgcController {
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value="/query")
+	@SystemControllerLog(description = "UGC列表查询")
     public ModelAndView query(KeywordPageRequest request){
 		ModelAndView view = new ModelAndView("article/ugcList");
 		EditorContentDto editorContentDto = new EditorContentDto();
@@ -43,6 +45,7 @@ public class UgcController {
 	}
 	
 	@RequestMapping(value="/option/hot")
+	@SystemControllerLog(description = "UGC置热或取消置热操作")
 	public ModelAndView optionHot(HttpServletRequest req){
 		int action = Integer.valueOf(req.getParameter("a"));
     	long ugcId = Long.valueOf(req.getParameter("i"));
@@ -54,6 +57,7 @@ public class UgcController {
 	}
 	
 	@RequestMapping(value="/option/top")
+	@SystemControllerLog(description = "UGC置顶或取消置顶操作")
 	public ModelAndView optionTop(HttpServletRequest req){
 		int action = Integer.valueOf(req.getParameter("a"));
     	long ugcId = Long.valueOf(req.getParameter("i"));

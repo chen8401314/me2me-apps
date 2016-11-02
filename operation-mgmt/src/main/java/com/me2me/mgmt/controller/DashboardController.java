@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.me2me.common.web.Response;
 import com.me2me.mgmt.Utils.DateUtil;
 import com.me2me.mgmt.request.ActiveStatDTO;
+import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.monitor.dto.LoadReportDto;
 import com.me2me.monitor.dto.MonitorReportDto;
 import com.me2me.monitor.service.MonitorService;
@@ -26,6 +27,7 @@ public class DashboardController {
 
     @SuppressWarnings("rawtypes")
 	@RequestMapping("")
+    @SystemControllerLog(description = "用户活跃度查询")
     public ModelAndView dashboard(){
     	ActiveStatDTO dto = new ActiveStatDTO();
     	
