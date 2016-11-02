@@ -35,6 +35,24 @@ String sub = request.getParameter("s");
                     <li <%if("3_3".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/stat/king/query">国王统计管理</a></li>
                 </ul>
             </li>
+            <li class="sub-menu">
+                <a href="javascript:;" <%if("4".equals(tab)){ %>class="active"<%} %>>
+                    <i class="fa fa-bar-chart-o"></i>
+                    <span>抽奖活动管理</span>
+                </a>
+                <ul class="sub">
+                    <li <%if("4_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/lottery/winnerQuery">获奖信息查询</a></li>
+                </ul>
+            </li>
+            <li class="sub-menu">
+                <a href="javascript:;" <%if("5".equals(tab)){ %>class="active"<%} %>>
+                    <i class="fa fa-bar-chart-o"></i>
+                    <span>APP用户管理</span>
+                </a>
+                <ul class="sub">
+                    <li <%if("5_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appuser/query">用户管理</a></li>
+                </ul>
+            </li>
 
         </ul>
         <!-- sidebar menu end-->

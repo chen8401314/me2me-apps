@@ -116,8 +116,8 @@
                                         </generatorConfiguration>
                                     </generatorConfigurations>
                                     <jvmSettings>
-                                        <initialMemorySize>1024M</initialMemorySize>
-                                        <maxMemorySize>1024M</maxMemorySize>
+                                        <initialMemorySize>512M</initialMemorySize>
+                                        <maxMemorySize>512M</maxMemorySize>
                                         <!--                            <systemProperties>
                                                                             <systemProperty>java.security.policy=conf/policy.all</systemProperty>
                                                                             <systemProperty>com.sun.management.jmxremote</systemProperty>

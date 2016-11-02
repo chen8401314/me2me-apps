@@ -18,7 +18,7 @@ public class MgmtWebRunner {
         server.setThreadPool(boundedThreadPool);
 
         Connector connector = new SelectChannelConnector();
-        connector.setPort(20000);
+        connector.setPort(8080);
         server.addConnector(connector);
 
         WebAppContext context = new WebAppContext("src/main/webapp", "");

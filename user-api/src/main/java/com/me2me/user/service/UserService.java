@@ -237,5 +237,15 @@ public interface UserService {
 
     List<UserProfile> getUserProfilesByUids(List<Long> uids);
 
+    Response searchPageByNickNameAndvLv(String nickName, String mobile, int vLv, int page, int pageSize);
+    
+    /**
+     * 操作大V
+     * @param action	1：上大V； 其他：取消大V
+     * @param uid		待操作的用户UID
+     * @return
+     */
+    Response optionV(int action, long uid);
+
     Response gag(GagDto dto);
 }
