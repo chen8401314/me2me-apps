@@ -948,7 +948,7 @@ public class ActivityServiceImpl implements ActivityService {
         for (int i = 0,size = proSection.size(); i < size; i++) {
             if(randomPro >= proSection.get(i)
                     && randomPro < proSection.get(i + 1)){
-                log.info("award info randomPro: "+randomPro+" proSection.get(i): "+proSection.get(i)+" proSection.get(i + 1): "+proSection.get(i + 1)+" i: "+i ," 总数:"+proSection.get(proSection.size()-1));
+                log.info("award info randomPro: "+randomPro+" proSection.get(i): "+proSection.get(i)+" i: "+i+" 总数:"+proSection.get(proSection.size()-1));
                 return awards.get(i);
             }
         }

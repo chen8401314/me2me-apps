@@ -166,7 +166,7 @@ public class Contents extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getUserData",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getUserData(UserInfoRequest request){
-        return contentService.getUserData(request.getCustomerId(),request.getUid());
+        return contentService.UserData(request.getCustomerId(),request.getUid());
     }
 
     /**
@@ -177,7 +177,7 @@ public class Contents extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getUserData2",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getUserData2(UserInfoRequest request){
-        return contentService.getUserData2(request.getCustomerId(),request.getUid());
+        return contentService.UserData2(request.getCustomerId(),request.getUid());
     }
 
     /**
@@ -191,7 +191,7 @@ public class Contents extends BaseController {
         if(request.getSinceId()==-1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.getSelectedData(request.getSinceId(),request.getUid());
+        return contentService.SelectedData(request.getSinceId(),request.getUid());
     }
 
     /**
@@ -229,7 +229,7 @@ public class Contents extends BaseController {
     @ResponseBody
     public Response activities(ActivitiesRequest request){
 
-        return contentService.getActivities(request.getSinceId(),request.getUid());
+        return contentService.Activities(request.getSinceId(),request.getUid());
     }
 
     /**

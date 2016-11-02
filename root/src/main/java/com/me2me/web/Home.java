@@ -92,7 +92,7 @@ public class Home extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.getNewest(request.getSinceId(),request.getUid());
+        return contentService.Newest(request.getSinceId(),request.getUid());
     }
 
     /**
@@ -106,7 +106,7 @@ public class Home extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.getAttention(request.getSinceId(),request.getUid());
+        return contentService.Attention(request.getSinceId(),request.getUid());
     }
 
 

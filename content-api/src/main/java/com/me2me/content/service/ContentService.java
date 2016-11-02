@@ -88,9 +88,9 @@ public interface ContentService{
      * @param sourceUid
      * @return
      */
-    Response getUserData(long targetUid ,long sourceUid);
+    Response UserData(long targetUid ,long sourceUid);
 
-    Response getUserData2(long targetUid ,long sourceUid);
+    Response UserData2(long targetUid ,long sourceUid);
 
     /**
      * 小编发布接口
@@ -104,7 +104,7 @@ public interface ContentService{
      * @param sinceId
      * @return
      */
-    Response getSelectedData(int sinceId,long uid);
+    Response SelectedData(int sinceId,long uid);
 
     /**
      * 精选首页
@@ -123,13 +123,13 @@ public interface ContentService{
 
     Response showContents(EditorContentDto editorContentDto);
 
-    Response getActivities(int sinceId,long uid);
+    Response Activities(int sinceId,long uid);
 
     Response getHottest(int sinceId,long uid);
 
-    Response getNewest(int sinceId,long uid);
+    Response Newest(int sinceId,long uid);
 
-    Response getAttention(int sinceId,long uid);
+    Response Attention(int sinceId,long uid);
 
     Response createReview(ReviewDto reviewDto);
 

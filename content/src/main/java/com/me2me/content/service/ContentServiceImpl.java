@@ -258,7 +258,23 @@ public class ContentServiceImpl implements ContentService {
                 int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
                 log.info(" get imageCounts success");
                 squareDataElement.setImageCount(imageCounts);
-                squareDataElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
+
+                if(content.getReadCountDummy() == 0){
+                    //为了保留乘以5.3后的数据
+                    int readCount = (int)Math.rint(content.getReadCount()*5.3);
+                    content.setReadCountDummy(readCount);
+                    contentMybatisDao.updateContentById(content);
+                    squareDataElement.setReadCount(readCount);
+                }else {
+                    int readCountDummy = content.getReadCountDummy();
+                    Random random = new Random();
+                    //取1-6的随机数每次添加
+                    int value = random.nextInt(6)+1;
+                    int readDummy = readCountDummy+value;
+                    content.setReadCountDummy(readDummy);
+                    contentMybatisDao.updateContentById(content);
+                    squareDataElement.setReadCount(readDummy);
+                }
                 squareDataDto.getResults().add(squareDataElement);
         }
     }
@@ -929,7 +945,24 @@ private void localJpush(long toUid){
             contentElement.setContentType(content.getContentType());
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
-            contentElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
+
+            if(content.getReadCountDummy() == 0){
+                //为了保留乘以5.3后的数据
+                int readCount = (int)Math.rint(content.getReadCount()*5.3);
+                content.setReadCountDummy(readCount);
+                contentMybatisDao.updateContentById(content);
+                contentElement.setReadCount(readCount);
+            }else {
+                int readCountDummy = content.getReadCountDummy();
+                Random random = new Random();
+                //取1-6的随机数每次添加
+                int value = random.nextInt(6)+1;
+                int readDummy = readCountDummy+value;
+                content.setReadCountDummy(readDummy);
+                contentMybatisDao.updateContentById(content);
+                contentElement.setReadCount(readDummy);
+            }
+
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
             contentElement.setUid(content.getUid());
@@ -1028,7 +1061,24 @@ private void localJpush(long toUid){
         contentDetailDto.setContentType(content.getContentType());
         contentDetailDto.setTitle(content.getTitle());
         contentDetailDto.setIsLike(isLike(content.getId(),uid));
-        contentDetailDto.setReadCount((int)Math.rint(content.getReadCount()*5.3));
+
+        if(content.getReadCountDummy() == 0){
+            //为了保留乘以5.3后的数据
+            int readCount = (int)Math.rint(content.getReadCount()*5.3);
+            content.setReadCountDummy(readCount);
+            contentMybatisDao.updateContentById(content);
+            contentDetailDto.setReadCount(readCount);
+        }else {
+            int readCountDummy = content.getReadCountDummy();
+            Random random = new Random();
+            //取1-6的随机数每次添加
+            int value = random.nextInt(6)+1;
+            int readDummy = readCountDummy+value;
+            content.setReadCountDummy(readDummy);
+            contentMybatisDao.updateContentById(content);
+            contentDetailDto.setReadCount(readDummy);
+        }
+
         contentDetailDto.setRights(content.getRights());
 
         String cover = content.getConverImage();
@@ -1224,7 +1274,7 @@ private void localJpush(long toUid){
     }
 
     @Override
-    public Response getUserData(long targetUid,long sourceUid){
+    public Response UserData(long targetUid,long sourceUid){
         log.info("getUserData start ...targetUid = " + targetUid + " sourceUid = "+ sourceUid);
         UserProfile userProfile = userService.getUserProfileByUid(targetUid);
         log.info("get userData success ");
@@ -1255,7 +1305,24 @@ private void localJpush(long toUid){
             contentElement.setContentType(content.getContentType());
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
-            contentElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
+
+            if(content.getReadCountDummy() == 0){
+                //为了保留乘以5.3后的数据
+                int readCount = (int)Math.rint(content.getReadCount()*5.3);
+                content.setReadCountDummy(readCount);
+                contentMybatisDao.updateContentById(content);
+                contentElement.setReadCount(readCount);
+            }else {
+                int readCountDummy = content.getReadCountDummy();
+                Random random = new Random();
+                //取1-6的随机数每次添加
+                int value = random.nextInt(6)+1;
+                int readDummy = readCountDummy+value;
+                content.setReadCountDummy(readDummy);
+                contentMybatisDao.updateContentById(content);
+                contentElement.setReadCount(readDummy);
+            }
+
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
             String cover =  content.getConverImage();
@@ -1314,7 +1381,7 @@ private void localJpush(long toUid){
     }
 
     @Override
-    public Response getUserData2(long targetUid,long sourceUid){
+    public Response UserData2(long targetUid,long sourceUid){
         UserInfoDto2 userInfoDto = new UserInfoDto2();
         log.info("getUserData2 start ...targetUid = " + targetUid + " sourceUid = "+ sourceUid);
         UserProfile userProfile = userService.getUserProfileByUid(targetUid);
@@ -1376,7 +1443,24 @@ private void localJpush(long toUid){
             contentElement.setContentType(content.getContentType());
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
-            contentElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
+
+            if(content.getReadCountDummy() == 0){
+                //为了保留乘以5.3后的数据
+                int readCount = (int)Math.rint(content.getReadCount()*5.3);
+                content.setReadCountDummy(readCount);
+                contentMybatisDao.updateContentById(content);
+                contentElement.setReadCount(readCount);
+            }else {
+                int readCountDummy = content.getReadCountDummy();
+                Random random = new Random();
+                //取1-6的随机数每次添加
+                int value = random.nextInt(6)+1;
+                int readDummy = readCountDummy+value;
+                content.setReadCountDummy(readDummy);
+                contentMybatisDao.updateContentById(content);
+                contentElement.setReadCount(readDummy);
+            }
+
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
             contentElement.setUid(content.getUid());
@@ -1513,7 +1597,7 @@ private void localJpush(long toUid){
     }
 
     @Override
-    public Response getSelectedData(int sinceId,long uid) {
+    public Response SelectedData(int sinceId,long uid) {
         SquareDataDto squareDataDto = new SquareDataDto();
         //小编精选
         List<Content> contentList = contentMybatisDao.loadSelectedData(sinceId);
@@ -1556,7 +1640,7 @@ private void localJpush(long toUid){
     }
 
     @Override
-    public Response getActivities(int sinceId,long uid) {
+    public Response Activities(int sinceId,long uid) {
         SquareDataDto squareDataDto = new SquareDataDto();
         List<Content> list = contentMybatisDao.loadSelectedData(sinceId);
         buildDatas(squareDataDto, list, uid);
@@ -1915,7 +1999,7 @@ private void localJpush(long toUid){
      * @return
      */
     @Override
-    public Response getNewest(int sinceId, long uid) {
+    public Response Newest(int sinceId, long uid) {
         log.info("getNewest start ...");
         ShowNewestDto showNewestDto = new ShowNewestDto();
         List<Content> newestList = contentMybatisDao.getNewest(sinceId);
@@ -1942,7 +2026,24 @@ private void localJpush(long toUid){
             contentElement.setIsLike(isLike(content.getId(),uid));
             String cover = content.getConverImage();
             contentElement.setReviewCount(content.getReviewCount());
-            contentElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
+
+            if(content.getReadCountDummy() == 0){
+                //为了保留乘以5.3后的数据
+                int readCount = (int)Math.rint(content.getReadCount()*5.3);
+                content.setReadCountDummy(readCount);
+                contentMybatisDao.updateContentById(content);
+                contentElement.setReadCount(readCount);
+            }else {
+                int readCountDummy = content.getReadCountDummy();
+                Random random = new Random();
+                //取1-6的随机数每次添加
+                int value = random.nextInt(6)+1;
+                int readDummy = readCountDummy+value;
+                content.setReadCountDummy(readDummy);
+                contentMybatisDao.updateContentById(content);
+                contentElement.setReadCount(readDummy);
+            }
+
             contentElement.setRights(content.getRights());
             if(!StringUtils.isEmpty(cover)) {
                 if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
@@ -2004,7 +2105,7 @@ private void localJpush(long toUid){
     }
 
     //获取自己UGC和直播列表不加权限
-    private void getMyAttention(ShowAttentionDto showAttentionDto ,List<Content> contentList ,long uid){
+    private void MyAttention(ShowAttentionDto showAttentionDto ,List<Content> contentList ,long uid){
 
         for(Content content : contentList) {
             ShowAttentionDto.ContentElement contentElement = showAttentionDto.createElement();
@@ -2028,7 +2129,24 @@ private void localJpush(long toUid){
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setIsLike(isLike(content.getId(), uid));
             contentElement.setReviewCount(content.getReviewCount());
-            contentElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
+
+            if(content.getReadCountDummy() == 0){
+                //为了保留乘以5.3后的数据
+                int readCount = (int)Math.rint(content.getReadCount()*5.3);
+                content.setReadCountDummy(readCount);
+                contentMybatisDao.updateContentById(content);
+                contentElement.setReadCount(readCount);
+            }else {
+                int readCountDummy = content.getReadCountDummy();
+                Random random = new Random();
+                //取1-6的随机数每次添加
+                int value = random.nextInt(6)+1;
+                int readDummy = readCountDummy+value;
+                content.setReadCountDummy(readDummy);
+                contentMybatisDao.updateContentById(content);
+                contentElement.setReadCount(readDummy);
+            }
+
             String cover = content.getConverImage();
             if (!StringUtils.isEmpty(cover)) {
                 if (content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
@@ -2074,7 +2192,7 @@ private void localJpush(long toUid){
         }
     }
     @Override
-    public Response getAttention(int sinceId, long uid) {
+    public Response Attention(int sinceId, long uid) {
         log.info("current sinceId is : " + sinceId);
         log.info("getAttention start ...");
         ShowAttentionDto showAttentionDto = new ShowAttentionDto();
@@ -2110,7 +2228,24 @@ private void localJpush(long toUid){
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setIsLike(isLike(content.getId(),uid));
             contentElement.setReviewCount(content.getReviewCount());
-            contentElement.setReadCount((int)Math.rint(content.getReadCount()*5.3));
+
+            if(content.getReadCountDummy() == 0){
+                //为了保留乘以5.3后的数据
+                int readCount = (int)Math.rint(content.getReadCount()*5.3);
+                content.setReadCountDummy(readCount);
+                contentMybatisDao.updateContentById(content);
+                contentElement.setReadCount(readCount);
+            }else {
+                int readCountDummy = content.getReadCountDummy();
+                Random random = new Random();
+                //取1-6的随机数每次添加
+                int value = random.nextInt(6)+1;
+                int readDummy = readCountDummy+value;
+                content.setReadCountDummy(readDummy);
+                contentMybatisDao.updateContentById(content);
+                contentElement.setReadCount(readDummy);
+            }
+
             String cover =  content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
                 if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
