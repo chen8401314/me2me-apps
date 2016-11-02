@@ -25,6 +25,7 @@ import com.me2me.mgmt.manager.MgmtUserManager;
 import com.me2me.mgmt.request.CreatePgcRequest;
 import com.me2me.mgmt.request.EditPgcRequest;
 import com.me2me.mgmt.request.KeywordPageRequest;
+import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.plusnet.sso.api.vo.SSOUser;
 import com.plusnet.sso.client.utils.AuthTool;
 
@@ -43,6 +44,7 @@ public class PgcController {
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value="/query")
+	@SystemControllerLog(description = "PGC列表查询")
     public ModelAndView query(KeywordPageRequest request){
 		ModelAndView view = new ModelAndView("article/pgcList");
 		EditorContentDto editorContentDto = new EditorContentDto();
@@ -64,6 +66,7 @@ public class PgcController {
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value="/create", method=RequestMethod.POST)
+	@SystemControllerLog(description = "创建PGC")
     public ModelAndView create(CreatePgcRequest request, HttpServletRequest req){
 		ModelAndView view = null;
     	try{
@@ -124,6 +127,7 @@ public class PgcController {
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value="/find/{pid}")
+	@SystemControllerLog(description = "查看PGC详情")
 	public ModelAndView editInit(@PathVariable long pid){
 		ModelAndView view = new ModelAndView("article/pgcEdit");
 		
@@ -154,6 +158,7 @@ public class PgcController {
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value="/editSave", method=RequestMethod.POST)
+	@SystemControllerLog(description = "更新PGC")
     public ModelAndView editSave(EditPgcRequest request, HttpServletRequest req){
 		ModelAndView view = null;
     	try{
@@ -205,6 +210,7 @@ public class PgcController {
 	}
 	
 	@RequestMapping(value="/option/hot")
+	@SystemControllerLog(description = "PGC置热或取消置热操作")
 	public ModelAndView optionHot(HttpServletRequest req){
 		int action = Integer.valueOf(req.getParameter("a"));
     	long pgcId = Long.valueOf(req.getParameter("i"));
@@ -215,6 +221,7 @@ public class PgcController {
 	}
 	
 	@RequestMapping(value="/option/top")
+	@SystemControllerLog(description = "PGC置顶或取消置顶操作")
 	public ModelAndView optionTop(HttpServletRequest req){
 		int action = Integer.valueOf(req.getParameter("a"));
     	long pgcId = Long.valueOf(req.getParameter("i"));

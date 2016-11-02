@@ -22,6 +22,7 @@ import com.me2me.mgmt.Utils.DateUtil;
 import com.me2me.mgmt.request.DailyActiveDTO;
 import com.me2me.mgmt.request.KingStatDTO;
 import com.me2me.mgmt.request.PromoterDTO;
+import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.monitor.dto.LoadReportDto;
 import com.me2me.monitor.dto.MonitorReportDto;
 import com.me2me.monitor.service.MonitorService;
@@ -76,6 +77,7 @@ public class StatController {
 	}
 
 	@RequestMapping(value = "/dailyActive/query")
+	@SystemControllerLog(description = "日活统计查询")
 	public ModelAndView dailyActiveQuery(DailyActiveDTO daDTO) {
 		if (null == daDTO.getTxtStartDate()) {
 			daDTO.setTxtStartDate(DateUtil.date2string(new Date(), "yyyy-MM-dd"));
@@ -157,6 +159,7 @@ public class StatController {
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/promoter/query")
+	@SystemControllerLog(description = "推广统计查询")
 	public ModelAndView promoterQuery(PromoterDTO pDTO) {
 		Response resp = userService.getPromoter(null,pDTO.getTxtStartDate(),pDTO.getTxtEndDate());
 		if(null != resp && resp.getCode() == 200){
@@ -169,6 +172,7 @@ public class StatController {
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/king/query")
+	@SystemControllerLog(description = "王国统计查询")
 	public ModelAndView kingQuery(KingStatDTO kDTO) {
 		if (null == kDTO.getTxtStartDate()) {
 			kDTO.setTxtStartDate(DateUtil.date2string(new Date(), "yyyy-MM-dd"));

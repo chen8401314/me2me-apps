@@ -21,6 +21,7 @@ import com.me2me.mgmt.manager.MgmtUserManager;
 import com.me2me.mgmt.request.CreateActivityNoticeRequest;
 import com.me2me.mgmt.request.CreateActivityRequest;
 import com.me2me.mgmt.request.KeywordPageRequest;
+import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.plusnet.sso.api.vo.SSOUser;
 import com.plusnet.sso.client.utils.AuthTool;
 
@@ -53,6 +54,7 @@ public class ActivityController {
 
     @SuppressWarnings("rawtypes")
 	@RequestMapping(value="/query")
+    @SystemControllerLog(description = "活动列表查询")
     public ModelAndView query(KeywordPageRequest request){
     	ModelAndView view = new ModelAndView("article/activityList");
     	Response resp = activityService.showActivity(1, 100, request.getKeyword());
@@ -94,6 +96,7 @@ public class ActivityController {
     
     @SuppressWarnings("rawtypes")
 	@RequestMapping(value="/create", method=RequestMethod.POST)
+    @SystemControllerLog(description = "活动创建")
     public ModelAndView create(CreateActivityRequest request, HttpServletRequest req){
     	ModelAndView view = null;
     	try{
@@ -146,6 +149,7 @@ public class ActivityController {
     }
     
     @RequestMapping(value="/option")
+    @SystemControllerLog(description = "活动上下架操作")
     public ModelAndView option(HttpServletRequest req){
     	int optionAction = 2;
     	int action = Integer.valueOf(req.getParameter("a"));
@@ -156,6 +160,7 @@ public class ActivityController {
     }
     
 	@RequestMapping(value="/notice/create", method=RequestMethod.POST)
+	@SystemControllerLog(description = "添加活动公告")
     public ModelAndView createNotice(CreateActivityNoticeRequest request, HttpServletRequest req){
 		ModelAndView view = null;
 		try{

@@ -12,6 +12,8 @@
     
   <!-- auto register Processor -->
 	<context:annotation-config/>
+	
+	<aop:aspectj-autoproxy/>
 
 	<bean id="propertyConfigurer"
 		class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
