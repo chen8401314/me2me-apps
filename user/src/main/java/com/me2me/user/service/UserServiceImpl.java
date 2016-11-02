@@ -52,6 +52,12 @@ public class UserServiceImpl implements UserService {
     private OldUserJdbcDao oldUserJdbcDao;
 
     @Autowired
+    private LiveForUserJdbcDao liveForUserJdbcDao;
+
+    @Autowired
+    private UgcForUserJdbcDao ugcForUserJdbcDao;
+
+    @Autowired
     private SmsService smsService;
 
     @Autowired
@@ -459,7 +465,7 @@ public class UserServiceImpl implements UserService {
         userProfile.setAvatar(modifyUserProfileDto.getAvatar());
         userProfile.setIntroduced(modifyUserProfileDto.getIntroduced());
         //设置为0不需要第三方登录检查昵称了 昵称唯一
-        userProfile.setIsClientLogin(0);
+//        userProfile.setIsClientLogin(0);
         //修改用户爱好
         if(!StringUtils.isEmpty(modifyUserProfileDto.getHobby())){
             ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();
@@ -1543,7 +1549,7 @@ public class UserServiceImpl implements UserService {
                     loginSuccessDto.setToken(userToken.getToken());
                     //h5先登录了 app未登录过 为首次登录 返回注册过了 但是值是1需要修改昵称
 //                    loginSuccessDto.setIsClientLogin(userProfile.getIsClientLogin());
-//                    openId没有unionId有的情况 肯定是h5微信登录过的 所以要修改昵称 前台检测过传来的
+                    //openId没有unionId有的情况 肯定是h5微信登录的 所以要修改昵称 前台检测过传来的
                     userProfile.setNickName(thirdPartSignUpDto.getNickName());
                     userMybatisDao.modifyUserProfile(userProfile);
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
@@ -1835,53 +1841,89 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response gag(GagDto dto) {
-        UserGag gag = (UserGag) CommonUtils.copyDto(dto,new UserGag());
+        log.info("gag start ... request:"+JSON.toJSONString(dto));
+        UserGag gag = (UserGag) CommonUtils.copyDto(dto, new UserGag());
+        switch (dto.getType()) {
+            case 0:
+                UserProfile profile = userMybatisDao.getUserProfileByUid(dto.getUid());
+                if (profile.getIsPromoter() != 1) {
+                    return Response.failure(ResponseStatus.GAG_IS_NOT_ADMIN.status, ResponseStatus.GAG_IS_NOT_ADMIN.message);
+                }
+                break;
+            case 1:
+                long king = liveForUserJdbcDao.getKingFromTopic(dto.getCid());
+                if (dto.getUid() != king) {
+                    return Response.failure(ResponseStatus.GAG_IS_NOT_KING.status, ResponseStatus.GAG_IS_NOT_KING.message);
+                }
+                break;
+            case 2:
+                long author = ugcForUserJdbcDao.getAuthorFromUgc(dto.getCid());
+                if(dto.getUid()!=author){
+                    return Response.failure(ResponseStatus.GAG_IS_NOT_AUTHOR.status,ResponseStatus.GAG_IS_NOT_AUTHOR.message);
+                }
+                break;
+        }
+        //action==0禁言，1解除禁言
+        if (dto.getAction() == 0) {
+            UserGag userGag = userMybatisDao.getUserGag(gag);
+            if(userGag!=null){
+                return Response.failure(ResponseStatus.USER_HAS_GAGGED.status,ResponseStatus.USER_HAS_GAGGED.message);
+            }
+            userMybatisDao.createGag(gag);
+        } else {
+            userMybatisDao.deleteGag(gag);
+        }
 
-        userMybatisDao.createGag(gag);
-
+        log.info("gag end ...");
         return Response.success();
     }
-    
+
+    @Override
+    public boolean checkGag(UserGag gag) {
+
+        return userMybatisDao.checkGag(gag);
+    }
+
     @SuppressWarnings("rawtypes")
-	@Override
-	public Response searchPageByNickNameAndvLv(String nickName, String mobile, int vLv,
-			int page, int pageSize) {
-		List<UserProfile> list =  userMybatisDao.searchByNickNameAndvLv(nickName, mobile, vLv, page, pageSize);
-		SearchUserProfileDto dto = new SearchUserProfileDto();
-		dto.setTotalRecord(userMybatisDao.totalByNickNameAndvLv(nickName, mobile, vLv));
-		int totalPage = (dto.getTotalRecord() + pageSize -1) / pageSize;
-		dto.setTotalPage(totalPage);
-		for(UserProfile u : list){
-			SearchUserProfileDto.UserProfileElement e = dto.createUserProfileElement();
-			e.setAvatar(Constant.QINIU_DOMAIN + "/" +u.getAvatar());
-			e.setCreateTime(u.getCreateTime());
-			e.setGender(u.getGender());
-			e.setMobile(u.getMobile());
-			e.setNickName(u.getNickName());
-			e.setThirdPartBind(u.getThirdPartBind());
-			e.setUid(u.getUid());
-			e.setVlv(u.getvLv());
-			e.setBirthday(u.getBirthday());
-			dto.getResult().add(e);
+    @Override
+    public Response searchPageByNickNameAndvLv(String nickName, String mobile, int vLv,
+                                               int page, int pageSize) {
+        List<UserProfile> list = userMybatisDao.searchByNickNameAndvLv(nickName, mobile, vLv, page, pageSize);
+        SearchUserProfileDto dto = new SearchUserProfileDto();
+        dto.setTotalRecord(userMybatisDao.totalByNickNameAndvLv(nickName, mobile, vLv));
+        int totalPage = (dto.getTotalRecord() + pageSize - 1) / pageSize;
+        dto.setTotalPage(totalPage);
+        for (UserProfile u : list) {
+            SearchUserProfileDto.UserProfileElement e = dto.createUserProfileElement();
+            e.setAvatar(Constant.QINIU_DOMAIN + "/" + u.getAvatar());
+            e.setCreateTime(u.getCreateTime());
+            e.setGender(u.getGender());
+            e.setMobile(u.getMobile());
+            e.setNickName(u.getNickName());
+            e.setThirdPartBind(u.getThirdPartBind());
+            e.setUid(u.getUid());
+            e.setVlv(u.getvLv());
+            e.setBirthday(u.getBirthday());
+            dto.getResult().add(e);
         }
         return Response.success(dto);
-	}
+    }
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Response optionV(int action, long uid) {
-		UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
-		if(null != userProfile){
-			if(action == 1){//上大V
-				userProfile.setvLv(Specification.VipLevel.isV.index);
-			}else{
-				userProfile.setvLv(Specification.VipLevel.noV.index);
-			}
-			userMybatisDao.modifyUserProfile(userProfile);
-			return Response.success();
-		}else{
-			return Response.failure("user is not exists");
-		}
-	}
+    @SuppressWarnings("rawtypes")
+    @Override
+    public Response optionV(int action, long uid) {
+        UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+        if (null != userProfile) {
+            if (action == 1) {//上大V
+                userProfile.setvLv(Specification.VipLevel.isV.index);
+            } else {
+                userProfile.setvLv(Specification.VipLevel.noV.index);
+            }
+            userMybatisDao.modifyUserProfile(userProfile);
+            return Response.success();
+        } else {
+            return Response.failure("user is not exists");
+        }
+    }
 
 }

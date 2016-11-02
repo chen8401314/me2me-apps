@@ -1395,13 +1395,7 @@ public class LiveServiceImpl implements LiveService {
 
         int nums = totalRecords-updateRecords;
         int startPageNo = nums/offset+1;
-        if(nums%offset>0) {
-            updateRecords -= updateRecords % offset;
-        }
-        int endPageNo = startPageNo+(updateRecords%offset==0?updateRecords/offset:updateRecords/offset+1);
-
         liveUpdateDto.setStartPageNo(startPageNo);
-        liveUpdateDto.setEndPageNo(endPageNo>totalPages?totalPages:endPageNo);
 
         log.info("get live update start ...");
         return    Response.success(ResponseStatus.GET_LIVE_UPDATE_SUCCESS.status, ResponseStatus.GET_LIVE_UPDATE_SUCCESS.message, liveUpdateDto);

@@ -203,6 +203,8 @@ public enum  ResponseStatus {
 
 
 
+
+
     USER_PASSWORD_ERROR("用户密码错误","user password error",5000),
 
     USER_NOT_EXISTS("该用户不存在","user not exists",5001),
@@ -280,6 +282,14 @@ public enum  ResponseStatus {
     EDIT_TOPIC_FRAGMENT_FAILURE("编辑王国发言内容失败","edit topic fragment failure",50038),
 
     AWARD_MESSAGE_FAILURE("中奖短信发送失败","award message failure",50040),
+
+    GAG_IS_NOT_ADMIN("只有管理可以进行全局禁言","only admin can gag  all",50041),
+
+    GAG_IS_NOT_KING("只有国王可以王国禁言","only king can gag  in kingdom",50042),
+
+    GAG_IS_NOT_AUTHOR("只有作者可以UGC禁言","only author can gag  in ugc",50043),
+
+    USER_HAS_GAGGED("该用户已被禁言","user has gagged",50044),
 
 
 

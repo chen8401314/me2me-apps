@@ -8,6 +8,8 @@ import lombok.Data;
  */
 @Data
 public class GagDto implements BaseEntity{
+    private  int action;
+
     private long uid;
 
     private long targetUid;

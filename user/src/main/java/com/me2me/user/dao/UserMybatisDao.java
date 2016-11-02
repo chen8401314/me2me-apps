@@ -13,6 +13,7 @@ import org.springframework.util.StringUtils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -766,5 +767,48 @@ public class UserMybatisDao {
 
     public void createGag(UserGag gag) {
         userGagMapper.insert(gag);
+    }
+
+    public boolean checkGag(UserGag gag) {
+
+        return getUserGag(gag)!=null;
+    }
+
+    public void deleteGag(UserGag gag) {
+        UserGagExample example = new UserGagExample();
+        UserGagExample.Criteria criteria = example.createCriteria();
+        criteria.andTargetUidEqualTo(gag.getTargetUid());
+        criteria.andTypeEqualTo(gag.getType());
+        criteria.andCidEqualTo(gag.getCid());
+        criteria.andGagLevelEqualTo(gag.getGagLevel());
+
+        userGagMapper.deleteByExample(example);
+    }
+
+    public UserGag getUserGag(UserGag gag) {
+        UserGagExample example = new UserGagExample();
+        UserGagExample.Criteria criteria = example.createCriteria();
+        criteria.andTargetUidEqualTo(gag.getTargetUid());
+        List<Integer> intList = new ArrayList<>();
+        intList.add(gag.getType());
+        if(gag.getType()>0){
+            intList.add(0);
+        }
+        criteria.andTypeIn(intList);
+        List<Long> longList = new ArrayList<>();
+        longList.add(gag.getCid());
+        if(gag.getCid()>0){
+            longList.add(0L);
+        }
+        criteria.andCidIn(longList);
+        intList = new ArrayList<>();
+        intList.add(gag.getGagLevel());
+        if(gag.getGagLevel()>0){
+            intList.add(0);
+        }
+        criteria.andGagLevelIn(intList);
+
+        List<UserGag> list = userGagMapper.selectByExample(example);
+        return list!=null&&list.size()>0?list.get(0):null;
     }
 }
