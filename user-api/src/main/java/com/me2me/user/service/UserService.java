@@ -251,4 +251,8 @@ public interface UserService {
 
 
     boolean checkGag(UserGag gag);
+
+    SystemConfig getSystemConfig();
+
+
 }

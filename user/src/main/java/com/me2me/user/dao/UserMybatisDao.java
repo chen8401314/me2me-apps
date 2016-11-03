@@ -729,7 +729,6 @@ public class UserMybatisDao {
 
     public SystemConfig getSystemConfig() {
         SystemConfigExample example = new SystemConfigExample();
-
         List<SystemConfig> systemConfigs =systemConfigMapper.selectByExample(example);
         return systemConfigs.size()>0?systemConfigs.get(0):null;
     }

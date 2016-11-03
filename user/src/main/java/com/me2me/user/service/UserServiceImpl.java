@@ -1884,6 +1884,12 @@ public class UserServiceImpl implements UserService {
         return userMybatisDao.checkGag(gag);
     }
 
+    @Override
+    public SystemConfig getSystemConfig() {
+       SystemConfig systemConfig =  userMybatisDao.getSystemConfig();
+        return systemConfig;
+    }
+
     @SuppressWarnings("rawtypes")
     @Override
     public Response searchPageByNickNameAndvLv(String nickName, String mobile, int vLv,
