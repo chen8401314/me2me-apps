@@ -37,7 +37,7 @@ String sub = request.getParameter("s");
             </li>
             <li class="sub-menu">
                 <a href="javascript:;" <%if("4".equals(tab)){ %>class="active"<%} %>>
-                    <i class="fa fa-bar-chart-o"></i>
+                    <i class="fa fa-gift"></i>
                     <span>抽奖活动管理</span>
                 </a>
                 <ul class="sub">
@@ -46,14 +46,22 @@ String sub = request.getParameter("s");
             </li>
             <li class="sub-menu">
                 <a href="javascript:;" <%if("5".equals(tab)){ %>class="active"<%} %>>
-                    <i class="fa fa-bar-chart-o"></i>
+                    <i class="fa fa-users"></i>
                     <span>APP用户管理</span>
                 </a>
                 <ul class="sub">
                     <li <%if("5_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appuser/query">用户管理</a></li>
                 </ul>
             </li>
-
+			<li class="sub-menu">
+                <a href="javascript:;" <%if("6".equals(tab)){ %>class="active"<%} %>>
+                    <i class="fa fa-sitemap"></i>
+                    <span>系统管理</span>
+                </a>
+                <ul class="sub">
+                    <li <%if("6_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/system/log/query">系统日志查询</a></li>
+                </ul>
+            </li>
         </ul>
         <!-- sidebar menu end-->
     </div>
