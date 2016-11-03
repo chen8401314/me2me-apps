@@ -20,4 +20,17 @@
     insert into t_mgmt_syslog (description, request_path, method, type, ip, user_id, user_name, create_time)
     values (#{description,jdbcType=VARCHAR}, #{requestPath,jdbcType=VARCHAR}, #{method,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, #{ip,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP})
   </insert>
+  
+  <select id="queryPageByDescAndTime" resultMap="BaseResultMap" >
+    SELECT
+      <include refid="Base_Column_List" />
+    FROM t_mgmt_syslog 
+    <![CDATA[
+    WHERE create_time > #{startTime,jdbcType=TIMESTAMP} and create_time < #{endTime,jdbcType=TIMESTAMP} 
+	]]>
+    <if test="description != null">
+    and description like CONCAT('%','${description}','%') 
+    </if>
+    order by create_time desc limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+  </select>
 </mapper>
