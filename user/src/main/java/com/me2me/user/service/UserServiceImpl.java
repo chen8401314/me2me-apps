@@ -116,6 +116,8 @@ public class UserServiceImpl implements UserService {
         userProfile.setMobile(userSignUpDto.getMobile());
         userProfile.setNickName(userSignUpDto.getNickName());
         userProfile.setIntroduced(userSignUpDto.getIntroduced());
+        userProfile.setCreateTime(new Date());
+        userProfile.setUpdateTime(new Date());
 
         List<UserAccountBindStatusDto> array = Lists.newArrayList();
         // 添加手机绑定
