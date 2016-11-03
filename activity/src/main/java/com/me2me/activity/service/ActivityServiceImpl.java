@@ -376,7 +376,7 @@ public class ActivityServiceImpl implements ActivityService {
             if (isToday(date) && acts.size() < 4) {
                 if (luckCount2.getNum() > 0) {
                     //处理抽奖通用方法
-                    return awardCommon(uid,user,luckacts,luckCount2,luck,userProfile,ip,activityName);
+                    return awardCommon(uid,user,luckacts,luckCount2,luck,userProfile,ip,activityName ,luckStatus);
                 } else {
                     //否则返回错误信息 今天次数已经用完
                     return Response.success(ResponseStatus.RUN_OUT_OF_LOTTERY.status, ResponseStatus.RUN_OUT_OF_LOTTERY.message);
@@ -390,7 +390,7 @@ public class ActivityServiceImpl implements ActivityService {
                 LuckCount luckCount3 = activityMybatisDao.getLuckCountByUid(uid);
                 if (luckCount3.getNum() > 0) {
                     //处理抽奖通用方法
-                    return awardCommon(uid,user,luckacts,luckCount2,luck,userProfile,ip,activityName);
+                    return awardCommon(uid,user,luckacts,luckCount2,luck,userProfile,ip,activityName,luckStatus);
                 } else {
                     //否则返回错误信息 今天次数已经用完
                     return Response.success(ResponseStatus.RUN_OUT_OF_LOTTERY.status, ResponseStatus.RUN_OUT_OF_LOTTERY.message);
@@ -399,7 +399,7 @@ public class ActivityServiceImpl implements ActivityService {
             //如果数据库存在中奖情况都话，直接返回个谢谢参与什么都信息，此操作不保存数据库中
             List<AwardDto> awards2 = new ArrayList<>();
             awards2.add(new AwardDto(6, 0.2f, 100));
-            AwardDto award2 = lottery(awards2);
+            AwardDto award2 = lotteryLastDay(awards2);
             //如果没有抽奖机会了直接返回
             if(luckCount2.getNum() == 0){
                 return Response.success(ResponseStatus.RUN_OUT_OF_LOTTERY.status, ResponseStatus.RUN_OUT_OF_LOTTERY.message);
@@ -559,7 +559,7 @@ public class ActivityServiceImpl implements ActivityService {
         return Response.success(awardStatusDto);
     }
 
-    public Response awardCommon(long uid ,User user ,List<LuckAct> luckacts ,LuckCount luckCount2 ,LuckAct luck ,UserProfile userProfile ,String ip ,int activityName){
+    public Response awardCommon(long uid ,User user ,List<LuckAct> luckacts ,LuckCount luckCount2 ,LuckAct luck ,UserProfile userProfile ,String ip ,int activityName ,LuckStatus luckStatus){
         //可以抽奖
         String proof = UUID.randomUUID().toString();
         LuckAct luckAct = new LuckAct();
@@ -594,7 +594,7 @@ public class ActivityServiceImpl implements ActivityService {
         if (luckacts.size() == 0) {
             List<AwardDto> awards2 = new ArrayList<>();
             awards2.add(new AwardDto(6, 0.2f, 100));
-            AwardDto award2 = lottery(awards2);
+            AwardDto award2 = lotteryLastDay(awards2);
 //            System.out.println("恭喜您，抽到了：" + award2.id);
             log.info("用户："+user.getUserName()+" 获得了 "+award2.id+"等奖");
             luckAct.setAwardId(0);
@@ -614,7 +614,9 @@ public class ActivityServiceImpl implements ActivityService {
             return Response.success(award2);
         } else {
             if (luck == null) {
-                AwardDto award = lottery(awards);
+                //需要取数据库的总概率值 控制平均
+                int sum = luckStatus.getAwardSumChance();
+                AwardDto award = lottery(awards,sum);
                 if (award.id == 1) {
                     int num = prize1.getNumber() - 1;
                     if (num >= 0) {
@@ -736,7 +738,7 @@ public class ActivityServiceImpl implements ActivityService {
                 log.info("用户："+user.getUserName()+" 已经中奖过了，不能继续中奖");
                 List<AwardDto> awards2 = new ArrayList<>();
                 awards2.add(new AwardDto(6, 0.2f, 100));
-                AwardDto award2 = lottery(awards2);
+                AwardDto award2 = lotteryLastDay(awards2);
                 //获取剩余次数返回给前台
                 LuckCount remain = activityMybatisDao.getLuckCountByUid(uid);
                 award2.setAwardCount(remain.getNum());
@@ -773,7 +775,7 @@ public class ActivityServiceImpl implements ActivityService {
         if (luckacts.size() == 0) {
             List<AwardDto> awards2 = new ArrayList<>();
             awards2.add(new AwardDto(6, 0.2f, 100));
-            AwardDto award2 = lottery(awards2);
+            AwardDto award2 = lotteryLastDay(awards2);
             log.info("用户："+user.getUserName()+" 获得了 "+award2.id+"等奖");
             luckAct.setAwardId(0);
             activityMybatisDao.createLuckAct(luckAct);
@@ -915,7 +917,7 @@ public class ActivityServiceImpl implements ActivityService {
                 log.info("用户："+user.getUserName()+" 已经中奖过了，不能继续中奖");
                 List<AwardDto> awards2 = new ArrayList<>();
                 awards2.add(new AwardDto(6, 0.2f, 100));
-                AwardDto award2 = lottery(awards2);
+                AwardDto award2 = lotteryLastDay(awards2);
                 //获取剩余次数返回给前台
                 LuckCount remain = activityMybatisDao.getLuckCountByUid(uid);
                 award2.setAwardCount(remain.getNum());
@@ -929,7 +931,33 @@ public class ActivityServiceImpl implements ActivityService {
         }
     }
 
-    public static AwardDto lottery(List<AwardDto> awards){
+    public static AwardDto lottery(List<AwardDto> awards ,int sum){
+        //总的概率区间
+        float totalPro = 0f;
+        //存储每个奖品新的概率区间
+        List<Float> proSection = new ArrayList<Float>();
+        proSection.add(0f);
+        //遍历每个奖品，设置概率区间，总的概率区间为每个概率区间的总和
+        for (AwardDto award : awards) {
+            //每个概率区间为奖品概率乘以1000（把三位小数转换为整）再乘以剩余奖品数量(奖品库存为0的话 是永远不会拿到奖品了)
+            totalPro += award.probability * 10 * award.count;
+            proSection.add(totalPro);
+        }
+        //获取总的概率区间中的随机数
+        float randomPro= (float)random1(proSection.get(proSection.size()-1) ,proSection.get(proSection.size()-2) ,sum);
+        //判断取到的随机数在哪个奖品的概率区间中
+        for (int i = 0,size = proSection.size(); i < size; i++) {
+            if(randomPro >= proSection.get(i)
+                    && randomPro < proSection.get(i + 1)){
+                System.out.println("下标:"+i);
+                return awards.get(i);
+            }
+        }
+        return null;
+    }
+
+    //不中奖的情况调用此方法
+    public static AwardDto lotteryLastDay(List<AwardDto> awards){
         //总的概率区间
         float totalPro = 0f;
         //存储每个奖品新的概率区间
@@ -1104,4 +1132,62 @@ public class ActivityServiceImpl implements ActivityService {
 		}
 		return "未知";
 	}
+
+    /**
+     * 随机方法1
+     * 主要是：随机0-10之间，如果随机在0-8之间，则随机0-80这个方法，
+     * 如果随机8-10，则随机80-100
+     * @return
+     */
+    public static int random1(float big ,float small ,int sum){
+        int i=randoms(sum);
+        System.out.println("randoms: "+i);
+        if(i==0){
+            return randomone(small);
+        }else{
+            return randomtwo(big,small);
+        }
+
+    }
+
+    /**
+     * 产生随机数0---10
+     * 如果当天有300人抽奖 这个改成100完全没问题 如果当天有3000人抽奖 这个改成1000完全没问题 百分之一 千分之一
+     */
+    public static int randoms(int sum){
+        Random random = new Random();
+        int i=random.nextInt(sum);//数据库luck_status表award_sum_chance字段控制概率
+        return i;
+    }
+    /**
+     * 99%中奖
+     * @return
+     */
+    public static int randomone(float small){
+        Random random = new Random();
+        //需要判断最后一个数据是否为0,为0的话随机1 因为0不能用nextInt会有异常
+        if (small == 0){
+            small = 1f;
+        }
+        int i=random.nextInt((int)small);
+        System.out.println("中奖范围: "+i);
+        return i;
+    }
+    /**
+     * 肯定不中奖
+     * @return
+     */
+    public static int randomtwo(float big ,float small){
+        Random random = new Random();
+        if (small == 0){
+            small = 1f;
+        }
+        int i=random.nextInt((int)small);//list最后一个数据 //只能随机到1-XXX +1表示不能为0
+        if(i == 0){
+            i = 1;
+        }
+        int j=(int)big-(int)small;//最大值-中奖最小值 这样永远是不中奖几率 前提不中奖数据必须>中奖数据
+        return j;
+    }
+
 }
