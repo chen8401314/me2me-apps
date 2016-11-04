@@ -1898,6 +1898,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public SystemConfig getSystemConfig() {
+       SystemConfig systemConfig =  userMybatisDao.getSystemConfig();
+        return systemConfig;
+    }
+
+    @Override
     public Response getEntryPageConfig(EntryPageDto dto) {
         log.info("get entry_page_config start ...");
         List<EntryPageConfig> list =  userMybatisDao.getEntryPageConfig(dto);

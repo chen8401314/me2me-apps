@@ -252,6 +252,10 @@ public interface UserService {
 
     boolean checkGag(UserGag gag);
 
+    SystemConfig getSystemConfig();
+
+
+
     Response getEntryPageConfig(EntryPageDto dto);
 
     SystemConfig getSystemConfig();
