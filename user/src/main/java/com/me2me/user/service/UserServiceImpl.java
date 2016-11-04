@@ -1923,11 +1923,7 @@ public class UserServiceImpl implements UserService {
         return Response.success(returnDto);
     }
 
-    @Override
-    public SystemConfig getSystemConfig() {
-       SystemConfig systemConfig =  userMybatisDao.getSystemConfig();
-        return systemConfig;
-    }
+
 
     @SuppressWarnings("rawtypes")
     @Override

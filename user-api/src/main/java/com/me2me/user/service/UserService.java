@@ -258,7 +258,6 @@ public interface UserService {
 
     Response getEntryPageConfig(EntryPageDto dto);
 
-    SystemConfig getSystemConfig();
 
 
 }
