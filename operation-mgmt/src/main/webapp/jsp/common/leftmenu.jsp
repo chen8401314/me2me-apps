@@ -60,6 +60,17 @@ String sub = request.getParameter("s");
                 </a>
                 <ul class="sub">
                     <li <%if("6_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/system/log/query">系统日志查询</a></li>
+                    <li <%if("6_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/system/user/query">系统用户查询</a></li>
+                </ul>
+            </li>
+            <li class="sub-menu">
+                <a href="javascript:;" <%if("7".equals(tab)){ %>class="active"<%} %>>
+                    <i class="fa fa-mobile"></i>
+                    <span>APP配置管理</span>
+                </a>
+                <ul class="sub">
+                	<li <%if("7_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appconfig/version/query">APP版本管理</a></li>
+                    <li <%if("7_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appconfig/cache/query">缓存配置管理</a></li>
                 </ul>
             </li>
         </ul>

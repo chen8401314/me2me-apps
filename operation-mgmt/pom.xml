@@ -53,6 +53,11 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+			<groupId>com.me2me</groupId>
+            <artifactId>cache-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>com.plusnet.sso</groupId>
             <artifactId>sso-client</artifactId>
             <version>1.0.3</version>

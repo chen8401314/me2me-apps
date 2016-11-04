@@ -19,4 +19,6 @@
 	<dubbo:reference interface="com.me2me.monitor.service.MonitorService" id="monitorService"/>
 	
 	<dubbo:reference interface="com.me2me.user.service.UserService" id="userService"/>
+	
+	<dubbo:reference interface="com.me2me.cache.service.CacheService" id="cacheService"/>
 </beans>
