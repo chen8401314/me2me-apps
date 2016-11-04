@@ -587,6 +587,7 @@ public class Users extends BaseController {
 //        dto.setUid(request.getUid());
         dto.setUnionId(request.getUnionId());
         dto.setH5type(request.getH5type());
+        dto.setNewNickName(request.getNewNickName());
         return userService.thirdPartLogin(dto);
     }
 

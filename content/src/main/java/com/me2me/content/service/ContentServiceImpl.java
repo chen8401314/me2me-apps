@@ -266,10 +266,13 @@ public class ContentServiceImpl implements ContentService {
                     contentMybatisDao.updateContentById(content);
                     squareDataElement.setReadCount(readCount);
                 }else {
+                    SystemConfig systemConfig =userService.getSystemConfig();
+                    int start = systemConfig.getReadCountStart();
+                    int end = systemConfig.getReadCountEnd();
                     int readCountDummy = content.getReadCountDummy();
                     Random random = new Random();
                     //取1-6的随机数每次添加
-                    int value = random.nextInt(6);
+                    int value = random.nextInt(end)+start;
                     int readDummy = readCountDummy+value;
                     content.setReadCountDummy(readDummy);
                     contentMybatisDao.updateContentById(content);
@@ -953,10 +956,13 @@ private void localJpush(long toUid){
                 contentMybatisDao.updateContentById(content);
                 contentElement.setReadCount(readCount);
             }else {
+                SystemConfig systemConfig =userService.getSystemConfig();
+                int start = systemConfig.getReadCountStart();
+                int end = systemConfig.getReadCountEnd();
                 int readCountDummy = content.getReadCountDummy();
                 Random random = new Random();
                 //取1-6的随机数每次添加
-                int value = random.nextInt(6)+1;
+                int value = random.nextInt(end)+start;
                 int readDummy = readCountDummy+value;
                 content.setReadCountDummy(readDummy);
                 contentMybatisDao.updateContentById(content);
@@ -1069,10 +1075,13 @@ private void localJpush(long toUid){
             contentMybatisDao.updateContentById(content);
             contentDetailDto.setReadCount(readCount);
         }else {
+            SystemConfig systemConfig =userService.getSystemConfig();
+            int start = systemConfig.getReadCountStart();
+            int end = systemConfig.getReadCountEnd();
             int readCountDummy = content.getReadCountDummy();
             Random random = new Random();
             //取1-6的随机数每次添加
-            int value = random.nextInt(6)+1;
+            int value = random.nextInt(end)+start;
             int readDummy = readCountDummy+value;
             content.setReadCountDummy(readDummy);
             contentMybatisDao.updateContentById(content);
@@ -1313,10 +1322,13 @@ private void localJpush(long toUid){
                 contentMybatisDao.updateContentById(content);
                 contentElement.setReadCount(readCount);
             }else {
+                SystemConfig systemConfig =userService.getSystemConfig();
+                int start = systemConfig.getReadCountStart();
+                int end = systemConfig.getReadCountEnd();
                 int readCountDummy = content.getReadCountDummy();
                 Random random = new Random();
                 //取1-6的随机数每次添加
-                int value = random.nextInt(6)+1;
+                int value = random.nextInt(end)+start;
                 int readDummy = readCountDummy+value;
                 content.setReadCountDummy(readDummy);
                 contentMybatisDao.updateContentById(content);
@@ -1451,10 +1463,13 @@ private void localJpush(long toUid){
                 contentMybatisDao.updateContentById(content);
                 contentElement.setReadCount(readCount);
             }else {
+                SystemConfig systemConfig =userService.getSystemConfig();
+                int start = systemConfig.getReadCountStart();
+                int end = systemConfig.getReadCountEnd();
                 int readCountDummy = content.getReadCountDummy();
                 Random random = new Random();
                 //取1-6的随机数每次添加
-                int value = random.nextInt(6)+1;
+                int value = random.nextInt(end)+start;
                 int readDummy = readCountDummy+value;
                 content.setReadCountDummy(readDummy);
                 contentMybatisDao.updateContentById(content);
@@ -1815,10 +1830,13 @@ private void localJpush(long toUid){
                 contentMybatisDao.updateContentById(content);
                 hottestContentElement.setReadCount(readCount);
             }else {
+                SystemConfig systemConfig =userService.getSystemConfig();
+                int start = systemConfig.getReadCountStart();
+                int end = systemConfig.getReadCountEnd();
                 int readCountDummy = content.getReadCountDummy();
                 Random random = new Random();
                 //取1-6的随机数每次添加
-                int value = random.nextInt(6)+1;
+                int value = random.nextInt(end)+start;
                 int readDummy = readCountDummy+value;
                 content.setReadCountDummy(readDummy);
                 contentMybatisDao.updateContentById(content);
@@ -1919,10 +1937,13 @@ private void localJpush(long toUid){
                 contentMybatisDao.updateContent(content1);
                 hottestContentElement.setReadCount(readCount);
             }else {
+                SystemConfig systemConfig =userService.getSystemConfig();
+                int start = systemConfig.getReadCountStart();
+                int end = systemConfig.getReadCountEnd();
                 int readCountDummy = content.getReadCountDummy();
                 Random random = new Random();
                 //取1-6的随机数每次添加
-                int value = random.nextInt(6)+1;
+                int value = random.nextInt(end)+start;
                 int readDummy = readCountDummy+value;
                 content1.setReadCountDummy(readDummy);
                 contentMybatisDao.updateContentById(content1);
@@ -2034,10 +2055,13 @@ private void localJpush(long toUid){
                 contentMybatisDao.updateContentById(content);
                 contentElement.setReadCount(readCount);
             }else {
+                SystemConfig systemConfig =userService.getSystemConfig();
+                int start = systemConfig.getReadCountStart();
+                int end = systemConfig.getReadCountEnd();
                 int readCountDummy = content.getReadCountDummy();
                 Random random = new Random();
                 //取1-6的随机数每次添加
-                int value = random.nextInt(6)+1;
+                int value = random.nextInt(end)+start;
                 int readDummy = readCountDummy+value;
                 content.setReadCountDummy(readDummy);
                 contentMybatisDao.updateContentById(content);
@@ -2137,10 +2161,13 @@ private void localJpush(long toUid){
                 contentMybatisDao.updateContentById(content);
                 contentElement.setReadCount(readCount);
             }else {
+                SystemConfig systemConfig =userService.getSystemConfig();
+                int start = systemConfig.getReadCountStart();
+                int end = systemConfig.getReadCountEnd();
                 int readCountDummy = content.getReadCountDummy();
                 Random random = new Random();
                 //取1-6的随机数每次添加
-                int value = random.nextInt(6)+1;
+                int value = random.nextInt(end)+start;
                 int readDummy = readCountDummy+value;
                 content.setReadCountDummy(readDummy);
                 contentMybatisDao.updateContentById(content);
@@ -2236,10 +2263,13 @@ private void localJpush(long toUid){
                 contentMybatisDao.updateContentById(content);
                 contentElement.setReadCount(readCount);
             }else {
+                SystemConfig systemConfig =userService.getSystemConfig();
+                int start = systemConfig.getReadCountStart();
+                int end = systemConfig.getReadCountEnd();
                 int readCountDummy = content.getReadCountDummy();
                 Random random = new Random();
                 //取1-6的随机数每次添加
-                int value = random.nextInt(6)+1;
+                int value = random.nextInt(end)+start;
                 int readDummy = readCountDummy+value;
                 content.setReadCountDummy(readDummy);
                 contentMybatisDao.updateContentById(content);

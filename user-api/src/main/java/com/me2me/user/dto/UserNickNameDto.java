@@ -18,4 +18,5 @@ public class UserNickNameDto implements BaseEntity {
     private String unionId;
 
     private int thirdPartType;
+
 }

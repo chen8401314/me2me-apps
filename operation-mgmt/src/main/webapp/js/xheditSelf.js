@@ -1,9 +1,8 @@
 ﻿$(pageInit);
 function pageInit() {
     $('#txtContent').xheditor({
-
         upLinkUrl: "~/upload.aspx", upLinkExt: "zip,rar,txt",
-        upImgUrl: "upload.aspx", upImgExt: "jpg,jpeg,gif,png",
+        upImgUrl: "/upload/image", upImgExt: "jpg,jpeg,gif,png",html5Upload : false,
         upFlashUrl: "~/upload.aspx", upFlashExt: "swf",
         upMediaUrl: "~/upload.aspx", upMediaExt: "wmv,avi,wma,mp3,mid",
         shortcuts: { 'ctrl+enter': submitForm }

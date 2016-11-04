@@ -30,7 +30,7 @@ public class UgcController {
 		EditorContentDto editorContentDto = new EditorContentDto();
         editorContentDto.setArticleType(0);//ugc
         editorContentDto.setPage(1);
-        editorContentDto.setPageSize(500);
+        editorContentDto.setPageSize(200);
         String keyword = request.getKeyword();
         if(null == keyword){
         	keyword = "";

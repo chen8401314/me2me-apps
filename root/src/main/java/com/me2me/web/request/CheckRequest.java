@@ -24,4 +24,5 @@ public class CheckRequest {
     @Getter
     @Setter
     private int thirdPartType;
+
 }

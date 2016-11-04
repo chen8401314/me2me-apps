@@ -116,6 +116,8 @@ public class UserServiceImpl implements UserService {
         userProfile.setMobile(userSignUpDto.getMobile());
         userProfile.setNickName(userSignUpDto.getNickName());
         userProfile.setIntroduced(userSignUpDto.getIntroduced());
+        userProfile.setCreateTime(new Date());
+        userProfile.setUpdateTime(new Date());
 
         List<UserAccountBindStatusDto> array = Lists.newArrayList();
         // 添加手机绑定
@@ -1467,6 +1469,19 @@ public class UserServiceImpl implements UserService {
         // TODO: 2016/9/12
         LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
         ThirdPartUser users = userMybatisDao.getThirdPartUser(thirdPartSignUpDto.getThirdPartOpenId() ,thirdPartSignUpDto.getThirdPartType());
+
+        //先判断是否H5微信登陆过 如果登陆过 isClientLogin为1 需要修改昵称
+        if(!StringUtils.isEmpty(thirdPartSignUpDto.getNewNickName())){
+            List<ThirdPartUser> thirdPartUsers = userMybatisDao.getThirdPartUserByUnionId(thirdPartSignUpDto.getUnionId() ,thirdPartSignUpDto.getThirdPartType());
+            if(thirdPartUsers.size()>0 && thirdPartUsers !=null && StringUtils.isEmpty(thirdPartUsers.get(0).getThirdPartOpenId())){
+                long uid = thirdPartUsers.get(0).getUid();
+                UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+                userProfile.setNickName(thirdPartSignUpDto.getNickName());
+                userProfile.setIsClientLogin(0);
+                userMybatisDao.modifyUserProfile(userProfile);
+            }
+        }
+
         //兼容老版本
         if(StringUtils.isEmpty(thirdPartSignUpDto.getUnionId())){
             if (users !=null) {
@@ -1548,8 +1563,8 @@ public class UserServiceImpl implements UserService {
                     //h5先登录了 app未登录过 为首次登录 返回注册过了 但是值是1需要修改昵称
 //                    loginSuccessDto.setIsClientLogin(userProfile.getIsClientLogin());
                     //openId没有unionId有的情况 肯定是h5微信登录的 所以要修改昵称 前台检测过传来的
-                    userProfile.setNickName(thirdPartSignUpDto.getNickName());
-                    userMybatisDao.modifyUserProfile(userProfile);
+//                    userProfile.setNickName(thirdPartSignUpDto.getNickName());
+//                    userMybatisDao.modifyUserProfile(userProfile);
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 }else{
                     buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
@@ -1900,6 +1915,12 @@ public class UserServiceImpl implements UserService {
         returnDto.setCversion(maxVersion);
         log.info("get entry_page_config end ...");
         return Response.success(returnDto);
+    }
+
+    @Override
+    public SystemConfig getSystemConfig() {
+       SystemConfig systemConfig =  userMybatisDao.getSystemConfig();
+        return systemConfig;
     }
 
     @SuppressWarnings("rawtypes")
