@@ -515,4 +515,18 @@
     from topic_fragment f
     where  f.topic_id=#{topicId,jdbcType=BIGINT}
   </select>
+  <select id="getTopicFragmentForPage" parameterType="com.me2me.live.dto.GetLiveDetailDto" resultMap="BaseResultMap">
+    <if test="sinceId>0">
+      select * from (
+    </if>
+    select
+    <include refid="Base_Column_List"/>
+    ,
+    <include refid="Blob_Column_List"/>
+    from topic_fragment f
+    where f.topic_id=#{topicId,jdbcType=BIGINT} order by id asc limit #{startIndex,jdbcType=INTEGER},#{offset,jdbcType=INTEGER}
+    <if test="sinceId>0">
+      )a where a.id>#{sinceId,jdbcType=BIGINT}
+    </if>
+  </select>
 </mapper>

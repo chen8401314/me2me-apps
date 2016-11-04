@@ -637,7 +637,7 @@ public class Users extends BaseController {
     }
 
     /**
-     * 绑定接口
+     * 禁言接口
      */
     @ResponseBody
     @RequestMapping(value = "/gag",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
@@ -645,6 +645,18 @@ public class Users extends BaseController {
         GagDto dto = (GagDto) CommonUtils.copyDto(request,new GagDto());
 
         return userService.gag(dto);
+    }
+
+    /**
+     * 禁言接口
+     */
+    @ResponseBody
+    @RequestMapping(value = "/entryPageConfig",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response entryPageConfig(EntryPageRequest request){
+
+        EntryPageDto dto = (EntryPageDto) CommonUtils.copyDto(request,new EntryPageDto());
+
+        return userService.getEntryPageConfig(dto);
     }
     /**
      * 上大V接口

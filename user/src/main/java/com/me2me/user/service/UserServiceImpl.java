@@ -1882,6 +1882,26 @@ public class UserServiceImpl implements UserService {
         return userMybatisDao.checkGag(gag);
     }
 
+    @Override
+    public Response getEntryPageConfig(EntryPageDto dto) {
+        log.info("get entry_page_config start ...");
+        List<EntryPageConfig> list =  userMybatisDao.getEntryPageConfig(dto);
+        int maxVersion=dto.getCversion();
+        EntryPageReturnDto returnDto  = new EntryPageReturnDto();
+        EntryPageReturnDto.EntryPageElement element;
+        for(EntryPageConfig config : list){
+            element = (EntryPageReturnDto.EntryPageElement) CommonUtils.copyDto(config,returnDto.createElement());
+            returnDto.getEntryPageElements().add(element);
+            if(config.getCversion()>maxVersion){
+                maxVersion = config.getCversion();
+            }
+        }
+
+        returnDto.setCversion(maxVersion);
+        log.info("get entry_page_config end ...");
+        return Response.success(returnDto);
+    }
+
     @SuppressWarnings("rawtypes")
     @Override
     public Response searchPageByNickNameAndvLv(String nickName, String mobile, int vLv,

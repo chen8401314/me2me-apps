@@ -1,5 +1,6 @@
 package com.me2me.live.mapper;
 
+import com.me2me.live.dto.GetLiveDetailDto;
 import com.me2me.live.dto.GetLiveUpdateDto;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicFragmentExample;
@@ -122,4 +123,6 @@ public interface TopicFragmentMapper {
     int updateByPrimaryKey(TopicFragment record);
 
     Map<String,Long> countFragmentByTopicIdWithSince(GetLiveUpdateDto getLiveUpdateDto);
+
+    List<TopicFragment> getTopicFragmentForPage(GetLiveDetailDto getLiveDetailDto);
 }

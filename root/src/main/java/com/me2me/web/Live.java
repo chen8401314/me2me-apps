@@ -78,6 +78,7 @@ public class Live extends BaseController {
         liveDetailDto.setOffset(offset);
         liveDetailDto.setPageNo(pageNo);
         liveDetailDto.setUid(request.getUid());
+        liveDetailDto.setSinceId(request.getSinceId());
         return liveService.getLiveDetail(liveDetailDto);
     }
 

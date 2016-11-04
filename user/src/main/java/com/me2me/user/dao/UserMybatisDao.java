@@ -95,6 +95,9 @@ public class UserMybatisDao {
     @Autowired
     private UserGagMapper userGagMapper;
 
+    @Autowired
+    private  EntryPageConfigMapper entryPageConfigMapper;
+
     /**
      * 保存用户注册信息
      * @param user
@@ -810,5 +813,19 @@ public class UserMybatisDao {
 
         List<UserGag> list = userGagMapper.selectByExample(example);
         return list!=null&&list.size()>0?list.get(0):null;
+    }
+
+    public List<EntryPageConfig> getEntryPageConfig(EntryPageDto dto) {
+        EntryPageConfigExample example = new EntryPageConfigExample();
+        EntryPageConfigExample.Criteria criteria = example.createCriteria();
+        criteria.andCversionGreaterThan(dto.getCversion());
+        if(dto.getType()>0){
+            criteria.andTypeEqualTo(dto.getType());
+        }
+        if(dto.getCversion()==0){
+            //默认情况下只获取有效的数据
+            criteria.andStatusEqualTo(0);
+        }
+        return entryPageConfigMapper.selectByExample(example);
     }
 }
