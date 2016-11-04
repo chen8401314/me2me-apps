@@ -68,4 +68,8 @@ public class ThirdPartRequest {
     @Setter
     private int h5type;
 
+    @Getter
+    @Setter
+    private String newNickName;
+
 }
