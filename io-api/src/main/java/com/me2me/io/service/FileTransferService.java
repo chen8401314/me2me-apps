@@ -30,6 +30,6 @@ public interface FileTransferService {
 
     byte[] download(String domain,String key) throws IOException;
 
-
+    String getUserInfo(String code) throws Exception;
 
 }

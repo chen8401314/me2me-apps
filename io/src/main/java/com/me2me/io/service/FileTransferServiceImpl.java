@@ -8,13 +8,25 @@ import com.qiniu.common.QiniuException;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.UUID;
 
 
 /**
@@ -23,6 +35,7 @@ import java.io.IOException;
  * Date: 2016/3/1.
  */
 @Service
+@Slf4j
 public class FileTransferServiceImpl implements FileTransferService{
 
     private static final String ACCESS_KEY ="1XwLbO6Bmfeqyj7goM1ewoDAFHKiQOI8HvkvkDV0";
@@ -32,6 +45,10 @@ public class FileTransferServiceImpl implements FileTransferService{
     private static final String BUCKET = "ifeeling";
 
     private static int DEFAULT_TIME_OUT = 60000000;
+
+    public static final String APPID = "wx06b8675378eb1a62";
+
+    public static final String SECRET = "59114162f6c8f043cb3e9f204a78bede";
 
 
     /**
@@ -69,6 +86,90 @@ public class FileTransferServiceImpl implements FileTransferService{
         String resourceUrl = domain + "/" + key;
         Connection.Response response = Jsoup.connect(resourceUrl).timeout(DEFAULT_TIME_OUT).ignoreContentType(true).execute();
         return response.bodyAsBytes();
+    }
+
+    @Override
+    public String getUserInfo(String code) throws Exception {
+
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+        HttpGet httpget = new HttpGet("https://api.weixin.qq.com/sns/oauth2/access_token?" +
+                "appid="+APPID+"&secret="+SECRET+"&" +
+                "code="+code+"&grant_type=authorization_code"
+        );
+        HttpResponse res = null;
+        try {
+            res = httpclient.execute(httpget);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        HttpEntity entity = res.getEntity();
+
+        JSONObject jsonObject = getJSONObject(entity);
+        if(!jsonObject.isNull("errcode")) {
+            System.out.println(jsonObject.get("errcode"));
+            return jsonObject.toString();
+        }
+        System.out.println(jsonObject.toString());
+        System.out.println("openid:"+(String) jsonObject.get("openid"));
+        log.info("get user openid and token"+jsonObject.toString());
+        //取得返回的openid和token去请求用户信息
+        String openId = (String) jsonObject.get("openid");
+        String access_token = (String) jsonObject.get("access_token");
+        HttpGet httpget1 = new HttpGet( "https://api.weixin.qq.com/sns/userinfo?" +
+                "access_token="+access_token+"&" +
+                "openid="+openId);
+        HttpResponse res1 = httpclient.execute(httpget1);
+        HttpEntity entity1 = res1.getEntity();
+        JSONObject userProfile = getJSONObject(entity1);
+        userProfile.put("access_token",access_token);
+
+        String headimgurl = (String) userProfile.get("headimgurl");
+        if(!StringUtils.isEmpty(headimgurl)) {
+            //获取到七牛key返回给前台
+            String QnKey = getQNImageKey(headimgurl);
+            userProfile.put("headimgurl",QnKey);
+        }else{
+            userProfile.put("headimgurl","default.jpg");
+        }
+        log.info("get user profile"+userProfile.toString());
+        return userProfile.toString();
+    }
+
+    //获取上传七牛后的图片key
+    private String getQNImageKey(String headimgurl) throws Exception {
+        URL url = new URL(headimgurl);
+        //http://cdn.me-to-me.com/key七牛地址
+        HttpURLConnection con = (HttpURLConnection)url.openConnection();
+        // 输入流
+        con.setRequestMethod("GET");
+        con.setConnectTimeout(5 * 1000);
+        InputStream is = con.getInputStream();
+        byte[] btImg = readInputStream(is);//得到图片的二进制数据
+        String key = UUID.randomUUID().toString();
+        upload(btImg,key);
+        return key;
+    }
+
+    public static JSONObject getJSONObject(HttpEntity entity) throws UnsupportedEncodingException, IllegalStateException, IOException, JSONException {
+        StringBuilder entityStringBuilder=new StringBuilder();
+        BufferedReader reader=new BufferedReader(new InputStreamReader(entity.getContent(), "UTF-8"));
+        String line=null;
+        while ((line=reader.readLine()) != null) {
+            entityStringBuilder.append(line);
+        }
+        JSONObject json = new JSONObject(entityStringBuilder.toString());
+        return json;
+    }
+
+    public static byte[] readInputStream(InputStream inStream) throws Exception{
+        ByteArrayOutputStream outStream = new ByteArrayOutputStream();
+        byte[] buffer = new byte[1024];
+        int len = 0;
+        while( (len=inStream.read(buffer)) != -1 ){
+            outStream.write(buffer, 0, len);
+        }
+        inStream.close();
+        return outStream.toByteArray();
     }
 
 }
