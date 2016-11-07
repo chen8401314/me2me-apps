@@ -258,6 +258,12 @@ public interface UserService {
 
     Response getEntryPageConfig(EntryPageDto dto);
 
+    Response getVersionList(String version, int platform);
+    
+    Response getVersion(String version, int platform);
 
-
+    Response getVersionById(long id);
+    
+    Response saveOrUpdateVersion(VersionControlDto dto);
+    
 }

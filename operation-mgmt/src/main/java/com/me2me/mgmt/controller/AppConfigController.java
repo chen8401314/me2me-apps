@@ -7,19 +7,25 @@ import java.util.Set;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.alibaba.dubbo.common.utils.StringUtils;
 import com.me2me.cache.service.CacheService;
+import com.me2me.common.web.Response;
+import com.me2me.mgmt.request.AppVersionQueryDTO;
 import com.me2me.mgmt.request.ConfigItem;
 import com.me2me.mgmt.syslog.SystemControllerLog;
+import com.me2me.user.dto.ShowVersionControlDto;
+import com.me2me.user.dto.VersionControlDto;
+import com.me2me.user.service.UserService;
 
 @Controller
 @RequestMapping("/appconfig")
@@ -29,6 +35,8 @@ public class AppConfigController {
 	
 	@Autowired
 	private CacheService cacheService;
+	@Autowired
+    private UserService userService;
 
 	private List<ConfigItem> cacheConfigList = null;
 	
@@ -117,5 +125,96 @@ public class AppConfigController {
 		}
 		
 		return "0";
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = "/version/query")
+	@SystemControllerLog(description = "APP版本查询")
+	public ModelAndView versionQuery(AppVersionQueryDTO dto){
+		Response resp = userService.getVersionList(dto.getVersion(), dto.getPlatform());
+		if(null != resp && resp.getCode() == 200 && null != resp.getData()){
+			ShowVersionControlDto data = (ShowVersionControlDto)resp.getData();
+			if(null != data.getResult() && data.getResult().size() > 0){
+				for(VersionControlDto v : data.getResult()){
+					if(StringUtils.isNotBlank(v.getUpdateDescription())){
+						v.setUpdateDescription(v.getUpdateDescription().replaceAll("\n", "<br/>"));
+					}
+				}
+			}
+			dto.setData(data);
+		}
+		ModelAndView view = new ModelAndView("appconfig/versionList");
+		view.addObject("dataObj",dto);
+		return view;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = "/version/find/{vid}")
+	public ModelAndView getVersion(@PathVariable long vid){
+		Response resp = userService.getVersionById(vid);
+		ModelAndView view = new ModelAndView("appconfig/versionEdit");
+		if(null != resp && resp.getCode() == 200 && null != resp.getData()){
+			VersionControlDto dto = (VersionControlDto) resp.getData();
+			view.addObject("dataObj",dto);
+		}
+		
+		return view;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = "/version/create")
+	@SystemControllerLog(description = "创建APP版本")
+	public ModelAndView createVersion(VersionControlDto dto){
+		ModelAndView view = null;
+		if(StringUtils.isBlank(dto.getVersion()) 
+				|| StringUtils.isBlank(dto.getUpdateDescription())
+				|| StringUtils.isBlank(dto.getUpdateUrl())){
+			view = new ModelAndView("appconfig/versionNew");
+			view.addObject("errMsg","请求参数不能为空");
+			return view;
+		}
+		
+		Response resp = userService.getVersion(dto.getVersion(), dto.getPlatform());
+		if(null != resp && resp.getCode() == 200 && null != resp.getData()){
+			view = new ModelAndView("appconfig/versionNew");
+			view.addObject("errMsg",(dto.getPlatform()==1?"安卓":"IOS") + "已经存在该版本["+dto.getVersion()+"]了");
+			return view;
+		}
+		
+		userService.saveOrUpdateVersion(dto);
+		
+		view = new ModelAndView("redirect:/appconfig/version/query");
+		return view;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = "/version/edit/save")
+	@SystemControllerLog(description = "更新APP版本")
+	public ModelAndView saveEditVersion(VersionControlDto dto){
+		ModelAndView view = null;
+		if(dto.getId() <= 0 ||StringUtils.isBlank(dto.getVersion()) 
+				|| StringUtils.isBlank(dto.getUpdateDescription())
+				|| StringUtils.isBlank(dto.getUpdateUrl())){
+			view = new ModelAndView("appconfig/versionEdit");
+			view.addObject("errMsg","请求参数不能为空");
+			view.addObject("dataObj",dto);
+			return view;
+		}
+		
+		Response resp = userService.getVersion(dto.getVersion(), dto.getPlatform());
+		if(null != resp && resp.getCode() == 200 && null != resp.getData()){
+			VersionControlDto vcdto = (VersionControlDto) resp.getData();
+			if(vcdto.getId() != dto.getId()){
+				view = new ModelAndView("appconfig/versionEdit");
+				view.addObject("errMsg",(dto.getPlatform()==1?"安卓":"IOS") + "已经存在该版本["+dto.getVersion()+"]了");
+				view.addObject("dataObj",dto);
+				return view;
+			}
+		}
+		
+		userService.saveOrUpdateVersion(dto);
+		
+		view = new ModelAndView("redirect:/appconfig/version/query");
+		return view;
 	}
 }

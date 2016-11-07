@@ -113,7 +113,7 @@ public class SystemController {
 		return view;
 	}
 	
-	@RequestMapping(value = "/user/file/{uid}")
+	@RequestMapping(value = "/user/find/{uid}")
 	@SystemControllerLog(description = "查询运营用户详细")
 	public ModelAndView findSysUser(@PathVariable long uid){
 		ModelAndView view = null;

@@ -476,6 +476,35 @@ public class UserMybatisDao {
         controlMapper.insertSelective(versionControl);
 
     }
+    
+    public List<VersionControl> getVersionListByVersionAndPlatform(String version,int platform){
+    	VersionControlExample example = new VersionControlExample();
+        VersionControlExample.Criteria criteria = example.createCriteria();
+        if(!StringUtils.isEmpty(version)){
+        	criteria.andVersionLike("%"+version+"%");
+        }
+        if(platform > 0){
+        	criteria.andPlatformEqualTo(platform);
+        }
+        example.setOrderByClause(" update_time desc ");
+        List<VersionControl> list =  controlMapper.selectByExample(example);
+        return list;
+    }
+    
+    public VersionControl getVersionById(long id){
+    	return controlMapper.selectByPrimaryKey(id);
+    }
+    
+    public void saveOrUpdateVersion(VersionControl vc){
+    	if(null == vc){
+    		return;
+    	}
+    	if(null != vc.getId() && vc.getId() > 0){
+    		controlMapper.updateByPrimaryKeySelective(vc);
+    	}else{
+    		controlMapper.insertSelectiveNotId(vc);
+    	}
+    }
 
     public Dictionary getDictionaryById(long id){
         return dictionaryMapper.selectByPrimaryKey(id);
