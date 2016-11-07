@@ -19,4 +19,8 @@ public class LiveDetailRequest extends Request{
     @Getter
     @Setter
     private long topicId;
+
+    @Getter
+    @Setter
+    private long sinceId;
 }

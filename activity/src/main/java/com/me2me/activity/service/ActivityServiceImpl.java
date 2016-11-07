@@ -1078,6 +1078,27 @@ public class ActivityServiceImpl implements ActivityService {
 		}
 		return Response.success(dto);
 	}
+	
+	@Override
+	public Response getWinnersCommitInfo(int activityName) {
+		List<LuckWinners> list = activityMybatisDao.getLuckWinnersByActivityName(activityName);
+		ShowLuckWinnersDTO dto = new ShowLuckWinnersDTO();
+		if(null != list && list.size() > 0){
+			for(LuckWinners w : list){
+				ShowLuckWinnersDTO.LuckWinnersElement e = ShowLuckWinnersDTO.createLuckWinnersElement();
+				e.setActivityName(w.getActivityName());
+				e.setAwardId(w.getAwardId());
+				e.setAwardName(w.getAwardName());
+				e.setCreateTime(w.getCreateTime());
+				e.setMobile(w.getMobile());
+				e.setUid(w.getUid());
+				e.setActivityNameStr(getNameFromInt2String(w.getActivityName()));
+				dto.getResult().add(e);
+			}
+		}
+		
+		return Response.success(dto);
+	}
 
     @Override
     public Response addWinners(long uid ,int activityName, String mobile, int awardId, String awardName) {

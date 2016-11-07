@@ -599,13 +599,17 @@ public class LiveMybatisDao {
     }
 
     public List<TopicFragment> getTopicFragmentForPage(GetLiveDetailDto getLiveDetailDto) {
-        TopicFragmentExample example = new TopicFragmentExample();
+       /* TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(getLiveDetailDto.getTopicId());
         int pageNo = getLiveDetailDto.getPageNo();
         String order = "id asc limit "+((pageNo-1)*getLiveDetailDto.getOffset())+","+getLiveDetailDto.getOffset();
         example.setOrderByClause(order);
-        return topicFragmentMapper.selectByExampleWithBLOBs(example);
+        return topicFragmentMapper.selectByExampleWithBLOBs(example);*/
+
+        int startIndex = (getLiveDetailDto.getPageNo()-1)*getLiveDetailDto.getOffset();
+        getLiveDetailDto.setStartIndex(startIndex);
+        return topicFragmentMapper.getTopicFragmentForPage(getLiveDetailDto);
     }
 
     public Map<String,Long> countFragmentByTopicIdWithSince(GetLiveUpdateDto getLiveUpdateDto) {

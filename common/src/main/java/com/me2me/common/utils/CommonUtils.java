@@ -2,6 +2,7 @@ package com.me2me.common.utils;
 
 import com.me2me.common.web.BaseEntity;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
@@ -13,6 +14,7 @@ import java.util.Random;
  * Author: 赵朋扬
  * Date: 2016/4/28.
  */
+@Slf4j
 public class CommonUtils {
 
     private static Random r = new Random();
@@ -54,13 +56,13 @@ public class CommonUtils {
             try {
                 clzd.getMethod("set"+name,fld.getType()).invoke(to,clzr.getMethod("get"+name).invoke(from));
             } catch (IllegalAccessException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             } catch (InvocationTargetException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             } catch (NoSuchMethodException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             }catch (Exception e){
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
         return to;

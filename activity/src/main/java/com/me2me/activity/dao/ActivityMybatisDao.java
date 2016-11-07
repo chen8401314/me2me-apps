@@ -308,6 +308,15 @@ public class ActivityMybatisDao {
     	List<LuckAct> luckActs = luckActMapper.selectByExample(example);
     	return luckActs;
     }
+    
+    public List<LuckWinners> getLuckWinnersByActivityName(int activityName){
+    	LuckWinnersExample example = new LuckWinnersExample();
+    	LuckWinnersExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityNameEqualTo(activityName);
+    	List<LuckWinners> list = luckWinnersMapper.selectByExample(example);
+    	
+    	return list;
+    }
 
     public LuckCount getLuckCountByUid(long uid) {
         LuckCountExample example = new LuckCountExample();

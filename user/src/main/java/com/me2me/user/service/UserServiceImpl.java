@@ -23,7 +23,9 @@ import com.me2me.user.dto.*;
 import com.me2me.user.model.*;
 import com.me2me.user.model.Dictionary;
 import com.me2me.user.widget.MessageNotificationAdapter;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -1903,6 +1905,28 @@ public class UserServiceImpl implements UserService {
         return systemConfig;
     }
 
+    @Override
+    public Response getEntryPageConfig(EntryPageDto dto) {
+        log.info("get entry_page_config start ...");
+        List<EntryPageConfig> list =  userMybatisDao.getEntryPageConfig(dto);
+        int maxVersion=dto.getCversion();
+        EntryPageReturnDto returnDto  = new EntryPageReturnDto();
+        EntryPageReturnDto.EntryPageElement element;
+        for(EntryPageConfig config : list){
+            element = (EntryPageReturnDto.EntryPageElement) CommonUtils.copyDto(config,returnDto.createElement());
+            returnDto.getEntryPageElements().add(element);
+            if(config.getCversion()>maxVersion){
+                maxVersion = config.getCversion();
+            }
+        }
+
+        returnDto.setCversion(maxVersion);
+        log.info("get entry_page_config end ...");
+        return Response.success(returnDto);
+    }
+
+
+
     @SuppressWarnings("rawtypes")
     @Override
     public Response searchPageByNickNameAndvLv(String nickName, String mobile, int vLv,
@@ -1944,5 +1968,81 @@ public class UserServiceImpl implements UserService {
             return Response.failure("user is not exists");
         }
     }
+
+    @SuppressWarnings("rawtypes")
+	@Override
+	public Response getVersionList(String version, int platform) {
+		List<VersionControl> list = userMybatisDao.getVersionListByVersionAndPlatform(version, platform);
+		ShowVersionControlDto dto = new ShowVersionControlDto();
+		if(null != list && list.size() > 0){
+			VersionControlDto vcdto = null;
+			for(VersionControl vc : list){
+				vcdto = new VersionControlDto();
+				vcdto.setId(vc.getId());
+				vcdto.setIsUpdate(vc.getForceUpdate());
+				vcdto.setPlatform(vc.getPlatform());
+				vcdto.setUpdateDescription(vc.getUpdateDescription());
+				vcdto.setUpdateTime(vc.getUpdateTime());
+				vcdto.setUpdateUrl(vc.getUpdateUrl());
+				vcdto.setVersion(vc.getVersion());
+				dto.getResult().add(vcdto);
+			}
+		}
+		return Response.success(dto);
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Response getVersionById(long id) {
+		VersionControl vc = userMybatisDao.getVersionById(id);
+		VersionControlDto vcdto = new VersionControlDto();
+		if(null != vc){
+			vcdto.setId(vc.getId());
+			vcdto.setIsUpdate(vc.getForceUpdate());
+			vcdto.setPlatform(vc.getPlatform());
+			vcdto.setUpdateDescription(vc.getUpdateDescription());
+			vcdto.setUpdateTime(vc.getUpdateTime());
+			vcdto.setUpdateUrl(vc.getUpdateUrl());
+			vcdto.setVersion(vc.getVersion());
+		}
+		return Response.success(vcdto);
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Response saveOrUpdateVersion(VersionControlDto dto) {
+		VersionControl vc = new VersionControl();
+		if(dto.getId() > 0){
+			vc.setId(dto.getId());
+		}
+		vc.setForceUpdate(dto.getIsUpdate());
+		vc.setPlatform(dto.getPlatform());
+		vc.setUpdateDescription(dto.getUpdateDescription());
+		vc.setUpdateTime(new Date());
+		vc.setUpdateUrl(dto.getUpdateUrl());
+		vc.setVersion(dto.getVersion());
+		userMybatisDao.saveOrUpdateVersion(vc);
+		
+		return Response.success();
+	}
+
+	@SuppressWarnings("rawtypes")
+	@Override
+	public Response getVersion(String version, int platform) {
+		VersionControl vc = userMybatisDao.getVersion(version, platform);
+		if(null != vc){
+			VersionControlDto vcdto = new VersionControlDto();
+			vcdto.setId(vc.getId());
+			vcdto.setIsUpdate(vc.getForceUpdate());
+			vcdto.setPlatform(vc.getPlatform());
+			vcdto.setUpdateDescription(vc.getUpdateDescription());
+			vcdto.setUpdateTime(vc.getUpdateTime());
+			vcdto.setUpdateUrl(vc.getUpdateUrl());
+			vcdto.setVersion(vc.getVersion());
+			return Response.success(vcdto);
+		}
+		
+		return Response.failure("版本不存在");
+	}
 
 }

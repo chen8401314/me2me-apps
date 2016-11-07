@@ -425,6 +425,7 @@ public class ContentServiceImpl implements ContentService {
      */
     @Override
     public Response like2(LikeDto likeDto) {
+        log.info("content like start...request:"+JSON.toJSONString(likeDto));
         return likeAdapter.execute(likeDto);
     }
 

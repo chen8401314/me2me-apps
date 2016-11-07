@@ -19,4 +19,8 @@ public class GetLiveDetailDto implements BaseEntity {
     private int pageNo;
 
     private long uid;
+
+    private long sinceId;
+
+    private int startIndex;
 }
