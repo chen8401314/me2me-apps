@@ -176,7 +176,26 @@ public class LiveServiceImpl implements LiveService {
         content.setReadCount(content.getReadCount() + 1);
         contentService.updateContentById(content);
         // 添加成员数量
-        liveCoverDto.setReadCount((int) Math.rint(content.getReadCount() * 5.3));
+        if(content.getReadCountDummy() == 0){
+            //为了保留乘以5.3后的数据
+            int readCount = (int)Math.rint(content.getReadCount()*5.3);
+            content.setReadCountDummy(readCount);
+            contentService.updateContentById(content);
+            liveCoverDto.setReadCount(readCount);
+        }else {
+            SystemConfig systemConfig =userService.getSystemConfig();
+            int start = systemConfig.getReadCountStart();
+            int end = systemConfig.getReadCountEnd();
+            int readCountDummy = content.getReadCountDummy();
+            Random random = new Random();
+            //取1-6的随机数每次添加
+            int value = random.nextInt(end)+start;
+            int readDummy = readCountDummy+value;
+            content.setReadCountDummy(readDummy);
+            contentService.updateContentById(content);
+            liveCoverDto.setReadCount(readDummy);
+        }
+
         List<LiveFavorite> list = liveMybatisDao.getFavoriteAll(topicId);
         if (list != null && list.size() > 0) {
             liveCoverDto.setMembersCount(list.size());
@@ -716,7 +735,28 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setFavorite(Specification.LiveFavorite.NORMAL.index);
             }
             Content content = contentService.getContentByTopicId(topic.getId());
-            showTopicElement.setReadCount((int) Math.rint(content.getReadCount() * 5.3));
+
+            if(content.getReadCountDummy() == 0){
+                //为了保留乘以5.3后的数据
+                int readCount = (int)Math.rint(content.getReadCount()*5.3);
+                content.setReadCountDummy(readCount);
+                contentService.updateContentById(content);
+                showTopicElement.setReadCount(readCount);
+            }else {
+                SystemConfig systemConfig =userService.getSystemConfig();
+                int start = systemConfig.getReadCountStart();
+                int end = systemConfig.getReadCountEnd();
+                int readCountDummy = content.getReadCountDummy();
+                Random random = new Random();
+                //取1-6的随机数每次添加
+                int value = random.nextInt(end)+start;
+                int readDummy = readCountDummy+value;
+                content.setReadCountDummy(readDummy);
+                contentService.updateContentById(content);
+                showTopicElement.setReadCount(readDummy);
+            }
+
+
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
     }
@@ -751,7 +791,27 @@ public class LiveServiceImpl implements LiveService {
             }
             //直播阅读数
             Content content = contentService.getContentByTopicId(topic.getId());
-            showTopicElement.setReadCount((int) Math.rint(content.getReadCount() * 5.3));
+
+            if(content.getReadCountDummy() == 0){
+                //为了保留乘以5.3后的数据
+                int readCount = (int)Math.rint(content.getReadCount()*5.3);
+                content.setReadCountDummy(readCount);
+                contentService.updateContentById(content);
+                showTopicElement.setReadCount(readCount);
+            }else {
+                SystemConfig systemConfig =userService.getSystemConfig();
+                int start = systemConfig.getReadCountStart();
+                int end = systemConfig.getReadCountEnd();
+                int readCountDummy = content.getReadCountDummy();
+                Random random = new Random();
+                //取1-6的随机数每次添加
+                int value = random.nextInt(end)+start;
+                int readDummy = readCountDummy+value;
+                content.setReadCountDummy(readDummy);
+                contentService.updateContentById(content);
+                showTopicElement.setReadCount(readDummy);
+            }
+
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
     }
