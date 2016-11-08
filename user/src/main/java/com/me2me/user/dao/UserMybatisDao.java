@@ -1,6 +1,5 @@
 package com.me2me.user.dao;
 
-import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.sms.dto.PushLogDto;
 import com.me2me.user.dto.*;
@@ -14,7 +13,6 @@ import org.springframework.util.StringUtils;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -798,7 +796,7 @@ public class UserMybatisDao {
     }
 
     public void createGag(UserGag gag) {
-        userGagMapper.insert(gag);
+        userGagMapper.insertSelective(gag);
     }
 
     public boolean checkGag(UserGag gag) {
@@ -843,6 +841,29 @@ public class UserMybatisDao {
         List<UserGag> list = userGagMapper.selectByExample(example);
         return list!=null&&list.size()>0?list.get(0):null;
     }
+    
+    public List<UserGag> getGagUserPageByTargetUid(long targetUid, int page, int pageSize){
+    	 UserGagExample example = new UserGagExample();
+         UserGagExample.Criteria criteria = example.createCriteria();
+         if(targetUid > 0){
+        	 criteria.andTargetUidEqualTo(targetUid);
+         }
+         example.setOrderByClause("id desc limit "+((page-1)*pageSize)+", " + pageSize);
+         return userGagMapper.selectByExample(example);
+    }
+    
+    public int countGagUserPageByTargetUid(long targetUid){
+    	UserGagExample example = new UserGagExample();
+        UserGagExample.Criteria criteria = example.createCriteria();
+        if(targetUid > 0){
+        	criteria.andTargetUidEqualTo(targetUid);
+        }
+        return userGagMapper.countByExample(example);
+    }
+    
+    public void deleteGagUserById(long id){
+    	userGagMapper.deleteByPrimaryKey(id);
+    }
 
     public List<EntryPageConfig> getEntryPageConfig(EntryPageDto dto) {
         EntryPageConfigExample example = new EntryPageConfigExample();
@@ -856,5 +877,9 @@ public class UserMybatisDao {
             criteria.andStatusEqualTo(0);
         }
         return entryPageConfigMapper.selectByExample(example);
+    }
+    
+    public void updateSystemConfig(SystemConfig config){
+    	systemConfigMapper.updateByPrimaryKeySelective(config);
     }
 }

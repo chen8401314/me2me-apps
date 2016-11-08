@@ -2049,4 +2049,72 @@ public class UserServiceImpl implements UserService {
 		return Response.failure("版本不存在");
 	}
 
+	@Override
+	public Response getGagUserPageByTargetUid(long targetUid, int page, int pageSize) {
+		if(page < 1){
+			page = 0;
+		}
+		if(pageSize < 1){
+			pageSize = 10;
+		}
+		ShowUsergagDto dto = new ShowUsergagDto();
+		dto.setTotalRecord(userMybatisDao.countGagUserPageByTargetUid(targetUid));
+        int totalPage = (dto.getTotalRecord() + pageSize - 1) / pageSize;
+        dto.setTotalPage(totalPage);
+		List<UserGag> list = userMybatisDao.getGagUserPageByTargetUid(targetUid, page, pageSize);
+		if(null != list && list.size() > 0){
+			List<Long> uidList = new ArrayList<Long>();
+			for(UserGag ug : list){
+				if(ug.getUid() > 0){
+					uidList.add(ug.getUid());
+				}
+				uidList.add(ug.getTargetUid());
+			}
+			Map<String, String> map = new HashMap<String, String>();
+			if(uidList.size() > 0){
+				List<UserProfile> ulist = userMybatisDao.getUserProfilesByUids(uidList);
+				if(null != ulist && ulist.size() > 0){
+					for(UserProfile u : ulist){
+						map.put(String.valueOf(u.getUid()), u.getNickName());
+					}
+				}
+			}
+			
+			for(UserGag ug : list){
+				ShowUsergagDto.UsergagElement e = ShowUsergagDto.createUsergagElement();
+				e.setCid(ug.getCid());
+				e.setGagLevel(ug.getGagLevel());
+				e.setId(ug.getId());
+				e.setTargetUid(ug.getTargetUid());
+				e.setType(ug.getType());
+				e.setUid(ug.getUid());
+				e.setTargetUserName(map.get(String.valueOf(ug.getTargetUid())));
+				e.setUserName(map.get(String.valueOf(ug.getUid())));
+				dto.getResult().add(e);
+			}
+		}
+		
+		return Response.success(dto);
+	}
+
+	@Override
+	public Response deleteGagUserById(long id) {
+		userMybatisDao.deleteGagUserById(id);
+		return Response.success();
+	}
+
+	@Override
+	public Response addGagUser(UserGag gag) {
+		if(!userMybatisDao.checkGag(gag)){
+			userMybatisDao.createGag(gag);
+		}
+		
+		return Response.success();
+	}
+
+	@Override
+	public Response updateSystemConfig(SystemConfig config) {
+		userMybatisDao.updateSystemConfig(config);
+		return Response.success();
+	}
 }

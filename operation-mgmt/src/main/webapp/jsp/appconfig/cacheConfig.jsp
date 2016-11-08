@@ -44,6 +44,15 @@ var modifyCommit = function(type){
 		key = $("#csetKey").val();
 		value = $("#csetValue").val();
 	}
+	if(key == ""){
+		alert("key不能为空");
+		return;
+	}
+	if(value == ""){
+		alert("value不能为空");
+		return;
+	}
+	
 	$.ajax({
 		url : "${ctx}/appconfig/cache/modify?k="+key+"&v="+value+"&t="+type,
 		async : false,

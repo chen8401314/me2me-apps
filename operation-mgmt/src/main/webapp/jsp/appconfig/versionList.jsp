@@ -47,7 +47,7 @@
 								<div class="panel-body">
 									<div class="form-inline" role="form">
 										版本号
-										<input type="text" id="version" name="version" value="${dataObj.version }" class="form-control">&nbsp&nbsp;
+										<input type="text" id="version" name="version" value="${dataObj.version }" class="form-control">&nbsp;&nbsp;
 										平台
 										<select name="platform" id="platform" class="form-control">
 											<option value="0" ${dataObj.platform==0?'selected':''}>全部</option>

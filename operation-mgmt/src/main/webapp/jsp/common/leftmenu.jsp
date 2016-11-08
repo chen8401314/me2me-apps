@@ -51,6 +51,7 @@ String sub = request.getParameter("s");
                 </a>
                 <ul class="sub">
                     <li <%if("5_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appuser/query">用户管理</a></li>
+                    <li <%if("5_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appuser/gaguser/query">禁言用户管理</a></li>
                 </ul>
             </li>
 			<li class="sub-menu">
@@ -71,6 +72,7 @@ String sub = request.getParameter("s");
                 <ul class="sub">
                 	<li <%if("7_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appconfig/version/query">APP版本管理</a></li>
                     <li <%if("7_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appconfig/cache/query">缓存配置管理</a></li>
+                    <li <%if("7_3".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appconfig/dbconfig/query">数据库配置管理</a></li>
                 </ul>
             </li>
         </ul>

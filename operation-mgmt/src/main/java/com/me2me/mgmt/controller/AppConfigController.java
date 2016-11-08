@@ -25,6 +25,7 @@ import com.me2me.mgmt.request.ConfigItem;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.user.dto.ShowVersionControlDto;
 import com.me2me.user.dto.VersionControlDto;
+import com.me2me.user.model.SystemConfig;
 import com.me2me.user.service.UserService;
 
 @Controller
@@ -40,6 +41,8 @@ public class AppConfigController {
 
 	private List<ConfigItem> cacheConfigList = null;
 	
+	private List<ConfigItem> dbConfigList = null;
+	
 	@PostConstruct
 	public void init(){
 		cacheConfigList = new ArrayList<ConfigItem>();
@@ -47,6 +50,14 @@ public class AppConfigController {
 		cacheConfigList.add(ci);
 		ci = new ConfigItem("power:key", "管理员", ConfigItem.ConfigType.SET);
 		cacheConfigList.add(ci);
+		
+		dbConfigList = new ArrayList<ConfigItem>();
+		ci = new ConfigItem(ConfigItem.DBConfig.DEFAULT_FOLLOW.getKey(), ConfigItem.DBConfig.DEFAULT_FOLLOW.getDesc(), ConfigItem.ConfigType.DB);
+		dbConfigList.add(ci);
+		ci = new ConfigItem(ConfigItem.DBConfig.READ_COUNT_START.getKey(), ConfigItem.DBConfig.READ_COUNT_START.getDesc(), ConfigItem.ConfigType.DB);
+		dbConfigList.add(ci);
+		ci = new ConfigItem(ConfigItem.DBConfig.READ_COUNT_END.getKey(), ConfigItem.DBConfig.READ_COUNT_END.getDesc(), ConfigItem.ConfigType.DB);
+		dbConfigList.add(ci);
 	}
 	
 	@RequestMapping(value = "/cache/query")
@@ -98,15 +109,53 @@ public class AppConfigController {
 		return result;
 	}
 	
+	@RequestMapping(value = "/dbconfig/query")
+	@SystemControllerLog(description = "数据库配置查询")
+	public ModelAndView dbConfigQuery(){
+		List<ConfigItem> result = new ArrayList<ConfigItem>();
+		
+		SystemConfig sconfig = userService.getSystemConfig();
+		ConfigItem item = null;
+		for(ConfigItem c : dbConfigList){
+			item = new ConfigItem(c.getKey(), c.getDesc(), c.getType());
+			if(null != sconfig){
+				item.setValue(this.getDbConfigValue(c.getKey(), sconfig));
+			}
+			result.add(item);
+		}
+		
+		ModelAndView view = new ModelAndView("appconfig/dbConfig");
+		view.addObject("dataObj",result);
+		long configId = 0;
+		if(null != sconfig){
+			configId = sconfig.getId();
+		}
+		view.addObject("configId", configId);
+		
+		return view;
+	}
+	
+	private String getDbConfigValue(String key, SystemConfig sconfig){
+		if(ConfigItem.DBConfig.DEFAULT_FOLLOW.getKey().equals(key)){
+			return sconfig.getDefaultFollow();
+		}else if(ConfigItem.DBConfig.READ_COUNT_START.getKey().equals(key)){
+			return sconfig.getReadCountStart().toString();
+		}else if(ConfigItem.DBConfig.READ_COUNT_END.getKey().equals(key)){
+			return sconfig.getReadCountEnd().toString();
+		}
+		
+		return "";
+	}
+	
 	@RequestMapping(value = "/cache/modify")
 	@ResponseBody
 	@SystemControllerLog(description = "缓存配置更新")
 	public String modifyConfig(@RequestParam("k")String key, 
 			@RequestParam("v")String value, 
 			@RequestParam("t")int type){
-		if(StringUtils.isBlank(key)){
-			logger.warn("key不能为空");
-			return "key不能为空";
+		if(StringUtils.isBlank(key) || StringUtils.isBlank(value)){
+			logger.warn("key和value不能为空");
+			return "key和value不能为空";
 		}
 		ConfigItem.ConfigType configType = ConfigItem.ConfigType.getByType(type);
 		if(null == configType){
@@ -123,6 +172,41 @@ public class AppConfigController {
 		}else if(ConfigItem.ConfigType.SET == configType){
 			cacheService.sadd(key, value);
 		}
+		
+		return "0";
+	}
+	
+	@RequestMapping(value = "/dbconfig/modify")
+	@ResponseBody
+	@SystemControllerLog(description = "数据库配置更新")
+	public String modifyDBConfig(@RequestParam("k")String key, 
+			@RequestParam("v")String value,
+			@RequestParam("i")long cid){
+		if(StringUtils.isBlank(key) || StringUtils.isBlank(value)){
+			logger.warn("key和value不能为空");
+			return "key和value不能为空";
+		}
+		
+		if(cid <= 0){
+			logger.warn("数据库中不存在配置，请先初始化数据库系统配置表");
+			return "数据库中不存在配置，请先初始化数据库系统配置表";
+		}
+		
+		SystemConfig config = new SystemConfig();
+		config.setId(cid);
+		if(ConfigItem.DBConfig.DEFAULT_FOLLOW.getKey().equals(key)){
+			config.setDefaultFollow(value);
+		}else if(ConfigItem.DBConfig.READ_COUNT_START.getKey().equals(key)){
+			Integer v = Integer.valueOf(value);
+			config.setReadCountStart(v);
+		}else if(ConfigItem.DBConfig.READ_COUNT_END.getKey().equals(key)){
+			Integer v = Integer.valueOf(value);
+			config.setReadCountEnd(v);
+		}else{
+			logger.warn("不支持的key");
+			return "不支持的key";
+		}
+		userService.updateSystemConfig(config);
 		
 		return "0";
 	}
