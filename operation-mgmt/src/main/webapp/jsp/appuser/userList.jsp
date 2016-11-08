@@ -47,9 +47,9 @@
 								<div class="panel-body">
 									<div class="form-inline" role="form">
 										手机号
-										<input type="text" id="mobile" name="mobile" value="${dataObj.mobile }" class="form-control">&nbsp&nbsp;
+										<input type="text" id="mobile" name="mobile" value="${dataObj.mobile }" class="form-control">&nbsp;&nbsp;
 										昵称
-										<input type="text" id="nickName" name="nickName" value="${dataObj.nickName }" class="form-control">&nbsp&nbsp
+										<input type="text" id="nickName" name="nickName" value="${dataObj.nickName }" class="form-control">&nbsp;&nbsp;
 										是否大V
 										<select name="isV" id="isV" class="form-control">
 											<option value="0" ${dataObj.isV==0?'selected':''}>全部</option>
@@ -126,7 +126,7 @@
                                                 			<a href="${ctx}/appuser/option/vlv?m=${dataObj.mobile }&s=${dataObj.nickName }&v=${dataObj.isV }&a=1&i=${userItem.uid}">上大V</a>
                                                 		</c:otherwise>
                                                 	</c:choose>
-                                                	|<a href="${ctx}/appuser/gaguser/${dataObj.uid }">禁言</a>
+                                                	|<a href="${ctx}/appuser/gaguser/add/${userItem.uid }">禁言</a>
 													</th>
 												</tr>
 											</c:forEach>

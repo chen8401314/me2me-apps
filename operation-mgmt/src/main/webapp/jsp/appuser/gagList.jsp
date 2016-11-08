@@ -46,8 +46,8 @@
 								<header class="panel-heading">执行操作</header>
 								<div class="panel-body">
 									<div class="form-inline" role="form">
-										UID
-										<input type="text" id="uid" name="uid" value="${dataObj.uid }" class="form-control">&nbsp&nbsp;
+										禁言用户UID
+										<input type="text" id="uid" name="uid" value="${dataObj.uid }" class="form-control">&nbsp;&nbsp;
 										<input type="submit" id="btnSearch" name="btnSearch" value="搜索" class="btn btn-info" />
 									</div>
 								</div>
@@ -70,60 +70,75 @@
 									<table class="display table table-bordered table-striped" id="dynamic-table">
 										<thead>
 											<tr>
-												<th>UID</th>
+												<th>序号</th>
+												<th>禁言UID</th>
 												<th>昵称</th>
 												<th>禁言类型</th>
 												<th>禁言级别</th>
+												<th>操作内容ID</th>
+												<th>操作人</th>
 												<th>操作</th>
 											</tr>
 										</thead>
 										<tbody>
-											<c:forEach items="${dataObj.data.result}" var="gagItem">
+											<c:forEach items="${dataObj.data.result}" var="gagItem" varStatus="status">
 												<tr class="gradeX">
-													<th>${userItem.uid }</th>
-													<th>${userItem.mobile }</th>
-													<th>${userItem.nickName }</th>
+													<th>${status.index + 1}</th>
+													<th>${gagItem.targetUid }</th>
+													<th>${gagItem.targetUserName }</th>
 													<th>
 													<c:choose>
-                                                		<c:when test="${userItem.gender == '1'}">
-                                                			男
+                                                		<c:when test="${gagItem.type == '0'}">
+                                                			全部
+                                                		</c:when>
+                                                		<c:when test="${gagItem.type == '1'}">
+                                                			王国
+                                                		</c:when>
+                                                		<c:when test="${gagItem.type == '2'}">
+                                                			UGC
+                                                		</c:when>
+                                                	</c:choose>
+													</th>
+													<th>
+													<c:choose>
+                                                		<c:when test="${gagItem.gagLevel == '0'}">
+                                                			全部
+                                                		</c:when>
+                                                		<c:when test="${gagItem.gagLevel == '1'}">
+                                                			新建
+                                                		</c:when>
+                                                		<c:when test="${gagItem.gagLevel == '2'}">
+                                                			发言
+                                                		</c:when>
+                                                		<c:when test="${gagItem.gagLevel == '3'}">
+                                                			点赞
+                                                		</c:when>
+                                                	</c:choose>
+													</th>
+													<th>
+													<c:choose>
+                                                		<c:when test="${gagItem.cid == '0'}">
+                                                			全部
                                                 		</c:when>
                                                 		<c:otherwise>
-                                                			女
+                                                			${gagItem.cid }
                                                 		</c:otherwise>
                                                 	</c:choose>
 													</th>
-													<th>${userItem.birthday }</th>
-													<th>
-													<c:choose>
-                                                		<c:when test="${userItem.vlv == '1'}">
-                                                			是
-                                                		</c:when>
-                                                		<c:otherwise>
-                                                			否
-                                                		</c:otherwise>
-                                                	</c:choose>
-													</th>
-													<th><fmt:formatDate value="${userItem.createTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
-													<th>
-													<c:choose>
-                                                		<c:when test="${userItem.vlv == '1'}">
-                                                			<a href="${ctx}/appuser/option/vlv?m=${dataObj.mobile }&s=${dataObj.nickName }&v=${dataObj.isV }&a=2&i=${userItem.uid}">取消大V</a>
-                                                		</c:when>
-                                                		<c:otherwise>
-                                                			<a href="${ctx}/appuser/option/vlv?m=${dataObj.mobile }&s=${dataObj.nickName }&v=${dataObj.isV }&a=1&i=${userItem.uid}">上大V</a>
-                                                		</c:otherwise>
-                                                	</c:choose>
-													</th>
+													<th>${gagItem.userName }</th>
+													<th><a href="${ctx}/appuser/gaguser/remove/${gagItem.id }">取消禁言</a></th>
 												</tr>
 											</c:forEach>
 										</tbody>
 										<tfoot>
 											<tr>
+												<th>序号</th>
 												<th>UID</th>
 												<th>昵称</th>
 												<th>禁言类型</th>
 												<th>禁言级别</th>
+												<th>操作内容ID</th>
+												<th>操作人</th>
 												<th>操作</th>
 											</tr>
 										</tfoot>
@@ -154,7 +169,7 @@
 	<script type="text/javascript" src="${ctx}/assets/data-tables/DT_bootstrap.js"></script>
 	<script src="${ctx}/js/respond.min.js"></script>
 	<script src="${ctx}/js/slidebars.min.js"></script>
-	<script src="${ctx}/js/dynamic_table_init.js"></script>
+	<script src="${ctx}/js/dynamic_table_init_0_asc.js"></script>
 	<script src="${ctx}/js/bootstrap-switch.js"></script>
 	<script src="${ctx}/js/jquery.tagsinput.js"></script>
 	<script src="${ctx}/js/form-component.js"></script>

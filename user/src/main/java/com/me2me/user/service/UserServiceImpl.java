@@ -2050,7 +2050,7 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public Response getGagUserPageByUid(long uid, int page, int pageSize) {
+	public Response getGagUserPageByTargetUid(long targetUid, int page, int pageSize) {
 		if(page < 1){
 			page = 0;
 		}
@@ -2058,13 +2058,16 @@ public class UserServiceImpl implements UserService {
 			pageSize = 10;
 		}
 		ShowUsergagDto dto = new ShowUsergagDto();
-		dto.setTotalRecord(userMybatisDao.countGagUserPageByUid(uid));
+		dto.setTotalRecord(userMybatisDao.countGagUserPageByTargetUid(targetUid));
         int totalPage = (dto.getTotalRecord() + pageSize - 1) / pageSize;
         dto.setTotalPage(totalPage);
-		List<UserGag> list = userMybatisDao.getGagUserPageByUid(uid, page, pageSize);
+		List<UserGag> list = userMybatisDao.getGagUserPageByTargetUid(targetUid, page, pageSize);
 		if(null != list && list.size() > 0){
 			List<Long> uidList = new ArrayList<Long>();
 			for(UserGag ug : list){
+				if(ug.getUid() > 0){
+					uidList.add(ug.getUid());
+				}
 				uidList.add(ug.getTargetUid());
 			}
 			Map<String, String> map = new HashMap<String, String>();
@@ -2086,6 +2089,7 @@ public class UserServiceImpl implements UserService {
 				e.setType(ug.getType());
 				e.setUid(ug.getUid());
 				e.setTargetUserName(map.get(String.valueOf(ug.getTargetUid())));
+				e.setUserName(map.get(String.valueOf(ug.getUid())));
 				dto.getResult().add(e);
 			}
 		}
@@ -2096,6 +2100,15 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Response deleteGagUserById(long id) {
 		userMybatisDao.deleteGagUserById(id);
+		return Response.success();
+	}
+
+	@Override
+	public Response addGagUser(UserGag gag) {
+		if(!userMybatisDao.checkGag(gag)){
+			userMybatisDao.createGag(gag);
+		}
+		
 		return Response.success();
 	}
 }

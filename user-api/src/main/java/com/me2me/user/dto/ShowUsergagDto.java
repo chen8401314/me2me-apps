@@ -35,5 +35,6 @@ public class ShowUsergagDto implements BaseEntity {
 		private int gagLevel;
 		
 		private String targetUserName;
+		private String userName;
 	}
 }

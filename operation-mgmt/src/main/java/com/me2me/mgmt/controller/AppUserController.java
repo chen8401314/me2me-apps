@@ -5,6 +5,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -16,6 +17,7 @@ import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.user.dto.SearchUserProfileDto;
 import com.me2me.user.dto.ShowUsergagDto;
 import com.me2me.user.dto.UserSignUpDto;
+import com.me2me.user.model.UserGag;
 import com.me2me.user.service.UserService;
 
 @Controller
@@ -100,13 +102,49 @@ public class AppUserController {
 			uid = Long.valueOf(dto.getUid());
 		}
 		
-		Response resp = userService.getGagUserPageByUid(uid, 1, 200);
+		Response resp = userService.getGagUserPageByTargetUid(uid, 1, 200);
 		if(null != resp && resp.getCode() == 200 && null != resp.getData()){
 			ShowUsergagDto data = (ShowUsergagDto)resp.getData();
+			if(null != data.getResult() && data.getResult().size() > 0){
+				for(ShowUsergagDto.UsergagElement e : data.getResult()){
+					if(e.getUid() == 0){
+						e.setUserName("运营管理员");
+					}
+				}
+			}
+			
 			dto.setData(data);
 		}
 		ModelAndView view = new ModelAndView("appuser/gagList");
 		view.addObject("dataObj",dto);
+		return view;
+	}
+	
+	@RequestMapping(value="/gaguser/add/{uid}")
+	@SystemControllerLog(description = "添加APP禁言用户")
+	public ModelAndView addGagUser(@PathVariable long uid){
+		if(uid > 0){
+			UserGag gag = new UserGag();
+			gag.setCid(Long.valueOf(0));
+			gag.setGagLevel(0);//后台设置的默认为全部
+			gag.setTargetUid(uid);
+			gag.setType(0);//后台设置的默认为全部
+			gag.setUid(Long.valueOf(0));//默认运营管理员
+			userService.addGagUser(gag);
+		}
+		
+		ModelAndView view = new ModelAndView("redirect:/appuser/gaguser/query");
+		return view;
+	}
+	
+	@RequestMapping(value="/gaguser/remove/{gid}")
+	@SystemControllerLog(description = "取消APP禁言用户")
+	public ModelAndView delGagUser(@PathVariable long gid){
+		if(gid > 0){
+			userService.deleteGagUserById(gid);
+		}
+		
+		ModelAndView view = new ModelAndView("redirect:/appuser/gaguser/query");
 		return view;
 	}
 }

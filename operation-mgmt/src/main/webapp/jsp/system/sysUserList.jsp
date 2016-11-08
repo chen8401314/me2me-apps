@@ -47,7 +47,7 @@
 								<div class="panel-body">
 									<div class="form-inline" role="form">
 										统一账号名
-										<input type="text" id="uname" name="uname" value="${dataObj.uname }" class="form-control">&nbsp&nbsp;
+										<input type="text" id="uname" name="uname" value="${dataObj.uname }" class="form-control">&nbsp;&nbsp;
 										<input type="submit" id="btnSearch" name="btnSearch" value="搜索" class="btn btn-info" />
 									</div>
 								</div>
