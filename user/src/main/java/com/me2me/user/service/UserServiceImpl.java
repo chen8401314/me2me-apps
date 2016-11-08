@@ -131,7 +131,7 @@ public class UserServiceImpl implements UserService {
         log.info("userProfile is create");
         //添加默认关注v2.1.4
         SystemConfig config = userMybatisDao.getSystemConfig();
-        if(config!=null&&StringUtils.isEmpty(config.getDefaultFollow())){
+        if(config!=null&&!StringUtils.isEmpty(config.getDefaultFollow())){
             String[] arrayDefaultFollow = config.getDefaultFollow().split(",");
             for(String defaultFollow:arrayDefaultFollow){
                 UserFollow userFollow = new UserFollow();
