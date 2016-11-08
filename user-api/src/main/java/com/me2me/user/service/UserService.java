@@ -271,4 +271,6 @@ public interface UserService {
     Response deleteGagUserById(long id);
     
     Response addGagUser(UserGag gag);
+    
+    Response updateSystemConfig(SystemConfig config);
 }

@@ -2111,4 +2111,10 @@ public class UserServiceImpl implements UserService {
 		
 		return Response.success();
 	}
+
+	@Override
+	public Response updateSystemConfig(SystemConfig config) {
+		userMybatisDao.updateSystemConfig(config);
+		return Response.success();
+	}
 }

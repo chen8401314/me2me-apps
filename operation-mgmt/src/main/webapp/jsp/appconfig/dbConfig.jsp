@@ -23,38 +23,24 @@
 <script src="${ctx}/js/jquery-migrate-1.2.1.min.js"></script>
 <script src="${ctx}/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-//1 sring ; 2 set ; 3 list ; 4 map
-var modifyConfig = function(key, type){
-	if(type == 1){//string
-		$("#cstringKey").val(key);
-		$("#stringConfigModal").modal();
-	}else if(type == 2){//set
-		$("#csetKey").val(key);
-		$("#setConfigModal").modal();
-	}
+var modifyConfig = function(key, desc){
+	$("#cdesc").val(desc);
+	$("#ckey").val(key);
+	$("#cvalue").val("");
+	$("#dbConfigModal").modal();
 }
 
 var modifyCommit = function(type){
-	var key = "";
-	var value = "";
-	if(type == 1){
-		key = $("#cstringKey").val();
-		value = $("#cstringValue").val();
-	}else if(type == 2){
-		key = $("#csetKey").val();
-		value = $("#csetValue").val();
-	}
-	if(key == ""){
-		alert("key不能为空");
+	var key = $("#ckey").val();
+	var value = $("#cvalue").val();
+	if(value == ''){
+		alert("配置值不能为空!");
 		return;
 	}
-	if(value == ""){
-		alert("value不能为空");
-		return;
-	}
-	
+	var configId = $("#configid").val();
+
 	$.ajax({
-		url : "${ctx}/appconfig/cache/modify?k="+key+"&v="+value+"&t="+type,
+		url : "${ctx}/appconfig/dbconfig/modify?k="+key+"&v="+value+"&i="+configId,
 		async : false,
 		type : "GET",
 		contentType : "application/json;charset=UTF-8",
@@ -78,7 +64,7 @@ var modifyCommit = function(type){
 		<!--sidebar start-->
 		<jsp:include page="../common/leftmenu.jsp" flush="false">
 			<jsp:param name="t" value="7" />
-			<jsp:param name="s" value="7_2" />
+			<jsp:param name="s" value="7_3" />
 		</jsp:include>
 		<!--sidebar end-->
 
@@ -90,7 +76,7 @@ var modifyCommit = function(type){
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								| 缓存配置列表 
+								| 数据库配置列表 
 								<span class="tools pull-right">
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>
@@ -104,7 +90,6 @@ var modifyCommit = function(type){
 												<th>配置项</th>
 												<th>KEY</th>
 												<th>VALUE</th>
-												<th>类型</th>
 												<th>操作</th>
 											</tr>
 										</thead>
@@ -115,8 +100,7 @@ var modifyCommit = function(type){
 													<th>${configItem.desc }</th>
 													<th>${configItem.key }</th>
 													<th>${configItem.value }</th>
-													<th>${configItem.type.desc }</th>
-													<th><a href="#" onclick="modifyConfig('${configItem.key }', ${configItem.type.type })">编辑</a></th>
+													<th><a href="#" onclick="modifyConfig('${configItem.key }', '${configItem.desc }')">编辑</a></th>
 												</tr>
 											</c:forEach>
 										</tbody>
@@ -126,7 +110,6 @@ var modifyCommit = function(type){
 												<th>配置项</th>
 												<th>KEY</th>
 												<th>VALUE</th>
-												<th>类型</th>
 												<th>操作</th>
 											</tr>
 										</tfoot>
@@ -151,57 +134,35 @@ var modifyCommit = function(type){
 	</section>
 
 	<!-- modal VIEW -->
-	<div class="modal fade" id="stringConfigModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+	<div class="modal fade" id="dbConfigModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4 class="modal-title">缓存配置更新[String]</h4>
+					<h4 class="modal-title">数据库配置更新</h4>
 				</div>
 				<div class="modal-body">
 					<div class="form-group">
+						<label for="exampleInputEmail1">配置项</label>
+                        <input type="text" id="cdesc" name="cdesc" class="form-control" style="width: 100%" readonly>
+                        <input type="hidden" id="configid" name="configid" value="${configId }">
+					</div>
+					<div class="form-group">
 						<label for="exampleInputEmail1">Key</label>
-                        <input type="text" id="cstringKey" name="cstringKey" class="form-control" style="width: 100%" readonly>
+                        <input type="text" id="ckey" name="ckey" class="form-control" style="width: 100%" readonly>
 					</div>
 					<div class="form-group">
 						<label for="exampleInputEmail1">Value</label>
-                        <input type="text" id="cstringValue" name="cstringValue" class="form-control" style="width: 100%">
+                        <input type="text" id="cvalue" name="cvalue" class="form-control" style="width: 100%">
 					</div>
 				</div>
 				<div class="modal-footer">
-					<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="modifyCommit(1)">更改</button>
+					<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="modifyCommit()">更改</button>
 					<button data-dismiss="modal" class="btn btn-default" type="button">关闭</button>
 				</div>
 			</div>
 		</div>
 	</div>
-
-	<!-- modal VIEW -->
-	<div class="modal fade" id="setConfigModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4 class="modal-title">缓存配置更新[SET]</h4>
-				</div>
-				<div class="modal-body">
-					<div class="form-group">
-						<label for="exampleInputEmail1">Key</label>
-                        <input type="text" id="csetKey" name="csetKey" class="form-control" style="width: 100%" readonly>
-					</div>
-					<div class="form-group">
-						<label for="exampleInputEmail1">Value</label>
-                        <input type="text" id="csetValue" name="csetValue" class="form-control" style="width: 100%" required>
-					</div>
-				</div>
-				<div class="modal-footer">
-					<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="modifyCommit(2)">增加</button>
-					<button data-dismiss="modal" class="btn btn-default" type="button">关闭</button>
-				</div>
-			</div>
-		</div>
-	</div>
-
 	<!-- js placed at the end of the document so the pages load faster -->
 	<script class="include" type="text/javascript" src="${ctx}/js/jquery.dcjqaccordion.2.7.js"></script>
 	<script src="${ctx}/js/jquery.scrollTo.min.js"></script>
