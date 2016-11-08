@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta charset="utf-8" />
 
-<title>ZX_IMS 2.0 - APP用户列表</title>
+<title>ZX_IMS 2.0 - APP禁言用户列表</title>
 
 <link href="${ctx}/css/bootstrap.min.css" rel="stylesheet" />
 <link href="${ctx}/css/bootstrap-reset.css" rel="stylesheet" />
@@ -32,30 +32,22 @@
 		<!--sidebar start-->
 		<jsp:include page="../common/leftmenu.jsp" flush="false">
 			<jsp:param name="t" value="5" />
-			<jsp:param name="s" value="5_1" />
+			<jsp:param name="s" value="5_2" />
 		</jsp:include>
 		<!--sidebar end-->
 
 		<!--main content start-->
 		<section id="main-content">
 			<section class="wrapper">
-				<form id="form1" action="${ctx}/appuser/query" method="post">
+				<form id="form1" action="${ctx}/appuser/gaguser/query" method="post">
 					<div class="row">
 						<div class="col-lg-12">
 							<section class="panel">
 								<header class="panel-heading">执行操作</header>
 								<div class="panel-body">
 									<div class="form-inline" role="form">
-										手机号
-										<input type="text" id="mobile" name="mobile" value="${dataObj.mobile }" class="form-control">&nbsp&nbsp;
-										昵称
-										<input type="text" id="nickName" name="nickName" value="${dataObj.nickName }" class="form-control">&nbsp&nbsp
-										是否大V
-										<select name="isV" id="isV" class="form-control">
-											<option value="0" ${dataObj.isV==0?'selected':''}>全部</option>
-											<option value="1" ${dataObj.isV==1?'selected':''}>是</option>
-											<option value="2" ${dataObj.isV==2?'selected':''}>否</option>
-										</select>
+										UID
+										<input type="text" id="uid" name="uid" value="${dataObj.uid }" class="form-control">&nbsp&nbsp;
 										<input type="submit" id="btnSearch" name="btnSearch" value="搜索" class="btn btn-info" />
 									</div>
 								</div>
@@ -68,9 +60,8 @@
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								| 用户列表 
+								| 禁言用户列表 
 								<span class="tools pull-right">
-									<a href="${ctx}/jsp/appuser/appUserNew.jsp" class="fa fa-plus add_link" title="添加马甲号" ></a>
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>
 							</header>
@@ -80,17 +71,14 @@
 										<thead>
 											<tr>
 												<th>UID</th>
-												<th>手机</th>
 												<th>昵称</th>
-												<th>性别</th>
-												<th>生日</th>
-												<th>是否大V</th>
-												<th>创建时间</th>
+												<th>禁言类型</th>
+												<th>禁言级别</th>
 												<th>操作</th>
 											</tr>
 										</thead>
 										<tbody>
-											<c:forEach items="${dataObj.data.result}" var="userItem">
+											<c:forEach items="${dataObj.data.result}" var="gagItem">
 												<tr class="gradeX">
 													<th>${userItem.uid }</th>
 													<th>${userItem.mobile }</th>
@@ -126,7 +114,6 @@
                                                 			<a href="${ctx}/appuser/option/vlv?m=${dataObj.mobile }&s=${dataObj.nickName }&v=${dataObj.isV }&a=1&i=${userItem.uid}">上大V</a>
                                                 		</c:otherwise>
                                                 	</c:choose>
-                                                	|<a href="${ctx}/appuser/gaguser/${dataObj.uid }">禁言</a>
 													</th>
 												</tr>
 											</c:forEach>
@@ -134,12 +121,9 @@
 										<tfoot>
 											<tr>
 												<th>UID</th>
-												<th>手机</th>
 												<th>昵称</th>
-												<th>性别</th>
-												<th>生日</th>
-												<th>是否大V</th>
-												<th>创建时间</th>
+												<th>禁言类型</th>
+												<th>禁言级别</th>
 												<th>操作</th>
 											</tr>
 										</tfoot>

@@ -266,4 +266,7 @@ public interface UserService {
     
     Response saveOrUpdateVersion(VersionControlDto dto);
     
+    Response getGagUserPageByUid(long uid, int page, int pageSize);
+    
+    Response deleteGagUserById(long id);
 }

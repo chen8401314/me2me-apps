@@ -9,10 +9,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.me2me.common.web.Response;
+import com.me2me.mgmt.request.AppGagUserQueryDTO;
 import com.me2me.mgmt.request.AppUserDTO;
 import com.me2me.mgmt.request.AppUserQueryDTO;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.user.dto.SearchUserProfileDto;
+import com.me2me.user.dto.ShowUsergagDto;
 import com.me2me.user.dto.UserSignUpDto;
 import com.me2me.user.service.UserService;
 
@@ -86,6 +88,25 @@ public class AppUserController {
 			}
 		}
 		ModelAndView view = new ModelAndView("redirect:/appuser/query");
+		return view;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value="/gaguser/query")
+	@SystemControllerLog(description = "APP禁言用户查询")
+	public ModelAndView gagUserQuery(AppGagUserQueryDTO dto){
+		long uid = 0;
+		if(StringUtils.isNotBlank(dto.getUid())){
+			uid = Long.valueOf(dto.getUid());
+		}
+		
+		Response resp = userService.getGagUserPageByUid(uid, 1, 200);
+		if(null != resp && resp.getCode() == 200 && null != resp.getData()){
+			ShowUsergagDto data = (ShowUsergagDto)resp.getData();
+			dto.setData(data);
+		}
+		ModelAndView view = new ModelAndView("appuser/gagList");
+		view.addObject("dataObj",dto);
 		return view;
 	}
 }

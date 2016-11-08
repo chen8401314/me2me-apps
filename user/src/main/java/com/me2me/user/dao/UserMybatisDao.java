@@ -842,6 +842,29 @@ public class UserMybatisDao {
         List<UserGag> list = userGagMapper.selectByExample(example);
         return list!=null&&list.size()>0?list.get(0):null;
     }
+    
+    public List<UserGag> getGagUserPageByUid(long uid, int page, int pageSize){
+    	 UserGagExample example = new UserGagExample();
+         UserGagExample.Criteria criteria = example.createCriteria();
+         if(uid > 0){
+        	 criteria.andUidEqualTo(uid);
+         }
+         example.setOrderByClause("id desc limit "+((page-1)*pageSize)+", " + pageSize);
+         return userGagMapper.selectByExample(example);
+    }
+    
+    public int countGagUserPageByUid(long uid){
+    	UserGagExample example = new UserGagExample();
+        UserGagExample.Criteria criteria = example.createCriteria();
+        if(uid > 0){
+        	criteria.andUidEqualTo(uid);
+        }
+        return userGagMapper.countByExample(example);
+    }
+    
+    public void deleteGagUserById(long id){
+    	userGagMapper.deleteByPrimaryKey(id);
+    }
 
     public List<EntryPageConfig> getEntryPageConfig(EntryPageDto dto) {
         EntryPageConfigExample example = new EntryPageConfigExample();
@@ -856,4 +879,6 @@ public class UserMybatisDao {
         }
         return entryPageConfigMapper.selectByExample(example);
     }
+    
+    
 }
