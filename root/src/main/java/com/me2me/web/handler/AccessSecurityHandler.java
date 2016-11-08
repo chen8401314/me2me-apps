@@ -54,7 +54,7 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
 
     static {
         WHITE_LIST.add("/api/user/login");
-        WHITE_LIST.add("/root/api/user/signUp");
+        WHITE_LIST.add("/api/user/signUp");
         WHITE_LIST.add("/api/user/findEncrypt");
         WHITE_LIST.add("/api/user/verify");
         WHITE_LIST.add("/api/user/getBasicDataByType");
