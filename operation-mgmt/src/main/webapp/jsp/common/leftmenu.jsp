@@ -51,6 +51,7 @@ String sub = request.getParameter("s");
                 </a>
                 <ul class="sub">
                     <li <%if("5_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appuser/query">用户管理</a></li>
+                    <li <%if("5_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appuser/gaguser/query">禁言用户管理</a></li>
                 </ul>
             </li>
 			<li class="sub-menu">

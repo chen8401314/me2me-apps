@@ -47,9 +47,9 @@
 								<div class="panel-body">
 									<div class="form-inline" role="form">
 										操作项
-										<input type="text" id="optDesc" name="optDesc" value="${dataObj.optDesc }" class="form-control">&nbsp&nbsp;
+										<input type="text" id="optDesc" name="optDesc" value="${dataObj.optDesc }" class="form-control">&nbsp;&nbsp;
 										开始时间
-										<input type="text" id="startDate" name="startDate" value="${dataObj.startDate }" data-mask="9999-99-99" class="form-control" required>&nbsp&nbsp;
+										<input type="text" id="startDate" name="startDate" value="${dataObj.startDate }" data-mask="9999-99-99" class="form-control" required>&nbsp;&nbsp;
 										结束时间
 										<input type="text" id="endDate" name="endDate" value="${dataObj.endDate }" data-mask="9999-99-99" class="form-control" required>
 										<input type="submit" id="btnSearch" name="btnSearch" value="搜索" class="btn btn-info" />
