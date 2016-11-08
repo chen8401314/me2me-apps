@@ -130,18 +130,7 @@ public class UserServiceImpl implements UserService {
         userMybatisDao.createUserProfile(userProfile);
         log.info("userProfile is create");
         //添加默认关注v2.1.4
-        SystemConfig config = userMybatisDao.getSystemConfig();
-        if(config!=null&&!StringUtils.isEmpty(config.getDefaultFollow())){
-            String[] arrayDefaultFollow = config.getDefaultFollow().split(",");
-            for(String defaultFollow:arrayDefaultFollow){
-                UserFollow userFollow = new UserFollow();
-                userFollow.setSourceUid(user.getUid());
-                userFollow.setTargetUid(Long.parseLong(defaultFollow));
-
-                userMybatisDao.createFollow(userFollow);
-            }
-
-        }
+        defaultFollow(user.getUid());
 
         signUpSuccessDto.setUserName(user.getUserName());
         // 获取用户token
@@ -176,7 +165,20 @@ public class UserServiceImpl implements UserService {
         //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
+private void defaultFollow(long uid){
+    SystemConfig config = userMybatisDao.getSystemConfig();
+    if(config!=null&&!StringUtils.isEmpty(config.getDefaultFollow())){
+        String[] arrayDefaultFollow = config.getDefaultFollow().split(",");
+        for(String defaultFollow:arrayDefaultFollow){
+            UserFollow userFollow = new UserFollow();
+            userFollow.setSourceUid(uid);
+            userFollow.setTargetUid(Long.parseLong(defaultFollow));
 
+            userMybatisDao.createFollow(userFollow);
+        }
+
+    }
+}
     /**
      * 用户登录
      * @param userLoginDto
@@ -1693,6 +1695,8 @@ public class UserServiceImpl implements UserService {
             log.info("ThirdPartUser is create");
         }
 
+        //添加默认关注v2.1.4
+        defaultFollow(user1.getUid());
         if(!StringUtils.isEmpty(thirdPartSignUpDto.getJPushToken())) {
             List<JpushToken> jpushTokens = userMybatisDao.getJpushToken(user1.getUid());
             if(jpushTokens!=null&&jpushTokens.size()>0){
