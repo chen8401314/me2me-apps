@@ -56,6 +56,6 @@
         <!--<table tableName="jpush_token" domainObjectName="JpushToken"/>-->
         <!--<table tableName="third_part_user" domainObjectName="ThirdPartUser"/>-->
         <!--<table tableName="open_device_count" domainObjectName="OpenDeviceCount"/>-->
-        <table tableName="entry_page_config" domainObjectName="EntryPageConfig"/>
+        <!--<table tableName="entry_page_config" domainObjectName="EntryPageConfig"/>-->
     </context>
 </generatorConfiguration>
