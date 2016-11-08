@@ -29,9 +29,9 @@
     <profiles>
         <profile>
             <id>dev</id>
-            <activation>
+           <!-- <activation>
                 <activeByDefault>true</activeByDefault>
-            </activation>
+            </activation>-->
             <build>
                 <plugins>
                     <plugin>

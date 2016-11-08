@@ -761,6 +761,7 @@ public class UserMybatisDao {
 
     public SystemConfig getSystemConfig() {
         SystemConfigExample example = new SystemConfigExample();
+        example.setOrderByClause(" id desc");
         List<SystemConfig> systemConfigs =systemConfigMapper.selectByExample(example);
         return systemConfigs.size()>0?systemConfigs.get(0):null;
     }
