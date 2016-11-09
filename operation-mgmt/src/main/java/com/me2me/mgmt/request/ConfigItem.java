@@ -66,8 +66,8 @@ public class ConfigItem {
 	
 	public enum DBConfig{
 		DEFAULT_FOLLOW("default_follow", "默认关注，多个以逗号分隔"),
-		READ_COUNT_START("read_count_start", "阅读随机数开始"),
-		READ_COUNT_END("read_count_end", "阅读随机数结束 如果要2-6，开始设置2，结束设置5");
+		READ_COUNT_START("read_count_start", "阅读随机数开始;"),
+		READ_COUNT_END("read_count_end", "阅读随机数结束 如果开始时1，则结束想要啥就设置啥，如果开始是非1，则结束时想要的值减1");
 		
 		private final String key;
 		private final String desc;

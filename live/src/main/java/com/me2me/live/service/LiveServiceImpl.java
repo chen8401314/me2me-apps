@@ -176,13 +176,6 @@ public class LiveServiceImpl implements LiveService {
         content.setReadCount(content.getReadCount() + 1);
         contentService.updateContentById(content);
         // 添加成员数量
-        if(content.getReadCountDummy() == 0){
-            //为了保留乘以5.3后的数据
-            int readCount = (int)Math.rint(content.getReadCount()*5.3);
-            content.setReadCountDummy(readCount);
-            contentService.updateContentById(content);
-            liveCoverDto.setReadCount(readCount);
-        }else {
             SystemConfig systemConfig =userService.getSystemConfig();
             int start = systemConfig.getReadCountStart();
             int end = systemConfig.getReadCountEnd();
@@ -194,7 +187,7 @@ public class LiveServiceImpl implements LiveService {
             content.setReadCountDummy(readDummy);
             contentService.updateContentById(content);
             liveCoverDto.setReadCount(readDummy);
-        }
+
 
         List<LiveFavorite> list = liveMybatisDao.getFavoriteAll(topicId);
         if (list != null && list.size() > 0) {
@@ -687,7 +680,7 @@ public class LiveServiceImpl implements LiveService {
      * @return
      */
     @Override
-    public Response getLivesByUpdateTime(long uid, long updateTime) {
+    public Response LivesByUpdateTime(long uid, long updateTime) {
         log.info("getLivesByUpdateTime start ...");
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
         List<Topic> topicList = liveMybatisDao.getLivesByUpdateTime(updateTime);
@@ -736,13 +729,6 @@ public class LiveServiceImpl implements LiveService {
             }
             Content content = contentService.getContentByTopicId(topic.getId());
 
-            if(content.getReadCountDummy() == 0){
-                //为了保留乘以5.3后的数据
-                int readCount = (int)Math.rint(content.getReadCount()*5.3);
-                content.setReadCountDummy(readCount);
-                contentService.updateContentById(content);
-                showTopicElement.setReadCount(readCount);
-            }else {
                 SystemConfig systemConfig =userService.getSystemConfig();
                 int start = systemConfig.getReadCountStart();
                 int end = systemConfig.getReadCountEnd();
@@ -754,7 +740,7 @@ public class LiveServiceImpl implements LiveService {
                 content.setReadCountDummy(readDummy);
                 contentService.updateContentById(content);
                 showTopicElement.setReadCount(readDummy);
-            }
+
 
 
             showTopicListDto.getShowTopicElements().add(showTopicElement);
@@ -792,13 +778,6 @@ public class LiveServiceImpl implements LiveService {
             //直播阅读数
             Content content = contentService.getContentByTopicId(topic.getId());
 
-            if(content.getReadCountDummy() == 0){
-                //为了保留乘以5.3后的数据
-                int readCount = (int)Math.rint(content.getReadCount()*5.3);
-                content.setReadCountDummy(readCount);
-                contentService.updateContentById(content);
-                showTopicElement.setReadCount(readCount);
-            }else {
                 SystemConfig systemConfig =userService.getSystemConfig();
                 int start = systemConfig.getReadCountStart();
                 int end = systemConfig.getReadCountEnd();
@@ -810,7 +789,6 @@ public class LiveServiceImpl implements LiveService {
                 content.setReadCountDummy(readDummy);
                 contentService.updateContentById(content);
                 showTopicElement.setReadCount(readDummy);
-            }
 
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
@@ -1161,7 +1139,7 @@ public class LiveServiceImpl implements LiveService {
      * @return
      */
     @Override
-    public Response getMyLivesByUpdateTime(long uid, long updateTime) {
+    public Response MyLivesByUpdateTime(long uid, long updateTime) {
         log.info("getMyLives start ...");
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
         List<Long> topics = liveMybatisDao.getTopicId(uid);
