@@ -879,5 +879,7 @@ public class UserMybatisDao {
         return entryPageConfigMapper.selectByExample(example);
     }
     
-    
+    public void updateSystemConfig(SystemConfig config){
+    	systemConfigMapper.updateByPrimaryKeySelective(config);
+    }
 }

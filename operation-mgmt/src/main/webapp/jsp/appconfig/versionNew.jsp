@@ -76,7 +76,7 @@
                         </div>
                     </div>
                     <input type="submit" id="btnSave" value="提交" class="btn btn-danger" />
-                    <span class="btn btn-default"><a href="${ctx}/version/query">返回</a></span>
+                    <span class="btn btn-default"><a href="${ctx}/appconfig/version/query">返回</a></span>
                 </section>
                 <!-- page end-->
                 </form>

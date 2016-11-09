@@ -32,6 +32,7 @@ public class ConfigItem {
 	}
 	
 	public enum ConfigType{
+		DB(0, "数据库"),
 		STRING(1,"字符串"),
 		SET(2,"Set集合"),
 		LIST(3, "List集合"),
@@ -56,6 +57,37 @@ public class ConfigItem {
 
 		public int getType() {
 			return type;
+		}
+
+		public String getDesc() {
+			return desc;
+		}
+	}
+	
+	public enum DBConfig{
+		DEFAULT_FOLLOW("default_follow", "默认关注，多个以逗号分隔"),
+		READ_COUNT_START("read_count_start", "阅读随机数开始;"),
+		READ_COUNT_END("read_count_end", "阅读随机数结束 如果开始时1，则结束想要啥就设置啥，如果开始是非1，则结束时想要的值减1");
+		
+		private final String key;
+		private final String desc;
+		
+		private DBConfig(String key, String desc){
+			this.key = key;
+			this.desc = desc;
+		}
+		
+		public static DBConfig getByKey(String key){
+			for(DBConfig c : DBConfig.values()){
+				if(c.getKey().equals(key)){
+					return c;
+				}
+			}
+			return null;
+		}
+
+		public String getKey() {
+			return key;
 		}
 
 		public String getDesc() {
