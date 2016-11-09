@@ -47,13 +47,13 @@ public class LiveForUserJdbcDao {
     }
 
     public void favoriteTopic(long topicId,long uid){
-        String sql = "insert into live_favorite (uid,topic_id) values (?,?)";
-        jdbcTemplate.update(sql,uid,topicId);
+        String sql = "insert into live_favorite (uid,topic_id) values ("+uid+","+topicId+")";
+        jdbcTemplate.execute(sql);
     }
 
 
     public void addToSnsCircle(long owner,long uid){
-        String sql = "insert into sns_circle (owner,uid,internal_status)values(?,?,0)";
-        jdbcTemplate.update(sql,owner,uid);
+        String sql = "insert into sns_circle (owner,uid,internal_status)values("+owner+","+uid+",0)";
+        jdbcTemplate.execute(sql);
     }
 }
