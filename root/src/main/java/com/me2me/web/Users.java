@@ -649,7 +649,7 @@ public class Users extends BaseController {
     }
 
     /**
-     * 禁言接口
+     * 获取入口页配置接口
      */
     @ResponseBody
     @RequestMapping(value = "/entryPageConfig",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)

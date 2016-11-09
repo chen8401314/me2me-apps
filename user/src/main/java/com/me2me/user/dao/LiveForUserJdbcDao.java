@@ -40,4 +40,20 @@ public class LiveForUserJdbcDao {
         }
         return 0L;
     }
+
+    public List<Map<String,Object>> getTopicByUid(long uid){
+        String sql = "select * from topic where uid="+uid;
+        return jdbcTemplate.queryForList(sql);
+    }
+
+    public void favoriteTopic(long topicId,long uid){
+        String sql = "insert into live_favorite (uid,topic_id) values (?,?)";
+        jdbcTemplate.update(sql,uid,topicId);
+    }
+
+
+    public void addToSnsCircle(long owner,long uid){
+        String sql = "insert into sns_circle (owner,uid,internal_status)values(?,?,0)";
+        jdbcTemplate.update(sql,owner,uid);
+    }
 }

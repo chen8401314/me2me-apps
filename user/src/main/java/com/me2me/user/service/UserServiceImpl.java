@@ -165,18 +165,28 @@ public class UserServiceImpl implements UserService {
         //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
-private void defaultFollow(long uid){
-    SystemConfig config = userMybatisDao.getSystemConfig();
-    if(config!=null&&!StringUtils.isEmpty(config.getDefaultFollow())){
-        String[] arrayDefaultFollow = config.getDefaultFollow().split(",");
-        for(String defaultFollow:arrayDefaultFollow){
-            UserFollow userFollow = new UserFollow();
-            userFollow.setSourceUid(uid);
-            userFollow.setTargetUid(Long.parseLong(defaultFollow));
 
-            userMybatisDao.createFollow(userFollow);
-        }
+    private void defaultFollow(long uid){
+        SystemConfig config = userMybatisDao.getSystemConfig();
+        if(config!=null&&!StringUtils.isEmpty(config.getDefaultFollow())){
+            String[] arrayDefaultFollow = config.getDefaultFollow().split(",");
+            for(String defaultFollow:arrayDefaultFollow) {
+                long tid = Long.parseLong(defaultFollow);
+                UserFollow userFollow = new UserFollow();
+                userFollow.setSourceUid(uid);
+                userFollow.setTargetUid(tid);
 
+                userMybatisDao.createFollow(userFollow);
+
+                //关注所有王国
+                List<Map<String,Object>> topics = liveForUserJdbcDao.getTopicByUid(tid);
+                for(Map<String,Object> topic : topics){
+                    liveForUserJdbcDao.favoriteTopic((Long)topic.get("id"),uid);
+                }
+
+                //加入圈外人
+                liveForUserJdbcDao.addToSnsCircle(tid,uid);
+            }
     }
 }
     /**
