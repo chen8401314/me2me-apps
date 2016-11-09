@@ -257,7 +257,7 @@ public class Live extends BaseController {
 
         //埋点
 //        kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_IN_UPDATE);
-        return liveService.getLivesByUpdateTime(request.getUid(),request.getUpdateTime());
+        return liveService.LivesByUpdateTime(request.getUid(),request.getUpdateTime());
     }
 
     /**
@@ -282,7 +282,7 @@ public class Live extends BaseController {
     @RequestMapping(value = "/getMyLivesByUpdateTime",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response getMyLivesByUpdateTime(GetMyLivesRequest request){
-        return liveService.getMyLivesByUpdateTime(request.getUid(),request.getUpdateTime());
+        return liveService.MyLivesByUpdateTime(request.getUid(),request.getUpdateTime());
     }
 
 

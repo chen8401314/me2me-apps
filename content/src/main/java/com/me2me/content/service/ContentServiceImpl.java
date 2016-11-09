@@ -259,13 +259,6 @@ public class ContentServiceImpl implements ContentService {
                 log.info(" get imageCounts success");
                 squareDataElement.setImageCount(imageCounts);
 
-                if(content.getReadCountDummy() == 0){
-                    //为了保留乘以5.3后的数据
-                    int readCount = (int)Math.rint(content.getReadCount()*5.3);
-                    content.setReadCountDummy(readCount);
-                    contentMybatisDao.updateContentById(content);
-                    squareDataElement.setReadCount(readCount);
-                }else {
                     SystemConfig systemConfig =userService.getSystemConfig();
                     int start = systemConfig.getReadCountStart();
                     int end = systemConfig.getReadCountEnd();
@@ -277,7 +270,7 @@ public class ContentServiceImpl implements ContentService {
                     content.setReadCountDummy(readDummy);
                     contentMybatisDao.updateContentById(content);
                     squareDataElement.setReadCount(readDummy);
-                }
+
                 squareDataDto.getResults().add(squareDataElement);
         }
     }
@@ -950,13 +943,6 @@ private void localJpush(long toUid){
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
 
-            if(content.getReadCountDummy() == 0){
-                //为了保留乘以5.3后的数据
-                int readCount = (int)Math.rint(content.getReadCount()*5.3);
-                content.setReadCountDummy(readCount);
-                contentMybatisDao.updateContentById(content);
-                contentElement.setReadCount(readCount);
-            }else {
                 SystemConfig systemConfig =userService.getSystemConfig();
                 int start = systemConfig.getReadCountStart();
                 int end = systemConfig.getReadCountEnd();
@@ -968,7 +954,6 @@ private void localJpush(long toUid){
                 content.setReadCountDummy(readDummy);
                 contentMybatisDao.updateContentById(content);
                 contentElement.setReadCount(readDummy);
-            }
 
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
@@ -1069,13 +1054,6 @@ private void localJpush(long toUid){
         contentDetailDto.setTitle(content.getTitle());
         contentDetailDto.setIsLike(isLike(content.getId(),uid));
 
-        if(content.getReadCountDummy() == 0){
-            //为了保留乘以5.3后的数据
-            int readCount = (int)Math.rint(content.getReadCount()*5.3);
-            content.setReadCountDummy(readCount);
-            contentMybatisDao.updateContentById(content);
-            contentDetailDto.setReadCount(readCount);
-        }else {
             SystemConfig systemConfig =userService.getSystemConfig();
             int start = systemConfig.getReadCountStart();
             int end = systemConfig.getReadCountEnd();
@@ -1087,7 +1065,6 @@ private void localJpush(long toUid){
             content.setReadCountDummy(readDummy);
             contentMybatisDao.updateContentById(content);
             contentDetailDto.setReadCount(readDummy);
-        }
 
         contentDetailDto.setRights(content.getRights());
 
@@ -1316,13 +1293,6 @@ private void localJpush(long toUid){
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
 
-            if(content.getReadCountDummy() == 0){
-                //为了保留乘以5.3后的数据
-                int readCount = (int)Math.rint(content.getReadCount()*5.3);
-                content.setReadCountDummy(readCount);
-                contentMybatisDao.updateContentById(content);
-                contentElement.setReadCount(readCount);
-            }else {
                 SystemConfig systemConfig =userService.getSystemConfig();
                 int start = systemConfig.getReadCountStart();
                 int end = systemConfig.getReadCountEnd();
@@ -1334,7 +1304,6 @@ private void localJpush(long toUid){
                 content.setReadCountDummy(readDummy);
                 contentMybatisDao.updateContentById(content);
                 contentElement.setReadCount(readDummy);
-            }
 
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
@@ -1457,13 +1426,6 @@ private void localJpush(long toUid){
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
 
-            if(content.getReadCountDummy() == 0){
-                //为了保留乘以5.3后的数据
-                int readCount = (int)Math.rint(content.getReadCount()*5.3);
-                content.setReadCountDummy(readCount);
-                contentMybatisDao.updateContentById(content);
-                contentElement.setReadCount(readCount);
-            }else {
                 SystemConfig systemConfig =userService.getSystemConfig();
                 int start = systemConfig.getReadCountStart();
                 int end = systemConfig.getReadCountEnd();
@@ -1475,7 +1437,6 @@ private void localJpush(long toUid){
                 content.setReadCountDummy(readDummy);
                 contentMybatisDao.updateContentById(content);
                 contentElement.setReadCount(readDummy);
-            }
 
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
@@ -1824,13 +1785,7 @@ private void localJpush(long toUid){
             hottestContentElement.setIsLike(isLike(content.getId(),uid));
             hottestContentElement.setForwardUrl(content.getForwardUrl());
             hottestContentElement.setForwardTitle(content.getForwardTitle());
-            if(content.getReadCountDummy() == 0){
-                //为了保留乘以5.3后的数据
-                int readCount = (int)Math.rint(content.getReadCount()*5.3);
-                content.setReadCountDummy(readCount);
-                contentMybatisDao.updateContentById(content);
-                hottestContentElement.setReadCount(readCount);
-            }else {
+
                 SystemConfig systemConfig =userService.getSystemConfig();
                 int start = systemConfig.getReadCountStart();
                 int end = systemConfig.getReadCountEnd();
@@ -1842,7 +1797,6 @@ private void localJpush(long toUid){
                 content.setReadCountDummy(readDummy);
                 contentMybatisDao.updateContentById(content);
                 hottestContentElement.setReadCount(readDummy);
-            }
 
 //            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
 //            log.info("getContentReviewTop3ByCid success");
@@ -1930,26 +1884,9 @@ private void localJpush(long toUid){
             hottestContentElement.setForwardUrl(content.getForwardUrl());
             hottestContentElement.setForwardTitle(content.getForwardTitle());
             //为了update查询的
-            Content content1 = contentMybatisDao.getContentById(content.getId());
-            if(content.getReadCountDummy() == 0){
-                //为了保留乘以5.3后的数据
-                int readCount = (int)Math.rint(content.getReadCount()*5.3);
-                content1.setReadCountDummy(readCount);
-                contentMybatisDao.updateContent(content1);
-                hottestContentElement.setReadCount(readCount);
-            }else {
-                SystemConfig systemConfig =userService.getSystemConfig();
-                int start = systemConfig.getReadCountStart();
-                int end = systemConfig.getReadCountEnd();
-                int readCountDummy = content.getReadCountDummy();
-                Random random = new Random();
-                //取1-6的随机数每次添加
-                int value = random.nextInt(end)+start;
-                int readDummy = readCountDummy+value;
-                content1.setReadCountDummy(readDummy);
-                contentMybatisDao.updateContentById(content1);
-                hottestContentElement.setReadCount(readDummy);
-            }
+//          Content content1 = contentMybatisDao.getContentById(content.getId());
+            int readCountDummy = content.getReadCountDummy();
+            hottestContentElement.setReadCount(readCountDummy);
 
             hottestContentElement.setRights(content.getRights());
 //            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
@@ -2049,13 +1986,6 @@ private void localJpush(long toUid){
             String cover = content.getConverImage();
             contentElement.setReviewCount(content.getReviewCount());
 
-            if(content.getReadCountDummy() == 0){
-                //为了保留乘以5.3后的数据
-                int readCount = (int)Math.rint(content.getReadCount()*5.3);
-                content.setReadCountDummy(readCount);
-                contentMybatisDao.updateContentById(content);
-                contentElement.setReadCount(readCount);
-            }else {
                 SystemConfig systemConfig =userService.getSystemConfig();
                 int start = systemConfig.getReadCountStart();
                 int end = systemConfig.getReadCountEnd();
@@ -2067,7 +1997,6 @@ private void localJpush(long toUid){
                 content.setReadCountDummy(readDummy);
                 contentMybatisDao.updateContentById(content);
                 contentElement.setReadCount(readDummy);
-            }
 
             contentElement.setRights(content.getRights());
             if(!StringUtils.isEmpty(cover)) {
@@ -2155,13 +2084,6 @@ private void localJpush(long toUid){
             contentElement.setIsLike(isLike(content.getId(), uid));
             contentElement.setReviewCount(content.getReviewCount());
 
-            if(content.getReadCountDummy() == 0){
-                //为了保留乘以5.3后的数据
-                int readCount = (int)Math.rint(content.getReadCount()*5.3);
-                content.setReadCountDummy(readCount);
-                contentMybatisDao.updateContentById(content);
-                contentElement.setReadCount(readCount);
-            }else {
                 SystemConfig systemConfig =userService.getSystemConfig();
                 int start = systemConfig.getReadCountStart();
                 int end = systemConfig.getReadCountEnd();
@@ -2173,7 +2095,6 @@ private void localJpush(long toUid){
                 content.setReadCountDummy(readDummy);
                 contentMybatisDao.updateContentById(content);
                 contentElement.setReadCount(readDummy);
-            }
 
             String cover = content.getConverImage();
             if (!StringUtils.isEmpty(cover)) {
@@ -2257,13 +2178,6 @@ private void localJpush(long toUid){
             contentElement.setIsLike(isLike(content.getId(),uid));
             contentElement.setReviewCount(content.getReviewCount());
 
-            if(content.getReadCountDummy() == 0){
-                //为了保留乘以5.3后的数据
-                int readCount = (int)Math.rint(content.getReadCount()*5.3);
-                content.setReadCountDummy(readCount);
-                contentMybatisDao.updateContentById(content);
-                contentElement.setReadCount(readCount);
-            }else {
                 SystemConfig systemConfig =userService.getSystemConfig();
                 int start = systemConfig.getReadCountStart();
                 int end = systemConfig.getReadCountEnd();
@@ -2275,7 +2189,6 @@ private void localJpush(long toUid){
                 content.setReadCountDummy(readDummy);
                 contentMybatisDao.updateContentById(content);
                 contentElement.setReadCount(readDummy);
-            }
 
             String cover =  content.getConverImage();
             if(!StringUtils.isEmpty(cover)){

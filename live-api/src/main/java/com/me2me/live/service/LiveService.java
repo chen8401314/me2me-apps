@@ -51,7 +51,7 @@ public interface LiveService {
      * @param updateTime
      * @return
      */
-    Response getLivesByUpdateTime(long uid,long updateTime);
+    Response LivesByUpdateTime(long uid,long updateTime);
 
     /**
      * 关注/取消关注我参与的直播
@@ -104,7 +104,7 @@ public interface LiveService {
      * 获取直播列表按时间线
      * @return
      */
-    Response getMyLivesByUpdateTime(long uid,long updateTime);
+    Response MyLivesByUpdateTime(long uid,long updateTime);
 
     Response getInactiveLive(long uid,long updateTime);
 
