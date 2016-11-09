@@ -176,18 +176,21 @@ public class LiveServiceImpl implements LiveService {
         content.setReadCount(content.getReadCount() + 1);
         contentService.updateContentById(content);
         // 添加成员数量
-            SystemConfig systemConfig =userService.getSystemConfig();
+        if(content.getReadCount() == 1){
+            liveCoverDto.setReadCount(1);
+        }else {
+            SystemConfig systemConfig = userService.getSystemConfig();
             int start = systemConfig.getReadCountStart();
             int end = systemConfig.getReadCountEnd();
             int readCountDummy = content.getReadCountDummy();
             Random random = new Random();
             //取1-6的随机数每次添加
-            int value = random.nextInt(end)+start;
-            int readDummy = readCountDummy+value;
+            int value = random.nextInt(end) + start;
+            int readDummy = readCountDummy + value;
             content.setReadCountDummy(readDummy);
             contentService.updateContentById(content);
             liveCoverDto.setReadCount(readDummy);
-
+        }
 
         List<LiveFavorite> list = liveMybatisDao.getFavoriteAll(topicId);
         if (list != null && list.size() > 0) {
@@ -648,7 +651,7 @@ public class LiveServiceImpl implements LiveService {
      * @return
      */
     @Override
-    public Response getMyLives(long uid, long sinceId) {
+    public Response MyLives(long uid, long sinceId) {
         log.info("getMyLives start ...");
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
         List<Long> topics = liveMybatisDao.getTopicId(uid);
@@ -666,7 +669,7 @@ public class LiveServiceImpl implements LiveService {
      * @return
      */
     @Override
-    public Response getLives(long uid, long sinceId) {
+    public Response Lives(long uid, long sinceId) {
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
         List<Topic> topicList = liveMybatisDao.getLives(sinceId);
         builder(uid, showTopicListDto, topicList);
@@ -740,8 +743,6 @@ public class LiveServiceImpl implements LiveService {
                 content.setReadCountDummy(readDummy);
                 contentService.updateContentById(content);
                 showTopicElement.setReadCount(readDummy);
-
-
 
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }

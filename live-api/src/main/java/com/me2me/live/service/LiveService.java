@@ -36,14 +36,14 @@ public interface LiveService {
      * 获取直播列表
      * @return
      */
-    Response getMyLives(long uid,long sinceId);
+    Response MyLives(long uid,long sinceId);
 
     /**
      * 获取所有未结束的直播列表
      * @param uid
      * @return
      */
-    Response getLives(long uid,long sinceId);
+    Response Lives(long uid,long sinceId);
 
     /**
      * 按时间倒序排列

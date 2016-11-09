@@ -271,7 +271,7 @@ public class Live extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Long.MAX_VALUE);
         }
-        return liveService.getMyLives(request.getUid(),request.getSinceId());
+        return liveService.MyLives(request.getUid(),request.getSinceId());
     }
 
     /**
