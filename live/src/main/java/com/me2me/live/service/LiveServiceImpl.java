@@ -176,19 +176,22 @@ public class LiveServiceImpl implements LiveService {
         content.setReadCount(content.getReadCount() + 1);
         contentService.updateContentById(content);
         // 添加成员数量
-        if(content.getReadCount() == 1){
+        Content content2 = contentService.getContentByTopicId(topicId);
+        if(content2.getReadCount() == 1 || content2.getReadCount() == 2){
             liveCoverDto.setReadCount(1);
+            content2.setReadCountDummy(1);
+            contentService.updateContentById(content2);
         }else {
             SystemConfig systemConfig = userService.getSystemConfig();
             int start = systemConfig.getReadCountStart();
             int end = systemConfig.getReadCountEnd();
-            int readCountDummy = content.getReadCountDummy();
+            int readCountDummy = content2.getReadCountDummy();
             Random random = new Random();
             //取1-6的随机数每次添加
             int value = random.nextInt(end) + start;
             int readDummy = readCountDummy + value;
-            content.setReadCountDummy(readDummy);
-            contentService.updateContentById(content);
+            content2.setReadCountDummy(readDummy);
+            contentService.updateContentById(content2);
             liveCoverDto.setReadCount(readDummy);
         }
 
@@ -731,22 +734,9 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setFavorite(Specification.LiveFavorite.NORMAL.index);
             }
             Content content = contentService.getContentByTopicId(topic.getId());
-
-            if(content.getReadCount() == 0){
-                showTopicElement.setReadCount(0);
-            }else {
-                SystemConfig systemConfig = userService.getSystemConfig();
-                int start = systemConfig.getReadCountStart();
-                int end = systemConfig.getReadCountEnd();
-                int readCountDummy = content.getReadCountDummy();
-                Random random = new Random();
-                //取1-6的随机数每次添加
-                int value = random.nextInt(end) + start;
-                int readDummy = readCountDummy + value;
-                content.setReadCountDummy(readDummy);
-                contentService.updateContentById(content);
-                showTopicElement.setReadCount(readDummy);
-            }
+            int readCountDummy = content.getReadCountDummy();
+            showTopicElement.setReadCount(readCountDummy);
+//            }
 
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
@@ -782,18 +772,8 @@ public class LiveServiceImpl implements LiveService {
             }
             //直播阅读数
             Content content = contentService.getContentByTopicId(topic.getId());
-
-                SystemConfig systemConfig =userService.getSystemConfig();
-                int start = systemConfig.getReadCountStart();
-                int end = systemConfig.getReadCountEnd();
-                int readCountDummy = content.getReadCountDummy();
-                Random random = new Random();
-                //取1-6的随机数每次添加
-                int value = random.nextInt(end)+start;
-                int readDummy = readCountDummy+value;
-                content.setReadCountDummy(readDummy);
-                contentService.updateContentById(content);
-                showTopicElement.setReadCount(readDummy);
+            int readCountDummy = content.getReadCountDummy();
+            showTopicElement.setReadCount(readCountDummy);
 
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }

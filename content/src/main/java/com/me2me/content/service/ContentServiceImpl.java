@@ -259,17 +259,8 @@ public class ContentServiceImpl implements ContentService {
                 log.info(" get imageCounts success");
                 squareDataElement.setImageCount(imageCounts);
 
-                    SystemConfig systemConfig =userService.getSystemConfig();
-                    int start = systemConfig.getReadCountStart();
-                    int end = systemConfig.getReadCountEnd();
                     int readCountDummy = content.getReadCountDummy();
-                    Random random = new Random();
-                    //取1-6的随机数每次添加
-                    int value = random.nextInt(end)+start;
-                    int readDummy = readCountDummy+value;
-                    content.setReadCountDummy(readDummy);
-                    contentMybatisDao.updateContentById(content);
-                    squareDataElement.setReadCount(readDummy);
+                    squareDataElement.setReadCount(readCountDummy);
 
                 squareDataDto.getResults().add(squareDataElement);
         }
@@ -1786,17 +1777,17 @@ private void localJpush(long toUid){
             hottestContentElement.setForwardUrl(content.getForwardUrl());
             hottestContentElement.setForwardTitle(content.getForwardTitle());
 
-                SystemConfig systemConfig =userService.getSystemConfig();
-                int start = systemConfig.getReadCountStart();
-                int end = systemConfig.getReadCountEnd();
+//                SystemConfig systemConfig =userService.getSystemConfig();
+//                int start = systemConfig.getReadCountStart();
+//                int end = systemConfig.getReadCountEnd();
                 int readCountDummy = content.getReadCountDummy();
-                Random random = new Random();
-                //取1-6的随机数每次添加
-                int value = random.nextInt(end)+start;
-                int readDummy = readCountDummy+value;
-                content.setReadCountDummy(readDummy);
-                contentMybatisDao.updateContentById(content);
-                hottestContentElement.setReadCount(readDummy);
+//                Random random = new Random();
+//                //取1-6的随机数每次添加
+//                int value = random.nextInt(end)+start;
+//                int readDummy = readCountDummy+value;
+//                content.setReadCountDummy(readDummy);
+//                contentMybatisDao.updateContentById(content);
+                hottestContentElement.setReadCount(readCountDummy);
 
 //            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
 //            log.info("getContentReviewTop3ByCid success");
@@ -1986,17 +1977,8 @@ private void localJpush(long toUid){
             String cover = content.getConverImage();
             contentElement.setReviewCount(content.getReviewCount());
 
-                SystemConfig systemConfig =userService.getSystemConfig();
-                int start = systemConfig.getReadCountStart();
-                int end = systemConfig.getReadCountEnd();
                 int readCountDummy = content.getReadCountDummy();
-                Random random = new Random();
-                //取1-6的随机数每次添加
-                int value = random.nextInt(end)+start;
-                int readDummy = readCountDummy+value;
-                content.setReadCountDummy(readDummy);
-                contentMybatisDao.updateContentById(content);
-                contentElement.setReadCount(readDummy);
+                contentElement.setReadCount(readCountDummy);
 
             contentElement.setRights(content.getRights());
             if(!StringUtils.isEmpty(cover)) {
@@ -2178,17 +2160,8 @@ private void localJpush(long toUid){
             contentElement.setIsLike(isLike(content.getId(),uid));
             contentElement.setReviewCount(content.getReviewCount());
 
-                SystemConfig systemConfig =userService.getSystemConfig();
-                int start = systemConfig.getReadCountStart();
-                int end = systemConfig.getReadCountEnd();
                 int readCountDummy = content.getReadCountDummy();
-                Random random = new Random();
-                //取1-6的随机数每次添加
-                int value = random.nextInt(end)+start;
-                int readDummy = readCountDummy+value;
-                content.setReadCountDummy(readDummy);
-                contentMybatisDao.updateContentById(content);
-                contentElement.setReadCount(readDummy);
+                contentElement.setReadCount(readCountDummy);
 
             String cover =  content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
