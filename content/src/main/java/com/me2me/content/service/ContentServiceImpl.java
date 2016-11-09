@@ -922,7 +922,7 @@ private void localJpush(long toUid){
     }
 
     @Override
-    public Response myPublishByType(long uid, int sinceId, int type,long updateTime) {
+    public Response myPublishByType(long uid, int sinceId, int type,long updateTime,long currentUid) {
         MyPublishDto dto = new MyPublishDto();
         dto.setType(type);
         dto.setSinceId(sinceId);
@@ -996,11 +996,11 @@ private void localJpush(long toUid){
                 int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
                 contentElement.setImageCount(imageCounts);
             }
-            int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
+            int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), currentUid);
             log.info("get content favorite success");
             //直播是否收藏
             contentElement.setFavorite(favorite);
-            contentElement.setIsLike(isLike(content.getId(),uid));
+            contentElement.setIsLike(isLike(content.getId(),currentUid));
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setPersonCount(content.getPersonCount());
             contentElement.setFavoriteCount(content.getFavoriteCount());
