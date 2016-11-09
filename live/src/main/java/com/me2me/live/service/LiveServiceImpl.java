@@ -732,17 +732,21 @@ public class LiveServiceImpl implements LiveService {
             }
             Content content = contentService.getContentByTopicId(topic.getId());
 
-                SystemConfig systemConfig =userService.getSystemConfig();
+            if(content.getReadCount() == 0){
+                showTopicElement.setReadCount(0);
+            }else {
+                SystemConfig systemConfig = userService.getSystemConfig();
                 int start = systemConfig.getReadCountStart();
                 int end = systemConfig.getReadCountEnd();
                 int readCountDummy = content.getReadCountDummy();
                 Random random = new Random();
                 //取1-6的随机数每次添加
-                int value = random.nextInt(end)+start;
-                int readDummy = readCountDummy+value;
+                int value = random.nextInt(end) + start;
+                int readDummy = readCountDummy + value;
                 content.setReadCountDummy(readDummy);
                 contentService.updateContentById(content);
                 showTopicElement.setReadCount(readDummy);
+            }
 
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
