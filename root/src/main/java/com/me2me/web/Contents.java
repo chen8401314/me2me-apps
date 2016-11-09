@@ -290,7 +290,7 @@ public class Contents extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.myPublishByType(request.getCustomerId(),request.getSinceId(),request.getType(),request.getUpdateTime());
+        return contentService.myPublishByType(request.getCustomerId(),request.getSinceId(),request.getType(),request.getUpdateTime(),request.getUid());
     }
 
 }
