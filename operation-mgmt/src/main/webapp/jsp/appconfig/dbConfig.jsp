@@ -33,10 +33,6 @@ var modifyConfig = function(key, desc){
 var modifyCommit = function(type){
 	var key = $("#ckey").val();
 	var value = $("#cvalue").val();
-	if(value == ''){
-		alert("配置值不能为空!");
-		return;
-	}
 	var configId = $("#configid").val();
 
 	$.ajax({
