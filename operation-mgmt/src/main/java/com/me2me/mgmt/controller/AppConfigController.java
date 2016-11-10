@@ -153,9 +153,9 @@ public class AppConfigController {
 	public String modifyConfig(@RequestParam("k")String key, 
 			@RequestParam("v")String value, 
 			@RequestParam("t")int type){
-		if(StringUtils.isBlank(key) || StringUtils.isBlank(value)){
-			logger.warn("key和value不能为空");
-			return "key和value不能为空";
+		if(StringUtils.isBlank(key)){
+			logger.warn("key不能为空");
+			return "key不能为空";
 		}
 		ConfigItem.ConfigType configType = ConfigItem.ConfigType.getByType(type);
 		if(null == configType){
@@ -182,9 +182,9 @@ public class AppConfigController {
 	public String modifyDBConfig(@RequestParam("k")String key, 
 			@RequestParam("v")String value,
 			@RequestParam("i")long cid){
-		if(StringUtils.isBlank(key) || StringUtils.isBlank(value)){
-			logger.warn("key和value不能为空");
-			return "key和value不能为空";
+		if(StringUtils.isBlank(key)){
+			logger.warn("key不能为空");
+			return "key不能为空";
 		}
 		
 		if(cid <= 0){
