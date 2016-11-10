@@ -254,6 +254,8 @@ public interface UserService {
 
     SystemConfig getSystemConfig();
 
+    boolean isAdmin(long uid);
+
 
 
     Response getEntryPageConfig(EntryPageDto dto);

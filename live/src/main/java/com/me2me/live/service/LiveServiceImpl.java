@@ -949,8 +949,7 @@ public class LiveServiceImpl implements LiveService {
         try {
             //验证是否是王国国王
             Topic topic = liveMybatisDao.getTopicById(topicId);
-            UserProfile profile = userService.getUserProfileByUid(uid);
-            if(topic.getUid()!=uid&&profile.getIsPromoter()!=1){
+            if(topic.getUid()!=uid&&!userService.isAdmin(uid)){
                 return Response.failure(ResponseStatus.TOPIC_FRAGMENT_CAN_NOT_DELETE.status, ResponseStatus.TOPIC_FRAGMENT_CAN_NOT_DELETE.message);
             }
             //从topicFragment中删除
