@@ -44,4 +44,6 @@ public class LiveCoverDto implements BaseEntity{
     private String liveWebUrl;
 
     private int v_lv;
+
+    private int hasFavorite;
 }
