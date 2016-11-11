@@ -137,6 +137,7 @@
 	<script src="${ctx}/js/dynamic_table_init_0_asc.js"></script>
 	<script src="${ctx}/js/jquery.tagsinput.js"></script>
 	<script src="${ctx}/js/form-component.js"></script>
+	<script src="${ctx}/js/bootstrap-switch.js"></script>
 	<script src="${ctx}/js/common-scripts.js"></script>
 	<script src="${ctx}/js/advanced-form-components.js"></script>
 	<script type="text/javascript" src="${ctx}/assets/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>

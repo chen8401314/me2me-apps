@@ -3274,7 +3274,7 @@ table.sliders tr td {
 .has-switch {
     border-radius: 30px;
     -webkit-border-radius: 30px;
-    display: inline-block;
+   /* display: inline-block;*/
     cursor: pointer;
     line-height: 1.231;
     overflow: hidden;
