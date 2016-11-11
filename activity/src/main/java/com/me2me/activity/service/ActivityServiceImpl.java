@@ -1438,4 +1438,34 @@ public class ActivityServiceImpl implements ActivityService {
 		return Response.success(dto);
 	}
 
+	@Override
+	public Response getLuckActList(int activityName, Date startTime,
+			Date endTime) {
+		List<LuckPrize> pList = activityMybatisDao.getPrizeListByActivityName(activityName);
+		Map<String, LuckPrize> pMap = new HashMap<String, LuckPrize>();
+		if(null != pList && pList.size() > 0){
+			for(LuckPrize lp : pList){
+				pMap.put(lp.getAwardId()+"", lp);
+			}
+		}
+		
+		ShowLuckActStatDTO slasDTO = new ShowLuckActStatDTO();
+		LuckActStatDTO stat = activityMybatisDao.getLuckActStat(activityName, startTime, endTime);
+		List<LuckAct> luckActList = activityMybatisDao.getPrizeLuckActListByActivityNameAndStartTimeAndEndTime(activityName, startTime, endTime);
+		ShowLuckActStatDTO.LuckActStatElement e = new ShowLuckActStatDTO.LuckActStatElement();
+		e.setDateStr("时间段");
+		e.setEnterUV(stat.getEnterUV());
+		e.setEnterPV(stat.getEnterPV());
+		if(null != luckActList && luckActList.size() > 0){
+			e.setPrizeNum(luckActList.size());
+			e.setPrizeNames(this.getPrizeNames(luckActList, pMap));
+		}else{
+			e.setPrizeNum(0);
+			e.setPrizeNames("");
+		}
+		slasDTO.getResult().add(e);
+		
+		return Response.success(slasDTO);
+	}
+
 }

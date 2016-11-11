@@ -10,6 +10,12 @@ public class LotteryStatusQueryDTO {
 	@Getter
     @Setter
 	private int active;
+	@Getter
+    @Setter
+	private String startTime;
+	@Getter
+    @Setter
+	private String endTime;
 	
 	@Getter
     @Setter

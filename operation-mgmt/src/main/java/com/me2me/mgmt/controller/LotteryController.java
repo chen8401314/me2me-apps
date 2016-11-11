@@ -1,10 +1,13 @@
 package com.me2me.mgmt.controller;
 
 import java.text.ParseException;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +34,8 @@ import com.me2me.mgmt.syslog.SystemControllerLog;
 @RequestMapping("/lottery")
 public class LotteryController {
 
+	private static final Logger logger = LoggerFactory.getLogger(LotteryController.class);
+	
 	@Autowired
     private ActivityService activityService;
 	
@@ -207,6 +212,49 @@ public class LotteryController {
 		}
 		view.addObject("dataObj",dto);
 		
+		return view;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = "/statusQuery")
+	@SystemControllerLog(description = "抽奖状态查询")
+	public ModelAndView statusQuery(LotteryStatusQueryDTO dto){
+		if(dto.getActive() <= 0){
+			dto.setActive(1);
+		}
+		
+		ModelAndView view = new ModelAndView("lottery/statusList");
+		
+		Date startTime = null;
+		Date endTime = null;
+		try{
+			if(StringUtils.isNotBlank(dto.getStartTime())){
+				startTime = DateUtil.string2date(dto.getStartTime(), "yyyy-MM-dd HH:mm:ss");
+			}
+			if(StringUtils.isNotBlank(dto.getEndTime())){
+				endTime = DateUtil.string2date(dto.getEndTime(), "yyyy-MM-dd HH:mm:ss");
+			}
+		}catch(Exception e){
+			logger.error("时间格式错误", e);
+			view.addObject("errMsg","日期格式错误，应为yyyy-MM-dd HH:mm:ss");
+			return view;
+		}
+		
+		Response resp = activityService.getLuckActList(dto.getActive(), startTime, endTime);
+		
+		if(null != resp && resp.getCode() == 200 && null != resp.getData()){
+			ShowLuckActStatDTO slasDTO = (ShowLuckActStatDTO) resp.getData();
+			if(null != slasDTO.getResult() && slasDTO.getResult().size() > 0){
+				for(ShowLuckActStatDTO.LuckActStatElement e : slasDTO.getResult()){
+					if(StringUtils.isNotBlank(e.getPrizeNames())){//奖品分行展示
+						e.setPrizeNames(e.getPrizeNames().replaceAll(";", "<br/>"));
+					}
+				}
+			}
+			dto.setData(slasDTO);
+		}
+		
+		view.addObject("dataObj",dto);
 		return view;
 	}
 }

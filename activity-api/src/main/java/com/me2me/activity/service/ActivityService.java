@@ -8,6 +8,7 @@ import com.me2me.activity.dto.LuckStatusDTO;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.common.web.Response;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -87,4 +88,6 @@ public interface ActivityService {
     Response updateLuckStatus(LuckStatusDTO dto);
     
     Response getLuckPrizeList(int activityName);
+    
+    Response getLuckActList(int activityName, Date startTime, Date endTime);
 }

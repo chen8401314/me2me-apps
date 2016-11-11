@@ -32,7 +32,7 @@
 		<!--sidebar start-->
 		<jsp:include page="../common/leftmenu.jsp" flush="false">
 			<jsp:param name="t" value="4" />
-			<jsp:param name="s" value="4_3" />
+			<jsp:param name="s" value="4_4" />
 		</jsp:include>
 		<!--sidebar end-->
 
