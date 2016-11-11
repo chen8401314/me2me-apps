@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.me2me.mgmt.Utils.DateUtil;
+import com.me2me.common.utils.DateUtil;
 import com.me2me.mgmt.dal.entity.MgmtSysLog;
 import com.me2me.mgmt.dal.entity.MgmtUser;
 import com.me2me.mgmt.manager.MgmtSysLogManager;

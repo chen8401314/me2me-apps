@@ -1,9 +1,12 @@
 package com.me2me.activity.dao;
 
 import com.google.common.base.Strings;
+import com.me2me.activity.dto.LuckActStat2DTO;
+import com.me2me.activity.dto.LuckActStatDTO;
 import com.me2me.activity.mapper.*;
 import com.me2me.activity.model.*;
 import com.me2me.common.web.Specification;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -344,5 +347,32 @@ public class ActivityMybatisDao {
 
     public void addWinners(LuckWinners winners){
         luckWinnersMapper.insertSelective(winners);
+    }
+    
+    public LuckActStatDTO getLuckActStat(int activityName, Date startTime, Date endTime){
+    	List<LuckActStatDTO> list = luckActMapper.getLuctActStatByActivityName(activityName, startTime, endTime);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
+    
+    public List<LuckActStat2DTO> getLuckActStat2List(int activityName){
+    	return luckActMapper.getLuctActStat2ByActivityName(activityName);
+    }
+    
+    public List<LuckAct> getPrizeLuckActListByActivityNameAndStartTimeAndEndTime(int activityName, Date startTime, Date endTime){
+    	LuckActExample example = new LuckActExample();
+    	LuckActExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityNameEqualTo(activityName);
+    	criteria.andAwardIdGreaterThan(0);//只要中奖的
+    	if(null != startTime){
+    		criteria.andCreatTimeGreaterThanOrEqualTo(startTime);
+    	}
+    	if(null != endTime){
+    		criteria.andCreatTimeLessThanOrEqualTo(endTime);
+    	}
+    	List<LuckAct> luckActs = luckActMapper.selectByExample(example);
+    	return luckActs;
     }
 }

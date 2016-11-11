@@ -227,23 +227,23 @@ public class ContentMybatisDao {
         if(editorContentDto.getArticleType()==1){
             // PGC
             criteria.andTypeEqualTo(Specification.ArticleType.EDITOR.index);
-            ContentExample.Criteria criteria2 = example.createCriteria();
+//            ContentExample.Criteria criteria2 = example.createCriteria();
             if(StringUtils.isNotBlank(editorContentDto.getKeyword())){
             	criteria.andTitleLike("%"+editorContentDto.getKeyword()+"%");
             }
-            criteria2.andTypeEqualTo(Specification.ArticleType.ACTIVITY.index);
+//            criteria2.andTypeEqualTo(Specification.ArticleType.ACTIVITY.index);
             criteria.andStatusNotEqualTo(1);
-            example.or(criteria2);
+//            example.or(criteria2);
         }else{
             // UGC
             criteria.andTypeEqualTo(Specification.ArticleType.ORIGIN.index);
-            ContentExample.Criteria criteria2 = example.createCriteria();
+//            ContentExample.Criteria criteria2 = example.createCriteria();
             if(StringUtils.isNotBlank(editorContentDto.getKeyword())){
             	criteria.andTitleLike("%"+editorContentDto.getKeyword()+"%");
             }
-            criteria2.andTypeEqualTo(Specification.ArticleType.LIVE.index);
+//            criteria2.andTypeEqualTo(Specification.ArticleType.LIVE.index);
             criteria.andStatusNotEqualTo(1);
-            example.or(criteria2);
+//            example.or(criteria2);
         }
     }
 

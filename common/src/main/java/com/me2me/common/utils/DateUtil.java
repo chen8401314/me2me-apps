@@ -1,4 +1,4 @@
-package com.me2me.mgmt.Utils;
+package com.me2me.common.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

@@ -3,16 +3,19 @@ package com.me2me.mgmt.controller;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.me2me.activity.dto.ShowLuckActStatDTO;
 import com.me2me.activity.dto.ShowLuckActsDTO;
 import com.me2me.activity.dto.ShowLuckWinnersDTO;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.web.Response;
 import com.me2me.mgmt.request.LotteryOptDTO;
+import com.me2me.mgmt.request.LotteryStatusQueryDTO;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 
 @Controller
@@ -59,6 +62,30 @@ public class LotteryController {
 		}
 		view.addObject("dataObj",dto);
 		
+		return view;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = "/statusStatQuery")
+	@SystemControllerLog(description = "抽奖状态查询")
+	public ModelAndView statusStatQuery(LotteryStatusQueryDTO dto){
+		ModelAndView view = new ModelAndView("lottery/statusStat");
+		if(dto.getActive() <= 0){
+			dto.setActive(1);//默认为小米活动
+		}
+		Response resp = activityService.getLuckActStatList(dto.getActive());
+		if(null != resp && resp.getCode() == 200 && null != resp.getData()){
+			ShowLuckActStatDTO slasDTO = (ShowLuckActStatDTO) resp.getData();
+			if(null != slasDTO.getResult() && slasDTO.getResult().size() > 0){
+				for(ShowLuckActStatDTO.LuckActStatElement e : slasDTO.getResult()){
+					if(StringUtils.isNotBlank(e.getPrizeNames())){//奖品分行展示
+						e.setPrizeNames(e.getPrizeNames().replaceAll(";", "<br/>"));
+					}
+				}
+			}
+			dto.setData(slasDTO);
+		}
+		view.addObject("dataObj",dto);
 		return view;
 	}
 }

@@ -5,6 +5,7 @@ import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dto.*;
 import com.me2me.activity.model.*;
 import com.me2me.common.Constant;
+import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.EncryUtil;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -1210,5 +1211,142 @@ public class ActivityServiceImpl implements ActivityService {
         int j=(int)big-(int)small;//最大值-中奖最小值 这样永远是不中奖几率 前提不中奖数据必须>中奖数据
         return j;
     }
+
+	@Override
+	public Response getLuckActStatList(int activityName) {
+		List<LuckPrize> pList = activityMybatisDao.getPrizeListByActivityName(activityName);
+		Map<String, LuckPrize> pMap = new HashMap<String, LuckPrize>();
+		if(null != pList && pList.size() > 0){
+			for(LuckPrize lp : pList){
+				pMap.put(lp.getAwardId()+"", lp);
+			}
+		}
+		
+		ShowLuckActStatDTO slasDTO = new ShowLuckActStatDTO();
+		//过去1小时内统计
+		Date now = new Date();
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(now);
+		cal.add(Calendar.HOUR_OF_DAY, -1);
+		Date lastOneHour = cal.getTime();
+		LuckActStatDTO stat = activityMybatisDao.getLuckActStat(activityName, lastOneHour, now);
+		List<LuckAct> luckActList = activityMybatisDao.getPrizeLuckActListByActivityNameAndStartTimeAndEndTime(activityName, lastOneHour, now);
+		ShowLuckActStatDTO.LuckActStatElement e = new ShowLuckActStatDTO.LuckActStatElement();
+		e.setDateStr("1小时内");
+		e.setEnterUV(stat.getEnterUV());
+		e.setEnterPV(stat.getEnterPV());
+		if(null != luckActList && luckActList.size() > 0){
+			e.setPrizeNum(luckActList.size());
+			e.setPrizeNames(this.getPrizeNames(luckActList, pMap));
+		}else{
+			e.setPrizeNum(0);
+			e.setPrizeNames("");
+		}
+		slasDTO.getResult().add(e);
+		//过去2小时内
+		cal.setTime(now);
+		cal.add(Calendar.HOUR_OF_DAY, -2);
+		Date lastTwoHour = cal.getTime();
+		stat = activityMybatisDao.getLuckActStat(activityName, lastTwoHour, now);
+		luckActList = activityMybatisDao.getPrizeLuckActListByActivityNameAndStartTimeAndEndTime(activityName, lastTwoHour, now);
+		e = new ShowLuckActStatDTO.LuckActStatElement();
+		e.setDateStr("2小时内");
+		e.setEnterUV(stat.getEnterUV());
+		e.setEnterPV(stat.getEnterPV());
+		if(null != luckActList && luckActList.size() > 0){
+			e.setPrizeNum(luckActList.size());
+			e.setPrizeNames(this.getPrizeNames(luckActList, pMap));
+		}else{
+			e.setPrizeNum(0);
+			e.setPrizeNames("");
+		}
+		slasDTO.getResult().add(e);
+		//历史到当前天的按天统计
+		//获取所有中奖纪录
+		luckActList = activityMybatisDao.getPrizeLuckActListByActivityNameAndStartTimeAndEndTime(activityName, null, null);
+		List<LuckActStat2DTO> list2 = activityMybatisDao.getLuckActStat2List(activityName);
+		if(null != list2 && list2.size() > 0){
+			for(LuckActStat2DTO dto2 : list2){
+				e = new ShowLuckActStatDTO.LuckActStatElement();
+				e.setDateStr(dto2.getDateStr());
+				e.setEnterPV(dto2.getEnterPV());
+				e.setEnterUV(dto2.getEnterUV());
+				e.setPrizeNum(dto2.getPrizeNum());
+				if(dto2.getPrizeNum() > 0){
+					e.setPrizeNames(this.getPrizeNames(luckActList, pMap, dto2.getDateStr()));
+				}else{
+					e.setPrizeNames("");
+				}
+				slasDTO.getResult().add(e);
+			}
+		}
+		//总计
+		stat = activityMybatisDao.getLuckActStat(activityName, null, null);
+		e = new ShowLuckActStatDTO.LuckActStatElement();
+		e.setDateStr("总计");
+		e.setEnterUV(stat.getEnterUV());
+		e.setEnterPV(stat.getEnterPV());
+		if(null != luckActList && luckActList.size() > 0){
+			e.setPrizeNum(luckActList.size());
+			e.setPrizeNames(this.getPrizeNames(luckActList, pMap));
+		}else{
+			e.setPrizeNum(0);
+			e.setPrizeNames("");
+		}
+		slasDTO.getResult().add(e);
+		
+		return Response.success(slasDTO);
+	}
+	
+	private String getPrizeNames(List<LuckAct> luckActList, Map<String, LuckPrize> pMap, String dateStr){
+		List<LuckAct> list = new ArrayList<LuckAct>();
+		String date = null;
+		for(LuckAct la : luckActList){
+			date = DateUtil.date2string(la.getCreatTime(), "yyyy-MM-dd");
+			if(date.equals(dateStr)){
+				list.add(la);
+			}
+		}
+		
+		return this.getPrizeNames(list, pMap);
+	}
+	
+	private String getPrizeNames(List<LuckAct> luckActList, Map<String, LuckPrize> pMap){
+		//PrizeName,Num
+		Map<String, Integer> map = new HashMap<String, Integer>();
+		LuckPrize p = null;
+		String pname = null;
+		Integer pNum = null;
+		for(LuckAct la : luckActList){
+			p = pMap.get(String.valueOf(la.getAwardId()));
+			if(null != p){
+				pname = p.getAwardName();
+			}else{
+				pname = this.getAwardNameFromInt2String(la.getAwardId());
+			}
+			if(null != pname && pname.length() > 0){
+				pNum = map.get(pname);
+				if(null != pNum){
+					pNum = Integer.valueOf(pNum+1);
+				}else{
+					pNum = Integer.valueOf(1);
+				}
+				map.put(pname, pNum);
+			}
+		}
+		StringBuilder sb = new StringBuilder();
+		for(Map.Entry<String, Integer> entry : map.entrySet()){
+			if(entry.getValue() > 1){
+				sb.append(";").append(entry.getKey()).append("X").append(entry.getValue());
+			}else{
+				sb.append(";").append(entry.getKey());
+			}
+		}
+		String result = sb.toString();
+		if(result.length() > 0){
+			result = result.substring(1);
+		}
+		return result;
+	}
 
 }

@@ -41,7 +41,9 @@ String sub = request.getParameter("s");
                     <span>抽奖活动管理</span>
                 </a>
                 <ul class="sub">
-                    <li <%if("4_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/lottery/winnerQuery">获奖信息查询</a></li>
+                    <li <%if("4_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/lottery/query">抽奖活动管理</a></li>
+                    <li <%if("4_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/lottery/statusStatQuery">抽奖状态查询</a></li>
+                    <li <%if("4_3".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/lottery/winnerQuery">获奖信息查询</a></li>
                 </ul>
             </li>
             <li class="sub-menu">

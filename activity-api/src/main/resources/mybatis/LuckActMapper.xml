@@ -362,4 +362,43 @@
       creat_time = #{creatTime,jdbcType=TIMESTAMP}
     where id = #{id,jdbcType=INTEGER}
   </update>
+  
+  <!-- getLuctActStatByActivityName -->
+  <resultMap id="BaseResultMap2" type="com.me2me.activity.dto.LuckActStat2DTO" >
+  	<result column="time1" property="dateStr" jdbcType="VARCHAR" />
+    <result column="rs" property="enterUV" jdbcType="INTEGER" />
+    <result column="rc" property="enterPV" jdbcType="INTEGER" />
+    <result column="jc" property="prizeNum" jdbcType="INTEGER" />
+  </resultMap>
+  <select id="getLuctActStat2ByActivityName" resultMap="BaseResultMap2" parameterType="java.lang.Integer">
+  	<![CDATA[
+    select c.time1,c.rs,c.rc,c.jc from (
+    select a.time1,a.rs,a.rc,b.jc from 
+    (
+    select date_format(creat_time,'%Y-%m-%d') as time1,count(1) as rc,count(DISTINCT uid) as rs from luck_act where activity_name=#{activityName,jdbcType=INTEGER} group by date_format(creat_time,'%Y-%m-%d')
+    ) a
+    LEFT JOIN
+    (
+    select date_format(creat_time,'%Y-%m-%d') as time2,count(1) as jc from luck_act where award_id>0 and activity_name=#{activityName,jdbcType=INTEGER} group by date_format(creat_time,'%Y-%m-%d')
+    ) b 
+    ON (a.time1 = b.time2)
+    ) c order by c.time1 desc
+    ]]>
+  </select>
+  <resultMap id="BaseResultMap3" type="com.me2me.activity.dto.LuckActStatDTO" >
+    <result column="rs" property="enterUV" jdbcType="INTEGER" />
+    <result column="rc" property="enterPV" jdbcType="INTEGER" />
+  </resultMap>
+  <select id="getLuctActStatByActivityName" resultMap="BaseResultMap3">
+  select count(1) as rc,count(DISTINCT uid) as rs from luck_act 
+  where activity_name=#{activityName,jdbcType=INTEGER} 
+  <if test="startTime != null" >
+  and creat_time>=#{startTime,jdbcType=TIMESTAMP}
+  </if>
+  <if test="endTime != null" >
+  <![CDATA[
+  and creat_time<=#{endTime,jdbcType=TIMESTAMP}
+  ]]>
+  </if>
+  </select>
 </mapper>

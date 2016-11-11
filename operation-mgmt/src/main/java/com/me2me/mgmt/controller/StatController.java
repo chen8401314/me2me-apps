@@ -14,11 +14,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.me2me.common.utils.DateUtil;
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.KingTopicDto;
 import com.me2me.content.dto.ShowKingTopicDto;
 import com.me2me.content.service.ContentService;
-import com.me2me.mgmt.Utils.DateUtil;
 import com.me2me.mgmt.request.DailyActiveDTO;
 import com.me2me.mgmt.request.KingStatDTO;
 import com.me2me.mgmt.request.PromoterDTO;

@@ -7,8 +7,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.me2me.common.utils.DateUtil;
 import com.me2me.common.web.Response;
-import com.me2me.mgmt.Utils.DateUtil;
 import com.me2me.mgmt.request.ActiveStatDTO;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.monitor.dto.LoadReportDto;

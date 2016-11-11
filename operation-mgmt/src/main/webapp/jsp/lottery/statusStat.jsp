@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta charset="utf-8" />
 
-<title>ZX_IMS 2.0 - 抽奖活动 获奖列表</title>
+<title>ZX_IMS 2.0 - 抽奖活动 抽奖状态统计</title>
 
 <link href="${ctx}/css/bootstrap.min.css" rel="stylesheet" />
 <link href="${ctx}/css/bootstrap-reset.css" rel="stylesheet" />
@@ -32,14 +32,14 @@
 		<!--sidebar start-->
 		<jsp:include page="../common/leftmenu.jsp" flush="false">
 			<jsp:param name="t" value="4" />
-			<jsp:param name="s" value="4_3" />
+			<jsp:param name="s" value="4_2" />
 		</jsp:include>
 		<!--sidebar end-->
 
 		<!--main content start-->
 		<section id="main-content">
 			<section class="wrapper">
-				<form id="form1" action="${ctx}/lottery/winnerQuery" method="post">
+				<form id="form1" action="${ctx}/lottery/statusStatQuery" method="post">
 					<div class="row">
 						<div class="col-lg-12">
 							<section class="panel">
@@ -62,7 +62,7 @@
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								| 抽奖活动获奖列表 
+								| 抽奖状态列表 
 								<span class="tools pull-right">
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>
@@ -72,37 +72,34 @@
 									<table class="display table table-bordered table-striped" id="dynamic-table">
 										<thead>
 											<tr>
-												<th>获奖时间</th>
-												<th>活动</th>
-												<th>获奖者UID</th>
-												<th>获奖者昵称</th>
-												<th>获奖者电话</th>
-												<th>奖品</th>
-												<th>抽奖凭证</th>
+												<th>序号</th>
+												<th>时间</th>
+												<th>参与人数</th>
+												<th>参与人次</th>
+												<th>中奖次数</th>
+												<th>被抽中奖品</th>
 											</tr>
 										</thead>
 										<tbody>
-											<c:forEach items="${dataObj.data.result}" var="lotteryItem">
+											<c:forEach items="${dataObj.data.result}" var="statItem" varStatus="status">
 												<tr class="gradeX">
-													<th><fmt:formatDate value="${lotteryItem.creatTime}" pattern="yyyy-MM-dd HH:mm:ss"/></th>
-													<th>${lotteryItem.activityNameStr }</th>
-													<th>${lotteryItem.uid }</th>
-													<th>${lotteryItem.nickName }</th>
-													<th>${lotteryItem.mobile }</th>
-													<th>${lotteryItem.awardName }[${lotteryItem.awardPrize }]</th>
-													<th>${lotteryItem.proof }</th>
+													<th>${status.index + 1}</th>
+													<th>${statItem.dateStr }</th>
+													<th>${statItem.enterUV }</th>
+													<th>${statItem.enterPV }</th>
+													<th>${statItem.prizeNum }</th>
+													<th>${statItem.prizeNames }</th>
 												</tr>
 											</c:forEach>
 										</tbody>
 										<tfoot>
 											<tr>
-												<th>获奖时间</th>
-												<th>活动</th>
-												<th>获奖者UID</th>
-												<th>获奖者昵称</th>
-												<th>获奖者电话</th>
-												<th>奖品</th>
-												<th>抽奖凭证</th>
+												<th>序号</th>
+												<th>时间</th>
+												<th>参与人数</th>
+												<th>参与人次</th>
+												<th>中奖次数</th>
+												<th>被抽中奖品</th>
 											</tr>
 										</tfoot>
 									</table>

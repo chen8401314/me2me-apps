@@ -69,4 +69,13 @@ public interface ActivityService {
     Response getWinnersCommitInfo(int activityName);
 
     Response addWinners(long uid ,int activityName ,String mobile ,int awardId ,String awardName);
+    
+    /**
+     * 获取抽奖活动统计方法
+     * 返回列表字段：时间，参与人数，参与人次，中奖次数，中奖奖品
+     * 时间有如下：过去1小时内，过去2小时内，历史按天统计，总计
+     * @param activityName	抽奖活动
+     * @return
+     */
+    Response getLuckActStatList(int activityName);
 }

@@ -1,8 +1,13 @@
 package com.me2me.activity.mapper;
 
+import com.me2me.activity.dto.LuckActStat2DTO;
+import com.me2me.activity.dto.LuckActStatDTO;
 import com.me2me.activity.model.LuckAct;
 import com.me2me.activity.model.LuckActExample;
+
+import java.util.Date;
 import java.util.List;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface LuckActMapper {
@@ -93,4 +98,8 @@ public interface LuckActMapper {
      * @mbggenerated Wed Oct 19 16:27:34 CST 2016
      */
     int updateByPrimaryKey(LuckAct record);
+    
+    List<LuckActStat2DTO> getLuctActStat2ByActivityName(int activityName);
+    
+    List<LuckActStatDTO> getLuctActStatByActivityName(@Param("activityName")int activityName, @Param("startTime")Date startTime, @Param("endTime")Date endTime);
 }
