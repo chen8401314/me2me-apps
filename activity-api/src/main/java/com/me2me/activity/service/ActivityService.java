@@ -4,6 +4,7 @@ import com.me2me.activity.dto.ActivityDto;
 import com.me2me.activity.dto.ActivityH5Dto;
 import com.me2me.activity.dto.CreateActivityDto;
 import com.me2me.activity.dto.CreateActivityNoticeDto;
+import com.me2me.activity.dto.LuckStatusDTO;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.common.web.Response;
 
@@ -78,4 +79,12 @@ public interface ActivityService {
      * @return
      */
     Response getLuckActStatList(int activityName);
+    
+    Response getAwardStatusList(int activityName);
+    
+    Response getLuckStatusById(int id);
+    
+    Response updateLuckStatus(LuckStatusDTO dto);
+    
+    Response getLuckPrizeList(int activityName);
 }

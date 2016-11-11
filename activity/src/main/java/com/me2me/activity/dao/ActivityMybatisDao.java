@@ -375,4 +375,21 @@ public class ActivityMybatisDao {
     	List<LuckAct> luckActs = luckActMapper.selectByExample(example);
     	return luckActs;
     }
+    
+    public List<LuckStatus> getLuckStatusListByName(Integer activityName){
+        LuckStatusExample example = new LuckStatusExample();
+        LuckStatusExample.Criteria criteria = example.createCriteria();
+        if(null != activityName){
+        	criteria.andActivityNameEqualTo(activityName);
+        }
+        return luckStatusMapper.selectByExample(example);
+    }
+    
+    public LuckStatus getLuckStatusById(int id){
+    	return luckStatusMapper.selectByPrimaryKey(id);
+    }
+    
+    public void updateLuckStatus(LuckStatus ls){
+    	luckStatusMapper.updateByPrimaryKeySelective(ls);
+    }
 }

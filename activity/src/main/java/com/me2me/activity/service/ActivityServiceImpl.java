@@ -1349,4 +1349,93 @@ public class ActivityServiceImpl implements ActivityService {
 		return result;
 	}
 
+	@Override
+	public Response getAwardStatusList(int activityName) {
+		Integer aname = null;
+		if(activityName > 0){
+			aname = Integer.valueOf(activityName);
+		}
+		List<LuckStatus> list = activityMybatisDao.getLuckStatusListByName(aname);
+		ShowLuckStatusDTO dto = new ShowLuckStatusDTO();
+		if(null != list && list.size() > 0){
+			LuckStatusDTO e = null;
+			for(LuckStatus ls : list){
+				e = new LuckStatusDTO();
+				e.setActivityName(ls.getActivityName());
+				e.setAwardStatus(ls.getAwardStatus());
+				e.setAwardSumChance(ls.getAwardSumChance());
+				e.setAwardTerm(ls.getAwardTerm());
+				e.setChannel(ls.getChannel());
+				e.setCreateTime(ls.getCreateTime());
+				e.setEndTime(ls.getEndTime());
+				e.setId(ls.getId());
+				e.setOperateMobile(ls.getOperateMobile());
+				e.setStartTime(ls.getStartTime());
+				e.setVersion(ls.getVersion());
+				e.setActivityNameStr(this.getNameFromInt2String(ls.getActivityName()));
+				dto.getResult().add(e);
+			}
+		}
+		
+		return Response.success(dto);
+	}
+
+	@Override
+	public Response getLuckStatusById(int id) {
+		LuckStatus ls = activityMybatisDao.getLuckStatusById(id);
+		LuckStatusDTO dto = new LuckStatusDTO();
+		dto.setActivityName(ls.getActivityName());
+		dto.setAwardStatus(ls.getAwardStatus());
+		dto.setAwardSumChance(ls.getAwardSumChance());
+		dto.setAwardTerm(ls.getAwardTerm());
+		dto.setChannel(ls.getChannel());
+		dto.setCreateTime(ls.getCreateTime());
+		dto.setEndTime(ls.getEndTime());
+		dto.setId(ls.getId());
+		dto.setOperateMobile(ls.getOperateMobile());
+		dto.setStartTime(ls.getStartTime());
+		dto.setVersion(ls.getVersion());
+		dto.setActivityNameStr(this.getNameFromInt2String(ls.getActivityName()));
+		
+		return Response.success(dto);
+	}
+
+	@Override
+	public Response updateLuckStatus(LuckStatusDTO dto) {
+		LuckStatus ls = new LuckStatus();
+		ls.setActivityName(dto.getActivityName());
+		ls.setAwardStatus(dto.getAwardStatus());
+		ls.setAwardSumChance(dto.getAwardSumChance());
+		ls.setChannel(dto.getChannel());
+		ls.setEndTime(dto.getEndTime());
+		ls.setId(dto.getId());
+		ls.setOperateMobile(dto.getOperateMobile());
+		ls.setStartTime(dto.getStartTime());
+		ls.setVersion(dto.getVersion());
+		activityMybatisDao.updateLuckStatus(ls);
+		return Response.success();
+	}
+
+	@Override
+	public Response getLuckPrizeList(int activityName) {
+		List<LuckPrize> list = activityMybatisDao.getPrizeListByActivityName(activityName);
+		ShowLuckPrizeDTO dto = new ShowLuckPrizeDTO();
+		if(null != list && list.size() > 0){
+			ShowLuckPrizeDTO.LuckPrizeElement e = null;
+			for(LuckPrize lp : list){
+				e = new ShowLuckPrizeDTO.LuckPrizeElement();
+				e.setActivityName(lp.getActivityName());
+				e.setAwardChance(lp.getAwardChance());
+				e.setAwardId(lp.getAwardId());
+				e.setAwardName(lp.getAwardName());
+				e.setId(lp.getId());
+				e.setNumber(lp.getNumber());
+				e.setActivityNameStr(this.getNameFromInt2String(lp.getActivityName()));
+				dto.getResult().add(e);
+			}
+		}
+		
+		return Response.success(dto);
+	}
+
 }
