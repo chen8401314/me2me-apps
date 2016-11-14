@@ -2138,4 +2138,30 @@ public class UserServiceImpl implements UserService {
 		userMybatisDao.updateSystemConfig(config);
 		return Response.success();
 	}
+
+    @Override
+    public Response touristLogin() {
+        SignUpSuccessDto signUpSuccessDto = new SignUpSuccessDto();
+        User user = new User();
+        String salt = SecurityUtils.getMask();
+        user.setEncrypt(SecurityUtils.md5("",salt));
+        user.setSalt(salt);
+        user.setCreateTime(new Date());
+        user.setUpdateTime(new Date());
+        user.setStatus(Specification.UserStatus.NORMAL.index);
+        //游客设定为1
+        user.setTouristtype(Specification.UserStatus.LOCK.index);
+        userMybatisDao.createUser(user);
+
+        // 保存用户token信息
+        UserToken userToken = new UserToken();
+        userToken.setUid(user.getUid());
+        userToken.setToken(SecurityUtils.getToken());
+        userMybatisDao.createUserToken(userToken);
+        signUpSuccessDto.setUid(userToken.getUid());
+        signUpSuccessDto.setToken(userToken.getToken());
+        return Response.success(ResponseStatus.TOURIST_LOGIN_SUCCESS.status,ResponseStatus.TOURIST_LOGIN_SUCCESS.message,signUpSuccessDto);
+
+    }
+
 }

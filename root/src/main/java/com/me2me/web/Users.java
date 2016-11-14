@@ -670,4 +670,13 @@ public class Users extends BaseController {
 //        return userService.addV(vDto);
 //    }
 
+    /**
+     * 游客模式登录(app)
+     */
+    @ResponseBody
+    @RequestMapping(value = "/touristLogin",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response touristLogin(){
+        return userService.touristLogin();
+    }
+
 }
