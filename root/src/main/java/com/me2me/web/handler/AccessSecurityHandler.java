@@ -6,8 +6,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.me2me.common.security.SecurityUtils;
-import com.me2me.common.web.BaseEntity;
-import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.core.exception.AccessSignNotMatchException;
 import com.me2me.core.exception.AppIdException;
@@ -24,8 +22,6 @@ import com.me2me.user.model.UserGag;
 import com.me2me.user.model.UserToken;
 import com.me2me.user.service.UserService;
 import com.me2me.web.JsonSecurity;
-
-import lombok.Data;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;

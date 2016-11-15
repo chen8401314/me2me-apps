@@ -294,7 +294,7 @@ public enum  ResponseStatus {
 
     USER_IS_GAGGED("因违反用户协议，已被禁止使用此功能", "This feature has been banned for breach of user agreement", 50045),
     
-    REVIEW_CAN_NOT_DELETE("你不能删除评论", "you can not delete the review", 50046),
+    REVIEW_CAN_NOT_DELETE("无权删除评论", "you can not delete the review", 50046),
 
 
 
