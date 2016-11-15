@@ -335,6 +335,7 @@ public class ContentMybatisDao {
         ContentReviewExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(cid);
         criteria.andIdLessThan(sinceId);
+        criteria.andStatusNotEqualTo(Specification.ContentDelStatus.DELETE.index);//非删除的内容
         example.setOrderByClause(" create_time desc limit 20 ");
         return contentReviewMapper.selectByExample(example);
     }
@@ -345,6 +346,7 @@ public class ContentMybatisDao {
         ArticleReviewExample.Criteria criteria = example.createCriteria();
         criteria.andArticleIdEqualTo(cid);
         criteria.andIdLessThan(sinceId);
+        criteria.andStatusNotEqualTo(Specification.ContentDelStatus.DELETE.index);//非删除的内容
         example.setOrderByClause(" create_time desc limit 20 ");
         List<ArticleReview> list = articleReviewMapper.selectByExample(example);
         for(ArticleReview articleReview : list){
@@ -364,6 +366,7 @@ public class ContentMybatisDao {
         ContentReviewExample example = new ContentReviewExample();
         ContentReviewExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(cid);
+        criteria.andStatusNotEqualTo(Specification.ContentDelStatus.DELETE.index);
         example.setOrderByClause(" create_time desc limit 20 ");
         return contentReviewMapper.selectByExample(example);
     }
@@ -435,6 +438,7 @@ public class ContentMybatisDao {
         review.setReview(reviewDto.getReview());
         review.setUid(reviewDto.getUid());
         review.setAtUid(reviewDto.getAtUid());
+        review.setStatus(Specification.ContentDelStatus.NORMAL.index);
         articleReviewMapper.insertSelective(review);
     }
 
@@ -450,6 +454,7 @@ public class ContentMybatisDao {
         ArticleReviewExample.Criteria criteria = example.createCriteria();
         criteria.andArticleIdEqualTo(id);
         criteria.andIdLessThan(sinceId);
+        criteria.andStatusNotEqualTo(Specification.ContentDelStatus.DELETE.index);
         example.setOrderByClause(" id desc limit 20 ");
         return articleReviewMapper.selectByExample(example);
     }
@@ -533,5 +538,21 @@ public class ContentMybatisDao {
         criteria.andTypeBetween(3,6);
         criteria.andStatusEqualTo(0);
         return contentMapper.countByExample(example);
+    }
+    
+    public ArticleReview getArticleReviewById(long id){
+    	return articleReviewMapper.selectByPrimaryKey(id);
+    }
+    
+    public void updateArticleReview(ArticleReview ar){
+    	articleReviewMapper.updateByPrimaryKeySelective(ar);
+    }
+    
+    public ContentReview getContentReviewById(long id){
+    	return contentReviewMapper.selectByPrimaryKey(id);
+    }
+    
+    public void updateContentReview(ContentReview cr){
+    	contentReviewMapper.updateByPrimaryKeySelective(cr);
     }
 }

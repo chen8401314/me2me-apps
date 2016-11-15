@@ -203,5 +203,10 @@ public interface ContentService{
     int getUgcCount(long uid);
 
     int getLiveCount(long uid);
+    
+    Response deleteReview(ReviewDelDTO delDTO);
+    
+    Response delArticleReview(ReviewDelDTO delDTO);
 
+    Response delContentReview(ReviewDelDTO delDTO);
 }

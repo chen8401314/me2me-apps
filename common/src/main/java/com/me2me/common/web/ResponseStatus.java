@@ -189,7 +189,7 @@ public enum  ResponseStatus {
 
     TOURIST_LOGIN_SUCCESS("游客模式登录成功","tourist login success",20088),
 
-
+    REVIEW_DELETE_SUCCESS("评论删除成功","review delete success", 20089),
 
 
 
@@ -272,7 +272,7 @@ public enum  ResponseStatus {
 
     TOPIC_FRAGMENT_DELETE_FAILURE("王国发言内容删除失败","topic fragment delete failure",50032),
 
-    TOPIC_FRAGMENT_CAN_NOT_DELETE("只有国王能删除王国里的发言","you are not the king",50033),
+    TOPIC_FRAGMENT_CAN_NOT_DELETE("你不能删除王国里的发言","you can not delete the fragment of the kingdom",50033),
 
     GET_REDDOT_FAILURE("获取红点失败没有更新","get reddot failure",50035),
 
@@ -293,6 +293,8 @@ public enum  ResponseStatus {
     USER_HAS_GAGGED("该用户已被禁言","user has gagged",50044),
 
     USER_IS_GAGGED("因违反用户协议，已被禁止使用此功能", "This feature has been banned for breach of user agreement", 50045),
+    
+    REVIEW_CAN_NOT_DELETE("你不能删除评论", "you can not delete the review", 50046),
 
 
 

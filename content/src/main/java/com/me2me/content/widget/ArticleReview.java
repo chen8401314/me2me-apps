@@ -2,10 +2,13 @@ package com.me2me.content.widget;
 
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
+import com.me2me.content.dto.ReviewDelDTO;
 import com.me2me.content.dto.ReviewDto;
 import com.me2me.content.service.ContentService;
 import com.plusnet.search.content.api.ContentStatService;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -34,4 +37,9 @@ public class ArticleReview implements Review{
         log.info("contentStatService comments success");
         return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
     }
+
+	@Override
+	public Response delReview(ReviewDelDTO delDTO) {
+		return contentService.delArticleReview(delDTO);
+	}
 }

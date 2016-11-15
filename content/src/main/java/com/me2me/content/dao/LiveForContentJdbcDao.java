@@ -33,4 +33,19 @@ public class LiveForContentJdbcDao {
         }
         return  null;
     }
+    
+    /**
+     * 记录删除日志
+     * @param type	类型
+     * @param oid	操作对象ID
+     * @param uid	删除人UID
+     */
+    public void insertDeleteLog(int type, long oid, long uid){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("insert into delete_log(type,oid,uid,del_time) values(");
+    	sb.append(type).append(",").append(oid).append(",");
+    	sb.append(uid).append(",now())");
+    	String sql = sb.toString();
+    	jdbcTemplate.execute(sql);
+    }
 }

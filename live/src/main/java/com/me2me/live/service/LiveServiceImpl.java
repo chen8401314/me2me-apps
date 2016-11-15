@@ -964,19 +964,19 @@ public class LiveServiceImpl implements LiveService {
         log.info("delete topic fragment start ...");
         try {
         	//判断当前用户是否有删除本条内容的权限
-        	boolean isCanDel = false;
+        	boolean canDel = false;
         	//判断是否是管理员，管理员啥都能删
         	if(userService.isAdmin(uid)){
-        		isCanDel = true;
+        		canDel = true;
         	}
-        	if(!isCanDel){
+        	if(!canDel){
         		//再验证是否是国王，国王也啥都能删
         		Topic topic = liveMybatisDao.getTopicById(topicId);
         		if(topic.getUid() == uid){
-        			isCanDel = true;
+        			canDel = true;
         		}
         	}
-        	if(!isCanDel){
+        	if(!canDel){
         		//再判断是否是自己发的内容，自己的内容有可能是可以删
         		TopicFragment tf = liveMybatisDao.getTopicFragmentById(fid);
         		if(tf.getUid() == uid){
@@ -984,12 +984,12 @@ public class LiveServiceImpl implements LiveService {
         			if(tf.getType() != Specification.LiveSpeakType.ANCHOR.index
         					&& tf.getType() != Specification.LiveSpeakType.ANCHOR_AT.index
         					&& tf.getType() != Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
-        				isCanDel = true;
+        				canDel = true;
         			}
         		}
         	}
         	
-        	if(!isCanDel){
+        	if(!canDel){
         		return Response.failure(ResponseStatus.TOPIC_FRAGMENT_CAN_NOT_DELETE.status, ResponseStatus.TOPIC_FRAGMENT_CAN_NOT_DELETE.message);
         	}
             

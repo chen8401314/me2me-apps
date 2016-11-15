@@ -30,7 +30,9 @@ import com.plusnet.search.content.RecommendResponse;
 import com.plusnet.search.content.api.ContentStatService;
 import com.plusnet.search.content.domain.ContentTO;
 import com.plusnet.search.content.domain.User;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -441,6 +443,7 @@ public class ContentServiceImpl implements ContentService {
             }
         }
         contentReview.setExtra(review.getExtra());
+        contentReview.setStatus(Specification.ContentDelStatus.NORMAL.index);
         contentMybatisDao.createReview(contentReview);
     }
 
@@ -2301,15 +2304,15 @@ private void localJpush(long toUid){
         log.info("reviewList get contentReview success");
         for(ContentReview contentReview : list){
             ContentReviewDto.ReviewElement reviewElement = ContentReviewDto.createElement();
-            UserProfile profile = userService.getUserProfileByUid(contentReview.getUid());
-            reviewElement.setV_lv(profile.getvLv());
             reviewElement.setUid(contentReview.getUid());
+            reviewElement.setCid(contentReview.getCid());
             reviewElement.setReview(contentReview.getReview());
             reviewElement.setCreateTime(contentReview.getCreateTime());
             UserProfile userProfile = userService.getUserProfileByUid(contentReview.getUid());
             reviewElement.setNickName(userProfile.getNickName());
             reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             reviewElement.setId(contentReview.getId());
+            reviewElement.setV_lv(userProfile.getvLv());
             if(!StringUtils.isEmpty(contentReview.getExtra())) {
                 reviewElement.setExtra(contentReview.getExtra());
             }
@@ -2440,4 +2443,94 @@ private void localJpush(long toUid){
             System.out.println(random.nextInt(5)+2);
         }
     }
+
+    /**
+     * 删除文章评论
+     * 删除规则：--20161114
+     * 1）管理员能删所有的评论
+     * 2）非管理员只能删自己发的评论
+     * @param delDTO
+     */
+	@Override
+	public Response delArticleReview(ReviewDelDTO delDTO) {
+		ArticleReview review = contentMybatisDao.getArticleReviewById(delDTO.getRid());
+		if(null == review){//可能是删除那些未发送成功的，所以直接置为成功
+			log.info("文章评论["+delDTO.getRid()+"]不存在");
+			return Response.success(ResponseStatus.REVIEW_DELETE_SUCCESS.status, ResponseStatus.REVIEW_DELETE_SUCCESS.message);
+		}
+		//判断当前用户是否有删除本条评论的权限
+		boolean canDel = false;
+		//判断是否是管理员，管理员啥都能删
+		if(userService.isAdmin(delDTO.getUid())){
+			canDel = true;
+    	}
+		if(!canDel){
+			//再判断是否是自己发的评论
+			if(review.getUid() == delDTO.getUid()){//自己的
+				canDel = true;
+			}
+		}
+		
+		if(!canDel){
+			return Response.failure(ResponseStatus.REVIEW_CAN_NOT_DELETE.status, ResponseStatus.REVIEW_CAN_NOT_DELETE.message);
+		}
+		
+		ArticleReview ar = new ArticleReview();
+		ar.setId(review.getId());
+		ar.setStatus(Specification.ContentDelStatus.DELETE.index);
+		contentMybatisDao.updateArticleReview(ar);
+		
+		//记录下删除记录
+		liveForContentJdbcDao.insertDeleteLog(Specification.DeleteObjectType.ARTICLE_REVIEW.index, delDTO.getRid(), delDTO.getUid());
+		
+		return Response.success(ResponseStatus.REVIEW_DELETE_SUCCESS.status, ResponseStatus.REVIEW_DELETE_SUCCESS.message);
+	}
+
+	/**
+	 * 删除UGC/PGC评论
+	 * 删除规则：--20161114
+	 * 1）管理员能删所有的评论
+	 * 2）非管理员只能删自己发的评论
+	 */
+	@Override
+	public Response delContentReview(ReviewDelDTO delDTO) {
+		ContentReview review = contentMybatisDao.getContentReviewById(delDTO.getRid());
+		if(null == review){//可能是删除那些未发送成功的，所以直接置为成功
+			log.info("UGC评论["+delDTO.getRid()+"]不存在");
+			return Response.success(ResponseStatus.REVIEW_DELETE_SUCCESS.status, ResponseStatus.REVIEW_DELETE_SUCCESS.message);
+		}
+		//判断当前用户是否有删除本条评论的权限
+		boolean canDel = false;
+		//判断是否是管理员，管理员啥都能删
+		if(userService.isAdmin(delDTO.getUid())){
+			canDel = true;
+    	}
+		if(!canDel){
+			//再判断是否是自己发的评论
+			if(review.getUid() == delDTO.getUid()){//自己的
+				canDel = true;
+			}
+		}
+		
+		if(!canDel){
+			return Response.failure(ResponseStatus.REVIEW_CAN_NOT_DELETE.status, ResponseStatus.REVIEW_CAN_NOT_DELETE.message);
+		}
+		
+		ContentReview cr = new ContentReview();
+		cr.setId(review.getId());
+		cr.setStatus(Specification.ContentDelStatus.DELETE.index);
+		contentMybatisDao.updateContentReview(cr);
+		
+		//记录下删除记录
+		liveForContentJdbcDao.insertDeleteLog(Specification.DeleteObjectType.CONTENT_REVIEW.index, delDTO.getRid(), delDTO.getUid());
+		
+		return Response.success(ResponseStatus.REVIEW_DELETE_SUCCESS.status, ResponseStatus.REVIEW_DELETE_SUCCESS.message);
+	}
+
+	@Override
+	public Response deleteReview(ReviewDelDTO delDTO) {
+		return reviewAdapter.executeDel(delDTO);
+	}
+	
+	
 }

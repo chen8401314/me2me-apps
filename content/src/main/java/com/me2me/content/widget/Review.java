@@ -1,6 +1,7 @@
 package com.me2me.content.widget;
 
 import com.me2me.common.web.Response;
+import com.me2me.content.dto.ReviewDelDTO;
 import com.me2me.content.dto.ReviewDto;
 
 /**
@@ -13,5 +14,5 @@ public interface Review {
 
     Response createReview(ReviewDto reviewDto);
 
-//    Response delReview();
+    Response delReview(ReviewDelDTO delDTO);
 }

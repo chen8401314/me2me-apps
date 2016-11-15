@@ -1,7 +1,6 @@
 package com.me2me.web;
 
 import com.me2me.common.web.Response;
-import com.me2me.common.web.Specification;
 import com.me2me.content.dto.*;
 import com.me2me.content.service.ContentService;
 import com.me2me.kafka.service.KafkaService;
@@ -253,6 +252,23 @@ public class Contents extends BaseController {
 //        kafkaService.saveClientLog(reviewDto,req.getHeader("User-Agent"), Specification.ClientLogAction.UGC_REVIEW);
 
         return contentService.createReview(reviewDto);
+    }
+    
+    /**
+     * 文章/UGC等评论删除接口
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/delReview",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response delReview(DelReviewRequest request){
+    	ReviewDelDTO dto = new ReviewDelDTO();
+    	dto.setUid(request.getUid());
+    	dto.setCid(request.getCid());
+    	dto.setRid(request.getRid());
+    	dto.setType(request.getType());
+    	
+    	return contentService.deleteReview(dto);
     }
 
     /**

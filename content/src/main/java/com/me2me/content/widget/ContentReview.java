@@ -1,27 +1,19 @@
 package com.me2me.content.widget;
 
-import com.google.common.collect.Maps;
-import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
-import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
-import com.me2me.common.web.Specification;
+import com.me2me.content.dto.ReviewDelDTO;
 import com.me2me.content.dto.ReviewDto;
 import com.me2me.content.event.ReviewEvent;
 import com.me2me.content.model.Content;
 import com.me2me.content.service.ContentService;
 import com.me2me.core.event.ApplicationEventBus;
-import com.me2me.sms.service.JPushService;
-import com.me2me.user.model.JpushToken;
-import com.me2me.user.model.UserProfile;
-import com.me2me.user.service.UserService;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
-
-import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -59,4 +51,9 @@ public class ContentReview implements Review{
         log.info("push success");
         return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
     }
+
+	@Override
+	public Response delReview(ReviewDelDTO delDTO) {
+		return contentService.delContentReview(delDTO);
+	}
 }

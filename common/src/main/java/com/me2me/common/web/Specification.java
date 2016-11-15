@@ -805,7 +805,11 @@ public interface Specification {
     enum  DeleteObjectType{
         TOPIC_FRAGMENT("topic_frament",1),
 
-        TOPIC_BARRAGE("topic_frament",1);
+        TOPIC_BARRAGE("topic_barrage",2),
+        
+        ARTICLE_REVIEW("article_review", 3),
+        
+        CONTENT_REVIEW("content_review", 4);
 
         public final String name;
 
@@ -944,5 +948,19 @@ public interface Specification {
             this.index = index;
         }
 
+    }
+    
+    enum ContentDelStatus{
+    	NORMAL("正常", 0),
+    	DELETE("删除", 1);
+    	
+    	public final String name;
+
+        public final int index;
+
+        ContentDelStatus(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
     }
 }
