@@ -615,4 +615,8 @@ public class LiveMybatisDao {
     public Map<String,Long> countFragmentByTopicIdWithSince(GetLiveUpdateDto getLiveUpdateDto) {
         return topicFragmentMapper.countFragmentByTopicIdWithSince(getLiveUpdateDto);
     }
+    
+    public TopicFragment getTopicFragmentById(long id){
+    	return topicFragmentMapper.selectByPrimaryKey(id);
+    }
 }

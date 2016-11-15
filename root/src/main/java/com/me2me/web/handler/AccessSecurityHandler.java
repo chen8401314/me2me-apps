@@ -13,20 +13,26 @@ import com.me2me.core.exception.AccessSignNotMatchException;
 import com.me2me.core.exception.AppIdException;
 import com.me2me.core.exception.TokenNullException;
 import com.me2me.core.exception.UidAndTokenNotMatchException;
+import com.me2me.core.exception.UserGagException;
 import com.me2me.monitor.event.MonitorEvent;
 import com.me2me.monitor.service.MonitorService;
 import com.me2me.user.dto.BasicDataDto;
 import com.me2me.user.dto.BasicDataSuccessDto;
 import com.me2me.user.model.ApplicationSecurity;
 import com.me2me.user.model.Dictionary;
+import com.me2me.user.model.UserGag;
 import com.me2me.user.model.UserToken;
 import com.me2me.user.service.UserService;
 import com.me2me.web.JsonSecurity;
+
 import lombok.Data;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +57,8 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
     private static List<String> TRUST_REQUEST_LIST = Lists.newArrayList();
 
     private static List<String> MONITOR_INTERCEPTOR_URLS = Lists.newArrayList();
+    
+    private static List<String> NEED_CHECK_GAG_LIST = Lists.newArrayList();
 
     static {
         WHITE_LIST.add("/api/user/login");
@@ -93,7 +101,13 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         MONITOR_INTERCEPTOR_URLS.add("/api/home/attention");
 
 
-
+        //需要判断禁言的接口
+        NEED_CHECK_GAG_LIST.add("/api/content/publish");//发布UGC、PGC
+        NEED_CHECK_GAG_LIST.add("/api/content/writeTag");//用户贴标
+        NEED_CHECK_GAG_LIST.add("/api/live/createLive");//发布王国
+        NEED_CHECK_GAG_LIST.add("/api/content/review");//UGC、文章评论
+        NEED_CHECK_GAG_LIST.add("/api/live/speak");//王国发表
+        
     }
 
     @Override
@@ -119,6 +133,22 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
                 }
             }
         }
+        //判断禁言
+        if(NEED_CHECK_GAG_LIST.contains(request.getRequestURI())){
+        	String uid = request.getParameter("uid");
+        	if(!Strings.isNullOrEmpty(uid)){
+        		UserGag gag = new UserGag();
+        		gag.setCid(0l);
+        		gag.setGagLevel(0);
+        		gag.setTargetUid(Long.valueOf(uid));
+        		gag.setType(0);
+        		
+        		if(userService.checkGag(gag)){
+        			throw new UserGagException("user is gagged!");
+        		}
+        	}
+        }
+        
         if(!WHITE_LIST.contains(request.getRequestURI())) {
             String uid = request.getParameter("uid");
             String token = request.getParameter("token");

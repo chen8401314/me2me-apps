@@ -72,6 +72,8 @@ public class LiveServiceImpl implements LiveService {
     @Value("#{app.live_web}")
     private String live_web;
 
+    /** 王国发言(评论等)最新ID */
+    private static final String TOPIC_FRAGMENT_NEWEST_MAP_KEY = "TOPIC_FRAGMENT_NEWEST";
 
     @Override
     public Response createLive(CreateLiveDto createLiveDto) {
@@ -412,6 +414,13 @@ public class LiveServiceImpl implements LiveService {
             liveMybatisDao.createTopicFragment(topicFragment);
 
             fid = topicFragment.getId();
+            
+            //--add update kingdom cache -- modify by zcl -- begin --
+            //此处暂不考虑原子操作
+            int total = liveMybatisDao.countFragmentByTopicId(speakDto.getTopicId());
+            String value = fid + "," + total;
+            cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + speakDto.getTopicId(), value);
+            //--add update kingdom cache -- modify by zcl -- end --
         }
         //获取最后一次发言FragmentId
         TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(speakDto.getTopicId(), speakDto.getUid());
@@ -940,6 +949,10 @@ public class LiveServiceImpl implements LiveService {
     /**
      * 删除王国跟贴内容
      *
+     * 王国删帖规则--20161114
+     * 1）管理员和国王（非小王），可以删除王国里的任何发言、评论等。
+     * 2）其他人只能删除自己发的评论。
+     * 3）其中有个特例，小王的发言以及@核心圈是以卡片形式展现的，小王是无法删除卡片的。
      *
      * @param topicId
      * @param fid
@@ -950,11 +963,36 @@ public class LiveServiceImpl implements LiveService {
     public Response deleteLiveFragment(long topicId, long fid, long uid) {
         log.info("delete topic fragment start ...");
         try {
-            //验证是否是王国国王
-            Topic topic = liveMybatisDao.getTopicById(topicId);
-            if(topic.getUid()!=uid&&!userService.isAdmin(uid)){
-                return Response.failure(ResponseStatus.TOPIC_FRAGMENT_CAN_NOT_DELETE.status, ResponseStatus.TOPIC_FRAGMENT_CAN_NOT_DELETE.message);
-            }
+        	//判断当前用户是否有删除本条内容的权限
+        	boolean isCanDel = false;
+        	//判断是否是管理员，管理员啥都能删
+        	if(userService.isAdmin(uid)){
+        		isCanDel = true;
+        	}
+        	if(!isCanDel){
+        		//再验证是否是国王，国王也啥都能删
+        		Topic topic = liveMybatisDao.getTopicById(topicId);
+        		if(topic.getUid() == uid){
+        			isCanDel = true;
+        		}
+        	}
+        	if(!isCanDel){
+        		//再判断是否是自己发的内容，自己的内容有可能是可以删
+        		TopicFragment tf = liveMybatisDao.getTopicFragmentById(fid);
+        		if(tf.getUid() == uid){
+        			//再判断是否是卡片（核心圈发言、核心圈@），卡片不能删
+        			if(tf.getType() != Specification.LiveSpeakType.ANCHOR.index
+        					&& tf.getType() != Specification.LiveSpeakType.ANCHOR_AT.index
+        					&& tf.getType() != Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
+        				isCanDel = true;
+        			}
+        		}
+        	}
+        	
+        	if(!isCanDel){
+        		return Response.failure(ResponseStatus.TOPIC_FRAGMENT_CAN_NOT_DELETE.status, ResponseStatus.TOPIC_FRAGMENT_CAN_NOT_DELETE.message);
+        	}
+            
             //从topicFragment中删除
             int updateRows = liveMybatisDao.deleteLiveFragmentById(fid);
             if (updateRows == 1) {
@@ -1403,10 +1441,27 @@ public class LiveServiceImpl implements LiveService {
         log.info("get total records...");
         int totalRecords;
         int updateRecords;
+        
         if(getLiveUpdateDto.getSinceId()>0){
-            Map<String,Long> result  = liveMybatisDao.countFragmentByTopicIdWithSince(getLiveUpdateDto);
-            totalRecords = result.get("total_records").intValue();
-            updateRecords = result.get("update_records").intValue();
+        	//newestId,totalCount
+        	String value = cacheService.hGet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + getLiveUpdateDto.getTopicId());
+        	long newestFragmentId = 0;
+        	int cacheTotalCount = 0;
+        	if(null != value && !"".equals(value)){
+        		String[] tmp = value.split(",");
+        		if(tmp.length == 2){
+        			newestFragmentId = Long.valueOf(tmp[0]);
+        			cacheTotalCount = Integer.valueOf(tmp[1]);
+        		}
+        	}
+        	if(newestFragmentId == 0 || newestFragmentId > getLiveUpdateDto.getSinceId()){//没有缓存，或缓存里的数据比传递过来的新，则重新拉取
+        		Map<String,Long> result  = liveMybatisDao.countFragmentByTopicIdWithSince(getLiveUpdateDto);
+                totalRecords = result.get("total_records").intValue();
+                updateRecords = result.get("update_records").intValue();
+        	}else{
+        		totalRecords = cacheTotalCount;
+        		updateRecords = 0;//没有更新，则更新数为0
+        	}
         }else {
             totalRecords =  liveMybatisDao.countFragmentByTopicId(getLiveUpdateDto.getTopicId());
             updateRecords = totalRecords;
@@ -1423,7 +1478,7 @@ public class LiveServiceImpl implements LiveService {
         liveUpdateDto.setStartPageNo(startPageNo);
 
         log.info("get live update start ...");
-        return    Response.success(ResponseStatus.GET_LIVE_UPDATE_SUCCESS.status, ResponseStatus.GET_LIVE_UPDATE_SUCCESS.message, liveUpdateDto);
+        return Response.success(ResponseStatus.GET_LIVE_UPDATE_SUCCESS.status, ResponseStatus.GET_LIVE_UPDATE_SUCCESS.message, liveUpdateDto);
     }
 
     private void buildLiveDetail(GetLiveDetailDto getLiveDetailDto, LiveDetailDto liveDetailDto, List<TopicFragment> fragmentList) {

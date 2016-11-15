@@ -291,7 +291,7 @@ public enum  ResponseStatus {
 
     USER_HAS_GAGGED("该用户已被禁言","user has gagged",50044),
 
-
+    USER_IS_GAGGED("因违反用户协议，已被禁止使用此功能", "This feature has been banned for breach of user agreement", 50045),
 
 
 
