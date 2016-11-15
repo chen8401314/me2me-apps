@@ -187,6 +187,7 @@ public enum  ResponseStatus {
 
     GET_LIVE_UPDATE_SUCCESS("获取王国更新内容数量成功","get live update num success",20087),
 
+    TOURIST_LOGIN_SUCCESS("游客模式登录成功","tourist login success",20088),
 
 
 

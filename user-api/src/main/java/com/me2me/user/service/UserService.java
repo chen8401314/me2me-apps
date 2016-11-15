@@ -275,4 +275,6 @@ public interface UserService {
     Response addGagUser(UserGag gag);
     
     Response updateSystemConfig(SystemConfig config);
+
+    Response touristLogin();
 }
