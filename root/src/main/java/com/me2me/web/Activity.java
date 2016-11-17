@@ -19,7 +19,7 @@ import java.net.UnknownHostException;
  */
 @Controller
 @RequestMapping(value = "/api/activity")
-public class Activity {
+public class Activity extends BaseController {
 
     @Autowired
     private ActivityService activityService;
