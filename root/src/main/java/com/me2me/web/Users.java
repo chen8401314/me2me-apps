@@ -461,6 +461,8 @@ public class Users extends BaseController {
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
             ip = rq.getHeader("HTTP_X_FORWARDED_FOR");
         if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
+        	ip = rq.getHeader("X-Real-IP");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
             ip = rq.getRemoteAddr();
         if ("127.0.0.1".equals(ip) || "0:0:0:0:0:0:0:1".equals(ip))
             try {
