@@ -30,7 +30,9 @@ import com.me2me.live.model.*;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.*;
 import com.me2me.user.service.UserService;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -271,6 +273,7 @@ public class LiveServiceImpl implements LiveService {
         showLiveDto.setTitle(topic.getTitle());
         showLiveDto.setStatus(topic.getStatus());
         showLiveDto.setIsLike(contentService.isLike(content.getId(), uid));
+        showLiveDto.setInternalStatus(this.getInternalStatus(topic, uid));
         return Response.success(showLiveDto);
     }
 
@@ -532,6 +535,7 @@ public class LiveServiceImpl implements LiveService {
             atArray.add(speakDto.getAtUid());
         }
 
+        Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
         for(int i=0;i<atArray.size();i++){
             long atUid = atArray.getLongValue(i);
             liveRemind(atUid, speakDto.getUid(), Specification.LiveSpeakType.FANS.index, speakDto.getTopicId(), speakDto.getFragment());
@@ -541,10 +545,10 @@ public class LiveServiceImpl implements LiveService {
             jsonObject.addProperty("messageType", Specification.PushMessageType.AT.index);
             jsonObject.addProperty("topicId",speakDto.getTopicId());
             jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
+            jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, atUid));
             String alias = String.valueOf(atUid);
             jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
         }
-
     }
 
     private void saveLiveDisplayData(SpeakDto speakDto) {
@@ -639,6 +643,7 @@ public class LiveServiceImpl implements LiveService {
                 jsonObject.addProperty("count", "1");
                 jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
                 jsonObject.addProperty("topicId",cid);
+                jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, targetUid));
                 String alias = String.valueOf(targetUid);
                 jPushService.payloadByIdForMessage(alias, jsonObject.toString());
             }
@@ -653,6 +658,7 @@ public class LiveServiceImpl implements LiveService {
                 jsonObject.addProperty("count", "1");
                 jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
                 jsonObject.addProperty("topicId",cid);
+                jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, targetUid));
                 String alias = String.valueOf(targetUid);
                 jPushService.payloadByIdForMessage(alias, jsonObject.toString());
             }
@@ -702,14 +708,6 @@ public class LiveServiceImpl implements LiveService {
         log.info("getLivesByUpdateTime start ...");
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
         List<Topic> topicList = liveMybatisDao.getLivesByUpdateTime(updateTime);
-//        for(Topic topic : topicList) {
-//            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topic.getId()+"","0");
-//            String isUpdate = cacheService.hGet(cacheModel.getKey(),topic.getId()+"");
-//            if(StringUtils.isEmpty(isUpdate)) {
-//                log.info("cache key {} , cache topic id {},cache value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
-//                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-//            }
-//        }
         log.info("getLivesByUpdateTime data success");
         builder(uid, showTopicListDto, topicList);
         log.info("getLivesByUpdateTime end ...");
@@ -717,14 +715,29 @@ public class LiveServiceImpl implements LiveService {
     }
 
     private void builder(long uid, ShowTopicListDto showTopicListDto, List<Topic> topicList) {
+    	List<Long> uidList = new ArrayList<Long>();
+    	for(Topic topic : topicList){
+    		if(!uidList.contains(topic.getUid())){
+    			uidList.add(topic.getUid());
+    		}
+    	}
+    	Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
+        List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
+        if(null != profileList && profileList.size() > 0){
+        	for(UserProfile up : profileList){
+        		profileMap.put(String.valueOf(up.getUid()), up);
+        	}
+        }
+    	
+        UserProfile userProfile = null;
         for (Topic topic : topicList) {
             ShowTopicListDto.ShowTopicElement showTopicElement = ShowTopicListDto.createShowTopicElement();
-            UserProfile profile = userService.getUserProfileByUid(topic.getUid());
-            showTopicElement.setV_lv(profile.getvLv());
+            
             showTopicElement.setUid(topic.getUid());
             showTopicElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
             showTopicElement.setTitle(topic.getTitle());
-            UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
+            userProfile = profileMap.get(String.valueOf(topic.getUid()));
+            showTopicElement.setV_lv(userProfile.getvLv());
             showTopicElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             showTopicElement.setNickName(userProfile.getNickName());
             showTopicElement.setCreateTime(topic.getCreateTime());
@@ -735,6 +748,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setIsFollowed(userService.isFollow(topic.getUid(), uid));
             showTopicElement.setIsFollowMe(userService.isFollow(uid, topic.getUid()));
             showTopicElement.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(), topic.getUid()));
+            showTopicElement.setInternalStatus(this.getInternalStatus(topic, uid));
 
             TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId(), topic.getUid());
             afterProcess(uid, topic, showTopicElement, topicFragment);
@@ -748,19 +762,33 @@ public class LiveServiceImpl implements LiveService {
             Content content = contentService.getContentByTopicId(topic.getId());
             int readCountDummy = content.getReadCountDummy();
             showTopicElement.setReadCount(readCountDummy);
-//            }
 
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
     }
 
     private void builderWithCache(long uid, ShowTopicListDto showTopicListDto, List<Topic> topicList) {
+    	List<Long> uidList = new ArrayList<Long>();
+    	for(Topic topic : topicList){
+    		if(!uidList.contains(topic.getUid())){
+    			uidList.add(topic.getUid());
+    		}
+    	}
+    	Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
+        List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
+        if(null != profileList && profileList.size() > 0){
+        	for(UserProfile up : profileList){
+        		profileMap.put(String.valueOf(up.getUid()), up);
+        	}
+        }
+    	
+        UserProfile userProfile = null;
         for (Topic topic : topicList) {
             ShowTopicListDto.ShowTopicElement showTopicElement = ShowTopicListDto.createShowTopicElement();
             showTopicElement.setUid(topic.getUid());
             showTopicElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
             showTopicElement.setTitle(topic.getTitle());
-            UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
+            userProfile = profileMap.get(String.valueOf(topic.getUid()));
             showTopicElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             showTopicElement.setNickName(userProfile.getNickName());
             showTopicElement.setCreateTime(topic.getCreateTime());
@@ -770,8 +798,9 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setIsFollowed(userService.isFollow(topic.getUid(), uid));
             showTopicElement.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(), topic.getUid()));
             showTopicElement.setLastUpdateTime(topic.getLongTime());
-            UserProfile profile = userService.getUserProfileByUid(topic.getUid());
-            showTopicElement.setV_lv(profile.getvLv());
+            showTopicElement.setV_lv(userProfile.getvLv());
+            showTopicElement.setInternalStatus(this.getInternalStatus(topic, uid));
+            
             processCache(uid,topic,showTopicElement);
             TopicFragment topicFragment = liveMybatisDao.getLastTopicFragmentByCoreCircle(topic.getId(),topic.getCoreCircle());
             afterProcess(uid, topic, showTopicElement, topicFragment);
@@ -982,7 +1011,6 @@ public class LiveServiceImpl implements LiveService {
         		if(tf.getUid() == uid){
         			//再判断是否是卡片（核心圈发言、核心圈@），卡片不能删
         			if(tf.getType() != Specification.LiveSpeakType.ANCHOR.index
-        					&& tf.getType() != Specification.LiveSpeakType.ANCHOR_AT.index
         					&& tf.getType() != Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
         				canDel = true;
         			}
@@ -1441,6 +1469,7 @@ public class LiveServiceImpl implements LiveService {
         log.info("get total records...");
         int totalRecords;
         int updateRecords;
+        long lastFragmentId = 0;
         
         if(getLiveUpdateDto.getSinceId()>0){
         	//newestId,totalCount
@@ -1467,6 +1496,7 @@ public class LiveServiceImpl implements LiveService {
             updateRecords = totalRecords;
         }
         LiveUpdateDto liveUpdateDto = new LiveUpdateDto();
+//        liveUpdateDto
         liveUpdateDto.setTotalRecords(totalRecords);
         int offset = getLiveUpdateDto.getOffset();
         int totalPages =totalRecords%offset==0?totalRecords/offset:totalRecords/offset+1;

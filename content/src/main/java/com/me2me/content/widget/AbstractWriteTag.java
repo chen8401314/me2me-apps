@@ -68,6 +68,7 @@ public class AbstractWriteTag {
                 jsonObject.addProperty("messageType", Specification.PushMessageType.LIVE_TAG.index);
                 jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
                 jsonObject.addProperty("topicId",content.getForwardCid());
+                jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//此处是给王国创建者发的推送，所以直接设置核心圈
                 String alias = String.valueOf(content.getUid());
                 jPushService.payloadByIdExtra(alias, "你发布的内容收到了新感受", JPushUtils.packageExtra(jsonObject));
                 contentService.remind(content, writeTagDto.getUid(), Specification.UserNoticeType.LIVE_TAG.index, writeTagDto.getTag());

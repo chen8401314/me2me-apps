@@ -1,7 +1,9 @@
 package com.me2me.user.service;
 
 import ch.qos.logback.core.net.SyslogOutputStream;
+
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
@@ -24,8 +26,8 @@ import com.me2me.user.dto.*;
 import com.me2me.user.model.*;
 import com.me2me.user.model.Dictionary;
 import com.me2me.user.widget.MessageNotificationAdapter;
-
 import com.sun.org.apache.xerces.internal.dom.PSVIAttrNSImpl;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -525,6 +527,45 @@ public class UserServiceImpl implements UserService {
         ShowUserNoticeDto showUserNoticeDto = new ShowUserNoticeDto();
         List<UserNotice> list = userMybatisDao.userNotice(userNoticeDto);
         log.info("getUserNotice data success");
+        List<Long> uidList = new ArrayList<Long>();
+        List<Long> topicIdList = new ArrayList<Long>();
+        for (UserNotice userNotice : list){
+        	if(!uidList.contains(userNotice.getFromUid())){
+        		uidList.add(userNotice.getFromUid());
+        	}
+        	if(!uidList.contains(userNotice.getToUid())){
+        		uidList.add(userNotice.getToUid());
+        	}
+        	if(userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_TAG.index
+            		|| userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_REVIEW.index
+            		|| userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_INVITED.index
+            		|| userNotice.getNoticeType() == Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index){
+        		//这些是王国相关的消息
+        		if(topicIdList.contains(userNotice.getCid())){
+        			topicIdList.add(userNotice.getCid());
+        		}
+        	}
+        }
+        List<UserProfile> userProfileList = this.getUserProfilesByUids(uidList);
+        Map<String, UserProfile> userProfileMap = new HashMap<String, UserProfile>();
+        if(null != userProfileList && userProfileList.size() > 0){
+        	for(UserProfile up : userProfileList){
+        		userProfileMap.put(String.valueOf(up.getUid()), up);
+        	}
+        }
+        
+        Map<String, Map<String, Object>> topicMap = new HashMap<String, Map<String, Object>>();
+        List<Map<String,Object>> topicList = liveForUserJdbcDao.getTopicListByIds(topicIdList);
+        if(null != topicList && topicList.size() > 0){
+        	Long topicId = null;
+        	for(Map<String,Object>  map : topicList){
+        		topicId = (Long)map.get("id");
+        		topicMap.put(topicId.toString(), map);
+        	}
+        }
+        
+        UserProfile fromUser = null;
+        UserProfile toUser = null;
         for (UserNotice userNotice : list){
             ShowUserNoticeDto.UserNoticeElement userNoticeElement = new ShowUserNoticeDto.UserNoticeElement();
             userNoticeElement.setId(userNotice.getId());
@@ -534,10 +575,10 @@ public class UserServiceImpl implements UserService {
             }else{
                 userNoticeElement.setCoverImage("");
             }
-            UserProfile userProfile = getUserProfileByUid(userNotice.getFromUid());
-            userNoticeElement.setFromAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            fromUser = userProfileMap.get(String.valueOf(userNotice.getFromUid()));
+            userNoticeElement.setFromAvatar(Constant.QINIU_DOMAIN + "/" + fromUser.getAvatar());
             userNoticeElement.setNoticeType(userNotice.getNoticeType());
-            userNoticeElement.setFromNickName(userProfile.getNickName());
+            userNoticeElement.setFromNickName(fromUser.getNickName());
             userNoticeElement.setFromUid(userNotice.getFromUid());
             userNoticeElement.setReadStatus(userNotice.getReadStatus());
             userNoticeElement.setToNickName(userNotice.getToNickName());
@@ -547,14 +588,44 @@ public class UserServiceImpl implements UserService {
             userNoticeElement.setToUid(userNotice.getToUid());
             userNoticeElement.setCid(userNotice.getCid());
             userNoticeElement.setReview(userNotice.getReview());
-            UserProfile profile = userMybatisDao.getUserProfileByUid(userNotice.getFromUid());
-            userNoticeElement.setV_lv(profile.getvLv());
-            UserProfile profile1 = userMybatisDao.getUserProfileByUid(userNotice.getToUid());
-            userNoticeElement.setTo_v_lv(profile1.getvLv());
+            userNoticeElement.setV_lv(fromUser.getvLv());
+            toUser = userProfileMap.get(String.valueOf(userNotice.getToUid()));
+            userNoticeElement.setTo_v_lv(toUser.getvLv());
+            if(userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_TAG.index
+            		|| userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_REVIEW.index
+            		|| userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_INVITED.index
+            		|| userNotice.getNoticeType() == Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index){
+            	//这个是王国相关的消息，则需要设置王国身份信息
+            	Map<String, Object> topic = topicMap.get(String.valueOf(userNotice.getCid()));
+            	if(null != topic){
+            		userNoticeElement.setInternalStatus(this.getInternalStatus(topic, userNoticeDto.getUid()));
+            	}
+            }
             showUserNoticeDto.getUserNoticeList().add(userNoticeElement);
         }
         log.info("getUserNotice end ...");
         return Response.success(ResponseStatus.GET_USER_NOTICE_SUCCESS.status,ResponseStatus.GET_USER_NOTICE_SUCCESS.message,showUserNoticeDto);
+    }
+    
+    //判断核心圈身份
+    private int getInternalStatus(Map<String, Object> topic, long uid) {
+    	int internalStatus = 0;
+        String coreCircle = (String)topic.get("core_circle");
+        if(null != coreCircle){
+        	JSONArray array = JSON.parseArray(coreCircle);
+        	for (int i = 0; i < array.size(); i++) {
+                if (array.getLong(i) == uid) {
+                    internalStatus = Specification.SnsCircle.CORE.index;
+                    break;
+                }
+            }
+        }
+        
+        if (internalStatus == 0) {
+            internalStatus = this.getUserInternalStatus(uid, (Long)topic.get("uid"));
+        }
+
+        return internalStatus;
     }
 
     @Override
@@ -1871,6 +1942,9 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<UserProfile> getUserProfilesByUids(List<Long> uids) {
+    	if(null == uids || uids.size() == 0){
+    		return new ArrayList<UserProfile>();
+    	}
         return userMybatisDao.getUserProfilesByUids(uids);
     }
 

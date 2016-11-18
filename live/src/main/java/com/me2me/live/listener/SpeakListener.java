@@ -19,12 +19,15 @@ import com.me2me.live.model.Topic;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.PostConstruct;
+
 import java.util.List;
 
 /**
@@ -43,17 +46,17 @@ public class SpeakListener {
 
     private final JPushService jPushService;
 
-    private final UserService userSerivce;
+    private final UserService userService;
 
     private final LiveMybatisDao liveMybatisDao;
 
     @Autowired
-    public SpeakListener(ApplicationEventBus applicationEventBus, LiveMybatisDao liveMybatisDao, CacheService cacheService, JPushService jPushService, UserService userSerivce){
+    public SpeakListener(ApplicationEventBus applicationEventBus, LiveMybatisDao liveMybatisDao, CacheService cacheService, JPushService jPushService, UserService userService){
         this.applicationEventBus = applicationEventBus;
         this.cacheService = cacheService;
         this.jPushService = jPushService;
         this.liveMybatisDao = liveMybatisDao;
-        this.userSerivce = userSerivce;
+        this.userService = userService;
     }
 
     @PostConstruct
@@ -114,6 +117,7 @@ public class SpeakListener {
                 jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
                 jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
                 jsonObject.addProperty("topicId",speakEvent.getTopicId());
+                jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, liveFavorite.getUid()));
                 String alias = String.valueOf(liveFavorite.getUid());
 
                 jPushService.payloadByIdExtra(alias,  "『"+topic.getTitle() + "』有更新", JPushUtils.packageExtra(jsonObject));
@@ -145,12 +149,29 @@ public class SpeakListener {
             jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
             jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
             jsonObject.addProperty("topicId",speakEvent.getTopicId());
+            jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//这里是给核心圈的通知，所以直接显示核心圈即可
             String alias = String.valueOf(cid);
 
             jPushService.payloadByIdExtra(alias,  "有人评论了『"+topic.getTitle()+"』", JPushUtils.packageExtra(jsonObject));
         }
     }
 
+    //判断核心圈身份
+    private int getInternalStatus(Topic topic, long uid) {
+        String coreCircle = topic.getCoreCircle();
+        JSONArray array = JSON.parseArray(coreCircle);
+        int internalStatus = 0;
+        for (int i = 0; i < array.size(); i++) {
+            if (array.getLong(i) == uid) {
+                internalStatus = Specification.SnsCircle.CORE.index;
+                break;
+            }
+        }
+        if (internalStatus == 0) {
+            internalStatus = userService.getUserInternalStatus(uid, topic.getUid());
+        }
 
+        return internalStatus;
+    }
 
 }

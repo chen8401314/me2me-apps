@@ -53,6 +53,9 @@ public class ShowUserNoticeDto implements BaseEntity {
         private int v_lv;
 
         private int to_v_lv;
+        
+        //0圈外 1圈内 2核心圈(当消息对象为王国时有效)
+        private int internalStatus;
     }
 
 

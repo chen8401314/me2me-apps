@@ -1,5 +1,7 @@
 package com.me2me.live.listener;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
@@ -15,10 +17,14 @@ import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.UserFollow;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import javax.annotation.PostConstruct;
+
 import java.util.List;
 
 /**
@@ -84,9 +90,8 @@ public class CacheLiveListener {
             jsonObject.addProperty("topicId",cacheLiveEvent.getTopicId());
             String alias = String.valueOf(userFollow.getSourceUid());
             Topic topic = liveService.getTopicById(cacheLiveEvent.getTopicId());
+            jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, userFollow.getSourceUid()));
             jPushService.payloadByIdExtra(alias,  userProfile.getNickName() + "新建了『" + topic.getTitle()+"』", JPushUtils.packageExtra(jsonObject));
-
-
         }
         //增加缓存，当创建王国后一个小时之内的发言不再推送
         LiveLastUpdate liveLastUpdate = new LiveLastUpdate(cacheLiveEvent.getTopicId(),"1");
@@ -96,4 +101,21 @@ public class CacheLiveListener {
 
     }
 
+    //判断核心圈身份
+    private int getInternalStatus(Topic topic, long uid) {
+        String coreCircle = topic.getCoreCircle();
+        JSONArray array = JSON.parseArray(coreCircle);
+        int internalStatus = 0;
+        for (int i = 0; i < array.size(); i++) {
+            if (array.getLong(i) == uid) {
+                internalStatus = Specification.SnsCircle.CORE.index;
+                break;
+            }
+        }
+        if (internalStatus == 0) {
+            internalStatus = userService.getUserInternalStatus(uid, topic.getUid());
+        }
+
+        return internalStatus;
+    }
 }

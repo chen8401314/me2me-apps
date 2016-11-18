@@ -49,4 +49,7 @@ public class ShowLiveDto implements BaseEntity {
     private int isFollowed;
 
     private int v_lv;
+    
+    //0圈外 1圈内 2核心圈
+    private int internalStatus;
 }

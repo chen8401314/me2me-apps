@@ -38,7 +38,6 @@ public class AbstractLikes {
             contentLikesDetails.setUid(likeDto.getUid());
             contentLikesDetails.setCid(likeDto.getCid());
             //点赞
-            ContentLikesDetails details = contentService.getContentLikesDetails(contentLikesDetails);
             if(likeDto.getAction() == Specification.IsLike.LIKE.index){
                 content.setLikeCount(content.getLikeCount() + 1);
                 contentService.updateContentById(content);
@@ -60,6 +59,7 @@ public class AbstractLikes {
                 }
                 return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
             }else{
+            	ContentLikesDetails details = contentService.getContentLikesDetails(contentLikesDetails);
                 if(details == null) {
                     Response.success(ResponseStatus.CONTENT_USER_LIKES_CANCEL_ALREADY.status,ResponseStatus.CONTENT_USER_LIKES_CANCEL_ALREADY.message);
                 }else {

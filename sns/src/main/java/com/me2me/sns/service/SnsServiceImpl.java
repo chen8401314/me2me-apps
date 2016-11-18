@@ -1,6 +1,7 @@
 package com.me2me.sns.service;
 
 import ch.qos.logback.core.net.SyslogOutputStream;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.google.gson.JsonObject;
@@ -26,7 +27,9 @@ import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -392,6 +395,7 @@ public class SnsServiceImpl implements SnsService {
                 jsonObject.addProperty("messageType", Specification.PushMessageType.CORE_CIRCLE.index);
                 jsonObject.addProperty("type", Specification.PushObjectType.LIVE.index);
                 jsonObject.addProperty("topicId", topicId);
+                jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//既然是邀请核心圈，那么已经是核心圈了，所以直接设置核心圈标识
                 String alias = String.valueOf(uid);
                 String review = "你已加入『" + topic.getTitle() + "』核心圈";
                 String message = "邀请我加入核心圈";
@@ -438,6 +442,8 @@ public class SnsServiceImpl implements SnsService {
                 jsonObject.addProperty("messageType", Specification.PushMessageType.REMOVE_CORE_CIRCLE.index);
                 jsonObject.addProperty("type", Specification.PushObjectType.LIVE.index);
                 jsonObject.addProperty("topicId", topicId);
+                topic = liveService.getTopicById(topicId);//已经更新过了。。重新查询一下
+                jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, uid));
                 String alias = String.valueOf(uid);
                 String review = "你被移出『" + topic.getTitle() + "』核心圈";
                 String message = "将我从核心圈移除";
@@ -450,6 +456,24 @@ public class SnsServiceImpl implements SnsService {
         }
         log.info("modify circle end ...");
         return Response.success(ResponseStatus.MODIFY_CIRCLE_SUCCESS.status, ResponseStatus.MODIFY_CIRCLE_SUCCESS.message);
+    }
+    
+    //判断核心圈身份
+    private int getInternalStatus(Topic topic, long uid) {
+        String coreCircle = topic.getCoreCircle();
+        JSONArray array = JSON.parseArray(coreCircle);
+        int internalStatus = 0;
+        for (int i = 0; i < array.size(); i++) {
+            if (array.getLong(i) == uid) {
+                internalStatus = Specification.SnsCircle.CORE.index;
+                break;
+            }
+        }
+        if (internalStatus == 0) {
+            internalStatus = userService.getUserInternalStatus(uid, topic.getUid());
+        }
+
+        return internalStatus;
     }
 
     public void snsRemind(long targetUid, long sourceUid, String review, long cid, int type) {

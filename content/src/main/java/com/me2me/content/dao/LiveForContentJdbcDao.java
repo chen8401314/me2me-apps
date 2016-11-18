@@ -2,7 +2,9 @@ package com.me2me.content.dao;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -47,5 +49,22 @@ public class LiveForContentJdbcDao {
     	sb.append(uid).append(",now())");
     	String sql = sb.toString();
     	jdbcTemplate.execute(sql);
+    }
+    
+    public List<Map<String,Object>> getTopicListByIds(List<Long> ids){
+    	if(null == ids || ids.size() == 0){
+    		return null;
+    	}
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select id,uid,core_circle from topic where id in (");
+    	for(int i=0;i<ids.size();i++){
+    		if(i > 0){
+    			sb.append(",");
+    		}
+    		sb.append(ids.get(i).longValue());
+    	}
+    	sb.append(")");
+        String sql = sb.toString();
+        return jdbcTemplate.queryForList(sql);
     }
 }

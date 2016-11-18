@@ -9,7 +9,9 @@ import com.me2me.user.dto.UserAccountBindStatusDto;
 import com.me2me.user.model.User;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserToken;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -55,5 +57,22 @@ public class LiveForUserJdbcDao {
     public void addToSnsCircle(long owner,long uid){
         String sql = "insert into sns_circle (owner,uid,internal_status)values("+owner+","+uid+",0)";
         jdbcTemplate.execute(sql);
+    }
+    
+    public List<Map<String,Object>> getTopicListByIds(List<Long> ids){
+    	if(null == ids || ids.size() == 0){
+    		return null;
+    	}
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select id,uid,core_circle from topic where id in (");
+    	for(int i=0;i<ids.size();i++){
+    		if(i > 0){
+    			sb.append(",");
+    		}
+    		sb.append(ids.get(i).longValue());
+    	}
+    	sb.append(")");
+        String sql = sb.toString();
+        return jdbcTemplate.queryForList(sql);
     }
 }

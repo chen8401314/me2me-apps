@@ -90,6 +90,9 @@ public class ShowTopicListDto implements BaseEntity{
         private int readCount;
 
         private int v_lv;
+        
+        //0圈外 1圈内 2核心圈
+        private int internalStatus;
 
         private  List<Tags> tags  =  Lists.newArrayList();
 

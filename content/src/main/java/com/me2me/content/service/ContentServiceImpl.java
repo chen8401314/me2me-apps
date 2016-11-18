@@ -38,8 +38,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -196,77 +199,111 @@ public class ContentServiceImpl implements ContentService {
     }
 
     //获取所有(直播和UGC)
-    private void buildDatas(SquareDataDto squareDataDto, List<Content> contents, long uid) {
-        log.info("buildDatas ...");
-        for(Content content : contents) {
-                SquareDataDto.SquareDataElement squareDataElement = SquareDataDto.createElement();
-                squareDataElement.setId(content.getId());
-                squareDataElement.setUid(content.getUid());
-                UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
-                log.info(" get userProfile success");
-                squareDataElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-                squareDataElement.setNickName(userProfile.getNickName());
-                String contentStr = content.getContent();
-                if (contentStr.length() > 100) {
-                    squareDataElement.setContent(contentStr.substring(0, 100));
-                } else {
-                    squareDataElement.setContent(contentStr);
-                }
-                squareDataElement.setTitle(content.getTitle());
-                squareDataElement.setTag(content.getFeeling());
-                squareDataElement.setType(content.getType());
-                squareDataElement.setCreateTime(content.getCreateTime());
-                squareDataElement.setReviewCount(content.getReviewCount());
-                squareDataElement.setForwardTitle(content.getForwardTitle());
-                squareDataElement.setForwardUrl(content.getForwardUrl());
-                squareDataElement.setForwardCid(content.getForwardCid());
-                UserProfile profile = userService.getUserProfileByUid(uid);
-                squareDataElement.setV_lv(profile.getvLv());
-                if (!StringUtils.isEmpty(content.getConverImage())) {
-                    if (content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
-                        squareDataElement.setCoverImage(content.getConverImage());
-                    } else {
-                        squareDataElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
-                    }
-                } else {
-                    squareDataElement.setCoverImage("");
-                }
-                squareDataElement.setContentType(content.getContentType());
-                int follow = userService.isFollow(content.getUid(), uid);
-                int followMe = userService.isFollow(uid, content.getUid());
-                log.info(" get isFollow success");
-                squareDataElement.setIsFollowed(follow);
-                squareDataElement.setIsFollowMe(followMe);
-                //如果是直播需要一个直播状态
-            if(content.getType() == Specification.ArticleType.LIVE.index) {
-                //查询直播状态
-                int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
-                log.info(" get live status success");
-                squareDataElement.setLiveStatus(status);
-                int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
-                //直播是否收藏
-                squareDataElement.setFavorite(favorite);
-                squareDataElement.setForwardCid(content.getForwardCid());
-                int reviewCount = contentMybatisDao.countFragment(content.getForwardCid(),content.getUid());
-                squareDataElement.setReviewCount(reviewCount);
-                squareDataElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
-                squareDataElement.setTopicCount(contentMybatisDao.getTopicCount(content.getForwardCid()) - reviewCount);
-            }
-                squareDataElement.setLikeCount(content.getLikeCount());
-                squareDataElement.setPersonCount(content.getPersonCount());
-                squareDataElement.setFavoriteCount(content.getFavoriteCount());
-                squareDataElement.setRights(content.getRights());
-                squareDataElement.setIsLike(isLike(content.getId(), uid));
-                int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
-                log.info(" get imageCounts success");
-                squareDataElement.setImageCount(imageCounts);
-
-                    int readCountDummy = content.getReadCountDummy();
-                    squareDataElement.setReadCount(readCountDummy);
-
-                squareDataDto.getResults().add(squareDataElement);
+	private void buildDatas(SquareDataDto squareDataDto, List<Content> contents, long uid) {
+		log.info("buildDatas ...");
+		List<Long> uidList = new ArrayList<Long>();
+        List<Long> topicIdList = new ArrayList<Long>();
+        for(Content idx : contents){
+        	if(!uidList.contains(idx.getUid())){
+        		uidList.add(idx.getUid());
+        	}
+        	if(idx.getType() == Specification.ArticleType.LIVE.index){//王国
+        		topicIdList.add(idx.getForwardCid());
+        	}
         }
-    }
+        
+        Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
+        List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
+        if(null != profileList && profileList.size() > 0){
+        	for(UserProfile up : profileList){
+        		profileMap.put(String.valueOf(up.getUid()), up);
+        	}
+        }
+        
+        Map<String, Map<String, Object>> topicMap = new HashMap<String, Map<String, Object>>();
+        List<Map<String,Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
+        if(null != topicList && topicList.size() > 0){
+        	Long topicId = null;
+        	for(Map<String,Object>  map : topicList){
+        		topicId = (Long)map.get("id");
+        		topicMap.put(topicId.toString(), map);
+        	}
+        }
+        
+        UserProfile userProfile = null;
+		for (Content content : contents) {
+			SquareDataDto.SquareDataElement squareDataElement = SquareDataDto.createElement();
+			squareDataElement.setId(content.getId());
+			squareDataElement.setUid(content.getUid());
+			userProfile = profileMap.get(String.valueOf(content.getUid()));
+			log.info(" get userProfile success");
+			squareDataElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+			squareDataElement.setNickName(userProfile.getNickName());
+			String contentStr = content.getContent();
+			if (contentStr.length() > 100) {
+				squareDataElement.setContent(contentStr.substring(0, 100));
+			} else {
+				squareDataElement.setContent(contentStr);
+			}
+			squareDataElement.setTitle(content.getTitle());
+			squareDataElement.setTag(content.getFeeling());
+			squareDataElement.setType(content.getType());
+			squareDataElement.setCreateTime(content.getCreateTime());
+			squareDataElement.setReviewCount(content.getReviewCount());
+			squareDataElement.setForwardTitle(content.getForwardTitle());
+			squareDataElement.setForwardUrl(content.getForwardUrl());
+			squareDataElement.setForwardCid(content.getForwardCid());
+			squareDataElement.setV_lv(userProfile.getvLv());
+			if (!StringUtils.isEmpty(content.getConverImage())) {
+				if (content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
+					squareDataElement.setCoverImage(content.getConverImage());
+				} else {
+					squareDataElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
+				}
+			} else {
+				squareDataElement.setCoverImage("");
+			}
+			squareDataElement.setContentType(content.getContentType());
+			int follow = userService.isFollow(content.getUid(), uid);
+			int followMe = userService.isFollow(uid, content.getUid());
+			log.info(" get isFollow success");
+			squareDataElement.setIsFollowed(follow);
+			squareDataElement.setIsFollowMe(followMe);
+			// 如果是直播需要一个直播状态
+			if (content.getType() == Specification.ArticleType.LIVE.index) {
+				// 查询直播状态
+				int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
+				log.info(" get live status success");
+				squareDataElement.setLiveStatus(status);
+				int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
+				// 直播是否收藏
+				squareDataElement.setFavorite(favorite);
+				squareDataElement.setForwardCid(content.getForwardCid());
+				int reviewCount = contentMybatisDao.countFragment(content.getForwardCid(), content.getUid());
+				squareDataElement.setReviewCount(reviewCount);
+				squareDataElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
+				squareDataElement.setTopicCount(contentMybatisDao.getTopicCount(content.getForwardCid()) - reviewCount);
+				//王国增加身份信息
+            	Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
+            	if(null != topic){
+            		squareDataElement.setInternalStatus(this.getInternalStatus(topic, uid));
+            	}
+			}
+			squareDataElement.setLikeCount(content.getLikeCount());
+			squareDataElement.setPersonCount(content.getPersonCount());
+			squareDataElement.setFavoriteCount(content.getFavoriteCount());
+			squareDataElement.setRights(content.getRights());
+			squareDataElement.setIsLike(isLike(content.getId(), uid));
+			int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
+			log.info(" get imageCounts success");
+			squareDataElement.setImageCount(imageCounts);
+
+			int readCountDummy = content.getReadCountDummy();
+			squareDataElement.setReadCount(readCountDummy);
+
+			squareDataDto.getResults().add(squareDataElement);
+		}
+	}
 
     @Override
     public Response square(int sinceId,long uid) {
@@ -470,6 +507,7 @@ public class ContentServiceImpl implements ContentService {
             UserProfile atUser = userService.getUserProfileByUid(articleReview.getAtUid());
             reviewElement.setAtUid(atUser.getUid());
             reviewElement.setAtNickName(atUser.getNickName());
+            reviewElement.setId(articleReview.getId());
             showArticleCommentsDto.getReviews().add(reviewElement);
         }
         for(ArticleLikesDetails likesDetails : articleLikesDetails){
@@ -917,6 +955,22 @@ private void localJpush(long toUid){
         dto.setUpdateTime(updateTime);
         ShowMyPublishDto showMyPublishDto = new ShowMyPublishDto();
         List<Content> contents = contentMybatisDao.myPublishByType(dto);
+        List<Long> topicIdList = new ArrayList<Long>();
+        for(Content idx : contents){
+        	if(idx.getType() == Specification.ArticleType.LIVE.index){//王国
+        		topicIdList.add(idx.getForwardCid());
+        	}
+        }
+        Map<String, Map<String, Object>> topicMap = new HashMap<String, Map<String, Object>>();
+        List<Map<String,Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
+        if(null != topicList && topicList.size() > 0){
+        	Long topicId = null;
+        	for(Map<String,Object>  map : topicList){
+        		topicId = (Long)map.get("id");
+        		topicMap.put(topicId.toString(), map);
+        	}
+        }
+        
         for (Content content : contents){
             ShowMyPublishDto.MyPublishElement contentElement = ShowMyPublishDto.createElement();
             contentElement.setTag(content.getFeeling());
@@ -969,6 +1023,11 @@ private void localJpush(long toUid){
                 contentElement.setReviewCount(reviewCount);
                 contentElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
                 contentElement.setTopicCount(contentMybatisDao.getTopicCount(content.getForwardCid()) - reviewCount);
+                //王国增加身份信息
+            	Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
+            	if(null != topic){
+            		contentElement.setInternalStatus(this.getInternalStatus(topic, currentUid));
+            	}
             }
             if(content.getType() == Specification.ArticleType.ORIGIN.index){
                 //获取内容图片数量
@@ -1105,6 +1164,7 @@ private void localJpush(long toUid){
             UserProfile atUser = userService.getUserProfileByUid(review.getAtUid());
             reviewElement.setAtUid(atUser.getUid());
             reviewElement.setAtNickName(atUser.getNickName());
+            reviewElement.setId(review.getId());
             contentDetailDto.getReviews().add(reviewElement);
         }
 
@@ -1846,6 +1906,36 @@ private void localJpush(long toUid){
     }
 
     private void builderContent2(long uid,List<Content2Dto> contentList, List<ShowHottestDto.HottestContentElement> container) {
+    	List<Long> uidList = new ArrayList<Long>();
+        List<Long> topicIdList = new ArrayList<Long>();
+        for(Content2Dto idx : contentList){
+        	if(!uidList.contains(idx.getUid())){
+        		uidList.add(idx.getUid());
+        	}
+        	if(idx.getType() == Specification.ArticleType.LIVE.index){//王国
+        		topicIdList.add(idx.getForwardCid());
+        	}
+        }
+        
+        Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
+        List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
+        if(null != profileList && profileList.size() > 0){
+        	for(UserProfile up : profileList){
+        		profileMap.put(String.valueOf(up.getUid()), up);
+        	}
+        }
+        
+        Map<String, Map<String, Object>> topicMap = new HashMap<String, Map<String, Object>>();
+        List<Map<String,Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
+        if(null != topicList && topicList.size() > 0){
+        	Long topicId = null;
+        	for(Map<String,Object>  map : topicList){
+        		topicId = (Long)map.get("id");
+        		topicMap.put(topicId.toString(), map);
+        	}
+        }
+        
+        UserProfile userProfile = null;
         for(Content2Dto content : contentList){
             ShowHottestDto.HottestContentElement hottestContentElement = ShowHottestDto.createHottestContentElement();
             hottestContentElement.setType(content.getType());
@@ -1864,9 +1954,7 @@ private void localJpush(long toUid){
             }else{
                 hottestContentElement.setContent(contentStr);
             }
-            UserProfile profile = userService.getUserProfileByUid(content.getUid());
-            hottestContentElement.setV_lv(profile.getvLv());
-
+            
             hottestContentElement.setLikeCount(content.getLikeCount());
             hottestContentElement.setReviewCount(content.getReviewCount());
             hottestContentElement.setTitle(content.getTitle());
@@ -1897,6 +1985,12 @@ private void localJpush(long toUid){
 
                 //直播 直播状态
             }else if(content.getType() == Specification.ArticleType.LIVE.index){
+            	//王国增加身份信息
+            	Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
+            	if(null != topic){
+            		hottestContentElement.setInternalStatus(this.getInternalStatus(topic, uid));
+            	}
+            	
                 int reviewCount = contentMybatisDao.countFragment(content.getForwardCid(),content.getUid());
                 hottestContentElement.setReviewCount(reviewCount);
                 hottestContentElement.setUid(content.getUid());
@@ -1907,7 +2001,8 @@ private void localJpush(long toUid){
                 //直播是否收藏
                 int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
                 hottestContentElement.setFavorite(favorite);
-                UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+                userProfile = profileMap.get(String.valueOf(content.getUid()));
+                hottestContentElement.setV_lv(userProfile.getvLv());
                 hottestContentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                 hottestContentElement.setNickName(userProfile.getNickName());
                 hottestContentElement.setTag(content.getFeeling());
@@ -1923,7 +2018,8 @@ private void localJpush(long toUid){
                 //原生
             }else if(content.getType() == Specification.ArticleType.ORIGIN.index){
                 hottestContentElement.setUid(content.getUid());
-                UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+                userProfile = profileMap.get(String.valueOf(content.getUid()));
+                hottestContentElement.setV_lv(userProfile.getvLv());
                 hottestContentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                 hottestContentElement.setNickName(userProfile.getNickName());
                 hottestContentElement.setTag(content.getFeeling());
@@ -1954,14 +2050,45 @@ private void localJpush(long toUid){
         ShowNewestDto showNewestDto = new ShowNewestDto();
         List<Content> newestList = contentMybatisDao.getNewest(sinceId);
         log.info("getNewest data success ");
+        
+        List<Long> uidList = new ArrayList<Long>();
+        List<Long> topicIdList = new ArrayList<Long>();
+        for(Content idx : newestList){
+        	if(!uidList.contains(idx.getUid())){
+        		uidList.add(idx.getUid());
+        	}
+        	if(idx.getType() == Specification.ArticleType.LIVE.index){//王国
+        		topicIdList.add(idx.getForwardCid());
+        	}
+        }
+        
+        Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
+        List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
+        if(null != profileList && profileList.size() > 0){
+        	for(UserProfile up : profileList){
+        		profileMap.put(String.valueOf(up.getUid()), up);
+        	}
+        }
+        
+        Map<String, Map<String, Object>> topicMap = new HashMap<String, Map<String, Object>>();
+        List<Map<String,Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
+        if(null != topicList && topicList.size() > 0){
+        	Long topicId = null;
+        	for(Map<String,Object>  map : topicList){
+        		topicId = (Long)map.get("id");
+        		topicMap.put(topicId.toString(), map);
+        	}
+        }
+        
+        UserProfile userProfile = null;
         for(Content content : newestList){
             ShowNewestDto.ContentElement contentElement = ShowNewestDto.createElement();
-            UserProfile profile = userService.getUserProfileByUid(content.getUid());
-            contentElement.setV_lv(profile.getvLv());
+            
             contentElement.setId(content.getId());
             contentElement.setUid(content.getUid());
             // 获取用户信息
-            UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+            userProfile = profileMap.get(String.valueOf(content.getUid()));
+            contentElement.setV_lv(userProfile.getvLv());
             contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             contentElement.setNickName(userProfile.getNickName());
             contentElement.setCreateTime(content.getCreateTime());
@@ -1995,6 +2122,12 @@ private void localJpush(long toUid){
                 //获取内容图片数量
                 int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
                 contentElement.setImageCount(imageCounts);
+            }else if(content.getType() == Specification.ArticleType.LIVE.index){
+            	//王国增加身份信息
+            	Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
+            	if(null != topic){
+            		contentElement.setInternalStatus(this.getInternalStatus(topic, uid));
+            	}
             }
             int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
             //直播是否收藏
@@ -2010,18 +2143,18 @@ private void localJpush(long toUid){
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
             contentElement.setContentType(content.getContentType());
-            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
-            log.info("content review data success");
-            for(ContentReview contentReview : contentReviewList){
-                ShowNewestDto.ContentElement.ReviewElement reviewElement = ShowNewestDto.ContentElement.createElement();
-                reviewElement.setUid(contentReview.getUid());
-                UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
-                reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
-                reviewElement.setNickName(user.getNickName());
-                reviewElement.setCreateTime(contentReview.getCreateTime());
-                reviewElement.setReview(contentReview.getReview());
-                contentElement.getReviews().add(reviewElement);
-            }
+//            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+//            log.info("content review data success");
+//            for(ContentReview contentReview : contentReviewList){
+//                ShowNewestDto.ContentElement.ReviewElement reviewElement = ShowNewestDto.ContentElement.createElement();
+//                reviewElement.setUid(contentReview.getUid());
+//                UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
+//                reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+//                reviewElement.setNickName(user.getNickName());
+//                reviewElement.setCreateTime(contentReview.getCreateTime());
+//                reviewElement.setReview(contentReview.getReview());
+//                contentElement.getReviews().add(reviewElement);
+//            }
             showNewestDto.getNewestData().add(contentElement);
         }
         //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.NEWEST.index,0,uid));
@@ -2131,18 +2264,44 @@ private void localJpush(long toUid){
         List<Long> list = userService.getFollowList(uid);
         log.info("get user follow");
         List<Content> attentionList = contentMybatisDao.getAttention(sinceId ,list,uid);
+        List<Long> uidList = new ArrayList<Long>();
+        List<Long> topicIdList = new ArrayList<Long>();
         for(Content idx : attentionList){
-            System.out.println("every id is : "+idx.getId());
+        	if(!uidList.contains(idx.getUid())){
+        		uidList.add(idx.getUid());
+        	}
+        	if(idx.getType() == Specification.ArticleType.LIVE.index){//王国
+        		topicIdList.add(idx.getForwardCid());
+        	}
         }
         log.info("getAttention data");
+        
+        Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
+        List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
+        if(null != profileList && profileList.size() > 0){
+        	for(UserProfile up : profileList){
+        		profileMap.put(String.valueOf(up.getUid()), up);
+        	}
+        }
+        
+        Map<String, Map<String, Object>> topicMap = new HashMap<String, Map<String, Object>>();
+        List<Map<String,Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
+        if(null != topicList && topicList.size() > 0){
+        	Long topicId = null;
+        	for(Map<String,Object>  map : topicList){
+        		topicId = (Long)map.get("id");
+        		topicMap.put(topicId.toString(), map);
+        	}
+        }
+        
+        UserProfile userProfile = null;
         for(Content content : attentionList){
             ShowAttentionDto.ContentElement contentElement = showAttentionDto.createElement();
-            UserProfile profile = userService.getUserProfileByUid(content.getUid());
-            contentElement.setV_lv(profile.getvLv());
             contentElement.setId(content.getId());
             contentElement.setUid(content.getUid());
             // 获取用户信息
-            UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+            userProfile = profileMap.get(String.valueOf(content.getUid()));
+            contentElement.setV_lv(userProfile.getvLv());
             contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             contentElement.setNickName(userProfile.getNickName());
             contentElement.setCreateTime(content.getCreateTime());
@@ -2159,9 +2318,7 @@ private void localJpush(long toUid){
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setIsLike(isLike(content.getId(),uid));
             contentElement.setReviewCount(content.getReviewCount());
-
-                int readCountDummy = content.getReadCountDummy();
-                contentElement.setReadCount(readCountDummy);
+            contentElement.setReadCount(content.getReadCountDummy());
 
             String cover =  content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
@@ -2192,6 +2349,13 @@ private void localJpush(long toUid){
             contentElement.setFavoriteCount(content.getFavoriteCount());
             contentElement.setForwardTitle(content.getForwardTitle());
             contentElement.setForwardUrl(content.getForwardUrl());
+            if(content.getType() == Specification.ArticleType.LIVE.index){//王国的话，获取身份信息
+            	Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
+            	if(null != topic){
+            		contentElement.setInternalStatus(this.getInternalStatus(topic, uid));
+            	}
+            }
+            
             showAttentionDto.getAttentionData().add(contentElement);
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
             log.info("getContentReviewTop3ByCid data success");
@@ -2209,6 +2373,27 @@ private void localJpush(long toUid){
         //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW_LIST.index,0,uid));
         log.info("monitor");
         return Response.success(showAttentionDto);
+    }
+    
+    //判断核心圈身份
+    private int getInternalStatus(Map<String, Object> topic, long uid) {
+    	int internalStatus = 0;
+        String coreCircle = (String)topic.get("core_circle");
+        if(null != coreCircle){
+        	JSONArray array = JSON.parseArray(coreCircle);
+        	for (int i = 0; i < array.size(); i++) {
+                if (array.getLong(i) == uid) {
+                    internalStatus = Specification.SnsCircle.CORE.index;
+                    break;
+                }
+            }
+        }
+        
+        if (internalStatus == 0) {
+            internalStatus = userService.getUserInternalStatus(uid, (Long)topic.get("uid"));
+        }
+
+        return internalStatus;
     }
 
     @Override
@@ -2369,6 +2554,7 @@ private void localJpush(long toUid){
                         jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index);
                         jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
                         jsonObject.addProperty("topicId",content.getForwardCid());
+                        jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//此处是核心圈的推送，所以直接设置核心圈
                         String alias =coreCircles.getString(i);
                         jPushService.payloadByIdExtra(alias,"『"+content.getTitle()+ "』上热点啦！",JPushUtils.packageExtra(jsonObject));
                     }
@@ -2480,6 +2666,16 @@ private void localJpush(long toUid){
 		ar.setStatus(Specification.ContentDelStatus.DELETE.index);
 		contentMybatisDao.updateArticleReview(ar);
 		
+		Content c = contentMybatisDao.getContentById(delDTO.getCid());
+		if(null != c){
+			int reviewCount = c.getReviewCount() -1;
+			if(reviewCount < 0){
+				reviewCount = 0;
+			}
+			c.setReviewCount(reviewCount);
+			contentMybatisDao.updateContentById(c);
+		}
+		
 		//记录下删除记录
 		liveForContentJdbcDao.insertDeleteLog(Specification.DeleteObjectType.ARTICLE_REVIEW.index, delDTO.getRid(), delDTO.getUid());
 		
@@ -2520,6 +2716,16 @@ private void localJpush(long toUid){
 		cr.setId(review.getId());
 		cr.setStatus(Specification.ContentDelStatus.DELETE.index);
 		contentMybatisDao.updateContentReview(cr);
+		
+		Content c = contentMybatisDao.getContentById(delDTO.getCid());
+		if(null != c){
+			int reviewCount = c.getReviewCount() -1;
+			if(reviewCount < 0){
+				reviewCount = 0;
+			}
+			c.setReviewCount(reviewCount);
+			contentMybatisDao.updateContentById(c);
+		}
 		
 		//记录下删除记录
 		liveForContentJdbcDao.insertDeleteLog(Specification.DeleteObjectType.CONTENT_REVIEW.index, delDTO.getRid(), delDTO.getUid());
