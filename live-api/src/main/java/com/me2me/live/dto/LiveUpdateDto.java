@@ -17,5 +17,5 @@ public class LiveUpdateDto implements BaseEntity{
 
     private int startPageNo;
     
-//    private long lastFragmentId;
+    private long lastFragmentId;
 }

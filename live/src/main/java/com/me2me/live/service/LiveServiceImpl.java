@@ -1487,16 +1487,20 @@ public class LiveServiceImpl implements LiveService {
         		Map<String,Long> result  = liveMybatisDao.countFragmentByTopicIdWithSince(getLiveUpdateDto);
                 totalRecords = result.get("total_records").intValue();
                 updateRecords = result.get("update_records").intValue();
+                lastFragmentId = result.get("lastFragmentId").longValue();
         	}else{
         		totalRecords = cacheTotalCount;
         		updateRecords = 0;//没有更新，则更新数为0
+        		lastFragmentId = newestFragmentId;
         	}
         }else {
-            totalRecords =  liveMybatisDao.countFragmentByTopicId(getLiveUpdateDto.getTopicId());
-            updateRecords = totalRecords;
+        	Map<String,Long> result  = liveMybatisDao.countFragmentByTopicIdWithSince(getLiveUpdateDto);
+            totalRecords = result.get("total_records").intValue();
+            updateRecords = result.get("update_records").intValue();
+            lastFragmentId = result.get("lastFragmentId").longValue();
         }
         LiveUpdateDto liveUpdateDto = new LiveUpdateDto();
-//        liveUpdateDto
+        liveUpdateDto.setLastFragmentId(lastFragmentId);
         liveUpdateDto.setTotalRecords(totalRecords);
         int offset = getLiveUpdateDto.getOffset();
         int totalPages =totalRecords%offset==0?totalRecords/offset:totalRecords/offset+1;
