@@ -1457,6 +1457,21 @@ private void localJpush(long toUid){
     }
 
     private void buildUserData(long sourceUid, List<Content> contents,int type,UserInfoDto2 userInfoDto) {
+    	List<Long> topicIdList = new ArrayList<Long>();
+        for(Content idx : contents){
+        	if(idx.getType() == Specification.ArticleType.LIVE.index){//王国
+        		topicIdList.add(idx.getForwardCid());
+        	}
+        }
+        Map<String, Map<String, Object>> topicMap = new HashMap<String, Map<String, Object>>();
+        List<Map<String,Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
+        if(null != topicList && topicList.size() > 0){
+        	Long topicId = null;
+        	for(Map<String,Object>  map : topicList){
+        		topicId = (Long)map.get("id");
+        		topicMap.put(topicId.toString(), map);
+        	}
+        }
         for (Content content : contents){
             UserInfoDto2.ContentElement contentElement = UserInfoDto2.createElement();
             contentElement.setTag(content.getFeeling());
@@ -1510,6 +1525,12 @@ private void localJpush(long toUid){
                 contentElement.setReviewCount(reviewCount);
                 contentElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
                 contentElement.setTopicCount(contentMybatisDao.getTopicCount(content.getForwardCid()) - reviewCount);
+                
+                //王国增加身份信息
+            	Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
+            	if(null != topic){
+            		contentElement.setInternalStatus(this.getInternalStatus(topic, sourceUid));
+            	}
             }
             if(content.getType() == Specification.ArticleType.ORIGIN.index){
                 //获取内容图片数量

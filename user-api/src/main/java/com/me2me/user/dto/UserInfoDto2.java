@@ -112,6 +112,9 @@ public class UserInfoDto2 implements BaseEntity{
         private int topicCount;
 
         private int v_lv;
+        
+        //0圈外 1圈内 2核心圈
+        private int internalStatus;
 
         @Data
         public static class ReviewElement implements BaseEntity{
