@@ -296,7 +296,7 @@ public enum  ResponseStatus {
     
     REVIEW_CAN_NOT_DELETE("无权删除评论", "you can not delete the review", 50046),
 
-
+    USER_ACCOUNT_DISABLED("因违反相关协议，此账号已被禁用", "user account disabled", 50047),
 
 
 
