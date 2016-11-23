@@ -102,6 +102,19 @@ public class SpeakListener {
             cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
         }
         LiveLastUpdate liveLastUpdate = new LiveLastUpdate(speakEvent.getTopicId(),"1");
+        
+        boolean isInvalid = true;//1小时缓存是否已失效
+        if(!StringUtils.isEmpty(cacheService.hGet(liveLastUpdate.getKey(),liveLastUpdate.getField()))){
+        	isInvalid = false;
+        }
+        
+        //已失效的重新设置缓存时间
+        if(isInvalid) {
+            log.info("set cache timeout");
+            cacheService.hSet(liveLastUpdate.getKey(), liveLastUpdate.getField(), liveLastUpdate.getValue());
+            cacheService.expire(liveLastUpdate.getKey(), 3600);
+        }
+        
         for(LiveFavorite liveFavorite : liveFavorites){
             MyLivesStatusModel livesStatusModel = new MyLivesStatusModel(liveFavorite.getUid(),"1");
             cacheService.hSet(livesStatusModel.getKey(),livesStatusModel.getField(),"1");
@@ -111,7 +124,8 @@ public class SpeakListener {
                 cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
             }
             //如果缓存存在时间失效，推送
-            if(StringUtils.isEmpty(cacheService.hGet(liveLastUpdate.getKey(),liveLastUpdate.getField()))&&liveFavorite.getUid()!=speakEvent.getUid()&&speakEvent.getAtUids().indexOf(CommonUtils.wrapString(liveFavorite.getUid(),","))==-1) {
+            if(isInvalid && liveFavorite.getUid()!=speakEvent.getUid()
+            		&& speakEvent.getAtUids().indexOf(CommonUtils.wrapString(liveFavorite.getUid(),","))==-1) {
                 log.info("update live start");
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
@@ -124,13 +138,6 @@ public class SpeakListener {
                 jPushService.payloadByIdExtra(alias,  "『"+topic.getTitle() + "』有更新", JPushUtils.packageExtra(jsonObject));
                 log.info("update live end");
             }
-        }
-
-        //设置缓存时间
-        if(StringUtils.isEmpty(cacheService.hGet(liveLastUpdate.getKey(),liveLastUpdate.getField()))) {
-            log.info("set cache timeout");
-            cacheService.hSet(liveLastUpdate.getKey(), liveLastUpdate.getField(), liveLastUpdate.getValue());
-            cacheService.expire(liveLastUpdate.getKey(), 3600);
         }
     }
 

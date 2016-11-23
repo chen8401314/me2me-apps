@@ -73,6 +73,13 @@ public class CacheLiveListener {
     @Subscribe
     public void cacheLive(CacheLiveEvent cacheLiveEvent) {
         log.info("invocation by event bus ... ");
+        
+        //增加缓存，当创建王国后一个小时之内的发言不再推送
+        LiveLastUpdate liveLastUpdate = new LiveLastUpdate(cacheLiveEvent.getTopicId(),"1");
+        log.info("set cache timeout");
+        cacheService.hSet(liveLastUpdate.getKey(), liveLastUpdate.getField(), liveLastUpdate.getValue());
+        cacheService.expire(liveLastUpdate.getKey(), 3600);
+        
         List<UserFollow> list = userService.getFans(cacheLiveEvent.getUid());
         log.info("get user fans ... ");
         for(UserFollow userFollow : list) {
@@ -94,12 +101,6 @@ public class CacheLiveListener {
             jsonObject.addProperty("fromInternalStatus", Specification.SnsCircle.CORE.index);//主播创建的，肯定是核心圈
             jPushService.payloadByIdExtra(alias,  userProfile.getNickName() + "新建了『" + topic.getTitle()+"』", JPushUtils.packageExtra(jsonObject));
         }
-        //增加缓存，当创建王国后一个小时之内的发言不再推送
-        LiveLastUpdate liveLastUpdate = new LiveLastUpdate(cacheLiveEvent.getTopicId(),"1");
-        log.info("set cache timeout");
-        cacheService.hSet(liveLastUpdate.getKey(), liveLastUpdate.getField(), liveLastUpdate.getValue());
-        cacheService.expire(liveLastUpdate.getKey(), 3600);
-
     }
 
     //判断核心圈身份
