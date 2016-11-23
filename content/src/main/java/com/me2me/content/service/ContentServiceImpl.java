@@ -2636,6 +2636,7 @@ private void localJpush(long toUid){
                         jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
                         jsonObject.addProperty("topicId",content.getForwardCid());
                         jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//此处是核心圈的推送，所以直接设置核心圈
+                        //这里是管理员将王国上热点。。这里没法设置操作人的身份了
                         String alias =coreCircles.getString(i);
                         jPushService.payloadByIdExtra(alias,"『"+content.getTitle()+ "』上热点啦！",JPushUtils.packageExtra(jsonObject));
                     }
