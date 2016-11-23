@@ -2623,7 +2623,7 @@ private void localJpush(long toUid){
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index);
                     jsonObject.addProperty("type",Specification.PushObjectType.UGC.index);
-                    jsonObject.addProperty("topicId",id);
+                    jsonObject.addProperty("cid",id);
                     String alias = String.valueOf(content.getUid());
                     jPushService.payloadByIdExtra(alias,"你发布的内容上热点啦！", JPushUtils.packageExtra(jsonObject));
                 }
