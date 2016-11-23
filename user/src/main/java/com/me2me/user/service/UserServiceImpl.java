@@ -603,6 +603,7 @@ public class UserServiceImpl implements UserService {
             	Map<String, Object> topic = topicMap.get(String.valueOf(userNotice.getCid()));
             	if(null != topic){
             		userNoticeElement.setInternalStatus(this.getInternalStatus(topic, userNoticeDto.getUid()));
+            		userNoticeElement.setFromInternalStatus(this.getInternalStatus(topic, userNotice.getFromUid()));
             	}
             }
             showUserNoticeDto.getUserNoticeList().add(userNoticeElement);
