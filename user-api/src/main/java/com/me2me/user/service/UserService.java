@@ -277,4 +277,6 @@ public interface UserService {
     Response updateSystemConfig(SystemConfig config);
 
     Response touristLogin();
+    
+    Response optionDisableUser(int action, long uid);
 }

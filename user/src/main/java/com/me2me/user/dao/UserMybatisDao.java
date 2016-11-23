@@ -128,6 +128,10 @@ public class UserMybatisDao {
         List<UserToken> lists = userTokenMapper.selectByExample(example);
         return (lists != null && lists.size() > 0) ? lists.get(0) : null;
     }
+    
+    public void updateUserToken(UserToken userToken){
+    	userTokenMapper.updateByPrimaryKeySelective(userToken);
+    }
 
     /**
      * 根据用户账号获取用户信息
@@ -150,6 +154,10 @@ public class UserMybatisDao {
         criteria.andStatusEqualTo(Specification.UserStatus.NORMAL.index);
         List<User> users = userMapper.selectByExample(example);
         return (users!=null&&users.size()>0)? users.get(0):null;
+    }
+    
+    public User getUserByUidPrimaryKey(long uid){
+    	return userMapper.selectByPrimaryKey(uid);
     }
 
     public User getUserByUidAndTime(long uid , Date startDate , Date endDate){

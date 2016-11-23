@@ -144,19 +144,19 @@
 													<th>
 													<c:choose>
                                                 		<c:when test="${userItem.vlv == '1'}">
-                                                			<a href="${ctx}/appuser/option/vlv?a=2&i=${userItem.uid}">取消大V</a>
+                                                			<a href="${ctx}/appuser/option/vlv?m=${userItem.nickName }&a=2&i=${userItem.uid}">取消大V</a>
                                                 		</c:when>
                                                 		<c:otherwise>
-                                                			<a href="${ctx}/appuser/option/vlv?a=1&i=${userItem.uid}">上大V</a>
+                                                			<a href="${ctx}/appuser/option/vlv?m=${userItem.nickName }&a=1&i=${userItem.uid}">上大V</a>
                                                 		</c:otherwise>
                                                 	</c:choose>
                                                 	|<a href="${ctx}/appuser/gaguser/add/${userItem.uid }">禁言</a>
                                                 	|<c:choose>
                                                 		<c:when test="${userItem.status == '0'}">
-                                                			<a href="${ctx}/appuser/option/status?a=1&i=${userItem.uid}">禁止</a>
+                                                			<a href="${ctx}/appuser/option/status?m=${userItem.nickName }&a=1&i=${userItem.uid}">禁止</a>
                                                 		</c:when>
                                                 		<c:otherwise>
-                                                			<a href="${ctx}/appuser/option/status?a=2&i=${userItem.uid}">恢复</a>
+                                                			<a href="${ctx}/appuser/option/status?m=${userItem.nickName }&a=2&i=${userItem.uid}">恢复</a>
                                                 		</c:otherwise>
                                                 	</c:choose>
 													</th>

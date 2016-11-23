@@ -60,19 +60,37 @@ public class AppUserController {
     public ModelAndView optionVlv(HttpServletRequest req){
     	int action = Integer.valueOf(req.getParameter("a"));
     	long uid = Long.valueOf(req.getParameter("i"));
+    	String nickName = req.getParameter("m");
+    	if(null == nickName){
+    		nickName = "";
+    	}
     	if(action == 1){
     		userService.optionV(1, uid);
     	}else{
     		userService.optionV(2, uid);
     	}
     	ModelAndView view = new ModelAndView("redirect:/appuser/query");
+    	view.addObject("nickName",nickName);
     	return view;
     }
 	
 	@RequestMapping(value="/option/status")
 	@SystemControllerLog(description = "禁止或恢复用户")
 	public ModelAndView optionStatus(HttpServletRequest req){
-		return null;
+		int action = Integer.valueOf(req.getParameter("a"));
+    	long uid = Long.valueOf(req.getParameter("i"));
+    	String nickName = req.getParameter("m");
+    	if(null == nickName){
+    		nickName = "";
+    	}
+    	if(action == 1){
+    		userService.optionDisableUser(1, uid);
+    	}else{
+    		userService.optionDisableUser(2, uid);
+    	}
+    	ModelAndView view = new ModelAndView("redirect:/appuser/query");
+    	view.addObject("nickName",nickName);
+		return view;
 	}
 	
 	@RequestMapping(value="/createUser")

@@ -2246,4 +2246,27 @@ public class UserServiceImpl implements UserService {
 
     }
 
+	@Override
+	public Response optionDisableUser(int action, long uid) {
+		User user = userMybatisDao.getUserByUidPrimaryKey(uid);
+		if(null != user){
+			if(action == 1){//禁止
+				//先将用户请求置失效。。重置用户token
+				UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
+				userToken.setToken(SecurityUtils.getToken());
+				userMybatisDao.updateUserToken(userToken);
+				//将用户状态置成失效状态
+				user.setDisableUser(1);
+				userMybatisDao.modifyUser(user);
+			}else{//恢复
+				//只要将用户状态放开就行了
+				user.setDisableUser(0);
+				userMybatisDao.modifyUser(user);
+			}
+			return Response.success();
+		}else{
+			return Response.failure("user is not exists");
+		}
+	}
+
 }
