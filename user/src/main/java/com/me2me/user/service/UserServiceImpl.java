@@ -1564,6 +1564,7 @@ public class UserServiceImpl implements UserService {
         // TODO: 2016/9/12
         LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
         ThirdPartUser users = userMybatisDao.getThirdPartUser(thirdPartSignUpDto.getThirdPartOpenId() ,thirdPartSignUpDto.getThirdPartType());
+        ThirdPartUser h5Users = userMybatisDao.getThirdPartUser(thirdPartSignUpDto.getUnionId() ,thirdPartSignUpDto.getThirdPartType());
 
         if(users != null) {
             //老版本 为1为禁用账户
@@ -1577,6 +1578,13 @@ public class UserServiceImpl implements UserService {
             User newUser = userMybatisDao.getUserByUid(users.getUid());
             if (newUser != null) {
                 if (newUser.getDisableUser() == 1) {
+                    return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
+                }
+            }
+        }else if(h5Users != null){
+            User user = userMybatisDao.getUserByUid(h5Users.getUid());
+            if(user != null){
+                if (user.getDisableUser() == 1) {
                     return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                 }
             }
