@@ -207,6 +207,10 @@ public class UserServiceImpl implements UserService {
         if(user != null){
             String salt = user.getSalt();
             if(SecurityUtils.md5(userLoginDto.getEncrypt(),salt).equals(user.getEncrypt())){
+                //如果status为1则已被禁用
+                if(user.getDisableUser() == 1){
+                    return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status,ResponseStatus.USER_ACCOUNT_DISABLED.message);
+                }
                 // 则用户登录成功
                 UserProfile userProfile = userMybatisDao.getUserProfileByUid(user.getUid());
                 log.info("get userProfile success");
@@ -1561,6 +1565,21 @@ public class UserServiceImpl implements UserService {
         LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
         ThirdPartUser users = userMybatisDao.getThirdPartUser(thirdPartSignUpDto.getThirdPartOpenId() ,thirdPartSignUpDto.getThirdPartType());
 
+        //老版本 为1为禁用账户
+        User oldUser = userMybatisDao.getUserByUid(users.getUid());
+        if(oldUser !=null){
+            if(oldUser.getDisableUser() == 1){
+                return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status,ResponseStatus.USER_ACCOUNT_DISABLED.message);
+            }
+        }
+        //新版
+        User newUser = userMybatisDao.getUserByUid(users.getUid());
+        if(newUser !=null){
+            if(newUser.getDisableUser() == 1){
+                return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status,ResponseStatus.USER_ACCOUNT_DISABLED.message);
+            }
+        }
+
         //先判断是否H5微信登陆过 如果登陆过 isClientLogin为1 需要修改昵称
         if(!StringUtils.isEmpty(thirdPartSignUpDto.getNewNickName())){
             List<ThirdPartUser> thirdPartUsers = userMybatisDao.getThirdPartUserByUnionId(thirdPartSignUpDto.getUnionId() ,thirdPartSignUpDto.getThirdPartType());
@@ -1616,25 +1635,11 @@ public class UserServiceImpl implements UserService {
                 users.setThirdPartUnionid(thirdPartSignUpDto.getUnionId());
                 userMybatisDao.updateThirdPartUser(users);
                 ResponseThirdPartUser(users ,loginSuccessDto);
-//                long uid = users.getUid();
-//                UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
-//                UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
-//                loginSuccessDto.setUid(userProfile.getUid());
-//                loginSuccessDto.setGender(userProfile.getGender());
-//                loginSuccessDto.setNickName(userProfile.getNickName());
-//                loginSuccessDto.setToken(userToken.getToken());
                 return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
 
             } else if(users !=null && !StringUtils.isEmpty(users.getThirdPartUnionid()) && thirdPartSignUpDto.getThirdPartType() == users.getThirdPartType()){
                 //如果openid用户有，unionId有 直接登录
                 ResponseThirdPartUser(users ,loginSuccessDto);
-//                long uid = users.getUid();
-//                UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
-//                UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
-//                loginSuccessDto.setUid(userProfile.getUid());
-//                loginSuccessDto.setGender(userProfile.getGender());
-//                loginSuccessDto.setNickName(userProfile.getNickName());
-//                loginSuccessDto.setToken(userToken.getToken());
                 return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
             }
             else if(users ==null){
@@ -1666,13 +1671,6 @@ public class UserServiceImpl implements UserService {
             else{
                 if (users !=null) {
                     ResponseThirdPartUser(users ,loginSuccessDto);
-//                    long uid = users.getUid();
-//                    UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
-//                    UserToken userToken = userMybatisDao.getUserTokenByUid(uid);
-//                    loginSuccessDto.setUid(userProfile.getUid());
-//                    loginSuccessDto.setGender(userProfile.getGender());
-//                    loginSuccessDto.setNickName(userProfile.getNickName());
-//                    loginSuccessDto.setToken(userToken.getToken());
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 } else {
                     buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
