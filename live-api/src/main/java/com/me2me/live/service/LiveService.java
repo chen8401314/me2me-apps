@@ -151,4 +151,6 @@ public interface LiveService {
     Response getLiveDetail(GetLiveDetailDto liveDetailDto);
 
     Response getLiveUpdate(GetLiveUpdateDto getLiveUpdateDto);
+
+    Response testApi(TestApiDto request);
 }

@@ -5,6 +5,7 @@ import com.me2me.kafka.service.KafkaService;
 import com.me2me.live.dto.*;
 import com.me2me.live.service.LiveService;
 import com.me2me.web.request.*;
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Calendar;
 
 /**
@@ -24,7 +26,7 @@ import java.util.Calendar;
  */
 @Controller
 @RequestMapping(value = "/api/live")
-public class Live extends BaseController {
+public class    Live extends BaseController {
 
     @Autowired
     private LiveService liveService;
@@ -411,5 +413,25 @@ public class Live extends BaseController {
     @RequestMapping(value = "/getRedDot",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getRedDot(GetMyLivesRequest request){
         return liveService.getRedDot(request.getUid(),request.getUpdateTime());
+    }
+
+    /**
+     * 测试接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/testApi",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response testApi(TestLiveRequest request){
+        TestApiDto dto = new TestApiDto();
+        System.out.println("请求了一次");
+        try {
+            BeanUtils.copyProperties(dto,request);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        return liveService.testApi(dto);
     }
 }

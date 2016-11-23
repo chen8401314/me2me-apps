@@ -33,11 +33,13 @@ import com.me2me.user.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 
 /**
@@ -1559,4 +1561,20 @@ public class LiveServiceImpl implements LiveService {
         }
         log.info("build live detail end ...");
     }
+
+    @Override
+    public Response testApi(TestApiDto request) {
+        TopicFragment fragment = new TopicFragment();
+        try {
+            BeanUtils.copyProperties(fragment,request);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
+        liveMybatisDao.createTopicFragment(fragment);
+        System.out.println("ok");
+        return null;
+    }
+
 }
