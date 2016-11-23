@@ -1,6 +1,7 @@
 package com.me2me.user.dao;
 
 import com.me2me.core.dao.BaseJdbcDao;
+
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -73,4 +74,58 @@ public class UserInitJdbcDao extends BaseJdbcDao {
         return super.query(sql);
     }
 
+    public List<Map<String, Object>> searchUserProfilesByPage(String nickName, String mobile, int vLv, int status, String startTime, String endTime, int start, int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select p.avatar,u.create_time,p.gender,p.mobile,p.nick_name,p.third_part_bind,p.uid,p.v_lv,p.birthday,u.disable_user ");
+    	sb.append("from user u,user_profile p ");
+    	sb.append("where u.uid=p.uid ");
+    	if(null != nickName && !"".equals(nickName)){
+    		sb.append("and p.nick_name like '%").append(nickName).append("%' ");
+    	}
+    	if(null != mobile && !"".equals(mobile)){
+    		sb.append("and p.mobile like '%").append(mobile).append("%' ");
+    	}
+    	if(vLv >= 0){
+    		sb.append("and p.v_lv=").append(vLv).append(" ");
+    	}
+    	if(status >= 0){
+    		sb.append("and u.disable_user=").append(status).append(" ");
+    	}
+    	if(null != startTime && !"".equals(startTime)){
+    		sb.append("and u.create_time>='").append(startTime).append("' ");
+    	}
+    	if(null != endTime && !"".equals(endTime)){
+    		sb.append("and u.create_time<='").append(endTime).append("' ");
+    	}
+    	sb.append("order by u.create_time desc limit ").append(start).append(",").append(pageSize);
+    	String sql = sb.toString();
+    	return super.query(sql);
+    }
+    
+    public int countUserProfilesByPage(String nickName, String mobile, int vLv, int status, String startTime, String endTime){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select count(1) as count ");
+    	sb.append("from user u,user_profile p ");
+    	sb.append("where u.uid=p.uid ");
+    	if(null != nickName && !"".equals(nickName)){
+    		sb.append("and p.nick_name like '%").append(nickName).append("%' ");
+    	}
+    	if(null != mobile && !"".equals(mobile)){
+    		sb.append("and p.mobile like '%").append(mobile).append("%' ");
+    	}
+    	if(vLv >= 0){
+    		sb.append("and p.v_lv=").append(vLv).append(" ");
+    	}
+    	if(status >= 0){
+    		sb.append("and u.disable_user=").append(status).append(" ");
+    	}
+    	if(null != startTime && !"".equals(startTime)){
+    		sb.append("and u.create_time>='").append(startTime).append("' ");
+    	}
+    	if(null != endTime && !"".equals(endTime)){
+    		sb.append("and u.create_time<='").append(endTime).append("' ");
+    	}
+    	String sql = sb.toString();
+    	return super.count(sql);
+    }
 }

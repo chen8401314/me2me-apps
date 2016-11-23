@@ -107,6 +107,8 @@ public class ContentDetailDto implements BaseEntity {
         private String atNickName;
         
         private long id;
+        
+        private int v_lv;
 
     }
 

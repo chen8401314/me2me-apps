@@ -56,6 +56,19 @@
 											<option value="1" ${dataObj.isV==1?'selected':''}>是</option>
 											<option value="2" ${dataObj.isV==2?'selected':''}>否</option>
 										</select>
+									</div>
+									<br/>
+									<div class="form-inline" role="form">
+										开始时间
+										<input type="text" id=startTime name="startTime" value="${dataObj.startTime }" class="form-control">&nbsp;&nbsp;
+										结束时间
+										<input type="text" id="endTime" name="endTime" value="${dataObj.endTime }" class="form-control">&nbsp;&nbsp;
+										状态
+										<select name="status" id="status" class="form-control">
+											<option value="0" ${dataObj.status==0?'selected':''}>全部</option>
+											<option value="1" ${dataObj.status==1?'selected':''}>正常</option>
+											<option value="2" ${dataObj.status==2?'selected':''}>禁止</option>
+										</select>
 										<input type="submit" id="btnSearch" name="btnSearch" value="搜索" class="btn btn-info" />
 									</div>
 								</div>
@@ -85,6 +98,7 @@
 												<th>性别</th>
 												<th>生日</th>
 												<th>是否大V</th>
+												<th>状态</th>
 												<th>创建时间</th>
 												<th>操作</th>
 											</tr>
@@ -116,17 +130,35 @@
                                                 		</c:otherwise>
                                                 	</c:choose>
 													</th>
+													<th>
+													<c:choose>
+                                                		<c:when test="${userItem.status == '0'}">
+                                                			正常
+                                                		</c:when>
+                                                		<c:otherwise>
+                                                			禁止
+                                                		</c:otherwise>
+                                                	</c:choose>
+													</th>
 													<th><fmt:formatDate value="${userItem.createTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
 													<th>
 													<c:choose>
                                                 		<c:when test="${userItem.vlv == '1'}">
-                                                			<a href="${ctx}/appuser/option/vlv?m=${dataObj.mobile }&s=${dataObj.nickName }&v=${dataObj.isV }&a=2&i=${userItem.uid}">取消大V</a>
+                                                			<a href="${ctx}/appuser/option/vlv?a=2&i=${userItem.uid}">取消大V</a>
                                                 		</c:when>
                                                 		<c:otherwise>
-                                                			<a href="${ctx}/appuser/option/vlv?m=${dataObj.mobile }&s=${dataObj.nickName }&v=${dataObj.isV }&a=1&i=${userItem.uid}">上大V</a>
+                                                			<a href="${ctx}/appuser/option/vlv?a=1&i=${userItem.uid}">上大V</a>
                                                 		</c:otherwise>
                                                 	</c:choose>
                                                 	|<a href="${ctx}/appuser/gaguser/add/${userItem.uid }">禁言</a>
+                                                	|<c:choose>
+                                                		<c:when test="${userItem.status == '0'}">
+                                                			<a href="${ctx}/appuser/option/status?a=1&i=${userItem.uid}">禁止</a>
+                                                		</c:when>
+                                                		<c:otherwise>
+                                                			<a href="${ctx}/appuser/option/status?a=2&i=${userItem.uid}">恢复</a>
+                                                		</c:otherwise>
+                                                	</c:choose>
 													</th>
 												</tr>
 											</c:forEach>

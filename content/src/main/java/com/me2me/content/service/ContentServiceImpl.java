@@ -496,24 +496,53 @@ public class ContentServiceImpl implements ContentService {
         //获取用户信息取得是否大V
         UserProfile userProfile1 = userService.getUserProfileByUid(uid);
         showArticleCommentsDto.setV_lv(userProfile1.getvLv());
+        
+        List<Long> uidList = new ArrayList<Long>();
+        for(ArticleReview ar : articleReviews){
+        	if(!uidList.contains(ar.getUid())){
+        		uidList.add(ar.getUid());
+        	}
+        	if(!uidList.contains(ar.getAtUid())){
+        		uidList.add(ar.getAtUid());
+        	}
+        }
+        for(ArticleLikesDetails ald : articleLikesDetails){
+        	if(!uidList.contains(ald.getUid())){
+        		uidList.add(ald.getUid());
+        	}
+        }
+        
+        List<UserProfile> upList = userService.getUserProfilesByUids(uidList);
+        Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+        if(null != upList && upList.size() > 0){
+        	for(UserProfile up : upList){
+        		userMap.put(String.valueOf(up.getUid()), up);
+        	}
+        }
+        
+        UserProfile user = null;
+        UserProfile atUser = null;
         for(ArticleReview articleReview : articleReviews) {
             ShowArticleCommentsDto.ReviewElement reviewElement = ShowArticleCommentsDto.createElement();
             reviewElement.setUid(articleReview.getUid());
             reviewElement.setCreateTime(articleReview.getCreateTime());
             reviewElement.setReview(articleReview.getReview());
-            UserProfile userProfile = userService.getUserProfileByUid(articleReview.getUid());
-            reviewElement.setNickName(userProfile.getNickName());
-            reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-            UserProfile atUser = userService.getUserProfileByUid(articleReview.getAtUid());
-            reviewElement.setAtUid(atUser.getUid());
-            reviewElement.setAtNickName(atUser.getNickName());
+            user = userMap.get(String.valueOf(articleReview.getUid()));
+            reviewElement.setNickName(user.getNickName());
+            reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+            reviewElement.setV_lv(user.getvLv());
+            if(articleReview.getAtUid() > 0){
+	            atUser = userMap.get(String.valueOf(articleReview.getAtUid()));
+	            reviewElement.setAtUid(atUser.getUid());
+	            reviewElement.setAtNickName(atUser.getNickName());
+            }
             reviewElement.setId(articleReview.getId());
             showArticleCommentsDto.getReviews().add(reviewElement);
         }
         for(ArticleLikesDetails likesDetails : articleLikesDetails){
             ShowArticleCommentsDto.LikeElement likeElement = ShowArticleCommentsDto.createLikeElement();
             likeElement.setUid(likesDetails.getUid());
-            UserProfile user = userService.getUserProfileByUid(likesDetails.getUid());
+            user = userMap.get(String.valueOf(likesDetails.getUid()));
             likeElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
             likeElement.setNickName(user.getNickName());
             showArticleCommentsDto.getLikeElements().add(likeElement);
@@ -1153,27 +1182,58 @@ private void localJpush(long toUid){
         }
         List<ContentReview> reviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
         log.info("get content review success");
+        
+        //点赞top30
+        List<ContentLikesDetails> contentLikesDetailsList = contentMybatisDao.getContentLikesDetails(id);
+        
+        List<Long> uidList = new ArrayList<Long>();
+        for(ContentReview cr : reviewList){
+        	if(!uidList.contains(cr.getUid())){
+        		uidList.add(cr.getUid());
+        	}
+        	if(!uidList.contains(cr.getAtUid())){
+        		uidList.add(cr.getAtUid());
+        	}
+        }
+        for(ContentLikesDetails cld : contentLikesDetailsList){
+        	if(!uidList.contains(cld.getUid())){
+        		uidList.add(cld.getUid());
+        	}
+        }
+        
+        List<UserProfile> upList = userService.getUserProfilesByUids(uidList);
+        Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+        if(null != upList && upList.size() > 0){
+        	for(UserProfile up : upList){
+        		userMap.put(String.valueOf(up.getUid()), up);
+        	}
+        }
+        
+        UserProfile user = null;
+        UserProfile atUser = null;
         for(ContentReview review :reviewList){
             ContentDetailDto.ReviewElement reviewElement = ContentDetailDto.createReviewElement();
             reviewElement.setUid(review.getUid());
             reviewElement.setCreateTime(review.getCreateTime());
             reviewElement.setReview(review.getReview());
-            UserProfile user = userService.getUserProfileByUid(review.getUid());
+            user = userMap.get(String.valueOf(review.getUid()));
             reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
             reviewElement.setNickName(user.getNickName());
-            UserProfile atUser = userService.getUserProfileByUid(review.getAtUid());
-            reviewElement.setAtUid(atUser.getUid());
-            reviewElement.setAtNickName(atUser.getNickName());
+            reviewElement.setV_lv(user.getvLv());
+            if(review.getAtUid() > 0){
+	            atUser = userMap.get(String.valueOf(review.getAtUid()));
+	            reviewElement.setAtUid(atUser.getUid());
+	            reviewElement.setAtNickName(atUser.getNickName());
+            }
             reviewElement.setId(review.getId());
             contentDetailDto.getReviews().add(reviewElement);
         }
 
         //点赞top30
-        List<ContentLikesDetails> contentLikesDetailsList = contentMybatisDao.getContentLikesDetails(id);
         for(ContentLikesDetails contentLikesDetails : contentLikesDetailsList){
             ContentDetailDto.LikeElement likeElement = ContentDetailDto.createLikeElement();
             likeElement.setUid(contentLikesDetails.getUid());
-            UserProfile user = userService.getUserProfileByUid(contentLikesDetails.getUid());
+            user = userMap.get(String.valueOf(contentLikesDetails.getUid()));
             likeElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
             likeElement.setNickName(user.getNickName());
             contentDetailDto.getLikeElements().add(likeElement);

@@ -23,4 +23,8 @@ public class LiveDetailRequest extends Request{
     @Getter
     @Setter
     private long sinceId;
+    
+    @Getter
+    @Setter
+    private int direction;
 }

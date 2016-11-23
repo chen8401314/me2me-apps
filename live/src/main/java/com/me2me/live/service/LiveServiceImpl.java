@@ -1456,11 +1456,38 @@ public class LiveServiceImpl implements LiveService {
         int offset = getLiveDetailDto.getOffset();
         int totalPages =totalRecords%offset==0?totalRecords/offset:totalRecords/offset+1;
         liveDetailDto.setTotalPages(totalPages);
-        liveDetailDto.setPageNo(getLiveDetailDto.getPageNo());
+//        liveDetailDto.setPageNo(getLiveDetailDto.getPageNo());
         log.info("get page records...");
-        List<TopicFragment> list = liveMybatisDao.getTopicFragmentForPage(getLiveDetailDto);
+        
+        liveDetailDto.getPageInfo().setStart(getLiveDetailDto.getPageNo());
+        
+        Topic topic = liveMybatisDao.getTopicById(getLiveDetailDto.getTopicId());
+        
+        int ss = 0;//预防机制。。防止程序出错死循环
+        while(true){
+        	ss++;
+        	if(ss > 100){//预计不会查询超过100页数据的，预防死循环
+        		break;
+        	}
+        	List<TopicFragment> list = liveMybatisDao.getTopicFragmentForPage(getLiveDetailDto);
+        	if(null == list || list.size() == 0){//理论上就是到底了
+        		break;
+        	}
+        	int flag = buildLiveDetail(getLiveDetailDto,liveDetailDto,list, topic);
+        	if(liveDetailDto.getLiveElements().size() >= offset){
+        		break;
+        	}
+        	if(flag == 1){
+        		break;
+        	}
+        	//还没满，则继续查询上一页或下一页
+        	if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){
+        		getLiveDetailDto.setPageNo(getLiveDetailDto.getPageNo() + 1);
+        	}else{
+        		getLiveDetailDto.setPageNo(getLiveDetailDto.getPageNo() - 1);
+        	}
+        }
 
-        buildLiveDetail(getLiveDetailDto,liveDetailDto,list);
         log.info("get live detail end ...");
         return  Response.success(ResponseStatus.GET_LIVE_DETAIL_SUCCESS.status, ResponseStatus.GET_LIVE_DETAIL_SUCCESS.message, liveDetailDto);
     }
@@ -1517,9 +1544,12 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(ResponseStatus.GET_LIVE_UPDATE_SUCCESS.status, ResponseStatus.GET_LIVE_UPDATE_SUCCESS.message, liveUpdateDto);
     }
 
-    private void buildLiveDetail(GetLiveDetailDto getLiveDetailDto, LiveDetailDto liveDetailDto, List<TopicFragment> fragmentList) {
+    //返回 1：到最后了  2：没到最后
+    private int buildLiveDetail(GetLiveDetailDto getLiveDetailDto, LiveDetailDto liveDetailDto, List<TopicFragment> fragmentList, Topic topic) {
         log.info("build live detail start ...");
-        Topic topic = liveMybatisDao.getTopicById(getLiveDetailDto.getTopicId());
+        liveDetailDto.setPageNo(getLiveDetailDto.getPageNo());
+        liveDetailDto.getPageInfo().setEnd(getLiveDetailDto.getPageNo());
+        int count = 0;
         for (TopicFragment topicFragment : fragmentList) {
             long uid = topicFragment.getUid();
 
@@ -1528,7 +1558,8 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setStatus(status);
             liveElement.setId(topicFragment.getId());
             if(status==0){
-                liveDetailDto.getLiveElements().add(liveElement);
+            	//删除的不要了
+                //liveDetailDto.getLiveElements().add(liveElement);
                 continue;
             }
 
@@ -1557,9 +1588,33 @@ public class LiveServiceImpl implements LiveService {
                 liveElement.setAtUid(atUser.getUid());
                 liveElement.setAtNickName(atUser.getNickName());
             }
-            liveDetailDto.getLiveElements().add(liveElement);
+            if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){
+            	liveDetailDto.getLiveElements().add(liveElement);
+            }else{
+            	liveDetailDto.getLiveElements().add(count, liveElement);
+            }
+            count++;
         }
+        LiveDetailDto.PageDetail pd = new LiveDetailDto.PageDetail();
+        pd.setPage(getLiveDetailDto.getPageNo());
+        pd.setRecords(count);
+        pd.setIsFull(fragmentList.size() >= getLiveDetailDto.getOffset()?1:2);
+        liveDetailDto.getPageInfo().getDetail().add(pd);
         log.info("build live detail end ...");
+        
+        //判断是否到底或到顶
+        int result = 2;
+        if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){//向下拉，那么返回的数据不满50条说明到底了
+        	if(fragmentList.size() < getLiveDetailDto.getOffset()){
+        		result = 1;
+        	}
+        }else{//向上拉，那么page到第一页时说明就到顶了
+        	if(getLiveDetailDto.getPageNo() <= 1){
+        		result = 1;
+        	}
+        }
+        
+        return result;
     }
 
     @Override

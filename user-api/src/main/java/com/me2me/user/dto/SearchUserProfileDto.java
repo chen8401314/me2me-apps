@@ -28,14 +28,16 @@ public class SearchUserProfileDto implements BaseEntity {
 
 		private static final long serialVersionUID = 9204369954350041021L;
 		
-		private Long uid;
+		private long uid;
 		private String mobile;
 		private String nickName;
-		private Integer gender;
+		private int gender;
 		private String avatar;
 		private String birthday;
-		private Date createTime;
 		private String thirdPartBind;
-		private Integer vlv;
+		private int vlv;
+		
+		private Date createTime;
+		private int status;
 	}
 }

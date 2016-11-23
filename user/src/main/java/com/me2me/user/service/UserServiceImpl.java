@@ -2022,28 +2022,27 @@ public class UserServiceImpl implements UserService {
         return Response.success(returnDto);
     }
 
-
-
     @SuppressWarnings("rawtypes")
     @Override
-    public Response searchPageByNickNameAndvLv(String nickName, String mobile, int vLv,
-                                               int page, int pageSize) {
-        List<UserProfile> list = userMybatisDao.searchByNickNameAndvLv(nickName, mobile, vLv, page, pageSize);
+    public Response searchUserPage(String nickName, String mobile, int vLv, int status, String startTime, String endTime, int page, int pageSize){
+    	int start = (page-1)*pageSize;
+    	List<Map<String, Object>> list = userInitJdbcDao.searchUserProfilesByPage(nickName, mobile, vLv, status, startTime, endTime, start, pageSize);
         SearchUserProfileDto dto = new SearchUserProfileDto();
-        dto.setTotalRecord(userMybatisDao.totalByNickNameAndvLv(nickName, mobile, vLv));
+        dto.setTotalRecord(userInitJdbcDao.countUserProfilesByPage(nickName, mobile, vLv, status, startTime, endTime));
         int totalPage = (dto.getTotalRecord() + pageSize - 1) / pageSize;
         dto.setTotalPage(totalPage);
-        for (UserProfile u : list) {
+        for(Map<String, Object> map : list){
             SearchUserProfileDto.UserProfileElement e = dto.createUserProfileElement();
-            e.setAvatar(Constant.QINIU_DOMAIN + "/" + u.getAvatar());
-            e.setCreateTime(u.getCreateTime());
-            e.setGender(u.getGender());
-            e.setMobile(u.getMobile());
-            e.setNickName(u.getNickName());
-            e.setThirdPartBind(u.getThirdPartBind());
-            e.setUid(u.getUid());
-            e.setVlv(u.getvLv());
-            e.setBirthday(u.getBirthday());
+            e.setAvatar(Constant.QINIU_DOMAIN + "/" + map.get("avatar"));
+            e.setCreateTime((Date)map.get("create_time"));
+            e.setGender((Integer)map.get("gender"));
+            e.setMobile((String)map.get("mobile"));
+            e.setNickName((String)map.get("nick_name"));
+            e.setThirdPartBind((String)map.get("third_part_bind"));
+            e.setUid((Long)map.get("uid"));
+            e.setVlv((Integer)map.get("v_lv"));
+            e.setBirthday((String)map.get("birthday"));
+            e.setStatus((Integer)map.get("disable_user"));
             dto.getResult().add(e);
         }
         return Response.success(dto);
