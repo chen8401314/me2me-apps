@@ -39,7 +39,14 @@ public class AppUserController {
 			vLv = 0;
 		}
 		
-		Response resp = userService.searchPageByNickNameAndvLv(dto.getNickName(), dto.getMobile(), vLv, 1, 200);
+		int status = -1;
+		if(dto.getStatus() == 1){
+			status = 0;
+		}else if(dto.getStatus() == 2){
+			status = 1;
+		}
+		
+		Response resp = userService.searchUserPage(dto.getNickName(), dto.getMobile(), vLv, status, dto.getStartTime(), dto.getEndTime(), 1, 200);
 		if(null != resp && resp.getCode() == 200 && null != resp.getData()){
 			SearchUserProfileDto data = (SearchUserProfileDto)resp.getData();
 			dto.setData(data);
@@ -51,14 +58,6 @@ public class AppUserController {
 	@RequestMapping(value="/option/vlv")
 	@SystemControllerLog(description = "上大V或取消大V操作")
     public ModelAndView optionVlv(HttpServletRequest req){
-		String nickName = req.getParameter("s");
-		String isVString = req.getParameter("v");
-		String mobile = req.getParameter("m");
-		int isV = 0;
-		if(StringUtils.isNotBlank(isVString)){
-			isV = Integer.valueOf(isVString);
-		}
-		
     	int action = Integer.valueOf(req.getParameter("a"));
     	long uid = Long.valueOf(req.getParameter("i"));
     	if(action == 1){
@@ -67,12 +66,14 @@ public class AppUserController {
     		userService.optionV(2, uid);
     	}
     	ModelAndView view = new ModelAndView("redirect:/appuser/query");
-    	//设置查询参数，以此来保持页面查询显示
-    	view.addObject("nickName", nickName);
-    	view.addObject("isV", isV);
-    	view.addObject("mobile", mobile);
     	return view;
     }
+	
+	@RequestMapping(value="/option/status")
+	@SystemControllerLog(description = "禁止或恢复用户")
+	public ModelAndView optionStatus(HttpServletRequest req){
+		return null;
+	}
 	
 	@RequestMapping(value="/createUser")
 	@SystemControllerLog(description = "创建马甲号")

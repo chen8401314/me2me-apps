@@ -963,4 +963,42 @@ public interface Specification {
             this.index = index;
         }
     }
+    
+    enum OperateAction{
+    	MAIN_HOT("MAIN_HOT","首页_热点"),
+    	MAIN_FOLLOW("MAIN_FOLLOW", "首页_关注"),
+    	MAIN_DISCOVER("MAIN_DISCOVER", "首页_发现"),
+    	KINGDOM_LIST("KINGDOM_LIST", "王国_列表"),
+    	KINGDOM_NOT_UPDATED("KINGDOM_NOT_UPDATED", "王国_未更新"),
+    	KINGDOM_UPDATED("KINGDOM_UPDATED", "王国_已更新"),
+    	INTELLIGENT_RECOMMENDED("INTELLIGENT_RECOMMENDED", "智能推荐"),
+    	ENTRY_PAGE("ENTRY_PAGE", "入口页"),
+    	MY_PROFILE("MY_PROFILE", "用户资料"),
+    	MY_FOLLOW("MY_FOLLOW", "关注列表"),
+    	MY_FANS("MY_FANS", "粉丝列表"),
+    	MY_FEEL("MY_FEEL", "我的感受"),
+    	MY_KINGDOM("MY_KINGDOM", "我的王国")
+    	;
+    	
+    	public final String name;
+    	public final String desc;
+    	
+    	OperateAction(String name, String desc){
+    		this.name = name;
+    		this.desc = desc;
+    	}
+    }
+    
+    enum LiveDetailDirection{
+    	UP("向上遍历", 1),
+    	DOWN("向下遍历", 0);
+    	
+    	public final String name;
+    	public final int index;
+    	
+    	LiveDetailDirection(String name, int index){
+    		this.name = name;
+            this.index = index;
+    	}
+    }
 }

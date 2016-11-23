@@ -23,25 +23,6 @@ public class KafkaServiceImpl implements  KafkaService{
     private KafkaTemplate kafkaTemplate;
 
     @Override
-    public void saveClientLog(BaseEntity request, String userAgent, String action) {
-        /*try {  //埋点
-            ClientLog clientLog = new ClientLog();
-
-            clientLog.setAction(action.index);
-            clientLog.setExt(action.name);
-            clientLog.setUserId(request.getUid());
-            clientLog.setChannel(request.getChannel());
-            clientLog.setVersion(request.getVersion());
-            clientLog.setUserAgent(userAgent);
-
-            log.info("client log:"+ JSON.toJSONString(clientLog));
-            kafkaTemplate.send(clientLog.getUserId()+""+clientLog.getLogTime(), JSON.toJSONString(clientLog));
-        }catch(Exception e){
-            e.printStackTrace();
-        }*/
-    }
-
-    @Override
     public void clientLog(OperateLog operateLog) {
       /*  try {
             log.info("client log:"+ JSON.toJSONString(clientLog));

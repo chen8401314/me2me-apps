@@ -23,6 +23,8 @@ public class LiveDetailDto implements BaseEntity {
     private int totalPages;
 
     private int pageNo;
+    
+    private PageInfo pageInfo = new PageInfo();
 
     public static LiveElement createElement(){
         return new LiveElement();
@@ -69,4 +71,18 @@ public class LiveDetailDto implements BaseEntity {
 
     }
 
+    @Data
+    public static class PageInfo implements BaseEntity {
+    	private int start;
+    	private int end;
+    	
+    	private List<PageDetail> detail = Lists.newArrayList();
+    }
+    
+    @Data
+    public static class PageDetail implements BaseEntity {
+    	private int page;
+    	private int records;
+    	private int isFull;
+    }
 }
