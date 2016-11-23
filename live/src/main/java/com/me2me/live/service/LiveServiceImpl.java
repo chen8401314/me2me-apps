@@ -538,16 +538,18 @@ public class LiveServiceImpl implements LiveService {
         }
 
         Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
+        UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
+        int fromStatus = this.getInternalStatus(topic, speakDto.getUid());
         for(int i=0;i<atArray.size();i++){
             long atUid = atArray.getLongValue(i);
             liveRemind(atUid, speakDto.getUid(), Specification.LiveSpeakType.FANS.index, speakDto.getTopicId(), speakDto.getFragment());
 
-            UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("messageType", Specification.PushMessageType.AT.index);
             jsonObject.addProperty("topicId",speakDto.getTopicId());
             jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
             jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, atUid));
+            jsonObject.addProperty("fromInternalStatus", fromStatus);
             String alias = String.valueOf(atUid);
             jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
         }
@@ -646,6 +648,7 @@ public class LiveServiceImpl implements LiveService {
                 jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
                 jsonObject.addProperty("topicId",cid);
                 jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, targetUid));
+                jsonObject.addProperty("fromInternalStatus", this.getInternalStatus(topic, sourceUid));
                 String alias = String.valueOf(targetUid);
                 jPushService.payloadByIdForMessage(alias, jsonObject.toString());
             }
@@ -661,6 +664,7 @@ public class LiveServiceImpl implements LiveService {
                 jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
                 jsonObject.addProperty("topicId",cid);
                 jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, targetUid));
+                jsonObject.addProperty("fromInternalStatus", this.getInternalStatus(topic, sourceUid));
                 String alias = String.valueOf(targetUid);
                 jPushService.payloadByIdForMessage(alias, jsonObject.toString());
             }

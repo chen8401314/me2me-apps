@@ -118,6 +118,7 @@ public class SpeakListener {
                 jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
                 jsonObject.addProperty("topicId",speakEvent.getTopicId());
                 jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, liveFavorite.getUid()));
+                jsonObject.addProperty("fromInternalStatus", Specification.SnsCircle.CORE.index);//主播发言的，都是核心圈
                 String alias = String.valueOf(liveFavorite.getUid());
 
                 jPushService.payloadByIdExtra(alias,  "『"+topic.getTitle() + "』有更新", JPushUtils.packageExtra(jsonObject));
@@ -135,6 +136,7 @@ public class SpeakListener {
 
     private void fansSpeak(SpeakEvent speakEvent) {
         Topic topic = liveMybatisDao.getTopicById(speakEvent.getTopicId());
+        int fromStatus = this.getInternalStatus(topic, speakEvent.getUid());
         JSONArray cores =JSON.parseArray(topic.getCoreCircle());
         for(int i=0;i<cores.size();i++){
             long cid = cores.getLongValue(i);
@@ -150,6 +152,7 @@ public class SpeakListener {
             jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
             jsonObject.addProperty("topicId",speakEvent.getTopicId());
             jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//这里是给核心圈的通知，所以直接显示核心圈即可
+            jsonObject.addProperty("fromInternalStatus", fromStatus);//评论人相对于王国的身份
             String alias = String.valueOf(cid);
 
             jPushService.payloadByIdExtra(alias,  "有人评论了『"+topic.getTitle()+"』", JPushUtils.packageExtra(jsonObject));

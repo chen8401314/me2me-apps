@@ -91,6 +91,7 @@ public class CacheLiveListener {
             String alias = String.valueOf(userFollow.getSourceUid());
             Topic topic = liveService.getTopicById(cacheLiveEvent.getTopicId());
             jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, userFollow.getSourceUid()));
+            jsonObject.addProperty("fromInternalStatus", Specification.SnsCircle.CORE.index);//主播创建的，肯定是核心圈
             jPushService.payloadByIdExtra(alias,  userProfile.getNickName() + "新建了『" + topic.getTitle()+"』", JPushUtils.packageExtra(jsonObject));
         }
         //增加缓存，当创建王国后一个小时之内的发言不再推送
