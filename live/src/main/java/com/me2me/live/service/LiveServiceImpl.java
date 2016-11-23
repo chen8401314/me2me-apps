@@ -1629,7 +1629,7 @@ public class LiveServiceImpl implements LiveService {
         }
         liveMybatisDao.createTopicFragment(fragment);
         System.out.println("ok");
-        return null;
+        return Response.success();
     }
 
 }
