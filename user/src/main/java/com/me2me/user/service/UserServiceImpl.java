@@ -1565,18 +1565,20 @@ public class UserServiceImpl implements UserService {
         LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
         ThirdPartUser users = userMybatisDao.getThirdPartUser(thirdPartSignUpDto.getThirdPartOpenId() ,thirdPartSignUpDto.getThirdPartType());
 
-        //老版本 为1为禁用账户
-        User oldUser = userMybatisDao.getUserByUid(users.getUid());
-        if(oldUser !=null){
-            if(oldUser.getDisableUser() == 1){
-                return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status,ResponseStatus.USER_ACCOUNT_DISABLED.message);
+        if(users != null) {
+            //老版本 为1为禁用账户
+            User oldUser = userMybatisDao.getUserByUid(users.getUid());
+            if (oldUser != null) {
+                if (oldUser.getDisableUser() == 1) {
+                    return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
+                }
             }
-        }
-        //新版
-        User newUser = userMybatisDao.getUserByUid(users.getUid());
-        if(newUser !=null){
-            if(newUser.getDisableUser() == 1){
-                return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status,ResponseStatus.USER_ACCOUNT_DISABLED.message);
+            //新版
+            User newUser = userMybatisDao.getUserByUid(users.getUid());
+            if (newUser != null) {
+                if (newUser.getDisableUser() == 1) {
+                    return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
+                }
             }
         }
 
