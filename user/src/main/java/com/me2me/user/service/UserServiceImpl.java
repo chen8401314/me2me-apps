@@ -1565,31 +1565,31 @@ public class UserServiceImpl implements UserService {
         // TODO: 2016/9/12
         LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
         ThirdPartUser users = userMybatisDao.getThirdPartUser(thirdPartSignUpDto.getThirdPartOpenId() ,thirdPartSignUpDto.getThirdPartType());
-        ThirdPartUser h5Users = userMybatisDao.getThirdPartUser(thirdPartSignUpDto.getUnionId() ,thirdPartSignUpDto.getThirdPartType());
-
-        if(users != null) {
-            //老版本 为1为禁用账户
-            User oldUser = userMybatisDao.getUserByUid(users.getUid());
-            if (oldUser != null) {
-                if (oldUser.getDisableUser() == 1) {
-                    return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
-                }
-            }
-            //新版
-            User newUser = userMybatisDao.getUserByUid(users.getUid());
-            if (newUser != null) {
-                if (newUser.getDisableUser() == 1) {
-                    return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
-                }
-            }
-        }else if(h5Users != null){
-            User user = userMybatisDao.getUserByUid(h5Users.getUid());
-            if(user != null){
-                if (user.getDisableUser() == 1) {
-                    return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
-                }
-            }
-        }
+//        ThirdPartUser h5Users = userMybatisDao.getThirdPartUser(thirdPartSignUpDto.getUnionId() ,thirdPartSignUpDto.getThirdPartType());
+//
+//        if(users != null) {
+//            //老版本 为1为禁用账户
+//            User oldUser = userMybatisDao.getUserByUid(users.getUid());
+//            if (oldUser != null) {
+//                if (oldUser.getDisableUser() == 1) {
+//                    return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
+//                }
+//            }
+//            //新版
+//            User newUser = userMybatisDao.getUserByUid(users.getUid());
+//            if (newUser != null) {
+//                if (newUser.getDisableUser() == 1) {
+//                    return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
+//                }
+//            }
+//        }else if(h5Users != null){
+//            User user = userMybatisDao.getUserByUid(h5Users.getUid());
+//            if(user != null){
+//                if (user.getDisableUser() == 1) {
+//                    return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
+//                }
+//            }
+//        }
 
         //先判断是否H5微信登陆过 如果登陆过 isClientLogin为1 需要修改昵称
         if(!StringUtils.isEmpty(thirdPartSignUpDto.getNewNickName())){
@@ -1613,9 +1613,15 @@ public class UserServiceImpl implements UserService {
                 loginSuccessDto.setGender(userProfile.getGender());
                 loginSuccessDto.setNickName(userProfile.getNickName());
                 loginSuccessDto.setToken(userToken.getToken());
+                if(checkUserDisable(loginSuccessDto.getUid())){
+                	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
+                }
                 return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
             } else {
                 buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
+            }
+            if(checkUserDisable(loginSuccessDto.getUid())){
+            	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
             }
             return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status, ResponseStatus.USER_LOGIN_SUCCESS.message, loginSuccessDto);
         }
@@ -1629,10 +1635,16 @@ public class UserServiceImpl implements UserService {
                     loginSuccessDto.setGender(userProfile.getGender());
                     loginSuccessDto.setNickName(userProfile.getNickName());
                     loginSuccessDto.setToken(userToken.getToken());
+                    if(checkUserDisable(loginSuccessDto.getUid())){
+                    	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
+                    }
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 }
                 //h5微信登录
                 buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
+                if(checkUserDisable(loginSuccessDto.getUid())){
+                	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
+                }
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status, ResponseStatus.USER_LOGIN_SUCCESS.message, loginSuccessDto);
             }
             else if(users !=null && StringUtils.isEmpty(users.getThirdPartUnionid()) && thirdPartSignUpDto.getThirdPartType() == users.getThirdPartType()){
@@ -1646,11 +1658,17 @@ public class UserServiceImpl implements UserService {
                 users.setThirdPartUnionid(thirdPartSignUpDto.getUnionId());
                 userMybatisDao.updateThirdPartUser(users);
                 ResponseThirdPartUser(users ,loginSuccessDto);
+                if(checkUserDisable(loginSuccessDto.getUid())){
+                	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
+                }
                 return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
 
             } else if(users !=null && !StringUtils.isEmpty(users.getThirdPartUnionid()) && thirdPartSignUpDto.getThirdPartType() == users.getThirdPartType()){
                 //如果openid用户有，unionId有 直接登录
                 ResponseThirdPartUser(users ,loginSuccessDto);
+                if(checkUserDisable(loginSuccessDto.getUid())){
+                	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
+                }
                 return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
             }
             else if(users ==null){
@@ -1672,9 +1690,15 @@ public class UserServiceImpl implements UserService {
                     //openId没有unionId有的情况 肯定是h5微信登录的 所以要修改昵称 前台检测过传来的
 //                    userProfile.setNickName(thirdPartSignUpDto.getNickName());
 //                    userMybatisDao.modifyUserProfile(userProfile);
+                    if(checkUserDisable(loginSuccessDto.getUid())){
+                    	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
+                    }
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 }else{
                     buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
+                    if(checkUserDisable(loginSuccessDto.getUid())){
+                    	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
+                    }
                     return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status, ResponseStatus.USER_LOGIN_SUCCESS.message, loginSuccessDto);
                 }
 
@@ -1682,15 +1706,29 @@ public class UserServiceImpl implements UserService {
             else{
                 if (users !=null) {
                     ResponseThirdPartUser(users ,loginSuccessDto);
+                    if(checkUserDisable(loginSuccessDto.getUid())){
+                    	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
+                    }
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 } else {
                     buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
+                }
+                if(checkUserDisable(loginSuccessDto.getUid())){
+                	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                 }
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status, ResponseStatus.USER_LOGIN_SUCCESS.message, loginSuccessDto);
             }
 
         }
 
+    }
+    
+    private boolean checkUserDisable(long uid){
+    	User user = userMybatisDao.getUserByUid(uid);
+    	if(null != user && user.getDisableUser() == 1){
+    		return true;
+    	}
+    	return false;
     }
 
     public void ResponseThirdPartUser(ThirdPartUser users,LoginSuccessDto loginSuccessDto){
