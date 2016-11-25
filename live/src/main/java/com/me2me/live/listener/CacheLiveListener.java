@@ -25,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -81,24 +82,29 @@ public class CacheLiveListener {
         cacheService.expire(liveLastUpdate.getKey(), 3600);
         
         List<UserFollow> list = userService.getFans(cacheLiveEvent.getUid());
-        log.info("get user fans ... ");
-        for(UserFollow userFollow : list) {
-            //主播的粉丝强制订阅
-            liveService.setLive3(userFollow.getSourceUid(),cacheLiveEvent.getTopicId());
+        List<Long> sourceUids = new ArrayList<Long>();
+        for(UserFollow uf : list){
+        	sourceUids.add(uf.getSourceUid());
         }
+        log.info("get user fans ... ");
+        
+        liveService.setLive3WithBatch(sourceUids, cacheLiveEvent.getTopicId());
+        
+        UserProfile userProfile = userService.getUserProfileByUid(cacheLiveEvent.getUid());
+        Topic topic = liveService.getTopicById(cacheLiveEvent.getTopicId());
+        
         for (UserFollow userFollow : list) {
             //所有订阅的人显示有红点
             MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(userFollow.getSourceUid(), cacheLiveEvent.getTopicId() + "", "1");
             cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-            UserProfile userProfile = userService.getUserProfileByUid(cacheLiveEvent.getUid());
+            
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("messageType", Specification.LiveSpeakType.FOLLOW.index);
             jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
             jsonObject.addProperty("topicId",cacheLiveEvent.getTopicId());
-            String alias = String.valueOf(userFollow.getSourceUid());
-            Topic topic = liveService.getTopicById(cacheLiveEvent.getTopicId());
             jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, userFollow.getSourceUid()));
             jsonObject.addProperty("fromInternalStatus", Specification.SnsCircle.CORE.index);//主播创建的，肯定是核心圈
+            String alias = String.valueOf(userFollow.getSourceUid());
             jPushService.payloadByIdExtra(alias,  userProfile.getNickName() + "新建了『" + topic.getTitle()+"』", JPushUtils.packageExtra(jsonObject));
         }
     }

@@ -74,6 +74,14 @@ public class LiveLocalJdbcDao {
 		jdbcTemplate.execute(sb.toString());
 	}
 	
+	public void updateContentAddFavoriteCountByForwardCid(int count, long forwardCid){
+		if(count < 1){
+			return;
+		}
+		String sql = "update content set favorite_count=favorite_count+"+count+" where forward_cid="+forwardCid;
+		jdbcTemplate.execute(sql);
+	}
+	
 	public void deleteLiveFavoriteByIds(List<Long> ids){
 		if(null == ids || ids.size() == 0){
 			return;

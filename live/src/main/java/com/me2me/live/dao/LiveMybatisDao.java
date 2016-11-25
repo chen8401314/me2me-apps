@@ -266,7 +266,7 @@ public class LiveMybatisDao {
     }
 
     public List<Long> getTopicId(long uid) {
-        List result = Lists.newArrayList();
+        List<Long> result = Lists.newArrayList();
         LiveFavoriteExample example = new LiveFavoriteExample();
         LiveFavoriteExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
@@ -309,6 +309,14 @@ public class LiveMybatisDao {
         LiveFavoriteExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
         criteria.andTopicIdIn(topicIds);
+        return liveFavoriteMapper.selectByExample(example);
+    }
+    
+    public List<LiveFavorite> getLiveFavoritesByUidsAndTopicId(List<Long> uids, long topicId){
+    	LiveFavoriteExample example = new LiveFavoriteExample();
+        LiveFavoriteExample.Criteria criteria = example.createCriteria();
+        criteria.andUidIn(uids);
+        criteria.andTopicIdEqualTo(topicId);
         return liveFavoriteMapper.selectByExample(example);
     }
 
@@ -492,6 +500,14 @@ public class LiveMybatisDao {
         LiveFavoriteDeleteExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
         criteria.andTopicIdIn(topicIds);
+        liveFavoriteDeleteMapper.deleteByExample(example);
+    }
+    
+    public void batchDeleteFavoriteDeletesByUids(List<Long> uids, long topicId){
+    	LiveFavoriteDeleteExample example = new LiveFavoriteDeleteExample();
+        LiveFavoriteDeleteExample.Criteria criteria = example.createCriteria();
+        criteria.andUidIn(uids);
+        criteria.andTopicIdEqualTo(topicId);
         liveFavoriteDeleteMapper.deleteByExample(example);
     }
 

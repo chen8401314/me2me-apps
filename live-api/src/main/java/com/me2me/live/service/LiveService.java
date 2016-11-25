@@ -131,6 +131,8 @@ public interface LiveService {
     Response genQRcode(long topicId);
 
     Response setLive3(long uid, long topicId);
+    
+    Response setLive3WithBatch(List<Long> uids, long topicId);
 
     Response deleteLiveFragment(long topicId, long fid, long uid);
 

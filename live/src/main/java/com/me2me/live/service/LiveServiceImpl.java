@@ -1124,6 +1124,47 @@ public class LiveServiceImpl implements LiveService {
         }
         return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
     }
+    
+    public Response setLive3WithBatch(List<Long> uids, long topicId){
+    	log.info("setLive3WithBatch start...");
+    	Map<String, LiveFavorite> liveFavoriteMap = new HashMap<String, LiveFavorite>();
+    	List<LiveFavorite> liveFavoriteList = liveMybatisDao.getLiveFavoritesByUidsAndTopicId(uids, topicId);
+    	if(null != liveFavoriteList && liveFavoriteList.size() > 0){
+    		for(LiveFavorite lf : liveFavoriteList){
+    			liveFavoriteMap.put(String.valueOf(lf.getUid()), lf);
+    		}
+    	}
+    	
+    	List<LiveFavorite> needInsertLiveFavoriteList = new ArrayList<LiveFavorite>();
+    	List<Long> needDeleteFavoriteDeleteUidList = new ArrayList<Long>();
+    	
+    	LiveFavorite liveFavorite = null;
+    	int needContentAddOne = 0;
+    	for(Long uid : uids){
+    		liveFavorite = liveFavoriteMap.get(String.valueOf(uid));
+    		if(null == liveFavorite){
+    			liveFavorite = new LiveFavorite();
+                liveFavorite.setTopicId(topicId);
+                liveFavorite.setUid(uid);
+                needInsertLiveFavoriteList.add(liveFavorite);
+                needDeleteFavoriteDeleteUidList.add(uid);
+                needContentAddOne++;
+    		}
+    	}
+    	
+    	if(needInsertLiveFavoriteList.size() > 0){
+    		liveLocalJdbcDao.batchInsertLiveFavorite(needInsertLiveFavoriteList);
+    	}
+    	if(needDeleteFavoriteDeleteUidList.size() > 0){
+    		liveMybatisDao.batchDeleteFavoriteDeletesByUids(uids, topicId);
+    	}
+    	if(needContentAddOne > 0){
+    		liveLocalJdbcDao.updateContentAddFavoriteCountByForwardCid(needContentAddOne, topicId);
+    	}
+    	
+    	log.info("setLive3WithBatch end!");
+    	return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
+    }
 
     /**
      * 删除王国跟贴内容
