@@ -303,6 +303,14 @@ public class LiveMybatisDao {
         List<LiveFavorite> liveFavoriteList = liveFavoriteMapper.selectByExample(example);
         return (liveFavoriteList != null && liveFavoriteList.size() > 0) ? liveFavoriteList.get(0) : null;
     }
+    
+    public List<LiveFavorite> getLiveFavoritesByUidAndTopicIds(long uid, List<Long> topicIds){
+    	LiveFavoriteExample example = new LiveFavoriteExample();
+        LiveFavoriteExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTopicIdIn(topicIds);
+        return liveFavoriteMapper.selectByExample(example);
+    }
 
     public void createLiveFavorite(LiveFavorite liveFavorite) {
         liveFavoriteMapper.insertSelective(liveFavorite);
@@ -400,6 +408,18 @@ public class LiveMybatisDao {
         List<TopicBarrage> topicBarrages = topicBarrageMapper.selectByExampleWithBLOBs(example);
         return com.me2me.common.utils.Lists.getSingle(topicBarrages);
     }
+    
+    public List<TopicBarrage> getBarrageListByTopicIds(List<Long> topicIds, long topId, long bottomId, int type, long uid){
+    	TopicBarrageExample example = new TopicBarrageExample();
+        TopicBarrageExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdIn(topicIds);
+        criteria.andTopIdEqualTo(topId);
+        criteria.andBottomIdEqualTo(bottomId);
+        criteria.andTypeEqualTo(type);
+        criteria.andUidEqualTo(uid);
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
+        return topicBarrageMapper.selectByExampleWithBLOBs(example);
+    }
 
     public List<Topic> getInactiveLive(long uid, List<Long> topics, long updateTime) {
         TopicExample example = new TopicExample();
@@ -450,12 +470,28 @@ public class LiveMybatisDao {
         List<LiveFavoriteDelete> list = liveFavoriteDeleteMapper.selectByExample(example);
         return com.me2me.common.utils.Lists.getSingle(list);
     }
+    
+    public List<LiveFavoriteDelete> getFavoriteDeletesByTopicIds(long uid, List<Long> topicIds){
+    	LiveFavoriteDeleteExample example = new LiveFavoriteDeleteExample();
+        LiveFavoriteDeleteExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTopicIdIn(topicIds);
+        return liveFavoriteDeleteMapper.selectByExample(example);
+    }
 
     public void deleteFavoriteDelete(long uid, long topicId) {
         LiveFavoriteDeleteExample example = new LiveFavoriteDeleteExample();
         LiveFavoriteDeleteExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
         criteria.andTopicIdEqualTo(topicId);
+        liveFavoriteDeleteMapper.deleteByExample(example);
+    }
+    
+    public void batchDeleteFavoriteDeletes(long uid, List<Long> topicIds){
+    	LiveFavoriteDeleteExample example = new LiveFavoriteDeleteExample();
+        LiveFavoriteDeleteExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTopicIdIn(topicIds);
         liveFavoriteDeleteMapper.deleteByExample(example);
     }
 

@@ -1,7 +1,5 @@
 package com.me2me.user.service;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
@@ -16,6 +14,7 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.core.QRCodeUtil;
+import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.io.service.FileTransferService;
 import com.me2me.sms.dto.*;
 import com.me2me.sms.service.JPushService;
@@ -23,10 +22,10 @@ import com.me2me.sms.service.SmsService;
 import com.me2me.sms.service.XgPushService;
 import com.me2me.user.dao.*;
 import com.me2me.user.dto.*;
+import com.me2me.user.event.FollowEvent;
 import com.me2me.user.model.*;
 import com.me2me.user.model.Dictionary;
 import com.me2me.user.widget.MessageNotificationAdapter;
-import com.sun.org.apache.xerces.internal.dom.PSVIAttrNSImpl;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -83,6 +82,8 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private JPushService jPushService;
 
+    @Autowired
+    private ApplicationEventBus applicationEventBus;
 
     /**
      * 用户注册
@@ -752,26 +753,28 @@ public class UserServiceImpl implements UserService {
             }
             userMybatisDao.createFollow(userFollow);
             log.info("follow success");
+            
+            applicationEventBus.post(new FollowEvent(followDto.getSourceUid(), followDto.getTargetUid()));
+            
             //关注提醒
-
-            UserProfile sourceUser = getUserProfileByUid(followDto.getSourceUid());
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("messageType",Specification.PushMessageType.FOLLOW.index);
-            jsonObject.addProperty("type",Specification.PushObjectType.SNS_CIRCLE.index);
-            String alias = String.valueOf(followDto.getTargetUid());
-            jPushService.payloadByIdExtra(alias, sourceUser.getNickName() + "关注了你！", JPushUtils.packageExtra(jsonObject));
-
-            //粉丝数量红点
-            log.info("follow fans add push start");
-            jsonObject = new JsonObject();
-            jsonObject.addProperty("fansCount","1");
-            alias = String.valueOf(followDto.getTargetUid());
-            jPushService.payloadByIdForMessage(alias,jsonObject.toString());
-            log.info("follow fans add push end ");
-
-            log.info("follow push success");
+//            UserProfile sourceUser = getUserProfileByUid(followDto.getSourceUid());
+//            JsonObject jsonObject = new JsonObject();
+//            jsonObject.addProperty("messageType",Specification.PushMessageType.FOLLOW.index);
+//            jsonObject.addProperty("type",Specification.PushObjectType.SNS_CIRCLE.index);
+//            String alias = String.valueOf(followDto.getTargetUid());
+//            jPushService.payloadByIdExtra(alias, sourceUser.getNickName() + "关注了你！", JPushUtils.packageExtra(jsonObject));
+//
+//            //粉丝数量红点
+//            log.info("follow fans add push start");
+//            jsonObject = new JsonObject();
+//            jsonObject.addProperty("fansCount","1");
+//            alias = String.valueOf(followDto.getTargetUid());
+//            jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+//            log.info("follow fans add push end ");
+//
+//            log.info("follow push success");
             //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW.index,0,followDto.getSourceUid()));
-            log.info("monitor success");
+//            log.info("monitor success");
             log.info("follow end ...");
             return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message);
         }else if(followDto.getAction() == Specification.UserFollowAction.UN_FOLLOW.index){

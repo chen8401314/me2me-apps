@@ -272,9 +272,18 @@ public class SnsServiceImpl implements SnsService {
         Topic topic = liveService.getTopicById(topicId);
         if (action == 0) {
             List<Topic> list = liveService.getTopicList(topic.getUid());
-            for (Topic live : list) {
-                liveService.setLive2(uid, live.getId(), 0, 0, action);
+            
+            List<Long> topicIds = new ArrayList<Long>();
+            if(null != list && list.size() > 0){
+            	for(Topic t : list){
+            		topicIds.add(t.getId());
+                }
             }
+            liveService.setLiveFromSnsFollow(uid, topicIds, 0, 0, action);
+            
+//            for (Topic live : list) {
+//                liveService.setLive2(uid, live.getId(), 0, 0, action);
+//            }
             FollowDto dto = new FollowDto();
             dto.setSourceUid(uid);
             dto.setTargetUid(topic.getUid());
@@ -307,19 +316,32 @@ public class SnsServiceImpl implements SnsService {
 
     @Override
     public Response follow(int action, long targetUid, long sourceUid) {
+    	log.info("====follow start...");
         FollowDto followDto = new FollowDto();
         followDto.setSourceUid(sourceUid);
         followDto.setTargetUid(targetUid);
         followDto.setAction(action);
         Response response = userService.follow(followDto);
+        //如果关注失败者直接返回失败，不必进行下面的逻辑
+        if(null == response || (response.getCode() != ResponseStatus.USER_FOLLOW_SUCCESS.status && response.getCode() != ResponseStatus.USER_CANCEL_FOLLOW_SUCCESS.status)){
+        	return response;
+        }
+        
         List<Topic> list = liveService.getMyTopic4Follow(targetUid);
         //关注,订阅所有直播/取消所有直播订阅
-        for (Topic topic : list) {
-            liveService.setLive2(sourceUid, topic.getId(), 0, 0, action);
+//        for (Topic topic : list) {
+//            liveService.setLive2(sourceUid, topic.getId(), 0, 0, action);
+//        }
+        List<Long> topicIds = new ArrayList<Long>();
+        if(null != list && list.size() > 0){
+        	for(Topic topic : list){
+        		topicIds.add(topic.getId());
+            }
         }
+        liveService.setLiveFromSnsFollow(sourceUid, topicIds, 0, 0, action);
+        
         //关注，默认加到圈外人
         if (action == 0) {
-
             // 判断人员关系,
             // 1如果他是我的粉丝则为相互圈内人
             //2.如果他不是我的粉丝，我是他的圈外人
@@ -343,6 +365,7 @@ public class SnsServiceImpl implements SnsService {
                 snsMybatisDao.updateSnsCircle(targetUid, sourceUid, internalStatus);
             }
         }
+        log.info("====follow end...");
         return response;
     }
 

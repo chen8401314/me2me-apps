@@ -1,5 +1,7 @@
 package com.me2me.content.service;
 
+import java.util.List;
+
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.*;
@@ -136,6 +138,8 @@ public interface ContentService{
     Response option(long id, int optionAction, int action);
 
     Content getContentByTopicId(long topicId);
+    
+    List<Content> getContentsByTopicIds(List<Long> topicIds);
 
     Response showUGCDetails(long id);
 

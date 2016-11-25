@@ -64,6 +64,8 @@ public interface LiveService {
 
     Response setLive2(long uid,long topicId,long topId,long bottomId,int action);
 
+    Response setLiveFromSnsFollow(long uid, List<Long> topicIds, long topId, long bottomId, int action);
+    
     /**
      * 结束自己当前直播
      * @param uid

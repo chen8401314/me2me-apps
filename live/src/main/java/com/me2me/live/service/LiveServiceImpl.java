@@ -22,6 +22,7 @@ import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.io.service.FileTransferService;
 import com.me2me.live.cache.MyLivesStatusModel;
 import com.me2me.live.cache.MySubscribeCacheModel;
+import com.me2me.live.dao.LiveLocalJdbcDao;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.*;
 import com.me2me.live.event.CacheLiveEvent;
@@ -71,6 +72,9 @@ public class LiveServiceImpl implements LiveService {
 
     @Autowired
     private ApplicationEventBus applicationEventBus;
+    
+    @Autowired
+    private LiveLocalJdbcDao liveLocalJdbcDao;
 
 
     @Value("#{app.live_web}")
@@ -955,6 +959,146 @@ public class LiveServiceImpl implements LiveService {
             return Response.success(ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.message);
         }
         return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
+    }
+    
+    @Override
+    public Response setLiveFromSnsFollow(long uid, List<Long> topicIds, long topId, long bottomId, int action){
+    	log.info("setLiveFromSnsFollow start ...");
+    	List<LiveFavorite> liveFavoriteList = liveMybatisDao.getLiveFavoritesByUidAndTopicIds(uid, topicIds);
+    	Map<String, LiveFavorite> liveFavoriteMap = new HashMap<String, LiveFavorite>();
+    	if(null != liveFavoriteList && liveFavoriteList.size() > 0){
+    		for(LiveFavorite lf : liveFavoriteList){
+    			liveFavoriteMap.put(lf.getUid()+"_"+lf.getTopicId(), lf);
+    		}
+    	}
+    	List<Content> contentList = contentService.getContentsByTopicIds(topicIds);
+    	Map<String, Content> contentMap = new HashMap<String, Content>();
+    	if(null != contentList && contentList.size() > 0){
+    		for(Content c : contentList){
+    			contentMap.put(String.valueOf(c.getForwardCid()), c);
+    		}
+    	}
+    	Response resp = null;
+    	if (action == 0) {//订阅
+    		resp = this.setLiveFollow(uid, topicIds, topId, bottomId, liveFavoriteMap, contentMap);
+    	} else if (action == 1) {//取消订阅
+    		resp = this.cancelLiveFollow(uid, topicIds, liveFavoriteMap, contentMap);
+    	}else{
+    		resp = Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
+    	}
+    	log.info("setLiveFromSnsFollow end ...");
+    	return resp;
+    }
+    
+    private Response setLiveFollow(long uid, List<Long> topicIds, long topId, long bottomId, Map<String, LiveFavorite> liveFavoriteMap, Map<String, Content> contentMap){
+    	Map<String, TopicBarrage> barrageMap = new HashMap<String, TopicBarrage>();
+    	List<TopicBarrage> barrageList = liveMybatisDao.getBarrageListByTopicIds(topicIds, topId, bottomId, Specification.LiveSpeakType.SUBSCRIBED.index, uid);
+    	if(null != barrageList && barrageList.size() > 0){
+    		for(TopicBarrage tb : barrageList){
+    			barrageMap.put(String.valueOf(tb.getTopicId()), tb);
+    		}
+    	}
+    	
+    	List<LiveFavorite> needInsertLiveFavoriteList = new ArrayList<LiveFavorite>();
+    	List<Long> needDeleteFavoriteDeleteTopicIdList = new ArrayList<Long>();
+    	List<TopicBarrage> needInsertTopicBarrageList = new ArrayList<TopicBarrage>();
+    	List<Long> needAddOneContentIdList = new ArrayList<Long>();
+    	
+    	LiveFavorite liveFavorite = null;
+    	Content content = null;
+    	TopicBarrage barrage = null;
+    	for(Long topicId : topicIds){
+    		liveFavorite = liveFavoriteMap.get(uid + "_" + topicId);
+    		if (liveFavorite == null) {
+    			liveFavorite = new LiveFavorite();
+                liveFavorite.setTopicId(topicId);
+                liveFavorite.setUid(uid);
+                needInsertLiveFavoriteList.add(liveFavorite);
+                needDeleteFavoriteDeleteTopicIdList.add(topicId);
+                
+                //保存弹幕
+                barrage = barrageMap.get(String.valueOf(topicId));
+                if(null == barrage){
+                	barrage = new TopicBarrage();
+                	barrage.setBottomId(bottomId);
+                	barrage.setTopicId(topicId);
+                	barrage.setTopId(topId);
+                	barrage.setContentType(0);
+                	barrage.setType(Specification.LiveSpeakType.SUBSCRIBED.index);
+                	barrage.setUid(uid);
+                	needInsertTopicBarrageList.add(barrage);
+                }
+                content = contentMap.get(String.valueOf(topicId));
+                if(null != content){
+                	needAddOneContentIdList.add(content.getId());
+                }
+    		}
+    	}
+    	
+    	//开始批量处理数据库更新
+    	if(needInsertLiveFavoriteList.size() > 0){
+    		liveLocalJdbcDao.batchInsertLiveFavorite(needInsertLiveFavoriteList);
+    	}
+    	if(needDeleteFavoriteDeleteTopicIdList.size() > 0){
+    		liveMybatisDao.batchDeleteFavoriteDeletes(uid, needDeleteFavoriteDeleteTopicIdList);
+    	}
+    	if(needInsertTopicBarrageList.size() > 0){
+    		liveLocalJdbcDao.batchInsertTopicBarrage(needInsertTopicBarrageList);
+    	}
+    	if(needAddOneContentIdList.size() > 0){
+    		liveLocalJdbcDao.updateContentAddOneFavoriteCount(needAddOneContentIdList);
+    	}
+    	
+    	return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
+    }
+    
+    private Response cancelLiveFollow(long uid, List<Long> topicIds, Map<String, LiveFavorite> liveFavoriteMap, Map<String, Content> contentMap){
+    	Map<String, LiveFavoriteDelete> favoriteDeleteMap = new HashMap<String, LiveFavoriteDelete>();
+    	List<LiveFavoriteDelete> favoriteDeleteList = liveMybatisDao.getFavoriteDeletesByTopicIds(uid, topicIds);
+    	if(null != favoriteDeleteList && favoriteDeleteList.size() > 0){
+    		for(LiveFavoriteDelete lfd : favoriteDeleteList){
+    			favoriteDeleteMap.put(String.valueOf(lfd.getTopicId()), lfd);
+    		}
+    	}
+    	
+    	List<Long> needDeleteLiveFavoriteIdList = new ArrayList<Long>();
+    	List<LiveFavoriteDelete> needInsertLiveFavoriteDeleteList = new ArrayList<LiveFavoriteDelete>();
+    	List<Long> needDecrOneContentIdList = new ArrayList<Long>();
+    	
+    	LiveFavorite liveFavorite = null;
+    	LiveFavoriteDelete liveFavoriteDelete = null;
+    	Content content = null;
+    	for(Long topicId : topicIds){
+    		liveFavorite = liveFavoriteMap.get(uid + "_" + topicId);
+    		if (liveFavorite != null) {
+    			needDeleteLiveFavoriteIdList.add(liveFavorite.getId());
+            }
+    		
+    		liveFavoriteDelete = favoriteDeleteMap.get(String.valueOf(topicId));
+    		if(null == liveFavoriteDelete){
+    			liveFavoriteDelete = new LiveFavoriteDelete();
+    	        liveFavoriteDelete.setUid(uid);
+    	        liveFavoriteDelete.setTopicId(topicId);
+    	        needInsertLiveFavoriteDeleteList.add(liveFavoriteDelete);
+    	        content = contentMap.get(String.valueOf(topicId));
+                if(null != content){
+                	needDecrOneContentIdList.add(content.getId());
+                }
+    		}
+    	}
+    	
+    	//开始批量处理
+    	if(needDeleteLiveFavoriteIdList.size() > 0){
+    		liveLocalJdbcDao.deleteLiveFavoriteByIds(needDeleteLiveFavoriteIdList);
+    	}
+    	if(needInsertLiveFavoriteDeleteList.size() > 0){
+    		liveLocalJdbcDao.batchInsertLiveFavoriteDelete(needInsertLiveFavoriteDeleteList);
+    	}
+    	if(needDecrOneContentIdList.size() > 0){
+    		liveLocalJdbcDao.updateContentDecrOneFavoriteCount(needDecrOneContentIdList);
+    	}
+    	
+    	return Response.success(ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.message);
     }
 
     /**

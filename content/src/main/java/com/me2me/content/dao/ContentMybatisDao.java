@@ -329,6 +329,14 @@ public class ContentMybatisDao {
         criteria.andTypeEqualTo(Specification.ArticleType.LIVE.index);
         return contentMapper.selectByExample(example);
     }
+    
+    public List<Content> getContentByTopicIds(List<Long> topicIds){
+    	ContentExample example = new ContentExample();
+        ContentExample.Criteria criteria =example.createCriteria();
+        criteria.andForwardCidIn(topicIds);
+        criteria.andTypeEqualTo(Specification.ArticleType.LIVE.index);
+        return contentMapper.selectByExample(example);
+    }
 
     public List<ContentReview> getContentReviewByCid(long cid,long sinceId){
         ContentReviewExample example = new ContentReviewExample();

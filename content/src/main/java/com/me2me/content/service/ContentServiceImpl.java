@@ -2533,6 +2533,12 @@ private void localJpush(long toUid){
         List<Content> list = contentMybatisDao.getContentByTopicId(topicId);
         return (list != null && list.size() > 0) ? list.get(0) : null;
     }
+    
+    @Override
+    public List<Content> getContentsByTopicIds(List<Long> topicIds) {
+        List<Content> list = contentMybatisDao.getContentByTopicIds(topicIds);
+        return list;
+    }
 
     @Override
     public Response showUGCDetails(long id) {
