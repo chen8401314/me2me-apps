@@ -1638,6 +1638,11 @@ public class LiveServiceImpl implements LiveService {
     public Response getLiveDetail(GetLiveDetailDto getLiveDetailDto) {
         log.info("get live detail start ... request:"+JSON.toJSONString(getLiveDetailDto));
         log.info("get total records...");
+        Topic topic = liveMybatisDao.getTopicById(getLiveDetailDto.getTopicId());
+        if(null == topic){
+        	return Response.failure(ResponseStatus.KINGDOM_IS_NOT_EXIST.status, ResponseStatus.KINGDOM_IS_NOT_EXIST.message);
+        }
+        
         int totalRecords = liveMybatisDao.countFragmentByTopicId(getLiveDetailDto.getTopicId());
 
         LiveDetailDto liveDetailDto = new LiveDetailDto();
@@ -1645,12 +1650,9 @@ public class LiveServiceImpl implements LiveService {
         int offset = getLiveDetailDto.getOffset();
         int totalPages =totalRecords%offset==0?totalRecords/offset:totalRecords/offset+1;
         liveDetailDto.setTotalPages(totalPages);
-//        liveDetailDto.setPageNo(getLiveDetailDto.getPageNo());
         log.info("get page records...");
         
         liveDetailDto.getPageInfo().setStart(getLiveDetailDto.getPageNo());
-        
-        Topic topic = liveMybatisDao.getTopicById(getLiveDetailDto.getTopicId());
         
         int ss = 0;//预防机制。。防止程序出错死循环
         while(true){
@@ -1660,7 +1662,17 @@ public class LiveServiceImpl implements LiveService {
         	}
         	List<TopicFragment> list = liveMybatisDao.getTopicFragmentForPage(getLiveDetailDto);
         	if(null == list || list.size() == 0){//理论上就是到底了
-        		break;
+        		if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){
+	        		if(ss == 1){//第一次循环就没拉到数据，那么说明就没有数据了。。这里要补全上下页
+	        			liveDetailDto.getPageInfo().setEnd(getLiveDetailDto.getPageNo());
+	        			LiveDetailDto.PageDetail pd = new LiveDetailDto.PageDetail();
+	        	        pd.setPage(getLiveDetailDto.getPageNo());
+	        	        pd.setRecords(0);
+	        	        pd.setIsFull(2);
+	        	        liveDetailDto.getPageInfo().getDetail().add(pd);
+	        		}
+	        		break;
+        		}
         	}
         	int flag = buildLiveDetail(getLiveDetailDto,liveDetailDto,list, topic);
         	if(liveDetailDto.getLiveElements().size() >= offset){
@@ -1674,9 +1686,12 @@ public class LiveServiceImpl implements LiveService {
         		getLiveDetailDto.setPageNo(getLiveDetailDto.getPageNo() + 1);
         	}else{
         		getLiveDetailDto.setPageNo(getLiveDetailDto.getPageNo() - 1);
+        		if(getLiveDetailDto.getPageNo() < 1){
+            		break;//向上拉到顶了
+            	}
         	}
         }
-
+        
         log.info("get live detail end ...");
         return  Response.success(ResponseStatus.GET_LIVE_DETAIL_SUCCESS.status, ResponseStatus.GET_LIVE_DETAIL_SUCCESS.message, liveDetailDto);
     }
