@@ -27,7 +27,7 @@ public class JPushUtils {
             Map.Entry<String,JsonElement> entry = (Map.Entry<String, JsonElement>) it.next();
             String key = entry.getKey();
             JsonElement element = entry.getValue();
-            map.put(key, element.toString());
+            map.put(key, element.toString().replace("\"",""));
         }
         return map;
     }
