@@ -7,7 +7,7 @@ package com.me2me.common;
  */
 public class Constant {
 
-    public static final String DEFAULT_AVATAR = "default.jpg";
+    public static final String DEFAULT_AVATAR = "default.png";
 
     public static final String QINIU_DOMAIN = "http://cdn.me-to-me.com";
 
