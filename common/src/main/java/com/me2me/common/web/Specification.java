@@ -1001,4 +1001,21 @@ public interface Specification {
             this.index = index;
     	}
     }
+    
+    enum UserContentSearchType{
+    	ARTICLE_REVIEW("文章评论", 1),
+    	UGC_OR_PGC("UGC或PGC", 2),
+    	UGC_OR_PGC_REVIEW("UGC或PGC评论", 3),
+    	KINGDOM("王国", 4),
+    	KINGDOM_SPEAK("王国发言或评论", 5)
+    	;
+    	
+    	public final String name;
+    	public final int index;
+    	
+    	UserContentSearchType(String name, int index){
+    		this.name = name;
+            this.index = index;
+    	}
+    }
 }

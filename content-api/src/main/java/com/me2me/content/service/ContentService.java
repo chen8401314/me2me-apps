@@ -213,4 +213,6 @@ public interface ContentService{
     Response delArticleReview(ReviewDelDTO delDTO);
 
     Response delContentReview(ReviewDelDTO delDTO);
+    
+    Response searchUserContent(UserContentSearchDTO searchDTO);
 }

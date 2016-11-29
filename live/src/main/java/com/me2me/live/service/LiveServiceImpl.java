@@ -1659,6 +1659,10 @@ public class LiveServiceImpl implements LiveService {
         	return Response.failure(ResponseStatus.KINGDOM_IS_NOT_EXIST.status, ResponseStatus.KINGDOM_IS_NOT_EXIST.message);
         }
         
+        //消除红点
+        MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(getLiveDetailDto.getUid(), getLiveDetailDto.getTopicId() + "", "0");
+        cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+        
         int totalRecords = liveMybatisDao.countFragmentByTopicId(getLiveDetailDto.getTopicId());
 
         LiveDetailDto liveDetailDto = new LiveDetailDto();
