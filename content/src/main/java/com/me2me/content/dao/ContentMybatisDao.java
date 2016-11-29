@@ -378,6 +378,14 @@ public class ContentMybatisDao {
         example.setOrderByClause(" create_time desc limit 20 ");
         return contentReviewMapper.selectByExample(example);
     }
+    
+    public List<ContentReview> getContentReviewPageByUid(long uid, int start, int pageSize){
+    	ContentReviewExample example = new ContentReviewExample();
+        ContentReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        example.setOrderByClause(" id desc limit "+start+","+pageSize);
+        return contentReviewMapper.selectByExample(example);
+    }
 
     public int isLike(long cid, long uid){
         ContentLikesDetailsExample example = new ContentLikesDetailsExample();
@@ -465,6 +473,21 @@ public class ContentMybatisDao {
         criteria.andStatusNotEqualTo(Specification.ContentDelStatus.DELETE.index);
         example.setOrderByClause(" id desc limit 20 ");
         return articleReviewMapper.selectByExample(example);
+    }
+    
+    public List<ArticleReview> getArticleReviewPageByUid(long uid, int start, int pageSize){
+    	ArticleReviewExample example = new ArticleReviewExample();
+        ArticleReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        example.setOrderByClause(" id desc limit "+start+","+pageSize);
+        return articleReviewMapper.selectByExample(example);
+    }
+    
+    public int countArticleReviewPageByUid(long uid){
+    	ArticleReviewExample example = new ArticleReviewExample();
+        ArticleReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        return articleReviewMapper.countByExample(example);
     }
 
     public void createContentArticleDetails(ArticleTagsDetails articleTagsDetails){

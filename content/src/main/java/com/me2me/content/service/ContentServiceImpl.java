@@ -2825,6 +2825,31 @@ private void localJpush(long toUid){
 	public Response deleteReview(ReviewDelDTO delDTO) {
 		return reviewAdapter.executeDel(delDTO);
 	}
+
+	@Override
+	public Response searchUserContent(UserContentSearchDTO searchDTO) {
+		int page = 1;
+		if(searchDTO.getPage() > 1){
+			page = searchDTO.getPage();
+		}
+		int pageSize = 10;
+		if(searchDTO.getPageSize() > 0){
+			pageSize = searchDTO.getPageSize();
+		}
+		int start = (page -1) * pageSize;
+		
+		ShowUserContentsDTO resultDTO = new ShowUserContentsDTO();
+		resultDTO.setSearchType(searchDTO.getSearchType());
+		resultDTO.setCurrentPage(page);
+		
+		if(searchDTO.getSearchType() == Specification.UserContentSearchType.ARTICLE_REVIEW.index){
+			//文章评论查询
+			List<ArticleReview> list = contentMybatisDao.getArticleReviewPageByUid(searchDTO.getUid(), start, pageSize);
+			
+		}
+		
+		return null;
+	}
 	
 	
 }
