@@ -1852,7 +1852,14 @@ public class LiveServiceImpl implements LiveService {
             e.printStackTrace();
         }
         liveMybatisDao.createTopicFragment(fragment);
-        System.out.println("ok");
+        
+        //--add update kingdom cache -- modify by zcl -- begin --
+        //此处暂不考虑原子操作
+        int total = liveMybatisDao.countFragmentByTopicId(fragment.getTopicId());
+        String value = fragment.getId() + "," + total;
+        cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + fragment.getTopicId(), value);
+        //--add update kingdom cache -- modify by zcl -- end --
+        
         return Response.success();
     }
 

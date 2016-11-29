@@ -40,6 +40,7 @@ import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -2844,11 +2845,128 @@ private void localJpush(long toUid){
 		
 		if(searchDTO.getSearchType() == Specification.UserContentSearchType.ARTICLE_REVIEW.index){
 			//文章评论查询
-			List<ArticleReview> list = contentMybatisDao.getArticleReviewPageByUid(searchDTO.getUid(), start, pageSize);
+			int totalCount = contentMybatisDao.countArticleReviewPageByUid(searchDTO.getUid());
+			resultDTO.setTotalCount(totalCount);
+			resultDTO.setTotalPage(totalCount%pageSize==0?totalCount/pageSize:totalCount/pageSize+1);
 			
+			List<ArticleReview> list = contentMybatisDao.getArticleReviewPageByUid(searchDTO.getUid(), start, pageSize);
+			if(null != list && list.size() > 0){
+				ShowUserContentsDTO.UserArtcileReviewElement e = null;
+				for(ArticleReview ar : list){
+					e = new ShowUserContentsDTO.UserArtcileReviewElement();
+					e.setId(ar.getId());
+					e.setArticleId(ar.getArticleId());
+					e.setAtUid(ar.getAtUid());
+					e.setCreateTime(ar.getCreateTime());
+					e.setReview(ar.getReview());
+					e.setStatus(ar.getStatus());
+					e.setUid(ar.getUid());
+					resultDTO.getResult().add(e);
+				}
+			}
+		}else if(searchDTO.getSearchType() == Specification.UserContentSearchType.UGC.index){
+			//UGC
+			int totalCount = contentMybatisDao.countUgcPageByUid(searchDTO.getUid());
+			resultDTO.setTotalCount(totalCount);
+			resultDTO.setTotalPage(totalCount%pageSize==0?totalCount/pageSize:totalCount/pageSize+1);
+			
+			List<Content> list = contentMybatisDao.getUgcPageByUid(searchDTO.getUid(), start, pageSize);
+			if(null != list && list.size() > 0){
+				ShowUserContentsDTO.UserUgcElement e = null;
+				for(Content c : list){
+					e = new ShowUserContentsDTO.UserUgcElement();
+					e.setContent(c.getContent());
+					e.setContentType(c.getContentType());
+					e.setConverImage(c.getConverImage());
+					e.setCreateTime(c.getCreateTime());
+					e.setFeeling(c.getFeeling());
+					e.setId(c.getId());
+					e.setIsTop(c.getIsTop());
+					e.setLikeCount(c.getLikeCount());
+					e.setReadCount(c.getReadCount());
+					e.setReadCountDummy(c.getReadCountDummy());
+					e.setReviewCount(c.getReviewCount());
+					e.setRights(c.getRights());
+					e.setStatus(c.getStatus());
+					e.setTitle(c.getTitle());
+					e.setType(c.getType());
+					e.setUid(c.getUid());
+					resultDTO.getResult().add(e);
+				}
+			}
+		}else if(searchDTO.getSearchType() == Specification.UserContentSearchType.UGC_OR_PGC_REVIEW.index){
+			//UGC评论
+			int totalCount = contentMybatisDao.countContentReviewPageByUid(searchDTO.getUid());
+			resultDTO.setTotalCount(totalCount);
+			resultDTO.setTotalPage(totalCount%pageSize==0?totalCount/pageSize:totalCount/pageSize+1);
+			
+			List<ContentReview> list = contentMybatisDao.getContentReviewPageByUid(searchDTO.getUid(), start, pageSize);
+			if(null != list && list.size() > 0){
+				ShowUserContentsDTO.UserUgcReviewElement e = null;
+				for(ContentReview cr : list){
+					e = new ShowUserContentsDTO.UserUgcReviewElement();
+					e.setAtUid(cr.getAtUid());
+					e.setCid(cr.getCid());
+					e.setCreateTime(cr.getCreateTime());
+					e.setExtra(cr.getExtra());
+					e.setId(cr.getId());
+					e.setReview(cr.getReview());
+					e.setStatus(cr.getStatus());
+					e.setUid(cr.getUid());
+					resultDTO.getResult().add(e);
+				}
+			}
+		}else if(searchDTO.getSearchType() == Specification.UserContentSearchType.KINGDOM.index){
+			//王国
+			int totalCount = liveForContentJdbcDao.countUserTopicPageByUid(searchDTO.getUid());
+			resultDTO.setTotalCount(totalCount);
+			resultDTO.setTotalPage(totalCount%pageSize==0?totalCount/pageSize:totalCount/pageSize+1);
+			
+			List<Map<String,Object>> list = liveForContentJdbcDao.getUserTopicPageByUid(searchDTO.getUid(), start, pageSize);
+			if(null != list && list.size() > 0){
+				ShowUserContentsDTO.UserTopicElement e = null;
+				for(Map<String,Object> t : list){
+					e = new ShowUserContentsDTO.UserTopicElement();
+					e.setCoreCircle((String)t.get("core_circle"));
+					e.setCreateTime((Date)t.get("create_time"));
+					e.setId((Long)t.get("id"));
+					e.setLiveImage((String)t.get("live_image"));
+					e.setStatus((Integer)t.get("status"));
+					e.setTitle((String)t.get("title"));
+					e.setUid((Long)t.get("uid"));
+					e.setUpdateTime((Date)t.get("update_time"));
+					resultDTO.getResult().add(e);
+				}
+			}
+		}else if(searchDTO.getSearchType() == Specification.UserContentSearchType.KINGDOM_SPEAK.index){
+			//王国发言/评论等
+			int totalCount = liveForContentJdbcDao.countUserTopicFragmentPageByUid(searchDTO.getUid());
+			resultDTO.setTotalCount(totalCount);
+			resultDTO.setTotalPage(totalCount%pageSize==0?totalCount/pageSize:totalCount/pageSize+1);
+			
+			List<Map<String,Object>> list = liveForContentJdbcDao.getUserTopicFragmentPageByUid(searchDTO.getUid(), start, pageSize);
+			if(null != list && list.size() > 0){
+				ShowUserContentsDTO.UserTopicFragmentElement e = null;
+				for(Map<String,Object> t : list){
+					e = new ShowUserContentsDTO.UserTopicFragmentElement();
+					e.setContentType((Integer)t.get("content_type"));
+					e.setCreateTime((Date)t.get("create_time"));
+					e.setExtra((String)t.get("extra"));
+					e.setFragment((String)t.get("fragment"));
+					e.setFragmentImage((String)t.get("fragment_image"));
+					e.setId((Long)t.get("id"));
+					e.setStatus((Integer)t.get("status"));
+					e.setTopicId((Long)t.get("topic_id"));
+					e.setType((Integer)t.get("type"));
+					e.setUid((Long)t.get("uid"));
+					resultDTO.getResult().add(e);
+				}
+			}
+		}else{
+			return Response.failure("非法的查询类型");
 		}
 		
-		return null;
+		return Response.success(resultDTO);
 	}
 	
 	

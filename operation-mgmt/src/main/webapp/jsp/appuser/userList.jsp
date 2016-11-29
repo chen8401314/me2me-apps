@@ -160,6 +160,7 @@
                                                 			<a href="${ctx}/appuser/option/status?m=${userItem.nickName }&a=2&i=${userItem.uid}">恢复</a>
                                                 		</c:otherwise>
                                                 	</c:choose>
+                                                	|<a href="${ctx}/appcontent/init/${userItem.uid }">查看内容</a>
 													</th>
 												</tr>
 											</c:forEach>
@@ -172,6 +173,7 @@
 												<th>性别</th>
 												<th>生日</th>
 												<th>是否大V</th>
+												<th>状态</th>
 												<th>创建时间</th>
 												<th>操作</th>
 											</tr>

@@ -67,4 +67,32 @@ public class LiveForContentJdbcDao {
         String sql = sb.toString();
         return jdbcTemplate.queryForList(sql);
     }
+    
+    public List<Map<String,Object>> getUserTopicPageByUid(long uid, int start, int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select id,uid,live_image,title,status,create_time,update_time,core_circle from topic ");
+    	sb.append("where uid=").append(uid).append(" order by id desc limit ").append(start).append(",").append(pageSize);
+    	return jdbcTemplate.queryForList(sb.toString());
+    }
+    
+    public int countUserTopicPageByUid(long uid){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select count(1) as count from topic ");
+    	sb.append("where uid=").append(uid);
+    	return Integer.valueOf(this.jdbcTemplate.queryForList(sb.toString()).get(0).get("count").toString());
+    }
+    
+    public List<Map<String,Object>> getUserTopicFragmentPageByUid(long uid, int start, int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select id,topic_id,uid,fragment_image,fragment,type,content_type,create_time,extra,status from topic_fragment ");
+    	sb.append(" where uid=").append(uid).append(" order by topic_id desc, id desc limit ").append(start).append(",").append(pageSize);
+    	return jdbcTemplate.queryForList(sb.toString());
+    }
+    
+    public int countUserTopicFragmentPageByUid(long uid){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select count(1) as count from topic_fragment ");
+    	sb.append(" where uid=").append(uid);
+    	return Integer.valueOf(this.jdbcTemplate.queryForList(sb.toString()).get(0).get("count").toString());
+    }
 }

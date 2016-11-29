@@ -386,6 +386,13 @@ public class ContentMybatisDao {
         example.setOrderByClause(" id desc limit "+start+","+pageSize);
         return contentReviewMapper.selectByExample(example);
     }
+    
+    public int countContentReviewPageByUid(long uid){
+    	ContentReviewExample example = new ContentReviewExample();
+        ContentReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        return contentReviewMapper.countByExample(example);
+    }
 
     public int isLike(long cid, long uid){
         ContentLikesDetailsExample example = new ContentLikesDetailsExample();
@@ -585,5 +592,23 @@ public class ContentMybatisDao {
     
     public void updateContentReview(ContentReview cr){
     	contentReviewMapper.updateByPrimaryKeySelective(cr);
+    }
+    
+    public List<Content> getUgcPageByUid(long uid, int start, int pageSize){
+    	ContentExample example = new ContentExample();
+        ContentExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTypeEqualTo(Specification.ArticleType.ORIGIN.index);
+        example.setOrderByClause(" id desc limit "+start+","+pageSize);
+        List<Content> list = contentMapper.selectByExampleWithBLOBs(example);
+    	return list;
+    }
+    
+    public int countUgcPageByUid(long uid){
+    	ContentExample example = new ContentExample();
+        ContentExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTypeEqualTo(Specification.ArticleType.ORIGIN.index);
+        return contentMapper.countByExample(example);
     }
 }

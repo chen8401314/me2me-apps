@@ -511,7 +511,7 @@
 
   <select id="countFragmentByTopicIdWithSince" parameterType="com.me2me.live.dto.GetLiveUpdateDto" resultType="java.util.Map">
     select
-    count(*) total_records,count(if(f.id>#{sinceId,jdbcType=BIGINT},TRUE,NULL)) as update_records,max(f.id) as lastFragmentId
+    count(1) total_records,count(if(f.id>#{sinceId,jdbcType=BIGINT},TRUE,NULL)) as update_records,max(f.id) as lastFragmentId
     from topic_fragment f
     where  f.topic_id=#{topicId,jdbcType=BIGINT}
   </select>

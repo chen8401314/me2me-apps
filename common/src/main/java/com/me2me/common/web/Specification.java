@@ -1004,7 +1004,7 @@ public interface Specification {
     
     enum UserContentSearchType{
     	ARTICLE_REVIEW("文章评论", 1),
-    	UGC_OR_PGC("UGC或PGC", 2),
+    	UGC("UGC", 2),
     	UGC_OR_PGC_REVIEW("UGC或PGC评论", 3),
     	KINGDOM("王国", 4),
     	KINGDOM_SPEAK("王国发言或评论", 5)
