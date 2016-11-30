@@ -300,7 +300,7 @@ public enum  ResponseStatus {
 
     KINGDOM_IS_NOT_EXIST("王国不存在", "the kingdom is not exist", 50048),
 
-
+    KINGDOM_CREATE_FAILURE("王国创建失败", "Kingdom creation failed", 50049),
 
 
 

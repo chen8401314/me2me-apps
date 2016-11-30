@@ -492,7 +492,8 @@ public class ContentServiceImpl implements ContentService {
         List<ArticleLikesDetails> articleLikesDetails =  contentMybatisDao.getArticleLikesDetails(id);
         List<ArticleReview> articleReviews = contentMybatisDao.getArticleReviews(id ,Integer.MAX_VALUE);
         showArticleCommentsDto.setLikeCount(articleLikesDetails.size());
-        showArticleCommentsDto.setReviewCount(articleReviews.size());
+//        showArticleCommentsDto.setReviewCount(articleReviews.size());
+        showArticleCommentsDto.setReviewCount(contentMybatisDao.countArticleReviews(id));
         showArticleCommentsDto.setIsLike(0);
         //获取用户信息取得是否大V
         UserProfile userProfile1 = userService.getUserProfileByUid(uid);
@@ -1161,7 +1162,9 @@ private void localJpush(long toUid){
         contentDetailDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
         contentDetailDto.setHotValue(content.getHotValue());
         contentDetailDto.setLikeCount(content.getLikeCount());
-        contentDetailDto.setReviewCount(content.getReviewCount());
+//        contentDetailDto.setReviewCount(content.getReviewCount());
+        contentDetailDto.setReviewCount(contentMybatisDao.countContentReviewByCid(content.getId()));
+        
         contentDetailDto.setFavoriteCount(content.getFavoriteCount());
         contentDetailDto.setPersonCount(content.getPersonCount());
         contentDetailDto.setCreateTime(content.getCreateTime());

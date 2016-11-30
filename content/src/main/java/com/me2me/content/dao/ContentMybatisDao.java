@@ -379,6 +379,14 @@ public class ContentMybatisDao {
         return contentReviewMapper.selectByExample(example);
     }
     
+    public int countContentReviewByCid(long cid){
+    	ContentReviewExample example = new ContentReviewExample();
+        ContentReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(cid);
+        criteria.andStatusNotEqualTo(Specification.ContentDelStatus.DELETE.index);
+        return contentReviewMapper.countByExample(example);
+    }
+    
     public List<ContentReview> getContentReviewPageByUid(long uid, int start, int pageSize){
     	ContentReviewExample example = new ContentReviewExample();
         ContentReviewExample.Criteria criteria = example.createCriteria();
@@ -480,6 +488,14 @@ public class ContentMybatisDao {
         criteria.andStatusNotEqualTo(Specification.ContentDelStatus.DELETE.index);
         example.setOrderByClause(" id desc limit 20 ");
         return articleReviewMapper.selectByExample(example);
+    }
+    
+    public int countArticleReviews(long id){
+    	ArticleReviewExample example = new ArticleReviewExample();
+        ArticleReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andArticleIdEqualTo(id);
+        criteria.andStatusNotEqualTo(Specification.ContentDelStatus.DELETE.index);
+        return articleReviewMapper.countByExample(example);
     }
     
     public List<ArticleReview> getArticleReviewPageByUid(long uid, int start, int pageSize){
