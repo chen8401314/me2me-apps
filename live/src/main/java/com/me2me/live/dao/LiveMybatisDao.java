@@ -305,6 +305,9 @@ public class LiveMybatisDao {
     }
     
     public List<LiveFavorite> getLiveFavoritesByUidAndTopicIds(long uid, List<Long> topicIds){
+    	if(null == topicIds || topicIds.size() == 0){
+    		return null;
+    	}
     	LiveFavoriteExample example = new LiveFavoriteExample();
         LiveFavoriteExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);

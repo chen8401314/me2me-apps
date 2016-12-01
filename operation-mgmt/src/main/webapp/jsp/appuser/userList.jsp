@@ -68,7 +68,7 @@
 										<select name="status" id="status" class="form-control">
 											<option value="0" ${dataObj.status==0?'selected':''}>全部</option>
 											<option value="1" ${dataObj.status==1?'selected':''}>正常</option>
-											<option value="2" ${dataObj.status==2?'selected':''}>禁止</option>
+											<option value="2" ${dataObj.status==2?'selected':''}>封号</option>
 										</select>
 										<input type="submit" id="btnSearch" name="btnSearch" value="搜索" class="btn btn-info" />
 									</div>
@@ -137,7 +137,7 @@
                                                 			正常
                                                 		</c:when>
                                                 		<c:otherwise>
-                                                			禁止
+                                                			封号
                                                 		</c:otherwise>
                                                 	</c:choose>
 													</th>
@@ -154,7 +154,7 @@
                                                 	|<a href="${ctx}/appuser/gaguser/add/${userItem.uid }">禁言</a>
                                                 	|<c:choose>
                                                 		<c:when test="${userItem.status == '0'}">
-                                                			<a href="${ctx}/appuser/option/status?m=${userItem.nickName }&a=1&i=${userItem.uid}">禁止</a>
+                                                			<a href="${ctx}/appuser/option/status?m=${userItem.nickName }&a=1&i=${userItem.uid}">封号</a>
                                                 		</c:when>
                                                 		<c:otherwise>
                                                 			<a href="${ctx}/appuser/option/status?m=${userItem.nickName }&a=2&i=${userItem.uid}">恢复</a>

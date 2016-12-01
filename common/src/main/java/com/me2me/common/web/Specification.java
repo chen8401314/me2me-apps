@@ -809,7 +809,12 @@ public interface Specification {
         
         ARTICLE_REVIEW("article_review", 3),
         
-        CONTENT_REVIEW("content_review", 4);
+        CONTENT_REVIEW("content_review", 4),
+        
+        TOPIC("topic",5),
+        
+        UGC("ugc",6)
+        ;
 
         public final String name;
 

@@ -22,6 +22,348 @@
 <script src="${ctx}/js/jquery-ui-1.9.2.custom.min.js"></script>
 <script src="${ctx}/js/jquery-migrate-1.2.1.min.js"></script>
 <script src="${ctx}/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+var pageSize = 10;
+
+var currentPage1 = 1;
+var currentPage2 = 1;
+var currentPage3 = 1;
+var currentPage4 = 1;
+var currentPage5 = 1;
+
+var getCurrentPage = function(type){
+	if(type == 1){
+		return currentPage1;
+	}else if(type == 2){
+		return currentPage2;
+	}else if(type == 3){
+		return currentPage3;
+	}else if(type == 4){
+		return currentPage4;
+	}else if(type == 5){
+		return currentPage5;
+	}else{
+		alert("无效的指令");
+		return 0;
+	}
+}
+
+var setCurrentPage = function(type, num){
+	if(type == 1){
+		currentPage1 = currentPage1 + num;
+	}else if(type == 2){
+		currentPage2 = currentPage2 + num;
+	}else if(type == 3){
+		currentPage3 = currentPage3 + num;
+	}else if(type == 4){
+		currentPage4 = currentPage4 + num;
+	}else if(type == 5){
+		currentPage5 = currentPage5 + num;
+	}
+}
+
+//上一页
+var previous = function(type){
+	var currPage = getCurrentPage(type);
+	if(currPage <= 1){
+		return;
+	}
+	var page = currPage-1;
+	
+	$.ajax({
+		url : "${ctx}/appcontent/query?uid="+$("#uid").val()+"&type="+type+"&page="+page+"&pageSize="+pageSize,
+		async : false,
+		type : "GET",
+		contentType : "application/json;charset=UTF-8",
+		success : function(resp) {
+			setCurrentPage(type, -1);
+			buildTable(resp, type);
+		}
+	});
+}
+
+//下一页
+var next = function(type){
+	var currPage = getCurrentPage(type);
+	var totalPage = $("#totalPage"+type).val();
+	if(currPage >= totalPage){
+		return;
+	}
+	var page = currPage+1;
+	
+	$.ajax({
+		url : "${ctx}/appcontent/query?uid="+$("#uid").val()+"&type="+type+"&page="+page+"&pageSize="+pageSize,
+		async : false,
+		type : "GET",
+		contentType : "application/json;charset=UTF-8",
+		success : function(resp) {
+			setCurrentPage(type, 1);
+			buildTable(resp, type);
+		}
+	});
+}
+
+var buildTable = function(resp, type){
+	var result = eval("("+resp+")");
+	var totalPage = 0;
+	var currentPage = getCurrentPage(type);
+	
+	if(result && result.totalPage){
+		totalPage = result.totalPage;
+		if(type == 1){
+			buildArticleReviewTableBody(result.result);
+		}else if(type == 2){
+			buildUgcTableBody(result.result);
+		}else if(type == 3){
+			buildUgcReviewTableBody(result.result);
+		}else if(type == 4){
+			buildKingdomTableBody(result.result);
+		}else if(type == 5){
+			buildKingdomFragmentTableBody(result.result);
+		}
+	}
+	
+	//记录分页信息
+	$("#totalPage"+type).val(totalPage);
+	$("#DataTables_Table_"+type+"_info").html("当前第 "+currentPage+" 页，共 "+totalPage+" 页");
+	$("#prev_"+type).removeClass("disabled");
+	$("#next_"+type).removeClass("disabled");
+	if(currentPage == 1){
+		$("#prev_"+type).addClass("disabled");
+	}
+	if(currentPage >= totalPage){
+		$("#next_"+type).addClass("disabled");
+	}
+}
+
+var buildArticleReviewTableBody = function(dataList){
+	var bodyHtml = "";
+	if(dataList && dataList.length > 0){
+		for(var i=0;i<dataList.length;i++){
+			bodyHtml = bodyHtml + "<tr class=\"gradeX\">";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].articleId+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].review+"</th>";
+			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].createTime))+"</th>";
+			bodyHtml = bodyHtml + "<th>";
+			if(dataList[i].status == 0){
+				bodyHtml = bodyHtml + "<font color=\"green\">正常</font>";
+			}else{
+				bodyHtml = bodyHtml + "<font color=\"red\">删除</font>";
+			}
+			bodyHtml = bodyHtml + "</th>";
+			bodyHtml = bodyHtml + "<th>";
+			if(dataList[i].status == 0){
+				bodyHtml = bodyHtml + "<a href=\"#\" onclick=\"delContent(1,"+dataList[i].id+")\">删除</a>";
+			}
+			bodyHtml = bodyHtml + "</th>";
+			bodyHtml = bodyHtml + "</tr>";
+		}
+	}
+	$("#tbody1").html(bodyHtml);
+}
+
+var buildUgcTableBody = function(dataList){
+	var bodyHtml = "";
+	if(dataList && dataList.length > 0){
+		for(var i=0;i<dataList.length;i++){
+			bodyHtml = bodyHtml + "<tr class=\"gradeX\">";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].title+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].feeling+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].content+"</th>";
+			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].createTime))+"</th>";
+			bodyHtml = bodyHtml + "<th>";
+			if(dataList[i].status == 0){
+				bodyHtml = bodyHtml + "<font color=\"green\">正常</font>";
+			}else{
+				bodyHtml = bodyHtml + "<font color=\"red\">删除</font>";
+			}
+			bodyHtml = bodyHtml + "</th>";
+			bodyHtml = bodyHtml + "<th>";
+			if(dataList[i].status == 0){
+				bodyHtml = bodyHtml + "<a href=\"#\" onclick=\"delContent(2,"+dataList[i].id+")\">删除</a>";
+			}
+			bodyHtml = bodyHtml + "</th>";
+			bodyHtml = bodyHtml + "</tr>";
+		}
+	}
+	$("#tbody2").html(bodyHtml);
+}
+
+var buildUgcReviewTableBody = function(dataList){
+	var bodyHtml = "";
+	if(dataList && dataList.length > 0){
+		for(var i=0;i<dataList.length;i++){
+			bodyHtml = bodyHtml + "<tr class=\"gradeX\">";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].cid+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].review+"</th>";
+			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].createTime))+"</th>";
+			bodyHtml = bodyHtml + "<th>";
+			if(dataList[i].status == 0){
+				bodyHtml = bodyHtml + "<font color=\"green\">正常</font>";
+			}else{
+				bodyHtml = bodyHtml + "<font color=\"red\">删除</font>";
+			}
+			bodyHtml = bodyHtml + "</th>";
+			bodyHtml = bodyHtml + "<th>";
+			if(dataList[i].status == 0){
+				bodyHtml = bodyHtml + "<a href=\"#\" onclick=\"delContent(3,"+dataList[i].id+")\">删除</a>";
+			}
+			bodyHtml = bodyHtml + "</th>";
+			bodyHtml = bodyHtml + "</tr>";
+		}
+	}
+	$("#tbody3").html(bodyHtml);
+}
+
+var buildKingdomTableBody = function(dataList){
+	var bodyHtml = "";
+	if(dataList && dataList.length > 0){
+		for(var i=0;i<dataList.length;i++){
+			bodyHtml = bodyHtml + "<tr class=\"gradeX\">";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].title+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].coreCircle+"</th>";
+			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].createTime))+"</th>";
+			bodyHtml = bodyHtml + "<th><a href=\"#\" onclick=\"delContent(4,"+dataList[i].id+")\">删除</a></th>";
+			bodyHtml = bodyHtml + "</tr>";
+		}
+	}
+	$("#tbody4").html(bodyHtml);
+}
+
+var buildKingdomFragmentTableBody = function(dataList){
+	var bodyHtml = "";
+	if(dataList && dataList.length > 0){
+		for(var i=0;i<dataList.length;i++){
+			bodyHtml = bodyHtml + "<tr class=\"gradeX\">";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].topicId+"</th>";
+			bodyHtml = bodyHtml + "<th>";
+			if(dataList[i].contentType == 1){
+				bodyHtml = bodyHtml + "图片";
+			}else{
+				bodyHtml = bodyHtml + "文字";
+			}
+			bodyHtml = bodyHtml + "</th>";
+			bodyHtml = bodyHtml + "<th>";
+			if(dataList[i].contentType == 1){
+				bodyHtml = bodyHtml + dataList[i].fragmentImage;
+			}else{
+				bodyHtml = bodyHtml + dataList[i].fragment;
+			}
+			bodyHtml = bodyHtml + "</th>";
+			bodyHtml = bodyHtml + "<th>" + getStrByLiveType(dataList[i].type) + "</th>";
+			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].createTime))+"</th>";
+			bodyHtml = bodyHtml + "<th>";
+			if(dataList[i].status == 1){
+				bodyHtml = bodyHtml + "<font color=\"green\">正常</font>";
+			}else{
+				bodyHtml = bodyHtml + "<font color=\"red\">删除</font>";
+			}
+			bodyHtml = bodyHtml + "</th>";
+			bodyHtml = bodyHtml + "<th>";
+			if(dataList[i].status == 1){
+				bodyHtml = bodyHtml + "<a href=\"#\" onclick=\"delContent(5,"+dataList[i].id+")\">删除</a>";
+			}
+			bodyHtml = bodyHtml + "</th>";
+			bodyHtml = bodyHtml + "</tr>";
+		}
+	}
+	$("#tbody5").html(bodyHtml);
+}
+
+var getStrByLiveType = function(liveType){
+	if(liveType == 0){
+		return "主播发言";
+	}else if(liveType ==1){
+		return "粉丝回复";
+	}else if(liveType == 3){
+		return "主播贴标";
+	}else if(liveType == 4){
+		return "粉丝贴标";
+	}else if(liveType == 5){
+		return "点赞";
+	}else if(liveType == 6){
+		return "订阅";
+	}else if(liveType == 7){
+		return "分享";
+	}else if(liveType == 8){
+		return "关注";
+	}else if(liveType == 9){
+		return "邀请";
+	}else if(liveType == 10){
+		return "有人@";
+	}else if(liveType == 11){
+		return "主播@";
+	}else if(liveType == 12){
+		return "视频";
+	}else if(liveType == 13){
+		return "语音";
+	}else if(liveType == 14){
+		return "国王收红包";
+	}else if(liveType == 15){
+		return "@核心圈";
+	}else{
+		return "";
+	}
+}
+
+var parserDatetimeStr = function(time){
+	var year=time.getYear()+1900;
+	var m=time.getMonth()+1;
+	var month;
+	if(m<10){
+		month = "0" + m;
+	}else{
+		month = "" + m;
+	}
+	var d=time.getDate();
+	var date;
+	if(d<10){
+		date = "0" + d;
+	}else{
+		date = "" + d;
+	}
+	var h=time.getHours();
+	var hour;
+	if(h<10){
+		hour = "0" + h;
+	}else{
+		hour = "" + h;
+	}
+	var mm=time.getMinutes();
+	var minute;
+	if(mm<10){
+		minute = "0" + mm;
+	}else{
+		minute = "" + mm;
+	}
+	var s=time.getSeconds();
+	var second;
+	if(s<10){
+		second = "0" + s;
+	}else{
+		second = "" + s;
+	}
+	return year+"-"+month+"-"+date+" "+hour+":"+minute+":"+second;
+}
+
+var delContent = function(type, id){
+	$.ajax({
+		url : "${ctx}/appcontent/del/"+type+"/"+id,
+		async : false,
+		type : "GET",
+		contentType : "application/json;charset=UTF-8",
+		success : function(resp) {
+			if(resp && resp == "0"){
+				//先退一页，再下一页，相当于刷新下当前页
+				setCurrentPage(type, -1);
+				next(type);
+			}else{
+				alert("删除失败!");
+			}
+		}
+	});
+}
+</script>
 </head>
 <body>
 	<section id="container" class="">
@@ -39,6 +381,7 @@
 		<!--main content start-->
 		<section id="main-content">
 			<section class="wrapper">
+				<input type="hidden" id="uid" value="${dataObj.uid }" >
 				<!-- page start-->
 				<div class="row">
 					<div class="col-sm-12">
@@ -77,11 +420,16 @@
                                                 		</c:otherwise>
                                                 	</c:choose>
 													</th>
-													<th></th>
+													<th>
+													<c:if test="${item1.status == '0'}">
+														<a href="#" onclick="delContent(1,${item1.id })">删除</a>
+													</c:if>
+													</th>
 												</tr>
 											</c:forEach>
 										</tbody>
 									</table>
+									<input type="hidden" id="totalPage1" value="${dataObj.articleReviewDTO.totalPage }" >
 								</div>
 								<div id="bottomTool" class="row-fluid">
 									<div class="span6">
@@ -90,8 +438,8 @@
 									<div class="span6">
 										<div class="dataTables_paginate paging_bootstrap pagination">
 											<ul id="previousNext">
-												<li onclick="previous(1)" class="prev disabled"><a href="#">上一页</a></li>
-												<li onclick="next(1)" class="next ${dataObj.articleReviewDTO.totalPage<=1?'disabled':''}"><a href="#">下一页</a></li>
+												<li id="prev_1" onclick="previous(1)" class="prev disabled"><a href="#">上一页</a></li>
+												<li id="next_1" onclick="next(1)" class="next ${dataObj.articleReviewDTO.totalPage<=1?'disabled':''}"><a href="#">下一页</a></li>
 											</ul>
 										</div>
 									</div>
@@ -140,11 +488,16 @@
                                                 		</c:otherwise>
                                                 	</c:choose>
 													</th>
-													<th></th>
+													<th>
+													<c:if test="${item2.status == '0'}">
+														<a href="#" onclick="delContent(2,${item2.id })">删除</a>
+													</c:if>
+													</th>
 												</tr>
 											</c:forEach>
 										</tbody>
 									</table>
+									<input type="hidden" id="totalPage2" value="${dataObj.ugcDTO.totalPage }" >
 								</div>
 								<div id="bottomTool" class="row-fluid">
 									<div class="span6">
@@ -153,8 +506,8 @@
 									<div class="span6">
 										<div class="dataTables_paginate paging_bootstrap pagination">
 											<ul id="previousNext">
-												<li onclick="previous(2)" class="prev disabled"><a href="#">上一页</a></li>
-												<li onclick="next(2)" class="next ${dataObj.ugcDTO.totalPage<=1?'disabled':''}"><a href="#">下一页</a></li>
+												<li id="prev_2" onclick="previous(2)" class="prev disabled"><a href="#">上一页</a></li>
+												<li id="next_2" onclick="next(2)" class="next ${dataObj.ugcDTO.totalPage<=1?'disabled':''}"><a href="#">下一页</a></li>
 											</ul>
 										</div>
 									</div>
@@ -201,11 +554,16 @@
                                                 		</c:otherwise>
                                                 	</c:choose>
 													</th>
-													<th></th>
+													<th>
+													<c:if test="${item3.status == '0'}">
+														<a href="#" onclick="delContent(3,${item3.id })">删除</a>
+													</c:if>
+													</th>
 												</tr>
 											</c:forEach>
 										</tbody>
 									</table>
+									<input type="hidden" id="totalPage3" value="${dataObj.ugcReviewDTO.totalPage }" >
 								</div>
 								<div id="bottomTool" class="row-fluid">
 									<div class="span6">
@@ -214,8 +572,8 @@
 									<div class="span6">
 										<div class="dataTables_paginate paging_bootstrap pagination">
 											<ul id="previousNext">
-												<li onclick="previous(3)" class="prev disabled"><a href="#">上一页</a></li>
-												<li onclick="next(3)" class="next ${dataObj.ugcReviewDTO.totalPage<=1?'disabled':''}"><a href="#">下一页</a></li>
+												<li id="prev_3" onclick="previous(3)" class="prev disabled"><a href="#">上一页</a></li>
+												<li id="next_3" onclick="next(3)" class="next ${dataObj.ugcReviewDTO.totalPage<=1?'disabled':''}"><a href="#">下一页</a></li>
 											</ul>
 										</div>
 									</div>
@@ -251,11 +609,14 @@
 													<th>${item4.title }</th>
 													<th>${item4.coreCircle }</th>
 													<th><fmt:formatDate value="${item4.createTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
-													<th></th>
+													<th>
+														<a href="#" onclick="delContent(4,${item4.id })">删除</a>
+													</th>
 												</tr>
 											</c:forEach>
 										</tbody>
 									</table>
+									<input type="hidden" id="totalPage4" value="${dataObj.topicDTO.totalPage }" >
 								</div>
 								<div id="bottomTool" class="row-fluid">
 									<div class="span6">
@@ -264,8 +625,8 @@
 									<div class="span6">
 										<div class="dataTables_paginate paging_bootstrap pagination">
 											<ul id="previousNext">
-												<li onclick="previous(4)" class="prev disabled"><a href="#">上一页</a></li>
-												<li onclick="next(4)" class="next ${dataObj.topicDTO.totalPage<=1?'disabled':''}"><a href="#">下一页</a></li>
+												<li id="prev_4" onclick="previous(4)" class="prev disabled"><a href="#">上一页</a></li>
+												<li id="next_4" onclick="next(4)" class="next ${dataObj.topicDTO.totalPage<=1?'disabled':''}"><a href="#">下一页</a></li>
 											</ul>
 										</div>
 									</div>
@@ -382,21 +743,26 @@
                                                 		</c:otherwise>
                                                 	</c:choose>
 													</th>
-													<th></th>
+													<th>
+													<c:if test="${item5.status == '1'}">
+														<a href="#" onclick="delContent(5,${item5.id })">删除</a>
+													</c:if>
+													</th>
 												</tr>
 											</c:forEach>
 										</tbody>
 									</table>
+									<input type="hidden" id="totalPage5" value="${dataObj.topicFragmentDTO.totalPage }" >
 								</div>
 								<div id="bottomTool" class="row-fluid">
 									<div class="span6">
-										<div id="DataTables_Table_5_info" class="dataTables_info">当前第 1 页，共 ${dataObj.topicFragmentDTO.totalPage } 页</div>
+										<div id="DataTables_Table_5_info" class="dataTables_info">当前第 1 页，共 ${dataObj.topicFragmentDTO.totalPage } 页，共${dataObj.topicFragmentDTO.totalPage } </div>
 									</div>
 									<div class="span6">
 										<div class="dataTables_paginate paging_bootstrap pagination">
 											<ul id="previousNext">
-												<li onclick="previous(5)" class="prev disabled"><a href="#">上一页</a></li>
-												<li onclick="next(5)" class="next ${dataObj.topicFragmentDTO.totalPage<=1?'disabled':''}"><a href="#">下一页</a></li>
+												<li id="prev_5" onclick="previous(5)" class="prev disabled"><a href="#">上一页</a></li>
+												<li id="next_5" onclick="next(5)" class="next ${dataObj.topicFragmentDTO.totalPage<=1?'disabled':''}"><a href="#">下一页</a></li>
 											</ul>
 										</div>
 									</div>

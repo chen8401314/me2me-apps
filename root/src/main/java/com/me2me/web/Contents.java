@@ -130,7 +130,7 @@ public class Contents extends BaseController {
     @RequestMapping(value = "/deleteContent",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response deleteContent(DeleteContentRequest request){
-        return contentService.deleteContent(request.getId(),request.getUid());
+        return contentService.deleteContent(request.getId(),request.getUid(),false);
     }
 
     /**

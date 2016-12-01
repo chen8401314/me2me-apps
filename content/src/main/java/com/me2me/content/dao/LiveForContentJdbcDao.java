@@ -95,4 +95,16 @@ public class LiveForContentJdbcDao {
     	sb.append(" where uid=").append(uid);
     	return Integer.valueOf(this.jdbcTemplate.queryForList(sb.toString()).get(0).get("count").toString());
     }
+    
+    public void deleteTopicFragmentById(long id){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("update topic_fragment set status=0 where id=").append(id);
+    	this.jdbcTemplate.execute(sb.toString());
+    }
+    
+    public void deleteTopicBarrageByFie(long fid){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("update topic_barrage set status=0 where fid=").append(fid);
+    	this.jdbcTemplate.execute(sb.toString());
+    }
 }

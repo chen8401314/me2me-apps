@@ -4,8 +4,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ShowUserContentsDTO;
@@ -24,6 +27,7 @@ public class AppContentController {
 	@RequestMapping(value = "/init/{uid}")
 	public ModelAndView queryinit(@PathVariable long uid){
 		UserContentQueryDTO dto = new UserContentQueryDTO();
+		dto.setUid(uid);
 		
 		UserContentSearchDTO searchDTO = new UserContentSearchDTO();
 		searchDTO.setPage(1);
@@ -68,5 +72,31 @@ public class AppContentController {
 		ModelAndView view = new ModelAndView("appcontent/userContentList");
 		view.addObject("dataObj",dto);
 		return view;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value = "/query")
+	@ResponseBody
+	public String query(long uid, int type, int page, int pageSize){
+		
+		UserContentSearchDTO searchDTO = new UserContentSearchDTO();
+		searchDTO.setPage(page);
+		searchDTO.setPageSize(pageSize);
+		searchDTO.setUid(uid);
+		searchDTO.setSearchType(type);//1文章评论，2UGC，3UGC评论，4王国，5王国评论/发言
+		Response resp = contentService.searchUserContent(searchDTO);
+		if(null != resp && resp.getCode() == 200 && null != resp.getData()){
+			JSONObject obj = (JSONObject)JSON.toJSON(resp.getData());
+			return obj.toJSONString();
+		}else{
+			return "{}";
+		}
+	}
+	
+	@RequestMapping(value = "/del/{type}/{id}")
+	@ResponseBody
+	public String delContent(@PathVariable int type, @PathVariable long id){
+		contentService.delUserContent(type, id);
+		return "0";
 	}
 }

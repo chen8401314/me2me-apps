@@ -9,6 +9,10 @@ public class UserContentQueryDTO {
 
 	@Getter
 	@Setter
+	private long uid;
+	
+	@Getter
+	@Setter
 	private ShowUserContentsDTO articleReviewDTO;
 	
 	@Getter

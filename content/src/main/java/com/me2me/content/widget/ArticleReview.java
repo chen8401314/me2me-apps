@@ -40,6 +40,6 @@ public class ArticleReview implements Review{
 
 	@Override
 	public Response delReview(ReviewDelDTO delDTO) {
-		return contentService.delArticleReview(delDTO);
+		return contentService.delArticleReview(delDTO, false);
 	}
 }

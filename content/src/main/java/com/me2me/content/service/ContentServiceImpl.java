@@ -1097,21 +1097,28 @@ private void localJpush(long toUid){
     }
 
     @Override
-    public Response deleteContent(long id, long uid) {
+    public Response deleteContent(long id, long uid, boolean isSys) {
         log.info("deleteContent start ...");
         Content content = contentMybatisDao.getContentById(id);
         //直播删除
         if(content.getType() == Specification.ArticleType.LIVE.index) {
-            if(uid!=content.getUid()&&!userService.isAdmin(uid)){ //只有王国自己，或者管理员能删除王国
+            if(!isSys&&uid!=content.getUid()&&!userService.isAdmin(uid)){ //只有王国自己，或者管理员能删除王国
                 return Response.failure(ResponseStatus.CONTENT_DELETE_NO_AUTH.status,ResponseStatus.CONTENT_DELETE_NO_AUTH.message);
             }
             contentMybatisDao.deleteTopicById(content.getForwardCid());
             log.info("topic delete");
+            //记录下删除记录
+          	liveForContentJdbcDao.insertDeleteLog(Specification.DeleteObjectType.TOPIC.index, content.getForwardCid(), uid);
+        }else{
+        	//记录下删除记录
+          	liveForContentJdbcDao.insertDeleteLog(Specification.DeleteObjectType.UGC.index, id, uid);
         }
 
         content.setStatus(Specification.ContentStatus.DELETE.index);
         log.info("content status delete");
         contentMybatisDao.updateContentById(content);
+        
+        
         log.info("deleteContent end ...");
         return Response.failure(ResponseStatus.CONTENT_DELETE_SUCCESS.status,ResponseStatus.CONTENT_DELETE_SUCCESS.message);
     }
@@ -2540,6 +2547,9 @@ private void localJpush(long toUid){
     
     @Override
     public List<Content> getContentsByTopicIds(List<Long> topicIds) {
+    	if(null == topicIds || topicIds.size() == 0){
+    		return null;
+    	}
         List<Content> list = contentMybatisDao.getContentByTopicIds(topicIds);
         return list;
     }
@@ -2730,7 +2740,7 @@ private void localJpush(long toUid){
      * @param delDTO
      */
 	@Override
-	public Response delArticleReview(ReviewDelDTO delDTO) {
+	public Response delArticleReview(ReviewDelDTO delDTO, boolean isSys) {
 		ArticleReview review = contentMybatisDao.getArticleReviewById(delDTO.getRid());
 		if(null == review){//可能是删除那些未发送成功的，所以直接置为成功
 			log.info("文章评论["+delDTO.getRid()+"]不存在");
@@ -2738,10 +2748,16 @@ private void localJpush(long toUid){
 		}
 		//判断当前用户是否有删除本条评论的权限
 		boolean canDel = false;
-		//判断是否是管理员，管理员啥都能删
-		if(userService.isAdmin(delDTO.getUid())){
+		if(isSys){//是否系统内部删除
 			canDel = true;
-    	}
+		}
+		
+		//判断是否是管理员，管理员啥都能删
+		if(!canDel){
+			if(userService.isAdmin(delDTO.getUid())){
+				canDel = true;
+	    	}
+		}
 		if(!canDel){
 			//再判断是否是自己发的评论
 			if(review.getUid() == delDTO.getUid()){//自己的
@@ -2758,16 +2774,6 @@ private void localJpush(long toUid){
 		ar.setStatus(Specification.ContentDelStatus.DELETE.index);
 		contentMybatisDao.updateArticleReview(ar);
 		
-		Content c = contentMybatisDao.getContentById(delDTO.getCid());
-		if(null != c){
-			int reviewCount = c.getReviewCount() -1;
-			if(reviewCount < 0){
-				reviewCount = 0;
-			}
-			c.setReviewCount(reviewCount);
-			contentMybatisDao.updateContentById(c);
-		}
-		
 		//记录下删除记录
 		liveForContentJdbcDao.insertDeleteLog(Specification.DeleteObjectType.ARTICLE_REVIEW.index, delDTO.getRid(), delDTO.getUid());
 		
@@ -2781,7 +2787,7 @@ private void localJpush(long toUid){
 	 * 2）非管理员只能删自己发的评论
 	 */
 	@Override
-	public Response delContentReview(ReviewDelDTO delDTO) {
+	public Response delContentReview(ReviewDelDTO delDTO, boolean isSys) {
 		ContentReview review = contentMybatisDao.getContentReviewById(delDTO.getRid());
 		if(null == review){//可能是删除那些未发送成功的，所以直接置为成功
 			log.info("UGC评论["+delDTO.getRid()+"]不存在");
@@ -2789,10 +2795,16 @@ private void localJpush(long toUid){
 		}
 		//判断当前用户是否有删除本条评论的权限
 		boolean canDel = false;
-		//判断是否是管理员，管理员啥都能删
-		if(userService.isAdmin(delDTO.getUid())){
+		if(isSys){//是否系统内部删除
 			canDel = true;
-    	}
+		}
+		
+		//判断是否是管理员，管理员啥都能删
+		if(!canDel){
+			if(userService.isAdmin(delDTO.getUid())){
+				canDel = true;
+	    	}
+		}
 		if(!canDel){
 			//再判断是否是自己发的评论
 			if(review.getUid() == delDTO.getUid()){//自己的
@@ -2970,6 +2982,48 @@ private void localJpush(long toUid){
 		}
 		
 		return Response.success(resultDTO);
+	}
+
+	@Override
+	public Response delUserContent(int type, long id) {
+		if(type == Specification.UserContentSearchType.ARTICLE_REVIEW.index){
+			ReviewDelDTO delDTO = new ReviewDelDTO();
+			delDTO.setRid(id);
+			delDTO.setUid(-100);//运维人员
+			return this.delArticleReview(delDTO, true);
+		}else if(type == Specification.UserContentSearchType.UGC.index){
+			return this.deleteContent(id, -100, true);
+		}else if(type == Specification.UserContentSearchType.UGC_OR_PGC_REVIEW.index){
+			ContentReview review = contentMybatisDao.getContentReviewById(id);
+			if(null == review){
+				log.info("UGC评论["+id+"]不存在");
+				return Response.success(ResponseStatus.REVIEW_DELETE_SUCCESS.status, ResponseStatus.REVIEW_DELETE_SUCCESS.message);
+			}
+			ReviewDelDTO delDTO = new ReviewDelDTO();
+			delDTO.setRid(id);
+			delDTO.setUid(-100);//运维人员
+			delDTO.setCid(review.getCid());
+			return this.delContentReview(delDTO, true);
+		}else if(type == Specification.UserContentSearchType.KINGDOM.index){
+			List<Content> list = contentMybatisDao.getContentByTopicId(id);
+			Content c = null;
+			if(null != list && list.size() > 0){
+				c = list.get(0);
+			}
+			if(null == c){
+				log.info("王国["+id+"]不存在");
+				return Response.success(ResponseStatus.CONTENT_DELETE_SUCCESS.status,ResponseStatus.CONTENT_DELETE_SUCCESS.message);
+			}
+			return this.deleteContent(c.getId(), -100, true);
+		}else if(type == Specification.UserContentSearchType.KINGDOM_SPEAK.index){
+			liveForContentJdbcDao.deleteTopicFragmentById(id);
+			liveForContentJdbcDao.deleteTopicBarrageByFie(id);
+			//记录下删除记录
+			liveForContentJdbcDao.insertDeleteLog(Specification.DeleteObjectType.TOPIC_FRAGMENT.index, id, -100);
+			return Response.success();
+		}else{
+			return Response.failure("非法的查询类型");
+		}
 	}
 	
 	

@@ -54,7 +54,7 @@ public interface ContentService{
      * @param uid
      * @return
      */
-    Response deleteContent(long id, long uid);
+    Response deleteContent(long id, long uid, boolean isSys);
 
     /**
      * 获取内容详情
@@ -210,9 +210,11 @@ public interface ContentService{
     
     Response deleteReview(ReviewDelDTO delDTO);
     
-    Response delArticleReview(ReviewDelDTO delDTO);
+    Response delArticleReview(ReviewDelDTO delDTO, boolean isSys);
 
-    Response delContentReview(ReviewDelDTO delDTO);
+    Response delContentReview(ReviewDelDTO delDTO, boolean isSys);
     
     Response searchUserContent(UserContentSearchDTO searchDTO);
+    
+    Response delUserContent(int type, long id);
 }

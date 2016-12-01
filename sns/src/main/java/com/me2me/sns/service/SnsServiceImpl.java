@@ -279,7 +279,9 @@ public class SnsServiceImpl implements SnsService {
             		topicIds.add(t.getId());
                 }
             }
-            liveService.setLiveFromSnsFollow(uid, topicIds, 0, 0, action);
+            if(null != topicIds && topicIds.size() > 0){
+            	liveService.setLiveFromSnsFollow(uid, topicIds, 0, 0, action);
+            }
             
 //            for (Topic live : list) {
 //                liveService.setLive2(uid, live.getId(), 0, 0, action);
@@ -338,7 +340,9 @@ public class SnsServiceImpl implements SnsService {
         		topicIds.add(topic.getId());
             }
         }
-        liveService.setLiveFromSnsFollow(sourceUid, topicIds, 0, 0, action);
+        if(null != topicIds && topicIds.size() > 0){
+        	liveService.setLiveFromSnsFollow(sourceUid, topicIds, 0, 0, action);
+        }
         
         //关注，默认加到圈外人
         if (action == 0) {
