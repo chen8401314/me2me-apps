@@ -1,10 +1,6 @@
 package com.me2me.activity.service;
 
-import com.me2me.activity.dto.ActivityDto;
-import com.me2me.activity.dto.ActivityH5Dto;
-import com.me2me.activity.dto.CreateActivityDto;
-import com.me2me.activity.dto.CreateActivityNoticeDto;
-import com.me2me.activity.dto.LuckStatusDTO;
+import com.me2me.activity.dto.*;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.common.web.Response;
 
@@ -71,7 +67,15 @@ public interface ActivityService {
     Response getWinnersCommitInfo(int activityName);
 
     Response addWinners(long uid ,int activityName ,String mobile ,int awardId ,String awardName);
-    
+
+    Response getActivityUser(long uid);
+
+    Response enterActivity(QiUserDto qiUserDto);
+
+    Response bindGetActivity(long uid ,String mobile);
+
+    Response getActivityInfo(long activityId);
+
     /**
      * 获取抽奖活动统计方法
      * 返回列表字段：时间，参与人数，参与人次，中奖次数，中奖奖品

@@ -214,6 +214,15 @@ public class UserMybatisDao {
         List<UserProfile> lists = userProfileMapper.selectByExample(example);
         return (lists != null && lists.size() > 0) ? lists.get(0) : null;
     }
+
+    public UserProfile getUserProfileByMobile(String mobile) {
+        UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andMobileEqualTo(mobile);
+        List<UserProfile> lists = userProfileMapper.selectByExample(example);
+        return (lists != null && lists.size() > 0) ? lists.get(0) : null;
+    }
+
     public List<UserProfile> getUserProfilesByUids(List<Long> uids) {
         UserProfileExample example = new UserProfileExample();
         UserProfileExample.Criteria criteria = example.createCriteria();

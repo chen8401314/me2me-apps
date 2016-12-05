@@ -160,6 +160,8 @@ public interface UserService {
 
     Response getUserProfile(long uid);
 
+    UserProfile getUserProfileByMobile(String mobile);
+
     ApplicationSecurity getApplicationSecurityByAppId(String appId);
 
     int getFollowCount(long uid);

@@ -63,13 +63,13 @@ public class ShowHottestDto implements BaseEntity {
         //活动更新时间
         private Date updateTime;
 
-
         private int likeCount;
-
 
         private int reviewCount;
 
+        private int contentType;
 
+        private String contentUrl;
 
     }
 

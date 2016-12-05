@@ -191,6 +191,34 @@ public enum  ResponseStatus {
 
     REVIEW_DELETE_SUCCESS("评论删除成功","review delete success", 20089),
 
+    QIACITIVITY_INFO_SUCCESS("获取用户活动信息成功","qiactivity info success", 20090),
+
+    QIACITIVITY_NOT_INFO_SUCCESS("该用户没有报名过此次活动","qiactivity not info success", 20091),
+
+    REGISTRATION_SUCCESS("用户报名成功","registration success", 20092),
+
+    CAN_ONLY_SIGN_UP_ONCE("该用户已经报名过了","Can only sign up once", 20093),
+
+    NOT_FIRST_STAGE("目前不处于报名阶段","not first stage", 20094),
+
+    QIACTIVITY_NOT_START("活动未开始或已结束","qiactivity not start", 20095),
+
+    QI_BIND_EXISTS("该账号已经绑定过了","qi bind exists", 20096),
+
+    QI_QUERY_SUCCESS("七天活动状态查询成功","qi query exists", 20096),
+
+    QI_QUERY_FAILUE("该用户不存在","qi query failue", 20097),
+
+
+
+
+
+
+
+
+
+
+
 
 
 

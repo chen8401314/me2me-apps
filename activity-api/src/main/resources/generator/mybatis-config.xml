@@ -42,5 +42,10 @@
         <!--<table tableName="luck_count" domainObjectName="LuckCount"/>-->
         <!--<table tableName="luck_status" domainObjectName="LuckStatus"/>-->
         <!--<table tableName="luck_winners" domainObjectName="LuckWinners"/>-->
+        <!--<table tableName="a_activity" domainObjectName="Aactivity"/>-->
+        <!--<table tableName="a_activity_stage" domainObjectName="AactivityStage"/>-->
+        <!--<table tableName="a_user" domainObjectName="Auser"/>-->
+        <!--<table tableName="a_user_to_sysuser" domainObjectName="AuserToSysUser"/>-->
+        <!--<table tableName="t_channel" domainObjectName="Tchannel"/>-->
     </context>
 </generatorConfiguration>

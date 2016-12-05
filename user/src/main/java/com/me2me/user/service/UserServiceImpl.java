@@ -982,6 +982,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserProfile getUserProfileByMobile(String mobile) {
+        return userMybatisDao.getUserProfileByMobile(mobile);
+    }
+
+    @Override
     public ApplicationSecurity getApplicationSecurityByAppId(String appId) {
         return userMybatisDao.getApplicationSecurityByAppId(appId);
     }

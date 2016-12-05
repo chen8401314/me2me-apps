@@ -51,6 +51,20 @@ public class ActivityMybatisDao {
     @Autowired
     private LuckWinnersMapper luckWinnersMapper;
 
+    @Autowired
+    private AactivityMapper aactivityMapper;
+
+    @Autowired
+    private AactivityStageMapper aactivityStageMapper;
+
+    @Autowired
+    private AuserMapper auserMapper;
+
+    @Autowired
+    private AuserToSysUserMapper auserToSysUserMapper;
+
+    @Autowired
+    private TchannelMapper tchannelMapper;
 
     public void saveActivity(ActivityWithBLOBs activity){
         activityMapper.insertSelective(activity);
@@ -347,6 +361,63 @@ public class ActivityMybatisDao {
 
     public void addWinners(LuckWinners winners){
         luckWinnersMapper.insertSelective(winners);
+    }
+
+    public AuserToSysUser getActivityUser(long uid){
+        AuserToSysUserExample example = new AuserToSysUserExample();
+        example.createCriteria().andUidEqualTo(uid);
+        List<AuserToSysUser> list = auserToSysUserMapper.selectByExample(example);
+        return list.size()>0 && list !=null ?list.get(0) : null;
+    }
+
+    public AuserToSysUser getActivityUserByMobile(String mobile){
+        AuserToSysUserExample example = new AuserToSysUserExample();
+        example.createCriteria().andMobileEqualTo(mobile);
+        List<AuserToSysUser> list = auserToSysUserMapper.selectByExample(example);
+        return list.size()>0 && list !=null ?list.get(0) : null;
+    }
+
+    public Auser getAuser(long aUid){
+        AuserExample example = new AuserExample();
+        example.createCriteria().andIdEqualTo(aUid);
+        List<Auser> list = auserMapper.selectByExample(example);
+        return list.size()>0 && list !=null ?list.get(0) : null;
+    }
+
+    public Auser getAuserByMobile(String mobile){
+        AuserExample example = new AuserExample();
+        example.createCriteria().andMobileEqualTo(mobile);
+        List<Auser> list = auserMapper.selectByExample(example);
+        return list.size()>0 && list !=null ?list.get(0) : null;
+    }
+
+    public Aactivity getAactivity(long id){
+        AactivityExample example = new AactivityExample();
+        example.createCriteria().andIdEqualTo(id).andStatusEqualTo(1);
+        List<Aactivity> list = aactivityMapper.selectByExample(example);
+        return list.size()>0 && list !=null ?list.get(0) : null;
+    }
+
+    public AactivityStage getAactivityStageByAid(long activityId){
+        AactivityStageExample example = new AactivityStageExample();
+        example.createCriteria().andActivityIdEqualTo(activityId);
+        List<AactivityStage> list = aactivityStageMapper.selectByExample(example);
+        return list.size()>0 && list !=null ?list.get(0) : null;
+    }
+
+    public AactivityStage getAactivityStage(long activityId){
+        AactivityStageExample example = new AactivityStageExample();
+        example.createCriteria().andActivityIdEqualTo(activityId);
+        List<AactivityStage> list = aactivityStageMapper.selectByExample(example);
+        return list.size()>0 && list !=null ?list.get(0) : null;
+    }
+
+    public void createAuser(Auser auser){
+       auserMapper.insertSelective(auser);
+    }
+
+    public void createAsysUser(AuserToSysUser user){
+        auserToSysUserMapper.insertSelective(user);
     }
     
     public LuckActStatDTO getLuckActStat(int activityName, Date startTime, Date endTime){

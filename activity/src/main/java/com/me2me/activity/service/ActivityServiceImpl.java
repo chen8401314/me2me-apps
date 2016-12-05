@@ -10,6 +10,9 @@ import com.me2me.common.utils.EncryUtil;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.sms.dto.AwardXMDto;
+import com.me2me.sms.dto.VerifyDto;
+import com.me2me.sms.service.ChannelType;
 import com.me2me.user.dto.ActivityModelDto;
 import com.me2me.user.model.User;
 import com.me2me.user.model.UserProfile;
@@ -17,6 +20,7 @@ import com.me2me.user.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -116,6 +120,8 @@ public class ActivityServiceImpl implements ActivityService {
             activityElement.setId(activity.getId());
             activityElement.setUpdateTime(activity.getUpdateTime());
             activityElement.setIsFollowed(userService.isFollow(activity.getUid(),uid));
+            activityElement.setContentType(activity.getTyp());
+            activityElement.setContentUrl(activity.getLinkUrl());
             showActivitiesDto.getActivityData().add(activityElement);
         }
         log.info("getActivity end ...");
@@ -1111,6 +1117,121 @@ public class ActivityServiceImpl implements ActivityService {
         winners.setAwardName(awardName);
         activityMybatisDao.addWinners(winners);
         return Response.success();
+    }
+
+    @Override
+    public Response getActivityUser(long uid) {
+        AuserToSysUser auserToSysUser = activityMybatisDao.getActivityUser(uid);
+        QiActivityDto qiActivityDto = new QiActivityDto();
+        if(auserToSysUser !=null){
+            //报名过了，查询是否审核通过
+            Auser auser = activityMybatisDao.getAuser(auserToSysUser.getAuid());
+            if(auser !=null){
+                if(auser.getStatus() == 3){
+                    //返回手机号，可能还有更多信息 待加
+                    qiActivityDto.setMobile(auser.getMobile());
+                    return Response.success(ResponseStatus.QIACITIVITY_INFO_SUCCESS.status,ResponseStatus.QIACITIVITY_INFO_SUCCESS.message,qiActivityDto);
+                }
+            }
+        }
+
+        return Response.success(ResponseStatus.QIACITIVITY_NOT_INFO_SUCCESS.status,ResponseStatus.QIACITIVITY_NOT_INFO_SUCCESS.message);
+    }
+
+    @Override
+    public Response enterActivity(QiUserDto qiUserDto) {
+
+        VerifyDto verifyDto = new VerifyDto();
+        //验证为1
+        verifyDto.setAction(ChannelType.NORMAL_SMS.index);
+        verifyDto.setMobile(qiUserDto.getMobile());
+        verifyDto.setVerifyCode(qiUserDto.getVerifyCode());
+        Response response = userService.verify(verifyDto);
+
+        Auser activityUser = activityMybatisDao.getAuserByMobile(qiUserDto.getMobile());
+        Aactivity aactivity = activityMybatisDao.getAactivity(qiUserDto.getActivityId());
+        Date nowDate = new Date();
+        Date startDate = null;
+        Date endDate = null;
+        if(!StringUtils.isEmpty(aactivity)) {
+            startDate = aactivity.getStartTime();
+            endDate = aactivity.getEndTime();
+        }
+
+        AactivityStage aactivityStage = activityMybatisDao.getAactivityStageByAid(qiUserDto.getActivityId());
+        //一个手机号只能报名一次，并且在七天活动中，而且必须处于第1阶段
+        if(StringUtils.isEmpty(activityUser) && nowDate.compareTo(startDate) > 0
+                && nowDate.compareTo(endDate) < 0 && aactivityStage.getStage() == 1) {
+            if (response.getCode() == ResponseStatus.USER_VERIFY_CHECK_SUCCESS.status) {
+                Auser auser = new Auser();
+                BeanUtils.copyProperties(qiUserDto, auser);
+                //默认审核状态
+                auser.setStatus(1);
+                activityMybatisDao.createAuser(auser);
+                UserProfile userProfile = userService.getUserProfileByMobile(qiUserDto.getMobile());
+                //手机号存在才会强行绑定
+                if (userProfile != null) {
+                    AuserToSysUser auserToSysUser = new AuserToSysUser();
+                    auserToSysUser.setMobile(userProfile.getMobile());
+                    auserToSysUser.setUid(userProfile.getUid());
+                    auserToSysUser.setAuid(auser.getId());
+                    activityMybatisDao.createAsysUser(auserToSysUser);
+                }
+                //发报名成功短信(模板出来代改)
+                AwardXMDto awardXMDto = new AwardXMDto();
+                awardXMDto.setNickName("测试");
+                awardXMDto.setAwardName("七天活动");
+                awardXMDto.setMobile("13915778564");
+                userService.sendAwardMessage(awardXMDto);
+
+                return Response.success(ResponseStatus.REGISTRATION_SUCCESS.status, ResponseStatus.REGISTRATION_SUCCESS.message);
+            }
+        }else if(aactivityStage.getStage() != 1){
+            return Response.success(ResponseStatus.NOT_FIRST_STAGE.status, ResponseStatus.NOT_FIRST_STAGE.message);
+        }else if(nowDate.compareTo(startDate) < 0 || nowDate.compareTo(endDate) > 0){
+            return Response.success(ResponseStatus.QIACTIVITY_NOT_START.status, ResponseStatus.QIACTIVITY_NOT_START.message);
+        }else if(!StringUtils.isEmpty(activityUser)) {
+            return Response.success(ResponseStatus.CAN_ONLY_SIGN_UP_ONCE.status, ResponseStatus.CAN_ONLY_SIGN_UP_ONCE.message);
+        }
+        //验证码不正确
+        return Response.failure(ResponseStatus.USER_VERIFY_CHECK_ERROR.status,ResponseStatus.USER_VERIFY_CHECK_ERROR.message);
+    }
+
+    @Override
+    public Response bindGetActivity(long uid, String mobile) {
+        QiStatusDto qiStatusDto = new QiStatusDto();
+        //是H5过来的 没有uid 所以默认是0
+        if(uid == 0){
+            AuserToSysUser sysUser = activityMybatisDao.getActivityUserByMobile(mobile);
+            if(!StringUtils.isEmpty(sysUser)){
+                Auser auser = activityMybatisDao.getAuser(sysUser.getAuid());
+                qiStatusDto.setStatus(auser.getStatus());
+                return Response.success(ResponseStatus.QI_QUERY_SUCCESS.status,ResponseStatus.QI_QUERY_SUCCESS.message,qiStatusDto);
+            }
+        }else {
+            AuserToSysUser sysUser = activityMybatisDao.getActivityUser(uid);
+            if(!StringUtils.isEmpty(sysUser)){
+                Auser auser = activityMybatisDao.getAuser(sysUser.getAuid());
+                qiStatusDto.setStatus(auser.getStatus());
+                return Response.success(ResponseStatus.QI_QUERY_SUCCESS.status,ResponseStatus.QI_QUERY_SUCCESS.message,qiStatusDto);
+            }
+        }
+        return Response.success(ResponseStatus.QI_QUERY_FAILUE.status,ResponseStatus.QI_QUERY_FAILUE.message);
+    }
+
+    @Override
+    public Response getActivityInfo(long activityId) {
+        QiActivityInfoDto infoDto = new QiActivityInfoDto();
+        Aactivity aactivity = activityMybatisDao.getAactivity(activityId);
+        if(!StringUtils.isEmpty(aactivity)){
+            infoDto.setName(aactivity.getName());
+            AactivityStage stage = activityMybatisDao.getAactivityStage(activityId);
+            if(!StringUtils.isEmpty(stage)){
+                infoDto.setStage(stage.getStage());
+            }
+            return Response.success(infoDto);
+        }
+        return Response.success(ResponseStatus.QIACTIVITY_NOT_START.status,ResponseStatus.QIACTIVITY_NOT_START.message);
     }
 
     /**

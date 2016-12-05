@@ -1870,6 +1870,8 @@ private void localJpush(long toUid){
                 activityElement.setId(activity.getId());
                 activityElement.setReviewCount(activityService.getReviewCount(activity.getId()));
                 activityElement.setLikeCount(activityService.getLikeCount(activity.getId()));
+                activityElement.setContentType(activity.getTyp());
+                activityElement.setContentUrl(activity.getLinkUrl());
                 hottestDto.getActivityData().add(activityElement);
             }
         }
