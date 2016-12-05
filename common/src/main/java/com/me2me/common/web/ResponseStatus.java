@@ -207,8 +207,11 @@ public enum  ResponseStatus {
 
     QI_QUERY_SUCCESS("七天活动状态查询成功","qi query exists", 20096),
 
-    QI_QUERY_FAILUE("该用户不存在","qi query failue", 20097),
+    QI_QUERY_FAILURE("该用户不存在","qi query failue", 20097),
 
+    AUDIT_FAILURE("该用户审核未通过","audit failure", 20098),
+
+    IN_AUDIT("该用户审核中","in audit", 20099),
 
 
 

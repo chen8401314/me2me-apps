@@ -416,6 +416,10 @@ public class ActivityMybatisDao {
        auserMapper.insertSelective(auser);
     }
 
+    public void createASysuser(AuserToSysUser user){
+        auserToSysUserMapper.insertSelective(user);
+    }
+
     public void createAsysUser(AuserToSysUser user){
         auserToSysUserMapper.insertSelective(user);
     }

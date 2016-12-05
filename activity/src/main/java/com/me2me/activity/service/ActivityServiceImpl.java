@@ -1131,6 +1131,10 @@ public class ActivityServiceImpl implements ActivityService {
                     //返回手机号，可能还有更多信息 待加
                     qiActivityDto.setMobile(auser.getMobile());
                     return Response.success(ResponseStatus.QIACITIVITY_INFO_SUCCESS.status,ResponseStatus.QIACITIVITY_INFO_SUCCESS.message,qiActivityDto);
+                }else if(auser.getStatus() == 2){
+                    return Response.success(ResponseStatus.AUDIT_FAILURE.status,ResponseStatus.AUDIT_FAILURE.message);
+                }else if(auser.getStatus() == 1){
+                    return Response.success(ResponseStatus.IN_AUDIT.status,ResponseStatus.IN_AUDIT.message);
                 }
             }
         }
@@ -1200,23 +1204,40 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public Response bindGetActivity(long uid, String mobile) {
         QiStatusDto qiStatusDto = new QiStatusDto();
+        AuserToSysUser sysUser = activityMybatisDao.getActivityUserByMobile(mobile);
         //是H5过来的 没有uid 所以默认是0
         if(uid == 0){
-            AuserToSysUser sysUser = activityMybatisDao.getActivityUserByMobile(mobile);
             if(!StringUtils.isEmpty(sysUser)){
                 Auser auser = activityMybatisDao.getAuser(sysUser.getAuid());
                 qiStatusDto.setStatus(auser.getStatus());
                 return Response.success(ResponseStatus.QI_QUERY_SUCCESS.status,ResponseStatus.QI_QUERY_SUCCESS.message,qiStatusDto);
             }
         }else {
-            AuserToSysUser sysUser = activityMybatisDao.getActivityUser(uid);
+            //AuserToSysUser sysUser = activityMybatisDao.getActivityUser(uid);
+            //系统关系表用户存在返回状态
             if(!StringUtils.isEmpty(sysUser)){
                 Auser auser = activityMybatisDao.getAuser(sysUser.getAuid());
                 qiStatusDto.setStatus(auser.getStatus());
                 return Response.success(ResponseStatus.QI_QUERY_SUCCESS.status,ResponseStatus.QI_QUERY_SUCCESS.message,qiStatusDto);
+            }else{
+                //查不到的话 看Auser表是否有（因为第三方登录是没有insert系统关系表的）
+                Auser auser = activityMybatisDao.getAuserByMobile(mobile);
+                if(!StringUtils.isEmpty(auser)){
+                    //有的话 往关系表绑定
+                    AuserToSysUser auserToSysUser = new AuserToSysUser();
+                    auserToSysUser.setAuid(auser.getId());
+                    auserToSysUser.setMobile(mobile);
+                    auserToSysUser.setUid(uid);
+                    activityMybatisDao.createASysuser(auserToSysUser);
+                    qiStatusDto.setStatus(auser.getStatus());
+                    return Response.success(ResponseStatus.QI_QUERY_SUCCESS.status,ResponseStatus.QI_QUERY_SUCCESS.message,qiStatusDto);
+                }else {
+                    //否则返回该用户不存在
+                    return Response.success(ResponseStatus.QI_QUERY_FAILURE.status,ResponseStatus.QI_QUERY_FAILURE.message);
+                }
             }
         }
-        return Response.success(ResponseStatus.QI_QUERY_FAILUE.status,ResponseStatus.QI_QUERY_FAILUE.message);
+        return Response.success(ResponseStatus.QI_QUERY_FAILURE.status,ResponseStatus.QI_QUERY_FAILURE.message);
     }
 
     @Override
