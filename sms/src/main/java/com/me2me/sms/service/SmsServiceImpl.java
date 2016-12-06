@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.util.List;
+
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -77,6 +79,16 @@ public class SmsServiceImpl implements SmsService {
     @Override
     public boolean sendQIMessage(String mobile) {
         Boolean isTrue = YunXinSms.sendSms3(mobile);
+        if(isTrue){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    @Override
+    public boolean sendQIauditMessage(List mobileList) {
+        Boolean isTrue = YunXinSms.sendSms4(mobileList);
         if(isTrue){
             return true;
         }else{

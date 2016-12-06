@@ -191,4 +191,16 @@ public class Activity extends BaseController {
     public Response getActivityInfo(QiUserRequest request){
         return activityService.getActivityInfo(request.getActivityId());
     }
+
+    /**
+     * 一键审核功能（七天活动）
+     *
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/oneKeyAudit",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response oneKeyAudit(){
+        return activityService.oneKeyAudit();
+    }
+
 }

@@ -42,8 +42,11 @@ public interface UserService {
 
     Response sendAwardMessage(AwardXMDto awardXMDto);
 
-    //七天活动
+    //七天活动报名成功通知短信
     Response sendQIMessage(AwardXMDto awardXMDto);
+
+    //七天活动审核通过通知短信
+    Response sendQIauditMessage(AwardXMDto awardXMDto);
 
     /**
      * 用户修改密码

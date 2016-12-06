@@ -213,6 +213,8 @@ public enum  ResponseStatus {
 
     IN_AUDIT("该用户审核中","in audit", 20099),
 
+    CANNOT_FIND_AUSER("未查询到审核中的用户","cannot find auser", 20100),
+
 
 
 

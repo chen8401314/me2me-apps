@@ -2,6 +2,8 @@ package com.me2me.sms.service;
 
 import com.me2me.sms.dto.VerifyDto;
 
+import java.util.List;
+
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 赵朋扬
@@ -16,5 +18,7 @@ public interface SmsService {
     boolean sendMessage(String nickName ,String awardName ,String mobile ,String OperateMobile);
 
     boolean sendQIMessage(String mobile);
+
+    boolean sendQIauditMessage(List mobileList);
 
 }

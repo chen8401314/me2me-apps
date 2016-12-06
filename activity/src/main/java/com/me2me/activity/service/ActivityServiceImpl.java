@@ -1,6 +1,7 @@
 package com.me2me.activity.service;
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dto.*;
 import com.me2me.activity.model.*;
@@ -243,7 +244,7 @@ public class ActivityServiceImpl implements ActivityService {
         return activityMybatisDao.getReviewCount(id);
     }
 
-    public static void main(String[] args) {
+//    public static void main(String[] args) {
 //        Pattern pattern = Pattern.compile("(.*)(#.{0,128}#)(.*)");
 //        Matcher matcher = pattern.matcher("#中国人#");
 //        boolean v = matcher.matches();
@@ -252,10 +253,10 @@ public class ActivityServiceImpl implements ActivityService {
 //        System.out.println(i);
 //        String value = matcher.group(2);
 //        System.out.println(value);
-        Random random = new Random();
-        float randomPro = (float)random.nextInt(2);
-        System.out.println(randomPro);
-    }
+//        Random random = new Random();
+//        float randomPro = (float)random.nextInt(2);
+//        System.out.println(randomPro);
+//    }
 
     @Override
     public Response luckAward(long uid ,String ip ,int activityName ,String channel ,String version) {
@@ -1265,6 +1266,28 @@ public class ActivityServiceImpl implements ActivityService {
             return Response.success(infoDto);
         }
         return Response.success(ResponseStatus.QIACTIVITY_NOT_START.status,ResponseStatus.QIACTIVITY_NOT_START.message);
+    }
+
+    @Override
+    public Response oneKeyAudit() {
+        List<Auser> auserList = activityMybatisDao.getAuserList();
+        //发短信给每个用户 告知审核通过了
+        if(auserList.size() > 0 && auserList != null){
+            List mobileList = Lists.newArrayList();
+            for(Auser auser : auserList){
+                //通知所有审核中的用户
+                mobileList.add(auser.getMobile());
+            }
+            AwardXMDto awardXMDto = new AwardXMDto();
+            awardXMDto.setMobileList(mobileList);
+            userService.sendQIauditMessage(awardXMDto);
+            //修改每个用户未审核通过
+            activityMybatisDao.updateAuser();
+            log.info("update Auser success");
+            return Response.success(ResponseStatus.AWARD_MESSAGE_SUCCESS.status,ResponseStatus.AWARD_MESSAGE_SUCCESS.message);
+        }
+
+        return Response.success(ResponseStatus.CANNOT_FIND_AUSER.status,ResponseStatus.CANNOT_FIND_AUSER.message);
     }
 
     /**

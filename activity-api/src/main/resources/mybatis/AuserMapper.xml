@@ -378,4 +378,9 @@
       liveness = #{liveness,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <update id="updateAauser" >
+    <!-- 修改为审核成功状态 -->
+    UPDATE a_user SET STATUS = 3 WHERE STATUS =1
+  </update>
 </mapper>

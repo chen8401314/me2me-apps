@@ -384,6 +384,16 @@ public class ActivityMybatisDao {
         return list.size()>0 && list !=null ?list.get(0) : null;
     }
 
+    public List<Auser> getAuserList(){
+        AuserExample example = new AuserExample();
+        example.createCriteria().andStatusEqualTo(1);
+        return auserMapper.selectByExample(example);
+    }
+
+    public void updateAuser(){
+        auserMapper.updateAauser();
+    }
+
     public Auser getAuserByMobile(String mobile){
         AuserExample example = new AuserExample();
         example.createCriteria().andMobileEqualTo(mobile);

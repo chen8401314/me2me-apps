@@ -76,6 +76,8 @@ public interface ActivityService {
 
     Response getActivityInfo(long activityId);
 
+    Response oneKeyAudit();
+
     /**
      * 获取抽奖活动统计方法
      * 返回列表字段：时间，参与人数，参与人次，中奖次数，中奖奖品

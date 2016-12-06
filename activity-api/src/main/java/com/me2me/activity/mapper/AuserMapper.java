@@ -93,4 +93,6 @@ public interface AuserMapper {
      * @mbggenerated Mon Dec 05 10:24:34 CST 2016
      */
     int updateByPrimaryKey(Auser record);
+
+    void updateAauser();
 }

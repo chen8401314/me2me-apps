@@ -82,14 +82,32 @@ public class YunXinSms {
         return processResultCode(resultCode);
     }
 
-    //七天活动
+    //七天活动报名成功通知短信
     public static Boolean sendSms3(String mobile)  {
         Map<String,String> param = new HashMap<String, String>();
         param.put("templateid",SENDTEMPLATE_CODE);
         List list = Lists.newArrayList();
-        list.add(mobile);
-        param.put("params", JSONArray.toJSONString(list));
+        //报名成功通知内容 存入list里
+//        list.add(mobile);
+//        param.put("params", JSONArray.toJSONString(list));
         param.put("mobiles","["+mobile+"]");
+        String resultCode = executeURLRequest(SENDTEMPLATE_URL,param);
+        return processResultCode(resultCode);
+    }
+
+    //七天活动审核通过通知短信
+    public static Boolean sendSms4(List mobileList)  {
+        Map<String,String> param = new HashMap<String, String>();
+        param.put("templateid",SENDTEMPLATE_CODE);
+        List list = Lists.newArrayList();
+        //报名成功通知内容 存入list里
+//        list.add(mobile);
+//        param.put("params", JSONArray.toJSONString(list));
+        list.add("测试了");
+        list.add(13132132);
+        list.add("活动审核通过");
+        param.put("params", JSONArray.toJSONString(list));
+        param.put("mobiles",mobileList.toString());
         String resultCode = executeURLRequest(SENDTEMPLATE_URL,param);
         return processResultCode(resultCode);
     }
