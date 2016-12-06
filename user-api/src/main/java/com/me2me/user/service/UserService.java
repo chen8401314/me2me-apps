@@ -42,6 +42,9 @@ public interface UserService {
 
     Response sendAwardMessage(AwardXMDto awardXMDto);
 
+    //七天活动
+    Response sendQIMessage(AwardXMDto awardXMDto);
+
     /**
      * 用户修改密码
      * @param modifyEncryptDto

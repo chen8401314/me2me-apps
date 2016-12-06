@@ -74,4 +74,14 @@ public class SmsServiceImpl implements SmsService {
         }
     }
 
+    @Override
+    public boolean sendQIMessage(String mobile) {
+        Boolean isTrue = YunXinSms.sendSms3(mobile);
+        if(isTrue){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 }

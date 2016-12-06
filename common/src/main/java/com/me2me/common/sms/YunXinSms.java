@@ -82,6 +82,18 @@ public class YunXinSms {
         return processResultCode(resultCode);
     }
 
+    //七天活动
+    public static Boolean sendSms3(String mobile)  {
+        Map<String,String> param = new HashMap<String, String>();
+        param.put("templateid",SENDTEMPLATE_CODE);
+        List list = Lists.newArrayList();
+        list.add(mobile);
+        param.put("params", JSONArray.toJSONString(list));
+        param.put("mobiles","["+mobile+"]");
+        String resultCode = executeURLRequest(SENDTEMPLATE_URL,param);
+        return processResultCode(resultCode);
+    }
+
     /**
      * 校验验证码
      * @param mobileNo 手机号

@@ -15,4 +15,6 @@ public interface SmsService {
 
     boolean sendMessage(String nickName ,String awardName ,String mobile ,String OperateMobile);
 
+    boolean sendQIMessage(String mobile);
+
 }

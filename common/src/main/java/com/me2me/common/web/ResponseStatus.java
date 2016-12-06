@@ -181,7 +181,7 @@ public enum  ResponseStatus {
 
     GET_REDDOT_SUCCESS("获取红点成功","get reddot success",20084),
 
-    AWARD_MESSAGE_SUCCESS("中奖短信发送成功","award message success",20085),
+    AWARD_MESSAGE_SUCCESS("短信发送成功","award message success",20085),
 
     THIRDPARTUSER_EXISTS("第三方账户已存在","thirdPartUser exists",20086),
 
@@ -313,7 +313,7 @@ public enum  ResponseStatus {
 
     EDIT_TOPIC_FRAGMENT_FAILURE("编辑王国发言内容失败","edit topic fragment failure",50038),
 
-    AWARD_MESSAGE_FAILURE("中奖短信发送失败","award message failure",50040),
+    AWARD_MESSAGE_FAILURE("短信发送失败","award message failure",50040),
 
     GAG_IS_NOT_ADMIN("只有管理可以进行全局禁言","only admin can gag  all",50041),
 

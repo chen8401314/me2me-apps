@@ -340,6 +340,18 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
+    public Response sendQIMessage(AwardXMDto awardXMDto) {
+        boolean isTrue = smsService.sendQIMessage(awardXMDto.getMobile());
+        if(isTrue){
+            log.info("qi message success");
+            return Response.success(ResponseStatus.AWARD_MESSAGE_SUCCESS.status,ResponseStatus.AWARD_MESSAGE_SUCCESS.message);
+        }else{
+            log.info("qi message failure");
+            return Response.success(ResponseStatus.AWARD_MESSAGE_FAILURE.status,ResponseStatus.AWARD_MESSAGE_FAILURE.message);
+        }
+    }
+
     /**
      * 修改密码
      * @param modifyEncryptDto

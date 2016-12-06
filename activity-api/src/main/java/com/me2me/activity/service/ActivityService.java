@@ -72,7 +72,7 @@ public interface ActivityService {
 
     Response enterActivity(QiUserDto qiUserDto);
 
-    Response bindGetActivity(long uid ,String mobile);
+    Response bindGetActivity(long uid ,String mobile ,String verifyCode);
 
     Response getActivityInfo(long activityId);
 
