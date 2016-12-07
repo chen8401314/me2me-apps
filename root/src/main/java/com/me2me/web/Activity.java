@@ -174,7 +174,7 @@ public class Activity extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/bindGetActivity",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/bindGetActivityUser",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response bindGetActivity(QiUserRequest request){
         return activityService.bindGetActivity(request.getUid(),request.getMobile(),request.getVerifyCode());
     }
