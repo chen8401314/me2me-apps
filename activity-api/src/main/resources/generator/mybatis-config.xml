@@ -47,5 +47,7 @@
         <!--<table tableName="a_user" domainObjectName="Auser"/>-->
         <!--<table tableName="a_user_to_sysuser" domainObjectName="AuserToSysUser"/>-->
         <!--<table tableName="t_channel" domainObjectName="Tchannel"/>-->
+        <!--<table tableName="a_topic" domainObjectName="Atopic"/>-->
+        <!--<table tableName="a_double_topic_apply" domainObjectName="AdoubleTopicApply"/>-->
     </context>
 </generatorConfiguration>
