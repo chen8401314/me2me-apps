@@ -203,4 +203,28 @@ public class Activity extends BaseController {
         return activityService.oneKeyAudit();
     }
 
+    /**
+     * 七天活动创建王国接口
+     *
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/createAlive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response createAlive(){
+//        return activityService.createAlive();
+        return null;
+    }
+
+    /**
+     * 活动王国查询接口
+     *
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getAliveInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getAliveInfo(){
+//        return activityService.createAlive();
+        return null;
+    }
+
 }
