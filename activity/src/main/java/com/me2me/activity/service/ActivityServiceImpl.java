@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dto.*;
 import com.me2me.activity.model.*;
+import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.EncryUtil;
@@ -48,6 +49,8 @@ import java.util.regex.Pattern;
 @Slf4j
 public class ActivityServiceImpl implements ActivityService {
 
+    private static final String SEVENDAY_KEY = "key:sevenday";
+
     @Autowired
     private ActivityMybatisDao activityMybatisDao;
 
@@ -56,6 +59,9 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Autowired
     private LiveService liveService;
+
+    @Autowired
+    private CacheService cacheService;
 
     @Override
     public Response createActivity(CreateActivityDto createActivityDto) {
@@ -1734,6 +1740,30 @@ public class ActivityServiceImpl implements ActivityService {
             }
         }
         return Response.success(ResponseStatus.SEARCH_ATOPIC_FAILURE.status, ResponseStatus.SEARCH_ATOPIC_FAILURE.message,atopicInfoDto);
+    }
+
+    @Override
+    public Response createDoubleLive(long uid, long targetUid ,long activityId) {
+        AactivityStage aactivityStage = activityMybatisDao.getAactivityStage(activityId);
+        if(aactivityStage.getStage() == 3){
+            //单人王国
+            Atopic ownerTopicSingle = activityMybatisDao.getAtopicByUid1(uid);
+            Atopic targetTopicSingle = activityMybatisDao.getAtopicByUid1(targetUid);
+            //双人王国
+            Atopic ownerTopicDouble = activityMybatisDao.getAtopicByUid2(uid);
+            Atopic targetTopicDouble = activityMybatisDao.getAtopicByUid2(targetUid);
+            //满足只建立了单人王国，都没建立双人王国
+            if(ownerTopicSingle != null && targetTopicSingle != null && ownerTopicDouble ==null && targetTopicDouble == null){
+                //申请次数
+                String num = cacheService.get(SEVENDAY_KEY);
+                if( <Integer.parseInt(num)){
+
+                }else{
+                    return Response.success(ResponseStatus.NUMBER_IS_BOUND.status, ResponseStatus.NUMBER_IS_BOUND.message);
+                }
+            }
+        }
+        return Response.success(ResponseStatus.NOT_THREE_STAGE.status, ResponseStatus.NOT_THREE_STAGE.message);
     }
 
 }

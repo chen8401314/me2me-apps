@@ -227,4 +227,17 @@ public class Activity extends BaseController {
         return activityService.getAliveInfo(request.getUid() ,request.getTopicName() ,request.getNickName());
     }
 
+    /**
+     * 双人王国创建申请接口
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/createDoubleLive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response createDoubleLive(QiUserRequest request){
+        //（0异性，1同性，2男，3女，4所有）现在没人接收异性0
+        return activityService.createDoubleLive(request.getUid() ,request.getTargetUid() ,request.getActivityId());
+    }
+
 }

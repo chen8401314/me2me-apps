@@ -437,6 +437,20 @@ public class ActivityMybatisDao {
         return list.size()>0 && list != null ?list.get(0):null;
     }
 
+    public Atopic getAtopicByUid1(long uid){
+        AtopicExample example = new AtopicExample();
+        example.createCriteria().andUidEqualTo(uid).andStatusEqualTo(0).andTypeEqualTo(1);
+        List<Atopic> list = atopicMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
+    }
+
+    public Atopic getAtopicByUid2(long uid){
+        AtopicExample example = new AtopicExample();
+        example.createCriteria().andUidEqualTo(uid).andStatusEqualTo(0).andTypeEqualTo(2);
+        List<Atopic> list = atopicMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
+    }
+
     public void createAuser(Auser auser){
        auserMapper.insertSelective(auser);
     }
@@ -511,6 +525,5 @@ public class ActivityMybatisDao {
     public List<BlurSearchDto> getTopicByGirl(Map map){
         return atopicMapper.getTopicByGirl(map);
     }
-
 
 }

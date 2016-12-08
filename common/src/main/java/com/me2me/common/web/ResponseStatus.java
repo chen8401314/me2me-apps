@@ -231,6 +231,9 @@ public enum  ResponseStatus {
 
     SEARCH_ATOPIC_FAILURE("未查询到活动王国信息","search atopic failure", 20108),
 
+    NUMBER_IS_BOUND("申请次数达到上限","number is bound", 20109),
+
+    NOT_THREE_STAGE("目前不处于第三阶段","not three stage", 20110),
 
 
 
