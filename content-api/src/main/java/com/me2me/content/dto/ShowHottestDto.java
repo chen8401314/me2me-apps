@@ -71,6 +71,8 @@ public class ShowHottestDto implements BaseEntity {
 
         private String contentUrl;
 
+        private int type;
+
     }
 
     //内容

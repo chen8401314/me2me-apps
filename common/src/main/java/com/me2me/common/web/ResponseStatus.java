@@ -227,6 +227,20 @@ public enum  ResponseStatus {
 
     SINGLE_TOPIC_NOT_OPEN("单人王国活动暂未开放","single topic not open", 20106),
 
+    SEARCH_ATOPIC_SUCCESS("查询活动王国信息成功","search atopic success", 20107),
+
+    SEARCH_ATOPIC_FAILURE("未查询到活动王国信息","search atopic failure", 20108),
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -1,5 +1,6 @@
 package com.me2me.activity.mapper;
 
+import com.me2me.activity.dto.BlurSearchDto;
 import com.me2me.activity.model.Atopic;
 import com.me2me.activity.model.AtopicExample;
 import java.util.List;
@@ -97,4 +98,9 @@ public interface AtopicMapper {
     int updateByPrimaryKey(Atopic record);
 
     int updateAtopicStatus(Map map);
+
+    List<BlurSearchDto> getTopicByBoy(Map map);
+
+    List<BlurSearchDto> getTopicByGirl(Map map);
+
 }

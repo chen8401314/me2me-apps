@@ -222,8 +222,9 @@ public class Activity extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "/getAliveInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response getAliveInfo(){
-        return activityService.getAliveInfo();
+    public Response getAliveInfo(QiUserRequest request){
+        //（0异性，1同性，2男，3女，4所有）现在没人接收异性0
+        return activityService.getAliveInfo(request.getUid() ,request.getTopicName() ,request.getNickName());
     }
 
 }

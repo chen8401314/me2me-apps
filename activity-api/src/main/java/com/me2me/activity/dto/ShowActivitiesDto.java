@@ -56,5 +56,7 @@ public class ShowActivitiesDto implements BaseEntity{
 
         private String contentUrl;
 
+        private int type;
+
     }
 }

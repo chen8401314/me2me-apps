@@ -101,7 +101,7 @@ public interface ActivityService {
 
     Atopic getAtopicByTopicId(long topicId);
 
-    int updateAtopicStatus(Map map);
+    void updateAtopicStatus(Map map);
 
-    Response getAliveInfo();
+    Response getAliveInfo(long uid ,String topicName ,String nickName);
 }

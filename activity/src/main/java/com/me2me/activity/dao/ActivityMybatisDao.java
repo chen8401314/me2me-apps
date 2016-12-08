@@ -1,6 +1,7 @@
 package com.me2me.activity.dao;
 
 import com.google.common.base.Strings;
+import com.me2me.activity.dto.BlurSearchDto;
 import com.me2me.activity.dto.LuckActStat2DTO;
 import com.me2me.activity.dto.LuckActStatDTO;
 import com.me2me.activity.mapper.*;
@@ -429,6 +430,13 @@ public class ActivityMybatisDao {
         return list.size()>0 && list !=null ?list.get(0) : null;
     }
 
+    public Atopic getAtopicByAuid(long Auid){
+        AtopicExample example = new AtopicExample();
+        example.createCriteria().andAuidEqualTo(Auid).andStatusEqualTo(0);
+        List<Atopic> list = atopicMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
+    }
+
     public void createAuser(Auser auser){
        auserMapper.insertSelective(auser);
     }
@@ -496,11 +504,13 @@ public class ActivityMybatisDao {
         atopicMapper.updateAtopicStatus(map);
     }
 
-    public Atopic getAtopicByAuid(long Auid){
-        AtopicExample example = new AtopicExample();
-        example.createCriteria().andAuidEqualTo(Auid).andStatusEqualTo(0);
-        List<Atopic> list = atopicMapper.selectByExample(example);
-        return list.size()>0 && list != null ?list.get(0):null;
+    public List<BlurSearchDto> getTopicByBoy(Map map){
+      return atopicMapper.getTopicByBoy(map);
     }
+
+    public List<BlurSearchDto> getTopicByGirl(Map map){
+        return atopicMapper.getTopicByGirl(map);
+    }
+
 
 }

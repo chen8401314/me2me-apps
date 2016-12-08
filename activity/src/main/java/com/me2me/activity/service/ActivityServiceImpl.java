@@ -2,6 +2,7 @@ package com.me2me.activity.service;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dto.*;
 import com.me2me.activity.model.*;
@@ -128,6 +129,7 @@ public class ActivityServiceImpl implements ActivityService {
             activityElement.setIsFollowed(userService.isFollow(activity.getUid(),uid));
             activityElement.setContentType(activity.getTyp());
             activityElement.setContentUrl(activity.getLinkUrl());
+            activityElement.setType(4);
             showActivitiesDto.getActivityData().add(activityElement);
         }
         log.info("getActivity end ...");
@@ -1699,6 +1701,39 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public void updateAtopicStatus(Map map) {
         activityMybatisDao.updateAtopicStatus(map);
+    }
+
+    @Override
+    public Response getAliveInfo(long uid ,String topicName ,String nickName) {
+        //判断当前是男性还是女性，查询出相反性别
+        UserProfile userProfile = userService.getUserProfileByUid(uid);
+        Map map = Maps.newHashMap();
+        AtopicInfoDto atopicInfoDto = new AtopicInfoDto();
+        map.put("titleName",topicName);
+        map.put("nickName",nickName);
+        if(userProfile != null){
+            if(userProfile.getGender() == 0) {
+                //0女 查询男
+                List<BlurSearchDto> boyList = activityMybatisDao.getTopicByBoy(map);
+                if(boyList.size()>0 && boyList != null){
+                    for(BlurSearchDto blurSearchDto : boyList){
+                        atopicInfoDto.getBlurSearchList().add(blurSearchDto);
+                    }
+                    return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message,atopicInfoDto);
+                }
+
+            }else{
+                //1男 //查询女
+                List<BlurSearchDto> girlList = activityMybatisDao.getTopicByGirl(map);
+                if(girlList.size()>0 && girlList != null){
+                    for(BlurSearchDto blurSearchDto : girlList){
+                        atopicInfoDto.getBlurSearchList().add(blurSearchDto);
+                    }
+                    return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message,atopicInfoDto);
+                }
+            }
+        }
+        return Response.success(ResponseStatus.SEARCH_ATOPIC_FAILURE.status, ResponseStatus.SEARCH_ATOPIC_FAILURE.message,atopicInfoDto);
     }
 
 }

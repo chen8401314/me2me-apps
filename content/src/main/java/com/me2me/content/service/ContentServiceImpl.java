@@ -1882,6 +1882,7 @@ private void localJpush(long toUid){
                 activityElement.setLikeCount(activityService.getLikeCount(activity.getId()));
                 activityElement.setContentType(activity.getTyp());
                 activityElement.setContentUrl(activity.getLinkUrl());
+                activityElement.setType(4);
                 hottestDto.getActivityData().add(activityElement);
             }
         }

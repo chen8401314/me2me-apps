@@ -61,4 +61,12 @@ public class QiUserRequest {
     @Getter
     @Setter
     private int channelAdapter;
+
+    @Getter
+    @Setter
+    private String topicName;
+
+    @Getter
+    @Setter
+    private String nickName;
 }
