@@ -235,6 +235,8 @@ public enum  ResponseStatus {
 
     NOT_THREE_STAGE("目前不处于第三阶段","not three stage", 20110),
 
+    APPLICATION_SUCCESS("目前不处于第三阶段","application success ", 20111),
+
 
 
 

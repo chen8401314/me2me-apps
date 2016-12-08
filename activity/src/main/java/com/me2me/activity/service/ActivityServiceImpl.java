@@ -1752,11 +1752,28 @@ public class ActivityServiceImpl implements ActivityService {
             //双人王国
             Atopic ownerTopicDouble = activityMybatisDao.getAtopicByUid2(uid);
             Atopic targetTopicDouble = activityMybatisDao.getAtopicByUid2(targetUid);
+            //申请次数
+            AdoubleTopicApply applyOwner = activityMybatisDao.getTopicApply(uid);
+
             //满足只建立了单人王国，都没建立双人王国
             if(ownerTopicSingle != null && targetTopicSingle != null && ownerTopicDouble ==null && targetTopicDouble == null){
                 //申请次数
                 String num = cacheService.get(SEVENDAY_KEY);
-                if( <Integer.parseInt(num)){
+                if(applyOwner.getNumber()<Integer.parseInt(num)){
+                    //请求
+                    AdoubleTopicApply applyReq = new AdoubleTopicApply();
+                    applyReq.setUid(uid);
+                    applyReq.setTargetUid(targetUid);
+                    applyReq.setNumber(applyOwner.getNumber()+1);
+                    applyReq.setType(1);
+                    //接收
+                    AdoubleTopicApply applyRec = new AdoubleTopicApply();
+                    applyReq.setUid(uid);
+                    applyReq.setTargetUid(targetUid);
+                    applyReq.setType(2);
+                    activityMybatisDao.createAdoubleTopicApply(applyReq);
+                    activityMybatisDao.createAdoubleTopicApply(applyRec);
+                    return Response.success(ResponseStatus.APPLICATION_SUCCESS.status, ResponseStatus.APPLICATION_SUCCESS.message);
 
                 }else{
                     return Response.success(ResponseStatus.NUMBER_IS_BOUND.status, ResponseStatus.NUMBER_IS_BOUND.message);

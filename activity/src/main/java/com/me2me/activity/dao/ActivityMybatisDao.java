@@ -451,6 +451,17 @@ public class ActivityMybatisDao {
         return list.size()>0 && list != null ?list.get(0):null;
     }
 
+    public AdoubleTopicApply getTopicApply(long uid){
+        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+        example.createCriteria().andUidEqualTo(uid);
+        List<AdoubleTopicApply> list = adoubleTopicApplyMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
+    }
+
+    public void createAdoubleTopicApply(AdoubleTopicApply adoubleTopicApply){
+        adoubleTopicApplyMapper.insertSelective(adoubleTopicApply);
+    }
+
     public void createAuser(Auser auser){
        auserMapper.insertSelective(auser);
     }
