@@ -388,7 +388,7 @@
    FROM `a_topic` a , topic b ,user_profile c WHERE a.`type` !=2
    AND gender = 1
    AND a.`topic_id`=b.`id` AND a.`uid`=c.`uid`
-   AND (b.`title` LIKE "%#{titleName}%" OR c.`nick_name` LIKE "%#{nickName}%")
+   AND (b.`title` LIKE "%${titleName}%" OR c.`nick_name` LIKE "%${nickName}%")
   </select>
 
   <select id="getTopicByGirl" parameterType="java.util.Map" resultMap="BlurSearchDtoMap">
@@ -396,7 +396,7 @@
    FROM `a_topic` a , topic b ,user_profile c WHERE a.`type` !=2
    AND gender = 0
    AND a.`topic_id`=b.`id` AND a.`uid`=c.`uid`
-   AND (b.`title` LIKE "%#{titleName}%" OR c.`nick_name` LIKE "%#{nickName}%")
+   AND (b.`title` LIKE "%${titleName}%" OR c.`nick_name` LIKE "%${nickName}%")
   </select>
 
 </mapper>
