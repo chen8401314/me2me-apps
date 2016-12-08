@@ -215,6 +215,18 @@ public enum  ResponseStatus {
 
     CANNOT_FIND_AUSER("未查询到审核中的用户","cannot find auser", 20100),
 
+    DOUBLE_TOPIC_NOT_OPEN("双人王国活动暂未开放","double topic not open", 20101),
+
+    DOUBLE_TOPIC_NOT_CREATE("双人王国暂未创建","double topic not create", 20102),
+
+    SINGLE_TOPIC_NOT_CREATE("单人王国暂未创建","double topic not create", 20103),
+
+    SINGLE_TOPIC_GET_SUCCESS("单人王国信息获取成功","double topic not create", 20104),
+
+    DOUBLE_TOPIC_GET_SUCCESS("双人王国息获取成功","double topic not create", 20105),
+
+    SINGLE_TOPIC_NOT_OPEN("单人王国活动暂未开放","single topic not open", 20106),
+
 
 
 

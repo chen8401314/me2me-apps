@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -65,6 +66,12 @@ public class ActivityMybatisDao {
 
     @Autowired
     private TchannelMapper tchannelMapper;
+
+    @Autowired
+    private AtopicMapper atopicMapper;
+
+    @Autowired
+    private AdoubleTopicApplyMapper adoubleTopicApplyMapper;
 
     public void saveActivity(ActivityWithBLOBs activity){
         activityMapper.insertSelective(activity);
@@ -477,4 +484,23 @@ public class ActivityMybatisDao {
     public void updateLuckStatus(LuckStatus ls){
     	luckStatusMapper.updateByPrimaryKeySelective(ls);
     }
+
+    public Atopic getAtopicByTopicId(long topicId){
+        AtopicExample example = new AtopicExample();
+        example.createCriteria().andTopicIdEqualTo(topicId);
+        List<Atopic> list = atopicMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
+    }
+
+    public void updateAtopicStatus(Map map){
+        atopicMapper.updateAtopicStatus(map);
+    }
+
+    public Atopic getAtopicByAuid(long Auid){
+        AtopicExample example = new AtopicExample();
+        example.createCriteria().andAuidEqualTo(Auid).andStatusEqualTo(0);
+        List<Atopic> list = atopicMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
+    }
+
 }

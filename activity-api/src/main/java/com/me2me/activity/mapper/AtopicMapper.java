@@ -3,6 +3,8 @@ package com.me2me.activity.mapper;
 import com.me2me.activity.model.Atopic;
 import com.me2me.activity.model.AtopicExample;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface AtopicMapper {
@@ -93,4 +95,6 @@ public interface AtopicMapper {
      * @mbggenerated Wed Dec 07 17:44:28 CST 2016
      */
     int updateByPrimaryKey(Atopic record);
+
+    int updateAtopicStatus(Map map);
 }

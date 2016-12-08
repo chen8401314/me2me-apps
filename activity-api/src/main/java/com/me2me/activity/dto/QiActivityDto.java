@@ -13,4 +13,10 @@ public class QiActivityDto implements BaseEntity {
 
     private String mobile;
 
+    private String title;
+
+    private String liveImage;
+
+    private long topicId;
+
 }

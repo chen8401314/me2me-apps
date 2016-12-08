@@ -43,6 +43,11 @@
                     <artifactId>content-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>live-api</artifactId>
+                    <version>2.0.8</version>
+                </dependency>
             </dependencies>
             <build>
                 <filters>
@@ -63,6 +68,11 @@
                     <groupId>com.me2me</groupId>
                     <artifactId>activity-api</artifactId>
                     <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>live-api</artifactId>
+                    <version>2.0.8</version>
                 </dependency>
             </dependencies>
             <build>
@@ -163,6 +173,11 @@
                     <groupId>com.me2me</groupId>
                     <artifactId>activity-api</artifactId>
                     <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>live-api</artifactId>
+                    <version>2.0.8</version>
                 </dependency>
             </dependencies>
             <build>

@@ -1023,4 +1023,21 @@ public interface Specification {
             this.index = index;
     	}
     }
+
+    enum ASevenDayType{
+        SINGLE_TOPIC("单人王国", 1),
+        DOUBLE_TOPIC("王国王国", 2),
+        A_THREE_STAGE("第三阶段双人王国", 3),
+        A_DOUBLE_STAGE("第二阶段单人王国", 2)
+        ;
+
+        public final String name;
+        public final int index;
+
+        ASevenDayType(String name, int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
 }

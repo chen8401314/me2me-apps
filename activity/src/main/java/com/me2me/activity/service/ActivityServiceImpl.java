@@ -11,6 +11,8 @@ import com.me2me.common.utils.EncryUtil;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.live.model.Topic;
+import com.me2me.live.service.LiveService;
 import com.me2me.sms.dto.AwardXMDto;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.service.ChannelType;
@@ -50,6 +52,9 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private LiveService liveService;
 
     @Override
     public Response createActivity(CreateActivityDto createActivityDto) {
@@ -1129,9 +1134,50 @@ public class ActivityServiceImpl implements ActivityService {
             Auser auser = activityMybatisDao.getAuser(auserToSysUser.getAuid());
             if(auser !=null){
                 if(auser.getStatus() == 3){
-                    //返回手机号，可能还有更多信息 待加
                     qiActivityDto.setMobile(auser.getMobile());
-                    return Response.success(ResponseStatus.QIACITIVITY_INFO_SUCCESS.status,ResponseStatus.QIACITIVITY_INFO_SUCCESS.message,qiActivityDto);
+                    //查询活动王国信息
+                    Atopic atopic = activityMybatisDao.getAtopicByAuid(auser.getId());
+                    //阶段
+                    AactivityStage aactivityStage = activityMybatisDao.getAactivityStage(auser.getActivityId());
+                    Topic topic = liveService.getTopicById(atopic.getTopicId());
+                    if(atopic != null){
+                        //单人王国返回信息
+                        if(atopic.getType() == Specification.ASevenDayType.SINGLE_TOPIC.index){
+                            if(aactivityStage.getStage() == Specification.ASevenDayType.A_DOUBLE_STAGE.index) {
+                                if (topic != null) {
+                                    qiActivityDto.setLiveImage(topic.getLiveImage());
+                                    qiActivityDto.setTitle(topic.getTitle());
+                                    qiActivityDto.setTopicId(topic.getId());
+                                    qiActivityDto.setStage(aactivityStage.getStage());
+                                    log.info("single topic get success ...");
+                                    return Response.success(ResponseStatus.SINGLE_TOPIC_GET_SUCCESS.status, ResponseStatus.SINGLE_TOPIC_GET_SUCCESS.message, qiActivityDto);
+                                } else {
+                                    //暂未创建单人王国
+                                    return Response.success(ResponseStatus.SINGLE_TOPIC_NOT_CREATE.status, ResponseStatus.SINGLE_TOPIC_NOT_CREATE.message);
+                                }
+                            }else{
+                                //返回暂未开放
+                                return Response.success(ResponseStatus.SINGLE_TOPIC_NOT_OPEN.status,ResponseStatus.SINGLE_TOPIC_NOT_OPEN.message);
+                            }
+                        } else if(atopic.getType() == Specification.ASevenDayType.DOUBLE_TOPIC.index){
+                            //是双人王国并且处于第三阶段
+                            if(aactivityStage.getStage() == Specification.ASevenDayType.A_THREE_STAGE.index){
+                                if(topic != null){
+                                    qiActivityDto.setLiveImage(topic.getLiveImage());
+                                    qiActivityDto.setTitle(topic.getTitle());
+                                    qiActivityDto.setTopicId(topic.getId());
+                                    qiActivityDto.setStage(aactivityStage.getStage());
+                                    log.info("double topic get success ...");
+                                    return Response.success(ResponseStatus.DOUBLE_TOPIC_GET_SUCCESS.status,ResponseStatus.DOUBLE_TOPIC_GET_SUCCESS.message,qiActivityDto);
+                                }else{
+                                    return Response.success(ResponseStatus.DOUBLE_TOPIC_NOT_CREATE.status,ResponseStatus.DOUBLE_TOPIC_NOT_CREATE.message);
+                                }
+                            }else{
+                                //返回暂未开放
+                                return Response.success(ResponseStatus.DOUBLE_TOPIC_NOT_OPEN.status,ResponseStatus.DOUBLE_TOPIC_NOT_OPEN.message);
+                            }
+                        }
+                    }
                 }else if(auser.getStatus() == 2){
                     return Response.success(ResponseStatus.AUDIT_FAILURE.status,ResponseStatus.AUDIT_FAILURE.message);
                 }else if(auser.getStatus() == 1){
@@ -1644,5 +1690,15 @@ public class ActivityServiceImpl implements ActivityService {
 		
 		return Response.success(slasDTO);
 	}
+
+    @Override
+    public Atopic getAtopicByTopicId(long topicId) {
+        return activityMybatisDao.getAtopicByTopicId(topicId);
+    }
+
+    @Override
+    public void updateAtopicStatus(Map map) {
+        activityMybatisDao.updateAtopicStatus(map);
+    }
 
 }

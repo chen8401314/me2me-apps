@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import com.me2me.activity.model.ActivityWithBLOBs;
+import com.me2me.activity.model.Atopic;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.JPushUtils;
@@ -1116,9 +1118,17 @@ private void localJpush(long toUid){
 
         content.setStatus(Specification.ContentStatus.DELETE.index);
         log.info("content status delete");
+
         contentMybatisDao.updateContentById(content);
         
-        
+        //判断是否还有活动王国 有的话直接更改status状态为1
+        Atopic atopic = activityService.getAtopicByTopicId(content.getForwardCid());
+        if(atopic != null){
+            Map map = Maps.newHashMap();
+            map.put("topicId",content.getForwardCid());
+            activityService.updateAtopicStatus(map);
+        }
+
         log.info("deleteContent end ...");
         return Response.failure(ResponseStatus.CONTENT_DELETE_SUCCESS.status,ResponseStatus.CONTENT_DELETE_SUCCESS.message);
     }

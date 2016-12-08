@@ -223,8 +223,7 @@ public class Activity extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getAliveInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getAliveInfo(){
-//        return activityService.createAlive();
-        return null;
+        return activityService.getAliveInfo();
     }
 
 }

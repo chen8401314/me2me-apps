@@ -2,10 +2,12 @@ package com.me2me.activity.service;
 
 import com.me2me.activity.dto.*;
 import com.me2me.activity.model.ActivityWithBLOBs;
+import com.me2me.activity.model.Atopic;
 import com.me2me.common.web.Response;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -96,4 +98,10 @@ public interface ActivityService {
     Response getLuckPrizeList(int activityName);
     
     Response getLuckActList(int activityName, Date startTime, Date endTime);
+
+    Atopic getAtopicByTopicId(long topicId);
+
+    int updateAtopicStatus(Map map);
+
+    Response getAliveInfo();
 }
