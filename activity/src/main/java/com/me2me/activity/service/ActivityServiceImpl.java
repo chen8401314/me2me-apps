@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.me2me.activity.dao.ActivityMybatisDao;
+import com.me2me.activity.dao.LiveForActivityDao;
 import com.me2me.activity.dto.*;
 import com.me2me.activity.model.*;
 import com.me2me.cache.service.CacheService;
@@ -13,8 +14,6 @@ import com.me2me.common.utils.EncryUtil;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
-import com.me2me.live.model.Topic;
-import com.me2me.live.service.LiveService;
 import com.me2me.sms.dto.AwardXMDto;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.service.ChannelType;
@@ -58,7 +57,7 @@ public class ActivityServiceImpl implements ActivityService {
     private UserService userService;
 
     @Autowired
-    private LiveService liveService;
+    private LiveForActivityDao liveForActivityDao;
 
     @Autowired
     private CacheService cacheService;
@@ -1174,22 +1173,22 @@ public class ActivityServiceImpl implements ActivityService {
                         stage3EndTime = aactivityStage3.getEndTime();
                     }
 
-                    Topic topicSingle =null;
-                    Topic topicDouble =null;
+                    Map<String,Object> topicSingle =null;
+                    Map<String,Object> topicDouble =null;
                     if(atopicSingle!=null){
-                        topicSingle = liveService.getTopicById(atopicSingle.getTopicId());
+                        topicSingle = liveForActivityDao.getTopicById(atopicSingle.getTopicId());
                     }
                     if(atopicDouble!=null){
-                        topicDouble = liveService.getTopicById(atopicDouble.getTopicId());
+                        topicDouble = liveForActivityDao.getTopicById(atopicDouble.getTopicId());
                     }
                         //单人王国返回信息 不在第一阶段就行
                         if(atopicSingle !=null){
                             if(nowDate.compareTo(stage1EndTime) > 0) {
                                 if (topicSingle != null) {
                                     QiActivityDto.TopicElement topicElement = qiActivityDto.createElement();
-                                    topicElement.setLiveImage(topicSingle.getLiveImage());
-                                    topicElement.setTitle(topicSingle.getTitle());
-                                    topicElement.setTopicId(topicSingle.getId());
+                                    topicElement.setLiveImage((String)topicSingle.get("live_image"));
+                                    topicElement.setTitle((String)topicSingle.get("title"));
+                                    topicElement.setTopicId((Long)topicSingle.get("id"));
                                     topicElement.setStage(Specification.ASevenDayType.A_DOUBLE_STAGE.index);
                                     log.info("single topic get success ...");
                                     qiActivityDto.getTopicList().add(topicElement);
@@ -1201,9 +1200,9 @@ public class ActivityServiceImpl implements ActivityService {
                             if(nowDate.compareTo(stage3StartTime)>0 || nowDate.compareTo(stage1EndTime)<0){
                                 if(topicDouble != null){
                                     QiActivityDto.TopicElement topicElement = qiActivityDto.createElement();
-                                    topicElement.setLiveImage(topicDouble.getLiveImage());
-                                    topicElement.setTitle(topicDouble.getTitle());
-                                    topicElement.setTopicId(topicDouble.getId());
+                                    topicElement.setLiveImage((String)topicDouble.get("live_image"));
+                                    topicElement.setTitle((String)topicDouble.get("title"));
+                                    topicElement.setTopicId((Long)topicDouble.get("id"));
                                     topicElement.setStage(Specification.ASevenDayType.A_THREE_STAGE.index);
                                     log.info("double topic get success ...");
                                     qiActivityDto.getTopicList().add(topicElement);
