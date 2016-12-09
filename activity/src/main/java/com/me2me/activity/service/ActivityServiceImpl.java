@@ -1966,9 +1966,23 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public Response getApplyInfo(long uid, int type) {
+        ApplyListDto applyListDto = new ApplyListDto();
+        if(type == 0){
+            //我发出的
+            List<AdoubleTopicApply> sendList = activityMybatisDao.getAdoubleTopicApplyByUid(uid);
+            List<Long> longList = Lists.newArrayList();
+            if(sendList.size() > 0 && sendList != null){
+                for(AdoubleTopicApply apply : sendList){
+                    longList.add(apply.getTargetUid());
+                }
+//                userService.getUserNoByUid();
+            }
+        }
+        return null;
+    }
 
-
-
+    @Override
+    public Response applyDoubleLive(long uid, int applyId) {
         return null;
     }
 

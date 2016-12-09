@@ -77,4 +77,8 @@ public class QiUserRequest {
     @Getter
     @Setter
     private int type;
+
+    @Getter
+    @Setter
+    private int applyId;
 }

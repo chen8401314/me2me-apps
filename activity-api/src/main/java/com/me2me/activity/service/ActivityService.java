@@ -122,4 +122,6 @@ public interface ActivityService {
     Response createDoubleLive(long uid ,long targetUid ,long activityId);
 
     Response getApplyInfo(long uid ,int type);
+
+    Response applyDoubleLive(long uid ,int applyId);
 }

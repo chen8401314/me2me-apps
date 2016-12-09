@@ -252,4 +252,16 @@ public class Activity extends BaseController {
         return activityService.getApplyInfo(request.getUid() ,request.getType());
     }
 
+    /**
+     * 双人王国申请操作接口
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/applyDoubleLive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response applyDoubleLive(QiUserRequest request){
+        return activityService.applyDoubleLive(request.getUid() ,request.getApplyId());
+    }
+
 }
