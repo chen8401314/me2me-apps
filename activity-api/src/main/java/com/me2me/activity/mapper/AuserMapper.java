@@ -94,5 +94,5 @@ public interface AuserMapper {
      */
     int updateByPrimaryKey(Auser record);
 
-    void updateAauser();
+    int updateAauser();
 }
