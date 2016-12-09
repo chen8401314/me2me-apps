@@ -118,4 +118,8 @@ public interface ActivityService {
     void updateAtopicStatus(Map map);
 
     Response getAliveInfo(long uid ,String topicName ,String nickName);
+
+    Response createDoubleLive(long uid ,long targetUid ,long activityId);
+
+    Response getApplyInfo(long uid ,int type);
 }

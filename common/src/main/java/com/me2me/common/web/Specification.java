@@ -1030,7 +1030,8 @@ public interface Specification {
         SINGLE_TOPIC("单人王国", 1),
         DOUBLE_TOPIC("王国王国", 2),
         A_THREE_STAGE("第三阶段双人王国", 3),
-        A_DOUBLE_STAGE("第二阶段单人王国", 2)
+        A_DOUBLE_STAGE("第二阶段单人王国", 2),
+        A_FIRST_STAGE("第已阶段报名", 1)
         ;
 
         public final String name;

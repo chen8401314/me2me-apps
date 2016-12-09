@@ -1,7 +1,10 @@
 package com.me2me.activity.dto;
 
+import com.google.common.collect.Lists;
 import com.me2me.common.web.BaseEntity;
 import lombok.Data;
+
+import java.util.List;
 
 /**
  * Created by 马秀成 on 2016/12/5.
@@ -9,14 +12,23 @@ import lombok.Data;
 @Data
 public class QiActivityDto implements BaseEntity {
 
-    private int stage;
-
     private String mobile;
 
-    private String title;
+    private List<TopicElement> topicList = Lists.newArrayList();
 
-    private String liveImage;
+    public TopicElement createElement(){
+        return new TopicElement();
+    }
 
-    private long topicId;
+    @Data
+    public class TopicElement implements BaseEntity{
 
+        private int stage;
+
+        private String title;
+
+        private String liveImage;
+
+        private long topicId;
+    }
 }

@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dto.*;
 import com.me2me.activity.model.*;
+import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.EncryUtil;
@@ -48,6 +49,8 @@ import java.util.regex.Pattern;
 @Slf4j
 public class ActivityServiceImpl implements ActivityService {
 
+    private static final String SEVENDAY_KEY = "key:sevenday";
+
     @Autowired
     private ActivityMybatisDao activityMybatisDao;
 
@@ -56,6 +59,9 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Autowired
     private LiveService liveService;
+
+    @Autowired
+    private CacheService cacheService;
 
     @Override
     public Response createActivity(CreateActivityDto createActivityDto) {
@@ -1138,48 +1144,82 @@ public class ActivityServiceImpl implements ActivityService {
                 if(auser.getStatus() == 3){
                     qiActivityDto.setMobile(auser.getMobile());
                     //查询活动王国信息
-                    Atopic atopic = activityMybatisDao.getAtopicByAuid(auser.getId());
-                    //阶段
-                    AactivityStage aactivityStage = activityMybatisDao.getAactivityStage(auser.getActivityId());
-                    Topic topic = liveService.getTopicById(atopic.getTopicId());
-                    if(atopic != null){
-                        //单人王国返回信息
-                        if(atopic.getType() == Specification.ASevenDayType.SINGLE_TOPIC.index){
-                            if(aactivityStage.getStage() == Specification.ASevenDayType.A_DOUBLE_STAGE.index) {
-                                if (topic != null) {
-                                    qiActivityDto.setLiveImage(topic.getLiveImage());
-                                    qiActivityDto.setTitle(topic.getTitle());
-                                    qiActivityDto.setTopicId(topic.getId());
-                                    qiActivityDto.setStage(aactivityStage.getStage());
+                    Atopic atopicSingle = activityMybatisDao.getAtopicByAuidAndSingle(auser.getId());
+                    Atopic atopicDouble = activityMybatisDao.getAtopicByAuidDouble(auser.getId());
+                    //第一阶段
+                    AactivityStage aactivityStage1 = activityMybatisDao.getAactivityStageByStage(auser.getActivityId() ,1);
+                    //第二阶段
+                    AactivityStage aactivityStage2 = activityMybatisDao.getAactivityStageByStage(auser.getActivityId() ,2);
+                    //第三阶段
+                    AactivityStage aactivityStage3 = activityMybatisDao.getAactivityStageByStage(auser.getActivityId() ,3);
+
+                    //阶段时间 都查出来是为了防止以后变更需求
+                    Date nowDate = new Date();
+                    Date stage1StartTime =null;
+                    Date stage1EndTime =null;
+                    Date stage2StartTime =null;
+                    Date stage2EndTime =null;
+                    Date stage3StartTime =null;
+                    Date stage3EndTime =null;
+                    if(aactivityStage1!=null){
+                        stage1StartTime = aactivityStage1.getStartTime();
+                        stage1EndTime = aactivityStage1.getEndTime();
+                    }
+                    if(aactivityStage2!=null){
+                        stage2StartTime = aactivityStage2.getStartTime();
+                        stage2EndTime = aactivityStage2.getEndTime();
+                    }
+                    if(aactivityStage3!=null){
+                        stage3StartTime = aactivityStage3.getStartTime();
+                        stage3EndTime = aactivityStage3.getEndTime();
+                    }
+
+                    Topic topicSingle =null;
+                    Topic topicDouble =null;
+                    if(atopicSingle!=null){
+                        topicSingle = liveService.getTopicById(atopicSingle.getTopicId());
+                    }
+                    if(atopicDouble!=null){
+                        topicDouble = liveService.getTopicById(atopicDouble.getTopicId());
+                    }
+                        //单人王国返回信息 不在第一阶段就行
+                        if(atopicSingle !=null){
+                            if(nowDate.compareTo(stage1EndTime) > 0) {
+                                if (topicSingle != null) {
+                                    QiActivityDto.TopicElement topicElement = qiActivityDto.createElement();
+                                    topicElement.setLiveImage(topicSingle.getLiveImage());
+                                    topicElement.setTitle(topicSingle.getTitle());
+                                    topicElement.setTopicId(topicSingle.getId());
+                                    topicElement.setStage(Specification.ASevenDayType.A_DOUBLE_STAGE.index);
                                     log.info("single topic get success ...");
-                                    return Response.success(ResponseStatus.SINGLE_TOPIC_GET_SUCCESS.status, ResponseStatus.SINGLE_TOPIC_GET_SUCCESS.message, qiActivityDto);
-                                } else {
-                                    //暂未创建单人王国
-                                    return Response.success(ResponseStatus.SINGLE_TOPIC_NOT_CREATE.status, ResponseStatus.SINGLE_TOPIC_NOT_CREATE.message);
+                                    qiActivityDto.getTopicList().add(topicElement);
                                 }
-                            }else{
-                                //返回暂未开放
-                                return Response.success(ResponseStatus.SINGLE_TOPIC_NOT_OPEN.status,ResponseStatus.SINGLE_TOPIC_NOT_OPEN.message);
-                            }
-                        } else if(atopic.getType() == Specification.ASevenDayType.DOUBLE_TOPIC.index){
-                            //是双人王国并且处于第三阶段
-                            if(aactivityStage.getStage() == Specification.ASevenDayType.A_THREE_STAGE.index){
-                                if(topic != null){
-                                    qiActivityDto.setLiveImage(topic.getLiveImage());
-                                    qiActivityDto.setTitle(topic.getTitle());
-                                    qiActivityDto.setTopicId(topic.getId());
-                                    qiActivityDto.setStage(aactivityStage.getStage());
-                                    log.info("double topic get success ...");
-                                    return Response.success(ResponseStatus.DOUBLE_TOPIC_GET_SUCCESS.status,ResponseStatus.DOUBLE_TOPIC_GET_SUCCESS.message,qiActivityDto);
-                                }else{
-                                    return Response.success(ResponseStatus.DOUBLE_TOPIC_NOT_CREATE.status,ResponseStatus.DOUBLE_TOPIC_NOT_CREATE.message);
-                                }
-                            }else{
-                                //返回暂未开放
-                                return Response.success(ResponseStatus.DOUBLE_TOPIC_NOT_OPEN.status,ResponseStatus.DOUBLE_TOPIC_NOT_OPEN.message);
                             }
                         }
-                    }
+                        if(atopicDouble !=null){
+                            //是双人王国并且处于第三阶段
+                            if(nowDate.compareTo(stage3StartTime)>0 || nowDate.compareTo(stage1EndTime)<0){
+                                if(topicDouble != null){
+                                    QiActivityDto.TopicElement topicElement = qiActivityDto.createElement();
+                                    topicElement.setLiveImage(topicDouble.getLiveImage());
+                                    topicElement.setTitle(topicDouble.getTitle());
+                                    topicElement.setTopicId(topicDouble.getId());
+                                    topicElement.setStage(Specification.ASevenDayType.A_THREE_STAGE.index);
+                                    log.info("double topic get success ...");
+                                    qiActivityDto.getTopicList().add(topicElement);
+                                }
+                            }
+                        }
+                        if(atopicSingle ==null && atopicDouble ==null){
+                            //都不存在返回为
+                            return Response.success(ResponseStatus.TOPIC_GET_FAILURE.status,ResponseStatus.TOPIC_GET_FAILURE.message);
+                        }
+                        if(nowDate.compareTo(stage3StartTime)<0 || nowDate.compareTo(stage1EndTime)>0){
+                            //不是第三阶段返回不处于第三阶段
+                            return Response.success(ResponseStatus.NOT_THREE_STAGE.status,ResponseStatus.NOT_THREE_STAGE.message,qiActivityDto);
+                        }
+                            //返回王国信息
+                            return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status,ResponseStatus.SEARCH_ATOPIC_SUCCESS.message,qiActivityDto);
                 }else if(auser.getStatus() == 2){
                     return Response.success(ResponseStatus.AUDIT_FAILURE.status,ResponseStatus.AUDIT_FAILURE.message);
                 }else if(auser.getStatus() == 1){
@@ -1352,10 +1392,20 @@ public class ActivityServiceImpl implements ActivityService {
             endDate = aactivity.getEndTime();
         }
 
+        Date stage1StartTime =null;
+        Date stage1EndTime =null;
+        //第一阶段
+        AactivityStage aactivityStage1 = activityMybatisDao.getAactivityStageByStage(qiUserDto.getActivityId() ,1);
+        if(aactivityStage1!=null){
+            stage1StartTime = aactivityStage1.getStartTime();
+            stage1EndTime = aactivityStage1.getEndTime();
+        }
+
         AactivityStage aactivityStage = activityMybatisDao.getAactivityStageByAid(qiUserDto.getActivityId());
-        //一个手机号只能报名一次，并且在七天活动中，而且必须处于第1阶段
-        if(StringUtils.isEmpty(activityUser) && nowDate.compareTo(startDate) > 0
-                && nowDate.compareTo(endDate) < 0 && aactivityStage.getStage() == 1) {
+        //一个手机号只能报名一次，并且在七天活动中，在第一阶段时间内，而且必须处于第1阶段
+        if(activityUser == null && nowDate.compareTo(startDate) > 0
+                && nowDate.compareTo(endDate) < 0 && aactivityStage.getStage() == 1
+                && nowDate.compareTo(stage1StartTime)>0 && nowDate.compareTo(stage1EndTime)<0) {
             if (response.getCode() == ResponseStatus.USER_VERIFY_CHECK_SUCCESS.status) {
                 Auser auser = new Auser();
                 BeanUtils.copyProperties(qiUserDto, auser);
@@ -1875,6 +1925,52 @@ public class ActivityServiceImpl implements ActivityService {
             }
         }
         return Response.success(ResponseStatus.SEARCH_ATOPIC_FAILURE.status, ResponseStatus.SEARCH_ATOPIC_FAILURE.message,atopicInfoDto);
+    }
+
+    @Override
+    public Response createDoubleLive(long uid, long targetUid ,long activityId) {
+        AactivityStage aactivityStage = activityMybatisDao.getAactivityStage(activityId);
+        if(aactivityStage.getStage() == 3){
+            //单人王国
+            Atopic ownerTopicSingle = activityMybatisDao.getAtopicByUid1(uid);
+            Atopic targetTopicSingle = activityMybatisDao.getAtopicByUid1(targetUid);
+            //双人王国
+            Atopic ownerTopicDouble = activityMybatisDao.getAtopicByUid2(uid);
+            Atopic targetTopicDouble = activityMybatisDao.getAtopicByUid2(targetUid);
+            //申请次数 长度<5 为5次
+            List<AdoubleTopicApply> applyOwner = activityMybatisDao.getTopicApply(uid);
+            //满足只建立了单人王国，都没建立双人王国
+            if(ownerTopicSingle != null && targetTopicSingle != null && ownerTopicDouble ==null && targetTopicDouble == null){
+                //申请次数
+                String num = cacheService.get(SEVENDAY_KEY);
+                if(applyOwner.size()<Integer.parseInt(num)){
+                    //请求
+                    AdoubleTopicApply applyReq = new AdoubleTopicApply();
+                    applyReq.setUid(uid);
+                    applyReq.setTargetUid(targetUid);
+                    applyReq.setType(1);
+                    //接收
+                    AdoubleTopicApply applyRec = new AdoubleTopicApply();
+                    applyRec.setUid(uid);
+                    applyRec.setTargetUid(targetUid);
+                    applyRec.setType(2);
+                    activityMybatisDao.createAdoubleTopicApply(applyReq);
+                    activityMybatisDao.createAdoubleTopicApply(applyRec);
+                    return Response.success(ResponseStatus.APPLICATION_SUCCESS.status, ResponseStatus.APPLICATION_SUCCESS.message);
+                }else{
+                    return Response.success(ResponseStatus.NUMBER_IS_BOUND.status, ResponseStatus.NUMBER_IS_BOUND.message);
+                }
+            }
+        }
+        return Response.success(ResponseStatus.NOT_THREE_STAGE.status, ResponseStatus.NOT_THREE_STAGE.message);
+    }
+
+    @Override
+    public Response getApplyInfo(long uid, int type) {
+
+
+
+        return null;
     }
 
 }

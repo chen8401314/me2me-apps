@@ -430,11 +430,56 @@ public class ActivityMybatisDao {
         return list.size()>0 && list !=null ?list.get(0) : null;
     }
 
+    public AactivityStage getAactivityStageByStage(long activityId ,int stage){
+        AactivityStageExample example = new AactivityStageExample();
+        example.createCriteria().andActivityIdEqualTo(activityId).andStageEqualTo(stage);
+        List<AactivityStage> list = aactivityStageMapper.selectByExample(example);
+        return list.size()>0 && list !=null ?list.get(0) : null;
+    }
+
     public Atopic getAtopicByAuid(long Auid){
         AtopicExample example = new AtopicExample();
         example.createCriteria().andAuidEqualTo(Auid).andStatusEqualTo(0);
         List<Atopic> list = atopicMapper.selectByExample(example);
         return list.size()>0 && list != null ?list.get(0):null;
+    }
+
+    public Atopic getAtopicByAuidAndSingle(long Auid){
+        AtopicExample example = new AtopicExample();
+        example.createCriteria().andAuidEqualTo(Auid).andStatusEqualTo(0).andTypeEqualTo(1);
+        List<Atopic> list = atopicMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
+    }
+
+    public Atopic getAtopicByAuidDouble(long Auid){
+        AtopicExample example = new AtopicExample();
+        example.createCriteria().andAuidEqualTo(Auid).andStatusEqualTo(0).andTypeEqualTo(2);
+        List<Atopic> list = atopicMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
+    }
+
+    public Atopic getAtopicByUid1(long uid){
+        AtopicExample example = new AtopicExample();
+        example.createCriteria().andUidEqualTo(uid).andStatusEqualTo(0).andTypeEqualTo(1);
+        List<Atopic> list = atopicMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
+    }
+
+    public Atopic getAtopicByUid2(long uid){
+        AtopicExample example = new AtopicExample();
+        example.createCriteria().andUidEqualTo(uid).andStatusEqualTo(0).andTypeEqualTo(2);
+        List<Atopic> list = atopicMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
+    }
+
+    public List<AdoubleTopicApply> getTopicApply(long uid){
+        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+        example.createCriteria().andUidEqualTo(uid).andTypeEqualTo(1);
+        return adoubleTopicApplyMapper.selectByExample(example);
+    }
+
+    public void createAdoubleTopicApply(AdoubleTopicApply adoubleTopicApply){
+        adoubleTopicApplyMapper.insertSelective(adoubleTopicApply);
     }
     
     public Atopic getAtopicByUidAndType(long uid, int type){
@@ -550,6 +595,5 @@ public class ActivityMybatisDao {
     public List<BlurSearchDto> getTopicByGirl(Map map){
         return atopicMapper.getTopicByGirl(map);
     }
-
 
 }

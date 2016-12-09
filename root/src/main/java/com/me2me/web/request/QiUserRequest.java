@@ -69,4 +69,12 @@ public class QiUserRequest {
     @Getter
     @Setter
     private String nickName;
+
+    @Getter
+    @Setter
+    private long targetUid;
+
+    @Getter
+    @Setter
+    private int type;
 }
