@@ -517,6 +517,13 @@ public class ActivityMybatisDao {
     	return adoubleTopicApplyMapper.selectByExample(example);
     }
 
+    public List<AdoubleTopicApply> getAdoubleTopicApplyByUid(long uid){
+        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+        AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        return adoubleTopicApplyMapper.selectByExample(example);
+    }
+
     public void createAuser(Auser auser){
        auserMapper.insertSelective(auser);
     }
