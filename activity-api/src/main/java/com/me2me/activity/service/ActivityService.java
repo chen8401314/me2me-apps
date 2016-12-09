@@ -1,8 +1,10 @@
 package com.me2me.activity.service;
 
 import com.me2me.activity.dto.*;
+import com.me2me.activity.model.Aactivity;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.model.Atopic;
+import com.me2me.activity.model.Auser;
 import com.me2me.common.web.Response;
 
 import java.util.Date;
@@ -71,6 +73,18 @@ public interface ActivityService {
     Response addWinners(long uid ,int activityName ,String mobile ,int awardId ,String awardName);
 
     Response getActivityUser(long uid);
+    
+    Auser getAuserByUid(long uid);
+    
+    Aactivity getAactivityById(long id);
+    
+    Atopic getAtopicByUidAndType(long uid, int type);
+    
+    Response checkUserActivityKindom(long uid, int type, long uid2);
+    
+    void createActivityKingdom(long topicId, long uid, int type, long uid2);
+    
+    List<Atopic> getAtopicsByUidsAndType(List<Long> uids, int type);
 
     Response enterActivity(QiUserDto qiUserDto);
 

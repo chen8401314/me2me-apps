@@ -436,6 +436,41 @@ public class ActivityMybatisDao {
         List<Atopic> list = atopicMapper.selectByExample(example);
         return list.size()>0 && list != null ?list.get(0):null;
     }
+    
+    public Atopic getAtopicByUidAndType(long uid, int type){
+    	AtopicExample example = new AtopicExample();
+    	AtopicExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	criteria.andTypeEqualTo(type);
+    	criteria.andStatusEqualTo(0);
+    	List<Atopic> list = atopicMapper.selectByExample(example);
+    	return list.size()>0 && list != null ?list.get(0):null;
+    }
+    
+    public List<Atopic> getAtopicsByUids(List<Long> uids){
+    	AtopicExample example = new AtopicExample();
+    	AtopicExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidIn(uids);
+    	criteria.andStatusEqualTo(0);
+    	return atopicMapper.selectByExample(example);
+    }
+    
+    public List<Atopic> getAtopicsByUidsAndType(List<Long> uids, int type){
+    	AtopicExample example = new AtopicExample();
+    	AtopicExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidIn(uids);
+    	criteria.andTypeEqualTo(type);
+    	criteria.andStatusEqualTo(0);
+    	return atopicMapper.selectByExample(example);
+    }
+    
+    public List<AdoubleTopicApply> getAdoubleTopicApplyByUidAndTargetUid(long uid, long targetUid){
+    	AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+    	AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	criteria.andTargetUidEqualTo(targetUid);
+    	return adoubleTopicApplyMapper.selectByExample(example);
+    }
 
     public void createAuser(Auser auser){
        auserMapper.insertSelective(auser);
@@ -500,6 +535,10 @@ public class ActivityMybatisDao {
         return list.size()>0 && list != null ?list.get(0):null;
     }
 
+    public void createAtopic(Atopic atopic){
+    	atopicMapper.insertSelective(atopic);
+    }
+    
     public void updateAtopicStatus(Map map){
         atopicMapper.updateAtopicStatus(map);
     }

@@ -47,6 +47,22 @@ public class    Live extends BaseController {
         createLiveDto.setLiveImage(request.getLiveImage());
         return liveService.createLive(createLiveDto);
     }
+    
+    @RequestMapping(value = "/createKingdom",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response createKingdom(CreateKingdomRequest request){
+    	CreateKingdomDto dto = new CreateKingdomDto();
+    	dto.setCExtra(request.getCExtra());
+    	dto.setContentType(request.getContentType());
+    	dto.setExtra(request.getExtra());
+    	dto.setFragment(request.getFragment());
+    	dto.setKType(request.getKType());
+    	dto.setLiveImage(request.getLiveImage());
+    	dto.setSource(request.getSource());
+    	dto.setTitle(request.getTitle());
+    	dto.setUid(request.getUid());
+    	return liveService.createKingdom(dto);
+    }
 
     /**
      * 获取消息列表

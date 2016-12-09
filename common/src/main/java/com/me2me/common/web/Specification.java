@@ -325,7 +325,9 @@ public interface Specification {
 
         ANCHOR_RED_BAGS("国王收红包",14),
 
-        AT_CORE_CIRCLE("@核心圈",15);
+        AT_CORE_CIRCLE("@核心圈",15),
+        
+        KINGDOM("王国链接", 16);
 
         public final String name;
         public final int index;
@@ -1035,6 +1037,32 @@ public interface Specification {
         public final int index;
 
         ASevenDayType(String name, int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+    
+    enum KingdomType{
+    	NORMAL("普通王国", 0),
+    	SPECIAL("特殊王国", 1);
+    	
+    	public final String name;
+        public final int index;
+        
+        KingdomType(String name, int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+    
+    enum ActivityKingdomType{
+    	SINGLEKING("单人王国", 1),
+    	DOUBLEKING("双人王国", 2);
+    	
+    	public final String name;
+        public final int index;
+        
+        ActivityKingdomType(String name, int index){
             this.name = name;
             this.index = index;
         }

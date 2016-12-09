@@ -72,6 +72,13 @@ public class LiveMybatisDao {
     public Topic getTopicById(long topicId) {
         return topicMapper.selectByPrimaryKey(topicId);
     }
+    
+    public List<Topic> getTopicsByIds(List<Long> ids){
+    	TopicExample example = new TopicExample();
+        TopicExample.Criteria criteria = example.createCriteria();
+        criteria.andIdIn(ids);
+        return topicMapper.selectByExample(example);
+    }
 
     public List<TopicFragment> getTopicFragment(long topicId, long sinceId) {
         TopicFragmentExample example = new TopicFragmentExample();

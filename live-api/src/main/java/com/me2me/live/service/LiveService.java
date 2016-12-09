@@ -20,6 +20,13 @@ public interface LiveService {
      */
     Response createLive(CreateLiveDto createLiveDto);
 
+    
+    /**
+     * 创建王国整合（创建+第一次发言）
+     * @return
+     */
+    Response createKingdom(CreateKingdomDto createKingdomDto);
+    
     /**
      * 获取直播时间线(轮询机制)
      * @return

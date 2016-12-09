@@ -53,6 +53,11 @@
                     <artifactId>cache</artifactId>
                     <version>${project.version}</version>
                 </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>activity</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
             </dependencies>
             <build>
                 <filters>
@@ -92,6 +97,11 @@
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>sns-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>activity</artifactId>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
@@ -212,6 +222,11 @@
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>sns-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>activity</artifactId>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>

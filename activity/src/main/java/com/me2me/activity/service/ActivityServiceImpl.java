@@ -1190,6 +1190,147 @@ public class ActivityServiceImpl implements ActivityService {
 
         return Response.success(ResponseStatus.QIACITIVITY_NOT_INFO_SUCCESS.status,ResponseStatus.QIACITIVITY_NOT_INFO_SUCCESS.message);
     }
+    
+    @Override
+	public Auser getAuserByUid(long uid) {
+    	AuserToSysUser auserToSysUser = activityMybatisDao.getActivityUser(uid);
+    	if(null != auserToSysUser){
+    		Auser auser = activityMybatisDao.getAuser(auserToSysUser.getAuid());
+    		return auser;
+    	}
+		return null;
+	}
+    
+    @Override
+	public Aactivity getAactivityById(long id) {
+		return activityMybatisDao.getAactivity(id);
+	}
+    
+	@Override
+	public Atopic getAtopicByUidAndType(long uid, int type) {
+		return activityMybatisDao.getAtopicByUidAndType(uid, type);
+	}
+	
+	@Override
+	public Response checkUserActivityKindom(long uid, int type, long uid2) {
+		Date now = new Date();
+		Aactivity aa = this.getAactivityById(1);
+		if(null == aa || null == aa.getStartTime() || null == aa.getEndTime() 
+				|| aa.getStartTime().getTime()>now.getTime() 
+				|| aa.getEndTime().getTime()<now.getTime()){
+			log.info("now is out of activity!");
+			return Response.failure("不在活动期");
+		}
+		//1先判断当前用户是否为我们活动报名用户，并审核通过
+		Auser auser = this.getAuserByUid(uid);
+		if(null == auser){
+			log.info("uid[" + uid + "] is not activity user!");
+			return Response.failure("用户为报名");
+		}
+		if(auser.getStatus() != 3){
+			log.info("uid["+uid+"] is not audit success!");
+			return Response.failure("用户为审核通过");
+		}
+		if(type == Specification.ActivityKingdomType.SINGLEKING.index){//单人王国
+			Atopic singleKingdom = this.getAtopicByUidAndType(uid, type);
+			if(null != singleKingdom){
+				log.info("user["+uid+"] already has single kingdom");
+				return Response.failure("用户已经有单人王国了");
+			}
+		}else if(type == Specification.ActivityKingdomType.DOUBLEKING.index){//双人王国
+			if(uid2 <= 0){
+				log.info("uid2 less 1");
+				return Response.failure("双人王国小王名字必须传递");
+			}
+			List<Long> uids = new ArrayList<Long>();
+			uids.add(uid);
+			uids.add(uid2);
+			List<Atopic> topics = activityMybatisDao.getAtopicsByUids(uids);
+			Map<String, Atopic> tMap = new HashMap<String, Atopic>();
+			if(null != topics && topics.size() > 0){
+				for(Atopic t : topics){
+					tMap.put(t.getUid()+"_"+t.getType(), t);
+				}
+			}
+			Atopic t = tMap.get(uid+"_"+Specification.ActivityKingdomType.SINGLEKING.index);
+			if(null == t){
+				return Response.failure("用户必须创建单人王国才能创建双人王国");
+			}
+			t = tMap.get(uid2+"_"+Specification.ActivityKingdomType.SINGLEKING.index);
+			if(null == t){
+				return Response.failure("对方必须创建单人王国才能创建双人王国");
+			}
+			t = tMap.get(uid+"_"+Specification.ActivityKingdomType.DOUBLEKING.index);
+			if(null != t){
+				return Response.failure("用户已经有双人王国了，不能再创建了");
+			}
+			t = tMap.get(uid2+"_"+Specification.ActivityKingdomType.DOUBLEKING.index);
+			if(null != t){
+				return Response.failure("对方已经有双人王国了，不能再创建了");
+			}
+			List<AdoubleTopicApply> applyList = activityMybatisDao.getAdoubleTopicApplyByUidAndTargetUid(uid, uid2);
+			boolean isCan = false;
+			if(null != applyList && applyList.size() > 0){
+				for(AdoubleTopicApply a : applyList){
+					if(a.getStatus() == 2){//同意
+						isCan = true;
+						break;
+					}
+				}
+			}
+			if(!isCan){
+				return Response.failure("你和对方的双人王国申请未通过，不能创建");
+			}
+		}else{
+			log.info("invalid type");
+			return Response.failure("无效的王国类型");
+		}
+		return Response.success();
+	}
+	
+	@Override
+	public void createActivityKingdom(long topicId, long uid, int type,
+			long uid2) {
+		Date now = new Date();
+		AuserToSysUser u1 = activityMybatisDao.getActivityUser(uid);
+		//先创大王的
+		Atopic t = new Atopic();
+		t.setAuid(u1.getAuid());
+		t.setUid(uid);
+		if(type == Specification.ActivityKingdomType.DOUBLEKING.index){
+			t.setUid2(uid2);
+		}else{
+			t.setUid2(0l);
+		}
+		t.setTopicId(topicId);
+		t.setType(type);
+		t.setRights(1);
+		t.setCreateTime(now);
+		t.setHot(0l);
+		t.setStatus(0);
+		activityMybatisDao.createAtopic(t);
+		
+		if(type == Specification.ActivityKingdomType.DOUBLEKING.index){
+			//双人王国还要创建小王的对应关系
+			AuserToSysUser u2 = activityMybatisDao.getActivityUser(uid2);
+			t = new Atopic();
+			t.setAuid(u2.getAuid());
+			t.setUid(uid2);
+			t.setUid2(uid);
+			t.setTopicId(topicId);
+			t.setType(type);
+			t.setRights(2);
+			t.setCreateTime(now);
+			t.setHot(0l);
+			t.setStatus(0);
+			activityMybatisDao.createAtopic(t);
+		}
+	}
+	
+	@Override
+	public List<Atopic> getAtopicsByUidsAndType(List<Long> uids, int type) {
+		return activityMybatisDao.getAtopicsByUidsAndType(uids, type);
+	}
 
     @Override
     public Response enterActivity(QiUserDto qiUserDto) {
