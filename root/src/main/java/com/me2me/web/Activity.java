@@ -236,7 +236,6 @@ public class Activity extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/createDoubleLive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response createDoubleLive(QiUserRequest request){
-        //（0异性，1同性，2男，3女，4所有）现在没人接收异性0
         return activityService.createDoubleLive(request.getUid() ,request.getTargetUid() ,request.getActivityId());
     }
 

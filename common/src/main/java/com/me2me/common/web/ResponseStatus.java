@@ -235,9 +235,9 @@ public enum  ResponseStatus {
 
     NOT_THREE_STAGE("目前不处于第三阶段","not three stage", 20110),
 
-    APPLICATION_SUCCESS("目前不处于第三阶段","application success ", 20111),
+    APPLICATION_SUCCESS("申请成功","application success ", 20111),
 
-
+    TOPIC_GET_FAILURE("未查询到任何王国信息","topic get failure", 20112),
 
 
 
