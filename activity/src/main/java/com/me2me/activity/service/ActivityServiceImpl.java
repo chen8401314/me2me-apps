@@ -1146,8 +1146,34 @@ public class ActivityServiceImpl implements ActivityService {
                     //查询活动王国信息
                     Atopic atopicSingle = activityMybatisDao.getAtopicByAuidAndSingle(auser.getId());
                     Atopic atopicDouble = activityMybatisDao.getAtopicByAuidDouble(auser.getId());
-                    //阶段
-                    AactivityStage aactivityStage = activityMybatisDao.getAactivityStage(auser.getActivityId());
+                    //第一阶段
+                    AactivityStage aactivityStage1 = activityMybatisDao.getAactivityStageByStage(auser.getActivityId() ,1);
+                    //第二阶段
+                    AactivityStage aactivityStage2 = activityMybatisDao.getAactivityStageByStage(auser.getActivityId() ,2);
+                    //第三阶段
+                    AactivityStage aactivityStage3 = activityMybatisDao.getAactivityStageByStage(auser.getActivityId() ,3);
+
+                    //阶段时间 都查出来是为了防止以后变更需求
+                    Date nowDate = new Date();
+                    Date stage1StartTime =null;
+                    Date stage1EndTime =null;
+                    Date stage2StartTime =null;
+                    Date stage2EndTime =null;
+                    Date stage3StartTime =null;
+                    Date stage3EndTime =null;
+                    if(aactivityStage1!=null){
+                        stage1StartTime = aactivityStage1.getStartTime();
+                        stage1EndTime = aactivityStage1.getEndTime();
+                    }
+                    if(aactivityStage2!=null){
+                        stage2StartTime = aactivityStage2.getStartTime();
+                        stage2EndTime = aactivityStage2.getEndTime();
+                    }
+                    if(aactivityStage3!=null){
+                        stage3StartTime = aactivityStage3.getStartTime();
+                        stage3EndTime = aactivityStage3.getEndTime();
+                    }
+
                     Topic topicSingle =null;
                     Topic topicDouble =null;
                     if(atopicSingle!=null){
@@ -1158,7 +1184,7 @@ public class ActivityServiceImpl implements ActivityService {
                     }
                         //单人王国返回信息 不在第一阶段就行
                         if(atopicSingle !=null){
-                            if(aactivityStage.getStage() != Specification.ASevenDayType.A_FIRST_STAGE.index) {
+                            if(nowDate.compareTo(stage1EndTime) > 0) {
                                 if (topicSingle != null) {
                                     QiActivityDto.TopicElement topicElement = qiActivityDto.createElement();
                                     topicElement.setLiveImage(topicSingle.getLiveImage());
@@ -1172,7 +1198,7 @@ public class ActivityServiceImpl implements ActivityService {
                         }
                         if(atopicDouble !=null){
                             //是双人王国并且处于第三阶段
-                            if(aactivityStage.getStage() == Specification.ASevenDayType.A_THREE_STAGE.index){
+                            if(nowDate.compareTo(stage3StartTime)>0 || nowDate.compareTo(stage1EndTime)<0){
                                 if(topicDouble != null){
                                     QiActivityDto.TopicElement topicElement = qiActivityDto.createElement();
                                     topicElement.setLiveImage(topicDouble.getLiveImage());
@@ -1188,7 +1214,7 @@ public class ActivityServiceImpl implements ActivityService {
                             //都不存在返回为
                             return Response.success(ResponseStatus.TOPIC_GET_FAILURE.status,ResponseStatus.TOPIC_GET_FAILURE.message);
                         }
-                        if(aactivityStage.getStage() != Specification.ASevenDayType.A_THREE_STAGE.index){
+                        if(nowDate.compareTo(stage3StartTime)<0 || nowDate.compareTo(stage1EndTime)>0){
                             //不是第三阶段返回不处于第三阶段
                             return Response.success(ResponseStatus.NOT_THREE_STAGE.status,ResponseStatus.NOT_THREE_STAGE.message,qiActivityDto);
                         }
@@ -1225,10 +1251,20 @@ public class ActivityServiceImpl implements ActivityService {
             endDate = aactivity.getEndTime();
         }
 
+        Date stage1StartTime =null;
+        Date stage1EndTime =null;
+        //第一阶段
+        AactivityStage aactivityStage1 = activityMybatisDao.getAactivityStageByStage(qiUserDto.getActivityId() ,1);
+        if(aactivityStage1!=null){
+            stage1StartTime = aactivityStage1.getStartTime();
+            stage1EndTime = aactivityStage1.getEndTime();
+        }
+
         AactivityStage aactivityStage = activityMybatisDao.getAactivityStageByAid(qiUserDto.getActivityId());
-        //一个手机号只能报名一次，并且在七天活动中，而且必须处于第1阶段
+        //一个手机号只能报名一次，并且在七天活动中，在第一阶段时间内，而且必须处于第1阶段
         if(activityUser == null && nowDate.compareTo(startDate) > 0
-                && nowDate.compareTo(endDate) < 0 && aactivityStage.getStage() == 1) {
+                && nowDate.compareTo(endDate) < 0 && aactivityStage.getStage() == 1
+                && nowDate.compareTo(stage1StartTime)>0 && nowDate.compareTo(stage1EndTime)<0) {
             if (response.getCode() == ResponseStatus.USER_VERIFY_CHECK_SUCCESS.status) {
                 Auser auser = new Auser();
                 BeanUtils.copyProperties(qiUserDto, auser);
@@ -1786,6 +1822,14 @@ public class ActivityServiceImpl implements ActivityService {
             }
         }
         return Response.success(ResponseStatus.NOT_THREE_STAGE.status, ResponseStatus.NOT_THREE_STAGE.message);
+    }
+
+    @Override
+    public Response getApplyInfo(long uid, int type) {
+
+
+
+        return null;
     }
 
 }

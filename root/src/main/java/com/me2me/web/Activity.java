@@ -234,9 +234,22 @@ public class Activity extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/createDoubleLive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/createApplyDoubleLive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response createDoubleLive(QiUserRequest request){
         return activityService.createDoubleLive(request.getUid() ,request.getTargetUid() ,request.getActivityId());
+    }
+
+    /**
+     * 申请信息列表查询接口
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getApplyInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getApplyInfo(QiUserRequest request){
+        //类型（0全部，1只要别人给我的申请，2只要我给比别人的申请）
+        return activityService.getApplyInfo(request.getUid() ,request.getType());
     }
 
 }
