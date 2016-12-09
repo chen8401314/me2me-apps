@@ -25,6 +25,7 @@
             <!--<activation>-->
             <!--<activeByDefault>true</activeByDefault>-->
             <!--</activation>-->
+            <!-- 
             <build>
                 <plugins>
                     <plugin>
@@ -64,6 +65,7 @@
                     </plugin>
                 </plugins>
             </build>
+             -->
         </profile>
     </profiles>
 

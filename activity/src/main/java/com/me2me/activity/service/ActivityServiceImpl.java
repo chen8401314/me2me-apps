@@ -1950,8 +1950,8 @@ public class ActivityServiceImpl implements ActivityService {
                     applyReq.setType(1);
                     //接收
                     AdoubleTopicApply applyRec = new AdoubleTopicApply();
-                    applyRec.setUid(uid);
-                    applyRec.setTargetUid(targetUid);
+                    applyRec.setUid(targetUid);
+                    applyRec.setTargetUid(uid);
                     applyRec.setType(2);
                     activityMybatisDao.createAdoubleTopicApply(applyReq);
                     activityMybatisDao.createAdoubleTopicApply(applyRec);
