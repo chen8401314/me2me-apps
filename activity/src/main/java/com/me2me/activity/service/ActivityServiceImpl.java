@@ -1447,11 +1447,11 @@ public class ActivityServiceImpl implements ActivityService {
             qiStatusDto.setAuid(auser.getId());
             
             if(uid > 0){//APP过来的
-            	//需要判断默认绑定
-            	if(auser.getUid() == 0){//还没有绑定的需要绑定
-            		auser.setUid(uid);
-            		activityMybatisDao.updateAuser(auser);
-            	}
+                    //需要判断默认绑定
+                    if (auser.getUid() == 0) {//还没有绑定的需要绑定
+                        auser.setUid(uid);
+                        activityMybatisDao.updateAuser(auser);
+                    }
             }
             return Response.success(ResponseStatus.QI_QUERY_SUCCESS.status, ResponseStatus.QI_QUERY_SUCCESS.message, qiStatusDto);
         }else {
