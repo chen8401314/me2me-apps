@@ -1073,5 +1073,28 @@ public interface Specification {
             this.index = index;
         }
     }
+    
+    enum ActivityMiliDataKey{
+    	
+    	ENTER_COMMON("ENTER_COMMON", "每次进入"),
+    	FIRST_ENTER("FIRST_ENTER", "首次进入"),
+    	APP_DOWNLOAD("APP_DOWNLOAD", "APP下载信息"),
+    	ACTIVITY_INFO("ACTIVITY_INFO", "活动信息"),
+    	ACTIVITY_COUNTDOWN("ACTIVITY_COUNTDOWN", "活动倒计时"),
+    	SIGNUP_STATUS_0_APP("SIGNUP_STATUS_0_APP", "没有报名信息并APP内"),
+    	SIGNUP_STATUS_0_BROWSER("SIGNUP_STATUS_0_BROWSER", "没有报名信息并APP外"),
+    	SIGNUP_STATUS_1("SIGNUP_STATUS_1", "报名状态审核中"),
+    	SIGNUP_STATUS_2("SIGNUP_STATUS_2", "报名审核通过并没有单人王国"),
+    	
+    	;
+    	
+    	public final String key;
+        public final String desc;
+        
+        ActivityMiliDataKey(String key, String desc){
+            this.key = key;
+            this.desc = desc;
+        }
+    }
 
 }

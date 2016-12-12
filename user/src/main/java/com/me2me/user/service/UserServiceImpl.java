@@ -2,8 +2,12 @@ package com.me2me.user.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
@@ -2341,6 +2345,21 @@ public class UserServiceImpl implements UserService {
 		}else{
 			return Response.failure("user is not exists");
 		}
+	}
+
+	@Override
+	public Response testPush(long uid, String msg, String jsonData) {
+		JSONObject obj = JSON.parseObject(jsonData);
+		Map<String, String> map = Maps.newHashMap();
+		Set<Map.Entry<String, Object>> set = obj.entrySet();
+		for(Map.Entry<String, Object> entry : set){
+			map.put(entry.getKey(), entry.getValue().toString().replace("\"",""));
+		}
+
+        String alias = String.valueOf(uid);
+
+        jPushService.payloadByIdExtra(alias,  msg, map);
+		return null;
 	}
 
 }

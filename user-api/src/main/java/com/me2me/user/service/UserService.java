@@ -287,4 +287,6 @@ public interface UserService {
     Response touristLogin();
     
     Response optionDisableUser(int action, long uid);
+    
+    Response testPush(long uid, String msg, String jsonData);
 }
