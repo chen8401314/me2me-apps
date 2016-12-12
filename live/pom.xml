@@ -101,7 +101,7 @@
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>activity</artifactId>
+                    <artifactId>activity-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
@@ -226,7 +226,7 @@
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>activity</artifactId>
+                    <artifactId>activity-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>

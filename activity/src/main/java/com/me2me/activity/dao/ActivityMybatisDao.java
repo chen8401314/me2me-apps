@@ -72,6 +72,9 @@ public class ActivityMybatisDao {
     @Autowired
     private AdoubleTopicApplyMapper adoubleTopicApplyMapper;
 
+    @Autowired
+    private AmiliDataMapper amiliDataMapper;
+
     public void saveActivity(ActivityWithBLOBs activity){
         activityMapper.insertSelective(activity);
     }
@@ -420,7 +423,7 @@ public class ActivityMybatisDao {
 
     public AactivityStage getAactivityStageByStage(long activityId ,int stage){
         AactivityStageExample example = new AactivityStageExample();
-        example.createCriteria().andActivityIdEqualTo(activityId).andStageEqualTo(stage).andTypeEqualTo(0);
+        example.createCriteria().andActivityIdEqualTo(activityId).andStageEqualTo(stage);
         List<AactivityStage> list = aactivityStageMapper.selectByExample(example);
         return list.size()>0 && list !=null ?list.get(0) : null;
     }
@@ -522,7 +525,7 @@ public class ActivityMybatisDao {
     public AdoubleTopicApply getAdoubleTopicApplyById(long id){
         AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
         AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
-        criteria.andIdEqualTo(id).andTypeEqualTo(1);
+        criteria.andIdEqualTo(id);
         List<AdoubleTopicApply> list = adoubleTopicApplyMapper.selectByExample(example);
         return list.size()>0 && list != null ?list.get(0):null;
     }
@@ -530,7 +533,7 @@ public class ActivityMybatisDao {
     public List<AdoubleTopicApply> getAdoubleTopicApplyByUid(long uid){
         AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
         AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
-        criteria.andUidEqualTo(uid).andStatusNotEqualTo(4).andTypeEqualTo(1);
+        criteria.andUidEqualTo(uid).andStatusNotEqualTo(4);
         return adoubleTopicApplyMapper.selectByExample(example);
     }
 
@@ -564,7 +567,7 @@ public class ActivityMybatisDao {
     public List<AdoubleTopicApply> getAdoubleTopicApplyByUidAgree(long uid){
         AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
         AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
-        criteria.andUidEqualTo(uid).andStatusEqualTo(2).andTypeEqualTo(1);
+        criteria.andUidEqualTo(uid).andStatusEqualTo(2);
         return adoubleTopicApplyMapper.selectByExample(example);
     }
 
@@ -661,6 +664,12 @@ public class ActivityMybatisDao {
 
     public void updateAdoubleTopicApply(AdoubleTopicApply topicApply) {
         adoubleTopicApplyMapper.updateByPrimaryKeySelective(topicApply);
+    }
+
+    public List<AmiliData> getAllAmiliData(){
+    	AmiliDataExample example = new AmiliDataExample();
+    	example.createCriteria().andStatusEqualTo(1);//可用
+    	return amiliDataMapper.selectByExample(example);
     }
 
 }
