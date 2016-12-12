@@ -537,6 +537,13 @@ public class ActivityMybatisDao {
         return adoubleTopicApplyMapper.selectByExample(example);
     }
 
+    public List<AdoubleTopicApply> getAdoubleTopicApplyByUidBrid(long uid){
+        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+        AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid).andStatusNotEqualTo(4).andTypeEqualTo(2);
+        return adoubleTopicApplyMapper.selectByExample(example);
+    }
+
     public List<AdoubleTopicApply> getAdoubleTopicApplyByUid2(long uid){
         AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
         AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
@@ -636,6 +643,10 @@ public class ActivityMybatisDao {
     
     public void updateAtopicStatus(Map map){
         atopicMapper.updateAtopicStatus(map);
+    }
+
+    public void updateAtopic(Atopic atopic){
+        atopicMapper.updateByPrimaryKeySelective(atopic);
     }
 
     public List<BlurSearchDto> getTopicByBoy(Map map){

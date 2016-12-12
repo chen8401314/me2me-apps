@@ -130,4 +130,7 @@ public interface ActivityService {
     Response bridSearch(long uid);
     
     Response genActivity7DayMiliList(Activity7DayMiliDTO dto);
+
+    Response operaBrid(long uid ,int applyId ,int operaStatus);
+
 }

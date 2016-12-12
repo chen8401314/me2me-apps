@@ -2018,8 +2018,9 @@ public class ActivityServiceImpl implements ActivityService {
         AactivityStage aactivityStage4 = activityMybatisDao.getAactivityStageByStage(1,4);
         if(aactivityStage4 != null) {
             if (bridKey != null) {
+                List<AdoubleTopicApply> lists = activityMybatisDao.getAdoubleTopicApplyByUidBrid(uid);
                 //申请人没有双人王国，接收人有双人王国，才能抢亲 只能5次
-                if (ownerTopic == null && targetTopic != null && Integer.parseInt(bridKey) < 5) {
+                if (ownerTopic == null && targetTopic != null && lists.size() < Integer.parseInt(bridKey)) {
                     AdoubleTopicApply apply = new AdoubleTopicApply();
                     apply.setType(2);//2是抢亲
                     apply.setUid(uid);
@@ -2027,6 +2028,8 @@ public class ActivityServiceImpl implements ActivityService {
                     activityMybatisDao.createAdoubleTopicApply(apply);
                     log.info("brid success");
                     return Response.success(ResponseStatus.APPLY_BRID_SUCCESS.status, ResponseStatus.APPLY_BRID_SUCCESS.message);
+                }else{
+                    return Response.success(ResponseStatus.BRID_UPPER_LIMIT.status, ResponseStatus.BRID_UPPER_LIMIT.message);
                 }
             }
         }else {
@@ -2090,8 +2093,32 @@ public class ActivityServiceImpl implements ActivityService {
 		
 		return Response.success(respDTO);
 	}
-	
-	private void genMili(Show7DayMiliDTO respDTO, Map<String, List<AmiliData>> miliMap, String key){
+
+    @Override
+    public Response operaBrid(long uid, int applyId, int operaStatus) {
+        AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
+        if(operaStatus ==2){
+            Atopic atopic = activityMybatisDao.getAtopicByAuidDoubleByUid(topicApply.getUid());
+            if (atopic != null) {
+                topicApply.setStatus(operaStatus);
+                activityMybatisDao.updateAdoubleTopicApply(topicApply);
+                //强制离婚
+                atopic.setStatus(1);
+                activityMybatisDao.updateAtopic(atopic);
+                return Response.success(ResponseStatus.BRID_IS_SUCCESS.status, ResponseStatus.BRID_IS_SUCCESS.message);
+            } else {
+                return Response.success(ResponseStatus.TARGET_NOT_CREATE_TOPIC.status, ResponseStatus.TARGET_NOT_CREATE_TOPIC.message);
+            }
+        }else if(operaStatus ==3){
+            //拒绝直接改变状态
+            topicApply.setStatus(operaStatus);
+            activityMybatisDao.updateAdoubleTopicApply(topicApply);
+            return Response.success(ResponseStatus.BRID_IS_FAILURE.status, ResponseStatus.BRID_IS_FAILURE.message);
+        }
+        return null;
+    }
+
+    private void genMili(Show7DayMiliDTO respDTO, Map<String, List<AmiliData>> miliMap, String key){
 		List<AmiliData> miliList = miliMap.get(key);
 		if(null != miliList && miliList.size() > 0){
 			Show7DayMiliDTO.MiliElement e = null;

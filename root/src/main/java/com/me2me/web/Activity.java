@@ -289,4 +289,15 @@ public class Activity extends BaseController {
         return activityService.bridSearch(request.getUid());
     }
 
+    /**
+     * 抢亲操作接口
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/operaBrid",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response operaBrid(QiUserRequest request){
+        return activityService.operaBrid(request.getUid() ,request.getApplyId() ,request.getOperaStatus());
+    }
 }
