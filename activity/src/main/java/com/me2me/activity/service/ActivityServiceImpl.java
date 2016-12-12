@@ -1916,14 +1916,7 @@ public class ActivityServiceImpl implements ActivityService {
                     AdoubleTopicApply applyReq = new AdoubleTopicApply();
                     applyReq.setUid(uid);
                     applyReq.setTargetUid(targetUid);
-                    applyReq.setType(1);
-                    //接收
-                    AdoubleTopicApply applyRec = new AdoubleTopicApply();
-                    applyRec.setUid(targetUid);
-                    applyRec.setTargetUid(uid);
-                    applyRec.setType(2);
                     activityMybatisDao.createAdoubleTopicApply(applyReq);
-                    activityMybatisDao.createAdoubleTopicApply(applyRec);
                     return Response.success(ResponseStatus.APPLICATION_SUCCESS.status, ResponseStatus.APPLICATION_SUCCESS.message);
                 }else{
                     return Response.success(ResponseStatus.NUMBER_IS_BOUND.status, ResponseStatus.NUMBER_IS_BOUND.message);
