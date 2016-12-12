@@ -1353,52 +1353,43 @@ public class ActivityServiceImpl implements ActivityService {
         verifyDto.setMobile(qiUserDto.getMobile());
         verifyDto.setVerifyCode(qiUserDto.getVerifyCode());
         Response response = userService.verify(verifyDto);
+        if (response.getCode() != ResponseStatus.USER_VERIFY_CHECK_SUCCESS.status) {
+        	return Response.failure(ResponseStatus.USER_VERIFY_CHECK_ERROR.status,ResponseStatus.USER_VERIFY_CHECK_ERROR.message);
+        }
 
-        Auser activityUser = activityMybatisDao.getAuserByMobile(qiUserDto.getMobile());
         Aactivity aactivity = activityMybatisDao.getAactivity(qiUserDto.getActivityId());
+        if(null == aactivity || null == aactivity.getStartTime() || null == aactivity.getEndTime()){
+        	return Response.success(ResponseStatus.QIACTIVITY_NOT_START.status, ResponseStatus.QIACTIVITY_NOT_START.message);
+        }
         Date nowDate = new Date();
-        Date startDate = null;
-        Date endDate = null;
-        if(!StringUtils.isEmpty(aactivity)) {
-            startDate = aactivity.getStartTime();
-            endDate = aactivity.getEndTime();
+        if(nowDate.compareTo(aactivity.getStartTime()) < 0 || nowDate.compareTo(aactivity.getEndTime()) > 0){
+        	return Response.success(ResponseStatus.QIACTIVITY_NOT_START.status, ResponseStatus.QIACTIVITY_NOT_START.message);
         }
-
+        
         AactivityStage aactivityStage1 = activityMybatisDao.getAactivityStageByStage(qiUserDto.getActivityId() ,1);
-
-        AactivityStage aactivityStage = activityMybatisDao.getAactivityStageByAid(qiUserDto.getActivityId());
-        //一个手机号只能报名一次，并且在七天活动中，在第一阶段时间内，而且必须处于第1阶段
-        if(activityUser == null && nowDate.compareTo(startDate) > 0
-                && nowDate.compareTo(endDate) < 0 && aactivityStage.getStage() == 1
-                && aactivityStage1 != null) {
-            if (response.getCode() == ResponseStatus.USER_VERIFY_CHECK_SUCCESS.status) {
-                Auser auser = new Auser();
-                BeanUtils.copyProperties(qiUserDto, auser);
-                //默认审核状态
-                auser.setStatus(1);
-                UserProfile userProfile = userService.getUserProfileByMobile(qiUserDto.getMobile());
-                //手机号存在才会强行绑定
-                if (userProfile != null) {
-                	auser.setUid(userProfile.getUid());
-                }
-                activityMybatisDao.createAuser(auser);
-
-                //发报名成功短信(模板出来待改)
-                AwardXMDto awardXMDto = new AwardXMDto();
-                awardXMDto.setMobile("13915778564");
-                userService.sendQIMessage(awardXMDto);
-
-                return Response.success(ResponseStatus.REGISTRATION_SUCCESS.status, ResponseStatus.REGISTRATION_SUCCESS.message);
-            }
-        }else if(aactivityStage.getStage() != 1){
-            return Response.success(ResponseStatus.NOT_FIRST_STAGE.status, ResponseStatus.NOT_FIRST_STAGE.message);
-        }else if(nowDate.compareTo(startDate) < 0 || nowDate.compareTo(endDate) > 0){
-            return Response.success(ResponseStatus.QIACTIVITY_NOT_START.status, ResponseStatus.QIACTIVITY_NOT_START.message);
-        }else if(!StringUtils.isEmpty(activityUser)) {
-            return Response.success(ResponseStatus.CAN_ONLY_SIGN_UP_ONCE.status, ResponseStatus.CAN_ONLY_SIGN_UP_ONCE.message);
+        if(null == aactivityStage1 || aactivityStage1.getType() != 0){
+        	return Response.success(ResponseStatus.NOT_FIRST_STAGE.status, ResponseStatus.NOT_FIRST_STAGE.message);
         }
-        //验证码不正确
-        return Response.failure(ResponseStatus.USER_VERIFY_CHECK_ERROR.status,ResponseStatus.USER_VERIFY_CHECK_ERROR.message);
+        
+        Auser activityUser = activityMybatisDao.getAuserByMobile(qiUserDto.getMobile());
+        if(null != activityUser){
+        	return Response.success(ResponseStatus.CAN_ONLY_SIGN_UP_ONCE.status, ResponseStatus.CAN_ONLY_SIGN_UP_ONCE.message);
+        }
+        
+        Auser auser = new Auser();
+        BeanUtils.copyProperties(qiUserDto, auser);
+        //默认审核状态
+        auser.setStatus(1);
+        UserProfile userProfile = userService.getUserProfileByMobile(qiUserDto.getMobile());
+        //手机号存在才会强行绑定
+        if (userProfile != null) {
+        	Auser u = activityMybatisDao.getAuserByUid(userProfile.getUid());
+        	if(null == u){//没绑的要默认绑上
+        		auser.setUid(userProfile.getUid());
+        	}
+        }
+        activityMybatisDao.createAuser(auser);
+        return Response.success(ResponseStatus.REGISTRATION_SUCCESS.status, ResponseStatus.REGISTRATION_SUCCESS.message);
     }
 
     @Override
@@ -2069,6 +2060,7 @@ public class ActivityServiceImpl implements ActivityService {
 	@Override
 	public Response genActivity7DayMiliList(Activity7DayMiliDTO dto) {
 		Show7DayMiliDTO respDTO = new Show7DayMiliDTO();
+		
 		//一次性获取所有活动米粒语料（不在后面每次获取）
 		Map<String, List<AmiliData>> miliMap = new HashMap<String, List<AmiliData>>();
 		List<AmiliData> allMiliDatas = activityMybatisDao.getAllAmiliData();
@@ -2084,10 +2076,39 @@ public class ActivityServiceImpl implements ActivityService {
 			}
 		}
 		
+		if(miliMap.size() == 0){
+			return Response.success(respDTO);
+		}
+		
+		//1 公共部分
+		//1.1 进入模板语料
+		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.ENTER_COMMON.key);
+		//1.2 是否首次进入
+		
 		
 		
 		
 		return Response.success(respDTO);
+	}
+	
+	private void genMili(Show7DayMiliDTO respDTO, Map<String, List<AmiliData>> miliMap, String key){
+		List<AmiliData> miliList = miliMap.get(key);
+		if(null != miliList && miliList.size() > 0){
+			Show7DayMiliDTO.MiliElement e = null;
+			for(AmiliData m : miliList){
+				e = new Show7DayMiliDTO.MiliElement();
+				e.setContent(replaceMiliData(m.getContent(), key));
+				e.setLinkUrl(m.getLinkUrl());
+				e.setOrder(m.getOrderby());
+				e.setType(m.getType());
+				respDTO.getResult().add(e);
+			}
+		}
+	}
+	
+	private String replaceMiliData(String content, String key){
+		
+		return content;
 	}
 
 }

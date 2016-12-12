@@ -2359,7 +2359,7 @@ public class UserServiceImpl implements UserService {
         String alias = String.valueOf(uid);
 
         jPushService.payloadByIdExtra(alias,  msg, map);
-		return null;
+		return Response.success();
 	}
 
 }
