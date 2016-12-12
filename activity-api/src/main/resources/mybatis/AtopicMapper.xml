@@ -411,7 +411,7 @@ FROM
   topic b,
   user_profile c
 WHERE a.`type` != 2
-  AND gender = 0
+  AND gender = #{gender}
   AND a.`topic_id` = b.`id`
   AND a.`uid` = c.`uid`
   AND (
