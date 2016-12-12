@@ -247,6 +247,20 @@ public enum  ResponseStatus {
 
     UPDATE_STATE_SUCCESS("申请状态更新成功","update state success", 20116),
 
+    NOT_SINGLE_STAGE("目前不处于第一阶段","not single stage", 20117),
+
+    CANT_APPLY_BRID("不满足抢亲条件","cant apply brid", 20118),
+
+    APPLY_BRID_SUCCESS("抢亲申请提交成功","apply brid success", 20119),
+
+    BRID_GET_LIST_SUCCESS("抢亲列表获取成功","brid get list success", 20120),
+
+    BRID_GET_LIST_FAILURE("未查询到抢亲列表信息","brid get list failure", 20121),
+
+    ONLY_AGREE_ONE_PEOPLE("你已经同意过其他人了","only agree one people", 20122),
+
+
+
 
 
 

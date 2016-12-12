@@ -264,4 +264,28 @@ public class Activity extends BaseController {
         return activityService.applyDoubleLive(request.getUid() ,request.getApplyId() ,request.getOperaStatus());
     }
 
+    /**
+     * 抢亲申请接口
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/bridApply",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response bridApply(QiUserRequest request){
+        return activityService.bridApply(request.getUid() ,request.getTargetUid());
+    }
+
+    /**
+     * 抢亲查询接口
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/bridSearch",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response bridSearch(QiUserRequest request){
+        return activityService.bridSearch(request.getUid());
+    }
+
 }

@@ -320,7 +320,11 @@
     select
     <include refid="Base_Column_List" />
     from a_double_topic_apply
-    where target_uid = #{uid} limit #{pageNum} ,#{pageSize};
+    where target_uid = #{uid} and type = 1 limit #{pageNum} ,#{pageSize};
+  </select>
+
+  <select id="getReceiveListTotal" parameterType="java.lang.Long" resultType="java.lang.Integer">
+    SELECT COUNT(1) FROM a_double_topic_apply WHERE target_uid = #{uid};
   </select>
 
 </mapper>

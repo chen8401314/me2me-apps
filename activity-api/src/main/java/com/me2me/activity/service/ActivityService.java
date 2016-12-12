@@ -124,6 +124,10 @@ public interface ActivityService {
     Response getApplyInfo(long uid ,int type ,int pageNum ,int pageSize);
 
     Response applyDoubleLive(long uid ,int applyId ,int operaStatus);
+
+    Response bridApply(long uid ,long targetUid);
+
+    Response bridSearch(long uid);
     
     Response genActivity7DayMiliList(Activity7DayMiliDTO dto);
 }

@@ -50,6 +50,8 @@ public class ActivityServiceImpl implements ActivityService {
 
     private static final String SEVENDAY_KEY = "key:sevenday";
 
+    private static final String BRID_KEY = "key:brid";
+
     @Autowired
     private ActivityMybatisDao activityMybatisDao;
 
@@ -1149,27 +1151,6 @@ public class ActivityServiceImpl implements ActivityService {
                 //第三阶段
                 AactivityStage aactivityStage3 = activityMybatisDao.getAactivityStageByStage(auser.getActivityId() ,3);
 
-                //阶段时间 都查出来是为了防止以后变更需求
-                Date nowDate = new Date();
-                Date stage1StartTime =null;
-                Date stage1EndTime =null;
-                Date stage2StartTime =null;
-                Date stage2EndTime =null;
-                Date stage3StartTime =null;
-                Date stage3EndTime =null;
-                if(aactivityStage1!=null){
-                    stage1StartTime = aactivityStage1.getStartTime();
-                    stage1EndTime = aactivityStage1.getEndTime();
-                }
-                if(aactivityStage2!=null){
-                    stage2StartTime = aactivityStage2.getStartTime();
-                    stage2EndTime = aactivityStage2.getEndTime();
-                }
-                if(aactivityStage3!=null){
-                    stage3StartTime = aactivityStage3.getStartTime();
-                    stage3EndTime = aactivityStage3.getEndTime();
-                }
-
                 Map<String,Object> topicSingle =null;
                 Map<String,Object> topicDouble =null;
                 if(atopicSingle!=null){
@@ -1180,7 +1161,7 @@ public class ActivityServiceImpl implements ActivityService {
                 }
                     //单人王国返回信息 不在第一阶段就行
                     if(atopicSingle !=null){
-                        if(nowDate.compareTo(stage1EndTime) > 0) {
+                        if(aactivityStage1 == null) {
                             if (topicSingle != null) {
                                 QiActivityDto.TopicElement topicElement = qiActivityDto.createElement();
                                 topicElement.setLiveImage((String)topicSingle.get("live_image"));
@@ -1194,7 +1175,7 @@ public class ActivityServiceImpl implements ActivityService {
                     }
                     if(atopicDouble !=null){
                         //是双人王国并且处于第三阶段
-                        if(nowDate.compareTo(stage3StartTime)>0 || nowDate.compareTo(stage1EndTime)<0){
+                        if(aactivityStage3 != null){
                             if(topicDouble != null){
                                 QiActivityDto.TopicElement topicElement = qiActivityDto.createElement();
                                 topicElement.setLiveImage((String)topicDouble.get("live_image"));
@@ -1210,7 +1191,7 @@ public class ActivityServiceImpl implements ActivityService {
                         //都不存在返回为
                         return Response.success(ResponseStatus.TOPIC_GET_FAILURE.status,ResponseStatus.TOPIC_GET_FAILURE.message);
                     }
-                    if(nowDate.compareTo(stage3StartTime)<0 || nowDate.compareTo(stage1EndTime)>0){
+                    if(aactivityStage3 == null){
                         //不是第三阶段返回不处于第三阶段
                         return Response.success(ResponseStatus.NOT_THREE_STAGE.status,ResponseStatus.NOT_THREE_STAGE.message,qiActivityDto);
                     }
@@ -1383,20 +1364,13 @@ public class ActivityServiceImpl implements ActivityService {
             endDate = aactivity.getEndTime();
         }
 
-        Date stage1StartTime =null;
-        Date stage1EndTime =null;
-        //第一阶段
         AactivityStage aactivityStage1 = activityMybatisDao.getAactivityStageByStage(qiUserDto.getActivityId() ,1);
-        if(aactivityStage1!=null){
-            stage1StartTime = aactivityStage1.getStartTime();
-            stage1EndTime = aactivityStage1.getEndTime();
-        }
 
         AactivityStage aactivityStage = activityMybatisDao.getAactivityStageByAid(qiUserDto.getActivityId());
         //一个手机号只能报名一次，并且在七天活动中，在第一阶段时间内，而且必须处于第1阶段
         if(activityUser == null && nowDate.compareTo(startDate) > 0
                 && nowDate.compareTo(endDate) < 0 && aactivityStage.getStage() == 1
-                && nowDate.compareTo(stage1StartTime)>0 && nowDate.compareTo(stage1EndTime)<0) {
+                && aactivityStage1 != null) {
             if (response.getCode() == ResponseStatus.USER_VERIFY_CHECK_SUCCESS.status) {
                 Auser auser = new Auser();
                 BeanUtils.copyProperties(qiUserDto, auser);
@@ -1466,11 +1440,15 @@ public class ActivityServiceImpl implements ActivityService {
         Aactivity aactivity = activityMybatisDao.getAactivity(activityId);
         if(!StringUtils.isEmpty(aactivity)){
             infoDto.setName(aactivity.getName());
-            AactivityStage stage = activityMybatisDao.getAactivityStage(activityId);
-            if(!StringUtils.isEmpty(stage)){
-                infoDto.setStage(stage.getStage());
+            //第一阶段
+            AactivityStage aactivityStage1 = activityMybatisDao.getAactivityStageByStage(activityId ,1);
+            if(aactivityStage1 != null){
+                infoDto.setStage(aactivityStage1.getStage());
+                return Response.success(infoDto);
+            }else {
+                //不在第一阶段
+                return Response.success(ResponseStatus.NOT_SINGLE_STAGE.status,ResponseStatus.NOT_SINGLE_STAGE.message);
             }
-            return Response.success(infoDto);
         }
         return Response.success(ResponseStatus.QIACTIVITY_NOT_START.status,ResponseStatus.QIACTIVITY_NOT_START.message);
     }
@@ -1897,8 +1875,8 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public Response createDoubleLive(long uid, long targetUid ,long activityId) {
-        AactivityStage aactivityStage = activityMybatisDao.getAactivityStage(activityId);
-        if(aactivityStage.getStage() == 3){
+        AactivityStage aactivityStage4 = activityMybatisDao.getAactivityStageByStage(activityId,4);
+        if(aactivityStage4 != null){
             //单人王国
             Atopic ownerTopicSingle = activityMybatisDao.getAtopicByUid1(uid);
             Atopic targetTopicSingle = activityMybatisDao.getAtopicByUid1(targetUid);
@@ -1916,6 +1894,8 @@ public class ActivityServiceImpl implements ActivityService {
                     AdoubleTopicApply applyReq = new AdoubleTopicApply();
                     applyReq.setUid(uid);
                     applyReq.setTargetUid(targetUid);
+                    //配对类型为1
+                    applyReq.setType(1);
                     activityMybatisDao.createAdoubleTopicApply(applyReq);
                     return Response.success(ResponseStatus.APPLICATION_SUCCESS.status, ResponseStatus.APPLICATION_SUCCESS.message);
                 }else{
@@ -1934,6 +1914,9 @@ public class ActivityServiceImpl implements ActivityService {
             List<AdoubleTopicApply> sendList = activityMybatisDao.getAdoubleTopicApplyByUid(uid);
             //我接收到的 包含删除的
             List<AdoubleTopicApply> receiveList = activityMybatisDao.getAdoubleTopicApplyByUidReceive(uid ,pageNum ,pageSize);
+            //我接收到的总条数
+            int total = activityMybatisDao.getReceiveList(uid);
+            applyListDto.setTotal(total);
             //我同意的
             List<AdoubleTopicApply> agreeList = activityMybatisDao.getAdoubleTopicApplyByUidAgree(uid);
             //我发出去的<=5
@@ -1979,19 +1962,25 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public Response applyDoubleLive(long uid, int applyId ,int operaStatus) {
+        //查询自己同意的条数 只能一条 ，接收方查询是targetUid
+        List<AdoubleTopicApply> lists = activityMybatisDao.getAdoubleTopicApplyByUid2(uid);
         //2同意，3拒绝，4删除
         if(operaStatus ==2){
             AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
-            //同意时，需要判断对方是否已经创建了双人王国，如果已经创建了，则无法同意了。
-            if(topicApply != null){
-                //查看对方是否有双人王国
-                Atopic atopic = activityMybatisDao.getAtopicByAuidDoubleByUid(topicApply.getUid());
-                if(atopic == null){
-                    topicApply.setStatus(operaStatus);
-                    activityMybatisDao.updateAdoubleTopicApply(topicApply);
-                }else{
-                    return Response.success(ResponseStatus.TARGET_CREATE_TOPIC.status, ResponseStatus.TARGET_CREATE_TOPIC.message);
+            if(lists.size() < 1) {
+                //同意时，需要判断对方是否已经创建了双人王国，如果已经创建了，则无法同意了。
+                if (topicApply != null) {
+                    //查看对方是否有双人王国
+                    Atopic atopic = activityMybatisDao.getAtopicByAuidDoubleByUid(topicApply.getUid());
+                    if (atopic == null) {
+                        topicApply.setStatus(operaStatus);
+                        activityMybatisDao.updateAdoubleTopicApply(topicApply);
+                    } else {
+                        return Response.success(ResponseStatus.TARGET_CREATE_TOPIC.status, ResponseStatus.TARGET_CREATE_TOPIC.message);
+                    }
                 }
+            }else{
+                return Response.success(ResponseStatus.ONLY_AGREE_ONE_PEOPLE.status, ResponseStatus.ONLY_AGREE_ONE_PEOPLE.message);
             }
         }else if(operaStatus ==3){
             AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
@@ -2013,6 +2002,45 @@ public class ActivityServiceImpl implements ActivityService {
             }
         }
         return Response.success(ResponseStatus.UPDATE_STATE_SUCCESS.status, ResponseStatus.UPDATE_STATE_SUCCESS.message);
+    }
+
+    @Override
+    public Response bridApply(long uid, long targetUid) {
+        Atopic ownerTopic = activityMybatisDao.getAtopicByUidandTypeBrid(uid ,2);
+        Atopic targetTopic = activityMybatisDao.getAtopicByUidandTypeBrid(targetUid ,2);
+        String bridKey = cacheService.get(BRID_KEY);
+        if(bridKey != null) {
+            //申请人没有双人王国，接收人有双人王国，才能抢亲 只能5次
+            if (ownerTopic == null && targetTopic != null && Integer.parseInt(bridKey) < 5) {
+                AdoubleTopicApply apply = new AdoubleTopicApply();
+                apply.setType(2);//2是抢亲
+                apply.setUid(uid);
+                apply.setTargetUid(targetUid);
+                activityMybatisDao.createAdoubleTopicApply(apply);
+                log.info("brid success");
+                return Response.success(ResponseStatus.APPLY_BRID_SUCCESS.status, ResponseStatus.APPLY_BRID_SUCCESS.message);
+            }
+        }
+        return Response.success(ResponseStatus.CANT_APPLY_BRID.status, ResponseStatus.CANT_APPLY_BRID.message);
+    }
+
+    @Override
+    public Response bridSearch(long uid) {
+        List<AdoubleTopicApply> applyList = activityMybatisDao.getAdoubleTopicApplyByUidandTypeBrid(uid,2);
+        BridListDto bridListDto = new BridListDto();
+        List<BridListDto.ApplyElement> lists = bridListDto.getBridList();
+        if(applyList.size() > 0 && applyList != null){
+            for(AdoubleTopicApply topicApply:applyList){
+                BridListDto.ApplyElement applyElement = bridListDto.createApplyElement();
+                UserProfile userProfile = userService.getUserProfileByUid(topicApply.getTargetUid());
+                BeanUtils.copyProperties(userProfile,applyElement);
+                applyElement.setId(topicApply.getId());
+                applyElement.setStatus(topicApply.getStatus());
+                lists.add(applyElement);
+            }
+            return Response.success(ResponseStatus.BRID_GET_LIST_SUCCESS.status, ResponseStatus.BRID_GET_LIST_SUCCESS.message,bridListDto);
+        }
+        return Response.success(ResponseStatus.BRID_GET_LIST_FAILURE.status, ResponseStatus.BRID_GET_LIST_FAILURE.message);
     }
 
     /**

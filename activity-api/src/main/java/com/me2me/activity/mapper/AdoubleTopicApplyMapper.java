@@ -98,4 +98,6 @@ public interface AdoubleTopicApplyMapper {
 
     List<AdoubleTopicApply> getReceiveList(Map map);
 
+    int getReceiveListTotal(Long uid);
+
 }
