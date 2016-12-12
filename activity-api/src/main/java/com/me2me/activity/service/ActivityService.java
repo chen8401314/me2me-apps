@@ -117,7 +117,7 @@ public interface ActivityService {
 
     void updateAtopicStatus(Map map);
 
-    Response getAliveInfo(long uid ,String topicName ,String nickName);
+    Response getAliveInfo(long uid ,String topicName ,String nickName ,int pageNum ,int pageSize);
 
     Response createDoubleLive(long uid ,long targetUid ,long activityId);
 

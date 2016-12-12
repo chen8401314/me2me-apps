@@ -564,6 +564,10 @@ public class ActivityMybatisDao {
         return adoubleTopicApplyMapper.getReceiveListTotal(uid);
     }
 
+    public int getAliveList(Map map){
+        return atopicMapper.getAliveList(map);
+    }
+
     public List<AdoubleTopicApply> getAdoubleTopicApplyByUidAgree(long uid){
         AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
         AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();

@@ -1841,15 +1841,25 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Response getAliveInfo(long uid ,String topicName ,String nickName) {
+    public Response getAliveInfo(long uid ,String topicName ,String nickName ,int pageNum ,int pageSize) {
         //判断当前是男性还是女性，查询出相反性别
         UserProfile userProfile = userService.getUserProfileByUid(uid);
         Map map = Maps.newHashMap();
         AtopicInfoDto atopicInfoDto = new AtopicInfoDto();
         map.put("titleName",topicName);
         map.put("nickName",nickName);
+        if(pageNum != 0){
+            pageNum = pageNum*pageSize;
+        }
+        map.put("pageNum",pageNum);
+        map.put("pageSize",pageSize);
+
         if(userProfile != null){
             if(userProfile.getGender() == 0) {
+                //查询总记录数
+                map.put("gender",1);
+                int total = activityMybatisDao.getAliveList(map);
+                atopicInfoDto.setTotal(total);
                 //0女 查询男
                 List<BlurSearchDto> boyList = activityMybatisDao.getTopicByBoy(map);
                 if(boyList.size()>0 && boyList != null){
@@ -1860,6 +1870,9 @@ public class ActivityServiceImpl implements ActivityService {
                 }
 
             }else{
+                map.put("gender",0);
+                int total = activityMybatisDao.getAliveList(map);
+                atopicInfoDto.setTotal(total);
                 //1男 //查询女
                 List<BlurSearchDto> girlList = activityMybatisDao.getTopicByGirl(map);
                 if(girlList.size()>0 && girlList != null){

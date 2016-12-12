@@ -20,4 +20,8 @@ public class BlurSearchDto implements BaseEntity {
     private String nickName;
 
     private long uid;
+
+    private int gender;
+
+    private String avatar;
 }

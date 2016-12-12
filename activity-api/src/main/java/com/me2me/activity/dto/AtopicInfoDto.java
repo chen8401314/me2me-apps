@@ -12,6 +12,8 @@ import java.util.List;
 @Data
 public class AtopicInfoDto implements BaseEntity {
 
+    private int total;
+
     private List<BlurSearchDto> blurSearchList = Lists.newArrayList();
 
 }
