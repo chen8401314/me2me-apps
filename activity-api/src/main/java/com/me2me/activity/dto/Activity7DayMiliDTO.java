@@ -11,6 +11,5 @@ public class Activity7DayMiliDTO implements BaseEntity {
 	private long auid;//报名用户ID
 	private int isApp;//是否APP内，0APP外(默认)，1APP内
 	private int isFirst;//是否首次请求，0首次(默认)，1非首次
-	private int source;//请求来源，0PC(默认)，1IOS，2Android
 	
 }

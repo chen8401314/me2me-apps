@@ -213,51 +213,51 @@ public enum  ResponseStatus {
 
     IN_AUDIT("该用户审核中","in audit", 20099),
 
-    CANNOT_FIND_AUSER("未查询到审核中的用户","cannot find auser", 20100),
+    CANNOT_FIND_AUSER("未查询到审核中的用户","cannot find auser", 200100),
 
-    DOUBLE_TOPIC_NOT_OPEN("双人王国活动暂未开放","double topic not open", 20101),
+    DOUBLE_TOPIC_NOT_OPEN("双人王国活动暂未开放","double topic not open", 200101),
 
-    DOUBLE_TOPIC_NOT_CREATE("双人王国暂未创建","double topic not create", 20102),
+    DOUBLE_TOPIC_NOT_CREATE("双人王国暂未创建","double topic not create", 200102),
 
-    SINGLE_TOPIC_NOT_CREATE("单人王国暂未创建","double topic not create", 20103),
+    SINGLE_TOPIC_NOT_CREATE("单人王国暂未创建","double topic not create", 200103),
 
-    SINGLE_TOPIC_GET_SUCCESS("单人王国信息获取成功","double topic not create", 20104),
+    SINGLE_TOPIC_GET_SUCCESS("单人王国信息获取成功","double topic not create", 200104),
 
-    DOUBLE_TOPIC_GET_SUCCESS("双人王国息获取成功","double topic not create", 20105),
+    DOUBLE_TOPIC_GET_SUCCESS("双人王国息获取成功","double topic not create", 200105),
 
-    SINGLE_TOPIC_NOT_OPEN("单人王国活动暂未开放","single topic not open", 20106),
+    SINGLE_TOPIC_NOT_OPEN("单人王国活动暂未开放","single topic not open", 200106),
 
-    SEARCH_ATOPIC_SUCCESS("查询活动王国信息成功","search atopic success", 20107),
+    SEARCH_ATOPIC_SUCCESS("查询活动王国信息成功","search atopic success", 200107),
 
-    SEARCH_ATOPIC_FAILURE("未查询到活动王国信息","search atopic failure", 20108),
+    SEARCH_ATOPIC_FAILURE("未查询到活动王国信息","search atopic failure", 200108),
 
-    NUMBER_IS_BOUND("申请次数达到上限","number is bound", 20109),
+    NUMBER_IS_BOUND("申请次数达到上限","number is bound", 200109),
 
-    NOT_THREE_STAGE("目前不处于第三阶段","not three stage", 20110),
+    NOT_THREE_STAGE("目前不处于第三阶段","not three stage", 200110),
 
-    APPLICATION_SUCCESS("申请成功","application success ", 20111),
+    APPLICATION_SUCCESS("申请成功","application success ", 200111),
 
-    TOPIC_GET_FAILURE("未查询到任何王国信息","topic get failure", 20112),
+    TOPIC_GET_FAILURE("未查询到任何王国信息","topic get failure", 200112),
 
-    APPLY_LIST_SUCCESS("申请列表信息获取成功","apply list success", 20113),
+    APPLY_LIST_SUCCESS("申请列表信息获取成功","apply list success", 200113),
 
-    TARGET_CREATE_TOPIC("对方已经创建了双人王国不能同意","target create topic", 20114),
+    TARGET_CREATE_TOPIC("对方已经创建了双人王国不能同意","target create topic", 200114),
 
-    CANT_DELETE("暂时不满足删除条件","cant delete", 20115),
+    CANT_DELETE("暂时不满足删除条件","cant delete", 200115),
 
-    UPDATE_STATE_SUCCESS("申请状态更新成功","update state success", 20116),
+    UPDATE_STATE_SUCCESS("申请状态更新成功","update state success", 200116),
 
-    NOT_SINGLE_STAGE("目前不处于第一阶段","not single stage", 20117),
+    NOT_SINGLE_STAGE("目前不处于第一阶段","not single stage", 200117),
 
-    CANT_APPLY_BRID("不满足抢亲条件","cant apply brid", 20118),
+    CANT_APPLY_BRID("不满足抢亲条件","cant apply brid", 200118),
 
-    APPLY_BRID_SUCCESS("抢亲申请提交成功","apply brid success", 20119),
+    APPLY_BRID_SUCCESS("抢亲申请提交成功","apply brid success", 200119),
 
-    BRID_GET_LIST_SUCCESS("抢亲列表获取成功","brid get list success", 20120),
+    BRID_GET_LIST_SUCCESS("抢亲列表获取成功","brid get list success", 200120),
 
-    BRID_GET_LIST_FAILURE("未查询到抢亲列表信息","brid get list failure", 20121),
+    BRID_GET_LIST_FAILURE("未查询到抢亲列表信息","brid get list failure", 200121),
 
-    ONLY_AGREE_ONE_PEOPLE("你已经同意过其他人了","only agree one people", 20122),
+    ONLY_AGREE_ONE_PEOPLE("你已经同意过其他人了","only agree one people", 200122),
 
 
 
