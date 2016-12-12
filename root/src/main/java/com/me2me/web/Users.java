@@ -688,7 +688,7 @@ public class Users extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/touristLogin",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/testPush",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response testPush(TestPushRequest request){
     	return userService.testPush(request.getUid(), request.getMsg(), request.getJsonData());
     }
