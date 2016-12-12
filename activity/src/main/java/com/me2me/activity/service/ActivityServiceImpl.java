@@ -1866,6 +1866,7 @@ public class ActivityServiceImpl implements ActivityService {
                     for(BlurSearchDto blurSearchDto : boyList){
                         atopicInfoDto.getBlurSearchList().add(blurSearchDto);
                     }
+                    log.info("get aliveInfo success");
                     return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message,atopicInfoDto);
                 }
 
@@ -1879,6 +1880,7 @@ public class ActivityServiceImpl implements ActivityService {
                     for(BlurSearchDto blurSearchDto : girlList){
                         atopicInfoDto.getBlurSearchList().add(blurSearchDto);
                     }
+                    log.info("get aliveInfo success");
                     return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message,atopicInfoDto);
                 }
             }
@@ -1888,8 +1890,8 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public Response createDoubleLive(long uid, long targetUid ,long activityId) {
-        AactivityStage aactivityStage4 = activityMybatisDao.getAactivityStageByStage(activityId,4);
-        if(aactivityStage4 != null){
+        AactivityStage aactivityStage3 = activityMybatisDao.getAactivityStageByStage(activityId,3);
+        if(aactivityStage3 != null){
             //单人王国
             Atopic ownerTopicSingle = activityMybatisDao.getAtopicByUid1(uid);
             Atopic targetTopicSingle = activityMybatisDao.getAtopicByUid1(targetUid);
@@ -2022,17 +2024,22 @@ public class ActivityServiceImpl implements ActivityService {
         Atopic ownerTopic = activityMybatisDao.getAtopicByUidandTypeBrid(uid ,2);
         Atopic targetTopic = activityMybatisDao.getAtopicByUidandTypeBrid(targetUid ,2);
         String bridKey = cacheService.get(BRID_KEY);
-        if(bridKey != null) {
-            //申请人没有双人王国，接收人有双人王国，才能抢亲 只能5次
-            if (ownerTopic == null && targetTopic != null && Integer.parseInt(bridKey) < 5) {
-                AdoubleTopicApply apply = new AdoubleTopicApply();
-                apply.setType(2);//2是抢亲
-                apply.setUid(uid);
-                apply.setTargetUid(targetUid);
-                activityMybatisDao.createAdoubleTopicApply(apply);
-                log.info("brid success");
-                return Response.success(ResponseStatus.APPLY_BRID_SUCCESS.status, ResponseStatus.APPLY_BRID_SUCCESS.message);
+        AactivityStage aactivityStage4 = activityMybatisDao.getAactivityStageByStage(1,4);
+        if(aactivityStage4 != null) {
+            if (bridKey != null) {
+                //申请人没有双人王国，接收人有双人王国，才能抢亲 只能5次
+                if (ownerTopic == null && targetTopic != null && Integer.parseInt(bridKey) < 5) {
+                    AdoubleTopicApply apply = new AdoubleTopicApply();
+                    apply.setType(2);//2是抢亲
+                    apply.setUid(uid);
+                    apply.setTargetUid(targetUid);
+                    activityMybatisDao.createAdoubleTopicApply(apply);
+                    log.info("brid success");
+                    return Response.success(ResponseStatus.APPLY_BRID_SUCCESS.status, ResponseStatus.APPLY_BRID_SUCCESS.message);
+                }
             }
+        }else {
+            return Response.success(ResponseStatus.NOT_FOUR_STAGE.status, ResponseStatus.NOT_FOUR_STAGE.message);
         }
         return Response.success(ResponseStatus.CANT_APPLY_BRID.status, ResponseStatus.CANT_APPLY_BRID.message);
     }
