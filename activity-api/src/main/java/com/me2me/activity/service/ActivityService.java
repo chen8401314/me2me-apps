@@ -124,4 +124,6 @@ public interface ActivityService {
     Response getApplyInfo(long uid ,int type);
 
     Response applyDoubleLive(long uid ,int applyId);
+    
+    Response genActivity7DayMiliList(Activity7DayMiliDTO dto);
 }

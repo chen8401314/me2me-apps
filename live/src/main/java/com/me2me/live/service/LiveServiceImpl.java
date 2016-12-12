@@ -11,6 +11,7 @@ import com.me2me.activity.model.Auser;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
+import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
@@ -2008,7 +2009,6 @@ public class LiveServiceImpl implements LiveService {
         if(createKingdomDto.getKType() != Specification.KingdomType.NORMAL.index){
         	//目前特殊王国只有7天活动，目前只以七天活动处理。
         	activityService.createActivityKingdom(topic.getId(), createKingdomDto.getUid(), type, uid2);
-        	/*
         	if(isDouble){
         		//还要发两个王国ID的发言
         		List<Long> uids = new ArrayList<Long>();
@@ -2025,22 +2025,30 @@ public class LiveServiceImpl implements LiveService {
         			List<Topic> tList = liveMybatisDao.getTopicsByIds(ids);
         			if(null != tList && tList.size() > 0){
         				TopicFragment topicFragment = null;
+        				StringBuilder sb = null;
+        				UserProfile userProfile = null;
         				for(Topic t : tList){
         					topicFragment = new TopicFragment();
         					topicFragment.setFragment(t.getTitle());
                         	topicFragment.setFragmentImage(t.getLiveImage());
-                        	topicFragment.setUid(t.getUid());
-                        	topicFragment.setType(0);//第一次发言肯定是主播发言
-                        	topicFragment.setContentType(Specification.LiveSpeakType.KINGDOM.index);
+                        	topicFragment.setUid(0l);//系统
+                        	topicFragment.setType(Specification.LiveSpeakType.SYSTEM.index);
+                        	topicFragment.setContentType(Specification.LiveContent.KINGDOM.index);
                         	topicFragment.setTopicId(topic.getId());
                             topicFragment.setBottomId(0l);
                             topicFragment.setTopId(0l);
                             topicFragment.setSource(createKingdomDto.getSource());
-                            e = map.get(String.valueOf(i));
-                            if(null == e){
-                            	e = "";
-                            }
-                            topicFragment.setExtra(e);
+                            topicFragment.setAtUid(t.getUid());
+                            sb = new StringBuilder();
+                            sb.append("{\"type\":\"kingdom\",\"only\":\"").append(SecurityUtils.getToken());
+                            sb.append("\",\"topicId\":").append(t.getId()).append(",\"uid\":").append(t.getUid());
+                            sb.append(",\"title\":\"").append(t.getTitle()).append("\",\"kType\":1,");
+                            userProfile = userService.getUserProfileByUid(t.getUid());
+                            sb.append("\"avatar\":\"").append(Constant.QINIU_DOMAIN).append("/").append(userProfile.getAvatar());
+                            sb.append("\",\"createTime\":").append((new Date()).getTime()).append(",\"coverImage\":\"");
+                            sb.append(Constant.QINIU_DOMAIN).append("/").append(t.getLiveImage()).append("\",\"url\":\"");
+                            sb.append(Constant.Live_WEB_URL).append(t.getId()).append("\"}");
+                            topicFragment.setExtra(sb.toString());
                             liveMybatisDao.createTopicFragment(topicFragment);
                             lastFragmentId = topicFragment.getId();
                             total++;
@@ -2048,7 +2056,6 @@ public class LiveServiceImpl implements LiveService {
         			}
         		}
         	}
-        	*/
         }
         
         //--add update kingdom cache -- modify by zcl -- begin --

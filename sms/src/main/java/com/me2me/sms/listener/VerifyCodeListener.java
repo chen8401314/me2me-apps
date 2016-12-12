@@ -65,6 +65,12 @@ public class VerifyCodeListener {
 
     @Subscribe
     public void send(VerifyEvent verifyEvent) {
+    	if(verifyEvent.getIsTest() == 1){
+    		String verifyCode = "1234";
+    		this.cacheService.setex(VERIFY_PREFIX + verifyEvent.getMobile(), verifyCode + "@" + System.currentTimeMillis(), 5 * 60);
+    		return;
+    	}
+    	
         // 尝试从缓存中获取验证码信息
         String verifyCodeAndSendTimeMillis = cacheService.get(VERIFY_PREFIX + verifyEvent.getMobile());
         if (StringUtils.isEmpty(verifyCodeAndSendTimeMillis)) {

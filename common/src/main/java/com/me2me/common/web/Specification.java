@@ -71,7 +71,9 @@ public interface Specification {
 
         CHECK("验证验证码",1),
 
-        FIND_MY_ENCRYPT("找回验证码",2);
+        FIND_MY_ENCRYPT("找回验证码",2),
+        
+        SEND_MESSAGE("纯发短信", 3);
 
         public final String name;
         public final int index;
@@ -279,8 +281,11 @@ public interface Specification {
 
         TEXT("文本",0),
 
-        IMAGE("图片",1);
+        IMAGE("图片",1),
 
+        LINK("浏览器链接", 17),
+        
+        KINGDOM("王国链接", 18);
 
         public final String name;
         public final int index;
@@ -327,8 +332,8 @@ public interface Specification {
 
         AT_CORE_CIRCLE("@核心圈",15),
         
-        KINGDOM("王国链接", 16);
-
+        SYSTEM("系统", 100);
+        
         public final String name;
         public final int index;
         LiveSpeakType(String name,int index){

@@ -18,6 +18,7 @@
     <result column="status" property="status" jdbcType="INTEGER" />
     <result column="audit_desc" property="auditDesc" jdbcType="VARCHAR" />
     <result column="liveness" property="liveness" jdbcType="BIGINT" />
+    <result column="uid" property="uid" jdbcType="BIGINT" />
   </resultMap>
   <sql id="Example_Where_Clause" >
     <!--
@@ -94,7 +95,7 @@
       This element was generated on Mon Dec 05 10:24:34 CST 2016.
     -->
     id, mobile, name, sex, age, channel, activity_id, create_time, status, audit_desc, 
-    liveness
+    liveness, uid
   </sql>
   <select id="selectByExample" resultMap="BaseResultMap" parameterType="com.me2me.activity.model.AuserExample" >
     <!--
@@ -155,11 +156,11 @@
     insert into a_user (id, mobile, name, 
       sex, age, channel, 
       activity_id, create_time, status, 
-      audit_desc, liveness)
+      audit_desc, liveness, uid)
     values (#{id,jdbcType=BIGINT}, #{mobile,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, 
       #{sex,jdbcType=INTEGER}, #{age,jdbcType=INTEGER}, #{channel,jdbcType=VARCHAR}, 
       #{activityId,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, #{status,jdbcType=INTEGER}, 
-      #{auditDesc,jdbcType=VARCHAR}, #{liveness,jdbcType=BIGINT})
+      #{auditDesc,jdbcType=VARCHAR}, #{liveness,jdbcType=BIGINT}, #{uid,jdbcType=BIGINT})
   </insert>
   <insert id="insertSelective" parameterType="com.me2me.activity.model.Auser" useGeneratedKeys="true" keyProperty="id">
     <!--
@@ -202,6 +203,9 @@
       <if test="liveness != null" >
         liveness,
       </if>
+      <if test="uid != null" >
+        uid,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides="," >
       <if test="id != null" >
@@ -236,6 +240,9 @@
       </if>
       <if test="liveness != null" >
         #{liveness,jdbcType=BIGINT},
+      </if>
+      <if test="uid != null" >
+        #{uid,jdbcType=BIGINT},
       </if>
     </trim>
   </insert>
@@ -291,6 +298,9 @@
       <if test="record.liveness != null" >
         liveness = #{record.liveness,jdbcType=BIGINT},
       </if>
+      <if test="record.uid != null" >
+        uid = #{record.uid,jdbcType=BIGINT},
+      </if>
     </set>
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
@@ -313,7 +323,8 @@
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       status = #{record.status,jdbcType=INTEGER},
       audit_desc = #{record.auditDesc,jdbcType=VARCHAR},
-      liveness = #{record.liveness,jdbcType=BIGINT}
+      liveness = #{record.liveness,jdbcType=BIGINT},
+      uid = #{record.uid,jdbcType=BIGINT}
     <if test="_parameter != null" >
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -356,6 +367,9 @@
       <if test="liveness != null" >
         liveness = #{liveness,jdbcType=BIGINT},
       </if>
+      <if test="uid != null" >
+        uid = #{uid,jdbcType=BIGINT},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -375,7 +389,8 @@
       create_time = #{createTime,jdbcType=TIMESTAMP},
       status = #{status,jdbcType=INTEGER},
       audit_desc = #{auditDesc,jdbcType=VARCHAR},
-      liveness = #{liveness,jdbcType=BIGINT}
+      liveness = #{liveness,jdbcType=BIGINT},
+      uid = #{uid,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
 

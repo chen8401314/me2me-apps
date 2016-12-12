@@ -10,5 +10,6 @@ import lombok.Data;
 public class QiStatusDto implements BaseEntity {
 
     private int status;
+    private long auid;
 
 }

@@ -63,9 +63,6 @@ public class ActivityMybatisDao {
     private AuserMapper auserMapper;
 
     @Autowired
-    private AuserToSysUserMapper auserToSysUserMapper;
-
-    @Autowired
     private TchannelMapper tchannelMapper;
 
     @Autowired
@@ -371,20 +368,6 @@ public class ActivityMybatisDao {
         luckWinnersMapper.insertSelective(winners);
     }
 
-    public AuserToSysUser getActivityUser(long uid){
-        AuserToSysUserExample example = new AuserToSysUserExample();
-        example.createCriteria().andUidEqualTo(uid);
-        List<AuserToSysUser> list = auserToSysUserMapper.selectByExample(example);
-        return list.size()>0 && list !=null ?list.get(0) : null;
-    }
-
-    public AuserToSysUser getActivityUserByMobile(String mobile){
-        AuserToSysUserExample example = new AuserToSysUserExample();
-        example.createCriteria().andMobileEqualTo(mobile);
-        List<AuserToSysUser> list = auserToSysUserMapper.selectByExample(example);
-        return list.size()>0 && list !=null ?list.get(0) : null;
-    }
-
     public Auser getAuser(long aUid){
         AuserExample example = new AuserExample();
         example.createCriteria().andIdEqualTo(aUid);
@@ -400,6 +383,10 @@ public class ActivityMybatisDao {
 
     public void updateAuser(){
         auserMapper.updateAauser();
+    }
+    
+    public void updateAuser(Auser auser){
+    	auserMapper.updateByPrimaryKeySelective(auser);
     }
 
     public Auser getAuserByMobile(String mobile){
@@ -442,6 +429,13 @@ public class ActivityMybatisDao {
         example.createCriteria().andAuidEqualTo(Auid).andStatusEqualTo(0);
         List<Atopic> list = atopicMapper.selectByExample(example);
         return list.size()>0 && list != null ?list.get(0):null;
+    }
+    
+    public Auser getAuserByUid(long uid){
+    	AuserExample example = new AuserExample();
+    	example.createCriteria().andUidEqualTo(uid);
+    	List<Auser> list = auserMapper.selectByExample(example);
+    	return null!=list && list.size()>0 ?list.get(0):null;
     }
 
     public Atopic getAtopicByAuidAndSingle(long Auid){
@@ -526,14 +520,6 @@ public class ActivityMybatisDao {
 
     public void createAuser(Auser auser){
        auserMapper.insertSelective(auser);
-    }
-
-    public void createASysuser(AuserToSysUser user){
-        auserToSysUserMapper.insertSelective(user);
-    }
-
-    public void createAsysUser(AuserToSysUser user){
-        auserToSysUserMapper.insertSelective(user);
     }
     
     public LuckActStatDTO getLuckActStat(int activityName, Date startTime, Date endTime){

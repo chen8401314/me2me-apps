@@ -126,7 +126,8 @@ public class Users extends BaseController {
         }else {
             verifyDto.setChannel(request.getChannelAdapter());
         }
-
+        verifyDto.setIsTest(request.getIsTest());
+        
        //埋点
        /* if(request.getAction()==0) {
             kafkaService.saveClientLog(request,req.getHeader("User-Agent"),Specification.ClientLogAction.REG_PAGE1_GET_VERIFY);
