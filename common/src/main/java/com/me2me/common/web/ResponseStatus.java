@@ -239,7 +239,13 @@ public enum  ResponseStatus {
 
     TOPIC_GET_FAILURE("未查询到任何王国信息","topic get failure", 20112),
 
+    APPLY_LIST_SUCCESS("申请列表信息获取成功","apply list success", 20113),
 
+    TARGET_CREATE_TOPIC("对方已经创建了双人王国不能同意","target create topic", 20114),
+
+    CANT_DELETE("暂时不满足删除条件","cant delete", 20115),
+
+    UPDATE_STATE_SUCCESS("申请状态更新成功","update state success", 20116),
 
 
 

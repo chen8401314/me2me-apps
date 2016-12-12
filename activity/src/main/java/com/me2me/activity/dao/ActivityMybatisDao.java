@@ -1,6 +1,7 @@
 package com.me2me.activity.dao;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Maps;
 import com.me2me.activity.dto.BlurSearchDto;
 import com.me2me.activity.dto.LuckActStat2DTO;
 import com.me2me.activity.dto.LuckActStatDTO;
@@ -511,10 +512,46 @@ public class ActivityMybatisDao {
     	return adoubleTopicApplyMapper.selectByExample(example);
     }
 
+//    public List<AdoubleTopicApply> getAdoubleTopicApplyByUid(long uid){
+//        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+//        AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
+//        criteria.andUidEqualTo(uid);
+//        return adoubleTopicApplyMapper.selectByExample(example);
+//    }
+
+    public AdoubleTopicApply getAdoubleTopicApplyById(long id){
+        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+        AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
+        criteria.andIdEqualTo(id);
+        List<AdoubleTopicApply> list = adoubleTopicApplyMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
+    }
+
     public List<AdoubleTopicApply> getAdoubleTopicApplyByUid(long uid){
         AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
         AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
-        criteria.andUidEqualTo(uid);
+        criteria.andUidEqualTo(uid).andStatusNotEqualTo(4);
+        return adoubleTopicApplyMapper.selectByExample(example);
+    }
+
+    public List<AdoubleTopicApply> getAdoubleTopicApplyByUidReceive(long uid ,int pageNum ,int pageSize){
+//        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+//        AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
+//        criteria.andTargetUidEqualTo(uid);
+        if(pageNum != 0){
+            pageNum = pageNum*pageSize;
+        }
+        Map map = Maps.newHashMap();
+        map.put("uid",uid);
+        map.put("pageNum",pageNum);
+        map.put("pageSize",pageSize);
+        return adoubleTopicApplyMapper.getReceiveList(map);
+    }
+
+    public List<AdoubleTopicApply> getAdoubleTopicApplyByUidAgree(long uid){
+        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+        AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid).andStatusEqualTo(2);
         return adoubleTopicApplyMapper.selectByExample(example);
     }
 
@@ -589,4 +626,14 @@ public class ActivityMybatisDao {
         return atopicMapper.getTopicByGirl(map);
     }
 
+    public Atopic getAtopicByAuidDoubleByUid(long uid){
+        AtopicExample example = new AtopicExample();
+        example.createCriteria().andUidEqualTo(uid).andStatusEqualTo(0).andTypeEqualTo(2);
+        List<Atopic> list = atopicMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
+    }
+
+    public void updateAdoubleTopicApply(AdoubleTopicApply topicApply) {
+        adoubleTopicApplyMapper.updateByPrimaryKeySelective(topicApply);
+    }
 }

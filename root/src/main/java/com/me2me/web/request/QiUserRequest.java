@@ -81,4 +81,18 @@ public class QiUserRequest {
     @Getter
     @Setter
     private int applyId;
+
+
+    @Getter
+    @Setter
+    private int pageNum;
+
+    @Getter
+    @Setter
+    private int pageSize;
+
+    @Getter
+    @Setter
+    private int operaStatus;//操作
+
 }

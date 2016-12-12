@@ -121,9 +121,9 @@ public interface ActivityService {
 
     Response createDoubleLive(long uid ,long targetUid ,long activityId);
 
-    Response getApplyInfo(long uid ,int type);
+    Response getApplyInfo(long uid ,int type ,int pageNum ,int pageSize);
 
-    Response applyDoubleLive(long uid ,int applyId);
+    Response applyDoubleLive(long uid ,int applyId ,int operaStatus);
     
     Response genActivity7DayMiliList(Activity7DayMiliDTO dto);
 }

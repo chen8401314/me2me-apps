@@ -3,6 +3,8 @@ package com.me2me.activity.mapper;
 import com.me2me.activity.model.AdoubleTopicApply;
 import com.me2me.activity.model.AdoubleTopicApplyExample;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface AdoubleTopicApplyMapper {
@@ -93,4 +95,7 @@ public interface AdoubleTopicApplyMapper {
      * @mbggenerated Thu Dec 08 20:49:19 CST 2016
      */
     int updateByPrimaryKey(AdoubleTopicApply record);
+
+    List<AdoubleTopicApply> getReceiveList(Map map);
+
 }

@@ -248,8 +248,8 @@ public class Activity extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getApplyInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getApplyInfo(QiUserRequest request){
-        //类型（0全部，1只要别人给我的申请，2只要我给比别人的申请）
-        return activityService.getApplyInfo(request.getUid() ,request.getType());
+        //类型（0全部，1只要别人给我的申请，2只要我给别人的申请）
+        return activityService.getApplyInfo(request.getUid() ,request.getType() ,request.getPageNum() ,request.getPageSize());
     }
 
     /**
@@ -261,7 +261,7 @@ public class Activity extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/applyDoubleLive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response applyDoubleLive(QiUserRequest request){
-        return activityService.applyDoubleLive(request.getUid() ,request.getApplyId());
+        return activityService.applyDoubleLive(request.getUid() ,request.getApplyId() ,request.getOperaStatus());
     }
 
 }

@@ -315,4 +315,12 @@
       number = #{number,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="getReceiveList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from a_double_topic_apply
+    where target_uid = #{uid} limit #{pageNum} ,#{pageSize};
+  </select>
+
 </mapper>

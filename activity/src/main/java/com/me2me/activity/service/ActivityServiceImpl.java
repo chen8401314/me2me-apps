@@ -1934,25 +1934,92 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Response getApplyInfo(long uid, int type) {
+    public Response getApplyInfo(long uid, int type ,int pageNum ,int pageSize) {
         ApplyListDto applyListDto = new ApplyListDto();
         if(type == 0){
-            //我发出的
+            //我发出的 不包含删除
             List<AdoubleTopicApply> sendList = activityMybatisDao.getAdoubleTopicApplyByUid(uid);
-            List<Long> longList = Lists.newArrayList();
+            //我接收到的 包含删除的
+            List<AdoubleTopicApply> receiveList = activityMybatisDao.getAdoubleTopicApplyByUidReceive(uid ,pageNum ,pageSize);
+            //我同意的
+            List<AdoubleTopicApply> agreeList = activityMybatisDao.getAdoubleTopicApplyByUidAgree(uid);
+            //我发出去的<=5
             if(sendList.size() > 0 && sendList != null){
+                List<ApplyListDto.ApplyElement> lists = applyListDto.getSendList();
                 for(AdoubleTopicApply apply : sendList){
-                    longList.add(apply.getTargetUid());
+                    UserProfile userProfile = userService.getUserProfileByUid(apply.getTargetUid());
+                    ApplyListDto.ApplyElement applyElement = applyListDto.createApplyElement();
+                    BeanUtils.copyProperties(userProfile,applyElement);
+                    applyElement.setId(apply.getId());
+                    applyElement.setStatus(apply.getStatus());
+                    lists.add(applyElement);
                 }
-//                userService.getUserNoByUid();
             }
+            //接收到可能很多需要分页
+            if(receiveList.size() > 0 && receiveList != null){
+                List<ApplyListDto.ApplyElement> lists = applyListDto.getReceiveList();
+                for(AdoubleTopicApply apply : receiveList){
+                    UserProfile userProfile = userService.getUserProfileByUid(apply.getUid());
+                    ApplyListDto.ApplyElement applyElement = applyListDto.createApplyElement();
+                    BeanUtils.copyProperties(userProfile,applyElement);
+                    applyElement.setId(apply.getId());
+                    applyElement.setStatus(apply.getStatus());
+                    lists.add(applyElement);
+                }
+            }
+            //我同意的<=1
+            if(agreeList.size() > 0 && agreeList != null){
+                List<ApplyListDto.ApplyElement> lists = applyListDto.getAgreeList();
+                for(AdoubleTopicApply apply : agreeList){
+                    UserProfile userProfile = userService.getUserProfileByUid(apply.getTargetUid());
+                    ApplyListDto.ApplyElement applyElement = applyListDto.createApplyElement();
+                    BeanUtils.copyProperties(userProfile,applyElement);
+                    applyElement.setId(apply.getId());
+                    applyElement.setStatus(apply.getStatus());
+                    lists.add(applyElement);
+                }
+            }
+            return Response.success(ResponseStatus.APPLY_LIST_SUCCESS.status, ResponseStatus.APPLY_LIST_SUCCESS.message,applyListDto);
         }
         return null;
     }
 
     @Override
-    public Response applyDoubleLive(long uid, int applyId) {
-        return null;
+    public Response applyDoubleLive(long uid, int applyId ,int operaStatus) {
+        //2同意，3拒绝，4删除
+        if(operaStatus ==2){
+            AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
+            //同意时，需要判断对方是否已经创建了双人王国，如果已经创建了，则无法同意了。
+            if(topicApply != null){
+                //查看对方是否有双人王国
+                Atopic atopic = activityMybatisDao.getAtopicByAuidDoubleByUid(topicApply.getUid());
+                if(atopic == null){
+                    topicApply.setStatus(operaStatus);
+                    activityMybatisDao.updateAdoubleTopicApply(topicApply);
+                }else{
+                    return Response.success(ResponseStatus.TARGET_CREATE_TOPIC.status, ResponseStatus.TARGET_CREATE_TOPIC.message);
+                }
+            }
+        }else if(operaStatus ==3){
+            AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
+            if(topicApply != null){
+                topicApply.setStatus(operaStatus);
+                activityMybatisDao.updateAdoubleTopicApply(topicApply);
+            }
+        } else if(operaStatus ==4){
+            //删除需要符合条件的才能删除，首先必须是自己发出的申请，并且对方还没有同意的申请才能删除，
+            // 或者对方同意了但是已经和别人创建 双人王国了也能删除。
+            AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
+            Atopic atopic = activityMybatisDao.getAtopicByAuidDoubleByUid(topicApply.getUid());
+            if((topicApply.getUid() == uid && topicApply.getStatus() ==1) ||
+                    (topicApply.getStatus() ==2 && atopic != null)){
+                topicApply.setStatus(operaStatus);
+                activityMybatisDao.updateAdoubleTopicApply(topicApply);
+            }else {
+                return Response.success(ResponseStatus.CANT_DELETE.status, ResponseStatus.CANT_DELETE.message);
+            }
+        }
+        return Response.success(ResponseStatus.UPDATE_STATE_SUCCESS.status, ResponseStatus.UPDATE_STATE_SUCCESS.message);
     }
 
     /**
