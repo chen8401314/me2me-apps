@@ -71,6 +71,9 @@ public class ActivityMybatisDao {
 
     @Autowired
     private AdoubleTopicApplyMapper adoubleTopicApplyMapper;
+    
+    @Autowired
+    private AmiliDataMapper amiliDataMapper;
 
     public void saveActivity(ActivityWithBLOBs activity){
         activityMapper.insertSelective(activity);
@@ -635,5 +638,11 @@ public class ActivityMybatisDao {
 
     public void updateAdoubleTopicApply(AdoubleTopicApply topicApply) {
         adoubleTopicApplyMapper.updateByPrimaryKeySelective(topicApply);
+    }
+    
+    public List<AmiliData> getAllAmiliData(){
+    	AmiliDataExample example = new AmiliDataExample();
+    	example.createCriteria().andStatusEqualTo(1);//可用
+    	return amiliDataMapper.selectByExample(example);
     }
 }

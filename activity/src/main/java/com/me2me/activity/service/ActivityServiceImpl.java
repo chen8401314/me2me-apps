@@ -2021,8 +2021,21 @@ public class ActivityServiceImpl implements ActivityService {
 	@Override
 	public Response genActivity7DayMiliList(Activity7DayMiliDTO dto) {
 		Show7DayMiliDTO respDTO = new Show7DayMiliDTO();
+		//一次性获取所有米粒语料（不在后面每次获取）
+		Map<String, List<AmiliData>> miliMap = new HashMap<String, List<AmiliData>>();
+		List<AmiliData> allMiliDatas = activityMybatisDao.getAllAmiliData();
+		if(null != allMiliDatas && allMiliDatas.size() > 0){
+			List<AmiliData> list = null;
+			for(AmiliData data : allMiliDatas){
+				list = miliMap.get(data.getKey());
+				if(null == list){
+					list = new ArrayList<AmiliData>();
+					miliMap.put(data.getKey(), list);
+				}
+				list.add(data);
+			}
+		}
 		
-//		Map<String, >
 		
 		
 		
