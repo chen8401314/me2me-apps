@@ -2009,6 +2009,7 @@ public class LiveServiceImpl implements LiveService {
         if(createKingdomDto.getKType() != Specification.KingdomType.NORMAL.index){
         	//目前特殊王国只有7天活动，目前只以七天活动处理。
         	activityService.createActivityKingdom(topic.getId(), createKingdomDto.getUid(), type, uid2);
+        	/* 突然说不要这个王国链接了。。
         	if(isDouble){
         		//还要发两个王国ID的发言
         		List<Long> uids = new ArrayList<Long>();
@@ -2055,7 +2056,7 @@ public class LiveServiceImpl implements LiveService {
         				}
         			}
         		}
-        	}
+        	}*/
         }
         
         //--add update kingdom cache -- modify by zcl -- begin --
