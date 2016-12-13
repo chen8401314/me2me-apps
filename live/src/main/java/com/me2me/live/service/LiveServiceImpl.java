@@ -1901,10 +1901,7 @@ public class LiveServiceImpl implements LiveService {
 			if(null == resp){
 				return Response.failure(ResponseStatus.KINGDOM_CREATE_FAILURE.status, ResponseStatus.KINGDOM_CREATE_FAILURE.message);
 			}else if(resp.getCode() == 500){
-				
-			}
-			if(null == resp || resp.getCode() == 500){
-				return Response.failure(resp.getMessage());
+				return Response.failure(ResponseStatus.KINGDOM_CREATE_FAILURE.status, (String)resp.getData());
 			}
 			if(type == Specification.ActivityKingdomType.DOUBLEKING.index){
 				isDouble = true;
