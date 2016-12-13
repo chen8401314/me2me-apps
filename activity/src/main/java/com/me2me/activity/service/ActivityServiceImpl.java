@@ -2085,10 +2085,10 @@ public class ActivityServiceImpl implements ActivityService {
 		if(null != allMiliDatas && allMiliDatas.size() > 0){
 			List<AmiliData> list = null;
 			for(AmiliData data : allMiliDatas){
-				list = miliMap.get(data.getKey());
+				list = miliMap.get(data.getMkey());
 				if(null == list){
 					list = new ArrayList<AmiliData>();
-					miliMap.put(data.getKey(), list);
+					miliMap.put(data.getMkey(), list);
 				}
 				list.add(data);
 			}

@@ -1,11 +1,14 @@
 package com.me2me.web;
 
+import com.me2me.activity.dto.Activity7DayMiliDTO;
 import com.me2me.activity.dto.QiUserDto;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.web.Response;
 import com.me2me.sms.dto.VerifyDto;
+import com.me2me.web.request.ActivityMiliRequest;
 import com.me2me.web.request.AwardRequest;
 import com.me2me.web.request.QiUserRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -14,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Date;
@@ -299,5 +303,19 @@ public class Activity extends BaseController {
     @RequestMapping(value = "/operaBrid",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response operaBrid(QiUserRequest request){
         return activityService.operaBrid(request.getUid() ,request.getApplyId() ,request.getOperaStatus());
+    }
+    
+    /**
+     * 七天活动米粒说接口
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/milidata",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response milidata(ActivityMiliRequest request){
+    	Activity7DayMiliDTO dto = new Activity7DayMiliDTO();
+    	dto.setAuid(request.getAuid());
+    	dto.setIsApp(request.getIsApp());
+    	dto.setIsFirst(request.getIsFirst());
+    	return activityService.genActivity7DayMiliList(dto);
     }
 }
