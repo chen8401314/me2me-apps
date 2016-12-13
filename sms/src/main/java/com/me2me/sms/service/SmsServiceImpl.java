@@ -104,7 +104,7 @@ public class SmsServiceImpl implements SmsService {
     @Override
     public void send7daySignUp(String mobile) {
         HashMap<String,Object> result = null;
-        result = messageClient.getCcpRestSmsSDK().sendTemplateSMS("13915778564","106877",new String[]{"测试","5"});
+        result = messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobile,"106877",new String[]{"测试","5"});
     }
 
     @Override
@@ -113,13 +113,6 @@ public class SmsServiceImpl implements SmsService {
         HashMap<String,Object> result = null;
         result = messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobiles,"106877",new String[]{"测试","5"});
     }
-
-//    @Override
-//    public void sendTest() {
-//        HashMap<String,Object> result = null;
-//        result = messageClient.getCcpRestSmsSDK().sendTemplateSMS("13915778564","106877",new String[]{"测试","5"});
-//        System.out.println(result);
-//    }
 
     /**
      * List转换成String逗号分隔的形式，通知多个手机号

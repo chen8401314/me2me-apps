@@ -21,8 +21,6 @@ public interface SmsService {
 
     boolean sendQIauditMessage(List mobileList);
 
-//    void sendTest(String mobile ,String templateId, String[] datas);
-
     //报名成功
     void send7daySignUp(String mobile);
 
