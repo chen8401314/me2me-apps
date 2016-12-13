@@ -684,7 +684,7 @@ public class ActivityMybatisDao {
     public List<AmiliData> getAllAmiliData(){
     	AmiliDataExample example = new AmiliDataExample();
     	example.createCriteria().andStatusEqualTo(1);//可用
-    	return amiliDataMapper.selectByExample(example);
+    	return amiliDataMapper.selectByExampleWithBLOBs(example);
     }
 
 }

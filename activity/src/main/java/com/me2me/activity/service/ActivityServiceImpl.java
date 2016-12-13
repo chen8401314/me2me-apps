@@ -1241,11 +1241,11 @@ public class ActivityServiceImpl implements ActivityService {
 		Auser auser = this.getAuserByUid(uid);
 		if(null == auser){
 			log.info("uid[" + uid + "] is not activity user!");
-			return Response.failure("用户为报名");
+			return Response.failure("用户未报名");
 		}
 		if(auser.getStatus() != 3){
 			log.info("uid["+uid+"] is not audit success!");
-			return Response.failure("用户为审核通过");
+			return Response.failure("用户未审核通过");
 		}
 		if(type == Specification.ActivityKingdomType.SINGLEKING.index){//单人王国
 			Atopic singleKingdom = this.getAtopicByUidAndType(uid, type);
@@ -2216,6 +2216,7 @@ public class ActivityServiceImpl implements ActivityService {
 		if(null == params || params.size() == 0){
 			return content;
 		}
+//		if()
 		
 		return content;
 	}
