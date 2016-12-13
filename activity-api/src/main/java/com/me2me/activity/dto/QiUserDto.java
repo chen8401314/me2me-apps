@@ -13,7 +13,7 @@ import java.util.Date;
 @Data
 public class QiUserDto implements BaseEntity {
 
-//    private long uid;
+    private long uid;
 
     private String mobile;
 

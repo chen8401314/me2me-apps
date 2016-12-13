@@ -162,8 +162,9 @@ public class Activity extends BaseController {
         qiUserDto.setChannel(request.getChannel());
         qiUserDto.setSex(request.getSex());
         qiUserDto.setLiveness(request.getLiveness());
-//        qiUserDto.setStatus(request.getStatus());
+        qiUserDto.setUid(request.getUid());
         qiUserDto.setVerifyCode(request.getVerifyCode());
+        
         return activityService.enterActivity(qiUserDto);
     }
 

@@ -12,7 +12,10 @@ import java.util.List;
 @Data
 public class QiActivityDto implements BaseEntity {
 
+	private int isBind;//0没绑过，1绑定过
     private String mobile;
+    private long auid;
+    private int userStatus;
 
     private List<TopicElement> topicList = Lists.newArrayList();
 

@@ -10,7 +10,17 @@ import lombok.Data;
 public class QiActivityInfoDto implements BaseEntity {
 
     private String name;
+    
+    //以下都是0否  1是
+    private int isInActivity;
+    private int isSignUpStage;
+    private int isSingleStage;
+    private int isDoubleStage;
 
-    private int stage;
-
+    public void init(){
+    	this.isInActivity = 0;
+    	this.isSignUpStage = 0;
+    	this.isSingleStage = 0;
+    	this.isDoubleStage = 0;
+    }
 }
