@@ -116,6 +116,7 @@ public class Users extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/verify",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response verify(VerifyRequest request,HttpServletRequest req){
+        //用的容联
         VerifyDto verifyDto = new VerifyDto();
         verifyDto.setAction(request.getAction());
         verifyDto.setMobile(request.getMobile());
