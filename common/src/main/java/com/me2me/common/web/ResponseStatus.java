@@ -259,6 +259,19 @@ public enum  ResponseStatus {
 
     ONLY_AGREE_ONE_PEOPLE("你已经同意过其他人了","only agree one people", 200122),
 
+    NOT_FOUR_STAGE("目前不处于第四阶段","not four stage", 200123),
+
+    BRID_IS_SUCCESS("同意了你的抢亲邀请","brid is success", 200124),
+
+    TARGET_NOT_CREATE_TOPIC("对方还未创建双人王国","target not create topic", 200125),
+
+    BRID_IS_FAILURE("拒绝了你的抢亲邀请","brid is failure", 200126),
+
+    BRID_UPPER_LIMIT("抢亲次数已经到达上限","brid upper limit", 200127),
+
+
+
+
 
 
 
@@ -385,6 +398,15 @@ public enum  ResponseStatus {
     KINGDOM_IS_NOT_EXIST("王国不存在", "the kingdom is not exist", 50048),
 
     KINGDOM_CREATE_FAILURE("王国创建失败", "Kingdom creation failed", 50049),
+
+    APPLICATION_FAILURE("不满足申请双人王国条件","application failure ", 50050),
+
+    CAN_NOT_REPEAT_THE_APPLICATION("不能重复申请","Can not repeat the application ", 50051),
+
+
+
+
+
 
 
 

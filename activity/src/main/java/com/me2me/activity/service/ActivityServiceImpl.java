@@ -17,6 +17,7 @@ import com.me2me.common.web.Specification;
 import com.me2me.sms.dto.AwardXMDto;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.service.ChannelType;
+import com.me2me.sms.service.SmsService;
 import com.me2me.user.dto.ActivityModelDto;
 import com.me2me.user.model.User;
 import com.me2me.user.model.UserProfile;
@@ -63,6 +64,9 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Autowired
     private CacheService cacheService;
+
+    @Autowired
+    private SmsService smsService;
 
     @Override
     public Response createActivity(CreateActivityDto createActivityDto) {
@@ -1389,6 +1393,8 @@ public class ActivityServiceImpl implements ActivityService {
         	}
         }
         activityMybatisDao.createAuser(auser);
+        //发送短信 报名成功(模板未给)
+//        smsService.send7daySignUp(qiUserDto.getMobile());
         return Response.success(ResponseStatus.REGISTRATION_SUCCESS.status, ResponseStatus.REGISTRATION_SUCCESS.message);
     }
 
@@ -1456,7 +1462,9 @@ public class ActivityServiceImpl implements ActivityService {
             }
             AwardXMDto awardXMDto = new AwardXMDto();
             awardXMDto.setMobileList(mobileList);
-            userService.sendQIauditMessage(awardXMDto);
+            //发送短信(模板未给)
+//            smsService.send7dayApply(mobileList);
+            log.info("send 7dayApply message success");
             //修改每个用户未审核通过
             activityMybatisDao.updateAuser();
             log.info("update Auser success");
@@ -1857,6 +1865,7 @@ public class ActivityServiceImpl implements ActivityService {
                     for(BlurSearchDto blurSearchDto : boyList){
                         atopicInfoDto.getBlurSearchList().add(blurSearchDto);
                     }
+                    log.info("get aliveInfo success");
                     return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message,atopicInfoDto);
                 }
 
@@ -1870,6 +1879,7 @@ public class ActivityServiceImpl implements ActivityService {
                     for(BlurSearchDto blurSearchDto : girlList){
                         atopicInfoDto.getBlurSearchList().add(blurSearchDto);
                     }
+                    log.info("get aliveInfo success");
                     return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message,atopicInfoDto);
                 }
             }
@@ -1879,8 +1889,8 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public Response createDoubleLive(long uid, long targetUid ,long activityId) {
-        AactivityStage aactivityStage4 = activityMybatisDao.getAactivityStageByStage(activityId,4);
-        if(aactivityStage4 != null){
+        AactivityStage aactivityStage3 = activityMybatisDao.getAactivityStageByStage(activityId,3);
+        if(aactivityStage3 != null){
             //单人王国
             Atopic ownerTopicSingle = activityMybatisDao.getAtopicByUid1(uid);
             Atopic targetTopicSingle = activityMybatisDao.getAtopicByUid1(targetUid);
@@ -1894,6 +1904,11 @@ public class ActivityServiceImpl implements ActivityService {
                 //申请次数
                 String num = cacheService.get(SEVENDAY_KEY);
                 if(applyOwner.size()<Integer.parseInt(num)){
+                    //如果申请记录存在，返回不能重复申请
+                    AdoubleTopicApply apply = activityMybatisDao.getAdoubleTopicApplyByUidAndTargetUid2(uid ,targetUid);
+                    if(apply != null){
+                        return Response.failure(ResponseStatus.CAN_NOT_REPEAT_THE_APPLICATION.status, ResponseStatus.CAN_NOT_REPEAT_THE_APPLICATION.message);
+                    }
                     //请求
                     AdoubleTopicApply applyReq = new AdoubleTopicApply();
                     applyReq.setUid(uid);
@@ -1905,6 +1920,8 @@ public class ActivityServiceImpl implements ActivityService {
                 }else{
                     return Response.success(ResponseStatus.NUMBER_IS_BOUND.status, ResponseStatus.NUMBER_IS_BOUND.message);
                 }
+            }else {
+                return Response.failure(ResponseStatus.APPLICATION_FAILURE.status, ResponseStatus.APPLICATION_FAILURE.message);
             }
         }
         return Response.success(ResponseStatus.NOT_THREE_STAGE.status, ResponseStatus.NOT_THREE_STAGE.message);
@@ -2013,17 +2030,25 @@ public class ActivityServiceImpl implements ActivityService {
         Atopic ownerTopic = activityMybatisDao.getAtopicByUidandTypeBrid(uid ,2);
         Atopic targetTopic = activityMybatisDao.getAtopicByUidandTypeBrid(targetUid ,2);
         String bridKey = cacheService.get(BRID_KEY);
-        if(bridKey != null) {
-            //申请人没有双人王国，接收人有双人王国，才能抢亲 只能5次
-            if (ownerTopic == null && targetTopic != null && Integer.parseInt(bridKey) < 5) {
-                AdoubleTopicApply apply = new AdoubleTopicApply();
-                apply.setType(2);//2是抢亲
-                apply.setUid(uid);
-                apply.setTargetUid(targetUid);
-                activityMybatisDao.createAdoubleTopicApply(apply);
-                log.info("brid success");
-                return Response.success(ResponseStatus.APPLY_BRID_SUCCESS.status, ResponseStatus.APPLY_BRID_SUCCESS.message);
+        AactivityStage aactivityStage4 = activityMybatisDao.getAactivityStageByStage(1,4);
+        if(aactivityStage4 != null) {
+            if (bridKey != null) {
+                List<AdoubleTopicApply> lists = activityMybatisDao.getAdoubleTopicApplyByUidBrid(uid);
+                //申请人没有双人王国，接收人有双人王国，才能抢亲 只能5次
+                if (ownerTopic == null && targetTopic != null && lists.size() < Integer.parseInt(bridKey)) {
+                    AdoubleTopicApply apply = new AdoubleTopicApply();
+                    apply.setType(2);//2是抢亲
+                    apply.setUid(uid);
+                    apply.setTargetUid(targetUid);
+                    activityMybatisDao.createAdoubleTopicApply(apply);
+                    log.info("brid success");
+                    return Response.success(ResponseStatus.APPLY_BRID_SUCCESS.status, ResponseStatus.APPLY_BRID_SUCCESS.message);
+                }else{
+                    return Response.success(ResponseStatus.BRID_UPPER_LIMIT.status, ResponseStatus.BRID_UPPER_LIMIT.message);
+                }
             }
+        }else {
+            return Response.success(ResponseStatus.NOT_FOUR_STAGE.status, ResponseStatus.NOT_FOUR_STAGE.message);
         }
         return Response.success(ResponseStatus.CANT_APPLY_BRID.status, ResponseStatus.CANT_APPLY_BRID.message);
     }
@@ -2171,6 +2196,7 @@ public class ActivityServiceImpl implements ActivityService {
 		return Response.success(respDTO);
 	}
 	
+	
 	private void genMili(Show7DayMiliDTO respDTO, Map<String, List<AmiliData>> miliMap, String key, List<String> params){
 		List<AmiliData> miliList = miliMap.get(key);
 		if(null != miliList && miliList.size() > 0){
@@ -2194,4 +2220,27 @@ public class ActivityServiceImpl implements ActivityService {
 		return content;
 	}
 
+	@Override
+    public Response operaBrid(long uid, int applyId, int operaStatus) {
+        AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
+        if(operaStatus ==2){
+            Atopic atopic = activityMybatisDao.getAtopicByAuidDoubleByUid(topicApply.getUid());
+            if (atopic != null) {
+                topicApply.setStatus(operaStatus);
+                activityMybatisDao.updateAdoubleTopicApply(topicApply);
+                //强制离婚
+                atopic.setStatus(1);
+                activityMybatisDao.updateAtopic(atopic);
+                return Response.success(ResponseStatus.BRID_IS_SUCCESS.status, ResponseStatus.BRID_IS_SUCCESS.message);
+            } else {
+                return Response.success(ResponseStatus.TARGET_NOT_CREATE_TOPIC.status, ResponseStatus.TARGET_NOT_CREATE_TOPIC.message);
+            }
+        }else if(operaStatus ==3){
+            //拒绝直接改变状态
+            topicApply.setStatus(operaStatus);
+            activityMybatisDao.updateAdoubleTopicApply(topicApply);
+            return Response.success(ResponseStatus.BRID_IS_FAILURE.status, ResponseStatus.BRID_IS_FAILURE.message);
+        }
+        return null;
+    }
 }
