@@ -135,7 +135,6 @@ public class Activity extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getActivityUser",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getActivityUser(QiUserRequest request){
-
         return activityService.getActivityUser(request.getUid());
     }
 
