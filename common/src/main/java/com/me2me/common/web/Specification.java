@@ -1084,7 +1084,9 @@ public interface Specification {
     	SIGNUP_STATUS_0_APP("SIGNUP_STATUS_0_APP", "没有报名信息并APP内"),
     	SIGNUP_STATUS_0_BROWSER("SIGNUP_STATUS_0_BROWSER", "没有报名信息并APP外"),
     	SIGNUP_STATUS_1("SIGNUP_STATUS_1", "报名状态审核中"),
-    	SIGNUP_STATUS_2("SIGNUP_STATUS_2", "报名审核通过并没有单人王国"),
+    	SIGNUP_STATUS_2_APP("SIGNUP_STATUS_2_APP", "报名审核通过并没有单人王国并APP内"),
+    	SIGNUP_STATUS_2_BROWSER("SIGNUP_STATUS_2_BROWSER", "报名审核通过并没有单人王国并APP外"),
+    	SYSTEM_ARTICLE("SYSTEM_ARTICLE", "系统运营文章"),
     	
     	;
     	
