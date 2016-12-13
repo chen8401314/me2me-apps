@@ -1143,6 +1143,7 @@ public class ActivityServiceImpl implements ActivityService {
     	Auser auser = activityMybatisDao.getAuserByUid(uid);
         QiActivityDto qiActivityDto = new QiActivityDto();
         if(auser !=null){
+            //审核通过
             if(auser.getStatus() == 3){
                 qiActivityDto.setMobile(auser.getMobile());
                 //查询活动王国信息
