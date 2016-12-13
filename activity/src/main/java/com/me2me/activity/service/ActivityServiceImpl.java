@@ -1349,7 +1349,7 @@ public class ActivityServiceImpl implements ActivityService {
 
         VerifyDto verifyDto = new VerifyDto();
         //验证为1
-        verifyDto.setAction(ChannelType.NORMAL_SMS.index);
+        verifyDto.setAction(Specification.VerifyAction.CHECK.index);
         verifyDto.setMobile(qiUserDto.getMobile());
         verifyDto.setVerifyCode(qiUserDto.getVerifyCode());
         Response response = userService.verify(verifyDto);
@@ -2075,22 +2075,109 @@ public class ActivityServiceImpl implements ActivityService {
 		
 		//1 公共部分
 		//1.1 进入模板语料
-		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.ENTER_COMMON.key);
+		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.ENTER_COMMON.key, null);
 		//1.2 是否首次进入
+		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.FIRST_ENTER.key, null);
+		//1.3 活动介绍和状态
+		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.ACTIVITY_INFO.key, null);
+		//1.4 下载链接等
+		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.APP_DOWNLOAD.key, null);
+		//1.5 系统运营文章
+		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SYSTEM_ARTICLE.key, null);
 		
+		
+		Map<String, AactivityStage> stageMap = new HashMap<String, AactivityStage>();
+		List<AactivityStage> allStages = activityMybatisDao.getAactivityStage(1);//7天活动
+		if(null != allStages && allStages.size() > 0){
+			for(AactivityStage s : allStages){
+				stageMap.put(String.valueOf(s.getStage()), s);
+			}
+		}
+		
+		List<String> params = null;
+		Auser activityUser = null;
+		Atopic singleKingdom = null;
+		Atopic doubleKingdom = null;
+		if(dto.getAuid() > 0){
+			activityUser = activityMybatisDao.getAuser(dto.getAuid());
+			if(null != activityUser && activityUser.getUid() > 0){
+				singleKingdom = activityMybatisDao.getAtopicByAuidAndSingle(dto.getAuid());
+				if(null != singleKingdom){
+					doubleKingdom = activityMybatisDao.getAtopicByAuidDouble(dto.getAuid());
+				}
+			}
+		}
+		
+		Date now = new Date();
+		
+		//2 报名阶段
+		AactivityStage stage1 = stageMap.get("1");
+		AactivityStage stage2 = stageMap.get("2");
+		boolean isCheckStage1 = false;
+		if(null != stage1 && stage1.getType() == 0){
+			isCheckStage1 = true;
+			if(null != activityUser){
+				if(activityUser.getStatus() == 1){//审核中
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_STATUS_1.key, null);
+				}else if(activityUser.getStatus() == 3){
+					if(null == singleKingdom){
+						if(dto.getIsApp() == 1){//APP内
+							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_STATUS_2_APP.key, null);
+						}else{
+							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_STATUS_2_BROWSER.key, null);
+						}
+					}
+				}
+			}else{
+				if(dto.getIsApp() == 1){//APP内
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_STATUS_0_APP.key, null);
+				}else{
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_STATUS_0_BROWSER.key, null);
+				}
+			}
+			if(null != stage2){
+				if(now.compareTo(stage2.getStartTime()) < 0){
+					long dayNum = DateUtil.getDaysBetween2Date(now, stage2.getStartTime());
+					if(dayNum > 0){
+						params = new ArrayList<String>();
+						params.add(String.valueOf(dayNum));
+						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.ACTIVITY_COUNTDOWN.key, params);
+					}
+				}
+			}
+		}
+		
+		//3 单人阶段
+		if(null != stage2 && stage2.getType() == 0){
+			if(!isCheckStage1){
+				if(null != activityUser && activityUser.getStatus() == 3 && null == singleKingdom){
+					if(dto.getIsApp() == 1){//APP内
+						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_STATUS_2_APP.key, null);
+					}else{
+						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_STATUS_2_BROWSER.key, null);
+					}
+				}
+			}
+			if(dto.getIsApp() == 1){//APP内才有的消息
+				if(null != singleKingdom){
+					Map<String,Object> singleTopic = null;
+				}
+					
+			}
+		}
 		
 		
 		
 		return Response.success(respDTO);
 	}
 	
-	private void genMili(Show7DayMiliDTO respDTO, Map<String, List<AmiliData>> miliMap, String key){
+	private void genMili(Show7DayMiliDTO respDTO, Map<String, List<AmiliData>> miliMap, String key, List<String> params){
 		List<AmiliData> miliList = miliMap.get(key);
 		if(null != miliList && miliList.size() > 0){
 			Show7DayMiliDTO.MiliElement e = null;
 			for(AmiliData m : miliList){
 				e = new Show7DayMiliDTO.MiliElement();
-				e.setContent(replaceMiliData(m.getContent(), key));
+				e.setContent(replaceMiliData(m.getContent(), key, params));
 				e.setLinkUrl(m.getLinkUrl());
 				e.setOrder(m.getOrderby());
 				e.setType(m.getType());
@@ -2099,7 +2186,10 @@ public class ActivityServiceImpl implements ActivityService {
 		}
 	}
 	
-	private String replaceMiliData(String content, String key){
+	private String replaceMiliData(String content, String key, List<String> params){
+		if(null == params || params.size() == 0){
+			return content;
+		}
 		
 		return content;
 	}

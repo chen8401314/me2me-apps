@@ -39,4 +39,19 @@ public class DateUtil {
 		cal.add(Calendar.DATE, dayNum);
 		return cal.getTime();
 	}
+	
+	public static long getDaysBetween2Date(Date date1, Date date2){
+		if(null == date1 || null == date2){
+			return -1;
+		}
+		try{
+			date1 = string2date(date2string(date1, "yyyy-MM-dd"), "yyyy-MM-dd");
+			date2 = string2date(date2string(date2, "yyyy-MM-dd"), "yyyy-MM-dd");
+			long day = (date1.getTime() - date2.getTime())/24*60*60*1000l;
+			return Math.abs(day);
+		}catch(Exception e){
+			e.printStackTrace();
+			return -1;
+		}
+	}
 }
