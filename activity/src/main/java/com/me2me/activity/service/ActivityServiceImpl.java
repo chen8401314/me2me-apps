@@ -17,6 +17,7 @@ import com.me2me.common.web.Specification;
 import com.me2me.sms.dto.AwardXMDto;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.service.ChannelType;
+import com.me2me.sms.service.SmsService;
 import com.me2me.user.dto.ActivityModelDto;
 import com.me2me.user.model.User;
 import com.me2me.user.model.UserProfile;
@@ -63,6 +64,9 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Autowired
     private CacheService cacheService;
+
+    @Autowired
+    private SmsService smsService;
 
     @Override
     public Response createActivity(CreateActivityDto createActivityDto) {
@@ -1389,6 +1393,8 @@ public class ActivityServiceImpl implements ActivityService {
         	}
         }
         activityMybatisDao.createAuser(auser);
+        //发送短信 报名成功(模板未给)
+//        smsService.send7daySignUp(qiUserDto.getMobile());
         return Response.success(ResponseStatus.REGISTRATION_SUCCESS.status, ResponseStatus.REGISTRATION_SUCCESS.message);
     }
 
@@ -1456,7 +1462,9 @@ public class ActivityServiceImpl implements ActivityService {
             }
             AwardXMDto awardXMDto = new AwardXMDto();
             awardXMDto.setMobileList(mobileList);
-            userService.sendQIauditMessage(awardXMDto);
+            //发送短信(模板未给)
+//            smsService.send7dayApply(mobileList);
+            log.info("send 7dayApply message success");
             //修改每个用户未审核通过
             activityMybatisDao.updateAuser();
             log.info("update Auser success");
@@ -1896,6 +1904,11 @@ public class ActivityServiceImpl implements ActivityService {
                 //申请次数
                 String num = cacheService.get(SEVENDAY_KEY);
                 if(applyOwner.size()<Integer.parseInt(num)){
+                    //如果申请记录存在，返回不能重复申请
+                    AdoubleTopicApply apply = activityMybatisDao.getAdoubleTopicApplyByUidAndTargetUid2(uid ,targetUid);
+                    if(apply != null){
+                        return Response.failure(ResponseStatus.CAN_NOT_REPEAT_THE_APPLICATION.status, ResponseStatus.CAN_NOT_REPEAT_THE_APPLICATION.message);
+                    }
                     //请求
                     AdoubleTopicApply applyReq = new AdoubleTopicApply();
                     applyReq.setUid(uid);
@@ -1907,6 +1920,8 @@ public class ActivityServiceImpl implements ActivityService {
                 }else{
                     return Response.success(ResponseStatus.NUMBER_IS_BOUND.status, ResponseStatus.NUMBER_IS_BOUND.message);
                 }
+            }else {
+                return Response.failure(ResponseStatus.APPLICATION_FAILURE.status, ResponseStatus.APPLICATION_FAILURE.message);
             }
         }
         return Response.success(ResponseStatus.NOT_THREE_STAGE.status, ResponseStatus.NOT_THREE_STAGE.message);

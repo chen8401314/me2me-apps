@@ -3,14 +3,16 @@ import com.google.common.base.Splitter;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.sms.YunXinSms;
 import com.me2me.core.event.ApplicationEventBus;
-import com.me2me.sms.channel.MessageChannel;
+import com.me2me.sms.channel.MessageClient;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.event.VerifyEvent;
 import com.me2me.sms.listener.VerifyCodeListener;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -34,6 +36,9 @@ public class SmsServiceImpl implements SmsService {
 
     @Autowired
     private VerifyCodeListener verifyCodeListener;
+
+    @Autowired
+    private MessageClient messageClient;
 
     /**
      * 发送验证码
@@ -96,4 +101,33 @@ public class SmsServiceImpl implements SmsService {
         }
     }
 
+    @Override
+    public void send7daySignUp(String mobile) {
+        HashMap<String,Object> result = null;
+        result = messageClient.getCcpRestSmsSDK().sendTemplateSMS("13915778564","106877",new String[]{"测试","5"});
+    }
+
+    @Override
+    public void send7dayApply(List mobileList) {
+        String mobiles = getListMobileToString(mobileList);
+        HashMap<String,Object> result = null;
+        result = messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobiles,"106877",new String[]{"测试","5"});
+    }
+
+//    @Override
+//    public void sendTest() {
+//        HashMap<String,Object> result = null;
+//        result = messageClient.getCcpRestSmsSDK().sendTemplateSMS("13915778564","106877",new String[]{"测试","5"});
+//        System.out.println(result);
+//    }
+
+    /**
+     * List转换成String逗号分隔的形式，通知多个手机号
+     *
+     * @param list
+     * @return
+     */
+    public String getListMobileToString(List list) {
+        return StringUtils.join(list.toArray(), ",");
+    }
 }

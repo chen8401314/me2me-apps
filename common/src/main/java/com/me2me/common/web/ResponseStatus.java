@@ -399,6 +399,15 @@ public enum  ResponseStatus {
 
     KINGDOM_CREATE_FAILURE("王国创建失败", "Kingdom creation failed", 50049),
 
+    APPLICATION_FAILURE("不满足申请双人王国条件","application failure ", 50050),
+
+    CAN_NOT_REPEAT_THE_APPLICATION("不能重复申请","Can not repeat the application ", 50051),
+
+
+
+
+
+
 
 
 

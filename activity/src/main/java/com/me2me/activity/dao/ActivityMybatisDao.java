@@ -423,7 +423,7 @@ public class ActivityMybatisDao {
 
     public AactivityStage getAactivityStageByStage(long activityId ,int stage){
         AactivityStageExample example = new AactivityStageExample();
-        example.createCriteria().andActivityIdEqualTo(activityId).andStageEqualTo(stage);
+        example.createCriteria().andActivityIdEqualTo(activityId).andStageEqualTo(stage).andTypeEqualTo(0);
         List<AactivityStage> list = aactivityStageMapper.selectByExample(example);
         return list.size()>0 && list !=null ?list.get(0) : null;
     }
@@ -535,6 +535,14 @@ public class ActivityMybatisDao {
         AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid).andStatusNotEqualTo(4);
         return adoubleTopicApplyMapper.selectByExample(example);
+    }
+
+    public AdoubleTopicApply getAdoubleTopicApplyByUidAndTargetUid2(long uid ,long targetUid){
+        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+        AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid).andTargetUidEqualTo(targetUid).andTypeEqualTo(1).andStatusEqualTo(1);
+        List<AdoubleTopicApply> list = adoubleTopicApplyMapper.selectByExample(example);
+        return list.size()>0 && list != null?list.get(0):null;
     }
 
     public List<AdoubleTopicApply> getAdoubleTopicApplyByUidBrid(long uid){
