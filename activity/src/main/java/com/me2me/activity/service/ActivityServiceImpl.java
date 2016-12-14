@@ -2204,6 +2204,8 @@ public class ActivityServiceImpl implements ActivityService {
 			return Response.success(respDTO);
 		}
 		
+		List<Map<String, String>> params = null;
+		
 		//0 公共部分
 		//0.1 进入模板语料
 		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.ENTER_COMMON.key, null);
@@ -2216,8 +2218,14 @@ public class ActivityServiceImpl implements ActivityService {
 		//0.5 系统运营文章
 		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SYSTEM_ARTICLE.key, null);
 		//0.6 任务
-		
-		
+		Atask lastTask = activityMybatisDao.getLastAtask(1);
+		if(null != lastTask){
+			params = new ArrayList<Map<String, String>>();
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("content", lastTask.getContent());
+			params.add(map);
+			this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.ACTIVITY_TASK.key, params);
+		}
 		
 		Map<String, AactivityStage> stageMap = new HashMap<String, AactivityStage>();
 		List<AactivityStage> allStages = activityMybatisDao.getAactivityStage(1);//7天活动
@@ -2232,7 +2240,7 @@ public class ActivityServiceImpl implements ActivityService {
 		AactivityStage stage4 = stageMap.get("4");//抢亲阶段
 		
 		
-		List<Map<String, String>> params = null;
+		
 		Auser activityUser = null;
 		Atopic singleKingdom = null;
 		Atopic doubleKingdom = null;
@@ -2323,6 +2331,7 @@ public class ActivityServiceImpl implements ActivityService {
 		}
 		
 		//3 配对阶段
+		boolean isDoubleCheck = false;
 		if(null != stage3 && stage3.getType() == 0){
 			if(!isCheckStage1){
 				isCheckStage1 = true;
@@ -2384,6 +2393,7 @@ public class ActivityServiceImpl implements ActivityService {
 							
 						}
 					}else{//有双人王国
+						isDoubleCheck = true;
 						Map<String,Object> doubleTopic = liveForActivityDao.getTopicById(doubleKingdom.getTopicId());
 						if(null != doubleTopic){
 							Long updateTime = (Long)doubleTopic.get("long_time");
@@ -2402,7 +2412,79 @@ public class ActivityServiceImpl implements ActivityService {
 		
 		//4抢亲阶段
 		if(null != stage4 && stage4.getType() == 0){
+			if(!isCheckStage1){
+				isCheckStage1 = true;
+				if(null != activityUser && activityUser.getStatus() == 3 && null == singleKingdom && activityUser.getUid() > 0){
+					if(dto.getIsApp() == 1){//APP内
+						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_STATUS_2_APP.key, null);
+					}else{
+						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_STATUS_2_BROWSER.key, null);
+					}
+				}
+			}
 			
+			if(dto.getIsApp() == 1){//APP内才有的消息
+				if(null != singleKingdom){//存在单人王国
+					if(null != doubleKingdom){
+						if(!isDoubleCheck){
+							isDoubleCheck = true;
+							Map<String,Object> doubleTopic = liveForActivityDao.getTopicById(doubleKingdom.getTopicId());
+							if(null != doubleTopic){
+								Long updateTime = (Long)doubleTopic.get("long_time");
+								if((now.getTime() - updateTime)/60*1000l >= 12){
+									params = new ArrayList<Map<String, String>>();
+									Map<String, String> map = new HashMap<String, String>();
+									map.put("topicId", String.valueOf(doubleKingdom.getTopicId()));
+									params.add(map);
+									this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.UPDATE_DOUBLE_KINGDOM.key, params);
+								}
+							}
+						}
+						
+						//判断你的另一半是否有人申请
+						List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByTargetUidAndType(doubleKingdom.getUid2(), 2);
+						if(null != list && list.size() > 0){
+							//有人抢你的另一半，提示
+							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.ROB_BRIDE_TARGET.key, params);
+						}
+					}else{//没有双人王国
+						//获取抢亲申请信息
+						Map<String,Object> lastApply = liveForActivityDao.getLastApply(singleKingdom.getUid(), 2);
+						if(null == lastApply){//没玩过抢亲
+							if(null == doubleKingdom){//并且没有双人王国，提示可以抢亲
+								this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.CAN_ROB_BRIDE.key, null);
+							}
+						}else{
+							long applyUid = (Long)lastApply.get("uid");
+							long applyTargetUid = (Long)lastApply.get("target_uid");
+							int status = (Integer)lastApply.get("status");
+							if(applyUid == singleKingdom.getUid()){//发起的请求
+								UserProfile userProfile = userService.getUserProfileByUid(applyTargetUid);
+								params = new ArrayList<Map<String, String>>();
+								Map<String, String> map = new HashMap<String, String>();
+								map.put("otherNickName", userProfile.getNickName());
+								params.add(map);
+								if(status == 3){
+									this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.MY_ROB_BRIDE_APPLY_REFUSED.key, params);
+								}else if(status == 2){
+									this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.MY_ROB_BRIDE_APPLY_AGREED.key, params);
+								}
+							}else{//接收的请求
+								UserProfile userProfile = userService.getUserProfileByUid(applyUid);
+								params = new ArrayList<Map<String, String>>();
+								Map<String, String> map = new HashMap<String, String>();
+								map.put("otherNickName", userProfile.getNickName());
+								params.add(map);
+								if(status == 1){
+									this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.RECIVE_ROB_BRIDE_APPLY.key, params);
+								}else{
+									this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.RECIVE_ROB_BRIDE_APPLY_DELETED.key, params);
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		return Response.success(respDTO);
@@ -2545,6 +2627,9 @@ public class ActivityServiceImpl implements ActivityService {
 				|| key.equals(Specification.ActivityMiliDataKey.RECIVE_DOUBLE_APPLY_DELETED.key)){
 			pMap = params.get(0);
 			content = content.replace("#{otherNickName}#", pMap.get("otherNickName"));
+		}else if(key.equals(Specification.ActivityMiliDataKey.ACTIVITY_TASK.key)){
+			pMap = params.get(0);
+			content = content.replace("#{content}#", pMap.get("content"));
 		}
 		
 		return content;

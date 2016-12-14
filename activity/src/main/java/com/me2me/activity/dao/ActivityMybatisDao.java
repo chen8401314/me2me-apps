@@ -80,7 +80,31 @@ public class ActivityMybatisDao {
     
     @Autowired
     private ArecommendUserDescMapper arecommendUserDescMapper;
+    
+    @Autowired
+    private AtaskMapper ataskMapper;
 
+    public List<Atask> getAtasks(long activityId){
+    	AtaskExample example = new AtaskExample();
+    	AtaskExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityIdEqualTo(activityId);
+    	criteria.andStatusEqualTo(0);
+    	return ataskMapper.selectByExampleWithBLOBs(example);
+    }
+    
+    public Atask getLastAtask(long activityId){
+    	AtaskExample example = new AtaskExample();
+    	AtaskExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityIdEqualTo(activityId);
+    	criteria.andStatusEqualTo(0);
+    	example.setOrderByClause(" update_time desc limit 1");
+    	List<Atask> list = ataskMapper.selectByExampleWithBLOBs(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
+    
     public ArecommendUser getArecommendUserByRecTimeKey(String recTimeKey, long auid){
     	ArecommendUserExample example = new ArecommendUserExample();
     	ArecommendUserExample.Criteria criteria = example.createCriteria();
@@ -589,6 +613,15 @@ public class ActivityMybatisDao {
         List<AdoubleTopicApply> list = adoubleTopicApplyMapper.selectByExample(example);
         return list.size()>0 && list != null?list.get(0):null;
     }
+    
+    public List<AdoubleTopicApply> getAdoubleTopicApplyByTargetUidAndType(long targetUid, int type){
+    	AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+        AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
+        criteria.andTargetUidEqualTo(targetUid);
+        criteria.andStatusEqualTo(1);
+        criteria.andTypeEqualTo(type);
+        return adoubleTopicApplyMapper.selectByExample(example);
+    }
 
     public List<AdoubleTopicApply> getAdoubleTopicApplyByUidBrid(long uid){
         AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
@@ -610,8 +643,6 @@ public class ActivityMybatisDao {
         criteria.andTargetUidEqualTo(uid).andStatusNotEqualTo(4).andTypeEqualTo(1).andStatusEqualTo(2);
         return adoubleTopicApplyMapper.selectByExample(example);
     }
-
-
 
     public List<AdoubleTopicApply> getAdoubleTopicApplyByUidReceive(long uid ,int pageNum ,int pageSize){
 //        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
