@@ -214,6 +214,10 @@ public class UserMybatisDao {
         List<UserProfile> lists = userProfileMapper.selectByExample(example);
         return (lists != null && lists.size() > 0) ? lists.get(0) : null;
     }
+    
+    public void updateUserProfile(UserProfile userProfile){
+    	userProfileMapper.updateByPrimaryKeySelective(userProfile);
+    }
 
     public UserProfile getUserProfileByMobile(String mobile) {
         UserProfileExample example = new UserProfileExample();

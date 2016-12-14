@@ -2362,4 +2362,15 @@ public class UserServiceImpl implements UserService {
 		return Response.success();
 	}
 
+	@Override
+	public void updateUserSex(long uid, int sex) {
+		UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+		if(null != userProfile){
+			if(userProfile.getGender() != sex){
+				userProfile.setGender(sex);
+				userMybatisDao.updateUserProfile(userProfile);
+			}
+		}
+	}
+
 }
