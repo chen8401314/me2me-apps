@@ -2131,16 +2131,16 @@ public class ActivityServiceImpl implements ActivityService {
 			return Response.success(respDTO);
 		}
 		
-		//1 公共部分
-		//1.1 进入模板语料
+		//0 公共部分
+		//0.1 进入模板语料
 		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.ENTER_COMMON.key, null);
-		//1.2 是否首次进入
+		//0.2 是否首次进入
 		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.FIRST_ENTER.key, null);
-		//1.3 活动介绍和状态
+		//0.3 活动介绍和状态
 		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.ACTIVITY_INFO.key, null);
-		//1.4 下载链接等
+		//0.4 下载链接等
 		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.APP_DOWNLOAD.key, null);
-		//1.5 系统运营文章
+		//0.5 系统运营文章
 		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SYSTEM_ARTICLE.key, null);
 		
 		
@@ -2151,6 +2151,11 @@ public class ActivityServiceImpl implements ActivityService {
 				stageMap.put(String.valueOf(s.getStage()), s);
 			}
 		}
+		AactivityStage stage1 = stageMap.get("1");//报名阶段
+		AactivityStage stage2 = stageMap.get("2");//单人展示阶段
+		AactivityStage stage3 = stageMap.get("3");//配对阶段
+		AactivityStage stage4 = stageMap.get("4");//抢亲阶段
+		
 		
 		List<Map<String, String>> params = null;
 		Auser activityUser = null;
@@ -2168,9 +2173,7 @@ public class ActivityServiceImpl implements ActivityService {
 		
 		Date now = new Date();
 		
-		//2 报名阶段
-		AactivityStage stage1 = stageMap.get("1");
-		AactivityStage stage2 = stageMap.get("2");
+		//1 报名阶段
 		boolean isCheckStage1 = false;
 		if(null != stage1 && stage1.getType() == 0){
 			isCheckStage1 = true;
@@ -2178,7 +2181,7 @@ public class ActivityServiceImpl implements ActivityService {
 				if(activityUser.getStatus() == 1){//审核中
 					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_STATUS_1.key, null);
 				}else if(activityUser.getStatus() == 3){
-					if(null == singleKingdom){
+					if(null == singleKingdom && activityUser.getUid() > 0){
 						if(dto.getIsApp() == 1){//APP内
 							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_STATUS_2_APP.key, null);
 						}else{
@@ -2207,10 +2210,12 @@ public class ActivityServiceImpl implements ActivityService {
 			}
 		}
 		
-		//3 单人阶段
+		//2单人阶段
+		boolean isRec = false;
 		if(null != stage2 && stage2.getType() == 0){
 			if(!isCheckStage1){
-				if(null != activityUser && activityUser.getStatus() == 3 && null == singleKingdom){
+				isCheckStage1 = true;
+				if(null != activityUser && activityUser.getStatus() == 3 && null == singleKingdom && activityUser.getUid() > 0){
 					if(dto.getIsApp() == 1){//APP内
 						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_STATUS_2_APP.key, null);
 					}else{
@@ -2231,18 +2236,75 @@ public class ActivityServiceImpl implements ActivityService {
 							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.UPDATE_SINGLE_KINGDOM.key, params);
 						}
 					}
+					UserProfile userProfile = userService.getUserProfileByUid(singleKingdom.getUid());
+					int searchSex = 0;
+					if(userProfile.getGender() == 0){
+						searchSex = 1;
+					}
+					this.genRecUserByTime(respDTO, miliMap, now, dto.getAuid(), singleKingdom.getUid(), this.isForce(stage3, now), searchSex, 1);//关注
+					isRec = true;
+				}
+			}
+		}
+		
+		//3 配对阶段
+		if(null != stage3 && stage3.getType() == 0){
+			if(!isCheckStage1){
+				isCheckStage1 = true;
+				if(null != activityUser && activityUser.getStatus() == 3 && null == singleKingdom && activityUser.getUid() > 0){
+					if(dto.getIsApp() == 1){//APP内
+						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_STATUS_2_APP.key, null);
+					}else{
+						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_STATUS_2_BROWSER.key, null);
+					}
+				}
+			}
+			if(dto.getIsApp() == 1){//APP内才有的消息
+				if(null != singleKingdom){//存在单人王国
+					if(!isRec){
+						UserProfile userProfile = userService.getUserProfileByUid(singleKingdom.getUid());
+						int searchSex = 0;
+						if(userProfile.getGender() == 0){
+							searchSex = 1;
+						}
+						this.genRecUserByTime(respDTO, miliMap, now, dto.getAuid(), singleKingdom.getUid(), this.isForce(stage3, now), searchSex, 2);//配对
+					}
 					
-					
+					if(null == doubleKingdom){//没有双人王国
+						//获取最后一条我的配对消息
+						
+					}else{//有双人王国
+						Map<String,Object> doubleTopic = liveForActivityDao.getTopicById(doubleKingdom.getTopicId());
+						if(null != doubleTopic){
+							Long updateTime = (Long)doubleTopic.get("long_time");
+							if((now.getTime() - updateTime)/60*1000l >= 12){
+								params = new ArrayList<Map<String, String>>();
+								Map<String, String> map = new HashMap<String, String>();
+								map.put("topicId", String.valueOf(doubleKingdom.getTopicId()));
+								params.add(map);
+								this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.UPDATE_DOUBLE_KINGDOM.key, params);
+							}
+						}
+					}
 				}
 			}
 		}
 		
 		
-		
 		return Response.success(respDTO);
 	}
 	
-	private void getRecUserByTime(Show7DayMiliDTO respDTO, Map<String, List<AmiliData>> miliMap, Date date, long auid, long uid, boolean isForce, int searchSex, int stageType){
+	private boolean isForce(AactivityStage stage3, Date now){
+		if(null != stage3 && stage3.getType() == 0){
+			if(DateUtil.isSameDay(stage3.getEndTime(), now)){//配对的最后一天为抢配阶段
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	private void genRecUserByTime(Show7DayMiliDTO respDTO, Map<String, List<AmiliData>> miliMap, Date date, long auid, long uid, boolean isForce, int searchSex, int stageType){
 		boolean isOut = false;
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
@@ -2349,12 +2411,20 @@ public class ActivityServiceImpl implements ActivityService {
 		if(key.equals(Specification.ActivityMiliDataKey.ACTIVITY_COUNTDOWN.key)){
 			pMap = params.get(0);
 			content = content.replace("#{dayCount}#", pMap.get("dayCount"));
-		}else if(key.equals(Specification.ActivityMiliDataKey.UPDATE_SINGLE_KINGDOM.key)){
+		}else if(key.equals(Specification.ActivityMiliDataKey.UPDATE_SINGLE_KINGDOM.key) || key.equals(Specification.ActivityMiliDataKey.UPDATE_DOUBLE_KINGDOM.key)){
 			pMap = params.get(0);
 			content = content.replace("#{topicId}#", pMap.get("topicId"));
 		}else if(key.equals(Specification.ActivityMiliDataKey.RECOMMEND_USER_1.key)){
 			pMap = params.get(0);
-			content = content.replace("#{}#", newChar)
+			content = content.replace("#{avatar1}#", pMap.get("avatar"));
+			if(params.size() > 1){
+				pMap = params.get(1);
+				content = content.replace("#{avatar2}#", pMap.get("avatar"));
+			}
+			if(params.size() > 2){
+				pMap = params.get(2);
+				content = content.replace("#{avatar3}#", pMap.get("avatar"));
+			}
 		}
 		
 		return content;

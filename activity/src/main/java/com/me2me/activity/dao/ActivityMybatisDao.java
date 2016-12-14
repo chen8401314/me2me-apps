@@ -105,7 +105,6 @@ public class ActivityMybatisDao {
         activityMapper.insertSelective(activity);
     }
 
-
     public List<ActivityWithBLOBs> showActivity(int page, int pageSize,String keyword) {
         ActivityExample example = new ActivityExample();
         ActivityExample.Criteria criteria = example.createCriteria();
@@ -553,6 +552,10 @@ public class ActivityMybatisDao {
         AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid).andStatusNotEqualTo(4).andTypeEqualTo(1);
         return adoubleTopicApplyMapper.selectByExample(example);
+    }
+    
+    public AdoubleTopicApply getLastAdoubleTopicApplyByUid(long uid){
+    	return null;
     }
 
     public AdoubleTopicApply getAdoubleTopicApplyByUidAndTargetUid2(long uid ,long targetUid){
