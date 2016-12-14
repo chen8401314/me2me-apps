@@ -472,6 +472,14 @@ public class ActivityMybatisDao {
         List<Atopic> list = atopicMapper.selectByExample(example);
         return list.size()>0 && list != null ?list.get(0):null;
     }
+    
+    public Atopic getLastDelAtopicByUidDouble(long uid){
+    	AtopicExample example = new AtopicExample();
+        example.createCriteria().andUidEqualTo(uid).andStatusEqualTo(1).andTypeEqualTo(2);
+        example.setOrderByClause(" create_time desc limit 1");
+        List<Atopic> list = atopicMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
+    }
 
     public Atopic getAtopicByUid1(long uid){
         AtopicExample example = new AtopicExample();
@@ -552,10 +560,6 @@ public class ActivityMybatisDao {
         AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid).andStatusNotEqualTo(4).andTypeEqualTo(1);
         return adoubleTopicApplyMapper.selectByExample(example);
-    }
-    
-    public AdoubleTopicApply getLastAdoubleTopicApplyByUid(long uid){
-    	return null;
     }
 
     public AdoubleTopicApply getAdoubleTopicApplyByUidAndTargetUid2(long uid ,long targetUid){

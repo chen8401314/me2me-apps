@@ -36,4 +36,32 @@ public class LiveForActivityDao {
 		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
 		return list;
 	}
+	
+	public Map<String,Object> getLastApply(long uid, int type){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select * from a_double_topic_apply");
+		sb.append(" where ((uid=").append(uid).append(" and status in (2,3)) or (target_uid=");
+		sb.append(uid).append(" and status in (1,4))) and type=").append(type);
+		sb.append(" order by create_time desc limit 1");
+		
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+	
+	public Map<String, Object> getLastTargetDouble(long uid){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select * from a_topic t where t.uid in");
+		sb.append(" (select target_uid from a_double_topic_apply d where d.uid=");
+		sb.append(uid).append(" and d.status=1) and t.type=2 and t.status=0");
+		sb.append(" order by create_time desc limit 1");
+		
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
 }
