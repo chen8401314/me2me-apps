@@ -1405,6 +1405,8 @@ public class ActivityServiceImpl implements ActivityService {
             if(null == auser){
             	return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
             }
+            //用户存在 说明绑定过
+            qiStatusDto.setIsBind(1);
             qiStatusDto.setStatus(auser.getStatus());
             qiStatusDto.setAuid(auser.getId());
             

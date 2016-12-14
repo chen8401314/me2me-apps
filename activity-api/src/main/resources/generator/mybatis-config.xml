@@ -50,5 +50,7 @@
         <!--<table tableName="a_topic" domainObjectName="Atopic"/>-->
         <!--<table tableName="a_double_topic_apply" domainObjectName="AdoubleTopicApply"/>-->
         <!--<table tableName="a_mili_data" domainObjectName="AmiliData"/>-->
+        <!--<table tableName="a_recommend_user" domainObjectName="ArecommendUser"/>-->
+
     </context>
 </generatorConfiguration>
