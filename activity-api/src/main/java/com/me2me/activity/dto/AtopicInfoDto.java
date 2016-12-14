@@ -14,8 +14,6 @@ public class AtopicInfoDto implements BaseEntity {
 
     private int total;
 
-    private int isAlone;//是否单身 0单身 1不是单身
-
     private List<BlurSearchDto> blurSearchList = Lists.newArrayList();
 
 }

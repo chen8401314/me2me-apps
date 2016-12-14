@@ -1878,7 +1878,7 @@ public class ActivityServiceImpl implements ActivityService {
                         Atopic isAlone = activityMybatisDao.getAtopicByUid2(blurSearchDto.getUid());
                         if(isAlone != null){
                             //有 不是单身
-                            atopicInfoDto.setIsAlone(1);
+                            blurSearchDto.setIsAlone(1);
                         }
                         atopicInfoDto.getBlurSearchList().add(blurSearchDto);
                     }
@@ -1898,7 +1898,7 @@ public class ActivityServiceImpl implements ActivityService {
                         Atopic isAlone = activityMybatisDao.getAtopicByUid2(blurSearchDto.getUid());
                         if(isAlone != null){
                             //有 不是单身
-                            atopicInfoDto.setIsAlone(1);
+                            blurSearchDto.setIsAlone(1);
                         }
                         atopicInfoDto.getBlurSearchList().add(blurSearchDto);
                     }
