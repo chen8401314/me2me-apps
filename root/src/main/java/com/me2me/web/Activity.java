@@ -318,4 +318,16 @@ public class Activity extends BaseController {
     	dto.setIsFirst(request.getIsFirst());
     	return activityService.genActivity7DayMiliList(dto);
     }
+
+    /**
+     * 双人王国状态接口(包含抢亲次数)
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/doublueLiveState",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response doublueLiveState(QiUserRequest request){
+        return activityService.doublueLiveState(request.getUid());
+    }
 }

@@ -128,6 +128,8 @@ public interface ActivityService {
     Response bridApply(long uid ,long targetUid);
 
     Response bridSearch(long uid);
+
+    Response doublueLiveState(long uid);
     
     Response genActivity7DayMiliList(Activity7DayMiliDTO dto);
 
