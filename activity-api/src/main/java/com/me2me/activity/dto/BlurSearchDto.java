@@ -24,4 +24,7 @@ public class BlurSearchDto implements BaseEntity {
     private int gender;
 
     private String avatar;
+
+    private int isAlone;//是否单身 0单身 1不是单身
+
 }
