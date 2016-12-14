@@ -2317,7 +2317,7 @@ public class ActivityServiceImpl implements ActivityService {
 			if(dto.getIsApp() == 1){//APP内才有的消息
 				if(null != singleKingdom){//存在单人王国
 					Map<String,Object> singleTopic = liveForActivityDao.getTopicById(singleKingdom.getTopicId());
-					if(null != singleTopic){
+					if(null != singleTopic && null == doubleKingdom){
 						Long updateTime = (Long)singleTopic.get("long_time");
 						if((now.getTime() - updateTime)/60*1000l >= 12){
 							params = new ArrayList<Map<String, String>>();
@@ -2495,6 +2495,8 @@ public class ActivityServiceImpl implements ActivityService {
 				}
 			}
 		}
+		
+		
 		
 		return Response.success(respDTO);
 	}
