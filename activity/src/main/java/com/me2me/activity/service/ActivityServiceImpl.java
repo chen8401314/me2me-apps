@@ -1881,7 +1881,11 @@ public class ActivityServiceImpl implements ActivityService {
                             //有 不是单身
                             blurSearchDto.setIsAlone(1);
                         }
-                        atopicInfoDto.getBlurSearchList().add(blurSearchDto);
+                        //申请过的不再显示
+                        List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(blurSearchDto.getUid());
+                        if(list.size() == 0){
+                            atopicInfoDto.getBlurSearchList().add(blurSearchDto);
+                        }
                     }
                     log.info("get aliveInfo success");
                     return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message,atopicInfoDto);
@@ -1901,7 +1905,11 @@ public class ActivityServiceImpl implements ActivityService {
                             //有 不是单身
                             blurSearchDto.setIsAlone(1);
                         }
-                        atopicInfoDto.getBlurSearchList().add(blurSearchDto);
+                        //申请过的不再显示
+                        List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(blurSearchDto.getUid());
+                        if(list.size() == 0){
+                            atopicInfoDto.getBlurSearchList().add(blurSearchDto);
+                        }
                     }
                     log.info("get aliveInfo success");
                     return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message,atopicInfoDto);
