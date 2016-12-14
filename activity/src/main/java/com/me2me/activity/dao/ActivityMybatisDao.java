@@ -77,6 +77,9 @@ public class ActivityMybatisDao {
     
     @Autowired
     private ArecommendUserMapper arecommendUserMapper;
+    
+    @Autowired
+    private ArecommendUserDescMapper arecommendUserDescMapper;
 
     public ArecommendUser getArecommendUserByRecTimeKey(String recTimeKey, long auid){
     	ArecommendUserExample example = new ArecommendUserExample();
@@ -94,10 +97,13 @@ public class ActivityMybatisDao {
     	arecommendUserMapper.insertSelective(recUser);
     }
     
+    public void saveArecommendUserDesc(ArecommendUserDesc desc){
+    	arecommendUserDescMapper.insertSelective(desc);
+    }
+    
     public void saveActivity(ActivityWithBLOBs activity){
         activityMapper.insertSelective(activity);
     }
-
 
     public List<ActivityWithBLOBs> showActivity(int page, int pageSize,String keyword) {
         ActivityExample example = new ActivityExample();
@@ -546,6 +552,10 @@ public class ActivityMybatisDao {
         AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid).andStatusNotEqualTo(4).andTypeEqualTo(1);
         return adoubleTopicApplyMapper.selectByExample(example);
+    }
+    
+    public AdoubleTopicApply getLastAdoubleTopicApplyByUid(long uid){
+    	return null;
     }
 
     public AdoubleTopicApply getAdoubleTopicApplyByUidAndTargetUid2(long uid ,long targetUid){

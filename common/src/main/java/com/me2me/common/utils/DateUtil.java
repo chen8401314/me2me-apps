@@ -30,6 +30,18 @@ public class DateUtil {
 		}
 	}
 	
+	public static boolean isSameDay(Date date1, Date date2){
+		if(null == date1 || null == date2){
+			return false;
+		}
+		String datestr1 = date2string(date1, "yyyyMMdd");
+		String datestr2 = date2string(date2, "yyyyMMdd");
+		if(datestr1.equals(datestr2)){
+			return true;
+		}
+		return false;
+	}
+	
 	public static Date addDay(Date date, int dayNum){
 		if(null == date){
 			return null;
