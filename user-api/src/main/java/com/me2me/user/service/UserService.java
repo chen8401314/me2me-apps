@@ -175,6 +175,8 @@ public interface UserService {
     int getFansCount(long uid);
 
     void initUserNumber(int limit);
+    
+    void updateUserSex(long uid, int sex);
 
     Response versionControl(String version,int platform,String ip,String channel,String device);
 

@@ -1378,6 +1378,10 @@ public class ActivityServiceImpl implements ActivityService {
     			auser.setUid(userProfile.getUid());
     		}
         }
+        
+        if(auser.getUid() > 0){//绑了用户，则需要更新原始性别
+        	userService.updateUserSex(auser.getUid(), auser.getSex());
+        }
 
         activityMybatisDao.createAuser(auser);
         //发送短信 报名成功(模板未给)
@@ -1410,6 +1414,7 @@ public class ActivityServiceImpl implements ActivityService {
             		if(null == appUser){//没有绑过就绑上
             			auser.setUid(uid);
             			activityMybatisDao.updateAuser(auser);
+            			userService.updateUserSex(auser.getUid(), auser.getSex());
             		}
             	}
             }
@@ -2189,9 +2194,17 @@ public class ActivityServiceImpl implements ActivityService {
 			}
 			if(dto.getIsApp() == 1){//APP内才有的消息
 				if(null != singleKingdom){
-					Map<String,Object> singleTopic = null;
+					Map<String,Object> singleTopic = liveForActivityDao.getTopicById(singleKingdom.getTopicId());
+					if(null != singleTopic){
+						Long updateTime = (Long)singleTopic.get("long_time");
+						if((now.getTime() - updateTime)/60*1000l >= 12){
+							params = new ArrayList<String>();
+							params.add(String.valueOf(singleKingdom.getTopicId()));
+							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.UPDATE_SINGLE_KINGDOM.key, params);
+						}
+					}
 				}
-					
+				
 			}
 		}
 		
@@ -2220,7 +2233,11 @@ public class ActivityServiceImpl implements ActivityService {
 		if(null == params || params.size() == 0){
 			return content;
 		}
-//		if()
+		if(key.equals(Specification.ActivityMiliDataKey.ACTIVITY_COUNTDOWN.key)){
+			content.replace("#{dayCount}#", params.get(0));
+		}else if(key.equals(Specification.ActivityMiliDataKey.UPDATE_SINGLE_KINGDOM.key)){
+			content.replace("#{topicId}#", params.get(0));
+		}
 		
 		return content;
 	}

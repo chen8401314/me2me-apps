@@ -1087,6 +1087,7 @@ public interface Specification {
     	SIGNUP_STATUS_2_APP("SIGNUP_STATUS_2_APP", "报名审核通过并没有单人王国并APP内"),
     	SIGNUP_STATUS_2_BROWSER("SIGNUP_STATUS_2_BROWSER", "报名审核通过并没有单人王国并APP外"),
     	SYSTEM_ARTICLE("SYSTEM_ARTICLE", "系统运营文章"),
+    	UPDATE_SINGLE_KINGDOM("UPDATE_SINGLE_KINGDOM", "更新单人王国"),
     	
     	;
     	
