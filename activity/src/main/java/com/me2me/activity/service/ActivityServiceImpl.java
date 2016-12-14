@@ -2327,13 +2327,15 @@ public class ActivityServiceImpl implements ActivityService {
 							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.UPDATE_SINGLE_KINGDOM.key, params);
 						}
 					}
-					UserProfile userProfile = userService.getUserProfileByUid(singleKingdom.getUid());
-					int searchSex = 0;
-					if(userProfile.getGender() == 0){
-						searchSex = 1;
+					if(null == doubleKingdom){
+						UserProfile userProfile = userService.getUserProfileByUid(singleKingdom.getUid());
+						int searchSex = 0;
+						if(userProfile.getGender() == 0){
+							searchSex = 1;
+						}
+						this.genRecUserByTime(respDTO, miliMap, now, dto.getAuid(), singleKingdom.getUid(), this.isForce(stage3, now), searchSex, 1);//关注
+						isRec = true;
 					}
-					this.genRecUserByTime(respDTO, miliMap, now, dto.getAuid(), singleKingdom.getUid(), this.isForce(stage3, now), searchSex, 1);//关注
-					isRec = true;
 				}
 			}
 		}
@@ -2353,16 +2355,15 @@ public class ActivityServiceImpl implements ActivityService {
 			}
 			if(dto.getIsApp() == 1){//APP内才有的消息
 				if(null != singleKingdom){//存在单人王国
-					if(!isRec){
-						UserProfile userProfile = userService.getUserProfileByUid(singleKingdom.getUid());
-						int searchSex = 0;
-						if(userProfile.getGender() == 0){
-							searchSex = 1;
-						}
-						this.genRecUserByTime(respDTO, miliMap, now, dto.getAuid(), singleKingdom.getUid(), this.isForce(stage3, now), searchSex, 2);//配对
-					}
-					
 					if(null == doubleKingdom){//没有双人王国
+						if(!isRec){
+							UserProfile userProfile = userService.getUserProfileByUid(singleKingdom.getUid());
+							int searchSex = 0;
+							if(userProfile.getGender() == 0){
+								searchSex = 1;
+							}
+							this.genRecUserByTime(respDTO, miliMap, now, dto.getAuid(), singleKingdom.getUid(), this.isForce(stage3, now), searchSex, 2);//配对
+						}
 						//获取最后一条我的配对消息
 						Map<String,Object> lastApply = liveForActivityDao.getLastApply(singleKingdom.getUid(), 1);
 //						Map<String,Object> lastTargetDouble = liveForActivityDao.getLastTargetDouble(singleKingdom.getUid());
