@@ -74,7 +74,26 @@ public class ActivityMybatisDao {
 
     @Autowired
     private AmiliDataMapper amiliDataMapper;
+    
+    @Autowired
+    private ArecommendUserMapper arecommendUserMapper;
 
+    public ArecommendUser getArecommendUserByRecTimeKey(String recTimeKey, long auid){
+    	ArecommendUserExample example = new ArecommendUserExample();
+    	ArecommendUserExample.Criteria criteria = example.createCriteria();
+    	criteria.andRecTimeKeyEqualTo(recTimeKey);
+    	criteria.andAuidEqualTo(auid);
+    	List<ArecommendUser> list = arecommendUserMapper.selectByExample(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
+    
+    public void saveArecommendUser(ArecommendUser recUser){
+    	arecommendUserMapper.insertSelective(recUser);
+    }
+    
     public void saveActivity(ActivityWithBLOBs activity){
         activityMapper.insertSelective(activity);
     }

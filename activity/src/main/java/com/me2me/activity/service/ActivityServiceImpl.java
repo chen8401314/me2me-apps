@@ -25,6 +25,7 @@ import com.me2me.user.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.eclipse.paho.client.mqttv3.logging.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -2216,7 +2217,7 @@ public class ActivityServiceImpl implements ActivityService {
 				}
 			}
 			if(dto.getIsApp() == 1){//APP内才有的消息
-				if(null != singleKingdom){
+				if(null != singleKingdom){//存在单人王国
 					Map<String,Object> singleTopic = liveForActivityDao.getTopicById(singleKingdom.getTopicId());
 					if(null != singleTopic){
 						Long updateTime = (Long)singleTopic.get("long_time");
@@ -2226,14 +2227,73 @@ public class ActivityServiceImpl implements ActivityService {
 							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.UPDATE_SINGLE_KINGDOM.key, params);
 						}
 					}
+					
+					
 				}
-				
 			}
 		}
 		
 		
 		
 		return Response.success(respDTO);
+	}
+	
+	private void getRecUserByTime(Show7DayMiliDTO respDTO, Map<String, List<AmiliData>> miliMap, Date date, long auid, long uid, boolean isForce, int searchSex){
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(date);
+		int hour = cal.get(Calendar.HOUR_OF_DAY);//0-23
+		String timeKey = null;
+		if(hour < 8){//8点前
+			timeKey = DateUtil.date2string(DateUtil.addDay(date, -1), "yyyyMMdd") + "22";
+		}else{
+			String hourStr = null;
+			if(hour%2 > 0){
+				hourStr = String.valueOf(hour-1);
+			}else{
+				hourStr = String.valueOf(hour);
+			}
+			if(hourStr.length() == 0){
+				hourStr = "0"+hourStr;
+			}
+			timeKey = DateUtil.date2string(date, "yyyyMMdd") + hourStr;
+		}
+		
+		ArecommendUser recUser = activityMybatisDao.getArecommendUserByRecTimeKey(timeKey, auid);
+		if(null != recUser){
+			//有记录了，说明已经看过了，不需要再展现了
+			return;
+		}
+		
+		//随机查询出3/5个异性，需去重
+		int num = 3;
+		if(isForce){
+			num = 5;
+		}
+		log.info("sql start...");
+		//这个sql可能是个坑，待优化
+		List<Map<String,Object>> list = liveForActivityDao.getRecSingleUser(searchSex, uid, num);
+		log.info("sql end");
+		if(null != list && list.size() > 0){
+			StringBuilder sb = new StringBuilder();
+			for(Map<String,Object> map : list){
+				sb.append(",").append(map.get("uid"));
+			}
+			String recUids = sb.toString().substring(1);
+			recUser = new ArecommendUser();
+			recUser.setAuid(auid);
+			recUser.setCreateTime(date);
+			recUser.setRecTimeKey(timeKey);
+			recUser.setUid(uid);
+			recUser.setRecUsers(recUids);
+			activityMybatisDao.saveArecommendUser(recUser);
+			
+			for(Map<String,Object> map : list){
+				
+			}
+		}
+		
+		
+		
 	}
 	
 	
