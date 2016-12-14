@@ -1869,6 +1869,12 @@ public class ActivityServiceImpl implements ActivityService {
                 List<BlurSearchDto> boyList = activityMybatisDao.getTopicByBoy(map);
                 if(boyList.size()>0 && boyList != null){
                     for(BlurSearchDto blurSearchDto : boyList){
+                        //是否单身，是否有双人王国条件判断
+                        Atopic isAlone = activityMybatisDao.getAtopicByUid2(blurSearchDto.getUid());
+                        if(isAlone != null){
+                            //有 不是单身
+                            atopicInfoDto.setIsAlone(1);
+                        }
                         atopicInfoDto.getBlurSearchList().add(blurSearchDto);
                     }
                     log.info("get aliveInfo success");
@@ -1883,6 +1889,12 @@ public class ActivityServiceImpl implements ActivityService {
                 List<BlurSearchDto> girlList = activityMybatisDao.getTopicByGirl(map);
                 if(girlList.size()>0 && girlList != null){
                     for(BlurSearchDto blurSearchDto : girlList){
+                        //是否单身，是否有双人王国条件判断
+                        Atopic isAlone = activityMybatisDao.getAtopicByUid2(blurSearchDto.getUid());
+                        if(isAlone != null){
+                            //有 不是单身
+                            atopicInfoDto.setIsAlone(1);
+                        }
                         atopicInfoDto.getBlurSearchList().add(blurSearchDto);
                     }
                     log.info("get aliveInfo success");
