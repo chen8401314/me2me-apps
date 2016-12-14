@@ -1925,6 +1925,11 @@ public class ActivityServiceImpl implements ActivityService {
             List<AdoubleTopicApply> applyOwner = activityMybatisDao.getTopicApply(uid);
             //满足只建立了单人王国，都没建立双人王国
             if(ownerTopicSingle != null && targetTopicSingle != null && ownerTopicDouble ==null && targetTopicDouble == null){
+                //如果有申请中，和同意了的记录，不能再发申请
+                List<AdoubleTopicApply> applyList = activityMybatisDao.getAdoubleTopicApplyByUidAndTargetUidandNotIn(uid ,targetUid);
+                if(applyList.size() > 0){
+                    return Response.success(ResponseStatus.APPLICATION_EXISTS.status, ResponseStatus.APPLICATION_EXISTS.message);
+                }
                 //申请次数
                 String num = cacheService.get(SEVENDAY_KEY);
                 if(applyOwner.size()<Integer.parseInt(num)){
@@ -2147,6 +2152,17 @@ public class ActivityServiceImpl implements ActivityService {
             return Response.success(doubleLiveDto);
         }
 
+        return Response.success(ResponseStatus.NOT_GET_DOUBLELIVE.status, ResponseStatus.NOT_GET_DOUBLELIVE.message);
+    }
+
+    @Override
+    public Response divorce(long uid, long targetUid) {
+        Atopic atopic = activityMybatisDao.getAtopicByUidAndtargetUid(uid ,targetUid);
+        if(atopic != null){
+            atopic.setStatus(1);//离婚
+            activityMybatisDao.updateAtopic(atopic);
+            return Response.success(ResponseStatus.DIVORCE_SUCCESS.status, ResponseStatus.DIVORCE_SUCCESS.message);
+        }
         return Response.success(ResponseStatus.NOT_GET_DOUBLELIVE.status, ResponseStatus.NOT_GET_DOUBLELIVE.message);
     }
 

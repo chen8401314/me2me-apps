@@ -52,6 +52,7 @@
         <!--<table tableName="a_mili_data" domainObjectName="AmiliData"/>-->
         <!--<table tableName="a_recommend_user" domainObjectName="ArecommendUser"/>-->
         <!--<table tableName="a_recommend_user_desc" domainObjectName="ArecommendUserDesc"/>-->
+        <table tableName="a_task" domainObjectName="Atask"/>
 
     </context>
 </generatorConfiguration>

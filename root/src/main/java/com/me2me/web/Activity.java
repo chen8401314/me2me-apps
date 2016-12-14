@@ -330,4 +330,16 @@ public class Activity extends BaseController {
     public Response doublueLiveState(QiUserRequest request){
         return activityService.doublueLiveState(request.getUid());
     }
+
+    /**
+     * 离婚接口
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/divorce",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response divorce(QiUserRequest request){
+        return activityService.divorce(request.getUid() ,request.getTargetUid());
+    }
 }
