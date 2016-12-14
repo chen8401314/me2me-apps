@@ -269,6 +269,8 @@ public enum  ResponseStatus {
 
     BRID_UPPER_LIMIT("抢亲次数已经到达上限","brid upper limit", 200127),
 
+    NOT_GET_DOUBLELIVE("未查询到双人王国状态信息","not get doublelive", 200128),
+
 
 
 

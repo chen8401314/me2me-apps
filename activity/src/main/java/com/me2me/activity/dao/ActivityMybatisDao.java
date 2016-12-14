@@ -563,6 +563,13 @@ public class ActivityMybatisDao {
         return adoubleTopicApplyMapper.selectByExample(example);
     }
 
+    public List<AdoubleTopicApply> getAdoubleTopicApplyByUidBrid2(long uid){
+        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+        AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
+        criteria.andTargetUidEqualTo(uid).andStatusNotEqualTo(4).andTypeEqualTo(2);
+        return adoubleTopicApplyMapper.selectByExample(example);
+    }
+
     public List<AdoubleTopicApply> getAdoubleTopicApplyByUid2(long uid){
         AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
         AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
@@ -704,6 +711,13 @@ public class ActivityMybatisDao {
     	AmiliDataExample example = new AmiliDataExample();
     	example.createCriteria().andStatusEqualTo(1);//可用
     	return amiliDataMapper.selectByExampleWithBLOBs(example);
+    }
+
+    public Atopic getAtopicByType(long uid ,int type){
+        AtopicExample example = new AtopicExample();
+        example.createCriteria().andUidEqualTo(uid).andTypeEqualTo(type);
+        List<Atopic> list = atopicMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
     }
 
 }
