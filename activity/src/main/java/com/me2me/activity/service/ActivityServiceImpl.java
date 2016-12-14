@@ -1925,6 +1925,11 @@ public class ActivityServiceImpl implements ActivityService {
             List<AdoubleTopicApply> applyOwner = activityMybatisDao.getTopicApply(uid);
             //满足只建立了单人王国，都没建立双人王国
             if(ownerTopicSingle != null && targetTopicSingle != null && ownerTopicDouble ==null && targetTopicDouble == null){
+                //如果有申请中，和同意了的记录，不能再发申请
+                List<AdoubleTopicApply> applyList = activityMybatisDao.getAdoubleTopicApplyByUidAndTargetUidandNotIn(uid ,targetUid);
+                if(applyList.size() > 0){
+                    return Response.success(ResponseStatus.APPLICATION_EXISTS.status, ResponseStatus.APPLICATION_EXISTS.message);
+                }
                 //申请次数
                 String num = cacheService.get(SEVENDAY_KEY);
                 if(applyOwner.size()<Integer.parseInt(num)){
@@ -2113,7 +2118,64 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public Response doublueLiveState(long uid) {
-        return null;
+        DoubleLiveDto doubleLiveDto = new DoubleLiveDto();
+        List<DoubleLiveDto.DoubleLiveElement> ownerInfo = doubleLiveDto.getOwnerInfo();
+        List<DoubleLiveDto.DoubleLiveElement> targetInfo = doubleLiveDto.getTargetInfo();
+        Atopic atopic = activityMybatisDao.getAtopicByType(uid ,2);
+        if(atopic != null){
+            UserProfile ownerProfile = userService.getUserProfileByUid(uid);//自己
+            UserProfile targetProfile = userService.getUserProfileByUid(atopic.getUid2());//爱人
+            List<AdoubleTopicApply> ownerRobbed = activityMybatisDao.getAdoubleTopicApplyByUidBrid2(uid);//被抢次数
+            List<AdoubleTopicApply> targetRobbed = activityMybatisDao.getAdoubleTopicApplyByUidBrid2(atopic.getUid2());
+
+            //自己
+            DoubleLiveDto.DoubleLiveElement ownerElement = doubleLiveDto.createDoubleLiveElement();
+            ownerElement.setAvatar(ownerProfile.getAvatar());
+            ownerElement.setNickName(ownerProfile.getNickName());
+            ownerElement.setUid(ownerProfile.getUid());
+            ownerElement.setRobbed(ownerRobbed.size());
+
+            //对方
+            DoubleLiveDto.DoubleLiveElement targetElement = doubleLiveDto.createDoubleLiveElement();
+            targetElement.setAvatar(targetProfile.getAvatar());
+            targetElement.setNickName(targetProfile.getNickName());
+            targetElement.setUid(targetProfile.getUid());
+            targetElement.setRobbed(targetRobbed.size());
+
+            ownerInfo.add(ownerElement);
+            targetInfo.add(targetElement);
+
+            Date createDate = atopic.getCreateTime();
+            Date nowDate = new Date();
+            int loveDay = differentDaysByMillisecond(createDate ,nowDate);
+            doubleLiveDto.setLoveDay(loveDay);
+            return Response.success(doubleLiveDto);
+        }
+
+        return Response.success(ResponseStatus.NOT_GET_DOUBLELIVE.status, ResponseStatus.NOT_GET_DOUBLELIVE.message);
+    }
+
+    @Override
+    public Response divorce(long uid, long targetUid) {
+        Atopic atopic = activityMybatisDao.getAtopicByUidAndtargetUid(uid ,targetUid);
+        if(atopic != null){
+            atopic.setStatus(1);//离婚
+            activityMybatisDao.updateAtopic(atopic);
+            return Response.success(ResponseStatus.DIVORCE_SUCCESS.status, ResponseStatus.DIVORCE_SUCCESS.message);
+        }
+        return Response.success(ResponseStatus.NOT_GET_DOUBLELIVE.status, ResponseStatus.NOT_GET_DOUBLELIVE.message);
+    }
+
+    /**
+     * 通过时间秒毫秒数判断两个时间的间隔
+     * @param date1
+     * @param date2
+     * @return
+     */
+    public static int differentDaysByMillisecond(Date date1,Date date2)
+    {
+        int days = (int) ((date2.getTime() - date1.getTime()) / (1000*3600*24));
+        return days;
     }
 
     /**

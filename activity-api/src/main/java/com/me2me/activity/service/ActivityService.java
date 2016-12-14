@@ -130,6 +130,8 @@ public interface ActivityService {
     Response bridSearch(long uid);
 
     Response doublueLiveState(long uid);
+
+    Response divorce(long uid ,long targetUid);
     
     Response genActivity7DayMiliList(Activity7DayMiliDTO dto);
 

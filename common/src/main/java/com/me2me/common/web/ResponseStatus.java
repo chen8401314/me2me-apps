@@ -269,6 +269,12 @@ public enum  ResponseStatus {
 
     BRID_UPPER_LIMIT("抢亲次数已经到达上限","brid upper limit", 200127),
 
+    NOT_GET_DOUBLELIVE("未查询到双人王国状态信息","not get doublelive", 200128),
+
+    DIVORCE_SUCCESS("离婚成功","divorce success", 200129),
+
+    APPLICATION_EXISTS("申请中或者对方已经同意了你的请求","application exists ", 200130),
+
 
 
 
