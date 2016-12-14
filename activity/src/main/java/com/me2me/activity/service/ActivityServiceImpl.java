@@ -2143,7 +2143,7 @@ public class ActivityServiceImpl implements ActivityService {
 			}
 		}
 		
-		List<String> params = null;
+		List<Map<String, String>> params = null;
 		Auser activityUser = null;
 		Atopic singleKingdom = null;
 		Atopic doubleKingdom = null;
@@ -2188,8 +2188,10 @@ public class ActivityServiceImpl implements ActivityService {
 				if(now.compareTo(stage2.getStartTime()) < 0){
 					long dayNum = DateUtil.getDaysBetween2Date(now, stage2.getStartTime());
 					if(dayNum > 0){
-						params = new ArrayList<String>();
-						params.add(String.valueOf(dayNum));
+						params = new ArrayList<Map<String, String>>();
+						Map<String, String> map = new HashMap<String, String>();
+						map.put("dayCount", String.valueOf(dayNum));
+						params.add(map);
 						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.ACTIVITY_COUNTDOWN.key, params);
 					}
 				}
@@ -2213,8 +2215,10 @@ public class ActivityServiceImpl implements ActivityService {
 					if(null != singleTopic){
 						Long updateTime = (Long)singleTopic.get("long_time");
 						if((now.getTime() - updateTime)/60*1000l >= 12){
-							params = new ArrayList<String>();
-							params.add(String.valueOf(singleKingdom.getTopicId()));
+							params = new ArrayList<Map<String, String>>();
+							Map<String, String> map = new HashMap<String, String>();
+							map.put("topicId", String.valueOf(singleKingdom.getTopicId()));
+							params.add(map);
 							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.UPDATE_SINGLE_KINGDOM.key, params);
 						}
 					}
@@ -2229,12 +2233,14 @@ public class ActivityServiceImpl implements ActivityService {
 		return Response.success(respDTO);
 	}
 	
-	private void getRecUserByTime(Show7DayMiliDTO respDTO, Map<String, List<AmiliData>> miliMap, Date date, long auid, long uid, boolean isForce, int searchSex){
+	private void getRecUserByTime(Show7DayMiliDTO respDTO, Map<String, List<AmiliData>> miliMap, Date date, long auid, long uid, boolean isForce, int searchSex, int stageType){
+		boolean isOut = false;
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(date);
 		int hour = cal.get(Calendar.HOUR_OF_DAY);//0-23
 		String timeKey = null;
 		if(hour < 8){//8点前
+			isOut = true;
 			timeKey = DateUtil.date2string(DateUtil.addDay(date, -1), "yyyyMMdd") + "22";
 		}else{
 			String hourStr = null;
@@ -2275,20 +2281,43 @@ public class ActivityServiceImpl implements ActivityService {
 			recUser.setCreateTime(date);
 			recUser.setRecTimeKey(timeKey);
 			recUser.setUid(uid);
+			recUser.setType(stageType);
 			recUser.setRecUsers(recUids);
 			activityMybatisDao.saveArecommendUser(recUser);
 			
+			ArecommendUserDesc desc = null;
 			for(Map<String,Object> map : list){
-				
+				desc = new ArecommendUserDesc();
+				desc.setAuid(auid);
+				desc.setRecTimeKey(timeKey);
+				desc.setType(stageType);
+				desc.setUid(uid);
+				desc.setRecUid((Long)map.get("uid"));
+				activityMybatisDao.saveArecommendUserDesc(desc);
 			}
+			
+			if(isOut){
+				this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.RECOMMEND_USER_2.key, null);
+			}else{
+				List<Map<String, String>> params = new ArrayList<Map<String, String>>();
+				Map<String, String> pMap = null;
+				for(Map<String,Object> map : list){
+					pMap = new HashMap<String, String>();
+					pMap.put("uid", map.get("uid").toString());
+					pMap.put("avatar", Constant.QINIU_DOMAIN + "/" + (String)map.get("avatar"));
+					pMap.put("v_lv", map.get("v_lv").toString());
+					params.add(pMap);
+				}
+				
+				this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.RECOMMEND_USER_1.key, params);
+			}
+		}else{
+			log.info("no user recommend!["+auid+"]");
 		}
-		
-		
-		
 	}
 	
 	
-	private void genMili(Show7DayMiliDTO respDTO, Map<String, List<AmiliData>> miliMap, String key, List<String> params){
+	private void genMili(Show7DayMiliDTO respDTO, Map<String, List<AmiliData>> miliMap, String key, List<Map<String, String>> params){
 		List<AmiliData> miliList = miliMap.get(key);
 		if(null != miliList && miliList.size() > 0){
 			Show7DayMiliDTO.MiliElement e = null;
@@ -2303,14 +2332,20 @@ public class ActivityServiceImpl implements ActivityService {
 		}
 	}
 	
-	private String replaceMiliData(String content, String key, List<String> params){
+	private String replaceMiliData(String content, String key, List<Map<String, String>> params){
 		if(null == params || params.size() == 0){
 			return content;
 		}
+		Map<String, String> pMap = null;
 		if(key.equals(Specification.ActivityMiliDataKey.ACTIVITY_COUNTDOWN.key)){
-			content.replace("#{dayCount}#", params.get(0));
+			pMap = params.get(0);
+			content = content.replace("#{dayCount}#", pMap.get("dayCount"));
 		}else if(key.equals(Specification.ActivityMiliDataKey.UPDATE_SINGLE_KINGDOM.key)){
-			content.replace("#{topicId}#", params.get(0));
+			pMap = params.get(0);
+			content = content.replace("#{topicId}#", pMap.get("topicId"));
+		}else if(key.equals(Specification.ActivityMiliDataKey.RECOMMEND_USER_1.key)){
+			pMap = params.get(0);
+			content = content.replace("#{}#", newChar)
 		}
 		
 		return content;

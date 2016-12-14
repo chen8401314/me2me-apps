@@ -77,6 +77,9 @@ public class ActivityMybatisDao {
     
     @Autowired
     private ArecommendUserMapper arecommendUserMapper;
+    
+    @Autowired
+    private ArecommendUserDescMapper arecommendUserDescMapper;
 
     public ArecommendUser getArecommendUserByRecTimeKey(String recTimeKey, long auid){
     	ArecommendUserExample example = new ArecommendUserExample();
@@ -92,6 +95,10 @@ public class ActivityMybatisDao {
     
     public void saveArecommendUser(ArecommendUser recUser){
     	arecommendUserMapper.insertSelective(recUser);
+    }
+    
+    public void saveArecommendUserDesc(ArecommendUserDesc desc){
+    	arecommendUserDescMapper.insertSelective(desc);
     }
     
     public void saveActivity(ActivityWithBLOBs activity){
