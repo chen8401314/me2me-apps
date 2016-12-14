@@ -1968,8 +1968,11 @@ public class ActivityServiceImpl implements ActivityService {
                 List<ApplyListDto.ApplyElement> lists = applyListDto.getSendList();
                 for(AdoubleTopicApply apply : sendList){
                     UserProfile userProfile = userService.getUserProfileByUid(apply.getTargetUid());
+                    Atopic atopic = activityMybatisDao.getAtopicByUid1(apply.getTargetUid());
+                    Map<String,Object> topic = liveForActivityDao.getTopicById(atopic.getTopicId());
                     ApplyListDto.ApplyElement applyElement = applyListDto.createApplyElement();
                     BeanUtils.copyProperties(userProfile,applyElement);
+                    applyElement.setTitle((String) topic.get("title"));
                     applyElement.setId(apply.getId());
                     applyElement.setStatus(apply.getStatus());
                     lists.add(applyElement);
@@ -1980,8 +1983,11 @@ public class ActivityServiceImpl implements ActivityService {
                 List<ApplyListDto.ApplyElement> lists = applyListDto.getReceiveList();
                 for(AdoubleTopicApply apply : receiveList){
                     UserProfile userProfile = userService.getUserProfileByUid(apply.getUid());
+                    Atopic atopic = activityMybatisDao.getAtopicByUid1(apply.getTargetUid());
+                    Map<String,Object> topic = liveForActivityDao.getTopicById(atopic.getTopicId());
                     ApplyListDto.ApplyElement applyElement = applyListDto.createApplyElement();
                     BeanUtils.copyProperties(userProfile,applyElement);
+                    applyElement.setTitle((String) topic.get("title"));
                     applyElement.setId(apply.getId());
                     applyElement.setStatus(apply.getStatus());
                     lists.add(applyElement);
@@ -1992,8 +1998,11 @@ public class ActivityServiceImpl implements ActivityService {
                 List<ApplyListDto.ApplyElement> lists = applyListDto.getAgreeList();
                 for(AdoubleTopicApply apply : agreeList){
                     UserProfile userProfile = userService.getUserProfileByUid(apply.getTargetUid());
+                    Atopic atopic = activityMybatisDao.getAtopicByUid1(apply.getTargetUid());
+                    Map<String,Object> topic = liveForActivityDao.getTopicById(atopic.getTopicId());
                     ApplyListDto.ApplyElement applyElement = applyListDto.createApplyElement();
                     BeanUtils.copyProperties(userProfile,applyElement);
+                    applyElement.setTitle((String) topic.get("title"));
                     applyElement.setId(apply.getId());
                     applyElement.setStatus(apply.getStatus());
                     lists.add(applyElement);
