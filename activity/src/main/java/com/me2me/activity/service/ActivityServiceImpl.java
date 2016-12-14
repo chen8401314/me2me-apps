@@ -2223,6 +2223,8 @@ public class ActivityServiceImpl implements ActivityService {
 		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.APP_DOWNLOAD.key, null);
 		//0.5 系统运营文章
 		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SYSTEM_ARTICLE.key, null);
+		//0.6 任务
+		
 		
 		
 		Map<String, AactivityStage> stageMap = new HashMap<String, AactivityStage>();
@@ -2353,7 +2355,42 @@ public class ActivityServiceImpl implements ActivityService {
 					
 					if(null == doubleKingdom){//没有双人王国
 						//获取最后一条我的配对消息
+						Map<String,Object> lastApply = liveForActivityDao.getLastApply(singleKingdom.getUid(), 1);
+//						Map<String,Object> lastTargetDouble = liveForActivityDao.getLastTargetDouble(singleKingdom.getUid());
+//						Atopic lastDelDouble = activityMybatisDao.getLastDelAtopicByUidDouble(singleKingdom.getUid());
+						if(null != lastApply){
+							long applyUid = (Long)lastApply.get("uid");
+							long applyTargetUid = (Long)lastApply.get("target_uid");
+							int status = (Integer)lastApply.get("status");
+							if(applyUid == singleKingdom.getUid()){//发起的请求
+								UserProfile userProfile = userService.getUserProfileByUid(applyTargetUid);
+								params = new ArrayList<Map<String, String>>();
+								Map<String, String> map = new HashMap<String, String>();
+								map.put("otherNickName", userProfile.getNickName());
+								params.add(map);
+								if(status == 3){
+									this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.MY_DOUBLE_APPLY_REFUSED.key, params);
+								}else if(status == 2){
+									this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.MY_DOUBLE_APPLY_AGREED.key, params);
+								}
+							}else{//接收的请求
+								UserProfile userProfile = userService.getUserProfileByUid(applyUid);
+								params = new ArrayList<Map<String, String>>();
+								Map<String, String> map = new HashMap<String, String>();
+								map.put("otherNickName", userProfile.getNickName());
+								params.add(map);
+								if(status == 1){
+									this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.RECIVE_DOUBLE_APPLY.key, params);
+								}else{
+									this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.RECIVE_DOUBLE_APPLY_DELETED.key, params);
+								}
+							}
+						}
 						
+						//强配
+						if(isForce(stage3, now)){//强配阶段
+							
+						}
 					}else{//有双人王国
 						Map<String,Object> doubleTopic = liveForActivityDao.getTopicById(doubleKingdom.getTopicId());
 						if(null != doubleTopic){
@@ -2371,6 +2408,10 @@ public class ActivityServiceImpl implements ActivityService {
 			}
 		}
 		
+		//4抢亲阶段
+		if(null != stage4 && stage4.getType() == 0){
+			
+		}
 		
 		return Response.success(respDTO);
 	}
@@ -2506,6 +2547,12 @@ public class ActivityServiceImpl implements ActivityService {
 				pMap = params.get(2);
 				content = content.replace("#{avatar3}#", pMap.get("avatar"));
 			}
+		}else if(key.equals(Specification.ActivityMiliDataKey.MY_DOUBLE_APPLY_AGREED.key)
+				|| key.equals(Specification.ActivityMiliDataKey.MY_DOUBLE_APPLY_REFUSED.key)
+				|| key.equals(Specification.ActivityMiliDataKey.RECIVE_DOUBLE_APPLY.key)
+				|| key.equals(Specification.ActivityMiliDataKey.RECIVE_DOUBLE_APPLY_DELETED.key)){
+			pMap = params.get(0);
+			content = content.replace("#{otherNickName}#", pMap.get("otherNickName"));
 		}
 		
 		return content;

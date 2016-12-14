@@ -1081,6 +1081,7 @@ public interface Specification {
     	APP_DOWNLOAD("APP_DOWNLOAD", "APP下载信息"),
     	ACTIVITY_INFO("ACTIVITY_INFO", "活动信息"),
     	ACTIVITY_COUNTDOWN("ACTIVITY_COUNTDOWN", "活动倒计时"),
+    	ACTIVITY_TASK("ACTIVITY_TASK", "活动任务"),
     	SIGNUP_STATUS_0_APP("SIGNUP_STATUS_0_APP", "没有报名信息并APP内"),
     	SIGNUP_STATUS_0_BROWSER("SIGNUP_STATUS_0_BROWSER", "没有报名信息并APP外"),
     	SIGNUP_STATUS_1("SIGNUP_STATUS_1", "报名状态审核中"),
@@ -1091,6 +1092,10 @@ public interface Specification {
     	UPDATE_DOUBLE_KINGDOM("UPDATE_DOUBLE_KINGDOM", "更新双人王国提醒"),
     	RECOMMEND_USER_1("RECOMMEND_USER_1", "有效期推荐用户"),
     	RECOMMEND_USER_2("RECOMMEND_USER_2", "失效推荐用户"),
+    	MY_DOUBLE_APPLY_REFUSED("MY_DOUBLE_APPLY_REFUSED", "我的双人王国请求被拒"),
+    	MY_DOUBLE_APPLY_AGREED("MY_DOUBLE_APPLY_AGREED", "我的双人王国请求被同意"),
+    	RECIVE_DOUBLE_APPLY("RECIVE_DOUBLE_APPLY", "接收到双人王国请求"),
+    	RECIVE_DOUBLE_APPLY_DELETED("RECIVE_DOUBLE_APPLY_DELETED", "接收到的双人王国请求被撤销"),
     	
     	;
     	
