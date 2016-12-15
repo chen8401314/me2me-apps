@@ -2,6 +2,7 @@ package com.me2me.activity.dao;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -29,10 +30,30 @@ public class LiveForActivityDao {
 		sb.append(" where p.gender=").append(searchSex);
 		sb.append(" and t.type=1 and t.uid=p.uid");
 		sb.append(" and t.uid<>").append(myUid);
-		sb.append(" and t.uid not in (select d.rec_uid from a_recommend_user_desc d where d.auid=t.auid)");
-		sb.append(" and t.uid not in (select a.uid from a_topic a where a.uid=t.uid and a.type=2)");
-		sb.append(" order by p.mobile limit ").append(count);
-		
+		sb.append(" and not exists(select 1 from a_topic a where a.type=2 and a.uid=t.uid)");
+		sb.append(" and not exists(select 1 from a_recommend_user_desc d where d.uid=");
+		sb.append(myUid).append(" and d.rec_uid=t.uid)");
+		//不连续的mysql随机，如果用random()方法，效率很低。。这里先这么搞着吧。。
+		Random r = new Random();
+		int rd = r.nextInt(4);
+		String p = null;
+		if(rd == 0){
+			p = "p.mobile";
+		}else if(rd == 1){
+			p = "p.avatar";
+		}else if(rd == 2){
+			p = "t.uid";
+		}else{
+			p = "t.create_time";
+		}
+		String d = "";
+		int dd = r.nextInt(2);
+		if(dd == 0){
+			d = " desc";
+		}else{
+			d = " asc";
+		}
+		sb.append(" order by ").append(p).append(d).append(" limit ").append(count);
 		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
 		return list;
 	}
