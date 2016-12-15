@@ -1925,7 +1925,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Response getBridList(long uid, String topicName, String nickName, int pageNum, int pageSize) {
+    public Response getBridList(long uid, String topicName, String nickName, int pageNum, int pageSize ,int type) {
         //判断当前是男性还是女性，查询出相反性别
         UserProfile userProfile = userService.getUserProfileByUid(uid);
         Map map = Maps.newHashMap();
@@ -1937,7 +1937,10 @@ public class ActivityServiceImpl implements ActivityService {
         }
         map.put("pageNum",pageNum);
         map.put("pageSize",pageSize);
-
+        //区分智能排序
+        if(type != 0){
+            map.put("type",type);
+        }
         if(userProfile != null) {
             if (userProfile.getGender() == 0) {
                 //查询总记录数

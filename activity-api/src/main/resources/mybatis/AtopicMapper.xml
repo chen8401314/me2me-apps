@@ -428,7 +428,10 @@ WHERE gender = #{gender}
     b.`title` LIKE "%${titleName}%"
     OR c.`nick_name` LIKE "%${nickName}%"
   )
-limit #{pageNum},#{pageSize}
+    <if test="type != null">
+      ORDER by id DESC
+    </if>
+  limit #{pageNum},#{pageSize}
   </select>
 
   <select id="getAliveList" parameterType="java.util.Map" resultType="java.lang.Integer">

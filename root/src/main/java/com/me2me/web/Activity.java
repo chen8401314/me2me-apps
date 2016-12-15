@@ -356,7 +356,22 @@ public class Activity extends BaseController {
     public Response getBridList(QiUserRequest request){
         //（0异性，1同性，2男，3女，4所有）现在没人接收异性0
         return activityService.getBridList(request.getUid() ,request.getTopicName() ,request.getNickName() ,
-                request.getPageNum() ,request.getPageSize());
+                request.getPageNum() ,request.getPageSize() ,request.getType());
+    }
+
+    /**
+     * 推荐列表（我可以抢亲的列表）
+     * 暂时调用了getBridList接口 只是多传了个参数 显示顺序不同
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/recommendBridList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response recommendBridList(QiUserRequest request){
+        //（0异性，1同性，2男，3女，4所有）现在没人接收异性0
+        return activityService.getBridList(request.getUid() ,request.getTopicName() ,request.getNickName() ,
+                request.getPageNum() ,request.getPageSize() ,request.getType());
     }
 
 }
