@@ -2917,6 +2917,10 @@ public class ActivityServiceImpl implements ActivityService {
             topicApply.setStatus(operaStatus);
             activityMybatisDao.updateAdoubleTopicApply(topicApply);
             return Response.success(ResponseStatus.BRID_IS_FAILURE.status, ResponseStatus.BRID_IS_FAILURE.message);
+        }else if(operaStatus ==4){
+            topicApply.setStatus(operaStatus);
+            activityMybatisDao.updateAdoubleTopicApply(topicApply);
+            return Response.success(ResponseStatus.BRID_IS_DELETE.status, ResponseStatus.BRID_IS_DELETE.message);
         }
         return Response.failure("不支持的操作类型");
     }
