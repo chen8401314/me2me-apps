@@ -327,4 +327,16 @@
     SELECT COUNT(1) FROM a_double_topic_apply WHERE target_uid = #{uid};
   </select>
 
+  <select id="getDoubleTipicByBridAndUid" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from `a_double_topic_apply` WHERE uid = #{uid} AND TYPE = #{type} AND status !=4 LIMIT #{pageNum} ,#{pageSize};
+  </select>
+
+  <select id="getDoubleTipicByBridAndTargetUid" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List" />
+    from `a_double_topic_apply` WHERE target_uid = #{uid} AND TYPE = #{type} AND status !=4 LIMIT #{pageNum} ,#{pageSize};
+  </select>
+
 </mapper>

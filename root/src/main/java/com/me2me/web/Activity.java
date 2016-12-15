@@ -283,14 +283,16 @@ public class Activity extends BaseController {
 
     /**
      * 抢亲查询接口
+     * 获取我抢别人的 列表
+     * 获取别人抢我的 列表
      *
      * @param request
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/bridSearch",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/rob-apply-list",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response bridSearch(QiUserRequest request){
-        return activityService.bridSearch(request.getUid());
+        return activityService.bridSearch(request.getUid() ,request.getType() ,request.getPageNum() ,request.getPageSize());
     }
 
     /**

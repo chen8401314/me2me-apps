@@ -129,7 +129,7 @@ public interface ActivityService {
 
     Response bridApply(long uid ,long targetUid);
 
-    Response bridSearch(long uid);
+    Response bridSearch(long uid ,int type ,int pageNum ,int pageSize);
 
     Response doublueLiveState(long uid);
 

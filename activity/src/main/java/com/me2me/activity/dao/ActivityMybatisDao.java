@@ -784,10 +784,28 @@ public class ActivityMybatisDao {
         return list.size()>0 && list != null ?list.get(0):null;
     }
 
-    public List<AdoubleTopicApply> getAdoubleTopicApplyByUidandTypeBrid(long uid ,int type){
-        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
-        example.createCriteria().andUidEqualTo(uid).andTypeEqualTo(type);
-        return adoubleTopicApplyMapper.selectByExample(example);
+    public List<AdoubleTopicApply> getDoubleTipicByBridAndUid(long uid ,int type ,int pageNum ,int pageSize){
+//        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+//        example.createCriteria().andUidEqualTo(uid).andTypeEqualTo(type);
+//        return adoubleTopicApplyMapper.selectByExample(example);
+        Map map = Maps.newHashMap();
+        map.put("uid",uid);
+        map.put("type",type);
+        map.put("pageNum",pageNum);
+        map.put("pageSize",pageSize);
+        return adoubleTopicApplyMapper.getDoubleTipicByBridAndUid(map);
+    }
+
+    public List<AdoubleTopicApply> getDoubleTipicByBridAndTargetUid(long uid ,int type ,int pageNum ,int pageSize){
+//        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+//        example.createCriteria().andTargetUidEqualTo(uid).andTypeEqualTo(type);
+//        return adoubleTopicApplyMapper.selectByExample(example);
+        Map map = Maps.newHashMap();
+        map.put("uid",uid);
+        map.put("type",type);
+        map.put("pageNum",pageNum);
+        map.put("pageSize",pageSize);
+        return adoubleTopicApplyMapper.getDoubleTipicByBridAndTargetUid(map);
     }
 
     public void updateAdoubleTopicApply(AdoubleTopicApply topicApply) {
