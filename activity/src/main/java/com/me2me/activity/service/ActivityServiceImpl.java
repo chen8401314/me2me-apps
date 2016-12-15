@@ -2091,8 +2091,8 @@ public class ActivityServiceImpl implements ActivityService {
             if(agreeList.size() > 0 && agreeList != null){
                 List<ApplyListDto.ApplyElement> lists = applyListDto.getAgreeList();
                 for(AdoubleTopicApply apply : agreeList){
-                    UserProfile userProfile = userService.getUserProfileByUid(apply.getTargetUid());
-                    Atopic atopic = activityMybatisDao.getAtopicByUid1(apply.getTargetUid());
+                    UserProfile userProfile = userService.getUserProfileByUid(apply.getUid());
+                    Atopic atopic = activityMybatisDao.getAtopicByUid1(apply.getUid());
                     ApplyListDto.ApplyElement applyElement = applyListDto.createApplyElement();
                     BeanUtils.copyProperties(userProfile,applyElement);
                     if(atopic != null){

@@ -755,7 +755,7 @@ public class ActivityMybatisDao {
     public List<AdoubleTopicApply> getAdoubleTopicApplyByUidAgree(long uid){
         AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
         AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
-        criteria.andUidEqualTo(uid).andStatusEqualTo(2).andTypeEqualTo(1);
+        criteria.andTargetUidEqualTo(uid).andStatusEqualTo(2).andTypeEqualTo(1);
         return adoubleTopicApplyMapper.selectByExample(example);
     }
 
