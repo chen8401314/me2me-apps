@@ -2026,6 +2026,7 @@ public class ActivityServiceImpl implements ActivityService {
                     //配对类型为1
                     applyReq.setType(1);
                     activityMybatisDao.createAdoubleTopicApply(applyReq);
+                    log.info("application success");
                     return Response.success(ResponseStatus.APPLICATION_SUCCESS.status, ResponseStatus.APPLICATION_SUCCESS.message);
                 }else{
                     return Response.success(ResponseStatus.NUMBER_IS_BOUND.status, ResponseStatus.NUMBER_IS_BOUND.message);
@@ -2066,6 +2067,7 @@ public class ActivityServiceImpl implements ActivityService {
                     applyElement.setStatus(apply.getStatus());
                     lists.add(applyElement);
                 }
+                log.info("get sendList success");
             }
             //接收到可能很多需要分页
             if(receiveList.size() > 0 && receiveList != null){
@@ -2083,6 +2085,7 @@ public class ActivityServiceImpl implements ActivityService {
                     applyElement.setStatus(apply.getStatus());
                     lists.add(applyElement);
                 }
+                log.info("get receiveList success");
             }
             //我同意的<=1
             if(agreeList.size() > 0 && agreeList != null){
@@ -2100,6 +2103,7 @@ public class ActivityServiceImpl implements ActivityService {
                     applyElement.setStatus(apply.getStatus());
                     lists.add(applyElement);
                 }
+                log.info("get agreeList success");
             }
             return Response.success(ResponseStatus.APPLY_LIST_SUCCESS.status, ResponseStatus.APPLY_LIST_SUCCESS.message,applyListDto);
         }
@@ -2121,6 +2125,7 @@ public class ActivityServiceImpl implements ActivityService {
                     if (atopic == null) {
                         topicApply.setStatus(operaStatus);
                         activityMybatisDao.updateAdoubleTopicApply(topicApply);
+                        log.info("update agree success");
                     } else {
                         return Response.success(ResponseStatus.TARGET_CREATE_TOPIC.status, ResponseStatus.TARGET_CREATE_TOPIC.message);
                     }
@@ -2133,6 +2138,7 @@ public class ActivityServiceImpl implements ActivityService {
             if(topicApply != null){
                 topicApply.setStatus(operaStatus);
                 activityMybatisDao.updateAdoubleTopicApply(topicApply);
+                log.info("update refuse success");
             }
         } else if(operaStatus ==4){
             //删除需要符合条件的才能删除，首先必须是自己发出的申请，并且对方还没有同意的申请才能删除，
@@ -2143,10 +2149,12 @@ public class ActivityServiceImpl implements ActivityService {
                     (topicApply.getStatus() ==2 && atopic != null)){
                 topicApply.setStatus(operaStatus);
                 activityMybatisDao.updateAdoubleTopicApply(topicApply);
+                log.info("update delete success");
             }else {
                 return Response.success(ResponseStatus.CANT_DELETE.status, ResponseStatus.CANT_DELETE.message);
             }
         }
+        log.info("update state success");
         return Response.success(ResponseStatus.UPDATE_STATE_SUCCESS.status, ResponseStatus.UPDATE_STATE_SUCCESS.message);
     }
 
@@ -2197,6 +2205,7 @@ public class ActivityServiceImpl implements ActivityService {
                     lists.add(applyElement);
                 }
                 bridListDto.setTotal(total);
+                log.info("brid get list success");
                 return Response.success(ResponseStatus.BRID_GET_LIST_SUCCESS.status, ResponseStatus.BRID_GET_LIST_SUCCESS.message, bridListDto);
             }
         }//别人抢我的列表
@@ -2215,6 +2224,7 @@ public class ActivityServiceImpl implements ActivityService {
                     lists.add(applyElement);
                 }
                 bridListDto.setTotal(total);
+                log.info("brid get list success");
                 return Response.success(ResponseStatus.BRID_GET_LIST_SUCCESS.status, ResponseStatus.BRID_GET_LIST_SUCCESS.message, bridListDto);
             }
 
@@ -2240,6 +2250,7 @@ public class ActivityServiceImpl implements ActivityService {
             ownerElement.setNickName(ownerProfile.getNickName());
             ownerElement.setUid(ownerProfile.getUid());
             ownerElement.setRobbed(ownerRobbed.size());
+            log.info("get owner doublueLiveState success");
 
             //对方
             DoubleLiveDto.DoubleLiveElement targetElement = doubleLiveDto.createDoubleLiveElement();
@@ -2247,6 +2258,7 @@ public class ActivityServiceImpl implements ActivityService {
             targetElement.setNickName(targetProfile.getNickName());
             targetElement.setUid(targetProfile.getUid());
             targetElement.setRobbed(targetRobbed.size());
+            log.info("get target doublueLiveState success");
 
             ownerInfo.add(ownerElement);
             targetInfo.add(targetElement);
@@ -2255,6 +2267,7 @@ public class ActivityServiceImpl implements ActivityService {
             Date nowDate = new Date();
             int loveDay = differentDaysByMillisecond(createDate ,nowDate);
             doubleLiveDto.setLoveDay(loveDay);
+            log.info("get doublueLiveState success");
             return Response.success(doubleLiveDto);
         }
 
@@ -2269,6 +2282,7 @@ public class ActivityServiceImpl implements ActivityService {
             Map map = Maps.newHashMap();
             map.put("topicId",atopic.getTopicId());
             activityMybatisDao.updateAtopicStatus(map);
+            log.info("divorce success");
             return Response.success(ResponseStatus.DIVORCE_SUCCESS.status, ResponseStatus.DIVORCE_SUCCESS.message);
         }
         return Response.success(ResponseStatus.NOT_GET_DOUBLELIVE.status, ResponseStatus.NOT_GET_DOUBLELIVE.message);
