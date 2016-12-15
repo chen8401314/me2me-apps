@@ -2339,15 +2339,6 @@ public class ActivityServiceImpl implements ActivityService {
 		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.APP_DOWNLOAD.key, null);
 		//0.5 系统运营文章
 		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SYSTEM_ARTICLE.key, null);
-		//0.6 任务
-		Atask lastTask = activityMybatisDao.getLastAtask(1);
-		if(null != lastTask){
-			params = new ArrayList<Map<String, String>>();
-			Map<String, String> map = new HashMap<String, String>();
-			map.put("content", lastTask.getContent());
-			params.add(map);
-			this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.ACTIVITY_TASK.key, params);
-		}
 		
 		Map<String, AactivityStage> stageMap = new HashMap<String, AactivityStage>();
 		List<AactivityStage> allStages = activityMybatisDao.getAactivityStage(1);//7天活动
@@ -2361,8 +2352,6 @@ public class ActivityServiceImpl implements ActivityService {
 		AactivityStage stage3 = stageMap.get("3");//配对阶段
 		AactivityStage stage4 = stageMap.get("4");//抢亲阶段
 		
-		
-		
 		Auser activityUser = null;
 		Atopic singleKingdom = null;
 		Atopic doubleKingdom = null;
@@ -2373,6 +2362,24 @@ public class ActivityServiceImpl implements ActivityService {
 				if(null != singleKingdom){
 					doubleKingdom = activityMybatisDao.getAtopicByAuidDouble(dto.getAuid());
 				}
+			}
+		}
+		
+		int taskType = 0;
+		if(null != doubleKingdom){
+			taskType = 2;
+		}else if(null != singleKingdom){
+			taskType = 1;
+		}
+		if(taskType > 0){
+			//0.6 任务
+			Atask lastTask = activityMybatisDao.getLastAtaskByType(1, taskType);
+			if(null != lastTask){
+				params = new ArrayList<Map<String, String>>();
+				Map<String, String> map = new HashMap<String, String>();
+				map.put("content", lastTask.getContent());
+				params.add(map);
+				this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.ACTIVITY_TASK.key, params);
 			}
 		}
 		

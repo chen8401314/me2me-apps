@@ -140,11 +140,14 @@ public class ActivityMybatisDao {
     	return ataskMapper.selectByExampleWithBLOBs(example);
     }
     
-    public Atask getLastAtask(long activityId){
+    public Atask getLastAtaskByType(long activityId, int type){
     	AtaskExample example = new AtaskExample();
     	AtaskExample.Criteria criteria = example.createCriteria();
     	criteria.andActivityIdEqualTo(activityId);
     	criteria.andStatusEqualTo(0);
+    	if(type == 1){
+    		criteria.andTypeEqualTo(type);
+    	}
     	example.setOrderByClause(" update_time desc limit 1");
     	List<Atask> list = ataskMapper.selectByExampleWithBLOBs(example);
     	if(null != list && list.size() > 0){
