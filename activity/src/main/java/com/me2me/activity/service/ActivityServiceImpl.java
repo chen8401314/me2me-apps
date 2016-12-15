@@ -2265,8 +2265,10 @@ public class ActivityServiceImpl implements ActivityService {
     public Response divorce(long uid, long targetUid) {
         Atopic atopic = activityMybatisDao.getAtopicByUidAndtargetUid(uid ,targetUid);
         if(atopic != null){
-            atopic.setStatus(1);//离婚
-            activityMybatisDao.updateAtopic(atopic);
+//            atopic.setStatus(1);//离婚
+            Map map = Maps.newHashMap();
+            map.put("topicId",atopic.getTopicId());
+            activityMybatisDao.updateAtopicStatus(map);
             return Response.success(ResponseStatus.DIVORCE_SUCCESS.status, ResponseStatus.DIVORCE_SUCCESS.message);
         }
         return Response.success(ResponseStatus.NOT_GET_DOUBLELIVE.status, ResponseStatus.NOT_GET_DOUBLELIVE.message);
@@ -2889,8 +2891,9 @@ public class ActivityServiceImpl implements ActivityService {
                 topicApply.setStatus(operaStatus);
                 activityMybatisDao.updateAdoubleTopicApply(topicApply);
                 //强制离婚
-                atopic.setStatus(1);
-                activityMybatisDao.updateAtopic(atopic);
+                Map map = Maps.newHashMap();
+                map.put("topicId",atopic.getTopicId());
+                activityMybatisDao.updateAtopicStatus(map);
                 return Response.success(ResponseStatus.BRID_IS_SUCCESS.status, ResponseStatus.BRID_IS_SUCCESS.message);
             } else {
                 return Response.success(ResponseStatus.TARGET_NOT_CREATE_TOPIC.status, ResponseStatus.TARGET_NOT_CREATE_TOPIC.message);

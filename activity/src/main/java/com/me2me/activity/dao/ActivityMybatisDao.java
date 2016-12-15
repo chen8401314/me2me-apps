@@ -771,8 +771,8 @@ public class ActivityMybatisDao {
         atopicMapper.updateAtopicStatus(map);
     }
 
-    public void updateAtopic(Atopic atopic){
-        atopicMapper.updateByPrimaryKeySelective(atopic);
+    public void updateAtopic(long topicId){
+        atopicMapper.updateATopic(topicId);
     }
 
     public List<BlurSearchDto> getTopicByBoy(Map map){

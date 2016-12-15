@@ -109,4 +109,6 @@ public interface AtopicMapper {
 
     int getBridListTotal(Map map);
 
+    int updateATopic(Long topicId);
+
 }
