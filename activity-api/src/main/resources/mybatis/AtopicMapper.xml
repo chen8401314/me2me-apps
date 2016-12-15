@@ -390,7 +390,7 @@
    c.gender as gender ,c.avatar as avatar
    FROM `a_topic` a , topic b ,user_profile c WHERE
    gender = 1
-   AND a.`topic_id`=b.`id` AND a.`uid`=c.`uid`
+   AND a.`topic_id`=b.`id` AND a.`uid`=c.`uid` AND a.`type` != 2
    AND a.`status` = 0
    AND (b.`title` LIKE "%${titleName}%" OR c.`nick_name` LIKE "%${nickName}%") limit #{pageNum},#{pageSize}
   </select>
@@ -400,7 +400,7 @@
    c.gender as gender ,c.avatar as avatar
    FROM `a_topic` a , topic b ,user_profile c WHERE
    gender = 0
-   AND a.`topic_id`=b.`id` AND a.`uid`=c.`uid`
+   AND a.`topic_id`=b.`id` AND a.`uid`=c.`uid` AND a.`type` != 2
    AND a.`status` = 0
    AND (b.`title` LIKE "%${titleName}%" OR c.`nick_name` LIKE "%${nickName}%") limit #{pageNum},#{pageSize}
   </select>
