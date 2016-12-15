@@ -2975,7 +2975,7 @@ public class ActivityServiceImpl implements ActivityService {
 				fp = new AforcedPairing();
 				fp.setAuid(auser.getId());
 				fp.setUid(uid);
-				fp.setStatus(1);//取消适配
+				fp.setStatus(1);//强配中
 				fp.setSex(userProfile.getGender());
 				fp.setTargetAuid(0l);
 				fp.setTargetUid(0l);

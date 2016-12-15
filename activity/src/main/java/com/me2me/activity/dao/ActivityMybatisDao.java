@@ -118,7 +118,7 @@ public class ActivityMybatisDao {
     	AforcedPairing fp = new AforcedPairing();
     	fp.setStatus(2);
     	fp.setTargetUid(targetUid);
-    	fp.setTargetUid(targetUid);
+    	fp.setTargetAuid(targetAuid);
     	
     	AforcedPairingExample example = new AforcedPairingExample();
     	AforcedPairingExample.Criteria criteria = example.createCriteria();
