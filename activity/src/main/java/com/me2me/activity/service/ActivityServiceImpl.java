@@ -2867,13 +2867,17 @@ public class ActivityServiceImpl implements ActivityService {
 										item.setConverImage(Constant.QINIU_DOMAIN + "/" + (String)singleTopicInfo.get("live_image"));
 										item.setHot((Long)singleTopicInfo.get("hot"));
 										
-										//设置状态
-										if(doubleTopicInfoMap.get(String.valueOf(uid)) != null){
-											item.setStatus(3);
-										}else if(applyMap.get(String.valueOf(uid)) != null){
-											item.setStatus(2);
+										if(au.getType() == 1){
+											item.setStatus(4);
 										}else{
-											item.setStatus(1);
+											//设置状态
+											if(doubleTopicInfoMap.get(String.valueOf(uid)) != null){
+												item.setStatus(3);
+											}else if(applyMap.get(String.valueOf(uid)) != null){
+												item.setStatus(2);
+											}else{
+												item.setStatus(1);
+											}
 										}
 									}else{
 										item.setStatus(0);//单人王国不存在
