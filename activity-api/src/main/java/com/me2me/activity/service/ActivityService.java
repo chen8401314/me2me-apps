@@ -139,6 +139,8 @@ public interface ActivityService {
 
     Response recommendHistory(long auid, int page, int pageSize);
     
+    Response optForcedPairing(long uid, int action);
+    
     Response operaBrid(long uid ,int applyId ,int operaStatus);
 
 }

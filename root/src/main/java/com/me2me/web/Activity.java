@@ -7,6 +7,7 @@ import com.me2me.common.web.Response;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.web.request.ActivityMiliRequest;
 import com.me2me.web.request.AwardRequest;
+import com.me2me.web.request.OptForcedPairingRequest;
 import com.me2me.web.request.QiUserRequest;
 import com.me2me.web.request.RecommendHistoryRequest;
 
@@ -355,6 +356,17 @@ public class Activity extends BaseController {
     @RequestMapping(value = "/recommendHistory",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response recommendHistory(RecommendHistoryRequest request){
     	return activityService.recommendHistory(request.getAuid(), request.getPage(), request.getPageSize());
+    }
+    
+    /**
+     * 强配操作接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/optForcedPairing",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response optForcedPairing(OptForcedPairingRequest request){
+    	return activityService.optForcedPairing(request.getUid(), request.getAction());
     }
 
     /**

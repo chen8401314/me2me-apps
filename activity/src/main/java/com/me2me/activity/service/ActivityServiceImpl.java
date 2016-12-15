@@ -2339,15 +2339,6 @@ public class ActivityServiceImpl implements ActivityService {
 		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.APP_DOWNLOAD.key, null);
 		//0.5 系统运营文章
 		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SYSTEM_ARTICLE.key, null);
-		//0.6 任务
-		Atask lastTask = activityMybatisDao.getLastAtask(1);
-		if(null != lastTask){
-			params = new ArrayList<Map<String, String>>();
-			Map<String, String> map = new HashMap<String, String>();
-			map.put("content", lastTask.getContent());
-			params.add(map);
-			this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.ACTIVITY_TASK.key, params);
-		}
 		
 		Map<String, AactivityStage> stageMap = new HashMap<String, AactivityStage>();
 		List<AactivityStage> allStages = activityMybatisDao.getAactivityStage(1);//7天活动
@@ -2361,8 +2352,6 @@ public class ActivityServiceImpl implements ActivityService {
 		AactivityStage stage3 = stageMap.get("3");//配对阶段
 		AactivityStage stage4 = stageMap.get("4");//抢亲阶段
 		
-		
-		
 		Auser activityUser = null;
 		Atopic singleKingdom = null;
 		Atopic doubleKingdom = null;
@@ -2373,6 +2362,24 @@ public class ActivityServiceImpl implements ActivityService {
 				if(null != singleKingdom){
 					doubleKingdom = activityMybatisDao.getAtopicByAuidDouble(dto.getAuid());
 				}
+			}
+		}
+		
+		int taskType = 0;
+		if(null != doubleKingdom){
+			taskType = 2;
+		}else if(null != singleKingdom){
+			taskType = 1;
+		}
+		if(taskType > 0){
+			//0.6 任务
+			Atask lastTask = activityMybatisDao.getLastAtaskByType(1, taskType);
+			if(null != lastTask){
+				params = new ArrayList<Map<String, String>>();
+				Map<String, String> map = new HashMap<String, String>();
+				map.put("content", lastTask.getContent());
+				params.add(map);
+				this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.ACTIVITY_TASK.key, params);
 			}
 		}
 		
@@ -2513,7 +2520,34 @@ public class ActivityServiceImpl implements ActivityService {
 						
 						//强配
 						if(isForce(stage3, now)){//强配阶段
-							
+							AforcedPairing fp = activityMybatisDao.getAforcedPairingForUser(singleKingdom.getUid());
+							if(null == fp){
+								//没有申请过，则提示可以强配
+								params = new ArrayList<Map<String, String>>();
+								Map<String, String> map = new HashMap<String, String>();
+								map.put("uid", String.valueOf(singleKingdom.getUid()));
+								params.add(map);
+								this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.FORCED_PAIRING.key, params);
+							}else{
+								if(fp.getStatus() == 1){
+									//申请中，则提示申请中
+									this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.FORCED_PAIRING_1.key, null);
+								}else if(fp.getStatus() == 2){
+									//强配成功，展示可以创建双人王国
+									params = new ArrayList<Map<String, String>>();
+									Map<String, String> map = new HashMap<String, String>();
+									map.put("uid", String.valueOf(singleKingdom.getUid()));
+									if(singleKingdom.getUid() == fp.getUid()){
+										map.put("targetUid", String.valueOf(fp.getTargetUid()));
+									}else{
+										map.put("targetUid", String.valueOf(fp.getUid()));
+									}
+									params.add(map);
+									this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.FORCED_PAIRING_2.key, params);
+								}else{
+									//不需要强配的人，则不需要提示啥了
+								}
+							}
 						}
 					}else{//有双人王国
 						isDoubleCheck = true;
@@ -2741,33 +2775,22 @@ public class ActivityServiceImpl implements ActivityService {
 		if(null == params || params.size() == 0){
 			return content;
 		}
-		Map<String, String> pMap = null;
-		if(key.equals(Specification.ActivityMiliDataKey.ACTIVITY_COUNTDOWN.key)){
-			pMap = params.get(0);
-			content = content.replace("#{dayCount}#", pMap.get("dayCount"));
-		}else if(key.equals(Specification.ActivityMiliDataKey.UPDATE_SINGLE_KINGDOM.key) || key.equals(Specification.ActivityMiliDataKey.UPDATE_DOUBLE_KINGDOM.key)){
-			pMap = params.get(0);
-			content = content.replace("#{topicId}#", pMap.get("topicId"));
-		}else if(key.equals(Specification.ActivityMiliDataKey.RECOMMEND_USER_1.key)){
-			pMap = params.get(0);
-			content = content.replace("#{avatar1}#", pMap.get("avatar"));
-			if(params.size() > 1){
-				pMap = params.get(1);
-				content = content.replace("#{avatar2}#", pMap.get("avatar"));
+		
+		boolean isOne = true;
+		if(params.size() > 1){
+			isOne = false;
+		}
+		
+		for(Map<String, String> map : params){
+			int i = 1;
+			for(Map.Entry<String, String> entry : map.entrySet()){
+				if(isOne){
+					content = content.replace("#{"+entry.getKey()+"}#", entry.getValue());
+				}else{
+					content = content.replace("#{"+entry.getKey()+i+"}#", entry.getValue());
+				}
+				i++;
 			}
-			if(params.size() > 2){
-				pMap = params.get(2);
-				content = content.replace("#{avatar3}#", pMap.get("avatar"));
-			}
-		}else if(key.equals(Specification.ActivityMiliDataKey.MY_DOUBLE_APPLY_AGREED.key)
-				|| key.equals(Specification.ActivityMiliDataKey.MY_DOUBLE_APPLY_REFUSED.key)
-				|| key.equals(Specification.ActivityMiliDataKey.RECIVE_DOUBLE_APPLY.key)
-				|| key.equals(Specification.ActivityMiliDataKey.RECIVE_DOUBLE_APPLY_DELETED.key)){
-			pMap = params.get(0);
-			content = content.replace("#{otherNickName}#", pMap.get("otherNickName"));
-		}else if(key.equals(Specification.ActivityMiliDataKey.ACTIVITY_TASK.key)){
-			pMap = params.get(0);
-			content = content.replace("#{content}#", pMap.get("content"));
 		}
 		
 		return content;
@@ -2898,6 +2921,76 @@ public class ActivityServiceImpl implements ActivityService {
 			log.error("查询失败", e);
 			return Response.failure("查询失败");
 		}
+	}
+	
+	@Override
+	public Response optForcedPairing(long uid, int action) {
+		UserProfile userProfile = userService.getUserProfileByUid(uid);
+		if(null == userProfile){
+			log.info("user is not exist!");
+			return Response.failure("用户不存在");
+		}
+		Auser auser = activityMybatisDao.getAuserByUid(uid);
+		if(null == auser){
+			log.info("uid["+uid+"] is not a activity user");
+			return Response.failure("当前用户不是报名用户");
+		}
+		AforcedPairing fp = activityMybatisDao.getAforcedPairingForUser(uid);
+		if(null != fp){//已经处理过了
+			log.info("repeat opt");
+			return Response.success();
+		}
+		if(action == 2){
+			fp = new AforcedPairing();
+			fp.setAuid(auser.getId());
+			fp.setUid(uid);
+			fp.setStatus(3);//取消适配
+			fp.setSex(userProfile.getGender());
+			fp.setTargetAuid(0l);
+			fp.setTargetUid(0l);
+			fp.setCreateTime(new Date());
+			activityMybatisDao.saveAforcedPairing(fp);
+		}else{
+			//申请强配，如果数据库中有正在等待强配的异性，则直接配上
+			boolean isSucc = false;
+			
+			int searchSex = 0;
+			if(userProfile.getGender() == 0){
+				searchSex = 1;
+			}
+			
+			int n = 1;
+			while(n<=100){//最多循环100次。。防止死循环
+				fp = activityMybatisDao.getOneAforcedPairingByStatusAndSex(1, searchSex);
+				if(null == fp){
+					//没有强配
+					break;
+				}
+				int updateRow = activityMybatisDao.updateAforcedPairing2Success(fp.getId(), uid, auser.getId());
+				if(updateRow == 0){//说明没有更新成功被别人更新去了。。所以得重新循环来
+					n++;
+					continue;
+				}else{
+					//更新成功
+					isSucc = true;
+					break;
+				}
+			}
+			
+			if(!isSucc){
+				//没配到的则记录下来等待别人来配
+				fp = new AforcedPairing();
+				fp.setAuid(auser.getId());
+				fp.setUid(uid);
+				fp.setStatus(1);//强配中
+				fp.setSex(userProfile.getGender());
+				fp.setTargetAuid(0l);
+				fp.setTargetUid(0l);
+				fp.setCreateTime(new Date());
+				activityMybatisDao.saveAforcedPairing(fp);
+			}
+		}
+		return Response.success();
 	}
 	
 	@Override
