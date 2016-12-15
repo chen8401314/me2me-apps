@@ -12,6 +12,8 @@ import java.util.List;
 @Data
 public class BridListDto implements BaseEntity {
 
+    private int total;
+
     private List<ApplyElement> bridList = Lists.newArrayList();
 
     public ApplyElement createApplyElement(){

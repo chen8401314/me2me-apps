@@ -100,4 +100,8 @@ public interface AdoubleTopicApplyMapper {
 
     int getReceiveListTotal(Long uid);
 
+    List<AdoubleTopicApply> getDoubleTipicByBridAndUid(Map map);
+
+    List<AdoubleTopicApply> getDoubleTipicByBridAndTargetUid(Map map);
+
 }

@@ -104,7 +104,9 @@ public class SmsServiceImpl implements SmsService {
     @Override
     public void send7daySignUp(String mobile) {
         HashMap<String,Object> result = null;
-        result = messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobile,"106877",new String[]{"测试","5"});
+        //没有需要传的数据传空，否则报错
+        result = messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobile,"142378",new String[]{""});
+        System.out.println(result);
     }
 
     @Override

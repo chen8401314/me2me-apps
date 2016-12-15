@@ -1385,8 +1385,8 @@ public class ActivityServiceImpl implements ActivityService {
         }
 
         activityMybatisDao.createAuser(auser);
-        //发送短信 报名成功(模板未给)
-//        smsService.send7daySignUp(qiUserDto.getMobile());
+        //发送短信 报名成功
+        //smsService.send7daySignUp(qiUserDto.getMobile());
         return Response.success(ResponseStatus.REGISTRATION_SUCCESS.status, ResponseStatus.REGISTRATION_SUCCESS.message);
     }
 
@@ -2176,20 +2176,45 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Response bridSearch(long uid) {
-        List<AdoubleTopicApply> applyList = activityMybatisDao.getAdoubleTopicApplyByUidandTypeBrid(uid,2);
-        BridListDto bridListDto = new BridListDto();
-        List<BridListDto.ApplyElement> lists = bridListDto.getBridList();
-        if(applyList.size() > 0 && applyList != null){
-            for(AdoubleTopicApply topicApply:applyList){
-                BridListDto.ApplyElement applyElement = bridListDto.createApplyElement();
-                UserProfile userProfile = userService.getUserProfileByUid(topicApply.getTargetUid());
-                BeanUtils.copyProperties(userProfile,applyElement);
-                applyElement.setId(topicApply.getId());
-                applyElement.setStatus(topicApply.getStatus());
-                lists.add(applyElement);
+    public Response bridSearch(long uid ,int type ,int pageNum ,int pageSize) {
+        int total = 0;
+        //我抢别人的列表
+        if(type == 1) {
+            List<AdoubleTopicApply> applyList = activityMybatisDao.getDoubleTipicByBridAndUid(uid ,2 ,pageNum ,pageSize);
+            BridListDto bridListDto = new BridListDto();
+            List<BridListDto.ApplyElement> lists = bridListDto.getBridList();
+            if (applyList.size() > 0 && applyList != null) {
+                for (AdoubleTopicApply topicApply : applyList) {
+                    BridListDto.ApplyElement applyElement = bridListDto.createApplyElement();
+                    UserProfile userProfile = userService.getUserProfileByUid(topicApply.getTargetUid());
+                    BeanUtils.copyProperties(userProfile, applyElement);
+                    applyElement.setId(topicApply.getId());
+                    applyElement.setStatus(topicApply.getStatus());
+                    total ++;
+                    lists.add(applyElement);
+                }
+                bridListDto.setTotal(total);
+                return Response.success(ResponseStatus.BRID_GET_LIST_SUCCESS.status, ResponseStatus.BRID_GET_LIST_SUCCESS.message, bridListDto);
             }
-            return Response.success(ResponseStatus.BRID_GET_LIST_SUCCESS.status, ResponseStatus.BRID_GET_LIST_SUCCESS.message,bridListDto);
+        }//别人抢我的列表
+        if(type == 2){
+            List<AdoubleTopicApply> applyList = activityMybatisDao.getDoubleTipicByBridAndTargetUid(uid ,2 ,pageNum ,pageSize);
+            BridListDto bridListDto = new BridListDto();
+            List<BridListDto.ApplyElement> lists = bridListDto.getBridList();
+            if (applyList.size() > 0 && applyList != null) {
+                for (AdoubleTopicApply topicApply : applyList) {
+                    BridListDto.ApplyElement applyElement = bridListDto.createApplyElement();
+                    UserProfile userProfile = userService.getUserProfileByUid(topicApply.getUid());
+                    BeanUtils.copyProperties(userProfile, applyElement);
+                    applyElement.setId(topicApply.getId());
+                    applyElement.setStatus(topicApply.getStatus());
+                    total ++;
+                    lists.add(applyElement);
+                }
+                bridListDto.setTotal(total);
+                return Response.success(ResponseStatus.BRID_GET_LIST_SUCCESS.status, ResponseStatus.BRID_GET_LIST_SUCCESS.message, bridListDto);
+            }
+
         }
         return Response.success(ResponseStatus.BRID_GET_LIST_FAILURE.status, ResponseStatus.BRID_GET_LIST_FAILURE.message);
     }
