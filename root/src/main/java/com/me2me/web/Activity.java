@@ -342,4 +342,19 @@ public class Activity extends BaseController {
     public Response divorce(QiUserRequest request){
         return activityService.divorce(request.getUid() ,request.getTargetUid());
     }
+
+    /**
+     * 抢亲列表查询
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getBridList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getBridList(QiUserRequest request){
+        //（0异性，1同性，2男，3女，4所有）现在没人接收异性0
+        return activityService.getBridList(request.getUid() ,request.getTopicName() ,request.getNickName() ,
+                request.getPageNum() ,request.getPageSize());
+    }
+
 }

@@ -1869,8 +1869,8 @@ public class ActivityServiceImpl implements ActivityService {
             if(userProfile.getGender() == 0) {
                 //查询总记录数
                 map.put("gender",1);
-                int total = activityMybatisDao.getAliveList(map);
-                atopicInfoDto.setTotal(total);
+//                int total = activityMybatisDao.getAliveList(map);
+                int total = 0;
                 //0女 查询男
                 List<BlurSearchDto> boyList = activityMybatisDao.getTopicByBoy(map);
                 if(boyList.size()>0 && boyList != null){
@@ -1882,19 +1882,22 @@ public class ActivityServiceImpl implements ActivityService {
                             blurSearchDto.setIsAlone(1);
                         }
                         //申请过的不再显示
-                        List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(blurSearchDto.getUid());
+                        List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(uid ,blurSearchDto.getUid());
                         if(list.size() == 0){
+                            total++;
                             atopicInfoDto.getBlurSearchList().add(blurSearchDto);
                         }
                     }
+                    atopicInfoDto.setTotal(total);
                     log.info("get aliveInfo success");
                     return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message,atopicInfoDto);
                 }
 
             }else{
                 map.put("gender",0);
-                int total = activityMybatisDao.getAliveList(map);
-                atopicInfoDto.setTotal(total);
+//                int total = activityMybatisDao.getAliveList(map);
+//                atopicInfoDto.setTotal(total);
+                int total = 0;
                 //1男 //查询女
                 List<BlurSearchDto> girlList = activityMybatisDao.getTopicByGirl(map);
                 if(girlList.size()>0 && girlList != null){
@@ -1906,17 +1909,84 @@ public class ActivityServiceImpl implements ActivityService {
                             blurSearchDto.setIsAlone(1);
                         }
                         //申请过的不再显示
-                        List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(blurSearchDto.getUid());
+                        List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(uid ,blurSearchDto.getUid());
                         if(list.size() == 0){
+                            total ++;
                             atopicInfoDto.getBlurSearchList().add(blurSearchDto);
                         }
                     }
+                    atopicInfoDto.setTotal(total);
                     log.info("get aliveInfo success");
                     return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message,atopicInfoDto);
                 }
             }
         }
         return Response.success(ResponseStatus.SEARCH_ATOPIC_FAILURE.status, ResponseStatus.SEARCH_ATOPIC_FAILURE.message,atopicInfoDto);
+    }
+
+    @Override
+    public Response getBridList(long uid, String topicName, String nickName, int pageNum, int pageSize) {
+        //判断当前是男性还是女性，查询出相反性别
+        UserProfile userProfile = userService.getUserProfileByUid(uid);
+        Map map = Maps.newHashMap();
+        AtopicInfoDto atopicInfoDto = new AtopicInfoDto();
+        map.put("titleName",topicName);
+        map.put("nickName",nickName);
+        if(pageNum != 0){
+            pageNum = pageNum*pageSize;
+        }
+        map.put("pageNum",pageNum);
+        map.put("pageSize",pageSize);
+
+        if(userProfile != null) {
+            if (userProfile.getGender() == 0) {
+                //查询总记录数
+                map.put("gender", 1);
+                // TODO: 2016/12/15
+//                int total = activityMybatisDao.getBridListTotal(map);
+//                atopicInfoDto.setTotal(total);
+                int total = 0;
+                //0女 查询男
+                List<BlurSearchDto> boyList = activityMybatisDao.getBridList(map);
+                if (boyList.size() > 0 && boyList != null) {
+                    for (BlurSearchDto blurSearchDto : boyList) {
+                        //申请过的不再显示
+                        List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid4(uid ,blurSearchDto.getUid());
+                        if (list.size() == 0) {
+                            total ++;
+                            atopicInfoDto.getBlurSearchList().add(blurSearchDto);
+                        }
+                    }
+                    atopicInfoDto.setTotal(total);
+                    log.info("get bridList success");
+                    return Response.success(ResponseStatus.SEARCH_BRIDLIST_SUCCESS.status, ResponseStatus.SEARCH_BRIDLIST_SUCCESS.message, atopicInfoDto);
+                }
+
+            } else {
+                map.put("gender", 0);
+//                int total = activityMybatisDao.getBridListTotal(map);
+//                atopicInfoDto.setTotal(total);
+                int total = 0;
+                //1男 //查询女
+                List<BlurSearchDto> girlList = activityMybatisDao.getBridList(map);
+                if (girlList.size() > 0 && girlList != null) {
+                    for (BlurSearchDto blurSearchDto : girlList) {
+                        //申请过的不再显示
+                        List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid4(uid ,blurSearchDto.getUid());
+                        if (list.size() == 0) {
+                            total ++;
+                            atopicInfoDto.getBlurSearchList().add(blurSearchDto);
+                        }
+                    }
+                    atopicInfoDto.setTotal(total);
+                    log.info("get bridList success");
+                    return Response.success(ResponseStatus.SEARCH_BRIDLIST_SUCCESS.status, ResponseStatus.SEARCH_BRIDLIST_SUCCESS.message, atopicInfoDto);
+                }
+            }
+
+        }
+            return null;
+
     }
 
     @Override

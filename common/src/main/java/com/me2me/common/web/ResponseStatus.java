@@ -275,7 +275,7 @@ public enum  ResponseStatus {
 
     APPLICATION_EXISTS("申请中或者对方已经同意了你的请求","application exists ", 200130),
 
-
+    SEARCH_BRIDLIST_SUCCESS("查询抢亲列表信息成功","search bridlist success", 200131),
 
 
 
