@@ -137,6 +137,8 @@ public interface ActivityService {
     
     Response genActivity7DayMiliList(Activity7DayMiliDTO dto);
 
+    Response recommendHistory(long auid, int page, int pageSize);
+    
     Response operaBrid(long uid ,int applyId ,int operaStatus);
 
 }

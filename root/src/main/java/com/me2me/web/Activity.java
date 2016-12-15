@@ -8,6 +8,7 @@ import com.me2me.sms.dto.VerifyDto;
 import com.me2me.web.request.ActivityMiliRequest;
 import com.me2me.web.request.AwardRequest;
 import com.me2me.web.request.QiUserRequest;
+import com.me2me.web.request.RecommendHistoryRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -341,6 +342,17 @@ public class Activity extends BaseController {
     @RequestMapping(value = "/divorce",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response divorce(QiUserRequest request){
         return activityService.divorce(request.getUid() ,request.getTargetUid());
+    }
+    
+    /**
+     * 推荐历史列表接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/recommendHistory",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response recommendHistory(RecommendHistoryRequest request){
+    	return activityService.recommendHistory(request.getAuid(), request.getPage(), request.getPageSize());
     }
 
     /**

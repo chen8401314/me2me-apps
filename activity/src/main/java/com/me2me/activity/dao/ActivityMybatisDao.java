@@ -121,6 +121,21 @@ public class ActivityMybatisDao {
     	arecommendUserMapper.insertSelective(recUser);
     }
     
+    public List<ArecommendUser> getArecommendUserPageByAuid(long auid, int start, int pageSize){
+    	ArecommendUserExample example = new ArecommendUserExample();
+    	ArecommendUserExample.Criteria criteria = example.createCriteria();
+    	criteria.andAuidEqualTo(auid);
+    	example.setOrderByClause(" create_time desc limit "+start+","+pageSize);
+    	return arecommendUserMapper.selectByExample(example);
+    }
+    
+    public int countArecommendUserPageByAuid(long auid){
+    	ArecommendUserExample example = new ArecommendUserExample();
+    	ArecommendUserExample.Criteria criteria = example.createCriteria();
+    	criteria.andAuidEqualTo(auid);
+    	return arecommendUserMapper.countByExample(example);
+    }
+    
     public void saveArecommendUserDesc(ArecommendUserDesc desc){
     	arecommendUserDescMapper.insertSelective(desc);
     }
@@ -584,12 +599,14 @@ public class ActivityMybatisDao {
         return adoubleTopicApplyMapper.selectByExample(example);
     }
 
-//    public List<AdoubleTopicApply> getAdoubleTopicApplyByUid(long uid){
-//        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
-//        AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
-//        criteria.andUidEqualTo(uid);
-//        return adoubleTopicApplyMapper.selectByExample(example);
-//    }
+    public List<AdoubleTopicApply> getAdoubleTopicApplyByUidAndTargetUids(long uid, List<Long> targetUids, int type){
+        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+        AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTypeEqualTo(type);
+        criteria.andTargetUidIn(targetUids);
+        return adoubleTopicApplyMapper.selectByExample(example);
+    }
 
     public AdoubleTopicApply getAdoubleTopicApplyById(long id){
         AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
