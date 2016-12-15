@@ -1879,7 +1879,7 @@ public class ActivityServiceImpl implements ActivityService {
                         Atopic isAlone = activityMybatisDao.getAtopicByUid2(blurSearchDto.getUid());
                         if(isAlone != null){
                             //有 不是单身
-                            blurSearchDto.setIsAlone(0);
+                            blurSearchDto.setIsAlone(1);
                         }
                         //申请过的不再显示
                         List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(uid ,blurSearchDto.getUid());
@@ -1906,7 +1906,7 @@ public class ActivityServiceImpl implements ActivityService {
                         Atopic isAlone = activityMybatisDao.getAtopicByUid2(blurSearchDto.getUid());
                         if(isAlone != null){
                             //有 不是单身
-                            blurSearchDto.setIsAlone(0);
+                            blurSearchDto.setIsAlone(1);
                         }
                         //申请过的不再显示
                         List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(uid ,blurSearchDto.getUid());
