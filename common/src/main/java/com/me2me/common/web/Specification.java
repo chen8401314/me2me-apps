@@ -1102,6 +1102,9 @@ public interface Specification {
     	RECIVE_ROB_BRIDE_APPLY("RECIVE_ROB_BRIDE_APPLY", "接收到抢亲请求"),
     	RECIVE_ROB_BRIDE_APPLY_DELETED("RECIVE_ROB_BRIDE_APPLY_DELETED", "接收到的抢亲请求被撤销"),
     	ROB_BRIDE_TARGET("ROB_BRIDE_TARGET", "你的对方被抢"),
+    	FORCED_PAIRING("FORCED_PAIRING", "可以强配"),
+    	FORCED_PAIRING_1("FORCED_PAIRING_1", "强配中"),
+    	FORCED_PAIRING_2("FORCED_PAIRING_1", "强配成功"),
     	
     	
     	;

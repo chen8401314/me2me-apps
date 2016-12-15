@@ -82,8 +82,56 @@ public class ActivityMybatisDao {
     private ArecommendUserDescMapper arecommendUserDescMapper;
     
     @Autowired
+    private AforcedPairingMapper aforcedPairingMapper;
+    
+    @Autowired
     private AtaskMapper ataskMapper;
 
+    public AforcedPairing getAforcedPairingForUser(long uid){
+    	AforcedPairingExample example = new AforcedPairingExample();
+    	AforcedPairingExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	AforcedPairingExample.Criteria criteria2 = example.createCriteria();
+    	criteria2.andTargetUidEqualTo(uid);
+    	example.or(criteria2);
+    	List<AforcedPairing> list = aforcedPairingMapper.selectByExample(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
+    
+    public AforcedPairing getOneAforcedPairingByStatusAndSex(int status, int sex){
+    	AforcedPairingExample example = new AforcedPairingExample();
+    	AforcedPairingExample.Criteria criteria = example.createCriteria();
+    	criteria.andSexEqualTo(sex);
+    	criteria.andStatusEqualTo(status);
+    	example.setOrderByClause(" id limit 1");
+    	List<AforcedPairing> list = aforcedPairingMapper.selectByExample(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
+    
+    public int updateAforcedPairing2Success(long id, long targetUid, long targetAuid){
+    	AforcedPairing fp = new AforcedPairing();
+    	fp.setStatus(2);
+    	fp.setTargetUid(targetUid);
+    	fp.setTargetUid(targetUid);
+    	
+    	AforcedPairingExample example = new AforcedPairingExample();
+    	AforcedPairingExample.Criteria criteria = example.createCriteria();
+    	criteria.andIdEqualTo(id);
+    	criteria.andStatusEqualTo(1);
+    	
+    	return aforcedPairingMapper.updateByExampleSelective(fp, example);
+    }
+    
+    public void saveAforcedPairing(AforcedPairing fp){
+    	aforcedPairingMapper.insertSelective(fp);
+    }
+    
     public List<Atask> getAtasks(long activityId){
     	AtaskExample example = new AtaskExample();
     	AtaskExample.Criteria criteria = example.createCriteria();
