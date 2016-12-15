@@ -644,10 +644,17 @@ public class ActivityMybatisDao {
         return adoubleTopicApplyMapper.selectByExample(example);
     }
 
-    public List<AdoubleTopicApply> getAdoubleTopicApplyByUid3(long uid){
+    public List<AdoubleTopicApply> getAdoubleTopicApplyByUid3(long uid ,long targetUid){
         AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
         AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
-        criteria.andTargetUidEqualTo(uid).andTypeEqualTo(1).andStatusNotEqualTo(4);
+        criteria.andUidEqualTo(uid).andTargetUidEqualTo(targetUid).andTypeEqualTo(1).andStatusNotEqualTo(4);
+        return adoubleTopicApplyMapper.selectByExample(example);
+    }
+
+    public List<AdoubleTopicApply> getAdoubleTopicApplyByUid4(long uid ,long targetUid){
+        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+        AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid).andTargetUidEqualTo(targetUid).andTypeEqualTo(2).andStatusNotEqualTo(4);
         return adoubleTopicApplyMapper.selectByExample(example);
     }
 
@@ -671,6 +678,10 @@ public class ActivityMybatisDao {
 
     public int getAliveList(Map map){
         return atopicMapper.getAliveList(map);
+    }
+
+    public int getBridListTotal(Map map){
+        return atopicMapper.getBridListTotal(map);
     }
 
     public List<AdoubleTopicApply> getAdoubleTopicApplyByUidAgree(long uid){
@@ -753,6 +764,10 @@ public class ActivityMybatisDao {
 
     public List<BlurSearchDto> getTopicByGirl(Map map){
         return atopicMapper.getTopicByGirl(map);
+    }
+
+    public List<BlurSearchDto> getBridList(Map map){
+        return atopicMapper.getBridList(map);
     }
 
     public Atopic getAtopicByAuidDoubleByUid(long uid){
