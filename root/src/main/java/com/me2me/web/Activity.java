@@ -342,4 +342,6 @@ public class Activity extends BaseController {
     public Response divorce(QiUserRequest request){
         return activityService.divorce(request.getUid() ,request.getTargetUid());
     }
+    
+//    public Response recommendHistory()
 }

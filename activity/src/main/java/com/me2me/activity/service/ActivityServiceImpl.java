@@ -2496,7 +2496,20 @@ public class ActivityServiceImpl implements ActivityService {
 			}
 		}
 		
-		
+		//米粒排序
+		if(respDTO.getResult().size() > 1){
+			Collections.sort(respDTO.getResult(), new Comparator<Show7DayMiliDTO.MiliElement>(){
+	            public int compare(Show7DayMiliDTO.MiliElement e1, Show7DayMiliDTO.MiliElement e2) {
+	            	if(e1.getOrder() == e2.getOrder()){
+	            		return 0;
+	            	}else if(e1.getOrder() > e2.getOrder()){
+	            		return 1;
+	            	}else{
+	            		return -1;
+	            	}
+	            }
+	        });
+		}
 		
 		return Response.success(respDTO);
 	}
