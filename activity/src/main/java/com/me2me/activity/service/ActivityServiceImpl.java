@@ -2916,7 +2916,7 @@ public class ActivityServiceImpl implements ActivityService {
             //拒绝直接改变状态
             topicApply.setStatus(operaStatus);
             activityMybatisDao.updateAdoubleTopicApply(topicApply);
-            return Response.success(ResponseStatus.BRID_IS_FAILURE.status, ResponseStatus.BRID_IS_FAILURE.message);
+            return Response.success (ResponseStatus.BRID_IS_FAILURE.status, ResponseStatus.BRID_IS_FAILURE.message);
         }else if(operaStatus ==4){
             topicApply.setStatus(operaStatus);
             activityMybatisDao.updateAdoubleTopicApply(topicApply);
