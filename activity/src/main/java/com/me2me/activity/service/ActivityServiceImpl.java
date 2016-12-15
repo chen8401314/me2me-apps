@@ -2758,6 +2758,129 @@ public class ActivityServiceImpl implements ActivityService {
 	}
 
 	@Override
+	public Response recommendHistory(long auid, int page, int pageSize) {
+		ShowRecommendHistoryDTO srhDTO = new ShowRecommendHistoryDTO();
+		try{
+			if(page < 1){
+				page = 1;
+			}
+			if(pageSize < 1){
+				pageSize = 10;
+			}
+			int start = (page-1)*pageSize;
+			srhDTO.setTotalCount(activityMybatisDao.countArecommendUserPageByAuid(auid));
+			srhDTO.setTotalPage(srhDTO.getTotalCount()%pageSize==0?srhDTO.getTotalCount()/pageSize:srhDTO.getTotalCount()/pageSize+1);
+			List<ArecommendUser> list = activityMybatisDao.getArecommendUserPageByAuid(auid, start, pageSize);
+			if(null != list && list.size() > 0){
+				long currentUid = list.get(0).getUid();
+				List<Long> uidList = new ArrayList<Long>();
+				String[] uids = null;
+				for(ArecommendUser au : list){
+					if(!StringUtils.isEmpty(au.getRecTimeKey()) 
+							&& !StringUtils.isEmpty(au.getRecUsers())){
+						uids = au.getRecUsers().split(",");
+						if(null != uids && uids.length > 0){
+							for(String u : uids){
+								long uid = Long.valueOf(u);
+								uidList.add(uid);
+							}
+						}
+					}
+				}
+				
+				Map<String, UserProfile> userProfileMap = new HashMap<String, UserProfile>();
+				Map<String, Map<String, Object>> singleTopicInfoMap = new HashMap<String, Map<String, Object>>();
+				Map<String, Map<String, Object>> doubleTopicInfoMap = new HashMap<String, Map<String, Object>>();
+				Map<String, AdoubleTopicApply> applyMap = new HashMap<String, AdoubleTopicApply>();
+				if(uidList.size() > 0){
+					List<UserProfile> userProfileList = userService.getUserProfilesByUids(uidList);
+					if(null != userProfileList && userProfileList.size() > 0){
+						for(UserProfile up : userProfileList){
+							userProfileMap.put(String.valueOf(up.getUid()), up);
+						}
+					}
+					
+					List<Map<String, Object>> singleTopicInfoList = liveForActivityDao.getAtopicInfoByUids(uidList, 1);
+					if(null != singleTopicInfoList && singleTopicInfoList.size() > 0){
+						for(Map<String, Object> st : singleTopicInfoList){
+							singleTopicInfoMap.put(String.valueOf(st.get("uid")), st);
+						}
+					}
+					
+					List<Map<String, Object>> doubleTopicInfoList = liveForActivityDao.getAtopicInfoByUids(uidList, 2);
+					if(null != doubleTopicInfoList && doubleTopicInfoList.size() > 0){
+						for(Map<String, Object> st : doubleTopicInfoList){
+							doubleTopicInfoMap.put(String.valueOf(st.get("uid")), st);
+						}
+					}
+					
+					List<AdoubleTopicApply> applyList = activityMybatisDao.getAdoubleTopicApplyByUidAndTargetUids(currentUid, uidList, 1);
+					if(null != applyList && applyList.size() > 0){
+						for(AdoubleTopicApply a : applyList){
+							applyMap.put(String.valueOf(a.getTargetUid()), a);
+						}
+					}
+				}
+				
+				ShowRecommendHistoryDTO.RecommendElement e = null;
+				ShowRecommendHistoryDTO.RecommendUserItem item = null;
+				UserProfile userProfile = null;
+				Map<String, Object> singleTopicInfo = null;
+				for(ArecommendUser au : list){
+					if(!StringUtils.isEmpty(au.getRecTimeKey()) 
+							&& !StringUtils.isEmpty(au.getRecUsers())){
+						e = new ShowRecommendHistoryDTO.RecommendElement();
+						e.setRecommendTime(DateUtil.string2date(au.getRecTimeKey(), "yyyyMMddHH"));
+						uids = au.getRecUsers().split(",");
+						if(null != uids && uids.length > 0){
+							for(String u : uids){
+								long uid = Long.valueOf(u);
+								userProfile = userProfileMap.get(String.valueOf(uid));
+								if(null != userProfile){
+									item = new ShowRecommendHistoryDTO.RecommendUserItem();
+									item.setUid(userProfile.getUid());
+									item.setNickName(userProfile.getNickName());
+									item.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+									item.setSex(userProfile.getGender());
+									item.setVlv(userProfile.getvLv());
+									
+									singleTopicInfo = singleTopicInfoMap.get(String.valueOf(uid));
+									if(null != singleTopicInfo){
+										item.setTopicId((Long)singleTopicInfo.get("topic_id"));
+										item.setTitle((String)singleTopicInfo.get("title"));
+										item.setConverImage(Constant.QINIU_DOMAIN + "/" + (String)singleTopicInfo.get("live_image"));
+										item.setHot((Long)singleTopicInfo.get("hot"));
+										
+										//设置状态
+										if(doubleTopicInfoMap.get(String.valueOf(uid)) != null){
+											item.setStatus(3);
+										}else if(applyMap.get(String.valueOf(uid)) != null){
+											item.setStatus(2);
+										}else{
+											item.setStatus(1);
+										}
+									}else{
+										item.setStatus(0);//单人王国不存在
+									}
+									e.getUserList().add(item);
+								}
+							}
+						}
+						if(e.getUserList().size() > 0){
+							srhDTO.getResult().add(e);
+						}
+					}
+				}
+			}
+			
+			return Response.success(srhDTO);
+		}catch(Exception e){
+			log.error("查询失败", e);
+			return Response.failure("查询失败");
+		}
+	}
+	
+	@Override
     public Response operaBrid(long uid, int applyId, int operaStatus) {
         AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
         if(operaStatus ==2){
@@ -2778,6 +2901,7 @@ public class ActivityServiceImpl implements ActivityService {
             activityMybatisDao.updateAdoubleTopicApply(topicApply);
             return Response.success(ResponseStatus.BRID_IS_FAILURE.status, ResponseStatus.BRID_IS_FAILURE.message);
         }
-        return null;
+        return Response.failure("不支持的操作类型");
     }
+
 }

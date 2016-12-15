@@ -64,4 +64,23 @@ public class LiveForActivityDao {
 		}
 		return null;
 	}
+	
+	public List<Map<String, Object>> getAtopicInfoByUids(List<Long> uids, int type){
+		if(null == uids || uids.size() == 0){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select p.uid,t.topic_id,p.title,p.live_image,t.hot");
+		sb.append(" from topic p,a_topic t");
+		sb.append(" where p.id=t.topic_id and t.type=").append(type);
+		sb.append(" and t.status=0 and t.uid in (");
+		for(int i=0;i<uids.size();i++){
+			if(i > 0){
+				sb.append(",");
+			}
+			sb.append(uids.get(i));
+		}
+		sb.append(")");
+		return jdbcTemplate.queryForList(sb.toString());
+	}
 }
