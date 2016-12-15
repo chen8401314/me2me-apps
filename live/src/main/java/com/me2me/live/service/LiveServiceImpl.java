@@ -1909,15 +1909,16 @@ public class LiveServiceImpl implements LiveService {
 			log.info("special kingdom check end...");
 		}
 		
+		Date now = new Date();
 		log.info("create cover..");
 		Topic topic = new Topic();
 		topic.setTitle(createKingdomDto.getTitle());
         topic.setLiveImage(createKingdomDto.getLiveImage());
         topic.setUid(createKingdomDto.getUid());
         topic.setStatus(Specification.LiveStatus.LIVING.index);
-        Calendar calendar = Calendar.getInstance();
-        topic.setLongTime(calendar.getTimeInMillis());
-        topic.setCreateTime(new Date());
+        topic.setLongTime(now.getTime());
+        topic.setCreateTime(now);
+        topic.setUpdateTime(now);
         JSONArray array = new JSONArray();
         array.add(createKingdomDto.getUid());
         if(isDouble){
@@ -1961,6 +1962,7 @@ public class LiveServiceImpl implements LiveService {
             topicFragment.setTopId(0l);
             topicFragment.setSource(createKingdomDto.getSource());
             topicFragment.setExtra(createKingdomDto.getExtra());
+            topicFragment.setCreateTime(now);
             liveMybatisDao.createTopicFragment(topicFragment);
             lastFragmentId = topicFragment.getId();
             total++;
@@ -1990,6 +1992,7 @@ public class LiveServiceImpl implements LiveService {
                     topicFragment.setBottomId(0l);
                     topicFragment.setTopId(0l);
                     topicFragment.setSource(createKingdomDto.getSource());
+                    topicFragment.setCreateTime(now);
                     e = map.get(String.valueOf(i));
                     if(null == e){
                     	e = "";
