@@ -1937,7 +1937,7 @@ public class ActivityServiceImpl implements ActivityService {
         }
         map.put("pageNum",pageNum);
         map.put("pageSize",pageSize);
-        //区分智能排序
+        //区分智能排序 按照昵称首字母排序
         if(type != 0){
             map.put("type",type);
         }

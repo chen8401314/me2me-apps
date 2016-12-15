@@ -429,7 +429,7 @@ WHERE gender = #{gender}
     OR c.`nick_name` LIKE "%${nickName}%"
   )
     <if test="type != null">
-      ORDER by id DESC
+      ORDER BY CONVERT(c.`nick_name` USING gbk) COLLATE gbk_chinese_ci ASC
     </if>
   limit #{pageNum},#{pageSize}
   </select>
