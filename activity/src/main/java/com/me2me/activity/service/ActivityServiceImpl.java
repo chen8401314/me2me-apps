@@ -2082,7 +2082,13 @@ public class ActivityServiceImpl implements ActivityService {
                         applyElement.setTitle((String) topic.get("title"));
                     }
                     applyElement.setId(apply.getId());
-                    applyElement.setStatus(apply.getStatus());
+                    //查询像我发出的申请的人有没有同意别人的邀请 如果同意了返回2
+                    AdoubleTopicApply only = activityMybatisDao.getAdoubleTopicApplyByUid5(apply.getUid());
+                    if(only != null){
+                        applyElement.setStatus(2);
+                    }else {
+                        applyElement.setStatus(apply.getStatus());
+                    }
                     lists.add(applyElement);
                 }
                 log.info("get receiveList success");
