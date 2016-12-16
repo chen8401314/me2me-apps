@@ -1386,7 +1386,7 @@ public class ActivityServiceImpl implements ActivityService {
 
         activityMybatisDao.createAuser(auser);
         //发送短信 报名成功
-//        smsService.send7daySignUp(qiUserDto.getMobile());
+        //smsService.send7dayCommon("142378",qiUserDto.getMobile(),null,null);
         return Response.success(ResponseStatus.REGISTRATION_SUCCESS.status, ResponseStatus.REGISTRATION_SUCCESS.message);
     }
 
