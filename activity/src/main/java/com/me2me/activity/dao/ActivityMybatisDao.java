@@ -778,6 +778,18 @@ public class ActivityMybatisDao {
         return adoubleTopicApplyMapper.selectByExample(example);
     }
 
+    public AdoubleTopicApply getAdoubleTopicApplyByUid5(long uid){
+        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+        AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid).andStatusEqualTo(2).andTypeEqualTo(1);
+        //或者 满足下面条件
+        AdoubleTopicApplyExample.Criteria criteria2 = example.createCriteria();
+        criteria2.andTargetUidEqualTo(uid).andStatusEqualTo(2).andTypeEqualTo(1);
+        example.or(criteria2);
+        List<AdoubleTopicApply> list = adoubleTopicApplyMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
+    }
+
     public List<AdoubleTopicApply> getAdoubleTopicApplyByUidReceive(long uid ,int pageNum ,int pageSize){
 //        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
 //        AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();

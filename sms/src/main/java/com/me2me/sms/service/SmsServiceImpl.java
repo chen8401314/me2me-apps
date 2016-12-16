@@ -111,18 +111,48 @@ public class SmsServiceImpl implements SmsService {
 
     @Override
     public void send7dayApply(List mobileList) {
-        String mobiles = getListMobileToString(mobileList);
+        String mobiles = getListToString(mobileList);
         HashMap<String,Object> result = null;
         result = messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobiles,"106877",new String[]{"测试","5"});
     }
 
+    @Override
+    public void send7dayCommon(String templateId ,String mobile ,List mobileList ,List message) {
+        String messages;
+        //审核走List 多个手机号
+        if(mobileList != null){
+            String mobiles = getListToString(mobileList);
+            if(message != null){
+                messages = getListToString(message);
+            }else {
+                messages = "";
+            }
+            getResult(templateId,mobiles,messages);
+        }
+        else{
+        //其余模板走通用
+            if(!org.springframework.util.StringUtils.isEmpty(message)){
+                messages = getListToString(message);
+            }else {
+                messages = "";
+            }
+                getResult(templateId,mobile,messages);
+        }
+    }
+
+    public HashMap<String,Object> getResult(String templateId ,String mobiles ,String message){
+        HashMap<String,Object> result = null;
+        result = messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobiles,templateId,new String[]{message});
+        return result;
+    }
+
     /**
-     * List转换成String逗号分隔的形式，通知多个手机号
+     * List转换成String逗号分隔的形式
      *
      * @param list
      * @return
      */
-    public String getListMobileToString(List list) {
+    public String getListToString(List list) {
         return StringUtils.join(list.toArray(), ",");
     }
 }
