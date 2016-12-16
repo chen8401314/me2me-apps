@@ -2994,6 +2994,59 @@ public class ActivityServiceImpl implements ActivityService {
 	}
 	
 	@Override
+	public Response getTaskList(long uid, int page, int pageSize) {
+		ShowTasksDTO stDTO = new ShowTasksDTO();
+		Auser auser = activityMybatisDao.getAuserByUid(uid);
+		if(null == auser){
+			log.info("user ["+uid+"] is not a activity user!");
+			stDTO.setTotalCount(0);
+			stDTO.setTotalPage(0);
+			return Response.success(stDTO);
+		}
+		List<Long> topicIds = new ArrayList<Long>();
+		int searchType = 0;
+		Atopic doubleKingdom = activityMybatisDao.getAtopicByAuidDouble(auser.getId());
+		if(null != doubleKingdom){
+			searchType = 2;
+			topicIds.add(doubleKingdom.getTopicId());
+		}
+		Atopic singleKingdom = activityMybatisDao.getAtopicByAuidAndSingle(auser.getId());
+		if(null != singleKingdom){
+			topicIds.add(singleKingdom.getTopicId());
+			if(searchType == 0){
+				searchType = 1;
+			}
+		}
+
+		if(searchType == 0){
+			stDTO.setTotalCount(0);
+			stDTO.setTotalPage(0);
+			return Response.success(stDTO);
+		}else{
+			if(page < 1){
+				page = 1;
+			}
+			if(pageSize < 1){
+				pageSize = 10;
+			}
+			int start = (page-1)*pageSize;
+			stDTO.setTotalCount(activityMybatisDao.countAtaskPageByType(1, searchType));
+			stDTO.setTotalPage(stDTO.getTotalCount()%pageSize==0?stDTO.getTotalCount()/pageSize:stDTO.getTotalCount()/pageSize+1);
+			List<Atask> list = activityMybatisDao.getAtaskPageByType(1, searchType, start, pageSize);
+			if(null != list && list.size() > 0){
+				//TODO 获取相关信息
+				
+				ShowTasksDTO.TaskElement e = null;
+				for(Atask t : list){
+					e = new ShowTasksDTO.TaskElement();
+				}
+			}
+		}
+		
+		return Response.success(stDTO);
+	}
+	
+	@Override
     public Response operaBrid(long uid, int applyId, int operaStatus) {
         AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
         if(operaStatus ==2){

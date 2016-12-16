@@ -141,6 +141,8 @@ public interface ActivityService {
     
     Response optForcedPairing(long uid, int action);
     
+    Response getTaskList(long uid, int page, int pageSize);
+    
     Response operaBrid(long uid ,int applyId ,int operaStatus);
 
 }
