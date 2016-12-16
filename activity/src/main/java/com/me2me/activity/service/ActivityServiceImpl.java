@@ -2161,7 +2161,7 @@ public class ActivityServiceImpl implements ActivityService {
             // 或者对方同意了但是已经和别人创建 双人王国了也能删除。
             AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
             Atopic atopic = activityMybatisDao.getAtopicByAuidDoubleByUid(topicApply.getUid());
-            if((topicApply.getUid() == uid && topicApply.getStatus() ==1) ||
+            if((topicApply.getUid() == uid && topicApply.getStatus() != 2) ||
                     (topicApply.getStatus() ==2 && atopic != null)){
                 topicApply.setStatus(operaStatus);
                 activityMybatisDao.updateAdoubleTopicApply(topicApply);
