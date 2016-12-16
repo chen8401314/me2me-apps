@@ -3230,7 +3230,6 @@ public class ActivityServiceImpl implements ActivityService {
 				
 				ShowTasksDTO.TaskElement e = null;
 				AtaskUser ataskUser = null;
-				List<Map<String, String>> params = null;
 				for(Atask t : list){
 					e = new ShowTasksDTO.TaskElement();
 					e.setId(t.getId());
