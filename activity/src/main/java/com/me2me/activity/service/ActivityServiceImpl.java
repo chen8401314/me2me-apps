@@ -2044,7 +2044,7 @@ public class ActivityServiceImpl implements ActivityService {
         if(type == 0){
             //我发出的 不包含删除
             List<AdoubleTopicApply> sendList = activityMybatisDao.getAdoubleTopicApplyByUid(uid);
-            //我接收到的 包含删除的
+            //我接收到的 包含申请和拒绝
             List<AdoubleTopicApply> receiveList = activityMybatisDao.getAdoubleTopicApplyByUidReceive(uid ,pageNum ,pageSize);
             //我接收到的总条数
             int total = activityMybatisDao.getReceiveList(uid);
