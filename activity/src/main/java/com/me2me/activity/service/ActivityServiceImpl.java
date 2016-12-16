@@ -1266,6 +1266,16 @@ public class ActivityServiceImpl implements ActivityService {
 				}
 			}
 			if(!isCan){
+				//再看下有没有强配的，有强配也可以创建
+				AforcedPairing fp = activityMybatisDao.getAforcedPairingForUser(uid);
+				if(fp.getStatus() == 2){
+					if((fp.getUid() == uid && fp.getTargetUid() == uid2) 
+							|| (fp.getUid() == uid2 && fp.getTargetUid() == uid)){
+						isCan = true;//强配成功
+					}
+				}
+			}
+			if(!isCan){
 				return Response.failure("你和对方的双人王国申请未通过，不能创建");
 			}
 		}else{
