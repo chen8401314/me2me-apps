@@ -1876,11 +1876,11 @@ public class ActivityServiceImpl implements ActivityService {
                 if(boyList.size()>0 && boyList != null){
                     for(BlurSearchDto blurSearchDto : boyList){
                         //是否单身，是否有双人王国条件判断
-//                        Atopic isAlone = activityMybatisDao.getAtopicByUid2(blurSearchDto.getUid());
-//                        if(isAlone != null){
+                        Atopic isAlone = activityMybatisDao.getAtopicByUid2(blurSearchDto.getUid());
+                        if(isAlone != null){
                             //有 不是单身
-                            blurSearchDto.setIsAlone(0);
-//                        }
+                            blurSearchDto.setIsAlone(1);
+                        }
                         //申请过的不再显示
                         List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(uid ,blurSearchDto.getUid());
                         if(list.size() == 0){
@@ -1903,11 +1903,11 @@ public class ActivityServiceImpl implements ActivityService {
                 if(girlList.size()>0 && girlList != null){
                     for(BlurSearchDto blurSearchDto : girlList){
                         //是否单身，是否有双人王国条件判断
-//                        Atopic isAlone = activityMybatisDao.getAtopicByUid2(blurSearchDto.getUid());
-//                        if(isAlone != null){
+                        Atopic isAlone = activityMybatisDao.getAtopicByUid2(blurSearchDto.getUid());
+                        if(isAlone != null){
                             //有 不是单身
-                            blurSearchDto.setIsAlone(0);
-//                        }
+                            blurSearchDto.setIsAlone(1);
+                        }
                         //申请过的不再显示
                         List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(uid ,blurSearchDto.getUid());
                         if(list.size() == 0){
@@ -2091,8 +2091,8 @@ public class ActivityServiceImpl implements ActivityService {
             if(agreeList.size() > 0 && agreeList != null){
                 List<ApplyListDto.ApplyElement> lists = applyListDto.getAgreeList();
                 for(AdoubleTopicApply apply : agreeList){
-                    UserProfile userProfile = userService.getUserProfileByUid(apply.getTargetUid());
-                    Atopic atopic = activityMybatisDao.getAtopicByUid1(apply.getTargetUid());
+                    UserProfile userProfile = userService.getUserProfileByUid(apply.getUid());
+                    Atopic atopic = activityMybatisDao.getAtopicByUid1(apply.getUid());
                     ApplyListDto.ApplyElement applyElement = applyListDto.createApplyElement();
                     BeanUtils.copyProperties(userProfile,applyElement);
                     if(atopic != null){
