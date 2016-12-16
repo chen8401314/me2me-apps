@@ -3034,7 +3034,17 @@ public class ActivityServiceImpl implements ActivityService {
 			stDTO.setTotalPage(stDTO.getTotalCount()%pageSize==0?stDTO.getTotalCount()/pageSize:stDTO.getTotalCount()/pageSize+1);
 			List<Atask> list = activityMybatisDao.getAtaskPageByType(1, searchType, start, pageSize);
 			if(null != list && list.size() > 0){
-				//TODO 获取相关信息
+				List<Long> taskIds = new ArrayList<Long>();
+				for(Atask t : list){
+					taskIds.add(t.getId());
+				}
+				List<AtaskUser> ataskUserList = activityMybatisDao.getAtaskUsersByTopicIdsAndTaskIds(topicIds, taskIds);
+				Map<String, String> map = new HashMap<String, String>();
+				if(null != ataskUserList && ataskUserList.size() > 0){
+					for(AtaskUser atu : ataskUserList){
+						
+					}
+				}
 				
 				ShowTasksDTO.TaskElement e = null;
 				for(Atask t : list){
