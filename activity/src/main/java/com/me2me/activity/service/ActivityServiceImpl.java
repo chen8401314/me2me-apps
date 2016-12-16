@@ -1266,6 +1266,16 @@ public class ActivityServiceImpl implements ActivityService {
 				}
 			}
 			if(!isCan){
+				//再看下有没有强配的，有强配也可以创建
+				AforcedPairing fp = activityMybatisDao.getAforcedPairingForUser(uid);
+				if(fp.getStatus() == 2){
+					if((fp.getUid() == uid && fp.getTargetUid() == uid2) 
+							|| (fp.getUid() == uid2 && fp.getTargetUid() == uid)){
+						isCan = true;//强配成功
+					}
+				}
+			}
+			if(!isCan){
 				return Response.failure("你和对方的双人王国申请未通过，不能创建");
 			}
 		}else{
@@ -2548,8 +2558,18 @@ public class ActivityServiceImpl implements ActivityService {
 								map.put("uid", String.valueOf(uid));
 								map.put("nickName", up.getNickName());
 								map.put("avatar", Constant.QINIU_DOMAIN + "/" + up.getAvatar());
+								map.put("hidden", "");
 								params.add(map);
 							}
+							
+							if(applyList.size() < 5){
+								for(int i=0;i<5-applyList.size();i++){
+									Map<String, String> map = new HashMap<String, String>();
+									map.put("hidden", "hidden");
+									params.add(map);
+								}
+							}
+							
 							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.HAS_DOUBLE_APPLY.key, params);
 						}else{
 							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NO_DOUBLE_APPLY.key, null);
@@ -2740,7 +2760,15 @@ public class ActivityServiceImpl implements ActivityService {
 								map.put("uid", String.valueOf(uid));
 								map.put("nickName", up.getNickName());
 								map.put("avatar", Constant.QINIU_DOMAIN + "/" + up.getAvatar());
+								map.put("hidden", "");
 								params.add(map);
+							}
+							if(applyList.size() < 3){
+								for(int i=0;i<3-applyList.size();i++){
+									Map<String, String> map = new HashMap<String, String>();
+									map.put("hidden", "hidden");
+									params.add(map);
+								}
 							}
 							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.HAS_ROB_BRIDE.key, params);
 						}else{
@@ -2797,9 +2825,9 @@ public class ActivityServiceImpl implements ActivityService {
 	            	if(e1.getOrder() == e2.getOrder()){
 	            		return 0;
 	            	}else if(e1.getOrder() > e2.getOrder()){
-	            		return 1;
-	            	}else{
 	            		return -1;
+	            	}else{
+	            		return 1;
 	            	}
 	            }
 	        });
@@ -2885,8 +2913,8 @@ public class ActivityServiceImpl implements ActivityService {
 			if(isOut){
 				params = new ArrayList<Map<String, String>>();
 				Map<String, String> map = new HashMap<String, String>();
-				map.put("userName1", userName);
-				map.put("timeKey1", timeKey.substring(0,4)+"-"+timeKey.substring(4,6)+"-"+timeKey.substring(6,8)+" "+timeKey.substring(8,10)+":00:00");
+				map.put("userName", userName);
+//				map.put("timeKey1", timeKey.substring(0,4)+"-"+timeKey.substring(4,6)+"-"+timeKey.substring(6,8)+" "+timeKey.substring(8,10)+":00:00");
 				params.add(map);
 				this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.RECOMMEND_USER_2.key, params);
 			}else{
@@ -2894,12 +2922,21 @@ public class ActivityServiceImpl implements ActivityService {
 				Map<String, String> pMap = null;
 				for(Map<String,Object> map : list){
 					pMap = new HashMap<String, String>();
+					pMap.put("count", String.valueOf(num));
 					pMap.put("userName", userName);
 					pMap.put("timeKey", timeKey.substring(0,4)+"-"+timeKey.substring(4,6)+"-"+timeKey.substring(6,8)+" "+timeKey.substring(8,10)+":00:00");
 					pMap.put("uid", map.get("uid").toString());
 					pMap.put("avatar", Constant.QINIU_DOMAIN + "/" + (String)map.get("avatar"));
 					pMap.put("v_lv", map.get("v_lv").toString());
+					pMap.put("hidden", "");
 					params.add(pMap);
+				}
+				if(params.size() < num){
+					for(int i=0;i<num-params.size();i++){
+						pMap = new HashMap<String, String>();
+						pMap.put("hidden", "hidden");
+						params.add(pMap);
+					}
 				}
 				
 				this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.RECOMMEND_USER_1.key, params);
@@ -2929,17 +2966,18 @@ public class ActivityServiceImpl implements ActivityService {
 		if(null == params || params.size() == 0){
 			return content;
 		}
-		
+
 		boolean isOne = true;
 		if(params.size() > 1){
 			isOne = false;
 		}
-		
+
 		for(Map<String, String> map : params){
 			int i = 1;
 			for(Map.Entry<String, String> entry : map.entrySet()){
 				if(isOne){
 					content = content.replace("#{"+entry.getKey()+"}#", entry.getValue());
+					content = content.replace("#{"+entry.getKey()+"1}#", entry.getValue());
 				}else{
 					content = content.replace("#{"+entry.getKey()+i+"}#", entry.getValue());
 				}
