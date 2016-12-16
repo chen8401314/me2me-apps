@@ -693,6 +693,15 @@ public class ActivityMybatisDao {
     	return adoubleTopicApplyMapper.selectByExample(example);
     }
 
+    public AdoubleTopicApply getAdoubleTopicApplyByUidAndTargetUid3(long uid, long targetUid){
+        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+        AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTargetUidEqualTo(targetUid);
+        List<AdoubleTopicApply> list = adoubleTopicApplyMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
+    }
+
     public List<AdoubleTopicApply> getAdoubleTopicApplyByUidAndTargetUidandNotIn(long uid, long targetUid){
         AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
         AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();

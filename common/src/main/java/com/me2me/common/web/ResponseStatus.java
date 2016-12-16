@@ -279,6 +279,8 @@ public enum  ResponseStatus {
 
     BRID_IS_DELETE("撤销了抢亲请求成功","brid is delete", 200132),
 
+    SEARCH_BRIDLIST_FAILURE("未查询到抢亲列表信息","search bridlist failure", 200133),
+
 
 
 

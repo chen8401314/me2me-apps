@@ -1159,21 +1159,21 @@ public class ActivityServiceImpl implements ActivityService {
                          topicElement.setTopicId((Long)topicSingle.get("id"));
                          topicElement.setStage(Specification.ASevenDayType.A_DOUBLE_STAGE.index);
                          qiActivityDto.getTopicList().add(topicElement);
-                         
-                         Atopic atopicDouble = activityMybatisDao.getAtopicByAuidDouble(auser.getId());
-                         if(null != atopicDouble){
-                        	 Map<String,Object> topicDouble = liveForActivityDao.getTopicById(atopicDouble.getTopicId());
-                        	 if(null != topicDouble && topicDouble.size() > 0){
-                        		 topicElement = qiActivityDto.createElement();
-                                 topicElement.setLiveImage(Constant.QINIU_DOMAIN + "/" + (String)topicDouble.get("live_image"));
-                                 topicElement.setTitle((String)topicDouble.get("title"));
-                                 topicElement.setTopicId((Long)topicDouble.get("id"));
-                                 topicElement.setStage(Specification.ASevenDayType.A_THREE_STAGE.index);
-                                 qiActivityDto.getTopicList().add(topicElement);
-                        	 }
-                         }
         			}
         		}
+                Atopic atopicDouble = activityMybatisDao.getAtopicByAuidDouble(auser.getId());
+                if(null != atopicDouble){
+                    Map<String,Object> topicDouble = liveForActivityDao.getTopicById(atopicDouble.getTopicId());
+                    if(null != topicDouble && topicDouble.size() > 0){
+                        QiActivityDto.TopicElement topicElement = qiActivityDto.createElement();
+                        topicElement = qiActivityDto.createElement();
+                        topicElement.setLiveImage(Constant.QINIU_DOMAIN + "/" + (String)topicDouble.get("live_image"));
+                        topicElement.setTitle((String)topicDouble.get("title"));
+                        topicElement.setTopicId((Long)topicDouble.get("id"));
+                        topicElement.setStage(Specification.ASevenDayType.A_THREE_STAGE.index);
+                        qiActivityDto.getTopicList().add(topicElement);
+                    }
+                }
         	}
         }else{//没绑过
         	qiActivityDto.setIsBind(0);
@@ -1998,7 +1998,7 @@ public class ActivityServiceImpl implements ActivityService {
             }
 
         }
-            return null;
+        return Response.success(ResponseStatus.SEARCH_BRIDLIST_FAILURE.status, ResponseStatus.SEARCH_BRIDLIST_FAILURE.message, atopicInfoDto);
 
     }
 
@@ -2298,6 +2298,16 @@ public class ActivityServiceImpl implements ActivityService {
             Map map = Maps.newHashMap();
             map.put("topicId",atopic.getTopicId());
             activityMybatisDao.updateAtopicStatus(map);
+            AdoubleTopicApply list = activityMybatisDao.getAdoubleTopicApplyByUidAndTargetUid3(uid ,targetUid);
+            AdoubleTopicApply list2 = activityMybatisDao.getAdoubleTopicApplyByUidAndTargetUid3(targetUid ,uid);
+            if(list != null){
+                list.setStatus(4);
+                activityMybatisDao.updateAdoubleTopicApply(list);
+            }
+            if(list2 != null){
+                list2.setStatus(4);
+                activityMybatisDao.updateAdoubleTopicApply(list2);
+            }
             log.info("divorce success");
             return Response.success(ResponseStatus.DIVORCE_SUCCESS.status, ResponseStatus.DIVORCE_SUCCESS.message);
         }
