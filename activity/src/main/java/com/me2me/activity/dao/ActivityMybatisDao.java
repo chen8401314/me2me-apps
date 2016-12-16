@@ -86,7 +86,18 @@ public class ActivityMybatisDao {
     
     @Autowired
     private AtaskMapper ataskMapper;
+    
+    @Autowired
+    private AtaskUserMapper ataskUserMapper;
 
+    public List<AtaskUser> getAtaskUsersByTopicIdsAndTaskIds(List<Long> topicIds, List<Long> taskIds){
+    	AtaskUserExample example = new AtaskUserExample();
+    	AtaskUserExample.Criteria criteria = example.createCriteria();
+    	criteria.andTopicIdIn(topicIds);
+    	criteria.andTaskIdIn(taskIds);
+    	return ataskUserMapper.selectByExample(example);
+    }
+    
     public AforcedPairing getAforcedPairingForUser(long uid){
     	AforcedPairingExample example = new AforcedPairingExample();
     	AforcedPairingExample.Criteria criteria = example.createCriteria();
@@ -132,12 +143,27 @@ public class ActivityMybatisDao {
     	aforcedPairingMapper.insertSelective(fp);
     }
     
-    public List<Atask> getAtasks(long activityId){
+    public List<Atask> getAtaskPageByType(long activityId, int type, int start, int pageSize){
     	AtaskExample example = new AtaskExample();
     	AtaskExample.Criteria criteria = example.createCriteria();
     	criteria.andActivityIdEqualTo(activityId);
     	criteria.andStatusEqualTo(0);
+    	if(type == 1){
+    		criteria.andTypeEqualTo(type);
+    	}
+    	example.setOrderByClause(" update_time desc limit "+start+","+pageSize);
     	return ataskMapper.selectByExampleWithBLOBs(example);
+    }
+    
+    public int countAtaskPageByType(long activityId, int type){
+    	AtaskExample example = new AtaskExample();
+    	AtaskExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityIdEqualTo(activityId);
+    	criteria.andStatusEqualTo(0);
+    	if(type == 1){
+    		criteria.andTypeEqualTo(type);
+    	}
+    	return ataskMapper.countByExample(example);
     }
     
     public Atask getLastAtaskByType(long activityId, int type){

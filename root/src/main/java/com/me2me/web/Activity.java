@@ -7,6 +7,7 @@ import com.me2me.common.web.Response;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.web.request.ActivityMiliRequest;
 import com.me2me.web.request.AwardRequest;
+import com.me2me.web.request.GetTaskListRequest;
 import com.me2me.web.request.OptForcedPairingRequest;
 import com.me2me.web.request.QiUserRequest;
 import com.me2me.web.request.RecommendHistoryRequest;
@@ -381,6 +382,17 @@ public class Activity extends BaseController {
         //（0异性，1同性，2男，3女，4所有）现在没人接收异性0
         return activityService.getBridList(request.getUid() ,request.getTopicName() ,request.getNickName() ,
                 request.getPageNum() ,request.getPageSize() ,request.getType());
+    }
+    
+    /**
+     * 获取任务列表接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getTaskList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getTaskList(GetTaskListRequest request){
+    	return activityService.getTaskList(request.getUid(), request.getPage(), request.getPageSize());
     }
 
     /**
