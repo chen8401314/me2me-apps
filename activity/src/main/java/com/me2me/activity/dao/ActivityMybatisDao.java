@@ -12,6 +12,7 @@ import com.me2me.common.web.Specification;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -141,6 +142,10 @@ public class ActivityMybatisDao {
     
     public void saveAforcedPairing(AforcedPairing fp){
     	aforcedPairingMapper.insertSelective(fp);
+    }
+    
+    public void updateAforcedPairing(AforcedPairing fp){
+    	aforcedPairingMapper.updateByPrimaryKeySelective(fp);
     }
     
     public List<Atask> getAtaskPageByType(long activityId, int type, int start, int pageSize){
@@ -615,6 +620,27 @@ public class ActivityMybatisDao {
         AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
         example.createCriteria().andUidEqualTo(uid).andTypeEqualTo(1);
         return adoubleTopicApplyMapper.selectByExample(example);
+    }
+    
+    public List<AdoubleTopicApply> getOptApplyByUidAndType(long uid, int type, int limit){
+    	AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+    	AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	List<Integer> s1 = new ArrayList<Integer>();
+    	s1.add(2);
+    	s1.add(3);
+    	criteria.andStatusIn(s1);
+    	criteria.andTypeEqualTo(type);
+    	AdoubleTopicApplyExample.Criteria criteria2 = example.createCriteria();
+    	criteria2.andTargetUidEqualTo(uid);
+    	List<Integer> s2 = new ArrayList<Integer>();
+    	s2.add(1);
+    	s2.add(4);
+    	criteria2.andStatusIn(s2);
+    	criteria2.andTypeEqualTo(type);
+    	example.or(criteria2);
+    	example.setOrderByClause(" create_time desc limit "+limit);
+    	return adoubleTopicApplyMapper.selectByExample(example);
     }
 
     public void createAdoubleTopicApply(AdoubleTopicApply adoubleTopicApply){
