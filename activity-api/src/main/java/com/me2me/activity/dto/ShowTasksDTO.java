@@ -23,7 +23,7 @@ public class ShowTasksDTO implements BaseEntity {
 		private long id;
 		private String title;
 		private String content;
-		private String link_url;
+		private String linkUrl;
 		private int type; //1单人任务  2双人任务
 		
 		private int status;//1已接受，2未接受

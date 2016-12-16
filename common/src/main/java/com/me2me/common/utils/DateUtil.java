@@ -66,4 +66,19 @@ public class DateUtil {
 			return -1;
 		}
 	}
+	
+	public static long getHoursBetween2Date(Date date1, Date date2){
+		if(null == date1 || null == date2){
+			return -1;
+		}
+		try{
+			date1 = string2date(date2string(date1, "yyyy-MM-dd HH:mm"), "yyyy-MM-dd HH:mm");
+			date2 = string2date(date2string(date2, "yyyy-MM-dd HH:mm"), "yyyy-MM-dd HH:mm");
+			long hour = (date1.getTime() - date2.getTime())/60*60*1000l;
+			return Math.abs(hour);
+		}catch(Exception e){
+			e.printStackTrace();
+			return -1;
+		}
+	}
 }
