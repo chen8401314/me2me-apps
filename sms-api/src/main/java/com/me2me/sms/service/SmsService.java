@@ -27,4 +27,7 @@ public interface SmsService {
     //审核成功 list
     void send7dayApply(List mobileList);
 
+    //七天活动封装短信接口
+    void send7dayCommon(String templateId ,String mobile ,List mobileList ,List message);
+
 }
