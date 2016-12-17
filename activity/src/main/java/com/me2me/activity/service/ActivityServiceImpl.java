@@ -3257,6 +3257,7 @@ public class ActivityServiceImpl implements ActivityService {
 					}else{
 						e.setStatus(2);//未接受
 					}
+					stDTO.getResult().add(e);
 				}
 			}
 		}
