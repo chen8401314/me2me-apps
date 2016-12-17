@@ -91,12 +91,28 @@ public class ActivityMybatisDao {
     @Autowired
     private AtaskUserMapper ataskUserMapper;
 
+    public void saveAtaskUser(AtaskUser ataskUser){
+    	ataskUserMapper.insertSelective(ataskUser);
+    }
+    
     public List<AtaskUser> getAtaskUsersByTopicIdsAndTaskIds(List<Long> topicIds, List<Long> taskIds){
     	AtaskUserExample example = new AtaskUserExample();
     	AtaskUserExample.Criteria criteria = example.createCriteria();
     	criteria.andTopicIdIn(topicIds);
     	criteria.andTaskIdIn(taskIds);
     	return ataskUserMapper.selectByExample(example);
+    }
+    
+    public AtaskUser getAtaskUserByTopicIdAndTaskId(long topicId, long taskId){
+    	AtaskUserExample example = new AtaskUserExample();
+    	AtaskUserExample.Criteria criteria = example.createCriteria();
+    	criteria.andTaskIdEqualTo(taskId);
+    	criteria.andTopicIdEqualTo(topicId);
+    	List<AtaskUser> list = ataskUserMapper.selectByExample(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
     }
     
     public AforcedPairing getAforcedPairingForUser(long uid){
@@ -158,6 +174,10 @@ public class ActivityMybatisDao {
     	}
     	example.setOrderByClause(" update_time desc limit "+start+","+pageSize);
     	return ataskMapper.selectByExampleWithBLOBs(example);
+    }
+    
+    public Atask getAtaskById(long id){
+    	return ataskMapper.selectByPrimaryKey(id);
     }
     
     public int countAtaskPageByType(long activityId, int type){

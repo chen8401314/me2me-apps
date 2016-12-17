@@ -2772,7 +2772,11 @@ public class ActivityServiceImpl implements ActivityService {
 							}
 							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.HAS_ROB_BRIDE.key, params);
 						}else{
-							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NO_DOUBLE_APPLY.key, null);
+							params = new ArrayList<Map<String, String>>();
+							Map<String, String> map = new HashMap<String, String>();
+							map.put("userName", userName);
+							params.add(map);
+							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.CAN_ROB_BRIDE.key, params);
 						}
 						
 						
@@ -2979,10 +2983,10 @@ public class ActivityServiceImpl implements ActivityService {
 					content = content.replace("#{"+entry.getKey()+"}#", entry.getValue());
 					content = content.replace("#{"+entry.getKey()+"1}#", entry.getValue());
 				}else{
-					content = content.replace("#{"+entry.getKey()+i+"}#", entry.getValue());
+					content = content.replace("#{"+entry.getKey()+String.valueOf(i)+"}#", entry.getValue());
 				}
-				i++;
 			}
+			i++;
 		}
 		
 		return content;
@@ -3258,6 +3262,46 @@ public class ActivityServiceImpl implements ActivityService {
 		}
 		
 		return Response.success(stDTO);
+	}
+	
+	@Override
+	public Response acceptTask(long tid, long uid) {
+		Atask atask = activityMybatisDao.getAtaskById(tid);
+		if(null == atask){
+			return Response.failure(ResponseStatus.ACCEPT_TASK_ERROR.status, "任务不存在");
+		}
+
+		Atopic atopic = null;
+		if(atask.getType() == 1){//单人王国
+			atopic = activityMybatisDao.getAtopicByUidandTypeBrid(uid, 1);
+		}else{//双人王国
+			atopic = activityMybatisDao.getAtopicByUidandTypeBrid(uid, 2);
+		}
+		if(null == atopic){
+			return Response.failure(ResponseStatus.ACCEPT_TASK_ERROR.status, atask.getType()==1?"没有对应的单人王国":"没有对应的双人王国");
+		}
+		
+		AtaskUser ataskUser = activityMybatisDao.getAtaskUserByTopicIdAndTaskId(atopic.getTopicId(), atask.getId());
+		if(null != ataskUser){
+			//已经接收过了，则直接返回成功
+			return Response.success();
+		}
+		
+		Auser auser = activityMybatisDao.getAuserByUid(uid);
+		if(null == auser){
+			return Response.failure(ResponseStatus.ACCEPT_TASK_ERROR.status, "当前用户不是报名用户");
+		}
+		
+		ataskUser = new AtaskUser();
+		ataskUser.setAuid(auser.getId());
+		ataskUser.setCreateTime(new Date());
+		ataskUser.setFragmentId(0l);
+		ataskUser.setTaskId(atask.getId());
+		ataskUser.setTopicId(atopic.getTopicId());
+		ataskUser.setUid(uid);
+		activityMybatisDao.saveAtaskUser(ataskUser);
+		
+		return Response.success();
 	}
 	
 	@Override

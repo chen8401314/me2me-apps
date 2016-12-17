@@ -5,6 +5,7 @@ import com.me2me.activity.dto.QiUserDto;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.web.Response;
 import com.me2me.sms.dto.VerifyDto;
+import com.me2me.web.request.AcceptTaskRequest;
 import com.me2me.web.request.ActivityMiliRequest;
 import com.me2me.web.request.AwardRequest;
 import com.me2me.web.request.GetTaskListRequest;
@@ -393,6 +394,17 @@ public class Activity extends BaseController {
     @RequestMapping(value = "/getTaskList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getTaskList(GetTaskListRequest request){
     	return activityService.getTaskList(request.getUid(), request.getPage(), request.getPageSize());
+    }
+    
+    /**
+     * 接受任务接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/acceptTask",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response acceptTask(AcceptTaskRequest request){
+    	return activityService.acceptTask(request.getTid(), request.getUid());
     }
 
     /**

@@ -143,6 +143,8 @@ public interface ActivityService {
     
     Response getTaskList(long uid, int page, int pageSize);
     
+    Response acceptTask(long tid, long uid);
+    
     Response operaBrid(long uid ,int applyId ,int operaStatus);
 
 }
