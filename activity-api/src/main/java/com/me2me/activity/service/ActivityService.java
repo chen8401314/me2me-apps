@@ -145,6 +145,8 @@ public interface ActivityService {
     
     Response acceptTask(long tid, long uid);
     
+    Response userTaskStatus(long tid, long uid);
+    
     Response operaBrid(long uid ,int applyId ,int operaStatus);
 
 }

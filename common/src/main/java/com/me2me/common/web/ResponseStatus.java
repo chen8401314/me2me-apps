@@ -415,7 +415,7 @@ public enum  ResponseStatus {
 
     ACCEPT_TASK_ERROR("接受任务失败", "accept task error", 50052),
 
-
+    USER_TASK_STATUS_QUERY_ERROR("用户任务状态查询失败", "user task status query error", 50053),
 
 
 

@@ -2470,6 +2470,21 @@ public class ActivityServiceImpl implements ActivityService {
 			}
 		}
 		
+		if(null != stage1 && stage2.getType() > 0){
+			if(dto.getIsApp() == 0){//APP外部
+				this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_END_BROWSER.key, null);
+			}else{
+				if(null != activityUser){
+					params = new ArrayList<Map<String, String>>();
+					Map<String, String> map = new HashMap<String, String>();
+					map.put("userName", userName);
+					params.add(map);
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_END_APP.key, params);
+				}
+			}
+			
+		}
+		
 		//2单人阶段
 		boolean isRec = false;
 		if(null != stage2 && stage2.getType() == 0){
@@ -2558,14 +2573,14 @@ public class ActivityServiceImpl implements ActivityService {
 								map.put("uid", String.valueOf(uid));
 								map.put("nickName", up.getNickName());
 								map.put("avatar", Constant.QINIU_DOMAIN + "/" + up.getAvatar());
-								map.put("hidden", "");
+								map.put("display", "block");
 								params.add(map);
 							}
 							
 							if(applyList.size() < 5){
 								for(int i=0;i<5-applyList.size();i++){
 									Map<String, String> map = new HashMap<String, String>();
-									map.put("hidden", "hidden");
+									map.put("display", "none");
 									params.add(map);
 								}
 							}
@@ -2760,13 +2775,13 @@ public class ActivityServiceImpl implements ActivityService {
 								map.put("uid", String.valueOf(uid));
 								map.put("nickName", up.getNickName());
 								map.put("avatar", Constant.QINIU_DOMAIN + "/" + up.getAvatar());
-								map.put("hidden", "");
+								map.put("display", "block");
 								params.add(map);
 							}
 							if(applyList.size() < 3){
 								for(int i=0;i<3-applyList.size();i++){
 									Map<String, String> map = new HashMap<String, String>();
-									map.put("hidden", "hidden");
+									map.put("display", "none");
 									params.add(map);
 								}
 							}
@@ -2875,17 +2890,49 @@ public class ActivityServiceImpl implements ActivityService {
 		ArecommendUser recUser = activityMybatisDao.getArecommendUserByRecTimeKey(timeKey, auid);
 		if(null != recUser){
 			//有记录了，说明已经看过了，不需要再展现了
+			List<Long> uids = new ArrayList<Long>();
+			String[] tmp = recUser.getRecUsers().split(",");
+			if(null != tmp && tmp.length > 0){
+				for(String t : tmp){
+					if(!StringUtils.isEmpty(t)){
+						uids.add(Long.valueOf(t));
+					}
+				}
+			}
+			if(uids.size() > 0){
+				List<UserProfile> uList = userService.getUserProfilesByUids(uids);
+				if(null != uList && uList.size() > 0){
+					List<Map<String, String>> params = new ArrayList<Map<String, String>>();
+					Map<String, String> pMap = null;
+					for(UserProfile u : uList){
+						pMap = new HashMap<String, String>();
+						pMap.put("count", String.valueOf(uList.size()));
+						pMap.put("userName", userName);
+						pMap.put("timeKey", timeKey.substring(0,4)+"-"+timeKey.substring(4,6)+"-"+timeKey.substring(6,8)+" "+timeKey.substring(8,10)+":00:00");
+						pMap.put("uid", String.valueOf(u.getUid()));
+						pMap.put("avatar", Constant.QINIU_DOMAIN + "/" + u.getAvatar());
+						pMap.put("v_lv", String.valueOf(u.getvLv()));
+						pMap.put("display", "block");
+						params.add(pMap);
+					}
+					if(params.size() < 3){
+						for(int i=0;i<3-params.size();i++){
+							pMap = new HashMap<String, String>();
+							pMap.put("display", "none");
+							params.add(pMap);
+						}
+					}
+					
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.RECOMMEND_USER_1.key, params);
+				}
+			}
+			
 			return;
 		}
 		
-		//随机查询出3/5个异性，需去重
-		int num = 3;
-		if(isForce){
-			num = 5;
-		}
 		log.info("sql start...");
 		//这个sql可能是个坑，待优化
-		List<Map<String,Object>> list = liveForActivityDao.getRecSingleUser(searchSex, uid, num);
+		List<Map<String,Object>> list = liveForActivityDao.getRecSingleUser(searchSex, uid, 3);
 		log.info("sql end");
 		if(null != list && list.size() > 0){
 			StringBuilder sb = new StringBuilder();
@@ -2918,7 +2965,6 @@ public class ActivityServiceImpl implements ActivityService {
 				params = new ArrayList<Map<String, String>>();
 				Map<String, String> map = new HashMap<String, String>();
 				map.put("userName", userName);
-//				map.put("timeKey1", timeKey.substring(0,4)+"-"+timeKey.substring(4,6)+"-"+timeKey.substring(6,8)+" "+timeKey.substring(8,10)+":00:00");
 				params.add(map);
 				this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.RECOMMEND_USER_2.key, params);
 			}else{
@@ -2926,19 +2972,19 @@ public class ActivityServiceImpl implements ActivityService {
 				Map<String, String> pMap = null;
 				for(Map<String,Object> map : list){
 					pMap = new HashMap<String, String>();
-					pMap.put("count", String.valueOf(num));
+					pMap.put("count", String.valueOf(list.size()));
 					pMap.put("userName", userName);
 					pMap.put("timeKey", timeKey.substring(0,4)+"-"+timeKey.substring(4,6)+"-"+timeKey.substring(6,8)+" "+timeKey.substring(8,10)+":00:00");
 					pMap.put("uid", map.get("uid").toString());
 					pMap.put("avatar", Constant.QINIU_DOMAIN + "/" + (String)map.get("avatar"));
 					pMap.put("v_lv", map.get("v_lv").toString());
-					pMap.put("hidden", "");
+					pMap.put("display", "block");
 					params.add(pMap);
 				}
-				if(params.size() < num){
-					for(int i=0;i<num-params.size();i++){
+				if(params.size() < 3){
+					for(int i=0;i<3-params.size();i++){
 						pMap = new HashMap<String, String>();
-						pMap.put("hidden", "hidden");
+						pMap.put("display", "none");
 						params.add(pMap);
 					}
 				}
@@ -3303,6 +3349,35 @@ public class ActivityServiceImpl implements ActivityService {
 		activityMybatisDao.saveAtaskUser(ataskUser);
 		
 		return Response.success();
+	}
+	
+	@Override
+	public Response userTaskStatus(long tid, long uid) {
+		Atask atask = activityMybatisDao.getAtaskById(tid);
+		if(null == atask){
+			return Response.failure(ResponseStatus.USER_TASK_STATUS_QUERY_ERROR.status, "任务不存在");
+		}
+		
+		UserTaskStatusDTO dto = new UserTaskStatusDTO();
+		Atopic atopic = null;
+		if(atask.getType() == 1){//单人王国
+			atopic = activityMybatisDao.getAtopicByUidandTypeBrid(uid, 1);
+		}else{//双人王国
+			atopic = activityMybatisDao.getAtopicByUidandTypeBrid(uid, 2);
+		}
+		if(null == atopic){
+			dto.setStatus(2);//未接受
+		}else{
+			AtaskUser ataskUser = activityMybatisDao.getAtaskUserByTopicIdAndTaskId(atopic.getTopicId(), atask.getId());
+			if(null != ataskUser){
+				//已经接收过了，则直接返回成功
+				dto.setStatus(1);
+			}else{
+				dto.setStatus(2);//未接受
+			}
+		}
+		
+		return Response.success(dto);
 	}
 	
 	@Override

@@ -12,6 +12,7 @@ import com.me2me.web.request.GetTaskListRequest;
 import com.me2me.web.request.OptForcedPairingRequest;
 import com.me2me.web.request.QiUserRequest;
 import com.me2me.web.request.RecommendHistoryRequest;
+import com.me2me.web.request.UserTaskStatusRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -405,6 +406,17 @@ public class Activity extends BaseController {
     @RequestMapping(value = "/acceptTask",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response acceptTask(AcceptTaskRequest request){
     	return activityService.acceptTask(request.getTid(), request.getUid());
+    }
+    
+    /**
+     * 用户任务状态查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/userTaskStatus",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response userTaskStatus(UserTaskStatusRequest request){
+    	return activityService.userTaskStatus(request.getTid(), request.getUid());
     }
 
     /**
