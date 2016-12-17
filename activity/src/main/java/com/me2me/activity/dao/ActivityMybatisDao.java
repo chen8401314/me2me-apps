@@ -981,7 +981,7 @@ public class ActivityMybatisDao {
 
     public Atopic getAtopicByType(long uid ,int type){
         AtopicExample example = new AtopicExample();
-        example.createCriteria().andUidEqualTo(uid).andTypeEqualTo(type);
+        example.createCriteria().andUidEqualTo(uid).andTypeEqualTo(type).andStatusEqualTo(0);
         List<Atopic> list = atopicMapper.selectByExample(example);
         return list.size()>0 && list != null ?list.get(0):null;
     }
