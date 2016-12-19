@@ -3332,7 +3332,7 @@ public class ActivityServiceImpl implements ActivityService {
 						e.setStatus(2);//未接受
 						pMap.put("status", "status-msg-btn fs12");
 						pMap.put("statusName", "待接受");
-						pMap.put("param", "?tid="+t.getId()+"&status=1");
+						pMap.put("param", "?tid="+t.getId()+"&status=2");
 					}
 					params.add(pMap);
 					e.setContent(this.replaceMiliData(t.getContent(), params));
