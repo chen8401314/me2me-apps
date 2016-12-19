@@ -662,6 +662,16 @@ public class ActivityMybatisDao {
     	example.setOrderByClause(" create_time desc limit "+limit);
     	return adoubleTopicApplyMapper.selectByExample(example);
     }
+    
+    public List<AdoubleTopicApply> getApply2MeByType(long uid, int type, int limit){
+    	AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
+    	AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
+    	criteria.andTargetUidEqualTo(uid);
+    	criteria.andStatusEqualTo(1);
+    	criteria.andTypeEqualTo(type);
+    	example.setOrderByClause(" create_time desc limit "+limit);
+    	return adoubleTopicApplyMapper.selectByExample(example);
+    }
 
     public void createAdoubleTopicApply(AdoubleTopicApply adoubleTopicApply){
         adoubleTopicApplyMapper.insertSelective(adoubleTopicApply);

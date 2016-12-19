@@ -878,7 +878,16 @@ public class UserServiceImpl implements UserService {
     public UserToken getUserByUidAndToken(long uid, String token) {
         return userMybatisDao.getUserTokenByUid(uid, token);
     }
+    
+    @Override
+    public UserToken getUserTokenByUid(long uid){
+    	return userMybatisDao.getUserTokenByUid(uid);
+    }
 
+    @Override
+    public List<UserToken> getUserTokenByUids(List<Long> uids){
+    	return userMybatisDao.getUserTokensByUids(uids);
+    }
 
     public Response getUser(long targetUid, long sourceUid){
         UserProfile userProfile =  getUserProfileByUid(targetUid);
