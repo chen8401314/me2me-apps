@@ -638,7 +638,7 @@ public class ActivityMybatisDao {
 
     public List<AdoubleTopicApply> getTopicApply(long uid){
         AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
-        example.createCriteria().andUidEqualTo(uid).andTypeEqualTo(1);
+        example.createCriteria().andUidEqualTo(uid).andStatusEqualTo(1);
         return adoubleTopicApplyMapper.selectByExample(example);
     }
     
@@ -804,6 +804,9 @@ public class ActivityMybatisDao {
         AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
         AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid).andTargetUidEqualTo(targetUid).andTypeEqualTo(2).andStatusNotEqualTo(4);
+        AdoubleTopicApplyExample.Criteria criteria2 = example.createCriteria();
+        criteria2.andUidEqualTo(targetUid).andTargetUidEqualTo(uid).andTypeEqualTo(2).andStatusNotEqualTo(4);
+        example.or(criteria2);
         return adoubleTopicApplyMapper.selectByExample(example);
     }
 
