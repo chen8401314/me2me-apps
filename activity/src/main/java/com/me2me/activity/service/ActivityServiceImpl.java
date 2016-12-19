@@ -14,6 +14,7 @@ import com.me2me.common.utils.EncryUtil;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.sms.dto.AwardXMDto;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.service.ChannelType;
@@ -68,6 +69,9 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Autowired
     private SmsService smsService;
+    
+    @Autowired
+    private ApplicationEventBus applicationEventBus;
 
     @Override
     public Response createActivity(CreateActivityDto createActivityDto) {
@@ -1390,7 +1394,7 @@ public class ActivityServiceImpl implements ActivityService {
     		}
         }
         
-        if(auser.getUid() > 0){//绑了用户，则需要更新原始性别
+        if(null != auser.getUid() && auser.getUid() > 0){//绑了用户，则需要更新原始性别
         	userService.updateUserSex(auser.getUid(), auser.getSex());
         }
 
@@ -2036,6 +2040,12 @@ public class ActivityServiceImpl implements ActivityService {
                     //配对类型为1
                     applyReq.setType(1);
                     activityMybatisDao.createAdoubleTopicApply(applyReq);
+                    
+                    //推送，让对方知晓
+                    UserProfile up = userService.getUserProfileByUid(uid);
+                    String msg = Specification.LinkPushType.PAIR_APPLY.message.replaceAll("#{1}#", up.getNickName());
+                    String linkUrl = Specification.LinkPushType.PAIR_APPLY.linkUrl;
+                    
                     log.info("application success");
                     return Response.success(ResponseStatus.APPLICATION_SUCCESS.status, ResponseStatus.APPLICATION_SUCCESS.message);
                 }else{
@@ -2713,14 +2723,23 @@ public class ActivityServiceImpl implements ActivityService {
 								this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.UPDATE_DOUBLE_KINGDOM.key, params);
 							}
 							
-							params = new ArrayList<Map<String, String>>();
-							Map<String, String> map = new HashMap<String, String>();
-							map.put("topicId", String.valueOf(doubleKingdom.getTopicId()));
-							map.put("otherName", up.getNickName());
-							map.put("avatar", Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-							map.put("otherAvatar", Constant.QINIU_DOMAIN + "/" + up.getAvatar());
-							params.add(map);
-							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.HAS_DOUBLE_KINGDOM.key, params);
+							long days = DateUtil.getDaysBetween2Date((Date)doubleTopic.get("create_time"), now);
+							if(days == 0){
+								params = new ArrayList<Map<String, String>>();
+								Map<String, String> map = new HashMap<String, String>();
+								map.put("topicId", String.valueOf(doubleKingdom.getTopicId()));
+								map.put("otherName", up.getNickName());
+								map.put("avatar", Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+								map.put("otherAvatar", Constant.QINIU_DOMAIN + "/" + up.getAvatar());
+								params.add(map);
+								this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.HAS_DOUBLE_KINGDOM.key, params);
+							}else{
+								params = new ArrayList<Map<String, String>>();
+								Map<String, String> map = new HashMap<String, String>();
+								map.put("day", String.valueOf(days+1));
+								params.add(map);
+								this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.HAS_DOUBLE_KINGDOM_2.key, params);
+							}
 						}
 					}
 				}
