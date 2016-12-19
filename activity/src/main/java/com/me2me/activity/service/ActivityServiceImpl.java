@@ -2424,9 +2424,11 @@ public class ActivityServiceImpl implements ActivityService {
 				if(null != ataskUser){//接受过任务
 					map.put("status", "status-msg-btn fs12 status-received");
 					map.put("statusName", "已接收");
+					map.put("param", "?tid="+lastTask.getId()+"&status=1");
 				}else{
 					map.put("status", "status-msg-btn fs12");
 					map.put("statusName", "待接收");
+					map.put("param", "?tid="+lastTask.getId()+"&status=2");
 				}
 				params.add(map);
 				String content = this.replaceMiliData(lastTask.getContent(), params);
@@ -3325,10 +3327,12 @@ public class ActivityServiceImpl implements ActivityService {
 						e.setStatus(1);//有说明已经接受过了（如果是双人王国，对方接受了，自己也就接受了）
 						pMap.put("status", "status-msg-btn fs12 status-received");
 						pMap.put("statusName", "已接受");
+						pMap.put("param", "?tid="+t.getId()+"&status=1");
 					}else{
 						e.setStatus(2);//未接受
 						pMap.put("status", "status-msg-btn fs12");
 						pMap.put("statusName", "待接受");
+						pMap.put("param", "?tid="+t.getId()+"&status=1");
 					}
 					params.add(pMap);
 					e.setContent(this.replaceMiliData(t.getContent(), params));
