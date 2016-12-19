@@ -2162,7 +2162,7 @@ public class ActivityServiceImpl implements ActivityService {
             AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
             Atopic atopic = activityMybatisDao.getAtopicByAuidDoubleByUid(topicApply.getUid());
             if((topicApply.getUid() == uid && topicApply.getStatus() != 2) ||
-                    (topicApply.getStatus() ==2 && atopic != null)){
+                    (topicApply.getStatus() ==2 && atopic != null) || topicApply.getStatus() == 3){
                 topicApply.setStatus(operaStatus);
                 activityMybatisDao.updateAdoubleTopicApply(topicApply);
                 log.info("update delete success");
