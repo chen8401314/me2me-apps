@@ -2880,7 +2880,7 @@ public class ActivityServiceImpl implements ActivityService {
 									params.add(map);
 								}
 							}
-							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.HAS_ROB_BRIDE.key, params);
+							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.HAS_ROB_BRIDE_2.key, params);
 						}else{
 							//没人抢
 							if(null == doubleTopic){

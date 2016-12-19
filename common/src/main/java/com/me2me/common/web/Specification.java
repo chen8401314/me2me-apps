@@ -1104,6 +1104,7 @@ public interface Specification {
     	RECIVE_DOUBLE_APPLY_DELETED("RECIVE_DOUBLE_APPLY_DELETED", "接收到的双人王国请求被撤销"),
     	CAN_ROB_BRIDE("CAN_ROB_BRIDE", "可以抢亲"),
     	HAS_ROB_BRIDE("HAS_ROB_BRIDE", "有抢亲操作"),
+    	HAS_ROB_BRIDE_2("HAS_ROB_BRIDE_2", "有被抢亲操作"),
     	NO_ROB_BRIDE("NO_ROB_BRIDE", "有双人没有被抢过"),
     	MY_ROB_BRIDE_APPLY_REFUSED("MY_ROB_BRIDE_APPLY_REFUSED", "我的抢亲请求被拒"),
     	MY_ROB_BRIDE_APPLY_AGREED("MY_ROB_BRIDE_APPLY_AGREED", "我的抢亲请求被同意"),
