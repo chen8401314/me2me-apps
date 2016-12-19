@@ -10,4 +10,6 @@
     <dubbo:reference interface="com.me2me.cache.service.CacheService" id="cacheService"/>
     
     <dubbo:reference interface="com.me2me.sms.service.SmsService" id="smsService"/>
+    
+    <dubbo:reference interface="com.me2me.sms.service.JPushService" id="jPushService"/>
 </beans>
