@@ -2650,7 +2650,7 @@ public class ActivityServiceImpl implements ActivityService {
 									Map<String, String> map = new HashMap<String, String>();
 									map.put("userName", userName);
 									long targetUid = fp.getUid();
-									if(singleKingdom.getUid() == fp.getUid()){
+									if(singleKingdom.getUid().longValue() == fp.getUid().longValue()){
 										targetUid = fp.getTargetUid();
 									}
 									UserProfile up = userService.getUserProfileByUid(targetUid);
@@ -2663,7 +2663,7 @@ public class ActivityServiceImpl implements ActivityService {
 										if(null != otherSingleTopic){
 											map.put("otherTopicId", String.valueOf(otherSingleTopic.get("id")));
 											map.put("otherTopicName", String.valueOf(otherSingleTopic.get("title")));
-											map.put("otherTopicImage", String.valueOf(otherSingleTopic.get("live_image")));
+											map.put("otherTopicImage", Constant.QINIU_DOMAIN + "/" + String.valueOf(otherSingleTopic.get("live_image")));
 											params.add(map);
 											this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.FORCED_PAIRING_2.key, params);
 										}
