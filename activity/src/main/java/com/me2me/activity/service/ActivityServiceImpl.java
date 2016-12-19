@@ -1969,6 +1969,7 @@ public class ActivityServiceImpl implements ActivityService {
                             total ++;
                             atopicInfoDto.getBlurSearchList().add(blurSearchDto);
                         }
+                        blurSearchDto.setIsAlone(1);
                     }
                     atopicInfoDto.setTotal(total);
                     log.info("get bridList success");
@@ -1990,6 +1991,7 @@ public class ActivityServiceImpl implements ActivityService {
                             total ++;
                             atopicInfoDto.getBlurSearchList().add(blurSearchDto);
                         }
+                        blurSearchDto.setIsAlone(1);
                     }
                     atopicInfoDto.setTotal(total);
                     log.info("get bridList success");
