@@ -2411,9 +2411,28 @@ public class ActivityServiceImpl implements ActivityService {
 			//0.6 任务
 			Atask lastTask = activityMybatisDao.getLastAtaskByType(1, taskType);
 			if(null != lastTask){
+				long topicId = 0;
+				if(lastTask.getType() == 1){
+					topicId = singleKingdom.getTopicId();
+				}else{
+					topicId = doubleKingdom.getTopicId();
+				}
+				AtaskUser ataskUser = activityMybatisDao.getAtaskUserByTopicIdAndTaskId(topicId, lastTask.getId());
+				
 				params = new ArrayList<Map<String, String>>();
 				Map<String, String> map = new HashMap<String, String>();
-				map.put("content", lastTask.getContent());
+				if(null != ataskUser){//接受过任务
+					map.put("status", "status-msg-btn fs12 status-received");
+					map.put("statusName", "已接收");
+				}else{
+					map.put("status", "status-msg-btn fs12");
+					map.put("statusName", "待接收");
+				}
+				params.add(map);
+				String content = this.replaceMiliData(lastTask.getContent(), params);
+				params = new ArrayList<Map<String, String>>();
+				map = new HashMap<String, String>();
+				map.put("content", content);
 				params.add(map);
 				this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.ACTIVITY_TASK.key, params);
 			}
@@ -2698,6 +2717,7 @@ public class ActivityServiceImpl implements ActivityService {
 							map.put("otherName", up.getNickName());
 							map.put("avatar", Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
 							map.put("otherAvatar", Constant.QINIU_DOMAIN + "/" + up.getAvatar());
+							params.add(map);
 							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.HAS_DOUBLE_KINGDOM.key, params);
 						}
 					}
@@ -3288,21 +3308,30 @@ public class ActivityServiceImpl implements ActivityService {
 					}
 				}
 				
+				List<Map<String, String>> params = null;
+				Map<String, String> pMap = null;
 				ShowTasksDTO.TaskElement e = null;
 				AtaskUser ataskUser = null;
 				for(Atask t : list){
 					e = new ShowTasksDTO.TaskElement();
 					e.setId(t.getId());
 					e.setTitle(t.getTitle());
-					e.setContent(t.getContent());
 					e.setLinkUrl(t.getLinkUrl());
 					e.setType(t.getType());
+					params = new ArrayList<Map<String, String>>();
+					pMap = new HashMap<String, String>();
 					ataskUser = map.get(String.valueOf(t.getId()));
 					if(null != ataskUser){
 						e.setStatus(1);//有说明已经接受过了（如果是双人王国，对方接受了，自己也就接受了）
+						pMap.put("status", "status-msg-btn fs12 status-received");
+						pMap.put("statusName", "已接受");
 					}else{
 						e.setStatus(2);//未接受
+						pMap.put("status", "status-msg-btn fs12");
+						pMap.put("statusName", "待接受");
 					}
+					params.add(pMap);
+					e.setContent(this.replaceMiliData(t.getContent(), params));
 					stDTO.getResult().add(e);
 				}
 			}
