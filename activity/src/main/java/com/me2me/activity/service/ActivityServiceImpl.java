@@ -1939,8 +1939,8 @@ public class ActivityServiceImpl implements ActivityService {
             if(userProfile.getGender() == 0) {
                 //查询总记录数
                 map.put("gender",1);
-//                int total = activityMybatisDao.getAliveList(map);
-                int total = 0;
+                int total = activityMybatisDao.getAliveList(map);
+//                int total = 0;
                 //0女 查询男
                 List<BlurSearchDto> boyList = activityMybatisDao.getTopicByBoy(map);
                 if(boyList.size()>0 && boyList != null){
@@ -1954,7 +1954,7 @@ public class ActivityServiceImpl implements ActivityService {
                         //申请过的不再显示
                         List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(uid ,blurSearchDto.getUid());
                         if(list.size() == 0){
-                            total++;
+//                            total++;
                             atopicInfoDto.getBlurSearchList().add(blurSearchDto);
                         }
                     }
@@ -1965,9 +1965,9 @@ public class ActivityServiceImpl implements ActivityService {
 
             }else{
                 map.put("gender",0);
-//                int total = activityMybatisDao.getAliveList(map);
+                int total = activityMybatisDao.getAliveList(map);
 //                atopicInfoDto.setTotal(total);
-                int total = 0;
+//                int total = 0;
                 //1男 //查询女
                 List<BlurSearchDto> girlList = activityMybatisDao.getTopicByGirl(map);
                 if(girlList.size()>0 && girlList != null){
@@ -1981,7 +1981,7 @@ public class ActivityServiceImpl implements ActivityService {
                         //申请过的不再显示
                         List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(uid ,blurSearchDto.getUid());
                         if(list.size() == 0){
-                            total ++;
+//                            total ++;
                             atopicInfoDto.getBlurSearchList().add(blurSearchDto);
                         }
                     }
@@ -2016,9 +2016,8 @@ public class ActivityServiceImpl implements ActivityService {
                 //查询总记录数
                 map.put("gender", 1);
                 // TODO: 2016/12/15
-//                int total = activityMybatisDao.getBridListTotal(map);
-//                atopicInfoDto.setTotal(total);
-                int total = 0;
+                int total = activityMybatisDao.getBridListTotal(map);
+                atopicInfoDto.setTotal(total);
                 //0女 查询男
                 List<BlurSearchDto> boyList = activityMybatisDao.getBridList(map);
                 if (boyList.size() > 0 && boyList != null) {
@@ -2026,21 +2025,18 @@ public class ActivityServiceImpl implements ActivityService {
                         //申请过的不再显示
                         List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid4(uid ,blurSearchDto.getUid());
                         if (list.size() == 0) {
-                            total ++;
                             atopicInfoDto.getBlurSearchList().add(blurSearchDto);
                         }
                         blurSearchDto.setIsAlone(1);
                     }
-                    atopicInfoDto.setTotal(total);
                     log.info("get bridList success");
                     return Response.success(ResponseStatus.SEARCH_BRIDLIST_SUCCESS.status, ResponseStatus.SEARCH_BRIDLIST_SUCCESS.message, atopicInfoDto);
                 }
 
             } else {
                 map.put("gender", 0);
-//                int total = activityMybatisDao.getBridListTotal(map);
-//                atopicInfoDto.setTotal(total);
-                int total = 0;
+                int total = activityMybatisDao.getBridListTotal(map);
+                atopicInfoDto.setTotal(total);
                 //1男 //查询女
                 List<BlurSearchDto> girlList = activityMybatisDao.getBridList(map);
                 if (girlList.size() > 0 && girlList != null) {
@@ -2048,12 +2044,10 @@ public class ActivityServiceImpl implements ActivityService {
                         //申请过的不再显示
                         List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid4(uid ,blurSearchDto.getUid());
                         if (list.size() == 0) {
-                            total ++;
                             atopicInfoDto.getBlurSearchList().add(blurSearchDto);
                         }
                         blurSearchDto.setIsAlone(1);
                     }
-                    atopicInfoDto.setTotal(total);
                     log.info("get bridList success");
                     return Response.success(ResponseStatus.SEARCH_BRIDLIST_SUCCESS.status, ResponseStatus.SEARCH_BRIDLIST_SUCCESS.message, atopicInfoDto);
                 }
