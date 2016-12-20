@@ -1369,7 +1369,6 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public Response enterActivity(QiUserDto qiUserDto) {
-
         VerifyDto verifyDto = new VerifyDto();
         //验证为1
         verifyDto.setAction(Specification.VerifyAction.CHECK.index);
@@ -1434,7 +1433,10 @@ public class ActivityServiceImpl implements ActivityService {
 
         activityMybatisDao.createAuser(auser);
         //发送短信 报名成功
-        //smsService.send7dayCommon("142378",qiUserDto.getMobile(),null,null);
+//        smsService.send7dayCommon("142378",qiUserDto.getMobile(),null,null);
+        List<String> mobileList = new ArrayList<String>();
+        mobileList.add(qiUserDto.getMobile());
+        smsService.send7dayCommon("142378", mobileList, null);
         return Response.success(ResponseStatus.REGISTRATION_SUCCESS.status, ResponseStatus.REGISTRATION_SUCCESS.message);
     }
 
@@ -1515,15 +1517,37 @@ public class ActivityServiceImpl implements ActivityService {
         List<Auser> auserList = activityMybatisDao.getAuserList();
         //发短信给每个用户 告知审核通过了
         if(auserList.size() > 0 && auserList != null){
-            List mobileList = Lists.newArrayList();
+        	log.info("total ["+auserList.size()+"] user");
+        	AactivityStage stage2 = activityMybatisDao.getAactivityStageByStage(1, 2);
+        	List<String> msgList = new ArrayList<String>();
+        	if(null != stage2){
+        		Calendar cal = Calendar.getInstance();
+        		cal.setTime(stage2.getStartTime());
+        		int month = cal.get(Calendar.MONTH)+1;
+        		int day = cal.get(Calendar.DAY_OF_MONTH);
+        		msgList.add(String.valueOf(month));
+        		msgList.add(String.valueOf(day));
+        	}else{
+        		msgList.add("");
+        		msgList.add("");
+        	}
+        	
+            List<String> mobileList = Lists.newArrayList();
             for(Auser auser : auserList){
                 //通知所有审核中的用户
                 mobileList.add(auser.getMobile());
+                
+                if(mobileList.size() >= 150){
+                	smsService.send7dayCommon("142379", mobileList, msgList);
+                	log.info("send ["+mobileList.size()+"] user!");
+                	mobileList.clear();
+                }
             }
-            AwardXMDto awardXMDto = new AwardXMDto();
-            awardXMDto.setMobileList(mobileList);
-            //发送短信(模板未给)
-//            smsService.send7dayApply(mobileList);
+            if(mobileList.size() > 0){
+            	smsService.send7dayCommon("142379", mobileList, msgList);
+            	log.info("send ["+mobileList.size()+"] user!");
+            }
+            
             log.info("send 7dayApply message success");
             //修改每个用户未审核通过
             activityMybatisDao.updateAuser();
@@ -3491,6 +3515,14 @@ public class ActivityServiceImpl implements ActivityService {
 	
 	@Override
 	public Response forcedPairingPush(){
+		
+		
+		
+		return Response.success();
+	}
+	
+	@Override
+	public Response bindNotice(){
 		
 		
 		

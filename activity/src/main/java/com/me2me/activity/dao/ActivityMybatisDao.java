@@ -573,13 +573,6 @@ public class ActivityMybatisDao {
         return list.size()>0 && list !=null ?list.get(0) : null;
     }
 
-    public AactivityStage getAactivityStageByAid(long activityId){
-        AactivityStageExample example = new AactivityStageExample();
-        example.createCriteria().andActivityIdEqualTo(activityId);
-        List<AactivityStage> list = aactivityStageMapper.selectByExample(example);
-        return list.size()>0 && list !=null ?list.get(0) : null;
-    }
-
     public List<AactivityStage> getAactivityStage(long activityId){
         AactivityStageExample example = new AactivityStageExample();
         example.createCriteria().andActivityIdEqualTo(activityId);
@@ -591,6 +584,13 @@ public class ActivityMybatisDao {
         example.createCriteria().andActivityIdEqualTo(activityId).andStageEqualTo(stage).andTypeEqualTo(0);
         List<AactivityStage> list = aactivityStageMapper.selectByExample(example);
         return list.size()>0 && list !=null ?list.get(0) : null;
+    }
+    
+    public AactivityStage getStageByStage(long activityId ,int stage){
+    	AactivityStageExample example = new AactivityStageExample();
+        example.createCriteria().andActivityIdEqualTo(activityId).andStageEqualTo(stage);
+        List<AactivityStage> list = aactivityStageMapper.selectByExample(example);
+        return null!=list&&list.size()>0?list.get(0) : null;
     }
     
     public Auser getAuserByUid(long uid){

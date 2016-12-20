@@ -41,7 +41,7 @@ public class ActivityLinkPushListener {
 		map.put("messageType", "13");
 		map.put("link_url", event.getLinkUrl());
 
-        String alias = String.valueOf(event.getMessage());
+        String alias = String.valueOf(event.getUid());
 
         jPushService.payloadByIdExtra(alias,  event.getMessage(), map);
 		log.info("link push end...");

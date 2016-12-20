@@ -149,6 +149,8 @@ public interface ActivityService {
     
     Response forcedPairingPush();
     
+    Response bindNotice();
+    
     Response operaBrid(long uid ,int applyId ,int operaStatus);
 
 }

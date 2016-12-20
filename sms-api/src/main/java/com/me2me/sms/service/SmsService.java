@@ -28,6 +28,6 @@ public interface SmsService {
     void send7dayApply(List mobileList);
 
     //七天活动封装短信接口
-    void send7dayCommon(String templateId ,String mobile ,List mobileList ,List message);
+    void send7dayCommon(String templateId, List<String> mobileList, List<String> messageList);
 
 }

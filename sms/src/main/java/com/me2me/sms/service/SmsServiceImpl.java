@@ -117,33 +117,27 @@ public class SmsServiceImpl implements SmsService {
     }
 
     @Override
-    public void send7dayCommon(String templateId ,String mobile ,List mobileList ,List message) {
-        String messages;
-        //审核走List 多个手机号
-        if(mobileList != null){
-            String mobiles = getListToString(mobileList);
-            if(message != null){
-                messages = getListToString(message);
-            }else {
-                messages = "";
-            }
-            getResult(templateId,mobiles,messages);
-        }
-        else{
-        //其余模板走通用
-            if(!org.springframework.util.StringUtils.isEmpty(message)){
-                messages = getListToString(message);
-            }else {
-                messages = "";
-            }
-                getResult(templateId,mobile,messages);
-        }
-    }
-
-    public HashMap<String,Object> getResult(String templateId ,String mobiles ,String message){
-        HashMap<String,Object> result = null;
-        result = messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobiles,templateId,new String[]{message});
-        return result;
+    public void send7dayCommon(String templateId, List<String> mobileList, List<String> messageList) {
+    	StringBuilder msb = new StringBuilder();
+    	if(null != mobileList && mobileList.size() > 0){
+    		for(String m : mobileList){
+    			msb.append(",").append(m.trim());
+    		}
+    	}
+    	String mobile = msb.toString();
+    	if(mobile.length() > 0){
+    		mobile = mobile.substring(1);
+    	}
+    	
+    	if(null == messageList || messageList.size() == 0){
+    		messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobile, templateId, new String[]{""});
+    	}else{
+    		String[] msgs = new String[messageList.size()];
+    		for(int i=0;i<messageList.size();i++){
+    			msgs[i] = messageList.get(i);
+    		}
+    		messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobile, templateId, msgs);
+    	}
     }
 
     /**
@@ -152,7 +146,7 @@ public class SmsServiceImpl implements SmsService {
      * @param list
      * @return
      */
-    public String getListToString(List list) {
+    private String getListToString(List list) {
         return StringUtils.join(list.toArray(), ",");
     }
 }
