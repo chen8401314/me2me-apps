@@ -2658,7 +2658,7 @@ public class ActivityServiceImpl implements ActivityService {
 					Map<String,Object> singleTopic = liveForActivityDao.getTopicById(singleKingdom.getTopicId());
 					if(null != singleTopic && null == doubleKingdom){
 						Long updateTime = (Long)singleTopic.get("long_time");
-						if((now.getTime() - updateTime)/60*60*1000l >= 12){
+						if((now.getTime() - updateTime)/(60*60*1000l) >= 12){
 							params = new ArrayList<Map<String, String>>();
 							Map<String, String> map = new HashMap<String, String>();
 							map.put("topicId", String.valueOf(singleKingdom.getTopicId()));
@@ -2797,7 +2797,7 @@ public class ActivityServiceImpl implements ActivityService {
 						if(null != doubleTopic){
 							UserProfile up = userService.getUserProfileByUid(doubleKingdom.getUid2());
 							Long updateTime = (Long)doubleTopic.get("long_time");
-							if((now.getTime() - updateTime)/60*60*1000l >= 12){
+							if((now.getTime() - updateTime)/(60*60*1000l) >= 12){
 								params = new ArrayList<Map<String, String>>();
 								Map<String, String> map = new HashMap<String, String>();
 								map.put("topicId", String.valueOf(doubleKingdom.getTopicId()));
@@ -2872,7 +2872,7 @@ public class ActivityServiceImpl implements ActivityService {
 							doubleTopic = liveForActivityDao.getTopicById(doubleKingdom.getTopicId());
 							if(null != doubleTopic){
 								Long updateTime = (Long)doubleTopic.get("long_time");
-								if((now.getTime() - updateTime)/60*1000l >= 12){
+								if((now.getTime() - updateTime)/(60*60*1000l) >= 12){
 									params = new ArrayList<Map<String, String>>();
 									Map<String, String> map = new HashMap<String, String>();
 									map.put("topicId", String.valueOf(doubleKingdom.getTopicId()));

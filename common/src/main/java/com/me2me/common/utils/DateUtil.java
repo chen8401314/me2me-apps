@@ -59,7 +59,7 @@ public class DateUtil {
 		try{
 			date1 = string2date(date2string(date1, "yyyy-MM-dd"), "yyyy-MM-dd");
 			date2 = string2date(date2string(date2, "yyyy-MM-dd"), "yyyy-MM-dd");
-			long day = (date1.getTime() - date2.getTime())/24*60*60*1000l;
+			long day = (date1.getTime() - date2.getTime())/(24*60*60*1000l);
 			return Math.abs(day);
 		}catch(Exception e){
 			e.printStackTrace();
@@ -74,7 +74,7 @@ public class DateUtil {
 		try{
 			date1 = string2date(date2string(date1, "yyyy-MM-dd HH:mm"), "yyyy-MM-dd HH:mm");
 			date2 = string2date(date2string(date2, "yyyy-MM-dd HH:mm"), "yyyy-MM-dd HH:mm");
-			long hour = (date1.getTime() - date2.getTime())/60*60*1000l;
+			long hour = (date1.getTime() - date2.getTime())/(60*60*1000l);
 			return Math.abs(hour);
 		}catch(Exception e){
 			e.printStackTrace();
