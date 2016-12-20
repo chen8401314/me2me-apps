@@ -599,6 +599,20 @@ public class ActivityMybatisDao {
     	List<Auser> list = auserMapper.selectByExample(example);
     	return null!=list && list.size()>0 ?list.get(0):null;
     }
+    
+    //审核通过的但是没绑定的用户
+    public List<Auser> getNoBindAuserList(){
+    	AuserExample example = new AuserExample();
+    	example.createCriteria().andUidEqualTo(0l).andStatusEqualTo(3);
+    	return auserMapper.selectByExample(example);
+    }
+    
+    //查询所有审核通过的用户
+    public List<Auser> getAllAuditSuccessAuser(){
+    	AuserExample example = new AuserExample();
+    	example.createCriteria().andStatusEqualTo(3);
+    	return auserMapper.selectByExample(example);
+    }
 
     public Atopic getAtopicByAuidAndSingle(long Auid){
         AtopicExample example = new AtopicExample();

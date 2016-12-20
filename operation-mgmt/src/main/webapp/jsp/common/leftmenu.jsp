@@ -78,6 +78,15 @@ String sub = request.getParameter("s");
                     <li <%if("7_3".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appconfig/dbconfig/query">数据库配置管理</a></li>
                 </ul>
             </li>
+            <li class="sub-menu">
+                <a href="javascript:;" <%if("8".equals(tab)){ %>class="active"<%} %>>
+                    <i class="fa fa-bar-chart-o"></i>
+                    <span>七天活动管理</span>
+                </a>
+                <ul class="sub">
+                	<li <%if("8_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/7day/stat/user">报名用户统计</a></li>
+                </ul>
+            </li>
         </ul>
         <!-- sidebar menu end-->
     </div>

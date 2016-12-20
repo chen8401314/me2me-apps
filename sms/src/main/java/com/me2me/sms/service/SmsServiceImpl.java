@@ -1,4 +1,5 @@
 package com.me2me.sms.service;
+
 import com.google.common.base.Splitter;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.sms.YunXinSms;
@@ -7,13 +8,15 @@ import com.me2me.sms.channel.MessageClient;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.event.VerifyEvent;
 import com.me2me.sms.listener.VerifyCodeListener;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
 
 
 /**
@@ -22,6 +25,7 @@ import java.util.List;
  * Date: 2016/3/1.
  */
 @Service
+@Slf4j
 public class SmsServiceImpl implements SmsService {
 
     @Autowired
@@ -129,14 +133,18 @@ public class SmsServiceImpl implements SmsService {
     		mobile = mobile.substring(1);
     	}
     	
-    	if(null == messageList || messageList.size() == 0){
-    		messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobile, templateId, new String[]{""});
-    	}else{
-    		String[] msgs = new String[messageList.size()];
-    		for(int i=0;i<messageList.size();i++){
-    			msgs[i] = messageList.get(i);
-    		}
-    		messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobile, templateId, msgs);
+    	try{
+    		if(null == messageList || messageList.size() == 0){
+        		messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobile, templateId, new String[]{""});
+        	}else{
+        		String[] msgs = new String[messageList.size()];
+        		for(int i=0;i<messageList.size();i++){
+        			msgs[i] = messageList.get(i);
+        		}
+        		messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobile, templateId, msgs);
+        	}
+    	}catch(Exception e){
+    		log.error("发送短信失败", e);
     	}
     }
 

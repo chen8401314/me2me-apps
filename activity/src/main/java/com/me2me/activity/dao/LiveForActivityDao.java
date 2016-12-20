@@ -1,5 +1,6 @@
 package com.me2me.activity.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -7,6 +8,7 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 @Repository
 public class LiveForActivityDao {
@@ -112,5 +114,65 @@ public class LiveForActivityDao {
 			return list.get(0);
 		}
 		return null;
+	}
+	
+	public List<Long> getForcedPairingUser(){
+		String sql = "select t.uid from a_topic t where not EXISTS (select 1 from a_topic p where p.type=2 and p.status=0 and p.uid=t.uid)";
+		sql = sql + " and t.type=1 and t.status=0";
+		List<Long> result = new ArrayList<Long>();
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
+		if(null != list && list.size() > 0){
+			for(Map<String,Object> m : list){
+				result.add((Long)m.get("uid"));
+			}
+		}
+		
+		return result;
+	}
+	
+	public Map<String, Object> get7dayUserStat(String channel, String code, String startTime, String endTime){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select count(1) as total,count(if(t.sex=0,TRUE,NULL)) as womanCount,count(if(t.sex=1,TRUE,NULL)) as manCount,");
+		sb.append("count(if(t.uid>0,TRUE,NULL)) as bindCount from a_user t where 1=1");
+		if(!StringUtils.isEmpty(channel)){
+			if(!StringUtils.isEmpty(code)){
+				sb.append(" and t.channel='").append(channel).append("=").append(code).append("'");
+			}else{
+				sb.append(" and t.channel like '").append(channel).append("=%'");
+			}
+		}
+		if(!StringUtils.isEmpty(startTime)){
+			sb.append(" and t.create_time>='").append(startTime).append("'");
+		}
+		if(!StringUtils.isEmpty(endTime)){
+			sb.append(" and t.create_time<='").append(endTime).append("'");
+		}
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+	
+	public List<Map<String, Object>> get7dayUsers(String channel, String code, String startTime, String endTime, int start, int pageSize){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select t.*,(select count(1) from topic p where p.uid=t.uid) as kingdomCount");
+		sb.append(" from a_user t where 1=1");
+		if(!StringUtils.isEmpty(channel)){
+			if(!StringUtils.isEmpty(code)){
+				sb.append(" and t.channel='").append(channel).append("=").append(code).append("'");
+			}else{
+				sb.append(" and t.channel like '").append(channel).append("=%'");
+			}
+		}
+		if(!StringUtils.isEmpty(startTime)){
+			sb.append(" and t.create_time>='").append(startTime).append("'");
+		}
+		if(!StringUtils.isEmpty(endTime)){
+			sb.append(" and t.create_time<='").append(endTime).append("'");
+		}
+		sb.append(" order by t.channel limit ").append(start).append(",").append(pageSize);
+		
+		return jdbcTemplate.queryForList(sb.toString());
 	}
 }
