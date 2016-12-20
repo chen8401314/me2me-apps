@@ -72,13 +72,13 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Autowired
     private SmsService smsService;
-    
+
     @Autowired
     private ApplicationEventBus applicationEventBus;
 
     @Value("#{app.activity_web_url}")
     private String activityWebUrl;
-    
+
     @Override
     public Response createActivity(CreateActivityDto createActivityDto) {
         ActivityWithBLOBs activity = new ActivityWithBLOBs();
@@ -1331,7 +1331,7 @@ public class ActivityServiceImpl implements ActivityService {
 			t.setHot(0l);
 			t.setStatus(0);
 			activityMybatisDao.createAtopic(t);
-			
+
 			//通知小王
 			UserProfile up = userService.getUserProfileByUid(uid);
 			UserToken ut = userService.getUserTokenByUid(uid2);
@@ -1340,7 +1340,7 @@ public class ActivityServiceImpl implements ActivityService {
             sb.append(activityWebUrl).append(Specification.LinkPushType.CREATE_DOUBLE_KINGDOM_PARTNER.linkUrl).append("?uid=");
             sb.append(uid2).append("&token=").append(ut.getToken());
             applicationEventBus.post(new LinkPushEvent(msg, sb.toString(), uid2));
-            
+
             //并且通知所有向我申请过的并且在申请中的人
             List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByTargetUidAndType(uid, 1);
             if(null != list && list.size() > 0){
@@ -1361,7 +1361,7 @@ public class ActivityServiceImpl implements ActivityService {
             		        applicationEventBus.post(new LinkPushEvent(msg, sb.toString(), u.getUid()));
             			}
             		}
-            		
+
             	}
             }
 		}
@@ -2081,7 +2081,7 @@ public class ActivityServiceImpl implements ActivityService {
                     //配对类型为1
                     applyReq.setType(1);
                     activityMybatisDao.createAdoubleTopicApply(applyReq);
-                    
+
                     //推送，让对方知晓
                     UserProfile up = userService.getUserProfileByUid(uid);
                     UserToken ut = userService.getUserTokenByUid(targetUid);
@@ -2090,7 +2090,7 @@ public class ActivityServiceImpl implements ActivityService {
                     sb.append(activityWebUrl).append(Specification.LinkPushType.PAIR_APPLY.linkUrl).append("?uid=");
                     sb.append(targetUid).append("&token=").append(ut.getToken());
                     applicationEventBus.post(new LinkPushEvent(msg, sb.toString(), targetUid));
-                    
+
                     log.info("application success");
                     return Response.success(ResponseStatus.APPLICATION_SUCCESS.status, ResponseStatus.APPLICATION_SUCCESS.message);
                 }else{
@@ -2186,9 +2186,9 @@ public class ActivityServiceImpl implements ActivityService {
         //查询自己同意的条数 只能一条 ，接收方查询是targetUid
         List<AdoubleTopicApply> lists = activityMybatisDao.getAdoubleTopicApplyByUid2(uid);
         //2同意，3拒绝，4删除
-        if(operaStatus ==2){
+        if (operaStatus == 2) {
             AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
-            if(lists.size() < 1) {
+            if (lists.size() < 1) {
                 //同意时，需要判断对方是否已经创建了双人王国，如果已经创建了，则无法同意了。
                 if (topicApply != null) {
                     //查看对方是否有双人王国
@@ -2196,7 +2196,7 @@ public class ActivityServiceImpl implements ActivityService {
                     if (atopic == null) {
                         topicApply.setStatus(operaStatus);
                         activityMybatisDao.updateAdoubleTopicApply(topicApply);
-                        
+
                         //同意对方申请，要通知对方
                         UserProfile up = userService.getUserProfileByUid(topicApply.getTargetUid());
                         UserToken ut = userService.getUserTokenByUid(topicApply.getUid());
@@ -2205,95 +2205,117 @@ public class ActivityServiceImpl implements ActivityService {
                         sb.append(activityWebUrl).append(Specification.LinkPushType.PAIR_AGREE.linkUrl).append("?uid=");
                         sb.append(topicApply.getUid()).append("&token=").append(ut.getToken());
                         applicationEventBus.post(new LinkPushEvent(msg, sb.toString(), topicApply.getUid()));
-                        
+
                         log.info("update agree success");
                     } else {
                         return Response.success(ResponseStatus.TARGET_CREATE_TOPIC.status, ResponseStatus.TARGET_CREATE_TOPIC.message);
                     }
-                }
-            }else{
-                return Response.success(ResponseStatus.ONLY_AGREE_ONE_PEOPLE.status, ResponseStatus.ONLY_AGREE_ONE_PEOPLE.message);
-            }
-        }else if(operaStatus ==3){
-            AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
-            if(topicApply != null){
-                topicApply.setStatus(operaStatus);
-                activityMybatisDao.updateAdoubleTopicApply(topicApply);
-                
-                //拒绝对方申请，要通知对方
-                UserProfile up = userService.getUserProfileByUid(topicApply.getTargetUid());
-                UserToken ut = userService.getUserTokenByUid(topicApply.getUid());
-                String msg = Specification.LinkPushType.PAIR_REFUSE.message.replaceAll("#{1}#", up.getNickName());
-                StringBuilder sb = new StringBuilder();
-                sb.append(activityWebUrl).append(Specification.LinkPushType.PAIR_REFUSE.linkUrl).append("?uid=");
-                sb.append(topicApply.getUid()).append("&token=").append(ut.getToken());
-                applicationEventBus.post(new LinkPushEvent(msg, sb.toString(), topicApply.getUid()));
-                
-                log.info("update refuse success");
-            }
-        } else if(operaStatus ==4){
-            //删除需要符合条件的才能删除，首先必须是自己发出的申请，并且对方还没有同意的申请才能删除，
-            // 或者对方同意了但是已经和别人创建 双人王国了也能删除。
-            AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
-            Atopic atopic = activityMybatisDao.getAtopicByAuidDoubleByUid(topicApply.getUid());
-            if((topicApply.getUid() == uid && topicApply.getStatus() != 2) ||
-                    (topicApply.getStatus() ==2 && atopic != null) || topicApply.getStatus() == 3){
-                topicApply.setStatus(operaStatus);
-                activityMybatisDao.updateAdoubleTopicApply(topicApply);
-                log.info("update delete success");
-            }else {
-                return Response.success(ResponseStatus.CANT_DELETE.status, ResponseStatus.CANT_DELETE.message);
-            }
-        }
-        log.info("update state success");
-        return Response.success(ResponseStatus.UPDATE_STATE_SUCCESS.status, ResponseStatus.UPDATE_STATE_SUCCESS.message);
-    }
-
-    @Override
-    public Response bridApply(long uid, long targetUid) {
-        Atopic ownerTopic = activityMybatisDao.getAtopicByUidandTypeBrid(uid ,2);
-        Atopic targetTopic = activityMybatisDao.getAtopicByUidandTypeBrid(targetUid ,2);
-        String bridKey = cacheService.get(BRID_KEY);
-        AactivityStage aactivityStage4 = activityMybatisDao.getAactivityStageByStage(1,4);
-        if(aactivityStage4 != null) {
-            if (bridKey != null) {
-                List<AdoubleTopicApply> lists = activityMybatisDao.getAdoubleTopicApplyByUidBrid(uid);
-                //申请人没有双人王国，接收人有双人王国，才能抢亲 只能5次
-                if (ownerTopic == null && targetTopic != null && lists.size() < Integer.parseInt(bridKey)) {
-                    AdoubleTopicApply apply = new AdoubleTopicApply();
-                    apply.setType(2);//2是抢亲
-                    apply.setUid(uid);
-                    apply.setTargetUid(targetUid);
-                    activityMybatisDao.createAdoubleTopicApply(apply);
-                    
-                    //发起抢亲向对方发推送
-                    UserProfile up = userService.getUserProfileByUid(uid);
-                    UserToken ut = userService.getUserTokenByUid(targetUid);
-                    String msg = Specification.LinkPushType.ROB_APPLY.message.replaceAll("#{1}#", up.getNickName());
-                    StringBuilder sb = new StringBuilder();
-                    sb.append(activityWebUrl).append(Specification.LinkPushType.ROB_APPLY.linkUrl).append("?uid=");
-                    sb.append(targetUid).append("&token=").append(ut.getToken());
-                    applicationEventBus.post(new LinkPushEvent(msg, sb.toString(), targetUid));
-                    
-                    //想对方的原配发消息
-                    ut = userService.getUserTokenByUid(targetTopic.getUid2());
-                    msg = Specification.LinkPushType.ROB_APPLY.message.replaceAll("#{1}#", up.getNickName());
-                    sb = new StringBuilder();
-                    sb.append(activityWebUrl).append(Specification.LinkPushType.ROB_APPLY.linkUrl).append("?uid=");
-                    sb.append(targetUid).append("&token=").append(ut.getToken());
-                    applicationEventBus.post(new LinkPushEvent(msg, sb.toString(), targetUid));
-                    
-                    log.info("brid success");
-                    return Response.success(ResponseStatus.APPLY_BRID_SUCCESS.status, ResponseStatus.APPLY_BRID_SUCCESS.message);
                 }else{
-                    return Response.success(ResponseStatus.BRID_UPPER_LIMIT.status, ResponseStatus.BRID_UPPER_LIMIT.message);
+                        //解决页面未及时刷新的问题
+                        if (topicApply.getStatus() == 1) {
+                            //查看对方是否有双人王国
+                            Atopic atopic = activityMybatisDao.getAtopicByAuidDoubleByUid(topicApply.getUid());
+                            if (atopic == null) {
+                                topicApply.setStatus(operaStatus);
+                                activityMybatisDao.updateAdoubleTopicApply(topicApply);
+                                log.info("update agree success");
+                            } else {
+                                return Response.success(ResponseStatus.TARGET_CREATE_TOPIC.status, ResponseStatus.TARGET_CREATE_TOPIC.message);
+                            }
+                        } else {
+                            return Response.success(ResponseStatus.ONLY_AGREE_ONE_PEOPLE.status, "同意失败");
+                        }
+                    }
+                } else {
+                    return Response.success(ResponseStatus.ONLY_AGREE_ONE_PEOPLE.status, ResponseStatus.ONLY_AGREE_ONE_PEOPLE.message);
+                }
+            } else if (operaStatus == 3) {
+                AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
+                if (topicApply != null) {
+                    topicApply.setStatus(operaStatus);
+                    activityMybatisDao.updateAdoubleTopicApply(topicApply);
+
+                    //拒绝对方申请，要通知对方
+                    UserProfile up = userService.getUserProfileByUid(topicApply.getTargetUid());
+                    UserToken ut = userService.getUserTokenByUid(topicApply.getUid());
+                    String msg = Specification.LinkPushType.PAIR_REFUSE.message.replaceAll("#{1}#", up.getNickName());
+                    StringBuilder sb = new StringBuilder();
+                    sb.append(activityWebUrl).append(Specification.LinkPushType.PAIR_REFUSE.linkUrl).append("?uid=");
+                    sb.append(topicApply.getUid()).append("&token=").append(ut.getToken());
+                    applicationEventBus.post(new LinkPushEvent(msg, sb.toString(), topicApply.getUid()));
+
+                    log.info("update refuse success");
+                    if (topicApply.getStatus() == 1) {
+                        topicApply.setStatus(operaStatus);
+                        activityMybatisDao.updateAdoubleTopicApply(topicApply);
+                        log.info("update refuse success");
+                    } else {
+                        return Response.success(ResponseStatus.ONLY_AGREE_ONE_PEOPLE.status, "拒绝失败");
+                    }
+                }
+            } else if (operaStatus == 4) {
+                //删除需要符合条件的才能删除，首先必须是自己发出的申请，并且对方还没有同意的申请才能删除，
+                // 或者对方同意了但是已经和别人创建 双人王国了也能删除。
+                AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
+                Atopic atopic = activityMybatisDao.getAtopicByAuidDoubleByUid(topicApply.getUid());
+                if ((topicApply.getUid() == uid && topicApply.getStatus() != 2) ||
+                        (topicApply.getStatus() == 2 && atopic != null) || topicApply.getStatus() == 3) {
+                    topicApply.setStatus(operaStatus);
+                    activityMybatisDao.updateAdoubleTopicApply(topicApply);
+                    log.info("update delete success");
+                } else {
+                    return Response.success(ResponseStatus.CANT_DELETE.status, ResponseStatus.CANT_DELETE.message);
                 }
             }
-        }else {
-            return Response.success(ResponseStatus.NOT_FOUR_STAGE.status, ResponseStatus.NOT_FOUR_STAGE.message);
+            log.info("update state success");
+            return Response.success(ResponseStatus.UPDATE_STATE_SUCCESS.status, ResponseStatus.UPDATE_STATE_SUCCESS.message);
         }
-        return Response.success(ResponseStatus.CANT_APPLY_BRID.status, ResponseStatus.CANT_APPLY_BRID.message);
-    }
+
+        @Override
+        public Response bridApply ( long uid, long targetUid){
+            Atopic ownerTopic = activityMybatisDao.getAtopicByUidandTypeBrid(uid, 2);
+            Atopic targetTopic = activityMybatisDao.getAtopicByUidandTypeBrid(targetUid, 2);
+            String bridKey = cacheService.get(BRID_KEY);
+            AactivityStage aactivityStage4 = activityMybatisDao.getAactivityStageByStage(1, 4);
+            if (aactivityStage4 != null) {
+                if (bridKey != null) {
+                    List<AdoubleTopicApply> lists = activityMybatisDao.getAdoubleTopicApplyByUidBrid(uid);
+                    //申请人没有双人王国，接收人有双人王国，才能抢亲 只能5次
+                    if (ownerTopic == null && targetTopic != null && lists.size() < Integer.parseInt(bridKey)) {
+                        AdoubleTopicApply apply = new AdoubleTopicApply();
+                        apply.setType(2);//2是抢亲
+                        apply.setUid(uid);
+                        apply.setTargetUid(targetUid);
+                        activityMybatisDao.createAdoubleTopicApply(apply);
+
+                        //发起抢亲向对方发推送
+                        UserProfile up = userService.getUserProfileByUid(uid);
+                        UserToken ut = userService.getUserTokenByUid(targetUid);
+                        String msg = Specification.LinkPushType.ROB_APPLY.message.replaceAll("#{1}#", up.getNickName());
+                        StringBuilder sb = new StringBuilder();
+                        sb.append(activityWebUrl).append(Specification.LinkPushType.ROB_APPLY.linkUrl).append("?uid=");
+                        sb.append(targetUid).append("&token=").append(ut.getToken());
+                        applicationEventBus.post(new LinkPushEvent(msg, sb.toString(), targetUid));
+
+                        //想对方的原配发消息
+                        ut = userService.getUserTokenByUid(targetTopic.getUid2());
+                        msg = Specification.LinkPushType.ROB_APPLY.message.replaceAll("#{1}#", up.getNickName());
+                        sb = new StringBuilder();
+                        sb.append(activityWebUrl).append(Specification.LinkPushType.ROB_APPLY.linkUrl).append("?uid=");
+                        sb.append(targetUid).append("&token=").append(ut.getToken());
+                        applicationEventBus.post(new LinkPushEvent(msg, sb.toString(), targetUid));
+
+                        log.info("brid success");
+                        return Response.success(ResponseStatus.APPLY_BRID_SUCCESS.status, ResponseStatus.APPLY_BRID_SUCCESS.message);
+                    } else {
+                        return Response.success(ResponseStatus.BRID_UPPER_LIMIT.status, ResponseStatus.BRID_UPPER_LIMIT.message);
+                    }
+                }
+            } else {
+                return Response.success(ResponseStatus.NOT_FOUR_STAGE.status, ResponseStatus.NOT_FOUR_STAGE.message);
+            }
+            return Response.success(ResponseStatus.CANT_APPLY_BRID.status, ResponseStatus.CANT_APPLY_BRID.message);
+        }
 
     @Override
     public Response bridSearch(long uid ,int type ,int pageNum ,int pageSize) {
@@ -2340,6 +2362,7 @@ public class ActivityServiceImpl implements ActivityService {
         }
         return Response.success(ResponseStatus.BRID_GET_LIST_FAILURE.status, ResponseStatus.BRID_GET_LIST_FAILURE.message);
     }
+
 
     @Override
     public Response doublueLiveState(long uid) {
@@ -2401,7 +2424,7 @@ public class ActivityServiceImpl implements ActivityService {
                 list2.setStatus(4);
                 activityMybatisDao.updateAdoubleTopicApply(list2);
             }
-            
+
             //离婚了要通知对方
             UserProfile up = userService.getUserProfileByUid(uid);
             UserToken ut = userService.getUserTokenByUid(targetUid);
@@ -2410,7 +2433,7 @@ public class ActivityServiceImpl implements ActivityService {
             sb.append(activityWebUrl).append(Specification.LinkPushType.DOUBLE_KINGDOM_BREAK.linkUrl).append("?uid=");
             sb.append(targetUid).append("&token=").append(ut.getToken());
             applicationEventBus.post(new LinkPushEvent(msg, sb.toString(), targetUid));
-            
+
             log.info("divorce success");
             return Response.success(ResponseStatus.DIVORCE_SUCCESS.status, ResponseStatus.DIVORCE_SUCCESS.message);
         }
@@ -2713,7 +2736,7 @@ public class ActivityServiceImpl implements ActivityService {
 						}else{
 							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NO_DOUBLE_APPLY.key, null);
 						}
-						
+
 						//强配
 						if(isForce(stage3, now)){//强配阶段
 							AforcedPairing fp = activityMybatisDao.getAforcedPairingForUser(singleKingdom.getUid());
@@ -2886,7 +2909,7 @@ public class ActivityServiceImpl implements ActivityService {
 							if(null == doubleTopic){
 								doubleTopic = liveForActivityDao.getTopicById(doubleKingdom.getTopicId());
 							}
-							
+
 							params = new ArrayList<Map<String, String>>();
 							Map<String, String> map = new HashMap<String, String>();
 							map.put("topicId", doubleTopic.get("id").toString());
@@ -3506,7 +3529,7 @@ public class ActivityServiceImpl implements ActivityService {
                 Map map = Maps.newHashMap();
                 map.put("topicId",atopic.getTopicId());
                 activityMybatisDao.updateAtopicStatus(map);
-                
+
                 //同意抢亲需要通知前夫/前妻
                 UserProfile up = userService.getUserProfileByUid(atopic.getUid());
                 UserToken ut = userService.getUserTokenByUid(atopic.getUid2());
@@ -3515,7 +3538,7 @@ public class ActivityServiceImpl implements ActivityService {
                 sb.append(activityWebUrl).append(Specification.LinkPushType.ROB_AGREE.linkUrl).append("?uid=");
                 sb.append(atopic.getUid2()).append("&token=").append(ut.getToken());
                 applicationEventBus.post(new LinkPushEvent(msg, sb.toString(), atopic.getUid2()));
-                
+
                 return Response.success(ResponseStatus.BRID_IS_SUCCESS.status, ResponseStatus.BRID_IS_SUCCESS.message);
             } else {
                 return Response.success(ResponseStatus.TARGET_NOT_CREATE_TOPIC.status, ResponseStatus.TARGET_NOT_CREATE_TOPIC.message);
