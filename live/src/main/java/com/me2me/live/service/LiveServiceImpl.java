@@ -333,10 +333,14 @@ public class LiveServiceImpl implements LiveService {
             }
 
             liveElement.setInternalStatus(getInternalStatus(topic, uid));
-            if (topicFragment.getAtUid() != 0) {
-                UserProfile atUser = userService.getUserProfileByUid(topicFragment.getAtUid());
-                liveElement.setAtUid(atUser.getUid());
-                liveElement.setAtNickName(atUser.getNickName());
+            if (null != topicFragment.getAtUid() && topicFragment.getAtUid() != 0) {
+            	if(topicFragment.getType() == Specification.LiveSpeakType.AT.index 
+            			|| topicFragment.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
+            			|| topicFragment.getType() == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
+	                UserProfile atUser = userService.getUserProfileByUid(topicFragment.getAtUid());
+	                liveElement.setAtUid(atUser.getUid());
+	                liveElement.setAtNickName(atUser.getNickName());
+            	}
             }
             liveTimeLineDto.getLiveElements().add(liveElement);
         }
@@ -1814,10 +1818,14 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setExtra(topicFragment.getExtra());
 
             liveElement.setInternalStatus(getInternalStatus(topic, uid));
-            if (topicFragment.getAtUid() != 0) {
-                UserProfile atUser = userService.getUserProfileByUid(topicFragment.getAtUid());
-                liveElement.setAtUid(atUser.getUid());
-                liveElement.setAtNickName(atUser.getNickName());
+            if (null != topicFragment.getAtUid() && topicFragment.getAtUid() > 0){
+            	if(topicFragment.getType() == Specification.LiveSpeakType.AT.index 
+            			|| topicFragment.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
+            			|| topicFragment.getType() == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
+	                UserProfile atUser = userService.getUserProfileByUid(topicFragment.getAtUid());
+	                liveElement.setAtUid(atUser.getUid());
+	                liveElement.setAtNickName(atUser.getNickName());
+            	}
             }
             if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){
             	liveDetailDto.getLiveElements().add(liveElement);
