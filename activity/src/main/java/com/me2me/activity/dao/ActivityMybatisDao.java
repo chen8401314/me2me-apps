@@ -822,9 +822,9 @@ public class ActivityMybatisDao {
     public List<AdoubleTopicApply> getAdoubleTopicApplyByUid4(long uid ,long targetUid){
         AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
         AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
-        criteria.andUidEqualTo(uid).andTargetUidEqualTo(targetUid).andTypeEqualTo(2).andStatusNotEqualTo(4);
+        criteria.andUidEqualTo(uid).andTargetUidEqualTo(targetUid).andTypeEqualTo(2).andStatusBetween(1,2);
         AdoubleTopicApplyExample.Criteria criteria2 = example.createCriteria();
-        criteria2.andUidEqualTo(targetUid).andTargetUidEqualTo(uid).andTypeEqualTo(2).andStatusNotEqualTo(4);
+        criteria2.andUidEqualTo(targetUid).andTargetUidEqualTo(uid).andTypeEqualTo(2).andStatusBetween(1,2);
         example.or(criteria2);
         return adoubleTopicApplyMapper.selectByExample(example);
     }
