@@ -2138,14 +2138,19 @@ public class ActivityServiceImpl implements ActivityService {
             if(lists.size() < 1) {
                 //同意时，需要判断对方是否已经创建了双人王国，如果已经创建了，则无法同意了。
                 if (topicApply != null) {
-                    //查看对方是否有双人王国
-                    Atopic atopic = activityMybatisDao.getAtopicByAuidDoubleByUid(topicApply.getUid());
-                    if (atopic == null) {
-                        topicApply.setStatus(operaStatus);
-                        activityMybatisDao.updateAdoubleTopicApply(topicApply);
-                        log.info("update agree success");
-                    } else {
-                        return Response.success(ResponseStatus.TARGET_CREATE_TOPIC.status, ResponseStatus.TARGET_CREATE_TOPIC.message);
+                    //解决页面未及时刷新的问题
+                    if(topicApply.getStatus() == 1) {
+                        //查看对方是否有双人王国
+                        Atopic atopic = activityMybatisDao.getAtopicByAuidDoubleByUid(topicApply.getUid());
+                        if (atopic == null) {
+                            topicApply.setStatus(operaStatus);
+                            activityMybatisDao.updateAdoubleTopicApply(topicApply);
+                            log.info("update agree success");
+                        } else {
+                            return Response.success(ResponseStatus.TARGET_CREATE_TOPIC.status, ResponseStatus.TARGET_CREATE_TOPIC.message);
+                        }
+                    }else {
+                        return Response.success(ResponseStatus.ONLY_AGREE_ONE_PEOPLE.status, "同意失败");
                     }
                 }
             }else{
@@ -2154,9 +2159,13 @@ public class ActivityServiceImpl implements ActivityService {
         }else if(operaStatus ==3){
             AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
             if(topicApply != null){
-                topicApply.setStatus(operaStatus);
-                activityMybatisDao.updateAdoubleTopicApply(topicApply);
-                log.info("update refuse success");
+                if(topicApply.getStatus() == 1) {
+                    topicApply.setStatus(operaStatus);
+                    activityMybatisDao.updateAdoubleTopicApply(topicApply);
+                    log.info("update refuse success");
+                }else{
+                    return Response.success(ResponseStatus.ONLY_AGREE_ONE_PEOPLE.status, "拒绝失败");
+                }
             }
         } else if(operaStatus ==4){
             //删除需要符合条件的才能删除，首先必须是自己发出的申请，并且对方还没有同意的申请才能删除，

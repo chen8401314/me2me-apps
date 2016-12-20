@@ -46,15 +46,15 @@
         <!--<table tableName="a_activity_stage" domainObjectName="AactivityStage"/>-->
         <!--<table tableName="a_user" domainObjectName="Auser"/>-->
         <!--<table tableName="a_user_to_sysuser" domainObjectName="AuserToSysUser"/>-->
-        <table tableName="t_channel" domainObjectName="Tchannel"/>
+        <!--<table tableName="t_channel" domainObjectName="Tchannel"/>-->
         <!--<table tableName="a_topic" domainObjectName="Atopic"/>-->
         <!--<table tableName="a_double_topic_apply" domainObjectName="AdoubleTopicApply"/>-->
         <!--<table tableName="a_mili_data" domainObjectName="AmiliData"/>-->
         <!--<table tableName="a_recommend_user" domainObjectName="ArecommendUser"/>-->
         <!--<table tableName="a_recommend_user_desc" domainObjectName="ArecommendUserDesc"/>-->
-        <table tableName="a_task" domainObjectName="Atask"/>
-        <table tableName="a_forced_pairing" domainObjectName="AforcedPairing"/>
-        <table tableName="a_task_user" domainObjectName="AtaskUser"/>
+        <!--<table tableName="a_task" domainObjectName="Atask"/>-->
+        <!--<table tableName="a_forced_pairing" domainObjectName="AforcedPairing"/>-->
+        <!--<table tableName="a_task_user" domainObjectName="AtaskUser"/>-->
 
 
     </context>
