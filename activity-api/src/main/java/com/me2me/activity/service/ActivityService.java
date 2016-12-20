@@ -147,6 +147,8 @@ public interface ActivityService {
     
     Response userTaskStatus(long tid, long uid);
     
+    Response forcedPairingPush();
+    
     Response operaBrid(long uid ,int applyId ,int operaStatus);
 
 }

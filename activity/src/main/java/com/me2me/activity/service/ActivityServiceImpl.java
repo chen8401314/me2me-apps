@@ -3487,6 +3487,14 @@ public class ActivityServiceImpl implements ActivityService {
 	}
 	
 	@Override
+	public Response forcedPairingPush(){
+		
+		
+		
+		return Response.success();
+	}
+	
+	@Override
     public Response operaBrid(long uid, int applyId, int operaStatus) {
         AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
         if(operaStatus ==2){
