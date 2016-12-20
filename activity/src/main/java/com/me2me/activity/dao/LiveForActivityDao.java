@@ -104,4 +104,13 @@ public class LiveForActivityDao {
 		sb.append(")");
 		return jdbcTemplate.queryForList(sb.toString());
 	}
+	
+	public Map<String, Object> getUserTokenInfo(long uid){
+		String sql = "select u.nick_name,t.token from user_profile u,user_token t where u.uid=t.uid and t.uid="+uid;
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
 }

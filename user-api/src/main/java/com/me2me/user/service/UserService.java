@@ -151,6 +151,10 @@ public interface UserService {
     int isFollow(long targetUid,long sourceUid);
 
     UserToken getUserByUidAndToken(long uid, String token);
+    
+    UserToken getUserTokenByUid(long uid);
+    
+    List<UserToken> getUserTokenByUids(List<Long> uids);
 
     Response getUser(long targetUid, long sourceUid);
 

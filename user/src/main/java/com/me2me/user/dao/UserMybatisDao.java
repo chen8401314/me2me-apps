@@ -119,6 +119,13 @@ public class UserMybatisDao {
         List<UserToken> lists = userTokenMapper.selectByExample(example);
         return (lists != null && lists.size() > 0) ? lists.get(0) : null;
     }
+    
+    public List<UserToken> getUserTokensByUids(List<Long> uids){
+    	UserTokenExample example = new UserTokenExample();
+        UserTokenExample.Criteria criteria = example.createCriteria();
+        criteria.andUidIn(uids);
+        return userTokenMapper.selectByExample(example);
+    }
 
     public UserToken getUserTokenByUid(long uid ,String token){
         UserTokenExample example = new UserTokenExample();

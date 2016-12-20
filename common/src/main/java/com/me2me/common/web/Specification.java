@@ -1096,13 +1096,16 @@ public interface Specification {
     	RECOMMEND_USER_2("RECOMMEND_USER_2", "失效推荐用户"),
     	NO_DOUBLE_APPLY("NO_DOUBLE_APPLY", "没有我发出的也没有我收到的请求"),
     	HAS_DOUBLE_APPLY("HAS_DOUBLE_APPLY", "有请求"),
-    	HAS_DOUBLE_KINGDOM("HAS_DOUBLE_KINGDOM", "有双人王国"),
+    	HAS_DOUBLE_KINGDOM("HAS_DOUBLE_KINGDOM", "有双人王国(配对)"),
+    	HAS_DOUBLE_KINGDOM_2("HAS_DOUBLE_KINGDOM_2", "有双人王国(天数)"),
     	MY_DOUBLE_APPLY_REFUSED("MY_DOUBLE_APPLY_REFUSED", "我的双人王国请求被拒"),
     	MY_DOUBLE_APPLY_AGREED("MY_DOUBLE_APPLY_AGREED", "我的双人王国请求被同意"),
     	RECIVE_DOUBLE_APPLY("RECIVE_DOUBLE_APPLY", "接收到双人王国请求"),
     	RECIVE_DOUBLE_APPLY_DELETED("RECIVE_DOUBLE_APPLY_DELETED", "接收到的双人王国请求被撤销"),
     	CAN_ROB_BRIDE("CAN_ROB_BRIDE", "可以抢亲"),
     	HAS_ROB_BRIDE("HAS_ROB_BRIDE", "有抢亲操作"),
+    	HAS_ROB_BRIDE_2("HAS_ROB_BRIDE_2", "有被抢亲操作"),
+    	NO_ROB_BRIDE("NO_ROB_BRIDE", "有双人没有被抢过"),
     	MY_ROB_BRIDE_APPLY_REFUSED("MY_ROB_BRIDE_APPLY_REFUSED", "我的抢亲请求被拒"),
     	MY_ROB_BRIDE_APPLY_AGREED("MY_ROB_BRIDE_APPLY_AGREED", "我的抢亲请求被同意"),
     	RECIVE_ROB_BRIDE_APPLY("RECIVE_ROB_BRIDE_APPLY", "接收到抢亲请求"),
@@ -1123,6 +1126,30 @@ public interface Specification {
             this.key = key;
             this.desc = desc;
         }
+    }
+    
+    enum LinkPushType{
+    	PAIR_APPLY("#{1}#向你抛出了绣球，申请跟你配对~", "/7day/my/pair"),
+    	PAIR_REFUSE("遗憾地通知你，你向#{1}#发出的配对申请被残忍地拒绝了", "/7day/my/pair"),
+    	PAIR_AGREE("恭喜！你中意的#{1}#已经同意了你的配对申请，赶紧共筑爱巢，开启你们的双人王国吧", "/7day/my/pair"),
+    	CREATE_DOUBLE_KINGDOM_PARTNER("你和#{1}#的双人王国已被#{1}#创建成功", "/7day/index"),
+    	CREATE_DOUBLE_KINGDOM_WOOER("来晚一步！你申请配对的#{1}#已经和别人创建了双人王国", "/7day/my/pair"),
+    	DOUBLE_KINGDOM_BREAK("Sad！你和#{1}#的双人王国已成过往烟云", "/7day/index"),
+    	FORCED_PAIRING("还没找到中意的TA？我们为你定制的缘分已经上线，快来把TA瞧个仔细！万一就看对眼了呢？", "/7day/index"),
+    	ROB_APPLY_PARTNER("有人抢你的另一半，去看看谁这么不要脸~", "/7day/my/pair-status"),
+    	ROB_APPLY("#{1}#向你发起了抢亲的请求，希望能和你共结连理，选TA？还是TA？你需要做出这个艰难的决定", "/7day/my/rob-index"),
+    	ROB_AGREE("不好啦后院起火啦！你的#{1}#被抢亲的抱走啦！快拿起你的锄头，去挖别人的墙角吧！", "/7day/index"),
+    	KINGDOM_NOT_UPDATE("紧急！你已经超过12小时没有更新王国了，有可能失去暗恋你的TA们哦", "/7day/index"),
+    	
+    	;
+    	
+    	public final String message;
+    	public final String linkUrl;
+    	
+    	LinkPushType(String message, String linkUrl){
+    		this.message = message;
+    		this.linkUrl = linkUrl;
+    	}
     }
 
 }
