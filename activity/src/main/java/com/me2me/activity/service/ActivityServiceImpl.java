@@ -1265,20 +1265,15 @@ public class ActivityServiceImpl implements ActivityService {
 			if(null != t){
 				return Response.failure("对方已经有双人王国了，不能再创建了");
 			}
-			List<AdoubleTopicApply> applyList = activityMybatisDao.getAdoubleTopicApplyByUidAndTargetUid(uid, uid2);
+			List<AdoubleTopicApply> applyList = activityMybatisDao.getAgreeAdoubleTopicApplyByUidAndTargetUid(uid, uid2);
 			boolean isCan = false;
 			if(null != applyList && applyList.size() > 0){
-				for(AdoubleTopicApply a : applyList){
-					if(a.getStatus() == 2){//同意
-						isCan = true;
-						break;
-					}
-				}
+				isCan = true;
 			}
 			if(!isCan){
 				//再看下有没有强配的，有强配也可以创建
 				AforcedPairing fp = activityMybatisDao.getAforcedPairingForUser(uid);
-				if(fp.getStatus() == 2){
+				if(null != fp && fp.getStatus() == 2){
 					if((fp.getUid() == uid && fp.getTargetUid() == uid2) 
 							|| (fp.getUid() == uid2 && fp.getTargetUid() == uid)){
 						isCan = true;//强配成功
