@@ -982,6 +982,20 @@ public class ActivityMybatisDao {
         return adoubleTopicApplyMapper.getDoubleTipicByBridAndTargetUid(map);
     }
 
+    public int getDoubleTipicByBridAndUidCount(long uid ,int type){
+        Map map = Maps.newHashMap();
+        map.put("uid",uid);
+        map.put("type",type);
+        return adoubleTopicApplyMapper.getDoubleTipicByBridAndUidCount(map);
+    }
+
+    public int getDoubleTipicByBridAndTargetUidCount(long uid ,int type){
+        Map map = Maps.newHashMap();
+        map.put("uid",uid);
+        map.put("type",type);
+        return adoubleTopicApplyMapper.getDoubleTipicByBridAndTargetUidCount(map);
+    }
+
     public void updateAdoubleTopicApply(AdoubleTopicApply topicApply) {
         adoubleTopicApplyMapper.updateByPrimaryKeySelective(topicApply);
     }

@@ -2306,7 +2306,6 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public Response bridSearch(long uid ,int type ,int pageNum ,int pageSize) {
-        int total = 0;
         //我抢别人的列表
         if(type == 1) {
             List<AdoubleTopicApply> applyList = activityMybatisDao.getDoubleTipicByBridAndUid(uid ,2 ,pageNum ,pageSize);
@@ -2319,9 +2318,9 @@ public class ActivityServiceImpl implements ActivityService {
                     BeanUtils.copyProperties(userProfile, applyElement);
                     applyElement.setId(topicApply.getId());
                     applyElement.setStatus(topicApply.getStatus());
-                    total ++;
                     lists.add(applyElement);
                 }
+                int total = activityMybatisDao.getDoubleTipicByBridAndUidCount(uid ,2);
                 bridListDto.setTotal(total);
                 log.info("brid get list success");
                 return Response.success(ResponseStatus.BRID_GET_LIST_SUCCESS.status, ResponseStatus.BRID_GET_LIST_SUCCESS.message, bridListDto);
@@ -2337,9 +2336,9 @@ public class ActivityServiceImpl implements ActivityService {
                     BeanUtils.copyProperties(userProfile, applyElement);
                     applyElement.setId(topicApply.getId());
                     applyElement.setStatus(topicApply.getStatus());
-                    total ++;
                     lists.add(applyElement);
                 }
+                int total = activityMybatisDao.getDoubleTipicByBridAndTargetUidCount(uid ,2);
                 bridListDto.setTotal(total);
                 log.info("brid get list success");
                 return Response.success(ResponseStatus.BRID_GET_LIST_SUCCESS.status, ResponseStatus.BRID_GET_LIST_SUCCESS.message, bridListDto);
