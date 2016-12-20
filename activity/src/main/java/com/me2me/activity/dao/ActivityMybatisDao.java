@@ -164,7 +164,7 @@ public class ActivityMybatisDao {
     	aforcedPairingMapper.updateByPrimaryKeySelective(fp);
     }
     
-    public List<Atask> getAtaskPageByType(long activityId, int type, int start, int pageSize){
+    public List<AtaskWithBLOBs> getAtaskPageByType(long activityId, int type, int start, int pageSize){
     	AtaskExample example = new AtaskExample();
     	AtaskExample.Criteria criteria = example.createCriteria();
     	criteria.andActivityIdEqualTo(activityId);
@@ -191,7 +191,7 @@ public class ActivityMybatisDao {
     	return ataskMapper.countByExample(example);
     }
     
-    public Atask getLastAtaskByType(long activityId, int type){
+    public AtaskWithBLOBs getLastAtaskByType(long activityId, int type){
     	AtaskExample example = new AtaskExample();
     	AtaskExample.Criteria criteria = example.createCriteria();
     	criteria.andActivityIdEqualTo(activityId);
@@ -200,7 +200,7 @@ public class ActivityMybatisDao {
     		criteria.andTypeEqualTo(type);
     	}
     	example.setOrderByClause(" update_time desc limit 1");
-    	List<Atask> list = ataskMapper.selectByExampleWithBLOBs(example);
+    	List<AtaskWithBLOBs> list = ataskMapper.selectByExampleWithBLOBs(example);
     	if(null != list && list.size() > 0){
     		return list.get(0);
     	}
