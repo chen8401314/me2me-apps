@@ -1158,6 +1158,7 @@ public class ActivityServiceImpl implements ActivityService {
         	qiActivityDto.setMobile(auser.getMobile());
         	if(auser.getStatus() == 3){
         		Atopic atopicSingle = activityMybatisDao.getAtopicByAuidAndSingle(auser.getId());
+                boolean hasSingle = false;
         		if(null != atopicSingle){
         			Map<String,Object> topicSingle = liveForActivityDao.getTopicById(atopicSingle.getTopicId());
         			if(null != topicSingle && topicSingle.size() > 0){
@@ -1167,8 +1168,14 @@ public class ActivityServiceImpl implements ActivityService {
                          topicElement.setTopicId((Long)topicSingle.get("id"));
                          topicElement.setStage(Specification.ASevenDayType.A_DOUBLE_STAGE.index);
                          qiActivityDto.getTopicList().add(topicElement);
+                        hasSingle = true;
         			}
         		}
+                if(!hasSingle){
+                    QiActivityDto.TopicElement topicElement = qiActivityDto.createElement();
+                    topicElement.setTopicId(null);
+                    qiActivityDto.getTopicList().add(topicElement);
+                }
                 Atopic atopicDouble = activityMybatisDao.getAtopicByAuidDouble(auser.getId());
                 if(null != atopicDouble){
                     Map<String,Object> topicDouble = liveForActivityDao.getTopicById(atopicDouble.getTopicId());
@@ -2159,7 +2166,9 @@ public class ActivityServiceImpl implements ActivityService {
                     }
                     applyElement.setId(apply.getId());
                     //查询像我发出的申请的人有没有同意别人的邀请 如果同意了返回2
-                    AdoubleTopicApply only = activityMybatisDao.getAdoubleTopicApplyByUid5(apply.getUid());
+                    //AdoubleTopicApply only = activityMybatisDao.getAdoubleTopicApplyByUid5(apply.getUid());
+                    //查询是否创建了双人王国 是的话已结婚 返回2
+                    Atopic only = activityMybatisDao.getAtopicByUid5(apply.getUid());
                     if(only != null){
                         applyElement.setStatus(2);
                     }else {
