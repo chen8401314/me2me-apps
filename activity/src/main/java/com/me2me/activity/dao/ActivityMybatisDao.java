@@ -858,7 +858,7 @@ public class ActivityMybatisDao {
     public Atopic getAtopicByUid5(long uid){
         AtopicExample example = new AtopicExample();
         AtopicExample.Criteria criteria = example.createCriteria();
-        criteria.andUidEqualTo(uid).andStatusEqualTo(0).andTypeEqualTo(1);
+        criteria.andUidEqualTo(uid).andStatusEqualTo(0).andTypeEqualTo(2);
         //或者 满足下面条件
         AtopicExample.Criteria criteria2 = example.createCriteria();
         criteria2.andUid2EqualTo(uid).andStatusEqualTo(0).andTypeEqualTo(2);
