@@ -41,6 +41,8 @@ public class ApplyListDto implements BaseEntity {
         private int status; //1申请中，2已配对，3可创建，4已撤销。
 
         private String title;
+
+        private long topicId;
     }
 
 }
