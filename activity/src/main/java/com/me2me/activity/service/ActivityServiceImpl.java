@@ -2342,6 +2342,9 @@ public class ActivityServiceImpl implements ActivityService {
     public Response bridSearch(long uid ,int type ,int pageNum ,int pageSize) {
         //我抢别人的列表
         if(type == 1) {
+            if(pageNum != 0){
+                pageNum = pageNum*pageSize;
+            }
             List<AdoubleTopicApply> applyList = activityMybatisDao.getDoubleTipicByBridAndUid(uid ,2 ,pageNum ,pageSize);
             BridListDto bridListDto = new BridListDto();
             List<BridListDto.ApplyElement> lists = bridListDto.getBridList();
@@ -2360,6 +2363,9 @@ public class ActivityServiceImpl implements ActivityService {
                 return Response.success(ResponseStatus.BRID_GET_LIST_SUCCESS.status, ResponseStatus.BRID_GET_LIST_SUCCESS.message, bridListDto);
             }
         }else if(type == 2){//别人抢我的列表
+            if(pageNum != 0){
+                pageNum = pageNum*pageSize;
+            }
             List<AdoubleTopicApply> applyList = activityMybatisDao.getDoubleTipicByBridAndTargetUid(uid ,2 ,pageNum ,pageSize);
             BridListDto bridListDto = new BridListDto();
             List<BridListDto.ApplyElement> lists = bridListDto.getBridList();
@@ -3617,7 +3623,7 @@ public class ActivityServiceImpl implements ActivityService {
     public Response operaBrid(long uid, int applyId, int operaStatus) {
         AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
         if(operaStatus ==2){
-            Atopic atopic = activityMybatisDao.getAtopicByAuidDoubleByUid(topicApply.getUid());
+            Atopic atopic = activityMybatisDao.getAtopicByAuidDoubleByUid(topicApply.getTargetUid());
             if (atopic != null) {
                 topicApply.setStatus(operaStatus);
                 activityMybatisDao.updateAdoubleTopicApply(topicApply);
