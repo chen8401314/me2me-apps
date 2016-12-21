@@ -14,7 +14,9 @@ public class ShowActivity7DayUsersDTO implements BaseEntity {
 	private List<UserItemElement> result = Lists.newArrayList();
 	
 	@Data
-	public static class UserItemElement{
+	public static class UserItemElement implements BaseEntity{
+		private static final long serialVersionUID = 1503424358374115240L;
+		
 		private String mobile;
 		private String name;
 		private int sex;
