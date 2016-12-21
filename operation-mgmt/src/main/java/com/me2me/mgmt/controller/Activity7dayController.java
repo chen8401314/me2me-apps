@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
@@ -12,6 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.me2me.activity.dto.ShowActivity7DayUserStatDTO;
 import com.me2me.activity.dto.ShowActivity7DayUsersDTO;
 import com.me2me.activity.service.ActivityService;
+import com.me2me.common.web.Response;
 import com.me2me.mgmt.request.StatUserDTO;
 
 @Controller
@@ -46,9 +48,25 @@ public class Activity7dayController {
 	}
 	
 	@RequestMapping(value="/stat/user/query")
+	@ResponseBody
 	public String statUserQuery(StatUserDTO dto){
 		ShowActivity7DayUsersDTO users = activityService.get7dayUsers(dto.getChannel(), dto.getCode(), dto.getStartTime(), dto.getEndTime(), dto.getPage(), dto.getPageSize());
 		JSONObject obj = (JSONObject)JSON.toJSON(users);
 		return obj.toJSONString();
+	}
+	
+	@RequestMapping(value="/control/index")
+	public ModelAndView controlIndex(){
+		ModelAndView view = new ModelAndView("7day/control");
+		return view;
+	}
+	
+	@RequestMapping(value="/control/auditSuccess")
+	@ResponseBody
+	public String auditSuccess(){
+		//一键审核通过
+		Response resp = activityService.oneKeyAudit();
+		
+		return "0";
 	}
 }

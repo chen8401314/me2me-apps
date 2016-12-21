@@ -80,7 +80,6 @@ var next = function(type){
 var buildTable = function(resp){
 	var result = eval("("+resp+")");
 	var currentPage = getCurrentPage();
-	
 	totalPage = $("#totalPage").val();
 	if(result){
 		buildTableBody(result.result);
@@ -173,7 +172,7 @@ var buildTableBody = function(dataList){
 							</header>
 							<div class="panel-body">
 								<div class="adv-table">
-									<table class="display table table-bordered table-striped" id="table">
+									<table class="display table table-bordered table-striped" id="table0">
 										<thead>
 											<tr>
 												<th>报名总人数</th>
@@ -182,12 +181,12 @@ var buildTableBody = function(dataList){
 												<th>已绑定数</th>
 											</tr>
 										</thead>
-										<tbody id="tbody">
+										<tbody id="tbody0">
 												<tr class="gradeX">
-													<th>dataObj.userStatDTO.totalUser</th>
-													<th>dataObj.userStatDTO.manCount</th>
-													<th>dataObj.userStatDTO.womanCount</th>
-													<th>dataObj.userStatDTO.bindCount</th>
+													<th>${dataObj.userStatDTO.totalUser}</th>
+													<th>${dataObj.userStatDTO.manCount}</th>
+													<th>${dataObj.userStatDTO.womanCount}</th>
+													<th>${dataObj.userStatDTO.bindCount}</th>
 												</tr>
 										</tbody>
 									</table>
@@ -216,6 +215,7 @@ var buildTableBody = function(dataList){
 												<th>性别</th>
 												<th>渠道</th>
 												<th>投放</th>
+												<th>UID</th>
 												<th>王国数</th>
 											</tr>
 										</thead>
