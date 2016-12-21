@@ -1227,17 +1227,17 @@ public class ActivityServiceImpl implements ActivityService {
 		Auser auser = this.getAuserByUid(uid);
 		if(null == auser){
 			log.info("uid[" + uid + "] is not activity user!");
-			return Response.failure("用户未报名");
+			return Response.failure("你未报名");
 		}
 		if(auser.getStatus() != 3){
 			log.info("uid["+uid+"] is not audit success!");
-			return Response.failure("用户未审核通过");
+			return Response.failure("你未审核通过");
 		}
 		if(type == Specification.ActivityKingdomType.SINGLEKING.index){//单人王国
 			Atopic singleKingdom = this.getAtopicByUidAndType(uid, type);
 			if(null != singleKingdom){
 				log.info("user["+uid+"] already has single kingdom");
-				return Response.failure("用户已经有单人王国了");
+				return Response.failure("你已经有单人王国了");
 			}
 		}else if(type == Specification.ActivityKingdomType.DOUBLEKING.index){//双人王国
 			if(uid2 <= 0){
@@ -1256,7 +1256,7 @@ public class ActivityServiceImpl implements ActivityService {
 			}
 			Atopic t = tMap.get(uid+"_"+Specification.ActivityKingdomType.SINGLEKING.index);
 			if(null == t){
-				return Response.failure("用户必须创建单人王国才能创建双人王国");
+				return Response.failure("你必须创建单人王国才能创建双人王国");
 			}
 			t = tMap.get(uid2+"_"+Specification.ActivityKingdomType.SINGLEKING.index);
 			if(null == t){
@@ -1264,7 +1264,7 @@ public class ActivityServiceImpl implements ActivityService {
 			}
 			t = tMap.get(uid+"_"+Specification.ActivityKingdomType.DOUBLEKING.index);
 			if(null != t){
-				return Response.failure("用户已经有双人王国了，不能再创建了");
+				return Response.failure("你已经有双人王国了，不能再创建了");
 			}
 			t = tMap.get(uid2+"_"+Specification.ActivityKingdomType.DOUBLEKING.index);
 			if(null != t){
@@ -2243,7 +2243,7 @@ public class ActivityServiceImpl implements ActivityService {
 							return Response.success(ResponseStatus.TARGET_CREATE_TOPIC.status, ResponseStatus.TARGET_CREATE_TOPIC.message);
 						}
 					}else{
-						return Response.success(ResponseStatus.ONLY_AGREE_ONE_PEOPLE.status, "同意失败");
+						return Response.success(ResponseStatus.APPLY_IS_CANCELED.status, ResponseStatus.APPLY_IS_CANCELED.message);
 					}
 				}
 			}else{
@@ -2267,7 +2267,7 @@ public class ActivityServiceImpl implements ActivityService {
 					
 					log.info("update refuse success");
 				}else{
-					return Response.success(ResponseStatus.ONLY_AGREE_ONE_PEOPLE.status, "拒绝失败");
+					return Response.success(ResponseStatus.APPLY_IS_CANCELED.status, ResponseStatus.APPLY_IS_CANCELED.message);
 				}
 			}
 		} else if (operaStatus == 4) {
@@ -2836,6 +2836,7 @@ public class ActivityServiceImpl implements ActivityService {
 								params = new ArrayList<Map<String, String>>();
 								Map<String, String> map = new HashMap<String, String>();
 								map.put("day", String.valueOf(days+1));
+								map.put("topicId", String.valueOf(doubleKingdom.getTopicId()));
 								params.add(map);
 								this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.HAS_DOUBLE_KINGDOM_2.key, params);
 							}

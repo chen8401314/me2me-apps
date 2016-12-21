@@ -8,6 +8,7 @@ import com.me2me.sms.dto.VerifyDto;
 import com.me2me.web.request.AcceptTaskRequest;
 import com.me2me.web.request.ActivityMiliRequest;
 import com.me2me.web.request.AwardRequest;
+import com.me2me.web.request.CheckUserActivityKindomRequest;
 import com.me2me.web.request.GetTaskListRequest;
 import com.me2me.web.request.OptForcedPairingRequest;
 import com.me2me.web.request.QiUserRequest;
@@ -434,4 +435,14 @@ public class Activity extends BaseController {
                 request.getPageNum() ,request.getPageSize() ,request.getType());
     }
 
+    /**
+     * 活动王国是否有资格创建接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/checkUserActivityKindom",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response checkUserActivityKindom(CheckUserActivityKindomRequest request){
+    	return activityService.checkUserActivityKindom(request.getUid(), request.getType(), request.getUid2());
+    }
 }

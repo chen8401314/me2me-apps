@@ -417,7 +417,7 @@ public enum  ResponseStatus {
 
     USER_TASK_STATUS_QUERY_ERROR("用户任务状态查询失败", "user task status query error", 50053),
 
-
+    APPLY_IS_CANCELED("申请已被对方撤销，请刷新页面", "apply is canceled", 50054),
 
 
 
