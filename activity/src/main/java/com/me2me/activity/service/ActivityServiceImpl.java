@@ -1160,6 +1160,7 @@ public class ActivityServiceImpl implements ActivityService {
         	qiActivityDto.setMobile(auser.getMobile());
         	if(auser.getStatus() == 3){
         		Atopic atopicSingle = activityMybatisDao.getAtopicByAuidAndSingle(auser.getId());
+                boolean hasSingle = false;
         		if(null != atopicSingle){
         			Map<String,Object> topicSingle = liveForActivityDao.getTopicById(atopicSingle.getTopicId());
         			if(null != topicSingle && topicSingle.size() > 0){
@@ -1169,8 +1170,14 @@ public class ActivityServiceImpl implements ActivityService {
                          topicElement.setTopicId((Long)topicSingle.get("id"));
                          topicElement.setStage(Specification.ASevenDayType.A_DOUBLE_STAGE.index);
                          qiActivityDto.getTopicList().add(topicElement);
+                        hasSingle = true;
         			}
         		}
+                if(!hasSingle){
+                    QiActivityDto.TopicElement topicElement = qiActivityDto.createElement();
+                    topicElement.setTopicId(null);
+                    qiActivityDto.getTopicList().add(topicElement);
+                }
                 Atopic atopicDouble = activityMybatisDao.getAtopicByAuidDouble(auser.getId());
                 if(null != atopicDouble){
                     Map<String,Object> topicDouble = liveForActivityDao.getTopicById(atopicDouble.getTopicId());
