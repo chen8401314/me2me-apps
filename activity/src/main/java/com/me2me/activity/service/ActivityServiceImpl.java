@@ -6,6 +6,7 @@ import com.google.common.collect.Maps;
 import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dao.LiveForActivityDao;
 import com.me2me.activity.dto.*;
+import com.me2me.activity.event.ForcedPairingPushEvent;
 import com.me2me.activity.event.LinkPushEvent;
 import com.me2me.activity.model.*;
 import com.me2me.cache.service.CacheService;
@@ -16,9 +17,7 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.core.event.ApplicationEventBus;
-import com.me2me.sms.dto.AwardXMDto;
 import com.me2me.sms.dto.VerifyDto;
-import com.me2me.sms.service.ChannelType;
 import com.me2me.sms.service.SmsService;
 import com.me2me.user.dto.ActivityModelDto;
 import com.me2me.user.model.User;
@@ -28,7 +27,6 @@ import com.me2me.user.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.eclipse.paho.client.mqttv3.logging.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -2227,6 +2225,17 @@ public class ActivityServiceImpl implements ActivityService {
 							sb.append(topicApply.getUid()).append("&token=").append(ut.getToken());
 							applicationEventBus.post(new LinkPushEvent(msg, sb.toString(), topicApply.getUid()));
 							
+							//同意对方申请，要短信通知对方
+							List<String> msgList = new ArrayList<String>();
+							msgList.add(up.getNickName());
+							
+							Auser auser = activityMybatisDao.getAuserByUid(topicApply.getUid());
+							if(null != auser){
+								List<String> mobileList = new ArrayList<String>();
+								mobileList.add(auser.getMobile());
+								smsService.send7dayCommon("142385", mobileList, msgList);
+							}
+							
 							log.info("update agree success");
 						}else{
 							return Response.success(ResponseStatus.TARGET_CREATE_TOPIC.status, ResponseStatus.TARGET_CREATE_TOPIC.message);
@@ -3514,18 +3523,87 @@ public class ActivityServiceImpl implements ActivityService {
 		return Response.success(dto);
 	}
 	
+	/**
+	 * 有单人没双人的通知强配
+	 */
 	@Override
 	public Response forcedPairingPush(){
+		AactivityStage stage3 = activityMybatisDao.getStageByStage(1, 3);
+		if(this.isForce(stage3, new Date())){
+			//在强配阶段，可以发推送
+			//把所有有单人没双人的进行推送
+			List<Long> uidList = liveForActivityDao.getForcedPairingUser();
+			log.info(uidList.size() + " users can be forced pairing");
+			
+			applicationEventBus.post(new ForcedPairingPushEvent(uidList));
+			
+			return Response.success(200, "共["+uidList.size()+"]个用户正在推送中");
+		}
 		
-		
+		return Response.failure("当前不处在强配阶段，无法全量强配推动");
+	}
+	
+	@Override
+	public Response bindNotice(){
+		//获取审核通过，但是没有绑定uid
+		List<Auser> list = activityMybatisDao.getNoBindAuserList();
+		if(null != list && list.size() > 0){
+			log.info("total ["+list.size()+"] user");
+        	AactivityStage stage2 = activityMybatisDao.getAactivityStageByStage(1, 2);
+        	List<String> msgList = new ArrayList<String>();
+        	if(null != stage2){
+        		Calendar cal = Calendar.getInstance();
+        		cal.setTime(stage2.getStartTime());
+        		int month = cal.get(Calendar.MONTH)+1;
+        		int day = cal.get(Calendar.DAY_OF_MONTH);
+        		msgList.add(String.valueOf(month));
+        		msgList.add(String.valueOf(day));
+        	}else{
+        		msgList.add("");
+        		msgList.add("");
+        	}
+        	
+            List<String> mobileList = Lists.newArrayList();
+            for(Auser auser : list){
+                //通知所有审核中的用户
+                mobileList.add(auser.getMobile());
+                
+                if(mobileList.size() >= 150){
+                	smsService.send7dayCommon("142383", mobileList, msgList);
+                	log.info("send ["+mobileList.size()+"] user!");
+                	mobileList.clear();
+                }
+            }
+            if(mobileList.size() > 0){
+            	smsService.send7dayCommon("142383", mobileList, msgList);
+            	log.info("send ["+mobileList.size()+"] user!");
+            }
+		}
 		
 		return Response.success();
 	}
 	
 	@Override
-	public Response bindNotice(){
-		
-		
+	public Response noticeActivityStart(){
+		List<Auser> list = activityMybatisDao.getAllAuditSuccessAuser();
+		if(null != list && list.size() > 0){
+			log.info("total ["+list.size()+"] user");
+            List<String> mobileList = Lists.newArrayList();
+            for(Auser auser : list){
+                //通知所有审核中的用户
+                mobileList.add(auser.getMobile());
+                
+                if(mobileList.size() >= 150){
+                	smsService.send7dayCommon("142384", mobileList, null);
+                	log.info("send ["+mobileList.size()+"] user!");
+                	mobileList.clear();
+                }
+            }
+            if(mobileList.size() > 0){
+            	smsService.send7dayCommon("142384", mobileList, null);
+            	log.info("send ["+mobileList.size()+"] user!");
+            }
+		}
 		
 		return Response.success();
 	}
@@ -3568,5 +3646,57 @@ public class ActivityServiceImpl implements ActivityService {
         }
         return Response.failure("不支持的操作类型");
     }
+
+	@Override
+	public ShowActivity7DayUserStatDTO get7dayUserStat(String channel,
+			String code, String startTime, String endTime) {
+		Map<String, Object> map = liveForActivityDao.get7dayUserStat(channel, code, startTime, endTime);
+		ShowActivity7DayUserStatDTO dto = new ShowActivity7DayUserStatDTO();
+		if(null != map){
+			dto.setTotalUser((Long)map.get("total"));
+			dto.setManCount((Long)map.get("manCount"));
+			dto.setWomanCount((Long)map.get("womanCount"));
+			dto.setBindCount((Long)map.get("bindCount"));
+		}
+		return dto;
+	}
+
+	@Override
+	public ShowActivity7DayUsersDTO get7dayUsers(String channel, String code,
+			String startTime, String endTime, int page, int pageSize) {
+		if(page < 1){
+			page = 1;
+		}
+		if(pageSize < 1){
+			pageSize = 10;
+		}
+		int start = (page-1)*pageSize;
+		List<Map<String, Object>> list = liveForActivityDao.get7dayUsers(channel, code, startTime, endTime, start, pageSize);
+		ShowActivity7DayUsersDTO dto = new ShowActivity7DayUsersDTO();
+		if(null != list && list.size() > 0){
+			ShowActivity7DayUsersDTO.UserItemElement e = null;
+			String cc = null;
+			String[] tmp = null;
+			for(Map<String, Object> map : list){
+				e = new ShowActivity7DayUsersDTO.UserItemElement();
+				e.setMobile((String)map.get("mobile"));
+				e.setName((String)map.get("name"));
+				e.setSex((Integer)map.get("sex"));
+				cc = (String)map.get("channel");
+				if(!StringUtils.isEmpty(cc)){
+					tmp = cc.split("=");
+					e.setChannel(tmp[0]);
+					if(tmp.length > 1){
+						e.setCode(tmp[1]);
+					}
+				}
+				e.setUid((Long)map.get("uid"));
+				e.setKingdomCount((Long)map.get("kingdomCount"));
+				dto.getResult().add(e);
+			}
+		}
+		
+		return dto;
+	}
 
 }

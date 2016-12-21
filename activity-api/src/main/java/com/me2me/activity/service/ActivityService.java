@@ -151,6 +151,11 @@ public interface ActivityService {
     
     Response bindNotice();
     
+    Response noticeActivityStart();
+    
     Response operaBrid(long uid ,int applyId ,int operaStatus);
 
+    ShowActivity7DayUserStatDTO get7dayUserStat(String channel, String code, String startTime, String endTime);
+    
+    ShowActivity7DayUsersDTO get7dayUsers(String channel, String code, String startTime, String endTime, int page, int pageSize);
 }
