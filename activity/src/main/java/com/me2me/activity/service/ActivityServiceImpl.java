@@ -1951,18 +1951,18 @@ public class ActivityServiceImpl implements ActivityService {
                 //0女 查询男
                 List<BlurSearchDto> boyList = activityMybatisDao.getTopicByBoy(map);
                 if(boyList.size()>0 && boyList != null){
-                    for(BlurSearchDto blurSearchDto : boyList){
+                    for(BlurSearchDto blurSearchDto : boyList) {
                         //是否单身，是否有双人王国条件判断
                         Atopic isAlone = activityMybatisDao.getAtopicByUid2(blurSearchDto.getUid());
-                        if(isAlone != null){
+                        if (isAlone == null) {
                             //有 不是单身
-                            blurSearchDto.setIsAlone(1);
-                        }
-                        //申请过的不再显示
-                        List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(uid ,blurSearchDto.getUid());
-                        if(list.size() == 0){
+//                            blurSearchDto.setIsAlone(1);
+                            //申请过的不再显示
+                            List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(uid, blurSearchDto.getUid());
+                            if (list.size() == 0) {
 //                            total++;
-                            atopicInfoDto.getBlurSearchList().add(blurSearchDto);
+                                atopicInfoDto.getBlurSearchList().add(blurSearchDto);
+                            }
                         }
                     }
                     atopicInfoDto.setTotal(total);
@@ -1978,18 +1978,18 @@ public class ActivityServiceImpl implements ActivityService {
                 //1男 //查询女
                 List<BlurSearchDto> girlList = activityMybatisDao.getTopicByGirl(map);
                 if(girlList.size()>0 && girlList != null){
-                    for(BlurSearchDto blurSearchDto : girlList){
+                    for(BlurSearchDto blurSearchDto : girlList) {
                         //是否单身，是否有双人王国条件判断
                         Atopic isAlone = activityMybatisDao.getAtopicByUid2(blurSearchDto.getUid());
-                        if(isAlone != null){
+                        if (isAlone == null) {
                             //有 不是单身
-                            blurSearchDto.setIsAlone(1);
-                        }
-                        //申请过的不再显示
-                        List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(uid ,blurSearchDto.getUid());
-                        if(list.size() == 0){
+//                            blurSearchDto.setIsAlone(1);
+                            //申请过的不再显示
+                            List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(uid, blurSearchDto.getUid());
+                            if (list.size() == 0) {
 //                            total ++;
-                            atopicInfoDto.getBlurSearchList().add(blurSearchDto);
+                                atopicInfoDto.getBlurSearchList().add(blurSearchDto);
+                            }
                         }
                     }
                     atopicInfoDto.setTotal(total);
@@ -2145,6 +2145,7 @@ public class ActivityServiceImpl implements ActivityService {
                     if(atopic != null){
                         Map<String,Object> topic = liveForActivityDao.getTopicById(atopic.getTopicId());
                         applyElement.setTitle((String) topic.get("title"));
+                        applyElement.setTopicId(atopic.getTopicId());
                     }
                     applyElement.setId(apply.getId());
                     applyElement.setStatus(apply.getStatus());
@@ -2163,6 +2164,7 @@ public class ActivityServiceImpl implements ActivityService {
                     if(atopic != null){
                         Map<String,Object> topic = liveForActivityDao.getTopicById(atopic.getTopicId());
                         applyElement.setTitle((String) topic.get("title"));
+                        applyElement.setTopicId(atopic.getTopicId());
                     }
                     applyElement.setId(apply.getId());
                     //查询像我发出的申请的人有没有同意别人的邀请 如果同意了返回2
@@ -2189,6 +2191,7 @@ public class ActivityServiceImpl implements ActivityService {
                     if(atopic != null){
                         Map<String,Object> topic = liveForActivityDao.getTopicById(atopic.getTopicId());
                         applyElement.setTitle((String) topic.get("title"));
+                        applyElement.setTopicId(atopic.getTopicId());
                     }
                     applyElement.setId(apply.getId());
                     applyElement.setStatus(apply.getStatus());
