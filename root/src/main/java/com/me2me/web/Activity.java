@@ -443,6 +443,14 @@ public class Activity extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/checkUserActivityKindom",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response checkUserActivityKindom(CheckUserActivityKindomRequest request){
-    	return activityService.checkUserActivityKindom(request.getUid(), request.getType(), request.getUid2());
+    	Response resp = activityService.checkUserActivityKindom(request.getUid(), request.getType(), request.getUid2());
+    	if(null != resp){
+    		if(resp.getCode() == 200){
+    			return Response.success();
+    		}else{
+    			return Response.failure(500, (String)resp.getData());
+    		}
+    	}
+    	return Response.failure("失败");
     }
 }

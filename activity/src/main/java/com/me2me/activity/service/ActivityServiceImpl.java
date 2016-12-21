@@ -2739,12 +2739,13 @@ public class ActivityServiceImpl implements ActivityService {
 								map.put("uid", String.valueOf(uid));
 								map.put("nickName", up.getNickName());
 								map.put("avatar", Constant.QINIU_DOMAIN + "/" + up.getAvatar());
-								map.put("display", "block");
+								map.put("display", "inline-block");
 								params.add(map);
 							}
 							
-							if(applyList.size() < 5){
-								for(int i=0;i<5-applyList.size();i++){
+							if(params.size() < 5){
+								int cc = 5-params.size();
+								for(int i=0;i<cc;i++){
 									Map<String, String> map = new HashMap<String, String>();
 									map.put("display", "none");
 									params.add(map);
@@ -2913,11 +2914,12 @@ public class ActivityServiceImpl implements ActivityService {
 								map.put("uid", String.valueOf(uid));
 								map.put("nickName", up.getNickName());
 								map.put("avatar", Constant.QINIU_DOMAIN + "/" + up.getAvatar());
-								map.put("display", "block");
+								map.put("display", "inline-block");
 								params.add(map);
 							}
-							if(applyList.size() < 3){
-								for(int i=0;i<3-applyList.size();i++){
+							if(params.size() < 3){
+								int cc = 3-params.size();
+								for(int i=0;i<cc;i++){
 									Map<String, String> map = new HashMap<String, String>();
 									map.put("display", "none");
 									params.add(map);
@@ -2952,11 +2954,12 @@ public class ActivityServiceImpl implements ActivityService {
 								map.put("uid", String.valueOf(uid));
 								map.put("nickName", up.getNickName());
 								map.put("avatar", Constant.QINIU_DOMAIN + "/" + up.getAvatar());
-								map.put("display", "block");
+								map.put("display", "inline-block");
 								params.add(map);
 							}
-							if(applyList.size() < 3){
-								for(int i=0;i<3-applyList.size();i++){
+							if(params.size() < 3){
+								int cc = 3-params.size();
+								for(int i=0;i<cc;i++){
 									Map<String, String> map = new HashMap<String, String>();
 									map.put("display", "none");
 									params.add(map);
@@ -3050,11 +3053,12 @@ public class ActivityServiceImpl implements ActivityService {
 						pMap.put("uid", String.valueOf(u.getUid()));
 						pMap.put("avatar", Constant.QINIU_DOMAIN + "/" + u.getAvatar());
 						pMap.put("v_lv", String.valueOf(u.getvLv()));
-						pMap.put("display", "block");
+						pMap.put("display", "inline-block");
 						params.add(pMap);
 					}
 					if(params.size() < 3){
-						for(int i=0;i<3-params.size();i++){
+						int cc = 3-params.size();
+						for(int i=0;i<cc;i++){
 							pMap = new HashMap<String, String>();
 							pMap.put("display", "none");
 							params.add(pMap);
@@ -3116,11 +3120,12 @@ public class ActivityServiceImpl implements ActivityService {
 					pMap.put("uid", map.get("uid").toString());
 					pMap.put("avatar", Constant.QINIU_DOMAIN + "/" + (String)map.get("avatar"));
 					pMap.put("v_lv", map.get("v_lv").toString());
-					pMap.put("display", "block");
+					pMap.put("display", "inline-block");
 					params.add(pMap);
 				}
 				if(params.size() < 3){
-					for(int i=0;i<3-params.size();i++){
+					int cc = 3-params.size();
+					for(int i=0;i<cc;i++){
 						pMap = new HashMap<String, String>();
 						pMap.put("display", "none");
 						params.add(pMap);
@@ -3160,8 +3165,8 @@ public class ActivityServiceImpl implements ActivityService {
 			isOne = false;
 		}
 
+		int i = 1;
 		for(Map<String, String> map : params){
-			int i = 1;
 			for(Map.Entry<String, String> entry : map.entrySet()){
 				if(isOne){
 					content = content.replace("#{"+entry.getKey()+"}#", entry.getValue());
@@ -3422,7 +3427,7 @@ public class ActivityServiceImpl implements ActivityService {
 				Map<String, AtaskUser> map = new HashMap<String, AtaskUser>();
 				if(null != ataskUserList && ataskUserList.size() > 0){
 					for(AtaskUser atu : ataskUserList){
-						map.put(String.valueOf(atu.getId()), atu);
+						map.put(String.valueOf(atu.getTaskId()), atu);
 					}
 				}
 				
