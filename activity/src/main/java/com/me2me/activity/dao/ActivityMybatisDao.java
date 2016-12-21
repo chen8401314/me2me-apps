@@ -855,6 +855,18 @@ public class ActivityMybatisDao {
         return list.size()>0 && list != null ?list.get(0):null;
     }
 
+    public Atopic getAtopicByUid5(long uid){
+        AtopicExample example = new AtopicExample();
+        AtopicExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid).andStatusEqualTo(0).andTypeEqualTo(1);
+        //或者 满足下面条件
+        AtopicExample.Criteria criteria2 = example.createCriteria();
+        criteria2.andUid2EqualTo(uid).andStatusEqualTo(0).andTypeEqualTo(2);
+        example.or(criteria2);
+        List<Atopic> list = atopicMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
+    }
+
     public List<AdoubleTopicApply> getAdoubleTopicApplyByUidReceive(long uid ,int pageNum ,int pageSize){
 //        AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
 //        AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();

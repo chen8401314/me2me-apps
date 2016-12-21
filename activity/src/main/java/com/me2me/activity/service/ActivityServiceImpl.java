@@ -2166,7 +2166,9 @@ public class ActivityServiceImpl implements ActivityService {
                     }
                     applyElement.setId(apply.getId());
                     //查询像我发出的申请的人有没有同意别人的邀请 如果同意了返回2
-                    AdoubleTopicApply only = activityMybatisDao.getAdoubleTopicApplyByUid5(apply.getUid());
+                    //AdoubleTopicApply only = activityMybatisDao.getAdoubleTopicApplyByUid5(apply.getUid());
+                    //查询是否创建了双人王国 是的话已结婚 返回2
+                    Atopic only = activityMybatisDao.getAtopicByUid5(apply.getUid());
                     if(only != null){
                         applyElement.setStatus(2);
                     }else {
