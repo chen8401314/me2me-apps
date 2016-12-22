@@ -2353,6 +2353,9 @@ public class ActivityServiceImpl implements ActivityService {
                     BridListDto.ApplyElement applyElement = bridListDto.createApplyElement();
                     UserProfile userProfile = userService.getUserProfileByUid(topicApply.getTargetUid());
                     BeanUtils.copyProperties(userProfile, applyElement);
+                    Atopic atopic = activityMybatisDao.getAtopicByUid2(topicApply.getTargetUid());
+                    Map<String ,Object> map = liveForActivityDao.getTopicById(atopic.getTopicId());
+                    applyElement.setTitle((String) map.get("title"));
                     applyElement.setId(topicApply.getId());
                     applyElement.setStatus(topicApply.getStatus());
                     lists.add(applyElement);
@@ -2374,6 +2377,9 @@ public class ActivityServiceImpl implements ActivityService {
                     BridListDto.ApplyElement applyElement = bridListDto.createApplyElement();
                     UserProfile userProfile = userService.getUserProfileByUid(topicApply.getUid());
                     BeanUtils.copyProperties(userProfile, applyElement);
+                    Atopic atopic = activityMybatisDao.getAtopicByUid2(topicApply.getUid());
+                    Map<String ,Object> map = liveForActivityDao.getTopicById(atopic.getTopicId());
+                    applyElement.setTitle((String) map.get("title"));
                     applyElement.setId(topicApply.getId());
                     applyElement.setStatus(topicApply.getStatus());
                     lists.add(applyElement);

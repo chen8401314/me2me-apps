@@ -265,7 +265,7 @@ public enum  ResponseStatus {
 
     TARGET_NOT_CREATE_TOPIC("对方还未创建双人王国","target not create topic", 200125),
 
-    BRID_IS_FAILURE("拒绝了你的抢亲邀请","brid is failure", 200126),
+    BRID_IS_FAILURE("拒绝对方的抢亲","brid is failure", 200126),
 
     BRID_UPPER_LIMIT("抢亲次数已经到达上限","brid upper limit", 200127),
 
