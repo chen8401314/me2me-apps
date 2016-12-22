@@ -1523,7 +1523,7 @@ public class ActivityServiceImpl implements ActivityService {
         //发短信给每个用户 告知审核通过了
         if(auserList.size() > 0 && auserList != null){
         	log.info("total ["+auserList.size()+"] user");
-        	AactivityStage stage2 = activityMybatisDao.getAactivityStageByStage(1, 2);
+        	AactivityStage stage2 = activityMybatisDao.getAactivityStageByStage2(1, 2);
         	List<String> msgList = new ArrayList<String>();
         	if(null != stage2){
         		Calendar cal = Calendar.getInstance();
