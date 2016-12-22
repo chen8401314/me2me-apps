@@ -129,6 +129,10 @@ public class ActivityMybatisDao {
     	return null;
     }
     
+    public void deleteAforcedPairingById(long id){
+    	aforcedPairingMapper.deleteByPrimaryKey(id);
+    }
+    
     public AforcedPairing getOneAforcedPairingByStatusAndSex(int status, int sex){
     	AforcedPairingExample example = new AforcedPairingExample();
     	AforcedPairingExample.Criteria criteria = example.createCriteria();

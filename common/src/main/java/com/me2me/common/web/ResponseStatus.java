@@ -259,7 +259,7 @@ public enum  ResponseStatus {
 
     ONLY_AGREE_ONE_PEOPLE("你已经同意过其他人了","only agree one people", 200122),
 
-    NOT_FOUR_STAGE("目前不处于第四阶段","not four stage", 200123),
+    NOT_FOUR_STAGE("目前不处于抢亲阶段","not four stage", 200123),
 
     BRID_IS_SUCCESS("同意了你的抢亲邀请","brid is success", 200124),
 

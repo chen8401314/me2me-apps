@@ -30,7 +30,7 @@ public class LiveForActivityDao {
 		sb.append("select t.auid,t.topic_id,t.uid,p.avatar,p.v_lv");
 		sb.append(" from a_topic t, user_profile p");
 		sb.append(" where p.gender=").append(searchSex);
-		sb.append(" and t.type=1 and t.uid=p.uid");
+		sb.append(" and t.type=1 and t.status=0 and t.uid=p.uid");
 		sb.append(" and t.uid<>").append(myUid);
 		sb.append(" and not exists(select 1 from a_topic a where a.type=2 and a.uid=t.uid)");
 		sb.append(" and not exists(select 1 from a_recommend_user_desc d where d.uid=");
