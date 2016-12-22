@@ -1137,7 +1137,7 @@ public interface Specification {
     	DOUBLE_KINGDOM_BREAK("Sad！你和#{1}#的双人王国已成过往烟云", "/7day/index"),
     	FORCED_PAIRING("还没找到中意的TA？我们为你定制的缘分已经上线，快来把TA瞧个仔细！万一就看对眼了呢？", "/7day/index"),
     	ROB_APPLY_PARTNER("有人抢你的另一半，去看看谁这么不要脸~", "/7day/my/pair-status"),
-    	ROB_APPLY("#{1}#向你发起了抢亲的请求，希望能和你共结连理，选TA？还是TA？你需要做出这个艰难的决定", "/7day/my/rob-index"),
+    	ROB_APPLY("#{1}#向你发起了抢亲的请求，希望能和你共结连理，选TA？还是TA？你需要做出这个艰难的决定", "/7day/my/pair-status"),
     	ROB_AGREE("不好啦后院起火啦！你的#{1}#被抢亲的抱走啦！快拿起你的锄头，去挖别人的墙角吧！", "/7day/index"),
     	KINGDOM_NOT_UPDATE("紧急！你已经超过12小时没有更新王国了，有可能失去暗恋你的TA们哦", "/7day/index"),
     	
