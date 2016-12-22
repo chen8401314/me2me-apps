@@ -2357,6 +2357,7 @@ public class ActivityServiceImpl implements ActivityService {
                     if(atopic != null){
                         Map<String ,Object> map = liveForActivityDao.getTopicById(atopic.getTopicId());
                         applyElement.setTitle((String) map.get("title"));
+                        applyElement.setTopicId((Long) map.get("id"));
                     }
                     applyElement.setId(topicApply.getId());
                     applyElement.setStatus(topicApply.getStatus());
@@ -2383,6 +2384,7 @@ public class ActivityServiceImpl implements ActivityService {
                     if(atopic != null){
                         Map<String ,Object> map = liveForActivityDao.getTopicById(atopic.getTopicId());
                         applyElement.setTitle((String) map.get("title"));
+                        applyElement.setTopicId((Long) map.get("id"));
                     }
                     applyElement.setId(topicApply.getId());
                     applyElement.setStatus(topicApply.getStatus());
