@@ -1543,13 +1543,13 @@ public class ActivityServiceImpl implements ActivityService {
                 mobileList.add(auser.getMobile());
                 
                 if(mobileList.size() >= 150){
-                	smsService.send7dayCommon("142379", mobileList, msgList);
+                	smsService.send7dayCommon("143699", mobileList, msgList);
                 	log.info("send ["+mobileList.size()+"] user!");
                 	mobileList.clear();
                 }
             }
             if(mobileList.size() > 0){
-            	smsService.send7dayCommon("142379", mobileList, msgList);
+            	smsService.send7dayCommon("143699", mobileList, msgList);
             	log.info("send ["+mobileList.size()+"] user!");
             }
             
@@ -2679,19 +2679,20 @@ public class ActivityServiceImpl implements ActivityService {
 			}
 		}
 		
-		if(null != stage1 && stage2.getType() > 0){
-			if(dto.getIsApp() == 0){//APP外部
-				this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_END_BROWSER.key, null);
-			}else{
-				if(null != activityUser){
-					params = new ArrayList<Map<String, String>>();
-					Map<String, String> map = new HashMap<String, String>();
-					map.put("userName", userName);
-					params.add(map);
-					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_END_APP.key, params);
+		if(null != stage1){
+			if(now.compareTo(stage1.getEndTime()) > 0){
+				if(dto.getIsApp() == 0){//APP外部
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_END_BROWSER.key, null);
+				}else{
+					if(null != activityUser){
+						params = new ArrayList<Map<String, String>>();
+						Map<String, String> map = new HashMap<String, String>();
+						map.put("userName", userName);
+						params.add(map);
+						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_END_APP.key, params);
+					}
 				}
 			}
-			
 		}
 		
 		//2单人阶段
