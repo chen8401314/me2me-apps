@@ -673,7 +673,7 @@ public class ActivityMybatisDao {
     	criteria2.andTargetUidEqualTo(uid);
     	List<Integer> s2 = new ArrayList<Integer>();
     	s2.add(1);
-    	s2.add(4);
+//    	s2.add(4);
     	criteria2.andStatusIn(s2);
     	criteria2.andTypeEqualTo(type);
     	example.or(criteria2);
@@ -750,13 +750,12 @@ public class ActivityMybatisDao {
     	return adoubleTopicApplyMapper.selectByExample(example);
     }
 
-    public AdoubleTopicApply getAdoubleTopicApplyByUidAndTargetUid3(long uid, long targetUid){
+    public List<AdoubleTopicApply> getAdoubleTopicApplyByUidAndTargetUid3(long uid, long targetUid){
         AdoubleTopicApplyExample example = new AdoubleTopicApplyExample();
         AdoubleTopicApplyExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
         criteria.andTargetUidEqualTo(targetUid);
-        List<AdoubleTopicApply> list = adoubleTopicApplyMapper.selectByExample(example);
-        return list.size()>0 && list != null ?list.get(0):null;
+        return adoubleTopicApplyMapper.selectByExample(example);
     }
 
     public List<AdoubleTopicApply> getAdoubleTopicApplyByUidAndTargetUidandNotIn(long uid, long targetUid){

@@ -1279,8 +1279,8 @@ public class ActivityServiceImpl implements ActivityService {
 				//再看下有没有强配的，有强配也可以创建
 				AforcedPairing fp = activityMybatisDao.getAforcedPairingForUser(uid);
 				if(null != fp && fp.getStatus() == 2){
-					if((fp.getUid() == uid && fp.getTargetUid() == uid2) 
-							|| (fp.getUid() == uid2 && fp.getTargetUid() == uid)){
+					if((fp.getUid().longValue() == uid && fp.getTargetUid().longValue() == uid2) 
+							|| (fp.getUid().longValue() == uid2 && fp.getTargetUid().longValue() == uid)){
 						isCan = true;//强配成功
 					}
 				}
@@ -1467,7 +1467,7 @@ public class ActivityServiceImpl implements ActivityService {
             qiStatusDto.setAuid(auser.getId());
             
             if(uid > 0){//APP过来的
-            	if (auser.getUid() == 0) {//还没有绑定的需要绑定
+            	if (auser.getUid().longValue() == 0) {//还没有绑定的需要绑定
             		Auser appUser = activityMybatisDao.getAuserByUid(uid);
             		if(null == appUser){//没有绑过就绑上
             			auser.setUid(uid);
@@ -2278,7 +2278,7 @@ public class ActivityServiceImpl implements ActivityService {
 			// 或者对方同意了但是已经和别人创建 双人王国了也能删除。
 			AdoubleTopicApply topicApply = activityMybatisDao.getAdoubleTopicApplyById(applyId);
 			Atopic atopic = activityMybatisDao.getAtopicByAuidDoubleByUid(topicApply.getUid());
-			if ((topicApply.getUid() == uid && topicApply.getStatus() != 2)
+			if ((topicApply.getUid().longValue() == uid && topicApply.getStatus() != 2)
 					|| (topicApply.getStatus() == 2 && atopic != null)
 					|| topicApply.getStatus() == 3) {
 				topicApply.setStatus(operaStatus);
@@ -2439,23 +2439,31 @@ public class ActivityServiceImpl implements ActivityService {
             Map map = Maps.newHashMap();
             map.put("topicId",atopic.getTopicId());
             activityMybatisDao.updateAtopicStatus(map);
-            AdoubleTopicApply list = activityMybatisDao.getAdoubleTopicApplyByUidAndTargetUid3(uid ,targetUid);
-            AdoubleTopicApply list2 = activityMybatisDao.getAdoubleTopicApplyByUidAndTargetUid3(targetUid ,uid);
-            if(list != null){
-                list.setStatus(4);
-                activityMybatisDao.updateAdoubleTopicApply(list);
+            List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUidAndTargetUid3(uid ,targetUid);
+            List<AdoubleTopicApply> list2 = activityMybatisDao.getAdoubleTopicApplyByUidAndTargetUid3(targetUid ,uid);
+            if(list != null && list.size() > 0){
+            	for(AdoubleTopicApply a : list){
+            		if(a.getStatus() != 4){
+		                a.setStatus(4);
+		                activityMybatisDao.updateAdoubleTopicApply(a);
+            		}
+            	}
             }
-            if(list2 != null){
-                list2.setStatus(4);
-                activityMybatisDao.updateAdoubleTopicApply(list2);
+            if(list2 != null && list2.size() > 0){
+            	for(AdoubleTopicApply a : list2){
+            		if(a.getStatus() != 4){
+            			a.setStatus(4);
+                        activityMybatisDao.updateAdoubleTopicApply(a);
+            		}
+            	}
             }
             
             //也许是强配的结婚，所以也要查询下有没有强配的记录，有的话也要一并清除
             AforcedPairing ap = activityMybatisDao.getAforcedPairingForUser(uid);
             if(null != ap){
-            	if(ap.getUid() == uid && ap.getTargetUid() == targetUid){
+            	if(ap.getUid().longValue() == uid && ap.getTargetUid().longValue() == targetUid){
             		activityMybatisDao.deleteAforcedPairingById(ap.getId());
-            	}else if(ap.getUid() == targetUid && ap.getTargetUid() == uid){
+            	}else if(ap.getUid().longValue() == targetUid && ap.getTargetUid().longValue() == uid){
             		activityMybatisDao.deleteAforcedPairingById(ap.getId());
             	}//其他的是和别人的，可以不做处理
             }
@@ -2753,7 +2761,7 @@ public class ActivityServiceImpl implements ActivityService {
 							params = new ArrayList<Map<String, String>>();
 							for(AdoubleTopicApply a : applyList){
 								long uid = a.getUid();
-								if(a.getUid() == singleKingdom.getUid()){//我发出的
+								if(a.getUid().longValue() == singleKingdom.getUid().longValue()){//我发出的
 									uid = a.getTargetUid();
 								}
 								UserProfile up = userService.getUserProfileByUid(uid);
@@ -3660,6 +3668,35 @@ public class ActivityServiceImpl implements ActivityService {
                         map.put("topicId",atopic.getTopicId());
                         activityMybatisDao.updateAtopicStatus(map);
 
+                        List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUidAndTargetUid3(atopic.getUid() ,atopic.getUid2());
+                        List<AdoubleTopicApply> list2 = activityMybatisDao.getAdoubleTopicApplyByUidAndTargetUid3(atopic.getUid2() ,atopic.getUid());
+                        if(list != null && list.size() > 0){
+                        	for(AdoubleTopicApply a : list){
+                        		if(a.getStatus() != 4){
+                        			a.setStatus(4);
+                                    activityMybatisDao.updateAdoubleTopicApply(a);
+                        		}
+                        	}
+                        }
+                        if(list2 != null && list2.size() > 0){
+                        	for(AdoubleTopicApply a : list2){
+                        		if(a.getStatus() != 4){
+                        			a.setStatus(4);
+                                    activityMybatisDao.updateAdoubleTopicApply(a);
+                        		}
+                        	}
+                        }
+                        
+                        //也许是强配的结婚，所以也要查询下有没有强配的记录，有的话也要一并清除
+                        AforcedPairing ap = activityMybatisDao.getAforcedPairingForUser(atopic.getUid());
+                        if(null != ap){
+                        	if(ap.getUid().longValue() == atopic.getUid().longValue() && ap.getTargetUid().longValue() == atopic.getUid2().longValue()){
+                        		activityMybatisDao.deleteAforcedPairingById(ap.getId());
+                        	}else if(ap.getUid().longValue() == atopic.getUid2().longValue() && ap.getTargetUid().longValue() == atopic.getUid().longValue()){
+                        		activityMybatisDao.deleteAforcedPairingById(ap.getId());
+                        	}//其他的是和别人的，可以不做处理
+                        }
+                        
                         //同意抢亲需要通知前夫/前妻
                         UserProfile up = userService.getUserProfileByUid(atopic.getUid());
                         UserToken ut = userService.getUserTokenByUid(atopic.getUid2());
