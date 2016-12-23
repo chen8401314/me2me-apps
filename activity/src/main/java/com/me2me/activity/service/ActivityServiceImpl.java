@@ -1438,10 +1438,9 @@ public class ActivityServiceImpl implements ActivityService {
 
         activityMybatisDao.createAuser(auser);
         //发送短信 报名成功
-//        smsService.send7dayCommon("142378",qiUserDto.getMobile(),null,null);
         List<String> mobileList = new ArrayList<String>();
         mobileList.add(qiUserDto.getMobile());
-        smsService.send7dayCommon("142378", mobileList, null);
+        smsService.send7dayCommon("144255", mobileList, null);
         return Response.success(ResponseStatus.REGISTRATION_SUCCESS.status, ResponseStatus.REGISTRATION_SUCCESS.message);
     }
 
@@ -1543,13 +1542,13 @@ public class ActivityServiceImpl implements ActivityService {
                 mobileList.add(auser.getMobile());
                 
                 if(mobileList.size() >= 150){
-                	smsService.send7dayCommon("143699", mobileList, msgList);
+                	smsService.send7dayCommon("144258", mobileList, msgList);
                 	log.info("send ["+mobileList.size()+"] user!");
                 	mobileList.clear();
                 }
             }
             if(mobileList.size() > 0){
-            	smsService.send7dayCommon("143699", mobileList, msgList);
+            	smsService.send7dayCommon("144258", mobileList, msgList);
             	log.info("send ["+mobileList.size()+"] user!");
             }
             
@@ -3604,7 +3603,7 @@ public class ActivityServiceImpl implements ActivityService {
 		List<Auser> list = activityMybatisDao.getNoBindAuserList();
 		if(null != list && list.size() > 0){
 			log.info("total ["+list.size()+"] user");
-        	AactivityStage stage2 = activityMybatisDao.getAactivityStageByStage(1, 2);
+        	AactivityStage stage2 = activityMybatisDao.getAactivityStageByStage2(1, 2);
         	List<String> msgList = new ArrayList<String>();
         	if(null != stage2){
         		Calendar cal = Calendar.getInstance();
@@ -3624,13 +3623,13 @@ public class ActivityServiceImpl implements ActivityService {
                 mobileList.add(auser.getMobile());
                 
                 if(mobileList.size() >= 150){
-                	smsService.send7dayCommon("142383", mobileList, msgList);
+                	smsService.send7dayCommon("144257", mobileList, msgList);
                 	log.info("send ["+mobileList.size()+"] user!");
                 	mobileList.clear();
                 }
             }
             if(mobileList.size() > 0){
-            	smsService.send7dayCommon("142383", mobileList, msgList);
+            	smsService.send7dayCommon("144257", mobileList, msgList);
             	log.info("send ["+mobileList.size()+"] user!");
             }
 		}
@@ -3649,13 +3648,13 @@ public class ActivityServiceImpl implements ActivityService {
                 mobileList.add(auser.getMobile());
                 
                 if(mobileList.size() >= 150){
-                	smsService.send7dayCommon("142384", mobileList, null);
+                	smsService.send7dayCommon("144256", mobileList, null);
                 	log.info("send ["+mobileList.size()+"] user!");
                 	mobileList.clear();
                 }
             }
             if(mobileList.size() > 0){
-            	smsService.send7dayCommon("142384", mobileList, null);
+            	smsService.send7dayCommon("144256", mobileList, null);
             	log.info("send ["+mobileList.size()+"] user!");
             }
 		}
@@ -3754,6 +3753,36 @@ public class ActivityServiceImpl implements ActivityService {
 			dto.setBindCount((Long)map.get("bindCount"));
 		}
 		return dto;
+	}
+	
+	@Override
+	public Response searchMiliDatas(String mkey, int page, int pageSize){
+		if(page < 1){
+			page = 1;
+		}
+		if(pageSize < 1){
+			pageSize = 10;
+		}
+		ShowMiliDatasDTO dto = new ShowMiliDatasDTO();
+		dto.setTotalCount(activityMybatisDao.countAmiliDataPage(mkey));
+		dto.setTotalPage(dto.getTotalCount()%pageSize==0?(dto.getTotalCount()%pageSize):(dto.getTotalCount()%pageSize+1));
+		
+		int start = (page-1)*pageSize;
+		List<AmiliData> list = activityMybatisDao.getAmiliDataPage(mkey, start, pageSize);
+		if(null != list && list.size() > 0){
+			ShowMiliDatasDTO.MiliDataElement e = null;
+			for(AmiliData a : list){
+				e = new ShowMiliDatasDTO.MiliDataElement();
+				e.setId(a.getId());
+				e.setMkey(a.getMkey());
+				e.setContent(a.getContent());
+				e.setOrderby(a.getOrderby());
+				e.setStatus(a.getStatus());
+				dto.getResult().add(e);
+			}
+		}
+		
+		return Response.success(dto);
 	}
 
 	@Override

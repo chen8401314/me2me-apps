@@ -24,9 +24,51 @@
 <script src="${ctx}/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 var auditSuccess = function(){
-	if(confirm('确定要一键审核通过?')){
+	if(confirm('确定要一键审核通过?\n此功能会群发短信')){
 		$.ajax({
 			url : "${ctx}/7day/control/auditSuccess",
+			async : false,
+			type : "GET",
+			contentType : "application/json;charset=UTF-8",
+			success : function(resp) {
+				if(resp == "0"){
+					alert('执行成功');
+				}else{
+					alert('执行失败');
+				}
+			},
+			error : function(){
+				alert('执行失败');
+			}
+		});
+	}
+}
+
+var noticeBind = function(){
+	if(confirm('确定要一键通知绑定?\n此功能会群发短信')){
+		$.ajax({
+			url : "${ctx}/7day/control/noticeBind",
+			async : false,
+			type : "GET",
+			contentType : "application/json;charset=UTF-8",
+			success : function(resp) {
+				if(resp == "0"){
+					alert('执行成功');
+				}else{
+					alert('执行失败');
+				}
+			},
+			error : function(){
+				alert('执行失败');
+			}
+		});
+	}
+}
+
+var noticeActivityStart = function(){
+	if(confirm('确定要通知所有人活动开始?\n此功能会群发短信给报名审核通过的人')){
+		$.ajax({
+			url : "${ctx}/7day/control/activityStartNotice",
 			async : false,
 			type : "GET",
 			contentType : "application/json;charset=UTF-8",
@@ -64,11 +106,23 @@ var auditSuccess = function(){
 					<div class="row">
 						<div class="col-lg-12">
 							<section class="panel">
-								<header class="panel-heading">控制操作</header>
+								<header class="panel-heading">短信通知操作</header>
 								<div class="panel-body">
 									<div class="form-inline" role="form">
 										一键审核通过&nbsp;&nbsp;&nbsp;&nbsp;
 										<input type="button" id="btn1" name="btn1" value="一键审核" class="btn btn-info" onclick="auditSuccess()"/>
+									</div>
+								</div>
+								<div class="panel-body">
+									<div class="form-inline" role="form">
+										一键提醒绑定&nbsp;&nbsp;&nbsp;&nbsp;
+										<input type="button" id="btn1" name="btn1" value="一键提醒" class="btn btn-info" onclick="noticeBind()"/>
+									</div>
+								</div>
+								<div class="panel-body">
+									<div class="form-inline" role="form">
+										提醒活动开始&nbsp;&nbsp;&nbsp;&nbsp;
+										<input type="button" id="btn1" name="btn1" value="提醒活动开始" class="btn btn-info" onclick="noticeActivityStart()"/>
 									</div>
 								</div>
 							</section>

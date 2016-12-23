@@ -151,6 +151,8 @@ public interface ActivityService {
     
     Response bindNotice();
     
+    Response searchMiliDatas(String mkey, int page, int pageSize);
+    
     Response noticeActivityStart();
     
     Response operaBrid(long uid ,int applyId ,int operaStatus);

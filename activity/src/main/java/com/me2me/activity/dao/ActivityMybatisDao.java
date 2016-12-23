@@ -1050,6 +1050,25 @@ public class ActivityMybatisDao {
     	example.createCriteria().andStatusEqualTo(1);//可用
     	return amiliDataMapper.selectByExampleWithBLOBs(example);
     }
+    
+    public List<AmiliData> getAmiliDataPage(String mkey, int start, int pageSize){
+    	AmiliDataExample example = new AmiliDataExample();
+    	AmiliDataExample.Criteria criteria = example.createCriteria();
+    	if(null != mkey && !"".equals(mkey)){
+    		criteria.andMkeyEqualTo(mkey);
+    	}
+    	example.setOrderByClause(" orderby limit "+start+","+pageSize);
+    	return amiliDataMapper.selectByExampleWithBLOBs(example);
+    }
+    
+    public int countAmiliDataPage(String mkey){
+    	AmiliDataExample example = new AmiliDataExample();
+    	AmiliDataExample.Criteria criteria = example.createCriteria();
+    	if(null != mkey && !"".equals(mkey)){
+    		criteria.andMkeyEqualTo(mkey);
+    	}
+    	return amiliDataMapper.countByExample(example);
+    }
 
     public Atopic getAtopicByType(long uid ,int type){
         AtopicExample example = new AtopicExample();

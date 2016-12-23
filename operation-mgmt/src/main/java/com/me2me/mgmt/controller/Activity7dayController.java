@@ -12,8 +12,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.me2me.activity.dto.ShowActivity7DayUserStatDTO;
 import com.me2me.activity.dto.ShowActivity7DayUsersDTO;
+import com.me2me.activity.dto.ShowMiliDatasDTO;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.web.Response;
+import com.me2me.mgmt.request.MiliDataQueryDTO;
 import com.me2me.mgmt.request.StatUserDTO;
 
 @Controller
@@ -68,5 +70,36 @@ public class Activity7dayController {
 		Response resp = activityService.oneKeyAudit();
 		
 		return "0";
+	}
+	
+	@RequestMapping(value="/control/noticeBind")
+	@ResponseBody
+	public String noticeBind(){
+		//一键通知绑定
+		Response resp = activityService.bindNotice();
+		return "0";
+	}
+	
+	@RequestMapping(value="/control/activityStartNotice")
+	@ResponseBody
+	public String activityStartNotice(){
+		//一键通知活动进行
+		Response resp = activityService.noticeActivityStart();
+		
+		return "0";
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value="/milidata/query")
+	public ModelAndView miliDataQuery(MiliDataQueryDTO dto){
+		ModelAndView view = new ModelAndView("7day/milidata");
+		
+		Response resp = activityService.searchMiliDatas(dto.getMkey(), dto.getPage(), dto.getPageSize());
+		if(null != resp && resp.getCode() == 200){
+			dto.setData((ShowMiliDatasDTO)resp.getData());
+		}
+		
+		view.addObject("dataObj",dto);
+		return view;
 	}
 }
