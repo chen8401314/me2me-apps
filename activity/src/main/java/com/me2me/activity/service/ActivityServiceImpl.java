@@ -3765,7 +3765,7 @@ public class ActivityServiceImpl implements ActivityService {
 		}
 		ShowMiliDatasDTO dto = new ShowMiliDatasDTO();
 		dto.setTotalCount(activityMybatisDao.countAmiliDataPage(mkey));
-		dto.setTotalPage(dto.getTotalCount()%pageSize==0?(dto.getTotalCount()%pageSize):(dto.getTotalCount()%pageSize+1));
+		dto.setTotalPage(dto.getTotalCount()%pageSize==0?(dto.getTotalCount()/pageSize):(dto.getTotalCount()/pageSize+1));
 		
 		int start = (page-1)*pageSize;
 		List<AmiliData> list = activityMybatisDao.getAmiliDataPage(mkey, start, pageSize);
@@ -3783,6 +3783,23 @@ public class ActivityServiceImpl implements ActivityService {
 		}
 		
 		return Response.success(dto);
+	}
+	
+	@Override
+	public AmiliData getAmiliDataById(long id){
+		return activityMybatisDao.getAmiliDataById(id);
+	}
+	
+	@Override
+	public void updateAmiliData(AmiliData data){
+		if(null != data.getId() && data.getId().longValue() > 0){
+			activityMybatisDao.updateAmiliData(data);
+		}
+	}
+	
+	@Override
+	public void saveAmiliData(AmiliData data){
+		activityMybatisDao.saveAmiliData(data);
 	}
 
 	@Override
@@ -3812,10 +3829,13 @@ public class ActivityServiceImpl implements ActivityService {
 					e.setChannel(tmp[0]);
 					if(tmp.length > 1){
 						e.setCode(tmp[1]);
+					}else{
+						e.setCode("");
 					}
 				}
 				e.setUid((Long)map.get("uid"));
 				e.setKingdomCount((Long)map.get("kingdomCount"));
+				e.setCreateTime((Date)map.get("create_time"));
 				dto.getResult().add(e);
 			}
 		}

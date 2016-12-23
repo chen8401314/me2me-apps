@@ -171,7 +171,7 @@ public class LiveForActivityDao {
 		if(!StringUtils.isEmpty(endTime)){
 			sb.append(" and t.create_time<='").append(endTime).append("'");
 		}
-		sb.append(" order by t.channel limit ").append(start).append(",").append(pageSize);
+		sb.append(" order by t.create_time desc limit ").append(start).append(",").append(pageSize);
 		
 		return jdbcTemplate.queryForList(sb.toString());
 	}

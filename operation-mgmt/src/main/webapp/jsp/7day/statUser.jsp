@@ -114,11 +114,52 @@ var buildTableBody = function(dataList){
 			bodyHtml = bodyHtml + "<th>"+dataList[i].channel+"</th>";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].code+"</th>";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].uid+"</th>";
+			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].createTime))+"</th>";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].kingdomCount+"</th>";
 			bodyHtml = bodyHtml + "</tr>";
 		}
 	}
 	$("#tbody").html(bodyHtml);
+}
+
+var parserDatetimeStr = function(time){
+	var year=time.getYear()+1900;
+	var m=time.getMonth()+1;
+	var month;
+	if(m<10){
+		month = "0" + m;
+	}else{
+		month = "" + m;
+	}
+	var d=time.getDate();
+	var date;
+	if(d<10){
+		date = "0" + d;
+	}else{
+		date = "" + d;
+	}
+	var h=time.getHours();
+	var hour;
+	if(h<10){
+		hour = "0" + h;
+	}else{
+		hour = "" + h;
+	}
+	var mm=time.getMinutes();
+	var minute;
+	if(mm<10){
+		minute = "0" + mm;
+	}else{
+		minute = "" + mm;
+	}
+	var s=time.getSeconds();
+	var second;
+	if(s<10){
+		second = "0" + s;
+	}else{
+		second = "" + s;
+	}
+	return year+"-"+month+"-"+date+" "+hour+":"+minute+":"+second;
 }
 </script>
 </head>
@@ -216,6 +257,7 @@ var buildTableBody = function(dataList){
 												<th>渠道</th>
 												<th>投放</th>
 												<th>UID</th>
+												<th>报名时间</th>
 												<th>王国数</th>
 											</tr>
 										</thead>
@@ -237,6 +279,7 @@ var buildTableBody = function(dataList){
 													<th>${item.channel }</th>
 													<th>${item.code }</th>
 													<th>${item.uid }</th>
+													<th><fmt:formatDate value="${item.createTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
 													<th>${item.kingdomCount }</th>
 												</tr>
 											</c:forEach>

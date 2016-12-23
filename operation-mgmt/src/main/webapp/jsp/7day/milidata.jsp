@@ -17,7 +17,6 @@
 <link href="${ctx}/css/slidebars.css" rel="stylesheet" />
 <link href="${ctx}/css/style.css" rel="stylesheet" />
 <link href="${ctx}/css/style-responsive.css" rel="stylesheet" />
-<link rel="stylesheet" type="text/css" href="${ctx}/assets/bootstrap-datetimepicker/css/datetimepicker.css" />
 
 <script src="${ctx}/js/jquery.js"></script>
 <script src="${ctx}/js/jquery-ui-1.9.2.custom.min.js"></script>
@@ -45,7 +44,7 @@ var previous = function(){
 	var page = currPage-1;
 	
 	$.ajax({
-		url : "${ctx}/7day/stat/user/query?channel="+$("#channel").val()+"&code="+$("#code").val()+"&startTime="+$("#startTime").val()+"&endTime="+$("#endTime").val()+"&page="+page+"&pageSize="+pageSize,
+		url : "${ctx}/7day/milidata/queryJson?mkey="+$("#mkey").val()+"&page="+page+"&pageSize="+pageSize,
 		async : false,
 		type : "GET",
 		contentType : "application/json;charset=UTF-8",
@@ -66,7 +65,7 @@ var next = function(type){
 	var page = currPage+1;
 	
 	$.ajax({
-		url : "${ctx}/7day/stat/user/query?channel="+$("#channel").val()+"&code="+$("#code").val()+"&startTime="+$("#startTime").val()+"&endTime="+$("#endTime").val()+"&page="+page+"&pageSize="+pageSize,
+		url : "${ctx}/7day/milidata/queryJson?mkey="+$("#mkey").val()+"&page="+page+"&pageSize="+pageSize,
 		async : false,
 		type : "GET",
 		contentType : "application/json;charset=UTF-8",
@@ -80,12 +79,13 @@ var next = function(type){
 var buildTable = function(resp){
 	var result = eval("("+resp+")");
 	var currentPage = getCurrentPage();
-	totalPage = $("#totalPage").val();
+	var totalPage = result.data.totalPage;
 	if(result){
-		buildTableBody(result.result);
+		buildTableBody(result.data.result);
 	}
 	
 	//记录分页信息
+	$("#totalPage").val(totalPage);
 	$("#DataTables_Table_info").html("当前第 "+currentPage+" 页，共 "+totalPage+" 页");
 	$("#prev").removeClass("disabled");
 	$("#next").removeClass("disabled");
@@ -102,19 +102,17 @@ var buildTableBody = function(dataList){
 	if(dataList && dataList.length > 0){
 		for(var i=0;i<dataList.length;i++){
 			bodyHtml = bodyHtml + "<tr class=\"gradeX\">";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].mobile+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].name+"</th>";
-			bodyHtml = bodyHtml + "<th>";
-			if(dataList[i].sex == 0){
-				bodyHtml = bodyHtml + "女";
+			bodyHtml = bodyHtml + "<td>"+dataList[i].mkey+"</td>";
+			bodyHtml = bodyHtml + "<td>"+dataList[i].content+"</td>";
+			bodyHtml = bodyHtml + "<td>"+dataList[i].orderby+"</td>";
+			bodyHtml = bodyHtml + "<td>";
+			if(dataList[i].status == 1){
+				bodyHtml = bodyHtml + "<font color=\"green\">可用</font>";
 			}else{
-				bodyHtml = bodyHtml + "男";
+				bodyHtml = bodyHtml + "<font color=\"red\">不可用</font>";
 			}
-			bodyHtml = bodyHtml + "</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].channel+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].code+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].uid+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].kingdomCount+"</th>";
+			bodyHtml = bodyHtml + "</td>";
+			bodyHtml = bodyHtml + "<td><a href=\"${ctx}/7day/milidata/f/"+dataList[i].id+"\">编辑</a></td>";
 			bodyHtml = bodyHtml + "</tr>";
 		}
 	}
@@ -131,28 +129,22 @@ var buildTableBody = function(dataList){
 		<!--sidebar start-->
 		<jsp:include page="../common/leftmenu.jsp" flush="false">
 			<jsp:param name="t" value="8" />
-			<jsp:param name="s" value="8_1" />
+			<jsp:param name="s" value="8_3" />
 		</jsp:include>
 		<!--sidebar end-->
 
 		<!--main content start-->
 		<section id="main-content">
 			<section class="wrapper">
-				<form id="form1" action="${ctx}/7day/stat/user" method="post">
+				<form id="form1" action="${ctx}/7day/milidata/query" method="post">
 					<div class="row">
 						<div class="col-lg-12">
 							<section class="panel">
 								<header class="panel-heading">执行操作</header>
 								<div class="panel-body">
 									<div class="form-inline" role="form">
-										渠道标识
-										<input type="text" id="channel" name="channel" value="${dataObj.channel }" class="form-control">&nbsp;&nbsp;
-										投放标识
-										<input type="text" id="code" name="code" value="${dataObj.code }" class="form-control">&nbsp;&nbsp;
-										开始时间
-										<input type="text" id="startTime" name="startTime" value="${dataObj.startTime }" class="form-control">&nbsp;&nbsp;
-										结束时间
-										<input type="text" id="endTime" name="endTime" value="${dataObj.endTime }" class="form-control">
+										标识KEY
+										<input type="text" id="mkey" name="mkey" value="${dataObj.mkey }" class="form-control">&nbsp;&nbsp;
 										<input type="submit" id="btnSearch" name="btnSearch" value="搜索" class="btn btn-info" />
 									</div>
 								</div>
@@ -167,6 +159,7 @@ var buildTableBody = function(dataList){
 							<header class="panel-heading">
 								| 米粒列表
 								<span class="tools pull-right">
+									<a href="${ctx}/jsp/7day/milidataNew.jsp" class="fa fa-plus add_link" title="添加运营文章" ></a>
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>
 							</header>
@@ -179,42 +172,43 @@ var buildTableBody = function(dataList){
 												<th>米粒内容块</th>
 												<th>排序</th>
 												<th>状态</th>
+												<th>操作</th>
 											</tr>
 										</thead>
 										<tbody id="tbody">
-											<c:forEach items="${dataObj.userDTO.result}" var="item">
+											<c:forEach items="${dataObj.data.result}" var="item">
 												<tr class="gradeX">
-													<th>${item.mobile }</th>
-													<th>${item.name }</th>
-													<th>
+													<td>${item.mkey }</td>
+													<td>${item.content }</td>
+													<td>${item.orderby }</td>
+													<td>
 													<c:choose>
-                                                		<c:when test="${item.sex == '0'}">
-                                                			女
+                                                		<c:when test="${item.status == '1'}">
+                                                			<font color='green'>可用</font>
                                                 		</c:when>
                                                 		<c:otherwise>
-                                                			男
+                                                			<font color='red'>不可用</font>
                                                 		</c:otherwise>
                                                 	</c:choose>
-													</th>
-													<th>${item.channel }</th>
-													<th>${item.code }</th>
-													<th>${item.uid }</th>
-													<th>${item.kingdomCount }</th>
+													</td>
+													<td>
+													<a href="${ctx}/7day/milidata/f/${item.id }">编辑</a>
+													</td>
 												</tr>
 											</c:forEach>
 										</tbody>
 									</table>
-									<input type="hidden" id="totalPage" value="${dataObj.totalPage }" >
+									<input type="hidden" id="totalPage" value="${dataObj.data.totalPage }" >
 								</div>
 								<div id="bottomTool" class="row-fluid">
 									<div class="span6">
-										<div id="DataTables_Table_info" class="dataTables_info">当前第 1 页，共 ${dataObj.totalPage } 页</div>
+										<div id="DataTables_Table_info" class="dataTables_info">当前第 1 页，共 ${dataObj.data.totalPage } 页</div>
 									</div>
 									<div class="span6">
 										<div class="dataTables_paginate paging_bootstrap pagination">
 											<ul id="previousNext">
 												<li id="prev" onclick="previous()" class="prev disabled"><a href="#">上一页</a></li>
-												<li id="next" onclick="next()" class="next ${dataObj.totalPage<=1?'disabled':''}"><a href="#">下一页</a></li>
+												<li id="next" onclick="next()" class="next ${dataObj.data.totalPage<=1?'disabled':''}"><a href="#">下一页</a></li>
 											</ul>
 										</div>
 									</div>
@@ -249,34 +243,5 @@ var buildTableBody = function(dataList){
 	<script src="${ctx}/js/form-component.js"></script>
 	<script src="${ctx}/js/common-scripts.js"></script>
 	<script src="${ctx}/js/advanced-form-components.js"></script>
-		<script type="text/javascript" src="${ctx}/assets/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
-	<script type="text/javascript">
-	$.fn.datetimepicker.dates['zh'] = {  
-            days:       ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六","星期日"],  
-            daysShort:  ["日", "一", "二", "三", "四", "五", "六","日"],  
-            daysMin:    ["日", "一", "二", "三", "四", "五", "六","日"],  
-            months:     ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月","十二月"],  
-            monthsShort:  ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"],  
-            meridiem:    ["上午", "下午"],  
-            //suffix:      ["st", "nd", "rd", "th"],  
-            today:       "今天"  
-    };
-	$('#startTime').datetimepicker({
-		format: 'yyyy-mm-dd hh:ii:ss',
-		language: 'zh',
-		startView: 4,
-		autoclose:true,
-		weekStart:1,
-		todayBtn:  1
-		});
-	$('#endTime').datetimepicker({
-		format: 'yyyy-mm-dd hh:ii:ss',
-		language: 'zh',
-		startView: 4,
-		autoclose:true,
-		weekStart:1,
-		todayBtn:  1
-		});
-	</script>
 </body>
 </html>

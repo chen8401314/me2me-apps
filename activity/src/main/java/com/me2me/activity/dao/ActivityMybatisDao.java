@@ -1061,6 +1061,18 @@ public class ActivityMybatisDao {
     	return amiliDataMapper.selectByExampleWithBLOBs(example);
     }
     
+    public AmiliData getAmiliDataById(long id){
+    	return amiliDataMapper.selectByPrimaryKey(id);
+    }
+    
+    public void updateAmiliData(AmiliData data){
+    	amiliDataMapper.updateByPrimaryKeySelective(data);
+    }
+    
+    public void saveAmiliData(AmiliData data){
+    	amiliDataMapper.insertSelective(data);
+    }
+    
     public int countAmiliDataPage(String mkey){
     	AmiliDataExample example = new AmiliDataExample();
     	AmiliDataExample.Criteria criteria = example.createCriteria();

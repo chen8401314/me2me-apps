@@ -3,6 +3,7 @@ package com.me2me.activity.service;
 import com.me2me.activity.dto.*;
 import com.me2me.activity.model.Aactivity;
 import com.me2me.activity.model.ActivityWithBLOBs;
+import com.me2me.activity.model.AmiliData;
 import com.me2me.activity.model.Atopic;
 import com.me2me.activity.model.Auser;
 import com.me2me.common.web.Response;
@@ -156,6 +157,12 @@ public interface ActivityService {
     Response noticeActivityStart();
     
     Response operaBrid(long uid ,int applyId ,int operaStatus);
+    
+    AmiliData getAmiliDataById(long id);
+    
+    void updateAmiliData(AmiliData data);
+    
+    void saveAmiliData(AmiliData data);
 
     ShowActivity7DayUserStatDTO get7dayUserStat(String channel, String code, String startTime, String endTime);
     

@@ -1,5 +1,6 @@
 package com.me2me.activity.dto;
 
+import java.util.Date;
 import java.util.List;
 
 import lombok.Data;
@@ -24,5 +25,6 @@ public class ShowActivity7DayUsersDTO implements BaseEntity {
 		private String code;
 		private long uid;
 		private long kingdomCount;
+		private Date createTime;
 	}
 }
