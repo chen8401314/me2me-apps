@@ -88,7 +88,7 @@ String sub = request.getParameter("s");
                 	<li <%if("8_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/7day/stat/user">报名用户统计</a></li>
                 	<li <%if("8_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/7day/control/index">后台控制管理</a></li>
                 	<li <%if("8_3".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/7day/milidata/query">米粒管理</a></li>
-                	
+                	<li <%if("8_4".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/7day/task/query">活动任务管理</a></li>
                 </ul>
             </li>
         </ul>

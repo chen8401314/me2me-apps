@@ -3815,6 +3815,47 @@ public class ActivityServiceImpl implements ActivityService {
 	public void updateAactivityStage(AactivityStage stage){
 		activityMybatisDao.updateAactivityStage(stage);
 	}
+	
+	public Response getTaskPage(String title, long activityId, int page, int pageSize){
+		if(page < 1){
+			page = 1;
+		}
+		if(pageSize < 1){
+			pageSize = 10;
+		}
+		int start = (page-1)*pageSize;
+		ShowActivity7DayTasksDTO dto = new ShowActivity7DayTasksDTO();
+		dto.setTotalCount(activityMybatisDao.countAtaskPage(title, activityId));
+		dto.setTotalPage(dto.getTotalCount()%pageSize==0?dto.getTotalCount()/pageSize:(dto.getTotalCount()/pageSize+1));
+		
+		List<AtaskWithBLOBs> list = activityMybatisDao.searchAtaskPage(title, activityId, start, pageSize);
+		if(null != list && list.size() > 0){
+			ShowActivity7DayTasksDTO.TaskElement e = null;
+			for(AtaskWithBLOBs t : list){
+				e = new ShowActivity7DayTasksDTO.TaskElement();
+				e.setId(t.getId());
+				e.setTitle(t.getTitle());
+				e.setContent(t.getContent());
+				e.setMiliContent(t.getMiliContent());
+				e.setActivityId(t.getActivityId());
+				e.setStatus(t.getStatus());
+				e.setType(t.getType());
+				e.setUpdateTime(t.getUpdateTime());
+				dto.getResult().add(e);
+			}
+		}
+		
+		return Response.success(dto);
+	}
+	
+	@Override
+	public AtaskWithBLOBs getAtaskWithBLOBsById(long id){
+		return activityMybatisDao.getAtaskById(id);
+	}
+	
+	public void updateAtaskWithBLOBs(AtaskWithBLOBs task){
+		activityMybatisDao.updateAtaskWithBLOBs(task);
+	}
 
 	@Override
 	public ShowActivity7DayUsersDTO get7dayUsers(String channel, String code,

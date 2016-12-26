@@ -5,6 +5,8 @@ import com.me2me.activity.model.Aactivity;
 import com.me2me.activity.model.AactivityStage;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.model.AmiliData;
+import com.me2me.activity.model.Atask;
+import com.me2me.activity.model.AtaskWithBLOBs;
 import com.me2me.activity.model.Atopic;
 import com.me2me.activity.model.Auser;
 import com.me2me.common.web.Response;
@@ -170,6 +172,12 @@ public interface ActivityService {
     AactivityStage getAactivityStageById(long id);
     
     void updateAactivityStage(AactivityStage stage);
+    
+    Response getTaskPage(String title, long activityId, int page, int pageSize);
+    
+    AtaskWithBLOBs getAtaskWithBLOBsById(long id);
+    
+    void updateAtaskWithBLOBs(AtaskWithBLOBs task);
 
     ShowActivity7DayUserStatDTO get7dayUserStat(String channel, String code, String startTime, String endTime);
     

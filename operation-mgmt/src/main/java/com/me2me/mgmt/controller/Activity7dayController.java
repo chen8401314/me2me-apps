@@ -16,11 +16,13 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.me2me.activity.dto.ShowActivity7DayTasksDTO;
 import com.me2me.activity.dto.ShowActivity7DayUserStatDTO;
 import com.me2me.activity.dto.ShowActivity7DayUsersDTO;
 import com.me2me.activity.dto.ShowMiliDatasDTO;
 import com.me2me.activity.model.AactivityStage;
 import com.me2me.activity.model.AmiliData;
+import com.me2me.activity.model.AtaskWithBLOBs;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.utils.DateUtil;
 import com.me2me.common.web.Response;
@@ -28,6 +30,7 @@ import com.me2me.mgmt.request.ActivityInfoDTO;
 import com.me2me.mgmt.request.MiliDataQueryDTO;
 import com.me2me.mgmt.request.StageItem;
 import com.me2me.mgmt.request.StatUserDTO;
+import com.me2me.mgmt.request.TaskQueryDTO;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 
 @Controller
@@ -259,6 +262,66 @@ public class Activity7dayController {
 		activityService.updateAactivityStage(stage);
 		
 		ModelAndView view = new ModelAndView("redirect:/7day/getActivityInfo");
+		return view;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value="/task/query")
+	public ModelAndView taskQuery(TaskQueryDTO dto){
+		ModelAndView view = new ModelAndView("7day/taskList");
+		
+		Response resp = activityService.getTaskPage(dto.getTitle(), 1, dto.getPage(), dto.getPageSize());
+		if(null != resp && resp.getCode() == 200 && null != resp.getData()){
+			dto.setData((ShowActivity7DayTasksDTO)resp.getData());
+			if(null != dto.getData().getResult() && dto.getData().getResult().size() > 0){
+				for(ShowActivity7DayTasksDTO.TaskElement e : dto.getData().getResult()){
+					e.setContent(e.getContent().replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
+					e.setMiliContent(e.getMiliContent().replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
+				}
+			}
+		}
+		
+		view.addObject("dataObj",dto);
+		
+		return view;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@RequestMapping(value="/task/queryJson")
+	@ResponseBody
+	public String taskQueryJson(TaskQueryDTO dto){
+		Response resp = activityService.getTaskPage(dto.getTitle(), 1, dto.getPage(), dto.getPageSize());
+		if(null != resp && resp.getCode() == 200 && null != resp.getData()){
+			ShowActivity7DayTasksDTO respDTO = (ShowActivity7DayTasksDTO)resp.getData();
+			if(null != respDTO.getResult() && respDTO.getResult().size() > 0){
+				for(ShowActivity7DayTasksDTO.TaskElement e : respDTO.getResult()){
+					e.setContent(e.getContent().replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
+					e.setMiliContent(e.getMiliContent().replaceAll("&", "&amp;").replaceAll(">", "&gt;").replaceAll("<", "&lt;"));
+				}
+			}
+		}
+		
+		JSONObject obj = (JSONObject)JSON.toJSON(resp);
+		return obj.toJSONString();
+	}
+	
+	@RequestMapping(value="/task/f/{id}")
+	public ModelAndView getTask(@PathVariable long id){
+		ModelAndView view = new ModelAndView("7day/taskEdit");
+		
+		AtaskWithBLOBs task = activityService.getAtaskWithBLOBsById(id);
+		if(null != task){
+			view.addObject("dataObj",task);
+		}
+		
+		return view;
+	}
+	
+	@RequestMapping(value="/task/update")
+	@SystemControllerLog(description = "七天活动更新阶段")
+	public ModelAndView updateTask(AtaskWithBLOBs task){
+		activityService.updateAtaskWithBLOBs(task);
+		ModelAndView view = new ModelAndView("redirect:/7day/task/query");
 		return view;
 	}
 }

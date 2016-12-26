@@ -11,6 +11,7 @@ import com.me2me.common.web.Specification;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -180,8 +181,12 @@ public class ActivityMybatisDao {
     	return ataskMapper.selectByExampleWithBLOBs(example);
     }
     
-    public Atask getAtaskById(long id){
+    public AtaskWithBLOBs getAtaskById(long id){
     	return ataskMapper.selectByPrimaryKey(id);
+    }
+    
+    public void updateAtaskWithBLOBs(AtaskWithBLOBs task){
+    	ataskMapper.updateByPrimaryKeySelective(task);
     }
     
     public int countAtaskPageByType(long activityId, int type){
@@ -191,6 +196,27 @@ public class ActivityMybatisDao {
     	criteria.andStatusEqualTo(0);
     	if(type == 1){
     		criteria.andTypeEqualTo(type);
+    	}
+    	return ataskMapper.countByExample(example);
+    }
+    
+    public List<AtaskWithBLOBs> searchAtaskPage(String title, long activityId, int start, int pageSize){
+    	AtaskExample example = new AtaskExample();
+    	AtaskExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityIdEqualTo(activityId);
+    	if(!StringUtils.isEmpty(title)){
+    		criteria.andTitleEqualTo(title);
+    	}
+    	example.setOrderByClause(" id asc limit "+start+","+pageSize);
+    	return ataskMapper.selectByExampleWithBLOBs(example);
+    }
+    
+    public int countAtaskPage(String title, long activityId){
+    	AtaskExample example = new AtaskExample();
+    	AtaskExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityIdEqualTo(activityId);
+    	if(!StringUtils.isEmpty(title)){
+    		criteria.andTitleEqualTo(title);
     	}
     	return ataskMapper.countByExample(example);
     }
