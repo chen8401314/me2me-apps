@@ -2,6 +2,7 @@ package com.me2me.activity.service;
 
 import com.me2me.activity.dto.*;
 import com.me2me.activity.model.Aactivity;
+import com.me2me.activity.model.AactivityStage;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.model.AmiliData;
 import com.me2me.activity.model.Atopic;
@@ -163,6 +164,12 @@ public interface ActivityService {
     void updateAmiliData(AmiliData data);
     
     void saveAmiliData(AmiliData data);
+    
+    List<AactivityStage> getAllStage();
+    
+    AactivityStage getAactivityStageById(long id);
+    
+    void updateAactivityStage(AactivityStage stage);
 
     ShowActivity7DayUserStatDTO get7dayUserStat(String channel, String code, String startTime, String endTime);
     

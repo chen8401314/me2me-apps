@@ -597,6 +597,14 @@ public class ActivityMybatisDao {
         return list.size()>0 && list !=null ?list.get(0) : null;
     }
     
+    public AactivityStage getAactivityStageById(long id){
+    	return aactivityStageMapper.selectByPrimaryKey(id);
+    }
+    
+    public void updateAactivityStage(AactivityStage stage){
+    	aactivityStageMapper.updateByPrimaryKeySelective(stage);
+    }
+    
     public AactivityStage getStageByStage(long activityId ,int stage){
     	AactivityStageExample example = new AactivityStageExample();
         example.createCriteria().andActivityIdEqualTo(activityId).andStageEqualTo(stage);
@@ -1080,6 +1088,12 @@ public class ActivityMybatisDao {
     		criteria.andMkeyEqualTo(mkey);
     	}
     	return amiliDataMapper.countByExample(example);
+    }
+    
+    public List<AactivityStage> getAllStage(){
+    	AactivityStageExample example = new AactivityStageExample();
+    	example.setOrderByClause(" start_time ");
+    	return aactivityStageMapper.selectByExample(example);
     }
 
     public Atopic getAtopicByType(long uid ,int type){

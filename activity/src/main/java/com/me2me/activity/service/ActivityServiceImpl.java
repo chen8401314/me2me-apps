@@ -1374,6 +1374,7 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public Response enterActivity(QiUserDto qiUserDto) {
+    	
         VerifyDto verifyDto = new VerifyDto();
         //验证为1
         verifyDto.setAction(Specification.VerifyAction.CHECK.index);
@@ -3800,6 +3801,19 @@ public class ActivityServiceImpl implements ActivityService {
 	@Override
 	public void saveAmiliData(AmiliData data){
 		activityMybatisDao.saveAmiliData(data);
+	}
+	
+	@Override
+	public List<AactivityStage> getAllStage(){
+		return activityMybatisDao.getAllStage();
+	}
+	
+	public AactivityStage getAactivityStageById(long id){
+		return activityMybatisDao.getAactivityStageById(id);
+	}
+	
+	public void updateAactivityStage(AactivityStage stage){
+		activityMybatisDao.updateAactivityStage(stage);
 	}
 
 	@Override

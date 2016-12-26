@@ -1,5 +1,9 @@
 package com.me2me.mgmt.controller;
 
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +19,14 @@ import com.alibaba.fastjson.JSONObject;
 import com.me2me.activity.dto.ShowActivity7DayUserStatDTO;
 import com.me2me.activity.dto.ShowActivity7DayUsersDTO;
 import com.me2me.activity.dto.ShowMiliDatasDTO;
+import com.me2me.activity.model.AactivityStage;
 import com.me2me.activity.model.AmiliData;
 import com.me2me.activity.service.ActivityService;
+import com.me2me.common.utils.DateUtil;
 import com.me2me.common.web.Response;
+import com.me2me.mgmt.request.ActivityInfoDTO;
 import com.me2me.mgmt.request.MiliDataQueryDTO;
+import com.me2me.mgmt.request.StageItem;
 import com.me2me.mgmt.request.StatUserDTO;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 
@@ -175,6 +183,82 @@ public class Activity7dayController {
 		
 		activityService.saveAmiliData(data);
 		view = new ModelAndView("redirect:/7day/milidata/query");
+		return view;
+	}
+	
+	@RequestMapping(value="/getActivityInfo")
+	public ModelAndView getActivityInfo(){
+		ActivityInfoDTO dto = new ActivityInfoDTO();
+		dto.setActivityInfo(activityService.getAactivityById(1));
+		List<AactivityStage> list = activityService.getAllStage();
+		List<StageItem> stageList = new ArrayList<StageItem>();
+		if(null != list && list.size() > 0){
+			StageItem item = null;
+			for(AactivityStage stage : list){
+				item = new StageItem();
+				item.setId(stage.getId());
+				item.setName(getStageNameByStage(stage.getStage()));
+				item.setStartTime(DateUtil.date2string(stage.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
+				item.setEndTime(DateUtil.date2string(stage.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
+				item.setStatus(stage.getType());
+				stageList.add(item);
+			}
+		}
+		
+		dto.setStageList(stageList);
+		
+		ModelAndView view = new ModelAndView("7day/stage");
+		view.addObject("dataObj",dto);
+		
+		return view;
+	}
+	
+	private String getStageNameByStage(int stage){
+		switch(stage){
+		case 1:
+			return "报名阶段";
+		case 2:
+			return "个人阶段";
+		case 3:
+			return "配对阶段";
+		case 4:
+			return "抢亲阶段";
+		case 5:
+			return "强配阶段";
+		default:
+			return "不支持的stage";
+		}
+	}
+	
+	@RequestMapping(value="/stage/f/{id}")
+	public ModelAndView getStage(@PathVariable long id){
+		ModelAndView view = new ModelAndView("7day/stageEdit");
+		
+		AactivityStage stage = activityService.getAactivityStageById(id);
+		if(null != stage){
+			StageItem item = new StageItem();
+			item.setId(stage.getId());
+			item.setName(getStageNameByStage(stage.getStage()));
+			item.setStartTime(DateUtil.date2string(stage.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
+			item.setEndTime(DateUtil.date2string(stage.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
+			item.setStatus(stage.getStage());
+			view.addObject("dataObj",item);
+		}
+		
+		return view;
+	}
+	
+	@RequestMapping(value="/stage/update")
+	@SystemControllerLog(description = "七天活动更新阶段")
+	public ModelAndView updateStage(StageItem item) throws ParseException{
+		AactivityStage stage = activityService.getAactivityStageById(item.getId());
+		stage.setStartTime(DateUtil.string2date(item.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
+		stage.setEndTime(DateUtil.string2date(item.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
+		stage.setType(item.getStatus());
+		
+		activityService.updateAactivityStage(stage);
+		
+		ModelAndView view = new ModelAndView("redirect:/7day/getActivityInfo");
 		return view;
 	}
 }
