@@ -68,7 +68,7 @@
 													<th><fmt:formatDate value="${dataObj.activityInfo.endTime}" pattern="yyyy-MM-dd HH:mm:ss"/></th>
 													<th>
 														<c:choose>
-                                                			<c:when test="${item.sex == '0'}">
+                                                			<c:when test="${dataObj.activityInfo.status == '1'}">
                                                 				<font color='green'>正常</font>
                                                 			</c:when>
                                                 			<c:otherwise>
@@ -114,7 +114,7 @@
 													<th>${item.endTime}</th>
 													<th>
 														<c:choose>
-                                                			<c:when test="${item.sex == '0'}">
+                                                			<c:when test="${item.status == '0'}">
                                                 				<font color='green'>开启</font>
                                                 			</c:when>
                                                 			<c:otherwise>

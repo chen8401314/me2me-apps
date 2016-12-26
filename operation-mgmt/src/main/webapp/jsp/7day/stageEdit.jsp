@@ -58,19 +58,19 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label">开始时间</label>
-                                            <input type="text" id="txtStarTime" name="txtStarTime" data-mask="9999-99-99 99:99:99" class="form-control" style="width: 100%" required>
+                                            <input type="text" id="startTime" name="startTime" value="${dataObj.startTime }" data-mask="9999-99-99 99:99:99" class="form-control" style="width: 100%" required>
                                             <span class="help-inline">2016-01-01 01:01:01</span>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label">结束时间</label>
-                                            <input type="text" id="txtEndTime" name="txtEndTime" data-mask="9999-99-99 99:99:99" class="form-control" style="width: 100%" required>
+                                            <input type="text" id="endTime" name="endTime" value="${dataObj.endTime }" data-mask="9999-99-99 99:99:99" class="form-control" style="width: 100%" required>
                                             <span class="help-inline">2016-02-02 02:02:02</span>
                                         </div>
                                         <div class="form-group">
                                             <label for="exampleInputFile">状态</label>
                                             <select name="status" id="status" class="form-control">
-												<option value="1" ${dataObj.status==1?'selected':''}>可用</option>
-												<option value="2" ${dataObj.status==2?'selected':''}>不可用</option>
+												<option value="0" ${dataObj.status==0?'selected':''}>开启</option>
+												<option value="1" ${dataObj.status==1?'selected':''}>关闭</option>
 											</select>
                                         </div>
                                     </div>

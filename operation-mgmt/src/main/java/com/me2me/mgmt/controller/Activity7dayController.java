@@ -241,7 +241,7 @@ public class Activity7dayController {
 			item.setName(getStageNameByStage(stage.getStage()));
 			item.setStartTime(DateUtil.date2string(stage.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
 			item.setEndTime(DateUtil.date2string(stage.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
-			item.setStatus(stage.getStage());
+			item.setStatus(stage.getType());
 			view.addObject("dataObj",item);
 		}
 		
