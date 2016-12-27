@@ -9,7 +9,7 @@ public class Constant {
 
     public static final String DEFAULT_AVATAR = "default.png";
 
-    public static final String QINIU_DOMAIN = "http://cdn.me-to-me.com";
+    public static final String QINIU_DOMAIN = "https://cdn.me-to-me.com";
 
     public static final String FORWARD_URL_TEST = "http://192.168.89.79:5678/console/forward?id=";
 
