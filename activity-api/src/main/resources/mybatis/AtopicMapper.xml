@@ -403,7 +403,7 @@
    AND a.`topic_id`=b.`id` AND a.`uid`=c.`uid` AND a.`type` = 1
    AND a.`status` = 0
    AND (b.`title` LIKE "%${titleName}%" OR c.`nick_name` LIKE "%${nickName}%")
-    ORDER BY a.hot DESC , sums DESC
+    ORDER BY sums DESC ,a.hot DESC
     LIMIT #{pageNum},#{pageSize}
   </select>
 
@@ -425,7 +425,7 @@
    AND a.`topic_id`=b.`id` AND a.`uid`=c.`uid` AND a.`type` = 1
    AND a.`status` = 0
    AND (b.`title` LIKE "%${titleName}%" OR c.`nick_name` LIKE "%${nickName}%")
-    ORDER BY a.hot DESC , sums DESC
+    ORDER BY sums DESC ,a.hot DESC
     LIMIT #{pageNum},#{pageSize}
   </select>
 
@@ -445,7 +445,7 @@
     WHERE a.`topic_id`=b.`id` AND a.`uid`=c.`uid` AND a.`type` = 1
     AND a.`status` = 0
     AND (b.`title` LIKE "%${titleName}%" OR c.`nick_name` LIKE "%${nickName}%")
-    ORDER BY a.hot DESC , sums DESC
+    ORDER BY sums DESC ,a.hot DESC
     LIMIT #{pageNum},#{pageSize}
   </select>
 
