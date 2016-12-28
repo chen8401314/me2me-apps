@@ -27,4 +27,6 @@ public class BlurSearchDto implements BaseEntity {
 
     private int isAlone;//是否单身 0单身 1不是单身
 
+    private long hot;
+
 }
