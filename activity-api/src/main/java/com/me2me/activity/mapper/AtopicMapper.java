@@ -101,6 +101,8 @@ public interface AtopicMapper {
 
     List<BlurSearchDto> getTopicByBoy(Map map);
 
+    List<BlurSearchDto> getTopicByAll(Map map);
+
     List<BlurSearchDto> getTopicByGirl(Map map);
 
     List<BlurSearchDto> getBridList(Map map);

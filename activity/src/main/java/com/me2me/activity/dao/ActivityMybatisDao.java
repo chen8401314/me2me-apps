@@ -1015,6 +1015,10 @@ public class ActivityMybatisDao {
       return atopicMapper.getTopicByBoy(map);
     }
 
+    public List<BlurSearchDto> getTopicByAll(Map map){
+        return atopicMapper.getTopicByAll(map);
+    }
+
     public List<BlurSearchDto> getTopicByGirl(Map map){
         return atopicMapper.getTopicByGirl(map);
     }

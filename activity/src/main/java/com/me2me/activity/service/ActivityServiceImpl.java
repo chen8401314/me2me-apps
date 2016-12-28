@@ -1943,59 +1943,79 @@ public class ActivityServiceImpl implements ActivityService {
         map.put("pageSize",pageSize);
         map.put("uid",uid);
 
-        if(userProfile != null){
-            if(userProfile.getGender() == 0) {
-                //查询总记录数
-                map.put("gender",1);
-                int total = activityMybatisDao.getAliveList(map);
-//                int total = 0;
-                //0女 查询男
-                List<BlurSearchDto> boyList = activityMybatisDao.getTopicByBoy(map);
-                if(boyList.size()>0 && boyList != null){
-                    for(BlurSearchDto blurSearchDto : boyList) {
-                        //是否单身，是否有双人王国条件判断
-                        Atopic isAlone = activityMybatisDao.getAtopicByUid2(blurSearchDto.getUid());
-                        if (isAlone == null) {
-                            //有 不是单身
-//                            blurSearchDto.setIsAlone(1);
-                            //申请过的不再显示
-                            List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(uid, blurSearchDto.getUid());
-                            if (list.size() == 0) {
-//                            total++;
-                                atopicInfoDto.getBlurSearchList().add(blurSearchDto);
-                            }
+        //查询是否报名过
+        Auser isActivityUser = activityMybatisDao.getAuserByUid(uid);
+        if(isActivityUser == null ){
+            //没报名过 显示全部
+            // TODO: 2016/12/28
+            int total = activityMybatisDao.getAliveList(map);
+            List<BlurSearchDto> allList = activityMybatisDao.getTopicByAll(map);
+            if(allList.size()>0 && allList != null){
+                for(BlurSearchDto blurSearchDto : allList) {
+                    //是否单身，是否有双人王国条件判断
+                    Atopic isAlone = activityMybatisDao.getAtopicByUid2(blurSearchDto.getUid());
+                    if (isAlone == null) {
+                        List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(uid, blurSearchDto.getUid());
+                        if (list.size() == 0) {
+                            atopicInfoDto.getBlurSearchList().add(blurSearchDto);
                         }
                     }
-                    atopicInfoDto.setTotal(total);
-                    log.info("get aliveInfo success");
-                    return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message,atopicInfoDto);
                 }
-
-            }else{
-                map.put("gender",0);
-                int total = activityMybatisDao.getAliveList(map);
-//                atopicInfoDto.setTotal(total);
-//                int total = 0;
-                //1男 //查询女
-                List<BlurSearchDto> girlList = activityMybatisDao.getTopicByGirl(map);
-                if(girlList.size()>0 && girlList != null){
-                    for(BlurSearchDto blurSearchDto : girlList) {
-                        //是否单身，是否有双人王国条件判断
-                        Atopic isAlone = activityMybatisDao.getAtopicByUid2(blurSearchDto.getUid());
-                        if (isAlone == null) {
-                            //有 不是单身
-//                            blurSearchDto.setIsAlone(1);
-                            //申请过的不再显示
-                            List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(uid, blurSearchDto.getUid());
-                            if (list.size() == 0) {
-//                            total ++;
-                                atopicInfoDto.getBlurSearchList().add(blurSearchDto);
+                atopicInfoDto.setTotal(total);
+                log.info("get aliveInfo success");
+                return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message,atopicInfoDto);
+            }
+            
+        }else {
+            //报名过 显示异性
+            if (userProfile != null) {
+                if (userProfile.getGender() == 0) {
+                    //查询总记录数
+                    map.put("gender", 1);
+                    int total = activityMybatisDao.getAliveList(map);
+                    List<BlurSearchDto> boyList = activityMybatisDao.getTopicByBoy(map);
+                    if (boyList.size() > 0 && boyList != null) {
+                        for (BlurSearchDto blurSearchDto : boyList) {
+                            //是否单身，是否有双人王国条件判断
+                            Atopic isAlone = activityMybatisDao.getAtopicByUid2(blurSearchDto.getUid());
+                            if (isAlone == null) {
+                                //有 不是单身
+                                //blurSearchDto.setIsAlone(1);
+                                //申请过的不再显示
+                                List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(uid, blurSearchDto.getUid());
+                                if (list.size() == 0) {
+                                    atopicInfoDto.getBlurSearchList().add(blurSearchDto);
+                                }
                             }
                         }
+                        atopicInfoDto.setTotal(total);
+                        log.info("get aliveInfo success");
+                        return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message, atopicInfoDto);
                     }
-                    atopicInfoDto.setTotal(total);
-                    log.info("get aliveInfo success");
-                    return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message,atopicInfoDto);
+
+                } else {
+                    map.put("gender", 0);
+                    int total = activityMybatisDao.getAliveList(map);
+                    //1男 //查询女
+                    List<BlurSearchDto> girlList = activityMybatisDao.getTopicByGirl(map);
+                    if (girlList.size() > 0 && girlList != null) {
+                        for (BlurSearchDto blurSearchDto : girlList) {
+                            //是否单身，是否有双人王国条件判断
+                            Atopic isAlone = activityMybatisDao.getAtopicByUid2(blurSearchDto.getUid());
+                            if (isAlone == null) {
+                                //有 不是单身
+                                // blurSearchDto.setIsAlone(1);
+                                //申请过的不再显示
+                                List<AdoubleTopicApply> list = activityMybatisDao.getAdoubleTopicApplyByUid3(uid, blurSearchDto.getUid());
+                                if (list.size() == 0) {
+                                    atopicInfoDto.getBlurSearchList().add(blurSearchDto);
+                                }
+                            }
+                        }
+                        atopicInfoDto.setTotal(total);
+                        log.info("get aliveInfo success");
+                        return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message, atopicInfoDto);
+                    }
                 }
             }
         }
