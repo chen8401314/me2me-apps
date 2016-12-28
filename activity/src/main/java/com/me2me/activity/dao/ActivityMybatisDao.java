@@ -177,7 +177,7 @@ public class ActivityMybatisDao {
     	if(type == 1){
     		criteria.andTypeEqualTo(type);
     	}
-    	example.setOrderByClause(" update_time desc limit "+start+","+pageSize);
+    	example.setOrderByClause(" id desc limit "+start+","+pageSize);
     	return ataskMapper.selectByExampleWithBLOBs(example);
     }
     
@@ -229,7 +229,7 @@ public class ActivityMybatisDao {
     	if(type == 1){
     		criteria.andTypeEqualTo(type);
     	}
-    	example.setOrderByClause(" update_time desc limit 1");
+    	example.setOrderByClause(" id desc limit 1");
     	List<AtaskWithBLOBs> list = ataskMapper.selectByExampleWithBLOBs(example);
     	if(null != list && list.size() > 0){
     		return list.get(0);

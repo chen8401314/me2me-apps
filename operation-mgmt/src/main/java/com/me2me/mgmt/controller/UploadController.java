@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.me2me.common.Constant;
 import com.me2me.common.security.SecurityUtils;
 import com.me2me.io.service.FileTransferService;
 
@@ -37,7 +38,7 @@ public class UploadController {
 			try{
 				String imgName = SecurityUtils.md5(request.getSession().getId()+System.currentTimeMillis(), "1");
 				fileTransferService.upload(file.getBytes(), imgName);
-				url = "http://cdn.me-to-me.com/" + imgName;
+				url = Constant.QINIU_DOMAIN + imgName;
 			}catch(Exception e){
 				logger.error("上传失败", e);
 				error = "上传失败";

@@ -38,9 +38,6 @@ public class Console  {
     private ContentService contentService;
 
     @Autowired
-    private LiveService liveService;
-
-    @Autowired
     private ActivityService activityService;
 
     @Autowired
@@ -72,8 +69,16 @@ public class Console  {
                 String cx = content.getContent();
                 cx = StringEscapeUtil.escapeHtml(cx);
                 cx = cx.replace("\n", "<br/>");
+                cx = cx.replaceAll("http://cdn\\.me-to-me\\.com", "//cdn.me-to-me.com");
+                cx = cx.replaceAll("http://7xs9q4\\.com1\\.z0\\.glb\\.clouddn\\.com", "//cdn.me-to-me.com");
                 content.setContent(cx);
+                
+                String img = content.getCoverImage();
+                if(null != img && img.startsWith("http://") && img.length() > 7){
+                	content.setCoverImage(img.substring(5));
+                }
             }
+            
             mv.addObject("root",content);
             mv.addObject("share",request.getShared());
         }else{
