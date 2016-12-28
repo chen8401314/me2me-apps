@@ -25,6 +25,20 @@ public class LiveForActivityDao {
         return null;
     }
 	
+	public void insertTopicFragment(Map<String, String> param){
+		if(null == param){
+			return;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("insert into topic_fragment(topic_id,uid,fragment_image,fragment,type,content_type,at_uid,status,extra)");
+		sb.append(" values(").append(param.get("topic_id")).append(",").append(param.get("uid"));
+		sb.append(",'").append(param.get("fragment_image")).append("','").append(param.get("fragment"));
+		sb.append("',").append(param.get("type")).append(",").append(param.get("content_type"));
+		sb.append(",").append(param.get("at_uid")).append(",").append(param.get("status")).append(",'").append(param.get("extra")).append("')");
+		
+		jdbcTemplate.execute(sb.toString());
+	}
+	
 	public List<Map<String,Object>> getRecSingleUser(int searchSex, long myUid, int count){
 		StringBuilder sb = new StringBuilder();
 		sb.append("select t.auid,t.topic_id,t.uid,p.avatar,p.v_lv");
@@ -174,5 +188,38 @@ public class LiveForActivityDao {
 		sb.append(" order by t.create_time desc limit ").append(start).append(",").append(pageSize);
 		
 		return jdbcTemplate.queryForList(sb.toString());
+	}
+	
+	public Map<String, Object> getTopicCount(long topicId){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select m.read_count_dummy,m.like_count,n.updateCount,n.reviewCount from (");
+		sb.append("select t.read_count_dummy,t.like_count,t.forward_cid from content t where t.forward_cid=").append(topicId);
+		sb.append(") m,(select count(if(f.type=0,TRUE,NULL)) as updateCount, count(if(f.type>0,TRUE,NULL)) as reviewCount, f.topic_id ");
+		sb.append("from topic_fragment f where f.topic_id=").append(topicId).append(" and f.status=1) n ");
+		sb.append("where m.forward_cid=n.topic_id");
+
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+	
+	public List<Long> get7DayTopicIds(){
+		String sql = "select DISTINCT t.topic_id from a_topic t where t.status=0";
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
+		if(null != list && list.size() > 0){
+			List<Long> result = new ArrayList<Long>();
+			for(Map<String,Object> map : list){
+				result.add((Long)map.get("topic_id"));
+			}
+			return result;
+		}
+		return null;
+	}
+	
+	public void updateTopicHot(long topicId, int hot){
+		String sql = "update a_topic set hot="+hot+" where topic_id="+topicId;
+		jdbcTemplate.execute(sql);
 	}
 }

@@ -178,6 +178,12 @@ public interface ActivityService {
     AtaskWithBLOBs getAtaskWithBLOBsById(long id);
     
     void updateAtaskWithBLOBs(AtaskWithBLOBs task);
+    
+    TopicCountDTO getTopicCount(long topicId);
+    
+    List<Long> get7dayTopicIds();
+    
+    void updateTopicHot(long topicId, int hot);
 
     ShowActivity7DayUserStatDTO get7dayUserStat(String channel, String code, String startTime, String endTime);
     

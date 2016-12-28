@@ -3535,7 +3535,7 @@ public class ActivityServiceImpl implements ActivityService {
 	
 	@Override
 	public Response acceptTask(long tid, long uid) {
-		Atask atask = activityMybatisDao.getAtaskById(tid);
+		AtaskWithBLOBs atask = activityMybatisDao.getAtaskById(tid);
 		if(null == atask){
 			return Response.failure(ResponseStatus.ACCEPT_TASK_ERROR.status, "任务不存在");
 		}
@@ -3569,6 +3569,21 @@ public class ActivityServiceImpl implements ActivityService {
 		ataskUser.setTopicId(atopic.getTopicId());
 		ataskUser.setUid(uid);
 		activityMybatisDao.saveAtaskUser(ataskUser);
+		
+		//接受完任务需要向对应王国里插一个图片，有接受人发起
+		Map<String, String> param = new HashMap<String, String>();
+		param.put("topic_id", String.valueOf(atopic.getTopicId()));
+		param.put("uid", String.valueOf(uid));
+		param.put("fragment_image", atask.getCardimage());
+		param.put("fragment", "");
+		param.put("type", "0");
+		param.put("content_type", "1");
+		param.put("at_uid", "0");
+		param.put("status", "1");
+		StringBuilder sb = new StringBuilder();
+		sb.append("{\"w\":").append(atask.getCardimageW()).append(",\"h\":").append(atask.getCardimageH()).append("}");
+		param.put("extra", sb.toString());
+		liveForActivityDao.insertTopicFragment(param);
 		
 		return Response.success();
 	}
@@ -3879,6 +3894,26 @@ public class ActivityServiceImpl implements ActivityService {
 	
 	public void updateAtaskWithBLOBs(AtaskWithBLOBs task){
 		activityMybatisDao.updateAtaskWithBLOBs(task);
+	}
+	
+	public List<Long> get7dayTopicIds(){
+		return liveForActivityDao.get7DayTopicIds();
+	}
+	
+	public void updateTopicHot(long topicId, int hot){
+		liveForActivityDao.updateTopicHot(topicId, hot);
+	}
+	
+	public TopicCountDTO getTopicCount(long topicId){
+		Map<String, Object> map = liveForActivityDao.getTopicCount(topicId);
+		TopicCountDTO dto = new TopicCountDTO();
+		if(null != map && map.size() > 0){
+			dto.setLikeCount((Integer)map.get("like_count"));
+			dto.setReadCount((Integer)map.get("read_count_dummy"));
+			dto.setReviewCount(((Long)map.get("reviewCount")).intValue());
+			dto.setUpdateCount(((Long)map.get("updateCount")).intValue());
+		}
+		return dto;
 	}
 
 	@Override
