@@ -1941,6 +1941,7 @@ public class ActivityServiceImpl implements ActivityService {
         }
         map.put("pageNum",pageNum);
         map.put("pageSize",pageSize);
+        map.put("uid",uid);
 
         if(userProfile != null){
             if(userProfile.getGender() == 0) {
