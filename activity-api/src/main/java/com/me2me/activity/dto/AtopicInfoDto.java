@@ -14,6 +14,8 @@ public class AtopicInfoDto implements BaseEntity {
 
     private int total;
 
+    private int status; //0未报名过 1报名过
+
     private List<BlurSearchDto> blurSearchList = Lists.newArrayList();
 
 }

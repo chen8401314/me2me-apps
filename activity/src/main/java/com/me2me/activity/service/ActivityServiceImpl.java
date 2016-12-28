@@ -1962,6 +1962,7 @@ public class ActivityServiceImpl implements ActivityService {
                     }
                 }
                 atopicInfoDto.setTotal(total);
+                atopicInfoDto.setStatus(0);
                 log.info("get aliveInfo success");
                 return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message,atopicInfoDto);
             }
@@ -1989,6 +1990,7 @@ public class ActivityServiceImpl implements ActivityService {
                             }
                         }
                         atopicInfoDto.setTotal(total);
+                        atopicInfoDto.setStatus(1);
                         log.info("get aliveInfo success");
                         return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message, atopicInfoDto);
                     }
@@ -2013,6 +2015,7 @@ public class ActivityServiceImpl implements ActivityService {
                             }
                         }
                         atopicInfoDto.setTotal(total);
+                        atopicInfoDto.setStatus(1);
                         log.info("get aliveInfo success");
                         return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message, atopicInfoDto);
                     }
