@@ -13,6 +13,7 @@ import com.me2me.web.request.GetTaskListRequest;
 import com.me2me.web.request.OptForcedPairingRequest;
 import com.me2me.web.request.QiUserRequest;
 import com.me2me.web.request.RecommendHistoryRequest;
+import com.me2me.web.request.TaskPublishRequest;
 import com.me2me.web.request.UserTaskStatusRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -452,5 +453,11 @@ public class Activity extends BaseController {
     		}
     	}
     	return Response.failure("失败");
+    }
+    
+    @ResponseBody
+    @RequestMapping(value = "/checkUserActivityKindom")
+    public Response taskPublish(TaskPublishRequest request){
+    	return activityService.taskPublish(request.getTid(), request.getType());
     }
 }

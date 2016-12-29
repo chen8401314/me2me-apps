@@ -222,4 +222,20 @@ public class LiveForActivityDao {
 		String sql = "update a_topic set hot="+hot+" where topic_id="+topicId;
 		jdbcTemplate.execute(sql);
 	}
+	
+	public List<Long> get7dayKingdomUpdateUids(long time){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select t.uid from a_topic t,topic p where t.topic_id=p.id and t.status=0 ");
+		sb.append("and p.long_time<").append(time);
+		
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
+		if(null != list && list.size() > 0){
+			List<Long> result = new ArrayList<Long>();
+			for(Map<String,Object> map : list){
+				result.add((Long)map.get("uid"));
+			}
+			return result;
+		}
+		return null;
+	}
 }

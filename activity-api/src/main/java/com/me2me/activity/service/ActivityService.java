@@ -186,6 +186,10 @@ public interface ActivityService {
     void updateTopicHot(long topicId, int hot);
     
     Response send7DayKingdomMessage(int sex);
+    
+    List<Long> get7dayKingdomUpdateUids();
+    
+    Response taskPublish(long taskId, int type);
 
     ShowActivity7DayUserStatDTO get7dayUserStat(String channel, String code, String startTime, String endTime);
     

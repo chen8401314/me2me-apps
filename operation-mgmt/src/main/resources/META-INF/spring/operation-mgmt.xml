@@ -49,12 +49,29 @@
         </property>
     </bean>
     <!-- task 2 end-->
+    
+    <!-- task 3 start-->
+    <bean id="kingdomUpdatePushTaskJobDetailA" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="kingdomUpdatePushTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="kingdomUpdatePushTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="kingdomUpdatePushTaskJobDetailA">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 8,12,16,20 * * ?</value>
+        </property>
+    </bean>
+    <!-- task 3 end-->
 
     <bean name="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
                 <ref bean="topicHotTaskTriggers" />
                 <ref bean="recommandPushTaskTriggers" />
+                <ref bean="kingdomUpdatePushTaskTriggers" />
             </list>
         </property>
     </bean>

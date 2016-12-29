@@ -672,6 +672,14 @@ public class ActivityMybatisDao {
         List<Atopic> list = atopicMapper.selectByExample(example);
         return list.size()>0 && list != null ?list.get(0):null;
     }
+    
+    public List<Atopic> getAtopicByType(int type){
+    	AtopicExample example = new AtopicExample();
+    	AtopicExample.Criteria criteria = example.createCriteria();
+    	criteria.andStatusEqualTo(0);
+    	criteria.andTypeEqualTo(type);
+    	return atopicMapper.selectByExample(example);
+    }
 
     public Atopic getAtopicByAuidDouble(long Auid){
         AtopicExample example = new AtopicExample();

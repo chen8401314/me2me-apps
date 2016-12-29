@@ -8,6 +8,7 @@ import com.me2me.activity.dao.LiveForActivityDao;
 import com.me2me.activity.dto.*;
 import com.me2me.activity.event.ForcedPairingPushEvent;
 import com.me2me.activity.event.LinkPushEvent;
+import com.me2me.activity.event.TaskPushEvent;
 import com.me2me.activity.model.*;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
@@ -1163,7 +1164,7 @@ public class ActivityServiceImpl implements ActivityService {
         			Map<String,Object> topicSingle = liveForActivityDao.getTopicById(atopicSingle.getTopicId());
         			if(null != topicSingle && topicSingle.size() > 0){
         				 QiActivityDto.TopicElement topicElement = qiActivityDto.createElement();
-                         topicElement.setLiveImage(Constant.QINIU_DOMAIN + "/" + (String)topicSingle.get("live_image"));
+                         topicElement.setLiveImage(Constant.QINIU_DOMAIN_COMMON + "/" + (String)topicSingle.get("live_image"));
                          topicElement.setTitle((String)topicSingle.get("title"));
                          topicElement.setTopicId((Long)topicSingle.get("id"));
                          topicElement.setStage(Specification.ASevenDayType.A_DOUBLE_STAGE.index);
@@ -1183,7 +1184,7 @@ public class ActivityServiceImpl implements ActivityService {
                     if(null != topicDouble && topicDouble.size() > 0){
                         QiActivityDto.TopicElement topicElement = qiActivityDto.createElement();
                         topicElement = qiActivityDto.createElement();
-                        topicElement.setLiveImage(Constant.QINIU_DOMAIN + "/" + (String)topicDouble.get("live_image"));
+                        topicElement.setLiveImage(Constant.QINIU_DOMAIN_COMMON + "/" + (String)topicDouble.get("live_image"));
                         topicElement.setTitle((String)topicDouble.get("title"));
                         topicElement.setTopicId((Long)topicDouble.get("id"));
                         topicElement.setStage(Specification.ASevenDayType.A_THREE_STAGE.index);
@@ -1540,6 +1541,7 @@ public class ActivityServiceImpl implements ActivityService {
         	}
         	
             List<String> mobileList = Lists.newArrayList();
+            mobileList.add("18916103465");//默认给一个内部的手机号
             for(Auser auser : auserList){
                 //通知所有审核中的用户
                 mobileList.add(auser.getMobile());
@@ -2346,9 +2348,9 @@ public class ActivityServiceImpl implements ActivityService {
 
 					// 向对方的原配发消息
 					ut = userService.getUserTokenByUid(targetTopic.getUid2());
-					msg = Specification.LinkPushType.ROB_APPLY.message.replaceAll("#\\{1\\}#", up.getNickName());
+					msg = Specification.LinkPushType.ROB_APPLY_PARTNER.message.replaceAll("#\\{1\\}#", up.getNickName());
 					sb = new StringBuilder();
-					sb.append(activityWebUrl).append(Specification.LinkPushType.ROB_APPLY.linkUrl).append("?uid=");
+					sb.append(activityWebUrl).append(Specification.LinkPushType.ROB_APPLY_PARTNER.linkUrl).append("?uid=");
 					sb.append(targetTopic.getUid2()).append("&token=").append(ut.getToken());
 					applicationEventBus.post(new LinkPushEvent(msg, sb.toString(), targetTopic.getUid2()));
 
@@ -2749,7 +2751,7 @@ public class ActivityServiceImpl implements ActivityService {
 							map.put("topicId", String.valueOf(singleKingdom.getTopicId()));
 							map.put("userName", userName);
 							map.put("topicTitle", (String)singleTopic.get("title"));
-							map.put("topicImage", Constant.QINIU_DOMAIN + "/" + (String)singleTopic.get("live_image"));
+							map.put("topicImage", Constant.QINIU_DOMAIN_COMMON + "/" + (String)singleTopic.get("live_image"));
 							map.put("lastUpdateTime", DateUtil.date2string(new Date(updateTime), "yyyy-MM-dd HH:mm:ss"));
 							params.add(map);
 							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.UPDATE_SINGLE_KINGDOM.key, params);
@@ -2808,7 +2810,7 @@ public class ActivityServiceImpl implements ActivityService {
 								map.put("userName", userName);
 								map.put("uid", String.valueOf(uid));
 								map.put("nickName", up.getNickName());
-								map.put("avatar", Constant.QINIU_DOMAIN + "/" + up.getAvatar());
+								map.put("avatar", Constant.QINIU_DOMAIN_COMMON + "/" + up.getAvatar());
 								map.put("display", "inline-block");
 								params.add(map);
 							}
@@ -2859,7 +2861,7 @@ public class ActivityServiceImpl implements ActivityService {
 									}
 									UserProfile up = userService.getUserProfileByUid(targetUid);
 									map.put("otherName", up.getNickName());
-									map.put("otherAvatar", Constant.QINIU_DOMAIN + "/" + up.getAvatar());
+									map.put("otherAvatar", Constant.QINIU_DOMAIN_COMMON + "/" + up.getAvatar());
 									map.put("otherUid", String.valueOf(targetUid));
 									Atopic otherAtopic = activityMybatisDao.getAtopicByType(targetUid, 1);
 									if(null != otherAtopic){
@@ -2867,7 +2869,7 @@ public class ActivityServiceImpl implements ActivityService {
 										if(null != otherSingleTopic){
 											map.put("otherTopicId", String.valueOf(otherSingleTopic.get("id")));
 											map.put("otherTopicName", String.valueOf(otherSingleTopic.get("title")));
-											map.put("otherTopicImage", Constant.QINIU_DOMAIN + "/" + String.valueOf(otherSingleTopic.get("live_image")));
+											map.put("otherTopicImage", Constant.QINIU_DOMAIN_COMMON + "/" + String.valueOf(otherSingleTopic.get("live_image")));
 											params.add(map);
 											this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.FORCED_PAIRING_2.key, params);
 										}
@@ -2889,7 +2891,7 @@ public class ActivityServiceImpl implements ActivityService {
 								map.put("topicId", String.valueOf(doubleKingdom.getTopicId()));
 								map.put("userName", userName);
 								map.put("topicTitle", (String)doubleTopic.get("title"));
-								map.put("topicImage", Constant.QINIU_DOMAIN + "/" + (String)doubleTopic.get("live_image"));
+								map.put("topicImage", Constant.QINIU_DOMAIN_COMMON + "/" + (String)doubleTopic.get("live_image"));
 								map.put("lastUpdateTime", DateUtil.date2string(new Date(updateTime), "yyyy-MM-dd HH:mm:ss"));
 								map.put("otherName", up.getNickName());
 								params.add(map);
@@ -2902,8 +2904,8 @@ public class ActivityServiceImpl implements ActivityService {
 								Map<String, String> map = new HashMap<String, String>();
 								map.put("topicId", String.valueOf(doubleKingdom.getTopicId()));
 								map.put("otherName", up.getNickName());
-								map.put("avatar", Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-								map.put("otherAvatar", Constant.QINIU_DOMAIN + "/" + up.getAvatar());
+								map.put("avatar", Constant.QINIU_DOMAIN_COMMON + "/" + userProfile.getAvatar());
+								map.put("otherAvatar", Constant.QINIU_DOMAIN_COMMON + "/" + up.getAvatar());
 								params.add(map);
 								this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.HAS_DOUBLE_KINGDOM.key, params);
 							}else{
@@ -2983,7 +2985,7 @@ public class ActivityServiceImpl implements ActivityService {
 								map.put("userName", userName);
 								map.put("uid", String.valueOf(uid));
 								map.put("nickName", up.getNickName());
-								map.put("avatar", Constant.QINIU_DOMAIN + "/" + up.getAvatar());
+								map.put("avatar", Constant.QINIU_DOMAIN_COMMON + "/" + up.getAvatar());
 								map.put("display", "inline-block");
 								params.add(map);
 							}
@@ -3023,7 +3025,7 @@ public class ActivityServiceImpl implements ActivityService {
 								map.put("userName", userName);
 								map.put("uid", String.valueOf(uid));
 								map.put("nickName", up.getNickName());
-								map.put("avatar", Constant.QINIU_DOMAIN + "/" + up.getAvatar());
+								map.put("avatar", Constant.QINIU_DOMAIN_COMMON + "/" + up.getAvatar());
 								map.put("display", "inline-block");
 								params.add(map);
 							}
@@ -3121,7 +3123,7 @@ public class ActivityServiceImpl implements ActivityService {
 						pMap.put("userName", userName);
 						pMap.put("timeKey", timeKey.substring(0,4)+"-"+timeKey.substring(4,6)+"-"+timeKey.substring(6,8)+" "+timeKey.substring(8,10)+":00:00");
 						pMap.put("uid", String.valueOf(u.getUid()));
-						pMap.put("avatar", Constant.QINIU_DOMAIN + "/" + u.getAvatar());
+						pMap.put("avatar", Constant.QINIU_DOMAIN_COMMON + "/" + u.getAvatar());
 						pMap.put("v_lv", String.valueOf(u.getvLv()));
 						pMap.put("display", "inline-block");
 						params.add(pMap);
@@ -3188,7 +3190,7 @@ public class ActivityServiceImpl implements ActivityService {
 					pMap.put("userName", userName);
 					pMap.put("timeKey", timeKey.substring(0,4)+"-"+timeKey.substring(4,6)+"-"+timeKey.substring(6,8)+" "+timeKey.substring(8,10)+":00:00");
 					pMap.put("uid", map.get("uid").toString());
-					pMap.put("avatar", Constant.QINIU_DOMAIN + "/" + (String)map.get("avatar"));
+					pMap.put("avatar", Constant.QINIU_DOMAIN_COMMON + "/" + (String)map.get("avatar"));
 					pMap.put("v_lv", map.get("v_lv").toString());
 					pMap.put("display", "inline-block");
 					params.add(pMap);
@@ -3334,7 +3336,7 @@ public class ActivityServiceImpl implements ActivityService {
 									item = new ShowRecommendHistoryDTO.RecommendUserItem();
 									item.setUid(userProfile.getUid());
 									item.setNickName(userProfile.getNickName());
-									item.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+									item.setAvatar(Constant.QINIU_DOMAIN_COMMON + "/" + userProfile.getAvatar());
 									item.setSex(userProfile.getGender());
 									item.setVlv(userProfile.getvLv());
 									
@@ -3342,7 +3344,7 @@ public class ActivityServiceImpl implements ActivityService {
 									if(null != singleTopicInfo){
 										item.setTopicId((Long)singleTopicInfo.get("topic_id"));
 										item.setTitle((String)singleTopicInfo.get("title"));
-										item.setConverImage(Constant.QINIU_DOMAIN + "/" + (String)singleTopicInfo.get("live_image"));
+										item.setConverImage(Constant.QINIU_DOMAIN_COMMON + "/" + (String)singleTopicInfo.get("live_image"));
 										item.setHot((Long)singleTopicInfo.get("hot"));
 										
 										if(au.getType() == 1){
@@ -3665,6 +3667,7 @@ public class ActivityServiceImpl implements ActivityService {
         	}
         	
             List<String> mobileList = Lists.newArrayList();
+            mobileList.add("18916103465");//默认给一个内部的手机号
             for(Auser auser : list){
                 //通知所有审核中的用户
                 mobileList.add(auser.getMobile());
@@ -3690,6 +3693,7 @@ public class ActivityServiceImpl implements ActivityService {
 		if(null != list && list.size() > 0){
 			log.info("total ["+list.size()+"] user");
             List<String> mobileList = Lists.newArrayList();
+            mobileList.add("18916103465");//默认给一个内部的手机号
             for(Auser auser : list){
                 //通知所有审核中的用户
                 mobileList.add(auser.getMobile());
@@ -3949,6 +3953,7 @@ public class ActivityServiceImpl implements ActivityService {
 			
 			log.info("total ["+list.size()+"] user");
             List<String> mobileList = Lists.newArrayList();
+            mobileList.add("18916103465");//默认给一个内部的手机号
             for(Auser auser : list){
                 //通知所有审核中的用户
                 mobileList.add(auser.getMobile());
@@ -3966,6 +3971,44 @@ public class ActivityServiceImpl implements ActivityService {
 		}
 		
 		return Response.success();
+	}
+	
+	public Response taskPublish(long taskId, int type){
+		AtaskWithBLOBs atask = activityMybatisDao.getAtaskById(taskId);
+		if(null == atask){
+			return Response.failure("任务不存在");
+		}
+		
+		if(type == 1){//发布任务
+			if(atask.getStatus()==0){
+				return Response.success(200, "发布原本就是启用状态");
+			}
+			atask.setStatus(0);
+			activityMybatisDao.updateAtaskWithBLOBs(atask);
+			return Response.success(200, "发布任务成功");
+		}else if(type == 2){//任务推送
+			List<Atopic> list = activityMybatisDao.getAtopicByType(atask.getType());
+			if(null != list && list.size() > 0){
+				List<Long> uidList = new ArrayList<Long>();
+				for(Atopic t : list){
+					uidList.add(t.getUid());
+				}
+				applicationEventBus.post(new TaskPushEvent(Specification.LinkPushType.TASK_PUSH.message, activityWebUrl+Specification.LinkPushType.TASK_PUSH.linkUrl, uidList));
+			}
+			
+			return Response.success(200, "任务推送中..请耐心等待");
+		}else{
+			return Response.failure("无效的type值");
+		}
+	}
+	
+	public List<Long> get7dayKingdomUpdateUids(){
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.add(Calendar.HOUR_OF_DAY, -12);
+		long time = cal.getTimeInMillis();
+		
+		return liveForActivityDao.get7dayKingdomUpdateUids(time);
 	}
 
 	@Override
