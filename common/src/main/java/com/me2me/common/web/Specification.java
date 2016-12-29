@@ -1132,14 +1132,14 @@ public interface Specification {
     	PAIR_APPLY("#{1}#向你抛出了绣球，申请跟你配对~", "/7day/my/pair"),
     	PAIR_REFUSE("遗憾地通知你，你向#{1}#发出的配对申请被残忍地拒绝了", "/7day/my/pair"),
     	PAIR_AGREE("恭喜！你中意的#{1}#已经同意了你的配对申请，赶紧共筑爱巢，开启你们的双人王国吧", "/7day/my/pair"),
-    	CREATE_DOUBLE_KINGDOM_PARTNER("你和#{1}#的双人王国已被#{1}#创建成功", "/7day/index"),
+    	CREATE_DOUBLE_KINGDOM_PARTNER("你和#{1}#的双人王国已被#{1}#创建成功", "/7day/main"),
     	CREATE_DOUBLE_KINGDOM_WOOER("来晚一步！你申请配对的#{1}#已经和别人创建了双人王国", "/7day/my/pair"),
     	DOUBLE_KINGDOM_BREAK("Sad！你和#{1}#的双人王国已成过往烟云", "/7day/index"),
-    	FORCED_PAIRING("还没找到中意的TA？我们为你定制的缘分已经上线，快来把TA瞧个仔细！万一就看对眼了呢？", "/7day/index"),
+    	FORCED_PAIRING("还没找到中意的TA？我们为你定制的缘分已经上线，快来把TA瞧个仔细！万一就看对眼了呢？", "/7day/main"),
     	ROB_APPLY_PARTNER("有人抢你的另一半，去看看谁这么不要脸~", "/7day/my/pair-status"),
     	ROB_APPLY("#{1}#向你发起了抢亲的请求，希望能和你共结连理，选TA？还是TA？你需要做出这个艰难的决定", "/7day/my/pair-status"),
-    	ROB_AGREE("不好啦后院起火啦！你的#{1}#被抢亲的抱走啦！快拿起你的锄头，去挖别人的墙角吧！", "/7day/index"),
-    	KINGDOM_NOT_UPDATE("紧急！你已经超过12小时没有更新王国了，有可能失去暗恋你的TA们哦", "/7day/index"),
+    	ROB_AGREE("不好啦后院起火啦！你的#{1}#被抢亲的抱走啦！快拿起你的锄头，去挖别人的墙角吧！", "/7day/main"),
+    	KINGDOM_NOT_UPDATE("紧急！你已经超过12小时没有更新王国了，有可能失去暗恋你的TA们哦", "/7day/main"),
     	
     	;
     	

@@ -18,12 +18,12 @@
     <import resource="classpath:META-INF/spring/mysql-context.xml" />
     <import resource="classpath:META-INF/spring/mgmt-dubbo-consumer.xml" />
     
+    <!-- task 1 start-->
     <bean id="topicHotTaskJobDetailA" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
         <property name="targetObject" ref="auto7DayTopicHotTask"></property>
         <property name="targetMethod" value="doTask"></property>
         <property name="concurrent" value="false" />
     </bean>
-    
     <bean id="topicHotTaskTriggers"
         class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
         <property name="jobDetail" ref="topicHotTaskJobDetailA">
@@ -32,11 +32,29 @@
             <value>0 */15 * * * ?</value>
         </property>
     </bean>
+    <!-- task 1 end-->
+    
+    <!-- task 2 start-->
+    <bean id="recommandPushTaskJobDetailA" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="recommandPushTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="recommandPushTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="recommandPushTaskJobDetailA">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 8,10,12,14,16,18,20,22 * * ?</value>
+        </property>
+    </bean>
+    <!-- task 2 end-->
 
     <bean name="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
                 <ref bean="topicHotTaskTriggers" />
+                <ref bean="recommandPushTaskTriggers" />
             </list>
         </property>
     </bean>

@@ -151,7 +151,7 @@ public interface ActivityService {
     
     Response userTaskStatus(long tid, long uid);
     
-    Response forcedPairingPush();
+    List<Long> getParingUser();
     
     Response bindNotice();
     
@@ -184,6 +184,8 @@ public interface ActivityService {
     List<Long> get7dayTopicIds();
     
     void updateTopicHot(long topicId, int hot);
+    
+    Response send7DayKingdomMessage(int sex);
 
     ShowActivity7DayUserStatDTO get7dayUserStat(String channel, String code, String startTime, String endTime);
     

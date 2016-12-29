@@ -658,6 +658,13 @@ public class ActivityMybatisDao {
     	example.createCriteria().andStatusEqualTo(3);
     	return auserMapper.selectByExample(example);
     }
+    
+    //查询所有审核通过的男女用户
+    public List<Auser> getAllAuditSuccessAuserBySex(int sex){
+    	AuserExample example = new AuserExample();
+    	example.createCriteria().andStatusEqualTo(3).andSexEqualTo(sex);
+    	return auserMapper.selectByExample(example);
+    }
 
     public Atopic getAtopicByAuidAndSingle(long Auid){
         AtopicExample example = new AtopicExample();
