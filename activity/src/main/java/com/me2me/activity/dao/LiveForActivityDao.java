@@ -238,4 +238,9 @@ public class LiveForActivityDao {
 		}
 		return null;
 	}
+	
+	public void updateContentAddLike(long topicId, int likeCount){
+		String sql = "update content set like_count=like_count+"+likeCount+" where forward_cid="+topicId;
+		jdbcTemplate.execute(sql);
+	}
 }

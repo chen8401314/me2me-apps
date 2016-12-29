@@ -456,7 +456,7 @@ public class Activity extends BaseController {
     }
     
     @ResponseBody
-    @RequestMapping(value = "/checkUserActivityKindom")
+    @RequestMapping(value = "/taskPublish")
     public Response taskPublish(TaskPublishRequest request){
     	return activityService.taskPublish(request.getTid(), request.getType());
     }

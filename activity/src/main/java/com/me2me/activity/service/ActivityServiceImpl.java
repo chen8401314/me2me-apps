@@ -3589,6 +3589,9 @@ public class ActivityServiceImpl implements ActivityService {
 		param.put("extra", sb.toString());
 		liveForActivityDao.insertTopicFragment(param);
 		
+		//接任务王国赞+500
+		liveForActivityDao.updateContentAddLike(atopic.getTopicId(), 500);
+		
 		return Response.success();
 	}
 	

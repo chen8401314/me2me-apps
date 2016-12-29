@@ -1140,7 +1140,7 @@ public interface Specification {
     	ROB_APPLY("#{1}#向你发起了抢亲的请求，希望能和你共结连理，选TA？还是TA？你需要做出这个艰难的决定", "/7day/my/pair-status"),
     	ROB_AGREE("不好啦后院起火啦！你的#{1}#被抢亲的抱走啦！快拿起你的锄头，去挖别人的墙角吧！", "/7day/main"),
     	KINGDOM_NOT_UPDATE("紧急！你已经超过12小时没有更新王国了，有可能失去暗恋你的TA们哦", "/7day/main"),
-    	TASK_PUSH("", "/7day/tasks"),
+    	TASK_PUSH("叮咚，是不是已经等不及要完成今天的任务了(嗯嗯)，赶紧去“七天之恋”主会场，要提高自己的热度值可就是今天啦！", "/7day/tasks"),
     	;
     	
     	public final String message;
