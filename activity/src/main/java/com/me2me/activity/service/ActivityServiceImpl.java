@@ -1167,6 +1167,7 @@ public class ActivityServiceImpl implements ActivityService {
                          topicElement.setTitle((String)topicSingle.get("title"));
                          topicElement.setTopicId((Long)topicSingle.get("id"));
                          topicElement.setStage(Specification.ASevenDayType.A_DOUBLE_STAGE.index);
+                         topicElement.setHot(atopicSingle.getHot());
                          qiActivityDto.getTopicList().add(topicElement);
                         hasSingle = true;
         			}
@@ -1186,6 +1187,7 @@ public class ActivityServiceImpl implements ActivityService {
                         topicElement.setTitle((String)topicDouble.get("title"));
                         topicElement.setTopicId((Long)topicDouble.get("id"));
                         topicElement.setStage(Specification.ASevenDayType.A_THREE_STAGE.index);
+                        topicElement.setHot(atopicDouble.getHot());
                         qiActivityDto.getTopicList().add(topicElement);
                     }
                 }
@@ -3515,12 +3517,12 @@ public class ActivityServiceImpl implements ActivityService {
 					if(null != ataskUser){
 						e.setStatus(1);//有说明已经接受过了（如果是双人王国，对方接受了，自己也就接受了）
 						pMap.put("status", "status-msg-btn fs12 status-received");
-						pMap.put("statusName", "已接受");
+						pMap.put("statusName", "已接收");
 						pMap.put("param", "?tid="+t.getId()+"&status=1");
 					}else{
 						e.setStatus(2);//未接受
 						pMap.put("status", "status-msg-btn fs12");
-						pMap.put("statusName", "待接受");
+						pMap.put("statusName", "待接收");
 						pMap.put("param", "?tid="+t.getId()+"&status=2");
 					}
 					params.add(pMap);

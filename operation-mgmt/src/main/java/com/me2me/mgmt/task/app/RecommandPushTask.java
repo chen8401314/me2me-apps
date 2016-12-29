@@ -7,6 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Maps;
@@ -29,7 +30,8 @@ public class RecommandPushTask {
 	@Autowired
 	private JPushService jPushService;
 	
-	private int mode = 1;
+	@Value("${systemMode}")
+	private int mode;
 	
 	public void doTask(){
 		logger.info("7天活动推荐异性任务开始...");

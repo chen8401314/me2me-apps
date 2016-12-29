@@ -33,5 +33,7 @@ public class QiActivityDto implements BaseEntity {
         private String liveImage;
 
         private Long topicId;
+        
+        private long hot;
     }
 }
