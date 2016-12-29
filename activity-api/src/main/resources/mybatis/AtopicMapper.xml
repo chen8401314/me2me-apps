@@ -388,66 +388,133 @@
 
   <select id="getTopicByBoy" parameterType="java.util.Map" resultMap="BlurSearchDtoMap">
    SELECT
- IFNULL(f.`source_uid`,-2) AS sour_uid, IFNULL(e.`target_uid`,-3) AS tar_uid , (IF((f.`source_uid`+e.`target_uid`) > f.`source_uid` , f.`source_uid`+e.`target_uid`,-1)
- ) AS sums
-
- , a.id AS id ,a.`topic_id` AS topicId,b.`title` AS title
- ,b.`live_image` AS liveImage,c.`nick_name` AS nickName,a.`uid` AS uid,
-   c.gender AS gender ,c.avatar AS avatar ,a.`hot` AS hot
-   FROM (`a_topic` a , topic b ,user_profile c )
-
-   LEFT JOIN user_follow f ON a.`uid`=f.source_uid  AND f.`target_uid`= #{uid}
-   LEFT JOIN user_follow e ON a.`uid`=e.target_uid  AND e.`source_uid`= #{uid}
-
-   WHERE
-   c.gender = 1
-   AND a.`topic_id`=b.`id` AND a.`uid`=c.`uid` AND a.`type` = 1
-   AND a.`status` = 0
-   AND (b.`title` LIKE "%${titleName}%" OR c.`nick_name` LIKE "%${nickName}%")
-    ORDER BY sums DESC ,a.hot DESC
-    LIMIT #{pageNum},#{pageSize}
+  IFNULL(f.`source_uid`, - 1) AS sour_uid,
+  IFNULL(e.`target_uid`, - 1) AS tar_uid,
+  a.`hot` AS hot,
+  (
+    IF(
+      (
+        IFNULL(f.`source_uid`, - 1) + IFNULL(e.`target_uid`, - 1)
+      ) > 0,
+      IFNULL(f.`target_uid`, - 1) + IFNULL(e.`source_uid`, - 1),
+      - 1
+    )
+  ) AS sums,
+  a.id AS id,
+  a.`topic_id` AS topicId,
+  b.`title` AS title,
+  b.`live_image` AS liveImage,
+  c.`nick_name` AS nickName,
+  a.`uid` AS uid,
+  c.gender AS gender,
+  c.avatar AS avatar
+FROM
+  (`a_topic` a, topic b, user_profile c)
+  LEFT JOIN user_follow f
+    ON a.`uid` = f.source_uid
+    AND f.`target_uid` = #{uid}
+  LEFT JOIN user_follow e
+    ON a.`uid` = e.target_uid
+    AND e.`source_uid` = #{uid}
+WHERE c.gender = #{gender}
+  AND a.`topic_id` = b.`id`
+  AND a.`uid` = c.`uid`
+  AND a.`type` = 1
+  AND a.`status` = 0
+  AND (
+    b.`title` LIKE "%${titleName}%"
+    OR c.`nick_name` LIKE "%${nickName}%"
+  )
+ORDER BY sums DESC,
+  a.hot DESC
+LIMIT #{pageNum},#{pageSize}
   </select>
 
   <select id="getTopicByGirl" parameterType="java.util.Map" resultMap="BlurSearchDtoMap">
    SELECT
- IFNULL(f.`source_uid`,-2) AS sour_uid, IFNULL(e.`target_uid`,-3) AS tar_uid , (IF((f.`source_uid`+e.`target_uid`) > f.`source_uid` , f.`source_uid`+e.`target_uid`,-1)
- ) AS sums
-
- , a.id AS id ,a.`topic_id` AS topicId,b.`title` AS title
- ,b.`live_image` AS liveImage,c.`nick_name` AS nickName,a.`uid` AS uid,
-   c.gender AS gender ,c.avatar AS avatar ,a.`hot` AS hot
-   FROM (`a_topic` a , topic b ,user_profile c )
-
-   LEFT JOIN user_follow f ON a.`uid`=f.source_uid  AND f.`target_uid`= #{uid}
-   LEFT JOIN user_follow e ON a.`uid`=e.target_uid  AND e.`source_uid`= #{uid}
-
-   WHERE
-   c.gender = 0
-   AND a.`topic_id`=b.`id` AND a.`uid`=c.`uid` AND a.`type` = 1
-   AND a.`status` = 0
-   AND (b.`title` LIKE "%${titleName}%" OR c.`nick_name` LIKE "%${nickName}%")
-    ORDER BY sums DESC ,a.hot DESC
-    LIMIT #{pageNum},#{pageSize}
+  IFNULL(f.`source_uid`, - 1) AS sour_uid,
+  IFNULL(e.`target_uid`, - 1) AS tar_uid,
+  a.`hot` AS hot,
+  (
+    IF(
+      (
+        IFNULL(f.`source_uid`, - 1) + IFNULL(e.`target_uid`, - 1)
+      ) > 0,
+      IFNULL(f.`target_uid`, - 1) + IFNULL(e.`source_uid`, - 1),
+      - 1
+    )
+  ) AS sums,
+  a.id AS id,
+  a.`topic_id` AS topicId,
+  b.`title` AS title,
+  b.`live_image` AS liveImage,
+  c.`nick_name` AS nickName,
+  a.`uid` AS uid,
+  c.gender AS gender,
+  c.avatar AS avatar
+FROM
+  (`a_topic` a, topic b, user_profile c)
+  LEFT JOIN user_follow f
+    ON a.`uid` = f.source_uid
+    AND f.`target_uid` = #{uid}
+  LEFT JOIN user_follow e
+    ON a.`uid` = e.target_uid
+    AND e.`source_uid` = #{uid}
+WHERE c.gender = #{gender}
+  AND a.`topic_id` = b.`id`
+  AND a.`uid` = c.`uid`
+  AND a.`type` = 1
+  AND a.`status` = 0
+  AND (
+    b.`title` LIKE "%${titleName}%"
+    OR c.`nick_name` LIKE "%${nickName}%"
+  )
+ORDER BY sums DESC,
+  a.hot DESC
+LIMIT #{pageNum},#{pageSize}
   </select>
 
   <select id="getTopicByAll" parameterType="java.util.Map" resultMap="BlurSearchDtoMap">
-    SELECT
-    IFNULL(f.`source_uid`,-2) AS sour_uid, IFNULL(e.`target_uid`,-3) AS tar_uid , (IF((f.`source_uid`+e.`target_uid`) > f.`source_uid` , f.`source_uid`+e.`target_uid`,-1)
-    ) AS sums
-
-    , a.id AS id ,a.`topic_id` AS topicId,b.`title` AS title
-    ,b.`live_image` AS liveImage,c.`nick_name` AS nickName,a.`uid` AS uid,
-    c.gender AS gender ,c.avatar AS avatar ,a.`hot` AS hot
-    FROM (`a_topic` a , topic b ,user_profile c )
-
-    LEFT JOIN user_follow f ON a.`uid`=f.source_uid  AND f.`target_uid`= #{uid}
-    LEFT JOIN user_follow e ON a.`uid`=e.target_uid  AND e.`source_uid`= #{uid}
-
-    WHERE a.`topic_id`=b.`id` AND a.`uid`=c.`uid` AND a.`type` = 1
-    AND a.`status` = 0
-    AND (b.`title` LIKE "%${titleName}%" OR c.`nick_name` LIKE "%${nickName}%")
-    ORDER BY sums DESC ,a.hot DESC
-    LIMIT #{pageNum},#{pageSize}
+     SELECT
+  IFNULL(f.`source_uid`, - 1) AS sour_uid,
+  IFNULL(e.`target_uid`, - 1) AS tar_uid,
+  a.`hot` AS hot,
+  (
+    IF(
+      (
+        IFNULL(f.`source_uid`, - 1) + IFNULL(e.`target_uid`, - 1)
+      ) > 0,
+      IFNULL(f.`target_uid`, - 1) + IFNULL(e.`source_uid`, - 1),
+      - 1
+    )
+  ) AS sums,
+  a.id AS id,
+  a.`topic_id` AS topicId,
+  b.`title` AS title,
+  b.`live_image` AS liveImage,
+  c.`nick_name` AS nickName,
+  a.`uid` AS uid,
+  c.gender AS gender,
+  c.avatar AS avatar
+FROM
+  (`a_topic` a, topic b, user_profile c)
+  LEFT JOIN user_follow f
+    ON a.`uid` = f.source_uid
+    AND f.`target_uid` = #{uid}
+  LEFT JOIN user_follow e
+    ON a.`uid` = e.target_uid
+    AND e.`source_uid` = #{uid}
+WHERE a.`topic_id` = b.`id`
+  AND a.`uid` = c.`uid`
+  AND a.`type` = 1
+  AND a.`status` = 0
+  AND (
+    b.`title` LIKE "%${titleName}%"
+    OR c.`nick_name` LIKE "%${nickName}%"
+  )
+ORDER BY sums DESC,
+  a.hot DESC
+LIMIT #{pageNum},#{pageSize}
   </select>
 
   <select id="getBridList" parameterType="java.util.Map" resultMap="BlurSearchDtoMap">
