@@ -107,6 +107,16 @@ public class Activity7dayController {
 		return "0";
 	}
 	
+	@RequestMapping(value="/control/sexSend/{sex}")
+	@ResponseBody
+	@SystemControllerLog(description = "七天活动男女推送")
+	public String sexSend(@PathVariable int sex){
+		
+		activityService.send7DayKingdomMessage(sex);
+		
+		return "0";
+	}
+	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value="/milidata/query")
 	public ModelAndView miliDataQuery(MiliDataQueryDTO dto){

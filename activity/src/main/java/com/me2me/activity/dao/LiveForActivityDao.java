@@ -130,7 +130,7 @@ public class LiveForActivityDao {
 		return null;
 	}
 	
-	public List<Long> getForcedPairingUser(){
+	public List<Long> getPairingUser(){
 		String sql = "select t.uid from a_topic t where not EXISTS (select 1 from a_topic p where p.type=2 and p.status=0 and p.uid=t.uid)";
 		sql = sql + " and t.type=1 and t.status=0";
 		List<Long> result = new ArrayList<Long>();

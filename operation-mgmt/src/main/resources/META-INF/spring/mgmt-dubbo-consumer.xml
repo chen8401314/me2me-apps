@@ -21,4 +21,6 @@
 	<dubbo:reference interface="com.me2me.user.service.UserService" id="userService"/>
 	
 	<dubbo:reference interface="com.me2me.cache.service.CacheService" id="cacheService"/>
+	
+	<dubbo:reference interface="com.me2me.sms.service.JPushService" id="jPushService"/>
 </beans>

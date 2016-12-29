@@ -1543,13 +1543,13 @@ public class ActivityServiceImpl implements ActivityService {
                 mobileList.add(auser.getMobile());
                 
                 if(mobileList.size() >= 150){
-                	smsService.send7dayCommon("144258", mobileList, msgList);
+                	smsService.send7dayCommon("145624", mobileList, msgList);
                 	log.info("send ["+mobileList.size()+"] user!");
                 	mobileList.clear();
                 }
             }
             if(mobileList.size() > 0){
-            	smsService.send7dayCommon("144258", mobileList, msgList);
+            	smsService.send7dayCommon("145624", mobileList, msgList);
             	log.info("send ["+mobileList.size()+"] user!");
             }
             
@@ -3617,25 +3617,30 @@ public class ActivityServiceImpl implements ActivityService {
 		return Response.success(dto);
 	}
 	
+	public List<Long> getParingUser(){
+		return liveForActivityDao.getPairingUser();
+	}
+	
+	
 	/**
 	 * 有单人没双人的通知强配
 	 */
-	@Override
-	public Response forcedPairingPush(){
-		AactivityStage stage3 = activityMybatisDao.getStageByStage(1, 3);
-		if(this.isForce(stage3, new Date())){
-			//在强配阶段，可以发推送
-			//把所有有单人没双人的进行推送
-			List<Long> uidList = liveForActivityDao.getForcedPairingUser();
-			log.info(uidList.size() + " users can be forced pairing");
-			
-			applicationEventBus.post(new ForcedPairingPushEvent(uidList));
-			
-			return Response.success(200, "共["+uidList.size()+"]个用户正在推送中");
-		}
-		
-		return Response.failure("当前不处在强配阶段，无法全量强配推动");
-	}
+//	@Override
+//	public Response forcedPairingPush(){
+//		AactivityStage stage3 = activityMybatisDao.getStageByStage(1, 3);
+//		if(this.isForce(stage3, new Date())){
+//			//在强配阶段，可以发推送
+//			//把所有有单人没双人的进行推送
+//			List<Long> uidList = liveForActivityDao.getPairingUser();
+//			log.info(uidList.size() + " users can be forced pairing");
+//			
+//			applicationEventBus.post(new ForcedPairingPushEvent(uidList));
+//			
+//			return Response.success(200, "共["+uidList.size()+"]个用户正在推送中");
+//		}
+//		
+//		return Response.failure("当前不处在强配阶段，无法全量强配推动");
+//	}
 	
 	@Override
 	public Response bindNotice(){
@@ -3663,13 +3668,13 @@ public class ActivityServiceImpl implements ActivityService {
                 mobileList.add(auser.getMobile());
                 
                 if(mobileList.size() >= 150){
-                	smsService.send7dayCommon("144257", mobileList, msgList);
+                	smsService.send7dayCommon("145621", mobileList, msgList);
                 	log.info("send ["+mobileList.size()+"] user!");
                 	mobileList.clear();
                 }
             }
             if(mobileList.size() > 0){
-            	smsService.send7dayCommon("144257", mobileList, msgList);
+            	smsService.send7dayCommon("145621", mobileList, msgList);
             	log.info("send ["+mobileList.size()+"] user!");
             }
 		}
@@ -3688,13 +3693,13 @@ public class ActivityServiceImpl implements ActivityService {
                 mobileList.add(auser.getMobile());
                 
                 if(mobileList.size() >= 150){
-                	smsService.send7dayCommon("144256", mobileList, null);
+                	smsService.send7dayCommon("145625", mobileList, null);
                 	log.info("send ["+mobileList.size()+"] user!");
                 	mobileList.clear();
                 }
             }
             if(mobileList.size() > 0){
-            	smsService.send7dayCommon("144256", mobileList, null);
+            	smsService.send7dayCommon("145625", mobileList, null);
             	log.info("send ["+mobileList.size()+"] user!");
             }
 		}
@@ -3914,6 +3919,51 @@ public class ActivityServiceImpl implements ActivityService {
 			dto.setUpdateCount(((Long)map.get("updateCount")).intValue());
 		}
 		return dto;
+	}
+	
+	@Override
+	public Response send7DayKingdomMessage(int sex){
+		List<Auser> list = activityMybatisDao.getAllAuditSuccessAuserBySex(sex);
+		String templateId = "145750";//男的
+		if(sex == 0){//女的
+			templateId = "145751";
+		}
+		
+		if(null != list && list.size() > 0){
+			AactivityStage stage2 = activityMybatisDao.getAactivityStageByStage2(1, 2);
+        	List<String> msgList = new ArrayList<String>();
+        	if(null != stage2){
+        		Calendar cal = Calendar.getInstance();
+        		cal.setTime(stage2.getStartTime());
+        		int month = cal.get(Calendar.MONTH)+1;
+        		int day = cal.get(Calendar.DAY_OF_MONTH);
+        		msgList.add(String.valueOf(month));
+        		msgList.add(String.valueOf(day));
+        	}else{
+        		msgList.add("");
+        		msgList.add("");
+        	}
+			
+			
+			log.info("total ["+list.size()+"] user");
+            List<String> mobileList = Lists.newArrayList();
+            for(Auser auser : list){
+                //通知所有审核中的用户
+                mobileList.add(auser.getMobile());
+                
+                if(mobileList.size() >= 150){
+                	smsService.send7dayCommon(templateId, mobileList, msgList);
+                	log.info("send ["+mobileList.size()+"] user!");
+                	mobileList.clear();
+                }
+            }
+            if(mobileList.size() > 0){
+            	smsService.send7dayCommon(templateId, mobileList, msgList);
+            	log.info("send ["+mobileList.size()+"] user!");
+            }
+		}
+		
+		return Response.success();
 	}
 
 	@Override
