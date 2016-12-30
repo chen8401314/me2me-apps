@@ -2709,17 +2709,14 @@ public class ActivityServiceImpl implements ActivityService {
 		
 		if(null != stage1){
 			if(now.compareTo(stage1.getEndTime()) > 0){
-				if(dto.getIsApp() == 0){//APP外部
-					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_END_BROWSER.key, null);
-				}else{
-					if(null != activityUser){
-						params = new ArrayList<Map<String, String>>();
-						Map<String, String> map = new HashMap<String, String>();
-						map.put("userName", userName);
-						params.add(map);
-						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_END_APP.key, params);
+				if(null == activityUser){
+					if(dto.getIsApp() == 0){//APP外部
+						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_END_BROWSER.key, null);
+					}else{
+						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SIGNUP_END_APP.key, null);
 					}
 				}
+			
 			}
 		}
 		
@@ -3121,7 +3118,11 @@ public class ActivityServiceImpl implements ActivityService {
 						pMap = new HashMap<String, String>();
 						pMap.put("count", String.valueOf(uList.size()));
 						pMap.put("userName", userName);
-						pMap.put("timeKey", timeKey.substring(0,4)+"-"+timeKey.substring(4,6)+"-"+timeKey.substring(6,8)+" "+timeKey.substring(8,10)+":00:00");
+//						pMap.put("timeKey", timeKey.substring(0,4)+"-"+timeKey.substring(4,6)+"-"+timeKey.substring(6,8)+" "+timeKey.substring(8,10)+":00:00");
+						int m = Integer.valueOf(timeKey.substring(4,6)).intValue();
+						int d = Integer.valueOf(timeKey.substring(6,8)).intValue();
+						int h = Integer.valueOf(timeKey.substring(8,10)).intValue();
+						pMap.put("timeKey", m+"月"+d+"日"+h+"点");
 						pMap.put("uid", String.valueOf(u.getUid()));
 						pMap.put("avatar", Constant.QINIU_DOMAIN_COMMON + "/" + u.getAvatar());
 						pMap.put("v_lv", String.valueOf(u.getvLv()));
@@ -3188,7 +3189,11 @@ public class ActivityServiceImpl implements ActivityService {
 					pMap = new HashMap<String, String>();
 					pMap.put("count", String.valueOf(list.size()));
 					pMap.put("userName", userName);
-					pMap.put("timeKey", timeKey.substring(0,4)+"-"+timeKey.substring(4,6)+"-"+timeKey.substring(6,8)+" "+timeKey.substring(8,10)+":00:00");
+//					pMap.put("timeKey", timeKey.substring(0,4)+"-"+timeKey.substring(4,6)+"-"+timeKey.substring(6,8)+" "+timeKey.substring(8,10)+":00:00");
+					int m = Integer.valueOf(timeKey.substring(4,6)).intValue();
+					int d = Integer.valueOf(timeKey.substring(6,8)).intValue();
+					int h = Integer.valueOf(timeKey.substring(8,10)).intValue();
+					pMap.put("timeKey", m+"月"+d+"日"+h+"点");
 					pMap.put("uid", map.get("uid").toString());
 					pMap.put("avatar", Constant.QINIU_DOMAIN_COMMON + "/" + (String)map.get("avatar"));
 					pMap.put("v_lv", map.get("v_lv").toString());
