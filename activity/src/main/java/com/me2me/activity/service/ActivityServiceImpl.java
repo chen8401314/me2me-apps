@@ -3094,7 +3094,7 @@ public class ActivityServiceImpl implements ActivityService {
 			}else{
 				hourStr = String.valueOf(hour);
 			}
-			if(hourStr.length() == 0){
+			if(hourStr.length() == 1){
 				hourStr = "0"+hourStr;
 			}
 			timeKey = DateUtil.date2string(date, "yyyyMMdd") + hourStr;
