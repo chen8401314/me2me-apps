@@ -951,11 +951,23 @@ public class UserServiceImpl implements UserService {
     }
     public boolean existsNickName(String nickName) {
         List<UserProfile> list = userMybatisDao.getByNickName(nickName);
-        if(list!=null&&list.size()>0){
-            return false;
-        }else{
-            return true;
+        if(list!=null && list.size()>0) {
+            //兼容emoji 才这样判断
+            for(UserProfile userProfile : list){
+                if(nickName.equals(userProfile.getNickName())) {
+                    return false;
+                }
+            }
         }
+
+//        if(list!=null&&list.size()>0){
+//            return false;
+//        }
+//        else{
+//            return true;
+//        }
+
+        return true;
     }
     public UserProfile getUserByNickName(String nickName) {
         List<UserProfile> list = userMybatisDao.getByNickName(nickName);
@@ -1956,9 +1968,17 @@ public class UserServiceImpl implements UserService {
         }else{
             String nickName = userNickNameDto.getNickName();
             List<UserProfile> list = userMybatisDao.checkUserNickName(nickName);
-        if(list.size()>0){
-            return Response.failure(ResponseStatus.USER_NICKNAME_EXISTS.status,ResponseStatus.USER_NICKNAME_EXISTS.message);
+            //兼容emoji 这样判断才可以
+            if(list != null && list.size() > 0) {
+                for(UserProfile userProfile : list){
+                    if (nickName.equals(userProfile.getNickName())) {
+                        return Response.failure(ResponseStatus.USER_NICKNAME_EXISTS.status, ResponseStatus.USER_NICKNAME_EXISTS.message);
+                    }
+                }
             }
+//            if(list.size()>0){
+//                return Response.failure(ResponseStatus.USER_NICKNAME_EXISTS.status,ResponseStatus.USER_NICKNAME_EXISTS.message);
+//            }
         }
         return Response.success(ResponseStatus.USER_NICKNAME_DONT_EXISTS.status,ResponseStatus.USER_NICKNAME_DONT_EXISTS.message);
     }
