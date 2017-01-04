@@ -26,7 +26,7 @@ import java.util.Calendar;
  */
 @Controller
 @RequestMapping(value = "/api/live")
-public class    Live extends BaseController {
+public class Live extends BaseController {
 
     @Autowired
     private LiveService liveService;
