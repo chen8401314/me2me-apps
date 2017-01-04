@@ -29,4 +29,6 @@ public class BlurSearchDto implements BaseEntity {
 
     private long hot;
 
+    private String nickName2; //发起人
+
 }

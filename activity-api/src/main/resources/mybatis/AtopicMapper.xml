@@ -34,6 +34,7 @@
     <result column="gender" property="gender" jdbcType="INTEGER" />
     <result column="avatar" property="avatar" jdbcType="VARCHAR" />
     <result column="hot" property="hot" jdbcType="BIGINT" />
+    <result column="nick_name" property="nickName2" jdbcType="VARCHAR" />
   </resultMap>
 
 
@@ -519,31 +520,34 @@ LIMIT #{pageNum},#{pageSize}
 
   <select id="getBridList" parameterType="java.util.Map" resultMap="BlurSearchDtoMap">
     SELECT
-  a.id AS id,
-  a.`topic_id` AS topicId,
-  b.`title` AS title,
-  b.`live_image` AS liveImage,
-  c.`nick_name` AS nickName,
-  a.`uid2` AS uid,
-  c.gender AS gender,
-  c.avatar AS avatar
-FROM
-  `a_topic` a,
-  topic b,
-  user_profile c
-WHERE gender = #{gender}
-  AND a.`topic_id` = b.`id`
-  AND a.`uid2` = c.`uid`
-  AND a.`type` = 2
-  AND a.`status` = 0
-  AND (
+    a.id AS id,
+    a.`topic_id` AS topicId,
+    b.`title` AS title,
+    b.`live_image` AS liveImage,
+    c.`nick_name` AS nickName,
+    d.`nick_name` AS nickName2,
+    a.`uid2` AS uid,
+    c.gender AS gender,
+    c.avatar AS avatar
+    FROM
+    `a_topic` a,
+    topic b,
+    user_profile c,
+    user_profile d
+    WHERE c.gender = #{gender}
+    AND a.`topic_id` = b.`id`
+    AND a.`uid2` = c.`uid`
+    AND a.`uid`= d.`uid`
+    AND a.`type` = 2
+    AND a.`status` = 0
+    AND (
     b.`title` LIKE "%${titleName}%"
     OR c.`nick_name` LIKE "%${nickName}%"
-  )
+    )
     <if test="type != null">
       ORDER BY CONVERT(c.`nick_name` USING gbk) COLLATE gbk_chinese_ci ASC
     </if>
-  limit #{pageNum},#{pageSize}
+    limit #{pageNum},#{pageSize}
   </select>
 
   <select id="getAliveList" parameterType="java.util.Map" resultType="java.lang.Integer">
