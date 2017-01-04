@@ -2587,6 +2587,7 @@ public class ActivityServiceImpl implements ActivityService {
 		AactivityStage stage1 = stageMap.get("1");//报名阶段
 		AactivityStage stage2 = stageMap.get("2");//单人展示阶段
 		AactivityStage stage3 = stageMap.get("3");//配对阶段
+		AactivityStage stage5 = stageMap.get("5");//强配阶段
 		AactivityStage stage4 = stageMap.get("4");//抢亲阶段
 		
 		Auser activityUser = null;
@@ -2759,7 +2760,7 @@ public class ActivityServiceImpl implements ActivityService {
 						if(userProfile.getGender() == 0){
 							searchSex = 1;
 						}
-						this.genRecUserByTime(respDTO, miliMap, now, dto.getAuid(), singleKingdom.getUid(), this.isForce(stage3, now), searchSex, 1, userName);//关注
+						this.genRecUserByTime(respDTO, miliMap, now, dto.getAuid(), singleKingdom.getUid(), this.isForce(stage5), searchSex, 1, userName);//关注
 						isRec = true;
 					}
 				}
@@ -2791,7 +2792,7 @@ public class ActivityServiceImpl implements ActivityService {
 							if(userProfile.getGender() == 0){
 								searchSex = 1;
 							}
-							this.genRecUserByTime(respDTO, miliMap, now, dto.getAuid(), singleKingdom.getUid(), this.isForce(stage3, now), searchSex, 2, userName);//配对
+							this.genRecUserByTime(respDTO, miliMap, now, dto.getAuid(), singleKingdom.getUid(), this.isForce(stage5), searchSex, 2, userName);//配对
 						}
 						
 						List<AdoubleTopicApply> applyList = activityMybatisDao.getOptApplyByUidAndType(singleKingdom.getUid(), 1, 5);
@@ -2824,57 +2825,6 @@ public class ActivityServiceImpl implements ActivityService {
 							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.HAS_DOUBLE_APPLY.key, params);
 						}else{
 							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NO_DOUBLE_APPLY.key, null);
-						}
-
-						//强配
-						if(isForce(stage3, now)){//强配阶段
-							AforcedPairing fp = activityMybatisDao.getAforcedPairingForUser(singleKingdom.getUid());
-							if(null == fp){
-								//没有申请过，则提示可以强配
-								params = new ArrayList<Map<String, String>>();
-								Map<String, String> map = new HashMap<String, String>();
-								map.put("uid", String.valueOf(singleKingdom.getUid()));
-								map.put("userName", userName);
-								long hour = DateUtil.getHoursBetween2Date(now, stage3.getEndTime());
-								map.put("countDown", String.valueOf(hour));
-								params.add(map);
-								this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.FORCED_PAIRING.key, params);
-							}else{
-								if(fp.getStatus() == 1){
-									//申请中，则提示申请中
-									params = new ArrayList<Map<String, String>>();
-									Map<String, String> map = new HashMap<String, String>();
-									map.put("userName", userName);
-									params.add(map);
-									this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.FORCED_PAIRING_1.key, params);
-								}else if(fp.getStatus() == 2){
-									//强配成功，展示可以创建双人王国
-									params = new ArrayList<Map<String, String>>();
-									Map<String, String> map = new HashMap<String, String>();
-									map.put("userName", userName);
-									long targetUid = fp.getUid();
-									if(singleKingdom.getUid().longValue() == fp.getUid().longValue()){
-										targetUid = fp.getTargetUid();
-									}
-									UserProfile up = userService.getUserProfileByUid(targetUid);
-									map.put("otherName", up.getNickName());
-									map.put("otherAvatar", Constant.QINIU_DOMAIN_COMMON + "/" + up.getAvatar());
-									map.put("otherUid", String.valueOf(targetUid));
-									Atopic otherAtopic = activityMybatisDao.getAtopicByType(targetUid, 1);
-									if(null != otherAtopic){
-										Map<String,Object> otherSingleTopic = liveForActivityDao.getTopicById(otherAtopic.getTopicId());
-										if(null != otherSingleTopic){
-											map.put("otherTopicId", String.valueOf(otherSingleTopic.get("id")));
-											map.put("otherTopicName", String.valueOf(otherSingleTopic.get("title")));
-											map.put("otherTopicImage", Constant.QINIU_DOMAIN_COMMON + "/" + String.valueOf(otherSingleTopic.get("live_image")));
-											params.add(map);
-											this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.FORCED_PAIRING_2.key, params);
-										}
-									}
-								}else{
-									//不需要强配的人，则不需要提示啥了
-								}
-							}
 						}
 					}else{//有双人王国
 						isDoubleCheck = true;
@@ -2917,24 +2867,96 @@ public class ActivityServiceImpl implements ActivityService {
 					}
 				}
 			}
-		}else{
-			if(null != stage3 && stage3.getType() == 1){
-				//第三阶段已关闭
-				//判断有没有强配
-				if(null != activityUser && activityUser.getUid() > 0){
-					AforcedPairing fp = activityMybatisDao.getAforcedPairingForUser(activityUser.getUid());
-					if(null != fp && fp.getStatus() == 1){
-						params = new ArrayList<Map<String, String>>();
-						Map<String, String> map = new HashMap<String, String>();
-						map.put("userName", userName);
-						params.add(map);
-						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.FORCED_PAIRING_END.key, params);
-						fp.setStatus(4);//只能看一次
-						activityMybatisDao.updateAforcedPairing(fp);
+		}
+//		else{
+//			if(null != stage3 && stage3.getType() == 1){
+//				//第三阶段已关闭
+//				//判断有没有强配
+//				if(null != activityUser && activityUser.getUid() > 0){
+//					AforcedPairing fp = activityMybatisDao.getAforcedPairingForUser(activityUser.getUid());
+//					if(null != fp && fp.getStatus() == 1){
+//						params = new ArrayList<Map<String, String>>();
+//						Map<String, String> map = new HashMap<String, String>();
+//						map.put("userName", userName);
+//						params.add(map);
+//						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.FORCED_PAIRING_END.key, params);
+//						fp.setStatus(4);//只能看一次
+//						activityMybatisDao.updateAforcedPairing(fp);
+//					}
+//				}
+//			}
+//		}
+		
+		//强配
+		if(dto.getIsApp() == 1){//APP内才有的消息
+			if(null != singleKingdom){//存在单人王国
+				if(null == doubleKingdom){//没有双人王国
+					if(isForce(stage5)){//强配阶段
+						AforcedPairing fp = activityMybatisDao.getAforcedPairingForUser(singleKingdom.getUid());
+						if(null == fp){
+							//没有申请过，则提示可以强配
+							params = new ArrayList<Map<String, String>>();
+							Map<String, String> map = new HashMap<String, String>();
+							map.put("uid", String.valueOf(singleKingdom.getUid()));
+							map.put("userName", userName);
+							long hour = DateUtil.getHoursBetween2Date(now, stage3.getEndTime());
+							map.put("countDown", String.valueOf(hour));
+							params.add(map);
+							this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.FORCED_PAIRING.key, params);
+						}else{
+							if(fp.getStatus() == 1){
+								//申请中，则提示申请中
+								params = new ArrayList<Map<String, String>>();
+								Map<String, String> map = new HashMap<String, String>();
+								map.put("userName", userName);
+								params.add(map);
+								this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.FORCED_PAIRING_1.key, params);
+							}else if(fp.getStatus() == 2){
+								//强配成功，展示可以创建双人王国
+								params = new ArrayList<Map<String, String>>();
+								Map<String, String> map = new HashMap<String, String>();
+								map.put("userName", userName);
+								long targetUid = fp.getUid();
+								if(singleKingdom.getUid().longValue() == fp.getUid().longValue()){
+									targetUid = fp.getTargetUid();
+								}
+								UserProfile up = userService.getUserProfileByUid(targetUid);
+								map.put("otherName", up.getNickName());
+								map.put("otherAvatar", Constant.QINIU_DOMAIN_COMMON + "/" + up.getAvatar());
+								map.put("otherUid", String.valueOf(targetUid));
+								Atopic otherAtopic = activityMybatisDao.getAtopicByType(targetUid, 1);
+								if(null != otherAtopic){
+									Map<String,Object> otherSingleTopic = liveForActivityDao.getTopicById(otherAtopic.getTopicId());
+									if(null != otherSingleTopic){
+										map.put("otherTopicId", String.valueOf(otherSingleTopic.get("id")));
+										map.put("otherTopicName", String.valueOf(otherSingleTopic.get("title")));
+										map.put("otherTopicImage", Constant.QINIU_DOMAIN_COMMON + "/" + String.valueOf(otherSingleTopic.get("live_image")));
+										params.add(map);
+										this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.FORCED_PAIRING_2.key, params);
+									}
+								}
+							}else{
+								//不需要强配的人，则不需要提示啥了
+							}
+						}
+					}else if(null != stage5 && stage5.getType() == 1){
+						if(now.compareTo(stage5.getEndTime()) > 0 && null != activityUser){
+							AforcedPairing fp = activityMybatisDao.getAforcedPairingForUser(activityUser.getUid());
+							if(null != fp && fp.getStatus() == 1){
+								params = new ArrayList<Map<String, String>>();
+								Map<String, String> map = new HashMap<String, String>();
+								map.put("userName", userName);
+								params.add(map);
+								this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.FORCED_PAIRING_END.key, params);
+								fp.setStatus(4);//只能看一次
+								activityMybatisDao.updateAforcedPairing(fp);
+							}
+						}
 					}
 				}
 			}
 		}
+		
 		
 		//4抢亲阶段
 		if(null != stage4 && stage4.getType() == 0){
@@ -3065,15 +3087,22 @@ public class ActivityServiceImpl implements ActivityService {
 		return Response.success(respDTO);
 	}
 	
-	private boolean isForce(AactivityStage stage3, Date now){
-		if(null != stage3 && stage3.getType() == 0){
-			if(DateUtil.isSameDay(stage3.getEndTime(), now)){//配对的最后一天为抢配阶段
-				return true;
-			}
+	private boolean isForce(AactivityStage stage5){
+		if(null != stage5 && stage5.getType() == 0){
+			return true;
 		}
-		
 		return false;
 	}
+	
+//	private boolean isForce(AactivityStage stage3, Date now){
+//		if(null != stage3 && stage3.getType() == 0){
+//			if(DateUtil.isSameDay(stage3.getEndTime(), now)){//配对的最后一天为抢配阶段
+//				return true;
+//			}
+//		}
+//		
+//		return false;
+//	}
 	
 	private void genRecUserByTime(Show7DayMiliDTO respDTO, Map<String, List<AmiliData>> miliMap, Date date, long auid, long uid, boolean isForce, int searchSex, int stageType, String userName){
 		boolean isOut = false;
@@ -3106,6 +3135,9 @@ public class ActivityServiceImpl implements ActivityService {
 				for(String t : tmp){
 					if(!StringUtils.isEmpty(t)){
 						uids.add(Long.valueOf(t));
+						if(uids.size() >= 3){
+							break;
+						}
 					}
 				}
 			}
@@ -3116,7 +3148,7 @@ public class ActivityServiceImpl implements ActivityService {
 					Map<String, String> pMap = null;
 					for(UserProfile u : uList){
 						pMap = new HashMap<String, String>();
-						pMap.put("count", String.valueOf(uList.size()));
+						pMap.put("count", String.valueOf(tmp.length));
 						pMap.put("userName", userName);
 //						pMap.put("timeKey", timeKey.substring(0,4)+"-"+timeKey.substring(4,6)+"-"+timeKey.substring(6,8)+" "+timeKey.substring(8,10)+":00:00");
 						int m = Integer.valueOf(timeKey.substring(4,6)).intValue();
@@ -3147,7 +3179,7 @@ public class ActivityServiceImpl implements ActivityService {
 		
 		log.info("sql start...");
 		//这个sql可能是个坑，待优化
-		List<Map<String,Object>> list = liveForActivityDao.getRecSingleUser(searchSex, uid, 3);
+		List<Map<String,Object>> list = liveForActivityDao.getRecSingleUser(searchSex, uid, 6);
 		log.info("sql end");
 		if(null != list && list.size() > 0){
 			StringBuilder sb = new StringBuilder();
@@ -3185,7 +3217,9 @@ public class ActivityServiceImpl implements ActivityService {
 			}else{
 				params = new ArrayList<Map<String, String>>();
 				Map<String, String> pMap = null;
-				for(Map<String,Object> map : list){
+				Map<String,Object> map = null;
+				for(int i=0;i<list.size()&&i<3;i++){
+					map = list.get(i);
 					pMap = new HashMap<String, String>();
 					pMap.put("count", String.valueOf(list.size()));
 					pMap.put("userName", userName);
@@ -3714,6 +3748,32 @@ public class ActivityServiceImpl implements ActivityService {
             }
             if(mobileList.size() > 0){
             	smsService.send7dayCommon("145625", mobileList, null);
+            	log.info("send ["+mobileList.size()+"] user!");
+            }
+		}
+		
+		return Response.success();
+	}
+	
+	@Override
+	public Response pairingNotice(){
+		List<Auser> list = activityMybatisDao.getAllAuditSuccessAuser();
+		if(null != list && list.size() > 0){
+			log.info("total ["+list.size()+"] user");
+            List<String> mobileList = Lists.newArrayList();
+            mobileList.add("18916103465");//默认给一个内部的手机号
+            for(Auser auser : list){
+                //通知所有审核中的用户
+                mobileList.add(auser.getMobile());
+                
+                if(mobileList.size() >= 150){
+                	smsService.send7dayCommon("146662", mobileList, null);
+                	log.info("send ["+mobileList.size()+"] user!");
+                	mobileList.clear();
+                }
+            }
+            if(mobileList.size() > 0){
+            	smsService.send7dayCommon("146662", mobileList, null);
             	log.info("send ["+mobileList.size()+"] user!");
             }
 		}
