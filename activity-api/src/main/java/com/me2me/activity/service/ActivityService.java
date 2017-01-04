@@ -155,6 +155,8 @@ public interface ActivityService {
     
     Response bindNotice();
     
+    Response pairingNotice();
+    
     Response searchMiliDatas(String mkey, int page, int pageSize);
     
     Response noticeActivityStart();

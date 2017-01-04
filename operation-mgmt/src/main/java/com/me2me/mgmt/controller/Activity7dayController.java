@@ -107,6 +107,16 @@ public class Activity7dayController {
 		return "0";
 	}
 	
+	@RequestMapping(value="/control/pairingStartNotice")
+	@ResponseBody
+	@SystemControllerLog(description = "七天活动配对即将开始通知")
+	public String pairingStartNotice(){
+		//一键通知活动进行
+		activityService.pairingNotice();
+		
+		return "0";
+	}
+	
 	@RequestMapping(value="/control/sexSend/{sex}")
 	@ResponseBody
 	@SystemControllerLog(description = "七天活动男女推送")

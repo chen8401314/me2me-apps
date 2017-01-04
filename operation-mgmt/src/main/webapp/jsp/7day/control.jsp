@@ -110,6 +110,27 @@ var sexSend = function(sex){
 		});
 	}
 }
+
+var noticePairing = function(){
+	if(confirm('确定要通知所有人审核通过的人配对即将开始吗？')){
+		$.ajax({
+			url : "${ctx}/7day/control/pairingStartNotice",
+			async : false,
+			type : "GET",
+			contentType : "application/json;charset=UTF-8",
+			success : function(resp) {
+				if(resp == "0"){
+					alert('执行成功');
+				}else{
+					alert('执行失败');
+				}
+			},
+			error : function(){
+				alert('执行失败');
+			}
+		});
+	}
+}
 </script>
 </head>
 <body>
@@ -156,6 +177,12 @@ var sexSend = function(sex){
 										<input type="button" id="btn1" name="btn1" value="男推送" class="btn btn-info" onclick="sexSend(1)"/>
 										&nbsp;&nbsp;&nbsp;&nbsp;
 										<input type="button" id="btn1" name="btn1" value="女推送" class="btn btn-info" onclick="sexSend(0)"/>
+									</div>
+								</div>
+								<div class="panel-body">
+									<div class="form-inline" role="form">
+										配对即将开始提醒&nbsp;&nbsp;&nbsp;&nbsp;
+										<input type="button" id="btn1" name="btn1" value="配对提醒" class="btn btn-info" onclick="noticePairing()"/>
 									</div>
 								</div>
 							</section>
