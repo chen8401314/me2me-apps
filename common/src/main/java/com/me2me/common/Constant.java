@@ -9,7 +9,7 @@ public class Constant {
 
     public static final String DEFAULT_AVATAR = "default.png";
 
-    public static final String QINIU_DOMAIN = "http://cdn.me-to-me.com";
+    public static final String QINIU_DOMAIN = "https://cdn.me-to-me.com";
     
     public static final String QINIU_DOMAIN_COMMON = "//cdn.me-to-me.com";
 
@@ -23,7 +23,7 @@ public class Constant {
 
 //    public static final String Live_WEB_URL = "http://webapp.me-to-me.com/h5web/liveDetail/";
     
-    public static final String Live_WEB_URL = "http://webapp.me-to-me.com/ld/";
+    public static final String Live_WEB_URL = "https://webapp.me-to-me.com/ld/";
 
     public static final String AWARD_URL = "http://www.baidu.com";
 
