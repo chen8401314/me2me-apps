@@ -521,6 +521,7 @@ LIMIT #{pageNum},#{pageSize}
   <select id="getBridList" parameterType="java.util.Map" resultMap="BlurSearchDtoMap">
     SELECT
     a.id AS id,
+    a.`hot` AS hot,
     a.`topic_id` AS topicId,
     b.`title` AS title,
     b.`live_image` AS liveImage,
@@ -544,9 +545,7 @@ LIMIT #{pageNum},#{pageSize}
     b.`title` LIKE "%${titleName}%"
     OR c.`nick_name` LIKE "%${nickName}%"
     )
-    <if test="type != null">
-      ORDER BY CONVERT(c.`nick_name` USING gbk) COLLATE gbk_chinese_ci ASC
-    </if>
+    ORDER BY a.hot DESC
     limit #{pageNum},#{pageSize}
   </select>
 
