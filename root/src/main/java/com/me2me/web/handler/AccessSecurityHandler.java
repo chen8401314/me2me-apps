@@ -113,6 +113,7 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         NEED_CHECK_GAG_LIST.add("/api/live/createLive");//发布王国
         NEED_CHECK_GAG_LIST.add("/api/content/review");//UGC、文章评论
         NEED_CHECK_GAG_LIST.add("/api/live/speak");//王国发表
+        NEED_CHECK_GAG_LIST.add("/api/live/createKingdom");//新创建王国接口
         
     }
 

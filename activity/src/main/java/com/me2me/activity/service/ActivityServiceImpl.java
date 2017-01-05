@@ -1334,6 +1334,22 @@ public class ActivityServiceImpl implements ActivityService {
 			t.setHot(0l);
 			t.setStatus(0);
 			activityMybatisDao.createAtopic(t);
+			
+			//删除所有我发出的，并且已经同意了的请求
+			List<AdoubleTopicApply> list1 = activityMybatisDao.getAdoubleTopicApplysByUidAndTypeAndStatus(uid, 1, 2);
+			if(null != list1 && list1.size() > 0){
+				for(AdoubleTopicApply apply : list1){
+					apply.setStatus(4);
+					activityMybatisDao.updateAdoubleTopicApply(apply);
+				}
+			}
+			List<AdoubleTopicApply> list2 = activityMybatisDao.getAdoubleTopicApplysByUidAndTypeAndStatus(uid2, 1, 2);
+			if(null != list2 && list2.size() > 0){
+				for(AdoubleTopicApply apply : list2){
+					apply.setStatus(4);
+					activityMybatisDao.updateAdoubleTopicApply(apply);
+				}
+			}
 
 			//通知小王
 			UserProfile up = userService.getUserProfileByUid(uid);
@@ -3975,9 +3991,11 @@ public class ActivityServiceImpl implements ActivityService {
 		activityMybatisDao.updateAtaskWithBLOBs(task);
 	}
 	
-	public List<Long> get7dayTopicIds(){
-		return liveForActivityDao.get7DayTopicIds();
+	public List<Long> get7dayTopicIdsByType(int type){
+		return liveForActivityDao.get7DayTopicIdsByType(type);
 	}
+	
+//	public List<Long> get
 	
 	public void updateTopicHot(long topicId, int hot){
 		liveForActivityDao.updateTopicHot(topicId, hot);

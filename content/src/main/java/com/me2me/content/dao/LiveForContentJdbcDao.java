@@ -107,4 +107,11 @@ public class LiveForContentJdbcDao {
     	sb.append("update topic_barrage set status=0 where fid=").append(fid);
     	this.jdbcTemplate.execute(sb.toString());
     }
+    
+    public void addContentLikeByCid(long cid, long addNum){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("update content set like_count=like_count+").append(addNum);
+    	sb.append(" where id=").append(cid);
+    	this.jdbcTemplate.execute(sb.toString());
+    }
 }

@@ -39,8 +39,10 @@ public class AbstractLikes {
             contentLikesDetails.setCid(likeDto.getCid());
             //点赞
             if(likeDto.getAction() == Specification.IsLike.LIKE.index){
-                content.setLikeCount(content.getLikeCount() + 1);
-                contentService.updateContentById(content);
+//                content.setLikeCount(content.getLikeCount() + 1);
+//                contentService.updateContentById(content);
+            	//疯狂点赞的时候会出问题。。所以改成直接数据库去保证原子
+            	contentService.addContentLikeByCid(content.getId(), 1);
                 contentService.createContentLikesDetails(contentLikesDetails);
                 if(likeDto.getUid() != content.getUid()&&content.getType()!=Specification.ArticleType.LIVE.index) {
                     contentService.remind(content, likeDto.getUid(), Specification.UserNoticeType.LIKE.index, null);

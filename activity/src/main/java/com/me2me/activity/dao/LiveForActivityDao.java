@@ -205,8 +205,8 @@ public class LiveForActivityDao {
 		return null;
 	}
 	
-	public List<Long> get7DayTopicIds(){
-		String sql = "select DISTINCT t.topic_id from a_topic t where t.status=0";
+	public List<Long> get7DayTopicIdsByType(int type){
+		String sql = "select DISTINCT t.topic_id from a_topic t where t.status=0 and t.type="+type;
 		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
 		if(null != list && list.size() > 0){
 			List<Long> result = new ArrayList<Long>();
@@ -215,6 +215,23 @@ public class LiveForActivityDao {
 			}
 			return result;
 		}
+		return null;
+	}
+	
+	public List<Long> getSingleHotsByDoubleTopicId(long doubleTopicId){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select a.hot from a_topic a where a.status=0 and a.type=1 ");
+		sb.append("and a.uid in (select t.uid from a_topic t where t.status=0 ");
+		sb.append("and t.topic_id=").append(doubleTopicId);
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
+		if(null != list && list.size() > 0){
+			List<Long> result = new ArrayList<Long>();
+			for(Map<String,Object> map : list){
+				result.add((Long)map.get("hot"));
+			}
+			return result;
+		}
+		
 		return null;
 	}
 	

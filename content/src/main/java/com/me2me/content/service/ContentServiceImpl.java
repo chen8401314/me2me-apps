@@ -2631,6 +2631,10 @@ private void localJpush(long toUid){
     public void updateContentById(Content content) {
         contentMybatisDao.updateContentById(content);
     }
+    
+    public void addContentLikeByCid(long cid, long addNum){
+    	liveForContentJdbcDao.addContentLikeByCid(cid, addNum);
+    }
 
     private Response optionContent(int action, long id) {
         if(action==1){

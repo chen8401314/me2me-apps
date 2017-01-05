@@ -183,7 +183,7 @@ public interface ActivityService {
     
     TopicCountDTO getTopicCount(long topicId);
     
-    List<Long> get7dayTopicIds();
+    List<Long> get7dayTopicIdsByType(int type);
     
     void updateTopicHot(long topicId, int hot);
     

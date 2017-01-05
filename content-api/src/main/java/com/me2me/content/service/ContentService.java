@@ -146,6 +146,8 @@ public interface ContentService{
     Response reviewList(long cid,long sinceId,int type);
 
     void updateContentById(Content content);
+    
+    void addContentLikeByCid(long cid, long addNum);
 
     int isLike(long cid,long uid);
 
