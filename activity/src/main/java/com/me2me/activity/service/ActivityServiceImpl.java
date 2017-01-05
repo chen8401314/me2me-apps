@@ -2529,9 +2529,16 @@ public class ActivityServiceImpl implements ActivityService {
      * @param date2
      * @return
      */
-    public static int differentDaysByMillisecond(Date date1,Date date2)
-    {
-        int days = (int) ((date2.getTime() - date1.getTime()) / (1000*3600*24));
+    public static int differentDaysByMillisecond(Date date1,Date date2) {
+//        int days = (int) ((date2.getTime() - date1.getTime()) / (1000*3600*24));
+        int days;
+        long cha = date2.getTime() - date1.getTime();
+        double result = cha * 1.0 / (1000 * 60 * 60);
+        if(result<=24){
+            return 1;
+        }else {
+            days = (int) ((date2.getTime() - date1.getTime()) / (1000*3600*24));
+        }
         return days;
     }
 
