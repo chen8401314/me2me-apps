@@ -222,7 +222,7 @@ public class LiveForActivityDao {
 		StringBuilder sb = new StringBuilder();
 		sb.append("select a.hot from a_topic a where a.status=0 and a.type=1 ");
 		sb.append("and a.uid in (select t.uid from a_topic t where t.status=0 ");
-		sb.append("and t.topic_id=").append(doubleTopicId);
+		sb.append("and t.topic_id=").append(doubleTopicId).append(")");
 		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
 		if(null != list && list.size() > 0){
 			List<Long> result = new ArrayList<Long>();
