@@ -185,6 +185,8 @@ public interface ActivityService {
     
     List<Long> get7dayTopicIdsByType(int type);
     
+    List<Long> getSingleHotByDoubleTopicId(long doubleTopicId);
+    
     void updateTopicHot(long topicId, int hot);
     
     Response send7DayKingdomMessage(int sex);

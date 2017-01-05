@@ -4002,7 +4002,9 @@ public class ActivityServiceImpl implements ActivityService {
 		return liveForActivityDao.get7DayTopicIdsByType(type);
 	}
 	
-//	public List<Long> get
+	public List<Long> getSingleHotByDoubleTopicId(long doubleTopicId){
+		return liveForActivityDao.getSingleHotsByDoubleTopicId(doubleTopicId);
+	}
 	
 	public void updateTopicHot(long topicId, int hot){
 		liveForActivityDao.updateTopicHot(topicId, hot);

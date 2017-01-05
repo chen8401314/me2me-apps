@@ -43,13 +43,20 @@ public class Auto7DayTopicHotTask {
 		if(null != doubleList && doubleList.size() > 0){
 			logger.info("有效双人王国共["+doubleList.size()+"]个");
 			TopicCountDTO dto = null;
+			List<Long> singleHots = null;
 			for(Long tid : doubleList){
 				//先算自身热度
 				dto = activityService.getTopicCount(tid);
 				if(null != dto){
 					int hot = dto.getReadCount()+dto.getUpdateCount()*4+dto.getLikeCount()+dto.getReviewCount()*3;
 					//再加上双人双方的单人王国的热度
-					
+					singleHots = activityService.getSingleHotByDoubleTopicId(tid);
+					if(null != singleHots && singleHots.size() > 0){
+						for(Long h : singleHots){
+							hot = hot + h.intValue();
+						}
+					}
+					activityService.updateTopicHot(tid, hot);
 				}
 			}
 		}else{
