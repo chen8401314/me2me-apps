@@ -4292,8 +4292,17 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public Response getNewYearLiveInfo(long uid, long activityId) {
-
-        return null;
+        BlurSearchDto dto = new BlurSearchDto();
+        AkingDom akingDom = activityMybatisDao.getAkingDomByUidAndAid(uid ,activityId);
+        if(akingDom != null){
+            dto.setTopicId(akingDom.getTopicId());
+            dto.setHot(akingDom.getHot());
+            Map<String, Object> topic = liveForActivityDao.getTopicById(akingDom.getTopicId());
+            dto.setTitle((String) topic.get("title"));
+            dto.setLiveImage((String) topic.get("live_image"));
+            return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status ,ResponseStatus.SEARCH_ATOPIC_SUCCESS.message ,dto);
+        }
+        return Response.success(ResponseStatus.SEARCH_ATOPIC_FAILURE.status ,ResponseStatus.SEARCH_ATOPIC_FAILURE.message);
     }
 
 }

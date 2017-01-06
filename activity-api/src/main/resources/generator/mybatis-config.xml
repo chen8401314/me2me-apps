@@ -55,6 +55,9 @@
         <!--<table tableName="a_task" domainObjectName="Atask"/>-->
         <!--<table tableName="a_forced_pairing" domainObjectName="AforcedPairing"/>-->
         <!--<table tableName="a_task_user" domainObjectName="AtaskUser"/>-->
+        <!--<table tableName="a_kingdom" domainObjectName="AkingDom"/>-->
+        <!--<table tableName="a_kingdom_list" domainObjectName="AkingDomList"/>-->
+
 
     </context>
 </generatorConfiguration>
