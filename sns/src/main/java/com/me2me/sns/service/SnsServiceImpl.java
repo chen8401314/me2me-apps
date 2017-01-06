@@ -65,6 +65,8 @@ public class SnsServiceImpl implements SnsService {
     @Autowired
     private CacheService cacheService;
 
+    
+    private static final String CORE_CIRCLE_KEY = "core:circle:key";
 
     @Override
     public Response showMemberConsole(long owner, long topicId) {
@@ -393,7 +395,13 @@ public class SnsServiceImpl implements SnsService {
                 String coreCircle = StringUtils.isEmpty(topic.getCoreCircle()) ? "[" + topic.getUid() + "]" : topic.getCoreCircle();
                 JSONArray array = JSON.parseArray(coreCircle);
 
-                if (array.size() == 10)
+                String limit = cacheService.get(CORE_CIRCLE_KEY);
+                int limitNum = 12;
+                if(null != limit && !"".equals(limit)){
+                	limitNum = Integer.valueOf(limit);
+                }
+                
+                if (array.size() >= limitNum)
                     return Response.failure(ResponseStatus.SNS_CORE_CIRCLE_IS_FULL.status, ResponseStatus.SNS_CORE_CIRCLE_IS_FULL.message);
                 else {
                     boolean contain = false;
