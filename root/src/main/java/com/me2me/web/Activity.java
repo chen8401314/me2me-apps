@@ -471,7 +471,7 @@ public class Activity extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getNewYearLiveInfo")
     public Response getNewYearLiveInfo(QiUserRequest request){
-        return activityService.getNewYearLiveInfo();
+        return activityService.getNewYearLiveInfo(request.getUid() ,request.getActivityId());
     }
 
 }

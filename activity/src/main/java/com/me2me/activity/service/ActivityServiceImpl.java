@@ -4290,4 +4290,10 @@ public class ActivityServiceImpl implements ActivityService {
 		return dto;
 	}
 
+    @Override
+    public Response getNewYearLiveInfo(long uid, long activityId) {
+
+        return null;
+    }
+
 }
