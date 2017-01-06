@@ -194,6 +194,8 @@ public interface ActivityService {
     List<Long> get7dayKingdomUpdateUids();
     
     Response taskPublish(long taskId, int type);
+    
+    Response forcedPairing(int isTest, long testUid1, long testUid2);
 
     ShowActivity7DayUserStatDTO get7dayUserStat(String channel, String code, String startTime, String endTime);
     

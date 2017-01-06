@@ -4097,6 +4097,7 @@ public class ActivityServiceImpl implements ActivityService {
 		}
 	}
 	
+	@Override
 	public List<Long> get7dayKingdomUpdateUids(){
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
@@ -4104,6 +4105,147 @@ public class ActivityServiceImpl implements ActivityService {
 		long time = cal.getTimeInMillis();
 		
 		return liveForActivityDao.get7dayKingdomUpdateUids(time);
+	}
+	
+	@Override
+	public Response forcedPairing(int isTest, long testUid1, long testUid2){
+		if(isTest == 1){
+			log.info("forcedPairing test begin...uid1["+testUid1+"], uid2["+testUid2+"]");
+			if(testUid1 <= 0 || testUid2 <= 0){
+				return Response.failure(500, "测试模式需要传入两个有效用户");
+			}
+			Atopic singleKingdom1 = activityMybatisDao.getAtopicByType(testUid1, 1);
+			if(null != singleKingdom1){
+				Atopic doubleKingdom1 = activityMybatisDao.getAtopicByType(testUid1, 2);
+				if(null != doubleKingdom1){
+					return Response.failure(500, "["+testUid1+"]已经有双人王国了");
+				}
+			}else{
+				return Response.failure(500, "["+testUid1+"]没有单人王国");
+			}
+			
+			Atopic singleKingdom2 = activityMybatisDao.getAtopicByType(testUid2, 1);
+			if(null != singleKingdom2){
+				Atopic doubleKingdom2 = activityMybatisDao.getAtopicByType(testUid2, 2);
+				if(null != doubleKingdom2){
+					return Response.failure(500, "["+testUid2+"]已经有双人王国了");
+				}
+			}else{
+				return Response.failure(500, "["+testUid2+"]没有单人王国");
+			}
+			
+			AforcedPairing fp1 = activityMybatisDao.getAforcedPairingForUser(testUid1);
+			if(null != fp1){
+				return Response.failure(500, "["+testUid1+"]已经强配了");
+			}
+			AforcedPairing fp2 = activityMybatisDao.getAforcedPairingForUser(testUid2);
+			if(null != fp2){
+				return Response.failure(500, "["+testUid2+"]已经强配了");
+			}
+			
+			UserProfile up1 = userService.getUserProfileByUid(testUid1);
+			UserProfile up2 = userService.getUserProfileByUid(testUid2);
+			if(up1.getGender() == up2.getGender()){
+				return Response.failure(500, "["+testUid1+"]和["+testUid2+"]不是异性");
+			}
+			Auser auser1 = activityMybatisDao.getAuserByUid(testUid1);
+			if(null == auser1){
+				return Response.failure(500, "["+testUid1+"]未报名");
+			}
+			Auser auser2 = activityMybatisDao.getAuserByUid(testUid2);
+			if(null == auser2){
+				return Response.failure(500, "["+testUid2+"]未报名");
+			}
+			
+			AforcedPairing fp = new AforcedPairing();
+			fp.setAuid(auser1.getId());
+			fp.setUid(auser1.getUid());
+			fp.setStatus(2);
+			fp.setSex(up1.getGender());
+			fp.setTargetAuid(auser2.getId());
+			fp.setTargetUid(auser2.getUid());
+			fp.setCreateTime(new Date());
+			activityMybatisDao.saveAforcedPairing(fp);
+			
+			//发短信,给双方都要发短信
+			List<String> msgList = new ArrayList<String>();
+			msgList.add(up1.getNickName());
+			List<String> mobileList = new ArrayList<String>();
+			mobileList.add(auser2.getMobile());
+			smsService.send7dayCommon("142385", mobileList, msgList);
+			
+			msgList.clear();
+			msgList.add(up2.getNickName());
+			mobileList.clear();
+			mobileList.add(auser1.getMobile());
+			smsService.send7dayCommon("142385", mobileList, msgList);
+			
+			log.info("forcedPairing test end.");
+		}else{
+			log.info("forcedPairing begin...");
+			List<Map<String, Object>> getAllSinglePersonList = liveForActivityDao.getSinglePerson();
+			List<Map<String, Object>> manList = new ArrayList<Map<String, Object>>();
+			List<Map<String, Object>> womanList = new ArrayList<Map<String, Object>>();
+			if(null != getAllSinglePersonList && getAllSinglePersonList.size() > 0){
+				for(Map<String, Object> m : getAllSinglePersonList){
+					int sex = (Integer)m.get("gender");
+					if(sex == 0){
+						womanList.add(m);
+					}else{
+						manList.add(m);
+					}
+				}
+			}
+			log.info("man=="+manList.size()+", woman=="+womanList.size());
+			if(manList.size() > 0 || womanList.size() > 0){
+				int min = manList.size();
+				if(womanList.size() < min){
+					min = womanList.size();
+				}
+				Map<String, Object> man = null;
+				Map<String, Object> woman = null;
+				AforcedPairing fp = null;
+				List<String> msgList = null;
+				List<String> mobileList = null;
+				for(int i=0;i<min;i++){
+					man = manList.get(i);
+					woman = womanList.get(i);
+					
+					fp = new AforcedPairing();
+					fp.setAuid((Long)man.get("auid"));
+					fp.setUid((Long)man.get("uid"));
+					fp.setStatus(2);
+					fp.setSex(1);
+					fp.setTargetAuid((Long)woman.get("auid"));
+					fp.setTargetUid((Long)woman.get("uid"));
+					fp.setCreateTime(new Date());
+					activityMybatisDao.saveAforcedPairing(fp);
+					
+					//发短信
+					msgList = new ArrayList<String>();
+					msgList.add((String)man.get("nick_name"));
+					mobileList = new ArrayList<String>();
+					mobileList.add((String)woman.get("mobile"));
+					smsService.send7dayCommon("142385", mobileList, msgList);
+					
+					msgList.clear();
+					msgList.add((String)woman.get("nick_name"));
+					mobileList.clear();
+					mobileList.add((String)man.get("mobile"));
+					smsService.send7dayCommon("142385", mobileList, msgList);
+				}
+				
+				//剩下的不处理
+				
+			}
+			
+			
+			
+			log.info("forcedPairing end...");
+		}
+		
+		
+		return Response.success();
 	}
 
 	@Override

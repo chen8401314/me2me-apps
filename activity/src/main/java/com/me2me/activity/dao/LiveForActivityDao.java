@@ -260,4 +260,17 @@ public class LiveForActivityDao {
 		String sql = "update content set like_count=like_count+"+likeCount+" where forward_cid="+topicId;
 		jdbcTemplate.execute(sql);
 	}
+	
+	public List<Map<String, Object>> getSinglePerson(){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select t.auid,t.uid,u.gender,r.mobile,u.nick_name ");
+		sb.append("from a_topic t,user_profile u,topic o,a_user r ");
+		sb.append("where t.uid=r.uid and t.topic_id=o.id and t.uid=u.uid and t.status=0 and t.type=1 ");
+		sb.append("and not EXISTS (select 1 from a_topic p where p.status=0 and p.type=2 and p.uid=t.uid) ");
+		sb.append("and not EXISTS (select 1 from a_forced_pairing f where f.uid=t.uid or f.target_uid=t.uid) ");
+		sb.append("order by o.long_time desc");
+
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
+		return list;
+	}
 }

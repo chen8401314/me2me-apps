@@ -15,6 +15,7 @@ import com.me2me.web.request.QiUserRequest;
 import com.me2me.web.request.RecommendHistoryRequest;
 import com.me2me.web.request.TaskPublishRequest;
 import com.me2me.web.request.UserTaskStatusRequest;
+import com.me2me.web.request.forcedPairingRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -459,5 +460,11 @@ public class Activity extends BaseController {
     @RequestMapping(value = "/taskPublish")
     public Response taskPublish(TaskPublishRequest request){
     	return activityService.taskPublish(request.getTid(), request.getType());
+    }
+    
+    @ResponseBody
+    @RequestMapping(value = "/forcedPairing")
+    public Response forcedPairing(forcedPairingRequest request){
+    	return activityService.forcedPairing(request.getIsTest(), request.getTestUid1(), request.getTestUid2());
     }
 }

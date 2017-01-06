@@ -238,6 +238,7 @@ public class UserMybatisDao {
         UserProfileExample example = new UserProfileExample();
         UserProfileExample.Criteria criteria = example.createCriteria();
         criteria.andUidIn(uids);
+        example.setOrderByClause(" id desc ");
         return userProfileMapper.selectByExample(example);
     }
 
