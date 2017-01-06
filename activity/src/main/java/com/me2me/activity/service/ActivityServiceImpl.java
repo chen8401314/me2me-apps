@@ -2553,7 +2553,8 @@ public class ActivityServiceImpl implements ActivityService {
         if(result<=24){
             return 1;
         }else {
-            days = (int) ((date2.getTime() - date1.getTime()) / (1000*3600*24));
+            //超过24小时后算2天 所以+1天
+            days = ((int) ((date2.getTime() - date1.getTime()) / (1000*3600*24)))+1;
         }
         return days;
     }
