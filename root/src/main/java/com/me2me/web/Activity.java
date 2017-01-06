@@ -468,6 +468,12 @@ public class Activity extends BaseController {
     	return activityService.forcedPairing(request.getIsTest(), request.getTestUid1(), request.getTestUid2());
     }
 
+    /**
+     * 春节活动王国信息查询
+     *
+     * @param request
+     * @return
+     */
     @ResponseBody
     @RequestMapping(value = "/getNewYearLiveInfo")
     public Response getNewYearLiveInfo(QiUserRequest request){
