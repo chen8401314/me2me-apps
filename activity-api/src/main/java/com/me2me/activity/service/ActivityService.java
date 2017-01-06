@@ -200,4 +200,7 @@ public interface ActivityService {
     ShowActivity7DayUserStatDTO get7dayUserStat(String channel, String code, String startTime, String endTime);
     
     ShowActivity7DayUsersDTO get7dayUsers(String channel, String code, String startTime, String endTime, int page, int pageSize);
+
+    Response getNewYearLiveInfo();
+
 }

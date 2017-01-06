@@ -56,6 +56,5 @@
         <!--<table tableName="a_forced_pairing" domainObjectName="AforcedPairing"/>-->
         <!--<table tableName="a_task_user" domainObjectName="AtaskUser"/>-->
 
-
     </context>
 </generatorConfiguration>

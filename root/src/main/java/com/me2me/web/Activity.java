@@ -467,4 +467,11 @@ public class Activity extends BaseController {
     public Response forcedPairing(forcedPairingRequest request){
     	return activityService.forcedPairing(request.getIsTest(), request.getTestUid1(), request.getTestUid2());
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/getNewYearLiveInfo")
+    public Response getNewYearLiveInfo(QiUserRequest request){
+        return activityService.getNewYearLiveInfo();
+    }
+
 }
