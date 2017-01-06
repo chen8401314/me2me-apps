@@ -1107,18 +1107,19 @@ public class ActivityMybatisDao {
         adoubleTopicApplyMapper.updateByPrimaryKeySelective(topicApply);
     }
 
-    public List<AmiliData> getAllAmiliData(){
+    public List<AmiliData> getAllAmiliData(long activity){
     	AmiliDataExample example = new AmiliDataExample();
-    	example.createCriteria().andStatusEqualTo(1);//可用
+    	example.createCriteria().andStatusEqualTo(1).andActivityIdEqualTo(activity);//可用
     	return amiliDataMapper.selectByExampleWithBLOBs(example);
     }
     
-    public List<AmiliData> getAmiliDataPage(String mkey, int start, int pageSize){
+    public List<AmiliData> getAmiliDataPage(String mkey, long activity, int start, int pageSize){
     	AmiliDataExample example = new AmiliDataExample();
     	AmiliDataExample.Criteria criteria = example.createCriteria();
     	if(null != mkey && !"".equals(mkey)){
     		criteria.andMkeyEqualTo(mkey);
     	}
+    	criteria.andActivityIdEqualTo(activity);
     	example.setOrderByClause(" orderby limit "+start+","+pageSize);
     	return amiliDataMapper.selectByExampleWithBLOBs(example);
     }
@@ -1135,17 +1136,19 @@ public class ActivityMybatisDao {
     	amiliDataMapper.insertSelective(data);
     }
     
-    public int countAmiliDataPage(String mkey){
+    public int countAmiliDataPage(String mkey, long activity){
     	AmiliDataExample example = new AmiliDataExample();
     	AmiliDataExample.Criteria criteria = example.createCriteria();
     	if(null != mkey && !"".equals(mkey)){
     		criteria.andMkeyEqualTo(mkey);
     	}
+    	criteria.andActivityIdEqualTo(activity);
     	return amiliDataMapper.countByExample(example);
     }
     
-    public List<AactivityStage> getAllStage(){
+    public List<AactivityStage> getAllStage(long activity){
     	AactivityStageExample example = new AactivityStageExample();
+    	example.createCriteria().andActivityIdEqualTo(activity);
     	example.setOrderByClause(" start_time ");
     	return aactivityStageMapper.selectByExample(example);
     }

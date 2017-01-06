@@ -1905,7 +1905,14 @@ public class LiveServiceImpl implements LiveService {
 				uid2 = cExtraObj.getLongValue("uid2");
 			}
 			
-			Response resp = activityService.checkUserActivityKindom(createKingdomDto.getUid(), type, uid2);
+			Response resp = null;
+			if(type == Specification.ActivityKingdomType.SPRINGKING.index){
+				//春节王国
+				
+			}else{
+				resp = activityService.checkUserActivityKindom(createKingdomDto.getUid(), type, uid2);
+			}
+			
 			if(null == resp){
 				return Response.failure(ResponseStatus.KINGDOM_CREATE_FAILURE.status, ResponseStatus.KINGDOM_CREATE_FAILURE.message);
 			}else if(resp.getCode() == 500){
