@@ -1330,7 +1330,10 @@ public class ActivityServiceImpl implements ActivityService {
 		}
 		
 		//最后判断，一个用户只能创建一个有效的春节王国
-		
+		AkingDom kingdom = activityMybatisDao.getAkingDomByUidAndAid(uid, 2);
+		if(null != kingdom){
+			return Response.failure("一个用户只能创建一个春节王国");
+		}
 		
 		return Response.success();
 	}
@@ -1421,6 +1424,19 @@ public class ActivityServiceImpl implements ActivityService {
             	}
             }
 		}
+	}
+	
+	@Override
+	public void createActivityKingdom4Spring(long topicId, long uid){
+		AkingDom kingdom = new AkingDom();
+		kingdom.setActivityId(2l);
+		kingdom.setConditions(0);
+		kingdom.setCreateTime(new Date());
+		kingdom.setHot(0l);
+		kingdom.setStatus(0);
+		kingdom.setTopicId(topicId);
+		kingdom.setUid(uid);
+		activityMybatisDao.saveAkingDom(kingdom);
 	}
 	
 	@Override
@@ -2595,6 +2611,140 @@ public class ActivityServiceImpl implements ActivityService {
         }
         return days;
     }
+    
+    @Override
+	public Response genMiliList4Spring(long uid){
+    	Show7DayMiliDTO respDTO = new Show7DayMiliDTO();
+		
+    	Date now = new Date();
+    	
+    	//一次性获取所有活动米粒语料（不在后面每次获取）
+    	Map<String, List<AmiliData>> miliMap = new HashMap<String, List<AmiliData>>();
+		List<AmiliData> allMiliDatas = activityMybatisDao.getAllAmiliData(2);
+		if(null != allMiliDatas && allMiliDatas.size() > 0){
+			List<AmiliData> list = null;
+			for(AmiliData data : allMiliDatas){
+				list = miliMap.get(data.getMkey());
+				if(null == list){
+					list = new ArrayList<AmiliData>();
+					miliMap.put(data.getMkey(), list);
+				}
+				list.add(data);
+			}
+		}
+		
+		if(miliMap.size() == 0){
+			return Response.success(respDTO);
+		}
+		
+		//获取所有
+		Map<String, AactivityStage> stageMap = new HashMap<String, AactivityStage>();
+		List<AactivityStage> allStages = activityMybatisDao.getAactivityStage(2);//7天活动
+		if(null != allStages && allStages.size() > 0){
+			for(AactivityStage s : allStages){
+				stageMap.put(String.valueOf(s.getStage()), s);
+			}
+		}
+		AactivityStage stage1 = stageMap.get("1");//预热阶段
+		AactivityStage stage2 = stageMap.get("2");//活动阶段
+		AactivityStage stage3 = stageMap.get("3");//结束阶段
+		
+		List<Map<String, String>> params = null;
+		
+		//0 公共部分
+		//0.1 进入模板语料
+		this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.ENTER_COMMON.key, null);
+		
+		//查询下当前用户是否创建了春节王国
+		AkingDom kingdom = activityMybatisDao.getAkingDomByUidAndAid(uid, 2);
+		
+		//1预热阶段
+		if(null != stage1 && checkInStage(now, stage1)){
+			//判断是否预热最后一天
+			if(DateUtil.isSameDay(now, stage1.getEndTime())){//最后一天
+				if(null == kingdom){//未建立
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NO_SPRING_KINGDOM_PREHEAT_2.key, null);
+				}else{//已建立
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.HAS_SPRING_KINGDOM_PREHEAT_2.key, null);
+				}
+			}else{
+				if(null == kingdom){//未建立
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NO_SPRING_KINGDOM_PREHEAT_1.key, null);
+				}else{//已建立
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.HAS_SPRING_KINGDOM_PREHEAT_1.key, null);
+				}
+			}
+		}
+		
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(now);
+		int currentHour = cal.get(Calendar.HOUR_OF_DAY);
+		
+		//2活动期间
+		if(null != stage2 && checkInStage(now, stage2)){
+			//判断是否活动第一天
+			if(DateUtil.isSameDay(now, stage2.getStartTime())){//活动第一天
+				if(null == kingdom){//未建立
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NO_SPRING_KINGDOM_PERIOD_1.key, null);
+				}else{
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.HAS_SPRING_KINGDOM_PERIOD_1.key, null);
+				}
+				//活动第一天，也就是除夕
+				if(currentHour >= 19){
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NEW_YEARS_EVE_19.key, null);
+				}
+			}else{
+				if(null == kingdom){//未建立
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NO_SPRING_KINGDOM_PERIOD_2.key, null);
+				}else{
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.HAS_SPRING_KINGDOM_PERIOD_2.key, null);
+				}
+				if(currentHour >= 9){
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NEW_YEAR_9.key, null);
+				}
+				if(currentHour >= 12){
+					//12点的信息每天都不一样。。喵了个咪的。。
+//					Calendar 
+				}
+				
+				
+			}
+		}
+		
+		//3结束阶段
+		if(null != stage3 && checkInStage(now, stage3)){
+			
+		}
+		
+		//米粒排序
+		if(respDTO.getResult().size() > 1){
+			Collections.sort(respDTO.getResult(), new Comparator<Show7DayMiliDTO.MiliElement>(){
+	            public int compare(Show7DayMiliDTO.MiliElement e1, Show7DayMiliDTO.MiliElement e2) {
+	            	if(e1.getOrder() == e2.getOrder()){
+	            		return 0;
+	            	}else if(e1.getOrder() > e2.getOrder()){
+	            		return -1;
+	            	}else{
+	            		return 1;
+	            	}
+	            }
+	        });
+		}
+		
+		return Response.success(respDTO);
+	}
+    
+    private boolean checkInStage(Date date, AactivityStage stage){
+    	if(null == date || null == stage || null == stage.getStartTime() || null == stage.getEndTime()){
+    		return false;
+    	}
+    	
+    	if(date.compareTo(stage.getStartTime()) > 0 && date.compareTo(stage.getEndTime()) < 0){
+    		return true;
+    	}
+    	
+    	return false;
+    }
 
     /**
      * 乱七八糟的逻辑。。一个巨大的深坑。。后来人注意
@@ -3352,7 +3502,7 @@ public class ActivityServiceImpl implements ActivityService {
 		
 		return content;
 	}
-
+	
 	@Override
 	public Response recommendHistory(long auid, int page, int pageSize) {
 		ShowRecommendHistoryDTO srhDTO = new ShowRecommendHistoryDTO();
@@ -3980,6 +4130,11 @@ public class ActivityServiceImpl implements ActivityService {
 	@Override
 	public void saveAmiliData(AmiliData data){
 		activityMybatisDao.saveAmiliData(data);
+	}
+	
+	@Override
+	public void deleteAkingDomByTopicId(long topicId){
+		liveForActivityDao.updateDeleteAkingdomByTopicId(topicId);
 	}
 	
 	@Override

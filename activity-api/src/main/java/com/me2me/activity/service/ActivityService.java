@@ -90,6 +90,8 @@ public interface ActivityService {
     
     void createActivityKingdom(long topicId, long uid, int type, long uid2);
     
+    void createActivityKingdom4Spring(long topicId, long uid);
+    
     List<Atopic> getAtopicsByUidsAndType(List<Long> uids, int type);
 
     Response enterActivity(QiUserDto qiUserDto);
@@ -142,6 +144,8 @@ public interface ActivityService {
     Response divorce(long uid ,long targetUid);
     
     Response genActivity7DayMiliList(Activity7DayMiliDTO dto);
+    
+    Response genMiliList4Spring(long uid);
 
     Response recommendHistory(long auid, int page, int pageSize);
     
@@ -170,6 +174,8 @@ public interface ActivityService {
     void updateAmiliData(AmiliData data);
     
     void saveAmiliData(AmiliData data);
+    
+    void deleteAkingDomByTopicId(long topicId);
     
     List<AactivityStage> getAllStage(long activity);
     

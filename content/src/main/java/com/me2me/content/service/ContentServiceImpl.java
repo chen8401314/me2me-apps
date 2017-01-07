@@ -1111,6 +1111,8 @@ private void localJpush(long toUid){
             log.info("topic delete");
             //记录下删除记录
           	liveForContentJdbcDao.insertDeleteLog(Specification.DeleteObjectType.TOPIC.index, content.getForwardCid(), uid);
+          	
+          	activityService.deleteAkingDomByTopicId(content.getForwardCid());
         }else{
         	//记录下删除记录
           	liveForContentJdbcDao.insertDeleteLog(Specification.DeleteObjectType.UGC.index, id, uid);
@@ -1120,14 +1122,6 @@ private void localJpush(long toUid){
         log.info("content status delete");
 
         contentMybatisDao.updateContentById(content);
-        
-        //判断是否还有活动王国 有的话直接更改status状态为1
-        Atopic atopic = activityService.getAtopicByTopicId(content.getForwardCid());
-        if(atopic != null){
-            Map map = Maps.newHashMap();
-            map.put("topicId",content.getForwardCid());
-            activityService.updateAtopicStatus(map);
-        }
 
         log.info("deleteContent end ...");
         return Response.failure(ResponseStatus.CONTENT_DELETE_SUCCESS.status,ResponseStatus.CONTENT_DELETE_SUCCESS.message);

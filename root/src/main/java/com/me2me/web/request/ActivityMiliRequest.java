@@ -16,4 +16,7 @@ public class ActivityMiliRequest extends Request {
 	@Setter
     @Getter
 	private int isFirst;//是否首次请求，0首次(默认)，1非首次
+	@Setter
+    @Getter
+	private long activityId;
 }

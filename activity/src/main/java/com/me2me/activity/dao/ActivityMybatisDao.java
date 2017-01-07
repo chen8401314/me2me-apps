@@ -1172,4 +1172,8 @@ public class ActivityMybatisDao {
         List<AkingDom> list = akingDomMapper.selectByExample(example);
         return list.size()>0 && list != null ?list.get(0):null;
     }
+    
+    public void saveAkingDom(AkingDom kingdom){
+    	akingDomMapper.insertSelective(kingdom);
+    }
 }

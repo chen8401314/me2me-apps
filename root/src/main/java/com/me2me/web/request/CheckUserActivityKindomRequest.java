@@ -13,4 +13,7 @@ public class CheckUserActivityKindomRequest extends Request {
 	@Getter
 	@Setter
 	private long uid2;
+	@Getter
+	@Setter
+	private long activityId;
 }

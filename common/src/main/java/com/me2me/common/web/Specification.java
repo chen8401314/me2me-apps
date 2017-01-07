@@ -1080,10 +1080,14 @@ public interface Specification {
     	
     	ENTER_COMMON("ENTER_COMMON", "每次进入"),
     	FIRST_ENTER("FIRST_ENTER", "首次进入"),
+    	
     	APP_DOWNLOAD("APP_DOWNLOAD", "APP下载信息"),
+    	
     	ACTIVITY_INFO("ACTIVITY_INFO", "活动信息"),
     	ACTIVITY_COUNTDOWN("ACTIVITY_COUNTDOWN", "活动倒计时"),
+    	
     	ACTIVITY_TASK("ACTIVITY_TASK", "活动任务"),
+    	
     	SIGNUP_STATUS_0_APP("SIGNUP_STATUS_0_APP", "没有报名信息并APP内"),
     	SIGNUP_STATUS_0_BROWSER("SIGNUP_STATUS_0_BROWSER", "没有报名信息并APP外"),
     	SIGNUP_STATUS_1("SIGNUP_STATUS_1", "报名状态审核中"),
@@ -1118,6 +1122,22 @@ public interface Specification {
     	FORCED_PAIRING_2("FORCED_PAIRING_2", "强配成功"),
     	FORCED_PAIRING_END("FORCED_PAIRING_END", "强配结束"),
     	
+    	NO_SPRING_KINGDOM_PREHEAT_1("NO_SPRING_KINGDOM_PREHEAT_1", "没有春节王国_预热期1(除最后一天)"),
+    	NO_SPRING_KINGDOM_PREHEAT_2("NO_SPRING_KINGDOM_PREHEAT_2", "没有春节王国_预热期2(最后一天)"),
+    	NO_SPRING_KINGDOM_PERIOD_1("NO_SPRING_KINGDOM_PERIOD_1", "没有春节王国_活动期1(第一天)"),
+    	NO_SPRING_KINGDOM_PERIOD_2("NO_SPRING_KINGDOM_PERIOD_2", "没有春节王国_活动期2(除第一天)"),
+    	HAS_SPRING_KINGDOM_PREHEAT_1("HAS_SPRING_KINGDOM_PREHEAT_1", "有春节王国_预热期1(除最后一天)"),
+    	HAS_SPRING_KINGDOM_PREHEAT_2("HAS_SPRING_KINGDOM_PREHEAT_2", "有春节王国_预热期2(最后一天)"),
+    	HAS_SPRING_KINGDOM_PERIOD_1("HAS_SPRING_KINGDOM_PERIOD_1", "有春节王国_活动期1(第一天)"),
+    	HAS_SPRING_KINGDOM_PERIOD_2("HAS_SPRING_KINGDOM_PERIOD_2", "有春节王国_活动期2(除第一天)"),
+    	NEW_YEARS_EVE_19("NEW_YEARS_EVE_19","除夕19点信息"),
+    	NEW_YEAR_9("NEW_YEAR_9", "新年9点信息"),
+    	NEW_YEAR_12_1("NEW_YEAR_12_1", "新年12点信息1"),
+    	NEW_YEAR_12_2("NEW_YEAR_12_2", "新年12点信息2"),
+    	NEW_YEAR_12_3("NEW_YEAR_12_3", "新年12点信息3"),
+    	NEW_YEAR_12_4("NEW_YEAR_12_4", "新年12点信息4"),
+    	NEW_YEAR_12_5("NEW_YEAR_12_5", "新年12点信息5"),
+    	NEW_YEAR_12_6("NEW_YEAR_12_6", "新年12点信息6"),
     	
     	;
     	
