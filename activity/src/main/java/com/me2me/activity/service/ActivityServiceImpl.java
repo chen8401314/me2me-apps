@@ -4291,7 +4291,7 @@ public class ActivityServiceImpl implements ActivityService {
 	}
 
     @Override
-    public Response getNewYearLiveInfo(long uid, long activityId) {
+    public Response getNewYearLiveInfo(long uid ,long activityId) {
         BlurSearchDto dto = new BlurSearchDto();
         AkingDom akingDom = activityMybatisDao.getAkingDomByUidAndAid(uid ,activityId);
         if(akingDom != null){
@@ -4300,6 +4300,32 @@ public class ActivityServiceImpl implements ActivityService {
             Map<String, Object> topic = liveForActivityDao.getTopicById(akingDom.getTopicId());
             dto.setTitle((String) topic.get("title"));
             dto.setLiveImage((String) topic.get("live_image"));
+            return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status ,ResponseStatus.SEARCH_ATOPIC_SUCCESS.message ,dto);
+        }
+        return Response.success(ResponseStatus.SEARCH_ATOPIC_FAILURE.status ,ResponseStatus.SEARCH_ATOPIC_FAILURE.message);
+    }
+
+    @Override
+    public Response getAllNewYearLiveInfo(long uid ,long activityId ,int pageNum ,int pageSize ,String topicName ,String nickName) {
+        Map map = Maps.newHashMap();
+        if(pageNum != 0){
+            pageNum = pageNum*pageSize;
+        }
+        map.put("pageNum",pageNum);
+        map.put("pageSize",pageSize);
+        map.put("topicName",topicName);
+        map.put("nickName",nickName);
+
+        List<BlurSearchDto> newYearLiveList = activityMybatisDao.getAllNewYearLive(map);
+        NewYearDto dto = new NewYearDto();
+        if(newYearLiveList.size() > 0 && newYearLiveList != null){
+            for(BlurSearchDto newYearDto : newYearLiveList){
+                NewYearDto.NewYearElement newYearElement = dto.createNewYearElement();
+                BeanUtils.copyProperties(newYearDto ,newYearElement);
+                newYearElement.setIsFollowed(userService.isFollow(newYearDto.getUid(),uid));//souceuid表里是被关注的人
+                newYearElement.setIsFollowMe(userService.isFollow(uid,newYearDto.getUid()));
+                dto.getNewYearList().add(newYearElement);
+            }
             return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status ,ResponseStatus.SEARCH_ATOPIC_SUCCESS.message ,dto);
         }
         return Response.success(ResponseStatus.SEARCH_ATOPIC_FAILURE.status ,ResponseStatus.SEARCH_ATOPIC_FAILURE.message);

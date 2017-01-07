@@ -1165,8 +1165,12 @@ public class ActivityMybatisDao {
 
     public AkingDom getAkingDomByUidAndAid(long uid ,long activityId){
         AkingDomExample example = new AkingDomExample();
-        example.createCriteria().andUidEqualTo(uid).andActivityIdEqualTo(activityId).andStatusEqualTo(0).andConditionsEqualTo(1);
+        example.createCriteria().andUidEqualTo(uid).andActivityIdEqualTo(activityId).andStatusEqualTo(0);
         List<AkingDom> list = akingDomMapper.selectByExample(example);
         return list.size()>0 && list != null ?list.get(0):null;
+    }
+
+    public List<BlurSearchDto> getAllNewYearLive(Map map){
+        return akingDomMapper.getAllNewYearLive(map);
     }
 }

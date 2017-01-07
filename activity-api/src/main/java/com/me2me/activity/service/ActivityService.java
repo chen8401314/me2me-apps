@@ -203,4 +203,6 @@ public interface ActivityService {
 
     Response getNewYearLiveInfo(long uid ,long activityId);
 
+    Response getAllNewYearLiveInfo(long uid ,long activityId ,int pageNum ,int pageSize ,String topicName ,String nickName);
+
 }

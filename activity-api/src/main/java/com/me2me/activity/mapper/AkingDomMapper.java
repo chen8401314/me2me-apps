@@ -1,8 +1,11 @@
 package com.me2me.activity.mapper;
 
+import com.me2me.activity.dto.BlurSearchDto;
 import com.me2me.activity.model.AkingDom;
 import com.me2me.activity.model.AkingDomExample;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface AkingDomMapper {
@@ -93,4 +96,6 @@ public interface AkingDomMapper {
      * @mbggenerated Fri Jan 06 16:58:28 CST 2017
      */
     int updateByPrimaryKey(AkingDom record);
+
+    List<BlurSearchDto> getAllNewYearLive(Map map);
 }
