@@ -1908,7 +1908,7 @@ public class LiveServiceImpl implements LiveService {
 			Response resp = null;
 			if(type == Specification.ActivityKingdomType.SPRINGKING.index){
 				//春节王国
-				
+				resp = activityService.checkUserActivityKindom4Spring(createKingdomDto.getUid());
 			}else{
 				resp = activityService.checkUserActivityKindom(createKingdomDto.getUid(), type, uid2);
 			}
@@ -2022,56 +2022,11 @@ public class LiveServiceImpl implements LiveService {
         
         //特殊王国需要做一点特殊处理
         if(createKingdomDto.getKType() != Specification.KingdomType.NORMAL.index){
-        	//目前特殊王国只有7天活动，目前只以七天活动处理。
-        	activityService.createActivityKingdom(topic.getId(), createKingdomDto.getUid(), type, uid2);
-        	/* 突然说不要这个王国链接了。。
-        	if(isDouble){
-        		//还要发两个王国ID的发言
-        		List<Long> uids = new ArrayList<Long>();
-        		uids.add(createKingdomDto.getUid());
-        		uids.add(uid2);
-        		List<Atopic> aList = activityService.getAtopicsByUidsAndType(uids, Specification.ActivityKingdomType.SINGLEKING.index);
-        		List<Long> ids = new ArrayList<Long>();
-        		if(null != aList && aList.size() > 0){
-        			for(Atopic a : aList){
-        				ids.add(a.getTopicId());
-        			}
-        		}
-        		if(ids.size() > 0){
-        			List<Topic> tList = liveMybatisDao.getTopicsByIds(ids);
-        			if(null != tList && tList.size() > 0){
-        				TopicFragment topicFragment = null;
-        				StringBuilder sb = null;
-        				UserProfile userProfile = null;
-        				for(Topic t : tList){
-        					topicFragment = new TopicFragment();
-        					topicFragment.setFragment(t.getTitle());
-                        	topicFragment.setFragmentImage(t.getLiveImage());
-                        	topicFragment.setUid(0l);//系统
-                        	topicFragment.setType(Specification.LiveSpeakType.SYSTEM.index);
-                        	topicFragment.setContentType(Specification.LiveContent.KINGDOM.index);
-                        	topicFragment.setTopicId(topic.getId());
-                            topicFragment.setBottomId(0l);
-                            topicFragment.setTopId(0l);
-                            topicFragment.setSource(createKingdomDto.getSource());
-                            topicFragment.setAtUid(t.getUid());
-                            sb = new StringBuilder();
-                            sb.append("{\"type\":\"kingdom\",\"only\":\"").append(SecurityUtils.getToken());
-                            sb.append("\",\"topicId\":").append(t.getId()).append(",\"uid\":").append(t.getUid());
-                            sb.append(",\"title\":\"").append(t.getTitle()).append("\",\"kType\":1,");
-                            userProfile = userService.getUserProfileByUid(t.getUid());
-                            sb.append("\"avatar\":\"").append(Constant.QINIU_DOMAIN).append("/").append(userProfile.getAvatar());
-                            sb.append("\",\"createTime\":").append((new Date()).getTime()).append(",\"coverImage\":\"");
-                            sb.append(Constant.QINIU_DOMAIN).append("/").append(t.getLiveImage()).append("\",\"url\":\"");
-                            sb.append(Constant.Live_WEB_URL).append(t.getId()).append("\"}");
-                            topicFragment.setExtra(sb.toString());
-                            liveMybatisDao.createTopicFragment(topicFragment);
-                            lastFragmentId = topicFragment.getId();
-                            total++;
-        				}
-        			}
-        		}
-        	}*/
+        	if(type == Specification.ActivityKingdomType.SPRINGKING.index){
+        		activityService.createActivityKingdom4Spring(topic.getId(), createKingdomDto.getUid());
+        	}else{
+        		activityService.createActivityKingdom(topic.getId(), createKingdomDto.getUid(), type, uid2);
+        	}
         }
         
         //--add update kingdom cache -- modify by zcl -- begin --

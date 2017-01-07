@@ -256,6 +256,11 @@ public class LiveForActivityDao {
 		return null;
 	}
 	
+	public void updateDeleteAkingdomByTopicId(long topicId){
+		String sql = "update a_kingdom set status=1 where topic_id="+topicId;
+		jdbcTemplate.execute(sql);
+	}
+	
 	public void updateContentAddLike(long topicId, int likeCount){
 		String sql = "update content set like_count=like_count+"+likeCount+" where forward_cid="+topicId;
 		jdbcTemplate.execute(sql);

@@ -445,7 +445,13 @@ public class Activity extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/checkUserActivityKindom",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response checkUserActivityKindom(CheckUserActivityKindomRequest request){
-    	Response resp = activityService.checkUserActivityKindom(request.getUid(), request.getType(), request.getUid2());
+    	Response resp = null;
+    	if(request.getActivityId() == 2){//春节活动
+    		resp = activityService.checkUserActivityKindom4Spring(request.getUid());
+    	}else{//默认为七天活动
+    		resp = activityService.checkUserActivityKindom(request.getUid(), request.getType(), request.getUid2());
+    	}
+    	
     	if(null != resp){
     		if(resp.getCode() == 200){
     			return Response.success();
