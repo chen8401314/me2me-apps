@@ -1103,15 +1103,10 @@ public class UserServiceImpl implements UserService {
 
         //春节特定标识
         Map<String ,Object> appUi = activityJdbcDao.getAppUiControl();
-        Date nowDate = new Date();
         if(appUi != null){
-            Date startDate = (Date) appUi.get("start_time");
-            Date endDate = (Date) appUi.get("end_time");
-            if(nowDate.compareTo(startDate)>0 && nowDate.compareTo(endDate)<0){
-                versionControlDto.setResourceCode(Specification.IsNewYear.NEWYAR_TYPE.index);
-            }else{
-                versionControlDto.setResourceCode(Specification.IsNewYear.COMMON_TYPE.index);
-            }
+            versionControlDto.setResourceCode((Integer)appUi.get("source_code"));
+        }else{
+            versionControlDto.setResourceCode(0);
         }
 
         VersionControl control = userMybatisDao.getVersion(version,platform);

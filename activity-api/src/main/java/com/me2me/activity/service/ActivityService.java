@@ -207,4 +207,6 @@ public interface ActivityService {
 
     Response getAllNewYearLiveInfo(long uid ,long activityId ,int pageNum ,int pageSize ,String topicName ,String nickName);
 
+    Response getlightboxInfo();
+
 }

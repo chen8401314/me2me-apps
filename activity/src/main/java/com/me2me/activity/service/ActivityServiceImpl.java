@@ -4368,4 +4368,16 @@ public class ActivityServiceImpl implements ActivityService {
         return Response.success(ResponseStatus.SEARCH_ATOPIC_FAILURE.status ,ResponseStatus.SEARCH_ATOPIC_FAILURE.message);
     }
 
+    @Override
+    public Response getlightboxInfo() {
+        Date nowDate = new Date();
+        LightBoxDto dto = new LightBoxDto();
+        AppLightboxSource appLightboxSource = activityMybatisDao.getAppLightboxSource(nowDate);
+        if(appLightboxSource != null){
+            BeanUtils.copyProperties(appLightboxSource ,dto);
+            return Response.success(dto);
+        }
+        return Response.success(ResponseStatus.SEARCH_LIGHTBOX_NOT_EXISTS.status ,ResponseStatus.SEARCH_LIGHTBOX_NOT_EXISTS.message);
+    }
+
 }

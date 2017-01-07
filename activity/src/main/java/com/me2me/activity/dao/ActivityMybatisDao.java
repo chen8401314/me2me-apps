@@ -98,6 +98,9 @@ public class ActivityMybatisDao {
     @Autowired
     private AkingDomMapper akingDomMapper;
 
+    @Autowired
+    private AppLightboxSourceMapper appLightboxSourceMapper;
+
     public void saveAtaskUser(AtaskUser ataskUser){
     	ataskUserMapper.insertSelective(ataskUser);
     }
@@ -1175,5 +1178,12 @@ public class ActivityMybatisDao {
 
     public List<BlurSearchDto> getAllNewYearLive(Map map){
         return akingDomMapper.getAllNewYearLive(map);
+    }
+
+    public AppLightboxSource getAppLightboxSource(Date nowDate){
+        AppLightboxSourceExample example = new AppLightboxSourceExample();
+        example.createCriteria().andStatusEqualTo(0).andStartTimeLessThan(nowDate).andEndTimeGreaterThan(nowDate);
+        List<AppLightboxSource> list = appLightboxSourceMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
     }
 }

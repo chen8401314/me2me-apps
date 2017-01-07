@@ -493,4 +493,16 @@ public class Activity extends BaseController {
                 ,request.getPageNum() ,request.getPageSize() ,request.getTopicName() ,request.getNickName());
     }
 
+    /**
+     * 灯箱内容获取
+     *
+     * @param
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getlightboxInfo")
+    public Response getlightboxInfo(){
+        return activityService.getlightboxInfo();
+    }
+
 }

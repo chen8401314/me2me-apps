@@ -18,7 +18,7 @@ public class ActivityJdbcDao {
     private JdbcTemplate jdbcTemplate;
 
     public Map<String,Object> getAppUiControl(){
-        String sql = "select * from app_ui_control where status = 0";
+        String sql = "select * from app_ui_control where status = 0 and start_time<=now() and end_time>=now()";
         List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
         if(null != list && list.size() > 0){
             return list.get(0);
