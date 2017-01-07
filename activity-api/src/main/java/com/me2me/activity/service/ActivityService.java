@@ -215,4 +215,6 @@ public interface ActivityService {
 
     Response getlightboxInfo();
 
+    Response getActualAndHistoryList(long uid ,int type ,String date ,long activityId);
+
 }

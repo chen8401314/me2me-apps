@@ -1180,6 +1180,36 @@ public class ActivityMybatisDao {
     	akingDomMapper.insertSelective(kingdom);
     }
 
+    public List<AkingDom> getAkingDomByUidAndAidAndConditionsActual(long uid ,long activityId ,int Conditions){
+        Map map = Maps.newHashMap();
+        map.put("uid",uid);
+        map.put("activityId",activityId);
+        map.put("Conditions",Conditions);
+        return  akingDomMapper.getActualList(map);
+    }
+
+    public int getRanksAkingDom(long uid){
+        Map map = Maps.newHashMap();
+        map.put("uid",uid);
+        return  akingDomMapper.getRanksAkingDom(map);
+    }
+
+    public List<AkingDomList> getAkingDomListByUidAndAidAndConditionsHistory(long uid , long activityId , int Conditions ,String dateKey){
+        Map map = Maps.newHashMap();
+        map.put("uid",uid);
+        map.put("activityId",activityId);
+        map.put("Conditions",Conditions);
+        map.put("dateKey",dateKey);
+        return  akingDomListMapper.getHistoryList(map);
+    }
+
+    public int getRanksAkingDomList(long uid ,String dateKey){
+        Map map = Maps.newHashMap();
+        map.put("uid",uid);
+        map.put("dateKey",dateKey);
+        return  akingDomListMapper.getRanksAkingDomList(map);
+    }
+
     public List<BlurSearchDto> getAllNewYearLive(Map map){
         return akingDomMapper.getAllNewYearLive(map);
     }

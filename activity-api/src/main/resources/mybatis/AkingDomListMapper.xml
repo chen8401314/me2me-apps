@@ -315,4 +315,19 @@
       conditions = #{conditions,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="getHistoryList" parameterType="java.util.Map" resultMap="BaseResultMap">
+    SELECT
+    <include refid="Base_Column_List" />
+    FROM `a_kingdom_list` WHERE uid = #{uid} AND activity_id = #{activityId} AND conditions = #{Conditions} AND day_key = #{dateKey}
+    UNION ALL
+    (SELECT
+    <include refid="Base_Column_List" />
+    FROM `a_kingdom_list` WHERE activity_id = #{activityId} AND conditions = #{Conditions} AND day_key = #{dateKey} ORDER BY hot DESC LIMIT 10)
+  </select>
+
+  <select id="getRanksAkingDomList" parameterType="java.util.Map" resultType="java.lang.Integer">
+      SELECT COUNT(*)+1 AS ranks FROM `a_kingdom_list` a WHERE a.activity_id = 2 AND day_key = #{dateKey} AND a.`hot` > (SELECT hot FROM `a_kingdom_list` WHERE activity_id = 2 AND uid = #{uid} and day_key = #{dateKey})
+  </select>
+
 </mapper>

@@ -95,4 +95,8 @@ public class QiUserRequest {
     @Setter
     private int operaStatus;//操作
 
+    @Getter
+    @Setter
+    private String date;
+
 }

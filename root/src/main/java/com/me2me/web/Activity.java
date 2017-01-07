@@ -500,7 +500,7 @@ public class Activity extends BaseController {
     }
 
     /**
-     * 灯箱内容获取
+     * 灯箱内容获取接口
      *
      * @param
      * @return
@@ -509,6 +509,17 @@ public class Activity extends BaseController {
     @RequestMapping(value = "/getlightboxInfo")
     public Response getlightboxInfo(){
         return activityService.getlightboxInfo();
+    }
+
+    /**
+     * 实时&历史榜单查询接口
+     *
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getActualAndHistoryList")
+    public Response getActualAndHistoryList(QiUserRequest request){
+        return activityService.getActualAndHistoryList(request.getUid() ,request.getType() ,request.getDate() ,request.getActivityId());
     }
 
 }
