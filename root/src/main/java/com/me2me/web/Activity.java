@@ -486,4 +486,29 @@ public class Activity extends BaseController {
         return activityService.getNewYearLiveInfo(request.getUid() ,request.getActivityId());
     }
 
+    /**
+     * 春节活动王国搜索接口
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getAllNewYearLiveInfo")
+    public Response getAllNewYearLiveInfo(QiUserRequest request){
+        return activityService.getAllNewYearLiveInfo(request.getUid() ,request.getActivityId()
+                ,request.getPageNum() ,request.getPageSize() ,request.getTopicName() ,request.getNickName());
+    }
+
+    /**
+     * 灯箱内容获取
+     *
+     * @param
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getlightboxInfo")
+    public Response getlightboxInfo(){
+        return activityService.getlightboxInfo();
+    }
+
 }

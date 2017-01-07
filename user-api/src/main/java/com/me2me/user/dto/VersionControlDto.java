@@ -27,4 +27,6 @@ public class VersionControlDto implements BaseEntity{
     private int platform;
 
     private int isUpdate;
+
+    private int resourceCode;//0不是 1是
 }

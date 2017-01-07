@@ -75,6 +75,7 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         WHITE_LIST.add("/api/activity/milidata");
         WHITE_LIST.add("/api/activity/optForcedPairing");
         WHITE_LIST.add("/api/activity/recommendHistory");
+        WHITE_LIST.add("/api/activity/getlightboxInfo");
 
         INTERNAL_WHITE_LIST.add("/api/console/showContents");
         INTERNAL_WHITE_LIST.add("/api/console/showActivity");

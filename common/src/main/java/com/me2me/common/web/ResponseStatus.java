@@ -281,6 +281,8 @@ public enum  ResponseStatus {
 
     SEARCH_BRIDLIST_FAILURE("未查询到抢亲列表信息","search bridlist failure", 200133),
 
+    SEARCH_LIGHTBOX_NOT_EXISTS("未查询到灯箱内容","search lightbox not exists", 200134),
+
 
 
 

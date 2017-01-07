@@ -98,6 +98,9 @@ public class ActivityMybatisDao {
     @Autowired
     private AkingDomMapper akingDomMapper;
 
+    @Autowired
+    private AppLightboxSourceMapper appLightboxSourceMapper;
+
     public void saveAtaskUser(AtaskUser ataskUser){
     	ataskUserMapper.insertSelective(ataskUser);
     }
@@ -1168,12 +1171,23 @@ public class ActivityMybatisDao {
 
     public AkingDom getAkingDomByUidAndAid(long uid ,long activityId){
         AkingDomExample example = new AkingDomExample();
-        example.createCriteria().andUidEqualTo(uid).andActivityIdEqualTo(activityId).andStatusEqualTo(0).andConditionsEqualTo(1);
+        example.createCriteria().andUidEqualTo(uid).andActivityIdEqualTo(activityId).andStatusEqualTo(0);
         List<AkingDom> list = akingDomMapper.selectByExample(example);
         return list.size()>0 && list != null ?list.get(0):null;
     }
     
     public void saveAkingDom(AkingDom kingdom){
     	akingDomMapper.insertSelective(kingdom);
+    }
+
+    public List<BlurSearchDto> getAllNewYearLive(Map map){
+        return akingDomMapper.getAllNewYearLive(map);
+    }
+
+    public AppLightboxSource getAppLightboxSource(Date nowDate){
+        AppLightboxSourceExample example = new AppLightboxSourceExample();
+        example.createCriteria().andStatusEqualTo(0).andStartTimeLessThan(nowDate).andEndTimeGreaterThan(nowDate);
+        List<AppLightboxSource> list = appLightboxSourceMapper.selectByExample(example);
+        return list.size()>0 && list != null ?list.get(0):null;
     }
 }
