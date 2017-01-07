@@ -76,6 +76,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private CacheService cacheService;
 
+    @Autowired
+    private ActivityJdbcDao activityJdbcDao;
+
     @Value("#{app.reg_web}")
     private String reg_web;
 
@@ -1097,6 +1100,20 @@ public class UserServiceImpl implements UserService {
         log.info("add channel count end ...");
 
         VersionControlDto versionControlDto = new VersionControlDto();
+
+        //春节特定标识
+        Map<String ,Object> appUi = activityJdbcDao.getAppUiControl();
+        Date nowDate = new Date();
+        if(appUi != null){
+            Date startDate = (Date) appUi.get("start_time");
+            Date endDate = (Date) appUi.get("end_time");
+            if(nowDate.compareTo(startDate)>0 && nowDate.compareTo(endDate)<0){
+                versionControlDto.setResourceCode(Specification.IsNewYear.NEWYAR_TYPE.index);
+            }else{
+                versionControlDto.setResourceCode(Specification.IsNewYear.COMMON_TYPE.index);
+            }
+        }
+
         VersionControl control = userMybatisDao.getVersion(version,platform);
         VersionControl versionControl = userMybatisDao.getNewestVersion(platform);
         if(control == null || (version.compareTo(versionControl.getVersion()) >= 0 && control.getVersion().equals(versionControl.getVersion()))){

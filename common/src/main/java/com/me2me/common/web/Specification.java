@@ -1075,6 +1075,20 @@ public interface Specification {
             this.index = index;
         }
     }
+
+    enum IsNewYear{
+        COMMON_TYPE("普通标识", 0),
+        NEWYAR_TYPE("新年标识", 1),
+        ;
+
+        public final String name;
+        public final int index;
+
+        IsNewYear(String name, int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
     
     enum ActivityMiliDataKey{
     	
