@@ -98,4 +98,9 @@ public interface AkingDomMapper {
     int updateByPrimaryKey(AkingDom record);
 
     List<BlurSearchDto> getAllNewYearLive(Map map);
+
+    List<AkingDom> getActualList(Map map);
+
+    int getRanksAkingDom(Map map);
+
 }

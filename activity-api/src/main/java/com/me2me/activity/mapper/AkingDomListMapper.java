@@ -1,8 +1,11 @@
 package com.me2me.activity.mapper;
 
+import com.me2me.activity.model.AkingDom;
 import com.me2me.activity.model.AkingDomList;
 import com.me2me.activity.model.AkingDomListExample;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface AkingDomListMapper {
@@ -93,4 +96,9 @@ public interface AkingDomListMapper {
      * @mbggenerated Fri Jan 06 16:58:28 CST 2017
      */
     int updateByPrimaryKey(AkingDomList record);
+
+    List<AkingDomList> getHistoryList(Map map);
+
+    int getRanksAkingDomList(Map map);
+
 }

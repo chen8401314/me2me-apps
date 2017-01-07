@@ -283,6 +283,8 @@ public enum  ResponseStatus {
 
     SEARCH_LIGHTBOX_NOT_EXISTS("未查询到灯箱内容","search lightbox not exists", 200134),
 
+    SEARCH_LIST_NOT_EXISTS("未查询到榜单信息","search list not exists", 200135),
+
 
 
 
