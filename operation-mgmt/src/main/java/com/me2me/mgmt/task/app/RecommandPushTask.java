@@ -45,7 +45,7 @@ public class RecommandPushTask {
 		}
 		
 		boolean can = false;
-		List<AactivityStage> all = activityService.getAllStage();
+		List<AactivityStage> all = activityService.getAllStage(1);
 		if(null != all && all.size() > 0){
 			for(AactivityStage stage : all){
 				if(stage.getType() == 0){

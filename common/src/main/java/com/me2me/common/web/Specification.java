@@ -1063,7 +1063,9 @@ public interface Specification {
     
     enum ActivityKingdomType{
     	SINGLEKING("单人王国", 1),
-    	DOUBLEKING("双人王国", 2);
+    	DOUBLEKING("双人王国", 2),
+    	SPRINGKING("春节王国", 3)
+    	;
     	
     	public final String name;
         public final int index;

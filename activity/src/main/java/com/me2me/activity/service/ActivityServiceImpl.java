@@ -1298,6 +1298,43 @@ public class ActivityServiceImpl implements ActivityService {
 		return Response.success();
 	}
 	
+	/**
+	 * 春节王国校验
+	 */
+	@Override
+	public Response checkUserActivityKindom4Spring(long uid){
+		//先判断是否在春节活动期间
+		Date now = new Date();
+		Aactivity aa = activityMybatisDao.getAactivity(2);
+		if(null == aa || null == aa.getStartTime() || null == aa.getEndTime() 
+				|| aa.getStartTime().getTime()>now.getTime() 
+				|| aa.getEndTime().getTime()<now.getTime()){
+			log.info("now is out of spring activity!");
+			return Response.failure("不在春节活动期，不能创建春节王国");
+		}
+		//再判断是否在可创建阶段
+		List<AactivityStage> stageList = activityMybatisDao.getAactivityStage(2);
+		boolean inStage = false;
+		if(null != stageList && stageList.size() > 0){
+			for(AactivityStage stage : stageList){
+				if(stage.getStage() == 1 || stage.getStage() == 2){
+					if(now.compareTo(stage.getStartTime()) > 0 && now.compareTo(stage.getEndTime()) < 0){
+						inStage = true;
+						break;
+					}
+				}
+			}
+		}
+		if(!inStage){
+			return Response.failure("当前阶段不能创建春节王国");
+		}
+		
+		//最后判断，一个用户只能创建一个有效的春节王国
+		
+		
+		return Response.success();
+	}
+	
 	@Override
 	public void createActivityKingdom(long topicId, long uid, int type,
 			long uid2) {
@@ -2568,7 +2605,7 @@ public class ActivityServiceImpl implements ActivityService {
 		
 		//一次性获取所有活动米粒语料（不在后面每次获取）
 		Map<String, List<AmiliData>> miliMap = new HashMap<String, List<AmiliData>>();
-		List<AmiliData> allMiliDatas = activityMybatisDao.getAllAmiliData();
+		List<AmiliData> allMiliDatas = activityMybatisDao.getAllAmiliData(1);
 		if(null != allMiliDatas && allMiliDatas.size() > 0){
 			List<AmiliData> list = null;
 			for(AmiliData data : allMiliDatas){
@@ -3899,7 +3936,7 @@ public class ActivityServiceImpl implements ActivityService {
 	}
 	
 	@Override
-	public Response searchMiliDatas(String mkey, int page, int pageSize){
+	public Response searchMiliDatas(String mkey, long activity, int page, int pageSize){
 		if(page < 1){
 			page = 1;
 		}
@@ -3907,11 +3944,11 @@ public class ActivityServiceImpl implements ActivityService {
 			pageSize = 10;
 		}
 		ShowMiliDatasDTO dto = new ShowMiliDatasDTO();
-		dto.setTotalCount(activityMybatisDao.countAmiliDataPage(mkey));
+		dto.setTotalCount(activityMybatisDao.countAmiliDataPage(mkey, activity));
 		dto.setTotalPage(dto.getTotalCount()%pageSize==0?(dto.getTotalCount()/pageSize):(dto.getTotalCount()/pageSize+1));
 		
 		int start = (page-1)*pageSize;
-		List<AmiliData> list = activityMybatisDao.getAmiliDataPage(mkey, start, pageSize);
+		List<AmiliData> list = activityMybatisDao.getAmiliDataPage(mkey, activity, start, pageSize);
 		if(null != list && list.size() > 0){
 			ShowMiliDatasDTO.MiliDataElement e = null;
 			for(AmiliData a : list){
@@ -3946,8 +3983,8 @@ public class ActivityServiceImpl implements ActivityService {
 	}
 	
 	@Override
-	public List<AactivityStage> getAllStage(){
-		return activityMybatisDao.getAllStage();
+	public List<AactivityStage> getAllStage(long activity){
+		return activityMybatisDao.getAllStage(activity);
 	}
 	
 	public AactivityStage getAactivityStageById(long id){

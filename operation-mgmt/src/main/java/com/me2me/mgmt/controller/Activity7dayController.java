@@ -132,7 +132,7 @@ public class Activity7dayController {
 	public ModelAndView miliDataQuery(MiliDataQueryDTO dto){
 		ModelAndView view = new ModelAndView("7day/milidata");
 		
-		Response resp = activityService.searchMiliDatas(dto.getMkey(), dto.getPage(), dto.getPageSize());
+		Response resp = activityService.searchMiliDatas(dto.getMkey(), 1, dto.getPage(), dto.getPageSize());
 		if(null != resp && resp.getCode() == 200){
 			dto.setData((ShowMiliDatasDTO)resp.getData());
 			if(null != dto.getData() && null != dto.getData().getResult() && dto.getData().getResult().size() > 0){
@@ -150,7 +150,7 @@ public class Activity7dayController {
 	@RequestMapping(value="/milidata/queryJson")
 	@ResponseBody
 	public String miliDataQueryJson(MiliDataQueryDTO dto){
-		Response resp = activityService.searchMiliDatas(dto.getMkey(), dto.getPage(), dto.getPageSize());
+		Response resp = activityService.searchMiliDatas(dto.getMkey(), 1, dto.getPage(), dto.getPageSize());
 		if(null != resp && resp.getCode() == 200){
 			if(null != resp.getData()){
 				ShowMiliDatasDTO sddto = (ShowMiliDatasDTO)resp.getData();
@@ -213,7 +213,7 @@ public class Activity7dayController {
 	public ModelAndView getActivityInfo(){
 		ActivityInfoDTO dto = new ActivityInfoDTO();
 		dto.setActivityInfo(activityService.getAactivityById(1));
-		List<AactivityStage> list = activityService.getAllStage();
+		List<AactivityStage> list = activityService.getAllStage(1);
 		List<StageItem> stageList = new ArrayList<StageItem>();
 		if(null != list && list.size() > 0){
 			StageItem item = null;

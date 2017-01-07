@@ -86,6 +86,8 @@ public interface ActivityService {
     
     Response checkUserActivityKindom(long uid, int type, long uid2);
     
+    Response checkUserActivityKindom4Spring(long uid);
+    
     void createActivityKingdom(long topicId, long uid, int type, long uid2);
     
     List<Atopic> getAtopicsByUidsAndType(List<Long> uids, int type);
@@ -157,7 +159,7 @@ public interface ActivityService {
     
     Response pairingNotice();
     
-    Response searchMiliDatas(String mkey, int page, int pageSize);
+    Response searchMiliDatas(String mkey, long activity, int page, int pageSize);
     
     Response noticeActivityStart();
     
@@ -169,7 +171,7 @@ public interface ActivityService {
     
     void saveAmiliData(AmiliData data);
     
-    List<AactivityStage> getAllStage();
+    List<AactivityStage> getAllStage(long activity);
     
     AactivityStage getAactivityStageById(long id);
     
