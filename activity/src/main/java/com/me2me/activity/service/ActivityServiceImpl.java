@@ -2694,26 +2694,72 @@ public class ActivityServiceImpl implements ActivityService {
 					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NEW_YEARS_EVE_19.key, null);
 				}
 			}else{
+				long days = DateUtil.getDaysBetween2Date(now, stage2.getStartTime());
 				if(null == kingdom){//未建立
 					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NO_SPRING_KINGDOM_PERIOD_2.key, null);
 				}else{
-					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.HAS_SPRING_KINGDOM_PERIOD_2.key, null);
+					//活动天数
+					params = new ArrayList<Map<String, String>>();
+					Map<String, String> map = new HashMap<String, String>();
+					map.put("dayCount", String.valueOf(days+1));
+					params.add(map);
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.HAS_SPRING_KINGDOM_PERIOD_2.key, params);
 				}
 				if(currentHour >= 9){
-					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NEW_YEAR_9.key, null);
+					//日期
+					Calendar cal2 = Calendar.getInstance();
+					cal2.setTime(now);
+					cal2.add(Calendar.DATE, -1);
+					int month = cal2.get(Calendar.MONTH)+1;
+					int day = cal2.get(Calendar.DAY_OF_MONTH);
+					params = new ArrayList<Map<String, String>>();
+					Map<String, String> map = new HashMap<String, String>();
+					map.put("month", String.valueOf(month));
+					map.put("day", String.valueOf(day));
+					params.add(map);
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NEW_YEAR_9.key, params);
 				}
 				if(currentHour >= 12){
 					//12点的信息每天都不一样。。喵了个咪的。。
-//					Calendar 
+					//活动开始第二天开始有此条信息。每天不一样
+					if(days == 1){
+						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NEW_YEAR_12_1.key, null);
+					}else if(days == 2){
+						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NEW_YEAR_12_2.key, null);
+					}else if(days == 3){
+						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NEW_YEAR_12_3.key, null);
+					}else if(days == 4){
+						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NEW_YEAR_12_4.key, null);
+					}else if(days == 5){
+						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NEW_YEAR_12_5.key, null);
+					}else if(days == 6){
+						this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NEW_YEAR_12_6.key, null);
+					}
 				}
-				
-				
 			}
 		}
 		
 		//3结束阶段
 		if(null != stage3 && checkInStage(now, stage3)){
-			
+			//活动结束阶段的第一天也有米粒
+			if(DateUtil.isSameDay(now, stage3.getStartTime())){//结束阶段第一天
+				this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SPRING_ACTIVITY_END.key, null);
+				
+				if(currentHour >= 9){
+					//日期
+					Calendar cal2 = Calendar.getInstance();
+					cal2.setTime(now);
+					cal2.add(Calendar.DATE, -1);
+					int month = cal2.get(Calendar.MONTH)+1;
+					int day = cal2.get(Calendar.DAY_OF_MONTH);
+					params = new ArrayList<Map<String, String>>();
+					Map<String, String> map = new HashMap<String, String>();
+					map.put("month", String.valueOf(month));
+					map.put("day", String.valueOf(day));
+					params.add(map);
+					this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SPRING_ACTIVITY_END_9.key, params);
+				}
+			}
 		}
 		
 		//米粒排序

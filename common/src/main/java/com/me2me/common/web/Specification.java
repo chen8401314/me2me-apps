@@ -1152,7 +1152,8 @@ public interface Specification {
     	NEW_YEAR_12_4("NEW_YEAR_12_4", "新年12点信息4"),
     	NEW_YEAR_12_5("NEW_YEAR_12_5", "新年12点信息5"),
     	NEW_YEAR_12_6("NEW_YEAR_12_6", "新年12点信息6"),
-    	
+    	SPRING_ACTIVITY_END("SPRING_ACTIVITY_END", "春节活动结束说明"),
+    	SPRING_ACTIVITY_END_9("SPRING_ACTIVITY_END_9", "春节活动结束9点信息"),
     	;
     	
     	public final String key;
