@@ -191,7 +191,7 @@ public interface ActivityService {
     
     TopicCountDTO getTopicCount(long topicId);
     
-    List<TopicCountDTO> getTopicCountsTodayByTopicIds(List<Long> topicIds);
+    List<TopicCountDTO> getTopicCountsByTopicIdsAndTime(List<Long> topicIds, String startTime, String endTime);
     
     List<Map<String,Object>> getActivityTopicIds(long activityId);
     

@@ -74,8 +74,9 @@ public class SpringTopicHotTask {
 			topicIds.add(Long.valueOf(entry.getKey()));
 		}
 		
-		//获取所有王国评论和更新数
-		List<TopicCountDTO> list = activityService.getTopicCountsTodayByTopicIds(topicIds);
+		//获取今天所有王国评论和更新数
+		String day = DateUtil.date2string(new Date(), "yyyy-MM-dd");
+		List<TopicCountDTO> list = activityService.getTopicCountsByTopicIdsAndTime(topicIds, day+" 00:00:00", day+" 23:59:59");
 		
 		List<KingdomHotDTO> batchUpdateList = new ArrayList<KingdomHotDTO>();
 		List<KingdomHotDTO> batchInsertList = new ArrayList<KingdomHotDTO>();
@@ -96,7 +97,7 @@ public class SpringTopicHotTask {
 					conditions = 1;
 				}
 				
-				long hot = (dto.getUpdateCount()*4+dto.getReviewCount()*3)*123;
+				long hot = (dto.getUpdateCount()*4+dto.getReviewCount()*3)*51;
 				
 				tid = Long.valueOf(dto.getTopicId());
 				noUpdateTopicIds.remove(tid);

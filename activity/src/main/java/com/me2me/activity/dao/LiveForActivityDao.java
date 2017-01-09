@@ -221,9 +221,14 @@ public class LiveForActivityDao {
 			}
 			sb.append(topicIds.get(i));
 		}
-		sb.append(") and f.status=1 and and f.create_time>='").append(startTime);
-		sb.append("' and f.create_time<='").append(endTime);
-		sb.append("' group by f.topic_id");
+		sb.append(") and f.status=1 ");
+		if(null != startTime && !"".equals(startTime)){
+			sb.append("and f.create_time>='").append(startTime).append("' ");
+		}
+		if(null != endTime && !"".equals(endTime)){
+			sb.append("and f.create_time<='").append(endTime).append("' ");
+		}
+		sb.append("group by f.topic_id");
 		
 		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
 		return list;

@@ -4280,10 +4280,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
     
     @Override
-    public List<TopicCountDTO> getTopicCountsTodayByTopicIds(List<Long> topicIds){
-    	String day = DateUtil.date2string(new Date(), "yyyy-MM-dd");
-    	
-    	List<Map<String, Object>> list = liveForActivityDao.getTopicCountsByTopicIds(topicIds, day+" 00:00:00", day+" 23:59:59");
+    public List<TopicCountDTO> getTopicCountsByTopicIdsAndTime(List<Long> topicIds, String startTime, String endTime){
+    	List<Map<String, Object>> list = liveForActivityDao.getTopicCountsByTopicIds(topicIds, startTime, endTime);
     	if(null != list && list.size() > 0){
     		List<TopicCountDTO> result = new ArrayList<TopicCountDTO>();
     		TopicCountDTO dto = null;
