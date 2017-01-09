@@ -191,7 +191,7 @@ public interface ActivityService {
     
     TopicCountDTO getTopicCount(long topicId);
     
-    List<TopicCountDTO> getTopicCountsByTopicIds(List<Long> topicIds);
+    List<TopicCountDTO> getTopicCountsTodayByTopicIds(List<Long> topicIds);
     
     List<Map<String,Object>> getActivityTopicIds(long activityId);
     
@@ -218,6 +218,8 @@ public interface ActivityService {
     void batchInsertKingdomList(List<KingdomHotDTO> list);
     
     void batchUpdateKingdomHot(List<KingdomHotDTO> list);
+    
+    void updateKingdomHotInitByTopicIds(List<Long> topicIds);
     
     Response getNewYearLiveInfo(long uid ,long activityId);
 
