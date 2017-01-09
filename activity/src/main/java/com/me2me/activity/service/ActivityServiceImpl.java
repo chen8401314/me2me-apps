@@ -4672,6 +4672,12 @@ public class ActivityServiceImpl implements ActivityService {
                     dto.getActualAndHistoryList().add(actualAndHistoryElement);
                 }
                 return Response.success(dto);
+            } else {
+                //list为空的时候返回用户信息
+                Elements.setAvatar(userProfile.getAvatar());
+                Elements.setNickName(userProfile.getNickName());
+                Elements.setUid(uid);
+                dto.getMyActualAndHistoryList().add(Elements);
             }
         } else if (type == 2) {
             //历史榜单
