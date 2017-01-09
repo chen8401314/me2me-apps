@@ -18,7 +18,7 @@ public class LightBoxDto implements BaseEntity {
 
     private String secondaryText;
 
-    private Long mainTone;
+    private String mainTone;
 
     private String linkUrl;
 
