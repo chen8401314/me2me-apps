@@ -191,6 +191,10 @@ public interface ActivityService {
     
     TopicCountDTO getTopicCount(long topicId);
     
+    List<TopicCountDTO> getTopicCountsByTopicIds(List<Long> topicIds);
+    
+    List<Map<String,Object>> getActivityTopicIds(long activityId);
+    
     List<Long> get7dayTopicIdsByType(int type);
     
     List<Long> getSingleHotByDoubleTopicId(long doubleTopicId);
@@ -209,6 +213,12 @@ public interface ActivityService {
     
     ShowActivity7DayUsersDTO get7dayUsers(String channel, String code, String startTime, String endTime, int page, int pageSize);
 
+    void deleteKingdomListByDayKey(String dayKey);
+    
+    void batchInsertKingdomList(List<KingdomHotDTO> list);
+    
+    void batchUpdateKingdomHot(List<KingdomHotDTO> list);
+    
     Response getNewYearLiveInfo(long uid ,long activityId);
 
     Response getAllNewYearLiveInfo(long uid ,long activityId ,int pageNum ,int pageSize ,String topicName ,String nickName);

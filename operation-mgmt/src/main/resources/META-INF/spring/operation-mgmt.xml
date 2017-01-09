@@ -69,9 +69,11 @@
     <bean name="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
+            	<!-- 7 days task
                 <ref bean="topicHotTaskTriggers" />
                 <ref bean="recommandPushTaskTriggers" />
                 <ref bean="kingdomUpdatePushTaskTriggers" />
+                 -->
             </list>
         </property>
     </bean>

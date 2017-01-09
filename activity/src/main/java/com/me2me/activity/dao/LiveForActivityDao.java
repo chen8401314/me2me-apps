@@ -10,6 +10,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import com.me2me.activity.dto.KingdomHotDTO;
+
 @Repository
 public class LiveForActivityDao {
 
@@ -205,6 +207,26 @@ public class LiveForActivityDao {
 		return null;
 	}
 	
+	public List<Map<String, Object>> getTopicCountsByTopicIds(List<Long> topicIds){
+		if(null == topicIds || topicIds.size() == 0){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select count(if(f.type in (0,12,13,15),TRUE,NULL)) as updateCount, ");
+		sb.append("count(if(f.type not in (0,12,13,15),TRUE,NULL)) as reviewCount, f.topic_id ");
+		sb.append("from topic_fragment f where f.topic_id in (");
+		for(int i=0;i<topicIds.size();i++){
+			if(i > 0){
+				sb.append(",");
+			}
+			sb.append(topicIds.get(i));
+		}
+		sb.append(") and f.status=1 group by f.topic_id");
+		
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
+		return list;
+	}
+	
 	public List<Long> get7DayTopicIdsByType(int type){
 		String sql = "select DISTINCT t.topic_id from a_topic t where t.status=0 and t.type="+type;
 		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
@@ -216,6 +238,12 @@ public class LiveForActivityDao {
 			return result;
 		}
 		return null;
+	}
+	
+	public List<Map<String,Object>> getActivityTopicIds(long activityId){
+		String sql = "select k.topic_id,k.uid from a_kingdom k where k.status=0 and k.activity_id=" + activityId;
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
+		return list;
 	}
 	
 	public List<Long> getSingleHotsByDoubleTopicId(long doubleTopicId){
@@ -266,6 +294,11 @@ public class LiveForActivityDao {
 		jdbcTemplate.execute(sql);
 	}
 	
+	public void deleteKingdomListByDayKey(String dayKey){
+		String sql = "delete from a_kingdom_list where day_key='"+dayKey+"'";
+		jdbcTemplate.execute(sql);
+	}
+	
 	public List<Map<String, Object>> getSinglePerson(){
 		StringBuilder sb = new StringBuilder();
 		sb.append("select t.auid,t.uid,u.gender,r.mobile,u.nick_name ");
@@ -277,5 +310,42 @@ public class LiveForActivityDao {
 
 		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
 		return list;
+	}
+	
+	public void batchInsertKingdomList(List<KingdomHotDTO> list){
+		if(null == list || list.size() == 0){
+    		return;
+    	}
+		StringBuilder sb = new StringBuilder();
+		sb.append("insert into a_kingdom_list(day_key,uid,topic_id,activity_id,hot,conditions) values");
+		KingdomHotDTO dto = null;
+		for(int i=0;i<list.size();i++){
+			dto = list.get(i);
+			if(i > 0){
+				sb.append(",");
+			}
+			sb.append("('").append(dto.getDayKey()).append("',").append(dto.getUid()).append(",");
+			sb.append(dto.getTopicId()).append(",").append(dto.getActivityId()).append(",");
+			sb.append(dto.getHot()).append(",").append(dto.getConditions()).append(")");
+		}
+	}
+	
+	public void batchUpdateKingdomHot(List<KingdomHotDTO> list){
+		if(null == list || list.size() == 0){
+    		return;
+    	}
+		String[] insertSqls = new String[list.size()];
+		StringBuilder sb = null;
+		KingdomHotDTO dto = null;
+		for(int i=0;i<list.size();i++){
+			dto = list.get(i);
+			sb = new StringBuilder();
+			sb.append("update a_kingdom set hot=").append(dto.getHot());
+			sb.append(",conditions=").append(dto.getConditions());
+			sb.append(" where topic_id=").append(dto.getTopicId());
+			sb.append(" and status=0");
+			insertSqls[i] = sb.toString();
+		}
+		jdbcTemplate.batchUpdate(insertSqls);
 	}
 }

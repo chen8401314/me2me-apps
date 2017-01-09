@@ -12,4 +12,6 @@ public class TopicCountDTO implements BaseEntity {
 	private int likeCount = 0;
 	private int updateCount = 0;
 	private int reviewCount = 0;
+	
+	private long topicId;
 }

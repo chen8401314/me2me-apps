@@ -2529,10 +2529,11 @@ public class ActivityServiceImpl implements ActivityService {
             ownerInfo.add(ownerElement);
             targetInfo.add(targetElement);
 
-            Date createDate = atopic.getCreateTime();
+            Map<String,Object> topic = liveForActivityDao.getTopicById(atopic.getTopicId());
+            Date createDate = (Date)topic.get("create_time");
             Date nowDate = new Date();
-            int loveDay = differentDaysByMillisecond(createDate ,nowDate);
-            doubleLiveDto.setLoveDay(loveDay);
+            long loveDay = DateUtil.getDaysBetween2Date(createDate, nowDate)+1;
+            doubleLiveDto.setLoveDay((int)loveDay);
             log.info("get doublueLiveState success");
             return Response.success(doubleLiveDto);
         }
@@ -2590,26 +2591,6 @@ public class ActivityServiceImpl implements ActivityService {
             return Response.success(ResponseStatus.DIVORCE_SUCCESS.status, ResponseStatus.DIVORCE_SUCCESS.message);
         }
         return Response.success(ResponseStatus.NOT_GET_DOUBLELIVE.status, ResponseStatus.NOT_GET_DOUBLELIVE.message);
-    }
-
-    /**
-     * 通过时间秒毫秒数判断两个时间的间隔
-     * @param date1
-     * @param date2
-     * @return
-     */
-    public static int differentDaysByMillisecond(Date date1,Date date2) {
-//        int days = (int) ((date2.getTime() - date1.getTime()) / (1000*3600*24));
-        int days;
-        long cha = date2.getTime() - date1.getTime();
-        double result = cha * 1.0 / (1000 * 60 * 60);
-        if(result<=24){
-            return 1;
-        }else {
-            //超过24小时后算2天 所以+1天
-            days = ((int) ((date2.getTime() - date1.getTime()) / (1000*3600*24)))+1;
-        }
-        return days;
     }
 
     @Override
@@ -4233,22 +4214,53 @@ public class ActivityServiceImpl implements ActivityService {
         return activityMybatisDao.getAtaskById(id);
     }
 
+    @Override
     public void updateAtaskWithBLOBs(AtaskWithBLOBs task){
         activityMybatisDao.updateAtaskWithBLOBs(task);
     }
+    
+    @Override
+    public List<Map<String,Object>> getActivityTopicIds(long activityId){
+    	return liveForActivityDao.getActivityTopicIds(activityId);
+    }
 
+    @Override
     public List<Long> get7dayTopicIdsByType(int type){
         return liveForActivityDao.get7DayTopicIdsByType(type);
     }
 
+    @Override
     public List<Long> getSingleHotByDoubleTopicId(long doubleTopicId){
         return liveForActivityDao.getSingleHotsByDoubleTopicId(doubleTopicId);
     }
+    
+    @Override
+    public void batchInsertKingdomList(List<KingdomHotDTO> list){
+    	if(null == list || list.size() == 0){
+    		return;
+    	}
+    	liveForActivityDao.batchInsertKingdomList(list);
+    }
+    
+    @Override
+    public void batchUpdateKingdomHot(List<KingdomHotDTO> list){
+    	if(null == list || list.size() == 0){
+    		return;
+    	}
+    	liveForActivityDao.batchUpdateKingdomHot(list);
+    }
 
+    @Override
     public void updateTopicHot(long topicId, int hot){
         liveForActivityDao.updateTopicHot(topicId, hot);
     }
+    
+    @Override
+    public void deleteKingdomListByDayKey(String dayKey){
+    	liveForActivityDao.deleteKingdomListByDayKey(dayKey);
+    }
 
+    @Override
     public TopicCountDTO getTopicCount(long topicId){
         Map<String, Object> map = liveForActivityDao.getTopicCount(topicId);
         TopicCountDTO dto = new TopicCountDTO();
@@ -4259,6 +4271,25 @@ public class ActivityServiceImpl implements ActivityService {
             dto.setUpdateCount(((Long)map.get("updateCount")).intValue());
         }
         return dto;
+    }
+    
+    @Override
+    public List<TopicCountDTO> getTopicCountsByTopicIds(List<Long> topicIds){
+    	List<Map<String, Object>> list = liveForActivityDao.getTopicCountsByTopicIds(topicIds);
+    	if(null != list && list.size() > 0){
+    		List<TopicCountDTO> result = new ArrayList<TopicCountDTO>();
+    		TopicCountDTO dto = null;
+    		for(Map<String, Object> map : list){
+    			dto = new TopicCountDTO();
+    			dto.setReviewCount(((Long)map.get("reviewCount")).intValue());
+                dto.setUpdateCount(((Long)map.get("updateCount")).intValue());
+                dto.setTopicId((Long)map.get("topic_id"));
+                result.add(dto);
+    		}
+    		return result;
+    	}
+    	
+    	return null;
     }
 
     @Override
