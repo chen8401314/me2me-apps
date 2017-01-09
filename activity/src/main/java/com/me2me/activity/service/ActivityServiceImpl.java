@@ -4249,6 +4249,11 @@ public class ActivityServiceImpl implements ActivityService {
     	}
     	liveForActivityDao.batchUpdateKingdomHot(list);
     }
+    
+    @Override
+    public void updateKingdomHotInitByTopicIds(List<Long> topicIds){
+    	liveForActivityDao.updateKingdomHotInit(topicIds);
+    }
 
     @Override
     public void updateTopicHot(long topicId, int hot){
@@ -4275,8 +4280,10 @@ public class ActivityServiceImpl implements ActivityService {
     }
     
     @Override
-    public List<TopicCountDTO> getTopicCountsByTopicIds(List<Long> topicIds){
-    	List<Map<String, Object>> list = liveForActivityDao.getTopicCountsByTopicIds(topicIds);
+    public List<TopicCountDTO> getTopicCountsTodayByTopicIds(List<Long> topicIds){
+    	String day = DateUtil.date2string(new Date(), "yyyy-MM-dd");
+    	
+    	List<Map<String, Object>> list = liveForActivityDao.getTopicCountsByTopicIds(topicIds, day+" 00:00:00", day+" 23:59:59");
     	if(null != list && list.size() > 0){
     		List<TopicCountDTO> result = new ArrayList<TopicCountDTO>();
     		TopicCountDTO dto = null;

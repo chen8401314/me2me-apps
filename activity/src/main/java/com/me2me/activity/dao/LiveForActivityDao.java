@@ -207,7 +207,7 @@ public class LiveForActivityDao {
 		return null;
 	}
 	
-	public List<Map<String, Object>> getTopicCountsByTopicIds(List<Long> topicIds){
+	public List<Map<String, Object>> getTopicCountsByTopicIds(List<Long> topicIds, String startTime, String endTime){
 		if(null == topicIds || topicIds.size() == 0){
 			return null;
 		}
@@ -221,7 +221,9 @@ public class LiveForActivityDao {
 			}
 			sb.append(topicIds.get(i));
 		}
-		sb.append(") and f.status=1 group by f.topic_id");
+		sb.append(") and f.status=1 and and f.create_time>='").append(startTime);
+		sb.append("' and f.create_time<='").append(endTime);
+		sb.append("' group by f.topic_id");
 		
 		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
 		return list;
@@ -328,6 +330,7 @@ public class LiveForActivityDao {
 			sb.append(dto.getTopicId()).append(",").append(dto.getActivityId()).append(",");
 			sb.append(dto.getHot()).append(",").append(dto.getConditions()).append(")");
 		}
+		jdbcTemplate.execute(sb.toString());
 	}
 	
 	public void batchUpdateKingdomHot(List<KingdomHotDTO> list){
@@ -347,5 +350,21 @@ public class LiveForActivityDao {
 			insertSqls[i] = sb.toString();
 		}
 		jdbcTemplate.batchUpdate(insertSqls);
+	}
+	
+	public void updateKingdomHotInit(List<Long> topicIds){
+		if(null == topicIds || topicIds.size() == 0){
+			return;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("update a_kingdom set hot=0,conditions=0 where topic_id in (");
+		for(int i=0;i<topicIds.size();i++){
+			if(i > 0){
+				sb.append(",");
+			}
+			sb.append(topicIds.get(i));
+		}
+		sb.append(")");
+		jdbcTemplate.execute(sb.toString());
 	}
 }

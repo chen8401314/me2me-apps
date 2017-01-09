@@ -44,7 +44,7 @@ public class SpringTopicHotTask {
 			List<Map<String,Object>> runItems = new ArrayList<Map<String,Object>>();
 			for(Map<String,Object> map : topicList){
 				runItems.add(map);
-				if(runItems.size() > 500){
+				if(runItems.size() >= 500){
 					this.execHot(runItems, dayKey);
 					logger.info("处理了["+runItems.size()+"]个");
 					runItems.clear();
@@ -75,14 +75,18 @@ public class SpringTopicHotTask {
 		}
 		
 		//获取所有王国评论和更新数
-		List<TopicCountDTO> list = activityService.getTopicCountsByTopicIds(topicIds);
+		List<TopicCountDTO> list = activityService.getTopicCountsTodayByTopicIds(topicIds);
 		
 		List<KingdomHotDTO> batchUpdateList = new ArrayList<KingdomHotDTO>();
 		List<KingdomHotDTO> batchInsertList = new ArrayList<KingdomHotDTO>();
 		
+		List<Long> noUpdateTopicIds = new ArrayList<Long>();
+		noUpdateTopicIds.addAll(topicIds);
+		
 		if(null != list && list.size() > 0){
 			KingdomHotDTO updateDTO = null;
 			KingdomHotDTO insertDTO = null;
+			Long tid = null;
 			for(TopicCountDTO dto : list){
 				updateDTO = new KingdomHotDTO();
 				insertDTO = new KingdomHotDTO();
@@ -93,6 +97,9 @@ public class SpringTopicHotTask {
 				}
 				
 				long hot = (dto.getUpdateCount()*4+dto.getReviewCount()*3)*123;
+				
+				tid = Long.valueOf(dto.getTopicId());
+				noUpdateTopicIds.remove(tid);
 				
 				updateDTO.setTopicId(dto.getTopicId());
 				updateDTO.setConditions(conditions);
@@ -107,6 +114,12 @@ public class SpringTopicHotTask {
 				insertDTO.setUid(Long.valueOf(tMap.get(String.valueOf(dto.getTopicId()))));
 				batchInsertList.add(insertDTO);
 			}
+		}
+		
+		if(noUpdateTopicIds.size() > 0){
+			logger.info("no update today size ["+noUpdateTopicIds.size()+"], update start...");
+			activityService.updateKingdomHotInitByTopicIds(noUpdateTopicIds);
+			logger.info("update end");
 		}
 		
 		if(batchUpdateList.size() > 0){
