@@ -319,7 +319,7 @@
   <select id="getHistoryList" parameterType="java.util.Map" resultMap="BaseResultMap">
     SELECT
     <include refid="Base_Column_List" />
-    FROM `a_kingdom_list` WHERE uid = #{uid} AND activity_id = #{activityId} AND conditions = #{Conditions} AND day_key = #{dateKey}
+    FROM `a_kingdom_list` WHERE uid = #{uid} AND activity_id = #{activityId} AND day_key = #{dateKey}
     UNION ALL
     (SELECT
     <include refid="Base_Column_List" />

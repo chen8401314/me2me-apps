@@ -34,6 +34,8 @@ public class NewYearDto implements BaseEntity {
 
         private long hot;
 
+        private String avatar;
+
     }
 
 }

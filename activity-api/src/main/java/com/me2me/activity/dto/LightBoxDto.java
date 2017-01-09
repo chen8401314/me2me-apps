@@ -12,8 +12,6 @@ import java.util.Date;
 @Data
 public class LightBoxDto implements BaseEntity {
 
-    private Long id;
-
     private String image;
 
     private String mainText;
@@ -23,11 +21,5 @@ public class LightBoxDto implements BaseEntity {
     private Long mainTone;
 
     private String linkUrl;
-
-    private Date startTime;
-
-    private Date endTime;
-
-    private Integer status;
 
 }

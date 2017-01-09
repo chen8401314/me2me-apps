@@ -4562,6 +4562,7 @@ public class ActivityServiceImpl implements ActivityService {
                 BeanUtils.copyProperties(newYearDto ,newYearElement);
                 newYearElement.setIsFollowed(userService.isFollow(newYearDto.getUid(),uid));//souceuid表里是被关注的人
                 newYearElement.setIsFollowMe(userService.isFollow(uid,newYearDto.getUid()));
+                newYearElement.setAvatar(Constant.QINIU_DOMAIN +"/" + newYearDto.getAvatar());
                 dto.getNewYearList().add(newYearElement);
             }
             return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status ,ResponseStatus.SEARCH_ATOPIC_SUCCESS.message ,dto);
@@ -4576,6 +4577,7 @@ public class ActivityServiceImpl implements ActivityService {
         AppLightboxSource appLightboxSource = activityMybatisDao.getAppLightboxSource(nowDate);
         if(appLightboxSource != null){
             BeanUtils.copyProperties(appLightboxSource ,dto);
+            dto.setImage(Constant.QINIU_DOMAIN +"/" + appLightboxSource.getImage());
             return Response.success(dto);
         }
         return Response.success(ResponseStatus.SEARCH_LIGHTBOX_NOT_EXISTS.status ,ResponseStatus.SEARCH_LIGHTBOX_NOT_EXISTS.message);
