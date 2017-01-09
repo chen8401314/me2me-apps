@@ -375,11 +375,11 @@
   <select id="getActualList" parameterType="java.util.Map" resultMap="BaseResultMap">
     SELECT
     <include refid="Base_Column_List" />
-     FROM `a_kingdom` WHERE uid = #{uid} AND STATUS = 0 AND activity_id = #{activityId}
+     FROM `a_kingdom` a WHERE a.uid = #{uid} AND a.STATUS = 0 AND a.activity_id = #{activityId}
     UNION ALL
     (SELECT
     <include refid="Base_Column_List" />
-    FROM `a_kingdom` WHERE STATUS = 0 AND activity_id = #{activityId} AND conditions = #{Conditions} ORDER BY hot DESC LIMIT 10)
+    FROM `a_kingdom` b WHERE b.STATUS = 0 AND b.activity_id = #{activityId} AND b.conditions = #{Conditions} ORDER BY b.hot DESC LIMIT 10)
   </select>
 
   <select id="getRanksAkingDom" parameterType="java.util.Map" resultType="java.lang.Integer">

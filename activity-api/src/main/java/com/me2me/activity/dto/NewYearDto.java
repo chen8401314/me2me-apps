@@ -36,6 +36,10 @@ public class NewYearDto implements BaseEntity {
 
         private String avatar;
 
+        private long uid;
+
+        private String nickName;
+
     }
 
 }
