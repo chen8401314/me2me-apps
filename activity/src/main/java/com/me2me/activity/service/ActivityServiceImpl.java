@@ -4642,12 +4642,12 @@ public class ActivityServiceImpl implements ActivityService {
         if (type == 1) {
             //实时榜单
             List<AkingDom> akingDomActualList = activityMybatisDao.getAkingDomByUidAndAidAndConditionsActual(uid, activityId, 1);
-            int ranks = activityMybatisDao.getRanksAkingDom(uid);
             if (akingDomActualList.size() > 0 && akingDomActualList != null) {
                 if (akingDomActualList.get(0).getUid() == uid && akingDomActualList.get(0).getConditions() == 1) {
                     //自己符合条件才显示排名 热度
                     Map<String, Object> topic = liveForActivityDao.getTopicById(akingDomActualList.get(0).getTopicId());
                     BeanUtils.copyProperties(akingDomActualList.get(0), Elements);
+                    int ranks = activityMybatisDao.getRanksAkingDom(akingDomActualList.get(0).getHot());
                     Elements.setRanks(ranks);
                     if (userProfile != null) {
                         Elements.setAvatar(userProfile.getAvatar());
@@ -4694,12 +4694,12 @@ public class ActivityServiceImpl implements ActivityService {
         } else if (type == 2) {
             //历史榜单
             List<AkingDomList> akingDomHistoryList = activityMybatisDao.getAkingDomListByUidAndAidAndConditionsHistory(uid, activityId, 1, date);
-            int ranks = activityMybatisDao.getRanksAkingDomList(uid, date);
             if (akingDomHistoryList.size() > 0 && akingDomHistoryList != null) {
                 if (akingDomHistoryList.get(0).getUid() == uid  && akingDomHistoryList.get(0).getConditions() == 1) {
                     //自己符合条件才显示排名 热度
                     Map<String, Object> topic = liveForActivityDao.getTopicById(akingDomHistoryList.get(0).getTopicId());
                     BeanUtils.copyProperties(akingDomHistoryList.get(0), Elements);
+                    int ranks = activityMybatisDao.getRanksAkingDomList(akingDomHistoryList.get(0).getHot(), date);
                     Elements.setRanks(ranks);
                     if (userProfile != null) {
                         Elements.setAvatar(userProfile.getAvatar());
