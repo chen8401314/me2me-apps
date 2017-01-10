@@ -3965,6 +3965,20 @@ public class ActivityServiceImpl implements ActivityService {
 
         return Response.success();
     }
+    
+    @Override
+    public Response springStartNotice(){
+    	//先获取所有手机用户手机号
+    	List<String> mobileList = liveForActivityDao.getAllUserMobilesInApp();
+    	if(null == mobileList){
+    		log.info("no mobile user in app.");
+    		return Response.success();
+    	}
+    	List<String> sendList = new ArrayList<String>();
+    	
+    	
+    	return Response.success();
+    }
 
     @Override
     public Response noticeActivityStart() {

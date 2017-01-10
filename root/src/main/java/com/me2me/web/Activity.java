@@ -326,7 +326,13 @@ public class Activity extends BaseController {
     	dto.setAuid(request.getAuid());
     	dto.setIsApp(request.getIsApp());
     	dto.setIsFirst(request.getIsFirst());
-    	return activityService.genActivity7DayMiliList(dto);
+    	if(request.getActivityId() == 0 || request.getActivityId() == 1){
+    		return activityService.genActivity7DayMiliList(dto);
+    	}else if(request.getActivityId() == 2){
+    		return activityService.genMiliList4Spring(request.getUid());
+    	}
+    	
+    	return Response.failure(500, "不识别的活动");
     }
 
     /**

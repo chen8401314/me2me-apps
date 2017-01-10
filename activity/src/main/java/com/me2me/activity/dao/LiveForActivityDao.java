@@ -372,4 +372,21 @@ public class LiveForActivityDao {
 		sb.append(")");
 		jdbcTemplate.execute(sb.toString());
 	}
+	
+	public List<String> getAllUserMobilesInApp(){
+		String sql = "select t.mobile from user_profile t where t.third_part_bind like '%mobile%' order by t.mobile";
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
+		if(null != list && list.size() > 0){
+			List<String> result = new ArrayList<String>();
+			String m = null;
+			for(Map<String,Object> map : list){
+				m = (String)map.get("mobile");
+				if(!StringUtils.isEmpty(m)){
+					result.add(m);
+				}
+			}
+			return result;
+		}
+		return null;
+	}
 }

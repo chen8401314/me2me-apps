@@ -91,6 +91,17 @@ String sub = request.getParameter("s");
                 	<li <%if("8_4".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/7day/task/query">活动任务管理</a></li>
                 </ul>
             </li>
+            <li class="sub-menu">
+                <a href="javascript:;" <%if("9".equals(tab)){ %>class="active"<%} %>>
+                    <i class="fa fa-bar-chart-o"></i>
+                    <span>春节活动管理</span>
+                </a>
+                <ul class="sub">
+                	<li <%if("9_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/spring/getActivityInfo">活动阶段管理</a></li>
+                	<li <%if("9_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/spring/control/index">后台控制管理</a></li>
+                	<li <%if("9_3".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/spring/milidata/query">米粒管理</a></li>
+                </ul>
+            </li>
         </ul>
         <!-- sidebar menu end-->
     </div>

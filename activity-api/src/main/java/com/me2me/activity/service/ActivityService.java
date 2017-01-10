@@ -101,6 +101,8 @@ public interface ActivityService {
     Response getActivityInfo(long activityId);
 
     Response oneKeyAudit();
+    
+    Response springStartNotice();
 
     /**
      * 获取抽奖活动统计方法
