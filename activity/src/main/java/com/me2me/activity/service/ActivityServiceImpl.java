@@ -4616,6 +4616,7 @@ public class ActivityServiceImpl implements ActivityService {
             Map<String, Object> topic = liveForActivityDao.getTopicById(akingDom.getTopicId());
             dto.setTitle((String) topic.get("title"));
             dto.setLiveImage((String) topic.get("live_image"));
+            log.info("get getNewYearLiveInfo success");
             return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message, dto);
         }
         return Response.success(ResponseStatus.SEARCH_ATOPIC_FAILURE.status, ResponseStatus.SEARCH_ATOPIC_FAILURE.message);
@@ -4643,6 +4644,7 @@ public class ActivityServiceImpl implements ActivityService {
                 newYearElement.setAvatar(Constant.QINIU_DOMAIN + "/" + newYearDto.getAvatar());
                 dto.getNewYearList().add(newYearElement);
             }
+            log.info("get getAllNewYearLiveInfo success");
             return Response.success(ResponseStatus.SEARCH_ATOPIC_SUCCESS.status, ResponseStatus.SEARCH_ATOPIC_SUCCESS.message, dto);
         }
         return Response.success(ResponseStatus.SEARCH_ATOPIC_FAILURE.status, ResponseStatus.SEARCH_ATOPIC_FAILURE.message);
@@ -4656,6 +4658,7 @@ public class ActivityServiceImpl implements ActivityService {
         if (appLightboxSource != null) {
             BeanUtils.copyProperties(appLightboxSource, dto);
             dto.setImage(Constant.QINIU_DOMAIN + "/" + appLightboxSource.getImage());
+            log.info("get getlightboxInfo success");
             return Response.success(dto);
         }
         return Response.success(ResponseStatus.SEARCH_LIGHTBOX_NOT_EXISTS.status, ResponseStatus.SEARCH_LIGHTBOX_NOT_EXISTS.message);
@@ -4686,6 +4689,7 @@ public class ActivityServiceImpl implements ActivityService {
                     }
                     dto.getMyActualAndHistoryList().add(Elements);
                     akingDomActualList.remove(0);
+                    log.info("get myActualAndHistoryList success");
                 }else {
                     if (akingDomActualList.get(0).getUid() == uid && akingDomActualList.get(0).getConditions() == 0) {
                         Elements.setHot(akingDomActualList.get(0).getHot());
@@ -4711,6 +4715,7 @@ public class ActivityServiceImpl implements ActivityService {
                     }
                     dto.getActualAndHistoryList().add(actualAndHistoryElement);
                 }
+                log.info("get akingDomActualList success");
                 return Response.success(dto);
             } else {
                 //list为空的时候返回用户信息
@@ -4738,6 +4743,7 @@ public class ActivityServiceImpl implements ActivityService {
                     }
                     dto.getMyActualAndHistoryList().add(Elements);
                     akingDomHistoryList.remove(0);
+                    log.info("get myActualAndHistoryList success");
                 } else {
                     if (akingDomHistoryList.get(0).getUid() == uid  && akingDomHistoryList.get(0).getConditions() == 0) {
                         Elements.setHot(akingDomHistoryList.get(0).getHot());
@@ -4762,6 +4768,7 @@ public class ActivityServiceImpl implements ActivityService {
                         actualAndHistoryElement.setTitle((String) topic.get("title"));
                     }
                     dto.getActualAndHistoryList().add(actualAndHistoryElement);
+                    log.info("get akingDomHistoryList success");
                 }
                 return Response.success(dto);
             }else {
