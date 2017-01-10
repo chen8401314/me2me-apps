@@ -1188,9 +1188,9 @@ public class ActivityMybatisDao {
         return  akingDomMapper.getActualList(map);
     }
 
-    public int getRanksAkingDom(long uid){
+    public int getRanksAkingDom(long hot){
         Map map = Maps.newHashMap();
-        map.put("uid",uid);
+        map.put("hot",hot);
         return  akingDomMapper.getRanksAkingDom(map);
     }
 
@@ -1203,9 +1203,9 @@ public class ActivityMybatisDao {
         return  akingDomListMapper.getHistoryList(map);
     }
 
-    public int getRanksAkingDomList(long uid ,String dateKey){
+    public int getRanksAkingDomList(long hot ,String dateKey){
         Map map = Maps.newHashMap();
-        map.put("uid",uid);
+        map.put("hot",hot);
         map.put("dateKey",dateKey);
         return  akingDomListMapper.getRanksAkingDomList(map);
     }
