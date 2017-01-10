@@ -383,7 +383,7 @@
   </select>
 
   <select id="getRanksAkingDom" parameterType="java.util.Map" resultType="java.lang.Integer">
-      SELECT COUNT(*)+1 AS ranks FROM `a_kingdom` a WHERE a.activity_id = 2 AND a.conditions = 1 AND a.`hot` > #{hot}
+      SELECT COUNT(*)+1 AS ranks FROM `a_kingdom` a WHERE a.activity_id = 2 AND a.conditions = 1 AND a.status = 0 AND a.`hot` > #{hot}
   </select>
 
 </mapper>
