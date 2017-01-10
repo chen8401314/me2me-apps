@@ -327,7 +327,7 @@
   </select>
 
   <select id="getRanksAkingDomList" parameterType="java.util.Map" resultType="java.lang.Integer">
-      SELECT COUNT(*)+1 AS ranks FROM `a_kingdom_list` a WHERE a.activity_id = 2 AND day_key = #{dateKey} AND a.`hot` > #{hot}
+      SELECT COUNT(*)+1 AS ranks FROM `a_kingdom_list` a WHERE a.activity_id = 2 AND a.conditions = 1 AND day_key = #{dateKey} AND a.`hot` > #{hot}
   </select>
 
 </mapper>
