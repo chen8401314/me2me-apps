@@ -81,6 +81,22 @@
         </property>
     </bean>
     <!-- task 4 end-->
+    
+    <!-- task 5 start-->
+    <bean id="springStartNoticeTaskJobDetailA" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="springStartNoticeTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="springStartNoticeTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="springStartNoticeTaskJobDetailA">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 12 26 1 ?</value>
+        </property>
+    </bean>
+    <!-- task 5 end-->
 
     <bean name="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
@@ -92,6 +108,7 @@
                  -->
                  <!-- 
                 <ref bean="springTopicHotTaskTriggers" />
+                <ref bean="springStartNoticeTaskTriggers" />
                  -->
             </list>
         </property>

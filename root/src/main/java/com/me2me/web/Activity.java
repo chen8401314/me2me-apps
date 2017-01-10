@@ -322,11 +322,11 @@ public class Activity extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/milidata",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response milidata(ActivityMiliRequest request){
-    	Activity7DayMiliDTO dto = new Activity7DayMiliDTO();
-    	dto.setAuid(request.getAuid());
-    	dto.setIsApp(request.getIsApp());
-    	dto.setIsFirst(request.getIsFirst());
     	if(request.getActivityId() == 0 || request.getActivityId() == 1){
+    		Activity7DayMiliDTO dto = new Activity7DayMiliDTO();
+        	dto.setAuid(request.getAuid());
+        	dto.setIsApp(request.getIsApp());
+        	dto.setIsFirst(request.getIsFirst());
     		return activityService.genActivity7DayMiliList(dto);
     	}else if(request.getActivityId() == 2){
     		return activityService.genMiliList4Spring(request.getUid());

@@ -184,7 +184,7 @@ public class ActivitySpringController {
 	@ResponseBody
 	@SystemControllerLog(description = "春节活动通知活动开始")
 	public String startNotice(){
-		activityService.oneKeyAudit();
+		activityService.springStartNotice();
 		return "0";
 	}
 }

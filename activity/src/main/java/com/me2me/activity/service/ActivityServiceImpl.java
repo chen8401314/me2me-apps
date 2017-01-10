@@ -3905,26 +3905,6 @@ public class ActivityServiceImpl implements ActivityService {
         return liveForActivityDao.getPairingUser();
     }
 
-
-    /**
-     * 有单人没双人的通知强配
-     */
-//	@Override
-//	public Response forcedPairingPush(){
-//		AactivityStage stage3 = activityMybatisDao.getStageByStage(1, 3);
-//		if(this.isForce(stage3, new Date())){
-//			//在强配阶段，可以发推送
-//			//把所有有单人没双人的进行推送
-//			List<Long> uidList = liveForActivityDao.getPairingUser();
-//			log.info(uidList.size() + " users can be forced pairing");
-//
-//			applicationEventBus.post(new ForcedPairingPushEvent(uidList));
-//
-//			return Response.success(200, "共["+uidList.size()+"]个用户正在推送中");
-//		}
-//
-//		return Response.failure("当前不处在强配阶段，无法全量强配推动");
-//	}
     @Override
     public Response bindNotice() {
         //获取审核通过，但是没有绑定uid
@@ -3970,14 +3950,62 @@ public class ActivityServiceImpl implements ActivityService {
     public Response springStartNotice(){
     	//先获取所有手机用户手机号
     	List<String> mobileList = liveForActivityDao.getAllUserMobilesInApp();
-    	if(null == mobileList){
+    	if(null == mobileList || mobileList.size() == 0){
     		log.info("no mobile user in app.");
     		return Response.success();
+    	}else{
+    		log.info("total ["+mobileList.size()+"] mobiles..");
     	}
-    	List<String> sendList = new ArrayList<String>();
     	
+    	List<String> msgList = new ArrayList<String>();
+    	AactivityStage stage2 = activityMybatisDao.getAactivityStageByStage2(2, 2);
+    	if (null != stage2) {
+            Calendar cal = Calendar.getInstance();
+            cal.setTime(stage2.getStartTime());
+            int month = cal.get(Calendar.MONTH) + 1;
+            int day = cal.get(Calendar.DAY_OF_MONTH);
+            msgList.add(String.valueOf(month));
+            msgList.add(String.valueOf(day));
+        } else {
+            msgList.add("");
+            msgList.add("");
+        }
+    	
+    	long total = 0;
+    	List<String> sendList = new ArrayList<String>();
+    	for(String mobile : mobileList){
+    		if(checkMobile(mobile)){
+    			sendList.add(mobile);
+    			if(sendList.size() >= 180){
+    				smsService.send7dayCommon("", sendList, msgList);
+                    log.info("send [" + sendList.size() + "] user!");
+                    total = total + sendList.size();
+                    sendList.clear();
+    			}
+    		}
+    	}
+    	if(sendList.size() > 0){
+    		smsService.send7dayCommon("", sendList, msgList);
+            log.info("send [" + sendList.size() + "] user!");
+            total = total + sendList.size();
+    	}
+    	
+    	log.info("total ["+total+"] mobiles send!");
     	
     	return Response.success();
+    }
+    
+    private boolean checkMobile(String mobile){
+    	if(!StringUtils.isEmpty(mobile)){
+    		if(!mobile.startsWith("100") && !mobile.startsWith("111")
+    				&& !mobile.startsWith("123") && !mobile.startsWith("1666")
+    				&& !mobile.startsWith("180000") && !mobile.startsWith("18888888")
+    				&& !mobile.startsWith("18900") && !mobile.startsWith("19000")
+    				&& !mobile.startsWith("2") && !mobile.startsWith("8")){
+    			return true;
+    		}
+    	}
+    	return false;
     }
 
     @Override
