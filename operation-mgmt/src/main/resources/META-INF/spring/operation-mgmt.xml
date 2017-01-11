@@ -97,6 +97,22 @@
         </property>
     </bean>
     <!-- task 5 end-->
+    
+    <!-- task 6 start-->
+    <bean id="springPushTop10TaskJobDetailA" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="springPushTop10Task"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="springPushTop10TaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="springPushTop10TaskJobDetailA">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 9 * * ?</value>
+        </property>
+    </bean>
+    <!-- task 6 end-->
 
     <bean name="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
@@ -107,8 +123,9 @@
                 <ref bean="kingdomUpdatePushTaskTriggers" />
                  -->
                  
-                <ref bean="springTopicHotTaskTriggers" />
+                 <ref bean="springTopicHotTaskTriggers" />
                 <!-- 
+                <ref bean="springPushTop10TaskTriggers" />
                 <ref bean="springStartNoticeTaskTriggers" />
                  -->
             </list>

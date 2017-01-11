@@ -7,6 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import com.google.common.collect.Maps;
@@ -25,6 +26,9 @@ public class SpringPushTop10Task {
     private ActivityService activityService;
 	@Autowired
 	private JPushService jPushService;
+	
+	@Value("${webappUrl}")
+	private String webappUrl;
 	
 	public void doTask(){
 		logger.info("春节活动TOP10推送任务开始...");
@@ -51,12 +55,18 @@ public class SpringPushTop10Task {
 				}
 			}
 			if(canPush){
+				logger.info("start push...");
+				Date date = DateUtil.addDay(now, -1);
+				String daykey = DateUtil.date2string(date, "yyyyMMdd");
 				//全部用户推送
 				Map<String, String> map = Maps.newHashMap();
 				map.put("type", "4");
 				map.put("messageType", "13");
-//				map.put("link_url", "https://webapp.me-to-me.com"+Specification.LinkPushType.FORCED_PAIRING.linkUrl+"?uid="+ut.getUid()+"&token="+ut.getToken());
+				map.put("link_url", webappUrl+Specification.LinkPushType.TOP10_PUSH.linkUrl+"?day=" + daykey);
 				
+//				jPushService.payloadByIdsExtra(true, null, Specification.LinkPushType.TOP10_PUSH.message, map);
+				String[] uids = new String[]{"446"};
+				jPushService.payloadByIdsExtra(false, uids, Specification.LinkPushType.TOP10_PUSH.message, map);
 			}else{
 				logger.info("当前不处在TOP10推送阶段");
 			}
