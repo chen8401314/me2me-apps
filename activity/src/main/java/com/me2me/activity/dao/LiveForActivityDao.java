@@ -11,6 +11,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import com.me2me.activity.dto.KingdomHotDTO;
+import com.me2me.activity.dto.TopicItem;
 
 @Repository
 public class LiveForActivityDao {
@@ -247,10 +248,22 @@ public class LiveForActivityDao {
 		return null;
 	}
 	
-	public List<Map<String,Object>> getActivityTopicIds(long activityId){
+	public List<TopicItem> getActivityTopicIds(long activityId){
 		String sql = "select k.topic_id,k.uid from a_kingdom k where k.status=0 and k.activity_id=" + activityId;
 		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
-		return list;
+		if(null != list && list.size() > 0){
+			List<TopicItem> result = new ArrayList<TopicItem>();
+			TopicItem item = null;
+			for(Map<String,Object> m : list){
+				item = new TopicItem();
+				item.setTopicId((Long)m.get("topic_id"));
+				item.setUid((Long)m.get("uid"));
+				result.add(item);
+			}
+			return result;
+		}
+		
+		return null;
 	}
 	
 	public List<Long> getSingleHotsByDoubleTopicId(long doubleTopicId){

@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import com.me2me.activity.dto.KingdomHotDTO;
 import com.me2me.activity.dto.TopicCountDTO;
+import com.me2me.activity.dto.TopicItem;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.utils.DateUtil;
 
@@ -37,12 +38,12 @@ public class SpringTopicHotTask {
 		logger.info("删除当前时间戳的榜单表记录完成");
 		
 		//获取所有待计算的春节王国
-		List<Map<String,Object>> topicList = activityService.getActivityTopicIds(2);
+		List<TopicItem> topicList = activityService.getActivityTopicIds(2);
 		
 		if(null != topicList && topicList.size() > 0){
 			logger.info("有效春节王国共["+topicList.size()+"]个");
-			List<Map<String,Object>> runItems = new ArrayList<Map<String,Object>>();
-			for(Map<String,Object> map : topicList){
+			List<TopicItem> runItems = new ArrayList<TopicItem>();
+			for(TopicItem map : topicList){
 				runItems.add(map);
 				if(runItems.size() >= 500){
 					this.execHot(runItems, dayKey);
@@ -62,11 +63,11 @@ public class SpringTopicHotTask {
 		logger.info("春节活动王国热度任务结束，共耗时["+(e-s)/1000+"]秒");
 	}
 	
-	private void execHot(List<Map<String,Object>> topicList, String dayKey){
+	private void execHot(List<TopicItem> topicList, String dayKey){
 		//topicId-->uid
 		Map<String,String> tMap = new HashMap<String, String>();
-		for(Map<String,Object> m : topicList){
-			tMap.put(String.valueOf((Long)m.get("topic_id")), String.valueOf((Long)m.get("uid")));
+		for(TopicItem m : topicList){
+			tMap.put(String.valueOf(m.getTopicId()), String.valueOf(m.getUid()));
 		}
 		
 		List<Long> topicIds = new ArrayList<Long>();

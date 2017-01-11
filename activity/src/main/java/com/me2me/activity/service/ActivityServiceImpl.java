@@ -4265,7 +4265,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
     
     @Override
-    public List<Map<String,Object>> getActivityTopicIds(long activityId){
+    public List<TopicItem> getActivityTopicIds(long activityId){
     	return liveForActivityDao.getActivityTopicIds(activityId);
     }
 
