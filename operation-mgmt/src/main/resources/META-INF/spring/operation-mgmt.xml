@@ -106,8 +106,9 @@
                 <ref bean="recommandPushTaskTriggers" />
                 <ref bean="kingdomUpdatePushTaskTriggers" />
                  -->
-                 <!-- 
+                 
                 <ref bean="springTopicHotTaskTriggers" />
+                <!-- 
                 <ref bean="springStartNoticeTaskTriggers" />
                  -->
             </list>
