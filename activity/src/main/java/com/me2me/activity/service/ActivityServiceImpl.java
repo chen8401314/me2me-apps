@@ -2693,10 +2693,12 @@ public class ActivityServiceImpl implements ActivityService {
                     cal2.add(Calendar.DATE, -1);
                     int month = cal2.get(Calendar.MONTH) + 1;
                     int day = cal2.get(Calendar.DAY_OF_MONTH);
+                    String daykey = DateUtil.date2string(cal2.getTime(), "yyyyMMdd");
                     params = new ArrayList<Map<String, String>>();
                     Map<String, String> map = new HashMap<String, String>();
                     map.put("month", String.valueOf(month));
                     map.put("day", String.valueOf(day));
+                    map.put("daykey", daykey);
                     params.add(map);
                     this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.NEW_YEAR_9.key, params);
                 }
@@ -2733,10 +2735,12 @@ public class ActivityServiceImpl implements ActivityService {
                     cal2.add(Calendar.DATE, -1);
                     int month = cal2.get(Calendar.MONTH) + 1;
                     int day = cal2.get(Calendar.DAY_OF_MONTH);
+                    String daykey = DateUtil.date2string(cal2.getTime(), "yyyyMMdd");
                     params = new ArrayList<Map<String, String>>();
                     Map<String, String> map = new HashMap<String, String>();
                     map.put("month", String.valueOf(month));
                     map.put("day", String.valueOf(day));
+                    map.put("daykey", daykey);
                     params.add(map);
                     this.genMili(respDTO, miliMap, Specification.ActivityMiliDataKey.SPRING_ACTIVITY_END_9.key, params);
                 }

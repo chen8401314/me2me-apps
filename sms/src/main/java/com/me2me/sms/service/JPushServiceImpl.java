@@ -116,7 +116,6 @@ public class JPushServiceImpl implements JPushService{
                 .newBuilder()
                 .setPlatform(Platform.all())
                 .setAudience(Audience.alias(uid))
-//                .setAudience(Audience.registrationId(regId))
                 .setMessage(platformMessage)
                 .build();
         try {
@@ -125,6 +124,50 @@ public class JPushServiceImpl implements JPushService{
             e.printStackTrace();
         } catch (APIRequestException e) {
             e.printStackTrace();
+        }
+    }
+    
+    @Override
+    public void payloadByIdsExtra(boolean isAll, String[] uids, String message, Map<String,String> extraMaps){
+    	if(!isAll && (null == uids || uids.length == 0)){
+    		log.info("no one to push!");
+    		return;
+    	}
+    	//默认为false开发环境，true为生产环境
+        Options options;
+        if("product".equals(env)) {
+            options = Options.newBuilder().setApnsProduction(true).build();
+        }else{
+            options = Options.newBuilder().setApnsProduction(false).build();
+        }
+        
+        Audience audience = null;
+        if(isAll){
+        	audience = Audience.all();
+        }else{
+        	audience = Audience.alias(uids);
+        }
+        
+        PushPayload payload = PushPayload.newBuilder()
+                .setPlatform(Platform.android_ios())
+                .setAudience(audience)
+                .setNotification(Notification.newBuilder()
+                        .setAlert(message)
+                        // android 平台
+                        .addPlatformNotification(AndroidNotification.newBuilder()
+                                .addExtras(extraMaps).build())
+                        // ios 平台
+                        .addPlatformNotification(IosNotification.newBuilder()
+                                .incrBadge(1)
+                                .addExtras(extraMaps).build())
+                        .build()).setOptions(options)
+                .build();
+        try {
+            jPushClient.sendPush(payload);
+        } catch (APIConnectionException e) {
+        	log.error("APIConnectionException", e);
+        } catch (APIRequestException e) {
+        	log.error("APIRequestException", e);
         }
     }
 
