@@ -4311,6 +4311,10 @@ public class ActivityServiceImpl implements ActivityService {
     	liveForActivityDao.deleteKingdomListByDayKey(dayKey);
     }
 
+    @Override
+    public List<Long> getSpringKingdomUids(){
+    	return liveForActivityDao.getAllKingdomUids();
+    }
 
     @Override
     public TopicCountDTO getTopicCount(long topicId){
@@ -4608,6 +4612,16 @@ public class ActivityServiceImpl implements ActivityService {
         }
 
         return dto;
+    }
+    
+    @Override
+    public List<AkingDom> getAkingDomsByConditions(int conditions, long activityId){
+    	return activityMybatisDao.getAkingDomListByActivityIdAndConditions(activityId, conditions);
+    }
+    
+    @Override
+    public List<AkingDom> getAkingdomsTop(long activityId, int topNum){
+    	return activityMybatisDao.getAkingDomListByTop(activityId, topNum);
     }
 
     @Override

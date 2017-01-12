@@ -319,6 +319,19 @@ public class LiveForActivityDao {
 		jdbcTemplate.execute(sql);
 	}
 	
+	public List<Long> getAllKingdomUids(){
+		String sql = "select DISTINCT t.uid from a_kingdom t where t.status=0";
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
+		if(null != list && list.size() > 0){
+			List<Long> uids = new ArrayList<Long>();
+			for(Map<String,Object> m : list){
+				uids.add((Long)m.get("uid"));
+			}
+			return uids;
+		}
+		return null;
+	}
+	
 	public List<Map<String, Object>> getSinglePerson(){
 		StringBuilder sb = new StringBuilder();
 		sb.append("select t.auid,t.uid,u.gender,r.mobile,u.nick_name ");

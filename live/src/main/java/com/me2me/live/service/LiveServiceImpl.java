@@ -31,6 +31,7 @@ import com.me2me.live.dao.LiveLocalJdbcDao;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.*;
 import com.me2me.live.event.CacheLiveEvent;
+import com.me2me.live.event.RemindAndJpushAtMessageEvent;
 import com.me2me.live.event.SpeakEvent;
 import com.me2me.live.model.*;
 import com.me2me.sms.service.JPushService;
@@ -452,28 +453,29 @@ public class LiveServiceImpl implements LiveService {
             speakDto.setFragmentId(topicFragment.getId());
         }
         log.info("createTopicFragment success");
-        TopicBarrage topicBarrage = new TopicBarrage();
-        topicBarrage.setFragmentImage(speakDto.getFragmentImage());
-        topicBarrage.setFragment(speakDto.getFragment());
-        topicBarrage.setBottomId(speakDto.getBottomId());
-        topicBarrage.setTopicId(speakDto.getTopicId());
-        topicBarrage.setTopId(speakDto.getTopId());
-        topicBarrage.setContentType(speakDto.getContentType());
-        topicBarrage.setType(speakDto.getType());
-        topicBarrage.setUid(speakDto.getUid());
-        topicBarrage.setFid(fid);
+        //弹幕已经不需要了
+//        TopicBarrage topicBarrage = new TopicBarrage();
+//        topicBarrage.setFragmentImage(speakDto.getFragmentImage());
+//        topicBarrage.setFragment(speakDto.getFragment());
+//        topicBarrage.setBottomId(speakDto.getBottomId());
+//        topicBarrage.setTopicId(speakDto.getTopicId());
+//        topicBarrage.setTopId(speakDto.getTopId());
+//        topicBarrage.setContentType(speakDto.getContentType());
+//        topicBarrage.setType(speakDto.getType());
+//        topicBarrage.setUid(speakDto.getUid());
+//        topicBarrage.setFid(fid);
 
         //保存弹幕
-        TopicBarrage barrage = liveMybatisDao.getBarrage(speakDto.getTopicId(), speakDto.getTopId(), speakDto.getBottomId(), speakDto.getType(), speakDto.getUid());
-        if (barrage == null) {
-            if (speakDto.getType() != Specification.LiveSpeakType.ANCHOR.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR_AT.index && speakDto.getType() != Specification.LiveSpeakType.VIDEO.index && speakDto.getType() != Specification.LiveSpeakType.SOUND.index) {
-                liveMybatisDao.createTopicBarrage(topicBarrage);
-            }
-        } else {
-            if (speakDto.getType() == Specification.LiveSpeakType.SUBSCRIBED.index || speakDto.getType() == Specification.LiveSpeakType.FANS.index || speakDto.getType() == Specification.LiveSpeakType.FORWARD.index || speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.SHARE.index || speakDto.getType() == Specification.LiveSpeakType.AT.index) {
-                liveMybatisDao.createTopicBarrage(topicBarrage);
-            }
-        }
+//        TopicBarrage barrage = liveMybatisDao.getBarrage(speakDto.getTopicId(), speakDto.getTopId(), speakDto.getBottomId(), speakDto.getType(), speakDto.getUid());
+//        if (barrage == null) {
+//            if (speakDto.getType() != Specification.LiveSpeakType.ANCHOR.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR_AT.index && speakDto.getType() != Specification.LiveSpeakType.VIDEO.index && speakDto.getType() != Specification.LiveSpeakType.SOUND.index) {
+//                liveMybatisDao.createTopicBarrage(topicBarrage);
+//            }
+//        } else {
+//            if (speakDto.getType() == Specification.LiveSpeakType.SUBSCRIBED.index || speakDto.getType() == Specification.LiveSpeakType.FANS.index || speakDto.getType() == Specification.LiveSpeakType.FORWARD.index || speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.SHARE.index || speakDto.getType() == Specification.LiveSpeakType.AT.index) {
+//                liveMybatisDao.createTopicBarrage(topicBarrage);
+//            }
+//        }
 //        if(barrage == null && speakDto.getType() != Specification.LiveSpeakType.ANCHOR.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index && speakDto.getType() != Specification.LiveSpeakType.ANCHOR_AT.index && speakDto.getType() != Specification.LiveSpeakType.VIDEO.index) {
 //            liveMybatisDao.createTopicBarrage(topicBarrage);
 //        }else if(barrage != null && (speakDto.getType() == Specification.LiveSpeakType.SUBSCRIBED.index || speakDto.getType() == Specification.LiveSpeakType.FANS.index || speakDto.getType() == Specification.LiveSpeakType.FORWARD.index || speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.LIKES.index || speakDto.getType() == Specification.LiveSpeakType.SHARE.index ||speakDto.getType() == Specification.LiveSpeakType.AT.index  )){
@@ -529,11 +531,20 @@ public class LiveServiceImpl implements LiveService {
             //userService.push(topic.getUid(),speakDto.getUid(),Specification.PushMessageType.LIVE_REVIEW.index,topic.getTitle());
             //log.info("live review push");
         } else if (speakDto.getType() == Specification.LiveSpeakType.AT.index) {
-            remindAndJpushAtMessage(speakDto);
+        	RemindAndJpushAtMessageEvent event = new RemindAndJpushAtMessageEvent();
+        	event.setSpeakDto(speakDto);
+        	applicationEventBus.post(event);
+//            remindAndJpushAtMessage(speakDto);
         } else if (speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index) {
-            remindAndJpushAtMessage(speakDto);
+        	RemindAndJpushAtMessageEvent event = new RemindAndJpushAtMessageEvent();
+        	event.setSpeakDto(speakDto);
+        	applicationEventBus.post(event);
+//            remindAndJpushAtMessage(speakDto);
         } else if (speakDto.getType() == Specification.LiveSpeakType.AT_CORE_CIRCLE.index) { //2.1.2
-            remindAndJpushAtMessage(speakDto);
+        	RemindAndJpushAtMessageEvent event = new RemindAndJpushAtMessageEvent();
+        	event.setSpeakDto(speakDto);
+        	applicationEventBus.post(event);
+//            remindAndJpushAtMessage(speakDto);
         }
         log.info("speak end ...");
         //2.0.7
@@ -796,9 +807,6 @@ public class LiveServiceImpl implements LiveService {
             } else {
                 showTopicElement.setFavorite(Specification.LiveFavorite.NORMAL.index);
             }
-            Content content = contentService.getContentByTopicId(topic.getId());
-            int readCountDummy = content.getReadCountDummy();
-            showTopicElement.setReadCount(readCountDummy);
 
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
@@ -848,10 +856,6 @@ public class LiveServiceImpl implements LiveService {
             } else {
                 showTopicElement.setFavorite(Specification.LiveFavorite.NORMAL.index);
             }
-            //直播阅读数
-            Content content = contentService.getContentByTopicId(topic.getId());
-            int readCountDummy = content.getReadCountDummy();
-            showTopicElement.setReadCount(readCountDummy);
 
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
@@ -874,6 +878,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setFavoriteCount(content.getFavoriteCount());
             showTopicElement.setCid(content.getId());
             showTopicElement.setIsLike(contentService.isLike(content.getId(), uid));
+            showTopicElement.setReadCount(content.getReadCountDummy());
         }
     }
 

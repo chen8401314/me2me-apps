@@ -4,6 +4,7 @@ import com.me2me.activity.dto.*;
 import com.me2me.activity.model.Aactivity;
 import com.me2me.activity.model.AactivityStage;
 import com.me2me.activity.model.ActivityWithBLOBs;
+import com.me2me.activity.model.AkingDom;
 import com.me2me.activity.model.AmiliData;
 import com.me2me.activity.model.Atask;
 import com.me2me.activity.model.AtaskWithBLOBs;
@@ -222,6 +223,12 @@ public interface ActivityService {
     void batchUpdateKingdomHot(List<KingdomHotDTO> list);
     
     void updateKingdomHotInitByTopicIds(List<Long> topicIds);
+    
+    List<Long> getSpringKingdomUids();
+    
+    List<AkingDom> getAkingDomsByConditions(int conditions, long activityId);
+    
+    List<AkingDom> getAkingdomsTop(long activityId, int topNum);
     
     Response getNewYearLiveInfo(long uid ,long activityId);
 
