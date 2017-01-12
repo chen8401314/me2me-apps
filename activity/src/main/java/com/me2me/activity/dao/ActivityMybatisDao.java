@@ -1263,4 +1263,27 @@ public class ActivityMybatisDao {
     public void createAppUiControl(AppUiControl appui){
     	appUiControlMapper.insertSelective(appui);
     }
+    
+    public List<AppLightboxSource> getAppLightboxSourceListByTime(Date searchTime){
+    	AppLightboxSourceExample example = new AppLightboxSourceExample();
+    	AppLightboxSourceExample.Criteria criteria = example.createCriteria();
+    	if(null != searchTime){
+    		criteria.andStartTimeLessThanOrEqualTo(searchTime);
+    		criteria.andEndTimeGreaterThanOrEqualTo(searchTime);
+    	}
+    	example.setOrderByClause(" start_time desc ");
+    	return appLightboxSourceMapper.selectByExample(example);
+    }
+    
+    public AppLightboxSource getAppLightboxSourceById(long id){
+    	return appLightboxSourceMapper.selectByPrimaryKey(id);
+    }
+    
+    public void updateAppLightboxSource(AppLightboxSource item){
+    	appLightboxSourceMapper.updateByPrimaryKeySelective(item);
+    }
+    
+    public void createAppLightboxSource(AppLightboxSource item){
+    	appLightboxSourceMapper.insertSelective(item);
+    }
 }

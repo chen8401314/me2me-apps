@@ -4832,7 +4832,37 @@ public class ActivityServiceImpl implements ActivityService {
     	activityMybatisDao.updateAppUiControl(appui);
     }
     
+    @Override
     public void createAppUiControl(AppUiControl appui){
     	activityMybatisDao.createAppUiControl(appui);
+    }
+    
+    @Override
+    public List<AppLightboxSource> getAppLightboxSourceList(String searchTime){
+    	Date sTime = null;
+    	if(!StringUtils.isEmpty(searchTime)){
+    		try{
+    			sTime = DateUtil.string2date(searchTime, "yyyy-MM-dd HH:mm:ss");
+    		}catch(Exception e){
+    			log.error("日期转换失败", e);
+    			sTime = null;
+    		}
+    	}
+    	return activityMybatisDao.getAppLightboxSourceListByTime(sTime);
+    }
+    
+    @Override
+    public AppLightboxSource getAppLightboxSourceById(long id){
+    	return activityMybatisDao.getAppLightboxSourceById(id);
+    }
+    
+    @Override
+    public void updateAppLightboxSource(AppLightboxSource lightbox){
+    	activityMybatisDao.updateAppLightboxSource(lightbox);
+    }
+    
+    @Override
+    public void createAppLightboxSource(AppLightboxSource lightbox){
+    	activityMybatisDao.createAppLightboxSource(lightbox);
     }
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.me2me.activity.model.AppLightboxSource;
 import com.me2me.activity.model.AppUiControl;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.cache.service.CacheService;
@@ -27,6 +28,8 @@ import com.me2me.mgmt.request.AppUIItem;
 import com.me2me.mgmt.request.AppUIQueryDTO;
 import com.me2me.mgmt.request.AppVersionQueryDTO;
 import com.me2me.mgmt.request.ConfigItem;
+import com.me2me.mgmt.request.LightBoxItem;
+import com.me2me.mgmt.request.LightBoxQueryDTO;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.user.dto.ShowVersionControlDto;
 import com.me2me.user.dto.VersionControlDto;
@@ -389,6 +392,103 @@ public class AppConfigController {
 		ui.setStatus(item.getStatus());
 		activityService.createAppUiControl(ui);
 		ModelAndView view = new ModelAndView("redirect:/appconfig/ui/query");
+		return view;
+	}
+	
+	@RequestMapping(value = "/lightbox/query")
+	public ModelAndView queryLightBox(LightBoxQueryDTO dto){
+		ModelAndView view = new ModelAndView("appconfig/lightboxList");
+		
+		List<AppLightboxSource> list = activityService.getAppLightboxSourceList(dto.getSearchTime());
+		if(null != list && list.size() > 0){
+			List<LightBoxItem> result = new ArrayList<LightBoxItem>();
+			LightBoxItem item = null;
+			for(AppLightboxSource l : list){
+				item = new LightBoxItem();
+				item.setId(l.getId());
+				item.setImage(l.getImage());
+				item.setMainText(l.getMainText());
+				item.setSecondaryText(l.getSecondaryText());
+				item.setMainTone(l.getMainTone());
+				item.setLinkUrl(l.getLinkUrl());
+				item.setStartTime(DateUtil.date2string(l.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
+				item.setEndTime(DateUtil.date2string(l.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
+				item.setStatus(l.getStatus());
+				result.add(item);
+			}
+			dto.setResult(result);
+		}
+
+		view.addObject("dataObj",dto);
+		return view;
+	}
+	
+	@RequestMapping(value = "/lightbox/find/{id}")
+	public ModelAndView getLightBox(@PathVariable long id){
+		ModelAndView view = new ModelAndView("appconfig/lightboxEdit");
+		AppLightboxSource l = activityService.getAppLightboxSourceById(id);
+		LightBoxItem item = new LightBoxItem();
+		item.setId(l.getId());
+		item.setImage(l.getImage());
+		item.setMainText(l.getMainText());
+		item.setSecondaryText(l.getSecondaryText());
+		item.setMainTone(l.getMainTone());
+		item.setLinkUrl(l.getLinkUrl());
+		item.setStartTime(DateUtil.date2string(l.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
+		item.setEndTime(DateUtil.date2string(l.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
+		item.setStatus(l.getStatus());
+		
+		view.addObject("dataObj",item);
+		return view;
+	}
+	
+	@RequestMapping(value = "/lightbox/update")
+	@SystemControllerLog(description = "更新APP灯箱页")
+	public ModelAndView updateLightBox(LightBoxItem item){
+		AppLightboxSource l = activityService.getAppLightboxSourceById(item.getId());
+		l.setImage(item.getImage());
+		l.setMainText(item.getMainText());
+		l.setSecondaryText(item.getSecondaryText());
+		l.setMainTone(item.getMainTone());
+		l.setLinkUrl(item.getLinkUrl());
+		try{
+			l.setStartTime(DateUtil.string2date(item.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
+			l.setEndTime(DateUtil.string2date(item.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
+		}catch(Exception e){
+			logger.error("时间转换失败", e);
+			ModelAndView view = new ModelAndView("appconfig/lightboxEdit");
+			view.addObject("errMsg","时间格式错误");
+			return view;
+		}
+		l.setStatus(item.getStatus());
+		activityService.updateAppLightboxSource(l);
+
+		ModelAndView view = new ModelAndView("redirect:/appconfig/lightbox/query");
+		return view;
+	}
+	
+	@RequestMapping(value = "/lightbox/create")
+	@SystemControllerLog(description = "新增APP灯箱页")
+	public ModelAndView createLightBox(LightBoxItem item){
+		AppLightboxSource l = new AppLightboxSource();
+		l.setImage(item.getImage());
+		l.setMainText(item.getMainText());
+		l.setSecondaryText(item.getSecondaryText());
+		l.setMainTone(item.getMainTone());
+		l.setLinkUrl(item.getLinkUrl());
+		try{
+			l.setStartTime(DateUtil.string2date(item.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
+			l.setEndTime(DateUtil.string2date(item.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
+		}catch(Exception e){
+			logger.error("时间转换失败", e);
+			ModelAndView view = new ModelAndView("appconfig/lightboxNew");
+			view.addObject("errMsg","时间格式错误");
+			return view;
+		}
+		l.setStatus(item.getStatus());
+		activityService.createAppLightboxSource(l);
+		
+		ModelAndView view = new ModelAndView("redirect:/appconfig/lightbox/query");
 		return view;
 	}
 }

@@ -6,6 +6,7 @@ import com.me2me.activity.model.AactivityStage;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.model.AkingDom;
 import com.me2me.activity.model.AmiliData;
+import com.me2me.activity.model.AppLightboxSource;
 import com.me2me.activity.model.AppUiControl;
 import com.me2me.activity.model.Atask;
 import com.me2me.activity.model.AtaskWithBLOBs;
@@ -238,6 +239,14 @@ public interface ActivityService {
     void updateAppUiControl(AppUiControl appui);
     
     void createAppUiControl(AppUiControl appui);
+    
+    List<AppLightboxSource> getAppLightboxSourceList(String searchTime);
+    
+    AppLightboxSource getAppLightboxSourceById(long id);
+    
+    void updateAppLightboxSource(AppLightboxSource lightbox);
+    
+    void createAppLightboxSource(AppLightboxSource lightbox);
     
     Response getNewYearLiveInfo(long uid ,long activityId);
 
