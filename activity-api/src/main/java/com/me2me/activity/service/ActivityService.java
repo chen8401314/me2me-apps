@@ -6,6 +6,7 @@ import com.me2me.activity.model.AactivityStage;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.model.AkingDom;
 import com.me2me.activity.model.AmiliData;
+import com.me2me.activity.model.AppUiControl;
 import com.me2me.activity.model.Atask;
 import com.me2me.activity.model.AtaskWithBLOBs;
 import com.me2me.activity.model.Atopic;
@@ -229,6 +230,14 @@ public interface ActivityService {
     List<AkingDom> getAkingDomsByConditions(int conditions, long activityId);
     
     List<AkingDom> getAkingdomsTop(long activityId, int topNum);
+    
+    List<AppUiControl> getAppUiControlList(String searchTime);
+    
+    AppUiControl getAppUiControlById(long id);
+    
+    void updateAppUiControl(AppUiControl appui);
+    
+    void createAppUiControl(AppUiControl appui);
     
     Response getNewYearLiveInfo(long uid ,long activityId);
 

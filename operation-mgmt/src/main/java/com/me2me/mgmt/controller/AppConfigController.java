@@ -18,8 +18,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.me2me.activity.model.AppUiControl;
+import com.me2me.activity.service.ActivityService;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.web.Response;
+import com.me2me.mgmt.request.AppUIQueryDTO;
 import com.me2me.mgmt.request.AppVersionQueryDTO;
 import com.me2me.mgmt.request.ConfigItem;
 import com.me2me.mgmt.syslog.SystemControllerLog;
@@ -38,6 +41,8 @@ public class AppConfigController {
 	private CacheService cacheService;
 	@Autowired
     private UserService userService;
+	@Autowired
+	private ActivityService activityService;
 
 	private List<ConfigItem> cacheConfigList = null;
 	
@@ -299,6 +304,41 @@ public class AppConfigController {
 		userService.saveOrUpdateVersion(dto);
 		
 		view = new ModelAndView("redirect:/appconfig/version/query");
+		return view;
+	}
+	
+	@RequestMapping(value = "/ui/query")
+	public ModelAndView queryAppUI(AppUIQueryDTO dto){
+		ModelAndView view = new ModelAndView("appconfig/appuiList");
+		
+		List<AppUiControl> list = activityService.getAppUiControlList(dto.getSearchTime());
+		dto.setResult(list);
+		
+		view.addObject("dataObj",dto);
+		return view;
+	}
+	
+	@RequestMapping(value = "/ui/find/{id}")
+	public ModelAndView getUI(@PathVariable long id){
+		ModelAndView view = new ModelAndView("appconfig/appuiEdit");
+		AppUiControl ui = activityService.getAppUiControlById(id);
+		view.addObject("dataObj",ui);
+		return view;
+	}
+	
+	@RequestMapping(value = "/ui/update")
+	@SystemControllerLog(description = "更新APP主题")
+	public ModelAndView updateAppUI(AppUiControl appui){
+		activityService.updateAppUiControl(appui);
+		ModelAndView view = new ModelAndView("redirect:/appconfig/ui/query");
+		return view;
+	}
+	
+	@RequestMapping(value = "/ui/create")
+	@SystemControllerLog(description = "新增APP主题")
+	public ModelAndView createAppUI(AppUiControl appui){
+		activityService.createAppUiControl(appui);
+		ModelAndView view = new ModelAndView("redirect:/appconfig/ui/query");
 		return view;
 	}
 }

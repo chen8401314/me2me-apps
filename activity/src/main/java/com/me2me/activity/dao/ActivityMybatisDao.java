@@ -100,6 +100,9 @@ public class ActivityMybatisDao {
 
     @Autowired
     private AppLightboxSourceMapper appLightboxSourceMapper;
+    
+    @Autowired
+    private AppUiControlMapper appUiControlMapper;
 
     public void saveAtaskUser(AtaskUser ataskUser){
     	ataskUserMapper.insertSelective(ataskUser);
@@ -1236,5 +1239,28 @@ public class ActivityMybatisDao {
         example.createCriteria().andStatusEqualTo(0).andStartTimeLessThan(nowDate).andEndTimeGreaterThan(nowDate);
         List<AppLightboxSource> list = appLightboxSourceMapper.selectByExample(example);
         return list.size()>0 && list != null ?list.get(0):null;
+    }
+    
+    public List<AppUiControl> getAppUiControlListByTime(Date searchTime){
+    	AppUiControlExample example = new AppUiControlExample();
+    	AppUiControlExample.Criteria criteria = example.createCriteria();
+    	if(null != searchTime){
+    		criteria.andStartTimeLessThanOrEqualTo(searchTime);
+    		criteria.andEndTimeGreaterThanOrEqualTo(searchTime);
+    	}
+    	example.setOrderByClause(" start_time desc ");
+    	return appUiControlMapper.selectByExample(example);
+    }
+    
+    public AppUiControl getAppUiControlById(long id){
+    	return appUiControlMapper.selectByPrimaryKey(id);
+    }
+    
+    public void updateAppUiControl(AppUiControl appui){
+    	appUiControlMapper.updateByPrimaryKeySelective(appui);
+    }
+    
+    public void createAppUiControl(AppUiControl appui){
+    	appUiControlMapper.insertSelective(appui);
     }
 }

@@ -4807,4 +4807,32 @@ public class ActivityServiceImpl implements ActivityService {
         }
         return Response.success(ResponseStatus.SEARCH_LIST_NOT_EXISTS.status, ResponseStatus.SEARCH_LIST_NOT_EXISTS.message, dto);
     }
+    
+    @Override
+    public List<AppUiControl> getAppUiControlList(String searchTime){
+    	Date sTime = null;
+    	if(!StringUtils.isEmpty(searchTime)){
+    		try{
+    			sTime = DateUtil.string2date(searchTime, "yyyy-MM-dd HH:mm:ss");
+    		}catch(Exception e){
+    			log.error("日期转换失败", e);
+    			sTime = null;
+    		}
+    	}
+    	return activityMybatisDao.getAppUiControlListByTime(sTime);
+    }
+    
+    @Override
+    public AppUiControl getAppUiControlById(long id){
+    	return activityMybatisDao.getAppUiControlById(id);
+    }
+    
+    @Override
+    public void updateAppUiControl(AppUiControl appui){
+    	activityMybatisDao.updateAppUiControl(appui);
+    }
+    
+    public void createAppUiControl(AppUiControl appui){
+    	activityMybatisDao.createAppUiControl(appui);
+    }
 }
