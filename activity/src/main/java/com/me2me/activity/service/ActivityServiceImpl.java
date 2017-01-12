@@ -4680,7 +4680,7 @@ public class ActivityServiceImpl implements ActivityService {
             if (akingDomActualList.size() > 0 && akingDomActualList != null) {
                 if (akingDomActualList.get(0).getUid() == uid && akingDomActualList.get(0).getConditions() == 1) {
                     //自己符合条件才显示排名 热度
-                    Map<String, Object> topic = liveForActivityDao.getTopicById(akingDomActualList.get(0).getTopicId());
+                    Map<String, Object> topics = liveForActivityDao.getTopicById(akingDomActualList.get(0).getTopicId());
                     BeanUtils.copyProperties(akingDomActualList.get(0), Elements);
                     int ranks = activityMybatisDao.getRanksAkingDom(akingDomActualList.get(0).getHot());
                     Elements.setRanks(ranks);
@@ -4688,8 +4688,8 @@ public class ActivityServiceImpl implements ActivityService {
                         Elements.setAvatar(userProfile.getAvatar());
                         Elements.setNickName(userProfile.getNickName());
                     }
-                    if (topic != null) {
-                        Elements.setTitle((String) topic.get("title"));
+                    if (topics != null) {
+                        Elements.setTitle((String) topics.get("title"));
                     }
                     dto.getMyActualAndHistoryList().add(Elements);
                     akingDomActualList.remove(0);
@@ -4697,6 +4697,10 @@ public class ActivityServiceImpl implements ActivityService {
                 }else {
                     if (akingDomActualList.get(0).getUid() == uid && akingDomActualList.get(0).getConditions() == 0) {
                         Elements.setHot(akingDomActualList.get(0).getHot());
+                        Map<String, Object> topics = liveForActivityDao.getTopicById(akingDomActualList.get(0).getTopicId());
+                        if (topics != null) {
+                            Elements.setTitle((String) topics.get("title"));
+                        }
                         akingDomActualList.remove(0);
                     }
                     //用户信息必须有,没有查询到信息，只返回用户资料
@@ -4734,7 +4738,7 @@ public class ActivityServiceImpl implements ActivityService {
             if (akingDomHistoryList.size() > 0 && akingDomHistoryList != null) {
                 if (akingDomHistoryList.get(0).getUid() == uid  && akingDomHistoryList.get(0).getConditions() == 1) {
                     //自己符合条件才显示排名 热度
-                    Map<String, Object> topic = liveForActivityDao.getTopicById(akingDomHistoryList.get(0).getTopicId());
+                    Map<String, Object> topics = liveForActivityDao.getTopicById(akingDomHistoryList.get(0).getTopicId());
                     BeanUtils.copyProperties(akingDomHistoryList.get(0), Elements);
                     int ranks = activityMybatisDao.getRanksAkingDomList(akingDomHistoryList.get(0).getHot(), date);
                     Elements.setRanks(ranks);
@@ -4742,8 +4746,8 @@ public class ActivityServiceImpl implements ActivityService {
                         Elements.setAvatar(userProfile.getAvatar());
                         Elements.setNickName(userProfile.getNickName());
                     }
-                    if (topic != null) {
-                        Elements.setTitle((String) topic.get("title"));
+                    if (topics != null) {
+                        Elements.setTitle((String) topics.get("title"));
                     }
                     dto.getMyActualAndHistoryList().add(Elements);
                     akingDomHistoryList.remove(0);
@@ -4751,6 +4755,10 @@ public class ActivityServiceImpl implements ActivityService {
                 } else {
                     if (akingDomHistoryList.get(0).getUid() == uid  && akingDomHistoryList.get(0).getConditions() == 0) {
                         Elements.setHot(akingDomHistoryList.get(0).getHot());
+                        Map<String, Object> topics = liveForActivityDao.getTopicById(akingDomHistoryList.get(0).getTopicId());
+                        if (topics != null) {
+                            Elements.setTitle((String) topics.get("title"));
+                        }
                         akingDomHistoryList.remove(0);
                     }
                     //用户信息必须有,没有查询到信息，只返回用户资料
