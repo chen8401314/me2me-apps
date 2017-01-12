@@ -2402,6 +2402,11 @@ public class UserServiceImpl implements UserService {
         jPushService.payloadByIdExtra(alias,  msg, map);
 		return Response.success();
 	}
+	
+	@Override
+	public List<Long> getAllUids(){
+		return oldUserJdbcDao.getAllUids();
+	}
 
 	@Override
 	public void updateUserSex(long uid, int sex) {

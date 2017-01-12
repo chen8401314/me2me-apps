@@ -1213,6 +1213,23 @@ public class ActivityMybatisDao {
     public List<BlurSearchDto> getAllNewYearLive(Map map){
         return akingDomMapper.getAllNewYearLive(map);
     }
+    
+    public List<AkingDom> getAkingDomListByActivityIdAndConditions(long activityId, int conditions){
+    	AkingDomExample example = new AkingDomExample();
+        example.createCriteria().andActivityIdEqualTo(activityId).andConditionsEqualTo(conditions).andStatusEqualTo(0);
+        List<AkingDom> list = akingDomMapper.selectByExample(example);
+        return list;
+    }
+    
+    public List<AkingDom> getAkingDomListByTop(long activityId, int topNum){
+    	AkingDomExample example = new AkingDomExample();
+    	AkingDomExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityIdEqualTo(activityId);
+    	criteria.andStatusEqualTo(0);
+    	criteria.andConditionsEqualTo(1);
+    	example.setOrderByClause(" hot desc limit " + topNum);
+    	return akingDomMapper.selectByExample(example);
+    }
 
     public AppLightboxSource getAppLightboxSource(Date nowDate){
         AppLightboxSourceExample example = new AppLightboxSourceExample();

@@ -51,7 +51,8 @@ public class AbstractLikes {
                 log.info("content like success");
                 //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LIKE.index,0,likeDto.getUid()));
                 log.info("content like monitor success");
-                if(likeDto.getUid()!=content.getUid()) {
+                //自己的和王国的点赞不推送了，防止王国疯狂点赞，导致流量默默的没了。。
+                if(likeDto.getUid()!=content.getUid() && content.getType()!=Specification.ArticleType.LIVE.index) {
                     JsonObject jsonObject = new JsonObject();
                     jsonObject.addProperty("messageType", Specification.PushMessageType.LIKE.index);
                     jsonObject.addProperty("type", Specification.PushObjectType.UGC.index);

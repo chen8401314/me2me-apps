@@ -113,6 +113,38 @@
         </property>
     </bean>
     <!-- task 6 end-->
+    
+    <!-- task 7 start-->
+    <bean id="springPushActivityStartTaskJobDetailA" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="springPushActivityStartTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="springPushActivityStartTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="springPushActivityStartTaskJobDetailA">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 9 * * ?</value>
+        </property>
+    </bean>
+    <!-- task 7 end-->
+    
+    <!-- task 8 start-->
+    <bean id="springPushNoticeAndHotTaskJobDetailA" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="springPushNoticeAndHotTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="springPushNoticeAndHotTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="springPushNoticeAndHotTaskJobDetailA">
+        </property>
+        <property name="cronExpression">
+            <value>0 5 19 * * ?</value>
+        </property>
+    </bean>
+    <!-- task 8 end-->
 
     <bean name="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
@@ -125,6 +157,8 @@
                  
                  <ref bean="springTopicHotTaskTriggers" />
                 <!-- 
+                <ref bean="springPushNoticeAndHotTaskTriggers" />
+                <ref bean="springPushActivityStartTaskTriggers" />
                 <ref bean="springPushTop10TaskTriggers" />
                 <ref bean="springStartNoticeTaskTriggers" />
                  -->
