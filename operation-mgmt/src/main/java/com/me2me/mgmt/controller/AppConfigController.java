@@ -21,7 +21,9 @@ import org.springframework.web.servlet.ModelAndView;
 import com.me2me.activity.model.AppUiControl;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.cache.service.CacheService;
+import com.me2me.common.utils.DateUtil;
 import com.me2me.common.web.Response;
+import com.me2me.mgmt.request.AppUIItem;
 import com.me2me.mgmt.request.AppUIQueryDTO;
 import com.me2me.mgmt.request.AppVersionQueryDTO;
 import com.me2me.mgmt.request.ConfigItem;
@@ -312,8 +314,22 @@ public class AppConfigController {
 		ModelAndView view = new ModelAndView("appconfig/appuiList");
 		
 		List<AppUiControl> list = activityService.getAppUiControlList(dto.getSearchTime());
-		dto.setResult(list);
-		
+		if(null != list && list.size() > 0){
+			List<AppUIItem> result = new ArrayList<AppUIItem>();
+			AppUIItem item = null;
+			for(AppUiControl ui : list){
+				item = new AppUIItem();
+				item.setId(ui.getId());
+				item.setSourceCode(ui.getSourceCode());
+				item.setDescription(ui.getDescription());
+				item.setStartTime(DateUtil.date2string(ui.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
+				item.setEndTime(DateUtil.date2string(ui.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
+				item.setStatus(ui.getStatus());
+				result.add(item);
+			}
+			dto.setResult(result);
+		}
+
 		view.addObject("dataObj",dto);
 		return view;
 	}
@@ -322,22 +338,56 @@ public class AppConfigController {
 	public ModelAndView getUI(@PathVariable long id){
 		ModelAndView view = new ModelAndView("appconfig/appuiEdit");
 		AppUiControl ui = activityService.getAppUiControlById(id);
-		view.addObject("dataObj",ui);
+		AppUIItem item = new AppUIItem();
+		item.setId(ui.getId());
+		item.setSourceCode(ui.getSourceCode());
+		item.setDescription(ui.getDescription());
+		item.setStartTime(DateUtil.date2string(ui.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
+		item.setEndTime(DateUtil.date2string(ui.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
+		item.setStatus(ui.getStatus());
+		
+		view.addObject("dataObj",item);
 		return view;
 	}
 	
 	@RequestMapping(value = "/ui/update")
 	@SystemControllerLog(description = "更新APP主题")
-	public ModelAndView updateAppUI(AppUiControl appui){
-		activityService.updateAppUiControl(appui);
+	public ModelAndView updateAppUI(AppUIItem item){
+		AppUiControl ui = activityService.getAppUiControlById(item.getId());
+		ui.setSourceCode(item.getSourceCode());
+		ui.setDescription(item.getDescription());
+		try{
+			ui.setStartTime(DateUtil.string2date(item.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
+			ui.setEndTime(DateUtil.string2date(item.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
+		}catch(Exception e){
+			logger.error("时间转换失败", e);
+			ModelAndView view = new ModelAndView("appconfig/appuiEdit");
+			view.addObject("errMsg","时间格式错误");
+			return view;
+		}
+		ui.setStatus(item.getStatus());
+		activityService.updateAppUiControl(ui);
 		ModelAndView view = new ModelAndView("redirect:/appconfig/ui/query");
 		return view;
 	}
 	
 	@RequestMapping(value = "/ui/create")
 	@SystemControllerLog(description = "新增APP主题")
-	public ModelAndView createAppUI(AppUiControl appui){
-		activityService.createAppUiControl(appui);
+	public ModelAndView createAppUI(AppUIItem item){
+		AppUiControl ui = new AppUiControl();
+		ui.setSourceCode(item.getSourceCode());
+		ui.setDescription(item.getDescription());
+		try{
+			ui.setStartTime(DateUtil.string2date(item.getStartTime(), "yyyy-MM-dd HH:mm:ss"));
+			ui.setEndTime(DateUtil.string2date(item.getEndTime(), "yyyy-MM-dd HH:mm:ss"));
+		}catch(Exception e){
+			logger.error("时间转换失败", e);
+			ModelAndView view = new ModelAndView("appconfig/appuiNew");
+			view.addObject("errMsg","时间格式错误");
+			return view;
+		}
+		ui.setStatus(item.getStatus());
+		activityService.createAppUiControl(ui);
 		ModelAndView view = new ModelAndView("redirect:/appconfig/ui/query");
 		return view;
 	}

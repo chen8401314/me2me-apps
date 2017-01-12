@@ -87,8 +87,8 @@
 													<th>${status.index + 1}</th>
 													<th>${item.sourceCode }</th>
 													<th>${item.description }</th>
-													<th><fmt:formatDate value="${item.startTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
-													<th><fmt:formatDate value="${item.endTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
+													<th>${item.startTime }</th>
+													<th>${item.endTime }</th>
 													<td>
 													<c:choose>
                                                 		<c:when test="${item.status == 0}">
