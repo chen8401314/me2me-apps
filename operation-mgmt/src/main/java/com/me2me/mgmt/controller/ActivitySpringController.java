@@ -179,12 +179,4 @@ public class ActivitySpringController {
 		view = new ModelAndView("redirect:/spring/milidata/query");
 		return view;
 	}
-	
-	@RequestMapping(value="/control/startNotice")
-	@ResponseBody
-	@SystemControllerLog(description = "春节活动通知活动开始")
-	public String startNotice(){
-		activityService.springStartNotice();
-		return "0";
-	}
 }

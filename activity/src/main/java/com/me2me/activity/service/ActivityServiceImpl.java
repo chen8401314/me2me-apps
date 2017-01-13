@@ -3951,65 +3951,8 @@ public class ActivityServiceImpl implements ActivityService {
     }
     
     @Override
-    public Response springStartNotice(){
-    	//先获取所有手机用户手机号
-    	List<String> mobileList = liveForActivityDao.getAllUserMobilesInApp();
-    	if(null == mobileList || mobileList.size() == 0){
-    		log.info("no mobile user in app.");
-    		return Response.success();
-    	}else{
-    		log.info("total ["+mobileList.size()+"] mobiles..");
-    	}
-    	
-    	List<String> msgList = new ArrayList<String>();
-    	AactivityStage stage2 = activityMybatisDao.getAactivityStageByStage2(2, 2);
-    	if (null != stage2) {
-            Calendar cal = Calendar.getInstance();
-            cal.setTime(stage2.getStartTime());
-            int month = cal.get(Calendar.MONTH) + 1;
-            int day = cal.get(Calendar.DAY_OF_MONTH);
-            msgList.add(String.valueOf(month));
-            msgList.add(String.valueOf(day));
-        } else {
-            msgList.add("");
-            msgList.add("");
-        }
-    	
-    	long total = 0;
-    	List<String> sendList = new ArrayList<String>();
-    	for(String mobile : mobileList){
-    		if(checkMobile(mobile)){
-    			sendList.add(mobile);
-    			if(sendList.size() >= 180){
-    				smsService.send7dayCommon("", sendList, msgList);
-                    log.info("send [" + sendList.size() + "] user!");
-                    total = total + sendList.size();
-                    sendList.clear();
-    			}
-    		}
-    	}
-    	if(sendList.size() > 0){
-    		smsService.send7dayCommon("", sendList, msgList);
-            log.info("send [" + sendList.size() + "] user!");
-            total = total + sendList.size();
-    	}
-    	
-    	log.info("total ["+total+"] mobiles send!");
-    	
-    	return Response.success();
-    }
-    
-    private boolean checkMobile(String mobile){
-    	if(!StringUtils.isEmpty(mobile)){
-    		if(!mobile.startsWith("100") && !mobile.startsWith("111")
-    				&& !mobile.startsWith("123") && !mobile.startsWith("1666")
-    				&& !mobile.startsWith("180000") && !mobile.startsWith("18888888")
-    				&& !mobile.startsWith("18900") && !mobile.startsWith("19000")
-    				&& !mobile.startsWith("2") && !mobile.startsWith("8")){
-    			return true;
-    		}
-    	}
-    	return false;
+    public List<String> getAllUserMobilesInApp(){
+    	return liveForActivityDao.getAllUserMobilesInApp();
     }
 
     @Override
