@@ -4714,6 +4714,7 @@ public class ActivityServiceImpl implements ActivityService {
                         Map<String, Object> topics = liveForActivityDao.getTopicById(akingDomActualList.get(0).getTopicId());
                         if (topics != null) {
                             Elements.setTitle((String) topics.get("title"));
+                            Elements.setTopicId(akingDomActualList.get(0).getTopicId());
                         }
                         akingDomActualList.remove(0);
                     }
@@ -4772,6 +4773,7 @@ public class ActivityServiceImpl implements ActivityService {
                         Map<String, Object> topics = liveForActivityDao.getTopicById(akingDomHistoryList.get(0).getTopicId());
                         if (topics != null) {
                             Elements.setTitle((String) topics.get("title"));
+                            Elements.setTopicId(akingDomHistoryList.get(0).getTopicId());
                         }
                         akingDomHistoryList.remove(0);
                     }
