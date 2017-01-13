@@ -98,7 +98,7 @@ public class SpringTopicHotTask {
 					conditions = 1;
 				}
 				
-				long hot = (dto.getUpdateCount()*4+dto.getReviewCount()*3)*51;
+				long hot = (dto.getUpdateCount()*6+dto.getReviewCount()*3)*11;
 				
 				tid = Long.valueOf(dto.getTopicId());
 				noUpdateTopicIds.remove(tid);

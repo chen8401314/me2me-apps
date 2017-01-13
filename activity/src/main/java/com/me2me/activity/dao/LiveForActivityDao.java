@@ -400,7 +400,7 @@ public class LiveForActivityDao {
 	}
 	
 	public List<String> getAllUserMobilesInApp(){
-		String sql = "select t.mobile from user_profile t where t.third_part_bind like '%mobile%' order by t.mobile";
+		String sql = "select DISTINCT t.mobile from user_profile t where t.third_part_bind like '%mobile%' order by t.mobile";
 		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
 		if(null != list && list.size() > 0){
 			List<String> result = new ArrayList<String>();

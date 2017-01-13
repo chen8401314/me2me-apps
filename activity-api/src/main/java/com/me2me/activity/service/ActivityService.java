@@ -105,7 +105,7 @@ public interface ActivityService {
 
     Response oneKeyAudit();
     
-    Response springStartNotice();
+    List<String> getAllUserMobilesInApp();
 
     /**
      * 获取抽奖活动统计方法
