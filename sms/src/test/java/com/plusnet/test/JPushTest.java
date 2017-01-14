@@ -30,9 +30,10 @@ public class JPushTest {
 		Map<String,String> extraMaps = new HashMap<String, String>();
 		extraMaps.put("type", "4");
 		extraMaps.put("messageType", "13");
-		extraMaps.put("link_url", "https://testwebapp.me-to-me.com/NewYear/my/rank?day=20170131");
+//		extraMaps.put("link_url", "https://testwebapp.me-to-me.com/NewYear/my/rank?day=20170131");
+		extraMaps.put("link_url", "https://testwebapp.me-to-me.com/NewYear/my/main");
 		
-		String[] uids = new String[]{"309", "316"};
+		String[] uids = new String[]{"446"};
 		
 		PushPayload payload = PushPayload.newBuilder()
                 .setPlatform(Platform.android_ios())

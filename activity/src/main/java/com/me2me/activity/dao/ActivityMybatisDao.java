@@ -1179,6 +1179,61 @@ public class ActivityMybatisDao {
         return list.size()>0 && list != null ?list.get(0):null;
     }
     
+    public List<AkingDom> getTop10AkingDom(long activityId){
+    	AkingDomExample example = new AkingDomExample();
+    	AkingDomExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityIdEqualTo(activityId);
+    	criteria.andStatusEqualTo(0);
+    	criteria.andConditionsEqualTo(1);
+    	example.setOrderByClause(" hot desc limit 10");
+    	return akingDomMapper.selectByExample(example);
+    }
+    
+    public List<AkingDom> getAkingDomListByHots(long activityId, long hot){
+    	AkingDomExample example = new AkingDomExample();
+    	AkingDomExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityIdEqualTo(activityId);
+    	criteria.andStatusEqualTo(0);
+    	criteria.andConditionsEqualTo(1);
+    	criteria.andHotGreaterThanOrEqualTo(hot);
+    	example.setOrderByClause(" hot desc");
+    	return akingDomMapper.selectByExample(example);
+    }
+    
+    public AkingDomList getAkingDomListByUidAndAidAndDaykey(long uid, long activityId, String dayKey){
+    	AkingDomListExample example = new AkingDomListExample();
+    	AkingDomListExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityIdEqualTo(activityId);
+    	criteria.andUidEqualTo(uid);
+    	criteria.andDayKeyEqualTo(dayKey);
+    	List<AkingDomList> list = akingDomListMapper.selectByExample(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
+    
+    public List<AkingDomList> getTop10AkingDomList(long activityId, String dayKey){
+    	AkingDomListExample example = new AkingDomListExample();
+    	AkingDomListExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityIdEqualTo(activityId);
+    	criteria.andDayKeyEqualTo(dayKey);
+    	criteria.andConditionsEqualTo(1);
+    	example.setOrderByClause(" hot desc limit 10");
+    	return akingDomListMapper.selectByExample(example);
+    }
+    
+    public List<AkingDomList> getAkingDomListsByHots(long activityId, long hot, String dayKey){
+    	AkingDomListExample example = new AkingDomListExample();
+    	AkingDomListExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityIdEqualTo(activityId);
+    	criteria.andDayKeyEqualTo(dayKey);
+    	criteria.andConditionsEqualTo(1);
+    	criteria.andHotGreaterThanOrEqualTo(hot);
+    	example.setOrderByClause(" hot desc");
+    	return akingDomListMapper.selectByExample(example);
+    }
+    
     public void saveAkingDom(AkingDom kingdom){
     	akingDomMapper.insertSelective(kingdom);
     }

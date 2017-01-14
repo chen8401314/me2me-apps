@@ -42,7 +42,7 @@ public class SpringStartNoticeTask {
     	if(null == mobileList || mobileList.size() == 0){
     		logger.info("no mobile user in app.");
     	}else{
-    		logger.info("total ["+mobileList.size()+"] mobiles..");
+    		logger.info("total ["+mobileList.size()+"] mobiles in app..");
     	}
     	
     	List<String> msgList = new ArrayList<String>();

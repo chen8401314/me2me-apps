@@ -4627,6 +4627,173 @@ public class ActivityServiceImpl implements ActivityService {
 
     @Override
     public Response getActualAndHistoryList(long uid, int type, String date, long activityId) {
+    	ActualAndHistoryDto dto = new ActualAndHistoryDto();
+    	ActualAndHistoryDto.ActualAndHistoryElement myElement = dto.createActualAndHistoryElement();
+    	//查询用户资料
+        UserProfile userProfile = userService.getUserProfileByUid(uid);
+        myElement.setAvatar(userProfile.getAvatar());
+    	myElement.setNickName(userProfile.getNickName());
+    	myElement.setUid(uid);
+        if(type == 1){//实时榜单
+        	//先查询自己的东东
+        	AkingDom kingdom = activityMybatisDao.getAkingDomByUidAndAid(uid, activityId);
+        	if(null != kingdom){
+        		Map<String, Object> topics = liveForActivityDao.getTopicById(kingdom.getTopicId());
+        		if(null != topics){
+        			myElement.setTitle((String)topics.get("title"));
+        		}
+        		myElement.setTopicId(kingdom.getTopicId());
+        		myElement.setHot(kingdom.getHot());
+        		if(kingdom.getConditions() == 1){
+	        		//查询实时排名
+	        		int ranks = activityMybatisDao.getRanksAkingDom(kingdom.getHot());
+	        		myElement.setRanks(ranks);
+        		}
+        	}
+        	dto.getMyActualAndHistoryList().add(myElement);
+        	log.info("get myActualAndHistoryList success");
+        	//再查询TOP10
+        	List<AkingDom> top10List = activityMybatisDao.getTop10AkingDom(activityId);
+        	if(null != top10List && top10List.size() > 0){
+        		if(top10List.size() >= 10){
+        			AkingDom last = top10List.get(9);
+        			top10List = activityMybatisDao.getAkingDomListByHots(activityId, last.getHot());
+        		}
+        		
+        		List<Long> uids = new ArrayList<Long>();
+        		List<Long> topicIds = new ArrayList<Long>();
+        		for(AkingDom k : top10List){
+        			uids.add(k.getUid());
+        			topicIds.add(k.getTopicId());
+        		}
+        		Map<String, UserProfile> userProfileMap = this.genUserProfileMap(uids);
+        		Map<String, Map<String, Object>> topicMap = this.genTopicMap(topicIds);
+        		
+        		long currentHot = Long.MAX_VALUE;
+        		int ranks = 0;
+        		int index = 0;
+        		UserProfile u = null;
+        		Map<String, Object> t = null;
+        		ActualAndHistoryDto.ActualAndHistoryElement e = null;
+        		for(AkingDom k : top10List){
+        			index++;
+        			e = dto.createActualAndHistoryElement();
+        			u = userProfileMap.get(String.valueOf(k.getUid()));
+        			e.setNickName(u.getNickName());
+        			e.setAvatar(u.getAvatar());
+        			t = topicMap.get(String.valueOf(k.getTopicId()));
+        			if(null != t){
+        				e.setTitle((String)t.get("title"));
+        			}
+        			e.setHot(k.getHot());
+        			//计算排名
+        			if(k.getHot() < currentHot){
+        				currentHot = k.getHot();
+        				ranks = index;
+        			}
+        			e.setRanks(ranks);
+        			dto.getActualAndHistoryList().add(e);
+        		}
+        		log.info("get akingDomActualList success");
+        		return Response.success(dto);
+        	}
+        }else if(type == 2){//历史榜单
+        	//先查询自己的东东
+        	AkingDomList kingdomList = activityMybatisDao.getAkingDomListByUidAndAidAndDaykey(uid, activityId, date);
+        	if(null != kingdomList){
+        		myElement.setTopicId(kingdomList.getTopicId());
+        		myElement.setHot(kingdomList.getHot());
+        		if(kingdomList.getConditions() == 1){
+	        		//查询实时排名
+        			int ranks = activityMybatisDao.getRanksAkingDomList(kingdomList.getHot(), date);
+	        		myElement.setRanks(ranks);
+        		}
+        		Map<String, Object> topic = liveForActivityDao.getTopicById(kingdomList.getTopicId());
+        		if(null != topic){
+	        		myElement.setTitle((String)topic.get("title"));
+        		}
+        	}
+        	dto.getMyActualAndHistoryList().add(myElement);
+        	log.info("get myActualAndHistoryList success");
+        	//再查询TOP10
+        	List<AkingDomList> top10List = activityMybatisDao.getTop10AkingDomList(activityId, date);
+        	if(null != top10List && top10List.size() > 0){
+        		if(top10List.size() >= 10){
+        			AkingDomList last = top10List.get(9);
+        			top10List = activityMybatisDao.getAkingDomListsByHots(activityId, last.getHot(), date);
+        		}
+        		List<Long> uids = new ArrayList<Long>();
+        		List<Long> topicIds = new ArrayList<Long>();
+        		for(AkingDomList k : top10List){
+        			uids.add(k.getUid());
+        			topicIds.add(k.getTopicId());
+        		}
+        		Map<String, UserProfile> userProfileMap = this.genUserProfileMap(uids);
+        		Map<String, Map<String, Object>> topicMap = this.genTopicMap(topicIds);
+        		
+        		long currentHot = Long.MAX_VALUE;
+        		int ranks = 0;
+        		int index = 0;
+        		UserProfile u = null;
+        		Map<String, Object> t = null;
+        		ActualAndHistoryDto.ActualAndHistoryElement e = null;
+        		for(AkingDomList k : top10List){
+        			index++;
+        			e = dto.createActualAndHistoryElement();
+        			u = userProfileMap.get(String.valueOf(k.getUid()));
+        			e.setNickName(u.getNickName());
+        			e.setAvatar(u.getAvatar());
+        			t = topicMap.get(String.valueOf(k.getTopicId()));
+        			if(null != t){
+        				e.setTitle((String)t.get("title"));
+        			}
+        			e.setHot(k.getHot());
+        			//计算排名
+        			if(k.getHot() < currentHot){
+        				currentHot = k.getHot();
+        				ranks = index;
+        			}
+        			e.setRanks(ranks);
+        			dto.getActualAndHistoryList().add(e);
+        		}
+        		log.info("get akingDomActualList success");
+        		return Response.success(dto);
+        	}
+        }
+        
+        return Response.success(ResponseStatus.SEARCH_LIST_NOT_EXISTS.status, ResponseStatus.SEARCH_LIST_NOT_EXISTS.message, dto);
+    }
+    
+    private Map<String, UserProfile> genUserProfileMap(List<Long> uids){
+    	Map<String, UserProfile> result = new HashMap<String, UserProfile>();
+    	if(null == uids || uids.size() == 0){
+    		return result;
+    	}
+    	List<UserProfile> list = userService.getUserProfilesByUids(uids);
+    	if(null != list && list.size() > 0){
+    		for(UserProfile u : list){
+    			result.put(String.valueOf(u.getUid()), u);
+    		}
+    	}
+    	return result;
+    }
+    
+    private Map<String, Map<String, Object>> genTopicMap(List<Long> topicIds){
+    	Map<String, Map<String, Object>> result = new HashMap<String, Map<String, Object>>();
+    	if(null == topicIds || topicIds.size() == 0){
+    		return result;
+    	}
+    	List<Map<String, Object>> list = liveForActivityDao.getTopicsByIds(topicIds);
+    	if(null != list && list.size() > 0){
+    		for(Map<String, Object> t : list){
+    			result.put(String.valueOf((Long)t.get("id")), t);
+    		}
+    	}
+    	return result;
+    }
+    
+    
+    public Response getActualAndHistoryList2(long uid, int type, String date, long activityId) {
         ActualAndHistoryDto dto = new ActualAndHistoryDto();
         ActualAndHistoryDto.ActualAndHistoryElement Elements = dto.createActualAndHistoryElement();
         //查询用户资料

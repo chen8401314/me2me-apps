@@ -28,6 +28,19 @@ public class LiveForActivityDao {
         return null;
     }
 	
+	public List<Map<String,Object>> getTopicsByIds(List<Long> ids){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select * from topic where id in (");
+		for(int i=0;i<ids.size();i++){
+			if(i>0){
+				sb.append(",");
+			}
+			sb.append(ids.get(i));
+		}
+		sb.append(")");
+		return jdbcTemplate.queryForList(sb.toString());
+	}
+	
 	public void insertTopicFragment(Map<String, String> param){
 		if(null == param){
 			return;

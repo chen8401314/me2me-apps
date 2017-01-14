@@ -54,9 +54,9 @@ public class SpringPushActivityStartTask {
 				map.put("messageType", "13");
 				map.put("link_url", webappUrl+Specification.LinkPushType.ACTIVITY_START_PUSH.linkUrl);
 				
-//				jPushService.payloadByIdsExtra(true, null, Specification.LinkPushType.ACTIVITY_START_PUSH.message, map);
-				String[] uids = new String[]{"446"};
-				jPushService.payloadByIdsExtra(false, uids, Specification.LinkPushType.ACTIVITY_START_PUSH.message, map);
+				jPushService.payloadByIdsExtra(true, null, Specification.LinkPushType.ACTIVITY_START_PUSH.message, map);
+//				String[] uids = new String[]{"446"};
+//				jPushService.payloadByIdsExtra(false, uids, Specification.LinkPushType.ACTIVITY_START_PUSH.message, map);
 			}else{
 				logger.info("当前不处在活动开始推送阶段");
 			}
