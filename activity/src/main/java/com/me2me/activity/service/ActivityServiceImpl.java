@@ -4678,7 +4678,9 @@ public class ActivityServiceImpl implements ActivityService {
         		for(AkingDom k : top10List){
         			index++;
         			e = dto.createActualAndHistoryElement();
+        			e.setTopicId(k.getTopicId());
         			u = userProfileMap.get(String.valueOf(k.getUid()));
+        			e.setUid(k.getUid());
         			e.setNickName(u.getNickName());
         			e.setAvatar(u.getAvatar());
         			t = topicMap.get(String.valueOf(k.getTopicId()));
@@ -4740,7 +4742,9 @@ public class ActivityServiceImpl implements ActivityService {
         		for(AkingDomList k : top10List){
         			index++;
         			e = dto.createActualAndHistoryElement();
+        			e.setTopicId(k.getTopicId());
         			u = userProfileMap.get(String.valueOf(k.getUid()));
+        			e.setUid(k.getUid());
         			e.setNickName(u.getNickName());
         			e.setAvatar(u.getAvatar());
         			t = topicMap.get(String.valueOf(k.getTopicId()));

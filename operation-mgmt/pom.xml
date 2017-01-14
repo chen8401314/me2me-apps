@@ -9,9 +9,11 @@
     <artifactId>operation-mgmt</artifactId>
     <packaging>war</packaging>
 
-	<!-- <properties>
+	<!-- 
+	<properties>
 		<spring.version>3.2.2.RELEASE</spring.version>
-	</properties> -->
+	</properties>
+	 -->
 
     <dependencies>
         <dependency>
