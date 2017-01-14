@@ -41,9 +41,25 @@ public class SpringStartNoticeTask {
     	List<String> mobileList = activityService.getAllUserMobilesInApp();
     	if(null == mobileList || mobileList.size() == 0){
     		logger.info("no mobile user in app.");
+    		mobileList = new ArrayList<String>();
     	}else{
     		logger.info("total ["+mobileList.size()+"] mobiles in app..");
     	}
+    	
+    	//获取7天活动所有报名手机号
+    	List<String> sdayMobileList = activityService.getAll7DayMobiles();
+    	if(null != sdayMobileList && sdayMobileList.size() > 0){
+    		logger.info("total ["+sdayMobileList.size()+"] mobile in 7day activity!");
+    		for(String m : sdayMobileList){
+    			if(!mobileList.contains(m)){
+    				mobileList.add(m);
+    			}
+    		}
+    	}else{
+    		logger.info("no mobile in 7day activity!");
+    	}
+    	
+    	logger.info("total ["+mobileList.size()+"] mobiles need to send message!");
     	
     	List<String> msgList = new ArrayList<String>();
     	msgList.add("1");
@@ -67,7 +83,6 @@ public class SpringStartNoticeTask {
             logger.info("send [" + sendList.size() + "] user!");
             sendList.clear();
     	}
-    	
     	logger.info("total ["+total+"] mobiles send!");
     }
     

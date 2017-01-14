@@ -3954,6 +3954,19 @@ public class ActivityServiceImpl implements ActivityService {
     public List<String> getAllUserMobilesInApp(){
     	return liveForActivityDao.getAllUserMobilesInApp();
     }
+    
+    @Override
+    public List<String> getAll7DayMobiles(){
+    	List<Auser> list = activityMybatisDao.getAllAuditSuccessAuser();
+    	if(null != list && list.size() > 0){
+    		List<String> result = new ArrayList<String>();
+    		for(Auser auser : list){
+    			result.add(auser.getMobile());
+    		}
+    		return result;
+    	}
+    	return null;
+    }
 
     @Override
     public Response noticeActivityStart() {

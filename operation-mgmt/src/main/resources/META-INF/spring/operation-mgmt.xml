@@ -155,6 +155,7 @@
                 <ref bean="kingdomUpdatePushTaskTriggers" />
                  -->
                  
+                 
                  <ref bean="springTopicHotTaskTriggers" />
                 <!-- 
                 

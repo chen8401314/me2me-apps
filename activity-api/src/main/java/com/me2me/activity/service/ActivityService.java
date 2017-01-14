@@ -106,6 +106,8 @@ public interface ActivityService {
     Response oneKeyAudit();
     
     List<String> getAllUserMobilesInApp();
+    
+    List<String> getAll7DayMobiles();
 
     /**
      * 获取抽奖活动统计方法

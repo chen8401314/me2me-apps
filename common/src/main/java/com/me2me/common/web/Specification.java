@@ -1182,10 +1182,10 @@ public interface Specification {
     	
     	
     	//春节活动
-    	TOP10_PUSH("米粒开始广播啦！昨日的中奖名单已新鲜出炉，快来看看名单上有没有你？", "/NewYear/my/rank"),
+    	TOP10_PUSH("昨日的中奖名单已新鲜出炉，快来看看名单上有没有你？", "/NewYear/my/rank"),
     	ACTIVITY_START_PUSH("春节王国活动开始啦！！！接下来的7天里，每天分享你的春节生活，都有奖励哦。我就先问问年夜饭准备的如何了？这可是件顶大的事。", "/NewYear/my/main"),
     	NO_KINGDOM_PUSH("春节活动明天就开始了，分享你的春节故事还能赢奖品,不来写几句么？", "/NewYear/my/main"),
-    	HAS_KINGDOM_PUSH("春节活动明天就开始。怕你错过了XXXX的奖品，米粒还是来提醒你了。", "/NewYear/my/main"),
+    	HAS_KINGDOM_PUSH("春节活动明天就开始了。怕你错过了奖品，先来提醒你！", "/NewYear/my/main"),
     	NO_LIST_PUSH("亲，你离今天的指标还差那么一点点哦，不如我们来聊聊今天吃了啥呗？", "/NewYear/my/main"),
     	LIST_TOP50_PUSH("棒棒哒！今天的任务你都完成啦，当前你的排名#{1}#位，请继续加油哦。", "/NewYear/my/main"),
     	LIST_TOP3_PUSH("你当前排行在前三名，太崇拜你了！后面的人正在努力追赶你呢，请保持哦。", "/NewYear/my/main"),
