@@ -467,18 +467,6 @@ public class Activity extends BaseController {
     	}
     	return Response.failure("失败");
     }
-    
-    @ResponseBody
-    @RequestMapping(value = "/taskPublish")
-    public Response taskPublish(TaskPublishRequest request){
-    	return activityService.taskPublish(request.getTid(), request.getType());
-    }
-    
-    @ResponseBody
-    @RequestMapping(value = "/forcedPairing")
-    public Response forcedPairing(forcedPairingRequest request){
-    	return activityService.forcedPairing(request.getIsTest(), request.getTestUid1(), request.getTestUid2());
-    }
 
     /**
      * 春节活动王国信息查询
