@@ -4163,6 +4163,8 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public void deleteAkingDomByTopicId(long topicId) {
         liveForActivityDao.updateDeleteAkingdomByTopicId(topicId);
+        //并且删除榜单表相关
+        liveForActivityDao.deleteAkingdomListByTopicId(topicId);
     }
 
     @Override

@@ -322,6 +322,11 @@ public class LiveForActivityDao {
 		jdbcTemplate.execute(sql);
 	}
 	
+	public void deleteAkingdomListByTopicId(long topicId){
+		String sql = "delete from a_kingdom_list where topic_id="+topicId;
+		jdbcTemplate.execute(sql);
+	}
+	
 	public void updateContentAddLike(long topicId, int likeCount){
 		String sql = "update content set like_count=like_count+"+likeCount+" where forward_cid="+topicId;
 		jdbcTemplate.execute(sql);
