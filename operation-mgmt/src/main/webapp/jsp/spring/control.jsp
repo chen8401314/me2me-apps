@@ -24,7 +24,7 @@
 <script src="${ctx}/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 var startNotice = function(){
-	if(confirm('确定要通知系统内所有手机号用户？')){
+	if(confirm('确定要通知系统内所有手机号用户+所有7天报名用户？')){
 		$.ajax({
 			url : "${ctx}/spring/control/startNotice",
 			async : false,

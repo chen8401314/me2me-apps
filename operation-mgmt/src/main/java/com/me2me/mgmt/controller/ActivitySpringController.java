@@ -26,6 +26,7 @@ import com.me2me.mgmt.request.ActivityInfoDTO;
 import com.me2me.mgmt.request.MiliDataQueryDTO;
 import com.me2me.mgmt.request.StageItem;
 import com.me2me.mgmt.syslog.SystemControllerLog;
+import com.me2me.sms.service.SmsService;
 
 @Controller
 @RequestMapping("/spring")
@@ -35,6 +36,8 @@ public class ActivitySpringController {
 	
 	@Autowired
     private ActivityService activityService;
+	@Autowired
+	private SmsService smsService;
 	
 	@RequestMapping(value="/getActivityInfo")
 	public ModelAndView getActivityInfo(){
@@ -113,6 +116,68 @@ public class ActivitySpringController {
 		ModelAndView view = new ModelAndView("spring/control");
 		return view;
 	}
+	
+	@RequestMapping(value="/control/startNotice")
+	@ResponseBody
+	public String msgStartNotice(){
+		//先获取所有手机用户手机号
+    	List<String> mobileList = activityService.getAllUserMobilesInApp();
+    	if(null == mobileList || mobileList.size() == 0){
+    		logger.info("没有系统手机用户");
+    		mobileList = new ArrayList<String>();
+    	}else{
+    		logger.info("共["+mobileList.size()+"]个系统手机用户");
+    	}
+    	//获取7天活动所有报名手机号
+    	List<String> sdayMobileList = activityService.getAll7DayMobiles();
+    	if(null != sdayMobileList && sdayMobileList.size() > 0){
+    		logger.info("共["+sdayMobileList.size()+"]个七天报名用户");
+    		for(String m : sdayMobileList){
+    			if(!mobileList.contains(m)){
+    				mobileList.add(m);
+    			}
+    		}
+    	}else{
+    		logger.info("没有七天报名用户");
+    	}
+    	
+    	logger.info("共["+mobileList.size()+"]个手机号待发送（这里包含马甲号，下面会去除）");
+    	
+    	long total = 0;
+    	List<String> sendList = new ArrayList<String>();
+    	for(String mobile : mobileList){
+    		if(checkMobile(mobile)){
+    			total++;
+    			sendList.add(mobile);
+    			if(sendList.size() >= 180){
+    				smsService.send7dayCommon("150472", sendList, null);
+                    logger.info("send [" + sendList.size() + "] user!");
+                    sendList.clear();
+    			}
+    		}
+    	}
+    	if(sendList.size() > 0){
+    		smsService.send7dayCommon("150472", sendList, null);
+            logger.info("send [" + sendList.size() + "] user!");
+            sendList.clear();
+    	}
+    	logger.info("共["+total+"]个手机号发送了消息");
+		
+		return "0";
+	}
+	
+	private boolean checkMobile(String mobile){
+    	if(!StringUtils.isEmpty(mobile)){
+    		if(!mobile.startsWith("100") && !mobile.startsWith("111")
+    				&& !mobile.startsWith("123") && !mobile.startsWith("1666")
+    				&& !mobile.startsWith("180000") && !mobile.startsWith("18888888")
+    				&& !mobile.startsWith("18900") && !mobile.startsWith("19000")
+    				&& !mobile.startsWith("2") && !mobile.startsWith("8")){
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value="/milidata/query")

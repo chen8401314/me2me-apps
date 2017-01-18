@@ -100,6 +100,7 @@ String sub = request.getParameter("s");
                 </a>
                 <ul class="sub">
                 	<li <%if("9_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/spring/getActivityInfo">活动阶段管理</a></li>
+                	<li <%if("9_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/spring/control/index">后台控制管理</a></li>
                 	<li <%if("9_3".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/spring/milidata/query">米粒管理</a></li>
                 </ul>
             </li>
