@@ -365,6 +365,7 @@ public class ContentMybatisDao {
             contentReview.setReview(articleReview.getReview());
             contentReview.setUid(articleReview.getUid());
             contentReview.setAtUid(articleReview.getAtUid());
+            contentReview.setExtra(articleReview.getExtra());
             result.add(contentReview);
         }
         return result;
@@ -470,6 +471,9 @@ public class ContentMybatisDao {
         review.setUid(reviewDto.getUid());
         review.setAtUid(reviewDto.getAtUid());
         review.setStatus(Specification.ContentDelStatus.NORMAL.index);
+        if(StringUtils.isNotEmpty(reviewDto.getExtra())){
+            review.setExtra(reviewDto.getExtra());
+        }
         articleReviewMapper.insertSelective(review);
     }
 
