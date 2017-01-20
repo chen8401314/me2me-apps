@@ -1241,6 +1241,7 @@ private void localJpush(long toUid){
 	            reviewElement.setAtNickName(atUser.getNickName());
             }
             reviewElement.setId(review.getId());
+            reviewElement.setExtra(review.getExtra());
             contentDetailDto.getReviews().add(reviewElement);
         }
 
