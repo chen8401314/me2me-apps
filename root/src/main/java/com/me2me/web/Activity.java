@@ -469,7 +469,7 @@ public class Activity extends BaseController {
     }
 
     /**
-     * 春节活动王国信息查询*
+     * 春节活动王国信息查询
      *
      * @param request
      * @return
