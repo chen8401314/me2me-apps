@@ -368,7 +368,7 @@
         b.`title` LIKE "%${topicName}%"
         OR c.`nick_name` LIKE "%${nickName}%"
       )
-    ORDER BY a.hot DESC
+    ORDER BY a.hot DESC,a.id DESC
     LIMIT #{pageNum},#{pageSize}
   </select>
 
