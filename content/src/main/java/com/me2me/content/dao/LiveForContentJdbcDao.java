@@ -52,21 +52,30 @@ public class LiveForContentJdbcDao {
     }
     
     public List<Map<String,Object>> getTopicListByIds(List<Long> ids){
-    	if(null == ids || ids.size() == 0){
-    		return null;
-    	}
-    	StringBuilder sb = new StringBuilder();
-    	sb.append("select id,uid,core_circle from topic where id in (");
-    	for(int i=0;i<ids.size();i++){
-    		if(i > 0){
-    			sb.append(",");
-    		}
-    		sb.append(ids.get(i).longValue());
-    	}
-    	sb.append(")");
-        String sql = sb.toString();
-        return jdbcTemplate.queryForList(sql);
-    }
+		if(null == ids || ids.size() == 0){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select id,uid,core_circle,type from topic where id in (");
+		for(int i=0;i<ids.size();i++){
+			if(i > 0){
+				sb.append(",");
+			}
+			sb.append(ids.get(i).longValue());
+		}
+		sb.append(")");
+		String sql = sb.toString();
+		return jdbcTemplate.queryForList(sql);
+	}
+
+	public Map<String,Object> getTopicListByCid(long cid){
+		String sql = "select type from topic where id = "+cid;
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
+		if(list.size() > 0 && list != null){
+			return list.get(0);
+		}
+		return null;
+	}
     
     public List<Map<String,Object>> getUserTopicPageByUid(long uid, int start, int pageSize){
     	StringBuilder sb = new StringBuilder();

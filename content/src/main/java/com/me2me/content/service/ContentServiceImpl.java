@@ -1987,6 +1987,11 @@ private void localJpush(long toUid){
                 hottestContentElement.setFavoriteCount(content.getFavoriteCount());
                 hottestContentElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
                 hottestContentElement.setTopicCount(contentMybatisDao.getTopicCount(content.getForwardCid()) - reviewCount);
+                //查询王国类型(聚合或普通)
+                Map<String,Object> topic = liveForContentJdbcDao.getTopicListByCid(content.getForwardCid());
+                if(topic != null){
+                    hottestContentElement.setContentType((Integer) topic.get("type"));
+                }
             //原生
             }else if(content.getType() == Specification.ArticleType.ORIGIN.index){
                 hottestContentElement.setUid(content.getUid());
@@ -2089,6 +2094,9 @@ private void localJpush(long toUid){
             	Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
             	if(null != topic){
             		hottestContentElement.setInternalStatus(this.getInternalStatus(topic, uid));
+                    if((Integer)topic.get("type") == 1000){
+                        //查询聚合子王国
+                    }
             	}
             	
                 int reviewCount = contentMybatisDao.countFragment(content.getForwardCid(),content.getUid());
