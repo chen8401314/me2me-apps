@@ -487,8 +487,25 @@ public class SnsServiceImpl implements SnsService {
                 jPushService.payloadByIdExtra(alias, review, JPushUtils.packageExtra(jsonObject));
 
                 snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index);
+            } else if(action == 6) {
+            	Topic topic = liveService.getTopicById(topicId);
+                JSONArray array = JSON.parseArray(topic.getCoreCircle());
+                for (int i = 0; i < array.size(); i++) {
+                    if (array.getLong(i) == uid) {
+                        array.remove(i);
+                    }
+                }
+                liveJdbcDao.updateTopic(topicId, array.toString());
 
-
+                //人员原来是什么样的关系，还是什么样的关系
+                int isFollow = userService.isFollow(owner, uid);
+                int isFollowMe = userService.isFollow(uid, owner);
+                if (isFollow == 1 && isFollowMe == 1) {
+                    snsMybatisDao.createSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
+                } else if (isFollow == 1 && isFollowMe == 0) {
+                    snsMybatisDao.createSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
+                }
+                //因为自己退出的，所以不需要什么推送什么的。
             }
         }
         log.info("modify circle end ...");
