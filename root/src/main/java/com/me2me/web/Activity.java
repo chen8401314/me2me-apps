@@ -479,6 +479,12 @@ public class Activity extends BaseController {
     public Response getNewYearLiveInfo(QiUserRequest request){
         return activityService.getNewYearLiveInfo(request.getUid() ,request.getActivityId());
     }
+    
+    @ResponseBody
+    @RequestMapping(value = "/abcdefggggggg123")
+    public Response getNewYearLiveInfo2(QiUserRequest request){
+        return activityService.getNewYearLiveInfo(request.getUid() ,request.getActivityId());
+    }
 
     /**
      * 春节活动王国搜索接口
