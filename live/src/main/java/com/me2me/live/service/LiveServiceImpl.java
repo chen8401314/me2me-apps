@@ -1897,7 +1897,8 @@ public class LiveServiceImpl implements LiveService {
 		String cExtraJson = createKingdomDto.getCExtra();
 		JSONObject cExtraObj = null;
 		//判断特殊王国条件
-		if(createKingdomDto.getKType() != Specification.KingdomType.NORMAL.index){
+		if(createKingdomDto.getKType() != Specification.KingdomType.NORMAL.index
+				&& createKingdomDto.getKType() != Specification.KingdomType.AGGREGATION.index){
 			log.info("special kingdom check start...");
 			//目前特殊王国就7天活动，故目前只要判断7天活动王国规则即可
 			if(StringUtils.isEmpty(cExtraJson)){
@@ -1945,6 +1946,17 @@ public class LiveServiceImpl implements LiveService {
         	array.add(uid2);
         }
         topic.setCoreCircle(array.toString());
+        //聚合版本新加属性
+        int kingdomType = Specification.KingdomType.NORMAL.index;
+        if(createKingdomDto.getKType() == Specification.KingdomType.AGGREGATION.index){
+        	kingdomType = Specification.KingdomType.AGGREGATION.index;
+        }
+        topic.setType(kingdomType);
+        topic.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);//目前默认公开的，等以后有需求的再说
+        topic.setSummary(createKingdomDto.getFragment());//目前，第一次发言即王国简介
+        topic.setCeAuditType(0);//聚合王国属性，是否需要国王审核才能加入此聚合王国，默认0是
+        topic.setAcAuditType(0);//个人王国属性，是否需要国王审核才能收录此王国，默认0是
+        topic.setAcPublishType(0);//个人王国属性，是否接受聚合王国下发的消息，默认0是
         liveMybatisDao.createTopic(topic);
 
         //创建直播之后添加到我的UGC
@@ -2026,7 +2038,8 @@ public class LiveServiceImpl implements LiveService {
         }
         
         //特殊王国需要做一点特殊处理
-        if(createKingdomDto.getKType() != Specification.KingdomType.NORMAL.index){
+        if(createKingdomDto.getKType() != Specification.KingdomType.NORMAL.index
+        		&& createKingdomDto.getKType() != Specification.KingdomType.AGGREGATION.index){
         	if(type == Specification.ActivityKingdomType.SPRINGKING.index){
         		activityService.createActivityKingdom4Spring(topic.getId(), createKingdomDto.getUid());
         	}else{
