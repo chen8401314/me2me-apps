@@ -164,4 +164,6 @@ public interface LiveService {
     Response getLiveUpdate(GetLiveUpdateDto getLiveUpdateDto);
 
     Response testApi(TestApiDto request);
+    
+    Response kingdomSearch(KingdomSearchDTO searchDTO);
 }

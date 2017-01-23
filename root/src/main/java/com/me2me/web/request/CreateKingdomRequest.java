@@ -31,4 +31,7 @@ public class CreateKingdomRequest extends Request {
 	@Setter
     @Getter
 	private String cExtra;
+	@Setter
+    @Getter
+	private String kConfig;
 }

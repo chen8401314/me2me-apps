@@ -18,4 +18,5 @@ public class CreateKingdomDto implements BaseEntity {
 	private String extra;
 	private int kType;
 	private String cExtra;
+	private String kConfig;
 }

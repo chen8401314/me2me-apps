@@ -876,6 +876,10 @@ public class UserServiceImpl implements UserService {
             return 1;
         }
     }
+    
+    public List<UserFollow> getAllFollows(long uid, List<Long> uids){
+    	return userMybatisDao.getAllFollows(uid, uids);
+    }
 
     @Override
     public UserToken getUserByUidAndToken(long uid, String token) {

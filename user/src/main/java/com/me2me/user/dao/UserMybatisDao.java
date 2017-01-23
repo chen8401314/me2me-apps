@@ -389,6 +389,18 @@ public class UserMybatisDao {
         List<UserFollow> list = userFollowMapper.selectByExample(example);
         return list!=null&&list.size()>0 ? list.get(0) : null;
     }
+    
+    public List<UserFollow> getAllFollows(long uid, List<Long> uids){
+    	UserFollowExample example = new UserFollowExample();
+        UserFollowExample.Criteria criteria =  example.createCriteria();
+        criteria.andSourceUidEqualTo(uid);
+        criteria.andTargetUidIn(uids);
+        UserFollowExample.Criteria criteria2 =  example.createCriteria();
+        criteria2.andSourceUidIn(uids);
+        criteria2.andTargetUidEqualTo(uid);
+        example.or(criteria2);
+        return userFollowMapper.selectByExample(example);
+    }
 
     public List<UserFansDto> getFans(FansParamsDto fansParamsDto){
         return userFollowMapper.getFans(fansParamsDto);

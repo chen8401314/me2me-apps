@@ -149,6 +149,8 @@ public interface UserService {
     Response getFollows(FollowParamsDto followParamsDto);
 
     int isFollow(long targetUid,long sourceUid);
+    
+    List<UserFollow> getAllFollows(long uid, List<Long> uids);
 
     UserToken getUserByUidAndToken(long uid, String token);
     

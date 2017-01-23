@@ -61,6 +61,7 @@ public class Live extends BaseController {
     	dto.setSource(request.getSource());
     	dto.setTitle(request.getTitle());
     	dto.setUid(request.getUid());
+    	dto.setKConfig(request.getKConfig());
     	return liveService.createKingdom(dto);
     }
 
@@ -450,5 +451,27 @@ public class Live extends BaseController {
             e.printStackTrace();
         }
         return liveService.testApi(dto);
+    }
+    
+    /**
+     * 王国检索接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/kingdomSearch",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response kingdomSearch(KingdomSearchRequest request){
+    	KingdomSearchDTO dto = new KingdomSearchDTO();
+    	dto.setAllowCore(request.getAllowCore());
+    	dto.setExceptTopicId(request.getExceptTopicId());
+    	dto.setKeyword(request.getKeyword());
+    	dto.setSearchRights(request.getSearchRights());
+    	dto.setSearchType(request.getSearchType());
+    	dto.setSearchUid(request.getSearchUid());
+    	dto.setTopicId(request.getTopicId());
+    	dto.setTopicType(request.getTopicType());
+    	dto.setUpdateTime(request.getUpdateTime());
+    	
+    	return liveService.kingdomSearch(dto);
     }
 }
