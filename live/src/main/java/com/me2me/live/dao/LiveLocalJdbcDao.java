@@ -280,4 +280,10 @@ public class LiveLocalJdbcDao {
 		}
 		return null;
 	}
+
+	public int getTopicAggregationCountByTopicId(long topicId){
+		String sql = "select count(1) as count from topic_aggregation where topic_id = "+topicId;
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
+		return Integer.valueOf(list.get(0).get("count").toString());
+	}
 }

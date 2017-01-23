@@ -69,12 +69,18 @@ public class LiveForContentJdbcDao {
 	}
 
 	public Map<String,Object> getTopicListByCid(long cid){
-		String sql = "select type from topic where id = "+cid;
+		String sql = "select id,type from topic where id = "+cid;
 		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
 		if(list.size() > 0 && list != null){
 			return list.get(0);
 		}
 		return null;
+	}
+
+	public int getTopicAggregationCountByTopicId(long topicId){
+		String sql = "select count(1) as count from topic_aggregation where topic_id = "+topicId;
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
+		return Integer.valueOf(list.get(0).get("count").toString());
 	}
     
     public List<Map<String,Object>> getUserTopicPageByUid(long uid, int start, int pageSize){

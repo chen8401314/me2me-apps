@@ -59,6 +59,11 @@ public class UserInitJdbcDao extends BaseJdbcDao {
         return super.count(sql,uid,uid);
     }
 
+    public int getLiveAcCount(long uid) {
+        String sql = "select count(*) as count from topic where (uid = ? or FIND_IN_SET(?,SUBSTR(core_circle FROM 2 FOR LENGTH(core_circle)-2))) and status <> 2 and type = 1000 " ;
+        return super.count(sql,uid,uid);
+    }
+
     public int getUGCount(long uid){
         String sql = "select count(*) as count from content where uid = ? and status <> 1 and type in (0,1,8,9)" ;
         return super.count(sql,uid);

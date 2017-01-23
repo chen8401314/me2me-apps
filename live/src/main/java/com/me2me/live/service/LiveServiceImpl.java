@@ -35,6 +35,7 @@ import com.me2me.live.event.RemindAndJpushAtMessageEvent;
 import com.me2me.live.event.SpeakEvent;
 import com.me2me.live.model.*;
 import com.me2me.sms.service.JPushService;
+import com.me2me.user.dao.LiveForUserJdbcDao;
 import com.me2me.user.model.*;
 import com.me2me.user.service.UserService;
 
@@ -797,6 +798,11 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setIsFollowMe(userService.isFollow(uid, topic.getUid()));
             showTopicElement.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(), topic.getUid()));
             showTopicElement.setInternalStatus(this.getInternalStatus(topic, uid));
+            showTopicElement.setContentType(topic.getType());
+            if(topic.getType() == 1000){
+                int acCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId(topic.getId());
+                showTopicElement.setAcCount(acCount);
+            }
 
             TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(topic.getId(), topic.getUid());
             afterProcess(uid, topic, showTopicElement, topicFragment);
@@ -845,7 +851,11 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setLastUpdateTime(topic.getLongTime());
             showTopicElement.setV_lv(userProfile.getvLv());
             showTopicElement.setInternalStatus(this.getInternalStatus(topic, uid));
-            
+            showTopicElement.setContentType(topic.getType());
+            if(topic.getType() == 1000){
+                int acCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId(topic.getId());
+                showTopicElement.setAcCount(acCount);
+            }
             processCache(uid,topic,showTopicElement);
             TopicFragment topicFragment = liveMybatisDao.getLastTopicFragmentByCoreCircle(topic.getId(),topic.getCoreCircle());
             afterProcess(uid, topic, showTopicElement, topicFragment);

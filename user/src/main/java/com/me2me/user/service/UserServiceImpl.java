@@ -1008,6 +1008,7 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setIsPromoter(userProfile.getIsPromoter());
         showUserProfileDto.setUgcCount(userInitJdbcDao.getUGCount(uid));
         showUserProfileDto.setLiveCount(userInitJdbcDao.getLiveCount(uid));
+        showUserProfileDto.setAcCount(userInitJdbcDao.getLiveAcCount(uid));
         if(!StringUtils.isEmpty(userProfile.getThirdPartBind())) {
             showUserProfileDto.setThirdPartBind(userProfile.getThirdPartBind());
         }

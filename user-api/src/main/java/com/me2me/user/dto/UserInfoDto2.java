@@ -112,6 +112,8 @@ public class UserInfoDto2 implements BaseEntity{
         private int topicCount;
 
         private int v_lv;
+
+        private int acCount;
         
         //0圈外 1圈内 2核心圈
         private int internalStatus;
