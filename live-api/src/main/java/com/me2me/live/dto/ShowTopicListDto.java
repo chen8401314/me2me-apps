@@ -90,6 +90,10 @@ public class ShowTopicListDto implements BaseEntity{
         private int readCount;
 
         private int v_lv;
+
+        private int contentType;
+
+        private int acCount;
         
         //0圈外 1圈内 2核心圈
         private int internalStatus;

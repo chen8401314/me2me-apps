@@ -95,4 +95,7 @@ public class BaseContentDto implements BaseEntity{
     
     //0圈外 1圈内 2核心圈
     private int internalStatus;
+
+    //聚集子王国数量
+    private int acCount;
 }

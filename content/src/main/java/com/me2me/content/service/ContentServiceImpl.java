@@ -290,6 +290,13 @@ public class ContentServiceImpl implements ContentService {
             	Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
             	if(null != topic){
             		squareDataElement.setInternalStatus(this.getInternalStatus(topic, uid));
+                    //是否聚合王国
+                    squareDataElement.setContentType((Integer) topic.get("type"));
+                    if((Integer)topic.get("type") == 1000){
+                        //查询聚合子王国
+                        int acCount = liveForContentJdbcDao.getTopicAggregationCountByTopicId((Long) topic.get("id"));
+                        squareDataElement.setAcCount(acCount);
+                    }
             	}
 			}
 			squareDataElement.setLikeCount(content.getLikeCount());
@@ -1607,6 +1614,16 @@ private void localJpush(long toUid){
             	if(null != topic){
             		contentElement.setInternalStatus(this.getInternalStatus(topic, sourceUid));
             	}
+                //查询王国类型(聚合或普通)
+                Map<String,Object> topic2 = liveForContentJdbcDao.getTopicListByCid(content.getForwardCid());
+                if(topic2 != null){
+                    contentElement.setContentType((Integer) topic2.get("type"));
+                    if((Integer)topic2.get("type") == 1000){
+                        //查询聚合子王国
+                        int acCount = liveForContentJdbcDao.getTopicAggregationCountByTopicId((Long) topic2.get("id"));
+                        contentElement.setAcCount(acCount);
+                    }
+                }
             }
             if(content.getType() == Specification.ArticleType.ORIGIN.index){
                 //获取内容图片数量
@@ -2096,6 +2113,8 @@ private void localJpush(long toUid){
             		hottestContentElement.setInternalStatus(this.getInternalStatus(topic, uid));
                     if((Integer)topic.get("type") == 1000){
                         //查询聚合子王国
+                        int acCount = liveForContentJdbcDao.getTopicAggregationCountByTopicId((Long) topic.get("id"));
+                        hottestContentElement.setAcCount(acCount);
                     }
             	}
             	
@@ -2123,6 +2142,11 @@ private void localJpush(long toUid){
                 hottestContentElement.setFavoriteCount(content.getFavoriteCount());
                 hottestContentElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
                 hottestContentElement.setTopicCount(contentMybatisDao.getTopicCount(content.getForwardCid()) - reviewCount);
+                //查询王国类型(聚合或普通)
+                Map<String,Object> agtopic = liveForContentJdbcDao.getTopicListByCid(content.getForwardCid());
+                if(agtopic != null){
+                    hottestContentElement.setContentType((Integer) agtopic.get("type"));
+                }
                 //原生
             }else if(content.getType() == Specification.ArticleType.ORIGIN.index){
                 hottestContentElement.setUid(content.getUid());
@@ -2226,6 +2250,7 @@ private void localJpush(long toUid){
             contentElement.setTag(content.getFeeling());
             contentElement.setForwardCid(content.getForwardCid());
             buildLive(content, contentElement);
+            contentElement.setContentType(content.getContentType());
             if(content.getType() == Specification.ArticleType.ORIGIN.index){
                 //获取内容图片数量
                 int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
@@ -2235,7 +2260,16 @@ private void localJpush(long toUid){
             	Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
             	if(null != topic){
             		contentElement.setInternalStatus(this.getInternalStatus(topic, uid));
+                    if((Integer)topic.get("type") == 1000){
+                        //查询聚合子王国
+                        int acCount = liveForContentJdbcDao.getTopicAggregationCountByTopicId((Long) topic.get("id"));
+                        contentElement.setAcCount(acCount);
+                    }
             	}
+                Map<String,Object> topic2 = liveForContentJdbcDao.getTopicListByCid(content.getForwardCid());
+                if(topic2 != null){
+                    contentElement.setContentType((Integer) topic2.get("type"));
+                }
             }
             int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
             //直播是否收藏
@@ -2250,7 +2284,6 @@ private void localJpush(long toUid){
             contentElement.setFavoriteCount(content.getFavoriteCount());
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
-            contentElement.setContentType(content.getContentType());
 //            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
 //            log.info("content review data success");
 //            for(ContentReview contentReview : contentReviewList){
@@ -2462,6 +2495,15 @@ private void localJpush(long toUid){
             	if(null != topic){
             		contentElement.setInternalStatus(this.getInternalStatus(topic, uid));
             	}
+                //查询王国类型(聚合或普通)
+                Map<String,Object> topic2 = liveForContentJdbcDao.getTopicListByCid(content.getForwardCid());
+                if(topic2 != null){
+                    contentElement.setContentType((Integer) topic2.get("type"));
+                    if((Integer) topic2.get("type") == 1000){
+                        //聚合王国子王国数量
+                        contentElement.setAcCount(liveForContentJdbcDao.getTopicAggregationCountByTopicId(content.getForwardCid()));
+                    }
+                }
             }
             
             showAttentionDto.getAttentionData().add(contentElement);

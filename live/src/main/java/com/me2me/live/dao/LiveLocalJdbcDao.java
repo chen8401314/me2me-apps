@@ -1,6 +1,7 @@
 package com.me2me.live.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -137,5 +138,11 @@ public class LiveLocalJdbcDao {
 		sb.append(")");
 		
 		jdbcTemplate.execute(sb.toString());
+	}
+
+	public int getTopicAggregationCountByTopicId(long topicId){
+		String sql = "select count(1) as count from topic_aggregation where topic_id = "+topicId;
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
+		return Integer.valueOf(list.get(0).get("count").toString());
 	}
 }
