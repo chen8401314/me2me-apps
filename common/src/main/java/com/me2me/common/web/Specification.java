@@ -1050,12 +1050,26 @@ public interface Specification {
     
     enum KingdomType{
     	NORMAL("普通王国", 0),
-    	SPECIAL("特殊王国", 1);
+    	SPECIAL("特殊王国", 1),
+    	AGGREGATION("聚合王国", 1000);
     	
     	public final String name;
         public final int index;
         
         KingdomType(String name, int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+    
+    enum KingdomRights{
+    	PUBLIC_KINGDOM("公开王国", 1),
+    	PRIVATE_KINGDOM("隐私王国", 2);
+    	
+    	public final String name;
+        public final int index;
+        
+        KingdomRights(String name, int index){
             this.name = name;
             this.index = index;
         }
