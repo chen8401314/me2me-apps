@@ -165,5 +165,5 @@ public interface LiveService {
 
     Response testApi(TestApiDto request);
     
-    Response kingdomSearch(KingdomSearchDTO searchDTO);
+    Response kingdomSearch(long currentUid, KingdomSearchDTO searchDTO);
 }
