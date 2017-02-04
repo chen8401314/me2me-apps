@@ -288,6 +288,17 @@ public class LiveLocalJdbcDao {
 		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
 		return Integer.valueOf(list.get(0).get("count").toString());
 	}
+
+	/**
+	 *  查母王国
+	 * @param topicId
+	 * @return
+	 */
+	public int getTopicAggregationCountByTopicId2(long topicId){
+		String sql = "select count(1) as count from topic_aggregation where sub_topic_id = "+topicId;
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
+		return Integer.valueOf(list.get(0).get("count").toString());
+	}
 	
 	public Map<String, Long> getLikeCountByUidAndCids(long uid, List<Long> cids){
 		StringBuilder sb = new StringBuilder();

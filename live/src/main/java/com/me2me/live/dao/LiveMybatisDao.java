@@ -64,6 +64,15 @@ public class LiveMybatisDao {
     @Autowired
     private LiveDisplayProtocolMapper liveDisplayProtocolMapper;
 
+    @Autowired
+    private TopicUserConfigMapper topicUserConfigMapper;
+
+    @Autowired
+    private TopicAggregationApplyMapper topicAggregationApplyMapper;
+
+    @Autowired
+    private TopicAggregationMapper topicAggregationMapper;
+
 
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -681,4 +690,30 @@ public class LiveMybatisDao {
     public TopicFragment getTopicFragmentById(long id){
     	return topicFragmentMapper.selectByPrimaryKey(id);
     }
+
+    public TopicUserConfig getTopicUserConfig(long uid ,long topicId){
+        TopicUserConfigExample example = new TopicUserConfigExample();
+        TopicUserConfigExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTopicIdEqualTo(topicId);
+        List<TopicUserConfig> list = topicUserConfigMapper.selectByExample(example);
+        return list.size() > 0 && list != null?list.get(0):null;
+    }
+
+    public void updateTopicUserConfig(TopicUserConfig topicUserConfig) {
+        topicUserConfigMapper.updateByPrimaryKeySelective(topicUserConfig);
+    }
+
+    public TopicAggregation getTopicAggregationBySub(long topicId){
+        TopicAggregationExample example = new TopicAggregationExample();
+        TopicAggregationExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        List<TopicAggregation> list = topicAggregationMapper.selectByExample(example);
+        return list.size() > 0 && list != null?list.get(0):null;
+    }
+
+    public void updateTopicAggregation(TopicAggregation topicAggregation) {
+        topicAggregationMapper.updateByPrimaryKeySelective(topicAggregation);
+    }
+
 }

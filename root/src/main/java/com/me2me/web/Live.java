@@ -1,5 +1,6 @@
 package com.me2me.web;
 
+import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.web.Response;
 import com.me2me.kafka.service.KafkaService;
 import com.me2me.live.dto.*;
@@ -474,4 +475,29 @@ public class Live extends BaseController {
     	
     	return liveService.kingdomSearch(request.getUid(), dto);
     }
+
+    /**
+     * 王国设置信息查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/settings",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response settings(KingdomSearchRequest request){
+        return liveService.settings(request.getUid() ,request.getTopicId());
+    }
+
+    /**
+     * 王国设置信息修改接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/settingModify",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response settingModify(SettingModifyRequest request){
+        SettingModifyDto dto = new SettingModifyDto();
+        CommonUtils.copyDto(request ,dto);
+        return liveService.settingModify(dto);
+    }
+
 }
