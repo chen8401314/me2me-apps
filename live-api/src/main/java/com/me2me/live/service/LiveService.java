@@ -166,4 +166,8 @@ public interface LiveService {
     Response testApi(TestApiDto request);
     
     Response kingdomSearch(KingdomSearchDTO searchDTO);
+
+    Response settings(long uid ,long topicId);
+
+    Response settingModify(SettingModifyDto dto);
 }

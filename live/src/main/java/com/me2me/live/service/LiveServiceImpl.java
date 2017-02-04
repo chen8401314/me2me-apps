@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
+import com.me2me.activity.dto.TopicCountDTO;
 import com.me2me.activity.model.Aactivity;
 import com.me2me.activity.model.Atopic;
 import com.me2me.activity.model.Auser;
@@ -336,7 +337,7 @@ public class LiveServiceImpl implements LiveService {
 
             liveElement.setInternalStatus(getInternalStatus(topic, uid));
             if (null != topicFragment.getAtUid() && topicFragment.getAtUid() != 0) {
-            	if(topicFragment.getType() == Specification.LiveSpeakType.AT.index 
+            	if(topicFragment.getType() == Specification.LiveSpeakType.AT.index
             			|| topicFragment.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
             			|| topicFragment.getType() == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
 	                UserProfile atUser = userService.getUserProfileByUid(topicFragment.getAtUid());
@@ -1834,7 +1835,7 @@ public class LiveServiceImpl implements LiveService {
 
             liveElement.setInternalStatus(getInternalStatus(topic, uid));
             if (null != topicFragment.getAtUid() && topicFragment.getAtUid() > 0){
-            	if(topicFragment.getType() == Specification.LiveSpeakType.AT.index 
+            	if(topicFragment.getType() == Specification.LiveSpeakType.AT.index
             			|| topicFragment.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
             			|| topicFragment.getType() == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
 	                UserProfile atUser = userService.getUserProfileByUid(topicFragment.getAtUid());
@@ -2098,8 +2099,101 @@ public class LiveServiceImpl implements LiveService {
 		
 		return Response.success(showTopicSearchDTO);
 	}
-	
-	private void builderTopicSearch(long uid, ShowTopicSearchDTO showTopicSearchDTO, List<Topic> topicList) {
+
+    @Override
+    public Response settings(long uid, long topicId) {
+        SettingsDto dto = new SettingsDto();
+        Topic topic = liveMybatisDao.getTopicById(topicId);
+        if(topic != null) {
+            dto.setTopicId(topicId);
+            dto.setCoverImage(Constant.QINIU_DOMAIN+"/"+topic.getLiveImage());
+            dto.setTitle(topic.getTitle());
+            Content content = contentService.getContentById(topic.getId());
+            if(content != null) {
+                dto.setReadCount(content.getReadCountDummy());
+                dto.setFavoriteCount(content.getFavoriteCount());
+            }
+            TopicCountDTO topicCountDTO = activityService.getTopicCount(topicId);
+            dto.setTopicCount(topicCountDTO.getUpdateCount());
+            dto.setCreateTime(topic.getLongTime());
+            dto.setSummary(topic.getSummary());
+            if(topic.getType() == 1000){
+                //查子王国
+                int acCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId(topicId);
+                dto.setAcCount(acCount);
+            }else {
+                //查母王国
+                int ceCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId2(topicId);
+                dto.setCeCount(ceCount);
+            }
+            TopicUserConfig topicUserConfig = liveMybatisDao.getTopicUserConfig(uid ,topicId);
+            if(topicUserConfig != null){
+                dto.setPushType(topicUserConfig.getPushType());
+                dto.setAcPublishType(topicUserConfig.getPushType());
+            }
+            dto.setCeAuditType(topic.getCeAuditType());
+            dto.setAcAuditType(topic.getAcAuditType());
+            log.info("get settings success");
+        }
+        return Response.success(dto);
+    }
+
+    @Override
+    public Response settingModify(SettingModifyDto dto) {
+        Topic topic = liveMybatisDao.getTopicById(dto.getTopicId());
+        TopicUserConfig topicUserConfig = liveMybatisDao.getTopicUserConfig(dto.getUid() ,dto.getTopicId());
+        if(dto.getAction() == Specification.SettingModify.COVER.index){
+            if(topic != null){
+                topic.setLiveImage(dto.getParams());
+                liveMybatisDao.updateTopic(topic);
+                log.info("update cover success");
+                return Response.success();
+            }
+        }else if(dto.getAction() == Specification.SettingModify.SUMMARY.index){
+            if(topic != null){
+                topic.setSummary(dto.getParams());
+                liveMybatisDao.updateTopic(topic);
+                log.info("update Summary success");
+                return Response.success();
+            }
+        }else if(dto.getAction() == Specification.SettingModify.TAGS.index){
+                log.info("暂时不考虑标签");
+        }else if(dto.getAction() == Specification.SettingModify.PUSH.index){
+            if(topicUserConfig != null){
+                topicUserConfig.setPushType(Integer.valueOf(dto.getParams()));
+                liveMybatisDao.updateTopicUserConfig(topicUserConfig);
+                log.info("update pushType success");
+                return Response.success();
+            }
+        }else if(dto.getAction() == Specification.SettingModify.AGVERIFY.index){
+            if(topic != null){
+                topic.setCeAuditType(Integer.valueOf(dto.getParams()));
+                liveMybatisDao.updateTopic(topic);
+                log.info("update CeAuditType success");
+                return Response.success();
+            }
+        }else if(dto.getAction() == Specification.SettingModify.VERIFY.index){
+            if(topic != null){
+                topic.setAcAuditType(Integer.valueOf(dto.getParams()));
+                liveMybatisDao.updateTopic(topic);
+                log.info("update AcAuditType success");
+                return Response.success();
+            }
+        }else if(dto.getAction() == Specification.SettingModify.ISSUED_MESSAGE.index){
+            //下发消息
+            TopicAggregation topicAggreation = liveMybatisDao.getTopicAggregationBySub(dto.getTopicId());
+            if(topicAggreation != null){
+                topicAggreation.setIsPublish(Integer.valueOf(dto.getParams()));
+                liveMybatisDao.updateTopicAggregation(topicAggreation);
+                log.info("update TopicAggreation success");
+                return Response.success();
+            }
+        }
+
+        return Response.success(ResponseStatus.ACTION_NOT_SUPPORT.status ,ResponseStatus.ACTION_NOT_SUPPORT.message);
+    }
+
+    private void builderTopicSearch(long uid, ShowTopicSearchDTO showTopicSearchDTO, List<Topic> topicList) {
 		List<Long> uidList = new ArrayList<Long>();
 		List<Long> tidList = new ArrayList<Long>();
     	for(Topic topic : topicList){

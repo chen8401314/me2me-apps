@@ -1215,4 +1215,28 @@ public interface Specification {
     	}
     }
 
+    enum SettingModify{
+
+        COVER("封面",1),
+
+        SUMMARY("简介",2),
+
+        TAGS("标签",3),
+
+        PUSH("王国推送",4),
+
+        AGVERIFY("聚合王国审核",5),
+
+        VERIFY("个人王国审核",6),
+
+        ISSUED_MESSAGE("个人王国下发消息",7);
+
+        public final String name;
+        public final int index;
+        SettingModify(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
 }
