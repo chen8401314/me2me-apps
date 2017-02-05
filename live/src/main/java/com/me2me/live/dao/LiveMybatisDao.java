@@ -735,4 +735,13 @@ public class LiveMybatisDao {
         return list.size() > 0 && list != null?list.get(0):null;
     }
 
+    public List<TopicAggregation> getTopicAggregationByTopicIdAndSubIdList(long topicId ,long subId){
+        TopicAggregationExample example = new TopicAggregationExample();
+        TopicAggregationExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andSubTopicIdEqualTo(subId);
+
+        return topicAggregationMapper.selectByExample(example);
+    }
+
 }

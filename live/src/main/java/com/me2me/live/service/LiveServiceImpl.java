@@ -96,6 +96,9 @@ public class LiveServiceImpl implements LiveService {
     /** 王国发言(评论等)最新ID */
     private static final String TOPIC_FRAGMENT_NEWEST_MAP_KEY = "TOPIC_FRAGMENT_NEWEST";
 
+    //置顶次数
+    private static final String TOP_COUNT = "topCount";
+
     @Override
     public Response createLive(CreateLiveDto createLiveDto) {
         log.info("createLive start ...");
@@ -2466,27 +2469,32 @@ public class LiveServiceImpl implements LiveService {
                             apply.setType(1);
                             liveMybatisDao.createTopicAggApply(apply);
                             log.info("create TopicAggregationApply success");
+                            return Response.success();
                         } else {
                             TopicAggregation agg = new TopicAggregation();
                             agg.setTopicId(dto.getCeTopicId());
                             agg.setSubTopicId(dto.getAcTopicId());
                             liveMybatisDao.createTopicAgg(agg);
                             log.info("create TopicAggregation success");
+                            return Response.success();
                         }
                     } else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {
                         liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
+                        return Response.success();
                     } else if (dto.getAction() == Specification.AggregationOptType.ISSUED.index) {
                         if(topicAggregation != null){
                             //0接受推送 1不接受推送
                             topicAggregation.setIsPublish(0);
+                            return Response.success();
                         }
                     } else if (dto.getAction() == Specification.AggregationOptType.CANCEL_ISSUED.index) {
                         if(topicAggregation != null){
                             topicAggregation.setIsPublish(1);
+                            return Response.success();
                         }
                     }
                 } else {
-                    Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
+                    return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
                 }
          }
 
@@ -2508,32 +2516,41 @@ public class LiveServiceImpl implements LiveService {
                             apply.setType(1);
                             liveMybatisDao.createTopicAggApply(apply);
                             log.info("create TopicAggregationApply success");
+                            return Response.success();
                         } else {
                             TopicAggregation agg = new TopicAggregation();
                             agg.setTopicId(dto.getCeTopicId());
                             agg.setSubTopicId(dto.getAcTopicId());
                             liveMybatisDao.createTopicAgg(agg);
                             log.info("create TopicAggregation success");
+                            return Response.success();
                         }
                     } else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {
                         liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
                     } else if (dto.getAction() == Specification.AggregationOptType.TOP.index) {
                         if(topicAggregation != null){
-                            //1置顶 0不置顶
-                            topicAggregation.setIsTop(1);
-                            //设置时间为了下次查询会显示在第一个
-                            topicAggregation.setUpdateTime(now);
-                            liveMybatisDao.updateTopicAggregation(topicAggregation);
+                            List<TopicAggregation> list = liveMybatisDao.getTopicAggregationByTopicIdAndSubIdList(dto.getCeTopicId() ,dto.getAcTopicId());
+                            if(list.size() <= Integer.valueOf(cacheService.get(TOP_COUNT))) {
+                                //1置顶 0不置顶
+                                topicAggregation.setIsTop(1);
+                                //设置时间为了下次查询会显示在第一个
+                                topicAggregation.setUpdateTime(now);
+                                liveMybatisDao.updateTopicAggregation(topicAggregation);
+                                return Response.success();
+                            }else {
+                                return Response.failure(ResponseStatus.TOP_COUNT_OVER_LIMIT.status, ResponseStatus.TOP_COUNT_OVER_LIMIT.message);
+                            }
                         }
                     } else if (dto.getAction() == Specification.AggregationOptType.CANCEL_TOP.index) {
                         if(topicAggregation != null){
                             topicAggregation.setIsTop(0);
                             liveMybatisDao.updateTopicAggregation(topicAggregation);
                             log.info("cancel top success");
+                            return Response.success();
                         }
                     }
                 } else {
-                    Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
+                    return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
                 }
             }
 
