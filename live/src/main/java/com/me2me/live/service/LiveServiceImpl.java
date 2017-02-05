@@ -2409,4 +2409,9 @@ public class LiveServiceImpl implements LiveService {
 
         return internalStatus;
     }
+	
+	@Override
+	public Response aggregationPublish(long uid, long topicId, long fid){
+		return null;
+	}
 }

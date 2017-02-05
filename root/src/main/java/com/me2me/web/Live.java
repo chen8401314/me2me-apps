@@ -500,4 +500,14 @@ public class Live extends BaseController {
         return liveService.settingModify(dto);
     }
 
+    /**
+     * 聚合内容下发接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/aggregationPublish",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response aggregationPublish(AggregationPublishRequest request){
+    	return liveService.aggregationPublish(request.getUid(), request.getTopicId(), request.getFid());
+    }
 }
