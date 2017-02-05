@@ -31,6 +31,7 @@ import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.dao.LiveLocalJdbcDao;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.*;
+import com.me2me.live.event.AggregationPublishEvent;
 import com.me2me.live.event.CacheLiveEvent;
 import com.me2me.live.event.RemindAndJpushAtMessageEvent;
 import com.me2me.live.event.SpeakEvent;
@@ -2172,8 +2173,8 @@ public class LiveServiceImpl implements LiveService {
             TopicUserConfig topicUserConfig = liveMybatisDao.getTopicUserConfig(uid ,topicId);
             if(topicUserConfig != null){
                 dto.setPushType(topicUserConfig.getPushType());
-                dto.setAcPublishType(topicUserConfig.getPushType());
             }
+            dto.setAcPublishType(topic.getAcPublishType());
             dto.setCeAuditType(topic.getCeAuditType());
             dto.setAcAuditType(topic.getAcAuditType());
             log.info("get settings success");
@@ -2226,13 +2227,10 @@ public class LiveServiceImpl implements LiveService {
                 }
             } else if (dto.getAction() == Specification.SettingModify.ISSUED_MESSAGE.index) {
                 //下发消息
-                TopicAggregation topicAggreation = liveMybatisDao.getTopicAggregationBySub(dto.getTopicId());
-                if (topicAggreation != null) {
-                    topicAggreation.setIsPublish(Integer.valueOf(dto.getParams()));
-                    liveMybatisDao.updateTopicAggregation(topicAggreation);
-                    log.info("update TopicAggreation success");
-                    return Response.success();
-                }
+            	topic.setAcPublishType(Integer.valueOf(dto.getParams()));
+            	liveMybatisDao.updateTopic(topic);
+            	log.info("update AcPublishType success");
+            	return Response.success();
             }
         }else {
             return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status ,ResponseStatus.YOU_ARE_NOT_KING.message);
@@ -2417,6 +2415,27 @@ public class LiveServiceImpl implements LiveService {
 	
 	@Override
 	public Response aggregationPublish(long uid, long topicId, long fid){
-		return null;
+		Topic topic = liveMybatisDao.getTopicById(topicId);
+		//必须是国王才能进行下发操作
+		if(null == topic || topic.getUid().longValue() != uid){
+			return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
+		}
+		if(topic.getType().intValue() != Specification.KingdomType.AGGREGATION.index){
+			return Response.failure(ResponseStatus.KINGDOM_IS_NOT_AGGREGATION.status, ResponseStatus.KINGDOM_IS_NOT_AGGREGATION.message);
+		}
+		TopicFragment tf = liveMybatisDao.getTopicFragmentById(fid);
+		if(null == tf || tf.getTopicId().longValue() != topic.getId().longValue()
+				|| tf.getStatus() != Specification.TopicFragmentStatus.ENABLED.index){
+			return Response.failure(ResponseStatus.FRAGMENT_IS_NOT_EXIST.status, ResponseStatus.FRAGMENT_IS_NOT_EXIST.message);
+		}
+		
+		//异步处理内容下发
+		AggregationPublishEvent event = new AggregationPublishEvent();
+		event.setUid(uid);
+		event.setTopicId(topicId);
+		event.setFid(fid);
+		applicationEventBus.post(event);
+		
+		return Response.success();
 	}
 }

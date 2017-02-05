@@ -429,6 +429,10 @@ public enum  ResponseStatus {
 
     REPEATED_TREATMENT("重复处理", "repeated treatment", 50057),
     
+    FRAGMENT_IS_NOT_EXIST("发言不存在或已删除","FRAGMENT IS NOT EXIST!", 50058),
+    
+    KINGDOM_IS_NOT_AGGREGATION("当前王国不是聚合王国","kingdom is not aggregation!", 50059),
+    
     
     
     
