@@ -709,4 +709,30 @@ public class LiveMybatisDao {
     }
 
 //    public List<TopicAggregation> getTopicAggregationsByTopic
+
+    public void createTopicAggApply(TopicAggregationApply topicAggregationApply) {
+        topicAggregationApplyMapper.insert(topicAggregationApply);
+    }
+
+    public void createTopicAgg(TopicAggregation topicAggregation) {
+        topicAggregationMapper.insert(topicAggregation);
+    }
+
+    public void deleteTopicAgg(long ceTopicId ,long acTopicId) {
+        TopicAggregationExample example = new TopicAggregationExample();
+        TopicAggregationExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(ceTopicId);
+        criteria.andSubTopicIdEqualTo(acTopicId);
+       topicAggregationMapper.deleteByExample(example);
+    }
+
+    public TopicAggregation getTopicAggregationByTopicIdAndSubId(long topicId ,long subId){
+        TopicAggregationExample example = new TopicAggregationExample();
+        TopicAggregationExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andSubTopicIdEqualTo(subId);
+        List<TopicAggregation> list = topicAggregationMapper.selectByExample(example);
+        return list.size() > 0 && list != null?list.get(0):null;
+    }
+
 }
