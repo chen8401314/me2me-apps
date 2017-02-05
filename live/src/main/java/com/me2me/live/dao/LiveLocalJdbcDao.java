@@ -169,6 +169,8 @@ public class LiveLocalJdbcDao {
 			}else{
 				sb.append(" where t.id=a.sub_topic_id and a.id=0");
 			}
+		}else{
+			sb.append(" where 1=1");
 		}
 		
 		sb.append(" and t.long_time<").append(searchDTO.getUpdateTime());
@@ -296,5 +298,59 @@ public class LiveLocalJdbcDao {
 		String sql = "select count(1) as count from topic_aggregation where sub_topic_id = "+topicId;
 		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
 		return Integer.valueOf(list.get(0).get("count").toString());
+	}
+	
+	public Map<String, Long> getLikeCountByUidAndCids(long uid, List<Long> cids){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select t.cid as cid,count(1) as cc from content_likes_details t");
+		sb.append(" where t.uid=").append(uid).append(" and t.cid in (");
+		for(int i=0;i<cids.size();i++){
+			if(i>0){
+				sb.append(",");
+			}
+			sb.append(cids.get(i));
+		}
+		sb.append(") group by t.cid");
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+		Map<String, Long> result = new HashMap<String, Long>();
+		if(null != list && list.size() > 0){
+			for(Map<String, Object> m : list){
+				result.put(String.valueOf(m.get("cid")), (Long)m.get("cc"));
+			}
+		}
+		return result;
+	}
+	
+	public List<Map<String, Object>> getLastCoreCircleFragmentByTopicIds(List<Long> topicIds){
+		if(null == topicIds || topicIds.size() == 0){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select p.* from topic_fragment p, (");
+		sb.append("select max(f.id) as fid from topic_fragment f, topic t ");
+		sb.append("where f.topic_id=t.id and t.id in (");
+		for(int i=0;i<topicIds.size();i++){
+			if(i>0){
+				sb.append(",");
+			}
+			sb.append(topicIds.get(i));
+		}
+		sb.append(") and FIND_IN_SET(f.uid, SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))");
+		sb.append(" group by t.id) m where p.id=m.fid");
+		
+		return jdbcTemplate.queryForList(sb.toString());
+	}
+	
+	public List<Map<String, Object>> getTopSubTopic(long topicId, int limit){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select * from ((select t.* from topic t,topic_aggregation a");
+		sb.append(" where t.id=a.sub_topic_id and a.topic_id=").append(topicId);
+		sb.append(" and a.is_top=1 order by a.create_time desc)");
+		sb.append(" UNION ALL");
+		sb.append(" (select t1.* from topic t1,topic_aggregation a1");
+		sb.append(" where t1.id=a1.sub_topic_id and a1.topic_id=").append(topicId);
+		sb.append(" and a1.is_top=0 order by t1.long_time desc)) m limit ").append(limit);
+		
+		return jdbcTemplate.queryForList(sb.toString());
 	}
 }
