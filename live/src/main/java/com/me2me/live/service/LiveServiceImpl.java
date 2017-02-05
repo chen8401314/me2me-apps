@@ -2142,55 +2142,60 @@ public class LiveServiceImpl implements LiveService {
     public Response settingModify(SettingModifyDto dto) {
         Topic topic = liveMybatisDao.getTopicById(dto.getTopicId());
         TopicUserConfig topicUserConfig = liveMybatisDao.getTopicUserConfig(dto.getUid() ,dto.getTopicId());
-        if(dto.getAction() == Specification.SettingModify.COVER.index){
-            if(topic != null){
-                topic.setLiveImage(dto.getParams());
-                liveMybatisDao.updateTopic(topic);
-                log.info("update cover success");
-                return Response.success();
-            }
-        }else if(dto.getAction() == Specification.SettingModify.SUMMARY.index){
-            if(topic != null){
-                topic.setSummary(dto.getParams());
-                liveMybatisDao.updateTopic(topic);
-                log.info("update Summary success");
-                return Response.success();
-            }
-        }else if(dto.getAction() == Specification.SettingModify.TAGS.index){
+        if(topic.getUid() == dto.getUid()) {
+            //国王操作
+            if (dto.getAction() == Specification.SettingModify.COVER.index) {
+                if (topic != null) {
+                    topic.setLiveImage(dto.getParams());
+                    liveMybatisDao.updateTopic(topic);
+                    log.info("update cover success");
+                    return Response.success();
+                }
+            } else if (dto.getAction() == Specification.SettingModify.SUMMARY.index) {
+                if (topic != null) {
+                    topic.setSummary(dto.getParams());
+                    liveMybatisDao.updateTopic(topic);
+                    log.info("update Summary success");
+                    return Response.success();
+                }
+            } else if (dto.getAction() == Specification.SettingModify.TAGS.index) {
                 log.info("暂时不考虑标签");
-        }else if(dto.getAction() == Specification.SettingModify.PUSH.index){
-            if(topicUserConfig != null){
-                topicUserConfig.setPushType(Integer.valueOf(dto.getParams()));
-                liveMybatisDao.updateTopicUserConfig(topicUserConfig);
-                log.info("update pushType success");
-                return Response.success();
+            } else if (dto.getAction() == Specification.SettingModify.PUSH.index) {
+                if (topicUserConfig != null) {
+                    topicUserConfig.setPushType(Integer.valueOf(dto.getParams()));
+                    liveMybatisDao.updateTopicUserConfig(topicUserConfig);
+                    log.info("update pushType success");
+                    return Response.success();
+                }
+            } else if (dto.getAction() == Specification.SettingModify.AGVERIFY.index) {
+                if (topic != null) {
+                    topic.setCeAuditType(Integer.valueOf(dto.getParams()));
+                    liveMybatisDao.updateTopic(topic);
+                    log.info("update CeAuditType success");
+                    return Response.success();
+                }
+            } else if (dto.getAction() == Specification.SettingModify.VERIFY.index) {
+                if (topic != null) {
+                    topic.setAcAuditType(Integer.valueOf(dto.getParams()));
+                    liveMybatisDao.updateTopic(topic);
+                    log.info("update AcAuditType success");
+                    return Response.success();
+                }
+            } else if (dto.getAction() == Specification.SettingModify.ISSUED_MESSAGE.index) {
+                //下发消息
+                TopicAggregation topicAggreation = liveMybatisDao.getTopicAggregationBySub(dto.getTopicId());
+                if (topicAggreation != null) {
+                    topicAggreation.setIsPublish(Integer.valueOf(dto.getParams()));
+                    liveMybatisDao.updateTopicAggregation(topicAggreation);
+                    log.info("update TopicAggreation success");
+                    return Response.success();
+                }
             }
-        }else if(dto.getAction() == Specification.SettingModify.AGVERIFY.index){
-            if(topic != null){
-                topic.setCeAuditType(Integer.valueOf(dto.getParams()));
-                liveMybatisDao.updateTopic(topic);
-                log.info("update CeAuditType success");
-                return Response.success();
-            }
-        }else if(dto.getAction() == Specification.SettingModify.VERIFY.index){
-            if(topic != null){
-                topic.setAcAuditType(Integer.valueOf(dto.getParams()));
-                liveMybatisDao.updateTopic(topic);
-                log.info("update AcAuditType success");
-                return Response.success();
-            }
-        }else if(dto.getAction() == Specification.SettingModify.ISSUED_MESSAGE.index){
-            //下发消息
-            TopicAggregation topicAggreation = liveMybatisDao.getTopicAggregationBySub(dto.getTopicId());
-            if(topicAggreation != null){
-                topicAggreation.setIsPublish(Integer.valueOf(dto.getParams()));
-                liveMybatisDao.updateTopicAggregation(topicAggreation);
-                log.info("update TopicAggreation success");
-                return Response.success();
-            }
+        }else {
+            return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status ,ResponseStatus.YOU_ARE_NOT_KING.message);
         }
 
-        return Response.success(ResponseStatus.ACTION_NOT_SUPPORT.status ,ResponseStatus.ACTION_NOT_SUPPORT.message);
+        return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status ,ResponseStatus.ACTION_NOT_SUPPORT.message);
     }
 
     private void builderTopicSearch(long uid, ShowTopicSearchDTO showTopicSearchDTO, List<Topic> topicList) {
