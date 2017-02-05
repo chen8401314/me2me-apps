@@ -708,5 +708,10 @@ public class LiveMybatisDao {
         topicAggregationMapper.updateByPrimaryKeySelective(topicAggregation);
     }
 
-//    public List<TopicAggregation> getTopicAggregationsByTopic
+    public List<TopicAggregation> getTopicAggregationsByTopicId(long topicId){
+    	TopicAggregationExample example = new TopicAggregationExample();
+    	TopicAggregationExample.Criteria criteria = example.createCriteria();
+    	criteria.andTopicIdEqualTo(topicId);
+    	return topicAggregationMapper.selectByExample(example);
+    }
 }
