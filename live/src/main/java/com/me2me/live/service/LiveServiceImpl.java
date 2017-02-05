@@ -2227,10 +2227,12 @@ public class LiveServiceImpl implements LiveService {
                 }
             } else if (dto.getAction() == Specification.SettingModify.ISSUED_MESSAGE.index) {
                 //下发消息
-            	topic.setAcPublishType(Integer.valueOf(dto.getParams()));
-            	liveMybatisDao.updateTopic(topic);
-            	log.info("update AcPublishType success");
-            	return Response.success();
+                if (topic != null) {
+                    topic.setAcPublishType(Integer.valueOf(dto.getParams()));
+                    liveMybatisDao.updateTopic(topic);
+                    log.info("update AcPublishType success");
+                    return Response.success();
+                }
             }
         }else {
             return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status ,ResponseStatus.YOU_ARE_NOT_KING.message);
