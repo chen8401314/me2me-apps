@@ -1,9 +1,12 @@
 package com.me2me.live.dto;
 
+import com.google.common.collect.Lists;
 import com.me2me.common.web.BaseEntity;
+
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -13,8 +16,9 @@ import java.util.Date;
  */
 @Data
 public class LiveCoverDto implements BaseEntity{
+	private static final long serialVersionUID = 6369649571729593474L;
 
-    private String title;
+	private String title;
 
     private Date createTime;
 
@@ -46,4 +50,25 @@ public class LiveCoverDto implements BaseEntity{
     private int v_lv;
 
     private int hasFavorite;
+    
+    //王国类型，0个人王国，1000聚合王国
+    private int type;
+    
+    //子王国数
+    private int acCount;
+    //子王国top列表
+    private List<TopicElement> acTopList = Lists.newArrayList();
+    
+    //被聚合次数，也即被聚合的聚合王国数
+    private int ceCount;
+    
+    @Data
+    public static class TopicElement implements BaseEntity{
+		private static final long serialVersionUID = 1465887396904072679L;
+    	
+		private long topicId;
+		private String title;
+		private String coverImage;
+		private int internalStatus;
+    }
 }
