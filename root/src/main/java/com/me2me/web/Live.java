@@ -510,4 +510,18 @@ public class Live extends BaseController {
     public Response aggregationPublish(AggregationPublishRequest request){
     	return liveService.aggregationPublish(request.getUid(), request.getTopicId(), request.getFid());
     }
+
+    /**
+     * 聚合操作接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/aggregationOpt",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response aggregationOpt(AggregationOptRequest request){
+        AggregationOptDto dto = new AggregationOptDto();
+        CommonUtils.copyDto(request ,dto);
+        return liveService.aggregationOpt(dto);
+    }
+
 }

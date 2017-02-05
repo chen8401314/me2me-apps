@@ -1233,7 +1233,46 @@ public interface Specification {
 
         public final String name;
         public final int index;
+
         SettingModify(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    enum KingdomLanuchType{
+
+        PERSONAL_LANUCH("个人王国发起",1),
+
+        AGGREGATION_LANUCH("聚合王国发起",2);
+
+        public final String name;
+        public final int index;
+
+        KingdomLanuchType(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
+
+    enum AggregationOptType{
+
+        APPLY("申请",1),
+
+        DISMISS("解散",2),
+
+        TOP("置顶",3),
+
+        CANCEL_TOP("取消置顶",4),
+
+        ISSUED("接受下发",5),
+
+        CANCEL_ISSUED("取消接受下发",6);
+
+        public final String name;
+        public final int index;
+
+        AggregationOptType(String name,int index){
             this.name = name;
             this.index = index;
         }

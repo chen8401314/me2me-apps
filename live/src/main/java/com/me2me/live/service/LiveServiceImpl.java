@@ -41,6 +41,8 @@ import com.me2me.user.dao.LiveForUserJdbcDao;
 import com.me2me.user.model.*;
 import com.me2me.user.service.UserService;
 
+import com.sun.tools.javac.comp.Todo;
+import com.sun.xml.internal.bind.v2.TODO;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -93,6 +95,9 @@ public class LiveServiceImpl implements LiveService {
 
     /** 王国发言(评论等)最新ID */
     private static final String TOPIC_FRAGMENT_NEWEST_MAP_KEY = "TOPIC_FRAGMENT_NEWEST";
+
+    //置顶次数
+    private static final String TOP_COUNT = "topCount";
 
     @Override
     public Response createLive(CreateLiveDto createLiveDto) {
@@ -2227,10 +2232,12 @@ public class LiveServiceImpl implements LiveService {
                 }
             } else if (dto.getAction() == Specification.SettingModify.ISSUED_MESSAGE.index) {
                 //下发消息
-            	topic.setAcPublishType(Integer.valueOf(dto.getParams()));
-            	liveMybatisDao.updateTopic(topic);
-            	log.info("update AcPublishType success");
-            	return Response.success();
+                if (topic != null) {
+                    topic.setAcPublishType(Integer.valueOf(dto.getParams()));
+                    liveMybatisDao.updateTopic(topic);
+                    log.info("update AcPublishType success");
+                    return Response.success();
+                }
             }
         }else {
             return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status ,ResponseStatus.YOU_ARE_NOT_KING.message);
@@ -2438,4 +2445,117 @@ public class LiveServiceImpl implements LiveService {
 		
 		return Response.success();
 	}
+
+    @Override
+    public Response aggregationOpt(AggregationOptDto dto) {
+        // TODO: 2017/2/5 消息和推送未加
+        Date now = new Date();
+        TopicAggregation topicAggregation = liveMybatisDao.getTopicAggregationByTopicIdAndSubId(dto.getCeTopicId() ,dto.getAcTopicId());
+        if(dto.getType() == Specification.KingdomLanuchType.PERSONAL_LANUCH.index) {
+            //个人王国
+            Topic topic = liveMybatisDao.getTopicById(dto.getCeTopicId());
+             if(topic != null){
+                if (topic.getUid() == dto.getUid()) {
+                    //只有国王才能操作
+                    if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {
+                        if (topic.getCeAuditType() == 0) {
+                            //需要申请同意收录
+                            TopicAggregationApply apply = new TopicAggregationApply();
+                            apply.setResult(0);
+                            apply.setTopicId(dto.getAcTopicId());
+                            apply.setTargetTopicId(dto.getCeTopicId());
+                            apply.setCreateTime(now);
+                            apply.setUpdateTime(now);
+                            apply.setType(1);
+                            liveMybatisDao.createTopicAggApply(apply);
+                            log.info("create TopicAggregationApply success");
+                            return Response.success();
+                        } else {
+                            TopicAggregation agg = new TopicAggregation();
+                            agg.setTopicId(dto.getCeTopicId());
+                            agg.setSubTopicId(dto.getAcTopicId());
+                            liveMybatisDao.createTopicAgg(agg);
+                            log.info("create TopicAggregation success");
+                            return Response.success();
+                        }
+                    } else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {
+                        liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
+                        return Response.success();
+                    } else if (dto.getAction() == Specification.AggregationOptType.ISSUED.index) {
+                        if(topicAggregation != null){
+                            //0接受推送 1不接受推送
+                            topicAggregation.setIsPublish(0);
+                            return Response.success();
+                        }
+                    } else if (dto.getAction() == Specification.AggregationOptType.CANCEL_ISSUED.index) {
+                        if(topicAggregation != null){
+                            topicAggregation.setIsPublish(1);
+                            return Response.success();
+                        }
+                    }
+                } else {
+                    return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
+                }
+         }
+
+        }else if(dto.getType() == Specification.KingdomLanuchType.AGGREGATION_LANUCH.index){
+            //聚合王国
+            Topic topic = liveMybatisDao.getTopicById(dto.getAcTopicId());
+            if(topic != null) {
+                if (topic.getUid() == dto.getUid()) {
+                    //只有国王才能操作
+                    if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {
+                        if (topic.getAcAuditType() == 0) {
+                            //需要申请同意收录
+                            TopicAggregationApply apply = new TopicAggregationApply();
+                            apply.setResult(0);
+                            apply.setTopicId(dto.getCeTopicId());
+                            apply.setTargetTopicId(dto.getAcTopicId());
+                            apply.setCreateTime(now);
+                            apply.setUpdateTime(now);
+                            apply.setType(1);
+                            liveMybatisDao.createTopicAggApply(apply);
+                            log.info("create TopicAggregationApply success");
+                            return Response.success();
+                        } else {
+                            TopicAggregation agg = new TopicAggregation();
+                            agg.setTopicId(dto.getCeTopicId());
+                            agg.setSubTopicId(dto.getAcTopicId());
+                            liveMybatisDao.createTopicAgg(agg);
+                            log.info("create TopicAggregation success");
+                            return Response.success();
+                        }
+                    } else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {
+                        liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
+                    } else if (dto.getAction() == Specification.AggregationOptType.TOP.index) {
+                        if(topicAggregation != null){
+                            List<TopicAggregation> list = liveMybatisDao.getTopicAggregationByTopicIdAndSubIdList(dto.getCeTopicId() ,dto.getAcTopicId());
+                            if(list.size() <= Integer.valueOf(cacheService.get(TOP_COUNT))) {
+                                //1置顶 0不置顶
+                                topicAggregation.setIsTop(1);
+                                //设置时间为了下次查询会显示在第一个
+                                topicAggregation.setUpdateTime(now);
+                                liveMybatisDao.updateTopicAggregation(topicAggregation);
+                                return Response.success();
+                            }else {
+                                return Response.failure(ResponseStatus.TOP_COUNT_OVER_LIMIT.status, ResponseStatus.TOP_COUNT_OVER_LIMIT.message);
+                            }
+                        }
+                    } else if (dto.getAction() == Specification.AggregationOptType.CANCEL_TOP.index) {
+                        if(topicAggregation != null){
+                            topicAggregation.setIsTop(0);
+                            liveMybatisDao.updateTopicAggregation(topicAggregation);
+                            log.info("cancel top success");
+                            return Response.success();
+                        }
+                    }
+                } else {
+                    return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
+                }
+            }
+
+        }
+
+        return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
+    }
 }

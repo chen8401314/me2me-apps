@@ -172,4 +172,6 @@ public interface LiveService {
     Response settingModify(SettingModifyDto dto);
     
     Response aggregationPublish(long uid, long topicId, long fid);
+
+    Response aggregationOpt(AggregationOptDto dto);
 }

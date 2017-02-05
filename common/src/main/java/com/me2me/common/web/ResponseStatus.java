@@ -432,6 +432,8 @@ public enum  ResponseStatus {
     FRAGMENT_IS_NOT_EXIST("发言不存在或已删除","FRAGMENT IS NOT EXIST!", 50058),
     
     KINGDOM_IS_NOT_AGGREGATION("当前王国不是聚合王国","kingdom is not aggregation!", 50059),
+
+    TOP_COUNT_OVER_LIMIT("置顶次数超过上限","top count over limit", 50060),
     
     
     
