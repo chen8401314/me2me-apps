@@ -353,4 +353,5 @@ public class LiveLocalJdbcDao {
 		
 		return jdbcTemplate.queryForList(sb.toString());
 	}
+
 }

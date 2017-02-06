@@ -29,4 +29,8 @@ public class AggregationOptRequest {
     @Setter
     private int type;
 
+    @Getter
+    @Setter
+    private int applyId;
+
 }

@@ -22,4 +22,6 @@ public class AggregationOptDto implements BaseEntity {
 
     private int type;
 
+    private int applyId;
+
 }

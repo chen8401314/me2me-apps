@@ -524,4 +524,17 @@ public class Live extends BaseController {
         return liveService.aggregationOpt(dto);
     }
 
+    /**
+     * 聚合申请操作接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/aggregationApplyOpt",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response aggregationApplyOpt(AggregationOptRequest request){
+        AggregationOptDto dto = new AggregationOptDto();
+        CommonUtils.copyDto(request ,dto);
+        return liveService.aggregationApplyOpt(dto);
+    }
+
 }

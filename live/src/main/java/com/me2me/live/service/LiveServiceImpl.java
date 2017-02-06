@@ -2459,6 +2459,12 @@ public class LiveServiceImpl implements LiveService {
                     //只有国王才能操作
                     if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {
                         if (topic.getCeAuditType() == 0) {
+                            //查询是否申请过
+                            TopicAggregationApply t = liveMybatisDao.getTopicAggregationApplyByTopicAndTarget(dto.getAcTopicId() ,dto.getCeTopicId());
+                            if(t != null){
+                                //重复操作
+                                return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
+                            }
                             //需要申请同意收录
                             TopicAggregationApply apply = new TopicAggregationApply();
                             apply.setResult(0);
@@ -2506,6 +2512,11 @@ public class LiveServiceImpl implements LiveService {
                     //只有国王才能操作
                     if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {
                         if (topic.getAcAuditType() == 0) {
+                            //查询是否申请过
+                            TopicAggregationApply t = liveMybatisDao.getTopicAggregationApplyByTopicAndTarget(dto.getCeTopicId() ,dto.getAcTopicId());
+                            if(t != null){
+                                return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
+                            }
                             //需要申请同意收录
                             TopicAggregationApply apply = new TopicAggregationApply();
                             apply.setResult(0);
@@ -2557,5 +2568,46 @@ public class LiveServiceImpl implements LiveService {
         }
 
         return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
+    }
+
+    @Override
+    public Response aggregationApplyOpt(AggregationOptDto dto) {
+        TopicAggregationApply topicAggregationApply = liveMybatisDao.getTopicAggregationApplyById(dto.getApplyId());
+        if(topicAggregationApply != null) {
+            Topic topic = liveMybatisDao.getTopicById(topicAggregationApply.getTopicId());
+            Topic sub_topic = liveMybatisDao.getTopicById(topicAggregationApply.getTargetTopicId());
+            if(topic ==null || sub_topic == null){
+                //失效
+                topicAggregationApply.setResult(3);
+                liveMybatisDao.updateTopicAggregationApply(topicAggregationApply);
+                log.info("update topicAggreationApply result : 3");
+
+                return Response.failure(ResponseStatus.DATA_DOES_NOT_EXIST.status, ResponseStatus.DATA_DOES_NOT_EXIST.message);
+            }
+            //1同意 2拒绝
+            if (topicAggregationApply.getResult() == 0) {
+                //0初始的情况才能操作
+                if (dto.getAction() == 1) {
+                    topicAggregationApply.setResult(1);
+                    liveMybatisDao.updateTopicAggregationApply(topicAggregationApply);
+                    log.info("update topic_agg_apply success");
+                    TopicAggregation aggregation = new TopicAggregation();
+                    aggregation.setTopicId(topicAggregationApply.getTopicId());
+                    aggregation.setSubTopicId(topicAggregationApply.getTargetTopicId());
+                    liveMybatisDao.createTopicAgg(aggregation);
+                    log.info("create topic_agg success");
+                    return Response.success();
+                } else if (dto.getAction() == 2) {
+                    topicAggregationApply.setResult(2);
+                    liveMybatisDao.updateTopicAggregationApply(topicAggregationApply);
+                    log.info("update topic_agg_apply success");
+                    return Response.success();
+                }
+            }else {
+                return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
+            }
+        }
+
+        return Response.failure(ResponseStatus.DATA_DOES_NOT_EXIST.status, ResponseStatus.DATA_DOES_NOT_EXIST.message);
     }
 }

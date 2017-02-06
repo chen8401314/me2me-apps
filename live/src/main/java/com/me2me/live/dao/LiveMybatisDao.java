@@ -708,14 +708,18 @@ public class LiveMybatisDao {
         topicAggregationMapper.updateByPrimaryKeySelective(topicAggregation);
     }
 
+    public void updateTopicAggregationApply(TopicAggregationApply topicAggregationApply) {
+        topicAggregationApplyMapper.updateByPrimaryKeySelective(topicAggregationApply);
+    }
+
 //    public List<TopicAggregation> getTopicAggregationsByTopic
 
     public void createTopicAggApply(TopicAggregationApply topicAggregationApply) {
-        topicAggregationApplyMapper.insert(topicAggregationApply);
+        topicAggregationApplyMapper.insertSelective(topicAggregationApply);
     }
 
     public void createTopicAgg(TopicAggregation topicAggregation) {
-        topicAggregationMapper.insert(topicAggregation);
+        topicAggregationMapper.insertSelective(topicAggregation);
     }
 
     public void deleteTopicAgg(long ceTopicId ,long acTopicId) {
@@ -740,8 +744,24 @@ public class LiveMybatisDao {
         TopicAggregationExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andSubTopicIdEqualTo(subId);
-
         return topicAggregationMapper.selectByExample(example);
+    }
+
+    public TopicAggregationApply getTopicAggregationApplyById(long applyId){
+        TopicAggregationApplyExample example = new TopicAggregationApplyExample();
+        TopicAggregationApplyExample.Criteria criteria = example.createCriteria();
+        criteria.andIdEqualTo(applyId);
+        List<TopicAggregationApply> list = topicAggregationApplyMapper.selectByExample(example);
+        return list.size() > 0 && list != null?list.get(0):null;
+    }
+
+    public TopicAggregationApply getTopicAggregationApplyByTopicAndTarget(long ownerTopicId ,long targetTopicId){
+        TopicAggregationApplyExample example = new TopicAggregationApplyExample();
+        TopicAggregationApplyExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(ownerTopicId);
+        criteria.andTargetTopicIdEqualTo(targetTopicId);
+        List<TopicAggregationApply> list = topicAggregationApplyMapper.selectByExample(example);
+        return list.size() > 0 && list != null?list.get(0):null;
     }
 
 }
