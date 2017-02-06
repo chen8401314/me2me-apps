@@ -129,4 +129,12 @@ public class LiveForContentJdbcDao {
     	sb.append(" where id=").append(cid);
     	this.jdbcTemplate.execute(sb.toString());
     }
+    
+    public void deleteAggregationTopic(long topicId){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("delete from topic_aggregation where topic_id=");
+    	sb.append(topicId).append(" or sub_topic_id=");
+    	sb.append(topicId);
+    	jdbcTemplate.execute(sb.toString());
+    }
 }

@@ -1119,7 +1119,10 @@ private void localJpush(long toUid){
             //记录下删除记录
           	liveForContentJdbcDao.insertDeleteLog(Specification.DeleteObjectType.TOPIC.index, content.getForwardCid(), uid);
           	
+          	//删除活动相关王国记录
           	activityService.deleteAkingDomByTopicId(content.getForwardCid());
+          	//删除聚合相关关系记录
+          	liveForContentJdbcDao.deleteAggregationTopic(content.getForwardCid());
         }else{
         	//记录下删除记录
           	liveForContentJdbcDao.insertDeleteLog(Specification.DeleteObjectType.UGC.index, id, uid);
