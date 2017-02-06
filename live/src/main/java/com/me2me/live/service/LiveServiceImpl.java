@@ -6,13 +6,9 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.me2me.activity.dto.TopicCountDTO;
-import com.me2me.activity.model.Aactivity;
-import com.me2me.activity.model.Atopic;
-import com.me2me.activity.model.Auser;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
-import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
@@ -37,12 +33,9 @@ import com.me2me.live.event.RemindAndJpushAtMessageEvent;
 import com.me2me.live.event.SpeakEvent;
 import com.me2me.live.model.*;
 import com.me2me.sms.service.JPushService;
-import com.me2me.user.dao.LiveForUserJdbcDao;
 import com.me2me.user.model.*;
 import com.me2me.user.service.UserService;
 
-import com.sun.tools.javac.comp.Todo;
-import com.sun.xml.internal.bind.v2.TODO;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.beanutils.BeanUtils;
