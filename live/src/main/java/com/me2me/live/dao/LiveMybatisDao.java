@@ -718,8 +718,6 @@ public class LiveMybatisDao {
         topicAggregationApplyMapper.updateByPrimaryKeySelective(topicAggregationApply);
     }
 
-//    public List<TopicAggregation> getTopicAggregationsByTopic
-
     public void createTopicAggApply(TopicAggregationApply topicAggregationApply) {
         topicAggregationApplyMapper.insertSelective(topicAggregationApply);
     }
