@@ -2448,36 +2448,44 @@ public class LiveServiceImpl implements LiveService {
         if(dto.getType() == Specification.KingdomLanuchType.PERSONAL_LANUCH.index) {
             //个人王国
             Topic topic = liveMybatisDao.getTopicById(dto.getCeTopicId());
+            Topic topicOwner = liveMybatisDao.getTopicById(dto.getAcTopicId());
              if(topic != null){
                 if (topic.getUid() == dto.getUid()) {
                     //只有国王才能操作
                     if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {
-                        if (topic.getCeAuditType() == 0) {
-                            //查询是否申请过
-                            TopicAggregationApply t = liveMybatisDao.getTopicAggregationApplyByTopicAndTarget(dto.getAcTopicId() ,dto.getCeTopicId());
-                            if(t != null){
-                                //重复操作
-                                return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
+                        if(topicOwner.getUid() != topic.getUid() ){
+                            if (topic.getCeAuditType() == 0) {
+                                //查询是否申请过
+                                TopicAggregationApply t = liveMybatisDao.getTopicAggregationApplyByTopicAndTarget(dto.getAcTopicId() ,dto.getCeTopicId() ,2);
+                                if(t != null){
+                                    //重复操作
+                                    return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
+                                }
+                                //是否重复收录
+                                if(topicAggregation != null){
+                                    return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
+                                }
+                                //需要申请同意收录
+                                TopicAggregationApply apply = new TopicAggregationApply();
+                                apply.setResult(0);
+                                apply.setTopicId(dto.getAcTopicId());
+                                apply.setTargetTopicId(dto.getCeTopicId());
+                                apply.setCreateTime(now);
+                                apply.setUpdateTime(now);
+                                apply.setType(2);
+                                liveMybatisDao.createTopicAggApply(apply);
+                                log.info("create TopicAggregationApply success");
+                                return Response.success();
                             }
-                            //需要申请同意收录
-                            TopicAggregationApply apply = new TopicAggregationApply();
-                            apply.setResult(0);
-                            apply.setTopicId(dto.getAcTopicId());
-                            apply.setTargetTopicId(dto.getCeTopicId());
-                            apply.setCreateTime(now);
-                            apply.setUpdateTime(now);
-                            apply.setType(1);
-                            liveMybatisDao.createTopicAggApply(apply);
-                            log.info("create TopicAggregationApply success");
-                            return Response.success();
-                        } else {
+                        }
+                            //如果是自己收录自己，不需要审核的情况下
                             TopicAggregation agg = new TopicAggregation();
                             agg.setTopicId(dto.getCeTopicId());
                             agg.setSubTopicId(dto.getAcTopicId());
                             liveMybatisDao.createTopicAgg(agg);
                             log.info("create TopicAggregation success");
                             return Response.success();
-                        }
+
                     } else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {
                         liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
                         return Response.success();
@@ -2501,35 +2509,42 @@ public class LiveServiceImpl implements LiveService {
         }else if(dto.getType() == Specification.KingdomLanuchType.AGGREGATION_LANUCH.index){
             //聚合王国
             Topic topic = liveMybatisDao.getTopicById(dto.getAcTopicId());
+            Topic topicOwner = liveMybatisDao.getTopicById(dto.getCeTopicId());
             if(topic != null) {
-                if (topic.getUid() == dto.getUid()) {
+                if (topicOwner.getUid() == dto.getUid()) {
                     //只有国王才能操作
                     if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {
-                        if (topic.getAcAuditType() == 0) {
-                            //查询是否申请过
-                            TopicAggregationApply t = liveMybatisDao.getTopicAggregationApplyByTopicAndTarget(dto.getCeTopicId() ,dto.getAcTopicId());
-                            if(t != null){
-                                return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
+                        //如果聚合王国收录自己的子王国不需要验证
+                        if(topicOwner.getUid() != topic.getUid() ){
+                            if (topic.getAcAuditType() == 0) {
+                                //查询是否申请过
+                                TopicAggregationApply t = liveMybatisDao.getTopicAggregationApplyByTopicAndTarget(dto.getCeTopicId() ,dto.getAcTopicId() ,1);
+                                if(t != null){
+                                    return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
+                                }
+                                //是否重复收录
+                                if(topicAggregation != null){
+                                    return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
+                                }
+                                //需要申请同意收录
+                                TopicAggregationApply apply = new TopicAggregationApply();
+                                apply.setResult(0);
+                                apply.setTopicId(dto.getCeTopicId());
+                                apply.setTargetTopicId(dto.getAcTopicId());
+                                apply.setCreateTime(now);
+                                apply.setUpdateTime(now);
+                                apply.setType(1);
+                                liveMybatisDao.createTopicAggApply(apply);
+                                log.info("create TopicAggregationApply success");
+                                return Response.success();
                             }
-                            //需要申请同意收录
-                            TopicAggregationApply apply = new TopicAggregationApply();
-                            apply.setResult(0);
-                            apply.setTopicId(dto.getCeTopicId());
-                            apply.setTargetTopicId(dto.getAcTopicId());
-                            apply.setCreateTime(now);
-                            apply.setUpdateTime(now);
-                            apply.setType(1);
-                            liveMybatisDao.createTopicAggApply(apply);
-                            log.info("create TopicAggregationApply success");
-                            return Response.success();
-                        } else {
+                        }
                             TopicAggregation agg = new TopicAggregation();
                             agg.setTopicId(dto.getCeTopicId());
                             agg.setSubTopicId(dto.getAcTopicId());
                             liveMybatisDao.createTopicAgg(agg);
                             log.info("create TopicAggregation success");
                             return Response.success();
-                        }
                     } else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {
                         liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
                     } else if (dto.getAction() == Specification.AggregationOptType.TOP.index) {

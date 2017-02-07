@@ -760,11 +760,12 @@ public class LiveMybatisDao {
         return list.size() > 0 && list != null?list.get(0):null;
     }
 
-    public TopicAggregationApply getTopicAggregationApplyByTopicAndTarget(long ownerTopicId ,long targetTopicId){
+    public TopicAggregationApply getTopicAggregationApplyByTopicAndTarget(long ownerTopicId ,long targetTopicId ,int type){
         TopicAggregationApplyExample example = new TopicAggregationApplyExample();
         TopicAggregationApplyExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(ownerTopicId);
         criteria.andTargetTopicIdEqualTo(targetTopicId);
+        criteria.andTypeEqualTo(type);
         List<TopicAggregationApply> list = topicAggregationApplyMapper.selectByExample(example);
         return list.size() > 0 && list != null?list.get(0):null;
     }
