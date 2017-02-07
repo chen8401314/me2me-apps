@@ -177,7 +177,15 @@ public interface Specification {
 
         LIVE_INVITED("圈子邀请",6),
 
-        REMOVE_SNS_CIRCLE("圈子移除",7);
+        REMOVE_SNS_CIRCLE("圈子移除",7),
+        
+        //以上为普通消息，以下为系统消息
+        CORE_CIRCLE_APPLY("核心圈申请", 10),
+        CORE_CIRCLE_NOTICE("核心圈通知", 11),
+        
+        AGGREGATION_APPLY("聚合申请", 12),
+        AGGREGATION_NOTICE("聚合通知", 13),
+        ;
 
         public final String name;
         public final int index;
@@ -483,7 +491,9 @@ public interface Specification {
 
         CORE_CIRCLE("邀请核心圈",11),
 
-        REMOVE_CORE_CIRCLE("从核心圈移除",12);
+        REMOVE_CORE_CIRCLE("从核心圈移除",12),
+        
+        LINK("链接跳转", 13);
 
         public final String name;
 
@@ -949,7 +959,9 @@ public interface Specification {
 
         LIVE("王国/直播",2),
 
-        SNS_CIRCLE("王国成员",3);
+        SNS_CIRCLE("王国成员",3),
+        
+        LINK("链接跳转", 4);
 
         public final String name;
 
