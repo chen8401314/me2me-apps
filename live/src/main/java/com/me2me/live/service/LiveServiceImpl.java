@@ -10,6 +10,7 @@ import com.me2me.activity.service.ActivityService;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.CommonUtils;
+import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -88,7 +89,10 @@ public class LiveServiceImpl implements LiveService {
 
     /** 王国发言(评论等)最新ID */
     private static final String TOPIC_FRAGMENT_NEWEST_MAP_KEY = "TOPIC_FRAGMENT_NEWEST";
-
+    
+    /** 聚合王国内容下发次数 */
+    private static final String TOPIC_AGGREGATION_PUBLISH_COUNT = "TOPIC_AGGREGATION_PUBLISH_COUNT";
+    
     //置顶次数
     private static final String TOP_COUNT = "topCount";
 
@@ -2424,6 +2428,25 @@ public class LiveServiceImpl implements LiveService {
 		if(topic.getType().intValue() != Specification.KingdomType.AGGREGATION.index){
 			return Response.failure(ResponseStatus.KINGDOM_IS_NOT_AGGREGATION.status, ResponseStatus.KINGDOM_IS_NOT_AGGREGATION.message);
 		}
+		
+		int max = 10;
+		String count = cacheService.get("TOPIC_AGGREGATION_PUBLISH_COUNT");
+		if(!StringUtils.isEmpty(count)){
+			max = Integer.valueOf(count);
+		}
+		
+		String dayStr = DateUtil.date2string(new Date(), "yyyyMMdd");
+		String key = topicId+"_"+dayStr;
+		String result = cacheService.get(key);
+		int currentCount = 0;
+		if(!StringUtils.isEmpty(result)){
+			currentCount = Integer.valueOf(result);
+		}
+		currentCount++;
+		if(currentCount > max){//超过了
+			return Response.failure(ResponseStatus.AGGREGATION_PUBLISH_OVER_LIMIT.status, ResponseStatus.AGGREGATION_PUBLISH_OVER_LIMIT.message);
+		}
+		
 		TopicFragment tf = liveMybatisDao.getTopicFragmentById(fid);
 		if(null == tf || tf.getTopicId().longValue() != topic.getId().longValue()
 				|| tf.getStatus() != Specification.TopicFragmentStatus.ENABLED.index){
@@ -2436,6 +2459,9 @@ public class LiveServiceImpl implements LiveService {
 		event.setTopicId(topicId);
 		event.setFid(fid);
 		applicationEventBus.post(event);
+		
+		//记录下发次数
+		cacheService.setex(key,String.valueOf(currentCount),60*60*24);
 		
 		return Response.success();
 	}

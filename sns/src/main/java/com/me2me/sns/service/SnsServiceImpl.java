@@ -506,6 +506,9 @@ public class SnsServiceImpl implements SnsService {
                     snsMybatisDao.createSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
                 }
                 //因为自己退出的，所以不需要什么推送什么的。
+                
+                //发送消息，告诉对方我退出了核心圈
+                
             }
         }
         log.info("modify circle end ...");
@@ -541,7 +544,6 @@ public class SnsServiceImpl implements SnsService {
         userNotice.setFromAvatar(userProfile.getAvatar());
         userNotice.setFromUid(userProfile.getUid());
         userNotice.setToNickName(customerProfile.getNickName());
-        userNotice.setReadStatus(userNotice.getReadStatus());
         userNotice.setCid(cid);
 
         Topic topic = liveService.getTopicById(cid);
