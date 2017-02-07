@@ -155,7 +155,7 @@ public class LiveLocalJdbcDao {
 	public List<Topic> searchTopics(KingdomSearchDTO searchDTO, int topType){
 		StringBuilder sb = new StringBuilder();
 		sb.append("select t.* from topic t");
-		if(searchDTO.getTopicId() > 0){
+		if(searchDTO.getTopicType() > 0 && searchDTO.getTopicId() > 0){
 			sb.append(",topic_aggregation a");
 			if(searchDTO.getTopicType() == 1){//个人王国查聚合的母王国
 				sb.append(" where t.id=a.topic_id");

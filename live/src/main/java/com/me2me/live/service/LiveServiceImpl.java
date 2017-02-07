@@ -2533,20 +2533,20 @@ public class LiveServiceImpl implements LiveService {
             //个人王国
             Topic topic = liveMybatisDao.getTopicById(dto.getCeTopicId());
             Topic topicOwner = liveMybatisDao.getTopicById(dto.getAcTopicId());
-             if(topic != null){
-                if (topic.getUid() == dto.getUid()) {
+             if(topic != null && topicOwner != null){
+                if (topic.getUid().longValue() == dto.getUid()) {
                     //只有国王才能操作
                     if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {
-                        if(topicOwner.getUid() != topic.getUid() ){
+                    	//是否重复收录
+                        if(topicAggregation != null){
+                            return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
+                        }
+                        if(topicOwner.getUid().longValue() != topic.getUid().longValue() ){
                             if (topic.getCeAuditType() == 0) {
                                 //查询是否申请过
                                 TopicAggregationApply t = liveMybatisDao.getTopicAggregationApplyByTopicAndTarget(dto.getAcTopicId() ,dto.getCeTopicId() ,2);
                                 if(t != null){
                                     //重复操作
-                                    return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
-                                }
-                                //是否重复收录
-                                if(topicAggregation != null){
                                     return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
                                 }
                                 //需要申请同意收录
@@ -2594,20 +2594,20 @@ public class LiveServiceImpl implements LiveService {
             //聚合王国
             Topic topic = liveMybatisDao.getTopicById(dto.getAcTopicId());
             Topic topicOwner = liveMybatisDao.getTopicById(dto.getCeTopicId());
-            if(topic != null) {
-                if (topicOwner.getUid() == dto.getUid()) {
+            if(topic != null && topicOwner != null) {
+                if (topicOwner.getUid().longValue() == dto.getUid()) {
                     //只有国王才能操作
                     if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {
+                    	//是否重复收录
+                        if(topicAggregation != null){
+                            return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
+                        }
                         //如果聚合王国收录自己的子王国不需要验证
-                        if(topicOwner.getUid() != topic.getUid() ){
+                        if(topicOwner.getUid().longValue() != topic.getUid().longValue() ){
                             if (topic.getAcAuditType() == 0) {
                                 //查询是否申请过
                                 TopicAggregationApply t = liveMybatisDao.getTopicAggregationApplyByTopicAndTarget(dto.getCeTopicId() ,dto.getAcTopicId() ,1);
                                 if(t != null){
-                                    return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
-                                }
-                                //是否重复收录
-                                if(topicAggregation != null){
                                     return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
                                 }
                                 //需要申请同意收录
