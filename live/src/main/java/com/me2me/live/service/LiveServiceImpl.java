@@ -88,7 +88,7 @@ public class LiveServiceImpl implements LiveService {
     private String live_web;
 
     /** 王国发言(评论等)最新ID */
-    private static final String TOPIC_FRAGMENT_NEWEST_MAP_KEY = "TOPIC_FRAGMENT_NEWEST";
+    public static final String TOPIC_FRAGMENT_NEWEST_MAP_KEY = "TOPIC_FRAGMENT_NEWEST";
     
     /** 聚合王国内容下发次数 */
     private static final String TOPIC_AGGREGATION_PUBLISH_COUNT = "TOPIC_AGGREGATION_PUBLISH_COUNT";
@@ -2105,7 +2105,7 @@ public class LiveServiceImpl implements LiveService {
         }
         
         //--add update kingdom cache -- modify by zcl -- begin --
-        String value = lastFragmentId + "," + total;
+		String value = lastFragmentId + "," + total;
         cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
         //--add update kingdom cache -- modify by zcl -- end --
         
@@ -2121,11 +2121,15 @@ public class LiveServiceImpl implements LiveService {
 			searchDTO.setUpdateTime(Long.MAX_VALUE);
 			first = true;
 		}
+		Map<String, String> topMap = new HashMap<String, String>();
 		//母查子的第一次需要先将置顶的全部查询出来
 		if(searchDTO.getTopicId() > 0 && searchDTO.getTopicType() == 2){//母查子
 			if(first){//第一次
 				List<Topic> topList = liveLocalJdbcDao.searchTopics(searchDTO, 1);
 				if(null != topList && topList.size() > 0){
+					for(Topic t : topList){
+						topMap.put(String.valueOf(t.getId()), "1");
+					}
 					topicList.addAll(topList);
 				}
 				List<Topic> noList = liveLocalJdbcDao.searchTopics(searchDTO, 0);
@@ -2139,9 +2143,21 @@ public class LiveServiceImpl implements LiveService {
 			topicList = liveLocalJdbcDao.searchTopics(searchDTO, -1);
 		}
 		
+		Map<String, String> publishMap = new HashMap<String, String>();
+		if(searchDTO.getTopicId() > 0 && searchDTO.getTopicType()==1){//子查母需要知道子对于母是否开启了内容下发
+			List<TopicAggregation> list = liveMybatisDao.getTopicAggregationsBySubTopicId(searchDTO.getTopicId());
+			if(null != list && list.size() > 0){
+				for(TopicAggregation ta : list){
+					if(ta.getIsPublish() == 0){
+						publishMap.put(String.valueOf(ta.getTopicId()), "1");
+					}
+				}
+			}
+		}
+		
 		ShowTopicSearchDTO showTopicSearchDTO = new ShowTopicSearchDTO();
 		if(null != topicList && topicList.size() > 0){
-			this.builderTopicSearch(currentUid, showTopicSearchDTO, topicList);
+			this.builderTopicSearch(currentUid, showTopicSearchDTO, topicList, topMap, publishMap);
 		}
 		
 		return Response.success(showTopicSearchDTO);
@@ -2203,6 +2219,29 @@ public class LiveServiceImpl implements LiveService {
                     topic.setSummary(dto.getParams());
                     liveMybatisDao.updateTopic(topic);
                     log.info("update Summary success");
+                    
+                    //更新成功需要在当前王国中插入一条国王发言
+                    if(!StringUtils.isEmpty(dto.getParams())){
+                    	TopicFragment topicFragment = new TopicFragment();
+                    	topicFragment.setFragment(dto.getParams());
+                    	topicFragment.setUid(dto.getUid());
+                    	topicFragment.setType(0);//第一次发言肯定是主播发言
+                    	topicFragment.setContentType(0);//文本
+                    	topicFragment.setTopicId(topic.getId());
+                        topicFragment.setBottomId(0l);
+                        topicFragment.setTopId(0l);
+                        topicFragment.setSource(0);
+//                        topicFragment.setExtra();
+                        topicFragment.setCreateTime(new Date());
+                        liveMybatisDao.createTopicFragment(topicFragment);
+                        long lastFragmentId = topicFragment.getId();
+                        
+                        //更新缓存
+                        int total = liveMybatisDao.countFragmentByTopicId(topic.getId());
+                        String value = lastFragmentId + "," + total;
+                        cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
+                    }
+                    
                     return Response.success();
                 }
             } else if (dto.getAction() == Specification.SettingModify.TAGS.index) {
@@ -2244,7 +2283,15 @@ public class LiveServiceImpl implements LiveService {
         return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status ,ResponseStatus.ACTION_NOT_SUPPORT.message);
     }
 
-    private void builderTopicSearch(long uid, ShowTopicSearchDTO showTopicSearchDTO, List<Topic> topicList) {
+    private void builderTopicSearch(long uid, ShowTopicSearchDTO showTopicSearchDTO, List<Topic> topicList, 
+    		Map<String, String> topMap, Map<String, String> publishMap) {
+    	if(null == topMap){
+    		topMap = new HashMap<String, String>();
+    	}
+    	if(null == publishMap){
+    		publishMap = new HashMap<String, String>();
+    	}
+    	
 		List<Long> uidList = new ArrayList<Long>();
 		List<Long> tidList = new ArrayList<Long>();
     	for(Topic topic : topicList){
@@ -2398,6 +2445,17 @@ public class LiveServiceImpl implements LiveService {
                 e.setFavorite(Specification.LiveFavorite.NORMAL.index);
             }
 
+            if(null != topMap.get(String.valueOf(topic.getId()))){
+            	e.setIsTop(1);
+            }else{
+            	e.setIsTop(0);
+            }
+            if(null != publishMap.get(String.valueOf(topic.getId()))){
+            	e.setIsPublish(1);
+            }else{
+            	e.setIsPublish(0);
+            }
+            
             showTopicSearchDTO.getResultList().add(e);
         }
     }
@@ -2444,7 +2502,7 @@ public class LiveServiceImpl implements LiveService {
 		}
 		currentCount++;
 		if(currentCount > max){//超过了
-			return Response.failure(ResponseStatus.AGGREGATION_PUBLISH_OVER_LIMIT.status, ResponseStatus.AGGREGATION_PUBLISH_OVER_LIMIT.message);
+			return Response.failure(ResponseStatus.AGGREGATION_PUBLISH_OVER_LIMIT.status, ResponseStatus.AGGREGATION_PUBLISH_OVER_LIMIT.message.replace("#{count}#", String.valueOf(max)));
 		}
 		
 		TopicFragment tf = liveMybatisDao.getTopicFragmentById(fid);
@@ -2560,8 +2618,8 @@ public class LiveServiceImpl implements LiveService {
                         liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
                     } else if (dto.getAction() == Specification.AggregationOptType.TOP.index) {
                         if(topicAggregation != null){
-                            List<TopicAggregation> list = liveMybatisDao.getTopicAggregationByTopicIdAndSubIdList(dto.getCeTopicId() ,dto.getAcTopicId());
-                            if(list.size() <= Integer.valueOf(cacheService.get(TOP_COUNT))) {
+                            List<TopicAggregation> list = liveMybatisDao.getTopicAggregationByTopicIdAndIsTop(dto.getCeTopicId(), 1);
+                            if(list.size() < Integer.valueOf(cacheService.get(TOP_COUNT))) {
                                 //1置顶 0不置顶
                                 topicAggregation.setIsTop(1);
                                 //设置时间为了下次查询会显示在第一个

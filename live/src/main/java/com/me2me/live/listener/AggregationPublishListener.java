@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.eventbus.Subscribe;
+import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Specification;
 import com.me2me.content.model.Content;
@@ -22,6 +23,7 @@ import com.me2me.live.event.AggregationPublishEvent;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicAggregation;
 import com.me2me.live.model.TopicFragment;
+import com.me2me.live.service.LiveServiceImpl;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 
@@ -33,14 +35,16 @@ public class AggregationPublishListener {
 	private final LiveMybatisDao liveMybatisDao;
 	private final UserService userService;
 	private final ContentService contentService;
+	private final CacheService cacheService;
 	
 	@Autowired
 	public AggregationPublishListener(ApplicationEventBus applicationEventBus, LiveMybatisDao liveMybatisDao,
-			UserService userService, ContentService contentService){
+			UserService userService, ContentService contentService, CacheService cacheService){
 		this.applicationEventBus = applicationEventBus;
 		this.liveMybatisDao = liveMybatisDao;
 		this.userService = userService;
 		this.contentService = contentService;
+		this.cacheService = cacheService;
 	}
 	
 	@PostConstruct
@@ -92,6 +96,13 @@ public class AggregationPublishListener {
 						newtf.setTopicId(subTopic.getId());
 						newtf.setId(null);
 						liveMybatisDao.createTopicFragment(newtf);
+						
+						//更新缓存
+						long lastFragmentId = newtf.getId();
+                        int total = liveMybatisDao.countFragmentByTopicId(subTopic.getId());
+                        String value = lastFragmentId + "," + total;
+                        cacheService.hSet(LiveServiceImpl.TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + subTopic.getId(), value);
+						
 						//也许需要有的红点/推送什么的如果需要再加，目前先不管
 					}
 				}

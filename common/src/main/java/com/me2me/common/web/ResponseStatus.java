@@ -435,7 +435,7 @@ public enum  ResponseStatus {
 
     TOP_COUNT_OVER_LIMIT("置顶次数超过上限","top count over limit", 50060),
     
-    AGGREGATION_PUBLISH_OVER_LIMIT("聚合王国内容下发数次超过上限", "aggregation puhlish over limit", 50061),
+    AGGREGATION_PUBLISH_OVER_LIMIT("每天只能下发#{count}#次，已经超过上限，不能再下发", "aggregation puhlish over limit", 50061),
     
     
     

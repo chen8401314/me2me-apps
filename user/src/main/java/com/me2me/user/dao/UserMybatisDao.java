@@ -310,6 +310,13 @@ public class UserMybatisDao {
         UserNoticeExample.Criteria criteria = example.createCriteria();
         criteria.andToUidEqualTo(userNoticeDto.getUid());
         criteria.andIdLessThan(userNoticeDto.getSinceId());
+        if(userNoticeDto.getLevel() == 1){//一级目录，除核心圈和聚合相关的信息
+        	criteria.andNoticeTypeLessThanOrEqualTo(5);
+        }else if(userNoticeDto.getLevel() == 2){//二级目录，系统消息，核心圈和聚合相关的信息
+        	criteria.andNoticeTypeGreaterThanOrEqualTo(6);
+        }else{//老版本的，则只需要查询2.2.0版本前的消息即可，主要是为了兼容老版本
+        	criteria.andNoticeTypeLessThanOrEqualTo(7);//新的类型不展示。。防止前台不兼容
+        }
         example.setOrderByClause("id desc limit 10 ");
         return  userNoticeMapper.selectByExample(example);
     }

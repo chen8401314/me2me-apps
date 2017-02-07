@@ -714,6 +714,14 @@ public class LiveMybatisDao {
     	criteria.andTopicIdEqualTo(topicId);
     	return topicAggregationMapper.selectByExample(example);
     }
+    
+    public List<TopicAggregation> getTopicAggregationsBySubTopicId(long subTopicId){
+    	TopicAggregationExample example = new TopicAggregationExample();
+    	TopicAggregationExample.Criteria criteria = example.createCriteria();
+    	criteria.andSubTopicIdEqualTo(subTopicId);
+    	return topicAggregationMapper.selectByExample(example);
+    }
+    
     public void updateTopicAggregationApply(TopicAggregationApply topicAggregationApply) {
         topicAggregationApplyMapper.updateByPrimaryKeySelective(topicAggregationApply);
     }
@@ -743,11 +751,11 @@ public class LiveMybatisDao {
         return list.size() > 0 && list != null?list.get(0):null;
     }
 
-    public List<TopicAggregation> getTopicAggregationByTopicIdAndSubIdList(long topicId ,long subId){
+    public List<TopicAggregation> getTopicAggregationByTopicIdAndIsTop(long topicId, int isTop){
         TopicAggregationExample example = new TopicAggregationExample();
         TopicAggregationExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
-        criteria.andSubTopicIdEqualTo(subId);
+        criteria.andIsTopEqualTo(isTop);
 
         return topicAggregationMapper.selectByExample(example);
     }

@@ -167,7 +167,7 @@ public class LiveLocalJdbcDao {
 					sb.append(" and a.is_top=").append(topType);
 				}
 			}else{
-				sb.append(" where t.id=a.sub_topic_id and a.id=0");
+				sb.append(" where t.id=a.sub_topic_id and a.id=0");//默认查不到数据
 			}
 		}else{
 			sb.append(" where 1=1");

@@ -579,11 +579,17 @@ public class UserServiceImpl implements UserService {
         	if(userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_TAG.index
             		|| userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_REVIEW.index
             		|| userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_INVITED.index
-            		|| userNotice.getNoticeType() == Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index){
+            		|| userNotice.getNoticeType() == Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index
+            		|| userNotice.getNoticeType() == Specification.UserNoticeType.CORE_CIRCLE_NOTICE.index){
         		//这些是王国相关的消息
         		if(topicIdList.contains(userNotice.getCid())){
         			topicIdList.add(userNotice.getCid());
         		}
+        	}else if(userNotice.getNoticeType() == Specification.UserNoticeType.CORE_CIRCLE_APPLY.index){//核心圈申请
+        		
+        	}else if(userNotice.getNoticeType() == Specification.UserNoticeType.AGGREGATION_APPLY.index
+            		|| userNotice.getNoticeType() == Specification.UserNoticeType.AGGREGATION_NOTICE.index){
+        		
         	}
         }
         List<UserProfile> userProfileList = this.getUserProfilesByUids(uidList);
@@ -621,7 +627,6 @@ public class UserServiceImpl implements UserService {
             userNoticeElement.setFromNickName(fromUser.getNickName());
             userNoticeElement.setFromUid(userNotice.getFromUid());
             userNoticeElement.setReadStatus(userNotice.getReadStatus());
-            userNoticeElement.setToNickName(userNotice.getToNickName());
             userNoticeElement.setCreateTime(userNotice.getCreateTime());
             userNoticeElement.setLikeCount(userNotice.getLikeCount());
             userNoticeElement.setSummary(userNotice.getSummary());
@@ -631,6 +636,7 @@ public class UserServiceImpl implements UserService {
             userNoticeElement.setV_lv(fromUser.getvLv());
             toUser = userProfileMap.get(String.valueOf(userNotice.getToUid()));
             userNoticeElement.setTo_v_lv(toUser.getvLv());
+            userNoticeElement.setToNickName(toUser.getNickName());
             if(userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_TAG.index
             		|| userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_REVIEW.index
             		|| userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_INVITED.index

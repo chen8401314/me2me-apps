@@ -15,6 +15,8 @@ import java.util.List;
 @Data
 public class ShowUserNoticeDto implements BaseEntity {
 
+	private int hasNextNew;//0没有新消息，1有新消息
+	
     private List<UserNoticeElement> userNoticeList = Lists.newArrayList();
 
     @Data
@@ -59,6 +61,16 @@ public class ShowUserNoticeDto implements BaseEntity {
         
         //0圈外 1圈内 2核心圈(当消息对象为王国时有效)
         private int fromInternalStatus;
+        
+        private int applyStatus;
+        
+        //以下为聚合相关新增的参数
+        private int coverType;
+        private String textKingdomTitle;
+        private long textKingdomId;
+        private int textKingdomType;
+        private int textInternalStatus;
+        
     }
 
 
