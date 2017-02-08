@@ -27,6 +27,7 @@ import com.me2me.sms.service.XgPushService;
 import com.me2me.user.dao.*;
 import com.me2me.user.dto.*;
 import com.me2me.user.event.FollowEvent;
+import com.me2me.user.event.NoticePushEvent;
 import com.me2me.user.model.*;
 import com.me2me.user.model.Dictionary;
 import com.me2me.user.widget.MessageNotificationAdapter;
@@ -680,6 +681,7 @@ public class UserServiceImpl implements UserService {
             	if(null != topic){
             		userNoticeElement.setInternalStatus(this.getInternalStatus(topic, userNoticeDto.getUid()));
             		userNoticeElement.setFromInternalStatus(this.getInternalStatus(topic, userNotice.getFromUid()));
+            		userNoticeElement.setContentType((Integer)topic.get("type"));
             	}
             }else if(userNotice.getNoticeType() == Specification.UserNoticeType.CORE_CIRCLE_APPLY.index
         			|| userNotice.getNoticeType() == Specification.UserNoticeType.CORE_CIRCLE_NOTICE.index
@@ -735,11 +737,20 @@ public class UserServiceImpl implements UserService {
         		}
             }
             
-            
-            
-            
             showUserNoticeDto.getUserNoticeList().add(userNoticeElement);
         }
+        
+        if(userNoticeDto.getLevel() == 1){//如果是查询的一级页面，则需要知道是否有二级按钮是否要红点
+        	String t = cacheService.get("my:notice:level2:"+userNoticeDto.getUid());
+        	if(null != t && "1".equals(t)){//有新消息
+        		showUserNoticeDto.setHasNextNew(1);
+        	}else{
+        		showUserNoticeDto.setHasNextNew(0);
+        	}
+        }else if(userNoticeDto.getLevel() == 2){//如果是查看二级页面，则消除二级按钮红点
+        	cacheService.set("my:notice:level2:"+userNoticeDto.getUid(), "0");
+        }
+        
         log.info("getUserNotice end ...");
         return Response.success(ResponseStatus.GET_USER_NOTICE_SUCCESS.status,ResponseStatus.GET_USER_NOTICE_SUCCESS.message,showUserNoticeDto);
     }
@@ -2520,4 +2531,10 @@ public class UserServiceImpl implements UserService {
 		}
 	}
 
+	@Override
+	public void noticePush(long uid){
+		NoticePushEvent event = new NoticePushEvent();
+		event.setUid(uid);
+		this.applicationEventBus.post(event);
+	}
 }

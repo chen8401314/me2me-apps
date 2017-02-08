@@ -64,7 +64,7 @@ public class LiveForUserJdbcDao {
     		return null;
     	}
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select id,uid,core_circle from topic where id in (");
+    	sb.append("select id,uid,core_circle,type from topic where id in (");
     	for(int i=0;i<ids.size();i++){
     		if(i > 0){
     			sb.append(",");

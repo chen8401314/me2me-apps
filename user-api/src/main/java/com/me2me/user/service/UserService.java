@@ -299,4 +299,6 @@ public interface UserService {
     Response optionDisableUser(int action, long uid);
     
     Response testPush(long uid, String msg, String jsonData);
+    
+    void noticePush(long uid);
 }

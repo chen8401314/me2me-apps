@@ -204,27 +204,26 @@ public class LiveServiceImpl implements LiveService {
         //添加直播阅读数log.info("liveCover end ...");
         Content content = contentService.getContentByTopicId(topicId);
         content.setReadCount(content.getReadCount() + 1);
-        contentService.updateContentById(content);
-        // 添加成员数量
-        Content content2 = contentService.getContentByTopicId(topicId);
-        if(content2.getReadCount() == 1 || content2.getReadCount() == 2){
+        
+        if(content.getReadCount() == 1 || content.getReadCount() == 2){
             liveCoverDto.setReadCount(1);
-            content2.setReadCountDummy(1);
-            contentService.updateContentById(content2);
+            content.setReadCountDummy(1);
+            contentService.updateContentById(content);
         }else {
             SystemConfig systemConfig = userService.getSystemConfig();
             int start = systemConfig.getReadCountStart();
             int end = systemConfig.getReadCountEnd();
-            int readCountDummy = content2.getReadCountDummy();
+            int readCountDummy = content.getReadCountDummy();
             Random random = new Random();
             //取1-6的随机数每次添加
             int value = random.nextInt(end) + start;
             int readDummy = readCountDummy + value;
-            content2.setReadCountDummy(readDummy);
-            contentService.updateContentById(content2);
+            content.setReadCountDummy(readDummy);
+            contentService.updateContentById(content);
             liveCoverDto.setReadCount(readDummy);
         }
 
+        // 添加成员数量
         List<LiveFavorite> list = liveMybatisDao.getFavoriteAll(topicId);
         if (list != null && list.size() > 0) {
             liveCoverDto.setMembersCount(list.size());
@@ -2525,20 +2524,19 @@ public class LiveServiceImpl implements LiveService {
 
     @Override
     public Response aggregationOpt(AggregationOptDto dto) {
-        // TODO: 2017/2/5 消息和推送未加
-        Date now = new Date();
-        TopicAggregation topicAggregation = liveMybatisDao.getTopicAggregationByTopicIdAndSubId(dto.getCeTopicId() ,dto.getAcTopicId());
-        if(dto.getAcTopicId() == dto.getCeTopicId()){
+    	if(dto.getAcTopicId() == dto.getCeTopicId()){
             //因为安卓的问题所以+此代码
             return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
         }
-        if(dto.getType() == Specification.KingdomLanuchType.PERSONAL_LANUCH.index) {
-            //个人王国
-            Topic topic = liveMybatisDao.getTopicById(dto.getCeTopicId());
-            Topic topicOwner = liveMybatisDao.getTopicById(dto.getAcTopicId());
-             if(topic != null && topicOwner != null){
-                if (topic.getUid().longValue() == dto.getUid()) {
-                    //只有国王才能操作
+        Date now = new Date();
+        TopicAggregation topicAggregation = liveMybatisDao.getTopicAggregationByTopicIdAndSubId(dto.getCeTopicId() ,dto.getAcTopicId());
+        
+        if(dto.getType() == Specification.KingdomLanuchType.PERSONAL_LANUCH.index) {//个人王国发起
+        	Topic topic = liveMybatisDao.getTopicById(dto.getCeTopicId());
+        	Topic topicOwner = liveMybatisDao.getTopicById(dto.getAcTopicId());
+        	if(topic != null && topicOwner != null){
+        		if (topicOwner.getUid().longValue() == dto.getUid()) {
+        			//只有国王才能操作
                     if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {
                     	//是否重复收录
                         if(topicAggregation != null){
@@ -2561,20 +2559,36 @@ public class LiveServiceImpl implements LiveService {
                                 apply.setUpdateTime(now);
                                 apply.setType(2);
                                 liveMybatisDao.createTopicAggApply(apply);
+                                
+                                //发送消息
+                                this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "申请被你的聚合王国收录", apply.getId(), topic.getId(), topicOwner.getId(), Specification.UserNoticeType.AGGREGATION_APPLY.index);
+                                
                                 log.info("create TopicAggregationApply success");
-                                return Response.success();
+                            }else{//不需要审核的情况
+                            	TopicAggregation agg = new TopicAggregation();
+                                agg.setTopicId(dto.getCeTopicId());
+                                agg.setSubTopicId(dto.getAcTopicId());
+                                liveMybatisDao.createTopicAgg(agg);
+                                
+                                //发送消息
+                                this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "加入了你的聚合王国", 0, topic.getId(), topicOwner.getId(), Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                                
+                                log.info("create TopicAggregation success");
                             }
-                        }
-                            //如果是自己收录自己，不需要审核的情况下
+                        }else{
+                        	//如果是自己收录自己，则不需要发消息了
                             TopicAggregation agg = new TopicAggregation();
                             agg.setTopicId(dto.getCeTopicId());
                             agg.setSubTopicId(dto.getAcTopicId());
                             liveMybatisDao.createTopicAgg(agg);
                             log.info("create TopicAggregation success");
-                            return Response.success();
-
+                        }
+                        return Response.success();
                     } else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {
                         liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
+                        
+                        this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "退出了你的聚合王国", 0, topic.getId(), topicOwner.getId(), Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                        
                         return Response.success();
                     } else if (dto.getAction() == Specification.AggregationOptType.ISSUED.index) {
                         if(topicAggregation != null){
@@ -2591,10 +2605,8 @@ public class LiveServiceImpl implements LiveService {
                 } else {
                     return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
                 }
-         }
-
-        }else if(dto.getType() == Specification.KingdomLanuchType.AGGREGATION_LANUCH.index){
-            //聚合王国
+        	}
+        }else if(dto.getType() == Specification.KingdomLanuchType.AGGREGATION_LANUCH.index){//聚合王国王国发起
             Topic topic = liveMybatisDao.getTopicById(dto.getAcTopicId());
             Topic topicOwner = liveMybatisDao.getTopicById(dto.getCeTopicId());
             if(topic != null && topicOwner != null) {
@@ -2622,18 +2634,35 @@ public class LiveServiceImpl implements LiveService {
                                 apply.setUpdateTime(now);
                                 apply.setType(1);
                                 liveMybatisDao.createTopicAggApply(apply);
+                                
+                                //发送消息
+                                this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "申请收录你的个人王国", apply.getId(), topic.getId(), topicOwner.getId(), Specification.UserNoticeType.AGGREGATION_APPLY.index);
+                                
                                 log.info("create TopicAggregationApply success");
-                                return Response.success();
+                            }else{
+                            	TopicAggregation agg = new TopicAggregation();
+                                agg.setTopicId(dto.getCeTopicId());
+                                agg.setSubTopicId(dto.getAcTopicId());
+                                liveMybatisDao.createTopicAgg(agg);
+                                
+                                this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "收录了你的个人王国", 0, topic.getId(), topicOwner.getId(), Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                                
+                                log.info("create TopicAggregation success");
                             }
-                        }
+                        }else{//自己加自己直接成功而且不需要消息
                             TopicAggregation agg = new TopicAggregation();
                             agg.setTopicId(dto.getCeTopicId());
                             agg.setSubTopicId(dto.getAcTopicId());
                             liveMybatisDao.createTopicAgg(agg);
                             log.info("create TopicAggregation success");
-                            return Response.success();
+                        }
+                        return Response.success();
                     } else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {
                         liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
+                        
+                        this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "踢走了你的个人王国", 0, topic.getId(), topicOwner.getId(), Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                        
+                        return Response.success();
                     } else if (dto.getAction() == Specification.AggregationOptType.TOP.index) {
                         if(topicAggregation != null){
                             List<TopicAggregation> list = liveMybatisDao.getTopicAggregationByTopicIdAndIsTop(dto.getCeTopicId(), 1);
@@ -2660,7 +2689,6 @@ public class LiveServiceImpl implements LiveService {
                     return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
                 }
             }
-
         }
 
         return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
@@ -2671,39 +2699,104 @@ public class LiveServiceImpl implements LiveService {
         TopicAggregationApply topicAggregationApply = liveMybatisDao.getTopicAggregationApplyById(dto.getApplyId());
         if(topicAggregationApply != null) {
             Topic topic = liveMybatisDao.getTopicById(topicAggregationApply.getTopicId());
-            Topic sub_topic = liveMybatisDao.getTopicById(topicAggregationApply.getTargetTopicId());
-            if(topic ==null || sub_topic == null){
+            Topic targetTopic = liveMybatisDao.getTopicById(topicAggregationApply.getTargetTopicId());
+            if(topic ==null || targetTopic == null){
                 //失效
                 topicAggregationApply.setResult(3);
                 liveMybatisDao.updateTopicAggregationApply(topicAggregationApply);
                 log.info("update topicAggreationApply result : 3");
-
                 return Response.failure(ResponseStatus.DATA_DOES_NOT_EXIST.status, ResponseStatus.DATA_DOES_NOT_EXIST.message);
             }
             //1同意 2拒绝
             if (topicAggregationApply.getResult() == 0) {
                 //0初始的情况才能操作
+            	String review = null;
                 if (dto.getAction() == 1) {
                     topicAggregationApply.setResult(1);
                     liveMybatisDao.updateTopicAggregationApply(topicAggregationApply);
                     log.info("update topic_agg_apply success");
                     TopicAggregation aggregation = new TopicAggregation();
-                    aggregation.setTopicId(topicAggregationApply.getTopicId());
-                    aggregation.setSubTopicId(topicAggregationApply.getTargetTopicId());
+                    if(topicAggregationApply.getType() == 1){//母拉子
+                    	aggregation.setTopicId(topicAggregationApply.getTopicId());
+                        aggregation.setSubTopicId(topicAggregationApply.getTargetTopicId());
+                    }else{//子求母
+                    	aggregation.setTopicId(topicAggregationApply.getTargetTopicId());
+                    	aggregation.setSubTopicId(topicAggregationApply.getTopicId());
+                    }
                     liveMybatisDao.createTopicAgg(aggregation);
+                    review = "同意你的收录申请";
                     log.info("create topic_agg success");
-                    return Response.success();
                 } else if (dto.getAction() == 2) {
                     topicAggregationApply.setResult(2);
                     liveMybatisDao.updateTopicAggregationApply(topicAggregationApply);
+                    review = "拒绝你的收录申请";
                     log.info("update topic_agg_apply success");
-                    return Response.success();
                 }
+                
+                this.aggregationRemind(targetTopic.getUid(), topic.getUid(), review, 0, topic.getId(), targetTopic.getId(), Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+
+                return Response.success();
             }else {
                 return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
             }
         }
 
         return Response.failure(ResponseStatus.DATA_DOES_NOT_EXIST.status, ResponseStatus.DATA_DOES_NOT_EXIST.message);
+    }
+    
+    private void aggregationRemind(long sourceUid, long targetUid, String review, long cid, long textTopicId, long coverTopicId, int type) {
+        if (targetUid == sourceUid) {
+            return;
+        }
+        UserProfile userProfile = userService.getUserProfileByUid(sourceUid);
+        UserProfile customerProfile = userService.getUserProfileByUid(targetUid);
+        UserNotice userNotice = new UserNotice();
+        userNotice.setFromNickName(userProfile.getNickName());
+        userNotice.setFromAvatar(userProfile.getAvatar());
+        userNotice.setFromUid(userProfile.getUid());
+        userNotice.setToNickName(customerProfile.getNickName());
+        userNotice.setToUid(customerProfile.getUid());
+        
+        userNotice.setCid(cid);
+        userNotice.setReview(review);
+        userNotice.setNoticeType(type);
+
+        userNotice.setSummary("");
+        userNotice.setLikeCount(0);
+        userNotice.setTag("");
+        userNotice.setReadStatus(0);
+        
+        Topic textTopic = liveMybatisDao.getTopicById(textTopicId);
+        Topic coverTopic = liveMybatisDao.getTopicById(coverTopicId);
+        userNotice.setCoverImage(coverTopic.getLiveImage());
+
+        JSONObject obj = new JSONObject();
+    	obj.put("textImage", textTopic.getLiveImage());
+    	obj.put("textTitle", textTopic.getTitle());
+    	obj.put("textType", textTopic.getType());
+    	obj.put("textTopicId", textTopic.getId());
+    	obj.put("coverImage", coverTopic.getLiveImage());
+    	obj.put("coverTitle", coverTopic.getTitle());
+    	obj.put("coverType", coverTopic.getType());
+    	obj.put("coverTopicId", coverTopic.getId());
+    	userNotice.setExtra(obj.toJSONString());
+        
+        userService.createUserNotice(userNotice);
+
+        //添加系统消息红点
+        cacheService.set("my:notice:level2:"+targetUid, "1");
+        
+        UserTips userTips = new UserTips();
+        userTips.setUid(targetUid);
+        userTips.setType(type);
+        UserTips tips = userService.getUserTips(userTips);
+        if (tips == null) {
+            userTips.setCount(1);
+            userService.createUserTips(userTips);
+        } else {
+            tips.setCount(tips.getCount() + 1);
+            userService.modifyUserTips(tips);
+        }
+        userService.noticePush(targetUid);
     }
 }

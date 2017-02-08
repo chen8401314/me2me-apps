@@ -4,6 +4,7 @@ import ch.qos.logback.core.net.SyslogOutputStream;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
@@ -505,10 +506,10 @@ public class SnsServiceImpl implements SnsService {
                 } else if (isFollow == 1 && isFollowMe == 0) {
                     snsMybatisDao.createSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
                 }
-                //因为自己退出的，所以不需要什么推送什么的。
                 
+                UserProfile userProfile = userService.getUserProfileByUid(owner);
                 //发送消息，告诉对方我退出了核心圈
-                
+                snsRemind(uid, userProfile.getUid(), "退出了核心圈", topic.getId(), Specification.UserNoticeType.CORE_CIRCLE_NOTICE.index);
             }
         }
         log.info("modify circle end ...");
@@ -533,7 +534,7 @@ public class SnsServiceImpl implements SnsService {
         return internalStatus;
     }
 
-    public void snsRemind(long targetUid, long sourceUid, String review, long cid, int type) {
+    private void snsRemind(long targetUid, long sourceUid, String review, long cid, int type) {
         if (targetUid == sourceUid) {
             return;
         }
@@ -556,8 +557,29 @@ public class SnsServiceImpl implements SnsService {
         userNotice.setTag("");
         userNotice.setNoticeType(type);
         userNotice.setReadStatus(0);
+        
+        if(type == Specification.UserNoticeType.CORE_CIRCLE_NOTICE.index){
+        	//核心圈通知
+        	JSONObject obj = new JSONObject();
+        	obj.put("textImage", topic.getLiveImage());
+        	obj.put("textTitle", topic.getTitle());
+        	obj.put("textType", topic.getType());
+        	obj.put("textTopicId", topic.getId());
+        	obj.put("coverImage", topic.getLiveImage());
+        	obj.put("coverTitle", topic.getTitle());
+        	obj.put("coverType", topic.getType());
+        	obj.put("coverTopicId", topic.getId());
+        	userNotice.setExtra(obj.toJSONString());
+        }
         userService.createUserNotice(userNotice);
 
+        if(type == Specification.UserNoticeType.CORE_CIRCLE_NOTICE.index
+        		|| type == Specification.UserNoticeType.LIVE_INVITED.index
+        		|| type == Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index){
+        	//增加系统消息红点
+        	cacheService.set("my:notice:level2:"+targetUid, "1");
+        }
+        
         UserTips userTips = new UserTips();
         userTips.setUid(targetUid);
         userTips.setType(type);
@@ -565,28 +587,11 @@ public class SnsServiceImpl implements SnsService {
         if (tips == null) {
             userTips.setCount(1);
             userService.createUserTips(userTips);
-            //修改推送为极光推送,兼容老版本
-            JpushToken jpushToken = userService.getJpushTokeByUid(targetUid);
-            if (jpushToken != null) {
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("count", "1");
-                String alias = String.valueOf(targetUid);
-                jPushService.payloadByIdForMessage(alias, jsonObject.toString());
-            }
-
         } else {
             tips.setCount(tips.getCount() + 1);
             userService.modifyUserTips(tips);
-            //修改推送为极光推送,兼容老版本
-            JpushToken jpushToken = userService.getJpushTokeByUid(targetUid);
-            if (jpushToken != null) {
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("count", "1");
-                String alias = String.valueOf(targetUid);
-                jPushService.payloadByIdForMessage(alias, jsonObject.toString());
-            }
         }
-
+        userService.noticePush(targetUid);
     }
 
     private void createFragment(long owner, long topicId, long uid) {
