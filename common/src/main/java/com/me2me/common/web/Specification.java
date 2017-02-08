@@ -180,11 +180,11 @@ public interface Specification {
         REMOVE_SNS_CIRCLE("圈子移除",7),
         
         //以上为普通消息，以下为系统消息
-        CORE_CIRCLE_APPLY("核心圈申请", 10),
-        CORE_CIRCLE_NOTICE("核心圈通知", 11),
+        CORE_CIRCLE_APPLY("核心圈申请", 8),
+        CORE_CIRCLE_NOTICE("核心圈通知", 9),
         
-        AGGREGATION_APPLY("聚合申请", 12),
-        AGGREGATION_NOTICE("聚合通知", 13),
+        AGGREGATION_APPLY("聚合申请", 10),
+        AGGREGATION_NOTICE("聚合通知", 11),
         ;
 
         public final String name;

@@ -241,7 +241,7 @@ public class LiveLocalJdbcDao {
 			return null;
 		}
 		StringBuilder sb = new StringBuilder();
-		sb.append("select f.topic_id, count(1) as total,count(if(t.uid=f.uid,TRUE,NULL)) as topicCount,");
+		sb.append("select f.topic_id, count(if(t.uid=f.uid,TRUE,NULL)) as topicCount,");
 		sb.append(" count(if(t.uid<>f.uid,TRUE,NULL)) as reviewCount");
 		sb.append(" from topic t,topic_fragment f");
 		sb.append(" where t.id=f.topic_id and t.id in (");

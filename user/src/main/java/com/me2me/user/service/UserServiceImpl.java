@@ -582,13 +582,13 @@ public class UserServiceImpl implements UserService {
             		|| userNotice.getNoticeType() == Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index
             		|| userNotice.getNoticeType() == Specification.UserNoticeType.CORE_CIRCLE_NOTICE.index){
         		//这些是王国相关的消息
-        		if(topicIdList.contains(userNotice.getCid())){
+        		if(!topicIdList.contains(userNotice.getCid())){
         			topicIdList.add(userNotice.getCid());
         		}
         	}else if(userNotice.getNoticeType() == Specification.UserNoticeType.CORE_CIRCLE_APPLY.index){//核心圈申请
         		
         	}else if(userNotice.getNoticeType() == Specification.UserNoticeType.AGGREGATION_APPLY.index
-            		|| userNotice.getNoticeType() == Specification.UserNoticeType.AGGREGATION_NOTICE.index){
+            		|| userNotice.getNoticeType() == Specification.UserNoticeType.AGGREGATION_NOTICE.index){//聚合相关的，这里的
         		
         	}
         }

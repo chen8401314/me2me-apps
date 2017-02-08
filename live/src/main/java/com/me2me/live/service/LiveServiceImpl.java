@@ -2142,7 +2142,6 @@ public class LiveServiceImpl implements LiveService {
 		}else{
 			topicList = liveLocalJdbcDao.searchTopics(searchDTO, -1);
 		}
-		
 		Map<String, String> publishMap = new HashMap<String, String>();
 		if(searchDTO.getTopicId() > 0 && searchDTO.getTopicType()==1){//子查母需要知道子对于母是否开启了内容下发
 			List<TopicAggregation> list = liveMybatisDao.getTopicAggregationsBySubTopicId(searchDTO.getTopicId());
@@ -2154,12 +2153,10 @@ public class LiveServiceImpl implements LiveService {
 				}
 			}
 		}
-		
 		ShowTopicSearchDTO showTopicSearchDTO = new ShowTopicSearchDTO();
 		if(null != topicList && topicList.size() > 0){
 			this.builderTopicSearch(currentUid, showTopicSearchDTO, topicList, topMap, publishMap);
 		}
-		
 		return Response.success(showTopicSearchDTO);
 	}
 
@@ -2366,7 +2363,6 @@ public class LiveServiceImpl implements LiveService {
         		lastFragmentMap.put(String.valueOf(m.get("topic_id")), m);
         	}
         }
-        
         UserProfile userProfile = null;
         ShowTopicSearchDTO.TopicElement e = null;
         MySubscribeCacheModel cacheModel = null;
