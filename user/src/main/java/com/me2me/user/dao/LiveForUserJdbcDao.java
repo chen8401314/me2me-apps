@@ -75,4 +75,21 @@ public class LiveForUserJdbcDao {
         String sql = sb.toString();
         return jdbcTemplate.queryForList(sql);
     }
+    
+    public List<Map<String,Object>> getTopicAggregationApplyListByIds(List<Long> ids){
+    	if(null == ids || ids.size() == 0){
+    		return null;
+    	}
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select id,topic_id,target_topic_id,type,result,create_time,");
+    	sb.append("update_time from topic_aggregation_apply where id in (");
+    	for(int i=0;i<ids.size();i++){
+    		if(i>0){
+    			sb.append(",");
+    		}
+    		sb.append(ids.get(i));
+    	}
+    	sb.append(")");
+    	return jdbcTemplate.queryForList(sb.toString());
+    }
 }

@@ -1,6 +1,8 @@
 package com.me2me.live.listener;
 
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
@@ -86,13 +88,15 @@ public class AggregationPublishListener {
 			fromObj.put("url", Constant.Live_WEB_URL+event.getTopicId());
 			obj.put("from", fromObj);
 			
-			newtf.setExtra(obj.toJSONString());
-			
 			Topic subTopic = null;
+			String only = null;
 			for(TopicAggregation ta : taList){
 				subTopic = liveMybatisDao.getTopicById(ta.getSubTopicId());
 				if(null != subTopic){//有可能已经被删除掉了
 					if(subTopic.getAcPublishType() == 0 && ta.getIsPublish() == 0){//王国上接受下发的开关开，并且聚合关系上也是可以接受下发
+						only = UUID.randomUUID().toString()+"-"+new Random().nextInt();
+						obj.put("only", only);
+						newtf.setExtra(obj.toJSONString());
 						newtf.setTopicId(subTopic.getId());
 						newtf.setId(null);
 						liveMybatisDao.createTopicFragment(newtf);

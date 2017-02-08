@@ -62,6 +62,7 @@ public class ShowUserNoticeDto implements BaseEntity {
         //0圈外 1圈内 2核心圈(当消息对象为王国时有效)
         private int fromInternalStatus;
         
+        private long applyId;//申请ID
         private int applyStatus;//0初始，1同意，2拒绝，3失效
         
         //以下为聚合相关新增的参数

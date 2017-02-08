@@ -569,6 +569,7 @@ public class UserServiceImpl implements UserService {
         log.info("getUserNotice data success");
         List<Long> uidList = new ArrayList<Long>();
         List<Long> topicIdList = new ArrayList<Long>();
+        List<Long> aggregationApplyIdList = new ArrayList<Long>();
         JSONObject obj = null;
         for (UserNotice userNotice : list){
         	if(!uidList.contains(userNotice.getFromUid())){
@@ -589,6 +590,9 @@ public class UserServiceImpl implements UserService {
         			|| userNotice.getNoticeType() == Specification.UserNoticeType.CORE_CIRCLE_NOTICE.index
         			|| userNotice.getNoticeType() == Specification.UserNoticeType.AGGREGATION_APPLY.index
         			|| userNotice.getNoticeType() == Specification.UserNoticeType.AGGREGATION_NOTICE.index){//核心圈和聚合相关
+        		if(userNotice.getNoticeType() == Specification.UserNoticeType.AGGREGATION_APPLY.index){
+        			aggregationApplyIdList.add(userNotice.getCid());
+        		}
         		//新增的消息类型
         		String extra = userNotice.getExtra();
         		if(!StringUtils.isEmpty(extra)){
@@ -628,9 +632,20 @@ public class UserServiceImpl implements UserService {
         	}
         }
         
+        Map<String, Map<String, Object>> aggregationApplyMap = new HashMap<String, Map<String, Object>>();
+        List<Map<String,Object>> aggregationApplyList = liveForUserJdbcDao.getTopicAggregationApplyListByIds(aggregationApplyIdList);
+        if(null != aggregationApplyList && aggregationApplyList.size() > 0){
+        	Long applyId = null;
+        	for(Map<String, Object> aa : aggregationApplyList){
+        		applyId = (Long)aa.get("id");
+        		aggregationApplyMap.put(applyId.toString(), aa);
+        	}
+        }
+        
         UserProfile fromUser = null;
         UserProfile toUser = null;
-        String image = null;
+        Map<String, Object> topic = null;
+        Map<String, Object> aggregationApply = null;
         for (UserNotice userNotice : list){
             ShowUserNoticeDto.UserNoticeElement userNoticeElement = new ShowUserNoticeDto.UserNoticeElement();
             userNoticeElement.setId(userNotice.getId());
@@ -661,12 +676,23 @@ public class UserServiceImpl implements UserService {
             		|| userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_INVITED.index
             		|| userNotice.getNoticeType() == Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index){
             	//这个是王国相关的消息，则需要设置王国身份信息
-            	Map<String, Object> topic = topicMap.get(String.valueOf(userNotice.getCid()));
+            	topic = topicMap.get(String.valueOf(userNotice.getCid()));
             	if(null != topic){
             		userNoticeElement.setInternalStatus(this.getInternalStatus(topic, userNoticeDto.getUid()));
             		userNoticeElement.setFromInternalStatus(this.getInternalStatus(topic, userNotice.getFromUid()));
             	}
-            }else if(userNotice.getNoticeType() == Specification.UserNoticeType.AGGREGATION_APPLY.index){//聚合申请
+            }else if(userNotice.getNoticeType() == Specification.UserNoticeType.CORE_CIRCLE_APPLY.index
+        			|| userNotice.getNoticeType() == Specification.UserNoticeType.CORE_CIRCLE_NOTICE.index
+        			|| userNotice.getNoticeType() == Specification.UserNoticeType.AGGREGATION_APPLY.index
+        			|| userNotice.getNoticeType() == Specification.UserNoticeType.AGGREGATION_NOTICE.index){//聚核心圈和聚合相关
+            	if(userNotice.getNoticeType() == Specification.UserNoticeType.AGGREGATION_APPLY.index){
+            		aggregationApply = aggregationApplyMap.get(String.valueOf(userNotice.getCid()));
+            		if(null != aggregationApply){
+            			userNoticeElement.setApplyId(userNotice.getCid());
+            			userNoticeElement.setApplyStatus((Integer)aggregationApply.get("result"));
+            		}
+            	}
+            	
             	String extra = userNotice.getExtra();
         		if(!StringUtils.isEmpty(extra)){
         			obj = JSON.parseObject(extra);
@@ -674,6 +700,10 @@ public class UserServiceImpl implements UserService {
         				if(null != obj.get("coverTopicId")){
         					long coverTopicId = obj.getLongValue("coverTopicId");
         					userNoticeElement.setCoverTopicId(coverTopicId);
+        					topic = topicMap.get(String.valueOf(coverTopicId));
+        					if(null != topic){
+        						userNoticeElement.setInternalStatus(this.getInternalStatus(topic, userNoticeDto.getUid()));
+        					}
         				}
         				if(null != obj.get("coverImage")){
         					userNoticeElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + obj.getString("coverImage"));
@@ -685,7 +715,12 @@ public class UserServiceImpl implements UserService {
         					userNoticeElement.setCoverType(obj.getIntValue("coverType"));
         				}
         				if(null != obj.get("textTopicId")){
-        					userNoticeElement.setTextTopicId(obj.getLongValue("textTopicId"));
+        					long textTopicId = obj.getLongValue("textTopicId");
+        					userNoticeElement.setTextTopicId(textTopicId);
+        					topic = topicMap.get(String.valueOf(textTopicId));
+        					if(null != topic){
+        						userNoticeElement.setTextInternalStatus(this.getInternalStatus(topic, userNoticeDto.getUid()));
+        					}
         				}
         				if(null != obj.get("textImage")){
         					userNoticeElement.setTextImage(Constant.QINIU_DOMAIN + "/" + obj.getString("textImage"));
