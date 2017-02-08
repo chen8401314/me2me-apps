@@ -2432,6 +2432,7 @@ public class LiveServiceImpl implements LiveService {
                 	e.setIsLike(0);
                 }
                 e.setReadCount(content.getReadCountDummy());
+                e.setType(content.getType());
             }
             
             //判断是否收藏了
@@ -2451,6 +2452,8 @@ public class LiveServiceImpl implements LiveService {
             }else{
             	e.setIsPublish(0);
             }
+            
+            e.setContentType(topic.getType());
             
             showTopicSearchDTO.getResultList().add(e);
         }

@@ -569,6 +569,7 @@ public class UserServiceImpl implements UserService {
         log.info("getUserNotice data success");
         List<Long> uidList = new ArrayList<Long>();
         List<Long> topicIdList = new ArrayList<Long>();
+        JSONObject obj = null;
         for (UserNotice userNotice : list){
         	if(!uidList.contains(userNotice.getFromUid())){
         		uidList.add(userNotice.getFromUid());
@@ -579,17 +580,34 @@ public class UserServiceImpl implements UserService {
         	if(userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_TAG.index
             		|| userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_REVIEW.index
             		|| userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_INVITED.index
-            		|| userNotice.getNoticeType() == Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index
-            		|| userNotice.getNoticeType() == Specification.UserNoticeType.CORE_CIRCLE_NOTICE.index){
+            		|| userNotice.getNoticeType() == Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index){
         		//这些是王国相关的消息
         		if(!topicIdList.contains(userNotice.getCid())){
         			topicIdList.add(userNotice.getCid());
         		}
-        	}else if(userNotice.getNoticeType() == Specification.UserNoticeType.CORE_CIRCLE_APPLY.index){//核心圈申请
-        		
-        	}else if(userNotice.getNoticeType() == Specification.UserNoticeType.AGGREGATION_APPLY.index
-            		|| userNotice.getNoticeType() == Specification.UserNoticeType.AGGREGATION_NOTICE.index){//聚合相关的，这里的
-        		
+        	}else if(userNotice.getNoticeType() == Specification.UserNoticeType.CORE_CIRCLE_APPLY.index
+        			|| userNotice.getNoticeType() == Specification.UserNoticeType.CORE_CIRCLE_NOTICE.index
+        			|| userNotice.getNoticeType() == Specification.UserNoticeType.AGGREGATION_APPLY.index
+        			|| userNotice.getNoticeType() == Specification.UserNoticeType.AGGREGATION_NOTICE.index){//核心圈和聚合相关
+        		//新增的消息类型
+        		String extra = userNotice.getExtra();
+        		if(!StringUtils.isEmpty(extra)){
+        			obj = JSON.parseObject(extra);
+        			if(null != obj && !obj.isEmpty()){
+        				if(null != obj.get("coverTopicId")){
+        					long ctId = obj.getLongValue("coverTopicId");
+        					if(ctId > 0 && !topicIdList.contains(Long.valueOf(ctId))){
+        						topicIdList.add(ctId);
+        					}
+        				}
+        				if(null != obj.get("textTopicId")){
+        					long ttId = obj.getLongValue("textTopicId");
+        					if(ttId > 0 && !topicIdList.contains(Long.valueOf(ttId))){
+        						topicIdList.add(ttId);
+        					}
+        				}
+        			}
+        		}
         	}
         }
         List<UserProfile> userProfileList = this.getUserProfilesByUids(uidList);
@@ -612,6 +630,7 @@ public class UserServiceImpl implements UserService {
         
         UserProfile fromUser = null;
         UserProfile toUser = null;
+        String image = null;
         for (UserNotice userNotice : list){
             ShowUserNoticeDto.UserNoticeElement userNoticeElement = new ShowUserNoticeDto.UserNoticeElement();
             userNoticeElement.setId(userNotice.getId());
@@ -631,12 +650,12 @@ public class UserServiceImpl implements UserService {
             userNoticeElement.setLikeCount(userNotice.getLikeCount());
             userNoticeElement.setSummary(userNotice.getSummary());
             userNoticeElement.setToUid(userNotice.getToUid());
-            userNoticeElement.setCid(userNotice.getCid());
             userNoticeElement.setReview(userNotice.getReview());
             userNoticeElement.setV_lv(fromUser.getvLv());
             toUser = userProfileMap.get(String.valueOf(userNotice.getToUid()));
             userNoticeElement.setTo_v_lv(toUser.getvLv());
             userNoticeElement.setToNickName(toUser.getNickName());
+            userNoticeElement.setCid(userNotice.getCid());
             if(userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_TAG.index
             		|| userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_REVIEW.index
             		|| userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_INVITED.index
@@ -647,7 +666,43 @@ public class UserServiceImpl implements UserService {
             		userNoticeElement.setInternalStatus(this.getInternalStatus(topic, userNoticeDto.getUid()));
             		userNoticeElement.setFromInternalStatus(this.getInternalStatus(topic, userNotice.getFromUid()));
             	}
+            }else if(userNotice.getNoticeType() == Specification.UserNoticeType.AGGREGATION_APPLY.index){//聚合申请
+            	String extra = userNotice.getExtra();
+        		if(!StringUtils.isEmpty(extra)){
+        			obj = JSON.parseObject(extra);
+        			if(null != obj && !obj.isEmpty()){
+        				if(null != obj.get("coverTopicId")){
+        					long coverTopicId = obj.getLongValue("coverTopicId");
+        					userNoticeElement.setCoverTopicId(coverTopicId);
+        				}
+        				if(null != obj.get("coverImage")){
+        					userNoticeElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + obj.getString("coverImage"));
+        				}
+        				if(null != obj.get("coverTitle")){
+        					userNoticeElement.setCoverTitle(obj.getString("coverTitle"));
+        				}
+        				if(null != obj.get("coverType")){
+        					userNoticeElement.setCoverType(obj.getIntValue("coverType"));
+        				}
+        				if(null != obj.get("textTopicId")){
+        					userNoticeElement.setTextTopicId(obj.getLongValue("textTopicId"));
+        				}
+        				if(null != obj.get("textImage")){
+        					userNoticeElement.setTextImage(Constant.QINIU_DOMAIN + "/" + obj.getString("textImage"));
+        				}
+        				if(null != obj.get("textTitle")){
+        					userNoticeElement.setTextTitle(obj.getString("textTitle"));
+        				}
+        				if(null != obj.get("textType")){
+        					userNoticeElement.setTextType(obj.getIntValue("textType"));
+        				}
+        			}
+        		}
             }
+            
+            
+            
+            
             showUserNoticeDto.getUserNoticeList().add(userNoticeElement);
         }
         log.info("getUserNotice end ...");
