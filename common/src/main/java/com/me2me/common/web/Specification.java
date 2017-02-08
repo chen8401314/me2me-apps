@@ -289,11 +289,7 @@ public interface Specification {
 
         TEXT("文本",0),
 
-        IMAGE("图片",1),
-
-        LINK("浏览器链接", 17),
-        
-        KINGDOM("王国链接", 18);
+        IMAGE("图片",1);
 
         public final String name;
         public final int index;
