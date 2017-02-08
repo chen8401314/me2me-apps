@@ -2528,6 +2528,10 @@ public class LiveServiceImpl implements LiveService {
         // TODO: 2017/2/5 消息和推送未加
         Date now = new Date();
         TopicAggregation topicAggregation = liveMybatisDao.getTopicAggregationByTopicIdAndSubId(dto.getCeTopicId() ,dto.getAcTopicId());
+        if(dto.getAcTopicId() == dto.getCeTopicId()){
+            //因为安卓的问题所以+此代码
+            return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
+        }
         if(dto.getType() == Specification.KingdomLanuchType.PERSONAL_LANUCH.index) {
             //个人王国
             Topic topic = liveMybatisDao.getTopicById(dto.getCeTopicId());
