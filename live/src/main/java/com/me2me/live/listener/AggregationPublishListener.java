@@ -124,9 +124,9 @@ public class AggregationPublishListener {
 		}else if(oldType == Specification.LiveSpeakType.FORWARD.index){//转发
 			
 		}else if(oldType == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index){//主播贴标
-			
+			return 2;
 		}else if(oldType == Specification.LiveSpeakType.FANS_WRITE_TAG.index){//粉丝贴标
-			
+			return 2;
 		}else if(oldType == Specification.LiveSpeakType.LIKES.index){//点赞
 			
 		}else if(oldType == Specification.LiveSpeakType.SUBSCRIBED.index){//订阅
