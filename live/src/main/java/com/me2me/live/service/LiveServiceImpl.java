@@ -2168,7 +2168,7 @@ public class LiveServiceImpl implements LiveService {
             dto.setTopicId(topicId);
             dto.setCoverImage(Constant.QINIU_DOMAIN+"/"+topic.getLiveImage());
             dto.setTitle(topic.getTitle());
-            Content content = contentService.getContentById(topic.getId());
+            Content content = contentService.getContentByTopicId(topic.getId());
             if(content != null) {
                 dto.setReadCount(content.getReadCountDummy());
                 dto.setFavoriteCount(content.getFavoriteCount());
