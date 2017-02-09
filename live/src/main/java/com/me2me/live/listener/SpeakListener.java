@@ -16,6 +16,7 @@ import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.event.SpeakEvent;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.Topic;
+import com.me2me.live.model.TopicUserConfig;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
@@ -125,7 +126,8 @@ public class SpeakListener {
             }
             //如果缓存存在时间失效，推送
             if(isInvalid && liveFavorite.getUid()!=speakEvent.getUid()
-            		&& speakEvent.getAtUids().indexOf(CommonUtils.wrapString(liveFavorite.getUid(),","))==-1) {
+            		&& speakEvent.getAtUids().indexOf(CommonUtils.wrapString(liveFavorite.getUid(),","))==-1
+            		&& this.checkTopicPush(speakEvent.getTopicId(), liveFavorite.getUid())) {
                 log.info("update live start");
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
@@ -154,15 +156,18 @@ public class SpeakListener {
             if(speakEvent.getAtUids().indexOf(CommonUtils.wrapString(cid,","))>-1){
                 continue;
             }
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
-            jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
-            jsonObject.addProperty("topicId",speakEvent.getTopicId());
-            jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//这里是给核心圈的通知，所以直接显示核心圈即可
-            jsonObject.addProperty("fromInternalStatus", fromStatus);//评论人相对于王国的身份
-            String alias = String.valueOf(cid);
-
-            jPushService.payloadByIdExtra(alias,  "有人评论了『"+topic.getTitle()+"』", JPushUtils.packageExtra(jsonObject));
+            
+            if(this.checkTopicPush(speakEvent.getTopicId(), cid)){
+	            JsonObject jsonObject = new JsonObject();
+	            jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
+	            jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
+	            jsonObject.addProperty("topicId",speakEvent.getTopicId());
+	            jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//这里是给核心圈的通知，所以直接显示核心圈即可
+	            jsonObject.addProperty("fromInternalStatus", fromStatus);//评论人相对于王国的身份
+	            String alias = String.valueOf(cid);
+	
+	            jPushService.payloadByIdExtra(alias,  "有人评论了『"+topic.getTitle()+"』", JPushUtils.packageExtra(jsonObject));
+            }
         }
     }
 
@@ -184,4 +189,11 @@ public class SpeakListener {
         return internalStatus;
     }
 
+    private boolean checkTopicPush(long topicId, long uid){
+    	TopicUserConfig tuc = liveMybatisDao.getTopicUserConfig(uid, topicId);
+    	if(null != tuc && tuc.getPushType().intValue() == 1){
+    		return false;
+    	}
+    	return true;
+    }
 }

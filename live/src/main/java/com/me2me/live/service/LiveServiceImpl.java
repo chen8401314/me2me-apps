@@ -780,10 +780,6 @@ public class LiveServiceImpl implements LiveService {
             if (jpushToken != null) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("count", "1");
-                jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
-                jsonObject.addProperty("topicId",cid);
-                jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, targetUid));
-                jsonObject.addProperty("fromInternalStatus", this.getInternalStatus(topic, sourceUid));
                 String alias = String.valueOf(targetUid);
                 jPushService.payloadByIdForMessage(alias, jsonObject.toString());
             }
@@ -796,10 +792,6 @@ public class LiveServiceImpl implements LiveService {
             if (jpushToken != null) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("count", "1");
-                jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
-                jsonObject.addProperty("topicId",cid);
-                jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, targetUid));
-                jsonObject.addProperty("fromInternalStatus", this.getInternalStatus(topic, sourceUid));
                 String alias = String.valueOf(targetUid);
                 jPushService.payloadByIdForMessage(alias, jsonObject.toString());
             }
@@ -2920,5 +2912,10 @@ public class LiveServiceImpl implements LiveService {
         int acTotal = liveMybatisDao.countFragmentByTopicId(acTopic.getId());
         String acValue = acLastFragmentId + "," + acTotal;
         cacheService.hSet(LiveServiceImpl.TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + acTopic.getId(), acValue);
+    }
+    
+    @Override
+    public TopicUserConfig getTopicUserConfigByTopicIdAndUid(long topicId, long uid){
+    	return liveMybatisDao.getTopicUserConfig(uid, topicId);
     }
 }

@@ -4,10 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.google.gson.JsonObject;
 import com.me2me.activity.model.ActivityWithBLOBs;
-import com.me2me.activity.model.Atopic;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.JPushUtils;
@@ -2716,6 +2714,9 @@ private void localJpush(long toUid){
                 JSONArray coreCircles = liveForContentJdbcDao.getTopicCoreCircle(content.getForwardCid());
                 if(coreCircles!=null){
                     for(int i=0;i<coreCircles.size();i++){
+                    	if(!this.checkTopicPush(content.getForwardCid(), Long.valueOf(coreCircles.getString(i)))){
+                    		continue;
+                    	}
                         JsonObject jsonObject = new JsonObject();
                         jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index);
                         jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
@@ -2736,6 +2737,17 @@ private void localJpush(long toUid){
             contentMybatisDao.removeHighQualityContent(temp.getId());
             return Response.success(ResponseStatus.HIGH_QUALITY_CONTENT_CANCEL_SUCCESS.status,ResponseStatus.HIGH_QUALITY_CONTENT_CANCEL_SUCCESS.message);
         }
+    }
+    
+    private boolean checkTopicPush(long topicId, long uid){
+    	Map<String,Object> tuc = liveForContentJdbcDao.getTopicUserConfig(topicId, uid);
+    	if(null != tuc){
+    		int pushType = (Integer)tuc.get("push_type");
+    		if(pushType == 1){
+    			return false;
+    		}
+    	}
+    	return true;
     }
 
     /**

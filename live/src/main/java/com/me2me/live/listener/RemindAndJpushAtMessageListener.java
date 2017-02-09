@@ -155,10 +155,6 @@ public class RemindAndJpushAtMessageListener {
             if (jpushToken != null) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("count", "1");
-                jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
-                jsonObject.addProperty("topicId",cid);
-                jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, targetUid));
-                jsonObject.addProperty("fromInternalStatus", this.getInternalStatus(topic, sourceUid));
                 String alias = String.valueOf(targetUid);
                 jPushService.payloadByIdForMessage(alias, jsonObject.toString());
             }
@@ -171,10 +167,6 @@ public class RemindAndJpushAtMessageListener {
             if (jpushToken != null) {
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("count", "1");
-                jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
-                jsonObject.addProperty("topicId",cid);
-                jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, targetUid));
-                jsonObject.addProperty("fromInternalStatus", this.getInternalStatus(topic, sourceUid));
                 String alias = String.valueOf(targetUid);
                 jPushService.payloadByIdForMessage(alias, jsonObject.toString());
             }

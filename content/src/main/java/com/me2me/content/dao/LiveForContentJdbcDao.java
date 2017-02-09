@@ -137,4 +137,16 @@ public class LiveForContentJdbcDao {
     	sb.append(topicId);
     	jdbcTemplate.execute(sb.toString());
     }
+    
+    public Map<String,Object> getTopicUserConfig(long topicId, long uid){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select id,uid,topic_id,push_type from topic_user_config ");
+    	sb.append("where topic_id=").append(topicId);
+    	sb.append(" and uid=").append(uid);
+    	List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
 }

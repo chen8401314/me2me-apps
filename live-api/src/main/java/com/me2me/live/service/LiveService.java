@@ -4,6 +4,7 @@ import com.me2me.common.web.Response;
 import com.me2me.live.dto.*;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicFragment;
+import com.me2me.live.model.TopicUserConfig;
 
 import java.util.List;
 
@@ -176,4 +177,6 @@ public interface LiveService {
     Response aggregationOpt(AggregationOptDto dto);
 
     Response aggregationApplyOpt(AggregationOptDto dto);
+    
+    TopicUserConfig getTopicUserConfigByTopicIdAndUid(long topicId, long uid);
 }

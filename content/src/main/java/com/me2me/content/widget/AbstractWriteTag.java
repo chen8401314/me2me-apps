@@ -83,7 +83,9 @@ public class AbstractWriteTag {
                 jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//此处是给王国创建者发的推送，所以直接设置核心圈
                 jsonObject.addProperty("fromInternalStatus", this.getInternalStatus(content.getForwardCid(), writeTagDto.getUid()));
                 String alias = String.valueOf(content.getUid());
-                jPushService.payloadByIdExtra(alias, "你发布的内容收到了新感受", JPushUtils.packageExtra(jsonObject));
+                if(this.checkTopicPush(content.getForwardCid(), content.getUid())){
+                	jPushService.payloadByIdExtra(alias, "你发布的内容收到了新感受", JPushUtils.packageExtra(jsonObject));
+                }
                 contentService.remind(content, writeTagDto.getUid(), Specification.UserNoticeType.LIVE_TAG.index, writeTagDto.getTag());
                 log.info("live tag end");
             }
@@ -124,5 +126,16 @@ public class AbstractWriteTag {
         }
 
         return internalStatus;
+    }
+    
+    private boolean checkTopicPush(long topicId, long uid){
+    	Map<String,Object> tuc = liveForContentJdbcDao.getTopicUserConfig(topicId, uid);
+    	if(null != tuc){
+    		int pushType = (Integer)tuc.get("push_type");
+    		if(pushType == 1){
+    			return false;
+    		}
+    	}
+    	return true;
     }
 }

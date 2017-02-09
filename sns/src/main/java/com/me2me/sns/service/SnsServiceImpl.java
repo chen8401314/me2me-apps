@@ -17,6 +17,7 @@ import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicFragment;
+import com.me2me.live.model.TopicUserConfig;
 import com.me2me.live.service.LiveService;
 import com.me2me.sms.service.JPushService;
 import com.me2me.sns.dao.LiveJdbcDao;
@@ -436,7 +437,10 @@ public class SnsServiceImpl implements SnsService {
                 String alias = String.valueOf(uid);
                 String review = "你已加入『" + topic.getTitle() + "』核心圈";
                 String message = "邀请我加入核心圈";
-                jPushService.payloadByIdExtra(alias, review, JPushUtils.packageExtra(jsonObject));
+                
+                if(this.checkTopicPush(topicId, uid)){
+                	jPushService.payloadByIdExtra(alias, review, JPushUtils.packageExtra(jsonObject));
+                }
                 snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.LIVE_INVITED.index);
 
                 //增加列表更新红点
@@ -485,7 +489,10 @@ public class SnsServiceImpl implements SnsService {
                 String alias = String.valueOf(uid);
                 String review = "你被移出『" + topic.getTitle() + "』核心圈";
                 String message = "将我从核心圈移除";
-                jPushService.payloadByIdExtra(alias, review, JPushUtils.packageExtra(jsonObject));
+                
+                if(this.checkTopicPush(topicId, uid)){
+                	jPushService.payloadByIdExtra(alias, review, JPushUtils.packageExtra(jsonObject));
+                }
 
                 snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index);
             } else if(action == 6) {
@@ -614,5 +621,13 @@ public class SnsServiceImpl implements SnsService {
         speakDto.setTopicId(topicId);
         speakDto.setType(Specification.LiveSpeakType.INVITED.index);
         liveService.speak(speakDto);
+    }
+    
+    private boolean checkTopicPush(long topicId, long uid){
+    	TopicUserConfig tuc = liveService.getTopicUserConfigByTopicIdAndUid(topicId, uid);
+    	if(null != tuc && tuc.getPushType().intValue() == 1){
+    		return false;
+    	}
+    	return true;
     }
 }

@@ -633,7 +633,7 @@ public class LiveMybatisDao {
         examle.setOrderByClause(" vlv desc limit 1");
 
         List<LiveDisplayProtocol> list = liveDisplayProtocolMapper.selectByExample(examle);
-        return list==null&&list.isEmpty()?null:list.get(0);
+        return (list==null||list.isEmpty())?null:list.get(0);
     }
 
     public int deleteLiveBarrageById(long bid) {
@@ -697,7 +697,7 @@ public class LiveMybatisDao {
         criteria.andUidEqualTo(uid);
         criteria.andTopicIdEqualTo(topicId);
         List<TopicUserConfig> list = topicUserConfigMapper.selectByExample(example);
-        return list.size() > 0 && list != null?list.get(0):null;
+        return list != null && list.size() > 0?list.get(0):null;
     }
 
     public void updateTopicUserConfig(TopicUserConfig topicUserConfig) {
