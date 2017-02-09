@@ -62,6 +62,8 @@ public class LiveCoverDto implements BaseEntity{
     //被聚合次数，也即被聚合的聚合王国数
     private int ceCount;
     
+    private int publishLimit;//聚合王国属性，能下发内容的次数
+    
     @Data
     public static class TopicElement implements BaseEntity{
 		private static final long serialVersionUID = 1465887396904072679L;

@@ -232,6 +232,12 @@ public class LiveServiceImpl implements LiveService {
         }
         
         //聚合相关属性--begin--add by zcl 20170205
+        int max = 10;
+		String count = cacheService.get("TOPIC_AGGREGATION_PUBLISH_COUNT");
+		if(!StringUtils.isEmpty(count)){
+			max = Integer.valueOf(count);
+		}
+		liveCoverDto.setPublishLimit(max);
         liveCoverDto.setType(topic.getType());
         if(topic.getType() == Specification.KingdomType.NORMAL.index){//个人王国
         	//被聚合次数
@@ -338,6 +344,7 @@ public class LiveServiceImpl implements LiveService {
         showLiveDto.setStatus(topic.getStatus());
         showLiveDto.setIsLike(contentService.isLike(content.getId(), uid));
         showLiveDto.setInternalStatus(this.getInternalStatus(topic, uid));
+        showLiveDto.setContentType(topic.getType());
         return Response.success(showLiveDto);
     }
 

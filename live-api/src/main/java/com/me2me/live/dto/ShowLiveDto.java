@@ -52,4 +52,6 @@ public class ShowLiveDto implements BaseEntity {
     
     //0圈外 1圈内 2核心圈
     private int internalStatus;
+    
+    private int contentType;//王国类型，0个人王国， 1聚合王国
 }
