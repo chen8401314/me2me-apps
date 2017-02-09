@@ -1,9 +1,12 @@
 package com.me2me.live.dto;
 
+import com.google.common.collect.Lists;
 import com.me2me.common.web.BaseEntity;
+
 import lombok.Data;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -54,4 +57,17 @@ public class ShowLiveDto implements BaseEntity {
     private int internalStatus;
     
     private int contentType;//王国类型，0个人王国， 1聚合王国
+    private int acCount;
+    private List<TopicElement> acTopList = Lists.newArrayList();
+    private int ceCount;
+    
+    @Data
+    public static class TopicElement implements BaseEntity{
+		private static final long serialVersionUID = 986248317266706695L;
+		
+		private long topicId;
+		private String title;
+		private String coverImage;
+		private int internalStatus;
+    }
 }

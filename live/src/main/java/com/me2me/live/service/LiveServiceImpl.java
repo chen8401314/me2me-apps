@@ -233,7 +233,7 @@ public class LiveServiceImpl implements LiveService {
         
         //聚合相关属性--begin--add by zcl 20170205
         int max = 10;
-		String count = cacheService.get("TOPIC_AGGREGATION_PUBLISH_COUNT");
+		String count = cacheService.get(TOPIC_AGGREGATION_PUBLISH_COUNT);
 		if(!StringUtils.isEmpty(count)){
 			max = Integer.valueOf(count);
 		}
@@ -345,6 +345,45 @@ public class LiveServiceImpl implements LiveService {
         showLiveDto.setIsLike(contentService.isLike(content.getId(), uid));
         showLiveDto.setInternalStatus(this.getInternalStatus(topic, uid));
         showLiveDto.setContentType(topic.getType());
+        
+        if(topic.getType() == Specification.KingdomType.NORMAL.index){//个人王国
+        	//被聚合次数
+        	int ceCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId2(cid);
+        	showLiveDto.setCeCount(ceCount);
+        }if(topic.getType() == Specification.KingdomType.AGGREGATION.index){//聚合王国
+        	//子王国数
+        	int acCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId(cid);
+        	showLiveDto.setAcCount(acCount);
+        	//子王国top5列表
+        	List<Map<String, Object>> topList = liveLocalJdbcDao.getTopSubTopic(cid, 5);
+        	if(null != topList && topList.size() > 0){
+        		List<Long> uidList = new ArrayList<Long>();
+        		Long id = null;
+        		for(Map<String, Object> t : topList){
+        			id = (Long)t.get("uid");
+        			if(!uidList.contains(id)){
+        				uidList.add(id);
+        			}
+        		}
+        		Map<String, Integer> internalStatusMap = liveLocalJdbcDao.getUserInternalStatus(uid, uidList);
+                if(null == internalStatusMap){
+                	internalStatusMap = new HashMap<String, Integer>();
+                }
+        		
+                ShowLiveDto.TopicElement e = null;
+        		for(Map<String, Object> t : topList){
+        			e = new ShowLiveDto.TopicElement();
+        			e.setTopicId((Long)t.get("id"));
+        			e.setTitle((String)t.get("title"));
+        			e.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)t.get("live_image"));
+        			e.setInternalStatus(this.getUserInternalStatus((Long)t.get("uid"), (String)t.get("core_circle"), uid, internalStatusMap));
+        			showLiveDto.getAcTopList().add(e);
+        		}
+        	}
+        }else{
+        	//暂不支持
+        }
+        
         return Response.success(showLiveDto);
     }
 
@@ -2493,7 +2532,7 @@ public class LiveServiceImpl implements LiveService {
 		}
 		
 		int max = 10;
-		String count = cacheService.get("TOPIC_AGGREGATION_PUBLISH_COUNT");
+		String count = cacheService.get(TOPIC_AGGREGATION_PUBLISH_COUNT);
 		if(!StringUtils.isEmpty(count)){
 			max = Integer.valueOf(count);
 		}
