@@ -276,7 +276,7 @@ public class Users extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/userNotice",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response userNotice(UserNoticeRequest request){
-        if(request.getSinceId() == -1){
+        if(request.getSinceId() <= 0){
             request.setSinceId(Integer.MAX_VALUE);
         }
         UserNoticeDto userNoticeDto = new UserNoticeDto();

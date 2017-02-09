@@ -318,7 +318,7 @@ public class UserMybatisDao {
         	criteria.andNoticeTypeLessThanOrEqualTo(7);//新的类型不展示。。防止前台不兼容
         }
         example.setOrderByClause("id desc limit 10 ");
-        return  userNoticeMapper.selectByExample(example);
+        return  userNoticeMapper.selectByExampleWithBLOBs(example);
     }
     public void createUserNotice(UserNotice userNotice){
         userNoticeMapper.insertSelective(userNotice);
@@ -563,7 +563,7 @@ public class UserMybatisDao {
         criteria.andFromUidEqualTo(userNotice.getFromUid());
         criteria.andToUidEqualTo(userNotice.getToUid());
         criteria.andCidEqualTo(userNotice.getCid());
-        List<UserNotice> userNotices = userNoticeMapper.selectByExample(example);
+        List<UserNotice> userNotices = userNoticeMapper.selectByExampleWithBLOBs(example);
         return (userNotices != null && userNotices.size() > 0) ? userNotices.get(0) : null;
     }
 
@@ -639,7 +639,7 @@ public class UserMybatisDao {
         UserNoticeExample.Criteria criteria = example.createCriteria();
         criteria.andToUidEqualTo(uid);
         criteria.andPushStatusEqualTo(Specification.PushStatus.UN_PUSHED.index);
-        return  userNoticeMapper.selectByExample(example);
+        return  userNoticeMapper.selectByExampleWithBLOBs(example);
     }
 
     public List<UserFansDto> getFansOrderByNickName(FansParamsDto fansParamsDto){

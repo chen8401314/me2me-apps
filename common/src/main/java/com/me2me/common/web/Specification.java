@@ -957,7 +957,10 @@ public interface Specification {
 
         SNS_CIRCLE("王国成员",3),
         
-        LINK("链接跳转", 4);
+        LINK("链接跳转", 4),
+        
+        NOTICE("消息列表", 5)
+        ;
 
         public final String name;
 
