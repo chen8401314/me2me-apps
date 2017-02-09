@@ -1,7 +1,5 @@
 package com.me2me.sns.service;
 
-import ch.qos.logback.core.net.SyslogOutputStream;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -13,7 +11,6 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.live.cache.MySubscribeCacheModel;
-import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicFragment;
@@ -24,7 +21,6 @@ import com.me2me.sns.dao.LiveJdbcDao;
 import com.me2me.sns.dao.SnsMybatisDao;
 import com.me2me.sns.dto.*;
 import com.me2me.user.dto.FollowDto;
-import com.me2me.user.model.JpushToken;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
@@ -598,7 +594,7 @@ public class SnsServiceImpl implements SnsService {
             tips.setCount(tips.getCount() + 1);
             userService.modifyUserTips(tips);
         }
-        userService.noticePush(targetUid);
+        userService.noticeCountPush(targetUid);
     }
 
     private void createFragment(long owner, long topicId, long uid) {

@@ -6,8 +6,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
@@ -27,7 +25,8 @@ import com.me2me.sms.service.XgPushService;
 import com.me2me.user.dao.*;
 import com.me2me.user.dto.*;
 import com.me2me.user.event.FollowEvent;
-import com.me2me.user.event.NoticePushEvent;
+import com.me2me.user.event.NoticeCountPushEvent;
+import com.me2me.user.event.NoticeMessagePushEvent;
 import com.me2me.user.model.*;
 import com.me2me.user.model.Dictionary;
 import com.me2me.user.widget.MessageNotificationAdapter;
@@ -2532,9 +2531,18 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public void noticePush(long uid){
-		NoticePushEvent event = new NoticePushEvent();
+	public void noticeCountPush(long uid){
+		NoticeCountPushEvent event = new NoticeCountPushEvent();
 		event.setUid(uid);
+		this.applicationEventBus.post(event);
+	}
+	
+	@Override
+	public void noticeMessagePush(long targetUid, String message, int level){
+		NoticeMessagePushEvent event = new NoticeMessagePushEvent();
+		event.setLevel(level);
+		event.setMessage(message);
+		event.setTargetUid(targetUid);
 		this.applicationEventBus.post(event);
 	}
 }

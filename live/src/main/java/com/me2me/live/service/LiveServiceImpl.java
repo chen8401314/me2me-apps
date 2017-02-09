@@ -2601,6 +2601,12 @@ public class LiveServiceImpl implements LiveService {
                                 //发送消息
                                 this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "申请被你的聚合王国收录", apply.getId(), topic, topicOwner, Specification.UserNoticeType.AGGREGATION_APPLY.index);
                                 
+                                //发推送
+                                //本消息是由王国发起的，所以需要判断王国的配置
+                                if(this.checkTopicPush(topic.getId(), topic.getUid())){
+                                	userService.noticeMessagePush(topic.getUid(), "有个人王国申请被你的聚合王国收录", 2);
+                                }
+                                
                                 log.info("create TopicAggregationApply success");
                             }else{//不需要审核的情况
                             	TopicAggregation agg = new TopicAggregation();
@@ -2610,6 +2616,12 @@ public class LiveServiceImpl implements LiveService {
                                 this.aggregateSuccessAfter(topic, topicOwner);
                                 //发送消息
                                 this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "加入了你的聚合王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                                
+                                //发推送
+                                //本消息是由王国发起的，所以需要判断王国的配置
+                                if(this.checkTopicPush(topic.getId(), topic.getUid())){
+                                	userService.noticeMessagePush(topic.getUid(), "有个人王国加入了你的聚合王国", 2);
+                                }
                                 
                                 log.info("create TopicAggregation success");
                             }
@@ -2627,6 +2639,12 @@ public class LiveServiceImpl implements LiveService {
                         liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
                         
                         this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "退出了你的聚合王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                        
+                        //发推送
+                        //本消息是由王国发起的，所以需要判断王国的配置
+                        if(this.checkTopicPush(topic.getId(), topic.getUid())){
+                        	userService.noticeMessagePush(topic.getUid(), "有个人王国退出了你的聚合王国", 2);
+                        }
                         
                         return Response.success();
                     } else if (dto.getAction() == Specification.AggregationOptType.ISSUED.index) {
@@ -2677,6 +2695,12 @@ public class LiveServiceImpl implements LiveService {
                                 //发送消息
                                 this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "申请收录你的个人王国", apply.getId(), topic, topicOwner, Specification.UserNoticeType.AGGREGATION_APPLY.index);
                                 
+                                //发推送
+                                //本消息是由王国发起的，所以需要判断王国的配置
+                                if(this.checkTopicPush(topic.getId(), topic.getUid())){
+                                	userService.noticeMessagePush(topic.getUid(), "有聚合王国申请收录你的个人王国", 2);
+                                }
+                                
                                 log.info("create TopicAggregationApply success");
                             }else{//不需要审核直接成功
                             	TopicAggregation agg = new TopicAggregation();
@@ -2685,6 +2709,12 @@ public class LiveServiceImpl implements LiveService {
                                 liveMybatisDao.createTopicAgg(agg);
                                 this.aggregateSuccessAfter(topicOwner, topic);
                                 this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "收录了你的个人王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                                
+                                //发推送
+                                //本消息是由王国发起的，所以需要判断王国的配置
+                                if(this.checkTopicPush(topic.getId(), topic.getUid())){
+                                	userService.noticeMessagePush(topic.getUid(), "有聚合王国收录了你的个人王国", 2);
+                                }
                                 
                                 log.info("create TopicAggregation success");
                             }
@@ -2701,6 +2731,12 @@ public class LiveServiceImpl implements LiveService {
                         liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
                         
                         this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "踢走了你的个人王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                        
+                        //发推送
+                        //本消息是由王国发起的，所以需要判断王国的配置
+                        if(this.checkTopicPush(topic.getId(), topic.getUid())){
+                        	userService.noticeMessagePush(topic.getUid(), "有聚合王国踢走了你的个人王国", 2);
+                        }
                         
                         return Response.success();
                     } else if (dto.getAction() == Specification.AggregationOptType.TOP.index) {
@@ -2733,6 +2769,14 @@ public class LiveServiceImpl implements LiveService {
 
         return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
     }
+    
+    private boolean checkTopicPush(long topicId, long uid){
+    	TopicUserConfig tuc = liveMybatisDao.getTopicUserConfig(uid, topicId);
+    	if(null != tuc && tuc.getPushType().intValue() == 1){
+    		return false;
+    	}
+    	return true;
+    }
 
     @Override
     public Response aggregationApplyOpt(AggregationOptDto dto) {
@@ -2751,6 +2795,7 @@ public class LiveServiceImpl implements LiveService {
             if (topicAggregationApply.getResult() == 0) {
                 //0初始的情况才能操作
             	String review = null;
+            	String message = null;
                 if (dto.getAction() == 1) {
                     topicAggregationApply.setResult(1);
                     liveMybatisDao.updateTopicAggregationApply(topicAggregationApply);
@@ -2761,11 +2806,13 @@ public class LiveServiceImpl implements LiveService {
                         aggregation.setSubTopicId(topicAggregationApply.getTargetTopicId());
                         liveMybatisDao.createTopicAgg(aggregation);
                         this.aggregateSuccessAfter(topic, targetTopic);
+                        message = "个人王国同意了你的收录申请";
                     }else{//子求母
                     	aggregation.setTopicId(topicAggregationApply.getTargetTopicId());
                     	aggregation.setSubTopicId(topicAggregationApply.getTopicId());
                     	liveMybatisDao.createTopicAgg(aggregation);
                     	this.aggregateSuccessAfter(targetTopic, topic);
+                    	message = "聚合王国同意了你的收录申请";
                     }
                     review = "同意你的收录申请";
                     log.info("create topic_agg success");
@@ -2773,11 +2820,22 @@ public class LiveServiceImpl implements LiveService {
                     topicAggregationApply.setResult(2);
                     liveMybatisDao.updateTopicAggregationApply(topicAggregationApply);
                     review = "拒绝你的收录申请";
+                    if(topicAggregationApply.getType() == 1){//母拉子
+                    	message = "个人王国拒绝了你的收录申请";
+                    }else{//子求母
+                    	message = "聚合王国拒绝了你的收录申请";
+                    }
                     log.info("update topic_agg_apply success");
                 }
                 
                 this.aggregationRemind(targetTopic.getUid(), topic.getUid(), review, 0, topic, targetTopic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
 
+                //发推送
+                //本消息是由王国发起的，所以需要判断王国的配置
+                if(this.checkTopicPush(topic.getId(), topic.getUid())){
+                	userService.noticeMessagePush(topic.getUid(), message, 2);
+                }
+                
                 return Response.success();
             }else {
                 return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
@@ -2838,7 +2896,7 @@ public class LiveServiceImpl implements LiveService {
             tips.setCount(tips.getCount() + 1);
             userService.modifyUserTips(tips);
         }
-        userService.noticePush(targetUid);
+        userService.noticeCountPush(targetUid);
     }
     
     /**

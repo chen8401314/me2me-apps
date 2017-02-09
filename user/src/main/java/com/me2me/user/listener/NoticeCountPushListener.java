@@ -11,17 +11,17 @@ import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonObject;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.sms.service.JPushService;
-import com.me2me.user.event.NoticePushEvent;
+import com.me2me.user.event.NoticeCountPushEvent;
 
 @Component
 @Slf4j
-public class NoticePushListener {
+public class NoticeCountPushListener {
 
 	private final ApplicationEventBus applicationEventBus;
 	private final JPushService jPushService;
 	
 	@Autowired
-	public NoticePushListener(ApplicationEventBus applicationEventBus, JPushService jPushService){
+	public NoticeCountPushListener(ApplicationEventBus applicationEventBus, JPushService jPushService){
 		this.applicationEventBus = applicationEventBus;
 		this.jPushService = jPushService;
 	}
@@ -32,7 +32,7 @@ public class NoticePushListener {
     }
 	
 	@Subscribe
-	public void noticePush(NoticePushEvent event){
+	public void noticeCountPush(NoticeCountPushEvent event){
 		log.info("user notice push..begin");
 		JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("count", "1");

@@ -300,5 +300,7 @@ public interface UserService {
     
     Response testPush(long uid, String msg, String jsonData);
     
-    void noticePush(long uid);
+    void noticeCountPush(long uid);
+    
+    void noticeMessagePush(long targetUid, String message, int level);
 }
