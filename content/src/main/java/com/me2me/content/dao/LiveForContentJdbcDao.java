@@ -1,8 +1,5 @@
 package com.me2me.content.dao;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,17 +21,6 @@ public class LiveForContentJdbcDao {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
-
-    public JSONArray getTopicCoreCircle(long topicId) {
-
-        String sql = "select core_circle from topic where id=?";
-        List<Map<String,Object>> list = jdbcTemplate.queryForList(sql,topicId);
-        if(list.size()>0){
-            return JSON.parseArray((String)list.get(0).get("core_circle"));
-        }
-        return  null;
-    }
     
     /**
      * 记录删除日志
@@ -69,7 +55,7 @@ public class LiveForContentJdbcDao {
 	}
 
 	public Map<String,Object> getTopicListByCid(long cid){
-		String sql = "select id,type from topic where id = "+cid;
+		String sql = "select id,core_circle,type from topic where id = "+cid;
 		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
 		if(list.size() > 0 && list != null){
 			return list.get(0);

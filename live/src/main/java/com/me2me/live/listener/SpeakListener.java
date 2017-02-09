@@ -133,6 +133,7 @@ public class SpeakListener {
                 jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
                 jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
                 jsonObject.addProperty("topicId",speakEvent.getTopicId());
+                jsonObject.addProperty("contentType", topic.getType());
                 jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, liveFavorite.getUid()));
                 jsonObject.addProperty("fromInternalStatus", Specification.SnsCircle.CORE.index);//主播发言的，都是核心圈
                 String alias = String.valueOf(liveFavorite.getUid());
@@ -162,6 +163,7 @@ public class SpeakListener {
 	            jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
 	            jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
 	            jsonObject.addProperty("topicId",speakEvent.getTopicId());
+	            jsonObject.addProperty("contentType", topic.getType());
 	            jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//这里是给核心圈的通知，所以直接显示核心圈即可
 	            jsonObject.addProperty("fromInternalStatus", fromStatus);//评论人相对于王国的身份
 	            String alias = String.valueOf(cid);

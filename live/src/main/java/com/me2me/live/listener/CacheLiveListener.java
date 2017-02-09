@@ -102,6 +102,7 @@ public class CacheLiveListener {
             jsonObject.addProperty("messageType", Specification.LiveSpeakType.FOLLOW.index);
             jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
             jsonObject.addProperty("topicId",cacheLiveEvent.getTopicId());
+            jsonObject.addProperty("contentType", topic.getType());
             jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, userFollow.getSourceUid()));
             jsonObject.addProperty("fromInternalStatus", Specification.SnsCircle.CORE.index);//主播创建的，肯定是核心圈
             String alias = String.valueOf(userFollow.getSourceUid());

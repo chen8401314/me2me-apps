@@ -680,6 +680,7 @@ public class LiveServiceImpl implements LiveService {
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("messageType", Specification.PushMessageType.AT.index);
             jsonObject.addProperty("topicId",speakDto.getTopicId());
+            jsonObject.addProperty("contentType", topic.getType());
             jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
             jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, atUid));
             jsonObject.addProperty("fromInternalStatus", fromStatus);

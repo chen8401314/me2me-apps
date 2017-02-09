@@ -2711,7 +2711,8 @@ private void localJpush(long toUid){
                     jPushService.payloadByIdExtra(alias,"你发布的内容上热点啦！", JPushUtils.packageExtra(jsonObject));
                 }
             }else if(content.getType() == Specification.ArticleType.LIVE.index){
-                JSONArray coreCircles = liveForContentJdbcDao.getTopicCoreCircle(content.getForwardCid());
+            	Map<String,Object> topic = liveForContentJdbcDao.getTopicListByCid(content.getForwardCid());
+                JSONArray coreCircles = JSON.parseArray((String)topic.get("core_circle"));
                 if(coreCircles!=null){
                     for(int i=0;i<coreCircles.size();i++){
                     	if(!this.checkTopicPush(content.getForwardCid(), Long.valueOf(coreCircles.getString(i)))){
@@ -2721,6 +2722,7 @@ private void localJpush(long toUid){
                         jsonObject.addProperty("messageType",Specification.PushMessageType.LIVE_HOTTEST.index);
                         jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
                         jsonObject.addProperty("topicId",content.getForwardCid());
+                        jsonObject.addProperty("contentType", (Integer)topic.get("type"));
                         jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//此处是核心圈的推送，所以直接设置核心圈
                         //这里是管理员将王国上热点。。这里没法设置操作人的身份了
                         String alias =coreCircles.getString(i);

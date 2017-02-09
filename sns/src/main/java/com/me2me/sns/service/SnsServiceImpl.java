@@ -428,6 +428,7 @@ public class SnsServiceImpl implements SnsService {
                 jsonObject.addProperty("messageType", Specification.PushMessageType.CORE_CIRCLE.index);
                 jsonObject.addProperty("type", Specification.PushObjectType.LIVE.index);
                 jsonObject.addProperty("topicId", topicId);
+                jsonObject.addProperty("contentType", topic.getType());
                 jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//既然是邀请核心圈，那么已经是核心圈了，所以直接设置核心圈标识
                 jsonObject.addProperty("fromInternalStatus", Specification.SnsCircle.CORE.index);//只有国王才能邀请核心圈，所以直接设置核心圈标识
                 String alias = String.valueOf(uid);
@@ -480,6 +481,7 @@ public class SnsServiceImpl implements SnsService {
                 jsonObject.addProperty("type", Specification.PushObjectType.LIVE.index);
                 jsonObject.addProperty("topicId", topicId);
                 topic = liveService.getTopicById(topicId);//已经更新过了。。重新查询一下
+                jsonObject.addProperty("contentType", topic.getType());
                 jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, uid));
                 jsonObject.addProperty("fromInternalStatus", Specification.SnsCircle.CORE.index);//只有国王才能移出核心圈，所以直接设置核心圈标识
                 String alias = String.valueOf(uid);
