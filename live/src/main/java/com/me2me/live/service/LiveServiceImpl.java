@@ -2638,12 +2638,14 @@ public class LiveServiceImpl implements LiveService {
                     } else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {
                         liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
                         
-                        this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "退出了你的聚合王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
-                        
-                        //发推送
-                        //本消息是由王国发起的，所以需要判断王国的配置
-                        if(this.checkTopicPush(topic.getId(), topic.getUid())){
-                        	userService.noticeMessagePush(topic.getUid(), "有个人王国退出了你的聚合王国", 2);
+                        if(topicOwner.getUid().longValue() != topic.getUid().longValue() ){//如果是踢自己的王国，不需要发消息和推送
+                        	this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "退出了你的聚合王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                            
+                            //发推送
+                            //本消息是由王国发起的，所以需要判断王国的配置
+                            if(this.checkTopicPush(topic.getId(), topic.getUid())){
+                            	userService.noticeMessagePush(topic.getUid(), "有个人王国退出了你的聚合王国", 2);
+                            }
                         }
                         
                         return Response.success();
@@ -2730,12 +2732,14 @@ public class LiveServiceImpl implements LiveService {
                     } else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {
                         liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
                         
-                        this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "踢走了你的个人王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
-                        
-                        //发推送
-                        //本消息是由王国发起的，所以需要判断王国的配置
-                        if(this.checkTopicPush(topic.getId(), topic.getUid())){
-                        	userService.noticeMessagePush(topic.getUid(), "有聚合王国踢走了你的个人王国", 2);
+                        if(topicOwner.getUid().longValue() != topic.getUid().longValue() ){//如果是踢自己的王国，不需要发消息和推送
+                        	this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "踢走了你的个人王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                            
+                            //发推送
+                            //本消息是由王国发起的，所以需要判断王国的配置
+                            if(this.checkTopicPush(topic.getId(), topic.getUid())){
+                            	userService.noticeMessagePush(topic.getUid(), "有聚合王国踢走了你的个人王国", 2);
+                            }
                         }
                         
                         return Response.success();
