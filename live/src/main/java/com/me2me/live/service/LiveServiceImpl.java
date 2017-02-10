@@ -2271,6 +2271,11 @@ public class LiveServiceImpl implements LiveService {
                         liveMybatisDao.createTopicFragment(topicFragment);
                         long lastFragmentId = topicFragment.getId();
                         
+                        Calendar calendar = Calendar.getInstance();
+                        topic.setUpdateTime(calendar.getTime());
+                        topic.setLongTime(calendar.getTimeInMillis());
+			            liveMybatisDao.updateTopic(topic);
+                        
                         //更新缓存
                         int total = liveMybatisDao.countFragmentByTopicId(topic.getId());
                         String value = lastFragmentId + "," + total;
@@ -2945,6 +2950,12 @@ public class LiveServiceImpl implements LiveService {
     	obj.put("action", Long.valueOf(1));//收录了
     	ceFragment.setExtra(obj.toJSONString());
     	liveMybatisDao.createTopicFragment(ceFragment);
+    	
+    	Calendar calendar = Calendar.getInstance();
+    	ceTopic.setUpdateTime(calendar.getTime());
+    	ceTopic.setLongTime(calendar.getTimeInMillis());
+        liveMybatisDao.updateTopic(ceTopic);
+    	
     	//更新缓存
 		long ceLastFragmentId = ceFragment.getId();
         int ceTotal = liveMybatisDao.countFragmentByTopicId(ceTopic.getId());
@@ -2976,6 +2987,12 @@ public class LiveServiceImpl implements LiveService {
     	obj2.put("action", Long.valueOf(2));//被收录
     	acFragment.setExtra(obj2.toJSONString());
     	liveMybatisDao.createTopicFragment(acFragment);
+    	
+    	calendar = Calendar.getInstance();
+    	acTopic.setUpdateTime(calendar.getTime());
+    	acTopic.setLongTime(calendar.getTimeInMillis());
+        liveMybatisDao.updateTopic(acTopic);
+    	
     	//更新缓存
 		long acLastFragmentId = acFragment.getId();
         int acTotal = liveMybatisDao.countFragmentByTopicId(acTopic.getId());

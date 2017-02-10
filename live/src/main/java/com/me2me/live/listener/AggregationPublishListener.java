@@ -1,5 +1,6 @@
 package com.me2me.live.listener;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -100,6 +101,11 @@ public class AggregationPublishListener {
 						newtf.setTopicId(subTopic.getId());
 						newtf.setId(null);
 						liveMybatisDao.createTopicFragment(newtf);
+						
+						Calendar calendar = Calendar.getInstance();
+						subTopic.setUpdateTime(calendar.getTime());
+						subTopic.setLongTime(calendar.getTimeInMillis());
+			            liveMybatisDao.updateTopic(subTopic);
 						
 						//更新缓存
 						long lastFragmentId = newtf.getId();
