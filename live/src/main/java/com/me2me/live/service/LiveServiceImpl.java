@@ -2585,7 +2585,7 @@ public class LiveServiceImpl implements LiveService {
                             if (topic.getCeAuditType() == 0) {
                                 //查询是否申请过
                                 TopicAggregationApply t = liveMybatisDao.getTopicAggregationApplyByTopicAndTarget(dto.getAcTopicId() ,dto.getCeTopicId() ,2);
-                                if(t != null){
+                                if(t != null && (t.getResult() == 0 || t.getResult() == 1)){
                                     //重复操作
                                     return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
                                 }
@@ -2684,7 +2684,7 @@ public class LiveServiceImpl implements LiveService {
                             if (topic.getAcAuditType() == 0) {
                                 //查询是否申请过
                                 TopicAggregationApply t = liveMybatisDao.getTopicAggregationApplyByTopicAndTarget(dto.getCeTopicId() ,dto.getAcTopicId() ,1);
-                                if(t != null){
+                                if(t != null && (t.getResult() == 0 || t.getResult() == 1)){//有过申请，并且是初始化的或已同意的
                                     return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
                                 }
                                 //需要申请同意收录
