@@ -2625,6 +2625,7 @@ public class LiveServiceImpl implements LiveService {
                                 }
                                 
                                 log.info("create TopicAggregation success");
+                                return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
                             }
                         }else{
                         	//如果是自己收录自己，则不需要发消息了
@@ -2634,6 +2635,7 @@ public class LiveServiceImpl implements LiveService {
                             liveMybatisDao.createTopicAgg(agg);
                             this.aggregateSuccessAfter(topic, topicOwner);
                             log.info("create TopicAggregation success");
+                            return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
                         }
                         return Response.success();
                     } else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {
@@ -2720,6 +2722,7 @@ public class LiveServiceImpl implements LiveService {
                                 }
                                 
                                 log.info("create TopicAggregation success");
+                                return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
                             }
                         }else{//自己加自己直接成功而且不需要消息
                             TopicAggregation agg = new TopicAggregation();
@@ -2728,6 +2731,7 @@ public class LiveServiceImpl implements LiveService {
                             liveMybatisDao.createTopicAgg(agg);
                             this.aggregateSuccessAfter(topicOwner, topic);
                             log.info("create TopicAggregation success");
+                            return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
                         }
                         return Response.success();
                     } else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {

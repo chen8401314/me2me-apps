@@ -285,7 +285,7 @@ public enum  ResponseStatus {
 
     SEARCH_LIST_NOT_EXISTS("未查询到榜单信息","search list not exists", 200135),
 
-
+    AGGREGATION_APPLY_SUCCESS("收录成功","apply success",200136),
 
 
 
