@@ -703,6 +703,10 @@ public class LiveMybatisDao {
     public void updateTopicUserConfig(TopicUserConfig topicUserConfig) {
         topicUserConfigMapper.updateByPrimaryKeySelective(topicUserConfig);
     }
+    
+    public void insertTopicUserConfig(TopicUserConfig topicUserConfig) {
+    	topicUserConfigMapper.insertSelective(topicUserConfig);
+    }
 
     public void updateTopicAggregation(TopicAggregation topicAggregation) {
         topicAggregationMapper.updateByPrimaryKeySelective(topicAggregation);

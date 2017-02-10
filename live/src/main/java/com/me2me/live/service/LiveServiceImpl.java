@@ -2236,92 +2236,90 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(dto);
     }
 
-    @Override
-    public Response settingModify(SettingModifyDto dto) {
-        Topic topic = liveMybatisDao.getTopicById(dto.getTopicId());
-        TopicUserConfig topicUserConfig = liveMybatisDao.getTopicUserConfig(dto.getUid() ,dto.getTopicId());
-        if(topic.getUid() == dto.getUid()) {
-            //国王操作
-            if (dto.getAction() == Specification.SettingModify.COVER.index) {
-                if (topic != null) {
-                    topic.setLiveImage(dto.getParams());
-                    liveMybatisDao.updateTopic(topic);
-                    log.info("update cover success");
-                    return Response.success();
-                }
-            } else if (dto.getAction() == Specification.SettingModify.SUMMARY.index) {
-                if (topic != null) {
-                    topic.setSummary(dto.getParams());
-                    liveMybatisDao.updateTopic(topic);
-                    log.info("update Summary success");
-                    
-                    //更新成功需要在当前王国中插入一条国王发言
-                    if(!StringUtils.isEmpty(dto.getParams())){
-                    	TopicFragment topicFragment = new TopicFragment();
-                    	topicFragment.setFragment(dto.getParams());
-                    	topicFragment.setUid(dto.getUid());
-                    	topicFragment.setType(0);//第一次发言肯定是主播发言
-                    	topicFragment.setContentType(0);//文本
-                    	topicFragment.setTopicId(topic.getId());
-                        topicFragment.setBottomId(0l);
-                        topicFragment.setTopId(0l);
-                        topicFragment.setSource(0);
-//                        topicFragment.setExtra();
-                        topicFragment.setCreateTime(new Date());
-                        liveMybatisDao.createTopicFragment(topicFragment);
-                        long lastFragmentId = topicFragment.getId();
-                        
-                        Calendar calendar = Calendar.getInstance();
-                        topic.setUpdateTime(calendar.getTime());
-                        topic.setLongTime(calendar.getTimeInMillis());
-			            liveMybatisDao.updateTopic(topic);
-                        
-                        //更新缓存
-                        int total = liveMybatisDao.countFragmentByTopicId(topic.getId());
-                        String value = lastFragmentId + "," + total;
-                        cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
-                    }
-                    
-                    return Response.success();
-                }
-            } else if (dto.getAction() == Specification.SettingModify.TAGS.index) {
-                log.info("暂时不考虑标签");
-            } else if (dto.getAction() == Specification.SettingModify.PUSH.index) {
-                if (topicUserConfig != null) {
-                    topicUserConfig.setPushType(Integer.valueOf(dto.getParams()));
-                    liveMybatisDao.updateTopicUserConfig(topicUserConfig);
-                    log.info("update pushType success");
-                    return Response.success();
-                }
-            } else if (dto.getAction() == Specification.SettingModify.AGVERIFY.index) {
-                if (topic != null) {
-                    topic.setCeAuditType(Integer.valueOf(dto.getParams()));
-                    liveMybatisDao.updateTopic(topic);
-                    log.info("update CeAuditType success");
-                    return Response.success();
-                }
-            } else if (dto.getAction() == Specification.SettingModify.VERIFY.index) {
-                if (topic != null) {
-                    topic.setAcAuditType(Integer.valueOf(dto.getParams()));
-                    liveMybatisDao.updateTopic(topic);
-                    log.info("update AcAuditType success");
-                    return Response.success();
-                }
-            } else if (dto.getAction() == Specification.SettingModify.ISSUED_MESSAGE.index) {
-                //下发消息
-                if (topic != null) {
-                    topic.setAcPublishType(Integer.valueOf(dto.getParams()));
-                    liveMybatisDao.updateTopic(topic);
-                    log.info("update AcPublishType success");
-                    return Response.success();
-                }
-            }
-        }else {
-            return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status ,ResponseStatus.YOU_ARE_NOT_KING.message);
-        }
+	@Override
+	public Response settingModify(SettingModifyDto dto) {
+		Topic topic = liveMybatisDao.getTopicById(dto.getTopicId());
+		if (null != topic && topic.getUid() == dto.getUid()) {
+			// 国王操作
+			if (dto.getAction() == Specification.SettingModify.COVER.index) {
+				topic.setLiveImage(dto.getParams());
+				liveMybatisDao.updateTopic(topic);
+				log.info("update cover success");
+				return Response.success();
+			} else if (dto.getAction() == Specification.SettingModify.SUMMARY.index) {
+				topic.setSummary(dto.getParams());
+				liveMybatisDao.updateTopic(topic);
+				log.info("update Summary success");
 
-        return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status ,ResponseStatus.ACTION_NOT_SUPPORT.message);
-    }
+				// 更新成功需要在当前王国中插入一条国王发言
+				if (!StringUtils.isEmpty(dto.getParams())) {
+					TopicFragment topicFragment = new TopicFragment();
+					topicFragment.setFragment(dto.getParams());
+					topicFragment.setUid(dto.getUid());
+					topicFragment.setType(0);// 第一次发言肯定是主播发言
+					topicFragment.setContentType(0);// 文本
+					topicFragment.setTopicId(topic.getId());
+					topicFragment.setBottomId(0l);
+					topicFragment.setTopId(0l);
+					topicFragment.setSource(0);
+					// topicFragment.setExtra();
+					topicFragment.setCreateTime(new Date());
+					liveMybatisDao.createTopicFragment(topicFragment);
+					long lastFragmentId = topicFragment.getId();
+
+					Calendar calendar = Calendar.getInstance();
+					topic.setUpdateTime(calendar.getTime());
+					topic.setLongTime(calendar.getTimeInMillis());
+					liveMybatisDao.updateTopic(topic);
+
+					// 更新缓存
+					int total = liveMybatisDao.countFragmentByTopicId(topic.getId());
+					String value = lastFragmentId + "," + total;
+					cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
+				}
+
+				return Response.success();
+			} else if (dto.getAction() == Specification.SettingModify.TAGS.index) {
+				log.info("暂时不考虑标签");
+			} else if (dto.getAction() == Specification.SettingModify.PUSH.index) {
+				int pushType = Integer.valueOf(dto.getParams()).intValue();
+				TopicUserConfig topicUserConfig = liveMybatisDao.getTopicUserConfig(dto.getUid(), dto.getTopicId());
+				if (topicUserConfig != null) {
+					topicUserConfig.setPushType(pushType);
+					liveMybatisDao.updateTopicUserConfig(topicUserConfig);
+					log.info("update pushType success");
+				} else {
+					topicUserConfig = new TopicUserConfig();
+					topicUserConfig.setUid(dto.getUid());
+					topicUserConfig.setTopicId(dto.getTopicId());
+					topicUserConfig.setPushType(pushType);
+					liveMybatisDao.insertTopicUserConfig(topicUserConfig);
+					log.info("update pushType success");
+				}
+				return Response.success();
+			} else if (dto.getAction() == Specification.SettingModify.AGVERIFY.index) {
+				topic.setCeAuditType(Integer.valueOf(dto.getParams()));
+				liveMybatisDao.updateTopic(topic);
+				log.info("update CeAuditType success");
+				return Response.success();
+			} else if (dto.getAction() == Specification.SettingModify.VERIFY.index) {
+				topic.setAcAuditType(Integer.valueOf(dto.getParams()));
+				liveMybatisDao.updateTopic(topic);
+				log.info("update AcAuditType success");
+				return Response.success();
+			} else if (dto.getAction() == Specification.SettingModify.ISSUED_MESSAGE.index) {
+				// 下发消息
+				topic.setAcPublishType(Integer.valueOf(dto.getParams()));
+				liveMybatisDao.updateTopic(topic);
+				log.info("update AcPublishType success");
+				return Response.success();
+			}
+		} else {
+			return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
+		}
+
+		return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
+	}
 
     private void builderTopicSearch(long uid, ShowTopicSearchDTO showTopicSearchDTO, List<Topic> topicList, 
     		Map<String, String> topMap, Map<String, String> publishMap) {
