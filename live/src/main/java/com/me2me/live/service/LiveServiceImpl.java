@@ -2918,7 +2918,7 @@ public class LiveServiceImpl implements LiveService {
     	TopicFragment ceFragment = new TopicFragment();
     	ceFragment.setTopicId(ceTopic.getId());
     	ceFragment.setUid(ceTopic.getUid());
-    	ceFragment.setFragment(ceTopic.getTitle());
+    	ceFragment.setFragment(acTopic.getTitle());//放内链的标题
     	ceFragment.setType(Specification.LiveSpeakType.ANCHOR.index);
     	ceFragment.setContentType(72);//王国内链
     	//子王国的相关内链extra信息
@@ -2949,7 +2949,7 @@ public class LiveServiceImpl implements LiveService {
         TopicFragment acFragment = new TopicFragment();
         acFragment.setTopicId(acTopic.getId());
         acFragment.setUid(acTopic.getUid());
-        acFragment.setFragment(acTopic.getTitle());
+        acFragment.setFragment(ceTopic.getTitle());//放内链的标题
         acFragment.setType(Specification.LiveSpeakType.ANCHOR.index);
         acFragment.setContentType(72);//王国内链
     	//子王国的相关内链extra信息
