@@ -2244,6 +2244,11 @@ public class LiveServiceImpl implements LiveService {
 			if (dto.getAction() == Specification.SettingModify.COVER.index) {
 				topic.setLiveImage(dto.getParams());
 				liveMybatisDao.updateTopic(topic);
+				Content content = contentService.getContentByTopicId(topic.getId());
+				if(null != content){
+					content.setConverImage(dto.getParams());
+					contentService.updateContentById(content);
+				}
 				log.info("update cover success");
 				return Response.success();
 			} else if (dto.getAction() == Specification.SettingModify.SUMMARY.index) {
