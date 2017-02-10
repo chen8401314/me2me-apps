@@ -2656,11 +2656,13 @@ public class LiveServiceImpl implements LiveService {
                         if(topicAggregation != null){
                             //0接受推送 1不接受推送
                             topicAggregation.setIsPublish(0);
+                            liveMybatisDao.updateTopicAggregation(topicAggregation);
                             return Response.success();
                         }
                     } else if (dto.getAction() == Specification.AggregationOptType.CANCEL_ISSUED.index) {
                         if(topicAggregation != null){
                             topicAggregation.setIsPublish(1);
+                            liveMybatisDao.updateTopicAggregation(topicAggregation);
                             return Response.success();
                         }
                     }
