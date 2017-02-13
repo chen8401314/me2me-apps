@@ -184,6 +184,9 @@ public class LiveServiceImpl implements LiveService {
         log.info("liveCover start ...");
         LiveCoverDto liveCoverDto = new LiveCoverDto();
         Topic topic = liveMybatisDao.getTopicById(topicId);
+        if(topic==null){
+            return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
+        }
         liveCoverDto.setTitle(topic.getTitle());
         liveCoverDto.setCreateTime(topic.getCreateTime());
         liveCoverDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
