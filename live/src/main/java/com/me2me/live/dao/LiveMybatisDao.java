@@ -772,14 +772,29 @@ public class LiveMybatisDao {
         return list.size() > 0 && list != null?list.get(0):null;
     }
 
-    public TopicAggregationApply getTopicAggregationApplyByTopicAndTarget(long ownerTopicId ,long targetTopicId ,int type){
+    public List<TopicAggregationApply> getTopicAggregationApplyByTopicAndTargetAndResult(long ownerTopicId ,long targetTopicId ,int type, List<Integer> resultList){
         TopicAggregationApplyExample example = new TopicAggregationApplyExample();
         TopicAggregationApplyExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(ownerTopicId);
         criteria.andTargetTopicIdEqualTo(targetTopicId);
         criteria.andTypeEqualTo(type);
-        List<TopicAggregationApply> list = topicAggregationApplyMapper.selectByExample(example);
-        return list.size() > 0 && list != null?list.get(0):null;
+        if(null != resultList && resultList.size() > 0){
+        	criteria.andResultIn(resultList);
+        }
+        return topicAggregationApplyMapper.selectByExample(example);
     }
 
+    /**
+     * 本方法慎用
+     */
+    public List<TopicAggregationApply> getTopicAggregationApplyBySourceIdsAndTargetIdsAndResults(List<Long> sourceIds, List<Long> targetIds, List<Integer> resultList){
+    	TopicAggregationApplyExample example = new TopicAggregationApplyExample();
+        TopicAggregationApplyExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdIn(sourceIds);
+        criteria.andTargetTopicIdIn(targetIds);
+        if(null != resultList && resultList.size() > 0){
+        	criteria.andResultIn(resultList);
+        }
+        return topicAggregationApplyMapper.selectByExample(example);
+    }
 }

@@ -2597,8 +2597,11 @@ public class LiveServiceImpl implements LiveService {
                         if(topicOwner.getUid().longValue() != topic.getUid().longValue() ){
                             if (topic.getCeAuditType() == 0) {
                                 //查询是否申请过
-                                TopicAggregationApply t = liveMybatisDao.getTopicAggregationApplyByTopicAndTarget(dto.getAcTopicId() ,dto.getCeTopicId() ,2);
-                                if(t != null && (t.getResult() == 0 || t.getResult() == 1)){
+                            	List<Integer> resultList = new ArrayList<Integer>();
+                            	resultList.add(0);
+                            	resultList.add(1);
+                            	List<TopicAggregationApply> list = liveMybatisDao.getTopicAggregationApplyByTopicAndTargetAndResult(dto.getAcTopicId(), dto.getCeTopicId(), 2, resultList);
+                                if(null != list && list.size() > 0){
                                     //重复操作
                                     return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
                                 }
@@ -2654,6 +2657,20 @@ public class LiveServiceImpl implements LiveService {
                     } else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {
                         liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
                         
+                        List<Long> ids = new ArrayList<Long>();
+                        ids.add(dto.getCeTopicId());
+                        ids.add(dto.getAcTopicId());
+                        List<Integer> resultList = new ArrayList<Integer>();
+                    	resultList.add(1);
+                        //解除如果以前申请成功过，需要将原先申请的记录置为失效
+                        List<TopicAggregationApply> list =  liveMybatisDao.getTopicAggregationApplyBySourceIdsAndTargetIdsAndResults(ids, ids, resultList);
+                        if(null != list && list.size() > 0){
+                        	for(TopicAggregationApply a : list){
+                        		a.setResult(3);
+                        		liveMybatisDao.updateTopicAggregationApply(a);
+                        	}
+                        }
+                        
                         if(topicOwner.getUid().longValue() != topic.getUid().longValue() ){//如果是踢自己的王国，不需要发消息和推送
                         	this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "退出了你的聚合王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
                             
@@ -2698,8 +2715,11 @@ public class LiveServiceImpl implements LiveService {
                         if(topicOwner.getUid().longValue() != topic.getUid().longValue() ){
                             if (topic.getAcAuditType() == 0) {
                                 //查询是否申请过
-                                TopicAggregationApply t = liveMybatisDao.getTopicAggregationApplyByTopicAndTarget(dto.getCeTopicId() ,dto.getAcTopicId() ,1);
-                                if(t != null && (t.getResult() == 0 || t.getResult() == 1)){//有过申请，并且是初始化的或已同意的
+                            	List<Integer> resultList = new ArrayList<Integer>();
+                            	resultList.add(0);
+                            	resultList.add(1);
+                            	List<TopicAggregationApply> list = liveMybatisDao.getTopicAggregationApplyByTopicAndTargetAndResult(dto.getCeTopicId() ,dto.getAcTopicId(), 1, resultList);
+                                if(null != list && list.size() > 0){//有过申请，并且是初始化的或已同意的
                                     return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
                                 }
                                 //需要申请同意收录
@@ -2755,6 +2775,20 @@ public class LiveServiceImpl implements LiveService {
                         if(topicOwner.getUid().longValue() != topic.getUid().longValue() ){//如果是踢自己的王国，不需要发消息和推送
                         	this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "踢走了你的个人王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
                             
+                        	List<Long> ids = new ArrayList<Long>();
+                            ids.add(dto.getCeTopicId());
+                            ids.add(dto.getAcTopicId());
+                            List<Integer> resultList = new ArrayList<Integer>();
+                        	resultList.add(1);
+                            //解除如果以前申请成功过，需要将原先申请的记录置为失效
+                            List<TopicAggregationApply> list =  liveMybatisDao.getTopicAggregationApplyBySourceIdsAndTargetIdsAndResults(ids, ids, resultList);
+                            if(null != list && list.size() > 0){
+                            	for(TopicAggregationApply a : list){
+                            		a.setResult(3);
+                            		liveMybatisDao.updateTopicAggregationApply(a);
+                            	}
+                            }
+                        	
                             //发推送
                             //本消息是由王国发起的，所以需要判断王国的配置
                             if(this.checkTopicPush(topic.getId(), topic.getUid())){
