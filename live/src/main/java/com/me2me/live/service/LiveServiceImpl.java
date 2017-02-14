@@ -2241,6 +2241,24 @@ public class LiveServiceImpl implements LiveService {
 
 	@Override
 	public Response settingModify(SettingModifyDto dto) {
+        //每个人都能操作
+        if (dto.getAction() == Specification.SettingModify.PUSH.index) {
+            int pushType = Integer.valueOf(dto.getParams()).intValue();
+            TopicUserConfig topicUserConfig = liveMybatisDao.getTopicUserConfig(dto.getUid(), dto.getTopicId());
+            if (topicUserConfig != null) {
+                topicUserConfig.setPushType(pushType);
+                liveMybatisDao.updateTopicUserConfig(topicUserConfig);
+                log.info("update pushType success");
+            } else {
+                topicUserConfig = new TopicUserConfig();
+                topicUserConfig.setUid(dto.getUid());
+                topicUserConfig.setTopicId(dto.getTopicId());
+                topicUserConfig.setPushType(pushType);
+                liveMybatisDao.insertTopicUserConfig(topicUserConfig);
+                log.info("update pushType success");
+            }
+            return Response.success();
+        }
 		Topic topic = liveMybatisDao.getTopicById(dto.getTopicId());
 		if (null != topic && topic.getUid() == dto.getUid()) {
 			// 国王操作
@@ -2289,23 +2307,7 @@ public class LiveServiceImpl implements LiveService {
 				return Response.success();
 			} else if (dto.getAction() == Specification.SettingModify.TAGS.index) {
 				log.info("暂时不考虑标签");
-			} else if (dto.getAction() == Specification.SettingModify.PUSH.index) {
-				int pushType = Integer.valueOf(dto.getParams()).intValue();
-				TopicUserConfig topicUserConfig = liveMybatisDao.getTopicUserConfig(dto.getUid(), dto.getTopicId());
-				if (topicUserConfig != null) {
-					topicUserConfig.setPushType(pushType);
-					liveMybatisDao.updateTopicUserConfig(topicUserConfig);
-					log.info("update pushType success");
-				} else {
-					topicUserConfig = new TopicUserConfig();
-					topicUserConfig.setUid(dto.getUid());
-					topicUserConfig.setTopicId(dto.getTopicId());
-					topicUserConfig.setPushType(pushType);
-					liveMybatisDao.insertTopicUserConfig(topicUserConfig);
-					log.info("update pushType success");
-				}
-				return Response.success();
-			} else if (dto.getAction() == Specification.SettingModify.AGVERIFY.index) {
+			}  else if (dto.getAction() == Specification.SettingModify.AGVERIFY.index) {
 				topic.setCeAuditType(Integer.valueOf(dto.getParams()));
 				liveMybatisDao.updateTopic(topic);
 				log.info("update CeAuditType success");
