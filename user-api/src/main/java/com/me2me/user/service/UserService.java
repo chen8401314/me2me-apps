@@ -9,6 +9,7 @@ import com.me2me.user.model.*;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -303,4 +304,6 @@ public interface UserService {
     void noticeCountPush(long uid);
     
     void noticeMessagePush(long targetUid, String message, int level);
+    
+    void pushWithExtra(String uid,String message,Map<String,String> extraMaps);
 }

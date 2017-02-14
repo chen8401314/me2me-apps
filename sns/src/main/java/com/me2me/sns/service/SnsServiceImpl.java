@@ -436,7 +436,7 @@ public class SnsServiceImpl implements SnsService {
                 String message = "邀请我加入核心圈";
                 
                 if(this.checkTopicPush(topicId, uid)){
-                	jPushService.payloadByIdExtra(alias, review, JPushUtils.packageExtra(jsonObject));
+                	userService.pushWithExtra(alias, review, JPushUtils.packageExtra(jsonObject));
                 }
                 snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.LIVE_INVITED.index);
 
@@ -489,32 +489,39 @@ public class SnsServiceImpl implements SnsService {
                 String message = "将我从核心圈移除";
                 
                 if(this.checkTopicPush(topicId, uid)){
-                	jPushService.payloadByIdExtra(alias, review, JPushUtils.packageExtra(jsonObject));
+                	userService.pushWithExtra(alias, review, JPushUtils.packageExtra(jsonObject));
                 }
 
                 snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index);
             } else if(action == 6) {
             	Topic topic = liveService.getTopicById(topicId);
                 JSONArray array = JSON.parseArray(topic.getCoreCircle());
+                boolean flag = false;
                 for (int i = 0; i < array.size(); i++) {
                     if (array.getLong(i) == uid) {
                         array.remove(i);
+                        flag = true;
                     }
                 }
-                liveJdbcDao.updateTopic(topicId, array.toString());
-
-                //人员原来是什么样的关系，还是什么样的关系
-                int isFollow = userService.isFollow(owner, uid);
-                int isFollowMe = userService.isFollow(uid, owner);
-                if (isFollow == 1 && isFollowMe == 1) {
-                    snsMybatisDao.createSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
-                } else if (isFollow == 1 && isFollowMe == 0) {
-                    snsMybatisDao.createSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
+                if(flag){
+	                liveJdbcDao.updateTopic(topicId, array.toString());
+	                
+	                //发送消息，告诉国王我退出了核心圈
+	                snsRemind(topic.getUid(), uid, "退出了核心圈", topic.getId(), Specification.UserNoticeType.CORE_CIRCLE_NOTICE.index);
+	                //推送告知国王我退出了核心圈
+	                if(this.checkTopicPush(topicId, topic.getUid())){
+	                	UserProfile userProfile = userService.getUserProfileByUid(uid);
+	                	String alias = String.valueOf(topic.getUid());
+	                	String review = userProfile.getNickName()+"退出了『" + topic.getTitle() + "』核心圈";
+	                	JsonObject jsonObject = new JsonObject();
+	                    jsonObject.addProperty("messageType", Specification.PushMessageType.QUIT_CORE_CIRCLE.index);
+	                    jsonObject.addProperty("type", Specification.PushObjectType.LIVE.index);
+	                    jsonObject.addProperty("topicId", topicId);
+	                    jsonObject.addProperty("contentType", topic.getType());
+	                    jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//国王自身肯定是核心圈人物啊
+	                	userService.pushWithExtra(alias, review, JPushUtils.packageExtra(jsonObject));
+	                }
                 }
-                
-                UserProfile userProfile = userService.getUserProfileByUid(owner);
-                //发送消息，告诉对方我退出了核心圈
-                snsRemind(uid, userProfile.getUid(), "退出了核心圈", topic.getId(), Specification.UserNoticeType.CORE_CIRCLE_NOTICE.index);
             }
         }
         log.info("modify circle end ...");

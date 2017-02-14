@@ -27,6 +27,7 @@ import com.me2me.user.dto.*;
 import com.me2me.user.event.FollowEvent;
 import com.me2me.user.event.NoticeCountPushEvent;
 import com.me2me.user.event.NoticeMessagePushEvent;
+import com.me2me.user.event.PushExtraEvent;
 import com.me2me.user.model.*;
 import com.me2me.user.model.Dictionary;
 import com.me2me.user.widget.MessageNotificationAdapter;
@@ -2543,6 +2544,15 @@ public class UserServiceImpl implements UserService {
 		event.setLevel(level);
 		event.setMessage(message);
 		event.setTargetUid(targetUid);
+		this.applicationEventBus.post(event);
+	}
+	
+	@Override
+	public void pushWithExtra(String uid,String message,Map<String,String> extraMaps){
+		PushExtraEvent event = new PushExtraEvent();
+		event.setUid(uid);
+		event.setMessage(message);
+		event.setExtraMaps(extraMaps);
 		this.applicationEventBus.post(event);
 	}
 }

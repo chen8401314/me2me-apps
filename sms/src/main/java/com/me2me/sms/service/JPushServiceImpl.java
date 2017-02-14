@@ -62,7 +62,6 @@ public class JPushServiceImpl implements JPushService{
                 .newBuilder()
                 .setPlatform(Platform.all())
                 .setAudience(Audience.alias(uid))
-//                .setAudience(Audience.registrationId(regId))
                 .setNotification(Notification.alert(message))
                 .build();
         try {
@@ -86,17 +85,14 @@ public class JPushServiceImpl implements JPushService{
         PushPayload payload = PushPayload.newBuilder()
                 .setPlatform(Platform.android_ios())
                 .setAudience(Audience.alias(uid))
-//                .setAudience(Audience.registrationId(regId))
                 .setNotification(Notification.newBuilder()
+                		.setAlert(message)
                         // android 平台
-                        .setAlert(message)
                         .addPlatformNotification(AndroidNotification.newBuilder()
-//                                .addExtra("extra",jsonObject).build())
                                 .addExtras(extraMaps).build())
                         // ios 平台
                         .addPlatformNotification(IosNotification.newBuilder()
                                 .incrBadge(1)
-//                                .addExtra("extra",jsonObject).build())
                                 .addExtras(extraMaps).build())
                         .build()).setOptions(options)
                 .build();

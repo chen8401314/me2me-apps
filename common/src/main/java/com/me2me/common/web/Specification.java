@@ -489,7 +489,7 @@ public interface Specification {
 
         REMOVE_CORE_CIRCLE("从核心圈移除",12),
         
-        LINK("链接跳转", 13);
+        QUIT_CORE_CIRCLE("退出核心圈",13);
 
         public final String name;
 
