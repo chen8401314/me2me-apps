@@ -1065,6 +1065,7 @@ private void localJpush(long toUid){
             	Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
             	if(null != topic){
             		contentElement.setInternalStatus(this.getInternalStatus(topic, currentUid));
+            		contentElement.setContentType((Integer)topic.get("type"));
             	}
             }
             if(content.getType() == Specification.ArticleType.ORIGIN.index){
