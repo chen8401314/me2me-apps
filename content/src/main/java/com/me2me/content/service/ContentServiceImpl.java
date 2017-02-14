@@ -1066,6 +1066,10 @@ private void localJpush(long toUid){
             	if(null != topic){
             		contentElement.setInternalStatus(this.getInternalStatus(topic, currentUid));
             		contentElement.setContentType((Integer)topic.get("type"));
+            		if(contentElement.getContentType() == 1000){//聚合王国要有子王国数
+            			int acCount = liveForContentJdbcDao.getTopicAggregationCountByTopicId((Long) topic.get("id"));
+            			contentElement.setAcCount(acCount);
+            		}
             	}
             }
             if(content.getType() == Specification.ArticleType.ORIGIN.index){
