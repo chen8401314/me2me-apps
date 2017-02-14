@@ -101,7 +101,7 @@ public class LiveServiceImpl implements LiveService {
         log.info("createLive start ...");
         if(StringUtils.isEmpty(createLiveDto.getLiveImage()) || StringUtils.isEmpty(createLiveDto.getTitle())){
         	log.info("liveImage or title is empty");
-        	Response.failure(ResponseStatus.KINGDOM_CREATE_FAILURE.status, ResponseStatus.KINGDOM_CREATE_FAILURE.message);
+        	return Response.failure(ResponseStatus.KINGDOM_CREATE_FAILURE.status, ResponseStatus.KINGDOM_CREATE_FAILURE.message);
         }
         Topic topic = new Topic();
         topic.setTitle(createLiveDto.getTitle());
