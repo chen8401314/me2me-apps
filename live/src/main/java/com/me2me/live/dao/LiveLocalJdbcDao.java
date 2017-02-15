@@ -345,7 +345,7 @@ public class LiveLocalJdbcDao {
 		StringBuilder sb = new StringBuilder();
 		sb.append("select * from ((select t.* from topic t,topic_aggregation a");
 		sb.append(" where t.id=a.sub_topic_id and a.topic_id=").append(topicId);
-		sb.append(" and a.is_top=1 order by a.create_time desc)");
+		sb.append(" and a.is_top=1 order by a.update_time desc)");
 		sb.append(" UNION ALL");
 		sb.append(" (select t1.* from topic t1,topic_aggregation a1");
 		sb.append(" where t1.id=a1.sub_topic_id and a1.topic_id=").append(topicId);
