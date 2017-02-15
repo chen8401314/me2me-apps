@@ -2148,6 +2148,7 @@ public class LiveServiceImpl implements LiveService {
 					liveMybatisDao.createTopicFragment(topicFragment);
 					long lastFragmentId = topicFragment.getId();
 
+					//王国修改简介，肯定是国王操作，这里需要更新更新时间
 					Calendar calendar = Calendar.getInstance();
 					topic.setUpdateTime(calendar.getTime());
 					topic.setLongTime(calendar.getTimeInMillis());

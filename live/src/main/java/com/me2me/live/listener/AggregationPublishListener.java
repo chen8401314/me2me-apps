@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.eventbus.Subscribe;
 import com.me2me.cache.service.CacheService;
@@ -102,10 +103,13 @@ public class AggregationPublishListener {
 						newtf.setId(null);
 						liveMybatisDao.createTopicFragment(newtf);
 						
-						Calendar calendar = Calendar.getInstance();
-						subTopic.setUpdateTime(calendar.getTime());
-						subTopic.setLongTime(calendar.getTimeInMillis());
-			            liveMybatisDao.updateTopic(subTopic);
+						if(this.isInCore(event.getUid(), subTopic.getCoreCircle())){
+							//核心圈的，相当于核心圈发言，需要更新更新时间
+							Calendar calendar = Calendar.getInstance();
+							subTopic.setUpdateTime(calendar.getTime());
+							subTopic.setLongTime(calendar.getTimeInMillis());
+				            liveMybatisDao.updateTopic(subTopic);
+						}
 						
 						//更新缓存
 						long lastFragmentId = newtf.getId();
@@ -120,6 +124,20 @@ public class AggregationPublishListener {
 		}
 		
 		log.info("aggregation publish end...");
+	}
+	
+	private boolean isInCore(long uid, String coreCircle){
+		boolean result = false;
+		if(null != coreCircle && !"".equals(coreCircle)){
+			JSONArray array = JSON.parseArray(coreCircle);
+	        for (int i = 0; i < array.size(); i++) {
+	            if (array.getLong(i).longValue() == uid) {
+	            	result = true;
+	                break;
+	            }
+	        }
+		}
+		return result;
 	}
 	
 	private int genContentType(int oldType, int oldContentType){
