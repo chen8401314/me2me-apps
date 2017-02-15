@@ -253,11 +253,26 @@ public class LiveServiceImpl implements LiveService {
         	int acCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId(topicId);
         	liveCoverDto.setAcCount(acCount);
         	//子王国top5列表
-        	List<Map<String, Object>> topList = liveLocalJdbcDao.getTopSubTopic(topicId, 5);
-        	if(null != topList && topList.size() > 0){
+        	List<Map<String, Object>> acTopList = new ArrayList<Map<String, Object>>();
+        	int needNum = 5;
+        	//先查置顶的，按置顶时间倒序
+        	List<Map<String, Object>> subList = liveLocalJdbcDao.getTopSubTopic(topicId, needNum);
+        	if(null != subList && subList.size() > 0){
+        		acTopList.addAll(subList);
+        		needNum = needNum - subList.size();
+        	}
+        	//如果不满{needNum}，则再查不置顶的，按更新时间倒序
+        	if(needNum > 0){
+        		subList = liveLocalJdbcDao.getNoTopSubTopic(topicId, needNum);
+        		if(null != subList && subList.size() > 0){
+            		acTopList.addAll(subList);
+            	}
+        	}
+        	
+        	if(null != acTopList && acTopList.size() > 0){
         		List<Long> uidList = new ArrayList<Long>();
         		Long id = null;
-        		for(Map<String, Object> t : topList){
+        		for(Map<String, Object> t : acTopList){
         			id = (Long)t.get("uid");
         			if(!uidList.contains(id)){
         				uidList.add(id);
@@ -269,7 +284,7 @@ public class LiveServiceImpl implements LiveService {
                 }
         		
         		LiveCoverDto.TopicElement e = null;
-        		for(Map<String, Object> t : topList){
+        		for(Map<String, Object> t : acTopList){
         			e = new LiveCoverDto.TopicElement();
         			e.setTopicId((Long)t.get("id"));
         			e.setTitle((String)t.get("title"));
