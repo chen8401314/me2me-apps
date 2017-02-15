@@ -389,7 +389,7 @@ public enum  ResponseStatus {
 
     CONTENT_DELETE_NO_AUTH("只有国王能删除自己的王国","content delete no auth",50036),
 
-    LIVE_HAS_DELETED("该王国已删除","live has deleted",50037),
+    LIVE_HAS_DELETED("来晚一步！这个王国已经被删除了……","live has deleted",50037),
 
     EDIT_TOPIC_FRAGMENT_FAILURE("编辑王国发言内容失败","edit topic fragment failure",50038),
 
@@ -435,7 +435,7 @@ public enum  ResponseStatus {
 
     TOP_COUNT_OVER_LIMIT("置顶次数超过上限","top count over limit", 50060),
     
-    AGGREGATION_PUBLISH_OVER_LIMIT("每天只能下发#{count}#次，已经超过上限，不能再下发", "aggregation puhlish over limit", 50061),
+    AGGREGATION_PUBLISH_OVER_LIMIT("每天只能下发#{count}#次，今天不能再下发了哦。", "aggregation puhlish over limit", 50061),
     
     
     

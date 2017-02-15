@@ -2556,7 +2556,7 @@ public class LiveServiceImpl implements LiveService {
                     if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {
                     	//是否重复收录
                         if(topicAggregation != null){
-                            return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
+                            return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, "你已经收录过该王国，不用重复收录");
                         }
                         //如果聚合王国收录自己的子王国不需要验证
                         if(topicOwner.getUid().longValue() != topic.getUid().longValue() ){
