@@ -4,14 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
-import com.google.gson.JsonObject;
 import com.me2me.activity.dto.TopicCountDTO;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.utils.DateUtil;
-import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -96,7 +94,8 @@ public class LiveServiceImpl implements LiveService {
     //置顶次数
     private static final String TOP_COUNT = "topCount";
 
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public Response createLive(CreateLiveDto createLiveDto) {
         log.info("createLive start ...");
         if(StringUtils.isEmpty(createLiveDto.getLiveImage()) || StringUtils.isEmpty(createLiveDto.getTitle())){
@@ -144,7 +143,8 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status, ResponseStatus.USER_CREATE_LIVE_SUCCESS.message, speakDto);
     }
 
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public Response getLiveTimeline(GetLiveTimeLineDto getLiveTimeLineDto) {
         log.info("getLiveTimeline start ...");
         LiveTimeLineDto liveTimeLineDto = new LiveTimeLineDto();
@@ -157,7 +157,8 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.status, ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.message, liveTimeLineDto);
     }
 
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public Response liveTimeline(GetLiveTimeLineDto getLiveTimeLineDto) {
         LiveTimeLineDto liveTimeLineDto = new LiveTimeLineDto();
         //判断进入直播是否是第一次
@@ -179,7 +180,8 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.status, ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.message, liveTimeLineDto);
     }
 
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public Response liveCover(long topicId, long uid) {
         log.info("liveCover start ...");
         LiveCoverDto liveCoverDto = new LiveCoverDto();
@@ -284,7 +286,8 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(ResponseStatus.GET_LIVE_COVER_SUCCESS.status, ResponseStatus.GET_LIVE_COVER_SUCCESS.message, liveCoverDto);
     }
 
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public Response barrage(LiveBarrageDto barrageDto) {
         log.info("barrage start ...");
         ShowBarrageDto showBarrageDto = new ShowBarrageDto();
@@ -314,7 +317,8 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(ResponseStatus.GET_LIVE_BARRAGE_SUCCESS.status, ResponseStatus.GET_LIVE_BARRAGE_SUCCESS.message, showBarrageDto);
     }
 
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public Response getLiveByCid(long cid, long uid) {
         ShowLiveDto showLiveDto = new ShowLiveDto();
         UserProfile userProfile = userService.getUserProfileByUid(uid);
@@ -460,7 +464,8 @@ public class LiveServiceImpl implements LiveService {
         return internalStatus;
     }
 
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public Response speak(SpeakDto speakDto) {
         log.info("speak start ...");
         //如果是主播发言更新cache
@@ -655,7 +660,8 @@ public class LiveServiceImpl implements LiveService {
      * @param uid
      * @return
      */
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public Response MyLives(long uid, long sinceId) {
         log.info("getMyLives start ...");
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
@@ -673,7 +679,8 @@ public class LiveServiceImpl implements LiveService {
      * @param uid
      * @return
      */
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public Response Lives(long uid, long sinceId) {
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
         List<Topic> topicList = liveMybatisDao.getLives(sinceId);
@@ -687,7 +694,8 @@ public class LiveServiceImpl implements LiveService {
      * @param uid
      * @return
      */
-    @Override
+    @SuppressWarnings("rawtypes")
+	@Override
     public Response LivesByUpdateTime(long uid, long updateTime) {
         log.info("getLivesByUpdateTime start ...");
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
@@ -2809,6 +2817,7 @@ public class LiveServiceImpl implements LiveService {
      * 再母王国和子王国中插入各自王国的内链
      */
     private void aggregateSuccessAfter(Topic ceTopic, Topic acTopic){
+    	/** 突然说不需要内链了。。暂时先注释掉，等说要的时候再放开
     	Content ceContent = contentService.getContentByTopicId(ceTopic.getId());
     	Content acContent = contentService.getContentByTopicId(acTopic.getId());
     	UserProfile ceUser = userService.getUserProfileByUid(ceTopic.getUid());
@@ -2887,6 +2896,7 @@ public class LiveServiceImpl implements LiveService {
         int acTotal = liveMybatisDao.countFragmentByTopicId(acTopic.getId());
         String acValue = acLastFragmentId + "," + acTotal;
         cacheService.hSet(LiveServiceImpl.TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + acTopic.getId(), acValue);
+        */
     }
     
     @Override
