@@ -17,11 +17,8 @@ import com.me2me.content.model.Content;
 import com.me2me.content.model.ContentTags;
 import com.me2me.content.model.ContentTagsDetails;
 import com.me2me.content.service.ContentService;
-import com.me2me.monitor.event.MonitorEvent;
 import com.me2me.monitor.service.MonitorService;
 import com.me2me.sms.service.JPushService;
-import com.me2me.user.model.JpushToken;
-import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -71,8 +68,9 @@ public class AbstractWriteTag {
                 jsonObject.addProperty("type",Specification.PushObjectType.UGC.index);
                 jsonObject.addProperty("cid",content.getId());
                 String alias = String.valueOf(content.getUid());
-                jPushService.payloadByIdExtra(alias, "你发布的内容收到了新感受", JPushUtils.packageExtra(jsonObject));
                 contentService.remind(content, writeTagDto.getUid(), Specification.UserNoticeType.TAG.index, writeTagDto.getTag());
+                
+                userService.pushWithExtra(alias, "你发布的内容收到了新感受", JPushUtils.packageExtra(jsonObject));
                 log.info("ugc tag end");
             } else {
                 log.info("live tag start");
@@ -85,10 +83,10 @@ public class AbstractWriteTag {
                 jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//此处是给王国创建者发的推送，所以直接设置核心圈
                 jsonObject.addProperty("fromInternalStatus", this.getInternalStatus(content.getForwardCid(), writeTagDto.getUid()));
                 String alias = String.valueOf(content.getUid());
-                if(this.checkTopicPush(content.getForwardCid(), content.getUid())){
-                	jPushService.payloadByIdExtra(alias, "你发布的内容收到了新感受", JPushUtils.packageExtra(jsonObject));
-                }
                 contentService.remind(content, writeTagDto.getUid(), Specification.UserNoticeType.LIVE_TAG.index, writeTagDto.getTag());
+                if(this.checkTopicPush(content.getForwardCid(), content.getUid())){
+                	userService.pushWithExtra(alias, "你发布的内容收到了新感受", JPushUtils.packageExtra(jsonObject));
+                }
                 log.info("live tag end");
             }
         }

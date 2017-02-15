@@ -2546,7 +2546,7 @@ public class UserServiceImpl implements UserService {
 		event.setTargetUid(targetUid);
 		this.applicationEventBus.post(event);
 	}
-	
+
 	@Override
 	public void pushWithExtra(String uid,String message,Map<String,String> extraMaps){
 		PushExtraEvent event = new PushExtraEvent();

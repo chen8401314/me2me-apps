@@ -33,7 +33,11 @@ public class PushListener {
 	@Subscribe
 	public void pushWithExtra(PushExtraEvent event){
 		log.info("push with extra...begin...");
-		jPushService.payloadByIdExtra(event.getUid(), event.getMessage(), event.getExtraMaps());
+		if(null != event.getExtraMaps() && event.getExtraMaps().size() > 0){
+			jPushService.payloadByIdExtra(event.getUid(), event.getMessage(), event.getExtraMaps());
+		}else{
+			jPushService.payloadByIdForMessage(event.getUid(), event.getMessage());
+		}
 		log.info("push with extra...end.");
 	}
 }

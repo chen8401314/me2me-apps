@@ -9,7 +9,10 @@ import com.me2me.content.model.Content;
 import com.me2me.content.model.ContentLikesDetails;
 import com.me2me.content.service.ContentService;
 import com.me2me.sms.service.JPushService;
+import com.me2me.user.service.UserService;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -26,6 +29,9 @@ public class AbstractLikes {
 
     @Autowired
     private JPushService jPushService;
+    
+    @Autowired
+    private UserService userService;
 
     public Response likes(LikeDto likeDto) {
         log.info(" AbstractLikes likes start ...");
@@ -58,7 +64,7 @@ public class AbstractLikes {
                     jsonObject.addProperty("type", Specification.PushObjectType.UGC.index);
                     jsonObject.addProperty("cid", likeDto.getCid());
                     String alias = String.valueOf(content.getUid());
-                    jPushService.payloadByIdForMessage(alias, jsonObject.toString());
+                    userService.pushWithExtra(alias, jsonObject.toString(), null);
                 }
                 return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
             }else{

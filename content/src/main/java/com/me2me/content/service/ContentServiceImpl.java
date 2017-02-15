@@ -642,14 +642,14 @@ public class ContentServiceImpl implements ContentService {
                             JsonObject jsonObject = new JsonObject();
                             jsonObject.addProperty("count","1");
                             String alias = String.valueOf(content.getUid());
-                            jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+                            userService.pushWithExtra(alias,jsonObject.toString(), null);
                         }
                         else
                         {
                             JsonObject jsonObject = new JsonObject();
                             jsonObject.addProperty("count","1");
                             String alias = String.valueOf(content.getUid());
-                            jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+                            userService.pushWithExtra(alias,jsonObject.toString(), null);
                         }
                     }
                 }else {
@@ -660,14 +660,14 @@ public class ContentServiceImpl implements ContentService {
                         JsonObject jsonObject = new JsonObject();
                         jsonObject.addProperty("count","1");
                         String alias = String.valueOf(content.getUid());
-                        jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+                        userService.pushWithExtra(alias,jsonObject.toString(), null);
                     }
                     else
                     {
                         JsonObject jsonObject = new JsonObject();
                         jsonObject.addProperty("count","1");
                         String alias = String.valueOf(content.getUid());
-                        jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+                        userService.pushWithExtra(alias,jsonObject.toString(), null);
                     }
                 }
             }
@@ -685,14 +685,14 @@ public class ContentServiceImpl implements ContentService {
                             JsonObject jsonObject = new JsonObject();
                             jsonObject.addProperty("count","1");
                             String alias = String.valueOf(content.getUid());
-                            jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+                            userService.pushWithExtra(alias,jsonObject.toString(), null);
                         }
                         else
                         {
                             JsonObject jsonObject = new JsonObject();
                             jsonObject.addProperty("count","1");
                             String alias = String.valueOf(content.getUid());
-                            jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+                            userService.pushWithExtra(alias,jsonObject.toString(), null);
                         }
                     }
                 }else {
@@ -703,14 +703,14 @@ public class ContentServiceImpl implements ContentService {
                         JsonObject jsonObject = new JsonObject();
                         jsonObject.addProperty("count","1");
                         String alias = String.valueOf(content.getUid());
-                        jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+                        userService.pushWithExtra(alias,jsonObject.toString(), null);
                     }
                     else
                     {
                         JsonObject jsonObject = new JsonObject();
                         jsonObject.addProperty("count","1");
                         String alias = String.valueOf(content.getUid());
-                        jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+                        userService.pushWithExtra(alias,jsonObject.toString(), null);
                     }
                 }
             }
@@ -789,7 +789,7 @@ private void localJpush(long toUid){
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("count","1");
         String alias = String.valueOf(toUid);
-        jPushService.payloadByIdForMessage(alias,jsonObject.toString());
+        userService.pushWithExtra(alias,jsonObject.toString(), null);
     }
 }
     @Override
@@ -2713,7 +2713,7 @@ private void localJpush(long toUid){
                     jsonObject.addProperty("type",Specification.PushObjectType.UGC.index);
                     jsonObject.addProperty("cid",id);
                     String alias = String.valueOf(content.getUid());
-                    jPushService.payloadByIdExtra(alias,"你发布的内容上热点啦！", JPushUtils.packageExtra(jsonObject));
+                    userService.pushWithExtra(alias, "你发布的内容上热点啦！", JPushUtils.packageExtra(jsonObject));
                 }
             }else if(content.getType() == Specification.ArticleType.LIVE.index){
             	Map<String,Object> topic = liveForContentJdbcDao.getTopicListByCid(content.getForwardCid());
@@ -2731,7 +2731,7 @@ private void localJpush(long toUid){
                         jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//此处是核心圈的推送，所以直接设置核心圈
                         //这里是管理员将王国上热点。。这里没法设置操作人的身份了
                         String alias =coreCircles.getString(i);
-                        jPushService.payloadByIdExtra(alias,"『"+content.getTitle()+ "』上热点啦！",JPushUtils.packageExtra(jsonObject));
+                        userService.pushWithExtra(alias,"『"+content.getTitle()+ "』上热点啦！",JPushUtils.packageExtra(jsonObject));
                     }
                 }
             }
