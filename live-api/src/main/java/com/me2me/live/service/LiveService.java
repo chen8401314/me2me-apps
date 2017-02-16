@@ -179,4 +179,6 @@ public interface LiveService {
     Response aggregationApplyOpt(AggregationOptDto dto);
     
     TopicUserConfig getTopicUserConfigByTopicIdAndUid(long topicId, long uid);
+    
+    Response subscribedTopicNew(long topicId, long uid, int action);
 }

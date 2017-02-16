@@ -81,6 +81,21 @@ public class LiveLocalJdbcDao {
 		jdbcTemplate.execute(sb.toString());
 	}
 	
+	public void contentAddFavoriteCount(long topicId, int type){
+		StringBuilder sb = new StringBuilder();
+		sb.append("update content set favorite_count=favorite_count");
+		if(type>0){
+			sb.append("+1");
+		}else{
+			sb.append("-1");
+		}
+		sb.append(" where forward_cid=").append(topicId);
+		if(type<=0){
+			sb.append(" and favorite_count>0");
+		}
+		jdbcTemplate.execute(sb.toString());
+	}
+	
 	public void updateContentAddFavoriteCountByForwardCid(int count, long forwardCid){
 		if(count < 1){
 			return;

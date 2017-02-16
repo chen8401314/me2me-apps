@@ -1,7 +1,6 @@
 package com.me2me.web;
 
 import com.me2me.common.web.Response;
-import com.me2me.common.web.Specification;
 import com.me2me.kafka.service.KafkaService;
 import com.me2me.sns.dto.GetSnsCircleDto;
 import com.me2me.sns.service.SnsService;
@@ -99,7 +98,8 @@ public class Sns extends BaseController {
     @RequestMapping(value = "/subscribed",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response subscribed(SubscribedRequest request) {
-        return snsService.subscribed(request.getUid(),request.getTopicId(),request.getTopId(),request.getBottomId(),request.getAction());
+//        return snsService.subscribed(request.getUid(),request.getTopicId(),request.getTopId(),request.getBottomId(),request.getAction());
+    	return snsService.subscribedNew(request.getUid(), request.getTopicId(), request.getAction());
     }
 
     /**

@@ -268,9 +268,17 @@ public class SnsServiceImpl implements SnsService {
 //    }
 
     @Override
+    public Response subscribedNew(long uid,long topicId,int action){
+    	return liveService.subscribedTopicNew(topicId, uid, action);
+    }
+    
+    @Override
     public Response subscribed(long uid, long topicId, long topId, long bottomId, int action) {
         Topic topic = liveService.getTopicById(topicId);
-        if (action == 0) {
+        if(null == topic){
+        	return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
+        }
+        if (action == 0) {//关注
             List<Topic> list = liveService.getTopicList(topic.getUid());
             
             List<Long> topicIds = new ArrayList<Long>();
@@ -282,10 +290,7 @@ public class SnsServiceImpl implements SnsService {
             if(null != topicIds && topicIds.size() > 0){
             	liveService.setLiveFromSnsFollow(uid, topicIds, 0, 0, action);
             }
-            
-//            for (Topic live : list) {
-//                liveService.setLive2(uid, live.getId(), 0, 0, action);
-//            }
+
             FollowDto dto = new FollowDto();
             dto.setSourceUid(uid);
             dto.setTargetUid(topic.getUid());

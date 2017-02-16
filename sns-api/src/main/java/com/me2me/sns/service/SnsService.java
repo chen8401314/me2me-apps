@@ -44,6 +44,15 @@ public interface SnsService {
      * @return
      */
     Response subscribed(long uid,long topicId,long topId,long bottomId,int action);
+    
+    /**
+     * 去除强奸逻辑的新订阅
+     * @param uid
+     * @param topicId
+     * @param action
+     * @return
+     */
+    Response subscribedNew(long uid,long topicId,int action);
 
     /**
      *关注

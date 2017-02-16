@@ -409,7 +409,8 @@ public enum  ResponseStatus {
 
     USER_ACCOUNT_DISABLED("因违反相关协议，此账号已被禁用", "user account disabled", 50047),
 
-    KINGDOM_IS_NOT_EXIST("王国不存在", "the kingdom is not exist", 50048),
+    //重复了,同50037
+//    KINGDOM_IS_NOT_EXIST("来晚一步！这个王国已经被删除了……", "the kingdom is not exist", 50048),
 
     KINGDOM_CREATE_FAILURE("王国创建失败", "Kingdom creation failed", 50049),
 

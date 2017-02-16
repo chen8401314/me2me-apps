@@ -1052,6 +1052,56 @@ public class LiveServiceImpl implements LiveService {
     	return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
     }
     
+    @Override
+    public Response subscribedTopicNew(long topicId, long uid, int action){
+    	log.info("subscribedTopicNew start ...");
+    	Topic topic = liveMybatisDao.getTopicById(topicId);
+        if(null == topic){
+        	return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
+        }
+    	LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid, topicId);
+    	
+    	Response resp = null;
+    	if (action == 0) {//订阅
+    		if(null == liveFavorite){
+    			liveFavorite = new LiveFavorite();
+                liveFavorite.setTopicId(topicId);
+                liveFavorite.setUid(uid);
+                liveMybatisDao.createLiveFavorite(liveFavorite);
+                //content表favorite_count+1
+                liveLocalJdbcDao.contentAddFavoriteCount(topicId, 1);
+    		}
+    		return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
+    	} else if (action == 1) {//取消订阅
+    		if(null != liveFavorite){
+    			liveMybatisDao.deleteLiveFavorite(liveFavorite);
+    			//content表favorite_count-1
+    			liveLocalJdbcDao.contentAddFavoriteCount(topicId, 0);
+    		}
+    		//如果是核心圈的，取消订阅的同时，需要退出核心圈
+    		if(null != topic.getCoreCircle() && !"".equals(topic.getCoreCircle())){
+    			JSONArray array = JSON.parseArray(topic.getCoreCircle());
+    			boolean needUpdate = false;
+    			for (int i = 0; i < array.size(); i++) {
+                    if (array.getLong(i).longValue() == uid) {
+                        array.remove(i);
+                        needUpdate = true;
+                    }
+                }
+    			if(needUpdate){
+    				topic.setCoreCircle(array.toJSONString());
+    				liveMybatisDao.updateTopic(topic);
+    			}
+    		}
+    		
+    		return Response.success(ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.message);
+    	}else{
+    		resp = Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
+    	}
+    	log.info("subscribedTopicNew end ...");
+    	return resp;
+    }
+    
     private Response cancelLiveFollow(long uid, List<Long> topicIds, Map<String, LiveFavorite> liveFavoriteMap, Map<String, Content> contentMap){
     	Map<String, LiveFavoriteDelete> favoriteDeleteMap = new HashMap<String, LiveFavoriteDelete>();
     	List<LiveFavoriteDelete> favoriteDeleteList = liveMybatisDao.getFavoriteDeletesByTopicIds(uid, topicIds);
@@ -1640,7 +1690,7 @@ public class LiveServiceImpl implements LiveService {
         log.info("get total records...");
         Topic topic = liveMybatisDao.getTopicById(getLiveDetailDto.getTopicId());
         if(null == topic){
-        	return Response.failure(ResponseStatus.KINGDOM_IS_NOT_EXIST.status, ResponseStatus.KINGDOM_IS_NOT_EXIST.message);
+        	return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
         }
         
         //消除红点
@@ -2150,7 +2200,7 @@ public class LiveServiceImpl implements LiveService {
 				// 更新成功需要在当前王国中插入一条国王发言
 				if (!StringUtils.isEmpty(dto.getParams())) {
 					TopicFragment topicFragment = new TopicFragment();
-					topicFragment.setFragment(dto.getParams());
+					topicFragment.setFragment("王国简介修改:" + dto.getParams());
 					topicFragment.setUid(dto.getUid());
 					topicFragment.setType(0);// 第一次发言肯定是主播发言
 					topicFragment.setContentType(0);// 文本
