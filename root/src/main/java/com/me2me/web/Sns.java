@@ -55,7 +55,8 @@ public class Sns extends BaseController {
         getSnsCircleDto.setUid(request.getUid());
         getSnsCircleDto.setSinceId((request.getSinceId()-1)*10);
         getSnsCircleDto.setTopicId(request.getTopicId());
-        return snsService.showMembers(getSnsCircleDto);
+//        return snsService.showMembers(getSnsCircleDto);
+        return snsService.showMembersNew(getSnsCircleDto);
     }
 
     /**
@@ -70,7 +71,7 @@ public class Sns extends BaseController {
     }
 
     /**
-     * 获取个圈子成员
+     * 获取各圈子成员
      * @param request
      * @return
      */
@@ -86,7 +87,8 @@ public class Sns extends BaseController {
 //        //埋点
 //        kafkaService.saveClientLog(getSnsCircleDto,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_MEMBERS);
 
-        return snsService.circleByType(getSnsCircleDto);
+//        return snsService.circleByType(getSnsCircleDto);
+        return snsService.circleByTypeNew(getSnsCircleDto);
     }
 
 
@@ -122,7 +124,8 @@ public class Sns extends BaseController {
 //            kafkaService.saveClientLog(followDto,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_OUT);
 //        }
 
-        return snsService.follow(request.getAction(),request.getTargetUid(),request.getUid());
+//        return snsService.follow(request.getAction(),request.getTargetUid(),request.getUid());
+        return snsService.followNew(request.getAction(),request.getTargetUid(),request.getUid());
     }
 
 }

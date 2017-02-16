@@ -19,6 +19,7 @@ import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.event.RemindAndJpushAtMessageEvent;
 import com.me2me.live.model.Topic;
+import com.me2me.live.model.TopicUserConfig;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.JpushToken;
 import com.me2me.user.model.UserNotice;
@@ -74,20 +75,31 @@ public class RemindAndJpushAtMessageListener {
         for(int i=0;i<atArray.size();i++){
             long atUid = atArray.getLongValue(i);
             this.liveRemind(atUid, speakDto.getUid(), Specification.LiveSpeakType.FANS.index, speakDto.getTopicId(), speakDto.getFragment());
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("messageType", Specification.PushMessageType.AT.index);
-            jsonObject.addProperty("topicId",speakDto.getTopicId());
-            jsonObject.addProperty("contentType", topic.getType());
-            jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
-            jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, atUid));
-            jsonObject.addProperty("fromInternalStatus", fromStatus);
-            jsonObject.addProperty("AtUid",speakDto.getUid());
-            jsonObject.addProperty("NickName",userProfile.getNickName());
-            String alias = String.valueOf(atUid);
-            jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
+            
+            if(this.checkTopicPush(speakDto.getTopicId(), atUid)){
+	            JsonObject jsonObject = new JsonObject();
+	            jsonObject.addProperty("messageType", Specification.PushMessageType.AT.index);
+	            jsonObject.addProperty("topicId",speakDto.getTopicId());
+	            jsonObject.addProperty("contentType", topic.getType());
+	            jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
+	            jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, atUid));
+	            jsonObject.addProperty("fromInternalStatus", fromStatus);
+	            jsonObject.addProperty("AtUid",speakDto.getUid());
+	            jsonObject.addProperty("NickName",userProfile.getNickName());
+	            String alias = String.valueOf(atUid);
+	            jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
+            }
         }
         log.info("remindAndPush end");
 	}
+	
+	private boolean checkTopicPush(long topicId, long uid){
+    	TopicUserConfig tuc = liveMybatisDao.getTopicUserConfig(uid, topicId);
+    	if(null != tuc && tuc.getPushType().intValue() == 1){
+    		return false;
+    	}
+    	return true;
+    }
 	
 	private int getInternalStatus(Topic topic, long uid) {
         String coreCircle = topic.getCoreCircle();

@@ -88,7 +88,8 @@ public class CacheLiveListener {
         }
         log.info("get user fans ... ");
         
-        liveService.setLive3WithBatch(sourceUids, cacheLiveEvent.getTopicId());
+        //强奸逻辑去除
+//        liveService.setLive3WithBatch(sourceUids, cacheLiveEvent.getTopicId());
         
         UserProfile userProfile = userService.getUserProfileByUid(cacheLiveEvent.getUid());
         Topic topic = liveService.getTopicById(cacheLiveEvent.getTopicId());

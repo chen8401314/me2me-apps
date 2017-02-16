@@ -270,6 +270,7 @@ public class ContentServiceImpl implements ContentService {
 			log.info(" get isFollow success");
 			squareDataElement.setIsFollowed(follow);
 			squareDataElement.setIsFollowMe(followMe);
+			
 			// 如果是直播需要一个直播状态
 			if (content.getType() == Specification.ArticleType.LIVE.index) {
 				// 查询直播状态
@@ -299,7 +300,7 @@ public class ContentServiceImpl implements ContentService {
 			}
 			squareDataElement.setLikeCount(content.getLikeCount());
 			squareDataElement.setPersonCount(content.getPersonCount());
-			squareDataElement.setFavoriteCount(content.getFavoriteCount());
+			squareDataElement.setFavoriteCount(content.getFavoriteCount()+1);
 			squareDataElement.setRights(content.getRights());
 			squareDataElement.setIsLike(isLike(content.getId(), uid));
 			int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
@@ -1024,7 +1025,7 @@ private void localJpush(long toUid){
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setReviewCount(content.getReviewCount());
             contentElement.setPersonCount(content.getPersonCount());
-            contentElement.setFavoriteCount(content.getFavoriteCount());
+            contentElement.setFavoriteCount(content.getFavoriteCount()+1);
             contentElement.setContentType(content.getContentType());
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
@@ -1084,7 +1085,7 @@ private void localJpush(long toUid){
             contentElement.setIsLike(isLike(content.getId(),currentUid));
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setPersonCount(content.getPersonCount());
-            contentElement.setFavoriteCount(content.getFavoriteCount());
+            contentElement.setFavoriteCount(content.getFavoriteCount()+1);
             ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
             if(contentImage != null) {
                 contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
@@ -1189,7 +1190,7 @@ private void localJpush(long toUid){
 //        contentDetailDto.setReviewCount(content.getReviewCount());
         contentDetailDto.setReviewCount(contentMybatisDao.countContentReviewByCid(content.getId()));
         
-        contentDetailDto.setFavoriteCount(content.getFavoriteCount());
+        contentDetailDto.setFavoriteCount(content.getFavoriteCount()+1);
         contentDetailDto.setPersonCount(content.getPersonCount());
         contentDetailDto.setCreateTime(content.getCreateTime());
         contentDetailDto.setId(content.getId());
@@ -1428,7 +1429,7 @@ private void localJpush(long toUid){
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setReviewCount(content.getReviewCount());
             contentElement.setPersonCount(content.getPersonCount());
-            contentElement.setFavoriteCount(content.getFavoriteCount());
+            contentElement.setFavoriteCount(content.getFavoriteCount()+1);
             contentElement.setContentType(content.getContentType());
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
@@ -1576,7 +1577,7 @@ private void localJpush(long toUid){
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setReviewCount(content.getReviewCount());
             contentElement.setPersonCount(content.getPersonCount());
-            contentElement.setFavoriteCount(content.getFavoriteCount());
+            contentElement.setFavoriteCount(content.getFavoriteCount()+1);
             contentElement.setContentType(content.getContentType());
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
@@ -1643,7 +1644,7 @@ private void localJpush(long toUid){
             contentElement.setIsLike(isLike(content.getId(),sourceUid));
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setPersonCount(content.getPersonCount());
-            contentElement.setFavoriteCount(content.getFavoriteCount());
+            contentElement.setFavoriteCount(content.getFavoriteCount()+1);
 //            ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
 //            if(contentImage != null) {
 //                contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
@@ -2007,7 +2008,7 @@ private void localJpush(long toUid){
                 hottestContentElement.setIsFollowed(follow);
 
                 hottestContentElement.setPersonCount(content.getPersonCount());
-                hottestContentElement.setFavoriteCount(content.getFavoriteCount());
+                hottestContentElement.setFavoriteCount(content.getFavoriteCount()+1);
                 hottestContentElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
                 hottestContentElement.setTopicCount(contentMybatisDao.getTopicCount(content.getForwardCid()) - reviewCount);
                 //查询王国类型(聚合或普通)
@@ -2145,7 +2146,7 @@ private void localJpush(long toUid){
                 hottestContentElement.setIsFollowMe(followMe);
 
                 hottestContentElement.setPersonCount(content.getPersonCount());
-                hottestContentElement.setFavoriteCount(content.getFavoriteCount());
+                hottestContentElement.setFavoriteCount(content.getFavoriteCount()+1);
                 hottestContentElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
                 hottestContentElement.setTopicCount(contentMybatisDao.getTopicCount(content.getForwardCid()) - reviewCount);
                 //查询王国类型(聚合或普通)
@@ -2287,7 +2288,7 @@ private void localJpush(long toUid){
             contentElement.setIsFollowMe(followMe);
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setPersonCount(content.getPersonCount());
-            contentElement.setFavoriteCount(content.getFavoriteCount());
+            contentElement.setFavoriteCount(content.getFavoriteCount()+1);
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
 //            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
@@ -2384,7 +2385,7 @@ private void localJpush(long toUid){
             contentElement.setIsFollowMe(followMe);
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setPersonCount(content.getPersonCount());
-            contentElement.setFavoriteCount(content.getFavoriteCount());
+            contentElement.setFavoriteCount(content.getFavoriteCount()+1);
             contentElement.setForwardTitle(content.getForwardTitle());
             contentElement.setForwardUrl(content.getForwardUrl());
             showAttentionDto.getAttentionData().add(contentElement);
@@ -2493,7 +2494,7 @@ private void localJpush(long toUid){
             contentElement.setIsFollowMe(followMe);
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setPersonCount(content.getPersonCount());
-            contentElement.setFavoriteCount(content.getFavoriteCount());
+            contentElement.setFavoriteCount(content.getFavoriteCount()+1);
             contentElement.setForwardTitle(content.getForwardTitle());
             contentElement.setForwardUrl(content.getForwardUrl());
             if(content.getType() == Specification.ArticleType.LIVE.index){//王国的话，获取身份信息

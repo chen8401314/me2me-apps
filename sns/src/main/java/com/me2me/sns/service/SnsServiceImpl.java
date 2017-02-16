@@ -12,6 +12,7 @@ import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.dto.SpeakDto;
+import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicUserConfig;
@@ -21,6 +22,7 @@ import com.me2me.sns.dao.LiveJdbcDao;
 import com.me2me.sns.dao.SnsMybatisDao;
 import com.me2me.sns.dto.*;
 import com.me2me.user.dto.FollowDto;
+import com.me2me.user.model.UserFollow;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
@@ -33,7 +35,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -96,6 +100,34 @@ public class SnsServiceImpl implements SnsService {
         showMemberConsoleDto.setOutCircleMembers(outCount);
         return Response.success(ResponseStatus.SHOW_MEMBER_CONSOLE_SUCCESS.status, ResponseStatus.SHOW_MEMBER_CONSOLE_SUCCESS.message, showMemberConsoleDto);
     }
+    
+    @Override
+    public Response showMembersNew(GetSnsCircleDto getSnsCircleDto){
+    	log.info("showMembersNew start ...");
+    	ShowMembersDto showMembersDto = new ShowMembersDto();
+    	int pageSize = 10;
+    	if(getSnsCircleDto.getType() == 0){
+    		//查询那些没有关注本王国的自己的粉丝
+    		List<Map<String, Object>> list = liveJdbcDao.getMyFansNotInTopicPage(getSnsCircleDto.getUid(), getSnsCircleDto.getTopicId(), (int)getSnsCircleDto.getSinceId(), pageSize);
+    		if(null != list && list.size() > 0){
+    			ShowMembersDto.UserElement userElement = null;
+    			for(Map<String, Object> up : list){
+    				userElement = showMembersDto.createUserElement();
+    	            userElement.setUid((Long)up.get("uid"));
+    	            userElement.setV_lv((Integer)up.get("v_lv"));
+    	            userElement.setAvatar(Constant.QINIU_DOMAIN + "/" + (String)up.get("avatar"));
+    	            userElement.setIntroduced((String)up.get("introduced"));
+    	            userElement.setNickName((String)up.get("nick_name"));
+    	            userElement.setInternalStatus(0);//这里查出来的都是啥都不是的，那么默认0
+    	            showMembersDto.getMembers().add(userElement);
+    			}
+    		}
+    	}//圈内的暂时不予考虑，直接返回空列表
+    	
+    	
+    	log.info("showMembersNew end ...");
+    	return Response.success(ResponseStatus.SHOW_MEMBERS_SUCCESS.status, ResponseStatus.SHOW_MEMBERS_SUCCESS.message, showMembersDto);
+    }
 
     @Override
     public Response showMembers(GetSnsCircleDto dto) {
@@ -122,17 +154,106 @@ public class SnsServiceImpl implements SnsService {
             showMembersDto.getMembers().add(userElement);
         }
     }
+    
+    @Override
+    public Response circleByTypeNew(GetSnsCircleDto getSnsCircleDto){
+    	log.info("circleByTypeNew start ...");
+    	Topic topic = liveService.getTopicById(getSnsCircleDto.getTopicId());
+    	if(null == topic){
+        	return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
+        }
+    	
+    	List<Long> coreUids = new ArrayList<Long>();
+    	coreUids.add(topic.getUid());//国王要放在第一位的，所以先将国王放进来，下面再处理掉
+    	String coreCircle = topic.getCoreCircle();
+    	JSONArray coreCircles = JSON.parseArray(coreCircle);
+    	for (int i = 0; i < coreCircles.size(); i++) {
+    		if(coreCircles.getLong(i).longValue() == topic.getUid().longValue()){//把国王剔除，已经第一个加过了
+    			continue;
+    		}
+    		coreUids.add(coreCircles.getLong(i));
+        }
+    	
+    	int pageSize = 10;
+    	List<Long> resultUidList = new ArrayList<Long>();
+    	if(getSnsCircleDto.getType() == Specification.SnsCircle.CORE.index){//核心圈
+    		int c = 0;
+    		for(int i=(int)getSnsCircleDto.getSinceId();i<coreUids.size();i++){
+    			if(c >= pageSize){
+    				break;
+    			}
+    			c++;
+    			resultUidList.add(coreUids.get(i));
+    		}
+    	}else if(getSnsCircleDto.getType() == Specification.SnsCircle.OUT.index){//圈外
+    		//查询加入了该王国的人作为圈外
+    		List<LiveFavorite> liveFavoriteList = liveService.getLiveFavoriteByTopicId(getSnsCircleDto.getTopicId(), coreUids, (int)getSnsCircleDto.getSinceId(), pageSize);
+    		if(null != liveFavoriteList && liveFavoriteList.size() > 0){
+    			for(LiveFavorite lf : liveFavoriteList){
+    				resultUidList.add(lf.getUid());
+    			}
+    		}
+    	}else if(getSnsCircleDto.getType() == Specification.SnsCircle.IN.index){//圈内
+    		return Response.failure(500, "新版本已优化王国圈子关系，请下载新版米汤");
+    	}else{
+    		return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
+    	}
+    	
+    	ShowSnsCircleDto showSnsCircleDto = new ShowSnsCircleDto();
+    	if(resultUidList.size() > 0){
+    		Map<String, String> followMap = new HashMap<String, String>();
+            List<UserFollow> userFollowList = userService.getAllFollows(getSnsCircleDto.getUid(), resultUidList);
+            if(null != userFollowList && userFollowList.size() > 0){
+            	for(UserFollow uf : userFollowList){
+            		followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+            	}
+            }
+    		
+    		List<UserProfile> upList = userService.getUserProfilesByUids(resultUidList);
+    		ShowSnsCircleDto.SnsCircleElement e = null;
+    		for(UserProfile up : upList){
+    			e = showSnsCircleDto.createElement();
+    			e.setV_lv(up.getvLv());
+                e.setUid(up.getUid());
+                e.setAvatar(Constant.QINIU_DOMAIN + "/" + up.getAvatar());
+                e.setIntroduced(up.getIntroduced());
+                e.setNickName(up.getNickName());
+                e.setInternalStatus(getSnsCircleDto.getType());
+                if(null != followMap.get(getSnsCircleDto.getUid()+"_"+up.getUid())){
+                	e.setIsFollowed(1);
+                }else{
+                	e.setIsFollowed(0);
+                }
+                if(null != followMap.get(up.getUid()+"_"+getSnsCircleDto.getUid())){
+                	e.setIsFollowMe(1);
+                }else{
+                	e.setIsFollowMe(0);
+                }
+                showSnsCircleDto.getCircleElements().add(e);
+    		}
+    	}
+    	int coreCount = coreUids.size();
+    	int outCount = liveService.countLiveFavoriteByTopicId(getSnsCircleDto.getTopicId(), coreUids);
+    	showSnsCircleDto.setMembers(outCount + coreCount);
+        showSnsCircleDto.setCoreCircleMembers(coreCount);
+        showSnsCircleDto.setInCircleMembers(0);//暂时先没有圈内
+        showSnsCircleDto.setOutCircleMembers(outCount);
+    	log.info("circleByTypeNew end ...");
+    	return Response.success(showSnsCircleDto);
+    }
 
     @Override
     public Response circleByType(GetSnsCircleDto dto) {
         log.info("getCircleByType start ...");
         Topic topic = liveService.getTopicById(dto.getTopicId());
+        if(null == topic){
+        	return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
+        }
         long uid = dto.getUid();
         dto.setUid(topic.getUid());
         ShowSnsCircleDto showSnsCircleDto = new ShowSnsCircleDto();
 
         //先把自己加到核心
-//            snsMybatisDao.createSnsCircle(dto.getUid(),dto.getUid(),Specification.SnsCircle.CORE.index);
         String coreCircle = topic.getCoreCircle();
         JSONArray coreCircles = JSON.parseArray(coreCircle);
         if (dto.getType() == Specification.SnsCircle.CORE.index) {
@@ -149,43 +270,17 @@ public class SnsServiceImpl implements SnsService {
             buildSnsCircle(showSnsCircleDto, list, uid, topic.getUid());
         }
 
-
         dto.setType(Specification.SnsCircle.IN.index);
         int inCount = snsMybatisDao.getSnsCircleCount(dto);
         dto.setType(Specification.SnsCircle.OUT.index);
         int outCount = snsMybatisDao.getSnsCircleCount(dto);
         //修改核心圈从topic表的core_circle字段中获取
         int coreCount = coreCircles.size();
-//            dto.setType(Specification.SnsCircle.CORE.index);
-//            int coreCount = snsMybatisDao.getSnsCircleCount(dto);
         showSnsCircleDto.setMembers(inCount + outCount + coreCount);
         showSnsCircleDto.setCoreCircleMembers(coreCount);
         showSnsCircleDto.setInCircleMembers(inCount);
         showSnsCircleDto.setOutCircleMembers(outCount);
         log.info("getCircleByType end ...");
-       /* }
-        else{
-            GetSnsCircleDto dto2 = new GetSnsCircleDto();
-            dto2.setUid(topic.getUid());
-            dto2.setSinceId(dto.getSinceId());
-            dto2.setTopicId(dto.getTopicId());
-            dto2.setType(dto.getType());
-            //先把自己加到核心
-            snsMybatisDao.createSnsCircle(dto2.getUid(),dto2.getUid(),Specification.SnsCircle.CORE.index);
-            List<SnsCircleDto> list = snsMybatisDao.getSnsCircle(dto2);
-            buildSnsCircle(showSnsCircleDto, list,dto.getUid(),topic.getUid());
-            dto2.setType(Specification.SnsCircle.IN.index);
-            int inCount = snsMybatisDao.getSnsCircleCount(dto2);
-            dto2.setType(Specification.SnsCircle.OUT.index);
-            int outCount = snsMybatisDao.getSnsCircleCount(dto2);
-            dto2.setType(Specification.SnsCircle.CORE.index);
-            int coreCount = snsMybatisDao.getSnsCircleCount(dto2);
-            showSnsCircleDto.setMembers(inCount + outCount + coreCount);
-            showSnsCircleDto.setCoreCircleMembers(coreCount);
-            showSnsCircleDto.setInCircleMembers(inCount);
-            showSnsCircleDto.setOutCircleMembers(outCount);
-            log.info("getCircleByType end ...");
-        }*/
 
         return Response.success(showSnsCircleDto);
     }
@@ -322,6 +417,19 @@ public class SnsServiceImpl implements SnsService {
     }
 
     @Override
+    public Response followNew(int action,long targetUid,long sourceUid){
+    	log.info("====followNew start...");
+    	//只关注人，不需要和他的王国相关了
+    	FollowDto followDto = new FollowDto();
+        followDto.setSourceUid(sourceUid);
+        followDto.setTargetUid(targetUid);
+        followDto.setAction(action);
+        Response response = userService.follow(followDto);
+    	log.info("====followNew end...");
+    	return response;
+    }
+    
+    @Override
     public Response follow(int action, long targetUid, long sourceUid) {
     	log.info("====follow start...");
         FollowDto followDto = new FollowDto();
@@ -381,16 +489,15 @@ public class SnsServiceImpl implements SnsService {
     @Override
     public Response modifyCircle(long owner, long topicId, long uid, int action) {
         log.info("modify circle start ... action:"+action+";topicId:"+topicId);
-        //兼容老版本
-//        String snsOnline = cacheService.get("version:2.1.1:online");
 
         if (action == 0) {
-            snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
-            //关注此人
-            follow(0, uid, owner);
-            liveService.setLive2(uid, topicId, 0, 0, 0);
-            liveService.deleteFavoriteDelete(uid, topicId);
-            createFragment(owner, topicId, uid);
+        	return Response.failure(500, "新版本已优化王国圈子关系，请下载新版米汤");
+//            snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
+//            //关注此人
+//            follow(0, uid, owner);
+//            liveService.setLive2(uid, topicId, 0, 0, 0);
+//            liveService.deleteFavoriteDelete(uid, topicId);
+//            createFragment(owner, topicId, uid);
         } else {
             if (action == 1) {
                 Topic topic = liveService.getTopicById(topicId);
@@ -420,14 +527,15 @@ public class SnsServiceImpl implements SnsService {
                         array.add(uid);
                         // 更新直播核心圈关系
                         liveJdbcDao.updateTopic(topicId, array.toString());
-                        snsMybatisDao.deleteSnsCircle(uid, owner);
+//                        snsMybatisDao.deleteSnsCircle(uid, owner);
                     }
                 }
                //关注此人
-                follow(0, uid, owner);
-                liveService.setLive2(uid, topicId, 0, 0, 0);
-                //推送被邀请的人
-                UserProfile userProfile = userService.getUserProfileByUid(owner);
+//                follow(0, uid, owner);
+//                liveService.setLive2(uid, topicId, 0, 0, 0);
+                
+                //拉进来了，那么就强奸他，让他加入到这个王国
+                liveService.subscribedTopicNew(topicId, uid, 0);
 
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("messageType", Specification.PushMessageType.CORE_CIRCLE.index);
@@ -443,23 +551,27 @@ public class SnsServiceImpl implements SnsService {
                 if(this.checkTopicPush(topicId, uid)){
                 	userService.pushWithExtra(alias, review, JPushUtils.packageExtra(jsonObject));
                 }
-                snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.LIVE_INVITED.index);
+                snsRemind(uid, owner, message, topic.getId(), Specification.UserNoticeType.LIVE_INVITED.index);
 
                 //增加列表更新红点
                 MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topicId + "", "1");
                 cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
             } else if (action == 2) {
-                snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
-                createFragment(owner, topicId, uid);
+            	return Response.failure(500, "新版本已优化王国圈子关系，请下载新版米汤");
+//                snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
+//                createFragment(owner, topicId, uid);
             } else if (action == 3) {
-                snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
-                //取消关注此人，取消此人直播的订阅
-                follow(1, uid, owner);
+            	return Response.failure(500, "新版本已优化王国圈子关系，请下载新版米汤");
+//                snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
+//                //取消关注此人，取消此人直播的订阅
+//                follow(1, uid, owner);
             } else if (action == 4) {
-                snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
-                liveService.setLive2(uid, topicId, 0, 0, 0);
-                liveService.deleteFavoriteDelete(uid, topicId);
-                createFragment(owner, topicId, uid);
+            	//邀请到圈外，那么就是直接关注这个王国即可
+            	liveService.subscribedTopicNew(topicId, uid, 0);
+//                snsMybatisDao.updateSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
+//                liveService.setLive2(uid, topicId, 0, 0, 0);
+//                liveService.deleteFavoriteDelete(uid, topicId);
+//                createFragment(owner, topicId, uid);
             } else if (action == 5) {
                 Topic topic = liveService.getTopicById(topicId);
                 JSONArray array = JSON.parseArray(topic.getCoreCircle());
@@ -471,15 +583,13 @@ public class SnsServiceImpl implements SnsService {
                 liveJdbcDao.updateTopic(topicId, array.toString());
 
                 //人员原来是什么样的关系，还是什么样的关系
-                int isFollow = userService.isFollow(owner, uid);
-                int isFollowMe = userService.isFollow(uid, owner);
-                if (isFollow == 1 && isFollowMe == 1) {
-                    snsMybatisDao.createSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
-                } else if (isFollow == 1 && isFollowMe == 0) {
-                    snsMybatisDao.createSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
-                }
-
-                UserProfile userProfile = userService.getUserProfileByUid(owner);
+//                int isFollow = userService.isFollow(owner, uid);
+//                int isFollowMe = userService.isFollow(uid, owner);
+//                if (isFollow == 1 && isFollowMe == 1) {
+//                    snsMybatisDao.createSnsCircle(uid, owner, Specification.SnsCircle.IN.index);
+//                } else if (isFollow == 1 && isFollowMe == 0) {
+//                    snsMybatisDao.createSnsCircle(uid, owner, Specification.SnsCircle.OUT.index);
+//                }
 
                 JsonObject jsonObject = new JsonObject();
                 jsonObject.addProperty("messageType", Specification.PushMessageType.REMOVE_CORE_CIRCLE.index);
@@ -497,8 +607,9 @@ public class SnsServiceImpl implements SnsService {
                 	userService.pushWithExtra(alias, review, JPushUtils.packageExtra(jsonObject));
                 }
 
-                snsRemind(uid, userProfile.getUid(), message, topic.getId(), Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index);
-            } else if(action == 6) {
+                snsRemind(uid, owner, message, topic.getId(), Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index);
+            } else if(action == 6) {//退出核心圈
+            	//退出核心圈，不代表不关注这个王国，所以不需要做啥
             	Topic topic = liveService.getTopicById(topicId);
                 JSONArray array = JSON.parseArray(topic.getCoreCircle());
                 boolean flag = false;

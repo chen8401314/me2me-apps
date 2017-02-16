@@ -22,6 +22,8 @@ public interface SnsService {
      */
     Response showMembers(GetSnsCircleDto getSnsCircleDto);
 
+    Response showMembersNew(GetSnsCircleDto getSnsCircleDto);
+    
     /**
      * 修改社交关系
      * @return
@@ -33,6 +35,13 @@ public interface SnsService {
      * @return
      */
     Response circleByType(GetSnsCircleDto getSnsCircleDto);
+    
+    /**
+     * 新成员列表获取接口
+     * @param getSnsCircleDto
+     * @return
+     */
+    Response circleByTypeNew(GetSnsCircleDto getSnsCircleDto);
 
     /**
      *订阅
@@ -62,5 +71,7 @@ public interface SnsService {
      * @return
      */
     Response follow(int action,long targetUid,long sourceUid);
+    
+    Response followNew(int action,long targetUid,long sourceUid);
 
 }

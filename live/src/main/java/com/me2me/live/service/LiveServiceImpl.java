@@ -349,7 +349,7 @@ public class LiveServiceImpl implements LiveService {
         showLiveDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
         showLiveDto.setCreateTime(topic.getCreateTime());
         showLiveDto.setUpdateTime(topic.getLongTime());
-        showLiveDto.setFavoriteCount(content.getFavoriteCount());
+        showLiveDto.setFavoriteCount(content.getFavoriteCount()+1);
         showLiveDto.setLikeCount(content.getLikeCount());
         showLiveDto.setPersonCount(content.getPersonCount());
         showLiveDto.setTopicId(topic.getId());
@@ -377,11 +377,26 @@ public class LiveServiceImpl implements LiveService {
         	int acCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId(cid);
         	showLiveDto.setAcCount(acCount);
         	//子王国top5列表
-        	List<Map<String, Object>> topList = liveLocalJdbcDao.getTopSubTopic(cid, 5);
-        	if(null != topList && topList.size() > 0){
+        	List<Map<String, Object>> acTopList = new ArrayList<Map<String, Object>>();
+        	int needNum = 5;
+        	//先查置顶的，按置顶时间倒序
+        	List<Map<String, Object>> subList = liveLocalJdbcDao.getTopSubTopic(cid, needNum);
+        	if(null != subList && subList.size() > 0){
+        		acTopList.addAll(subList);
+        		needNum = needNum - subList.size();
+        	}
+        	//如果不满{needNum}，则再查不置顶的，按更新时间倒序
+        	if(needNum > 0){
+        		subList = liveLocalJdbcDao.getNoTopSubTopic(cid, needNum);
+        		if(null != subList && subList.size() > 0){
+            		acTopList.addAll(subList);
+            	}
+        	}
+        	
+        	if(null != acTopList && acTopList.size() > 0){
         		List<Long> uidList = new ArrayList<Long>();
         		Long id = null;
-        		for(Map<String, Object> t : topList){
+        		for(Map<String, Object> t : acTopList){
         			id = (Long)t.get("uid");
         			if(!uidList.contains(id)){
         				uidList.add(id);
@@ -393,7 +408,7 @@ public class LiveServiceImpl implements LiveService {
                 }
         		
                 ShowLiveDto.TopicElement e = null;
-        		for(Map<String, Object> t : topList){
+        		for(Map<String, Object> t : acTopList){
         			e = new ShowLiveDto.TopicElement();
         			e.setTopicId((Long)t.get("id"));
         			e.setTitle((String)t.get("title"));
@@ -843,7 +858,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setLikeCount(content.getLikeCount());
             showTopicElement.setPersonCount(content.getPersonCount());
             showTopicElement.setReviewCount(liveMybatisDao.countFragment(content.getForwardCid(), content.getUid()));
-            showTopicElement.setFavoriteCount(content.getFavoriteCount());
+            showTopicElement.setFavoriteCount(content.getFavoriteCount()+1);//把国王加入进去
             showTopicElement.setCid(content.getId());
             showTopicElement.setIsLike(contentService.isLike(content.getId(), uid));
             showTopicElement.setReadCount(content.getReadCountDummy());
@@ -1071,7 +1086,7 @@ public class LiveServiceImpl implements LiveService {
                 //content表favorite_count+1
                 liveLocalJdbcDao.contentAddFavoriteCount(topicId, 1);
     		}
-    		return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
+    		resp = Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
     	} else if (action == 1) {//取消订阅
     		if(null != liveFavorite){
     			liveMybatisDao.deleteLiveFavorite(liveFavorite);
@@ -1094,7 +1109,7 @@ public class LiveServiceImpl implements LiveService {
     			}
     		}
     		
-    		return Response.success(ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.message);
+    		resp = Response.success(ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.message);
     	}else{
     		resp = Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
     	}
@@ -2132,7 +2147,7 @@ public class LiveServiceImpl implements LiveService {
             Content content = contentService.getContentByTopicId(topic.getId());
             if(content != null) {
                 dto.setReadCount(content.getReadCountDummy());
-                dto.setFavoriteCount(content.getFavoriteCount());
+                dto.setFavoriteCount(content.getFavoriteCount()+1);
             }
             TopicCountDTO topicCountDTO = activityService.getTopicCount(topicId);
             dto.setTopicCount(topicCountDTO.getUpdateCount());
@@ -2395,7 +2410,7 @@ public class LiveServiceImpl implements LiveService {
             if (content != null) {
                 e.setLikeCount(content.getLikeCount());
                 e.setPersonCount(content.getPersonCount());
-                e.setFavoriteCount(content.getFavoriteCount());
+                e.setFavoriteCount(content.getFavoriteCount()+1);
                 e.setCid(content.getId());
                 if(null != contentLikeCountMap.get(String.valueOf(content.getId()))
                 		&& contentLikeCountMap.get(String.valueOf(content.getId())).longValue() > 0){
@@ -2968,5 +2983,15 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public TopicUserConfig getTopicUserConfigByTopicIdAndUid(long topicId, long uid){
     	return liveMybatisDao.getTopicUserConfig(uid, topicId);
+    }
+    
+    @Override
+    public List<LiveFavorite> getLiveFavoriteByTopicId(long topicId, List<Long> exceptUids, int start, int pageSize){
+    	return liveMybatisDao.getLiveFavoritePageByTopicIdAndExceptUids(topicId, exceptUids, start, pageSize);
+    }
+    
+    @Override
+    public int countLiveFavoriteByTopicId(long topicId, List<Long> exceptUids){
+    	return liveMybatisDao.countLiveFavoriteByTopicIdAndExceptUids(topicId, exceptUids);
     }
 }

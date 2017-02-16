@@ -1,20 +1,9 @@
 package com.me2me.sns.dao;
 
-import com.alibaba.fastjson.JSON;
-import com.google.common.collect.Lists;
-import com.me2me.common.Constant;
-import com.me2me.common.security.SecurityUtils;
-import com.me2me.common.web.Specification;
-import com.me2me.user.dto.UserAccountBindStatusDto;
-import com.me2me.user.model.User;
-import com.me2me.user.model.UserProfile;
-import com.me2me.user.model.UserToken;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -25,7 +14,6 @@ import java.util.Map;
  * Time :11:51
  */
 @Repository
-@Slf4j
 public class LiveJdbcDao {
 
     @Autowired
@@ -35,5 +23,16 @@ public class LiveJdbcDao {
     public void updateTopic(long topicId, String coreCircle) {
         String sql = "update topic set core_circle = ? where id = ?";
         jdbcTemplate.update(sql,coreCircle,topicId);
+    }
+    
+    public List<Map<String, Object>> getMyFansNotInTopicPage(long uid, long topicId, int start, int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select u.* from user_profile u left join user_follow f ");
+    	sb.append("on u.uid = f.source_uid where f.target_uid=").append(uid);
+    	sb.append(" and not EXISTS (select 1 from live_favorite l where l.topic_id=");
+    	sb.append(topicId).append(" and l.uid=f.source_uid)");
+    	sb.append(" order by convert(u.nick_name USING gbk) COLLATE gbk_chinese_ci");
+    	sb.append(" limit ").append(start).append(",").append(pageSize);
+    	return jdbcTemplate.queryForList(sb.toString());
     }
 }

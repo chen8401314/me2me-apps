@@ -191,14 +191,15 @@ public class UserServiceImpl implements UserService {
 
                 userMybatisDao.createFollow(userFollow);
 
+                //不需要关注他的王国..modify by zcl 20170216 version 2.2.0
                 //关注所有王国
-                List<Map<String,Object>> topics = liveForUserJdbcDao.getTopicByUid(tid);
-                for(Map<String,Object> topic : topics){
-                    liveForUserJdbcDao.favoriteTopic((Long)topic.get("id"),uid);
-                }
+//                List<Map<String,Object>> topics = liveForUserJdbcDao.getTopicByUid(tid);
+//                for(Map<String,Object> topic : topics){
+//                    liveForUserJdbcDao.favoriteTopic((Long)topic.get("id"),uid);
+//                }
 
                 //加入圈外人
-                liveForUserJdbcDao.addToSnsCircle(tid,uid);
+//                liveForUserJdbcDao.addToSnsCircle(tid,uid);
             }
     }
 }

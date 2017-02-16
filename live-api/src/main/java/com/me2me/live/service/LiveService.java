@@ -2,6 +2,7 @@ package com.me2me.live.service;
 
 import com.me2me.common.web.Response;
 import com.me2me.live.dto.*;
+import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicUserConfig;
@@ -181,4 +182,8 @@ public interface LiveService {
     TopicUserConfig getTopicUserConfigByTopicIdAndUid(long topicId, long uid);
     
     Response subscribedTopicNew(long topicId, long uid, int action);
+    
+    List<LiveFavorite> getLiveFavoriteByTopicId(long topicId, List<Long> exceptUids, int start, int pageSize);
+    
+    int countLiveFavoriteByTopicId(long topicId, List<Long> exceptUids);
 }

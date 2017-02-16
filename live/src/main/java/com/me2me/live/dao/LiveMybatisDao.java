@@ -320,6 +320,27 @@ public class LiveMybatisDao {
         return (liveFavoriteList != null && liveFavoriteList.size() > 0) ? liveFavoriteList.get(0) : null;
     }
     
+    public List<LiveFavorite> getLiveFavoritePageByTopicIdAndExceptUids(long topicId, List<Long> exceptUids, int start, int pageSize){
+    	LiveFavoriteExample example = new LiveFavoriteExample();
+        LiveFavoriteExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        if(null != exceptUids && exceptUids.size() > 0){
+        	criteria.andUidNotIn(exceptUids);
+        }
+        example.setOrderByClause(" id asc limit "+start+","+pageSize);
+        return liveFavoriteMapper.selectByExample(example);
+    }
+    
+    public int countLiveFavoriteByTopicIdAndExceptUids(long topicId, List<Long> exceptUids){
+    	LiveFavoriteExample example = new LiveFavoriteExample();
+        LiveFavoriteExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        if(null != exceptUids && exceptUids.size() > 0){
+        	criteria.andUidNotIn(exceptUids);
+        }
+        return liveFavoriteMapper.countByExample(example);
+    }
+    
     public List<LiveFavorite> getLiveFavoritesByUidAndTopicIds(long uid, List<Long> topicIds){
     	if(null == topicIds || topicIds.size() == 0){
     		return null;
