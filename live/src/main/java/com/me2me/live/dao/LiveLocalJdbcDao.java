@@ -285,6 +285,25 @@ public class LiveLocalJdbcDao {
 		}
 		return null;
 	}
+	
+	public List<Map<String,Object>> getTopicAggregationAcCountByTopicIds(List<Long> topicIds){
+		if(null == topicIds || topicIds.size() == 0){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select t.topic_id,count(1) as cc");
+		sb.append(" from topic_aggregation t");
+		sb.append(" where t.topic_id in (");
+		for(int i=0;i<topicIds.size();i++){
+			if(i > 0){
+				sb.append(",");
+			}
+			sb.append(topicIds.get(i).longValue());
+		}
+		sb.append(") group by t.topic_id");
+		
+		return jdbcTemplate.queryForList(sb.toString());
+	}
 
 	public int getTopicAggregationCountByTopicId(long topicId){
 		String sql = "select count(1) as count from topic_aggregation where topic_id = "+topicId;
