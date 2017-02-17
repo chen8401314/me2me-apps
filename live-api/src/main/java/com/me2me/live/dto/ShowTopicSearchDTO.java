@@ -53,5 +53,7 @@ public class ShowTopicSearchDTO implements BaseEntity {
         
         private int isTop;//是否置顶，0否，1是
         private int isPublish;//是否接受内容下发，0是，1否
+        
+        private long pageUpdateTime;
 	}
 }

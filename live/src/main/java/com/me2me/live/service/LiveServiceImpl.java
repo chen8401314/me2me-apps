@@ -1433,6 +1433,47 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(showFavoriteListFto);
     }
 
+    @Override
+    public Response myLivesAllByUpdateTime(long uid, long updateTime){
+    	log.info("myLivesAllByUpdateTime start ...");
+        ShowTopicListDto showTopicListDto = new ShowTopicListDto();
+        List<Long> topics = liveMybatisDao.getTopicId(uid);
+        Calendar calendar = Calendar.getInstance();
+        if (updateTime == 0) {
+            updateTime = calendar.getTimeInMillis();
+        }
+        List<Topic> topicList = liveMybatisDao.getALLMyLivesByUpdateTime(uid, updateTime, topics);
+        log.info("getMyLives data success");
+        builderWithCache(uid, showTopicListDto, topicList);
+        log.info("getMyLivesss start ...");
+        
+        //获取所有更新中直播主笔的信息
+        List<Topic> list = liveMybatisDao.getLives(Long.MAX_VALUE);
+        int num = 0;
+        for (Topic topic : list) {
+        	if(num > 8){
+        		break;
+        	}
+        	num++;
+            ShowTopicListDto.UpdateLives updateLives = ShowTopicListDto.createUpdateLivesElement();
+            UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
+            updateLives.setV_lv(userProfile.getvLv());
+            updateLives.setUid(userProfile.getUid());
+            updateLives.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            showTopicListDto.getUpdateLives().add(updateLives);
+        }
+        showTopicListDto.setLiveCount(liveMybatisDao.countLives());
+        MyLivesStatusModel myLivesStatusModel = new MyLivesStatusModel(uid, "0");
+        String isUpdate = cacheService.hGet(myLivesStatusModel.getKey(), myLivesStatusModel.getField());
+        if (!StringUtils.isEmpty(isUpdate)) {
+            showTopicListDto.setIsUpdate(Integer.parseInt(isUpdate));
+        } else {
+            showTopicListDto.setIsUpdate(0);
+        }
+        log.info("myLivesAllByUpdateTime end ...");
+        return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status, ResponseStatus.GET_MY_LIVE_SUCCESS.message, showTopicListDto);
+    }
+    
     /**
      * 获取我关注的直播，和我的直播列表
      *
@@ -1449,15 +1490,6 @@ public class LiveServiceImpl implements LiveService {
             updateTime = calendar.getTimeInMillis();
         }
         List<Topic> topicList = liveMybatisDao.getMyLivesByUpdateTime(uid, updateTime, topics);
-//        //初始化cache
-//        for(Topic topic : topicList) {
-//            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topic.getId()+"","0");
-//            String isUpdate = cacheService.hGet(cacheModel.getKey(),topic.getId()+"");
-//            if(StringUtils.isEmpty(isUpdate)) {
-//                log.info("cache key {} , cache topic id {},cache value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
-//                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-//            }
-//        }
         log.info("getMyLives data success");
         builderWithCache(uid, showTopicListDto, topicList);
         log.info("getMyLives start ...");
@@ -2083,7 +2115,7 @@ public class LiveServiceImpl implements LiveService {
 
 	@Override
 	public Response kingdomSearch(long currentUid, KingdomSearchDTO searchDTO){
-		List<Topic> topicList = new ArrayList<Topic>();
+		List<Map<String,Object>> topicList = new ArrayList<Map<String,Object>>();
 		boolean first = false;
 		if(searchDTO.getUpdateTime() == 0){//第一次
 			searchDTO.setUpdateTime(Long.MAX_VALUE);
@@ -2093,14 +2125,14 @@ public class LiveServiceImpl implements LiveService {
 		//母查子的第一次需要先将置顶的全部查询出来
 		if(searchDTO.getTopicId() > 0 && searchDTO.getTopicType() == 2){//母查子
 			if(first){//第一次
-				List<Topic> topList = liveLocalJdbcDao.searchTopics(searchDTO, 1);
+				List<Map<String,Object>> topList = liveLocalJdbcDao.searchTopics(searchDTO, 1);
 				if(null != topList && topList.size() > 0){
-					for(Topic t : topList){
-						topMap.put(String.valueOf(t.getId()), "1");
+					for(Map<String,Object> t : topList){
+						topMap.put(String.valueOf(t.get("id")), "1");
 					}
 					topicList.addAll(topList);
 				}
-				List<Topic> noList = liveLocalJdbcDao.searchTopics(searchDTO, 0);
+				List<Map<String,Object>> noList = liveLocalJdbcDao.searchTopics(searchDTO, 0);
 				if(null != noList && noList.size() > 0){
 					topicList.addAll(noList);
 				}
@@ -2259,7 +2291,7 @@ public class LiveServiceImpl implements LiveService {
 		return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
 	}
 
-    private void builderTopicSearch(long uid, ShowTopicSearchDTO showTopicSearchDTO, List<Topic> topicList, 
+    private void builderTopicSearch(long uid, ShowTopicSearchDTO showTopicSearchDTO, List<Map<String,Object>> topicList, 
     		Map<String, String> topMap, Map<String, String> publishMap) {
     	if(null == topMap){
     		topMap = new HashMap<String, String>();
@@ -2270,12 +2302,14 @@ public class LiveServiceImpl implements LiveService {
     	
 		List<Long> uidList = new ArrayList<Long>();
 		List<Long> tidList = new ArrayList<Long>();
-    	for(Topic topic : topicList){
-    		if(!uidList.contains(topic.getUid())){
-    			uidList.add(topic.getUid());
+    	for(Map<String,Object> topic : topicList){
+    		Long u = (Long)topic.get("uid");
+    		Long id = (Long)topic.get("id");
+    		if(!uidList.contains(u)){
+    			uidList.add(u);
     		}
-    		if(!tidList.contains(topic.getId())){
-    			tidList.add(topic.getId());
+    		if(!tidList.contains(id)){
+    			tidList.add(id);
     		}
     	}
     	//一次性查询用户属性
@@ -2342,44 +2376,48 @@ public class LiveServiceImpl implements LiveService {
         MySubscribeCacheModel cacheModel = null;
         Map<String, Object> lastFragment = null;
         Content content = null;
-        for (Topic topic : topicList) {
+        Long topicUid = null;
+        Long topicId = null;
+        for (Map<String,Object> topic : topicList) {
         	e = new ShowTopicSearchDTO.TopicElement();
-        	userProfile = profileMap.get(String.valueOf(topic.getUid()));
+        	topicUid = (Long)topic.get("uid");
+        	topicId = (Long)topic.get("id");
+        	userProfile = profileMap.get(String.valueOf(topicUid));
             e.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             e.setNickName(userProfile.getNickName());
             e.setV_lv(userProfile.getvLv());
-            e.setUid(topic.getUid());
-            e.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
-            e.setTitle(topic.getTitle());
-            e.setCreateTime(topic.getCreateTime());
-            e.setTopicId(topic.getId());
-            e.setStatus(topic.getStatus());
-            e.setUpdateTime(topic.getLongTime());
-            if(null != followMap.get(uid+"_"+topic.getUid())){
+            e.setUid(topicUid);
+            e.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
+            e.setTitle((String)topic.get("title"));
+            e.setCreateTime((Date)topic.get("create_time"));
+            e.setTopicId(topicId);
+            e.setStatus((Integer)topic.get("status"));
+            e.setUpdateTime((Long)topic.get("long_time"));
+            if(null != followMap.get(uid+"_"+topicUid)){
             	e.setIsFollowed(1);
             }else{
             	e.setIsFollowed(0);
             }
-            if(null != followMap.get(topic.getUid()+"_"+uid)){
+            if(null != followMap.get(topicUid+"_"+uid)){
             	e.setIsFollowMe(1);
             }else{
             	e.setIsFollowMe(0);
             }
-            e.setLastUpdateTime(topic.getLongTime());
-            if(null != topicCountMap.get(String.valueOf(topic.getId()))){
-            	e.setTopicCount(topicCountMap.get(String.valueOf(topic.getId())).intValue());
+            e.setLastUpdateTime((Long)topic.get("long_time"));
+            if(null != topicCountMap.get(String.valueOf(topicId))){
+            	e.setTopicCount(topicCountMap.get(String.valueOf(topicId)).intValue());
             }else{
             	e.setTopicCount(0);
             }
-            e.setInternalStatus(this.getUserInternalStatus(topic.getCoreCircle(), uid));
+            e.setInternalStatus(this.getUserInternalStatus((String)topic.get("core_circle"), uid));
             
-            cacheModel = new MySubscribeCacheModel(uid, topic.getId() + "", "0");
-            String isUpdate = cacheService.hGet(cacheModel.getKey(), topic.getId() + "");
+            cacheModel = new MySubscribeCacheModel(uid, String.valueOf(topicId), "0");
+            String isUpdate = cacheService.hGet(cacheModel.getKey(), String.valueOf(topicId));
             if (!StringUtils.isEmpty(isUpdate)) {
                 e.setIsUpdate(Integer.parseInt(isUpdate));
             }
             
-            lastFragment = lastFragmentMap.get(String.valueOf(topic.getId()));
+            lastFragment = lastFragmentMap.get(String.valueOf(topicId));
             if (null != lastFragment) {
                 e.setLastContentType((Integer)lastFragment.get("content_type"));
                 e.setLastFragment((String)lastFragment.get("fragment"));
@@ -2388,12 +2426,12 @@ public class LiveServiceImpl implements LiveService {
             } else {
                 e.setLastContentType(-1);
             }
-            if(null != reviewCountMap.get(String.valueOf(topic.getId()))){
-            	e.setReviewCount(reviewCountMap.get(String.valueOf(topic.getId())).intValue());
+            if(null != reviewCountMap.get(String.valueOf(topicId))){
+            	e.setReviewCount(reviewCountMap.get(String.valueOf(topicId)).intValue());
             }else{
             	e.setReviewCount(0);
             }
-            content = contentMap.get(String.valueOf(topic.getId()));
+            content = contentMap.get(String.valueOf(topicId));
             if (content != null) {
                 e.setLikeCount(content.getLikeCount());
                 e.setPersonCount(content.getPersonCount());
@@ -2410,24 +2448,25 @@ public class LiveServiceImpl implements LiveService {
             }
             
             //判断是否收藏了
-            if (null != liveFavoriteMap.get(String.valueOf(topic.getId()))) {
+            if (null != liveFavoriteMap.get(String.valueOf(topicId))) {
                 e.setFavorite(Specification.LiveFavorite.FAVORITE.index);
             } else {
                 e.setFavorite(Specification.LiveFavorite.NORMAL.index);
             }
 
-            if(null != topMap.get(String.valueOf(topic.getId()))){
+            if(null != topMap.get(String.valueOf(topicId))){
             	e.setIsTop(1);
             }else{
             	e.setIsTop(0);
             }
-            if(null != publishMap.get(String.valueOf(topic.getId()))){
+            if(null != publishMap.get(String.valueOf(topicId))){
             	e.setIsPublish(1);
             }else{
             	e.setIsPublish(0);
             }
             
-            e.setContentType(topic.getType());
+            e.setContentType((Integer)topic.get("type"));
+            e.setPageUpdateTime((Long)topic.get("longtime"));
             
             showTopicSearchDTO.getResultList().add(e);
         }

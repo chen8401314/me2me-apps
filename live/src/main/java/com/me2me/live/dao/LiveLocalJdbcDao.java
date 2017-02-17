@@ -167,9 +167,32 @@ public class LiveLocalJdbcDao {
 	 * @param topType 查询是否置顶 -1全部 0不置顶的 1置顶的
 	 * @return
 	 */
-	public List<Topic> searchTopics(KingdomSearchDTO searchDTO, int topType){
+	public List<Map<String,Object>> searchTopics(KingdomSearchDTO searchDTO, int topType){
 		StringBuilder sb = new StringBuilder();
-		sb.append("select t.* from topic t");
+		sb.append("select t.* from (");
+		if(searchDTO.getSearchUid() > 0){
+			sb.append("select m.*,m.long_time*10000 as longtime");
+			sb.append(" from topic m where m.uid=").append(searchDTO.getSearchUid());
+			if(searchDTO.getAllowCore() > 0){
+				sb.append(" union ");
+				sb.append("select m1.*,m1.long_time*100 as longtime");
+				sb.append(" from topic m1 where m1.uid<>").append(searchDTO.getSearchUid());
+				sb.append(" and FIND_IN_SET(").append(searchDTO.getSearchUid());
+				sb.append(",SUBSTR(m1.core_circle FROM 2 FOR LENGTH(m1.core_circle)-2))");
+			}
+			if(searchDTO.getAllowCore() > 1){
+				sb.append(" union ");
+				sb.append("select m2.*,m2.long_time as longtime");
+				sb.append(" from topic m2,live_favorite f");
+				sb.append(" where m2.id=f.topic_id");
+				sb.append(" and f.uid=").append(searchDTO.getSearchUid());
+			}
+		}else{
+			sb.append("select m.*,m.long_time*10000 as longtime");
+			sb.append(" from topic m");
+		}
+		sb.append(") t");
+
 		if(searchDTO.getTopicType() > 0 && searchDTO.getTopicId() > 0){
 			sb.append(",topic_aggregation a");
 			if(searchDTO.getTopicType() == 1){//个人王国查聚合的母王国
@@ -188,7 +211,7 @@ public class LiveLocalJdbcDao {
 			sb.append(" where 1=1");
 		}
 		
-		sb.append(" and t.long_time<").append(searchDTO.getUpdateTime());
+		sb.append(" and t.longtime<").append(searchDTO.getUpdateTime());
 		if(searchDTO.getSearchRights() > 0){
 			sb.append(" and t.rights=").append(searchDTO.getSearchRights());
 		}
@@ -207,48 +230,13 @@ public class LiveLocalJdbcDao {
 		if(searchDTO.getExceptTopicId() > 0){
 			sb.append(" and t.id<>").append(searchDTO.getExceptTopicId());
 		}
-		if(searchDTO.getSearchUid() > 0){
-			if(searchDTO.getAllowCore() > 0){
-				sb.append(" and (t.uid=").append(searchDTO.getSearchUid());
-				sb.append(" or FIND_IN_SET(").append(searchDTO.getSearchUid());
-				sb.append(",SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2)))");
-			}else{
-				sb.append(" and t.uid=").append(searchDTO.getSearchUid());
-			}
-		}
 		if(searchDTO.getTopicId() > 0 && searchDTO.getTopicType() == 2 && topType == 1){//母查置顶的子,则查出所有的置顶项并按置顶时间倒序
 			sb.append(" order by a.update_time desc");
 		}else{
-			sb.append(" order by t.long_time desc limit 10");
+			sb.append(" order by t.longtime desc limit 10");
 		}
 		
-		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
-		if(null != list && list.size() > 0){
-			List<Topic> result = new ArrayList<Topic>();
-			Topic topic = null;
-			for(Map<String,Object> t : list){
-				topic = new Topic();
-				topic.setId((Long)t.get("id"));
-				topic.setUid((Long)t.get("uid"));
-				topic.setLiveImage((String)t.get("live_image"));
-				topic.setTitle((String)t.get("title"));
-				topic.setStatus((Integer)t.get("status"));
-				topic.setCreateTime((Date)t.get("create_time"));
-				topic.setUpdateTime((Date)t.get("update_time"));
-				topic.setLongTime((Long)t.get("long_time"));
-				topic.setQrcode((String)t.get("qrcode"));
-				topic.setCoreCircle((String)t.get("core_circle"));
-				topic.setType((Integer)t.get("type"));
-				topic.setCeAuditType((Integer)t.get("ce_audit_type"));
-				topic.setAcAuditType((Integer)t.get("ac_audit_type"));
-				topic.setAcPublishType((Integer)t.get("ac_publish_type"));
-				topic.setRights((Integer)t.get("rights"));
-				topic.setSummary((String)t.get("summary"));
-				result.add(topic);
-			}
-			return result;
-		}
-		return null;
+		return jdbcTemplate.queryForList(sb.toString());
 	}
 	
 	public List<Map<String, Object>> getTopicUpdateCount(List<Long> tids){

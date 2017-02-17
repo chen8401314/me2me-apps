@@ -117,6 +117,8 @@ public interface LiveService {
      */
     Response MyLivesByUpdateTime(long uid,long updateTime);
 
+    Response myLivesAllByUpdateTime(long uid, long updateTime);
+    
     Response getInactiveLive(long uid,long updateTime);
 
     Topic getTopicById(long topicId);

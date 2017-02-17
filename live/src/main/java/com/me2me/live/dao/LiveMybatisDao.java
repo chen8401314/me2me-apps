@@ -217,6 +217,24 @@ public class LiveMybatisDao {
         criteria.andStatusNotEqualTo(Specification.LiveStatus.LIVING.index);
         return topicMapper.countByExample(example);
     }
+    
+    public List<Topic> getALLMyLivesByUpdateTime(long uid, long updateTime, List<Long> topics) {
+        TopicExample example = new TopicExample();
+        TopicExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andLongTimeLessThan(updateTime);
+        criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
+        TopicExample.Criteria criteriaOr = example.createCriteria();
+        if (topics != null && topics.size() > 0) {
+            criteriaOr.andLongTimeLessThan(updateTime);
+            criteriaOr.andUidNotEqualTo(uid);
+            criteriaOr.andIdIn(topics);
+            example.or(criteriaOr);
+        }
+        //最后更新时间降序排列
+        example.setOrderByClause("long_time desc limit 10");
+        return topicMapper.selectByExample(example);
+    }
 
     public List<Topic> getMyLivesByUpdateTime(long uid, long updateTime, List<Long> topics) {
         TopicExample example = new TopicExample();
