@@ -770,9 +770,9 @@ public class UserServiceImpl implements UserService {
             }
         }
         
-        if (internalStatus == 0) {
-            internalStatus = this.getUserInternalStatus(uid, (Long)topic.get("uid"));
-        }
+//        if (internalStatus == 0) {
+//            internalStatus = this.getUserInternalStatus(uid, (Long)topic.get("uid"));
+//        }
 
         return internalStatus;
     }

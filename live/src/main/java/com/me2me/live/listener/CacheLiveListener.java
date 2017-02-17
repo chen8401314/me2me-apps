@@ -122,9 +122,9 @@ public class CacheLiveListener {
                 break;
             }
         }
-        if (internalStatus == 0) {
-            internalStatus = userService.getUserInternalStatus(uid, topic.getUid());
-        }
+//        if (internalStatus == 0) {
+//            internalStatus = userService.getUserInternalStatus(uid, topic.getUid());
+//        }
 
         return internalStatus;
     }

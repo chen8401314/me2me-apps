@@ -194,7 +194,7 @@ public class SnsServiceImpl implements SnsService {
     			}
     		}
     	}else if(getSnsCircleDto.getType() == Specification.SnsCircle.IN.index){//圈内
-    		return Response.failure(500, "新版本已优化王国圈子关系，请下载新版米汤");
+    		
     	}else{
     		return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
     	}
@@ -655,9 +655,9 @@ public class SnsServiceImpl implements SnsService {
                 break;
             }
         }
-        if (internalStatus == 0) {
-            internalStatus = userService.getUserInternalStatus(uid, topic.getUid());
-        }
+//        if (internalStatus == 0) {
+//            internalStatus = userService.getUserInternalStatus(uid, topic.getUid());
+//        }
 
         return internalStatus;
     }

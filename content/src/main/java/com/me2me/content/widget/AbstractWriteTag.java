@@ -121,9 +121,9 @@ public class AbstractWriteTag {
             }
         }
         
-        if (internalStatus == 0) {
-            internalStatus = userService.getUserInternalStatus(uid, (Long)topic.get("uid"));
-        }
+//        if (internalStatus == 0) {
+//            internalStatus = userService.getUserInternalStatus(uid, (Long)topic.get("uid"));
+//        }
 
         return internalStatus;
     }

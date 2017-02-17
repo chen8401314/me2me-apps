@@ -2546,9 +2546,9 @@ private void localJpush(long toUid){
             }
         }
         
-        if (internalStatus == 0) {
-            internalStatus = userService.getUserInternalStatus(uid, (Long)topic.get("uid"));
-        }
+//        if (internalStatus == 0) {
+//            internalStatus = userService.getUserInternalStatus(uid, (Long)topic.get("uid"));
+//        }
 
         return internalStatus;
     }

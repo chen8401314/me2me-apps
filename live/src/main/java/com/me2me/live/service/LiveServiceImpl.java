@@ -278,10 +278,6 @@ public class LiveServiceImpl implements LiveService {
         				uidList.add(id);
         			}
         		}
-        		Map<String, Integer> internalStatusMap = liveLocalJdbcDao.getUserInternalStatus(uid, uidList);
-                if(null == internalStatusMap){
-                	internalStatusMap = new HashMap<String, Integer>();
-                }
         		
         		LiveCoverDto.TopicElement e = null;
         		for(Map<String, Object> t : acTopList){
@@ -289,7 +285,7 @@ public class LiveServiceImpl implements LiveService {
         			e.setTopicId((Long)t.get("id"));
         			e.setTitle((String)t.get("title"));
         			e.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)t.get("live_image"));
-        			e.setInternalStatus(this.getUserInternalStatus((Long)t.get("uid"), (String)t.get("core_circle"), uid, internalStatusMap));
+        			e.setInternalStatus(this.getUserInternalStatus((String)t.get("core_circle"), uid));
         			liveCoverDto.getAcTopList().add(e);
         		}
         	}
@@ -402,10 +398,6 @@ public class LiveServiceImpl implements LiveService {
         				uidList.add(id);
         			}
         		}
-        		Map<String, Integer> internalStatusMap = liveLocalJdbcDao.getUserInternalStatus(uid, uidList);
-                if(null == internalStatusMap){
-                	internalStatusMap = new HashMap<String, Integer>();
-                }
         		
                 ShowLiveDto.TopicElement e = null;
         		for(Map<String, Object> t : acTopList){
@@ -413,7 +405,7 @@ public class LiveServiceImpl implements LiveService {
         			e.setTopicId((Long)t.get("id"));
         			e.setTitle((String)t.get("title"));
         			e.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)t.get("live_image"));
-        			e.setInternalStatus(this.getUserInternalStatus((Long)t.get("uid"), (String)t.get("core_circle"), uid, internalStatusMap));
+        			e.setInternalStatus(this.getUserInternalStatus((String)t.get("core_circle"), uid));
         			showLiveDto.getAcTopList().add(e);
         		}
         	}
@@ -487,9 +479,9 @@ public class LiveServiceImpl implements LiveService {
                 break;
             }
         }
-        if (internalStatus == 0) {
-            internalStatus = userService.getUserInternalStatus(uid, topic.getUid());
-        }
+//        if (internalStatus == 0) {
+//            internalStatus = userService.getUserInternalStatus(uid, topic.getUid());
+//        }
 
         return internalStatus;
     }
@@ -2312,11 +2304,6 @@ public class LiveServiceImpl implements LiveService {
         		reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
         	}
         }
-        //一次性查询当前用户针对于所有王国的身份
-        Map<String, Integer> internalStatusMap = liveLocalJdbcDao.getUserInternalStatus(uid, uidList);
-        if(null == internalStatusMap){
-        	internalStatusMap = new HashMap<String, Integer>();
-        }
         List<Long> cidList = new ArrayList<Long>();
         //一次性查询所有topic对应的content
         Map<String, Content> contentMap = new HashMap<String, Content>();
@@ -2384,7 +2371,7 @@ public class LiveServiceImpl implements LiveService {
             }else{
             	e.setTopicCount(0);
             }
-            e.setInternalStatus(this.getUserInternalStatus(topic.getUid(), topic.getCoreCircle(), uid, internalStatusMap));
+            e.setInternalStatus(this.getUserInternalStatus(topic.getCoreCircle(), uid));
             
             cacheModel = new MySubscribeCacheModel(uid, topic.getId() + "", "0");
             String isUpdate = cacheService.hGet(cacheModel.getKey(), topic.getId() + "");
@@ -2446,7 +2433,7 @@ public class LiveServiceImpl implements LiveService {
         }
     }
 	
-	private int getUserInternalStatus(long topicUid, String coreCircle, long uid, Map<String, Integer> internalStatusMap) {
+	private int getUserInternalStatus(String coreCircle, long uid) {
         JSONArray array = JSON.parseArray(coreCircle);
         int internalStatus = 0;
         for (int i = 0; i < array.size(); i++) {
@@ -2455,9 +2442,9 @@ public class LiveServiceImpl implements LiveService {
                 break;
             }
         }
-        if (internalStatus == 0 && null != internalStatusMap.get(uid+"_"+topicUid)) {
-            internalStatus = internalStatusMap.get(uid+"_"+topicUid).intValue();
-        }
+//        if (internalStatus == 0 && null != internalStatusMap.get(uid+"_"+topicUid)) {
+//            internalStatus = internalStatusMap.get(uid+"_"+topicUid).intValue();
+//        }
 
         return internalStatus;
     }
