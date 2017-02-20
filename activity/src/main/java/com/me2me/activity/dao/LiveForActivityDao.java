@@ -210,7 +210,7 @@ public class LiveForActivityDao {
 		StringBuilder sb = new StringBuilder();
 		sb.append("select m.read_count_dummy,m.like_count,n.updateCount,n.reviewCount from (");
 		sb.append("select t.read_count_dummy,t.like_count,t.forward_cid from content t where t.forward_cid=").append(topicId);
-		sb.append(") m,(select count(if(f.type=0,TRUE,NULL)) as updateCount, count(if(f.type>0,TRUE,NULL)) as reviewCount, f.topic_id ");
+		sb.append(" and t.type=3) m,(select count(if(f.type=0,TRUE,NULL)) as updateCount, count(if(f.type>0,TRUE,NULL)) as reviewCount, f.topic_id ");
 		sb.append("from topic_fragment f where f.topic_id=").append(topicId).append(" and f.status=1) n ");
 		sb.append("where m.forward_cid=n.topic_id");
 
@@ -328,7 +328,7 @@ public class LiveForActivityDao {
 	}
 	
 	public void updateContentAddLike(long topicId, int likeCount){
-		String sql = "update content set like_count=like_count+"+likeCount+" where forward_cid="+topicId;
+		String sql = "update content set like_count=like_count+"+likeCount+" where forward_cid="+topicId+" and type=3";
 		jdbcTemplate.execute(sql);
 	}
 	

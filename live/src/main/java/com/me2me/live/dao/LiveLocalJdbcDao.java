@@ -90,6 +90,7 @@ public class LiveLocalJdbcDao {
 			sb.append("-1");
 		}
 		sb.append(" where forward_cid=").append(topicId);
+		sb.append(" and type=3");
 		if(type<=0){
 			sb.append(" and favorite_count>0");
 		}
@@ -100,7 +101,7 @@ public class LiveLocalJdbcDao {
 		if(count < 1){
 			return;
 		}
-		String sql = "update content set favorite_count=favorite_count+"+count+" where forward_cid="+forwardCid;
+		String sql = "update content set favorite_count=favorite_count+"+count+" where forward_cid="+forwardCid+" and type=3";
 		jdbcTemplate.execute(sql);
 	}
 	
