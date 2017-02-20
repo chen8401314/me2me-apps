@@ -2073,7 +2073,6 @@ private void localJpush(long toUid){
         		profileMap.put(String.valueOf(up.getUid()), up);
         	}
         }
-        
         Map<String, Map<String, Object>> topicMap = new HashMap<String, Map<String, Object>>();
         List<Map<String,Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
         if(null != topicList && topicList.size() > 0){
@@ -2081,6 +2080,14 @@ private void localJpush(long toUid){
         	for(Map<String,Object>  map : topicList){
         		topicId = (Long)map.get("id");
         		topicMap.put(topicId.toString(), map);
+        	}
+        }
+        //一次性查询关注信息
+        Map<String, String> followMap = new HashMap<String, String>();
+        List<UserFollow> userFollowList = userService.getAllFollows(uid, uidList);
+        if(null != userFollowList && userFollowList.size() > 0){
+        	for(UserFollow uf : userFollowList){
+        		followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
         	}
         }
         
@@ -2145,10 +2152,16 @@ private void localJpush(long toUid){
                 hottestContentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                 hottestContentElement.setNickName(userProfile.getNickName());
                 hottestContentElement.setTag(content.getFeeling());
-                int follow = userService.isFollow(content.getUid(),uid);
-                hottestContentElement.setIsFollowed(follow);
-                int followMe = userService.isFollow(uid,content.getUid());
-                hottestContentElement.setIsFollowMe(followMe);
+                if(null != followMap.get(uid+"_"+content.getUid())){
+                	hottestContentElement.setIsFollowed(1);
+                }else{
+                	hottestContentElement.setIsFollowed(0);
+                }
+                if(null != followMap.get(content.getUid()+"_"+uid)){
+                	hottestContentElement.setIsFollowMe(1);
+                }else{
+                	hottestContentElement.setIsFollowMe(0);
+                }
 
                 hottestContentElement.setPersonCount(content.getPersonCount());
                 hottestContentElement.setFavoriteCount(content.getFavoriteCount()+1);
@@ -2161,10 +2174,16 @@ private void localJpush(long toUid){
                 hottestContentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                 hottestContentElement.setNickName(userProfile.getNickName());
                 hottestContentElement.setTag(content.getFeeling());
-                int follow = userService.isFollow(content.getUid(),uid);
-                hottestContentElement.setIsFollowed(follow);
-                int followMe = userService.isFollow(uid,content.getUid());
-                hottestContentElement.setIsFollowMe(followMe);
+                if(null != followMap.get(uid+"_"+content.getUid())){
+                	hottestContentElement.setIsFollowed(1);
+                }else{
+                	hottestContentElement.setIsFollowed(0);
+                }
+                if(null != followMap.get(content.getUid()+"_"+uid)){
+                	hottestContentElement.setIsFollowMe(1);
+                }else{
+                	hottestContentElement.setIsFollowMe(0);
+                }
                 //获取内容图片数量
                 int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
                 hottestContentElement.setImageCount(imageCounts);
