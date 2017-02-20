@@ -3251,4 +3251,133 @@ public class LiveServiceImpl implements LiveService {
     public int countLiveFavoriteByTopicId(long topicId, List<Long> exceptUids){
     	return liveMybatisDao.countLiveFavoriteByTopicIdAndExceptUids(topicId, exceptUids);
     }
+    
+    @SuppressWarnings("rawtypes")
+	@Override
+    public Response fragmentForward(long uid, long fid, long sourceTopicId, long targetTopicId){
+    	Topic sourceTopic = liveMybatisDao.getTopicById(sourceTopicId);
+    	if(null == sourceTopic){
+    		return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
+    	}
+    	Topic targetTopic = liveMybatisDao.getTopicById(targetTopicId);
+    	if(null == targetTopic){
+    		return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, "目标王国已删除");
+    	}
+    	TopicFragment tf = liveMybatisDao.getTopicFragmentById(fid);
+		if(null == tf || tf.getTopicId().longValue() != sourceTopicId
+				|| tf.getStatus() != Specification.TopicFragmentStatus.ENABLED.index){
+			return Response.failure(ResponseStatus.FRAGMENT_IS_NOT_EXIST.status, ResponseStatus.FRAGMENT_IS_NOT_EXIST.message);
+		}
+		
+		boolean isCoreUser = false;
+		if(uid == targetTopic.getUid().longValue() || this.isInCore(uid, targetTopic.getCoreCircle())){
+			isCoreUser = true;
+		}
+    	
+		TopicFragment newtf = new TopicFragment();
+		newtf.setUid(uid);//记录操作人的UID
+		newtf.setFragmentImage(tf.getFragmentImage());
+		newtf.setFragment(tf.getFragment());
+		newtf.setTopicId(targetTopicId);
+		//判断身份
+		if(isCoreUser){
+			newtf.setType(55);
+		}else{
+			newtf.setType(56);
+		}
+		newtf.setContentType(this.genContentType(tf.getType(), tf.getContentType()));//转换成新的contentType
+		
+		String extra = tf.getExtra();
+		//extra转换，添加from属性
+		if(null == extra || "".equals(extra)){
+			extra = "{}";
+		}
+		JSONObject obj = JSON.parseObject(extra);
+		String only = UUID.randomUUID().toString()+"-"+new Random().nextInt();
+		obj.put("only", only);
+		UserProfile up = userService.getUserProfileByUid(uid);
+		Content topicContent = contentService.getContentByTopicId(sourceTopicId);
+		JSONObject fromObj = new JSONObject();
+		fromObj.put("uid", Long.valueOf(uid));
+		fromObj.put("avatar", Constant.QINIU_DOMAIN+"/"+up.getAvatar());
+		fromObj.put("id", Long.valueOf(sourceTopicId));
+		fromObj.put("cid", topicContent.getId());
+		fromObj.put("title", sourceTopic.getTitle());
+		fromObj.put("cover", Constant.QINIU_DOMAIN+"/"+sourceTopic.getLiveImage());
+		fromObj.put("url", Constant.Live_WEB_URL+sourceTopicId);
+		obj.put("from", fromObj);
+		newtf.setExtra(obj.toJSONString());
+		liveMybatisDao.createTopicFragment(newtf);
+		
+		if(isCoreUser){//如果是核心圈的发言，则需要更新评论缓存
+			Calendar calendar = Calendar.getInstance();
+			targetTopic.setUpdateTime(calendar.getTime());
+			targetTopic.setLongTime(calendar.getTimeInMillis());
+            liveMybatisDao.updateTopic(targetTopic);
+		}
+		
+		//更新缓存
+		long lastFragmentId = newtf.getId();
+        int total = liveMybatisDao.countFragmentByTopicId(targetTopicId);
+        String value = lastFragmentId + "," + total;
+        cacheService.hSet(LiveServiceImpl.TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + targetTopicId, value);
+    	
+    	return Response.success();
+    }
+    
+    private boolean isInCore(long uid, String coreCircle){
+		boolean result = false;
+		if(null != coreCircle && !"".equals(coreCircle)){
+			JSONArray array = JSON.parseArray(coreCircle);
+	        for (int i = 0; i < array.size(); i++) {
+	            if (array.getLong(i).longValue() == uid) {
+	            	result = true;
+	                break;
+	            }
+	        }
+		}
+		return result;
+	}
+    
+    private int genContentType(int oldType, int oldContentType){
+		if(oldType == Specification.LiveSpeakType.ANCHOR.index){//主播发言
+			
+		}else if(oldType == Specification.LiveSpeakType.FANS.index){//粉丝回复
+			
+		}else if(oldType == Specification.LiveSpeakType.FORWARD.index){//转发
+			
+		}else if(oldType == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index){//主播贴标
+			return 2;
+		}else if(oldType == Specification.LiveSpeakType.FANS_WRITE_TAG.index){//粉丝贴标
+			return 2;
+		}else if(oldType == Specification.LiveSpeakType.LIKES.index){//点赞
+			
+		}else if(oldType == Specification.LiveSpeakType.SUBSCRIBED.index){//订阅
+			
+		}else if(oldType == Specification.LiveSpeakType.SHARE.index){//分享
+			
+		}else if(oldType == Specification.LiveSpeakType.FOLLOW.index){//关注
+			
+		}else if(oldType == Specification.LiveSpeakType.INVITED.index){//邀请
+			
+		}else if(oldType == Specification.LiveSpeakType.AT.index){//有人@
+			return 10;
+		}else if(oldType == Specification.LiveSpeakType.ANCHOR_AT.index){//主播@
+			return 11;
+		}else if(oldType == Specification.LiveSpeakType.VIDEO.index){//视频
+			return 62;
+		}else if(oldType == Specification.LiveSpeakType.SOUND.index){//语音
+			return 63;
+		}else if(oldType == Specification.LiveSpeakType.ANCHOR_RED_BAGS.index){//国王收红包
+			
+		}else if(oldType == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){//@核心圈
+			return 15;
+		}else if(oldType == Specification.LiveSpeakType.SYSTEM.index){//系统
+			
+		}
+		if(oldContentType == 1){
+			return 51;
+		}
+		return oldContentType;
+	}
 }

@@ -578,5 +578,15 @@ public class Live extends BaseController {
         CommonUtils.copyDto(request ,dto);
         return liveService.aggregationApplyOpt(dto);
     }
-
+    
+    /**
+     * 王国内容转发接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/fragmentForward",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response fragmentForward(FragmentForwardRequest request){
+    	return liveService.fragmentForward(request.getUid(), request.getFid(), request.getSourceTopicId(), request.getTargetTopicId());
+    }
 }

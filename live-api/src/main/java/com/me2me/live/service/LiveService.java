@@ -188,4 +188,6 @@ public interface LiveService {
     List<LiveFavorite> getLiveFavoriteByTopicId(long topicId, List<Long> exceptUids, int start, int pageSize);
     
     int countLiveFavoriteByTopicId(long topicId, List<Long> exceptUids);
+    
+    Response fragmentForward(long uid, long fid, long sourceTopicId, long targetTopicId);
 }
