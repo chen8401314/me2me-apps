@@ -259,7 +259,8 @@ public class ContentServiceImpl implements ContentService {
 			squareDataElement.setForwardCid(content.getForwardCid());
 			squareDataElement.setV_lv(userProfile.getvLv());
 			if (!StringUtils.isEmpty(content.getConverImage())) {
-				if (content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index) {
+				if (content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index
+						|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index) {
 					squareDataElement.setCoverImage(content.getConverImage());
 				} else {
 					squareDataElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + content.getConverImage());
@@ -1052,7 +1053,8 @@ private void localJpush(long toUid){
             String cover = content.getConverImage();
 
             if(!StringUtils.isEmpty(cover)){
-                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
+                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index
+                		|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index){
                     contentElement.setCoverImage(cover);
                 }else {
                     contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
@@ -1454,7 +1456,8 @@ private void localJpush(long toUid){
             contentElement.setForwardTitle(content.getForwardTitle());
             String cover =  content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
-                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
+                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index
+                		|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index){
                     contentElement.setCoverImage(cover);
                 }else {
                     contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
@@ -1605,7 +1608,8 @@ private void localJpush(long toUid){
             contentElement.setV_lv(profile.getvLv());
             String cover = content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
-                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
+                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index
+                		|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index){
                     contentElement.setCoverImage(cover);
                 }else {
                     contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
@@ -1977,7 +1981,8 @@ private void localJpush(long toUid){
             hottestContentElement.setType(content.getType());
             String cover = content.getConverImage();
             if(!StringUtils.isEmpty(cover)) {
-                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
+                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index
+                		|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index){
                     hottestContentElement.setCoverImage(cover);
                 }else {
                     hottestContentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
@@ -2097,7 +2102,8 @@ private void localJpush(long toUid){
             hottestContentElement.setType(content.getType());
             String cover = content.getConverImage();
             if(!StringUtils.isEmpty(cover)) {
-                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
+                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index
+                		|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index){
                     hottestContentElement.setCoverImage(cover);
                 }else {
                     hottestContentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
@@ -2263,7 +2269,8 @@ private void localJpush(long toUid){
             contentElement.setReadCount(content.getReadCountDummy());
             contentElement.setRights(content.getRights());
             if(!StringUtils.isEmpty(cover)) {
-                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
+                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index
+                		|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index){
                     contentElement.setCoverImage(cover);
                 }else {
                     contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
@@ -2381,7 +2388,8 @@ private void localJpush(long toUid){
 
             String cover =  content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
-                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index){
+                if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index
+                		|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index){
                     contentElement.setCoverImage(cover);
                 }else {
                     contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
