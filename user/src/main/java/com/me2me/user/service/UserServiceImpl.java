@@ -986,6 +986,9 @@ public class UserServiceImpl implements UserService {
     }
     
     public List<UserFollow> getAllFollows(long uid, List<Long> uids){
+    	if(null == uids || uids.size() == 0){
+    		return null;
+    	}
     	return userMybatisDao.getAllFollows(uid, uids);
     }
 
@@ -1100,7 +1103,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response getUserProfile(long uid) {
+    public Response getUserProfile(long uid, int vFlag) {
         log.info("getUserProfile start ...");
         UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
         log.info("getUserProfile getUserData success . uid : " + uid);
@@ -1114,7 +1117,7 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setGender(userProfile.getGender());
         showUserProfileDto.setUserName(userProfile.getMobile());
         showUserProfileDto.setIsPromoter(userProfile.getIsPromoter());
-        showUserProfileDto.setUgcCount(userInitJdbcDao.getUGCount(uid));
+        showUserProfileDto.setUgcCount(userInitJdbcDao.getUGCount(uid, vFlag));
         showUserProfileDto.setLiveCount(userInitJdbcDao.getLiveCount(uid));
         showUserProfileDto.setAcCount(userInitJdbcDao.getLiveAcCount(uid));
         if(!StringUtils.isEmpty(userProfile.getThirdPartBind())) {

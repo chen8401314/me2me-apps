@@ -64,8 +64,14 @@ public class UserInitJdbcDao extends BaseJdbcDao {
         return super.count(sql,uid,uid);
     }
 
-    public int getUGCount(long uid){
-        String sql = "select count(*) as count from content where uid = ? and status <> 1 and type in (0,1,8,9)" ;
+    public int getUGCount(long uid, int vFlag){
+    	String sql = null;
+    	if(vFlag == 0){
+    		sql = "select count(*) as count from content where uid = ? and status <> 1 and type in (0,1,8,9)" ;
+    	}else{
+    		sql = "select count(*) as count from content where uid = ? and status <> 1 and type in (0,1,6,8,9)" ;
+    	}
+    	
         return super.count(sql,uid);
     }
 

@@ -860,6 +860,9 @@
     <if test="type == 0">
       and c.type != 3
     </if>
+    <if test="flag == 0">
+     and c.type != 6
+    </if>
   </select>
 
   <select id="loadSelectedData" resultMap="ResultMapWithBLOBs">

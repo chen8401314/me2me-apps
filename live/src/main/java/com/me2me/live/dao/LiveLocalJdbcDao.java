@@ -324,6 +324,9 @@ public class LiveLocalJdbcDao {
 	}
 	
 	public Map<String, Long> getLikeCountByUidAndCids(long uid, List<Long> cids){
+		if(null == cids || cids.size() == 0){
+			return null;
+		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("select t.cid as cid,count(1) as cc from content_likes_details t");
 		sb.append(" where t.uid=").append(uid).append(" and t.cid in (");

@@ -1513,7 +1513,7 @@ private void localJpush(long toUid){
     }
 
     @Override
-    public Response UserData2(long targetUid,long sourceUid){
+    public Response UserData2(long targetUid,long sourceUid,int vFlag){
         UserInfoDto2 userInfoDto = new UserInfoDto2();
         log.info("getUserData2 start ...targetUid = " + targetUid + " sourceUid = "+ sourceUid);
         UserProfile userProfile = userService.getUserProfileByUid(targetUid);
@@ -1528,6 +1528,7 @@ private void localJpush(long toUid){
         }else {
             dto.setIsOwner(0);
         }
+        dto.setFlag(vFlag);
         //非直播文章
         List<Content> contents = contentMybatisDao.myPublishByType(dto);
         userInfoDto.setContentCount(contentMybatisDao.countMyPublishByType(dto));
@@ -1703,6 +1704,9 @@ private void localJpush(long toUid){
     }
 
     public void createTag(ContentDto contentDto, Content content) {
+    	if(StringUtils.isEmpty(contentDto.getFeeling())){
+    		return;
+    	}
         log.info("createTag start ...");
         if(!StringUtils.isEmpty(contentDto.getFeeling()) && contentDto.getFeeling().contains(";")){
             String[] tags = contentDto.getFeeling().split(";");
@@ -2059,6 +2063,9 @@ private void localJpush(long toUid){
     }
 
     private void builderContent2(long uid,List<Content2Dto> contentList, List<ShowHottestDto.HottestContentElement> container) {
+    	if(null == contentList || contentList.size() == 0){
+    		return;
+    	}
     	List<Long> uidList = new ArrayList<Long>();
         List<Long> topicIdList = new ArrayList<Long>();
         for(Content2Dto idx : contentList){

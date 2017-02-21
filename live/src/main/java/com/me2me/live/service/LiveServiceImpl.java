@@ -730,6 +730,9 @@ public class LiveServiceImpl implements LiveService {
     }
 
     private void builder(long uid, ShowTopicListDto showTopicListDto, List<Topic> topicList) {
+    	if(null == topicList || topicList.size() == 0){
+    		return;
+    	}
     	List<Long> uidList = new ArrayList<Long>();
     	List<Long> tidList = new ArrayList<Long>();
     	List<Long> ceTidList = new ArrayList<Long>();
@@ -901,6 +904,9 @@ public class LiveServiceImpl implements LiveService {
     }
 
     private void builderWithCache(long uid, ShowTopicListDto showTopicListDto, List<Topic> topicList) {
+    	if(null == topicList || topicList.size() == 0){
+    		return;
+    	}
     	List<Long> uidList = new ArrayList<Long>();
     	List<Long> tidList = new ArrayList<Long>();
     	List<Long> ceTidList = new ArrayList<Long>();
@@ -2525,6 +2531,9 @@ public class LiveServiceImpl implements LiveService {
 
     private void builderTopicSearch(long uid, ShowTopicSearchDTO showTopicSearchDTO, List<Map<String,Object>> topicList, 
     		Map<String, String> topMap, Map<String, String> publishMap) {
+    	if(null == topicList || topicList.size() == 0){
+    		return;
+    	}
     	if(null == topMap){
     		topMap = new HashMap<String, String>();
     	}

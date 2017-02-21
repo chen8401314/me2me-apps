@@ -139,9 +139,9 @@ public interface ContentMapper {
 
     List<Content> loadHottestContent(int sinceId);
 
-    List<Content> loadHottestTopsContent(int flag);
+    List<Content> loadHottestTopsContent(@Param("flag") int flag);
 
-    List<Content> loadNewestContent(int sinceId, int flag);
+    List<Content> loadNewestContent(@Param("sinceId") int sinceId, @Param("flag") int flag);
 
     int countFragment(CountFragmentDto countFragmentDto);
 
@@ -163,7 +163,7 @@ public interface ContentMapper {
      * @param flag  0 2.2.0版本前
      * @return
      */
-    List<Content2Dto> loadHottestContentByUpdateTime(long sinceId, int flag);
+    List<Content2Dto> loadHottestContentByUpdateTime(@Param("sinceId") long sinceId, @Param("flag") int flag);
 
     List<Content> loadMyPublishUgcData(Map map);
 

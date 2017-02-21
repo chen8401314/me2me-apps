@@ -92,7 +92,7 @@ public interface ContentService{
      */
     Response UserData(long targetUid ,long sourceUid);
 
-    Response UserData2(long targetUid ,long sourceUid);
+    Response UserData2(long targetUid ,long sourceUid,int vFlag);
 
     /**
      * 小编发布接口

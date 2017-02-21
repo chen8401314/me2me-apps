@@ -9,6 +9,8 @@ import com.me2me.sms.service.ChannelType;
 import com.me2me.user.dto.*;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
+import com.me2me.web.utils.VersionUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
+
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
@@ -432,7 +435,11 @@ public class Users extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getUserProfile",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getUserProfile(UserProfileRequest request){
-        return userService.getUserProfile(request.getUid());
+    	int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
+        	vflag = 1;
+        }
+        return userService.getUserProfile(request.getUid(), vflag);
     }
 
     /**

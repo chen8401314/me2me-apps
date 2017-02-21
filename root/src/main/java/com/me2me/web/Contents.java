@@ -182,7 +182,11 @@ public class Contents extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getUserData2",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getUserData2(UserInfoRequest request){
-        return contentService.UserData2(request.getCustomerId(),request.getUid());
+    	int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
+        	vflag = 1;
+        }
+        return contentService.UserData2(request.getCustomerId(),request.getUid(),vflag);
     }
 
     /**

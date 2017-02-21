@@ -171,7 +171,7 @@ public interface UserService {
 
     List<Long> getFollowList(long uid);
 
-    Response getUserProfile(long uid);
+    Response getUserProfile(long uid, int vFlag);
 
     UserProfile getUserProfileByMobile(String mobile);
 
