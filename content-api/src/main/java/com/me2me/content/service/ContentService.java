@@ -69,7 +69,7 @@ public interface ContentService{
      * @param updateTime
      * @return
      */
-    Response myPublish(long uid ,long updateTime ,int type ,int sinceId ,int newType);
+    Response myPublish(long uid ,long updateTime ,int type ,int sinceId ,int newType,int vFlag);
 
     /**
      * 内容所有感受列表
@@ -129,9 +129,9 @@ public interface ContentService{
 
     Response getHottest(int sinceId,long uid);
 
-    Response Newest(int sinceId,long uid);
+    Response Newest(int sinceId,long uid, int vFlag);
 
-    Response Attention(int sinceId,long uid);
+    Response Attention(int sinceId,long uid, int vFlag);
 
     Response createReview(ReviewDto reviewDto);
 
@@ -199,12 +199,12 @@ public interface ContentService{
 
     Response kingTopic(KingTopicDto kingTopic);
 
-    Response myPublishByType(long uid ,int sinceId ,int type,long updateTime,long currentUid);
+    Response myPublishByType(long uid ,int sinceId ,int type,long updateTime,long currentUid,int vFlag);
 
     void clearData();
 
 
-    Response Hottest2(int sinceId,long uid);
+    Response Hottest2(int sinceId,long uid, int flag);
 
     int getUgcCount(long uid);
 

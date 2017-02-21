@@ -4,6 +4,8 @@ import com.me2me.activity.service.ActivityService;
 import com.me2me.common.web.Response;
 import com.me2me.content.service.ContentService;
 import com.me2me.web.request.*;
+import com.me2me.web.utils.VersionUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -52,7 +54,11 @@ public class Home extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.Hottest2(request.getSinceId(),request.getUid());
+        int flag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
+        	flag = 1;
+        }
+        return contentService.Hottest2(request.getSinceId(),request.getUid(), flag);
     }
 
     /**
@@ -92,7 +98,11 @@ public class Home extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.Newest(request.getSinceId(),request.getUid());
+        int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
+        	vflag = 1;
+        }
+        return contentService.Newest(request.getSinceId(),request.getUid(), vflag);
     }
 
     /**
@@ -106,7 +116,11 @@ public class Home extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.Attention(request.getSinceId(),request.getUid());
+        int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
+        	vflag = 1;
+        }
+        return contentService.Attention(request.getSinceId(),request.getUid(),vflag);
     }
 
 

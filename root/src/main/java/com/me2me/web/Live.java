@@ -6,6 +6,8 @@ import com.me2me.kafka.service.KafkaService;
 import com.me2me.live.dto.*;
 import com.me2me.live.service.LiveService;
 import com.me2me.web.request.*;
+import com.me2me.web.utils.VersionUtil;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.lang.reflect.InvocationTargetException;
 import java.util.Calendar;
 
@@ -304,49 +307,11 @@ public class Live extends BaseController {
     @ResponseBody
     public Response getMyLivesByUpdateTime(GetMyLivesRequest request){
     	String version = request.getVersion();
-    	if(this.isNewVersion(version, "2.2.0")){//2.2.0版本，不需要3天未更新的的合集了，都在列表里展现
+    	if(VersionUtil.isNewVersion(version, "2.2.0")){//2.2.0版本，不需要3天未更新的的合集了，都在列表里展现
     		return liveService.myLivesAllByUpdateTime(request.getUid(),request.getUpdateTime());
     	}
     	
         return liveService.MyLivesByUpdateTime(request.getUid(),request.getUpdateTime());
-    }
-
-    private boolean isNewVersion(String currentVersion, String baseVersion){
-    	if(null == currentVersion || "".equals(currentVersion)){
-    		return false;
-    	}
-    	String[] v = currentVersion.split("\\.");
-    	String[] bv = baseVersion.split("\\.");
-    	if(v.length < 3 || bv.length < 3){
-    		return false;
-    	}
-    	
-    	try{
-    		int v1 = Integer.valueOf(v[0]);
-    		int bv1 = Integer.valueOf(bv[0]);
-    		if(v1 > bv1){
-    			return true;
-    		}else if(v1 < bv1){
-    			return false;
-    		}
-    		int v2 = Integer.valueOf(v[1]);
-    		int bv2 = Integer.valueOf(bv[1]);
-    		if(v2 > bv2){
-    			return true;
-    		}else if(v2 < bv2){
-    			return false;
-    		}
-    		int v3 = Integer.valueOf(v[2]);
-    		int bv3 = Integer.valueOf(bv[2]);
-    		if(v3 >= bv3){
-    			return true;
-    		}else{
-    			return false;
-    		}
-    	}catch(Exception e){
-    		e.printStackTrace();
-    	}
-    	return false;
     }
 
     /**

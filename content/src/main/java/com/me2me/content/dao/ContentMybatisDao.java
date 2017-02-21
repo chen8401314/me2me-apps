@@ -104,10 +104,11 @@ public class ContentMybatisDao {
         return contentMapper.loadMyPublishData(map);
     }
 
-    public List<Content>myPublishUgc(long uid,int sinceId) {
+    public List<Content>myPublishUgc(long uid,int sinceId,int flag) {
         Map<String,Object> map = Maps.newHashMap();
         map.put("uid",uid);
         map.put("sinceId",sinceId);
+        map.put("flag", flag);
         return contentMapper.loadMyPublishUgcData(map);
     }
 
@@ -124,15 +125,6 @@ public class ContentMybatisDao {
         map.put("sinceId",sinceId);
         return contentMapper.loadMyPublishLiveData2(map);
     }
-
-    /*
-    public List<LoadAllFeelingDto>loadAllFeeling(long cid , int sinceId) {
-        Map<String,Object> map = new HashMap<String,Object>();
-        map.put("cid",cid);
-        map.put("sinceId",sinceId);
-        List<LoadAllFeelingDto> result = contentUserLikesMapper.loadAllFeeling(map);
-        return result;
-    }*/
 
     public void modifyPGCById(Content content){
         contentMapper.updateByPrimaryKeySelective(content);
@@ -263,8 +255,8 @@ public class ContentMybatisDao {
         return contentMapper.loadHottestContent(sinceId);
     }
 
-    public List<Content> getHottestTopsContent(){
-        return contentMapper.loadHottestTopsContent();
+    public List<Content> getHottestTopsContent(int flag){
+        return contentMapper.loadHottestTopsContent(flag);
     }
 
     public int getContentImageCount(long cid){
@@ -274,32 +266,15 @@ public class ContentMybatisDao {
         return contentImageMapper.countByExample(example);
     }
 
-    public List<Content> getNewest(int sinceId){
-        return contentMapper.loadNewestContent(sinceId);
+    public List<Content> getNewest(int sinceId, int vFlag){
+        return contentMapper.loadNewestContent(sinceId, vFlag);
     }
 
-    public List<Content> getAttention(long sinceId , List<Long> userFollows,long meUid){
-//        ContentExample example = new ContentExample();
-//        ContentExample.Criteria criteria = example.createCriteria();
-//        criteria.andStatusNotEqualTo(Specification.ContentStatus.DELETE.index);
-//        if(userFollows != null && userFollows.size() >0) {
-//            criteria.andUidIn(userFollows);
-//        }else{
-//            criteria.andUidEqualTo(-1L);
-//        }
-//        criteria.andRightsEqualTo(Specification.ContentRights.EVERY.index);
-//        criteria.andIdLessThan(sinceId);
-//        // 查询自己发布的UGC
-//        ContentExample.Criteria criteria2 = example.createCriteria();
-//        criteria2.andUidEqualTo(meUid);
-//        criteria2.andStatusNotEqualTo(Specification.ContentStatus.DELETE.index);
-//        example.or(criteria2);
-//        example.setOrderByClause(" id desc limit 10 ");
-//        return  contentMapper.selectByExampleWithBLOBs(example);
-
+    public List<Content> getAttention(long sinceId , long meUid, int vFlag){
         Map<String,Object> params = Maps.newHashMap();
         params.put("uid",meUid);
         params.put("sinceId",sinceId);
+        params.put("flag", vFlag);
         return contentMapper.getAttention(params);
     }
 
@@ -564,9 +539,14 @@ public class ContentMybatisDao {
         contentMapper.clearData();
     }
 
-
-    public List<Content2Dto> getHottestContentByUpdateTime(int sinceId){
-        return contentMapper.loadHottestContentByUpdateTime(sinceId);
+    /**
+     * 
+     * @param sinceId
+     * @param flag   0 2.2.0版本前
+     * @return
+     */
+    public List<Content2Dto> getHottestContentByUpdateTime(int sinceId, int flag){
+        return contentMapper.loadHottestContentByUpdateTime(sinceId, flag);
     }
 
     public int getUgcCount(long uid){

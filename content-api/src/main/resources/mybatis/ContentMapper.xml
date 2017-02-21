@@ -776,7 +776,14 @@
     select
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
     c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights
-    from content c where c.status != 1 and c.uid =  #{uid,jdbcType=BIGINT} and c.type in (0,1,6,8,9) and c.id &lt; #{sinceId}
+    from content c where c.status != 1 and c.uid =  #{uid,jdbcType=BIGINT} 
+    <if test="flag == 0">
+    and c.type in (0,1,8,9)
+    </if>
+    <if test="flag != 0">
+    and c.type in (0,1,6,8,9)
+    </if>
+    and c.id &lt; #{sinceId}
     order by c.id desc limit 10
   </select>
 
@@ -814,6 +821,9 @@
     </if>
     <if test="type == 0">
      and c.type != 3
+    </if>
+    <if test="flag == 0">
+     and c.type != 6
     </if>
     <if test="type == 3">
       and c.type = 3
@@ -896,6 +906,9 @@
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
     c.thumbnail, c.hot_value, c.like_count, c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content
     from content c  right join high_quality_content h on c.id = h.cid  where c.is_top = 1 and c.status != 1  and c.rights = 1
+    <if test="flag == 0">
+    and c.type != 6
+    </if>
     order by c.id desc limit 5
   </select>
 
@@ -903,7 +916,13 @@
     select
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
     c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights
-    from content c  where c.id &lt; #{sinceId} and c.status != 1 and rights = 1 and (c.type = 0 or c.type = 3 or c.type = 9 or c.type = 8)
+    from content c  where c.id &lt; #{sinceId} and c.status != 1 and c.rights = 1 
+    <if test="flag == 0">
+    and  c.type in (0,3,8,9)
+    </if>
+    <if test="flag != 0">
+    and  c.type in (0,3,6,8,9)
+    </if>
     order by c.id desc limit 10
   </select>
 
@@ -948,6 +967,9 @@
     c.thumbnail, c.hot_value, c.like_count, c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights
     ,h.id as hid
     from content c  right join high_quality_content h on c.id = h.cid  where h.id &lt; #{sinceId} and c.status != 1 and c.is_top = 0 and c.rights = 1
+    <if test="flag == 0">
+    and c.type != 6
+    </if>
     order by h.id desc limit 10
   </select>
 
@@ -957,11 +979,18 @@
       <include refid="Blob_Column_List" />
      from (select <include refid="Base_Column_List" />,
     <include refid="Blob_Column_List" /> from content where uid IN (SELECT target_uid from user_follow where source_uid = #{uid} and target_uid != 0) and `status` != 1 and rights = 1
+    <if test="flag == 0">
+    and type != 6
+    </if>
     UNION
     select
     <include refid="Base_Column_List" />,
     <include refid="Blob_Column_List" />
-    from content where uid = #{uid} AND `status` != 1) v where v.id &lt; #{sinceId}
+    from content where uid = #{uid} AND `status` != 1
+    <if test="flag == 0">
+    and type != 6
+    </if>
+    ) v where v.id &lt; #{sinceId}
     order by v.id desc limit 10;
   </select>
 

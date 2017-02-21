@@ -5,6 +5,8 @@ import com.me2me.content.dto.*;
 import com.me2me.content.service.ContentService;
 import com.me2me.kafka.service.KafkaService;
 import com.me2me.web.request.*;
+import com.me2me.web.utils.VersionUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -143,7 +145,11 @@ public class Contents extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.myPublish(request.getCustomerId(),request.getUpdateTime(),request.getType(),request.getSinceId(),request.getNewType());
+        int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
+        	vflag = 1;
+        }
+        return contentService.myPublish(request.getCustomerId(),request.getUpdateTime(),request.getType(),request.getSinceId(),request.getNewType(),vflag);
     }
 
     /**
@@ -306,7 +312,11 @@ public class Contents extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.myPublishByType(request.getCustomerId(),request.getSinceId(),request.getType(),request.getUpdateTime(),request.getUid());
+        int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
+        	vflag = 1;
+        }
+        return contentService.myPublishByType(request.getCustomerId(),request.getSinceId(),request.getType(),request.getUpdateTime(),request.getUid(),vflag);
     }
 
 }

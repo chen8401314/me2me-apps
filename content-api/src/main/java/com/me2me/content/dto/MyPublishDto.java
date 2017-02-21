@@ -22,4 +22,6 @@ public class MyPublishDto implements BaseEntity {
     private long updateTime;
 
     private int isOwner;
+    
+    private int flag;
 }

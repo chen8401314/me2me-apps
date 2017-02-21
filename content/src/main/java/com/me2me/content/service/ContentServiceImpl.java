@@ -991,12 +991,13 @@ private void localJpush(long toUid){
     }
 
     @Override
-    public Response myPublishByType(long uid, int sinceId, int type,long updateTime,long currentUid) {
+    public Response myPublishByType(long uid, int sinceId, int type,long updateTime,long currentUid,int vFlag) {
         MyPublishDto dto = new MyPublishDto();
         dto.setType(type);
         dto.setSinceId(sinceId);
         dto.setUid(uid);
         dto.setUpdateTime(updateTime);
+        dto.setFlag(vFlag);
         ShowMyPublishDto showMyPublishDto = new ShowMyPublishDto();
         List<Content> contents = contentMybatisDao.myPublishByType(dto);
         List<Long> topicIdList = new ArrayList<Long>();
@@ -1062,7 +1063,8 @@ private void localJpush(long toUid){
             }
             contentElement.setTag(content.getFeeling());
             //查询直播状态
-            if(type == Specification.ArticleType.LIVE.index) {
+            if(type == Specification.ArticleType.LIVE.index
+            		|| type == Specification.ArticleType.FORWARD_LIVE.index) {
                 contentElement.setLiveStatus(contentMybatisDao.getTopicStatus(content.getForwardCid()));
                 int reviewCount = contentMybatisDao.countFragment(content.getForwardCid(),content.getUid());
                 contentElement.setReviewCount(reviewCount);
@@ -1300,7 +1302,7 @@ private void localJpush(long toUid){
     }
 
     @Override
-    public Response myPublish(long uid ,long updateTime ,int type ,int sinceId ,int newType) {
+    public Response myPublish(long uid ,long updateTime ,int type ,int sinceId ,int newType, int vFlag) {
         log.info("myPublish start ...");
         SquareDataDto squareDataDto = new SquareDataDto();
         if(newType == 1) {//新版本2.1.1
@@ -1309,7 +1311,7 @@ private void localJpush(long toUid){
             if (type == 1) {
                 log.info("myPublish ugc getData ...");
                 //获取非直播内容
-                List<Content> contents = contentMybatisDao.myPublishUgc(uid, sinceId);
+                List<Content> contents = contentMybatisDao.myPublishUgc(uid, sinceId, vFlag);
                 buildDatas(squareDataDto, contents, uid);
             } else if (type == 2) {
                 log.info("my publish live getData ...");
@@ -1327,7 +1329,7 @@ private void localJpush(long toUid){
             if (type == 1) {
                 log.info("myPublish ugc getData ...");
                 //获取非直播内容
-                List<Content> contents = contentMybatisDao.myPublishUgc(uid, sinceId);
+                List<Content> contents = contentMybatisDao.myPublishUgc(uid, sinceId, vFlag);
                 buildDatas(squareDataDto, contents, uid);
             } else if (type == 2) {
                 log.info("my publish live getData ...");
@@ -1867,7 +1869,7 @@ private void localJpush(long toUid){
         }
         // 置顶内容
         if(sinceId==Integer.MAX_VALUE) {
-            List<Content> contentTopList = contentMybatisDao.getHottestTopsContent();
+            List<Content> contentTopList = contentMybatisDao.getHottestTopsContent(0);
             builderContent(uid, contentTopList, hottestDto.getTops());
         }
         //内容
@@ -1881,7 +1883,7 @@ private void localJpush(long toUid){
     }
 
     @Override
-    public Response Hottest2(int sinceId,long uid){
+    public Response Hottest2(int sinceId,long uid, int flag){
         log.info("getHottest2 start ...");
         ShowHottestDto hottestDto = new ShowHottestDto();
         //活动
@@ -1915,11 +1917,11 @@ private void localJpush(long toUid){
         }
         // 置顶内容
         if(sinceId==Integer.MAX_VALUE) {
-            List<Content> contentTopList = contentMybatisDao.getHottestTopsContent();
+            List<Content> contentTopList = contentMybatisDao.getHottestTopsContent(flag);
             builderContent(uid, contentTopList, hottestDto.getTops());
         }
         //内容
-        List<Content2Dto> contentList = contentMybatisDao.getHottestContentByUpdateTime(sinceId);
+        List<Content2Dto> contentList = contentMybatisDao.getHottestContentByUpdateTime(sinceId, flag);
         log.info("getHottestContent success");
         builderContent2(uid, contentList,hottestDto.getHottestContentData());
         //log.info("monitor");
@@ -2207,10 +2209,10 @@ private void localJpush(long toUid){
      * @return
      */
     @Override
-    public Response Newest(int sinceId, long uid) {
+    public Response Newest(int sinceId, long uid, int vFlag) {
         log.info("getNewest start ...");
         ShowNewestDto showNewestDto = new ShowNewestDto();
-        List<Content> newestList = contentMybatisDao.getNewest(sinceId);
+        List<Content> newestList = contentMybatisDao.getNewest(sinceId, vFlag);
         log.info("getNewest data success ");
         
         List<Long> uidList = new ArrayList<Long>();
@@ -2321,14 +2323,13 @@ private void localJpush(long toUid){
     }
 
     @Override
-    public Response Attention(int sinceId, long uid) {
+    public Response Attention(int sinceId, long uid, int vFlag) {
         log.info("current sinceId is : " + sinceId);
         log.info("getAttention start ...");
         ShowAttentionDto showAttentionDto = new ShowAttentionDto();
         //获取此人关注的人是列表
-        List<Long> list = userService.getFollowList(uid);
         log.info("get user follow");
-        List<Content> attentionList = contentMybatisDao.getAttention(sinceId ,list,uid);
+        List<Content> attentionList = contentMybatisDao.getAttention(sinceId ,uid, vFlag);
         List<Long> uidList = new ArrayList<Long>();
         List<Long> topicIdList = new ArrayList<Long>();
         for(Content idx : attentionList){
@@ -2362,7 +2363,7 @@ private void localJpush(long toUid){
         
         UserProfile userProfile = null;
         for(Content content : attentionList){
-            ShowAttentionDto.ContentElement contentElement = showAttentionDto.createElement();
+            ShowAttentionDto.ContentElement contentElement = ShowAttentionDto.createElement();
             contentElement.setId(content.getId());
             contentElement.setUid(content.getUid());
             // 获取用户信息
