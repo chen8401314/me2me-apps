@@ -76,6 +76,7 @@ public class AggregationPublishListener {
 			}
 			
 			JSONObject obj = JSON.parseObject(extra);
+			obj.put("action", Integer.valueOf(0));//下发的暂时没有什么花头，和前端沟通后，暂设为0
 			
 			UserProfile up = userService.getUserProfileByUid(event.getUid());
 			Content topicContent = contentService.getContentByTopicId(event.getTopicId());
