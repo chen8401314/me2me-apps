@@ -589,7 +589,7 @@
     select
     <include refid="Base_Column_List" />
     from user_profile p
-    where  p.uid in (SELECT f.target_uid FROM user_follow f WHERE f.source_uid = #{uid,jdbcType=BIGINT})
+    where  p.uid in (SELECT f.source_uid FROM user_follow f WHERE f.target_uid = #{uid,jdbcType=BIGINT})
     and  p.nick_name like #{nickName,jdbcType=VARCHAR}
     order by convert(nick_name USING gbk) COLLATE gbk_chinese_ci limit #{start,jdbcType=INTEGER} ,#{pageSize,jdbcType=INTEGER}
   </select>
@@ -599,7 +599,7 @@
     select
     count(1)
     from user_profile p
-    where p.uid in (SELECT f.target_uid FROM user_follow f WHERE f.source_uid = #{uid,jdbcType=BIGINT})
+    where p.uid in (SELECT f.source_uid FROM user_follow f WHERE f.target_uid = #{uid,jdbcType=BIGINT})
     and p.nick_name like #{nickName,jdbcType=VARCHAR}
   </select>
 </mapper>
