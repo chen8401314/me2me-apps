@@ -1158,6 +1158,8 @@ private void localJpush(long toUid){
             return Response.failure(ResponseStatus.DATA_DOES_NOT_EXIST.status,ResponseStatus.DATA_DOES_NOT_EXIST.message);
         }else if(content.getStatus() == Specification.ContentStatus.DELETE.index){
             return Response.failure(ResponseStatus.DATA_IS_DELETE.status,ResponseStatus.DATA_IS_DELETE.message);
+        }else if(content.getRights().intValue() == Specification.ContentRights.SELF.index && content.getUid().longValue() != uid){
+        	return Response.failure(ResponseStatus.UGC_NO_RIGHTS.status,ResponseStatus.UGC_NO_RIGHTS.message);
         }
         log.info("get content data success");
         contentDetailDto.setFeeling(content.getFeeling());

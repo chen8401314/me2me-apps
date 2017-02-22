@@ -438,7 +438,7 @@ public enum  ResponseStatus {
     
     AGGREGATION_PUBLISH_OVER_LIMIT("每天只能下发#{count}#次，今天不能再下发了哦。", "aggregation puhlish over limit", 50061),
     
-    
+    UGC_NO_RIGHTS("无权访问", "no rights", 50062),
     
     
 
