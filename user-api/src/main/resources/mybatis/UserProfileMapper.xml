@@ -589,15 +589,17 @@
     select
     <include refid="Base_Column_List" />
     from user_profile p
-    where  p.uid in (select s.uid from sns_circle s where s.owner = #{uid,jdbcType=BIGINT})  and  p.nick_name like #{nickName,jdbcType=VARCHAR}
+    where  p.uid in (SELECT f.target_uid FROM user_follow f WHERE f.source_uid = #{uid,jdbcType=BIGINT})
+    and  p.nick_name like #{nickName,jdbcType=VARCHAR}
     order by convert(nick_name USING gbk) COLLATE gbk_chinese_ci limit #{start,jdbcType=INTEGER} ,#{pageSize,jdbcType=INTEGER}
   </select>
 
 
   <select id="countFans" parameterType="com.me2me.user.dto.SearchFansDto" resultType="java.lang.Integer">
     select
-    count(*)
+    count(1)
     from user_profile p
-    where  p.uid in (select s.uid from sns_circle s where s.owner = #{uid,jdbcType=BIGINT})  and  p.nick_name like #{nickName,jdbcType=VARCHAR}
+    where p.uid in (SELECT f.target_uid FROM user_follow f WHERE f.source_uid = #{uid,jdbcType=BIGINT})
+    and p.nick_name like #{nickName,jdbcType=VARCHAR}
   </select>
 </mapper>
