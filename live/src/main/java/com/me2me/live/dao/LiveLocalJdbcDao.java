@@ -186,6 +186,9 @@ public class LiveLocalJdbcDao {
 				sb.append("select m2.*,m2.long_time as longtime");
 				sb.append(" from topic m2,live_favorite f");
 				sb.append(" where m2.id=f.topic_id");
+				sb.append(" and m2.uid<>").append(searchDTO.getSearchUid());
+				sb.append(" and not FIND_IN_SET(").append(searchDTO.getSearchUid());
+				sb.append(",SUBSTR(m2.core_circle FROM 2 FOR LENGTH(m2.core_circle)-2))");
 				sb.append(" and f.uid=").append(searchDTO.getSearchUid());
 			}
 		}else{
