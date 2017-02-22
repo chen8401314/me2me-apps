@@ -49,6 +49,7 @@ public class ShowTopicSearchDTO implements BaseEntity {
         private int isLike;
         
         private int type;//内容type：ugc,王国之类
+        private int acCount;//聚合王国属性，子王国数
         private int contentType;//王国类型
         
         private int isTop;//是否置顶，0否，1是

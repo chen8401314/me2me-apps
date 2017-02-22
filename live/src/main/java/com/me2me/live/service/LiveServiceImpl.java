@@ -2543,6 +2543,7 @@ public class LiveServiceImpl implements LiveService {
     	
 		List<Long> uidList = new ArrayList<Long>();
 		List<Long> tidList = new ArrayList<Long>();
+		List<Long> ceTidList = new ArrayList<Long>();
     	for(Map<String,Object> topic : topicList){
     		Long u = (Long)topic.get("uid");
     		Long id = (Long)topic.get("id");
@@ -2551,6 +2552,11 @@ public class LiveServiceImpl implements LiveService {
     		}
     		if(!tidList.contains(id)){
     			tidList.add(id);
+    		}
+    		if(((Integer)topic.get("type")).intValue() == Specification.KingdomType.AGGREGATION.index){//聚合王国
+    			if(!ceTidList.contains(id)){
+    				ceTidList.add(id);
+    			}
     		}
     	}
     	//一次性查询用户属性
@@ -2612,6 +2618,17 @@ public class LiveServiceImpl implements LiveService {
         		lastFragmentMap.put(String.valueOf(m.get("topic_id")), m);
         	}
         }
+        //一次性查询聚合王国的子王国数
+        Map<String, Long> acCountMap = new HashMap<String, Long>();
+        if(ceTidList.size() > 0){
+        	List<Map<String,Object>> acCountList = liveLocalJdbcDao.getTopicAggregationAcCountByTopicIds(ceTidList);
+        	if(null != acCountList && acCountList.size() > 0){
+        		for(Map<String,Object> a : acCountList){
+        			acCountMap.put(String.valueOf(a.get("topic_id")), (Long)a.get("cc"));
+        		}
+        	}
+        }
+        
         UserProfile userProfile = null;
         ShowTopicSearchDTO.TopicElement e = null;
         MySubscribeCacheModel cacheModel = null;
@@ -2707,6 +2724,15 @@ public class LiveServiceImpl implements LiveService {
             }
             
             e.setContentType((Integer)topic.get("type"));
+            
+            if(e.getContentType() == Specification.KingdomType.AGGREGATION.index){//聚合王国
+            	if(null != acCountMap.get(String.valueOf(topicId))){
+            		e.setAcCount(acCountMap.get(String.valueOf(topicId)).intValue());
+            	}else{
+            		e.setAcCount(0);
+            	}
+            }
+            
             e.setPageUpdateTime((Long)topic.get("longtime"));
             
             showTopicSearchDTO.getResultList().add(e);

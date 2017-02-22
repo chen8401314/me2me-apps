@@ -1179,9 +1179,8 @@ private void localJpush(long toUid){
             int value = random.nextInt(end)+start;
             int readDummy = readCountDummy+value;
             content.setReadCountDummy(readDummy);
-            contentMybatisDao.updateContentById(content);
-            contentDetailDto.setReadCount(readDummy);
 
+        contentDetailDto.setReadCount(readDummy);
         contentDetailDto.setRights(content.getRights());
 
         String cover = content.getConverImage();
@@ -1200,7 +1199,7 @@ private void localJpush(long toUid){
 //        contentDetailDto.setReviewCount(content.getReviewCount());
         contentDetailDto.setReviewCount(contentMybatisDao.countContentReviewByCid(content.getId()));
         
-        contentDetailDto.setFavoriteCount(content.getFavoriteCount()+1);
+        contentDetailDto.setFavoriteCount(content.getFavoriteCount());
         contentDetailDto.setPersonCount(content.getPersonCount());
         contentDetailDto.setCreateTime(content.getCreateTime());
         contentDetailDto.setId(content.getId());
