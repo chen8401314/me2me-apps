@@ -3305,6 +3305,7 @@ public class LiveServiceImpl implements LiveService {
 		JSONObject obj = JSON.parseObject(extra);
 		String only = UUID.randomUUID().toString()+"-"+new Random().nextInt();
 		obj.put("only", only);
+		obj.put("action", Integer.valueOf(3));//转发
 		UserProfile up = userService.getUserProfileByUid(uid);
 		Content topicContent = contentService.getContentByTopicId(sourceTopicId);
 		JSONObject fromObj = new JSONObject();
