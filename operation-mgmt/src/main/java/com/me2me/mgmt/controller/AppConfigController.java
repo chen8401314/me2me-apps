@@ -64,6 +64,8 @@ public class AppConfigController {
 		dbConfigList = new ArrayList<ConfigItem>();
 		ci = new ConfigItem(ConfigItem.DBConfig.DEFAULT_FOLLOW.getKey(), ConfigItem.DBConfig.DEFAULT_FOLLOW.getDesc(), ConfigItem.ConfigType.DB);
 		dbConfigList.add(ci);
+		ci = new ConfigItem(ConfigItem.DBConfig.DEFAULT_SUBSCRIBE.getKey(), ConfigItem.DBConfig.DEFAULT_SUBSCRIBE.getDesc(), ConfigItem.ConfigType.DB);
+		dbConfigList.add(ci);
 		ci = new ConfigItem(ConfigItem.DBConfig.READ_COUNT_START.getKey(), ConfigItem.DBConfig.READ_COUNT_START.getDesc(), ConfigItem.ConfigType.DB);
 		dbConfigList.add(ci);
 		ci = new ConfigItem(ConfigItem.DBConfig.READ_COUNT_END.getKey(), ConfigItem.DBConfig.READ_COUNT_END.getDesc(), ConfigItem.ConfigType.DB);
@@ -152,6 +154,8 @@ public class AppConfigController {
 			return sconfig.getReadCountStart().toString();
 		}else if(ConfigItem.DBConfig.READ_COUNT_END.getKey().equals(key)){
 			return sconfig.getReadCountEnd().toString();
+		}else if(ConfigItem.DBConfig.DEFAULT_SUBSCRIBE.getKey().equals(key)){
+			return sconfig.getDefaultSubscribe();
 		}
 		
 		return "";
@@ -212,6 +216,8 @@ public class AppConfigController {
 		}else if(ConfigItem.DBConfig.READ_COUNT_END.getKey().equals(key)){
 			Integer v = Integer.valueOf(value);
 			config.setReadCountEnd(v);
+		}else if(ConfigItem.DBConfig.DEFAULT_SUBSCRIBE.getKey().equals(key)){
+			config.setDefaultSubscribe(value);
 		}else{
 			logger.warn("不支持的key");
 			return "不支持的key";

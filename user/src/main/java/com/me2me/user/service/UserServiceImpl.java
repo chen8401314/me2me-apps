@@ -181,7 +181,11 @@ public class UserServiceImpl implements UserService {
 
     private void defaultFollow(long uid){
         SystemConfig config = userMybatisDao.getSystemConfig();
-        if(config!=null&&!StringUtils.isEmpty(config.getDefaultFollow())){
+        if(null == config){
+        	return;
+        }
+        
+        if(!StringUtils.isEmpty(config.getDefaultFollow())){
             String[] arrayDefaultFollow = config.getDefaultFollow().split(",");
             for(String defaultFollow:arrayDefaultFollow) {
                 long tid = Long.parseLong(defaultFollow);
@@ -201,8 +205,17 @@ public class UserServiceImpl implements UserService {
                 //加入圈外人
 //                liveForUserJdbcDao.addToSnsCircle(tid,uid);
             }
+        }
+        if(!StringUtils.isEmpty(config.getDefaultSubscribe())){//默认订阅王国
+        	String[] topicIds = config.getDefaultSubscribe().split(",");
+        	for(String topicId : topicIds){
+        		if(!StringUtils.isEmpty(topicId)){
+        			long tid = Long.valueOf(topicId);
+        			liveForUserJdbcDao.favoriteTopic(tid, uid);
+        		}
+        	}
+        }
     }
-}
     /**
      * 用户登录
      * @param userLoginDto

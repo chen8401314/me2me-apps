@@ -153,12 +153,7 @@
                 <ref bean="topicHotTaskTriggers" />
                 <ref bean="recommandPushTaskTriggers" />
                 <ref bean="kingdomUpdatePushTaskTriggers" />
-                 -->
-                 
-                 
-                 <ref bean="springTopicHotTaskTriggers" />
-                <!-- 
-                
+                <ref bean="springTopicHotTaskTriggers" />
                 <ref bean="springPushNoticeAndHotTaskTriggers" />
                 <ref bean="springPushActivityStartTaskTriggers" />
                 <ref bean="springPushTop10TaskTriggers" />
