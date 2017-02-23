@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -135,7 +136,11 @@ public class ContentMybatisDao {
         ContentTagsDetailsExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(cid);
         criteria.andIdLessThan(sinceId);
-        criteria.andCreateTimeNotEqualTo(createTime);
+        //由于自己的feeling也是感受，两个表存储有可能会有时间差，故这里想自己的去除。
+        Calendar cal = Calendar.getInstance();
+		cal.setTime(createTime);
+		cal.add(Calendar.SECOND, 2);
+		criteria.andCreateTimeGreaterThan(cal.getTime());
         example.setOrderByClause(" create_time desc ");
         return contentTagsDetailsMapper.selectByExample(example);
     }
