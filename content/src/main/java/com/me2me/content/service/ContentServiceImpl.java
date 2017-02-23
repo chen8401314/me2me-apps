@@ -552,6 +552,7 @@ public class ContentServiceImpl implements ContentService {
 	            reviewElement.setAtNickName(atUser.getNickName());
             }
             reviewElement.setId(articleReview.getId());
+            reviewElement.setExtra(articleReview.getExtra());
             showArticleCommentsDto.getReviews().add(reviewElement);
         }
         for(ArticleLikesDetails likesDetails : articleLikesDetails){
@@ -1592,19 +1593,7 @@ private void localJpush(long toUid){
             contentElement.setContentType(content.getContentType());
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
-
-                SystemConfig systemConfig =userService.getSystemConfig();
-                int start = systemConfig.getReadCountStart();
-                int end = systemConfig.getReadCountEnd();
-                int readCountDummy = content.getReadCountDummy();
-                Random random = new Random();
-                //取1-6的随机数每次添加
-                int value = random.nextInt(end)+start;
-                int readDummy = readCountDummy+value;
-                content.setReadCountDummy(readDummy);
-                contentMybatisDao.updateContentById(content);
-                contentElement.setReadCount(readDummy);
-
+            contentElement.setReadCount(content.getReadCountDummy());
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
             contentElement.setUid(content.getUid());
@@ -1619,7 +1608,6 @@ private void localJpush(long toUid){
                     contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + cover);
                 }
             }
-            contentElement.setTag(content.getFeeling());
             //查询直播状态
             if(type == Specification.ArticleType.LIVE.index) {
                 contentElement.setLiveStatus(contentMybatisDao.getTopicStatus(content.getForwardCid()));
@@ -1654,15 +1642,6 @@ private void localJpush(long toUid){
             //直播是否收藏
             contentElement.setFavorite(favorite);
             contentElement.setIsLike(isLike(content.getId(),sourceUid));
-            contentElement.setLikeCount(content.getLikeCount());
-            contentElement.setPersonCount(content.getPersonCount());
-            contentElement.setFavoriteCount(content.getFavoriteCount()+1);
-//            ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
-//            if(contentImage != null) {
-//                contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
-//            }else{
-//                contentElement.setCoverImage("");
-//            }
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
             log.info("get content review success");
             for(ContentReview contentReview : contentReviewList){

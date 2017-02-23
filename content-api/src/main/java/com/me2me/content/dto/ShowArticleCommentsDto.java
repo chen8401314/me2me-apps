@@ -46,6 +46,8 @@ public class ShowArticleCommentsDto implements BaseEntity{
         private long atUid;
         
         private int v_lv;
+        
+        private String extra;
 
     }
 
