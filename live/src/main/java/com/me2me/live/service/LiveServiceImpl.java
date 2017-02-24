@@ -30,6 +30,7 @@ import com.me2me.live.event.AggregationPublishEvent;
 import com.me2me.live.event.CacheLiveEvent;
 import com.me2me.live.event.RemindAndJpushAtMessageEvent;
 import com.me2me.live.event.SpeakEvent;
+import com.me2me.live.event.TopicNoticeEvent;
 import com.me2me.live.model.*;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.*;
@@ -3359,6 +3360,10 @@ public class LiveServiceImpl implements LiveService {
         String value = lastFragmentId + "," + total;
         cacheService.hSet(LiveServiceImpl.TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + targetTopicId, value);
     	
+        //推送&&红点等设置
+        TopicNoticeEvent event = new TopicNoticeEvent(uid, targetTopicId);
+        this.applicationEventBus.post(event);
+        
     	return Response.success();
     }
     

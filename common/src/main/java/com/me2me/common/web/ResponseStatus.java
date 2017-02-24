@@ -440,6 +440,8 @@ public enum  ResponseStatus {
     
     UGC_NO_RIGHTS("无权访问", "no rights", 50062),
     
+    YOU_ARE_NOT_CORECIRCLE("只有核心圈才能操作", "you are not coreCircle", 50063),
+    
     
 
     ILLEGAL_REQUEST("非法的请求参数","illegal request",50099);
