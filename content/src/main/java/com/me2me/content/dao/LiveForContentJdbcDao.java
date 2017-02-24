@@ -135,4 +135,23 @@ public class LiveForContentJdbcDao {
     	}
     	return null;
     }
+    
+    public List<Map<String,Object>> getTopicUserProfileByTopicIds(List<Long> topicIds){
+    	if(null == topicIds || topicIds.size() == 0){
+    		return null;
+    	}
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select t.id,p.uid,p.nick_name,p.avatar,p.v_lv");
+    	sb.append(" from user_profile p LEFT JOIN topic t on t.uid=p.uid");
+    	sb.append(" where t.id in (");
+    	for(int i=0;i<topicIds.size();i++){
+    		if(i>0){
+    			sb.append(",");
+    		}
+    		sb.append(topicIds.get(i));
+    	}
+    	sb.append(")");
+    	
+    	return jdbcTemplate.queryForList(sb.toString());
+    }
 }

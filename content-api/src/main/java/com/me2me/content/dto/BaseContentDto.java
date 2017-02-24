@@ -98,4 +98,8 @@ public class BaseContentDto implements BaseEntity{
 
     //聚集子王国数量
     private int acCount;
+    
+    private long forwardUid;
+    
+    private String forwardNickName;
 }

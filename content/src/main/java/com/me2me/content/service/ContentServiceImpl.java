@@ -204,6 +204,7 @@ public class ContentServiceImpl implements ContentService {
 		log.info("buildDatas ...");
 		List<Long> uidList = new ArrayList<Long>();
         List<Long> topicIdList = new ArrayList<Long>();
+        List<Long> forwardTopicIdList = new ArrayList<Long>();
         for(Content idx : contents){
         	if(!uidList.contains(idx.getUid())){
         		uidList.add(idx.getUid());
@@ -212,6 +213,21 @@ public class ContentServiceImpl implements ContentService {
         			|| idx.getType() == Specification.ArticleType.FORWARD_LIVE.index){//王国
         		if(!topicIdList.contains(idx.getForwardCid())){
         			topicIdList.add(idx.getForwardCid());
+        		}
+        		if(idx.getType() == Specification.ArticleType.FORWARD_LIVE.index){
+        			if(!forwardTopicIdList.contains(idx.getForwardCid())){
+        				forwardTopicIdList.add(idx.getForwardCid());
+        			}
+        		}
+        	}
+        }
+        
+        Map<String, Map<String, Object>> forwardTopicUserProfileMap = new HashMap<String, Map<String, Object>>();
+        if(forwardTopicIdList.size() > 0){
+        	List<Map<String,Object>> topicUserProfileList = liveForContentJdbcDao.getTopicUserProfileByTopicIds(forwardTopicIdList);
+        	if(null != topicUserProfileList && topicUserProfileList.size() > 0){
+        		for(Map<String,Object> topicUserProfile : topicUserProfileList){
+        			forwardTopicUserProfileMap.put(String.valueOf(topicUserProfile.get("id")), topicUserProfile);
         		}
         	}
         }
@@ -235,6 +251,7 @@ public class ContentServiceImpl implements ContentService {
         }
         
         UserProfile userProfile = null;
+        Map<String, Object> topicUserProfile = null;
 		for (Content content : contents) {
 			SquareDataDto.SquareDataElement squareDataElement = SquareDataDto.createElement();
 			squareDataElement.setId(content.getId());
@@ -278,6 +295,15 @@ public class ContentServiceImpl implements ContentService {
 			// 如果是直播需要一个直播状态
 			if (content.getType() == Specification.ArticleType.LIVE.index
 					|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index) {
+				
+				if(content.getType() == Specification.ArticleType.FORWARD_LIVE.index){//王国转发UGC的，那么需要返回原作者UID和昵称
+            		topicUserProfile = forwardTopicUserProfileMap.get(content.getForwardCid().toString());
+            		if(null != topicUserProfile){
+            			squareDataElement.setForwardUid((Long)topicUserProfile.get("uid"));
+            			squareDataElement.setForwardNickName((String)topicUserProfile.get("nick_name"));
+            		}
+            	}
+				
 				// 查询直播状态
 				int status = contentMybatisDao.getTopicStatus(content.getForwardCid());
 				log.info(" get live status success");
@@ -1002,11 +1028,31 @@ private void localJpush(long toUid){
         ShowMyPublishDto showMyPublishDto = new ShowMyPublishDto();
         List<Content> contents = contentMybatisDao.myPublishByType(dto);
         List<Long> topicIdList = new ArrayList<Long>();
+        List<Long> forwardTopicIdList = new ArrayList<Long>();
         for(Content idx : contents){
-        	if(idx.getType() == Specification.ArticleType.LIVE.index){//王国
-        		topicIdList.add(idx.getForwardCid());
+        	if(idx.getType() == Specification.ArticleType.LIVE.index
+        			|| idx.getType() == Specification.ArticleType.FORWARD_LIVE.index){//王国
+        		if(!topicIdList.contains(idx.getForwardCid())){
+        			topicIdList.add(idx.getForwardCid());
+        		}
+        		if(idx.getType() == Specification.ArticleType.FORWARD_LIVE.index){
+        			if(!forwardTopicIdList.contains(idx.getForwardCid())){
+        				forwardTopicIdList.add(idx.getForwardCid());
+        			}
+        		}
         	}
         }
+        
+        Map<String, Map<String, Object>> forwardTopicUserProfileMap = new HashMap<String, Map<String, Object>>();
+        if(forwardTopicIdList.size() > 0){
+        	List<Map<String,Object>> topicUserProfileList = liveForContentJdbcDao.getTopicUserProfileByTopicIds(forwardTopicIdList);
+        	if(null != topicUserProfileList && topicUserProfileList.size() > 0){
+        		for(Map<String,Object> topicUserProfile : topicUserProfileList){
+        			forwardTopicUserProfileMap.put(String.valueOf(topicUserProfile.get("id")), topicUserProfile);
+        		}
+        	}
+        }
+        
         Map<String, Map<String, Object>> topicMap = new HashMap<String, Map<String, Object>>();
         List<Map<String,Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
         if(null != topicList && topicList.size() > 0){
@@ -1016,7 +1062,7 @@ private void localJpush(long toUid){
         		topicMap.put(topicId.toString(), map);
         	}
         }
-        
+        Map<String, Object> topicUserProfile = null;
         for (Content content : contents){
             ShowMyPublishDto.MyPublishElement contentElement = ShowMyPublishDto.createElement();
             contentElement.setTag(content.getFeeling());
@@ -1064,8 +1110,17 @@ private void localJpush(long toUid){
             }
             contentElement.setTag(content.getFeeling());
             //查询直播状态
-            if(type == Specification.ArticleType.LIVE.index
-            		|| type == Specification.ArticleType.FORWARD_LIVE.index) {
+            if(content.getType() == Specification.ArticleType.LIVE.index
+            		|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index) {
+            	
+            	if(content.getType() == Specification.ArticleType.FORWARD_LIVE.index){//王国转发UGC的，那么需要返回原作者UID和昵称
+            		topicUserProfile = forwardTopicUserProfileMap.get(content.getForwardCid().toString());
+            		if(null != topicUserProfile){
+            			contentElement.setForwardUid((Long)topicUserProfile.get("uid"));
+            			contentElement.setForwardNickName((String)topicUserProfile.get("nick_name"));
+            		}
+            	}
+            	
                 contentElement.setLiveStatus(contentMybatisDao.getTopicStatus(content.getForwardCid()));
                 int reviewCount = contentMybatisDao.countFragment(content.getForwardCid(),content.getUid());
                 contentElement.setReviewCount(reviewCount);
@@ -1560,11 +1615,28 @@ private void localJpush(long toUid){
 
     private void buildUserData(long sourceUid, List<Content> contents,int type,UserInfoDto2 userInfoDto) {
     	List<Long> topicIdList = new ArrayList<Long>();
+    	List<Long> forwardTopicIdList = new ArrayList<Long>();
         for(Content idx : contents){
         	if(idx.getType() == Specification.ArticleType.LIVE.index){//王国
         		topicIdList.add(idx.getForwardCid());
         	}
+        	if(idx.getType() == Specification.ArticleType.FORWARD_LIVE.index){
+    			if(!forwardTopicIdList.contains(idx.getForwardCid())){
+    				forwardTopicIdList.add(idx.getForwardCid());
+    			}
+    		}
         }
+        
+        Map<String, Map<String, Object>> forwardTopicUserProfileMap = new HashMap<String, Map<String, Object>>();
+        if(forwardTopicIdList.size() > 0){
+        	List<Map<String,Object>> topicUserProfileList = liveForContentJdbcDao.getTopicUserProfileByTopicIds(forwardTopicIdList);
+        	if(null != topicUserProfileList && topicUserProfileList.size() > 0){
+        		for(Map<String,Object> topicUserProfile : topicUserProfileList){
+        			forwardTopicUserProfileMap.put(String.valueOf(topicUserProfile.get("id")), topicUserProfile);
+        		}
+        	}
+        }
+        
         Map<String, Map<String, Object>> topicMap = new HashMap<String, Map<String, Object>>();
         List<Map<String,Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
         if(null != topicList && topicList.size() > 0){
@@ -1574,6 +1646,7 @@ private void localJpush(long toUid){
         		topicMap.put(topicId.toString(), map);
         	}
         }
+        Map<String, Object> topicUserProfile = null;
         for (Content content : contents){
             UserInfoDto2.ContentElement contentElement = UserInfoDto2.createElement();
             contentElement.setTag(content.getFeeling());
@@ -1609,7 +1682,17 @@ private void localJpush(long toUid){
                 }
             }
             //查询直播状态
-            if(type == Specification.ArticleType.LIVE.index) {
+            if(content.getType() == Specification.ArticleType.LIVE.index
+            		|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index) {
+            	
+            	if(content.getType() == Specification.ArticleType.FORWARD_LIVE.index){//王国转发UGC的，那么需要返回原作者UID和昵称
+            		topicUserProfile = forwardTopicUserProfileMap.get(content.getForwardCid().toString());
+            		if(null != topicUserProfile){
+            			contentElement.setForwardUid((Long)topicUserProfile.get("uid"));
+            			contentElement.setForwardNickName((String)topicUserProfile.get("nick_name"));
+            		}
+            	}
+            	
                 contentElement.setLiveStatus(contentMybatisDao.getTopicStatus(content.getForwardCid()));
                 int reviewCount = contentMybatisDao.countFragment(content.getForwardCid(),content.getUid());
                 contentElement.setReviewCount(reviewCount);
@@ -1931,6 +2014,7 @@ private void localJpush(long toUid){
     private void builderContent(long uid,List<Content> contentList, List<ShowHottestDto.HottestContentElement> container) {
     	List<Long> uidList = new ArrayList<Long>();
         List<Long> topicIdList = new ArrayList<Long>();
+        List<Long> forwardTopicIdList = new ArrayList<Long>();
         for(Content idx : contentList){
         	if(!uidList.contains(idx.getUid())){
         		uidList.add(idx.getUid());
@@ -1939,6 +2023,21 @@ private void localJpush(long toUid){
         			|| idx.getType() == Specification.ArticleType.FORWARD_LIVE.index){//王国/转发王国
         		if(!topicIdList.contains(idx.getForwardCid())){
         			topicIdList.add(idx.getForwardCid());
+        		}
+        		if(idx.getType() == Specification.ArticleType.FORWARD_LIVE.index){
+        			if(!forwardTopicIdList.contains(idx.getForwardCid())){
+        				forwardTopicIdList.add(idx.getForwardCid());
+        			}
+        		}
+        	}
+        }
+        
+        Map<String, Map<String, Object>> forwardTopicUserProfileMap = new HashMap<String, Map<String, Object>>();
+        if(forwardTopicIdList.size() > 0){
+        	List<Map<String,Object>> topicUserProfileList = liveForContentJdbcDao.getTopicUserProfileByTopicIds(forwardTopicIdList);
+        	if(null != topicUserProfileList && topicUserProfileList.size() > 0){
+        		for(Map<String,Object> topicUserProfile : topicUserProfileList){
+        			forwardTopicUserProfileMap.put(String.valueOf(topicUserProfile.get("id")), topicUserProfile);
         		}
         	}
         }
@@ -1962,6 +2061,7 @@ private void localJpush(long toUid){
         }
     	
         UserProfile userProfile = null;
+        Map<String, Object> topicUserProfile = null;
         for(Content content : contentList){
             ShowHottestDto.HottestContentElement hottestContentElement = ShowHottestDto.createHottestContentElement();
             hottestContentElement.setType(content.getType());
@@ -1993,7 +2093,16 @@ private void localJpush(long toUid){
             if(content.getType() == Specification.ArticleType.SYSTEM.index){//系统文章不包含，用户信息
 
             }else if(content.getType() == Specification.ArticleType.LIVE.index
-            		|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index){//直播 直播状态
+            		|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index){//直播 直播状态d
+            	
+            	if(content.getType() == Specification.ArticleType.FORWARD_LIVE.index){//王国转发UGC的，那么需要返回原作者UID和昵称
+            		topicUserProfile = forwardTopicUserProfileMap.get(content.getForwardCid().toString());
+            		if(null != topicUserProfile){
+            			hottestContentElement.setForwardUid((Long)topicUserProfile.get("uid"));
+            			hottestContentElement.setForwardNickName((String)topicUserProfile.get("nick_name"));
+            		}
+            	}
+            	
             	Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
             	if(null != topic){
             		hottestContentElement.setContentType((Integer) topic.get("type"));
@@ -2048,6 +2157,7 @@ private void localJpush(long toUid){
     	}
     	List<Long> uidList = new ArrayList<Long>();
         List<Long> topicIdList = new ArrayList<Long>();
+        List<Long> forwardTopicIdList = new ArrayList<Long>();
         for(Content2Dto idx : contentList){
         	if(!uidList.contains(idx.getUid())){
         		uidList.add(idx.getUid());
@@ -2057,8 +2167,24 @@ private void localJpush(long toUid){
         		if(!topicIdList.contains(idx.getForwardCid())){
         			topicIdList.add(idx.getForwardCid());
         		}
+        		if(idx.getType() == Specification.ArticleType.FORWARD_LIVE.index){
+        			if(!forwardTopicIdList.contains(idx.getForwardCid())){
+        				forwardTopicIdList.add(idx.getForwardCid());
+        			}
+        		}
         	}
         }
+        
+        Map<String, Map<String, Object>> forwardTopicUserProfileMap = new HashMap<String, Map<String, Object>>();
+        if(forwardTopicIdList.size() > 0){
+        	List<Map<String,Object>> topicUserProfileList = liveForContentJdbcDao.getTopicUserProfileByTopicIds(forwardTopicIdList);
+        	if(null != topicUserProfileList && topicUserProfileList.size() > 0){
+        		for(Map<String,Object> topicUserProfile : topicUserProfileList){
+        			forwardTopicUserProfileMap.put(String.valueOf(topicUserProfile.get("id")), topicUserProfile);
+        		}
+        	}
+        }
+        
         
         Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
         List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
@@ -2086,6 +2212,7 @@ private void localJpush(long toUid){
         }
         
         UserProfile userProfile = null;
+        Map<String, Object> topicUserProfile = null;
         for(Content2Dto content : contentList){
             ShowHottestDto.HottestContentElement hottestContentElement = ShowHottestDto.createHottestContentElement();
             hottestContentElement.setType(content.getType());
@@ -2120,6 +2247,15 @@ private void localJpush(long toUid){
             	
             }else if(content.getType() == Specification.ArticleType.LIVE.index
             		|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index){//直播 直播状态
+            	
+            	if(content.getType() == Specification.ArticleType.FORWARD_LIVE.index){//王国转发UGC的，那么需要返回原作者UID和昵称
+            		topicUserProfile = forwardTopicUserProfileMap.get(content.getForwardCid().toString());
+            		if(null != topicUserProfile){
+            			hottestContentElement.setForwardUid((Long)topicUserProfile.get("uid"));
+            			hottestContentElement.setForwardNickName((String)topicUserProfile.get("nick_name"));
+            		}
+            	}
+            	
             	//王国增加身份信息
             	Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
             	if(null != topic){
@@ -2204,13 +2340,31 @@ private void localJpush(long toUid){
         
         List<Long> uidList = new ArrayList<Long>();
         List<Long> topicIdList = new ArrayList<Long>();
+        List<Long> forwardTopicIdList = new ArrayList<Long>();
         for(Content idx : newestList){
         	if(!uidList.contains(idx.getUid())){
         		uidList.add(idx.getUid());
         	}
         	if(idx.getType() == Specification.ArticleType.LIVE.index
         			|| idx.getType() == Specification.ArticleType.FORWARD_LIVE.index){//王国
-        		topicIdList.add(idx.getForwardCid());
+        		if(!topicIdList.contains(idx.getForwardCid())){
+        			topicIdList.add(idx.getForwardCid());
+        		}
+        		if(idx.getType() == Specification.ArticleType.FORWARD_LIVE.index){
+        			if(!forwardTopicIdList.contains(idx.getForwardCid())){
+        				forwardTopicIdList.add(idx.getForwardCid());
+        			}
+        		}
+        	}
+        }
+        
+        Map<String, Map<String, Object>> forwardTopicUserProfileMap = new HashMap<String, Map<String, Object>>();
+        if(forwardTopicIdList.size() > 0){
+        	List<Map<String,Object>> topicUserProfileList = liveForContentJdbcDao.getTopicUserProfileByTopicIds(forwardTopicIdList);
+        	if(null != topicUserProfileList && topicUserProfileList.size() > 0){
+        		for(Map<String,Object> topicUserProfile : topicUserProfileList){
+        			forwardTopicUserProfileMap.put(String.valueOf(topicUserProfile.get("id")), topicUserProfile);
+        		}
         	}
         }
         
@@ -2233,6 +2387,7 @@ private void localJpush(long toUid){
         }
         
         UserProfile userProfile = null;
+        Map<String, Object> topicUserProfile = null;
         for(Content content : newestList){
             ShowNewestDto.ContentElement contentElement = ShowNewestDto.createElement();
             
@@ -2274,6 +2429,15 @@ private void localJpush(long toUid){
                 contentElement.setImageCount(imageCounts);
             }else if(content.getType() == Specification.ArticleType.LIVE.index
             		|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index){
+            	
+            	if(content.getType() == Specification.ArticleType.FORWARD_LIVE.index){//王国转发UGC的，那么需要返回原作者UID和昵称
+            		topicUserProfile = forwardTopicUserProfileMap.get(content.getForwardCid().toString());
+            		if(null != topicUserProfile){
+            			contentElement.setForwardUid((Long)topicUserProfile.get("uid"));
+            			contentElement.setForwardNickName((String)topicUserProfile.get("nick_name"));
+            		}
+            	}
+            	
             	//王国增加身份信息
             	Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
             	if(null != topic){
@@ -2319,16 +2483,34 @@ private void localJpush(long toUid){
         List<Content> attentionList = contentMybatisDao.getAttention(sinceId ,uid, vFlag);
         List<Long> uidList = new ArrayList<Long>();
         List<Long> topicIdList = new ArrayList<Long>();
+        List<Long> forwardTopicIdList = new ArrayList<Long>();
         for(Content idx : attentionList){
         	if(!uidList.contains(idx.getUid())){
         		uidList.add(idx.getUid());
         	}
         	if(idx.getType() == Specification.ArticleType.LIVE.index
         			|| idx.getType() == Specification.ArticleType.FORWARD_LIVE.index){//王国
-        		topicIdList.add(idx.getForwardCid());
+        		if(!topicIdList.contains(idx.getForwardCid())){
+        			topicIdList.add(idx.getForwardCid());
+        		}
+        		if(idx.getType() == Specification.ArticleType.FORWARD_LIVE.index){
+        			if(!forwardTopicIdList.contains(idx.getForwardCid())){
+        				forwardTopicIdList.add(idx.getForwardCid());
+        			}
+        		}
         	}
         }
         log.info("getAttention data");
+        
+        Map<String, Map<String, Object>> forwardTopicUserProfileMap = new HashMap<String, Map<String, Object>>();
+        if(forwardTopicIdList.size() > 0){
+        	List<Map<String,Object>> topicUserProfileList = liveForContentJdbcDao.getTopicUserProfileByTopicIds(forwardTopicIdList);
+        	if(null != topicUserProfileList && topicUserProfileList.size() > 0){
+        		for(Map<String,Object> topicUserProfile : topicUserProfileList){
+        			forwardTopicUserProfileMap.put(String.valueOf(topicUserProfile.get("id")), topicUserProfile);
+        		}
+        	}
+        }
         
         Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
         List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
@@ -2349,6 +2531,7 @@ private void localJpush(long toUid){
         }
         
         UserProfile userProfile = null;
+        Map<String, Object> topicUserProfile = null;
         for(Content content : attentionList){
             ShowAttentionDto.ContentElement contentElement = ShowAttentionDto.createElement();
             contentElement.setId(content.getId());
@@ -2404,6 +2587,14 @@ private void localJpush(long toUid){
             contentElement.setForwardUrl(content.getForwardUrl());
             if(content.getType() == Specification.ArticleType.LIVE.index
             		|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index){//王国的话，获取身份信息
+            	if(content.getType() == Specification.ArticleType.FORWARD_LIVE.index){//王国转发UGC的，那么需要返回原作者UID和昵称
+            		topicUserProfile = forwardTopicUserProfileMap.get(content.getForwardCid().toString());
+            		if(null != topicUserProfile){
+            			contentElement.setForwardUid((Long)topicUserProfile.get("uid"));
+            			contentElement.setForwardNickName((String)topicUserProfile.get("nick_name"));
+            		}
+            	}
+            	
             	contentElement.setLiveStatus(contentMybatisDao.getTopicStatus(content.getForwardCid()));
                 int reviewCount = contentMybatisDao.countFragment(content.getForwardCid(),content.getUid());
                 contentElement.setReviewCount(reviewCount);
