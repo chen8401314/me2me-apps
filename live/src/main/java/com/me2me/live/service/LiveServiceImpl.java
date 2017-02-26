@@ -2360,38 +2360,43 @@ public class LiveServiceImpl implements LiveService {
 			searchDTO.setUpdateTime(Long.MAX_VALUE);
 			first = true;
 		}
-		Map<String, String> topMap = new HashMap<String, String>();
-		//母查子的第一次需要先将置顶的全部查询出来
-		if(searchDTO.getTopicId() > 0 && searchDTO.getTopicType() == 2){//母查子
-			if(first){//第一次
-				List<Map<String,Object>> topList = liveLocalJdbcDao.searchTopics(searchDTO, 1);
-				if(null != topList && topList.size() > 0){
-					for(Map<String,Object> t : topList){
-						topMap.put(String.valueOf(t.get("id")), "1");
+		Map<String, String> topMap = new HashMap<String, String>();//母查子第一次需要
+		Map<String, String> publishMap = new HashMap<String, String>();//子查母需要
+		if(searchDTO.getSearchScene() == 0){
+			//母查子的第一次需要先将置顶的全部查询出来
+			if(searchDTO.getTopicId() > 0 && searchDTO.getTopicType() == 2){//母查子
+				if(first){//第一次
+					List<Map<String,Object>> topList = liveLocalJdbcDao.searchTopics(searchDTO, 1);
+					if(null != topList && topList.size() > 0){
+						for(Map<String,Object> t : topList){
+							topMap.put(String.valueOf(t.get("id")), "1");
+						}
+						topicList.addAll(topList);
 					}
-					topicList.addAll(topList);
-				}
-				List<Map<String,Object>> noList = liveLocalJdbcDao.searchTopics(searchDTO, 0);
-				if(null != noList && noList.size() > 0){
-					topicList.addAll(noList);
+					List<Map<String,Object>> noList = liveLocalJdbcDao.searchTopics(searchDTO, 0);
+					if(null != noList && noList.size() > 0){
+						topicList.addAll(noList);
+					}
+				}else{
+					topicList = liveLocalJdbcDao.searchTopics(searchDTO, 0);
 				}
 			}else{
-				topicList = liveLocalJdbcDao.searchTopics(searchDTO, 0);
+				topicList = liveLocalJdbcDao.searchTopics(searchDTO, -1);
 			}
-		}else{
-			topicList = liveLocalJdbcDao.searchTopics(searchDTO, -1);
-		}
-		Map<String, String> publishMap = new HashMap<String, String>();
-		if(searchDTO.getTopicId() > 0 && searchDTO.getTopicType()==1){//子查母需要知道子对于母是否开启了内容下发
-			List<TopicAggregation> list = liveMybatisDao.getTopicAggregationsBySubTopicId(searchDTO.getTopicId());
-			if(null != list && list.size() > 0){
-				for(TopicAggregation ta : list){
-					if(ta.getIsPublish() == 0){
-						publishMap.put(String.valueOf(ta.getTopicId()), "1");
+			if(searchDTO.getTopicId() > 0 && searchDTO.getTopicType()==1){//子查母需要知道子对于母是否开启了内容下发
+				List<TopicAggregation> list = liveMybatisDao.getTopicAggregationsBySubTopicId(searchDTO.getTopicId());
+				if(null != list && list.size() > 0){
+					for(TopicAggregation ta : list){
+						if(ta.getIsPublish() == 0){
+							publishMap.put(String.valueOf(ta.getTopicId()), "1");
+						}
 					}
 				}
 			}
+		}else{
+			topicList = liveLocalJdbcDao.getKingdomListBySearchScene(currentUid, searchDTO);
 		}
+		
 		ShowTopicSearchDTO showTopicSearchDTO = new ShowTopicSearchDTO();
 		if(null != topicList && topicList.size() > 0){
 			this.builderTopicSearch(currentUid, showTopicSearchDTO, topicList, topMap, publishMap);
@@ -2805,31 +2810,96 @@ public class LiveServiceImpl implements LiveService {
 	}
 	
 	//暂时先放一放。。
-	public Response aggregationOpt2(AggregationOptDto dto) {
-		if(dto.getAcTopicId() == dto.getCeTopicId()){//自己对自己暂不支持操作
-            return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
-        }
-		
-		TopicAggregation topicAggregation = liveMybatisDao.getTopicAggregationByTopicIdAndSubId(dto.getCeTopicId() ,dto.getAcTopicId());
-		
-		if(dto.getType() == Specification.KingdomLanuchType.PERSONAL_LANUCH.index) {//个人王国发起
-			Topic topic = liveMybatisDao.getTopicById(dto.getCeTopicId());
-        	Topic topicOwner = liveMybatisDao.getTopicById(dto.getAcTopicId());
-        	if(topic != null && topicOwner != null){
-        		if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {
-        			
-        		}else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {
-        			
-        		}
-        	}else{
-        		return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
-        	}
-		}else if(dto.getType() == Specification.KingdomLanuchType.AGGREGATION_LANUCH.index){//聚合王国王国发起
-			
-		}
-		
-		return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
-	}
+//	@SuppressWarnings("rawtypes")
+//	public Response aggregationOpt2(AggregationOptDto dto) {
+//		if(dto.getAcTopicId() == dto.getCeTopicId()){//自己对自己暂不支持操作
+//            return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
+//        }
+//		
+//		Date now = new Date();
+//		TopicAggregation topicAggregation = liveMybatisDao.getTopicAggregationByTopicIdAndSubId(dto.getCeTopicId() ,dto.getAcTopicId());
+//		
+//		if(dto.getType() == Specification.KingdomLanuchType.PERSONAL_LANUCH.index) {//个人王国发起
+//			Topic topicOwner = liveMybatisDao.getTopicById(dto.getAcTopicId());
+//			Topic topic = liveMybatisDao.getTopicById(dto.getCeTopicId());
+//			if(topic == null || topicOwner == null){
+//				return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
+//			}
+//			
+//			if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {//收录申请
+//				
+//			}else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {//解散聚合
+//				
+//			}else if (dto.getAction() == Specification.AggregationOptType.ISSUED.index) {//接受下发设置(个人王国设置)
+//				if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
+//					return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
+//				}
+//				if(topicAggregation != null){
+//                    //0接受推送 1不接受推送
+//                    topicAggregation.setIsPublish(0);
+//                    liveMybatisDao.updateTopicAggregation(topicAggregation);
+//                }
+//				log.info("issued success");
+//				return Response.success();
+//			}else if (dto.getAction() == Specification.AggregationOptType.CANCEL_ISSUED.index) {//取消接受下发设置(个人王国设置)
+//				if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
+//					return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
+//				}
+//				if(topicAggregation != null){
+//					//0接受推送 1不接受推送
+//                    topicAggregation.setIsPublish(1);
+//                    liveMybatisDao.updateTopicAggregation(topicAggregation);
+//                }
+//				log.info("cancel issued success");
+//				return Response.success();
+//			}
+//		}else if(dto.getType() == Specification.KingdomLanuchType.AGGREGATION_LANUCH.index){//聚合王国王国发起
+//			Topic topicOwner = liveMybatisDao.getTopicById(dto.getCeTopicId());
+//			Topic topic = liveMybatisDao.getTopicById(dto.getAcTopicId());
+//			if(topic == null || topicOwner == null){
+//				return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
+//			}
+//			
+//			if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {//收录申请
+//				
+//			}else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {//解散聚合
+//				
+//			}else if (dto.getAction() == Specification.AggregationOptType.TOP.index) {//置顶操作(聚合王国设置)
+//				if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
+//					return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
+//				}
+//				if(topicAggregation != null){
+//                    List<TopicAggregation> list = liveMybatisDao.getTopicAggregationByTopicIdAndIsTop(dto.getCeTopicId(), 1);
+//                    if(list.size() < Integer.valueOf(cacheService.get(TOP_COUNT))) {
+//                        //1置顶 0不置顶
+//                        topicAggregation.setIsTop(1);
+//                        //设置时间为了下次查询会显示在第一个
+//                        topicAggregation.setUpdateTime(now);
+//                        liveMybatisDao.updateTopicAggregation(topicAggregation);
+//                    }else {
+//                    	log.info("top over limit");
+//                        return Response.failure(ResponseStatus.TOP_COUNT_OVER_LIMIT.status, ResponseStatus.TOP_COUNT_OVER_LIMIT.message);
+//                    }
+//                }
+//				log.info("top success");
+//				return Response.success();
+//			}else if (dto.getAction() == Specification.AggregationOptType.CANCEL_TOP.index) {//取消置顶操作(聚合王国设置)
+//				if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
+//					return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
+//				}
+//				if(topicAggregation != null){
+//                    topicAggregation.setIsTop(0);
+//                    liveMybatisDao.updateTopicAggregation(topicAggregation);
+//                }
+//				log.info("cancel top success");
+//				return Response.success();
+//			}
+//		}
+//
+//		return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
+//	}
+	
+	
 
     @Override
     public Response aggregationOpt(AggregationOptDto dto) {
@@ -3407,6 +3477,14 @@ public class LiveServiceImpl implements LiveService {
 		}
 		return result;
 	}
+    
+    private boolean isKing(long uid, long topicUid){
+    	boolean result = false;
+    	if(uid == topicUid){
+    		result = true;
+    	}
+    	return result;
+    }
     
     private int genContentType(int oldType, int oldContentType){
 		if(oldType == Specification.LiveSpeakType.ANCHOR.index){//主播发言

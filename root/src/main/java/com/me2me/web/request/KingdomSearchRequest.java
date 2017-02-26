@@ -34,4 +34,7 @@ public class KingdomSearchRequest extends Request {
 	@Getter
     @Setter
 	private String keyword;
+	@Getter
+    @Setter
+	private int searchScene;
 }

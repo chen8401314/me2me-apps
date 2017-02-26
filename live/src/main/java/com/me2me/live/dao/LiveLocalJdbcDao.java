@@ -243,6 +243,139 @@ public class LiveLocalJdbcDao {
 		return jdbcTemplate.queryForList(sb.toString());
 	}
 	
+	public List<Map<String,Object>> getKingdomListBySearchScene(long currentUid, KingdomSearchDTO searchDTO){
+		StringBuilder sb = new StringBuilder();
+		
+		if(searchDTO.getSearchScene() == 1){//聚合王国主动场景（收录列表）
+			//查询我创建的个人王国+我是核心圈的个人王国+我订阅的个人王国
+			sb.append("select t.* from (");
+			sb.append("select m.*,m.long_time*10000 as longtime");
+			sb.append(" from topic m where m.type=0 and m.uid=").append(currentUid);
+			sb.append(" union ");
+			sb.append("select m1.*,m1.long_time*100 as longtime");
+			sb.append(" from topic m1 where m.type=0 and m1.uid<>").append(currentUid);
+			sb.append(" and FIND_IN_SET(").append(currentUid);
+			sb.append(",SUBSTR(m1.core_circle FROM 2 FOR LENGTH(m1.core_circle)-2))");
+			sb.append(" union ");
+			sb.append("select m2.*,m2.long_time as longtime");
+			sb.append(" from topic m2,live_favorite f");
+			sb.append(" where m2.type=0 and m2.id=f.topic_id");
+			sb.append(" and m2.uid<>").append(currentUid);
+			sb.append(" and not FIND_IN_SET(").append(currentUid);
+			sb.append(",SUBSTR(m2.core_circle FROM 2 FOR LENGTH(m2.core_circle)-2))");
+			sb.append(" and f.uid=").append(currentUid);
+			sb.append(") t");
+			sb.append(" where t.longtime<").append(searchDTO.getUpdateTime());
+			if(searchDTO.getExceptTopicId() > 0){
+				sb.append(" and t.id<>").append(searchDTO.getExceptTopicId());
+			}
+			if(StringUtils.isNotBlank(searchDTO.getKeyword())){
+				sb.append(" and t.title like '%").append(searchDTO.getKeyword()).append("%'");
+			}
+			sb.append(" order by t.longtime desc limit 10");
+		}else if(searchDTO.getSearchScene() == 2){//聚合王国被动场景（加入列表）
+			//查询我创建的个人王国
+			sb.append("select t.*,t.long_time as longtime from topic t ");
+			sb.append(" where t.type=0 and t.uid=").append(currentUid);
+			sb.append(" and t.longtime<").append(searchDTO.getUpdateTime());
+			if(searchDTO.getExceptTopicId() > 0){
+				sb.append(" and t.id<>").append(searchDTO.getExceptTopicId());
+			}
+			if(StringUtils.isNotBlank(searchDTO.getKeyword())){
+				sb.append(" and t.title like '%").append(searchDTO.getKeyword()).append("%'");
+			}
+			sb.append(" order by t.longtime desc limit 10");
+		}else if(searchDTO.getSearchScene() == 4){//个人王国被动场景
+			//查询我创建的聚合王国
+			sb.append("select t.*,t.long_time as longtime from topic t ");
+			sb.append(" where t.type=1000 and t.uid=").append(currentUid);
+			sb.append(" and t.longtime<").append(searchDTO.getUpdateTime());
+			if(searchDTO.getExceptTopicId() > 0){
+				sb.append(" and t.id<>").append(searchDTO.getExceptTopicId());
+			}
+			if(StringUtils.isNotBlank(searchDTO.getKeyword())){
+				sb.append(" and t.title like '%").append(searchDTO.getKeyword()).append("%'");
+			}
+			sb.append(" order by t.longtime desc limit 10");
+		}else if(searchDTO.getSearchScene() == 5){//分享场景
+			//查询我创建的+我是核心圈的+我订阅的
+			sb.append("select t.* from (");
+			sb.append("select m.*,m.long_time*10000 as longtime");
+			sb.append(" from topic m where m.uid=").append(currentUid);
+			sb.append(" union ");
+			sb.append("select m1.*,m1.long_time*100 as longtime");
+			sb.append(" from topic m1 where m1.uid<>").append(currentUid);
+			sb.append(" and FIND_IN_SET(").append(currentUid);
+			sb.append(",SUBSTR(m1.core_circle FROM 2 FOR LENGTH(m1.core_circle)-2))");
+			sb.append(" union ");
+			sb.append("select m2.*,m2.long_time as longtime");
+			sb.append(" from topic m2,live_favorite f");
+			sb.append(" where m2.id=f.topic_id");
+			sb.append(" and m2.uid<>").append(currentUid);
+			sb.append(" and not FIND_IN_SET(").append(currentUid);
+			sb.append(",SUBSTR(m2.core_circle FROM 2 FOR LENGTH(m2.core_circle)-2))");
+			sb.append(" and f.uid=").append(currentUid);
+			sb.append(") t");
+			sb.append(" where t.longtime<").append(searchDTO.getUpdateTime());
+			if(searchDTO.getExceptTopicId() > 0){
+				sb.append(" and t.id<>").append(searchDTO.getExceptTopicId());
+			}
+			if(StringUtils.isNotBlank(searchDTO.getKeyword())){
+				sb.append(" and t.title like '%").append(searchDTO.getKeyword()).append("%'");
+			}
+			if(searchDTO.getSearchType() > 0){
+				if(searchDTO.getSearchType() == 1){
+					sb.append(" and t.type=0");
+				}else if(searchDTO.getSearchType() == 2){
+					sb.append(" and t.type=1000");
+				}else{
+					sb.append(" and t.type=").append(searchDTO.getSearchType());
+				}
+			}
+			sb.append(" order by t.longtime desc limit 10");
+		}else if(searchDTO.getSearchScene() == 6){//转发场景
+			//查询我创建的+我是核心圈的+我订阅的
+			sb.append("select t.* from (");
+			sb.append("select m.*,m.long_time*10000 as longtime");
+			sb.append(" from topic m where m.uid=").append(currentUid);
+			sb.append(" union ");
+			sb.append("select m1.*,m1.long_time*100 as longtime");
+			sb.append(" from topic m1 where m1.uid<>").append(currentUid);
+			sb.append(" and FIND_IN_SET(").append(currentUid);
+			sb.append(",SUBSTR(m1.core_circle FROM 2 FOR LENGTH(m1.core_circle)-2))");
+			sb.append(" union ");
+			sb.append("select m2.*,m2.long_time as longtime");
+			sb.append(" from topic m2,live_favorite f");
+			sb.append(" where m2.id=f.topic_id");
+			sb.append(" and m2.uid<>").append(currentUid);
+			sb.append(" and not FIND_IN_SET(").append(currentUid);
+			sb.append(",SUBSTR(m2.core_circle FROM 2 FOR LENGTH(m2.core_circle)-2))");
+			sb.append(" and f.uid=").append(currentUid);
+			sb.append(") t");
+			sb.append(" where t.longtime<").append(searchDTO.getUpdateTime());
+			if(searchDTO.getExceptTopicId() > 0){
+				sb.append(" and t.id<>").append(searchDTO.getExceptTopicId());
+			}
+			if(StringUtils.isNotBlank(searchDTO.getKeyword())){
+				sb.append(" and t.title like '%").append(searchDTO.getKeyword()).append("%'");
+			}
+			if(searchDTO.getSearchType() > 0){
+				if(searchDTO.getSearchType() == 1){
+					sb.append(" and t.type=0");
+				}else if(searchDTO.getSearchType() == 2){
+					sb.append(" and t.type=1000");
+				}else{
+					sb.append(" and t.type=").append(searchDTO.getSearchType());
+				}
+			}
+			sb.append(" order by t.longtime desc limit 10");
+		}else{
+			return null;
+		}
+		
+		return jdbcTemplate.queryForList(sb.toString());
+	}
+	
 	public List<Map<String, Object>> getTopicUpdateCount(List<Long> tids){
 		if(null == tids || tids.size() == 0){
 			return null;

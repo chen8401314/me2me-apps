@@ -17,4 +17,5 @@ public class KingdomSearchDTO implements BaseEntity {
 	private int searchType;
 	private int searchRights;
 	private String keyword;
+	private int searchScene;
 }
