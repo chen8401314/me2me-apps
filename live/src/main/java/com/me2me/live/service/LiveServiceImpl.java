@@ -2251,7 +2251,7 @@ public class LiveServiceImpl implements LiveService {
         topic.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);//目前默认公开的，等以后有需求的再说
         topic.setSummary(createKingdomDto.getFragment());//目前，第一次发言即王国简介
         topic.setCeAuditType(0);//聚合王国属性，是否需要国王审核才能加入此聚合王国，默认0是
-        topic.setAcAuditType(0);//个人王国属性，是否需要国王审核才能收录此王国，默认0是
+        topic.setAcAuditType(1);//个人王国属性，是否需要国王审核才能收录此王国，默认1否
         topic.setAcPublishType(0);//个人王国属性，是否接受聚合王国下发的消息，默认0是
         liveMybatisDao.createTopic(topic);
 
@@ -2809,98 +2809,6 @@ public class LiveServiceImpl implements LiveService {
 		return Response.success();
 	}
 	
-	//暂时先放一放。。
-//	@SuppressWarnings("rawtypes")
-//	public Response aggregationOpt2(AggregationOptDto dto) {
-//		if(dto.getAcTopicId() == dto.getCeTopicId()){//自己对自己暂不支持操作
-//            return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
-//        }
-//		
-//		Date now = new Date();
-//		TopicAggregation topicAggregation = liveMybatisDao.getTopicAggregationByTopicIdAndSubId(dto.getCeTopicId() ,dto.getAcTopicId());
-//		
-//		if(dto.getType() == Specification.KingdomLanuchType.PERSONAL_LANUCH.index) {//个人王国发起
-//			Topic topicOwner = liveMybatisDao.getTopicById(dto.getAcTopicId());
-//			Topic topic = liveMybatisDao.getTopicById(dto.getCeTopicId());
-//			if(topic == null || topicOwner == null){
-//				return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
-//			}
-//			
-//			if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {//收录申请
-//				
-//			}else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {//解散聚合
-//				
-//			}else if (dto.getAction() == Specification.AggregationOptType.ISSUED.index) {//接受下发设置(个人王国设置)
-//				if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
-//					return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
-//				}
-//				if(topicAggregation != null){
-//                    //0接受推送 1不接受推送
-//                    topicAggregation.setIsPublish(0);
-//                    liveMybatisDao.updateTopicAggregation(topicAggregation);
-//                }
-//				log.info("issued success");
-//				return Response.success();
-//			}else if (dto.getAction() == Specification.AggregationOptType.CANCEL_ISSUED.index) {//取消接受下发设置(个人王国设置)
-//				if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
-//					return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
-//				}
-//				if(topicAggregation != null){
-//					//0接受推送 1不接受推送
-//                    topicAggregation.setIsPublish(1);
-//                    liveMybatisDao.updateTopicAggregation(topicAggregation);
-//                }
-//				log.info("cancel issued success");
-//				return Response.success();
-//			}
-//		}else if(dto.getType() == Specification.KingdomLanuchType.AGGREGATION_LANUCH.index){//聚合王国王国发起
-//			Topic topicOwner = liveMybatisDao.getTopicById(dto.getCeTopicId());
-//			Topic topic = liveMybatisDao.getTopicById(dto.getAcTopicId());
-//			if(topic == null || topicOwner == null){
-//				return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
-//			}
-//			
-//			if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {//收录申请
-//				
-//			}else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {//解散聚合
-//				
-//			}else if (dto.getAction() == Specification.AggregationOptType.TOP.index) {//置顶操作(聚合王国设置)
-//				if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
-//					return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
-//				}
-//				if(topicAggregation != null){
-//                    List<TopicAggregation> list = liveMybatisDao.getTopicAggregationByTopicIdAndIsTop(dto.getCeTopicId(), 1);
-//                    if(list.size() < Integer.valueOf(cacheService.get(TOP_COUNT))) {
-//                        //1置顶 0不置顶
-//                        topicAggregation.setIsTop(1);
-//                        //设置时间为了下次查询会显示在第一个
-//                        topicAggregation.setUpdateTime(now);
-//                        liveMybatisDao.updateTopicAggregation(topicAggregation);
-//                    }else {
-//                    	log.info("top over limit");
-//                        return Response.failure(ResponseStatus.TOP_COUNT_OVER_LIMIT.status, ResponseStatus.TOP_COUNT_OVER_LIMIT.message);
-//                    }
-//                }
-//				log.info("top success");
-//				return Response.success();
-//			}else if (dto.getAction() == Specification.AggregationOptType.CANCEL_TOP.index) {//取消置顶操作(聚合王国设置)
-//				if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
-//					return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
-//				}
-//				if(topicAggregation != null){
-//                    topicAggregation.setIsTop(0);
-//                    liveMybatisDao.updateTopicAggregation(topicAggregation);
-//                }
-//				log.info("cancel top success");
-//				return Response.success();
-//			}
-//		}
-//
-//		return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
-//	}
-	
-	
-
     @Override
     public Response aggregationOpt(AggregationOptDto dto) {
     	if(dto.getAcTopicId() == dto.getCeTopicId()){

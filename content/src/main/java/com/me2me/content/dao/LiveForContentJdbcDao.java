@@ -117,11 +117,19 @@ public class LiveForContentJdbcDao {
     }
     
     public void deleteAggregationTopic(long topicId){
+    	//删除聚合关系
     	StringBuilder sb = new StringBuilder();
     	sb.append("delete from topic_aggregation where topic_id=");
     	sb.append(topicId).append(" or sub_topic_id=");
     	sb.append(topicId);
     	jdbcTemplate.execute(sb.toString());
+    	//聚合申请相关至失效
+    	StringBuilder sb2 = new StringBuilder();
+    	sb2.append("update topic_aggregation_apply set result=3");
+    	sb2.append(" where (topic_id=").append(topicId);
+    	sb2.append(" or target_topic_id=").append(topicId);
+    	sb2.append(") and result in (0,1)");
+    	jdbcTemplate.execute(sb2.toString());
     }
     
     public Map<String,Object> getTopicUserConfig(long topicId, long uid){
