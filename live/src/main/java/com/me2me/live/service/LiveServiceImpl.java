@@ -2803,6 +2803,33 @@ public class LiveServiceImpl implements LiveService {
 		
 		return Response.success();
 	}
+	
+	//暂时先放一放。。
+	public Response aggregationOpt2(AggregationOptDto dto) {
+		if(dto.getAcTopicId() == dto.getCeTopicId()){//自己对自己暂不支持操作
+            return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
+        }
+		
+		TopicAggregation topicAggregation = liveMybatisDao.getTopicAggregationByTopicIdAndSubId(dto.getCeTopicId() ,dto.getAcTopicId());
+		
+		if(dto.getType() == Specification.KingdomLanuchType.PERSONAL_LANUCH.index) {//个人王国发起
+			Topic topic = liveMybatisDao.getTopicById(dto.getCeTopicId());
+        	Topic topicOwner = liveMybatisDao.getTopicById(dto.getAcTopicId());
+        	if(topic != null && topicOwner != null){
+        		if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {
+        			
+        		}else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {
+        			
+        		}
+        	}else{
+        		return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
+        	}
+		}else if(dto.getType() == Specification.KingdomLanuchType.AGGREGATION_LANUCH.index){//聚合王国王国发起
+			
+		}
+		
+		return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
+	}
 
     @Override
     public Response aggregationOpt(AggregationOptDto dto) {
@@ -3333,10 +3360,10 @@ public class LiveServiceImpl implements LiveService {
 		String only = UUID.randomUUID().toString()+"-"+new Random().nextInt();
 		obj.put("only", only);
 		obj.put("action", Integer.valueOf(3));//转发
-		UserProfile up = userService.getUserProfileByUid(uid);
+		UserProfile up = userService.getUserProfileByUid(sourceTopic.getUid());
 		Content topicContent = contentService.getContentByTopicId(sourceTopicId);
 		JSONObject fromObj = new JSONObject();
-		fromObj.put("uid", Long.valueOf(uid));
+		fromObj.put("uid", sourceTopic.getUid());
 		fromObj.put("avatar", Constant.QINIU_DOMAIN+"/"+up.getAvatar());
 		fromObj.put("id", Long.valueOf(sourceTopicId));
 		fromObj.put("cid", topicContent.getId());
