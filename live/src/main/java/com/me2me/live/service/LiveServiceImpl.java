@@ -3299,16 +3299,16 @@ public class LiveServiceImpl implements LiveService {
     public Response fragmentForward(long uid, long fid, long sourceTopicId, long targetTopicId){
     	Topic sourceTopic = liveMybatisDao.getTopicById(sourceTopicId);
     	if(null == sourceTopic){
-    		return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
+    		return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, "发生未知错误转发失败，再试一次吧。");
     	}
     	Topic targetTopic = liveMybatisDao.getTopicById(targetTopicId);
     	if(null == targetTopic){
-    		return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, "目标王国已删除");
+    		return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, "发生未知错误转发失败，再试一次吧。");
     	}
     	TopicFragment tf = liveMybatisDao.getTopicFragmentById(fid);
 		if(null == tf || tf.getTopicId().longValue() != sourceTopicId
 				|| tf.getStatus() != Specification.TopicFragmentStatus.ENABLED.index){
-			return Response.failure(ResponseStatus.FRAGMENT_IS_NOT_EXIST.status, ResponseStatus.FRAGMENT_IS_NOT_EXIST.message);
+			return Response.failure(ResponseStatus.FRAGMENT_IS_NOT_EXIST.status, "发生未知错误转发失败，再试一次吧。");
 		}
 		
 		boolean isCoreUser = false;
@@ -3369,7 +3369,7 @@ public class LiveServiceImpl implements LiveService {
         TopicNoticeEvent event = new TopicNoticeEvent(uid, targetTopicId);
         this.applicationEventBus.post(event);
         
-    	return Response.success();
+    	return Response.success(200, "转发成功！");
     }
     
     private boolean isInCore(long uid, String coreCircle){

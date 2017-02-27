@@ -253,7 +253,7 @@ public class LiveLocalJdbcDao {
 			sb.append(" from topic m where m.type=0 and m.uid=").append(currentUid);
 			sb.append(" union ");
 			sb.append("select m1.*,m1.long_time*100 as longtime");
-			sb.append(" from topic m1 where m.type=0 and m1.uid<>").append(currentUid);
+			sb.append(" from topic m1 where m1.type=0 and m1.uid<>").append(currentUid);
 			sb.append(" and FIND_IN_SET(").append(currentUid);
 			sb.append(",SUBSTR(m1.core_circle FROM 2 FOR LENGTH(m1.core_circle)-2))");
 			sb.append(" union ");
