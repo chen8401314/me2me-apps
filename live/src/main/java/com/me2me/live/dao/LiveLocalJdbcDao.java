@@ -277,26 +277,26 @@ public class LiveLocalJdbcDao {
 			//查询我创建的个人王国
 			sb.append("select t.*,t.long_time as longtime from topic t ");
 			sb.append(" where t.type=0 and t.uid=").append(currentUid);
-			sb.append(" and t.longtime<").append(searchDTO.getUpdateTime());
+			sb.append(" and t.long_time<").append(searchDTO.getUpdateTime());
 			if(searchDTO.getExceptTopicId() > 0){
 				sb.append(" and t.id<>").append(searchDTO.getExceptTopicId());
 			}
 			if(StringUtils.isNotBlank(searchDTO.getKeyword())){
 				sb.append(" and t.title like '%").append(searchDTO.getKeyword()).append("%'");
 			}
-			sb.append(" order by t.longtime desc limit 10");
+			sb.append(" order by t.long_time desc limit 10");
 		}else if(searchDTO.getSearchScene() == 4){//个人王国被动场景
 			//查询我创建的聚合王国
 			sb.append("select t.*,t.long_time as longtime from topic t ");
 			sb.append(" where t.type=1000 and t.uid=").append(currentUid);
-			sb.append(" and t.longtime<").append(searchDTO.getUpdateTime());
+			sb.append(" and t.long_time<").append(searchDTO.getUpdateTime());
 			if(searchDTO.getExceptTopicId() > 0){
 				sb.append(" and t.id<>").append(searchDTO.getExceptTopicId());
 			}
 			if(StringUtils.isNotBlank(searchDTO.getKeyword())){
 				sb.append(" and t.title like '%").append(searchDTO.getKeyword()).append("%'");
 			}
-			sb.append(" order by t.longtime desc limit 10");
+			sb.append(" order by t.long_time desc limit 10");
 		}else if(searchDTO.getSearchScene() == 5){//分享场景
 			//查询我创建的+我是核心圈的+我订阅的
 			sb.append("select t.* from (");

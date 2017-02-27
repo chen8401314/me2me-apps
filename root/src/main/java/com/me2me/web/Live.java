@@ -479,6 +479,7 @@ public class Live extends BaseController {
     	dto.setTopicId(request.getTopicId());
     	dto.setTopicType(request.getTopicType());
     	dto.setUpdateTime(request.getUpdateTime());
+    	dto.setSearchScene(request.getSearchScene());
     	
     	return liveService.kingdomSearch(request.getUid(), dto);
     }
