@@ -2827,7 +2827,7 @@ public class LiveServiceImpl implements LiveService {
                     if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {
                     	//是否重复收录
                         if(topicAggregation != null){
-                            return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
+                            return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, "已申请");
                         }
                         if(topicOwner.getUid().longValue() != topic.getUid().longValue() ){
                             if (topic.getCeAuditType() == 0) {
@@ -2838,7 +2838,7 @@ public class LiveServiceImpl implements LiveService {
                             	List<TopicAggregationApply> list = liveMybatisDao.getTopicAggregationApplyByTopicAndTargetAndResult(dto.getAcTopicId(), dto.getCeTopicId(), 2, resultList);
                                 if(null != list && list.size() > 0){
                                     //重复操作
-                                    return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
+                                    return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, "已申请");
                                 }
                                 //需要申请同意收录
                                 TopicAggregationApply apply = new TopicAggregationApply();
@@ -2851,12 +2851,12 @@ public class LiveServiceImpl implements LiveService {
                                 liveMybatisDao.createTopicAggApply(apply);
                                 
                                 //发送消息
-                                this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "申请被你的聚合王国收录", apply.getId(), topic, topicOwner, Specification.UserNoticeType.AGGREGATION_APPLY.index);
+                                this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "申请加入你的聚合王国", apply.getId(), topic, topicOwner, Specification.UserNoticeType.AGGREGATION_APPLY.index);
                                 
                                 //发推送
                                 //本消息是由王国发起的，所以需要判断王国的配置
                                 if(this.checkTopicPush(topic.getId(), topic.getUid())){
-                                	userService.noticeMessagePush(topic.getUid(), "有个人王国申请被你的聚合王国收录", 2);
+                                	userService.noticeMessagePush(topic.getUid(), "有个人王国申请加入你的聚合王国", 2);
                                 }
                                 
                                 log.info("create TopicAggregationApply success");
@@ -2944,7 +2944,7 @@ public class LiveServiceImpl implements LiveService {
                     if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {
                     	//是否重复收录
                         if(topicAggregation != null){
-                            return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
+                            return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, "已申请");
                         }
                         //如果聚合王国收录自己的子王国不需要验证
                         if(topicOwner.getUid().longValue() != topic.getUid().longValue() ){
@@ -2955,7 +2955,7 @@ public class LiveServiceImpl implements LiveService {
                             	resultList.add(1);
                             	List<TopicAggregationApply> list = liveMybatisDao.getTopicAggregationApplyByTopicAndTargetAndResult(dto.getCeTopicId() ,dto.getAcTopicId(), 1, resultList);
                                 if(null != list && list.size() > 0){//有过申请，并且是初始化的或已同意的
-                                    return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
+                                    return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, "已申请");
                                 }
                                 //需要申请同意收录
                                 TopicAggregationApply apply = new TopicAggregationApply();
