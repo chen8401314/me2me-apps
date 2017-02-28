@@ -173,7 +173,7 @@ public class AggregationPublishListener {
             			                jsonObject.addProperty("internalStatus", this.getInternalStatus(subTopic, liveFavorite.getUid()));
             			                jsonObject.addProperty("fromInternalStatus", Specification.SnsCircle.CORE.index);//主播发言的，都是核心圈
             			                String alias = String.valueOf(liveFavorite.getUid());
-            			                jPushService.payloadByIdExtra(alias,  "『"+subTopic.getTitle() + "』有更新", JPushUtils.packageExtra(jsonObject));
+            			                userService.pushWithExtra(alias,  "『"+subTopic.getTitle() + "』有更新", JPushUtils.packageExtra(jsonObject));
             						}
             					}
             				}
