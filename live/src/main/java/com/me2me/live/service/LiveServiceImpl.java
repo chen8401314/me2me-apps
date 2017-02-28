@@ -2860,6 +2860,7 @@ public class LiveServiceImpl implements LiveService {
                                 }
                                 
                                 log.info("create TopicAggregationApply success");
+                                return Response.success(200, "已发送申请");
                             }else{//不需要审核的情况
                             	TopicAggregation agg = new TopicAggregation();
                                 agg.setTopicId(dto.getCeTopicId());
@@ -2888,7 +2889,6 @@ public class LiveServiceImpl implements LiveService {
                             log.info("create TopicAggregation success");
                             return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
                         }
-                        return Response.success();
                     } else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {
                         liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
                         
@@ -2916,19 +2916,19 @@ public class LiveServiceImpl implements LiveService {
                             }
                         }
                         
-                        return Response.success();
+                        return Response.success(200, "操作成功");
                     } else if (dto.getAction() == Specification.AggregationOptType.ISSUED.index) {
                         if(topicAggregation != null){
                             //0接受推送 1不接受推送
                             topicAggregation.setIsPublish(0);
                             liveMybatisDao.updateTopicAggregation(topicAggregation);
-                            return Response.success();
+                            return Response.success(200, "操作成功");
                         }
                     } else if (dto.getAction() == Specification.AggregationOptType.CANCEL_ISSUED.index) {
                         if(topicAggregation != null){
                             topicAggregation.setIsPublish(1);
                             liveMybatisDao.updateTopicAggregation(topicAggregation);
-                            return Response.success();
+                            return Response.success(200, "操作成功");
                         }
                     }
                 } else {
@@ -2977,6 +2977,7 @@ public class LiveServiceImpl implements LiveService {
                                 }
                                 
                                 log.info("create TopicAggregationApply success");
+                                return Response.success(200, "已发送申请");
                             }else{//不需要审核直接成功
                             	TopicAggregation agg = new TopicAggregation();
                                 agg.setTopicId(dto.getCeTopicId());
@@ -3003,7 +3004,6 @@ public class LiveServiceImpl implements LiveService {
                             log.info("create TopicAggregation success");
                             return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
                         }
-                        return Response.success();
                     } else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {
                         liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
                         
@@ -3031,7 +3031,7 @@ public class LiveServiceImpl implements LiveService {
                             }
                         }
                         
-                        return Response.success();
+                        return Response.success(200, "操作成功");
                     } else if (dto.getAction() == Specification.AggregationOptType.TOP.index) {
                         if(topicAggregation != null){
                             List<TopicAggregation> list = liveMybatisDao.getTopicAggregationByTopicIdAndIsTop(dto.getCeTopicId(), 1);
@@ -3041,7 +3041,7 @@ public class LiveServiceImpl implements LiveService {
                                 //设置时间为了下次查询会显示在第一个
                                 topicAggregation.setUpdateTime(now);
                                 liveMybatisDao.updateTopicAggregation(topicAggregation);
-                                return Response.success();
+                                return Response.success(200, "操作成功");
                             }else {
                                 return Response.failure(ResponseStatus.TOP_COUNT_OVER_LIMIT.status, ResponseStatus.TOP_COUNT_OVER_LIMIT.message);
                             }
@@ -3051,7 +3051,7 @@ public class LiveServiceImpl implements LiveService {
                             topicAggregation.setIsTop(0);
                             liveMybatisDao.updateTopicAggregation(topicAggregation);
                             log.info("cancel top success");
-                            return Response.success();
+                            return Response.success(200, "操作成功");
                         }
                     }
                 } else {
