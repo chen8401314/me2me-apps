@@ -3369,7 +3369,7 @@ public class LiveServiceImpl implements LiveService {
         TopicNoticeEvent event = new TopicNoticeEvent(uid, targetTopicId);
         this.applicationEventBus.post(event);
         
-    	return Response.success(200, "转发成功！");
+    	return Response.success(200, "转发成功");
     }
     
     private boolean isInCore(long uid, String coreCircle){
