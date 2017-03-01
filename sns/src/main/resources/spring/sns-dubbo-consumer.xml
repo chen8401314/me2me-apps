@@ -15,6 +15,6 @@
 
     <dubbo:reference interface="com.me2me.cache.service.CacheService" id="cacheService"/>
 
-
+	<dubbo:consumer check="false" />
 
 </beans>

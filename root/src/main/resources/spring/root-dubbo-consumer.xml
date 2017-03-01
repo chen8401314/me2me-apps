@@ -29,5 +29,5 @@
 
     <dubbo:reference interface="com.me2me.kafka.service.KafkaService" id="kafkaService"/>
 
-
+	<dubbo:consumer check="false" />
 </beans>

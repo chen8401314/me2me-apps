@@ -203,7 +203,6 @@ public interface ContentService{
 
     void clearData();
 
-
     Response Hottest2(int sinceId,long uid, int flag);
 
     int getUgcCount(long uid);

@@ -12,4 +12,6 @@
     <dubbo:reference interface="com.me2me.sms.service.SmsService" id="smsService"/>
     
     <dubbo:reference interface="com.me2me.sms.service.JPushService" id="jPushService"/>
+    
+    <dubbo:consumer check="false" />
 </beans>

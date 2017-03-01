@@ -9,4 +9,5 @@
 
     <dubbo:reference interface="com.me2me.user.service.UserService" id="userService"/>
     
+    <dubbo:consumer check="false" />
 </beans>
