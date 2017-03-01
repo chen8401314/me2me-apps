@@ -333,8 +333,6 @@ public class LiveServiceImpl implements LiveService {
 	@Override
     public Response getLiveByCid(long cid, long uid) {
         ShowLiveDto showLiveDto = new ShowLiveDto();
-        UserProfile userProfile = userService.getUserProfileByUid(uid);
-        showLiveDto.setV_lv(userProfile.getvLv());
         Topic topic = liveMybatisDao.getTopicById(cid);
         if(topic==null){
             return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
@@ -342,6 +340,8 @@ public class LiveServiceImpl implements LiveService {
         Content content = contentService.getContentByTopicId(cid);
         showLiveDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
         showLiveDto.setUid(topic.getUid());
+        UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
+        showLiveDto.setV_lv(userProfile.getvLv());
         showLiveDto.setNickName(userProfile.getNickName());
         showLiveDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
         showLiveDto.setCreateTime(topic.getCreateTime());
