@@ -158,7 +158,9 @@ public class ContentServiceImpl implements ContentService {
             contentDataElement.setTitle(content.getTitle());
             contentDataElement.setTag(content.getFeeling());
             ContentTags contentTags = contentMybatisDao.getContentTags(content.getFeeling());
-            contentDataElement.setTid(contentTags.getId());
+            if(null != contentTags){
+            	contentDataElement.setTid(contentTags.getId());
+            }
             contentDataElement.setType(content.getType());
             contentDataElement.setCreateTime(content.getCreateTime());
             if(!StringUtils.isEmpty(content.getConverImage())) {
