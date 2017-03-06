@@ -28,6 +28,7 @@ import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.*;
 import com.me2me.live.event.AggregationPublishEvent;
 import com.me2me.live.event.CacheLiveEvent;
+import com.me2me.live.event.CoreAggregationRemindEvent;
 import com.me2me.live.event.RemindAndJpushAtMessageEvent;
 import com.me2me.live.event.SpeakEvent;
 import com.me2me.live.event.TopicNoticeEvent;
@@ -2810,7 +2811,8 @@ public class LiveServiceImpl implements LiveService {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Response aggregationOpt2(AggregationOptDto dto) {
+	@Override
+	public Response aggregationOpt(AggregationOptDto dto) {
 		if (dto.getAcTopicId() == dto.getCeTopicId()) {// 自己对自己暂不支持操作
 			return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
 		}
@@ -2826,9 +2828,124 @@ public class LiveServiceImpl implements LiveService {
 			}
 
 			if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {// 收录申请
+				if(!this.isInCore(dto.getUid(), topicOwner.getCoreCircle())){
+					return Response.failure(ResponseStatus.YOU_ARE_NOT_CORECIRCLE.status, ResponseStatus.YOU_ARE_NOT_CORECIRCLE.message);
+				}
+				
+				//是否重复收录
+                if(topicAggregation != null){
+                    return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, "已申请");
+                }
+                
+                if(this.isKing(dto.getUid(), topic.getUid())){//我是聚合王国国王
+                	//直接成功
+                	TopicAggregation agg = new TopicAggregation();
+                    agg.setTopicId(dto.getCeTopicId());
+                    agg.setSubTopicId(dto.getAcTopicId());
+                    liveMybatisDao.createTopicAgg(agg);
+                    this.aggregateSuccessAfter(topic, topicOwner);
+                    return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
+                }else if(this.isInCore(dto.getUid(), topic.getCoreCircle())){//我是聚合王国的核心圈
+                	//直接成功
+                	TopicAggregation agg = new TopicAggregation();
+                    agg.setTopicId(dto.getCeTopicId());
+                    agg.setSubTopicId(dto.getAcTopicId());
+                    liveMybatisDao.createTopicAgg(agg);
+                    this.aggregateSuccessAfter(topic, topicOwner);
+                    return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
+                }else{//我是圈外身份
+                	if (topic.getCeAuditType() == 0) {//需要审核
+                    	//查询是否申请过
+                    	List<Integer> resultList = new ArrayList<Integer>();
+                    	resultList.add(0);
+                    	resultList.add(1);
+                    	List<TopicAggregationApply> list = liveMybatisDao.getTopicAggregationApplyByTopicAndTargetAndResult(dto.getAcTopicId(), dto.getCeTopicId(), 2, resultList);
+                        if(null != list && list.size() > 0){
+                            //重复操作
+                            return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, "已申请");
+                        }
+                        //需要申请同意收录
+                        TopicAggregationApply apply = new TopicAggregationApply();
+                        apply.setResult(0);
+                        apply.setTopicId(dto.getAcTopicId());
+                        apply.setTargetTopicId(dto.getCeTopicId());
+                        apply.setCreateTime(now);
+                        apply.setUpdateTime(now);
+                        apply.setType(2);
+                        apply.setOperator(dto.getUid());
+                        liveMybatisDao.createTopicAggApply(apply);
+                        
+                        //向聚合王国的核心圈下发申请消息和推送
+                        CoreAggregationRemindEvent event = new CoreAggregationRemindEvent();
+                        event.setApplyId(apply.getId());
+                        event.setReview("申请加入你的聚合王国");
+                        event.setSourceTopic(topicOwner);
+                        event.setSourceUid(dto.getUid());
+                        event.setTargetTopic(topic);
+                        event.setMessage("有个人王国申请加入你的聚合王国");
+                        this.applicationEventBus.post(event);
 
+                        return Response.success(200, "已发送申请");
+                    }else{//不需要审核
+                    	TopicAggregation agg = new TopicAggregation();
+                        agg.setTopicId(dto.getCeTopicId());
+                        agg.setSubTopicId(dto.getAcTopicId());
+                        liveMybatisDao.createTopicAgg(agg);
+                        this.aggregateSuccessAfter(topic, topicOwner);
+                        
+                        //发送消息
+                        this.aggregationRemind(dto.getUid(), topic.getUid(), "加入了你的聚合王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                        //发推送
+                        //本消息是由王国发起的，所以需要判断王国的配置
+                        if(this.checkTopicPush(topic.getId(), topic.getUid())){
+                        	userService.noticeMessagePush(topic.getUid(), "有个人王国加入了你的聚合王国", 2);
+                        }
+                        
+                        //判断个人王国的国王是不是当前操作人，如果是，则不需要消息
+                        if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
+                        	this.aggregationRemind(dto.getUid(), topicOwner.getUid(), "收录了你的个人王国", 0, topicOwner, topic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                            //发推送
+                            //本消息是由王国发起的，所以需要判断王国的配置
+                            if(this.checkTopicPush(topicOwner.getId(), topicOwner.getUid())){
+                            	userService.noticeMessagePush(topicOwner.getUid(), "有聚合王国收录了你的个人王国", 2);
+                            }
+                        }
+                        
+                        return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
+                    }
+                }
 			} else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {// 解散聚合
-
+				if (!this.isKing(dto.getUid(), topicOwner.getUid().longValue())) {
+					return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
+				}
+				
+				liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
+                
+                List<Long> ids = new ArrayList<Long>();
+                ids.add(dto.getCeTopicId());
+                ids.add(dto.getAcTopicId());
+                List<Integer> resultList = new ArrayList<Integer>();
+            	resultList.add(1);
+                //解除如果以前申请成功过，需要将原先申请的记录置为失效
+                List<TopicAggregationApply> list =  liveMybatisDao.getTopicAggregationApplyBySourceIdsAndTargetIdsAndResults(ids, ids, resultList);
+                if(null != list && list.size() > 0){
+                	for(TopicAggregationApply a : list){
+                		a.setResult(3);
+                		liveMybatisDao.updateTopicAggregationApply(a);
+                	}
+                }
+                
+                if(topicOwner.getUid().longValue() != topic.getUid().longValue() ){//如果是踢自己的王国，不需要发消息和推送
+                	this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "退出了你的聚合王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                    
+                    //发推送
+                    //本消息是由王国发起的，所以需要判断王国的配置
+                    if(this.checkTopicPush(topic.getId(), topic.getUid())){
+                    	userService.noticeMessagePush(topic.getUid(), "有个人王国退出了你的聚合王国", 2);
+                    }
+                }
+                
+                return Response.success(200, "操作成功");
 			} else if (dto.getAction() == Specification.AggregationOptType.ISSUED.index) {// 接受下发设置(个人王国设置)
 				if (!this.isKing(dto.getUid(), topicOwner.getUid().longValue())) {
 					return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
@@ -2860,9 +2977,138 @@ public class LiveServiceImpl implements LiveService {
 			}
 
 			if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {// 收录申请
-
+				if(!this.isInCore(dto.getUid(), topicOwner.getCoreCircle())){
+					return Response.failure(ResponseStatus.YOU_ARE_NOT_CORECIRCLE.status, ResponseStatus.YOU_ARE_NOT_CORECIRCLE.message);
+				}
+				
+				//是否重复收录
+                if(topicAggregation != null){
+                    return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, "已申请");
+                }
+                
+                if(this.isKing(dto.getUid(), topic.getUid().longValue())){//我是个人王国的国王
+                	//直接成功
+                	TopicAggregation agg = new TopicAggregation();
+                    agg.setTopicId(dto.getCeTopicId());
+                    agg.setSubTopicId(dto.getAcTopicId());
+                    liveMybatisDao.createTopicAgg(agg);
+                    this.aggregateSuccessAfter(topicOwner, topic);
+                    
+                    return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
+                }else if(this.isInCore(dto.getUid(), topic.getCoreCircle())){//我是个人王国的核心圈
+                	//直接成功
+                	TopicAggregation agg = new TopicAggregation();
+                    agg.setTopicId(dto.getCeTopicId());
+                    agg.setSubTopicId(dto.getAcTopicId());
+                    liveMybatisDao.createTopicAgg(agg);
+                    this.aggregateSuccessAfter(topicOwner, topic);
+                    
+                    //向双方国王发送消息
+                    //先向个人王国发送消息和推送
+                    this.aggregationRemind(dto.getUid(), topic.getUid(), "收录了你的个人王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                    //本消息是由王国发起的，所以需要判断王国的配置
+                    if(this.checkTopicPush(topic.getId(), topic.getUid())){
+                    	userService.noticeMessagePush(topic.getUid(), "有聚合王国收录了你的个人王国", 2);
+                    }
+                    //再想聚合王国发送消息和推送（如果这个聚合王国是自己的，则不需要消息了）
+                    if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
+                    	this.aggregationRemind(dto.getUid(), topicOwner.getUid(), "加入了你的聚合王国", 0, topicOwner, topic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                        //本消息是由王国发起的，所以需要判断王国的配置
+                        if(this.checkTopicPush(topicOwner.getId(), topicOwner.getUid())){
+                        	userService.noticeMessagePush(topicOwner.getUid(), "有个人王国加入了你的聚合王国", 2);
+                        }
+                    }
+                    
+                    return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
+                }else{//我是圈外身份
+                	if (topic.getAcAuditType() == 0) {//需要审核
+                		//查询是否申请过
+                    	List<Integer> resultList = new ArrayList<Integer>();
+                    	resultList.add(0);
+                    	resultList.add(1);
+                    	List<TopicAggregationApply> list = liveMybatisDao.getTopicAggregationApplyByTopicAndTargetAndResult(dto.getCeTopicId() ,dto.getAcTopicId(), 1, resultList);
+                        if(null != list && list.size() > 0){//有过申请，并且是初始化的或已同意的
+                            return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, "已申请");
+                        }
+                        //需要申请同意收录
+                        TopicAggregationApply apply = new TopicAggregationApply();
+                        apply.setResult(0);
+                        apply.setTopicId(dto.getCeTopicId());
+                        apply.setTargetTopicId(dto.getAcTopicId());
+                        apply.setCreateTime(now);
+                        apply.setUpdateTime(now);
+                        apply.setType(1);
+                        apply.setOperator(dto.getUid());
+                        liveMybatisDao.createTopicAggApply(apply);
+                        
+                        //向个人王国的核心圈发送申请消息和推送
+                        CoreAggregationRemindEvent event = new CoreAggregationRemindEvent();
+                        event.setApplyId(apply.getId());
+                        event.setReview("申请收录你的个人王国");
+                        event.setSourceTopic(topicOwner);
+                        event.setSourceUid(dto.getUid());
+                        event.setTargetTopic(topic);
+                        event.setMessage("有聚合王国申请收录你的个人王国");
+                        this.applicationEventBus.post(event);
+                        
+                        return Response.success(200, "已发送申请");
+                	}else{//不需要审核
+                		TopicAggregation agg = new TopicAggregation();
+                        agg.setTopicId(dto.getCeTopicId());
+                        agg.setSubTopicId(dto.getAcTopicId());
+                        liveMybatisDao.createTopicAgg(agg);
+                        this.aggregateSuccessAfter(topicOwner, topic);
+                        
+                        //向双方国王发送消息
+                        //先向个人王国发送消息和推送
+                        this.aggregationRemind(dto.getUid(), topic.getUid(), "收录了你的个人王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                        //本消息是由王国发起的，所以需要判断王国的配置
+                        if(this.checkTopicPush(topic.getId(), topic.getUid())){
+                        	userService.noticeMessagePush(topic.getUid(), "有聚合王国收录了你的个人王国", 2);
+                        }
+                        //再想聚合王国发送消息和推送（如果这个聚合王国是自己的，则不需要消息了）
+                        if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
+                        	this.aggregationRemind(dto.getUid(), topicOwner.getUid(), "加入了你的聚合王国", 0, topicOwner, topic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                            //本消息是由王国发起的，所以需要判断王国的配置
+                            if(this.checkTopicPush(topicOwner.getId(), topicOwner.getUid())){
+                            	userService.noticeMessagePush(topicOwner.getUid(), "有个人王国加入了你的聚合王国", 2);
+                            }
+                        }
+                        return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
+                	}
+                }
 			} else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {// 解散聚合
-
+				if (!this.isKing(dto.getUid(), topicOwner.getUid().longValue())) {
+					return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
+				}
+				
+				liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
+                
+                if(topicOwner.getUid().longValue() != topic.getUid().longValue() ){//如果是踢自己的王国，不需要发消息和推送
+                	this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "踢走了你的个人王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                    
+                	List<Long> ids = new ArrayList<Long>();
+                    ids.add(dto.getCeTopicId());
+                    ids.add(dto.getAcTopicId());
+                    List<Integer> resultList = new ArrayList<Integer>();
+                	resultList.add(1);
+                    //解除如果以前申请成功过，需要将原先申请的记录置为失效
+                    List<TopicAggregationApply> list =  liveMybatisDao.getTopicAggregationApplyBySourceIdsAndTargetIdsAndResults(ids, ids, resultList);
+                    if(null != list && list.size() > 0){
+                    	for(TopicAggregationApply a : list){
+                    		a.setResult(3);
+                    		liveMybatisDao.updateTopicAggregationApply(a);
+                    	}
+                    }
+                	
+                    //发推送
+                    //本消息是由王国发起的，所以需要判断王国的配置
+                    if(this.checkTopicPush(topic.getId(), topic.getUid())){
+                    	userService.noticeMessagePush(topic.getUid(), "有聚合王国踢走了你的个人王国", 2);
+                    }
+                }
+                
+                return Response.success(200, "操作成功");
 			} else if (dto.getAction() == Specification.AggregationOptType.TOP.index) {// 置顶操作(聚合王国设置)
 				if (!this.isKing(dto.getUid(), topicOwner.getUid().longValue())) {
 					return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
@@ -2897,262 +3143,6 @@ public class LiveServiceImpl implements LiveService {
 
 		return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
 	}
-	
-    @Override
-    public Response aggregationOpt(AggregationOptDto dto) {
-    	if(dto.getAcTopicId() == dto.getCeTopicId()){
-            //因为安卓的问题所以+此代码
-            return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
-        }
-        Date now = new Date();
-        TopicAggregation topicAggregation = liveMybatisDao.getTopicAggregationByTopicIdAndSubId(dto.getCeTopicId() ,dto.getAcTopicId());
-        
-        if(dto.getType() == Specification.KingdomLanuchType.PERSONAL_LANUCH.index) {//个人王国发起
-        	Topic topic = liveMybatisDao.getTopicById(dto.getCeTopicId());
-        	Topic topicOwner = liveMybatisDao.getTopicById(dto.getAcTopicId());
-        	if(topic != null && topicOwner != null){
-        		if (topicOwner.getUid().longValue() == dto.getUid()) {
-        			//只有国王才能操作
-                    if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {
-                    	//是否重复收录
-                        if(topicAggregation != null){
-                            return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, "已申请");
-                        }
-                        if(topicOwner.getUid().longValue() != topic.getUid().longValue() ){
-                            if (topic.getCeAuditType() == 0) {
-                                //查询是否申请过
-                            	List<Integer> resultList = new ArrayList<Integer>();
-                            	resultList.add(0);
-                            	resultList.add(1);
-                            	List<TopicAggregationApply> list = liveMybatisDao.getTopicAggregationApplyByTopicAndTargetAndResult(dto.getAcTopicId(), dto.getCeTopicId(), 2, resultList);
-                                if(null != list && list.size() > 0){
-                                    //重复操作
-                                    return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, "已申请");
-                                }
-                                //需要申请同意收录
-                                TopicAggregationApply apply = new TopicAggregationApply();
-                                apply.setResult(0);
-                                apply.setTopicId(dto.getAcTopicId());
-                                apply.setTargetTopicId(dto.getCeTopicId());
-                                apply.setCreateTime(now);
-                                apply.setUpdateTime(now);
-                                apply.setType(2);
-                                apply.setOperator(dto.getUid());
-                                liveMybatisDao.createTopicAggApply(apply);
-                                
-                                //发送消息
-                                this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "申请加入你的聚合王国", apply.getId(), topic, topicOwner, Specification.UserNoticeType.AGGREGATION_APPLY.index);
-                                
-                                //发推送
-                                //本消息是由王国发起的，所以需要判断王国的配置
-                                if(this.checkTopicPush(topic.getId(), topic.getUid())){
-                                	userService.noticeMessagePush(topic.getUid(), "有个人王国申请加入你的聚合王国", 2);
-                                }
-                                
-                                log.info("create TopicAggregationApply success");
-                                return Response.success(200, "已发送申请");
-                            }else{//不需要审核的情况
-                            	TopicAggregation agg = new TopicAggregation();
-                                agg.setTopicId(dto.getCeTopicId());
-                                agg.setSubTopicId(dto.getAcTopicId());
-                                liveMybatisDao.createTopicAgg(agg);
-                                this.aggregateSuccessAfter(topic, topicOwner);
-                                //发送消息
-                                this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "加入了你的聚合王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
-                                
-                                //发推送
-                                //本消息是由王国发起的，所以需要判断王国的配置
-                                if(this.checkTopicPush(topic.getId(), topic.getUid())){
-                                	userService.noticeMessagePush(topic.getUid(), "有个人王国加入了你的聚合王国", 2);
-                                }
-                                
-                                log.info("create TopicAggregation success");
-                                return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
-                            }
-                        }else{
-                        	//如果是自己收录自己，则不需要发消息了
-                            TopicAggregation agg = new TopicAggregation();
-                            agg.setTopicId(dto.getCeTopicId());
-                            agg.setSubTopicId(dto.getAcTopicId());
-                            liveMybatisDao.createTopicAgg(agg);
-                            this.aggregateSuccessAfter(topic, topicOwner);
-                            log.info("create TopicAggregation success");
-                            return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
-                        }
-                    } else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {
-                        liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
-                        
-                        List<Long> ids = new ArrayList<Long>();
-                        ids.add(dto.getCeTopicId());
-                        ids.add(dto.getAcTopicId());
-                        List<Integer> resultList = new ArrayList<Integer>();
-                    	resultList.add(1);
-                        //解除如果以前申请成功过，需要将原先申请的记录置为失效
-                        List<TopicAggregationApply> list =  liveMybatisDao.getTopicAggregationApplyBySourceIdsAndTargetIdsAndResults(ids, ids, resultList);
-                        if(null != list && list.size() > 0){
-                        	for(TopicAggregationApply a : list){
-                        		a.setResult(3);
-                        		liveMybatisDao.updateTopicAggregationApply(a);
-                        	}
-                        }
-                        
-                        if(topicOwner.getUid().longValue() != topic.getUid().longValue() ){//如果是踢自己的王国，不需要发消息和推送
-                        	this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "退出了你的聚合王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
-                            
-                            //发推送
-                            //本消息是由王国发起的，所以需要判断王国的配置
-                            if(this.checkTopicPush(topic.getId(), topic.getUid())){
-                            	userService.noticeMessagePush(topic.getUid(), "有个人王国退出了你的聚合王国", 2);
-                            }
-                        }
-                        
-                        return Response.success(200, "操作成功");
-                    } else if (dto.getAction() == Specification.AggregationOptType.ISSUED.index) {
-                        if(topicAggregation != null){
-                            //0接受推送 1不接受推送
-                            topicAggregation.setIsPublish(0);
-                            liveMybatisDao.updateTopicAggregation(topicAggregation);
-                            return Response.success(200, "操作成功");
-                        }
-                    } else if (dto.getAction() == Specification.AggregationOptType.CANCEL_ISSUED.index) {
-                        if(topicAggregation != null){
-                            topicAggregation.setIsPublish(1);
-                            liveMybatisDao.updateTopicAggregation(topicAggregation);
-                            return Response.success(200, "操作成功");
-                        }
-                    }
-                } else {
-                    return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
-                }
-        	}
-        }else if(dto.getType() == Specification.KingdomLanuchType.AGGREGATION_LANUCH.index){//聚合王国王国发起
-            Topic topic = liveMybatisDao.getTopicById(dto.getAcTopicId());
-            Topic topicOwner = liveMybatisDao.getTopicById(dto.getCeTopicId());
-            if(topic != null && topicOwner != null) {
-                if (topicOwner.getUid().longValue() == dto.getUid()) {
-                    //只有国王才能操作
-                    if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {
-                    	//是否重复收录
-                        if(topicAggregation != null){
-                            return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, "已申请");
-                        }
-                        //如果聚合王国收录自己的子王国不需要验证
-                        if(topicOwner.getUid().longValue() != topic.getUid().longValue() ){
-                            if (topic.getAcAuditType() == 0) {
-                                //查询是否申请过
-                            	List<Integer> resultList = new ArrayList<Integer>();
-                            	resultList.add(0);
-                            	resultList.add(1);
-                            	List<TopicAggregationApply> list = liveMybatisDao.getTopicAggregationApplyByTopicAndTargetAndResult(dto.getCeTopicId() ,dto.getAcTopicId(), 1, resultList);
-                                if(null != list && list.size() > 0){//有过申请，并且是初始化的或已同意的
-                                    return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, "已申请");
-                                }
-                                //需要申请同意收录
-                                TopicAggregationApply apply = new TopicAggregationApply();
-                                apply.setResult(0);
-                                apply.setTopicId(dto.getCeTopicId());
-                                apply.setTargetTopicId(dto.getAcTopicId());
-                                apply.setCreateTime(now);
-                                apply.setUpdateTime(now);
-                                apply.setType(1);
-                                apply.setOperator(dto.getUid());
-                                liveMybatisDao.createTopicAggApply(apply);
-                                
-                                //发送消息
-                                this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "申请收录你的个人王国", apply.getId(), topic, topicOwner, Specification.UserNoticeType.AGGREGATION_APPLY.index);
-                                
-                                //发推送
-                                //本消息是由王国发起的，所以需要判断王国的配置
-                                if(this.checkTopicPush(topic.getId(), topic.getUid())){
-                                	userService.noticeMessagePush(topic.getUid(), "有聚合王国申请收录你的个人王国", 2);
-                                }
-                                
-                                log.info("create TopicAggregationApply success");
-                                return Response.success(200, "已发送申请");
-                            }else{//不需要审核直接成功
-                            	TopicAggregation agg = new TopicAggregation();
-                                agg.setTopicId(dto.getCeTopicId());
-                                agg.setSubTopicId(dto.getAcTopicId());
-                                liveMybatisDao.createTopicAgg(agg);
-                                this.aggregateSuccessAfter(topicOwner, topic);
-                                this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "收录了你的个人王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
-                                
-                                //发推送
-                                //本消息是由王国发起的，所以需要判断王国的配置
-                                if(this.checkTopicPush(topic.getId(), topic.getUid())){
-                                	userService.noticeMessagePush(topic.getUid(), "有聚合王国收录了你的个人王国", 2);
-                                }
-                                
-                                log.info("create TopicAggregation success");
-                                return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
-                            }
-                        }else{//自己加自己直接成功而且不需要消息
-                            TopicAggregation agg = new TopicAggregation();
-                            agg.setTopicId(dto.getCeTopicId());
-                            agg.setSubTopicId(dto.getAcTopicId());
-                            liveMybatisDao.createTopicAgg(agg);
-                            this.aggregateSuccessAfter(topicOwner, topic);
-                            log.info("create TopicAggregation success");
-                            return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
-                        }
-                    } else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {
-                        liveMybatisDao.deleteTopicAgg(dto.getCeTopicId(), dto.getAcTopicId());
-                        
-                        if(topicOwner.getUid().longValue() != topic.getUid().longValue() ){//如果是踢自己的王国，不需要发消息和推送
-                        	this.aggregationRemind(topicOwner.getUid(), topic.getUid(), "踢走了你的个人王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
-                            
-                        	List<Long> ids = new ArrayList<Long>();
-                            ids.add(dto.getCeTopicId());
-                            ids.add(dto.getAcTopicId());
-                            List<Integer> resultList = new ArrayList<Integer>();
-                        	resultList.add(1);
-                            //解除如果以前申请成功过，需要将原先申请的记录置为失效
-                            List<TopicAggregationApply> list =  liveMybatisDao.getTopicAggregationApplyBySourceIdsAndTargetIdsAndResults(ids, ids, resultList);
-                            if(null != list && list.size() > 0){
-                            	for(TopicAggregationApply a : list){
-                            		a.setResult(3);
-                            		liveMybatisDao.updateTopicAggregationApply(a);
-                            	}
-                            }
-                        	
-                            //发推送
-                            //本消息是由王国发起的，所以需要判断王国的配置
-                            if(this.checkTopicPush(topic.getId(), topic.getUid())){
-                            	userService.noticeMessagePush(topic.getUid(), "有聚合王国踢走了你的个人王国", 2);
-                            }
-                        }
-                        
-                        return Response.success(200, "操作成功");
-                    } else if (dto.getAction() == Specification.AggregationOptType.TOP.index) {
-                        if(topicAggregation != null){
-                            List<TopicAggregation> list = liveMybatisDao.getTopicAggregationByTopicIdAndIsTop(dto.getCeTopicId(), 1);
-                            if(list.size() < Integer.valueOf(cacheService.get(TOP_COUNT))) {
-                                //1置顶 0不置顶
-                                topicAggregation.setIsTop(1);
-                                //设置时间为了下次查询会显示在第一个
-                                topicAggregation.setUpdateTime(now);
-                                liveMybatisDao.updateTopicAggregation(topicAggregation);
-                                return Response.success(200, "操作成功");
-                            }else {
-                                return Response.failure(ResponseStatus.TOP_COUNT_OVER_LIMIT.status, ResponseStatus.TOP_COUNT_OVER_LIMIT.message);
-                            }
-                        }
-                    } else if (dto.getAction() == Specification.AggregationOptType.CANCEL_TOP.index) {
-                        if(topicAggregation != null){
-                            topicAggregation.setIsTop(0);
-                            liveMybatisDao.updateTopicAggregation(topicAggregation);
-                            log.info("cancel top success");
-                            return Response.success(200, "操作成功");
-                        }
-                    }
-                } else {
-                    return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
-                }
-            }
-        }
-
-        return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
-    }
     
     private boolean checkTopicPush(long topicId, long uid){
     	TopicUserConfig tuc = liveMybatisDao.getTopicUserConfig(uid, topicId);
