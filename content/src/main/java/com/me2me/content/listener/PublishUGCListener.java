@@ -66,82 +66,45 @@ public class PublishUGCListener {
     }
 
     @Subscribe
-    public void sendMessage(ReviewEvent reviewEvent){
-        ReviewDto reviewDto = reviewEvent.getReviewDto();
-        Content content = reviewEvent.getContent();
-        if(reviewDto.getIsAt() == 1) {
-//            JSONArray array = null;
-            //兼容老版本
-            if(reviewDto.getAtUid() > 0) {
-            	long atUid = reviewDto.getAtUid();
-                if ("1".equals(reviewEvent.getIsOnline())) {
-                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview(), atUid);
-                } else {
-                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview(), atUid);
-                }
+	public void sendMessage(ReviewEvent reviewEvent) {
+		ReviewDto reviewDto = reviewEvent.getReviewDto();
+		Content content = reviewEvent.getContent();
+		if (reviewDto.getIsAt() == 1) {
+			// 兼容老版本
+			if (reviewDto.getAtUid() > 0) {
+				long atUid = reviewDto.getAtUid();
+				if ("1".equals(reviewEvent.getIsOnline())) {
+					contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview(), atUid);
+				} else {
+					contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview(), atUid);
+				}
 
-                UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("messageType", Specification.PushMessageType.AT.index);
-                jsonObject.addProperty("type",Specification.PushObjectType.UGC.index);
-                jsonObject.addProperty("cid",content.getId());
-                String alias = String.valueOf(atUid);
-                jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
-            	
-            	
-            	
-//                String extra = reviewDto.getExtra();
-//                if(StringUtils.isEmpty(extra)){
-//                    array = new JSONArray();
-//                    array.add(reviewDto.getAtUid());
-//                }else {
-//                    JSONObject json = JSON.parseObject(extra);
-//                    array = json.containsKey("atArray") ? json.getJSONArray("atArray") : null;
-//                    if (array == null) {
-//                        return;
-//                    }
-//                }
-//                for(int i=0;i<array.size();i++) {
-//                    long atUid = array.getLongValue(i);
-//                    if ("1".equals(reviewEvent.getIsOnline())) {
-//                        contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview(), atUid);
-//                    } else {
-//                        contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview(), atUid);
-//                    }
-//
-//                    UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
-//                    JsonObject jsonObject = new JsonObject();
-//                    jsonObject.addProperty("messageType", Specification.PushMessageType.AT.index);
-//                    jsonObject.addProperty("type",Specification.PushObjectType.UGC.index);
-//                    jsonObject.addProperty("cid",content.getId());
-//                    String alias = String.valueOf(atUid);
-//                    jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
-//                }
-            }
-//            if(reviewDto.getAtUid() != content.getUid()) {
-//                if(isOnline.equals("1")) {
-//                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.UGCAT.index, reviewDto.getReview(), reviewDto.getAtUid());
-//                }else{
-//                    contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview(), reviewDto.getAtUid());
-//                }
-//            }
-        }else{
-            //添加提醒
-            if(content.getUid()!=reviewDto.getUid()) {
-                log.info("review you start ... from "+reviewDto.getUid()+" to "+content.getUid());
-               UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
-               JsonObject jsonObject = new JsonObject();
-               jsonObject.addProperty("messageType",Specification.PushMessageType.REVIEW.index);
-               jsonObject.addProperty("type",Specification.PushObjectType.UGC.index);
-                jsonObject.addProperty("cid",content.getId());
-               String alias = String.valueOf(content.getUid());
-                jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "评论了你", JPushUtils.packageExtra(jsonObject));
-               contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview());
-
-               log.info("review you end");
-            }
-        }
-    }
+				UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
+				JsonObject jsonObject = new JsonObject();
+				jsonObject.addProperty("messageType", Specification.PushMessageType.AT.index);
+				jsonObject.addProperty("type", Specification.PushObjectType.UGC.index);
+				jsonObject.addProperty("cid", content.getId());
+				String alias = String.valueOf(atUid);
+				userService.pushWithExtra(alias, userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
+			}
+		} else {
+			// 添加提醒
+			if (content.getUid() != reviewDto.getUid()) {
+				log.info("review you start ... from " + reviewDto.getUid() + " to " + content.getUid());
+				contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview());
+				
+				UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
+				JsonObject jsonObject = new JsonObject();
+				jsonObject.addProperty("messageType", Specification.PushMessageType.REVIEW.index);
+				jsonObject.addProperty("type", Specification.PushObjectType.UGC.index);
+				jsonObject.addProperty("cid", content.getId());
+				String alias = String.valueOf(content.getUid());
+				userService.pushWithExtra(alias, userProfile.getNickName() + "评论了你", JPushUtils.packageExtra(jsonObject));
+				
+				log.info("review you end");
+			}
+		}
+	}
 
 
 }
