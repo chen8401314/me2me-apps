@@ -12,10 +12,10 @@ public class UserFamousRequest implements BaseEntity {
 
     @Getter
     @Setter
-    private long uid;
+    private long targetUid;
 
     @Getter
     @Setter
-    private int type;
+    private int action;
 
 }

@@ -307,5 +307,5 @@ public interface UserService {
     
     void pushWithExtra(String uid,String message,Map<String,String> extraMaps);
 
-    Response userRecomm(long uid ,int type);
+    Response userRecomm(long targetUid ,int action);
 }

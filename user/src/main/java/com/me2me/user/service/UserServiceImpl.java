@@ -2578,23 +2578,23 @@ public class UserServiceImpl implements UserService {
 	}
 
     @Override
-    public Response userRecomm(long uid ,int type) {
-        UserFamous userFamous = userMybatisDao.getUserFamousByUid(uid);
-        if(type == 1) {
+    public Response userRecomm(long targetUid ,int action) {
+        UserFamous userFamous = userMybatisDao.getUserFamousByUid(targetUid);
+        if(action == 1) {
             //推荐
             if (userFamous != null) {
                 userFamous.setUpdateTime(new Date());
                 userMybatisDao.updateUserFamous(userFamous);
             } else {
                 UserFamous newUserFamous = new UserFamous();
-                newUserFamous.setUid(uid);
+                newUserFamous.setUid(targetUid);
                 newUserFamous.setUpdateTime(new Date());
                 userMybatisDao.createUserFamous(newUserFamous);
             }
-        }else if(type == 2){
+        }else if(action == 2){
             //取消
             if(userFamous != null){
-                userMybatisDao.deleteUserFamous(uid);
+                userMybatisDao.deleteUserFamous(targetUid);
             }else {
                 return Response.failure("数据不存在");
             }
