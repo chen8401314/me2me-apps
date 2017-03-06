@@ -2808,6 +2808,95 @@ public class LiveServiceImpl implements LiveService {
 		
 		return Response.success();
 	}
+
+	@SuppressWarnings("rawtypes")
+	public Response aggregationOpt2(AggregationOptDto dto) {
+		if (dto.getAcTopicId() == dto.getCeTopicId()) {// 自己对自己暂不支持操作
+			return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
+		}
+
+		Date now = new Date();
+		TopicAggregation topicAggregation = liveMybatisDao.getTopicAggregationByTopicIdAndSubId(dto.getCeTopicId(), dto.getAcTopicId());
+
+		if (dto.getType() == Specification.KingdomLanuchType.PERSONAL_LANUCH.index) {// 个人王国发起
+			Topic topicOwner = liveMybatisDao.getTopicById(dto.getAcTopicId());
+			Topic topic = liveMybatisDao.getTopicById(dto.getCeTopicId());
+			if (topic == null || topicOwner == null) {
+				return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
+			}
+
+			if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {// 收录申请
+
+			} else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {// 解散聚合
+
+			} else if (dto.getAction() == Specification.AggregationOptType.ISSUED.index) {// 接受下发设置(个人王国设置)
+				if (!this.isKing(dto.getUid(), topicOwner.getUid().longValue())) {
+					return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
+				}
+				if (topicAggregation != null) {
+					// 0接受推送 1不接受推送
+					topicAggregation.setIsPublish(0);
+					liveMybatisDao.updateTopicAggregation(topicAggregation);
+				}
+				log.info("issued success");
+				return Response.success(200, "操作成功");
+			} else if (dto.getAction() == Specification.AggregationOptType.CANCEL_ISSUED.index) {// 取消接受下发设置(个人王国设置)
+				if (!this.isKing(dto.getUid(), topicOwner.getUid().longValue())) {
+					return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
+				}
+				if (topicAggregation != null) {
+					// 0接受推送 1不接受推送
+					topicAggregation.setIsPublish(1);
+					liveMybatisDao.updateTopicAggregation(topicAggregation);
+				}
+				log.info("cancel issued success");
+				return Response.success(200, "操作成功");
+			}
+		} else if (dto.getType() == Specification.KingdomLanuchType.AGGREGATION_LANUCH.index) {// 聚合王国王国发起
+			Topic topicOwner = liveMybatisDao.getTopicById(dto.getCeTopicId());
+			Topic topic = liveMybatisDao.getTopicById(dto.getAcTopicId());
+			if (topic == null || topicOwner == null) {
+				return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
+			}
+
+			if (dto.getAction() == Specification.AggregationOptType.APPLY.index) {// 收录申请
+
+			} else if (dto.getAction() == Specification.AggregationOptType.DISMISS.index) {// 解散聚合
+
+			} else if (dto.getAction() == Specification.AggregationOptType.TOP.index) {// 置顶操作(聚合王国设置)
+				if (!this.isKing(dto.getUid(), topicOwner.getUid().longValue())) {
+					return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
+				}
+				if (topicAggregation != null) {
+					List<TopicAggregation> list = liveMybatisDao.getTopicAggregationByTopicIdAndIsTop(dto.getCeTopicId(), 1);
+					if (list.size() < Integer.valueOf(cacheService.get(TOP_COUNT))) {
+						// 1置顶 0不置顶
+						topicAggregation.setIsTop(1);
+						// 设置时间为了下次查询会显示在第一个
+						topicAggregation.setUpdateTime(now);
+						liveMybatisDao.updateTopicAggregation(topicAggregation);
+					} else {
+						log.info("top over limit");
+						return Response.failure(ResponseStatus.TOP_COUNT_OVER_LIMIT.status, ResponseStatus.TOP_COUNT_OVER_LIMIT.message);
+					}
+				}
+				log.info("top success");
+				return Response.success(200, "操作成功");
+			} else if (dto.getAction() == Specification.AggregationOptType.CANCEL_TOP.index) {// 取消置顶操作(聚合王国设置)
+				if (!this.isKing(dto.getUid(), topicOwner.getUid().longValue())) {
+					return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
+				}
+				if (topicAggregation != null) {
+					topicAggregation.setIsTop(0);
+					liveMybatisDao.updateTopicAggregation(topicAggregation);
+				}
+				log.info("cancel top success");
+				return Response.success(200, "操作成功");
+			}
+		}
+
+		return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
+	}
 	
     @Override
     public Response aggregationOpt(AggregationOptDto dto) {
@@ -2848,6 +2937,7 @@ public class LiveServiceImpl implements LiveService {
                                 apply.setCreateTime(now);
                                 apply.setUpdateTime(now);
                                 apply.setType(2);
+                                apply.setOperator(dto.getUid());
                                 liveMybatisDao.createTopicAggApply(apply);
                                 
                                 //发送消息
@@ -2965,6 +3055,7 @@ public class LiveServiceImpl implements LiveService {
                                 apply.setCreateTime(now);
                                 apply.setUpdateTime(now);
                                 apply.setType(1);
+                                apply.setOperator(dto.getUid());
                                 liveMybatisDao.createTopicAggApply(apply);
                                 
                                 //发送消息
@@ -3091,6 +3182,7 @@ public class LiveServiceImpl implements LiveService {
             	String message = null;
                 if (dto.getAction() == 1) {
                     topicAggregationApply.setResult(1);
+                    topicAggregationApply.setOperator2(dto.getUid());
                     liveMybatisDao.updateTopicAggregationApply(topicAggregationApply);
                     log.info("update topic_agg_apply success");
                     TopicAggregation aggregation = new TopicAggregation();
@@ -3111,6 +3203,7 @@ public class LiveServiceImpl implements LiveService {
                     log.info("create topic_agg success");
                 } else if (dto.getAction() == 2) {
                     topicAggregationApply.setResult(2);
+                    topicAggregationApply.setOperator2(dto.getUid());
                     liveMybatisDao.updateTopicAggregationApply(topicAggregationApply);
                     review = "拒绝你的收录申请";
                     if(topicAggregationApply.getType() == 1){//母拉子
@@ -3129,7 +3222,13 @@ public class LiveServiceImpl implements LiveService {
                 	userService.noticeMessagePush(topic.getUid(), message, 2);
                 }
                 
-                return Response.success();
+                return Response.success(200, "操作成功");
+            }else if (topicAggregationApply.getResult() == 1) {
+            	return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, "已经同意了哦");
+            }else if (topicAggregationApply.getResult() == 2) {
+            	return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, "已经拒绝了哦");
+            }else if (topicAggregationApply.getResult() == 3) {
+            	return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, "申请已失效");
             }else {
                 return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, ResponseStatus.REPEATED_TREATMENT.message);
             }
