@@ -3202,14 +3202,24 @@ public class LiveServiceImpl implements LiveService {
                     	message = "聚合王国拒绝了你的收录申请";
                     }
                     log.info("update topic_agg_apply success");
+                }else{
+                	return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, "无效操作");
                 }
                 
-                this.aggregationRemind(targetTopic.getUid(), topic.getUid(), review, 0, topic, targetTopic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
-
-                //发推送
+                //先向对方国王发送消息和推送
+                this.aggregationRemind(dto.getUid(), topic.getUid(), review, 0, topic, targetTopic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
                 //本消息是由王国发起的，所以需要判断王国的配置
                 if(this.checkTopicPush(topic.getId(), topic.getUid())){
                 	userService.noticeMessagePush(topic.getUid(), message, 2);
+                }
+                //判断申请操作人是否是对方王国国王，如果不是也要发消息
+                if(topicAggregationApply.getOperator().longValue() > 0 
+                		&& topicAggregationApply.getOperator().longValue() != topic.getUid().longValue()){
+                	this.aggregationRemind(dto.getUid(), topicAggregationApply.getOperator().longValue(), review, 0, topic, targetTopic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                    //本消息是由王国发起的，所以需要判断王国的配置
+                    if(this.checkTopicPush(topic.getId(), topicAggregationApply.getOperator().longValue())){
+                    	userService.noticeMessagePush(topicAggregationApply.getOperator().longValue(), message, 2);
+                    }
                 }
                 
                 return Response.success(200, "操作成功");
