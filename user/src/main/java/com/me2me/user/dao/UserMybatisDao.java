@@ -96,6 +96,9 @@ public class UserMybatisDao {
     @Autowired
     private  EntryPageConfigMapper entryPageConfigMapper;
 
+    @Autowired
+    private UserFamousMapper userFamousMapper;
+
     /**
      * 保存用户注册信息
      * @param user
@@ -930,4 +933,26 @@ public class UserMybatisDao {
     public void updateSystemConfig(SystemConfig config){
     	systemConfigMapper.updateByPrimaryKeySelective(config);
     }
+
+    public UserFamous getUserFamousByUid(long uid){
+        UserFamousExample example = new UserFamousExample();
+        example.createCriteria().andUidEqualTo(uid);
+        List<UserFamous> list = userFamousMapper.selectByExample(example);
+        return list.size()>0&&list!=null?list.get(0):null;
+    }
+
+    public void updateUserFamous(UserFamous userFamous){
+         userFamousMapper.updateByPrimaryKeySelective(userFamous);
+    }
+
+    public void createUserFamous(UserFamous userFamous){
+        userFamousMapper.insert(userFamous);
+    }
+
+    public void deleteUserFamous(long uid){
+        UserFamousExample example = new UserFamousExample();
+        example.createCriteria().andUidEqualTo(uid);
+        userFamousMapper.deleteByExample(example);
+    }
+
 }

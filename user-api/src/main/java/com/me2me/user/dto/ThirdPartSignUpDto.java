@@ -45,4 +45,8 @@ public class ThirdPartSignUpDto extends UserSignUpDto {
     //新昵称 前台检查后的(h5登陆过次啊会有这个字段)
     private String newNickName;
 
+    private int platform;
+
+    private String channel;
+
 }

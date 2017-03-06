@@ -72,4 +72,12 @@ public class ThirdPartRequest {
     @Setter
     private String newNickName;
 
+    @Getter
+    @Setter
+    private int platform;
+
+    @Getter
+    @Setter
+    private String channel;
+
 }

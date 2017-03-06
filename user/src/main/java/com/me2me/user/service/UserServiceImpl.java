@@ -133,6 +133,8 @@ public class UserServiceImpl implements UserService {
         userProfile.setIntroduced(userSignUpDto.getIntroduced());
         userProfile.setCreateTime(new Date());
         userProfile.setUpdateTime(new Date());
+        userProfile.setChannel(userSignUpDto.getChannel());
+        userProfile.setPlatform(userSignUpDto.getPlatform());
 
         List<UserAccountBindStatusDto> array = Lists.newArrayList();
         // 添加手机绑定
@@ -1966,6 +1968,8 @@ public class UserServiceImpl implements UserService {
         userProfile.setAvatar(thirdPartSignUpDto.getAvatar());
         userProfile.setGender(thirdPartSignUpDto.getGender());
         userProfile.setCreateTime(new Date());
+        userProfile.setChannel(thirdPartSignUpDto.getChannel());
+        userProfile.setPlatform(thirdPartSignUpDto.getPlatform());
         //第三方h5微信登录首次登录设置为1 下一次app登录的时候如果是1 app弹出修改昵称页面 0为不需要修改(默认为0)
         if(thirdPartSignUpDto.getH5type() ==1){
             userProfile.setIsClientLogin(1);
@@ -2572,4 +2576,29 @@ public class UserServiceImpl implements UserService {
 		event.setExtraMaps(extraMaps);
 		this.applicationEventBus.post(event);
 	}
+
+    @Override
+    public Response userRecomm(long uid ,int type) {
+        UserFamous userFamous = userMybatisDao.getUserFamousByUid(uid);
+        if(type == 1) {
+            //推荐
+            if (userFamous != null) {
+                userFamous.setUpdateTime(new Date());
+                userMybatisDao.updateUserFamous(userFamous);
+            } else {
+                UserFamous newUserFamous = new UserFamous();
+                newUserFamous.setUid(uid);
+                newUserFamous.setUpdateTime(new Date());
+                userMybatisDao.createUserFamous(newUserFamous);
+            }
+        }else if(type == 2){
+            //取消
+            if(userFamous != null){
+                userMybatisDao.deleteUserFamous(uid);
+            }else {
+                return Response.failure("数据不存在");
+            }
+        }
+        return Response.success(200,"操作成功");
+    }
 }

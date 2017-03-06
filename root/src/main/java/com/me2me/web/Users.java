@@ -55,7 +55,7 @@ public class Users extends BaseController {
         userSignUpDto.setPlatform(request.getPlatform());
         userSignUpDto.setOs(request.getOs());
         userSignUpDto.setIntroduced(request.getIntroduced());
-
+        userSignUpDto.setChannel(request.getChannel());
 
         //埋点
 //        kafkaService.saveClientLog(request,req.getHeader("User-Agent"),Specification.ClientLogAction.REG_PAGE2_SAVE);
@@ -600,6 +600,8 @@ public class Users extends BaseController {
         dto.setUnionId(request.getUnionId());
         dto.setH5type(request.getH5type());
         dto.setNewNickName(request.getNewNickName());
+        dto.setChannel(request.getChannel());
+        dto.setPlatform(request.getPlatform());
         return userService.thirdPartLogin(dto);
     }
 
@@ -701,4 +703,16 @@ public class Users extends BaseController {
     public Response testPush(TestPushRequest request){
     	return userService.testPush(request.getUid(), request.getMsg(), request.getJsonData());
     }
+
+    /**
+     * 用户推荐接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/userRecomm",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response userRecomm(UserFamousRequest request){
+        return userService.userRecomm(request.getUid() ,request.getType());
+    }
+
 }

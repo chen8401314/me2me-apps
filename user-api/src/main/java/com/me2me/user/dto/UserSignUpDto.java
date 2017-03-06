@@ -28,6 +28,8 @@ public class UserSignUpDto implements BaseEntity {
     private String os;
 
     private String introduced;
+
+    private String channel;
     
 
 }
