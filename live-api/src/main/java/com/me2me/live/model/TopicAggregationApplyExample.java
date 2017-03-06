@@ -254,6 +254,126 @@ public class TopicAggregationApplyExample {
             addCriterion("id not between", value1, value2, "id");
             return (Criteria) this;
         }
+        
+        public Criteria andOperatorIsNull() {
+            addCriterion("operator is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorIsNotNull() {
+            addCriterion("operator is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorEqualTo(Long value) {
+            addCriterion("operator =", value, "operator");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorNotEqualTo(Long value) {
+            addCriterion("operator <>", value, "operator");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorGreaterThan(Long value) {
+            addCriterion("operator >", value, "operator");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorGreaterThanOrEqualTo(Long value) {
+            addCriterion("operator >=", value, "operator");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorLessThan(Long value) {
+            addCriterion("operator <", value, "operator");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorLessThanOrEqualTo(Long value) {
+            addCriterion("operator <=", value, "operator");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorIn(List<Long> values) {
+            addCriterion("operator in", values, "operator");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorNotIn(List<Long> values) {
+            addCriterion("operator not in", values, "operator");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorBetween(Long value1, Long value2) {
+            addCriterion("operator between", value1, value2, "operator");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperatorNotBetween(Long value1, Long value2) {
+            addCriterion("operator not between", value1, value2, "operator");
+            return (Criteria) this;
+        }
+        
+        public Criteria andOperator2IsNull() {
+            addCriterion("operator2 is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperator2IsNotNull() {
+            addCriterion("operator2 is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperator2EqualTo(Long value) {
+            addCriterion("operator2 =", value, "operator2");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperator2NotEqualTo(Long value) {
+            addCriterion("operator2 <>", value, "operator2");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperator2GreaterThan(Long value) {
+            addCriterion("operator2 >", value, "operator2");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperator2GreaterThanOrEqualTo(Long value) {
+            addCriterion("operator2 >=", value, "operator2");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperator2LessThan(Long value) {
+            addCriterion("operator2 <", value, "operator2");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperator2LessThanOrEqualTo(Long value) {
+            addCriterion("operator2 <=", value, "operator2");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperator2In(List<Long> values) {
+            addCriterion("operator2 in", values, "operator2");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperator2NotIn(List<Long> values) {
+            addCriterion("operator2 not in", values, "operator2");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperator2Between(Long value1, Long value2) {
+            addCriterion("operator2 between", value1, value2, "operator2");
+            return (Criteria) this;
+        }
+
+        public Criteria andOperator2NotBetween(Long value1, Long value2) {
+            addCriterion("operator2 not between", value1, value2, "operator2");
+            return (Criteria) this;
+        }
 
         public Criteria andTopicIdIsNull() {
             addCriterion("topic_id is null");
