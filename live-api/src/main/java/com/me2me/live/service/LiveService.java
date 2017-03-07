@@ -190,4 +190,6 @@ public interface LiveService {
     int countLiveFavoriteByTopicId(long topicId, List<Long> exceptUids);
     
     Response fragmentForward(long uid, long fid, long sourceTopicId, long targetTopicId);
+
+    Response recommend(long uid ,long topicId ,long action);
 }

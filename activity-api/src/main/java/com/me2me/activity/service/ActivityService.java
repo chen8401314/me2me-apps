@@ -1,17 +1,7 @@
 package com.me2me.activity.service;
 
 import com.me2me.activity.dto.*;
-import com.me2me.activity.model.Aactivity;
-import com.me2me.activity.model.AactivityStage;
-import com.me2me.activity.model.ActivityWithBLOBs;
-import com.me2me.activity.model.AkingDom;
-import com.me2me.activity.model.AmiliData;
-import com.me2me.activity.model.AppLightboxSource;
-import com.me2me.activity.model.AppUiControl;
-import com.me2me.activity.model.Atask;
-import com.me2me.activity.model.AtaskWithBLOBs;
-import com.me2me.activity.model.Atopic;
-import com.me2me.activity.model.Auser;
+import com.me2me.activity.model.*;
 import com.me2me.common.web.Response;
 
 import java.util.Date;
@@ -32,6 +22,8 @@ public interface ActivityService {
      */
     Response createActivity(CreateActivityDto createActivityDto);
 
+    //创建王国活动
+    void createActivityLive(CreateActivityDto createActivityDto);
 
     Response showActivity(int page,int pageSize,String keyword);
 
@@ -257,5 +249,9 @@ public interface ActivityService {
     Response getlightboxInfo();
 
     Response getActualAndHistoryList(long uid ,int type ,String date ,long activityId);
+
+    ActivityWithBLOBs getActivityByCid(long topicId ,int type);
+
+    void updateActivity(ActivityWithBLOBs activity);
 
 }

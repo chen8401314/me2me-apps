@@ -555,4 +555,16 @@ public class Live extends BaseController {
     public Response fragmentForward(FragmentForwardRequest request){
     	return liveService.fragmentForward(request.getUid(), request.getFid(), request.getSourceTopicId(), request.getTargetTopicId());
     }
+
+    /**
+     * 王国推荐接口
+     * @param recommRequest
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/recommend",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response recommend(TopicRecommRequest recommRequest){
+        return liveService.recommend(recommRequest.getUid() ,recommRequest.getTopicId() ,recommRequest.getAction());
+    }
+
 }
