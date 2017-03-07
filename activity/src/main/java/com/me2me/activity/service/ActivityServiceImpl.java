@@ -1,6 +1,7 @@
 package com.me2me.activity.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.me2me.activity.dao.ActivityMybatisDao;
@@ -152,6 +153,15 @@ public class ActivityServiceImpl implements ActivityService {
         log.info("getActivity data success");
         for (ActivityWithBLOBs activity : list) {
             ShowActivitiesDto.ActivityElement activityElement = ShowActivitiesDto.createActivityElement();
+            if (activity.getTyp() == 2) {
+                //王国活动
+                activityElement.setTopicId(activity.getCid());
+                Map<String, Object> contentMap = liveForActivityDao.getContentByForwordCid(activity.getCid());
+                activityElement.setCid((Long) contentMap.get("id"));
+                Map<String, Object> topicMap = liveForActivityDao.getTopicById(activity.getCid());
+                activityElement.setTopicType((Integer) topicMap.get("type"));
+                activityElement.setTopicInternalStatus(this.getInternalStatus(topicMap, uid));
+            }
             activityElement.setUid(activity.getUid());
             activityElement.setTitle(activity.getActivityHashTitle());
             String cover = activity.getActivityCover();
@@ -171,6 +181,23 @@ public class ActivityServiceImpl implements ActivityService {
         }
         log.info("getActivity end ...");
         return Response.success(showActivitiesDto);
+    }
+
+    //判断核心圈身份
+    private int getInternalStatus(Map<String, Object> topic, long uid) {
+        int internalStatus = 0;
+        String coreCircle = (String)topic.get("core_circle");
+        if(null != coreCircle){
+            JSONArray array = JSON.parseArray(coreCircle);
+            for (int i = 0; i < array.size(); i++) {
+                if (array.getLong(i) == uid) {
+                    internalStatus = Specification.SnsCircle.CORE.index;
+                    break;
+                }
+            }
+        }
+
+        return internalStatus;
     }
 
     @Override
