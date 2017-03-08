@@ -3541,6 +3541,7 @@ private void localJpush(long toUid){
 				contentElement.setCreateTime(c.getCreateTime().getTime());
 				contentElement.setUpdateTime(c.getCreateTime().getTime());
 				contentElement.setCid(c.getId());
+				contentElement.setId(c.getId());
 				contentElement.setTitle(c.getTitle());
 				contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + c.getConverImage());
 				contentElement.setContent(c.getContent());
@@ -3575,6 +3576,11 @@ private void localJpush(long toUid){
 		            }else{
 		            	contentElement.setReviewCount(0);
 		            }
+					if(null != liveFavouriteMap.get(c.getForwardCid().toString())){
+						contentElement.setFavorite(1);
+					}else{
+						contentElement.setFavorite(0);
+					}
 				}
 				
 				result.getHottestContentData().add(contentElement);

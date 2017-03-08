@@ -3541,7 +3541,12 @@ public class LiveServiceImpl implements LiveService {
     public CreateActivityDto setCreateActivityDto(CreateActivityDto createActivityDto ,Topic topic){
         createActivityDto.setUid(topic.getUid());
         createActivityDto.setIssue("");
-        createActivityDto.setContent("");
+        //为了让低版本能看到兼容内容，故这里需将特定的兼容内容放置进来
+        String content = activityService.getTopicCompatibleContent();
+        if(null == content){
+        	content = "";
+        }
+        createActivityDto.setContent(content);
         createActivityDto.setCover(topic.getLiveImage());
         createActivityDto.setTitle(topic.getTitle());
         createActivityDto.setHashTitle("#" + topic.getTitle() + "#");

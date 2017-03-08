@@ -5067,4 +5067,16 @@ public class ActivityServiceImpl implements ActivityService {
     	
     	return false;
     }
+    
+    @Override
+    public String getTopicCompatibleContent(){
+    	
+    	
+    	return "";
+    }
+    
+    @Override
+    public List<Tchannel> getAllChannel(){
+    	return activityMybatisDao.getAllChannel();
+    }
 }

@@ -104,6 +104,11 @@ public class ActivityMybatisDao {
     @Autowired
     private AppUiControlMapper appUiControlMapper;
 
+    public List<Tchannel> getAllChannel(){
+    	TchannelExample example = new TchannelExample();
+    	return tchannelMapper.selectByExample(example);
+    }
+    
     public void saveAtaskUser(AtaskUser ataskUser){
     	ataskUserMapper.insertSelective(ataskUser);
     }

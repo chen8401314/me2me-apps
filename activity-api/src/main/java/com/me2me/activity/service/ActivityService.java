@@ -11,6 +11,7 @@ import com.me2me.activity.model.AppUiControl;
 import com.me2me.activity.model.AtaskWithBLOBs;
 import com.me2me.activity.model.Atopic;
 import com.me2me.activity.model.Auser;
+import com.me2me.activity.model.Tchannel;
 import com.me2me.common.web.Response;
 
 import java.util.Date;
@@ -266,4 +267,8 @@ public interface ActivityService {
     void updateActivity(ActivityWithBLOBs activity);
 
     boolean isTopicRec(long topicId);
+    
+    String getTopicCompatibleContent();
+    
+    List<Tchannel> getAllChannel();
 }

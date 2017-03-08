@@ -109,8 +109,10 @@ public class ShowHotListDTO implements BaseEntity {
 		private String nickName;
 		private int v_lv;
 		private int type;
+		private int favorite;
 		private long createTime;
 		private long updateTime;
+		private long id;
 		private long cid;
 		private long topicId;
 		private String title;
