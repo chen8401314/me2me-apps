@@ -310,4 +310,6 @@ public interface UserService {
     List<UserFamous> getUserFamousPage(int page, int pageSize);
     
     Response userRecomm(long uid ,long targetUid ,int action);
+    
+    boolean isUserFamous(long uid);
 }

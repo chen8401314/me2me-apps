@@ -1603,6 +1603,11 @@ private void localJpush(long toUid){
         userInfoDto.getUser().setFollowedCount(userService.getFollowCount(targetUid));
         userInfoDto.getUser().setFansCount(userService.getFansCount(targetUid));
         userInfoDto.getUser().setIntroduced(userProfile.getIntroduced());
+        if(userService.isUserFamous(targetUid)){
+        	userInfoDto.getUser().setIsRec(1);
+        }else{
+        	userInfoDto.getUser().setIsRec(0);
+        }
         buildUserData(sourceUid, contents,Specification.ArticleType.ORIGIN.index,userInfoDto);
         //直播
         dto.setType(Specification.ArticleType.LIVE.index);

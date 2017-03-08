@@ -5054,4 +5054,14 @@ public class ActivityServiceImpl implements ActivityService {
     public void createAppLightboxSource(AppLightboxSource lightbox){
     	activityMybatisDao.createAppLightboxSource(lightbox);
     }
+    
+    @Override
+    public boolean isTopicRec(long topicId){
+    	ActivityWithBLOBs banner = activityMybatisDao.getActivityByCid(topicId ,2);
+    	if(null != banner){
+    		return true;
+    	}
+    	
+    	return false;
+    }
 }

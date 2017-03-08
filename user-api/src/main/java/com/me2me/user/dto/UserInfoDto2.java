@@ -55,6 +55,8 @@ public class UserInfoDto2 implements BaseEntity{
         private String introduced;
 
         private int v_lv;
+        
+        private int isRec;
     }
 
     @Data

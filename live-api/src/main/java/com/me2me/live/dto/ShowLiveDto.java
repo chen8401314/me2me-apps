@@ -61,6 +61,8 @@ public class ShowLiveDto implements BaseEntity {
     private List<TopicElement> acTopList = Lists.newArrayList();
     private int ceCount;
     
+    private int isRec;//是否推荐到banner 0否 1是
+    
     @Data
     public static class TopicElement implements BaseEntity{
 		private static final long serialVersionUID = 986248317266706695L;

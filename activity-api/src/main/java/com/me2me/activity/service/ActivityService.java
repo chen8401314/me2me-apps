@@ -265,4 +265,5 @@ public interface ActivityService {
 
     void updateActivity(ActivityWithBLOBs activity);
 
+    boolean isTopicRec(long topicId);
 }

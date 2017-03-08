@@ -216,6 +216,12 @@ public class LiveServiceImpl implements LiveService {
         Content content = contentService.getContentByTopicId(topicId);
         content.setReadCount(content.getReadCount() + 1);
         
+        if(activityService.isTopicRec(topicId)){
+        	liveCoverDto.setIsRec(1);
+        }else{
+        	liveCoverDto.setIsRec(0);
+        }
+        
         if(content.getReadCount() == 1 || content.getReadCount() == 2){
             liveCoverDto.setReadCount(1);
             content.setReadCountDummy(1);
@@ -369,6 +375,12 @@ public class LiveServiceImpl implements LiveService {
         showLiveDto.setIsLike(contentService.isLike(content.getId(), uid));
         showLiveDto.setInternalStatus(this.getInternalStatus(topic, uid));
         showLiveDto.setContentType(topic.getType());
+        
+        if(activityService.isTopicRec(cid)){
+        	showLiveDto.setIsRec(1);
+        }else{
+        	showLiveDto.setIsRec(0);
+        }
         
         if(topic.getType() == Specification.KingdomType.NORMAL.index){//个人王国
         	//被聚合次数

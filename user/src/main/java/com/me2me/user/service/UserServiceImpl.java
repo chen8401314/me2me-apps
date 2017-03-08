@@ -2619,4 +2619,13 @@ public class UserServiceImpl implements UserService {
     	
     	return userMybatisDao.getUserFamousList(start, pageSize);
     }
+    
+    @Override
+    public boolean isUserFamous(long uid){
+    	UserFamous userFamous = userMybatisDao.getUserFamousByUid(uid);
+    	if(null != userFamous){
+    		return true;
+    	}
+    	return false;
+    }
 }

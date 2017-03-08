@@ -1358,7 +1358,7 @@ public class ActivityMybatisDao {
                 .andTypEqualTo(type)
                 .andStatusEqualTo(0);
         List<ActivityWithBLOBs> list = activityMapper.selectByExampleWithBLOBs(example);
-        return list.size()>0 && list != null ?list.get(0):null;
+        return null != list && list.size()>0 ?list.get(0):null;
     }
 
 }

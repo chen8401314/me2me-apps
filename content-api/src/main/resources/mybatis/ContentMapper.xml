@@ -977,7 +977,7 @@
   </select>
   
    <select id="getHotContentByType" resultMap="ResultMapWithBLOBs2">
-	 select m.*,h.id FROM
+	 select m.*,h.id as hid FROM
 	 (select c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, 
 	 c.forward_title, c.forward_url, c.content_type, c.thumbnail, c.hot_value, 
 	 c.like_count, c.review_count,c.person_count,c.favorite_count, c.read_count, 
