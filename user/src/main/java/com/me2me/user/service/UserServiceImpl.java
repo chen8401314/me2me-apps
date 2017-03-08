@@ -2578,28 +2578,33 @@ public class UserServiceImpl implements UserService {
 	}
 
     @Override
-    public Response userRecomm(long targetUid ,int action) {
-        UserFamous userFamous = userMybatisDao.getUserFamousByUid(targetUid);
-        if(action == 1) {
-            //推荐
-            if (userFamous != null) {
-                userFamous.setUpdateTime(new Date());
-                userMybatisDao.updateUserFamous(userFamous);
-            } else {
-                UserFamous newUserFamous = new UserFamous();
-                newUserFamous.setUid(targetUid);
-                newUserFamous.setUpdateTime(new Date());
-                userMybatisDao.createUserFamous(newUserFamous);
+    public Response userRecomm(long uid ,long targetUid ,int action) {
+        if(isAdmin(uid)) {
+            UserFamous userFamous = userMybatisDao.getUserFamousByUid(targetUid);
+            if (action == 0) {
+                //推荐
+                if (userFamous != null) {
+                    userFamous.setUpdateTime(new Date());
+                    userMybatisDao.updateUserFamous(userFamous);
+                } else {
+                    UserFamous newUserFamous = new UserFamous();
+                    newUserFamous.setUid(targetUid);
+                    newUserFamous.setUpdateTime(new Date());
+                    userMybatisDao.createUserFamous(newUserFamous);
+                }
+            } else if (action == 1) {
+                //取消
+                if (userFamous != null) {
+                    userMybatisDao.deleteUserFamous(targetUid);
+                } else {
+                    return Response.failure("数据不存在");
+                }
             }
-        }else if(action == 2){
-            //取消
-            if(userFamous != null){
-                userMybatisDao.deleteUserFamous(targetUid);
-            }else {
-                return Response.failure("数据不存在");
-            }
+            return Response.success(200, "操作成功");
         }
-        return Response.success(200,"操作成功");
+
+        return Response.failure(ResponseStatus.YOU_ARE_NOT_ADMIN.status ,ResponseStatus.YOU_ARE_NOT_ADMIN.message);
+
     }
     
     @Override

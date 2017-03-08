@@ -710,9 +710,9 @@ public class Users extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/userRecomm",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/Recommend",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response userRecomm(UserFamousRequest request){
-        return userService.userRecomm(request.getTargetUid() ,request.getAction());
+        return userService.userRecomm(request.getUid() ,request.getTargetUid() ,request.getAction());
     }
 
 }

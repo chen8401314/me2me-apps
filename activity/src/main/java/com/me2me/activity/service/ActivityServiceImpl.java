@@ -1,12 +1,12 @@
 package com.me2me.activity.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.me2me.activity.dao.ActivityMybatisDao;
 import com.me2me.activity.dao.LiveForActivityDao;
 import com.me2me.activity.dto.*;
-import com.me2me.activity.event.ForcedPairingPushEvent;
 import com.me2me.activity.event.LinkPushEvent;
 import com.me2me.activity.event.TaskPushEvent;
 import com.me2me.activity.model.*;
@@ -95,6 +95,23 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
+    public void createActivityLive(CreateActivityDto createActivityDto) {
+        ActivityWithBLOBs activity = new ActivityWithBLOBs();
+        activity.setActivityCover(createActivityDto.getCover());
+        activity.setActivityHashTitle(createActivityDto.getHashTitle());
+        activity.setActivityTitle(createActivityDto.getTitle());
+        activity.setStartTime(createActivityDto.getStartTime());
+        activity.setEndTime(createActivityDto.getEndTime());
+        activity.setIssue(createActivityDto.getIssue());
+        activity.setActivityContent(createActivityDto.getContent());
+        activity.setUid(createActivityDto.getUid());
+        activity.setStatus(Specification.ActivityStatus.NORMAL.index);
+        activity.setCid(createActivityDto.getCid());
+        activity.setTyp(createActivityDto.getType());
+        activityMybatisDao.saveActivity(activity);
+    }
+
+    @Override
     public Response showActivity(int page, int pageSize, String keyword) {
         log.info("show activity ... start ");
         ShowActivityDto showActivityDto = new ShowActivityDto();
@@ -141,6 +158,15 @@ public class ActivityServiceImpl implements ActivityService {
         log.info("getActivity data success");
         for (ActivityWithBLOBs activity : list) {
             ShowActivitiesDto.ActivityElement activityElement = ShowActivitiesDto.createActivityElement();
+            if (activity.getTyp() == 2) {
+                //王国活动
+                activityElement.setTopicId(activity.getCid());
+                Map<String, Object> contentMap = liveForActivityDao.getContentByForwordCid(activity.getCid());
+                activityElement.setCid((Long) contentMap.get("id"));
+                Map<String, Object> topicMap = liveForActivityDao.getTopicById(activity.getCid());
+                activityElement.setTopicType((Integer) topicMap.get("type"));
+                activityElement.setTopicInternalStatus(this.getInternalStatus(topicMap, uid));
+            }
             activityElement.setUid(activity.getUid());
             activityElement.setTitle(activity.getActivityHashTitle());
             String cover = activity.getActivityCover();
@@ -160,6 +186,23 @@ public class ActivityServiceImpl implements ActivityService {
         }
         log.info("getActivity end ...");
         return Response.success(showActivitiesDto);
+    }
+
+    //判断核心圈身份
+    private int getInternalStatus(Map<String, Object> topic, long uid) {
+        int internalStatus = 0;
+        String coreCircle = (String)topic.get("core_circle");
+        if(null != coreCircle){
+            JSONArray array = JSON.parseArray(coreCircle);
+            for (int i = 0; i < array.size(); i++) {
+                if (array.getLong(i) == uid) {
+                    internalStatus = Specification.SnsCircle.CORE.index;
+                    break;
+                }
+            }
+        }
+
+        return internalStatus;
     }
 
     @Override
@@ -4787,7 +4830,17 @@ public class ActivityServiceImpl implements ActivityService {
         
         return Response.success(ResponseStatus.SEARCH_LIST_NOT_EXISTS.status, ResponseStatus.SEARCH_LIST_NOT_EXISTS.message, dto);
     }
-    
+
+    @Override
+    public ActivityWithBLOBs getActivityByCid(long topicId ,int type) {
+        return activityMybatisDao.getActivityByCid(topicId ,type);
+    }
+
+    @Override
+    public void updateActivity(ActivityWithBLOBs activity) {
+        activityMybatisDao.updateActivity(activity);
+    }
+
     private Map<String, UserProfile> genUserProfileMap(List<Long> uids){
     	Map<String, UserProfile> result = new HashMap<String, UserProfile>();
     	if(null == uids || uids.size() == 0){

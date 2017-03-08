@@ -306,8 +306,8 @@ public interface UserService {
     void noticeMessagePush(long targetUid, String message, int level);
     
     void pushWithExtra(String uid,String message,Map<String,String> extraMaps);
-
-    Response userRecomm(long targetUid ,int action);
     
     List<UserFamous> getUserFamousPage(int page, int pageSize);
+    
+    Response userRecomm(long uid ,long targetUid ,int action);
 }

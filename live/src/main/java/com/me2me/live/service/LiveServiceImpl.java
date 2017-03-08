@@ -4,7 +4,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import com.me2me.activity.dto.CreateActivityDto;
 import com.me2me.activity.dto.TopicCountDTO;
+import com.me2me.activity.model.Activity;
+import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
@@ -46,6 +49,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
 import java.util.*;
 
 /**
@@ -3470,7 +3474,62 @@ public class LiveServiceImpl implements LiveService {
         
     	return Response.success(200, "转发成功");
     }
-    
+
+    @Override
+    public Response recommend(long uid, long topicId, long action) {
+        Topic topic = liveMybatisDao.getTopicById(topicId);
+        CreateActivityDto createActivityDto = new CreateActivityDto();
+        if(userService.isAdmin(uid)) {
+            ActivityWithBLOBs activity = activityService.getActivityByCid(topicId, 2);
+            if (action == 0) {
+                if (activity != null) {
+                    activity.setStatus(1);
+                    activityService.updateActivity(activity);
+                    log.info("update activity status : 1");
+                    if (topic != null) {
+                        setCreateActivityDto(createActivityDto, topic);
+                        activityService.createActivityLive(createActivityDto);
+                        log.info("create activity success");
+                    }
+                } else {
+                    if (topic != null) {
+                        setCreateActivityDto(createActivityDto, topic);
+                        activityService.createActivityLive(createActivityDto);
+                        log.info("create activity success");
+                    }
+                }
+            }else if(action == 1){
+                //取消
+                if (activity != null) {
+                    activity.setStatus(1);
+                    activityService.updateActivity(activity);
+                    log.info("update activity status : 1");
+                }
+            }
+            return Response.success(200, "操作成功");
+        }
+
+        return Response.failure(ResponseStatus.YOU_ARE_NOT_ADMIN.status ,ResponseStatus.YOU_ARE_NOT_ADMIN.message);
+    }
+
+    public CreateActivityDto setCreateActivityDto(CreateActivityDto createActivityDto ,Topic topic){
+        createActivityDto.setUid(topic.getUid());
+        createActivityDto.setIssue("");
+        createActivityDto.setContent("");
+        createActivityDto.setCover(topic.getLiveImage());
+        createActivityDto.setTitle(topic.getTitle());
+        createActivityDto.setHashTitle("#" + topic.getTitle() + "#");
+        try {
+            createActivityDto.setStartTime(new Date());
+            createActivityDto.setEndTime(DateUtil.string2date("2020-01-01 00:00:00", "yyyy-MM-dd HH:mm:ss"));
+        } catch (ParseException e) {
+            log.error("time error");
+        };
+        createActivityDto.setCid(topic.getId());
+        createActivityDto.setType(2);
+        return createActivityDto;
+    }
+
     private boolean isInCore(long uid, String coreCircle){
 		boolean result = false;
 		if(null != coreCircle && !"".equals(coreCircle)){

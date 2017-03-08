@@ -1350,4 +1350,15 @@ public class ActivityMybatisDao {
     public void createAppLightboxSource(AppLightboxSource item){
     	appLightboxSourceMapper.insertSelective(item);
     }
+
+    public ActivityWithBLOBs getActivityByCid(long topicId ,int type){
+        ActivityExample example = new ActivityExample();
+        example.createCriteria()
+                .andCidEqualTo(topicId)
+                .andTypEqualTo(type)
+                .andStatusEqualTo(0);
+        List<ActivityWithBLOBs> list = activityMapper.selectByExampleWithBLOBs(example);
+        return list.size()>0 && list != null ?list.get(0):null;
+    }
+
 }

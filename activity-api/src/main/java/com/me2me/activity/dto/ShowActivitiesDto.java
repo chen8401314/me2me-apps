@@ -58,5 +58,13 @@ public class ShowActivitiesDto implements BaseEntity{
 
         private int type;
 
+        private long topicId;
+
+        private long cid;
+
+        private int topicType;
+
+        private int topicInternalStatus;
+
     }
 }

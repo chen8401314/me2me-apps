@@ -31,6 +31,8 @@ public interface ActivityService {
      */
     Response createActivity(CreateActivityDto createActivityDto);
 
+    //创建王国活动
+    void createActivityLive(CreateActivityDto createActivityDto);
 
     Response showActivity(int page,int pageSize,String keyword);
 
@@ -258,5 +260,9 @@ public interface ActivityService {
     Response getlightboxInfo();
 
     Response getActualAndHistoryList(long uid ,int type ,String date ,long activityId);
+
+    ActivityWithBLOBs getActivityByCid(long topicId ,int type);
+
+    void updateActivity(ActivityWithBLOBs activity);
 
 }
