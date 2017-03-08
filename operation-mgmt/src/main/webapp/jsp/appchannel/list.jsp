@@ -60,9 +60,9 @@
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								| 用户列表 
+								| 渠道列表 
 								<span class="tools pull-right">
-									<a href="${ctx}/jsp/appconfig/versionNew.jsp" class="fa fa-plus add_link" title="添加新版本" ></a>
+									<a href="${ctx}/jsp/appchannel/new.jsp" class="fa fa-plus add_link" title="新增渠道" ></a>
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>
 							</header>
@@ -71,47 +71,27 @@
 									<table class="display table table-bordered table-striped" id="dynamic-table">
 										<thead>
 											<tr>
-												<th>序号</th>
-												<th>版本号</th>
-												<th>平台</th>
-												<th>更新描述</th>
-												<th>下载地址</th>
-												<th>更新时间</th>
+												<th>渠道标识</th>
+												<th>渠道名称</th>
 												<th>操作</th>
 											</tr>
 										</thead>
 										<tbody>
-											<c:forEach items="${dataObj.data.result}" var="versionItem" varStatus="status">
+											<c:forEach items="${dataObj.result}" var="item">
 												<tr class="gradeX">
-													<th>${status.index + 1}</th>
-													<th>${versionItem.version }</th>
+													<th>${item.code }</th>
+													<th>${item.name }</th>
 													<th>
-													<c:choose>
-                                                		<c:when test="${versionItem.platform == '1'}">
-                                                			Android
-                                                		</c:when>
-                                                		<c:otherwise>
-                                                			IOS
-                                                		</c:otherwise>
-                                                	</c:choose>
-													</th>
-													<th>${versionItem.updateDescription }</th>
-													<th>${versionItem.updateUrl }</th>
-													<th><fmt:formatDate value="${versionItem.updateTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
-													<th>
-													<a href="${ctx}/appconfig/version/find/${versionItem.id }">编辑</a>
+													<a href="${ctx}/appchannel/find/${item.id }">编辑</a>
+													|<a href="${ctx}/appchannel/delete/${item.id }">删除</a>
 													</th>
 												</tr>
 											</c:forEach>
 										</tbody>
 										<tfoot>
 											<tr>
-												<th>序号</th>
-												<th>版本号</th>
-												<th>平台</th>
-												<th>更新描述</th>
-												<th>下载地址</th>
-												<th>更新时间</th>
+												<th>渠道标识</th>
+												<th>渠道名称</th>
 												<th>操作</th>
 											</tr>
 										</tfoot>

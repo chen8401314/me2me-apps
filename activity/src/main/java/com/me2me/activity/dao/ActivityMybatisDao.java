@@ -104,9 +104,38 @@ public class ActivityMybatisDao {
     @Autowired
     private AppUiControlMapper appUiControlMapper;
 
-    public List<Tchannel> getAllChannel(){
+    public List<Tchannel> getAppChannel(String code){
     	TchannelExample example = new TchannelExample();
+    	if(!StringUtils.isEmpty(code)){
+    		example.createCriteria().andCodeLike("%"+code+"%");
+    	}
     	return tchannelMapper.selectByExample(example);
+    }
+    
+    public Tchannel getTchannelById(long id){
+    	return tchannelMapper.selectByPrimaryKey(id);
+    }
+    
+    public Tchannel getTchannelByCode(String code){
+    	TchannelExample example = new TchannelExample();
+    	example.createCriteria().andCodeEqualTo(code);
+    	List<Tchannel> list = tchannelMapper.selectByExample(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
+    
+    public void saveTchannel(Tchannel t){
+    	tchannelMapper.insertSelective(t);
+    }
+    
+    public void deleteTchannel(long id){
+    	tchannelMapper.deleteByPrimaryKey(id);
+    }
+    
+    public void updateTchannel(Tchannel t){
+    	tchannelMapper.updateByPrimaryKeySelective(t);
     }
     
     public void saveAtaskUser(AtaskUser ataskUser){

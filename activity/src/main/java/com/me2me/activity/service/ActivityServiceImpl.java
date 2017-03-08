@@ -5076,7 +5076,32 @@ public class ActivityServiceImpl implements ActivityService {
     }
     
     @Override
-    public List<Tchannel> getAllChannel(){
-    	return activityMybatisDao.getAllChannel();
+    public List<Tchannel> getAppChannel(String code){
+    	return activityMybatisDao.getAppChannel(code);
+    }
+    
+    @Override
+    public Tchannel getTchannelById(long id){
+    	return activityMybatisDao.getTchannelById(id);
+    }
+    
+    @Override
+    public Tchannel getTchannelByCode(String code){
+    	return activityMybatisDao.getTchannelByCode(code);
+    }
+    
+    @Override
+    public void saveTchannel(Tchannel c){
+    	activityMybatisDao.saveTchannel(c);
+    }
+    
+    @Override
+    public void updateTchannel(Tchannel c){
+    	activityMybatisDao.updateTchannel(c);
+    }
+    
+    @Override
+    public void deleteTchannel(long id){
+    	activityMybatisDao.deleteTchannel(id);
     }
 }

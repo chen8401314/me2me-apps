@@ -270,5 +270,15 @@ public interface ActivityService {
     
     String getTopicCompatibleContent();
     
-    List<Tchannel> getAllChannel();
+    List<Tchannel> getAppChannel(String code);
+    
+    Tchannel getTchannelById(long id);
+    
+    Tchannel getTchannelByCode(String code);
+    
+    void saveTchannel(Tchannel c);
+    
+    void updateTchannel(Tchannel c);
+    
+    void deleteTchannel(long id);
 }
