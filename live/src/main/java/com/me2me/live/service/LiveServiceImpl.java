@@ -211,7 +211,7 @@ public class LiveServiceImpl implements LiveService {
         liveCoverDto.setHasFavorite(hasFavorite==null?0:1);
 
         liveCoverDto.setInternalStatus(getInternalStatus(topic,uid));
-        liveCoverDto.setLiveWebUrl(Constant.Live_WEB_URL+topicId);//返回直播URL地址
+        liveCoverDto.setLiveWebUrl(live_web+topicId);//返回直播URL地址
         //添加直播阅读数log.info("liveCover end ...");
         Content content = contentService.getContentByTopicId(topicId);
         content.setReadCount(content.getReadCount() + 1);
@@ -2831,6 +2831,7 @@ public class LiveServiceImpl implements LiveService {
 		event.setUid(uid);
 		event.setTopicId(topicId);
 		event.setFid(fid);
+		event.setLiveWebUrl(live_web);
 		applicationEventBus.post(event);
 		
 		//记录下发次数
@@ -3475,7 +3476,7 @@ public class LiveServiceImpl implements LiveService {
 		fromObj.put("cid", topicContent.getId());
 		fromObj.put("title", sourceTopic.getTitle());
 		fromObj.put("cover", Constant.QINIU_DOMAIN+"/"+sourceTopic.getLiveImage());
-		fromObj.put("url", Constant.Live_WEB_URL+sourceTopicId);
+		fromObj.put("url", live_web+sourceTopicId);
 		obj.put("from", fromObj);
 		newtf.setExtra(obj.toJSONString());
 		liveMybatisDao.createTopicFragment(newtf);

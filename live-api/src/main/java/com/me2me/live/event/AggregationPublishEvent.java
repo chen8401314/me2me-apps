@@ -11,4 +11,6 @@ public class AggregationPublishEvent implements BaseEntity {
 	private long uid;
 	private long topicId;
 	private long fid; 
+	
+	private String liveWebUrl;
 }

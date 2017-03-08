@@ -23,7 +23,7 @@ public class Constant {
 
 //    public static final String Live_WEB_URL = "http://webapp.me-to-me.com/h5web/liveDetail/";
     
-    public static final String Live_WEB_URL = "https://webapp.me-to-me.com/ld/";
+//    public static final String Live_WEB_URL = "https://webapp.me-to-me.com/ld/";
 
     public static final String AWARD_URL = "http://www.baidu.com";
 
