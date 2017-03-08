@@ -42,7 +42,7 @@ public class LiveForContentJdbcDao {
 			return null;
 		}
 		StringBuilder sb = new StringBuilder();
-		sb.append("select id,uid,core_circle,type from topic where id in (");
+		sb.append("select * from topic where id in (");
 		for(int i=0;i<ids.size();i++){
 			if(i > 0){
 				sb.append(",");
@@ -162,4 +162,104 @@ public class LiveForContentJdbcDao {
     	
     	return jdbcTemplate.queryForList(sb.toString());
     }
+    
+    public List<Map<String,Object>> getLiveFavoritesByUidAndTopicIds(long uid, List<Long> topicIds){
+    	if(null == topicIds || topicIds.size() == 0){
+    		return null;
+    	}
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select * from live_favorite t where t.uid=");
+    	sb.append(uid).append(" and t.topic_id in (");
+    	for(int i=0;i<topicIds.size();i++){
+    		if(i>0){
+    			sb.append(",");
+    		}
+    		sb.append(topicIds.get(i));
+    	}
+    	sb.append(")");
+    	
+    	return jdbcTemplate.queryForList(sb.toString());
+    }
+    
+    public List<Map<String,Object>> getTopicAggregationAcCountByTopicIds(List<Long> topicIds){
+		if(null == topicIds || topicIds.size() == 0){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select t.topic_id,count(1) as cc");
+		sb.append(" from topic_aggregation t");
+		sb.append(" where t.topic_id in (");
+		for(int i=0;i<topicIds.size();i++){
+			if(i > 0){
+				sb.append(",");
+			}
+			sb.append(topicIds.get(i).longValue());
+		}
+		sb.append(") group by t.topic_id");
+		
+		return jdbcTemplate.queryForList(sb.toString());
+	}
+    
+    public List<Map<String, Object>> getAcTopicListByCeTopicId(long ceTopicId, int start, int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select m.* from (select t.*,unix_timestamp(a.update_time)*100000 as ltime");
+    	sb.append(" from topic_aggregation a,topic t where a.sub_topic_id=t.id");
+    	sb.append(" and a.topic_id=").append(ceTopicId).append(" and a.is_top=1");
+    	sb.append(" UNION ");
+    	sb.append("select t.*,t.long_time as ltime from topic_aggregation a,topic t");
+    	sb.append(" where a.sub_topic_id=t.id and a.topic_id=").append(ceTopicId);
+    	sb.append(" and a.is_top=0 ) m ");
+    	sb.append(" order by m.ltime desc limit ").append(start).append(",").append(pageSize);
+
+    	return jdbcTemplate.queryForList(sb.toString());
+    }
+    
+    public List<Map<String, Object>> getTopicMembersByTopicId(long topicId, int start, int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select p.* from live_favorite f,user_profile p");
+    	sb.append(" where f.uid=p.uid and f.topic_id=").append(topicId);
+    	sb.append(" order by f.create_time desc limit ").append(start);
+    	sb.append(",").append(pageSize);
+    	
+    	return jdbcTemplate.queryForList(sb.toString());
+    }
+    
+    public List<Map<String, Object>> getLastFragmentByTopicIds(List<Long> topicIds){
+    	if(null == topicIds || topicIds.size() == 0){
+    		return null;
+    	}
+    	
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select f2.* from topic_fragment f2,(select max(f.id) as fid");
+    	sb.append(" from topic_fragment f where f.topic_id in (");
+    	for(int i=0;i<topicIds.size();i++){
+    		if(i>0){
+    			sb.append(",");
+    		}
+    		sb.append(topicIds.get(i));
+    	}
+    	sb.append(") group by f.topic_id) m where f2.id=m.fid");
+    		
+    	return jdbcTemplate.queryForList(sb.toString());
+    }
+    
+    public List<Map<String, Object>> getTopicUpdateCount(List<Long> tids){
+		if(null == tids || tids.size() == 0){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select f.topic_id, count(if(t.uid=f.uid,TRUE,NULL)) as topicCount,");
+		sb.append(" count(if(t.uid<>f.uid,TRUE,NULL)) as reviewCount");
+		sb.append(" from topic t,topic_fragment f");
+		sb.append(" where t.id=f.topic_id and t.id in (");
+		for(int i=0;i<tids.size();i++){
+			if(i>0){
+				sb.append(",");
+			}
+			sb.append(tids.get(i));
+		}
+		sb.append(") group by f.topic_id");
+		
+		return jdbcTemplate.queryForList(sb.toString());
+	}
 }

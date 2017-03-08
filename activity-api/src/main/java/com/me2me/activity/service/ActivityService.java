@@ -8,7 +8,6 @@ import com.me2me.activity.model.AkingDom;
 import com.me2me.activity.model.AmiliData;
 import com.me2me.activity.model.AppLightboxSource;
 import com.me2me.activity.model.AppUiControl;
-import com.me2me.activity.model.Atask;
 import com.me2me.activity.model.AtaskWithBLOBs;
 import com.me2me.activity.model.Atopic;
 import com.me2me.activity.model.Auser;
@@ -36,6 +35,8 @@ public interface ActivityService {
     Response showActivity(int page,int pageSize,String keyword);
 
     List<ActivityWithBLOBs> getActivityTop5();
+    
+    List<ActivityWithBLOBs> getHotActivity();
 
     Response getActivity(int sinceId,long uid);
 

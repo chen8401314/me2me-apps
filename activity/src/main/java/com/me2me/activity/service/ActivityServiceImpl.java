@@ -127,6 +127,11 @@ public class ActivityServiceImpl implements ActivityService {
     public List<ActivityWithBLOBs> getActivityTop5() {
         return activityMybatisDao.getActivityTop5();
     }
+    
+    @Override
+    public List<ActivityWithBLOBs> getHotActivity() {
+        return activityMybatisDao.getHotActivity();
+    }
 
     @Override
     public Response getActivity(int sinceId, long uid) {

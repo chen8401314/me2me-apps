@@ -123,6 +123,16 @@ public class Home extends BaseController {
         return contentService.Attention(request.getSinceId(),request.getUid(),vflag);
     }
 
-
+    /**
+     * 新热点接口
+     * V2.2.1版本开始使用本接口
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/hotList ",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response hotList(HotListRequest request){
+    	return contentService.hotList(request.getSinceId(), request.getUid());
+    }
 
 }

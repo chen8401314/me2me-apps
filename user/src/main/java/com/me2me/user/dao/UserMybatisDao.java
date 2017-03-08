@@ -934,6 +934,12 @@ public class UserMybatisDao {
     	systemConfigMapper.updateByPrimaryKeySelective(config);
     }
 
+    public List<UserFamous> getUserFamousList(int start, int pageSize){
+    	UserFamousExample example = new UserFamousExample();
+    	example.setOrderByClause(" update_time desc limit "+start+","+pageSize);
+    	return userFamousMapper.selectByExample(example);
+    }
+    
     public UserFamous getUserFamousByUid(long uid){
         UserFamousExample example = new UserFamousExample();
         example.createCriteria().andUidEqualTo(uid);

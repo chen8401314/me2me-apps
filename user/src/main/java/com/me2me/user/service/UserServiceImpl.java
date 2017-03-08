@@ -2601,4 +2601,17 @@ public class UserServiceImpl implements UserService {
         }
         return Response.success(200,"操作成功");
     }
+    
+    @Override
+    public List<UserFamous> getUserFamousPage(int page, int pageSize){
+    	if(page <= 0){
+    		page = 1;
+    	}
+    	if(pageSize <= 0){
+    		pageSize = 20;
+    	}
+    	int start = (page-1)*pageSize;
+    	
+    	return userMybatisDao.getUserFamousList(start, pageSize);
+    }
 }

@@ -218,4 +218,6 @@ public interface ContentService{
     Response searchUserContent(UserContentSearchDTO searchDTO);
     
     Response delUserContent(int type, long id);
+    
+    Response hotList(long sinceId, long uid);
 }

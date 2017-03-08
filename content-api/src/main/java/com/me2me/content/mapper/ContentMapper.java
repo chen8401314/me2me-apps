@@ -165,6 +165,14 @@ public interface ContentMapper {
      */
     List<Content2Dto> loadHottestContentByUpdateTime(@Param("sinceId") long sinceId, @Param("flag") int flag);
 
+    /**
+     * 
+     * @param sinceId
+     * @param type   0 ugc+pgc+个人王国   1 聚合王国
+     * @return
+     */
+    List<Content2Dto> getHotContentByType(@Param("sinceId") long sinceId, @Param("type") int type, @Param("pageSize") int pageSize);
+    
     List<Content> loadMyPublishUgcData(Map map);
 
     List<Content> loadMyPublishLiveData(Map map);

@@ -321,6 +321,15 @@ public class ActivityMybatisDao {
         example.setOrderByClause(" issue desc limit 4 ");
         return activityMapper.selectByExampleWithBLOBs(example);
     }
+    
+    public List<ActivityWithBLOBs> getHotActivity(){
+    	ActivityExample example = new ActivityExample();
+        ActivityExample.Criteria criteria = example.createCriteria();
+        criteria.andStatusEqualTo(Specification.ActivityStatus.NORMAL.index);
+        criteria.andStartTimeLessThanOrEqualTo(new Date());
+        example.setOrderByClause(" id desc limit 4 ");
+        return activityMapper.selectByExampleWithBLOBs(example);
+    }
 
     public List<ActivityWithBLOBs> getActivity(long sinceId){
         ActivityExample example = new ActivityExample();

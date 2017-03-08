@@ -553,6 +553,10 @@ public class ContentMybatisDao {
     public List<Content2Dto> getHottestContentByUpdateTime(int sinceId, int flag){
         return contentMapper.loadHottestContentByUpdateTime(sinceId, flag);
     }
+    
+    public List<Content2Dto> getHotContentByType(long sinceId, int type, int pageSize){
+    	return contentMapper.getHotContentByType(sinceId, type, pageSize);
+    }
 
     public int getUgcCount(long uid){
         ContentExample example = new ContentExample();
