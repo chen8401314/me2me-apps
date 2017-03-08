@@ -135,4 +135,14 @@ public class Home extends BaseController {
     	return contentService.hotList(request.getSinceId(), request.getUid());
     }
 
+    /**
+     * 更多热点聚合王国列表接口
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/ceKingdomHotList ",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response ceKingdomHotList(CeKingdomHotListRequest request){
+    	return contentService.ceKingdomHotList(request.getSinceId(), request.getUid());
+    }
 }

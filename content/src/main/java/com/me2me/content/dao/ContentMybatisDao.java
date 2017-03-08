@@ -554,6 +554,13 @@ public class ContentMybatisDao {
         return contentMapper.loadHottestContentByUpdateTime(sinceId, flag);
     }
     
+    /**
+     * 
+     * @param sinceId
+     * @param type  0 ugc+个人王国    1 聚合王国
+     * @param pageSize
+     * @return
+     */
     public List<Content2Dto> getHotContentByType(long sinceId, int type, int pageSize){
     	return contentMapper.getHotContentByType(sinceId, type, pageSize);
     }

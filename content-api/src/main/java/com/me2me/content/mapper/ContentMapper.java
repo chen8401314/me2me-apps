@@ -168,7 +168,7 @@ public interface ContentMapper {
     /**
      * 
      * @param sinceId
-     * @param type   0 ugc+pgc+个人王国   1 聚合王国
+     * @param type   0 ugc+个人王国   1 聚合王国
      * @return
      */
     List<Content2Dto> getHotContentByType(@Param("sinceId") long sinceId, @Param("type") int type, @Param("pageSize") int pageSize);

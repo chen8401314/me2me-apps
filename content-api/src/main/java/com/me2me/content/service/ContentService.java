@@ -220,4 +220,6 @@ public interface ContentService{
     Response delUserContent(int type, long id);
     
     Response hotList(long sinceId, long uid);
+    
+    Response ceKingdomHotList(long sinceId, long uid);
 }
