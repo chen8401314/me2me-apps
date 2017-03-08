@@ -3918,6 +3918,9 @@ public class ActivityServiceImpl implements ActivityService {
         param.put("extra", sb.toString());
         liveForActivityDao.insertTopicFragment(param);
 
+        Calendar calendar = Calendar.getInstance();
+        liveForActivityDao.updateTopicLongtime(atopic.getTopicId(), calendar.getTimeInMillis());
+        
         //接任务王国赞+500
         liveForActivityDao.updateContentAddLike(atopic.getTopicId(), 500);
 

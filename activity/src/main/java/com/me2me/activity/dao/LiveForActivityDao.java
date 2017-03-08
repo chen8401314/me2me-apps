@@ -64,6 +64,13 @@ public class LiveForActivityDao {
 		jdbcTemplate.execute(sb.toString());
 	}
 	
+	public void updateTopicLongtime(long topicId, long longTime){
+		StringBuilder sb = new StringBuilder();
+		sb.append("update topic set long_time=").append(longTime);
+		sb.append(" where id=").append(topicId);
+		jdbcTemplate.execute(sb.toString());
+	}
+	
 	public List<Map<String,Object>> getRecSingleUser(int searchSex, long myUid, int count){
 		StringBuilder sb = new StringBuilder();
 		sb.append("select t.auid,t.topic_id,t.uid,p.avatar,p.v_lv");

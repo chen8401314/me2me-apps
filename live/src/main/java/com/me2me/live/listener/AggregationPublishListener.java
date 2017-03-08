@@ -116,13 +116,13 @@ public class AggregationPublishListener {
 						newtf.setId(null);
 						liveMybatisDao.createTopicFragment(newtf);
 						
-						if(this.isInCore(event.getUid(), subTopic.getCoreCircle())){
+//						if(this.isInCore(event.getUid(), subTopic.getCoreCircle())){
 							//核心圈的，相当于核心圈发言，需要更新更新时间
 							Calendar calendar = Calendar.getInstance();
 							subTopic.setUpdateTime(calendar.getTime());
 							subTopic.setLongTime(calendar.getTimeInMillis());
 				            liveMybatisDao.updateTopic(subTopic);
-						}
+//						}
 						
 						//更新缓存
 						long lastFragmentId = newtf.getId();

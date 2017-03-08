@@ -579,6 +579,13 @@ public class LiveServiceImpl implements LiveService {
             topicFragment.setExtra(speakDto.getExtra());
             liveMybatisDao.createTopicFragment(topicFragment);
 
+            Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
+            Calendar calendar = Calendar.getInstance();
+            topic.setUpdateTime(calendar.getTime());
+            topic.setLongTime(calendar.getTimeInMillis());
+            liveMybatisDao.updateTopic(topic);
+            log.info("updateTopic updateTime");
+            
             fid = topicFragment.getId();
             
             //--add update kingdom cache -- modify by zcl -- begin --
@@ -643,16 +650,16 @@ public class LiveServiceImpl implements LiveService {
             writeTagDto.setTag(speakDto.getFragment());
             contentService.writeTag2(writeTagDto);
         }
-        Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
+//        Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
         //直播发言时候更新直播更新时间
-        if (speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.VIDEO.index || speakDto.getType() == Specification.LiveSpeakType.SOUND.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index||speakDto.getType()==Specification.LiveSpeakType.AT_CORE_CIRCLE.index
-        		|| this.isInCore(speakDto.getUid(), topic.getCoreCircle())) {
-            Calendar calendar = Calendar.getInstance();
-            topic.setUpdateTime(calendar.getTime());
-            topic.setLongTime(calendar.getTimeInMillis());
-            liveMybatisDao.updateTopic(topic);
-            log.info("updateTopic updateTime");
-        }
+//        if (speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index || speakDto.getType() == Specification.LiveSpeakType.VIDEO.index || speakDto.getType() == Specification.LiveSpeakType.SOUND.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index||speakDto.getType()==Specification.LiveSpeakType.AT_CORE_CIRCLE.index
+//        		|| this.isInCore(speakDto.getUid(), topic.getCoreCircle())) {
+//            Calendar calendar = Calendar.getInstance();
+//            topic.setUpdateTime(calendar.getTime());
+//            topic.setLongTime(calendar.getTimeInMillis());
+//            liveMybatisDao.updateTopic(topic);
+//            log.info("updateTopic updateTime");
+//        }
         if (speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index) {
 //            List<LiveFavorite> list = liveMybatisDao.getFavoriteList(speakDto.getTopicId());
 //            for(LiveFavorite liveFavorite : list) {
@@ -2186,6 +2193,12 @@ public class LiveServiceImpl implements LiveService {
         }
         liveMybatisDao.createTopicFragment(fragment);
         
+        Topic topic = liveMybatisDao.getTopicById(fragment.getTopicId());
+        Calendar calendar = Calendar.getInstance();
+        topic.setUpdateTime(calendar.getTime());
+        topic.setLongTime(calendar.getTimeInMillis());
+        liveMybatisDao.updateTopic(topic);
+        
         //--add update kingdom cache -- modify by zcl -- begin --
         //此处暂不考虑原子操作
         int total = liveMybatisDao.countFragmentByTopicId(fragment.getTopicId());
@@ -3467,12 +3480,12 @@ public class LiveServiceImpl implements LiveService {
 		newtf.setExtra(obj.toJSONString());
 		liveMybatisDao.createTopicFragment(newtf);
 		
-		if(isCoreUser){//如果是核心圈的发言，则需要更新评论缓存
+//		if(isCoreUser){//如果是核心圈的发言，则需要更新评论缓存
 			Calendar calendar = Calendar.getInstance();
 			targetTopic.setUpdateTime(calendar.getTime());
 			targetTopic.setLongTime(calendar.getTimeInMillis());
             liveMybatisDao.updateTopic(targetTopic);
-		}
+//		}
 		
 		//更新缓存
 		long lastFragmentId = newtf.getId();
