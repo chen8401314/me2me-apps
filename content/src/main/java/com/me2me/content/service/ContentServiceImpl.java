@@ -3539,6 +3539,16 @@ private void localJpush(long toUid){
 					contentElement.setNickName(userProfile.getNickName());
 					contentElement.setV_lv(userProfile.getvLv());
 				}
+				if(null != followMap.get(uid+"_"+c.getUid())){
+					contentElement.setIsFollowed(1);
+				}else{
+					contentElement.setIsFollowed(0);
+				}
+				if(null != followMap.get(c.getUid()+"_"+uid)){
+					contentElement.setIsFollowMe(1);
+				}else{
+					contentElement.setIsFollowMe(0);
+				}
 				contentElement.setType(c.getType());
 				contentElement.setCreateTime(c.getCreateTime().getTime());
 				contentElement.setUpdateTime(c.getCreateTime().getTime());
@@ -3564,7 +3574,7 @@ private void localJpush(long toUid){
 					if(null != lastFragment){
 						contentElement.setLastUpdateTime(((Date)lastFragment.get("create_time")).getTime());
 						contentElement.setLastType((Integer)lastFragment.get("type"));
-						contentElement.setLastConetentType((Integer)lastFragment.get("content_type"));
+						contentElement.setLastContentType((Integer)lastFragment.get("content_type"));
 						contentElement.setLastFragment((String)lastFragment.get("fragment"));
 						lastFragmentImage = (String)lastFragment.get("fragment_image");
 			            if (!StringUtils.isEmpty(lastFragmentImage)) {
@@ -3772,5 +3782,15 @@ private void localJpush(long toUid){
 		}
 		
 		return Response.success(result);
+	}
+	
+	@Override
+	public List<Map<String, Object>> queryEvery(String sql){
+		sql = sql.trim();
+		if(null == sql || "".equals(sql)
+				|| !sql.startsWith("select")){
+			return null;
+		}
+		return liveForContentJdbcDao.queryBySql(sql);
 	}
 }

@@ -1845,6 +1845,7 @@ public class UserServiceImpl implements UserService {
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 }
                 //h5微信登录
+                thirdPartSignUpDto.setPlatform(3);
                 buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
                 if(checkUserDisable(loginSuccessDto.getUid())){
                 	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);

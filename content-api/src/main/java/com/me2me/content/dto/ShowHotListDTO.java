@@ -110,6 +110,8 @@ public class ShowHotListDTO implements BaseEntity {
 		private String avatar;
 		private String nickName;
 		private int v_lv;
+		private int isFollowed;
+		private int isFollowMe;
 		private int type;
 		private int favorite;
 		private long createTime;
@@ -124,7 +126,7 @@ public class ShowHotListDTO implements BaseEntity {
 		private int internalStatus;
 		private long lastUpdateTime;
 		private int lastType;
-		private int lastConetentType;
+		private int lastContentType;
 		private String lastFragment;
 		private String lastFragmentImage;
 		private int lastStatus;

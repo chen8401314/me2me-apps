@@ -1,6 +1,7 @@
 package com.me2me.content.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.*;
@@ -222,4 +223,12 @@ public interface ContentService{
     Response hotList(long sinceId, long uid);
     
     Response ceKingdomHotList(long sinceId, long uid);
+    
+    /**
+     * 给IMS系统开的后门，直接通过sql查询结果
+     * 其他地方不建议调用本方法
+     * @param sql
+     * @return
+     */
+    List<Map<String, Object>> queryEvery(String sql);
 }

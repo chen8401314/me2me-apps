@@ -262,4 +262,8 @@ public class LiveForContentJdbcDao {
 		
 		return jdbcTemplate.queryForList(sb.toString());
 	}
+    
+    public List<Map<String, Object>> queryBySql(String sql){
+    	return jdbcTemplate.queryForList(sql);
+    }
 }
