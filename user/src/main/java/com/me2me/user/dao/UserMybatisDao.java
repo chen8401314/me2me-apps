@@ -99,6 +99,9 @@ public class UserMybatisDao {
     @Autowired
     private UserFamousMapper userFamousMapper;
 
+    @Autowired
+    private IosWapxMapper iosWapxMapper;
+
     /**
      * 保存用户注册信息
      * @param user
@@ -959,6 +962,21 @@ public class UserMybatisDao {
         UserFamousExample example = new UserFamousExample();
         example.createCriteria().andUidEqualTo(uid);
         userFamousMapper.deleteByExample(example);
+    }
+
+    public void createWapx(IosWapx iosWapx){
+        iosWapxMapper.insert(iosWapx);
+    }
+
+    public IosWapx getWapxByIdfa(String idfa){
+        IosWapxExample example = new IosWapxExample();
+        example.createCriteria().andIdfaEqualTo(idfa);
+        List<IosWapx> list = iosWapxMapper.selectByExample(example);
+        return list.size()>0&&list!=null?list.get(0):null;
+    }
+
+    public void updateWapx(IosWapx iosWapx){
+        iosWapxMapper.updateByPrimaryKeySelective(iosWapx);
     }
 
 }

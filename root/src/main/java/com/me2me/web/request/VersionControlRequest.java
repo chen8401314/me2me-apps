@@ -23,4 +23,8 @@ public class VersionControlRequest extends Request{
     @Getter
     @Setter
     private String device;
+
+    @Getter
+    @Setter
+    private String idfa;
 }

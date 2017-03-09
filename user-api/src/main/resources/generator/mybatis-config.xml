@@ -58,5 +58,6 @@
         <!--<table tableName="open_device_count" domainObjectName="OpenDeviceCount"/>-->
         <!--<table tableName="entry_page_config" domainObjectName="EntryPageConfig"/>-->
         <!--<table tableName="user_famous" domainObjectName="UserFamous"/>-->
+        <!--<table tableName="ios_wapx" domainObjectName="IosWapx"/>-->
     </context>
 </generatorConfiguration>

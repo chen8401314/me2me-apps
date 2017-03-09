@@ -2,6 +2,7 @@ package com.me2me.web;
 
 import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.web.Response;
+import com.me2me.common.web.ResponseWapx;
 import com.me2me.kafka.service.KafkaService;
 import com.me2me.sms.dto.AwardXMDto;
 import com.me2me.sms.dto.VerifyDto;
@@ -480,7 +481,7 @@ public class Users extends BaseController {
             }
             catch (UnknownHostException unknownhostexception) {
             }
-        return userService.versionControl(request.getVersion(),request.getPlatform(),ip,request.getChannel(),request.getDevice());
+        return userService.versionControl(request.getVersion(),request.getPlatform(),ip,request.getChannel(),request.getDevice() ,request.getIdfa());
     }
 
     /**
@@ -713,6 +714,20 @@ public class Users extends BaseController {
     @RequestMapping(value = "/Recommend",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response userRecomm(UserFamousRequest request){
         return userService.userRecomm(request.getUid() ,request.getTargetUid() ,request.getAction());
+    }
+
+    /**
+     * 万普广告用户登记接口
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/iosWapxUserRegist",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseWapx iosWapxUserRegist(WapxIosRequest request){
+        WapxIosDto dto = new WapxIosDto();
+        CommonUtils.copyDto(request ,dto);
+        return userService.iosWapxUserRegist(dto);
     }
 
 }

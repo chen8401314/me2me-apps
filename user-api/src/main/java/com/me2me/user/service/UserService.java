@@ -1,6 +1,7 @@
 package com.me2me.user.service;
 
 import com.me2me.common.web.Response;
+import com.me2me.common.web.ResponseWapx;
 import com.me2me.sms.dto.AwardXMDto;
 import com.me2me.sms.dto.PushLogDto;
 import com.me2me.sms.dto.VerifyDto;
@@ -185,7 +186,7 @@ public interface UserService {
     
     void updateUserSex(long uid, int sex);
 
-    Response versionControl(String version,int platform,String ip,String channel,String device);
+    Response versionControl(String version,int platform,String ip,String channel,String device ,String idfa);
 
     Response updateVersion(VersionDto versionDto);
 
@@ -312,4 +313,6 @@ public interface UserService {
     Response userRecomm(long uid ,long targetUid ,int action);
     
     boolean isUserFamous(long uid);
+
+    ResponseWapx iosWapxUserRegist(WapxIosDto dto);
 }

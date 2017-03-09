@@ -1,17 +1,18 @@
 package com.me2me.web;
 
 import com.me2me.common.web.Response;
+import com.me2me.common.web.ResponseWapx;
 import com.me2me.io.service.FileTransferService;
+import com.me2me.user.dto.WapxIosDto;
+import com.me2me.web.request.WapxIosRequest;
 import com.me2me.web.request.WeChatRequest;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -43,6 +44,18 @@ public class IO extends BaseController {
     @RequestMapping(value = "/getUserInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public String getUserInfo(WeChatRequest request) throws Exception {
         return fileTransferService.getUserInfo(request.getCode());
+    }
+
+    /**
+     * 万普激活接口
+     * @param request
+     * @return
+     * @throws Exception
+     */
+    @ResponseBody
+    @RequestMapping(value = "/iosWapxActivate",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+    public void IosWapxActivate(WapxIosRequest request) {
+        fileTransferService.IosWapxActivate(request.getUdid() ,request.getApp() ,request.getIdfa() ,request.getOpenudid());
     }
 
 }

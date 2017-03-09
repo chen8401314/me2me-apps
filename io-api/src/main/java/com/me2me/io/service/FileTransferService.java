@@ -1,6 +1,7 @@
 package com.me2me.io.service;
 
 import com.me2me.common.web.Response;
+import com.me2me.common.web.ResponseWapx;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -31,5 +32,7 @@ public interface FileTransferService {
     byte[] download(String domain,String key) throws IOException;
 
     String getUserInfo(String code) throws Exception;
+
+    boolean IosWapxActivate(String udid ,String app ,String idfa ,String openudid);
 
 }

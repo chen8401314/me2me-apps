@@ -14,6 +14,7 @@ import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
+import com.me2me.common.web.ResponseWapx;
 import com.me2me.common.web.Specification;
 import com.me2me.core.QRCodeUtil;
 import com.me2me.core.event.ApplicationEventBus;
@@ -24,16 +25,14 @@ import com.me2me.sms.service.SmsService;
 import com.me2me.sms.service.XgPushService;
 import com.me2me.user.dao.*;
 import com.me2me.user.dto.*;
-import com.me2me.user.event.FollowEvent;
-import com.me2me.user.event.NoticeCountPushEvent;
-import com.me2me.user.event.NoticeMessagePushEvent;
-import com.me2me.user.event.PushExtraEvent;
+import com.me2me.user.event.*;
 import com.me2me.user.model.*;
 import com.me2me.user.model.Dictionary;
 import com.me2me.user.widget.MessageNotificationAdapter;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -1216,7 +1215,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response versionControl(String version,int platform,String ip,String channel,String device) {
+    public Response versionControl(String version,int platform,String ip,String channel,String device ,String idfa) {
+        WapxIosEvent event = new WapxIosEvent();
+        event.setIdfa(idfa);
+        applicationEventBus.post(event);
         //记录打开次数
         log.info("ip address :" + ip);
         log.info("add channel count start ...");
@@ -2628,5 +2630,23 @@ public class UserServiceImpl implements UserService {
     		return true;
     	}
     	return false;
+    }
+
+    @Override
+    public ResponseWapx iosWapxUserRegist(WapxIosDto dto) {
+        IosWapx iosWapx = userMybatisDao.getWapxByIdfa(dto.getIdfa());
+        IosWapx wapx = new IosWapx();
+        BeanUtils.copyProperties(dto ,wapx);
+        if(iosWapx != null){
+            //未激活 更新
+            if(iosWapx.getStatus() == 0){
+                userMybatisDao.updateWapx(wapx);
+                log.info("because status 0 so update wapx");
+            }
+        }else {
+            userMybatisDao.createWapx(wapx);
+            log.info("create wapx success");
+        }
+        return ResponseWapx.success("成功",true);
     }
 }

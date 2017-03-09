@@ -1,12 +1,15 @@
 package com.me2me.io.service;
 
+import com.me2me.common.utils.HttpUtil;
 import com.me2me.common.web.BaseEntity;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
+import com.me2me.common.web.ResponseWapx;
 import com.me2me.io.dto.QiniuAccessTokenDto;
 import com.qiniu.common.QiniuException;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.HttpEntity;
@@ -133,6 +136,21 @@ public class FileTransferServiceImpl implements FileTransferService{
         }
         log.info("get user profile"+userProfile.toString());
         return userProfile.toString();
+    }
+
+    @Override
+    public boolean IosWapxActivate(String udid, String app, String idfa, String openudid) {
+        String url = "http://ios.wapx.cn/ios/receiver/activate?app=" + app + "&udid=" + udid + "&idfa=" + idfa + "&openudid=" + openudid;
+        String json = HttpUtil.get(url);
+        JSONObject jsonObject = null;
+        Boolean b = null;
+        try {
+            jsonObject = new JSONObject(json);
+            b = (Boolean) jsonObject.get("success");
+        } catch (JSONException e) {
+            log.error(e.getMessage());
+        }
+        return b;
     }
 
     //获取上传七牛后的图片key
