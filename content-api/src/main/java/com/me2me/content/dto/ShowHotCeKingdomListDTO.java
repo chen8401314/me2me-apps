@@ -26,6 +26,8 @@ public class ShowHotCeKingdomListDTO implements BaseEntity {
 		private int isFollowMe;
 		private int favorite;
 		private long topicId;
+		private long forwardCid;
+		private long id;
 		private long cid;
 		private String title;
 		private String coverImage;

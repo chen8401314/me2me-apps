@@ -29,7 +29,7 @@ public class LiveForActivityDao {
     }
 
 	public Map<String,Object> getContentByForwordCid(long id){
-		String sql = "select * from content where forward_cid="+id;
+		String sql = "select * from content where type=3 and forward_cid="+id;
 		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
 		if(null != list && list.size() > 0){
 			return list.get(0);

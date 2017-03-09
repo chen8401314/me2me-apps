@@ -3476,7 +3476,9 @@ private void localJpush(long toUid){
 					ceKingdomElement.setFavorite(0);
 				}
 				ceKingdomElement.setTopicId(ce.getForwardCid());
+				ceKingdomElement.setForwardCid(ce.getForwardCid());
 				ceKingdomElement.setCid(ce.getId());
+				ceKingdomElement.setId(ce.getId());
 				topic = topicMap.get(ce.getForwardCid().toString());
 				if(null != topic){
 					ceKingdomElement.setTitle((String)topic.get("title"));
@@ -3552,6 +3554,7 @@ private void localJpush(long toUid){
 				
 				if(c.getType() == Specification.ArticleType.LIVE.index){
 					contentElement.setTopicId(c.getForwardCid());
+					contentElement.setForwardCid(c.getForwardCid());
 					topic = topicMap.get(c.getForwardCid().toString());
 					if(null != topic){
 						contentElement.setContentType((Integer)topic.get("type"));
@@ -3718,7 +3721,9 @@ private void localJpush(long toUid){
 					ceKingdomElement.setFavorite(0);
 				}
 				ceKingdomElement.setTopicId(ce.getForwardCid());
+				ceKingdomElement.setForwardCid(ce.getForwardCid());
 				ceKingdomElement.setCid(ce.getId());
+				ceKingdomElement.setId(ce.getId());
 				topic = topicMap.get(ce.getForwardCid().toString());
 				if(null != topic){
 					ceKingdomElement.setTitle((String)topic.get("title"));

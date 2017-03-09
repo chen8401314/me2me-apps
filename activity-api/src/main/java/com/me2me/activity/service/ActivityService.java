@@ -268,8 +268,6 @@ public interface ActivityService {
 
     boolean isTopicRec(long topicId);
     
-    String getTopicCompatibleContent();
-    
     List<Tchannel> getAppChannel(String code);
     
     Tchannel getTchannelById(long id);

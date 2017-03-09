@@ -6,7 +6,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.me2me.activity.dto.CreateActivityDto;
 import com.me2me.activity.dto.TopicCountDTO;
-import com.me2me.activity.model.Activity;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.cache.service.CacheService;
@@ -3538,15 +3537,13 @@ public class LiveServiceImpl implements LiveService {
         return Response.failure(ResponseStatus.YOU_ARE_NOT_ADMIN.status ,ResponseStatus.YOU_ARE_NOT_ADMIN.message);
     }
 
+    private static final String DEFAULT_KINGDOM_ACTIVITY_CONTENT = "<p style=\"text-align:center;\"><span style=\"font-family:宋体;\"><span style=\"font-size:16px;\">米汤新版本已登场！</span></span></p><p style=\"text-align:center;\"><span style=\"font-family:宋体;\"><span style=\"font-size:16px;\">您目前的米汤版本太低，不升级的话是无法看到帅气新界面的哦。</span></span></p><p style=\"text-align: center;\"><span style=\"font-family:宋体;\"><span style=\"font-size:16px;\"><strong>请及时下载更新至最新版本。</strong></span></span></p>";
+    
     public CreateActivityDto setCreateActivityDto(CreateActivityDto createActivityDto ,Topic topic){
         createActivityDto.setUid(topic.getUid());
         createActivityDto.setIssue("");
         //为了让低版本能看到兼容内容，故这里需将特定的兼容内容放置进来
-        String content = activityService.getTopicCompatibleContent();
-        if(null == content){
-        	content = "";
-        }
-        createActivityDto.setContent(content);
+        createActivityDto.setContent(DEFAULT_KINGDOM_ACTIVITY_CONTENT);
         createActivityDto.setCover(topic.getLiveImage());
         createActivityDto.setTitle(topic.getTitle());
         createActivityDto.setHashTitle("#" + topic.getTitle() + "#");
