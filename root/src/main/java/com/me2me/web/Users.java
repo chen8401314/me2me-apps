@@ -21,7 +21,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
+import java.net.URLDecoder;
 import java.net.UnknownHostException;
 
 /**
@@ -723,9 +725,14 @@ public class Users extends BaseController {
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/iosWapxUserRegist",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/IOSWapxUserRegist",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseWapx iosWapxUserRegist(WapxIosRequest request){
         WapxIosDto dto = new WapxIosDto();
+        try {
+            request.setCallbackurl(URLDecoder.decode(request.getCallbackurl() ,"UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         CommonUtils.copyDto(request ,dto);
         return userService.iosWapxUserRegist(dto);
     }

@@ -139,9 +139,8 @@ public class FileTransferServiceImpl implements FileTransferService{
     }
 
     @Override
-    public boolean IosWapxActivate(String udid, String app, String idfa, String openudid) {
-        String url = "http://ios.wapx.cn/ios/receiver/activate?app=" + app + "&udid=" + udid + "&idfa=" + idfa + "&openudid=" + openudid;
-        String json = HttpUtil.get(url);
+    public boolean IosWapxActivate(String callbackUrl) {
+        String json = HttpUtil.get(callbackUrl);
         JSONObject jsonObject = null;
         Boolean b = null;
         try {

@@ -44,7 +44,7 @@ public class WapxIosListener {
         if(iosWapx != null){
             if(iosWapx.getStatus() == 0){
                 //去激活
-                boolean b = fileTransferService.IosWapxActivate(iosWapx.getUdid() ,iosWapx.getApp() ,iosWapx.getIdfa() ,iosWapx.getOpenudid());
+                boolean b = fileTransferService.IosWapxActivate(iosWapx.getCallbackurl());
                 if(b){
                     iosWapx.setStatus(1);
                     userMybatisDao.updateWapx(iosWapx);

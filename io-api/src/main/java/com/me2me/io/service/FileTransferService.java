@@ -33,6 +33,6 @@ public interface FileTransferService {
 
     String getUserInfo(String code) throws Exception;
 
-    boolean IosWapxActivate(String udid ,String app ,String idfa ,String openudid);
+    boolean IosWapxActivate(String callbackUrl);
 
 }

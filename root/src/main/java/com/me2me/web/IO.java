@@ -46,16 +46,4 @@ public class IO extends BaseController {
         return fileTransferService.getUserInfo(request.getCode());
     }
 
-    /**
-     * 万普激活接口
-     * @param request
-     * @return
-     * @throws Exception
-     */
-    @ResponseBody
-    @RequestMapping(value = "/iosWapxActivate",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
-    public void IosWapxActivate(WapxIosRequest request) {
-        fileTransferService.IosWapxActivate(request.getUdid() ,request.getApp() ,request.getIdfa() ,request.getOpenudid());
-    }
-
 }
