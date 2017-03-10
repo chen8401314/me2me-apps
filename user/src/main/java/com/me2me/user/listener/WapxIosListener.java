@@ -49,6 +49,8 @@ public class WapxIosListener {
                     iosWapx.setStatus(1);
                     userMybatisDao.updateWapx(iosWapx);
                     log.info("update wapx success");
+                }else {
+                    log.info("update wapx failure success:false");
                 }
             }
         }
