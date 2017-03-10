@@ -1,5 +1,6 @@
 package com.me2me.user.service;
 
+import com.alibaba.dubbo.common.json.ParseException;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -1215,9 +1216,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response versionControl(String version,int platform,String ip,String channel,String device ,String idfa) {
+    public Response versionControl(String version,int platform,String ip,String channel,String device ,String params) {
         WapxIosEvent event = new WapxIosEvent();
-        event.setIdfa(idfa);
+        try {
+            WapxParams wapxParams = com.alibaba.dubbo.common.json.JSON.parse(params ,WapxParams.class);
+            event.setIdfa(wapxParams.getIdfa());
+        } catch (ParseException e) {
+            log.error("params parse error");
+        }
         applicationEventBus.post(event);
         //记录打开次数
         log.info("ip address :" + ip);

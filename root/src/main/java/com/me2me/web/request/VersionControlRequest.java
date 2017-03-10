@@ -26,5 +26,6 @@ public class VersionControlRequest extends Request{
 
     @Getter
     @Setter
-    private String idfa;
+    private String params;
+
 }

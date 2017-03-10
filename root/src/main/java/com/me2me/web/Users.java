@@ -483,7 +483,7 @@ public class Users extends BaseController {
             }
             catch (UnknownHostException unknownhostexception) {
             }
-        return userService.versionControl(request.getVersion(),request.getPlatform(),ip,request.getChannel(),request.getDevice() ,request.getIdfa());
+        return userService.versionControl(request.getVersion(),request.getPlatform(),ip,request.getChannel(),request.getDevice() ,request.getParams());
     }
 
     /**
