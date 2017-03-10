@@ -352,7 +352,7 @@ public class ActivityMybatisDao {
         criteria2.andInternalStatusEqualTo(Specification.ActivityInternalStatus.NOTICED.index);
         criteria2.andStatusEqualTo(Specification.ActivityStatus.NORMAL.index);
         example.or(criteria2);
-        example.setOrderByClause(" issue desc limit 4 ");
+        example.setOrderByClause(" id desc limit 4 ");
         return activityMapper.selectByExampleWithBLOBs(example);
     }
     

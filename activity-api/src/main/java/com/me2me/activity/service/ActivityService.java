@@ -41,7 +41,7 @@ public interface ActivityService {
     
     List<ActivityWithBLOBs> getHotActivity();
 
-    Response getActivity(int sinceId,long uid);
+    Response getActivity(int sinceId,long uid,int vflag);
 
     ActivityWithBLOBs loadActivityById(long id);
 

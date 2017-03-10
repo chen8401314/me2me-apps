@@ -159,6 +159,11 @@ var parserDatetimeStr = function(time){
 	}
 	return year+"-"+month+"-"+date+" "+hour+":"+minute+":"+second;
 }
+
+var errMsg = '${errMsg}';
+if(errMsg && errMsg != 'null' && errMsg != ''){
+	alert(errMsg);
+}
 </script>
 </head>
 <body>

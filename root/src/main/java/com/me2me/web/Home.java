@@ -71,7 +71,11 @@ public class Home extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-       return activityService.getActivity(request.getSinceId(),request.getUid());
+        int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.1")){
+        	vflag = 1;
+        }
+        return activityService.getActivity(request.getSinceId(),request.getUid(), vflag);
     }
 
 

@@ -320,6 +320,10 @@ public class StatController {
 			countKingdomList = contentService.queryEvery(countKingdomSql.toString());
 		}catch(Exception e){
 			logger.error("查询出错", e);
+			ModelAndView view = new ModelAndView("stat/channelRegisterDetail");
+			view.addObject("errMsg", "查询出错");
+			view.addObject("dataObj", dto);
+			return view;
 		}
 		if(null != countList && countList.size() > 0){
 			Map<String, Object> count = countList.get(0);

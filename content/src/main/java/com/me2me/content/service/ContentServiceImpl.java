@@ -1983,7 +1983,12 @@ private void localJpush(long toUid){
                 activityElement.setId(activity.getId());
                 activityElement.setReviewCount(activityService.getReviewCount(activity.getId()));
                 activityElement.setLikeCount(activityService.getLikeCount(activity.getId()));
-                activityElement.setContentType(activity.getTyp());
+                //这个接口肯定是低于V2.2.1版本的APP调用的，所以这里干脆将大于1的都置为0
+                if(activity.getTyp() < 2){
+                	activityElement.setContentType(activity.getTyp());
+                }else{
+                	activityElement.setContentType(0);
+                }
                 activityElement.setContentUrl(activity.getLinkUrl());
                 activityElement.setType(4);
                 hottestDto.getActivityData().add(activityElement);

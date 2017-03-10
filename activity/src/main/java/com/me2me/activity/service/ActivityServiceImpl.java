@@ -151,7 +151,7 @@ public class ActivityServiceImpl implements ActivityService {
     }
 
     @Override
-    public Response getActivity(int sinceId, long uid) {
+    public Response getActivity(int sinceId, long uid, int vflag) {
         log.info("getActivity start ...");
         ShowActivitiesDto showActivitiesDto = new ShowActivitiesDto();
         List<ActivityWithBLOBs> list = activityMybatisDao.getActivity(sinceId);
@@ -179,7 +179,15 @@ public class ActivityServiceImpl implements ActivityService {
             activityElement.setId(activity.getId());
             activityElement.setUpdateTime(activity.getUpdateTime());
             activityElement.setIsFollowed(userService.isFollow(activity.getUid(), uid));
-            activityElement.setContentType(activity.getTyp());
+            if(vflag < 1){
+            	if(activity.getTyp() > 1){
+            		activityElement.setContentType(0);
+            	}else{
+            		activityElement.setContentType(activity.getTyp());
+            	}
+            }else{
+            	activityElement.setContentType(activity.getTyp());
+            }
             activityElement.setContentUrl(activity.getLinkUrl());
             activityElement.setType(4);
             showActivitiesDto.getActivityData().add(activityElement);
