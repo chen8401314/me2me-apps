@@ -34,6 +34,7 @@ String sub = request.getParameter("s");
                     <li <%if("3_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/stat/promoter/query">推广统计管理</a></li>
                     <li <%if("3_3".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/stat/king/query">国王统计管理</a></li>
                     <li <%if("3_4".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appchannel/query">渠道管理</a></li>
+                    <li <%if("3_5".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/stat/channelRegister/query">渠道注册统计</a></li>
                 </ul>
             </li>
             <li class="sub-menu">

@@ -2,6 +2,7 @@ package com.me2me.mgmt.controller;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.PostConstruct;
@@ -19,7 +20,8 @@ import com.me2me.common.web.Response;
 import com.me2me.content.dto.KingTopicDto;
 import com.me2me.content.dto.ShowKingTopicDto;
 import com.me2me.content.service.ContentService;
-import com.me2me.mgmt.request.ChannelQueryDTO;
+import com.me2me.mgmt.request.ChannelRegisterDetailDTO;
+import com.me2me.mgmt.request.ChannelRegisterQueryDTO;
 import com.me2me.mgmt.request.DailyActiveDTO;
 import com.me2me.mgmt.request.KingStatDTO;
 import com.me2me.mgmt.request.PromoterDTO;
@@ -195,5 +197,126 @@ public class StatController {
 		return view;
 	}
 	
+	@RequestMapping(value = "/channelRegister/query")
+	public ModelAndView channelRegisterQuery(ChannelRegisterQueryDTO dto){
+		Date now = new Date();
+		if(null == dto.getStartTime() || "".equals(dto.getStartTime())){
+			dto.setStartTime(DateUtil.date2string(now, "yyyy-MM-dd")+" 00:00:00");
+		}
+		if(null == dto.getEndTime() || "".equals(dto.getEndTime())){
+			dto.setEndTime(DateUtil.date2string(now, "yyyy-MM-dd")+" 23:59:59");
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("select c.code,m.cu,m.ck from t_channel c LEFT JOIN (");
+		sb.append("select u.channel,count(t.id) as ck,count(DISTINCT u.uid) as cu");
+		sb.append(" from user_profile u  LEFT JOIN topic t on u.uid=t.uid");
+		sb.append(" and t.create_time>='").append(dto.getStartTime());
+		sb.append("' and t.create_time<='").append(dto.getEndTime());
+		sb.append("' where u.create_time>='").append(dto.getStartTime());
+		sb.append("' and u.create_time<='").append(dto.getEndTime());
+		sb.append("' and u.channel is not NULL and u.channel<>''");
+		sb.append(" group by u.channel ) m on c.code=m.channel");
+		if(null != dto.getChannelCode() && !"".equals(dto.getChannelCode())){
+			sb.append(" where c.code like '%").append(dto.getChannelCode()).append("%'");
+		}
+		
+		dto.getResult().clear();
+		List<Map<String, Object>> list = null;
+		try{
+			list = contentService.queryEvery(sb.toString());
+		}catch(Exception e){
+			logger.error("查询出错", e);
+		}
+		if(null != list && list.size() > 0){
+			ChannelRegisterQueryDTO.Item item = null;
+			for(Map<String, Object> m : list){
+				item = new ChannelRegisterQueryDTO.Item();
+				item.setChannelCode((String)m.get("code"));
+				if(null != m.get("cu")){
+					item.setRegisterCount((Long)m.get("cu"));
+				}else{
+					item.setRegisterCount(0);
+				}
+				if(null != m.get("ck")){
+					item.setKingdomCount((Long)m.get("ck"));
+				}else{
+					item.setKingdomCount(0);
+				}
+				
+				dto.getResult().add(item);
+			}
+		}
+		
+		ModelAndView view = new ModelAndView("stat/channelRegister");
+		view.addObject("dataObj", dto);
+		return view;
+	}
 	
+	@RequestMapping(value = "/channelRegister/detail")
+	public ModelAndView channelRegisterDetail(ChannelRegisterDetailDTO dto){
+		int page = dto.getPage();
+		if(page <=0){
+			page = 1;
+		}
+		int pageSize = dto.getPageSize();
+		if(pageSize <= 0){
+			pageSize = 10;
+		}
+		int start = (page-1)*pageSize;
+		
+		StringBuilder pageSql = new StringBuilder();
+		pageSql.append("select u2.uid,u2.nick_name,u2.mobile,u2.gender,u2.create_time,m.ck");
+		pageSql.append(" from user_profile u2,(select u.uid,count(t.id) as ck");
+		pageSql.append(" from user_profile u LEFT JOIN topic t on u.uid=t.uid");
+		pageSql.append(" and t.create_time>='").append(dto.getStartTime());
+		pageSql.append("' and t.create_time<='").append(dto.getEndTime());
+		pageSql.append("' where u.channel='").append(dto.getChannelCode());
+		pageSql.append("' and u.create_time>='").append(dto.getStartTime());
+		pageSql.append("' and u.create_time<='").append(dto.getEndTime());
+		pageSql.append("' group by u.uid) m where u2.uid=m.uid");
+		pageSql.append(" order by u2.create_time limit ").append(start);
+		pageSql.append(",").append(pageSize);
+		
+		StringBuilder pageCountSql = new StringBuilder();
+		pageCountSql.append("select count(1) as cc from user_profile u");
+		pageCountSql.append(" where u.channel='").append(dto.getChannelCode());
+		pageCountSql.append("' and u.create_time>='").append(dto.getStartTime());
+		pageCountSql.append("' and u.create_time<='").append(dto.getEndTime());
+		pageCountSql.append("'");
+		
+		dto.getResult().clear();
+		List<Map<String, Object>> list = null;
+		List<Map<String, Object>> countList = null;
+		try{
+			list = contentService.queryEvery(pageSql.toString());
+			countList = contentService.queryEvery(pageCountSql.toString());
+		}catch(Exception e){
+			logger.error("查询出错", e);
+		}
+		if(null != countList && countList.size() > 0){
+			Map<String, Object> count = countList.get(0);
+			long totalCount = (Long)count.get("cc");
+			int totalPage = totalCount%pageSize==0?(int)totalCount/pageSize:((int)totalCount/pageSize)+1;
+			dto.setTotalCount((int)totalCount);
+			dto.setTotalPage(totalPage);
+		}
+		if(null != list && list.size() > 0){
+			ChannelRegisterDetailDTO.Item item = null;
+			for(Map<String, Object> m : list){
+				item = new ChannelRegisterDetailDTO.Item();
+				item.setKingdomCount((Long)m.get("ck"));
+				item.setMobile((String)m.get("mobile"));
+				item.setNickName((String)m.get("nick_name"));
+				item.setRegisterTime((Date)m.get("create_time"));
+				item.setSex((Integer)m.get("gender"));
+				item.setUid((Long)m.get("uid"));
+				dto.getResult().add(item);
+			}
+		}
+		
+		
+		
+		return null;
+	}
 }

@@ -2873,6 +2873,17 @@ public class LiveServiceImpl implements LiveService {
                     agg.setSubTopicId(dto.getAcTopicId());
                     liveMybatisDao.createTopicAgg(agg);
                     this.aggregateSuccessAfter(topic, topicOwner);
+                    
+                    //如果我不是个人王国国王，则需要通知个人王国国王
+                    if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
+                    	this.aggregationRemind(dto.getUid(), topicOwner.getUid(), "收录了你的个人王国", 0, topicOwner, topic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                        //发推送
+                        //本消息是由王国发起的，所以需要判断王国的配置
+                        if(this.checkTopicPush(topicOwner.getId(), topicOwner.getUid())){
+                        	userService.noticeMessagePush(topicOwner.getUid(), "有聚合王国收录了你的个人王国", 2);
+                        }
+                    }
+                    
                     return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
                 }else if(this.isInCore(dto.getUid(), topic.getCoreCircle())){//我是聚合王国的核心圈
                 	//直接成功
@@ -2881,6 +2892,23 @@ public class LiveServiceImpl implements LiveService {
                     agg.setSubTopicId(dto.getAcTopicId());
                     liveMybatisDao.createTopicAgg(agg);
                     this.aggregateSuccessAfter(topic, topicOwner);
+                    
+                    //先向聚合王国国王发消息
+                    this.aggregationRemind(dto.getUid(), topic.getUid(), "加入了你的聚合王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                    if(this.checkTopicPush(topic.getId(), topic.getUid())){
+                    	userService.noticeMessagePush(topic.getUid(), "有个人王国加入了你的聚合王国", 2);
+                    }
+                    
+                    //如果我不是个人王国国王，则需要通知个人王国国王
+                    if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
+                    	this.aggregationRemind(dto.getUid(), topicOwner.getUid(), "收录了你的个人王国", 0, topicOwner, topic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                        //发推送
+                        //本消息是由王国发起的，所以需要判断王国的配置
+                        if(this.checkTopicPush(topicOwner.getId(), topicOwner.getUid())){
+                        	userService.noticeMessagePush(topicOwner.getUid(), "有聚合王国收录了你的个人王国", 2);
+                        }
+                    }
+                    
                     return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
                 }else{//我是圈外身份
                 	if (topic.getCeAuditType() == 0) {//需要审核
@@ -3022,6 +3050,15 @@ public class LiveServiceImpl implements LiveService {
                     agg.setSubTopicId(dto.getAcTopicId());
                     liveMybatisDao.createTopicAgg(agg);
                     this.aggregateSuccessAfter(topicOwner, topic);
+                    
+                    //如果我不是聚合王国的，则需要向聚合王国国王发消息
+                    if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
+                    	this.aggregationRemind(dto.getUid(), topicOwner.getUid(), "加入了你的聚合王国", 0, topicOwner, topic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                        //本消息是由王国发起的，所以需要判断王国的配置
+                        if(this.checkTopicPush(topicOwner.getId(), topicOwner.getUid())){
+                        	userService.noticeMessagePush(topicOwner.getUid(), "有个人王国加入了你的聚合王国", 2);
+                        }
+                    }
                     
                     return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
                 }else if(this.isInCore(dto.getUid(), topic.getCoreCircle())){//我是个人王国的核心圈
@@ -3235,19 +3272,19 @@ public class LiveServiceImpl implements LiveService {
                 	return Response.failure(ResponseStatus.REPEATED_TREATMENT.status, "无效操作");
                 }
                 
-                //先向对方国王发送消息和推送
-                this.aggregationRemind(dto.getUid(), topic.getUid(), review, 0, topic, targetTopic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                //先向对方操作人发消息，这个消息肯定要发的
+                this.aggregationRemind(dto.getUid(), topicAggregationApply.getOperator().longValue(), review, 0, topic, targetTopic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
                 //本消息是由王国发起的，所以需要判断王国的配置
-                if(this.checkTopicPush(topic.getId(), topic.getUid())){
-                	userService.noticeMessagePush(topic.getUid(), message, 2);
+                if(this.checkTopicPush(topic.getId(), topicAggregationApply.getOperator().longValue())){
+                	userService.noticeMessagePush(topicAggregationApply.getOperator().longValue(), message, 2);
                 }
-                //判断申请操作人是否是对方王国国王，如果不是也要发消息
-                if(topicAggregationApply.getOperator().longValue() > 0 
-                		&& topicAggregationApply.getOperator().longValue() != topic.getUid().longValue()){
-                	this.aggregationRemind(dto.getUid(), topicAggregationApply.getOperator().longValue(), review, 0, topic, targetTopic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+                
+                //然后是同意的，则需要向对方国王发消息，当然如果这个国王就是操作人则不需要发了，已经发过了
+                if (dto.getAction() == 1 && topicAggregationApply.getOperator().longValue() != topic.getUid().longValue()) {
+                	this.aggregationRemind(dto.getUid(), topic.getUid(), review, 0, topic, targetTopic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
                     //本消息是由王国发起的，所以需要判断王国的配置
-                    if(this.checkTopicPush(topic.getId(), topicAggregationApply.getOperator().longValue())){
-                    	userService.noticeMessagePush(topicAggregationApply.getOperator().longValue(), message, 2);
+                    if(this.checkTopicPush(topic.getId(), topic.getUid())){
+                    	userService.noticeMessagePush(topic.getUid(), message, 2);
                     }
                 }
                 
