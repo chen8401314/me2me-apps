@@ -133,7 +133,7 @@ public enum  ResponseStatus {
 
     HIGH_QUALITY_CONTENT_CANCEL_SUCCESS("取消置热成功","high quality content cancel success",20060),
 
-    HIGH_QUALITY_CONTENT_YET("取消置热成功","high quality content YET",20061),
+    HIGH_QUALITY_CONTENT_YET("重复置热","high quality content YET",20061),
 
     USER_EXISTS("该账户已经注册过了","user exists",20062),
 

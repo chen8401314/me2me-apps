@@ -26,6 +26,7 @@ import com.me2me.content.service.ContentService;
 import com.me2me.mgmt.request.ChannelRegisterDetailDTO;
 import com.me2me.mgmt.request.ChannelRegisterQueryDTO;
 import com.me2me.mgmt.request.DailyActiveDTO;
+import com.me2me.mgmt.request.KingDayQueryDTO;
 import com.me2me.mgmt.request.KingStatDTO;
 import com.me2me.mgmt.request.PromoterDTO;
 import com.me2me.monitor.dto.LoadReportDto;
@@ -302,10 +303,10 @@ public class StatController {
 		StringBuilder countKingdomSql = new StringBuilder();
 		countKingdomSql.append("select count(1) as ck from topic t,user_profile u");
 		countKingdomSql.append(" where t.uid=u.uid and u.channel='").append(dto.getChannelCode());
-		countUserSql.append("' and u.create_time>='").append(dto.getStartTime());
-		countUserSql.append("' and u.create_time<='").append(dto.getEndTime());
-		countUserSql.append("' and c.create_time>='").append(dto.getStartTime());
-		countUserSql.append("' and c.create_time<='").append(dto.getEndTime());
+		countKingdomSql.append("' and u.create_time>='").append(dto.getStartTime());
+		countKingdomSql.append("' and u.create_time<='").append(dto.getEndTime());
+		countKingdomSql.append("' and t.create_time>='").append(dto.getStartTime());
+		countKingdomSql.append("' and t.create_time<='").append(dto.getEndTime());
 		countKingdomSql.append("'");
 		
 		dto.getResult().clear();
@@ -410,5 +411,24 @@ public class StatController {
 		
 		JSONObject obj = (JSONObject)JSON.toJSON(dto);
 		return obj.toJSONString();
+	}
+	
+	@RequestMapping(value = "/channelRegister/detail")
+	public ModelAndView kingDayQuery(KingDayQueryDTO dto){
+		Date now = new Date();
+		if(null == dto.getStartTime() || "".equals(dto.getStartTime())){
+			dto.setStartTime(DateUtil.date2string(DateUtil.addDay(now, -9), "yyyy-MM-dd"));
+		}
+		if(null == dto.getEndTime() || "".equals(dto.getEndTime())){
+			dto.setEndTime(DateUtil.date2string(now, "yyyy-MM-dd"));
+		}
+		
+		StringBuilder sb = new StringBuilder();
+		
+		
+		
+		ModelAndView view = new ModelAndView("stat/kingDay");
+		view.addObject("dataObj", dto);
+		return view;
 	}
 }
