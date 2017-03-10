@@ -26,18 +26,18 @@ public class KingDayQueryDTO {
 		private String dayStr;//日期
 		@Getter
 	    @Setter
-		private long totalKingdomCount;//建立王国的总数量
+		private long totalKingdomCount = 0;//建立王国的总数量
 		@Getter
 	    @Setter
-		private long newUserKingdomCount;//新用户建王国的数量
+		private long newUserKingdomCount = 0;//新用户建王国的数量
 		@Getter
 	    @Setter
-		private long updateKingdomCount;//仍在更新的王国数量
+		private long updateKingdomCount = 0;//仍在更新的王国数量
 		@Getter
 	    @Setter
-		private long totalKingFragmentCount;//王国总更新数量
+		private long totalKingFragmentCount = 0;//王国总更新数量
 		@Getter
 	    @Setter
-		private long totalUserFragmentCount;//王国总留言数
+		private long totalUserFragmentCount = 0;//王国总留言数
 	}
 }

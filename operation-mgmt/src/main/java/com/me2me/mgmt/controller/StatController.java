@@ -413,7 +413,7 @@ public class StatController {
 		return obj.toJSONString();
 	}
 	
-	@RequestMapping(value = "/channelRegister/detail")
+	@RequestMapping(value = "/king/day/query")
 	public ModelAndView kingDayQuery(KingDayQueryDTO dto){
 		Date now = new Date();
 		if(null == dto.getStartTime() || "".equals(dto.getStartTime())){
@@ -423,9 +423,68 @@ public class StatController {
 			dto.setEndTime(DateUtil.date2string(now, "yyyy-MM-dd"));
 		}
 		
+		String startTime = dto.getStartTime() + " 00:00:00";
+		String endTime = dto.getEndTime() + " 23:59:59";
+		
 		StringBuilder sb = new StringBuilder();
+		sb.append("select m1.dd as dayStr,m1.c as totalKingdomCount,");
+		sb.append("m1.cc as newUserKingdomCount,m2.c2 as updateKingdomCount,");
+		sb.append("m2.cc2 as totalKingFragmentCount,m3.c3 as totalUserFragmentCount");
+		sb.append(" from (");
+		sb.append("select DATE_FORMAT(t.create_time,'%Y-%m-%d') as dd,count(1) as c,");
+		sb.append("count(if(u.create_time>='").append(startTime);
+		sb.append("' and u.create_time<='").append(endTime);
+		sb.append("',TRUE,NULL)) as cc");
+		sb.append(" from topic t LEFT JOIN user_profile u on t.uid=u.uid");
+		sb.append(" where t.create_time>='").append(startTime);
+		sb.append("' and t.create_time<='").append(endTime);
+		sb.append("' group by DATE_FORMAT(t.create_time,'%Y-%m-%d')");
+		sb.append(") m1 LEFT JOIN (");
+		sb.append("select DATE_FORMAT(f.create_time,'%Y-%m-%d') as dd2,count(DISTINCT f.topic_id) as c2, count(1) as cc2");
+		sb.append(" from topic_fragment f");
+		sb.append(" where f.create_time>='").append(startTime);
+		sb.append("' and f.create_time<='").append(endTime);
+		sb.append("' and f.type in (0,11,12,13,15,52,55)");
+		sb.append(" group by DATE_FORMAT(f.create_time,'%Y-%m-%d')");
+		sb.append(") m2 on m1.dd=m2.dd2 LEFT JOIN (");
+		sb.append("select DATE_FORMAT(f2.create_time,'%Y-%m-%d') as dd3,count(1) as c3");
+		sb.append(" from topic_fragment f2");
+		sb.append(" where f2.create_time>='").append(startTime);
+		sb.append("' and f2.create_time<='").append(endTime);
+		sb.append("' and f2.type not in (0,11,12,13,15,52,55)");
+		sb.append(" group by DATE_FORMAT(f2.create_time,'%Y-%m-%d')");
+		sb.append(") m3 on m1.dd=m3.dd3");
 		
-		
+		dto.getResult().clear();
+		List<Map<String, Object>> list = null;
+		try{
+			list = contentService.queryEvery(sb.toString());
+		}catch(Exception e){
+			logger.error("查询出错", e);
+		}
+		if(null != list && list.size() > 0){
+			KingDayQueryDTO.Item item = null;
+			for(Map<String, Object> m : list){
+				item = new KingDayQueryDTO.Item();
+				item.setDayStr((String)m.get("dayStr"));
+				if(null != m.get("newUserKingdomCount")){
+					item.setNewUserKingdomCount((Long)m.get("newUserKingdomCount"));
+				}
+				if(null != m.get("totalKingdomCount")){
+					item.setTotalKingdomCount((Long)m.get("totalKingdomCount"));
+				}
+				if(null != m.get("totalKingFragmentCount")){
+					item.setTotalKingFragmentCount((Long)m.get("totalKingFragmentCount"));
+				}
+				if(null != m.get("totalUserFragmentCount")){
+					item.setTotalUserFragmentCount((Long)m.get("totalUserFragmentCount"));
+				}
+				if(null != m.get("updateKingdomCount")){
+					item.setUpdateKingdomCount((Long)m.get("updateKingdomCount"));
+				}
+				dto.getResult().add(item);
+			}
+		}
 		
 		ModelAndView view = new ModelAndView("stat/kingDay");
 		view.addObject("dataObj", dto);

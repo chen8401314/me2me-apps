@@ -208,6 +208,7 @@ public class LiveServiceImpl implements LiveService {
 
         LiveFavorite hasFavorite =  liveMybatisDao.getLiveFavorite(uid,topicId);
         liveCoverDto.setHasFavorite(hasFavorite==null?0:1);
+        liveCoverDto.setFavorite(liveCoverDto.getHasFavorite());
 
         liveCoverDto.setInternalStatus(getInternalStatus(topic,uid));
         liveCoverDto.setLiveWebUrl(live_web+topicId);//返回直播URL地址

@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta charset="utf-8" />
 
-<title>ZX_IMS 2.0 - 渠道注册统计</title>
+<title>ZX_IMS 2.0 - 王国按天统计</title>
 
 <link href="${ctx}/css/bootstrap.min.css" rel="stylesheet" />
 <link href="${ctx}/css/bootstrap-reset.css" rel="stylesheet" />
@@ -33,14 +33,14 @@
 		<!--sidebar start-->
 		<jsp:include page="../common/leftmenu.jsp" flush="false">
 			<jsp:param name="t" value="3" />
-			<jsp:param name="s" value="3_5" />
+			<jsp:param name="s" value="3_6" />
 		</jsp:include>
 		<!--sidebar end-->
 
 		<!--main content start-->
 		<section id="main-content">
 			<section class="wrapper">
-				<form id="form1" action="${ctx}/stat/channelRegister/query" method="post">
+				<form id="form1" action="${ctx}/stat/king/day/query" method="post">
 					<div class="row">
 						<div class="col-lg-12">
 							<section class="panel">
@@ -51,8 +51,6 @@
 										<input type="text" id="startTime" name="startTime" value="${dataObj.startTime }" class="form-control" required>&nbsp;&nbsp;
 										结束时间
 										<input type="text" id="endTime" name="endTime" value="${dataObj.endTime }" class="form-control" required>&nbsp;&nbsp;
-										渠道标识
-										<input type="text" id="channelCode" name="channelCode" value="${dataObj.channelCode }" class="form-control">&nbsp;&nbsp;&nbsp;&nbsp;
 										<input type="submit" id="btnSearch" name="btnSearch" value="搜索" class="btn btn-info" />
 									</div>
 								</div>
@@ -65,7 +63,7 @@
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								| 渠道列表 
+								| 统计列表 
 								<span class="tools pull-right">
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>
@@ -75,30 +73,34 @@
 									<table class="display table table-bordered table-striped" id="dynamic-table">
 										<thead>
 											<tr>
-												<th>渠道标识</th>
-												<th>注册数</th>
-												<th>王国创建数</th>
-												<th>操作</th>
+												<th>日期</th>
+												<th>建立王国的总数</th>
+												<th>新用户建王国数</th>
+												<th>仍在更新王国数</th>
+												<th>王国总更新数</th>
+												<th>王国总留言数</th>
 											</tr>
 										</thead>
 										<tbody>
 											<c:forEach items="${dataObj.result}" var="item">
 												<tr class="gradeX">
-													<td>${item.channelCode }</td>
-													<td>${item.registerCount }</td>
-													<td>${item.kingdomCount }</td>
-													<td>
-													<a href="${ctx}/stat/channelRegister/detail?channelCode=${item.channelCode }&startTime=${dataObj.startTime }&endTime=${dataObj.endTime }">查看详细</a>
-													</td>
+													<td>${item.dayStr }</td>
+													<td>${item.totalKingdomCount }</td>
+													<td>${item.newUserKingdomCount }</td>
+													<td>${item.updateKingdomCount }</td>
+													<td>${item.totalKingFragmentCount }</td>
+													<td>${item.totalUserFragmentCount }</td>
 												</tr>
 											</c:forEach>
 										</tbody>
 										<tfoot>
 											<tr>
-												<th>渠道标识</th>
-												<th>注册数</th>
-												<th>王国创建数</th>
-												<th>操作</th>
+												<th>日期</th>
+												<th>建立王国的总数</th>
+												<th>新用户建王国数</th>
+												<th>仍在更新王国数</th>
+												<th>王国总更新数</th>
+												<th>王国总留言数</th>
 											</tr>
 										</tfoot>
 									</table>
@@ -147,20 +149,22 @@
             today:       "今天"  
     };
 	$('#startTime').datetimepicker({
-		format: 'yyyy-mm-dd hh:ii:ss',
+		format: 'yyyy-mm-dd',
 		language: 'zh',
 		startView: 2,
 		autoclose:true,
 		weekStart:1,
-		todayBtn:  1
+		todayBtn:1,
+		minView:2
 		});
 	$('#endTime').datetimepicker({
-		format: 'yyyy-mm-dd hh:ii:ss',
+		format: 'yyyy-mm-dd',
 		language: 'zh',
 		startView: 2,
 		autoclose:true,
 		weekStart:1,
-		todayBtn:  1
+		todayBtn:1,
+		minView:2
 		});
 	</script>
 </body>

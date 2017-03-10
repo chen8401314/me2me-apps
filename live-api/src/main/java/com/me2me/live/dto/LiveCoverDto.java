@@ -50,6 +50,7 @@ public class LiveCoverDto implements BaseEntity{
     private int v_lv;
 
     private int hasFavorite;
+    private int favorite;
     
     //王国类型，0个人王国，1000聚合王国
     private int type;

@@ -342,7 +342,7 @@ if(errMsg && errMsg != 'null' && errMsg != ''){
 	$('#startTime').datetimepicker({
 		format: 'yyyy-mm-dd hh:ii:ss',
 		language: 'zh',
-		startView: 4,
+		startView: 2,
 		autoclose:true,
 		weekStart:1,
 		todayBtn:  1
@@ -350,7 +350,7 @@ if(errMsg && errMsg != 'null' && errMsg != ''){
 	$('#endTime').datetimepicker({
 		format: 'yyyy-mm-dd hh:ii:ss',
 		language: 'zh',
-		startView: 4,
+		startView: 2,
 		autoclose:true,
 		weekStart:1,
 		todayBtn:  1
