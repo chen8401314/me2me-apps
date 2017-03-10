@@ -218,7 +218,7 @@ public class LiveForContentJdbcDao {
     	StringBuilder sb = new StringBuilder();
     	sb.append("select p.* from live_favorite f,user_profile p");
     	sb.append(" where f.uid=p.uid and f.topic_id=").append(topicId);
-    	sb.append(" order by f.create_time desc limit ").append(start);
+    	sb.append(" order by f.create_time limit ").append(start);
     	sb.append(",").append(pageSize);
     	
     	return jdbcTemplate.queryForList(sb.toString());

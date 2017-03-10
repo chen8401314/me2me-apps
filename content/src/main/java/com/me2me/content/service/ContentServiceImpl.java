@@ -3791,6 +3791,18 @@ private void localJpush(long toUid){
 				|| !sql.startsWith("select")){
 			return null;
 		}
-		return liveForContentJdbcDao.queryBySql(sql);
+		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+		List<Map<String, Object>> list = liveForContentJdbcDao.queryBySql(sql);
+		if(null != list && list.size() > 0){
+			Map<String, Object> map = null;
+			for(Map<String, Object> m : list){
+				map = new HashMap<String, Object>();
+				for(Map.Entry<String, Object> entry : m.entrySet()){
+					map.put(entry.getKey(), entry.getValue());
+				}
+				result.add(map);
+			}
+		}
+		return result;
 	}
 }

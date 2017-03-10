@@ -88,6 +88,7 @@
 													<td>${item.registerCount }</td>
 													<td>${item.kingdomCount }</td>
 													<td>
+													<a href="${ctx}/stat/channelRegister/detail?channelCode=${item.channelCode }&startTime=${dataObj.startTime }&endTime=${dataObj.endTime }">查看详细</a>
 													</td>
 												</tr>
 											</c:forEach>

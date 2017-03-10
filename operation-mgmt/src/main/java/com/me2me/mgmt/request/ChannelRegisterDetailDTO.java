@@ -29,16 +29,16 @@ public class ChannelRegisterDetailDTO {
 	
 	@Getter
     @Setter
-	private long totalUserCount;
+	private long totalUserCount = 0;
 	@Getter
     @Setter
-	private long manCount;
+	private long manCount = 0;
 	@Getter
     @Setter
-	private long womanCount;
+	private long womanCount = 0;
 	@Getter
     @Setter
-	private long totalKingdomCount;
+	private long totalKingdomCount = 0;
 	
 	@Getter
     @Setter

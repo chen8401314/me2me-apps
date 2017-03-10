@@ -13,8 +13,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.me2me.common.utils.DateUtil;
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.KingTopicDto;
@@ -255,6 +258,8 @@ public class StatController {
 	
 	@RequestMapping(value = "/channelRegister/detail")
 	public ModelAndView channelRegisterDetail(ChannelRegisterDetailDTO dto){
+		dto.setPage(1);
+		dto.setPageSize(10);
 		int page = dto.getPage();
 		if(page <=0){
 			page = 1;
@@ -285,12 +290,34 @@ public class StatController {
 		pageCountSql.append("' and u.create_time<='").append(dto.getEndTime());
 		pageCountSql.append("'");
 		
+		//汇总信息
+		StringBuilder countUserSql = new StringBuilder();
+		countUserSql.append("select count(1) as ct,COUNT(if(u.gender<>1,TRUE,NULL)) as cw,");
+		countUserSql.append("COUNT(if(u.gender=1,TRUE,NULL)) as cm from user_profile u");
+		countUserSql.append(" where u.channel='").append(dto.getChannelCode());
+		countUserSql.append("' and u.create_time>='").append(dto.getStartTime());
+		countUserSql.append("' and u.create_time<='").append(dto.getEndTime());
+		countUserSql.append("'");
+		
+		StringBuilder countKingdomSql = new StringBuilder();
+		countKingdomSql.append("select count(1) as ck from topic t,user_profile u");
+		countKingdomSql.append(" where t.uid=u.uid and u.channel='").append(dto.getChannelCode());
+		countUserSql.append("' and u.create_time>='").append(dto.getStartTime());
+		countUserSql.append("' and u.create_time<='").append(dto.getEndTime());
+		countUserSql.append("' and c.create_time>='").append(dto.getStartTime());
+		countUserSql.append("' and c.create_time<='").append(dto.getEndTime());
+		countKingdomSql.append("'");
+		
 		dto.getResult().clear();
 		List<Map<String, Object>> list = null;
 		List<Map<String, Object>> countList = null;
+		List<Map<String, Object>> countUserList = null;
+		List<Map<String, Object>> countKingdomList = null;
 		try{
 			list = contentService.queryEvery(pageSql.toString());
 			countList = contentService.queryEvery(pageCountSql.toString());
+			countUserList = contentService.queryEvery(countUserSql.toString());
+			countKingdomList = contentService.queryEvery(countKingdomSql.toString());
 		}catch(Exception e){
 			logger.error("查询出错", e);
 		}
@@ -314,9 +341,70 @@ public class StatController {
 				dto.getResult().add(item);
 			}
 		}
+		if(null != countUserList && countUserList.size() > 0){
+			Map<String, Object> countUser = countUserList.get(0);
+			dto.setTotalUserCount((Long)countUser.get("ct"));
+			dto.setManCount((Long)countUser.get("cm"));
+			dto.setWomanCount((Long)countUser.get("cw"));
+		}
+		if(null != countKingdomList && countKingdomList.size() > 0){
+			Map<String, Object> countKingdom = countKingdomList.get(0);
+			dto.setTotalKingdomCount((Long)countKingdom.get("ck"));
+		}
 		
+		ModelAndView view = new ModelAndView("stat/channelRegisterDetail");
+		view.addObject("dataObj", dto);
+		return view;
+	}
+	
+	@RequestMapping(value="/channelRegister/detail/Page")
+	@ResponseBody
+	public String channelRegisterDetailPage(ChannelRegisterDetailDTO dto){
+		int page = dto.getPage();
+		if(page <=0){
+			page = 1;
+		}
+		int pageSize = dto.getPageSize();
+		if(pageSize <= 0){
+			pageSize = 10;
+		}
+		int start = (page-1)*pageSize;
 		
+		StringBuilder pageSql = new StringBuilder();
+		pageSql.append("select u2.uid,u2.nick_name,u2.mobile,u2.gender,u2.create_time,m.ck");
+		pageSql.append(" from user_profile u2,(select u.uid,count(t.id) as ck");
+		pageSql.append(" from user_profile u LEFT JOIN topic t on u.uid=t.uid");
+		pageSql.append(" and t.create_time>='").append(dto.getStartTime());
+		pageSql.append("' and t.create_time<='").append(dto.getEndTime());
+		pageSql.append("' where u.channel='").append(dto.getChannelCode());
+		pageSql.append("' and u.create_time>='").append(dto.getStartTime());
+		pageSql.append("' and u.create_time<='").append(dto.getEndTime());
+		pageSql.append("' group by u.uid) m where u2.uid=m.uid");
+		pageSql.append(" order by u2.create_time limit ").append(start);
+		pageSql.append(",").append(pageSize);
+
+		dto.getResult().clear();
+		List<Map<String, Object>> list = null;
+		try{
+			list = contentService.queryEvery(pageSql.toString());
+		}catch(Exception e){
+			logger.error("查询出错", e);
+		}
+		if(null != list && list.size() > 0){
+			ChannelRegisterDetailDTO.Item item = null;
+			for(Map<String, Object> m : list){
+				item = new ChannelRegisterDetailDTO.Item();
+				item.setKingdomCount((Long)m.get("ck"));
+				item.setMobile((String)m.get("mobile"));
+				item.setNickName((String)m.get("nick_name"));
+				item.setRegisterTime((Date)m.get("create_time"));
+				item.setSex((Integer)m.get("gender"));
+				item.setUid((Long)m.get("uid"));
+				dto.getResult().add(item);
+			}
+		}
 		
-		return null;
+		JSONObject obj = (JSONObject)JSON.toJSON(dto);
+		return obj.toJSONString();
 	}
 }
