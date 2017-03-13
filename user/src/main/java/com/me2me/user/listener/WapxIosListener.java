@@ -1,6 +1,7 @@
 package com.me2me.user.listener;
 
 import com.google.common.eventbus.Subscribe;
+import com.me2me.common.utils.DateUtil;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.io.service.FileTransferService;
 import com.me2me.user.dao.UserMybatisDao;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.Date;
 
 /**
  * Author: 马秀成
@@ -42,7 +44,9 @@ public class WapxIosListener {
     public void wapxIOS(WapxIosEvent event){
         IosWapx iosWapx = userMybatisDao.getWapxByIdfa(event.getIdfa());
         if(iosWapx != null){
-            if(iosWapx.getStatus() == 0){
+            long hours = DateUtil.getHoursBetween2Date(new Date() ,iosWapx.getUpdateTime());
+            //控制在一小时
+            if(iosWapx.getStatus() == 0 && hours <= 1){
                 //去激活
                 boolean b = fileTransferService.IosWapxActivate(iosWapx.getCallbackurl());
                 if(b){

@@ -12,6 +12,7 @@ import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.utils.CommonUtils;
+import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -2647,6 +2648,7 @@ public class UserServiceImpl implements UserService {
         BeanUtils.copyProperties(dto ,wapx);
         if(iosWapx != null){
             //未激活 更新
+            wapx.setId(iosWapx.getId());
             if(iosWapx.getStatus() == 0){
                 userMybatisDao.updateWapx(wapx);
                 log.info("because status 0 so update wapx");
