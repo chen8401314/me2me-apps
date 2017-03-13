@@ -490,4 +490,9 @@ public class StatController {
 		view.addObject("dataObj", dto);
 		return view;
 	}
+	
+//	@RequestMapping(value = "/userRegister/detail/query")
+//	public ModelAndView userRegisterDetailQuery(UserRegisterDetailQueryDTO dto){
+//		
+//	}
 }

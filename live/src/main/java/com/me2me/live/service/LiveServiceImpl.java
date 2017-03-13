@@ -369,6 +369,7 @@ public class LiveServiceImpl implements LiveService {
         }
         showLiveDto.setCid(content.getId());
         showLiveDto.setIsFollowed(userService.isFollow(topic.getUid(), uid));
+        showLiveDto.setIsFollowMe(userService.isFollow(uid, topic.getUid()));
         showLiveDto.setReviewCount(liveMybatisDao.countFragment(content.getForwardCid(), content.getUid()));
         showLiveDto.setTitle(topic.getTitle());
         showLiveDto.setStatus(topic.getStatus());
