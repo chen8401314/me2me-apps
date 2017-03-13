@@ -149,16 +149,16 @@ public class LiveForContentJdbcDao {
     		return null;
     	}
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select t.id,p.uid,p.nick_name,p.avatar,p.v_lv");
-    	sb.append(" from user_profile p LEFT JOIN topic t on t.uid=p.uid");
-    	sb.append(" where t.id in (");
+    	sb.append("select c.forward_cid as id,p.uid,p.nick_name,p.avatar,p.v_lv");
+    	sb.append(" from user_profile p LEFT JOIN content c on c.uid=p.uid");
+    	sb.append(" where c.forward_cid in (");
     	for(int i=0;i<topicIds.size();i++){
     		if(i>0){
     			sb.append(",");
     		}
     		sb.append(topicIds.get(i));
     	}
-    	sb.append(")");
+    	sb.append(") and c.type=3");
     	
     	return jdbcTemplate.queryForList(sb.toString());
     }

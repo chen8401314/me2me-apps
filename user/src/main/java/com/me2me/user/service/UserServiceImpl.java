@@ -317,9 +317,7 @@ public class UserServiceImpl implements UserService {
                 log.info("user mobile duplicate");
                 return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
             }
-            smsService.send(verifyDto);
-            log.info("user signUp get verify code success");
-            return Response.success(ResponseStatus.USER_VERIFY_GET_SUCCESS.status,ResponseStatus.USER_VERIFY_GET_SUCCESS.message);
+            return smsService.send(verifyDto);
         }else if(verifyDto.getAction() == Specification.VerifyAction.CHECK.index){
             // 验证校验码
             boolean result = smsService.verify(verifyDto);
@@ -337,17 +335,14 @@ public class UserServiceImpl implements UserService {
             oldUserJdbcDao.moveOldUser2Apps(verifyDto.getMobile(),Constant.OLD_USER_ENCRYPT);
             User user = userMybatisDao.getUserByUserName(verifyDto.getMobile());
             if(user!=null){
-                smsService.send(verifyDto);
-                log.info("user verify get success");
-                return Response.success(ResponseStatus.USER_VERIFY_GET_SUCCESS.status,ResponseStatus.USER_VERIFY_GET_SUCCESS.message);
+            	return smsService.send(verifyDto);
             }else{
                 log.info("user not exists");
                 return Response.failure(ResponseStatus.USER_NOT_EXISTS.status,ResponseStatus.USER_NOT_EXISTS.message);
             }
         }else if(verifyDto.getAction() == Specification.VerifyAction.SEND_MESSAGE.index){
         	//纯发短信
-        	smsService.send(verifyDto);
-        	return Response.success(ResponseStatus.USER_VERIFY_GET_SUCCESS.status,ResponseStatus.USER_VERIFY_GET_SUCCESS.message);
+        	return smsService.send(verifyDto);
         }
         log.info("user verify times over");
         return Response.failure(ResponseStatus.USER_VERIFY_ERROR.status,ResponseStatus.USER_VERIFY_ERROR.message);
