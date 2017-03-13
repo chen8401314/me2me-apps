@@ -1217,14 +1217,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response versionControl(String version,int platform,String ip,String channel,String device ,String params) {
-        WapxIosEvent event = new WapxIosEvent();
-        try {
-            WapxParams wapxParams = com.alibaba.dubbo.common.json.JSON.parse(params ,WapxParams.class);
-            event.setIdfa(wapxParams.getIdfa());
-        } catch (ParseException e) {
-            log.error("params parse error");
+        if(!StringUtils.isEmpty(params)) {
+            WapxIosEvent event = new WapxIosEvent();
+            try {
+                WapxParams wapxParams = com.alibaba.dubbo.common.json.JSON.parse(params, WapxParams.class);
+                event.setIdfa(wapxParams.getIdfa());
+            } catch (ParseException e) {
+                log.error("params parse error");
+            }
+            applicationEventBus.post(event);
         }
-        applicationEventBus.post(event);
         //记录打开次数
         log.info("ip address :" + ip);
         log.info("add channel count start ...");
