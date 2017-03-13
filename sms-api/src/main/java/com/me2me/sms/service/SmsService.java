@@ -1,5 +1,6 @@
 package com.me2me.sms.service;
 
+import com.me2me.common.web.Response;
 import com.me2me.sms.dto.VerifyDto;
 
 import java.util.List;
@@ -11,7 +12,7 @@ import java.util.List;
  */
 public interface SmsService {
 
-    void send(VerifyDto verifyDto);
+	Response send(VerifyDto verifyDto);
 
     boolean verify(VerifyDto verifyDto);
 

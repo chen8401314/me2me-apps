@@ -3,10 +3,14 @@ package com.me2me.sms.service;
 import com.google.common.base.Splitter;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.sms.YunXinSms;
+import com.me2me.common.web.Response;
+import com.me2me.common.web.ResponseStatus;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.sms.channel.MessageClient;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.event.VerifyEvent;
+import com.me2me.sms.exception.SendMessageLimitException;
+import com.me2me.sms.exception.SendMessageTimeException;
 import com.me2me.sms.listener.VerifyCodeListener;
 
 import org.apache.commons.lang3.StringUtils;
@@ -49,9 +53,17 @@ public class SmsServiceImpl implements SmsService {
      * @param verifyDto
      */
     @Override
-    public void send(VerifyDto verifyDto){
-        // applicationEventBus.post(new VerifyEvent(verifyDto.getMobile(),verifyDto.getVerifyCode(),verifyDto.getChannel()));
-        verifyCodeListener.send(new VerifyEvent(verifyDto.getMobile(),verifyDto.getVerifyCode(),verifyDto.getChannel(),verifyDto.getIsTest()));
+    public Response send(VerifyDto verifyDto){
+    	try{
+    		verifyCodeListener.send(new VerifyEvent(verifyDto.getMobile(),verifyDto.getVerifyCode(),verifyDto.getChannel(),verifyDto.getIsTest()));
+    	}catch(Exception e){
+    		if(e instanceof SendMessageLimitException || e instanceof SendMessageTimeException){
+    			return Response.success(20094,e.getMessage());
+    		}else{
+    			return Response.failure(e.getMessage());
+    		}
+    	}
+    	return Response.success(ResponseStatus.USER_VERIFY_GET_SUCCESS.status,ResponseStatus.USER_VERIFY_GET_SUCCESS.message);
     }
 
     /**
