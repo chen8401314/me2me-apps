@@ -8,7 +8,6 @@ import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.sms.channel.MessageChannel;
 import com.me2me.sms.event.VerifyEvent;
 import com.me2me.sms.exception.SendMessageLimitException;
-import com.me2me.sms.exception.SendMessageTimeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -45,7 +44,7 @@ public class VerifyCodeListener {
     private static final String VERIFY_MOBILE_PREFIX = "verify:mobile:count:";
 
     /**
-     * 每日发送验证码上线次数为10次
+     * 每日发送验证码上线次数为20次
      */
     private static final int SEND_MESSAGE_LIMIT = 20;
 
