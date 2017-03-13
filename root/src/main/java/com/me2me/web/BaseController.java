@@ -29,6 +29,4 @@ public class BaseController {
         return Response.failure(e.getMessage());
     }
 
-
-
 }
