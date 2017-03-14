@@ -29,8 +29,10 @@ import com.me2me.mgmt.request.ChannelRegisterQueryDTO;
 import com.me2me.mgmt.request.DailyActiveDTO;
 import com.me2me.mgmt.request.KingDayQueryDTO;
 import com.me2me.mgmt.request.KingStatDTO;
+import com.me2me.mgmt.request.KingdomCreateDetailQueryDTO;
 import com.me2me.mgmt.request.PromoterDTO;
 import com.me2me.mgmt.request.UserRegisterDetailQueryDTO;
+import com.me2me.mgmt.services.LocalConfigService;
 import com.me2me.monitor.dto.LoadReportDto;
 import com.me2me.monitor.dto.MonitorReportDto;
 import com.me2me.monitor.service.MonitorService;
@@ -49,9 +51,11 @@ public class StatController {
     private UserService userService;
 	@Autowired
     private ContentService contentService;
+	@Autowired
+	private LocalConfigService localConfigService;
 
 	private static Map<String, String> channelSelectMap = new HashMap<String, String>();
-
+	
 	@PostConstruct
 	public void init() {
 		channelSelectMap.put("0", "ALL");
@@ -809,5 +813,167 @@ public class StatController {
 		
 		JSONObject obj = (JSONObject)JSON.toJSON(dto);
 		return obj.toJSONString();
+	}
+	
+	@RequestMapping(value = "/kingdomCreate/detail/query")
+	public ModelAndView kingdomCreateDetailQuery(KingdomCreateDetailQueryDTO dto){
+		Date now = new Date();
+		if(null == dto.getStartTime() || "".equals(dto.getStartTime())){
+			dto.setStartTime(DateUtil.date2string(now, "yyyy-MM-dd"));
+		}
+		if(null == dto.getEndTime() || "".equals(dto.getEndTime())){
+			dto.setEndTime(DateUtil.date2string(now, "yyyy-MM-dd"));
+		}
+		
+		this.genKingdomCreateDetail(dto);
+		
+		ModelAndView view = new ModelAndView("stat/kingdomCreateDetail");
+		view.addObject("dataObj", dto);
+		return view;
+	}
+	
+	@RequestMapping(value="/kingdomCreate/detail/page")
+	@ResponseBody
+	public String kingdomCreateDetailPage(KingdomCreateDetailQueryDTO dto){
+		
+		this.genKingdomCreateDetail(dto);
+		
+		JSONObject obj = (JSONObject)JSON.toJSON(dto);
+		return obj.toJSONString();
+	}
+	
+	private void genKingdomCreateDetail(KingdomCreateDetailQueryDTO dto){
+		int pageSize = dto.getPageSize();
+		int start = (dto.getPage()-1)*pageSize;
+		String startTime = dto.getStartTime() + " 00:00:00";
+		String endTime = dto.getEndTime() + " 23:59:59";
+		
+		StringBuilder pageSql = new StringBuilder();
+		pageSql.append("select t.id,t.title,p.uid,p.nick_name,p.third_part_bind,p.create_time,p.channel,p.platform");
+		pageSql.append(" from topic t,user_profile p where t.uid=p.uid");
+		pageSql.append(" and t.create_time>='").append(startTime);
+		pageSql.append("' and t.create_time<='").append(endTime).append("'");
+		if(null != dto.getChannelCode() && !"".equals(dto.getChannelCode())){
+			pageSql.append(" and p.channel='").append(dto.getChannelCode()).append("'");
+		}
+		if(null != dto.getNickName() && !"".equals(dto.getNickName())){
+			pageSql.append(" and p.nick_name like '%").append(dto.getNickName()).append("%'");
+		}
+		pageSql.append("order by t.id limit ").append(start).append(",").append(pageSize);
+		
+		StringBuilder countSql = new StringBuilder();
+		countSql.append("select count(1) as cc");
+		countSql.append(" from topic t,user_profile p where t.uid=p.uid");
+		countSql.append(" and t.create_time>='").append(startTime);
+		countSql.append("' and t.create_time<='").append(endTime).append("'");
+		if(null != dto.getChannelCode() && !"".equals(dto.getChannelCode())){
+			countSql.append(" and p.channel='").append(dto.getChannelCode()).append("'");
+		}
+		if(null != dto.getNickName() && !"".equals(dto.getNickName())){
+			countSql.append(" and p.nick_name like '%").append(dto.getNickName()).append("%'");
+		}
+		
+		dto.getResult().clear();
+		List<Map<String, Object>> list = null;
+		List<Map<String, Object>> countList = null;
+		try{
+			list = contentService.queryEvery(pageSql.toString());
+			countList = contentService.queryEvery(countSql.toString());
+		}catch(Exception e){
+			logger.error("查询出错", e);
+		}
+		
+		if(null != countList && countList.size() > 0){
+			Map<String, Object> count = countList.get(0);
+			long totalCount = (Long)count.get("cc");
+			int totalPage = totalCount%pageSize==0?(int)totalCount/pageSize:((int)totalCount/pageSize)+1;
+			dto.setTotalCount((int)totalCount);
+			dto.setTotalPage(totalPage);
+		}
+		
+		if(null != list && list.size() > 0){
+			List<Long> topicIdList = new ArrayList<Long>();
+			for(Map<String, Object> k : list){
+				topicIdList.add((Long)k.get("id"));
+			}
+			
+			StringBuilder updateCountSql = new StringBuilder();
+			updateCountSql.append("select f.topic_id,count(1) as cc");
+			updateCountSql.append(" from topic_fragment f");
+			updateCountSql.append(" where f.status=1 and f.topic_id in (");
+			for(int i=0;i<topicIdList.size();i++){
+				if(i>0){
+					updateCountSql.append(",");
+				}
+				updateCountSql.append(topicIdList.get(i));
+			}
+			updateCountSql.append(") and f.type in (0,11,12,13,15,52,55)");
+			updateCountSql.append(" group by f.topic_id");
+			
+			StringBuilder memberCountSql = new StringBuilder();
+			memberCountSql.append("select f.topic_id,count(1) as cc");
+			memberCountSql.append(" from live_favorite f where f.topic_id in (");
+			for(int i=0;i<topicIdList.size();i++){
+				if(i>0){
+					memberCountSql.append(",");
+				}
+				memberCountSql.append(topicIdList.get(i));
+			}
+			memberCountSql.append(") group by f.topic_id");
+			
+			List<Map<String, Object>> updateCountList = null;
+			List<Map<String, Object>> memberCountList = null;
+			try{
+				updateCountList = contentService.queryEvery(updateCountSql.toString());
+				memberCountList = contentService.queryEvery(memberCountSql.toString());
+			}catch(Exception e){
+				logger.error("查询出错", e);
+			}
+			Map<String, Long> updateCountMap = new HashMap<String, Long>();
+			if(null != updateCountList && updateCountList.size() > 0){
+				for(Map<String, Object> m : updateCountList){
+					updateCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc"));
+				}
+			}
+			Map<String, Long> memberCountMap = new HashMap<String, Long>();
+			if(null != memberCountList && memberCountList.size() > 0){
+				for(Map<String, Object> m : memberCountList){
+					memberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc"));
+				}
+			}
+			
+			KingdomCreateDetailQueryDTO.Item item = null;
+			Long updateCount = null;
+			Long memberCount = null;
+			for(Map<String, Object> k : list){
+				item = new KingdomCreateDetailQueryDTO.Item();
+				item.setChannel((String)k.get("channel"));
+				item.setNickName((String)k.get("nick_name"));
+				if(null != k.get("platform")){
+					item.setPlatform((Integer)k.get("platform"));
+				}else{
+					item.setPlatform(0);
+				}
+				item.setRegisterDate((Date)k.get("create_time"));
+				item.setRegisterMode(this.getRegisterMode((String)k.get("third_part_bind")));
+				item.setTitle((String)k.get("title"));
+				item.setTopicId((Long)k.get("id"));
+				item.setH5Addr(localConfigService.getWebappUrl() + item.getTopicId());
+				item.setUid((Long)k.get("uid"));
+				updateCount = updateCountMap.get(String.valueOf(item.getTopicId()));
+				if(null != updateCount){
+					item.setUpdateCount(updateCount.longValue());
+				}else{
+					item.setUpdateCount(0);
+				}
+				memberCount = memberCountMap.get(String.valueOf(item.getTopicId()));
+				if(null != memberCount){
+					item.setMemberCount(memberCount.longValue());
+				}else{
+					item.setMemberCount(0);
+				}
+				dto.getResult().add(item);
+			}
+		}
 	}
 }
