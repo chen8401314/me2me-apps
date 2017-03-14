@@ -1,5 +1,6 @@
 package com.me2me.mgmt.controller;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +30,7 @@ import com.me2me.mgmt.request.DailyActiveDTO;
 import com.me2me.mgmt.request.KingDayQueryDTO;
 import com.me2me.mgmt.request.KingStatDTO;
 import com.me2me.mgmt.request.PromoterDTO;
+import com.me2me.mgmt.request.UserRegisterDetailQueryDTO;
 import com.me2me.monitor.dto.LoadReportDto;
 import com.me2me.monitor.dto.MonitorReportDto;
 import com.me2me.monitor.service.MonitorService;
@@ -491,8 +493,321 @@ public class StatController {
 		return view;
 	}
 	
-//	@RequestMapping(value = "/userRegister/detail/query")
-//	public ModelAndView userRegisterDetailQuery(UserRegisterDetailQueryDTO dto){
-//		
-//	}
+	@RequestMapping(value = "/userRegister/detail/query")
+	public ModelAndView userRegisterDetailQuery(UserRegisterDetailQueryDTO dto){
+		Date now = new Date();
+		if(null == dto.getStartTime() || "".equals(dto.getStartTime())){
+			dto.setStartTime(DateUtil.date2string(now, "yyyy-MM-dd"));
+		}
+		if(null == dto.getEndTime() || "".equals(dto.getEndTime())){
+			dto.setEndTime(DateUtil.date2string(now, "yyyy-MM-dd"));
+		}
+		
+		String startTime = dto.getStartTime() + " 00:00:00";
+		String endTime = dto.getEndTime() + " 23:59:59";
+		
+		int pageSize = dto.getPageSize();
+		int start = (dto.getPage()-1) * pageSize;
+		
+		StringBuilder pageSql = new StringBuilder();
+		pageSql.append("select p.* from user_profile p");
+		pageSql.append(" where p.create_time>='").append(startTime);
+		pageSql.append("' and p.create_time<='").append(endTime);
+		pageSql.append("'");
+		if(null != dto.getChannelCode() && !"".equals(dto.getChannelCode())){
+			pageSql.append(" and p.channel='").append(dto.getChannelCode()).append("'");
+		}
+		if(null != dto.getNickName() && !"".equals(dto.getNickName())){
+			pageSql.append(" and p.nick_name like '%").append(dto.getNickName()).append("%'");
+		}
+		pageSql.append(" order by p.id limit ").append(start).append(",").append(pageSize);
+
+		StringBuilder pageCountSql = new StringBuilder();
+		pageCountSql.append("select count(1) as cc from user_profile p");
+		pageCountSql.append(" where p.create_time>='").append(startTime);
+		pageCountSql.append("' and p.create_time<='").append(endTime);
+		pageCountSql.append("'");
+		if(null != dto.getChannelCode() && !"".equals(dto.getChannelCode())){
+			pageCountSql.append(" and p.channel='").append(dto.getChannelCode()).append("'");
+		}
+		if(null != dto.getNickName() && !"".equals(dto.getNickName())){
+			pageCountSql.append(" and p.nick_name like '%").append(dto.getNickName()).append("%'");
+		}
+		
+		dto.getResult().clear();
+		List<Map<String, Object>> list = null;
+		List<Map<String, Object>> countList = null;
+		try{
+			list = contentService.queryEvery(pageSql.toString());
+			countList = contentService.queryEvery(pageCountSql.toString());
+		}catch(Exception e){
+			logger.error("查询出错", e);
+			ModelAndView view = new ModelAndView("stat/userRegisterDetail");
+			view.addObject("errMsg", "查询出错");
+			view.addObject("dataObj", dto);
+			return view;
+		}
+		
+		if(null != countList && countList.size() > 0){
+			Map<String, Object> count = countList.get(0);
+			long totalCount = (Long)count.get("cc");
+			int totalPage = totalCount%pageSize==0?(int)totalCount/pageSize:((int)totalCount/pageSize)+1;
+			dto.setTotalCount((int)totalCount);
+			dto.setTotalPage(totalPage);
+		}
+		
+		if(null != list && list.size() > 0){
+			List<Long> uidList = new ArrayList<Long>();
+			for(Map<String, Object> u : list){
+				uidList.add((Long)u.get("uid"));
+			}
+			
+			StringBuilder fansSql = new StringBuilder();
+			fansSql.append("select f.target_uid,count(1) as cc");
+			fansSql.append(" from user_follow f where f.target_uid in (");
+			for(int i=0;i<uidList.size();i++){
+				if(i>0){
+					fansSql.append(",");
+				}
+				fansSql.append(uidList.get(i));
+			}
+			fansSql.append(") group by f.target_uid");
+			
+			StringBuilder kingdomsSql = new StringBuilder();
+			kingdomsSql.append("select t.uid,count(1) as cc");
+			kingdomsSql.append(" from topic t where t.uid in (");
+			for(int i=0;i<uidList.size();i++){
+				if(i>0){
+					kingdomsSql.append(",");
+				}
+				kingdomsSql.append(uidList.get(i));
+			}
+			kingdomsSql.append(") group by t.uid");
+			
+			List<Map<String, Object>> fansList = null;
+			List<Map<String, Object>> kingdomsList = null;
+			try{
+				fansList = contentService.queryEvery(fansSql.toString());
+				kingdomsList = contentService.queryEvery(kingdomsSql.toString());
+			}catch(Exception e){
+				logger.error("查询出错", e);
+				ModelAndView view = new ModelAndView("stat/userRegisterDetail");
+				view.addObject("errMsg", "查询出错");
+				view.addObject("dataObj", dto);
+				return view;
+			}
+			Map<String, Long> fansMap = new HashMap<String, Long>();
+			if(null != fansList && fansList.size() > 0){
+				for(Map<String, Object> fans : fansList){
+					fansMap.put(String.valueOf(fans.get("target_uid")), (Long)fans.get("cc"));
+				}
+			}
+			Map<String, Long> kingdomsMap = new HashMap<String, Long>();
+			if(null != kingdomsList && kingdomsList.size() > 0){
+				for(Map<String, Object> kingdoms : kingdomsList){
+					kingdomsMap.put(String.valueOf(kingdoms.get("uid")), (Long)kingdoms.get("cc"));
+				}
+			}
+			
+			UserRegisterDetailQueryDTO.Item item = null;
+			Long fansCount = null;
+			Long kingdomsCount = null;
+			for(Map<String, Object> u : list){
+				item = new UserRegisterDetailQueryDTO.Item();
+				item.setChannelCode((String)u.get("channel"));
+				fansCount = fansMap.get(String.valueOf(u.get("uid")));
+				if(null != fansCount){
+					item.setFansCount(fansCount.longValue());
+				}else{
+					item.setFansCount(0);
+				}
+				kingdomsCount = kingdomsMap.get(String.valueOf(u.get("uid")));
+				if(null != kingdomsCount){
+					item.setKingdomCount(kingdomsCount.longValue());
+				}else{
+					item.setKingdomCount(0);
+				}
+				item.setNickName((String)u.get("nick_name"));
+				if(null != u.get("platform")){
+					item.setPlatform((Integer)u.get("platform"));
+				}else{
+					item.setPlatform(0);
+				}
+				item.setRegisterDate((Date)u.get("create_time"));
+				item.setUid((Long)u.get("uid"));
+				item.setRegisterMode(this.getRegisterMode((String)u.get("third_part_bind")));
+				
+				dto.getResult().add(item);
+			}
+		}
+		
+		ModelAndView view = new ModelAndView("stat/userRegisterDetail");
+		view.addObject("dataObj", dto);
+		return view;
+	}
+	
+	private String getRegisterMode(String thirdPartBind){
+		StringBuilder sb = new StringBuilder();
+		if(null != thirdPartBind && !"".equals(thirdPartBind)){
+			if(thirdPartBind.indexOf("mobile") != -1){
+				sb.append(",手机");
+			}
+			if(thirdPartBind.indexOf("qq") != -1){
+				sb.append(",QQ");
+			}
+			if(thirdPartBind.indexOf("weixin") != -1){
+				sb.append(",微信");
+			}
+		}
+		String result = sb.toString();
+		if(result.length() > 0){
+			result = result.substring(1);
+		}
+		return result;
+	}
+	
+	@RequestMapping(value="/userRegister/detail/page")
+	@ResponseBody
+	public String userRegisterDetailPage(UserRegisterDetailQueryDTO dto){
+		Date now = new Date();
+		if(null == dto.getStartTime() || "".equals(dto.getStartTime())){
+			dto.setStartTime(DateUtil.date2string(now, "yyyy-MM-dd"));
+		}
+		if(null == dto.getEndTime() || "".equals(dto.getEndTime())){
+			dto.setEndTime(DateUtil.date2string(now, "yyyy-MM-dd"));
+		}
+		
+		String startTime = dto.getStartTime() + " 00:00:00";
+		String endTime = dto.getEndTime() + " 23:59:59";
+		
+		int pageSize = dto.getPageSize();
+		int start = (dto.getPage()-1) * pageSize;
+		
+		StringBuilder pageSql = new StringBuilder();
+		pageSql.append("select p.* from user_profile p");
+		pageSql.append(" where p.create_time>='").append(startTime);
+		pageSql.append("' and p.create_time<='").append(endTime);
+		pageSql.append("'");
+		if(null != dto.getChannelCode() && !"".equals(dto.getChannelCode())){
+			pageSql.append(" and p.channel='").append(dto.getChannelCode()).append("'");
+		}
+		if(null != dto.getNickName() && !"".equals(dto.getNickName())){
+			pageSql.append(" and p.nick_name like '%").append(dto.getNickName()).append("%'");
+		}
+		pageSql.append(" order by p.id limit ").append(start).append(",").append(pageSize);
+
+		StringBuilder pageCountSql = new StringBuilder();
+		pageCountSql.append("select count(1) as cc from user_profile p");
+		pageCountSql.append(" where p.create_time>='").append(startTime);
+		pageCountSql.append("' and p.create_time<='").append(endTime);
+		pageCountSql.append("'");
+		if(null != dto.getChannelCode() && !"".equals(dto.getChannelCode())){
+			pageCountSql.append(" and p.channel='").append(dto.getChannelCode()).append("'");
+		}
+		if(null != dto.getNickName() && !"".equals(dto.getNickName())){
+			pageCountSql.append(" and p.nick_name like '%").append(dto.getNickName()).append("%'");
+		}
+		
+		dto.getResult().clear();
+		List<Map<String, Object>> list = null;
+		List<Map<String, Object>> countList = null;
+		try{
+			list = contentService.queryEvery(pageSql.toString());
+			countList = contentService.queryEvery(pageCountSql.toString());
+		}catch(Exception e){
+			logger.error("查询出错", e);
+		}
+		
+		if(null != countList && countList.size() > 0){
+			Map<String, Object> count = countList.get(0);
+			long totalCount = (Long)count.get("cc");
+			int totalPage = totalCount%pageSize==0?(int)totalCount/pageSize:((int)totalCount/pageSize)+1;
+			dto.setTotalCount((int)totalCount);
+			dto.setTotalPage(totalPage);
+		}
+		
+		if(null != list && list.size() > 0){
+			List<Long> uidList = new ArrayList<Long>();
+			for(Map<String, Object> u : list){
+				uidList.add((Long)u.get("uid"));
+			}
+			
+			StringBuilder fansSql = new StringBuilder();
+			fansSql.append("select f.target_uid,count(1) as cc");
+			fansSql.append(" from user_follow f where f.target_uid in (");
+			for(int i=0;i<uidList.size();i++){
+				if(i>0){
+					fansSql.append(",");
+				}
+				fansSql.append(uidList.get(i));
+			}
+			fansSql.append(") group by f.target_uid");
+			
+			StringBuilder kingdomsSql = new StringBuilder();
+			kingdomsSql.append("select t.uid,count(1) as cc");
+			kingdomsSql.append(" from topic t where t.uid in (");
+			for(int i=0;i<uidList.size();i++){
+				if(i>0){
+					kingdomsSql.append(",");
+				}
+				kingdomsSql.append(uidList.get(i));
+			}
+			kingdomsSql.append(") group by t.uid");
+			
+			List<Map<String, Object>> fansList = null;
+			List<Map<String, Object>> kingdomsList = null;
+			try{
+				fansList = contentService.queryEvery(fansSql.toString());
+				kingdomsList = contentService.queryEvery(kingdomsSql.toString());
+			}catch(Exception e){
+				logger.error("查询出错", e);
+			}
+			Map<String, Long> fansMap = new HashMap<String, Long>();
+			if(null != fansList && fansList.size() > 0){
+				for(Map<String, Object> fans : fansList){
+					fansMap.put(String.valueOf(fans.get("target_uid")), (Long)fans.get("cc"));
+				}
+			}
+			Map<String, Long> kingdomsMap = new HashMap<String, Long>();
+			if(null != kingdomsList && kingdomsList.size() > 0){
+				for(Map<String, Object> kingdoms : kingdomsList){
+					kingdomsMap.put(String.valueOf(kingdoms.get("uid")), (Long)kingdoms.get("cc"));
+				}
+			}
+			
+			UserRegisterDetailQueryDTO.Item item = null;
+			Long fansCount = null;
+			Long kingdomsCount = null;
+			for(Map<String, Object> u : list){
+				item = new UserRegisterDetailQueryDTO.Item();
+				item.setChannelCode((String)u.get("channel"));
+				fansCount = fansMap.get(String.valueOf(u.get("uid")));
+				if(null != fansCount){
+					item.setFansCount(fansCount.longValue());
+				}else{
+					item.setFansCount(0);
+				}
+				kingdomsCount = kingdomsMap.get(String.valueOf(u.get("uid")));
+				if(null != kingdomsCount){
+					item.setKingdomCount(kingdomsCount.longValue());
+				}else{
+					item.setKingdomCount(0);
+				}
+				item.setNickName((String)u.get("nick_name"));
+				if(null != u.get("platform")){
+					item.setPlatform((Integer)u.get("platform"));
+				}else{
+					item.setPlatform(0);
+				}
+				item.setRegisterDate((Date)u.get("create_time"));
+				item.setUid((Long)u.get("uid"));
+				item.setRegisterMode(this.getRegisterMode((String)u.get("third_part_bind")));
+				
+				dto.getResult().add(item);
+			}
+		}
+		
+		JSONObject obj = (JSONObject)JSON.toJSON(dto);
+		return obj.toJSONString();
+	}
 }
