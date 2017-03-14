@@ -1193,6 +1193,8 @@ private void localJpush(long toUid){
           	activityService.deleteAkingDomByTopicId(content.getForwardCid());
           	//删除聚合相关关系记录
           	liveForContentJdbcDao.deleteAggregationTopic(content.getForwardCid());
+          	//删除banner上的王国
+          	liveForContentJdbcDao.deleteBannerTopic(content.getForwardCid());
         }else{
         	//记录下删除记录
           	liveForContentJdbcDao.insertDeleteLog(Specification.DeleteObjectType.UGC.index, id, uid);
@@ -3412,10 +3414,10 @@ private void localJpush(long toUid){
 				activityElement.setContentUrl(activity.getLinkUrl());
 				activityElement.setType(4);//固定为4
 				if(activity.getTyp() == 2){//王国类型的banner
+					activityElement.setTopicId(activity.getCid());
 					topic = topicMap.get(activity.getCid().toString());
 					topicContent = topicContentMap.get(activity.getCid().toString());
 					if(null != topic && null != topicContent){
-						activityElement.setTopicId(activity.getCid());
 						activityElement.setCid(topicContent.getId());
 						activityElement.setTopicType((Integer)topic.get("type"));
 						activityElement.setTopicInternalStatus(this.getInternalStatus(topic, uid));

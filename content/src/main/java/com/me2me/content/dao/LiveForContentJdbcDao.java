@@ -132,6 +132,16 @@ public class LiveForContentJdbcDao {
     	jdbcTemplate.execute(sb2.toString());
     }
     
+    /**
+     * 删除banner上的王国
+     * @param topicId
+     */
+    public void deleteBannerTopic(long topicId){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("delete from activity where typ=2 and cid=").append(topicId);
+    	jdbcTemplate.execute(sb.toString());
+    }
+    
     public Map<String,Object> getTopicUserConfig(long topicId, long uid){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select id,uid,topic_id,push_type from topic_user_config ");

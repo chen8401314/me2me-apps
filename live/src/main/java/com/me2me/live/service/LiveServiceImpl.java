@@ -1687,6 +1687,9 @@ public class LiveServiceImpl implements LiveService {
         for (LiveFavorite liveFavorite : liveFavoriteList) {
             ShowFavoriteListDto.FavoriteUser favoriteUser = ShowFavoriteListDto.createElement();
             UserProfile userProfile = userService.getUserProfileByUid(liveFavorite.getUid());
+            if(null == userProfile){
+            	continue;
+            }
             favoriteUser.setV_lv(userProfile.getvLv());
             favoriteUser.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             favoriteUser.setUid(userProfile.getUid());

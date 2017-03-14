@@ -162,10 +162,14 @@ public class ActivityServiceImpl implements ActivityService {
                 //王国活动
                 activityElement.setTopicId(activity.getCid());
                 Map<String, Object> contentMap = liveForActivityDao.getContentByForwordCid(activity.getCid());
-                activityElement.setCid((Long) contentMap.get("id"));
+                if(null != contentMap){
+                	activityElement.setCid((Long) contentMap.get("id"));
+                }
                 Map<String, Object> topicMap = liveForActivityDao.getTopicById(activity.getCid());
-                activityElement.setTopicType((Integer) topicMap.get("type"));
-                activityElement.setTopicInternalStatus(this.getInternalStatus(topicMap, uid));
+                if(null != topicMap){
+	                activityElement.setTopicType((Integer) topicMap.get("type"));
+	                activityElement.setTopicInternalStatus(this.getInternalStatus(topicMap, uid));
+                }
             }
             activityElement.setUid(activity.getUid());
             activityElement.setTitle(activity.getActivityHashTitle());
