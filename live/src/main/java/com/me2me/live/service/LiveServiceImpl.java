@@ -3581,10 +3581,26 @@ public class LiveServiceImpl implements LiveService {
 
     @Override
     public Response dropAround(long uid, long sourceTopicId) {
+        DropAroundDto dto = new DropAroundDto();
+        if(sourceTopicId == 0){
+            //注册页进来
 
-        
+        }else {
+            //随机获取一条王国
+            TopicDroparound droparound = liveMybatisDao.getRandomDropaRound();
+            Topic topic = liveMybatisDao.getTopicById(droparound.getTopicid());
+            Content content = contentService.getContentByTopicId(droparound.getTopicid());
+            if(topic != null){
+                dto.setInternalStatus(this.getInternalStatus(topic ,uid));
+                dto.setTopicType(topic.getType());
+            }if(content != null){
+                dto.setCid(content.getId());
+            }
+            dto.setTopicId(droparound.getTopicid());
+            dto.setTrackContent("不知道取啥");
+        }
 
-        return null;
+        return Response.success(dto);
     }
 
     private static final String DEFAULT_KINGDOM_ACTIVITY_CONTENT = "<p style=\"text-align:center;\"><span style=\"font-family:宋体;\"><span style=\"font-size:16px;\">米汤新版本已登场！</span></span></p><p style=\"text-align:center;\"><span style=\"font-family:宋体;\"><span style=\"font-size:16px;\">您目前的米汤版本太低，不升级的话是无法看到帅气新界面的哦。</span></span></p><p style=\"text-align: center;\"><span style=\"font-family:宋体;\"><span style=\"font-size:16px;\"><strong>请及时下载更新至最新版本。</strong></span></span></p>";

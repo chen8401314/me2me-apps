@@ -93,4 +93,7 @@ public interface TopicDroparoundMapper {
      * @mbggenerated Fri Mar 17 10:03:44 CST 2017
      */
     int updateByPrimaryKey(TopicDroparound record);
+
+    TopicDroparound getRandomDropaRound();
+
 }

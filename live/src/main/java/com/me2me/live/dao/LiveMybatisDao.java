@@ -73,6 +73,9 @@ public class LiveMybatisDao {
     @Autowired
     private TopicAggregationMapper topicAggregationMapper;
 
+    @Autowired
+    private TopicDroparoundMapper topicDroparoundMapper;
+
 
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -836,4 +839,10 @@ public class LiveMybatisDao {
         }
         return topicAggregationApplyMapper.selectByExample(example);
     }
+
+    public TopicDroparound getRandomDropaRound(){
+        TopicDroparound topicDroparound = topicDroparoundMapper.getRandomDropaRound();
+        return topicDroparound;
+    }
+
 }
