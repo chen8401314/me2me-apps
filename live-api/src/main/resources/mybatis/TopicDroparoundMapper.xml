@@ -258,7 +258,7 @@
     select
     <include refid="Base_Column_List" />
      FROM topic_droparound
-     WHERE topicId >= ((SELECT MAX(topicId) FROM topic_droparound) - (SELECT MIN(topicId) FROM topic_droparound)) * RAND() + (SELECT MIN(topicId) FROM topic_droparound) LIMIT 1
+     ORDER BY RAND() LIMIT 1
   </select>
 
 </mapper>

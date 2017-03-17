@@ -443,6 +443,9 @@ public enum  ResponseStatus {
     YOU_ARE_NOT_CORECIRCLE("只有核心圈才能操作", "you are not coreCircle", 50063),
     
     YOU_ARE_NOT_ADMIN("只有管理员才能操作", "you are not admin", 50064),
+
+    YOU_NOT_JOIN_OWNER_TOPIC("你不能加入自己建立/自己是核心圈的王国", "you not join owner topic",50065),
+
     
 
     ILLEGAL_REQUEST("非法的请求参数","illegal request",50099);

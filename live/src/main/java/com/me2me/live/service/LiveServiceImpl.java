@@ -49,6 +49,7 @@ import org.springframework.util.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -3582,25 +3583,55 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response dropAround(long uid, long sourceTopicId) {
         DropAroundDto dto = new DropAroundDto();
+        TopicDroparoundTrail trail = new TopicDroparoundTrail();
+        int dr =0;
+        String now = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        String number = cacheService.hGet("droparound" ,uid+"@"+now);
+        if(!StringUtils.isEmpty(number)){
+            //有的话取
+            dr = Integer.parseInt(number);
+        }
+        //每次进来+1
+        cacheService.hSet("droparound" ,uid+"@"+now ,String.valueOf(dr+1));
         if(sourceTopicId == 0){
             //注册页进来
-
+            setDropaRoundDto(dto ,uid);
+            //设置轨迹
+            trail.setCreateTime(new Date());
+            trail.setSourceTopicId(sourceTopicId);
+            trail.setUid(uid);
+            trail.setTargetTopicId(dto.getTopicId());
+            liveMybatisDao.createTopicDroparoundTrail(trail);
         }else {
-            //随机获取一条王国
-            TopicDroparound droparound = liveMybatisDao.getRandomDropaRound();
-            Topic topic = liveMybatisDao.getTopicById(droparound.getTopicid());
-            Content content = contentService.getContentByTopicId(droparound.getTopicid());
-            if(topic != null){
-                dto.setInternalStatus(this.getInternalStatus(topic ,uid));
-                dto.setTopicType(topic.getType());
-            }if(content != null){
-                dto.setCid(content.getId());
-            }
-            dto.setTopicId(droparound.getTopicid());
-            dto.setTrackContent("不知道取啥");
+            if(dr <= 5){
+                setDropaRoundDto(dto ,uid);
+                trail.setCreateTime(new Date());
+                trail.setSourceTopicId(sourceTopicId);
+                trail.setUid(uid);
+                trail.setTargetTopicId(dto.getTopicId());
+                liveMybatisDao.createTopicDroparoundTrail(trail);
+            }else {
+                //算法取王国
+            };
         }
 
         return Response.success(dto);
+    }
+
+    public void setDropaRoundDto(DropAroundDto dto ,long uid){
+        //随机获取一条王国
+        TopicDroparound droparound = liveMybatisDao.getRandomDropaRound();
+        Topic topic = liveMybatisDao.getTopicById(droparound.getTopicid());
+        Content content = contentService.getContentByTopicId(droparound.getTopicid());
+        if(topic != null){
+            int status = this.getInternalStatus(topic ,uid);
+            dto.setInternalStatus(status);
+            dto.setTopicType(topic.getType());
+        }if(content != null){
+            dto.setCid(content.getId());
+        }
+        dto.setTopicId(droparound.getTopicid());
+        dto.setTrackContent("不知道取啥");
     }
 
     private static final String DEFAULT_KINGDOM_ACTIVITY_CONTENT = "<p style=\"text-align:center;\"><span style=\"font-family:宋体;\"><span style=\"font-size:16px;\">米汤新版本已登场！</span></span></p><p style=\"text-align:center;\"><span style=\"font-family:宋体;\"><span style=\"font-size:16px;\">您目前的米汤版本太低，不升级的话是无法看到帅气新界面的哦。</span></span></p><p style=\"text-align: center;\"><span style=\"font-family:宋体;\"><span style=\"font-size:16px;\"><strong>请及时下载更新至最新版本。</strong></span></span></p>";

@@ -76,6 +76,9 @@ public class LiveMybatisDao {
     @Autowired
     private TopicDroparoundMapper topicDroparoundMapper;
 
+    @Autowired
+    private TopicDroparoundTrailMapper topicDroparoundTrailMapper;
+
 
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -843,6 +846,10 @@ public class LiveMybatisDao {
     public TopicDroparound getRandomDropaRound(){
         TopicDroparound topicDroparound = topicDroparoundMapper.getRandomDropaRound();
         return topicDroparound;
+    }
+
+    public void createTopicDroparoundTrail(TopicDroparoundTrail trail){
+        topicDroparoundTrailMapper.insertSelective(trail);
     }
 
 }
