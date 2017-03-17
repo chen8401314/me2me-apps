@@ -12,7 +12,7 @@ public class ShowHotCeKingdomListDTO implements BaseEntity {
 	private static final long serialVersionUID = 3142494224381887221L;
 
 	private List<HotCeKingdomElement> hottestCeKingdomData = Lists.newArrayList();
-	
+
 	@Data
 	public static class HotCeKingdomElement implements BaseEntity{
 		private static final long serialVersionUID = 4196958942361116395L;

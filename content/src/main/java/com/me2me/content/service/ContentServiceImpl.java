@@ -3790,8 +3790,14 @@ private void localJpush(long toUid){
 		
 		return Response.success(result);
 	}
-	
-	@Override
+
+    @Override
+    public Response showBangDanList() {
+        BangDanDto bangDanDto = new BangDanDto();
+        return Response.success(bangDanDto);
+    }
+
+    @Override
 	public List<Map<String, Object>> queryEvery(String sql){
 		sql = sql.trim();
 		if(null == sql || "".equals(sql)
