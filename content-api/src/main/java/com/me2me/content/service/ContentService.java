@@ -223,7 +223,13 @@ public interface ContentService{
     Response hotList(long sinceId, long uid);
     
     Response ceKingdomHotList(long sinceId, long uid);
-    
+
+    /**
+     * 榜单列表
+     * @return
+     */
+    Response showBangDanList();
+
     /**
      * 给IMS系统开的后门，直接通过sql查询结果
      * 其他地方不建议调用本方法

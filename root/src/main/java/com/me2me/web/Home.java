@@ -149,4 +149,15 @@ public class Home extends BaseController {
     public Response ceKingdomHotList(CeKingdomHotListRequest request){
     	return contentService.ceKingdomHotList(request.getSinceId(), request.getUid());
     }
+
+    /**
+     * 榜单列表查询接口
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/showList ",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response showList(BangDanRequest request){
+        return contentService.showBangDanList();
+    }
 }
