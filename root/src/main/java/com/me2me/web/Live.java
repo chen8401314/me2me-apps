@@ -573,4 +573,15 @@ public class Live extends BaseController {
         return liveService.recommend(recommRequest.getUid() ,recommRequest.getTopicId() ,recommRequest.getAction());
     }
 
+    /**
+     * 王国串门接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/dropAround",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response dropAround(DropAroundRequest request){
+        return liveService.dropAround(request.getUid() ,request.getSourceTopicId());
+    }
+
 }

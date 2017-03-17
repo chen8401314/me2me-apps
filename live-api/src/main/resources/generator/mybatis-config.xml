@@ -43,7 +43,7 @@
         <!--<table tableName="topic_user_config" domainObjectName="TopicUserConfig"/>-->
         <!--<table tableName="topic_aggregation" domainObjectName="TopicAggregation"/>-->
         <!--<table tableName="topic_aggregation_apply" domainObjectName="TopicAggregationApply"/>-->
-
+        <!--<table tableName="topic_droparound" domainObjectName="TopicDroparound"/>-->
 
 
     </context>
