@@ -32,6 +32,7 @@ import com.me2me.mgmt.request.KingStatDTO;
 import com.me2me.mgmt.request.KingdomCreateDetailQueryDTO;
 import com.me2me.mgmt.request.PromoterDTO;
 import com.me2me.mgmt.request.UserRegisterDetailQueryDTO;
+import com.me2me.mgmt.request.UserRegisterQueryDTO;
 import com.me2me.mgmt.services.LocalConfigService;
 import com.me2me.monitor.dto.LoadReportDto;
 import com.me2me.monitor.dto.MonitorReportDto;
@@ -975,5 +976,55 @@ public class StatController {
 				dto.getResult().add(item);
 			}
 		}
+	}
+	
+	@RequestMapping(value = "/userRegister/query")
+	public ModelAndView userRegister(UserRegisterQueryDTO dto){
+		Date now = new Date();
+		if(null == dto.getStartTime() || "".equals(dto.getStartTime())){
+			dto.setStartTime(DateUtil.date2string(now, "yyyy-MM-dd"));
+		}
+		if(null == dto.getEndTime() || "".equals(dto.getEndTime())){
+			dto.setEndTime(DateUtil.date2string(now, "yyyy-MM-dd"));
+		}
+		
+		String startTime = dto.getStartTime() + " 00:00:00";
+		String endTime = dto.getEndTime() + " 23:59:59";
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("select DATE_FORMAT(p.create_time,'%Y-%m-%d') as dateStr,");
+		sb.append("count(1) as totalCount,");
+		sb.append("count(if(p.third_part_bind like '%mobile%', TRUE, NULL)) as phoneCount,");
+		sb.append("count(if(p.third_part_bind like '%qq%', TRUE, NULL)) as qqCount,");
+		sb.append("count(if(p.third_part_bind like '%weixin%', TRUE, NULL)) as weixinCount");
+		sb.append(" from user_profile p");
+		sb.append(" where p.create_time>='").append(startTime);
+		sb.append("' and p.create_time<='").append(endTime);
+		sb.append("' group by DATE_FORMAT(p.create_time,'%Y-%m-%d')");
+		
+		dto.getResult().clear();
+		List<Map<String, Object>> list = null;
+		try{
+			list = contentService.queryEvery(sb.toString());
+		}catch(Exception e){
+			logger.error("查询出错", e);
+		}
+		if(null != list && list.size() > 0){
+			UserRegisterQueryDTO.Item item = null;
+			for(Map<String, Object> m : list){
+				item = new UserRegisterQueryDTO.Item();
+				item.setDateStr((String)m.get("dateStr"));
+				item.setTotalCount((Long)m.get("totalCount"));
+				item.setPhoneCount((Long)m.get("phoneCount"));
+				item.setQqCount((Long)m.get("qqCount"));
+				item.setWeixinCount((Long)m.get("weixinCount"));
+				
+				dto.getResult().add(item);
+			}
+		}
+		
+		ModelAndView view = new ModelAndView("stat/userRegister");
+		view.addObject("dataObj", dto);
+		return view;
 	}
 }
