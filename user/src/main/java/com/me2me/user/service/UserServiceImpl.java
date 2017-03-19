@@ -1246,28 +1246,77 @@ public class UserServiceImpl implements UserService {
             versionControlDto.setResourceCode(0);
         }
 
-        VersionControl control = userMybatisDao.getVersion(version,platform);
-        VersionControl versionControl = userMybatisDao.getNewestVersion(platform);
-        if(control == null || (version.compareTo(versionControl.getVersion()) >= 0 && control.getVersion().equals(versionControl.getVersion()))){
-            return Response.success(versionControlDto);
+        boolean hasNewVersion = false;
+        VersionControl newestVersion = userMybatisDao.getNewestVersion(platform);
+        if(null != newestVersion && !StringUtils.isEmpty(newestVersion.getVersion())
+        		&& !StringUtils.isEmpty(version)){
+        	hasNewVersion = this.hasNewVersion(version, newestVersion.getVersion());
         }
-        versionControlDto.setId(versionControl.getId());
-        versionControlDto.setUpdateDescription(versionControl.getUpdateDescription());
-        versionControlDto.setUpdateTime(versionControl.getUpdateTime());
-        versionControlDto.setPlatform(versionControl.getPlatform());
-        versionControlDto.setVersion(versionControl.getVersion());
-        versionControlDto.setUpdateUrl(versionControl.getUpdateUrl());
-        if(control == null ||(!control.getVersion().equals(versionControl.getVersion()))){
-            if(versionControl.getForceUpdate() == 1){
-                versionControlDto.setIsUpdate(Specification.VersionStatus.FORCE_UPDATE.index);
-            }else{
-                versionControlDto.setIsUpdate(Specification.VersionStatus.UPDATE.index);
-            }
+        if(!hasNewVersion){
+        	return Response.success(versionControlDto);
+        }
+        
+        versionControlDto.setId(newestVersion.getId());
+        versionControlDto.setUpdateDescription(newestVersion.getUpdateDescription());
+        versionControlDto.setUpdateTime(newestVersion.getUpdateTime());
+        versionControlDto.setPlatform(newestVersion.getPlatform());
+        versionControlDto.setVersion(newestVersion.getVersion());
+        versionControlDto.setUpdateUrl(newestVersion.getUpdateUrl());
+        if(newestVersion.getForceUpdate() == 1){
+            versionControlDto.setIsUpdate(Specification.VersionStatus.FORCE_UPDATE.index);
         }else{
-            versionControlDto.setIsUpdate(Specification.VersionStatus.NEWEST.index);
+            versionControlDto.setIsUpdate(Specification.VersionStatus.UPDATE.index);
         }
         //monitorService.post(new MonitorEvent(Specification.MonitorType.BOOT.index,Specification.MonitorAction.BOOT.index,0,0));
         return Response.success(versionControlDto);
+    }
+    
+    private boolean hasNewVersion(String currentVersion, String newestVersion){
+    	String[] cv = currentVersion.split("\\.");
+    	String[] nv = newestVersion.split("\\.");
+    	if(cv.length>=3 && nv.length>=3){
+        	try{
+        		int cv1 = Integer.valueOf(cv[0]);
+        		int nv1 = Integer.valueOf(nv[0]);
+        		if(cv1>nv1){
+        			return false;
+        		}else if(cv1<nv1){
+        			return true;
+        		}else{
+        			int cv2 = Integer.valueOf(cv[1]);
+            		int nv2 = Integer.valueOf(nv[1]);
+            		if(cv2>nv2){
+            			return false;
+            		}else if(cv2<nv2){
+            			return true;
+            		}else{
+            			int cv3 = Integer.valueOf(cv[2]);
+                		int nv3 = Integer.valueOf(nv[2]);
+                		if(cv3>nv3){
+                			return false;
+                		}else if(cv3<nv3){
+                			return true;
+                		}else{
+                			if(cv.length > 3){
+                				if(nv.length > 3){
+                					if(nv[3].compareTo(cv[3]) > 0){
+                						return true;
+                					}else{
+                						return false;
+                					}
+                				}else{
+                					return false;
+                				}
+                			}else{
+                				return false;
+                			}
+                		}
+            		}
+        		}
+        	}catch(Exception ignore){
+        	}
+    	}
+    	return false;
     }
 
     @Override

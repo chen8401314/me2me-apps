@@ -247,9 +247,9 @@ public class LiveLocalJdbcDao {
 		StringBuilder sb = new StringBuilder();
 		
 		if(searchDTO.getSearchScene() == 1){//聚合王国主动场景（收录列表）
-			//查询我创建的个人王国+我是核心圈的个人王国+我订阅的个人王国
+			//查询我创建的个人王国+我是核心圈的个人王国+我订阅的个人王国+其他的王国
 			sb.append("select t.* from (");
-			sb.append("select m.*,m.long_time*10000 as longtime");
+			sb.append("select m.*,m.long_time*1000 as longtime");
 			sb.append(" from topic m where m.type=0 and m.uid=").append(currentUid);
 			sb.append(" union ");
 			sb.append("select m1.*,m1.long_time*100 as longtime");
@@ -257,13 +257,20 @@ public class LiveLocalJdbcDao {
 			sb.append(" and FIND_IN_SET(").append(currentUid);
 			sb.append(",SUBSTR(m1.core_circle FROM 2 FOR LENGTH(m1.core_circle)-2))");
 			sb.append(" union ");
-			sb.append("select m2.*,m2.long_time as longtime");
+			sb.append("select m2.*,m2.long_time*10 as longtime");
 			sb.append(" from topic m2,live_favorite f");
 			sb.append(" where m2.type=0 and m2.id=f.topic_id");
 			sb.append(" and m2.uid<>").append(currentUid);
 			sb.append(" and not FIND_IN_SET(").append(currentUid);
 			sb.append(",SUBSTR(m2.core_circle FROM 2 FOR LENGTH(m2.core_circle)-2))");
 			sb.append(" and f.uid=").append(currentUid);
+			sb.append(" union ");
+			sb.append(" select m3.*,m3.long_time as longtime");
+			sb.append(" from topic m3 where m3.uid<>").append(currentUid);
+			sb.append(" and not FIND_IN_SET(").append(currentUid);
+			sb.append(",SUBSTR(m2.core_circle FROM 2 FOR LENGTH(m2.core_circle)-2))");
+			sb.append(" and not exist (select 1 from live_favorite f3 where f3.uid=");
+			sb.append(currentUid).append(")");
 			sb.append(") t");
 			sb.append(" where t.longtime<").append(searchDTO.getUpdateTime());
 			if(searchDTO.getExceptTopicId() > 0){
@@ -542,22 +549,18 @@ public class LiveLocalJdbcDao {
 		return jdbcTemplate.queryForList(sb.toString());
 	}
 	
-	public List<Map<String, Object>> getTopSubTopic(long topicId, int limit){
-		StringBuilder sb = new StringBuilder();
-		sb.append("select t.* from topic t,topic_aggregation a ");
-		sb.append("where t.id=a.sub_topic_id and a.topic_id=").append(topicId);
-		sb.append(" and a.is_top=1 order by a.update_time desc limit ").append(limit);
-		
-		return jdbcTemplate.queryForList(sb.toString());
-	}
-	
-	public List<Map<String, Object>> getNoTopSubTopic(long topicId, int limit){
-		StringBuilder sb = new StringBuilder();
-		sb.append("select t1.* from topic t1,topic_aggregation a1 ");
-		sb.append("where t1.id=a1.sub_topic_id and a1.topic_id=").append(topicId);
-		sb.append(" and a1.is_top=0 order by t1.long_time desc limit ").append(limit);
-		
-		return jdbcTemplate.queryForList(sb.toString());
-	}
+	public List<Map<String, Object>> getAcTopicListByCeTopicId(long ceTopicId, int start, int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select m.* from (select t.*,unix_timestamp(a.update_time)*100000 as ltime");
+    	sb.append(" from topic_aggregation a,topic t where a.sub_topic_id=t.id");
+    	sb.append(" and a.topic_id=").append(ceTopicId).append(" and a.is_top=1");
+    	sb.append(" UNION ");
+    	sb.append("select t.*,t.long_time as ltime from topic_aggregation a,topic t");
+    	sb.append(" where a.sub_topic_id=t.id and a.topic_id=").append(ceTopicId);
+    	sb.append(" and a.is_top=0 ) m ");
+    	sb.append(" order by m.ltime desc limit ").append(start).append(",").append(pageSize);
+
+    	return jdbcTemplate.queryForList(sb.toString());
+    }
 
 }

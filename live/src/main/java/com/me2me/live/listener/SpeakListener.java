@@ -138,7 +138,7 @@ public class SpeakListener {
                 jsonObject.addProperty("fromInternalStatus", Specification.SnsCircle.CORE.index);//主播发言的，都是核心圈
                 String alias = String.valueOf(liveFavorite.getUid());
 
-                jPushService.payloadByIdExtra(alias,  "『"+topic.getTitle() + "』有更新", JPushUtils.packageExtra(jsonObject));
+                userService.pushWithExtra(alias,  "『"+topic.getTitle() + "』有更新", JPushUtils.packageExtra(jsonObject));
                 log.info("update live end");
             }
         }
@@ -168,7 +168,7 @@ public class SpeakListener {
 	            jsonObject.addProperty("fromInternalStatus", fromStatus);//评论人相对于王国的身份
 	            String alias = String.valueOf(cid);
 	
-	            jPushService.payloadByIdExtra(alias,  "有人评论了『"+topic.getTitle()+"』", JPushUtils.packageExtra(jsonObject));
+	            userService.pushWithExtra(alias,  "有人评论了『"+topic.getTitle()+"』", JPushUtils.packageExtra(jsonObject));
             }
         }
     }
