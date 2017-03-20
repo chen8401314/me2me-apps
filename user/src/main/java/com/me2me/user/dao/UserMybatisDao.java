@@ -1013,4 +1013,8 @@ public class UserMybatisDao {
     public void updateVersionChannelDownload(VersionChannelDownload vcd){
     	versionChannelDownloadMapper.updateByPrimaryKeySelective(vcd);
     }
+    
+    public void deleteVersionChannelDownload(long id){
+    	versionChannelDownloadMapper.deleteByPrimaryKey(id);
+    }
 }

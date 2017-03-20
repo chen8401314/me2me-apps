@@ -53,7 +53,7 @@ public class ShowTopicListDto implements BaseEntity{
 
         private Date createTime;
 
-        private int LastContentType;
+        private int lastContentType;
 
         private String lastFragment;
 
@@ -94,6 +94,14 @@ public class ShowTopicListDto implements BaseEntity{
         private int contentType;
 
         private int acCount;
+
+        private int lastStatus;
+
+        private String lastExtra;
+
+        private int isTop;
+
+        private int lastType;
         
         //0圈外 1圈内 2核心圈
         private int internalStatus;

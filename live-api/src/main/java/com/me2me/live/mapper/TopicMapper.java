@@ -1,6 +1,7 @@
 package com.me2me.live.mapper;
 
 import com.me2me.live.model.Topic;
+import com.me2me.live.model.Topic2;
 import com.me2me.live.model.TopicExample;
 import java.util.List;
 import java.util.Map;
@@ -97,4 +98,7 @@ public interface TopicMapper {
     int updateByPrimaryKey(Topic record);
 
     Topic getRandomDropaRoundAlgorithm(Map<String ,String> map);
+
+    List<Topic2> getMyLivesByUpdateTimeNew(Map map);
+
 }

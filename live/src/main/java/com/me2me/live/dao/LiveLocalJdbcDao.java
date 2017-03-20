@@ -548,6 +548,26 @@ public class LiveLocalJdbcDao {
 		
 		return jdbcTemplate.queryForList(sb.toString());
 	}
+
+	public List<Map<String, Object>> getLastCoreCircleFragmentByTopicIds2(List<Long> topicIds){
+		if(null == topicIds || topicIds.size() == 0){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select p.* from topic_fragment p, (");
+		sb.append("select max(f.id) as fid from topic_fragment f, topic t ");
+		sb.append("where f.topic_id=t.id and t.id in (");
+		for(int i=0;i<topicIds.size();i++){
+			if(i>0){
+				sb.append(",");
+			}
+			sb.append(topicIds.get(i));
+		}
+		sb.append(") ");
+		sb.append(" group by t.id) m where p.id=m.fid order by id desc");
+
+		return jdbcTemplate.queryForList(sb.toString());
+	}
 	
 	public List<Map<String, Object>> getAcTopicListByCeTopicId(long ceTopicId, int start, int pageSize){
     	StringBuilder sb = new StringBuilder();
