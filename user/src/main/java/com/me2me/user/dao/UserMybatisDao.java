@@ -101,6 +101,9 @@ public class UserMybatisDao {
 
     @Autowired
     private IosWapxMapper iosWapxMapper;
+    
+    @Autowired
+    private VersionChannelDownloadMapper versionChannelDownloadMapper;
 
     /**
      * 保存用户注册信息
@@ -979,4 +982,35 @@ public class UserMybatisDao {
         iosWapxMapper.updateByPrimaryKeySelective(iosWapx);
     }
 
+    public List<VersionChannelDownload> queryVersionChannelDownloads(String channel){
+    	VersionChannelDownloadExample example = new VersionChannelDownloadExample();
+    	VersionChannelDownloadExample.Criteria criteria = example.createCriteria();
+    	if(!StringUtils.isEmpty(channel)){
+    		criteria.andChannelLike("%"+channel+"%");
+    	}
+    	return versionChannelDownloadMapper.selectByExample(example);
+    }
+    
+    public VersionChannelDownload getVersionChannelDownloadByChannel(String channel){
+    	VersionChannelDownloadExample example = new VersionChannelDownloadExample();
+    	VersionChannelDownloadExample.Criteria criteria = example.createCriteria();
+    	criteria.andChannelEqualTo(channel);
+    	List<VersionChannelDownload> list = versionChannelDownloadMapper.selectByExample(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
+    
+    public void saveVersionChannelDownload(VersionChannelDownload vcd){
+    	versionChannelDownloadMapper.insertSelective(vcd);
+    }
+    
+    public VersionChannelDownload getVersionChannelDownloadById(long id){
+    	return versionChannelDownloadMapper.selectByPrimaryKey(id);
+    }
+    
+    public void updateVersionChannelDownload(VersionChannelDownload vcd){
+    	versionChannelDownloadMapper.updateByPrimaryKeySelective(vcd);
+    }
 }

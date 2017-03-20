@@ -336,7 +336,7 @@ public interface Specification {
 
         AT_CORE_CIRCLE("@核心圈",15),
         
-        SYSTEM("系统", 100);
+        SYSTEM("系统", 1000);
         
         public final String name;
         public final int index;

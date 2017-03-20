@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta charset="utf-8" />
 
-<title>ZX_IMS 2.0 - APP版本列表</title>
+<title>ZX_IMS 2.0 - 用户注册统计</title>
 
 <link href="${ctx}/css/bootstrap.min.css" rel="stylesheet" />
 <link href="${ctx}/css/bootstrap-reset.css" rel="stylesheet" />
@@ -17,6 +17,7 @@
 <link href="${ctx}/css/slidebars.css" rel="stylesheet" />
 <link href="${ctx}/css/style.css" rel="stylesheet" />
 <link href="${ctx}/css/style-responsive.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="${ctx}/assets/bootstrap-datetimepicker/css/datetimepicker.css" />
 
 <script src="${ctx}/js/jquery.js"></script>
 <script src="${ctx}/js/jquery-ui-1.9.2.custom.min.js"></script>
@@ -31,29 +32,25 @@
 
 		<!--sidebar start-->
 		<jsp:include page="../common/leftmenu.jsp" flush="false">
-			<jsp:param name="t" value="7" />
-			<jsp:param name="s" value="7_0" />
+			<jsp:param name="t" value="3" />
+			<jsp:param name="s" value="3_9" />
 		</jsp:include>
 		<!--sidebar end-->
 
 		<!--main content start-->
 		<section id="main-content">
 			<section class="wrapper">
-				<form id="form1" action="${ctx}/appconfig/version/query" method="post">
+				<form id="form1" action="${ctx}/stat/userRegister/query" method="post">
 					<div class="row">
 						<div class="col-lg-12">
 							<section class="panel">
 								<header class="panel-heading">执行操作</header>
 								<div class="panel-body">
 									<div class="form-inline" role="form">
-										版本号
-										<input type="text" id="version" name="version" value="${dataObj.version }" class="form-control">&nbsp;&nbsp;
-										平台
-										<select name="platform" id="platform" class="form-control">
-											<option value="0" ${dataObj.platform==0?'selected':''}>全部</option>
-											<option value="1" ${dataObj.platform==1?'selected':''}>Android</option>
-											<option value="2" ${dataObj.platform==2?'selected':''}>IOS</option>
-										</select>
+										开始时间
+										<input type="text" id="startTime" name="startTime" value="${dataObj.startTime }" class="form-control" required>&nbsp;&nbsp;
+										结束时间
+										<input type="text" id="endTime" name="endTime" value="${dataObj.endTime }" class="form-control" required>&nbsp;&nbsp;
 										<input type="submit" id="btnSearch" name="btnSearch" value="搜索" class="btn btn-info" />
 									</div>
 								</div>
@@ -66,9 +63,8 @@
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								| 用户列表 
+								| 统计列表 
 								<span class="tools pull-right">
-									<a href="${ctx}/jsp/appconfig/versionNew.jsp" class="fa fa-plus add_link" title="添加新版本" ></a>
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>
 							</header>
@@ -77,48 +73,31 @@
 									<table class="display table table-bordered table-striped" id="dynamic-table">
 										<thead>
 											<tr>
-												<th>序号</th>
-												<th>版本号</th>
-												<th>平台</th>
-												<th>更新描述</th>
-												<th>下载地址</th>
-												<th>更新时间</th>
-												<th>操作</th>
+												<th>日期</th>
+												<th>注册总数</th>
+												<th>手机注册数</th>
+												<th>QQ注册数</th>
+												<th>微信注册数</th>
 											</tr>
 										</thead>
 										<tbody>
-											<c:forEach items="${dataObj.data.result}" var="versionItem" varStatus="status">
+											<c:forEach items="${dataObj.result}" var="item">
 												<tr class="gradeX">
-													<th>${status.index + 1}</th>
-													<th>${versionItem.version }</th>
-													<th>
-													<c:choose>
-                                                		<c:when test="${versionItem.platform == '1'}">
-                                                			Android
-                                                		</c:when>
-                                                		<c:otherwise>
-                                                			IOS
-                                                		</c:otherwise>
-                                                	</c:choose>
-													</th>
-													<th>${versionItem.updateDescription }</th>
-													<th>${versionItem.updateUrl }</th>
-													<th><fmt:formatDate value="${versionItem.updateTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
-													<th>
-													<a href="${ctx}/appconfig/version/find/${versionItem.id }">编辑</a>
-													</th>
+													<td>${item.dateStr }</td>
+													<td>${item.totalCount }</td>
+													<td>${item.phoneCount }</td>
+													<td>${item.qqCount }</td>
+													<td>${item.weixinCount }</td>
 												</tr>
 											</c:forEach>
 										</tbody>
 										<tfoot>
 											<tr>
-												<th>序号</th>
-												<th>版本号</th>
-												<th>平台</th>
-												<th>更新描述</th>
-												<th>下载地址</th>
-												<th>更新时间</th>
-												<th>操作</th>
+												<th>日期</th>
+												<th>注册总数</th>
+												<th>手机注册数</th>
+												<th>QQ注册数</th>
+												<th>微信注册数</th>
 											</tr>
 										</tfoot>
 									</table>
@@ -154,5 +133,36 @@
 	<script src="${ctx}/js/form-component.js"></script>
 	<script src="${ctx}/js/common-scripts.js"></script>
 	<script src="${ctx}/js/advanced-form-components.js"></script>
+	<script type="text/javascript" src="${ctx}/assets/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+	<script type="text/javascript">
+	$.fn.datetimepicker.dates['zh'] = {  
+            days:       ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六","星期日"],  
+            daysShort:  ["日", "一", "二", "三", "四", "五", "六","日"],  
+            daysMin:    ["日", "一", "二", "三", "四", "五", "六","日"],  
+            months:     ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月","十二月"],  
+            monthsShort:  ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"],  
+            meridiem:    ["上午", "下午"],  
+            //suffix:      ["st", "nd", "rd", "th"],  
+            today:       "今天"  
+    };
+	$('#startTime').datetimepicker({
+		format: 'yyyy-mm-dd',
+		language: 'zh',
+		startView: 2,
+		autoclose:true,
+		weekStart:1,
+		todayBtn:  1,
+		minView:2
+		});
+	$('#endTime').datetimepicker({
+		format: 'yyyy-mm-dd',
+		language: 'zh',
+		startView: 2,
+		autoclose:true,
+		weekStart:1,
+		todayBtn:  1,
+		minView:2
+		});
+	</script>
 </body>
 </html>

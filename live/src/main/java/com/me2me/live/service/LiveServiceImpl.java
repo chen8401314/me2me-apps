@@ -49,6 +49,7 @@ import org.springframework.util.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 /**
@@ -264,23 +265,10 @@ public class LiveServiceImpl implements LiveService {
         	//子王国数
         	int acCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId(topicId);
         	liveCoverDto.setAcCount(acCount);
-        	//子王国top5列表
-        	List<Map<String, Object>> acTopList = new ArrayList<Map<String, Object>>();
-        	int needNum = 5;
-        	//先查置顶的，按置顶时间倒序
-        	List<Map<String, Object>> subList = liveLocalJdbcDao.getTopSubTopic(topicId, needNum);
-        	if(null != subList && subList.size() > 0){
-        		acTopList.addAll(subList);
-        		needNum = needNum - subList.size();
-        	}
-        	//如果不满{needNum}，则再查不置顶的，按更新时间倒序
-        	if(needNum > 0){
-        		subList = liveLocalJdbcDao.getNoTopSubTopic(topicId, needNum);
-        		if(null != subList && subList.size() > 0){
-            		acTopList.addAll(subList);
-            	}
-        	}
-        	
+        	//子王国top列表
+        	int needNum = 30;
+        	//置顶的按置顶时间倒序，非置顶的按更新时间倒叙
+        	List<Map<String, Object>> acTopList = liveLocalJdbcDao.getAcTopicListByCeTopicId(topicId, 0, needNum);
         	if(null != acTopList && acTopList.size() > 0){
         		List<Long> uidList = new ArrayList<Long>();
         		Long id = null;
@@ -392,21 +380,9 @@ public class LiveServiceImpl implements LiveService {
         	int acCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId(cid);
         	showLiveDto.setAcCount(acCount);
         	//子王国top5列表
-        	List<Map<String, Object>> acTopList = new ArrayList<Map<String, Object>>();
-        	int needNum = 5;
-        	//先查置顶的，按置顶时间倒序
-        	List<Map<String, Object>> subList = liveLocalJdbcDao.getTopSubTopic(cid, needNum);
-        	if(null != subList && subList.size() > 0){
-        		acTopList.addAll(subList);
-        		needNum = needNum - subList.size();
-        	}
-        	//如果不满{needNum}，则再查不置顶的，按更新时间倒序
-        	if(needNum > 0){
-        		subList = liveLocalJdbcDao.getNoTopSubTopic(cid, needNum);
-        		if(null != subList && subList.size() > 0){
-            		acTopList.addAll(subList);
-            	}
-        	}
+        	int needNum = 30;
+        	//置顶的按置顶时间倒序，非置顶的按更新时间倒叙
+        	List<Map<String, Object>> acTopList = liveLocalJdbcDao.getAcTopicListByCeTopicId(cid, 0, needNum);
         	
         	if(null != acTopList && acTopList.size() > 0){
         		List<Long> uidList = new ArrayList<Long>();
@@ -2880,14 +2856,14 @@ public class LiveServiceImpl implements LiveService {
                     this.aggregateSuccessAfter(topic, topicOwner);
                     
                     //如果我不是个人王国国王，则需要通知个人王国国王
-                    if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
-                    	this.aggregationRemind(dto.getUid(), topicOwner.getUid(), "收录了你的个人王国", 0, topicOwner, topic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
-                        //发推送
-                        //本消息是由王国发起的，所以需要判断王国的配置
-                        if(this.checkTopicPush(topicOwner.getId(), topicOwner.getUid())){
-                        	userService.noticeMessagePush(topicOwner.getUid(), "有聚合王国收录了你的个人王国", 2);
-                        }
-                    }
+//                    if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
+//                    	this.aggregationRemind(dto.getUid(), topicOwner.getUid(), "收录了你的个人王国", 0, topicOwner, topic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+//                        //发推送
+//                        //本消息是由王国发起的，所以需要判断王国的配置
+//                        if(this.checkTopicPush(topicOwner.getId(), topicOwner.getUid())){
+//                        	userService.noticeMessagePush(topicOwner.getUid(), "有聚合王国收录了你的个人王国", 2);
+//                        }
+//                    }
                     
                     return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
                 }else if(this.isInCore(dto.getUid(), topic.getCoreCircle())){//我是聚合王国的核心圈
@@ -2898,21 +2874,21 @@ public class LiveServiceImpl implements LiveService {
                     liveMybatisDao.createTopicAgg(agg);
                     this.aggregateSuccessAfter(topic, topicOwner);
                     
-                    //先向聚合王国国王发消息
-                    this.aggregationRemind(dto.getUid(), topic.getUid(), "加入了你的聚合王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
-                    if(this.checkTopicPush(topic.getId(), topic.getUid())){
-                    	userService.noticeMessagePush(topic.getUid(), "有个人王国加入了你的聚合王国", 2);
-                    }
-                    
-                    //如果我不是个人王国国王，则需要通知个人王国国王
-                    if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
-                    	this.aggregationRemind(dto.getUid(), topicOwner.getUid(), "收录了你的个人王国", 0, topicOwner, topic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
-                        //发推送
-                        //本消息是由王国发起的，所以需要判断王国的配置
-                        if(this.checkTopicPush(topicOwner.getId(), topicOwner.getUid())){
-                        	userService.noticeMessagePush(topicOwner.getUid(), "有聚合王国收录了你的个人王国", 2);
-                        }
-                    }
+//                    //先向聚合王国国王发消息
+//                    this.aggregationRemind(dto.getUid(), topic.getUid(), "加入了你的聚合王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+//                    if(this.checkTopicPush(topic.getId(), topic.getUid())){
+//                    	userService.noticeMessagePush(topic.getUid(), "有个人王国加入了你的聚合王国", 2);
+//                    }
+//                    
+//                    //如果我不是个人王国国王，则需要通知个人王国国王
+//                    if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
+//                    	this.aggregationRemind(dto.getUid(), topicOwner.getUid(), "收录了你的个人王国", 0, topicOwner, topic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+//                        //发推送
+//                        //本消息是由王国发起的，所以需要判断王国的配置
+//                        if(this.checkTopicPush(topicOwner.getId(), topicOwner.getUid())){
+//                        	userService.noticeMessagePush(topicOwner.getUid(), "有聚合王国收录了你的个人王国", 2);
+//                        }
+//                    }
                     
                     return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
                 }else{//我是圈外身份
@@ -2955,23 +2931,23 @@ public class LiveServiceImpl implements LiveService {
                         liveMybatisDao.createTopicAgg(agg);
                         this.aggregateSuccessAfter(topic, topicOwner);
                         
-                        //发送消息
-                        this.aggregationRemind(dto.getUid(), topic.getUid(), "加入了你的聚合王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
-                        //发推送
-                        //本消息是由王国发起的，所以需要判断王国的配置
-                        if(this.checkTopicPush(topic.getId(), topic.getUid())){
-                        	userService.noticeMessagePush(topic.getUid(), "有个人王国加入了你的聚合王国", 2);
-                        }
-                        
-                        //判断个人王国的国王是不是当前操作人，如果是，则不需要消息
-                        if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
-                        	this.aggregationRemind(dto.getUid(), topicOwner.getUid(), "收录了你的个人王国", 0, topicOwner, topic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
-                            //发推送
-                            //本消息是由王国发起的，所以需要判断王国的配置
-                            if(this.checkTopicPush(topicOwner.getId(), topicOwner.getUid())){
-                            	userService.noticeMessagePush(topicOwner.getUid(), "有聚合王国收录了你的个人王国", 2);
-                            }
-                        }
+//                        //发送消息
+//                        this.aggregationRemind(dto.getUid(), topic.getUid(), "加入了你的聚合王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+//                        //发推送
+//                        //本消息是由王国发起的，所以需要判断王国的配置
+//                        if(this.checkTopicPush(topic.getId(), topic.getUid())){
+//                        	userService.noticeMessagePush(topic.getUid(), "有个人王国加入了你的聚合王国", 2);
+//                        }
+//                        
+//                        //判断个人王国的国王是不是当前操作人，如果是，则不需要消息
+//                        if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
+//                        	this.aggregationRemind(dto.getUid(), topicOwner.getUid(), "收录了你的个人王国", 0, topicOwner, topic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+//                            //发推送
+//                            //本消息是由王国发起的，所以需要判断王国的配置
+//                            if(this.checkTopicPush(topicOwner.getId(), topicOwner.getUid())){
+//                            	userService.noticeMessagePush(topicOwner.getUid(), "有聚合王国收录了你的个人王国", 2);
+//                            }
+//                        }
                         
                         return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
                     }
@@ -3056,14 +3032,14 @@ public class LiveServiceImpl implements LiveService {
                     liveMybatisDao.createTopicAgg(agg);
                     this.aggregateSuccessAfter(topicOwner, topic);
                     
-                    //如果我不是聚合王国的，则需要向聚合王国国王发消息
-                    if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
-                    	this.aggregationRemind(dto.getUid(), topicOwner.getUid(), "加入了你的聚合王国", 0, topicOwner, topic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
-                        //本消息是由王国发起的，所以需要判断王国的配置
-                        if(this.checkTopicPush(topicOwner.getId(), topicOwner.getUid())){
-                        	userService.noticeMessagePush(topicOwner.getUid(), "有个人王国加入了你的聚合王国", 2);
-                        }
-                    }
+//                    //如果我不是聚合王国的，则需要向聚合王国国王发消息
+//                    if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
+//                    	this.aggregationRemind(dto.getUid(), topicOwner.getUid(), "加入了你的聚合王国", 0, topicOwner, topic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+//                        //本消息是由王国发起的，所以需要判断王国的配置
+//                        if(this.checkTopicPush(topicOwner.getId(), topicOwner.getUid())){
+//                        	userService.noticeMessagePush(topicOwner.getUid(), "有个人王国加入了你的聚合王国", 2);
+//                        }
+//                    }
                     
                     return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
                 }else if(this.isInCore(dto.getUid(), topic.getCoreCircle())){//我是个人王国的核心圈
@@ -3074,21 +3050,21 @@ public class LiveServiceImpl implements LiveService {
                     liveMybatisDao.createTopicAgg(agg);
                     this.aggregateSuccessAfter(topicOwner, topic);
                     
-                    //向双方国王发送消息
-                    //先向个人王国发送消息和推送
-                    this.aggregationRemind(dto.getUid(), topic.getUid(), "收录了你的个人王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
-                    //本消息是由王国发起的，所以需要判断王国的配置
-                    if(this.checkTopicPush(topic.getId(), topic.getUid())){
-                    	userService.noticeMessagePush(topic.getUid(), "有聚合王国收录了你的个人王国", 2);
-                    }
-                    //再想聚合王国发送消息和推送（如果这个聚合王国是自己的，则不需要消息了）
-                    if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
-                    	this.aggregationRemind(dto.getUid(), topicOwner.getUid(), "加入了你的聚合王国", 0, topicOwner, topic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
-                        //本消息是由王国发起的，所以需要判断王国的配置
-                        if(this.checkTopicPush(topicOwner.getId(), topicOwner.getUid())){
-                        	userService.noticeMessagePush(topicOwner.getUid(), "有个人王国加入了你的聚合王国", 2);
-                        }
-                    }
+//                    //向双方国王发送消息
+//                    //先向个人王国发送消息和推送
+//                    this.aggregationRemind(dto.getUid(), topic.getUid(), "收录了你的个人王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+//                    //本消息是由王国发起的，所以需要判断王国的配置
+//                    if(this.checkTopicPush(topic.getId(), topic.getUid())){
+//                    	userService.noticeMessagePush(topic.getUid(), "有聚合王国收录了你的个人王国", 2);
+//                    }
+//                    //再想聚合王国发送消息和推送（如果这个聚合王国是自己的，则不需要消息了）
+//                    if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
+//                    	this.aggregationRemind(dto.getUid(), topicOwner.getUid(), "加入了你的聚合王国", 0, topicOwner, topic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+//                        //本消息是由王国发起的，所以需要判断王国的配置
+//                        if(this.checkTopicPush(topicOwner.getId(), topicOwner.getUid())){
+//                        	userService.noticeMessagePush(topicOwner.getUid(), "有个人王国加入了你的聚合王国", 2);
+//                        }
+//                    }
                     
                     return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
                 }else{//我是圈外身份
@@ -3130,21 +3106,21 @@ public class LiveServiceImpl implements LiveService {
                         liveMybatisDao.createTopicAgg(agg);
                         this.aggregateSuccessAfter(topicOwner, topic);
                         
-                        //向双方国王发送消息
-                        //先向个人王国发送消息和推送
-                        this.aggregationRemind(dto.getUid(), topic.getUid(), "收录了你的个人王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
-                        //本消息是由王国发起的，所以需要判断王国的配置
-                        if(this.checkTopicPush(topic.getId(), topic.getUid())){
-                        	userService.noticeMessagePush(topic.getUid(), "有聚合王国收录了你的个人王国", 2);
-                        }
-                        //再想聚合王国发送消息和推送（如果这个聚合王国是自己的，则不需要消息了）
-                        if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
-                        	this.aggregationRemind(dto.getUid(), topicOwner.getUid(), "加入了你的聚合王国", 0, topicOwner, topic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
-                            //本消息是由王国发起的，所以需要判断王国的配置
-                            if(this.checkTopicPush(topicOwner.getId(), topicOwner.getUid())){
-                            	userService.noticeMessagePush(topicOwner.getUid(), "有个人王国加入了你的聚合王国", 2);
-                            }
-                        }
+//                        //向双方国王发送消息
+//                        //先向个人王国发送消息和推送
+//                        this.aggregationRemind(dto.getUid(), topic.getUid(), "收录了你的个人王国", 0, topic, topicOwner, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+//                        //本消息是由王国发起的，所以需要判断王国的配置
+//                        if(this.checkTopicPush(topic.getId(), topic.getUid())){
+//                        	userService.noticeMessagePush(topic.getUid(), "有聚合王国收录了你的个人王国", 2);
+//                        }
+//                        //再想聚合王国发送消息和推送（如果这个聚合王国是自己的，则不需要消息了）
+//                        if(!this.isKing(dto.getUid(), topicOwner.getUid().longValue())){
+//                        	this.aggregationRemind(dto.getUid(), topicOwner.getUid(), "加入了你的聚合王国", 0, topicOwner, topic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+//                            //本消息是由王国发起的，所以需要判断王国的配置
+//                            if(this.checkTopicPush(topicOwner.getId(), topicOwner.getUid())){
+//                            	userService.noticeMessagePush(topicOwner.getUid(), "有个人王国加入了你的聚合王国", 2);
+//                            }
+//                        }
                         return Response.success(ResponseStatus.AGGREGATION_APPLY_SUCCESS.status,ResponseStatus.AGGREGATION_APPLY_SUCCESS.message);
                 	}
                 }
@@ -3284,14 +3260,14 @@ public class LiveServiceImpl implements LiveService {
                 	userService.noticeMessagePush(topicAggregationApply.getOperator().longValue(), message, 2);
                 }
                 
-                //然后是同意的，则需要向对方国王发消息，当然如果这个国王就是操作人则不需要发了，已经发过了
-                if (dto.getAction() == 1 && topicAggregationApply.getOperator().longValue() != topic.getUid().longValue()) {
-                	this.aggregationRemind(dto.getUid(), topic.getUid(), review, 0, topic, targetTopic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
-                    //本消息是由王国发起的，所以需要判断王国的配置
-                    if(this.checkTopicPush(topic.getId(), topic.getUid())){
-                    	userService.noticeMessagePush(topic.getUid(), message, 2);
-                    }
-                }
+//                //然后是同意的，则需要向对方国王发消息，当然如果这个国王就是操作人则不需要发了，已经发过了
+//                if (dto.getAction() == 1 && topicAggregationApply.getOperator().longValue() != topic.getUid().longValue()) {
+//                	this.aggregationRemind(dto.getUid(), topic.getUid(), review, 0, topic, targetTopic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
+//                    //本消息是由王国发起的，所以需要判断王国的配置
+//                    if(this.checkTopicPush(topic.getId(), topic.getUid())){
+//                    	userService.noticeMessagePush(topic.getUid(), message, 2);
+//                    }
+//                }
                 
                 return Response.success(200, "操作成功");
             }else if (topicAggregationApply.getResult() == 1) {
@@ -3367,35 +3343,44 @@ public class LiveServiceImpl implements LiveService {
      * 再母王国和子王国中插入各自王国的内链
      */
     private void aggregateSuccessAfter(Topic ceTopic, Topic acTopic){
-    	/** 突然说不需要内链了。。暂时先注释掉，等说要的时候再放开
+    	//在双方的王国里插入相关系统提示信息
     	Content ceContent = contentService.getContentByTopicId(ceTopic.getId());
     	Content acContent = contentService.getContentByTopicId(acTopic.getId());
     	UserProfile ceUser = userService.getUserProfileByUid(ceTopic.getUid());
     	UserProfile acUser = userService.getUserProfileByUid(acTopic.getUid());
-    	
-    	//在母王国中插入子王国的内链
+    	//1在母王国里插入
+    	String ceFragmentContent = "王国"+acTopic.getTitle()+"已加入了本聚合王国";
     	TopicFragment ceFragment = new TopicFragment();
     	ceFragment.setTopicId(ceTopic.getId());
     	ceFragment.setUid(ceTopic.getUid());
-    	ceFragment.setFragment(acTopic.getTitle());//放内链的标题
-    	ceFragment.setType(Specification.LiveSpeakType.ANCHOR.index);
+    	ceFragment.setFragment(ceFragmentContent);
+    	ceFragment.setType(Specification.LiveSpeakType.SYSTEM.index);
     	ceFragment.setContentType(72);//王国内链
-    	//子王国的相关内链extra信息
+    	//组装extra
     	JSONObject obj = new JSONObject();
-    	obj.put("type", "link");
+    	obj.put("type", "system");
     	obj.put("only", UUID.randomUUID().toString()+"-"+new Random().nextInt());
-    	obj.put("id", acTopic.getId());
-    	obj.put("cid", acContent.getId());
-    	obj.put("uid", acTopic.getUid());
-    	obj.put("title", acTopic.getTitle());
-    	obj.put("subType", acTopic.getType());
-    	obj.put("avatar", Constant.QINIU_DOMAIN + "/" + acUser.getAvatar());
-    	obj.put("createTime", acTopic.getCreateTime().getTime());
-    	obj.put("url", Constant.Live_WEB_URL+acTopic.getId());
-    	obj.put("v_lv", acUser.getvLv());
-    	obj.put("name", acUser.getNickName());
-    	obj.put("cover", Constant.QINIU_DOMAIN + "/" + acTopic.getLiveImage());
-    	obj.put("action", Long.valueOf(1));//收录了
+    	obj.put("content", ceFragmentContent);
+    	obj.put("linkType", 72);//王国内链
+    	obj.put("linkColor", "#8B572A");
+    	obj.put("linkColor", 2);//从0算起
+    	obj.put("linkColor", acTopic.getTitle().length()+2);
+    	//组装链接
+    	JSONObject linkObj = new JSONObject();
+    	linkObj.put("type", "link");
+    	linkObj.put("id", acTopic.getId());
+    	linkObj.put("cid", acContent.getId());
+    	linkObj.put("uid", acTopic.getUid());
+    	linkObj.put("title", acTopic.getTitle());
+    	linkObj.put("subType", acTopic.getType());
+    	linkObj.put("avatar", Constant.QINIU_DOMAIN + "/" + acUser.getAvatar());
+    	linkObj.put("createTime", acTopic.getCreateTime().getTime());
+    	linkObj.put("url", this.live_web + acTopic.getId());
+    	linkObj.put("v_lv", acUser.getvLv());
+    	linkObj.put("name", acUser.getNickName());
+    	linkObj.put("cover", Constant.QINIU_DOMAIN + "/" + acTopic.getLiveImage());
+    	linkObj.put("action", 0);
+    	obj.put("link", linkObj);
     	ceFragment.setExtra(obj.toJSONString());
     	liveMybatisDao.createTopicFragment(ceFragment);
     	
@@ -3403,36 +3388,47 @@ public class LiveServiceImpl implements LiveService {
     	ceTopic.setUpdateTime(calendar.getTime());
     	ceTopic.setLongTime(calendar.getTimeInMillis());
         liveMybatisDao.updateTopic(ceTopic);
-    	
-    	//更新缓存
-		long ceLastFragmentId = ceFragment.getId();
+        
+        //更新缓存
+        long ceLastFragmentId = ceFragment.getId();
         int ceTotal = liveMybatisDao.countFragmentByTopicId(ceTopic.getId());
         String ceValue = ceLastFragmentId + "," + ceTotal;
         cacheService.hSet(LiveServiceImpl.TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + ceTopic.getId(), ceValue);
     	
-    	//在子王国中插入母王国的内链
-        TopicFragment acFragment = new TopicFragment();
-        acFragment.setTopicId(acTopic.getId());
-        acFragment.setUid(acTopic.getUid());
-        acFragment.setFragment(ceTopic.getTitle());//放内链的标题
-        acFragment.setType(Specification.LiveSpeakType.ANCHOR.index);
-        acFragment.setContentType(72);//王国内链
-    	//子王国的相关内链extra信息
+        
+        //2在子王国里插入
+        String acFragmentContent = "本王国已加入聚合王国"+ceTopic.getTitle();
+    	TopicFragment acFragment = new TopicFragment();
+    	acFragment.setTopicId(acTopic.getId());
+    	acFragment.setUid(acTopic.getUid());
+    	acFragment.setFragment(acFragmentContent);
+    	acFragment.setType(Specification.LiveSpeakType.SYSTEM.index);
+    	acFragment.setContentType(72);//王国内链
+    	//组装extra
     	JSONObject obj2 = new JSONObject();
-    	obj2.put("type", "link");
+    	obj2.put("type", "system");
     	obj2.put("only", UUID.randomUUID().toString()+"-"+new Random().nextInt());
-    	obj2.put("id", ceTopic.getId());
-    	obj2.put("cid", ceContent.getId());
-    	obj2.put("uid", ceTopic.getUid());
-    	obj2.put("title", ceTopic.getTitle());
-    	obj2.put("subType", ceTopic.getType());
-    	obj2.put("avatar", Constant.QINIU_DOMAIN + "/" + ceUser.getAvatar());
-    	obj2.put("createTime", ceTopic.getCreateTime().getTime());
-    	obj2.put("url", Constant.Live_WEB_URL+ceTopic.getId());
-    	obj2.put("v_lv", ceUser.getvLv());
-    	obj2.put("name", ceUser.getNickName());
-    	obj2.put("cover", Constant.QINIU_DOMAIN + "/" + ceTopic.getLiveImage());
-    	obj2.put("action", Long.valueOf(2));//被收录
+    	obj2.put("content", acFragmentContent);
+    	obj2.put("linkType", 72);//王国内链
+    	obj2.put("linkColor", "#8B572A");
+    	obj2.put("linkColor", 2);//从0算起
+    	obj2.put("linkColor", acFragmentContent.length());
+    	//组装链接
+    	JSONObject linkObj2 = new JSONObject();
+    	linkObj2.put("type", "link");
+    	linkObj2.put("id", ceTopic.getId());
+    	linkObj2.put("cid", ceContent.getId());
+    	linkObj2.put("uid", ceTopic.getUid());
+    	linkObj2.put("title", ceTopic.getTitle());
+    	linkObj2.put("subType", ceTopic.getType());
+    	linkObj2.put("avatar", Constant.QINIU_DOMAIN + "/" + ceUser.getAvatar());
+    	linkObj2.put("createTime", ceTopic.getCreateTime().getTime());
+    	linkObj2.put("url", this.live_web + ceTopic.getId());
+    	linkObj2.put("v_lv", ceUser.getvLv());
+    	linkObj2.put("name", ceUser.getNickName());
+    	linkObj2.put("cover", Constant.QINIU_DOMAIN + "/" + ceTopic.getLiveImage());
+    	linkObj2.put("action", 0);
+    	obj2.put("link", linkObj2);
     	acFragment.setExtra(obj2.toJSONString());
     	liveMybatisDao.createTopicFragment(acFragment);
     	
@@ -3440,13 +3436,12 @@ public class LiveServiceImpl implements LiveService {
     	acTopic.setUpdateTime(calendar.getTime());
     	acTopic.setLongTime(calendar.getTimeInMillis());
         liveMybatisDao.updateTopic(acTopic);
-    	
-    	//更新缓存
-		long acLastFragmentId = acFragment.getId();
+        
+        //更新缓存
+        long acLastFragmentId = acFragment.getId();
         int acTotal = liveMybatisDao.countFragmentByTopicId(acTopic.getId());
         String acValue = acLastFragmentId + "," + acTotal;
         cacheService.hSet(LiveServiceImpl.TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + acTopic.getId(), acValue);
-        */
     }
     
     @Override
@@ -3582,25 +3577,60 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response dropAround(long uid, long sourceTopicId) {
         DropAroundDto dto = new DropAroundDto();
+        TopicDroparoundTrail trail = new TopicDroparoundTrail();
+        int dr =0;
+        String now = new SimpleDateFormat("yyyyMMdd").format(new Date());
+        String number = cacheService.hGet("droparound" ,uid+"@"+now);
+        if(!StringUtils.isEmpty(number)){
+            //有的话取
+            dr = Integer.parseInt(number);
+        }
+        //每次进来+1
+        cacheService.hSet("droparound" ,uid+"@"+now ,String.valueOf(dr+1));
+        cacheService.expire(uid+"@"+now ,3600*24);//24小时过期
         if(sourceTopicId == 0){
             //注册页进来
-
+            setDropaRoundDto(dto ,uid);
+            //设置轨迹
+            trail.setCreateTime(new Date());
+            trail.setSourceTopicId(sourceTopicId);
+            trail.setUid(uid);
+            trail.setTargetTopicId(dto.getTopicId());
+            liveMybatisDao.createTopicDroparoundTrail(trail);
         }else {
-            //随机获取一条王国
-            TopicDroparound droparound = liveMybatisDao.getRandomDropaRound();
-            Topic topic = liveMybatisDao.getTopicById(droparound.getTopicid());
-            Content content = contentService.getContentByTopicId(droparound.getTopicid());
-            if(topic != null){
-                dto.setInternalStatus(this.getInternalStatus(topic ,uid));
-                dto.setTopicType(topic.getType());
-            }if(content != null){
-                dto.setCid(content.getId());
-            }
-            dto.setTopicId(droparound.getTopicid());
-            dto.setTrackContent("不知道取啥");
+            if(dr <= 5){
+                setDropaRoundDto(dto ,uid);
+                trail.setCreateTime(new Date());
+                trail.setSourceTopicId(sourceTopicId);
+                trail.setUid(uid);
+                trail.setTargetTopicId(dto.getTopicId());
+                liveMybatisDao.createTopicDroparoundTrail(trail);
+            }else {
+                //算法取王国
+            };
         }
 
         return Response.success(dto);
+    }
+
+    public void setDropaRoundDto(DropAroundDto dto ,long uid){
+        //随机获取一条王国
+        TopicDroparound droparound = liveMybatisDao.getRandomDropaRound();
+        Topic topic = liveMybatisDao.getTopicById(droparound.getTopicid());
+        Content content = contentService.getContentByTopicId(droparound.getTopicid());
+        if(topic != null){
+            int status = this.getInternalStatus(topic ,uid);
+            dto.setInternalStatus(status);
+            dto.setTopicType(topic.getType());
+        }if(content != null){
+            dto.setCid(content.getId());
+        }
+        dto.setTopicId(droparound.getTopicid());
+        TopicFragmentTemplate topicFragmentTemplate = liveMybatisDao.getTopicFragmentTemplate();
+        if(topicFragmentTemplate != null){
+            dto.setTrackContent(topicFragmentTemplate.getContent());
+        }
+
     }
 
     private static final String DEFAULT_KINGDOM_ACTIVITY_CONTENT = "<p style=\"text-align:center;\"><span style=\"font-family:宋体;\"><span style=\"font-size:16px;\">米汤新版本已登场！</span></span></p><p style=\"text-align:center;\"><span style=\"font-family:宋体;\"><span style=\"font-size:16px;\">您目前的米汤版本太低，不升级的话是无法看到帅气新界面的哦。</span></span></p><p style=\"text-align: center;\"><span style=\"font-family:宋体;\"><span style=\"font-size:16px;\"><strong>请及时下载更新至最新版本。</strong></span></span></p>";
