@@ -15,10 +15,7 @@ import com.me2me.sns.model.SnsCircleExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -78,6 +75,9 @@ public class LiveMybatisDao {
 
     @Autowired
     private TopicDroparoundTrailMapper topicDroparoundTrailMapper;
+
+    @Autowired
+    private TopicFragmentTemplateMapper topicFragmentTemplateMapper;
 
 
     public void createTopic(Topic topic) {
@@ -850,6 +850,12 @@ public class LiveMybatisDao {
 
     public void createTopicDroparoundTrail(TopicDroparoundTrail trail){
         topicDroparoundTrailMapper.insertSelective(trail);
+    }
+
+    public TopicFragmentTemplate getTopicFragmentTemplate(){
+        List<TopicFragmentTemplate> list = topicFragmentTemplateMapper.selectByExample(null);
+        Collections.shuffle(list);
+        return list.size() > 0 && list != null ? list.get(0):null;
     }
 
 }
