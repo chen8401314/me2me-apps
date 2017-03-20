@@ -325,4 +325,6 @@ public interface UserService {
     void saveVersionChannelDownload(VersionChannelDownload vcd);
     
     void updateVersionChannelDownload(VersionChannelDownload vcd);
+    
+    void deleteVersionChannelDownload(long id);
 }

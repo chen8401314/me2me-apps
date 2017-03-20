@@ -53,14 +53,14 @@
                                     <div role="form">
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">渠道</label>
-                                            <input type="text" id="version" name="version" class="form-control" value="${dataObj.channel }" style="width: 100%" required>
+                                            <input type="text" id="channel" name="channel" class="form-control" value="${dataObj.channel }" style="width: 100%" required>
                                             <input type="hidden" id="id" name="id" value="${dataObj.id }">
                                         </div>
                                         <div class="form-group">
                                             <label for="exampleInputFile">下载类型</label>
                                             <select name="type" id="type" class="form-control">
-												<option value="0" ${dataObj.type==1?'selected':''}>Android</option>
-												<option value="1" ${dataObj.type==2?'selected':''}>IOS</option>
+												<option value="0" ${dataObj.type==0?'selected':''}>第三方平台下载</option>
+												<option value="1" ${dataObj.type==1?'selected':''}>本地下载</option>
 											</select>
                                         </div>
                                         <div class="form-group">
