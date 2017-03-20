@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.me2me.activity.dto.CreateActivityDto;
 import com.me2me.activity.dto.TopicCountDTO;
 import com.me2me.activity.model.ActivityWithBLOBs;
@@ -39,6 +40,7 @@ import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.*;
 import com.me2me.user.service.UserService;
 
+import com.plusnet.common.util.collection.ArrayHashSet;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -3576,8 +3578,6 @@ public class LiveServiceImpl implements LiveService {
 
     @Override
     public Response dropAround(long uid, long sourceTopicId) {
-        DropAroundDto dto = new DropAroundDto();
-        TopicDroparoundTrail trail = new TopicDroparoundTrail();
         int dr =0;
         String now = new SimpleDateFormat("yyyyMMdd").format(new Date());
         String number = cacheService.hGet("droparound" ,uid+"@"+now);
@@ -3585,39 +3585,83 @@ public class LiveServiceImpl implements LiveService {
             //有的话取
             dr = Integer.parseInt(number);
         }
-        //每次进来+1
+        //每次进来+1 控制每人每天五次
         cacheService.hSet("droparound" ,uid+"@"+now ,String.valueOf(dr+1));
         cacheService.expire(uid+"@"+now ,3600*24);//24小时过期
+
+        //控制每个用户避免进入重复的
+        Set<String> s = cacheService.smembers("list:user@"+uid );
+        String set = org.apache.commons.lang3.StringUtils.join(s.toArray(), ",");
+        DropAroundDto dto = new DropAroundDto();
+
         if(sourceTopicId == 0){
             //注册页进来
-            setDropaRoundDto(dto ,uid);
-            //设置轨迹
-            trail.setCreateTime(new Date());
-            trail.setSourceTopicId(sourceTopicId);
-            trail.setUid(uid);
-            trail.setTargetTopicId(dto.getTopicId());
-            liveMybatisDao.createTopicDroparoundTrail(trail);
+            setDropaRoundDto(dto ,uid ,set);
         }else {
             if(dr <= 5){
-                setDropaRoundDto(dto ,uid);
-                trail.setCreateTime(new Date());
-                trail.setSourceTopicId(sourceTopicId);
-                trail.setUid(uid);
-                trail.setTargetTopicId(dto.getTopicId());
-                liveMybatisDao.createTopicDroparoundTrail(trail);
+                setDropaRoundDto(dto ,uid ,set);
             }else {
                 //算法取王国
+                setDropaRoundDtoAlgorithm(dto ,uid ,set);
             };
         }
+        //设置轨迹
+        TopicDroparoundTrail trail = new TopicDroparoundTrail();
+        trail.setCreateTime(new Date());
+        trail.setSourceTopicId(sourceTopicId);
+        trail.setUid(uid);
+        trail.setTargetTopicId(dto.getTopicId());
+        liveMybatisDao.createTopicDroparoundTrail(trail);
 
         return Response.success(dto);
     }
 
-    public void setDropaRoundDto(DropAroundDto dto ,long uid){
+    public void setDropaRoundDto(DropAroundDto dto ,long uid ,String set){
+        Map<String ,String> map = Maps.newHashMap();
+        map.put("uid",String.valueOf(uid));
+        map.put("set",set);
         //随机获取一条王国
-        TopicDroparound droparound = liveMybatisDao.getRandomDropaRound();
-        Topic topic = liveMybatisDao.getTopicById(droparound.getTopicid());
-        Content content = contentService.getContentByTopicId(droparound.getTopicid());
+        TopicDroparound droparound = liveMybatisDao.getRandomDropaRound(map);
+        if(droparound == null){
+            //没有数据了 算法取
+            setDropaRoundDtoAlgorithm(dto ,uid ,set);
+        }else {
+            Topic topic = liveMybatisDao.getTopicById(droparound.getTopicid());
+            Content content = contentService.getContentByTopicId(droparound.getTopicid());
+            if (topic != null) {
+                int status = this.getInternalStatus(topic, uid);
+                dto.setInternalStatus(status);
+                dto.setTopicType(topic.getType());
+            }
+            if (content != null) {
+                dto.setCid(content.getId());
+            }
+            dto.setTopicId(droparound.getTopicid());
+            cacheService.sadd("list:user@" + uid, String.valueOf(droparound.getTopicid()));
+            TopicFragmentTemplate topicFragmentTemplate = liveMybatisDao.getTopicFragmentTemplate();
+            if (topicFragmentTemplate != null) {
+                dto.setTrackContent(topicFragmentTemplate.getContent());
+            }
+        }
+
+    }
+
+    //算法取
+    public void setDropaRoundDtoAlgorithm(DropAroundDto dto ,long uid ,String set){
+        Map<String ,String> map = Maps.newHashMap();
+        System.out.println(set);
+        map.put("uid",String.valueOf(uid));
+        map.put("set",set);
+        //随机获取一条王国
+        Topic topicInfo;
+        topicInfo = liveMybatisDao.getRandomDropaRoundAlgorithm(map);
+        if(topicInfo == null){
+            //topic王国取完了
+            cacheService.del("list:user@" + uid);
+            topicInfo = liveMybatisDao.getRandomDropaRoundAlgorithm(map);
+        }
+        Topic topic = liveMybatisDao.getTopicById(topicInfo.getId());
+        Content content = contentService.getContentByTopicId(topicInfo.getId());
         if(topic != null){
             int status = this.getInternalStatus(topic ,uid);
             dto.setInternalStatus(status);
@@ -3625,7 +3669,8 @@ public class LiveServiceImpl implements LiveService {
         }if(content != null){
             dto.setCid(content.getId());
         }
-        dto.setTopicId(droparound.getTopicid());
+        dto.setTopicId(topicInfo.getId());
+        cacheService.sadd("list:user@"+uid ,String.valueOf(topicInfo.getId()));
         TopicFragmentTemplate topicFragmentTemplate = liveMybatisDao.getTopicFragmentTemplate();
         if(topicFragmentTemplate != null){
             dto.setTrackContent(topicFragmentTemplate.getContent());

@@ -66,6 +66,16 @@ public class CacheServiceImpl implements CacheService {
     }
 
     @Override
+    public void del(final String key) {
+        jedisTemplate.execute(new JedisTemplate.JedisAction() {
+            @Override
+            public void action(Jedis jedis) {
+                jedis.del(key);
+            }
+        });
+    }
+
+    @Override
     public void setex(final String key, final String value, final int timeout) {
         jedisTemplate.execute(new JedisTemplate.JedisAction() {
             @Override

@@ -1,5 +1,6 @@
 package com.me2me.web;
 
+import com.me2me.cache.service.CacheService;
 import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.web.Response;
 import com.me2me.kafka.service.KafkaService;

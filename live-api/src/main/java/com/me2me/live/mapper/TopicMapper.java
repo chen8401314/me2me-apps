@@ -3,6 +3,8 @@ package com.me2me.live.mapper;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicExample;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface TopicMapper {
@@ -93,4 +95,6 @@ public interface TopicMapper {
      * @mbggenerated Sun Jan 22 09:35:40 CST 2017
      */
     int updateByPrimaryKey(Topic record);
+
+    Topic getRandomDropaRoundAlgorithm(Map<String ,String> map);
 }
