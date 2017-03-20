@@ -265,7 +265,7 @@ public class LiveMybatisDao {
         return topicMapper.selectByExample(example);
     }
 
-    public List<Topic> getMyLivesByUpdateTimeNew(long uid, long updateTime) {
+    public List<Topic2> getMyLivesByUpdateTimeNew(long uid, long updateTime) {
         Map map = Maps.newHashMap();
         map.put("uid" ,uid);
         map.put("updateTime" ,updateTime);

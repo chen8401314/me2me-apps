@@ -1044,12 +1044,6 @@ public class LiveServiceImpl implements LiveService {
             	showTopicElement.setLastFragment((String)lastFragment.get("fragment"));
             	showTopicElement.setLastFragmentImage((String)lastFragment.get("fragment_image"));
             	showTopicElement.setLastUpdateTime(((Date)lastFragment.get("create_time")).getTime());
-                //新增
-                showTopicElement.setLastType((Integer) lastFragment.get("type"));
-                showTopicElement.setLastStatus((Integer)lastFragment.get("status"));
-                showTopicElement.setLastExtra((String)lastFragment.get("extra"));
-                // TODO: 2017/3/20 需要关联查询查出
-                showTopicElement.setIsTop((Integer) lastFragment.get("istop"));
             } else {
             	showTopicElement.setLastContentType(-1);
             }
@@ -1079,6 +1073,182 @@ public class LiveServiceImpl implements LiveService {
             	showTopicElement.setFavorite(Specification.LiveFavorite.NORMAL.index);
             }
             
+
+            showTopicListDto.getShowTopicElements().add(showTopicElement);
+        }
+    }
+
+    private void builderWithCache2(long uid, ShowTopicListDto showTopicListDto, List<Topic2> topicList) {
+        if(null == topicList || topicList.size() == 0){
+            return;
+        }
+        List<Long> uidList = new ArrayList<Long>();
+        List<Long> tidList = new ArrayList<Long>();
+        List<Long> ceTidList = new ArrayList<Long>();
+        for(Topic2 topic : topicList){
+            if(!uidList.contains(topic.getUid())){
+                uidList.add(topic.getUid());
+            }
+            if(!tidList.contains(topic.getId())){
+                tidList.add(topic.getId());
+            }
+            if(topic.getType() == 1000){//聚合王国
+                if(!ceTidList.contains(topic.getId())){
+                    ceTidList.add(topic.getId());
+                }
+            }
+        }
+        Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
+        List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
+        if(null != profileList && profileList.size() > 0){
+            for(UserProfile up : profileList){
+                profileMap.put(String.valueOf(up.getUid()), up);
+            }
+        }
+        //一次性查询聚合王国的子王国数
+        Map<String, Long> acCountMap = new HashMap<String, Long>();
+        if(ceTidList.size() > 0){
+            List<Map<String,Object>> acCountList = liveLocalJdbcDao.getTopicAggregationAcCountByTopicIds(ceTidList);
+            if(null != acCountList && acCountList.size() > 0){
+                for(Map<String,Object> a : acCountList){
+                    acCountMap.put(String.valueOf(a.get("topic_id")), (Long)a.get("cc"));
+                }
+            }
+        }
+        //一次性查询关注信息
+        Map<String, String> followMap = new HashMap<String, String>();
+        List<UserFollow> userFollowList = userService.getAllFollows(uid, uidList);
+        if(null != userFollowList && userFollowList.size() > 0){
+            for(UserFollow uf : userFollowList){
+                followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+            }
+        }
+        //一次性查询所有王国的国王更新数，以及评论数
+        Map<String, Long> topicCountMap = new HashMap<String, Long>();
+        Map<String, Long> reviewCountMap = new HashMap<String, Long>();
+        List<Map<String, Object>> tcList = liveLocalJdbcDao.getTopicUpdateCount(tidList);
+        if(null != tcList && tcList.size() > 0){
+            for(Map<String, Object> m : tcList){
+                topicCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("topicCount"));
+                reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
+            }
+        }
+        //一次性查询所有王国的最新一条核心圈更新
+        Map<String, Map<String, Object>> lastFragmentMap = new HashMap<String, Map<String, Object>>();
+        List<Map<String, Object>> lastFragmentList = liveLocalJdbcDao.getLastCoreCircleFragmentByTopicIds2(tidList);
+        if(null != lastFragmentList && lastFragmentList.size() > 0){
+            for(Map<String, Object> m : lastFragmentList){
+                lastFragmentMap.put(String.valueOf(m.get("topic_id")), m);
+            }
+        }
+        List<Long> cidList = new ArrayList<Long>();
+        //一次性查询所有topic对应的content
+        Map<String, Content> contentMap = new HashMap<String, Content>();
+        List<Content> contentList = contentService.getContentsByTopicIds(tidList);
+        if(null != contentList && contentList.size() > 0){
+            for(Content c : contentList){
+                contentMap.put(String.valueOf(c.getForwardCid()), c);
+                if(!cidList.contains(c.getId())){
+                    cidList.add(c.getId());
+                }
+            }
+        }
+        //一次性查询用户是否点赞过
+        Map<String, Long> contentLikeCountMap = liveLocalJdbcDao.getLikeCountByUidAndCids(uid, cidList);
+        if(null == contentLikeCountMap){
+            contentLikeCountMap = new HashMap<String, Long>();
+        }
+        //一次性获取当前用户针对于各王国是否收藏过
+        Map<String, LiveFavorite> liveFavoriteMap = new HashMap<String, LiveFavorite>();
+        List<LiveFavorite> liveFavoriteList = liveMybatisDao.getLiveFavoritesByUidAndTopicIds(uid, tidList);
+        if(null != liveFavoriteList && liveFavoriteList.size() > 0){
+            for(LiveFavorite lf : liveFavoriteList){
+                liveFavoriteMap.put(String.valueOf(lf.getTopicId()), lf);
+            }
+        }
+
+        UserProfile userProfile = null;
+        Map<String, Object> lastFragment = null;
+        Content content = null;
+        for (Topic2 topic : topicList) {
+            ShowTopicListDto.ShowTopicElement showTopicElement = ShowTopicListDto.createShowTopicElement();
+            showTopicElement.setUid(topic.getUid());
+            showTopicElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
+            showTopicElement.setTitle(topic.getTitle());
+            userProfile = profileMap.get(String.valueOf(topic.getUid()));
+            showTopicElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            showTopicElement.setNickName(userProfile.getNickName());
+            showTopicElement.setCreateTime(topic.getCreateTime());
+            showTopicElement.setTopicId(topic.getId());
+            showTopicElement.setStatus(topic.getStatus());
+            showTopicElement.setUpdateTime(topic.getLongTime());
+            if(null != followMap.get(uid+"_"+topic.getUid().toString())){
+                showTopicElement.setIsFollowed(1);
+            }else{
+                showTopicElement.setIsFollowed(0);
+            }
+            if(null != followMap.get(topic.getUid().toString()+"_"+uid)){
+                showTopicElement.setIsFollowMe(1);
+            }else{
+                showTopicElement.setIsFollowMe(0);
+            }
+            if(null != topicCountMap.get(String.valueOf(topic.getId()))){
+                showTopicElement.setTopicCount(topicCountMap.get(String.valueOf(topic.getId())).intValue());
+            }else{
+                showTopicElement.setTopicCount(0);
+            }
+            showTopicElement.setLastUpdateTime(topic.getLongTime());
+            showTopicElement.setV_lv(userProfile.getvLv());
+            showTopicElement.setInternalStatus(this.getInternalStatus(topic, uid));
+            showTopicElement.setContentType(topic.getType());
+            if(topic.getType() == 1000){
+                if(null != acCountMap.get(String.valueOf(topic.getId()))){
+                    showTopicElement.setAcCount(acCountMap.get(String.valueOf(topic.getId())).intValue());
+                }else{
+                    showTopicElement.setAcCount(0);
+                }
+            }
+            processCache(uid,topic,showTopicElement);
+            lastFragment = lastFragmentMap.get(String.valueOf(topic.getId()));
+            if (null != lastFragment) {
+                showTopicElement.setLastContentType((Integer)lastFragment.get("content_type"));
+                showTopicElement.setLastFragment((String)lastFragment.get("fragment"));
+                showTopicElement.setLastFragmentImage((String)lastFragment.get("fragment_image"));
+                showTopicElement.setLastUpdateTime(((Date)lastFragment.get("create_time")).getTime());
+                //新增
+                showTopicElement.setLastType((Integer) lastFragment.get("type"));
+                showTopicElement.setLastStatus((Integer)lastFragment.get("status"));
+                showTopicElement.setLastExtra((String)lastFragment.get("extra"));
+                showTopicElement.setIsTop(topic.getIstop());
+            } else {
+                showTopicElement.setLastContentType(-1);
+            }
+            if(null != reviewCountMap.get(String.valueOf(topic.getId()))){
+                showTopicElement.setReviewCount(reviewCountMap.get(String.valueOf(topic.getId())).intValue());
+            }else{
+                showTopicElement.setReviewCount(0);
+            }
+            content = contentMap.get(String.valueOf(topic.getId()));
+            if (content != null) {
+                showTopicElement.setLikeCount(content.getLikeCount());
+                showTopicElement.setPersonCount(content.getPersonCount());
+                showTopicElement.setFavoriteCount(content.getFavoriteCount()+1);//把国王加入进去
+                showTopicElement.setCid(content.getId());
+                if(null != contentLikeCountMap.get(String.valueOf(content.getId()))
+                        && contentLikeCountMap.get(String.valueOf(content.getId())).longValue() > 0){
+                    showTopicElement.setIsLike(1);
+                }else{
+                    showTopicElement.setIsLike(0);
+                }
+                showTopicElement.setReadCount(content.getReadCountDummy());
+            }
+            //判断是否收藏了
+            if (null != liveFavoriteMap.get(String.valueOf(topic.getId()))) {
+                showTopicElement.setFavorite(Specification.LiveFavorite.FAVORITE.index);
+            } else {
+                showTopicElement.setFavorite(Specification.LiveFavorite.NORMAL.index);
+            }
+
 
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
@@ -1781,9 +1951,9 @@ public class LiveServiceImpl implements LiveService {
         if (updateTime == 0) {
             updateTime = calendar.getTimeInMillis();
         }
-        List<Topic> topicList = liveMybatisDao.getMyLivesByUpdateTimeNew(uid ,updateTime);
+        List<Topic2> topicList = liveMybatisDao.getMyLivesByUpdateTimeNew(uid ,updateTime);
         log.info("getMyLives data success");
-        builderWithCache(uid, showTopicListDto, topicList);
+        builderWithCache2(uid, showTopicListDto, topicList);
         log.info("getMyLives start ...");
         int inactiveLiveCount = liveMybatisDao.getInactiveLiveCount(uid, topics);
         showTopicListDto.setInactiveLiveCount(inactiveLiveCount);
