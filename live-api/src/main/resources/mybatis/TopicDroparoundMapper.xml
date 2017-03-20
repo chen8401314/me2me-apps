@@ -11,6 +11,7 @@
     <result column="topicId" property="topicid" jdbcType="BIGINT" />
     <result column="sort" property="sort" jdbcType="INTEGER" />
   </resultMap>
+  
   <sql id="Example_Where_Clause" >
     <!--
       WARNING - @mbggenerated
@@ -260,5 +261,24 @@
      FROM topic_droparound
      ORDER BY RAND() LIMIT 1
   </select>
-
+  <select id="getDropAroundKingdomPage" resultType="com.me2me.live.dto.SearchDropAroundTopicDto">
+  	select da.id,tp.uid,tp.title,da.topicId,up.nick_name as nickName,up.v_lv as vLv
+  	from topic_droparound da
+  	left join topic tp on tp.id=da.topicId
+  	left join user_profile up on up.id= tp.uid
+  	<if test="searchStr!=null">
+  		where up.nick_name like #{searchStr} or tp.title like #{searchStr}
+  	</if>
+  	order by da.sort desc,da.id desc
+  	limit #{skip},#{limit}
+  </select>
+  <select id="countDropAroundKingdomPage" resultType="int">
+	  	select count(1)
+	  	from topic_droparound da
+	  	left join topic tp on tp.id=da.topicId
+	  	left join user_profile up on up.id= tp.uid
+	  	<if test="searchStr!=null">
+	  		where up.nick_name like #{searchStr} or tp.title like #{searchStr}
+	  	</if>
+  </select>
 </mapper>

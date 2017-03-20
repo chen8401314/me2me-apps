@@ -1,10 +1,14 @@
 package com.me2me.live.service;
 
+import com.me2me.common.page.PageBean;
 import com.me2me.common.web.Response;
 import com.me2me.live.dto.*;
+import com.me2me.live.dto.ShowTopicListDto.ShowTopicElement;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.Topic;
+import com.me2me.live.model.TopicDroparound;
 import com.me2me.live.model.TopicFragment;
+import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicUserConfig;
 
 import java.util.List;
@@ -194,4 +198,86 @@ public interface LiveService {
     Response recommend(long uid ,long topicId ,long action);
 
     Response dropAround(long uid ,long sourceTopicId);
+
+	
+	/**
+	 * 获取所有足迹提示
+	 * @author zhangjiwei
+	 * @date Mar 17, 2017
+	 * @return
+	 */
+    List<TopicFragmentTemplate> getFragmentTplList(String queryStr);
+	/**
+	 * 添加足迹提示消息 
+	 * @author zhangjiwei
+	 * @date Mar 17, 2017
+	 * @return
+	 */
+	void addFragmentTpl(TopicFragmentTemplate obj);
+	/**
+	 * 获取一个足迹消息 
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param id
+	 * @return
+	 */
+	TopicFragmentTemplate getFragmentTplById(Long id);
+	/**
+	 * 删除足迹提示消息 
+	 * @author zhangjiwei
+	 * @date Mar 17, 2017
+	 * @param msgId
+	 * @return
+	 */
+	void deleteFragmentTpl(Long msgId);
+	/**
+	 * 修改足迹提示消息 。
+	 * @author zhangjiwei
+	 * @date Mar 17, 2017
+	 * @return
+	 */
+	void updateFragmentTpl(TopicFragmentTemplate obj);
+	/**
+	 * 拷贝王国到可串门的王国列表。
+	 * @author zhangjiwei
+	 * @date Mar 17, 2017
+	 * @param tropicId
+	 * @return
+	 */
+	
+	void copyKingdomToDropAroundKingdom(int tropicId,int sort);
+	/**
+	 * 删除一个可串门的王国
+	 * @author zhangjiwei
+	 * @date Mar 17, 2017
+	 * @param tropicId
+	 * @return
+	 */
+	void delDropAroundKingdom(int tropicId);
+
+	/**
+	 * 修改一个可串门的王国
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param td
+	 */
+	void updateDropAroundKingdom(TopicDroparound td);
+	/**
+	 * 获取可被串门的王国列表
+	 * @author zhangjiwei
+	 * @date Mar 17, 2017
+	 * @return
+	 */
+	public PageBean<SearchDropAroundTopicDto> getDropAroundKingdomPage(PageBean page,String queryStr);
+
+
+	/**
+	 * 搜索所有王国，返回分页
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param page
+	 * @param searchKeyword
+	 * @return
+	 */
+	PageBean<SearchDropAroundTopicDto> getTopicPage(PageBean page,String searchKeyword);
 }
