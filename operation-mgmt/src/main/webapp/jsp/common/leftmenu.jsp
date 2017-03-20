@@ -79,7 +79,8 @@ String sub = request.getParameter("s");
                     <span>APP配置管理</span>
                 </a>
                 <ul class="sub">
-                	<li <%if("7_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appconfig/version/query">APP版本管理</a></li>
+                	<li <%if("7_0".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appconfig/version/query">APP版本管理</a></li>
+                	<li <%if("7_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appconfig/version/query">APP版本渠道下载管理</a></li>
                     <li <%if("7_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appconfig/cache/query">缓存配置管理</a></li>
                     <li <%if("7_3".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appconfig/dbconfig/query">数据库配置管理</a></li>
                     <li <%if("7_4".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appconfig/ui/query">APP主题管理</a></li>

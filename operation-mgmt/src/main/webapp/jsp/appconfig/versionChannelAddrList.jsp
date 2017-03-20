@@ -32,28 +32,22 @@
 		<!--sidebar start-->
 		<jsp:include page="../common/leftmenu.jsp" flush="false">
 			<jsp:param name="t" value="7" />
-			<jsp:param name="s" value="7_0" />
+			<jsp:param name="s" value="7_1" />
 		</jsp:include>
 		<!--sidebar end-->
 
 		<!--main content start-->
 		<section id="main-content">
 			<section class="wrapper">
-				<form id="form1" action="${ctx}/appconfig/version/query" method="post">
+				<form id="form1" action="${ctx}/appconfig/version/channel/query" method="post">
 					<div class="row">
 						<div class="col-lg-12">
 							<section class="panel">
 								<header class="panel-heading">执行操作</header>
 								<div class="panel-body">
 									<div class="form-inline" role="form">
-										版本号
-										<input type="text" id="version" name="version" value="${dataObj.version }" class="form-control">&nbsp;&nbsp;
-										平台
-										<select name="platform" id="platform" class="form-control">
-											<option value="0" ${dataObj.platform==0?'selected':''}>全部</option>
-											<option value="1" ${dataObj.platform==1?'selected':''}>Android</option>
-											<option value="2" ${dataObj.platform==2?'selected':''}>IOS</option>
-										</select>
+										渠道
+										<input type="text" id="channel" name="channel" value="${dataObj.channel }" class="form-control">&nbsp;&nbsp;&nbsp;&nbsp;
 										<input type="submit" id="btnSearch" name="btnSearch" value="搜索" class="btn btn-info" />
 									</div>
 								</div>
@@ -66,9 +60,9 @@
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								| 用户列表 
+								| 渠道列表 
 								<span class="tools pull-right">
-									<a href="${ctx}/jsp/appconfig/versionNew.jsp" class="fa fa-plus add_link" title="添加新版本" ></a>
+									<a href="${ctx}/jsp/appconfig/versionChannelAddrNew.jsp" class="fa fa-plus add_link" title="添加渠道信息" ></a>
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>
 							</header>
@@ -77,47 +71,39 @@
 									<table class="display table table-bordered table-striped" id="dynamic-table">
 										<thead>
 											<tr>
-												<th>序号</th>
-												<th>版本号</th>
-												<th>平台</th>
-												<th>更新描述</th>
+												<th>渠道</th>
+												<th>下载类型</th>
 												<th>下载地址</th>
-												<th>更新时间</th>
 												<th>操作</th>
 											</tr>
 										</thead>
 										<tbody>
-											<c:forEach items="${dataObj.data.result}" var="versionItem" varStatus="status">
+											<c:forEach items="${dataObj.result}" var="item">
 												<tr class="gradeX">
-													<th>${status.index + 1}</th>
-													<th>${versionItem.version }</th>
+													<th>${item.channel }</th>
 													<th>
 													<c:choose>
-                                                		<c:when test="${versionItem.platform == '1'}">
-                                                			Android
+                                                		<c:when test="${item.type == '0'}">
+                                                			第三方平台下载
                                                 		</c:when>
                                                 		<c:otherwise>
-                                                			IOS
+                                                			本地下载
                                                 		</c:otherwise>
                                                 	</c:choose>
 													</th>
-													<th>${versionItem.updateDescription }</th>
-													<th>${versionItem.updateUrl }</th>
-													<th><fmt:formatDate value="${versionItem.updateTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
+													<th>${item.versionAddr }</th>
 													<th>
-													<a href="${ctx}/appconfig/version/find/${versionItem.id }">编辑</a>
+													<a href="${ctx}/appconfig/version/channel/find/${item.id }">编辑</a>
+													|<a href="${ctx}/appconfig/version/channel/del/${item.id }">删除</a>
 													</th>
 												</tr>
 											</c:forEach>
 										</tbody>
 										<tfoot>
 											<tr>
-												<th>序号</th>
-												<th>版本号</th>
-												<th>平台</th>
-												<th>更新描述</th>
+												<th>渠道</th>
+												<th>下载类型</th>
 												<th>下载地址</th>
-												<th>更新时间</th>
 												<th>操作</th>
 											</tr>
 										</tfoot>

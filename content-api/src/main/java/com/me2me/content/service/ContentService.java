@@ -228,7 +228,7 @@ public interface ContentService{
      * 榜单列表
      * @return
      */
-    Response showBangDanList();
+    Response showBangDanList(int type,long currentUid);
 
     /**
      * 给IMS系统开的后门，直接通过sql查询结果

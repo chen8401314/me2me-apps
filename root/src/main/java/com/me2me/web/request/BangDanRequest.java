@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class BangDanRequest extends Request {
 
-    private  long sinceId;
+    private long sinceId;
 
     // 0 找组织，1找谁
     private int listType;
