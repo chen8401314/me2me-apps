@@ -2703,4 +2703,26 @@ public class UserServiceImpl implements UserService {
         }
         return ResponseWapx.success("成功",true);
     }
+    
+    @Override
+    public List<VersionChannelDownload> queryVersionChannelDownloads(String channel){
+    	return userMybatisDao.queryVersionChannelDownloads(channel);
+    }
+    
+    @Override
+    public VersionChannelDownload getVersionChannelDownloadByChannel(String channel){
+    	return userMybatisDao.getVersionChannelDownloadByChannel(channel);
+    }
+    
+    public void saveVersionChannelDownload(VersionChannelDownload vcd){
+    	userMybatisDao.saveVersionChannelDownload(vcd);
+    }
+    
+    public VersionChannelDownload getVersionChannelDownloadById(long id){
+    	return userMybatisDao.getVersionChannelDownloadById(id);
+    }
+    
+    public void updateVersionChannelDownload(VersionChannelDownload vcd){
+    	userMybatisDao.updateVersionChannelDownload(vcd);
+    }
 }
