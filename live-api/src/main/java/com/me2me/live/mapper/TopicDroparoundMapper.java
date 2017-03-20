@@ -3,6 +3,8 @@ package com.me2me.live.mapper;
 import com.me2me.live.model.TopicDroparound;
 import com.me2me.live.model.TopicDroparoundExample;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface TopicDroparoundMapper {
@@ -94,6 +96,6 @@ public interface TopicDroparoundMapper {
      */
     int updateByPrimaryKey(TopicDroparound record);
 
-    TopicDroparound getRandomDropaRound();
+    TopicDroparound getRandomDropaRound(Map<String ,String> map);
 
 }

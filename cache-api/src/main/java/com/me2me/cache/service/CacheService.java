@@ -19,6 +19,12 @@ public interface CacheService {
     void set(String key,String value);
 
     /**
+     * 删除普通键
+     * @param key
+     */
+    void del(String key);
+
+    /**
      * 设置一个key并设置他的ttl
      * @param key
      * @param value

@@ -843,9 +843,14 @@ public class LiveMybatisDao {
         return topicAggregationApplyMapper.selectByExample(example);
     }
 
-    public TopicDroparound getRandomDropaRound(){
-        TopicDroparound topicDroparound = topicDroparoundMapper.getRandomDropaRound();
+    public TopicDroparound getRandomDropaRound(Map<String ,String> map){
+        TopicDroparound topicDroparound = topicDroparoundMapper.getRandomDropaRound(map);
         return topicDroparound;
+    }
+
+    public Topic getRandomDropaRoundAlgorithm(Map<String ,String> map){
+        Topic topic = topicMapper.getRandomDropaRoundAlgorithm(map);
+        return topic;
     }
 
     public void createTopicDroparoundTrail(TopicDroparoundTrail trail){

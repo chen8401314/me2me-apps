@@ -254,11 +254,16 @@
     where id = #{id,jdbcType=BIGINT}
   </update>
 
-  <select id="getRandomDropaRound" resultMap="BaseResultMap" >
-    select
-    <include refid="Base_Column_List" />
-     FROM topic_droparound
-     ORDER BY RAND() LIMIT 1
+  <select id="getRandomDropaRound" resultMap="BaseResultMap" parameterType="java.util.Map">
+    SELECT m.* FROM topic t,
+    (SELECT* FROM topic_droparound
+    <if test="set != ''">
+    where topicId not in (${set})
+    </if>
+    ORDER BY RAND() LIMIT 1) m
+    WHERE t.id=m.topicId
+    AND t.uid != #{uid}
+    AND NOT FIND_IN_SET(#{uid},SUBSTR(t.core_circle ,2, LENGTH(t.core_circle)-2));
   </select>
 
 </mapper>
