@@ -3884,9 +3884,10 @@ private void localJpush(long toUid){
                 bangDanInnerData.setIntroduced(userProfile.getIntroduced());
             }else if(type==3){
                 // 榜单
+                BillBoard billBoard = contentMybatisDao.loadBillBoardById(targetId);
+                bangDanInnerData.setCoverImage(billBoard.getImage());
+                bangDanInnerData.setId(billBoard.getId());
             }
-
-
             ret.add(bangDanInnerData);
         }
 	    return ret;

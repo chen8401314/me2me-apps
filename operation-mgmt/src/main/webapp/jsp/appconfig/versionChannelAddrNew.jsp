@@ -53,7 +53,7 @@
                                     <div role="form">
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">渠道</label>
-                                            <input type="text" id="version" name="version" class="form-control" style="width: 100%" required>
+                                            <input type="text" id="channel" name="channel" class="form-control" style="width: 100%" required>
                                         </div>
                                         <div class="form-group">
                                             <label for="exampleInputFile">下载类型</label>

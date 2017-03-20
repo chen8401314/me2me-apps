@@ -636,4 +636,8 @@ public class ContentMybatisDao {
         return billBoardRelationMapper.selectByExample(example);
     }
 
+    public BillBoard loadBillBoardById(long id){
+       return billBoardMapper.selectByPrimaryKey(id);
+    }
+
 }

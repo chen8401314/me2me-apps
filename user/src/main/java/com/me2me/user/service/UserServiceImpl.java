@@ -2725,4 +2725,8 @@ public class UserServiceImpl implements UserService {
     public void updateVersionChannelDownload(VersionChannelDownload vcd){
     	userMybatisDao.updateVersionChannelDownload(vcd);
     }
+    
+    public void deleteVersionChannelDownload(long id){
+    	userMybatisDao.deleteVersionChannelDownload(id);
+    }
 }

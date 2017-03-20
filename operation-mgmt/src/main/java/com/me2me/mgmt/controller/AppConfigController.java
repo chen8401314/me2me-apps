@@ -599,4 +599,12 @@ public class AppConfigController {
 		ModelAndView view = new ModelAndView("redirect:/appconfig/version/channel/query");
 		return view;
 	}
+	
+	@RequestMapping(value = "/version/channel/del/{id}")
+	@SystemControllerLog(description = "删除版本渠道下载地址")
+	public ModelAndView deleteVersionChannelAddr(@PathVariable long id){
+		userService.deleteVersionChannelDownload(id);
+		ModelAndView view = new ModelAndView("redirect:/appconfig/version/channel/query");
+		return view;
+	}
 }
