@@ -16,7 +16,6 @@ public class BangDanDto implements BaseEntity {
 
     private List<BangDanData> listData = Lists.newArrayList();
 
-    private List<Map<String,Object>> result = new ArrayList<>();
 
     @Data
     public static class BangDanData implements BaseEntity{
