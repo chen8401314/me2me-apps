@@ -97,4 +97,7 @@ public interface TopicMapper {
     int updateByPrimaryKey(Topic record);
 
     Topic getRandomDropaRoundAlgorithm(Map<String ,String> map);
+
+    List<Topic> getMyLivesByUpdateTimeNew(Map map);
+
 }

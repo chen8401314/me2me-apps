@@ -316,6 +316,17 @@ public class Live extends BaseController {
     }
 
     /**
+     * 王国互动接口
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/getMyTopic",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response getMyTopic(GetMyLivesRequest request){
+        return liveService.getMyTopic(request.getUid(),request.getUpdateTime());
+    }
+
+    /**
      * 完结的直播移除
      * @param request
      * @return
