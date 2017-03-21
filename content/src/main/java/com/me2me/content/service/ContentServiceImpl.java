@@ -3805,16 +3805,22 @@ private void localJpush(long toUid){
             bangDanData.setSummary(billBoard.getSummary());
             bangDanData.setTitle(billBoard.getName());
             bangDanData.setListId(billBoard.getId());
-            bangDanData.setCoverImage(billBoard.getImage());
+            bangDanData.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
             bangDanData.setIsShowName(billBoard.getShowName());
             bangDanData.setCoverWidth(billBoard.getImgWidth());
             bangDanData.setCoverHeight(billBoard.getImgHeight());
             bangDanData.setBgColor(billBoard.getBgColor());
             bangDanData.setType(billBoard.getType());
             bangDanData.setSinceId(0);
-            bangDanData.setSubType(0);
             bangDanData.setSubList(loadBangDanInnerData(billBoard.getId(),currentUid));
             bangDanDto.getListData().add(bangDanData);
+        }
+        for(BangDanDto.BangDanData temp : bangDanDto.getListData()){
+            BangDanDto.BangDanData.BangDanInnerData bangDanInnerData = com.me2me.common.utils.Lists.getSingle(temp.getSubList());
+            if(bangDanInnerData!=null){
+                temp.setSubType(bangDanInnerData.getSubType());
+            }
+            continue;
         }
         return Response.success(bangDanDto);
     }
@@ -3833,11 +3839,11 @@ private void localJpush(long toUid){
                 String title = map.get("title").toString();
                 long uid = Long.valueOf(map.get("uid").toString());
                 int contentType = Integer.valueOf(map.get("type").toString());
-                String liveImage = String.valueOf("live_image").toString();
+                String liveImage = map.get("live_image").toString();
                 bangDanInnerData.setSubListId(billBoardRelation.getId());
                 bangDanInnerData.setUid(uid);
                 UserProfile userProfile = userService.getUserProfileByUid(uid);
-                bangDanInnerData.setAvatar(userProfile.getAvatar());
+                bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                 bangDanInnerData.setNickName(userProfile.getNickName());
                 bangDanInnerData.setV_lv(userProfile.getvLv());
                 int isFollowed = userService.isFollow(uid,currentUid);
@@ -3852,7 +3858,7 @@ private void localJpush(long toUid){
                 bangDanInnerData.setTopicId(targetId);
                 bangDanInnerData.setForwardCid(targetId);
                 bangDanInnerData.setTitle(title);
-                bangDanInnerData.setCoverImage(liveImage);
+                bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + liveImage);
                 bangDanInnerData.setInternalStatus(contentType);
                 bangDanInnerData.setFavoriteCount(content.getFavoriteCount()+1);
                 bangDanInnerData.setReadCount(content.getReadCountDummy());
@@ -3861,7 +3867,7 @@ private void localJpush(long toUid){
             }else if(type==2){
                 bangDanInnerData.setUid(targetId);
                 UserProfile userProfile = userService.getUserProfileByUid(targetId);
-                bangDanInnerData.setAvatar(userProfile.getAvatar());
+                bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                 bangDanInnerData.setNickName(userProfile.getNickName());
                 bangDanInnerData.setV_lv(userProfile.getvLv());
                 int isFollowed = userService.isFollow(targetId,currentUid);
@@ -3885,7 +3891,7 @@ private void localJpush(long toUid){
             }else if(type==3){
                 // 榜单
                 BillBoard billBoard = contentMybatisDao.loadBillBoardById(targetId);
-                bangDanInnerData.setCoverImage(billBoard.getImage());
+                bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
                 bangDanInnerData.setId(billBoard.getId());
             }
             ret.add(bangDanInnerData);
