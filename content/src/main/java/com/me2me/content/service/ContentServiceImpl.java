@@ -3920,4 +3920,17 @@ private void localJpush(long toUid){
 		}
 		return result;
 	}
+    
+    @Override
+    public void insertBillboardList(List<BillBoardList> insertList, String key){
+    	if(null == insertList || insertList.size() == 0 || StringUtils.isEmpty(key)){
+    		return;
+    	}
+    	
+    	contentMybatisDao.deleteBillBoardListByKey(key);
+    	
+    	for(BillBoardList bbl : insertList){
+    		contentMybatisDao.insertBillBoardList(bbl);
+    	}
+    }
 }

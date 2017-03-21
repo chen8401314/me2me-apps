@@ -62,6 +62,9 @@ public class ContentMybatisDao {
 
     @Autowired
     private BillBoardRelationMapper billBoardRelationMapper;
+    
+    @Autowired
+    private BillBoardListMapper billBoardListMapper;
 
     public List<Content> loadSquareData(int sinceId){
         return contentMapper.loadSquareData(sinceId);
@@ -640,4 +643,14 @@ public class ContentMybatisDao {
        return billBoardMapper.selectByPrimaryKey(id);
     }
 
+    public void deleteBillBoardListByKey(String key){
+    	BillBoardListExample example = new BillBoardListExample();
+    	BillBoardListExample.Criteria criteria = example.createCriteria();
+    	criteria.andKeyEqualTo(key);
+    	billBoardListMapper.deleteByExample(example);
+    }
+    
+    public void insertBillBoardList(BillBoardList bbl){
+    	billBoardListMapper.insertSelective(bbl);
+    }
 }

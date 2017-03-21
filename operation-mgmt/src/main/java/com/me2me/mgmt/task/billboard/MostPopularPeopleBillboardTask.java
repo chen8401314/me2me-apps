@@ -107,30 +107,34 @@ public class MostPopularPeopleBillboardTask {
 			
 			//存入数据库
 			//1 查询当前列表key
-			String nextKey = Constant.BILLBOARD_KEY_POPULAR_PEOPLE;
+			String nextCacheKey = null;
 			String currentCacheKey = cacheService.get(Constant.BILLBOARD_KEY_POPULAR_PEOPLE);
 			if(StringUtils.isNotBlank(currentCacheKey)){
 				if(currentCacheKey.equals(Constant.BILLBOARD_KEY_TARGET2)){
-					nextKey = nextKey + Constant.BILLBOARD_KEY_TARGET1;
+					nextCacheKey = Constant.BILLBOARD_KEY_TARGET1;
 				}else{
-					nextKey = nextKey + Constant.BILLBOARD_KEY_TARGET2;
+					nextCacheKey = Constant.BILLBOARD_KEY_TARGET2;
 				}
 			}else{
-				nextKey = nextKey + Constant.BILLBOARD_KEY_TARGET2;
+				nextCacheKey = Constant.BILLBOARD_KEY_TARGET2;
 			}
 			//2处理待插入对象
 			List<BillBoardList> insertList = new ArrayList<BillBoardList>();
 			BillBoardList bbl = null;
+			String listKey = Constant.BILLBOARD_KEY_POPULAR_PEOPLE + nextCacheKey;
 			for(int i=0;i<resultList.size()&&i<100;i++){
 				item = resultList.get(i);
 				bbl = new BillBoardList();
-				bbl.setKey(nextKey);
+				bbl.setKey(listKey);
 				bbl.setTargetId(item.getUid());
 				bbl.setType(0);
 				bbl.setSinceId((int)item.getCount());
 				insertList.add(bbl);
 			}
-			//存入数据库
+			//3存入数据库
+			contentService.insertBillboardList(insertList, listKey);
+			//4将新的列表提交到缓存
+			cacheService.set(Constant.BILLBOARD_KEY_POPULAR_PEOPLE, nextCacheKey);
 		}
 
 		long e = System.currentTimeMillis();

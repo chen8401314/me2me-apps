@@ -237,4 +237,6 @@ public interface ContentService{
      * @return
      */
     List<Map<String, Object>> queryEvery(String sql);
+    
+    void insertBillboardList(List<BillBoardList> insertList, String key);
 }
