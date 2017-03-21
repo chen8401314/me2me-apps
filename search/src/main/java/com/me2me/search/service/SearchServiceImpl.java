@@ -4,6 +4,8 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
+import org.springframework.data.elasticsearch.core.query.StringQuery;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,6 +18,10 @@ public class SearchServiceImpl implements SearchService {
 
     @Autowired
     private UserService userService;
+
+//    @Autowired
+//    private ElasticsearchTemplate elasticsearchTemplate;
+
 
     @Override
     public Response search(String keyword,int page,int pageSize,long uid,int isSearchFans) {
