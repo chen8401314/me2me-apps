@@ -3798,13 +3798,13 @@ public class LiveServiceImpl implements LiveService {
         int dr =0;
         String now = new SimpleDateFormat("yyyyMMdd").format(new Date());
         String number = cacheService.hGet("droparound" ,uid+"@"+now);
-        log.info("cache number:"+number);
         if(!StringUtils.isEmpty(number)){
             //有的话取
             dr = Integer.parseInt(number);
         }
         //每次进来+1 控制每人每天五次
         cacheService.hSet("droparound" ,uid+"@"+now ,String.valueOf(dr+1));
+        log.info("key:droparound filed:{}@{} value: {}" ,uid , now ,dr+1);
         cacheService.expire(uid+"@"+now ,3600*24);//24小时过期
 
         //控制每个用户避免进入重复的
