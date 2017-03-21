@@ -237,6 +237,19 @@ public interface ContentService{
      * @return
      */
     List<Map<String, Object>> queryEvery(String sql);
-    
+
+    /**
+     * 自动榜单列表插入方法(供IMS系统调用)
+     * @param insertList
+     * @param key
+     */
     void insertBillboardList(List<BillBoardList> insertList, String key);
+
+    /**
+     * 榜单详情接口
+     * @param currentUid
+     * @param bid
+     * @return
+     */
+    Response showListDetail(long currentUid,long bid);
 }

@@ -125,7 +125,7 @@ public class MostPopularPeopleBillboardTask {
 			for(int i=0;i<resultList.size()&&i<100;i++){
 				item = resultList.get(i);
 				bbl = new BillBoardList();
-				bbl.setKey(listKey);
+				bbl.setListKey(listKey);
 				bbl.setTargetId(item.getUid());
 				bbl.setType(0);
 				bbl.setSinceId((int)item.getCount());

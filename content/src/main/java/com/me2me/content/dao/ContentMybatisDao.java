@@ -646,7 +646,7 @@ public class ContentMybatisDao {
     public void deleteBillBoardListByKey(String key){
     	BillBoardListExample example = new BillBoardListExample();
     	BillBoardListExample.Criteria criteria = example.createCriteria();
-    	criteria.andKeyEqualTo(key);
+    	criteria.andListKeyEqualTo(key);
     	billBoardListMapper.deleteByExample(example);
     }
     
