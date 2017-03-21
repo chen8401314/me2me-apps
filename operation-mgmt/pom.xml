@@ -50,6 +50,11 @@
         </dependency>
         <dependency>
             <groupId>com.me2me</groupId>
+            <artifactId>live-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.me2me</groupId>
             <artifactId>content-api</artifactId>
             <version>${project.version}</version>
         </dependency>

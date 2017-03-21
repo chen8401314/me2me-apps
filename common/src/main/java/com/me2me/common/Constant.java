@@ -27,4 +27,11 @@ public class Constant {
 
     public static final String AWARD_URL = "http://www.baidu.com";
 
+    public static final String BILLBOARD_KEY_TARGET1 = "_target1";
+    public static final String BILLBOARD_KEY_TARGET2 = "_target2";
+    
+    public static final String BILLBOARD_KEY_POPULAR_PEOPLE = "popular_people";
+    public static final String BILLBOARD_KEY_JAY_PEOPLE = "jay_people";
+    public static final String BILLBOARD_KEY_COLOURFUL_KINGDOM = "colourful_kingdom";
+    public static final String BILLBOARD_KEY_LONELY_KINGDOM = "lonely_kingdom";
 }
