@@ -3,5 +3,5 @@
 <%@ taglib prefix="fmt"   uri="http://java.sun.com/jsp/jstl/fmt" %>
 <% pageContext.setAttribute("ctx",request.getContextPath()); %>
 <script type="application/javascript">
-    var ctx = ${ctx};
+    var ctx = "${ctx}";
 </script>

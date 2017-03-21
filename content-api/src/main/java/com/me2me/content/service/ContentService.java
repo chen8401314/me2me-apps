@@ -237,4 +237,12 @@ public interface ContentService{
      * @return
      */
     List<Map<String, Object>> queryEvery(String sql);
+
+    /**
+     * 榜单详情接口
+     * @param currentUid
+     * @param bid
+     * @return
+     */
+    Response showListDetail(long currentUid,long bid);
 }

@@ -50,6 +50,11 @@
         </dependency>
         <dependency>
             <groupId>com.me2me</groupId>
+            <artifactId>live-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.me2me</groupId>
             <artifactId>content-api</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -92,7 +97,13 @@
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>jetty</artifactId>
 			<version>${jetty.version}</version>
-		</dependency>
+			<exclusions>
+				<exclusion>
+					<groupId>org.mortbay.jetty</groupId>
+					<artifactId>servlet-api</artifactId>
+				</exclusion>
+			</exclusions>
+        </dependency>
 		<dependency>
 			<groupId>org.mortbay.jetty</groupId>
 			<artifactId>jetty-util</artifactId>
@@ -103,16 +114,18 @@
 			<artifactId>jetty-plus</artifactId>
 			<version>${jetty.version}</version>
 		</dependency>
-		<dependency>
-  <groupId>org.mortbay.jetty</groupId>
-  <artifactId>jsp-2.1-jetty</artifactId>
-  <version>6.1.26</version>
-</dependency>
 <dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang3</artifactId>
 			<version>3.4</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/javax.servlet/jstl -->
+		<dependency>
+		    <groupId>javax.servlet</groupId>
+		    <artifactId>jstl</artifactId>
+		    <version>1.2</version>
+		</dependency>
+
     </dependencies>
 
     <build>
