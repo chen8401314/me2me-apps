@@ -1,11 +1,8 @@
 package com.me2me.mgmt.task.billboard;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-
-import lombok.Data;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -49,25 +46,9 @@ public class JayPeopleBillboardTask {
 		searchSql.append(" and f.create_time>date_add(now(), interval -7 day)");
 		searchSql.append(" group by f.uid order by cc desc limit 100");
 		
-		List<UserCountItem> resultList = new ArrayList<UserCountItem>();
-		
 		List<Map<String, Object>> searchList = contentService.queryEvery(searchSql.toString());
 		if(null != searchList && searchList.size() > 0){
 			logger.info("共有"+searchList.size()+"个国王存在增量数据");
-			UserCountItem item = null;
-			for(Map<String, Object> m : searchList){
-				item = new UserCountItem();
-				item.setUid((Long)m.get("uid"));
-				item.setCount((Long)m.get("cc"));
-				resultList.add(item);
-			}
-		}else{
-			logger.info("共有0个国王存在增量数据");
-		}
-		
-		if(resultList.size() > 0){
-			Collections.sort(resultList);
-			
 			//存入数据库
 			//1 查询当前列表key
 			String nextCacheKey = null;
@@ -84,39 +65,23 @@ public class JayPeopleBillboardTask {
 			//2处理待插入对象
 			List<BillBoardList> insertList = new ArrayList<BillBoardList>();
 			BillBoardList bbl = null;
-			UserCountItem item = null;
 			String listKey = Constant.BILLBOARD_KEY_JAY_PEOPLE + nextCacheKey;
-			for(int i=0;i<resultList.size()&&i<100;i++){
-				item = resultList.get(i);
+			int s = 1;
+			for(Map<String, Object> m : searchList){
 				bbl = new BillBoardList();
 				bbl.setListKey(listKey);
-				bbl.setTargetId(item.getUid());
+				bbl.setTargetId((Long)m.get("uid"));
 				bbl.setType(0);
-				bbl.setSinceId((int)item.getCount());
+				bbl.setSinceId(s);
 				insertList.add(bbl);
+				s++;
 			}
 			//3存入数据库
 			contentService.insertBillboardList(insertList, listKey);
 			//4将新的列表提交到缓存
-			cacheService.set(Constant.BILLBOARD_KEY_POPULAR_PEOPLE, nextCacheKey);
+			cacheService.set(Constant.BILLBOARD_KEY_JAY_PEOPLE, nextCacheKey);
+		}else{
+			logger.info("共有0个国王存在增量数据");
 		}
-	}
-	
-	@Data
-	private class UserCountItem implements Comparable<UserCountItem>{
-		private long uid;
-		private long count;
-		
-		@Override
-		public int compareTo(UserCountItem o) {
-			if(this.count < o.getCount()){
-				return 1;
-			}else if(this.count > o.getCount()){
-				return -1;
-			}else{
-				return 0;
-			}
-		}
-
 	}
 }

@@ -133,14 +133,16 @@ public class PopularPeopleBillboardTask {
 			List<BillBoardList> insertList = new ArrayList<BillBoardList>();
 			BillBoardList bbl = null;
 			String listKey = Constant.BILLBOARD_KEY_POPULAR_PEOPLE + nextCacheKey;
+			int s = 1;
 			for(int i=0;i<resultList.size()&&i<100;i++){
 				item = resultList.get(i);
 				bbl = new BillBoardList();
 				bbl.setListKey(listKey);
 				bbl.setTargetId(item.getUid());
 				bbl.setType(0);
-				bbl.setSinceId((int)item.getCount());
+				bbl.setSinceId(s);
 				insertList.add(bbl);
+				s++;
 			}
 			//3存入数据库
 			contentService.insertBillboardList(insertList, listKey);
