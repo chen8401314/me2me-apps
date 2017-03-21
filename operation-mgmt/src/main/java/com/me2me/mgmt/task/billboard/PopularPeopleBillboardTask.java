@@ -21,10 +21,10 @@ import com.me2me.common.Constant;
 import com.me2me.content.model.BillBoardList;
 import com.me2me.content.service.ContentService;
 
-@Component("mostPopularPeopleBillboardTask")
-public class MostPopularPeopleBillboardTask {
+@Component("popularPeopleBillboardTask")
+public class PopularPeopleBillboardTask {
 
-	private static final Logger logger = LoggerFactory.getLogger(MostPopularPeopleBillboardTask.class);
+	private static final Logger logger = LoggerFactory.getLogger(PopularPeopleBillboardTask.class);
 	
 	@Autowired
     private ContentService contentService;
