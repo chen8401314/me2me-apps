@@ -42,7 +42,6 @@ import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.*;
 import com.me2me.user.service.UserService;
 
-import com.plusnet.common.util.collection.ArrayHashSet;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -3802,6 +3801,7 @@ public class LiveServiceImpl implements LiveService {
         int dr =0;
         String now = new SimpleDateFormat("yyyyMMdd").format(new Date());
         String number = cacheService.hGet("droparound" ,uid+"@"+now);
+        log.info("cache number:"+number);
         if(!StringUtils.isEmpty(number)){
             //有的话取
             dr = Integer.parseInt(number);
@@ -3837,6 +3837,24 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(dto);
     }
 
+    @Override
+    public Response myTopicOpt(long uid, int action, long topicId) {
+        TopicUserConfig config = liveMybatisDao.getTopicUserConfig(uid ,topicId);
+        if(config != null){
+            config.setIsTop(action);
+            liveMybatisDao.updateTopicUserConfig(config);
+            log.info("update topic_user_config success");
+        }else {
+            TopicUserConfig topicUserConfig = new TopicUserConfig();
+            topicUserConfig.setUid(uid);
+            topicUserConfig.setIsTop(action);
+            topicUserConfig.setTopicId(topicId);
+            liveMybatisDao.insertTopicUserConfig(topicUserConfig);
+            log.info("insert topic_user_config success");
+        }
+        return Response.success(200 ,"操作成功");
+    }
+
     public void setDropaRoundDto(DropAroundDto dto ,long uid ,String set){
         Map<String ,String> map = Maps.newHashMap();
         map.put("uid",String.valueOf(uid));
@@ -3864,7 +3882,7 @@ public class LiveServiceImpl implements LiveService {
                 dto.setTrackContent(topicFragmentTemplate.getContent());
             }
         }
-
+            log.info("setDropaRoundDto is ok");
     }
 
     //算法取
@@ -3896,7 +3914,7 @@ public class LiveServiceImpl implements LiveService {
         if(topicFragmentTemplate != null){
             dto.setTrackContent(topicFragmentTemplate.getContent());
         }
-
+        log.info("setDropaRoundDtoAlgorithm is ok");
     }
 
     private static final String DEFAULT_KINGDOM_ACTIVITY_CONTENT = "<p style=\"text-align:center;\"><span style=\"font-family:宋体;\"><span style=\"font-size:16px;\">米汤新版本已登场！</span></span></p><p style=\"text-align:center;\"><span style=\"font-family:宋体;\"><span style=\"font-size:16px;\">您目前的米汤版本太低，不升级的话是无法看到帅气新界面的哦。</span></span></p><p style=\"text-align: center;\"><span style=\"font-family:宋体;\"><span style=\"font-size:16px;\"><strong>请及时下载更新至最新版本。</strong></span></span></p>";

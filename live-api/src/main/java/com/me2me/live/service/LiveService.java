@@ -200,6 +200,8 @@ public interface LiveService {
     Response recommend(long uid ,long topicId ,long action);
 
     Response dropAround(long uid ,long sourceTopicId);
+    
+    Response myTopicOpt(long uid ,int action ,long topicId);
 
 	
 	/**
