@@ -270,7 +270,7 @@
   	select da.id,tp.uid,tp.title,da.topicId,up.nick_name as nickName,up.v_lv as vLv
   	from topic_droparound da
   	left join topic tp on tp.id=da.topicId
-  	left join user_profile up on up.id= tp.uid
+  	left join user_profile up on up.uid= tp.uid
   	<if test="searchStr!=null">
   		where up.nick_name like #{searchStr} or tp.title like #{searchStr}
   	</if>
@@ -281,7 +281,7 @@
 	  	select count(1)
 	  	from topic_droparound da
 	  	left join topic tp on tp.id=da.topicId
-	  	left join user_profile up on up.id= tp.uid
+	  	left join user_profile up on up.uid= tp.uid
 	  	<if test="searchStr!=null">
 	  		where up.nick_name like #{searchStr} or tp.title like #{searchStr}
 	  	</if>

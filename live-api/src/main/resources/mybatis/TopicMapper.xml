@@ -516,5 +516,29 @@
     ORDER BY n.longtime DESC
     LIMIT 10;
   </select>
-
+  
+  <select id="getTopicPage" resultType="com.me2me.live.dto.ShowLiveDto">
+	  select 
+	  	tp.id as topicId,
+	  	tp.uid,
+	  	tp.title,
+	  	up.nick_name as nickName,
+	  	up.v_lv
+	  	 from topic tp
+	  	left join user_profile up on up.id= tp.uid
+	  	<if test="searchStr!=null">
+	  		where up.nick_name like #{searchStr} or tp.title like #{searchStr}
+	  	</if>
+	  	order by tp.update_time desc,tp.id desc
+	  	limit #{skip},#{limit}
+  </select>
+  <select id="countTopicForPage" resultType="long">
+	  select 
+	  	count(0)
+	  	 from topic tp
+	  	left join user_profile up on up.id= tp.uid
+	  	<if test="searchStr!=null">
+	  		where up.nick_name like #{searchStr} or tp.title like #{searchStr}
+	  	</if>
+  </select>
 </mapper>

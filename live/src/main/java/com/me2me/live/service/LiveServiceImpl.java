@@ -30,7 +30,6 @@ import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.dao.LiveLocalJdbcDao;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.*;
-import com.me2me.live.dto.ShowTopicListDto.ShowTopicElement;
 import com.me2me.live.event.AggregationPublishEvent;
 import com.me2me.live.event.CacheLiveEvent;
 import com.me2me.live.event.CoreAggregationRemindEvent;
@@ -93,8 +92,6 @@ public class LiveServiceImpl implements LiveService {
     @Autowired
     private ActivityService activityService;
     
-    @Autowired
-	private TopicFragmentTemplateMapper templateMapper;
 
     @Value("#{app.live_web}")
     private String live_web;

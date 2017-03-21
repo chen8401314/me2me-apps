@@ -148,7 +148,7 @@
 		        {data: "title",title: "标题"},
 		        {data: "nickName",title: "作者"},
 		        {title:"操作",width:60,render:function(data, type, row, meta){
-		        	var txt= "<a href='#stop' class='btn btn-danger btn-xs btnAddKingdom'>加入</a> ";
+		        	var txt= "<a href='#stop' title='topicId:"+row.topicId+",uid:"+row.uid+"' class='btn btn-danger btn-xs btnAddKingdom'>加入</a> ";
 		        	return txt;
 		        }}
 		     ]
@@ -193,7 +193,7 @@
 		        {data: "title",title: "标题"},
 		        {data: "nickName",title: "作者"},
 		        {title:"操作",width:60,render:function(data, type, row, meta){
-		        	var txt= "<a href='#stop' class='btn btn-danger btn-xs btnDelMyKingdom'>删除</a> ";
+		        	var txt= "<a href='#stop' title='topicId:"+row.topicId+",uid:"+row.uid+"' class='btn btn-danger btn-xs btnDelMyKingdom'>删除</a> ";
 		        	return txt;
 		        }}
 		     ]

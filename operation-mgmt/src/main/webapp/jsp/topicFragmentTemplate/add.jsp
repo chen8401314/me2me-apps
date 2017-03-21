@@ -53,8 +53,10 @@
                                 <div class="panel-body">
                                     <div role="form">
                                         <div class="form-group">
-                                            <label for="exampleInputEmail1">类型</label>
-                                            <input type="text" id="type" name="type" class="form-control" style="width: 100%" required value="${item.type}">
+                                            <label for="exampleInputEmail1">模板类型</label>
+                                            <select name="type" id="type" class="form-control" value="${item.type}">
+												<option value="1" selected="selected">足迹模板</option>
+											</select>
                                         </div>
                                         <div class="form-group">
                                             <label for="exampleInputFile">内容类型</label>
