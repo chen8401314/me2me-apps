@@ -1256,17 +1256,22 @@ public class UserServiceImpl implements UserService {
         	return Response.success(versionControlDto);
         }
         
-        versionControlDto.setId(newestVersion.getId());
-        versionControlDto.setUpdateDescription(newestVersion.getUpdateDescription());
-        versionControlDto.setUpdateTime(newestVersion.getUpdateTime());
-        versionControlDto.setPlatform(newestVersion.getPlatform());
-        versionControlDto.setVersion(newestVersion.getVersion());
-        versionControlDto.setUpdateUrl(newestVersion.getUpdateUrl());
-        if(newestVersion.getForceUpdate() == 1){
-            versionControlDto.setIsUpdate(Specification.VersionStatus.FORCE_UPDATE.index);
-        }else{
-            versionControlDto.setIsUpdate(Specification.VersionStatus.UPDATE.index);
+        //根据渠道配置进行提醒
+        VersionChannelDownload vcd = userMybatisDao.getVersionChannelDownloadByChannel(channel);
+        if(null != vcd && vcd.getType() == 1 && !StringUtils.isEmpty(vcd.getVersionAddr())){
+        	versionControlDto.setId(newestVersion.getId());
+            versionControlDto.setUpdateDescription(newestVersion.getUpdateDescription());
+            versionControlDto.setUpdateTime(newestVersion.getUpdateTime());
+            versionControlDto.setPlatform(newestVersion.getPlatform());
+            versionControlDto.setVersion(newestVersion.getVersion());
+            versionControlDto.setUpdateUrl(vcd.getVersionAddr());
+            if(newestVersion.getForceUpdate() == 1){
+                versionControlDto.setIsUpdate(Specification.VersionStatus.FORCE_UPDATE.index);
+            }else{
+                versionControlDto.setIsUpdate(Specification.VersionStatus.UPDATE.index);
+            }
         }
+        
         //monitorService.post(new MonitorEvent(Specification.MonitorType.BOOT.index,Specification.MonitorAction.BOOT.index,0,0));
         return Response.success(versionControlDto);
     }
