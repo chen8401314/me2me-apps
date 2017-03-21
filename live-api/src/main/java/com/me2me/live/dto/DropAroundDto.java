@@ -20,4 +20,6 @@ public class DropAroundDto implements BaseEntity {
 
     private String trackContent;//足迹内容
 
+    private String trackImage;
+
 }

@@ -1897,7 +1897,7 @@ public class LiveServiceImpl implements LiveService {
         log.info("myLivesAllByUpdateTime end ...");
         return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status, ResponseStatus.GET_MY_LIVE_SUCCESS.message, showTopicListDto);
     }
-    
+
     /**
      * 获取我关注的直播，和我的直播列表
      *
@@ -1957,7 +1957,7 @@ public class LiveServiceImpl implements LiveService {
                 size++;
                 ShowTopicListDto.AttentionElement attentionElement = showTopicListDto.createAttentionElement();
                 UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
-                attentionElement.setAvatar(userProfile.getAvatar());
+                attentionElement.setAvatar(Constant.QINIU_DOMAIN+"/"+userProfile.getAvatar());
                 attentionElement.setUid(content.getUid());
                 attentionElement.setV_lv(userProfile.getvLv());
                 showTopicListDto.getAttentionData().add(attentionElement);
@@ -3896,7 +3896,11 @@ public class LiveServiceImpl implements LiveService {
             cacheService.sadd("list:user@" + uid, String.valueOf(droparound.getTopicid()));
             TopicFragmentTemplate topicFragmentTemplate = liveMybatisDao.getTopicFragmentTemplate();
             if (topicFragmentTemplate != null) {
-                dto.setTrackContent(topicFragmentTemplate.getContent());
+                String text = topicFragmentTemplate.getContent();
+                String trackImage = text.substring(text.indexOf("##")+2);
+                String trackContent = text.substring(0,text.indexOf("##"));
+                dto.setTrackContent(trackContent);
+                dto.setTrackImage(Constant.QINIU_DOMAIN+"/"+trackImage);
             }
         }
             log.info("setDropaRoundDto is ok");
@@ -3905,7 +3909,6 @@ public class LiveServiceImpl implements LiveService {
     //算法取
     public void setDropaRoundDtoAlgorithm(DropAroundDto dto ,long uid ,String set){
         Map<String ,String> map = Maps.newHashMap();
-        System.out.println(set);
         map.put("uid",String.valueOf(uid));
         map.put("set",set);
         //随机获取一条王国
@@ -3929,7 +3932,11 @@ public class LiveServiceImpl implements LiveService {
         cacheService.sadd("list:user@"+uid ,String.valueOf(topicInfo.getId()));
         TopicFragmentTemplate topicFragmentTemplate = liveMybatisDao.getTopicFragmentTemplate();
         if(topicFragmentTemplate != null){
-            dto.setTrackContent(topicFragmentTemplate.getContent());
+            String text = topicFragmentTemplate.getContent();
+            String trackImage = text.substring(text.indexOf("##")+2);
+            String trackContent = text.substring(0,text.indexOf("##"));
+            dto.setTrackContent(trackContent);
+            dto.setTrackImage(Constant.QINIU_DOMAIN+"/"+trackImage);
         }
         log.info("setDropaRoundDtoAlgorithm is ok");
     }
