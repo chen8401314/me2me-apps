@@ -30,10 +30,12 @@ import com.me2me.mgmt.request.AppVersionQueryDTO;
 import com.me2me.mgmt.request.ConfigItem;
 import com.me2me.mgmt.request.LightBoxItem;
 import com.me2me.mgmt.request.LightBoxQueryDTO;
+import com.me2me.mgmt.request.VersionChannelAddrQueryDTO;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.user.dto.ShowVersionControlDto;
 import com.me2me.user.dto.VersionControlDto;
 import com.me2me.user.model.SystemConfig;
+import com.me2me.user.model.VersionChannelDownload;
 import com.me2me.user.service.UserService;
 
 @Controller
@@ -495,6 +497,114 @@ public class AppConfigController {
 		activityService.createAppLightboxSource(l);
 		
 		ModelAndView view = new ModelAndView("redirect:/appconfig/lightbox/query");
+		return view;
+	}
+	
+	@RequestMapping(value = "/version/channel/query")
+	public ModelAndView versionChannelAddrQuery(VersionChannelAddrQueryDTO dto){
+		dto.getResult().clear();
+		List<VersionChannelDownload> list = userService.queryVersionChannelDownloads(dto.getChannel());
+		if(null != list && list.size() > 0){
+			VersionChannelAddrQueryDTO.Item item = null;
+			for(VersionChannelDownload vcd : list){
+				item = new VersionChannelAddrQueryDTO.Item();
+				item.setChannel(vcd.getChannel());
+				item.setId(vcd.getId());
+				item.setType(vcd.getType());
+				if(vcd.getType() == 0){
+					item.setVersionAddr("第三方拉取");
+				}else{
+					item.setVersionAddr(vcd.getVersionAddr());
+				}
+				dto.getResult().add(item);
+			}
+		}
+		
+		ModelAndView view = new ModelAndView("appconfig/versionChannelAddrList");
+		view.addObject("dataObj",dto);
+		return view;
+	}
+	
+	@RequestMapping(value = "/version/channel/create")
+	@SystemControllerLog(description = "创建版本渠道下载地址")
+	public ModelAndView createVersionChannelAddr(VersionChannelAddrQueryDTO.Item item){
+		if(item.getType() != 0 && StringUtils.isBlank(item.getVersionAddr())){
+			ModelAndView view = new ModelAndView("appconfig/versionChannelAddrNew");
+			view.addObject("errMsg","本地下载类型，地址必填");
+			return view;
+		}
+		
+		VersionChannelDownload vcd = userService.getVersionChannelDownloadByChannel(item.getChannel());
+		if(null != vcd){
+			ModelAndView view = new ModelAndView("appconfig/versionChannelAddrNew");
+			view.addObject("errMsg","渠道不能重复");
+			return view;
+		}
+		vcd = new VersionChannelDownload();
+		vcd.setChannel(item.getChannel());
+		vcd.setType(item.getType());
+		if(item.getType() == 0){
+			vcd.setVersionAddr("");
+		}else{
+			vcd.setVersionAddr(item.getVersionAddr());
+		}
+		userService.saveVersionChannelDownload(vcd);
+		
+		ModelAndView view = new ModelAndView("redirect:/appconfig/version/channel/query");
+		return view;
+	}
+	
+	@RequestMapping(value = "/version/channel/find/{id}")
+	public ModelAndView findVersionChannelAddr(@PathVariable long id){
+		VersionChannelDownload vcd = userService.getVersionChannelDownloadById(id);
+		
+		VersionChannelAddrQueryDTO.Item item = new VersionChannelAddrQueryDTO.Item();
+		if(null != vcd){
+			item.setId(vcd.getId());
+			item.setChannel(vcd.getChannel());
+			item.setType(vcd.getType());
+			item.setVersionAddr(vcd.getVersionAddr());
+		}
+		
+		ModelAndView view = new ModelAndView("appconfig/versionChannelAddrEdit");
+		view.addObject("dataObj",item);
+		return view;
+	}
+	
+	@RequestMapping(value = "/version/channel/editSave")
+	@SystemControllerLog(description = "更新版本渠道下载地址")
+	public ModelAndView saveEditVersionChannelAddr(VersionChannelAddrQueryDTO.Item item){
+		VersionChannelDownload vcd = userService.getVersionChannelDownloadById(item.getId());
+		
+		//校验渠道唯一
+		if(!vcd.getChannel().equals(item.getChannel())){
+			VersionChannelDownload checkVcd = userService.getVersionChannelDownloadByChannel(item.getChannel());
+			if(null != checkVcd){
+				ModelAndView view = new ModelAndView("appconfig/versionChannelAddrEdit");
+				view.addObject("errMsg","渠道不能重复");
+				view.addObject("dataObj",item);
+				return view;
+			}
+		}
+		
+		vcd.setChannel(item.getChannel());
+		vcd.setType(item.getType());
+		if(item.getType() == 0){
+			vcd.setVersionAddr("");
+		}else{
+			vcd.setVersionAddr(item.getVersionAddr());
+		}
+		userService.updateVersionChannelDownload(vcd);
+		
+		ModelAndView view = new ModelAndView("redirect:/appconfig/version/channel/query");
+		return view;
+	}
+	
+	@RequestMapping(value = "/version/channel/del/{id}")
+	@SystemControllerLog(description = "删除版本渠道下载地址")
+	public ModelAndView deleteVersionChannelAddr(@PathVariable long id){
+		userService.deleteVersionChannelDownload(id);
+		ModelAndView view = new ModelAndView("redirect:/appconfig/version/channel/query");
 		return view;
 	}
 }

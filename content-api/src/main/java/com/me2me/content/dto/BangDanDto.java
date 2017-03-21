@@ -4,7 +4,9 @@ import com.google.common.collect.Lists;
 import com.me2me.common.web.BaseEntity;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by pc329 on 2017/3/17.
@@ -13,6 +15,7 @@ import java.util.List;
 public class BangDanDto implements BaseEntity {
 
     private List<BangDanData> listData = Lists.newArrayList();
+
 
     @Data
     public static class BangDanData implements BaseEntity{
@@ -42,7 +45,7 @@ public class BangDanDto implements BaseEntity {
         private List<BangDanInnerData> subList = Lists.newArrayList();
 
         @Data
-        private class BangDanInnerData {
+        public static class BangDanInnerData {
             private long subListId;
 
             private int subType;

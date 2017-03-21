@@ -5,7 +5,7 @@
 	<%@include file="../common/meta.jsp"%>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta charset="utf-8" />
-    <title>ZX_IMS 2.0 - 更新APP版本</title>
+    <title>ZX_IMS 2.0 - 新建APP版本</title>
 
     <link href="${ctx}/css/bootstrap.min.css" rel="stylesheet">
     <link href="${ctx}/css/bootstrap-reset.css" rel="stylesheet">
@@ -36,13 +36,13 @@
             <!--sidebar start-->
             <jsp:include page="../common/leftmenu.jsp" flush="false">
     			<jsp:param name="t" value="7"/>
-    			<jsp:param name="s" value="7_0"/>
+    			<jsp:param name="s" value="7_1"/>
     		</jsp:include>
             <!--sidebar end-->
 
             <!--main content start-->
             <section id="main-content">
-            	<form id="form1" action="${ctx}/appconfig/version/edit/save" method="POST">
+            	<form id="form1" action="${ctx}/appconfig/version/channel/create" method="POST">
                 <section class="wrapper">
                     <!-- page start-->
                     <div class="row">
@@ -52,24 +52,19 @@
                                 <div class="panel-body">
                                     <div role="form">
                                         <div class="form-group">
-                                            <label for="exampleInputEmail1">版本号</label>
-                                            <input type="text" id="version" name="version" class="form-control" value="${dataObj.version }" style="width: 100%" required>
-                                            <input type="hidden" id="id" name="id" value="${dataObj.id }">
+                                            <label for="exampleInputEmail1">渠道</label>
+                                            <input type="text" id="channel" name="channel" class="form-control" style="width: 100%" required>
                                         </div>
                                         <div class="form-group">
-                                            <label for="exampleInputFile">平台</label>
-                                            <select name="platform" id="platform" class="form-control">
-												<option value="1" ${dataObj.platform==1?'selected':''}>Android</option>
-												<option value="2" ${dataObj.platform==2?'selected':''}>IOS</option>
+                                            <label for="exampleInputFile">下载类型</label>
+                                            <select name="type" id="type" class="form-control">
+												<option value="0">第三方平台下载</option>
+												<option value="1">本地下载</option>
 											</select>
                                         </div>
                                         <div class="form-group">
-                                            <label for="exampleInputFile">更新描述</label>
-                                            <textarea rows="4" style="width:100%" id="updateDescription" name="updateDescription" required>${dataObj.updateDescription }</textarea>
-                                        </div>
-                                        <div class="form-group">
                                             <label for="exampleInputEmail1">下载地址</label>
-                                            <input type="text" id="updateUrl" name="updateUrl" class="form-control" style="width: 100%" value="${dataObj.updateUrl }" required>
+                                            <input type="text" id="versionAddr" name="versionAddr" class="form-control" style="width: 100%">
                                         </div>
                                     </div>
                                 </div>
@@ -77,7 +72,7 @@
                         </div>
                     </div>
                     <input type="submit" id="btnSave" value="提交" class="btn btn-danger" />
-                    <span class="btn btn-default"><a href="${ctx}/appconfig/version/query">返回</a></span>
+                    <span class="btn btn-default"><a href="${ctx}/appconfig/version/channel/query">返回</a></span>
                 </section>
                 <!-- page end-->
                 </form>

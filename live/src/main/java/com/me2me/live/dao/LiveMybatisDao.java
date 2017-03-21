@@ -6,6 +6,7 @@ import com.google.common.collect.Lists;
 import com.me2me.activity.model.AactivityExample.Criteria;
 import com.me2me.common.page.Page;
 import com.me2me.common.page.PageBean;
+import com.google.common.collect.Maps;
 import com.me2me.common.web.Specification;
 import com.me2me.live.dto.GetLiveDetailDto;
 import com.me2me.live.dto.GetLiveUpdateDto;
@@ -20,7 +21,7 @@ import com.me2me.sns.model.SnsCircleExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
-
+import java.util.*;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -89,6 +90,9 @@ public class LiveMybatisDao {
     
     @Autowired
     private TopicFragmentTemplateMapper fragmentTemplateMapper;
+    
+    @Autowired
+    private TopicFragmentTemplateMapper topicFragmentTemplateMapper;
     
 
     public void createTopic(Topic topic) {
@@ -273,6 +277,13 @@ public class LiveMybatisDao {
         //最后更新时间降序排列
         example.setOrderByClause("long_time desc limit 10");
         return topicMapper.selectByExample(example);
+    }
+
+    public List<Topic2> getMyLivesByUpdateTimeNew(long uid, long updateTime) {
+        Map map = Maps.newHashMap();
+        map.put("uid" ,uid);
+        map.put("updateTime" ,updateTime);
+        return topicMapper.getMyLivesByUpdateTimeNew(map);
     }
 
     //获取所有直播红点
@@ -854,9 +865,14 @@ public class LiveMybatisDao {
         return topicAggregationApplyMapper.selectByExample(example);
     }
 
-    public TopicDroparound getRandomDropaRound(){
-        TopicDroparound topicDroparound = topicDroparoundMapper.getRandomDropaRound();
+    public TopicDroparound getRandomDropaRound(Map<String ,String> map){
+        TopicDroparound topicDroparound = topicDroparoundMapper.getRandomDropaRound(map);
         return topicDroparound;
+    }
+
+    public Topic getRandomDropaRoundAlgorithm(Map<String ,String> map){
+        Topic topic = topicMapper.getRandomDropaRoundAlgorithm(map);
+        return topic;
     }
 
     public void createTopicDroparoundTrail(TopicDroparoundTrail trail){
@@ -1003,4 +1019,10 @@ public class LiveMybatisDao {
 		page.setTotalRecords(count);
 		return page;
 	}
+    public TopicFragmentTemplate getTopicFragmentTemplate(){
+        List<TopicFragmentTemplate> list = topicFragmentTemplateMapper.selectByExample(null);
+        Collections.shuffle(list);
+        return list.size() > 0 && list != null ? list.get(0):null;
+    }
+
 }

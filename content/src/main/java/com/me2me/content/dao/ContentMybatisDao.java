@@ -57,6 +57,12 @@ public class ContentMybatisDao {
     @Autowired
     private AtReviewMapper atReviewMapper;
 
+    @Autowired
+    private BillBoardMapper billBoardMapper;
+
+    @Autowired
+    private BillBoardRelationMapper billBoardRelationMapper;
+
     public List<Content> loadSquareData(int sinceId){
         return contentMapper.loadSquareData(sinceId);
     }
@@ -616,4 +622,22 @@ public class ContentMybatisDao {
         criteria.andTypeEqualTo(Specification.ArticleType.ORIGIN.index);
         return contentMapper.countByExample(example);
     }
+
+    public List<BillBoard> loadBillBoard(){
+        BillBoardExample example = new BillBoardExample();
+        BillBoardExample.Criteria criteria = example.createCriteria();
+        return billBoardMapper.selectByExample(example);
+    }
+
+    public List<BillBoardRelation> loadBillBoardRelation(long sourceId){
+        BillBoardRelationExample example = new BillBoardRelationExample();
+        BillBoardRelationExample.Criteria criteria = example.createCriteria();
+        criteria.andSourceIdEqualTo(sourceId);
+        return billBoardRelationMapper.selectByExample(example);
+    }
+
+    public BillBoard loadBillBoardById(long id){
+       return billBoardMapper.selectByPrimaryKey(id);
+    }
+
 }

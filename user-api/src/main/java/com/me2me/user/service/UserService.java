@@ -315,4 +315,16 @@ public interface UserService {
     boolean isUserFamous(long uid);
 
     ResponseWapx iosWapxUserRegist(WapxIosDto dto);
+    
+    List<VersionChannelDownload> queryVersionChannelDownloads(String channel);
+    
+    VersionChannelDownload getVersionChannelDownloadByChannel(String channel);
+    
+    VersionChannelDownload getVersionChannelDownloadById(long id);
+    
+    void saveVersionChannelDownload(VersionChannelDownload vcd);
+    
+    void updateVersionChannelDownload(VersionChannelDownload vcd);
+    
+    void deleteVersionChannelDownload(long id);
 }
