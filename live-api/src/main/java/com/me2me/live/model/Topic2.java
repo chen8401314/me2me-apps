@@ -11,6 +11,10 @@ public class Topic2 extends Topic {
 
     @Getter
     @Setter
-    private int istop;
+    private int isTop;
+
+    @Getter
+    @Setter
+    private long longTimes;
 
 }
