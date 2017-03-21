@@ -3,10 +3,15 @@ package com.me2me.live.dao;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
+import com.me2me.activity.model.AactivityExample.Criteria;
+import com.me2me.common.page.Page;
+import com.me2me.common.page.PageBean;
 import com.google.common.collect.Maps;
 import com.me2me.common.web.Specification;
 import com.me2me.live.dto.GetLiveDetailDto;
 import com.me2me.live.dto.GetLiveUpdateDto;
+import com.me2me.live.dto.SearchDropAroundTopicDto;
+import com.me2me.live.dto.ShowTopicListDto.ShowTopicElement;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.mapper.*;
 import com.me2me.live.model.*;
@@ -15,8 +20,13 @@ import com.me2me.sns.model.SnsCircle;
 import com.me2me.sns.model.SnsCircleExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
+import org.springframework.util.StringUtils;
 import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -77,9 +87,13 @@ public class LiveMybatisDao {
     @Autowired
     private TopicDroparoundTrailMapper topicDroparoundTrailMapper;
 
+    
+    @Autowired
+    private TopicFragmentTemplateMapper fragmentTemplateMapper;
+    
     @Autowired
     private TopicFragmentTemplateMapper topicFragmentTemplateMapper;
-
+    
 
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -864,7 +878,147 @@ public class LiveMybatisDao {
     public void createTopicDroparoundTrail(TopicDroparoundTrail trail){
         topicDroparoundTrailMapper.insertSelective(trail);
     }
-
+	/**
+	 * 获取串门轨迹语言模板列表。返回所有语言模板。
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param queryStr
+	 * @return
+	 */
+	public List<TopicFragmentTemplate> getFragmentTplList(String queryStr) {
+		TopicFragmentTemplateExample tf = new TopicFragmentTemplateExample();
+		if(!StringUtils.isEmpty(queryStr)){
+			tf.createCriteria().andContentLike("%"+queryStr+"%");
+		}
+		List<TopicFragmentTemplate> templates = fragmentTemplateMapper.selectByExample(tf);
+		return templates;
+	}
+	/**
+	 * 添加一个语言模板
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param obj
+	 */
+	public void addFragmentTpl(TopicFragmentTemplate obj) {
+		fragmentTemplateMapper.insert(obj);
+	}
+	/**
+	 * 根据ID取一个语言模板
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param id
+	 * @return
+	 */
+	public TopicFragmentTemplate getFragmentTplById(Long id) {
+		return fragmentTemplateMapper.selectByPrimaryKey(id);
+	}
+	/**
+	 * 删除王国语言模板
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param msgId
+	 */
+	public void deleteFragmentTplById(Long msgId) {
+		fragmentTemplateMapper.deleteByPrimaryKey(msgId);
+	}
+	/**
+	 * 修改王国语言模板
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param obj
+	 */
+	public void updateFragmentTpl(TopicFragmentTemplate obj) {
+		fragmentTemplateMapper.updateByPrimaryKey(obj);
+	}
+	/**
+	 *  添加可串门的王国
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param tropicId
+	 * @param sort
+	 */
+	public void addDropAroundKingdom(long tropicId, int sort) {
+		TopicDroparound record =new TopicDroparound();
+		record.setSort(sort);
+		record.setTopicid(tropicId);
+		topicDroparoundMapper.insert(record);
+	}
+	/**
+	 * 删除可串门的王国
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param tropicId
+	 */
+	public void deleteDropAroundKingdom(long tropicId) {
+		topicDroparoundMapper.deleteByPrimaryKey(tropicId);
+	}
+	/**
+	 * 查询指定的王国ID是否在可串门的王国列表中。存在返回true,不存在返回false.
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param tropicId 指定的王国ID
+	 */
+	public boolean existsDropAroundKingdom(long tropicId){
+		TopicDroparoundExample example = new TopicDroparoundExample();
+		example.createCriteria().andTopicidEqualTo(tropicId);
+		int count = topicDroparoundMapper.countByExample(example);
+		return count==1;
+	}
+	/**
+	 * 修改串门王国
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param td
+	 */
+	public void updateDropAroundKingdom(TopicDroparound td) {
+		topicDroparoundMapper.updateByPrimaryKeySelective(td);
+	}
+	/**
+	 * 查询王国分页
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param page
+	 * @param searchKeyword
+	 * @return
+	 */
+	public PageBean<Topic> getTopicPage(PageBean page, String searchKeyword) {
+		TopicExample example = new TopicExample();
+		if(!org.apache.commons.lang.StringUtils.isEmpty(searchKeyword)){
+			example.createCriteria().andTitleLike("%"+searchKeyword+"%");
+			if(searchKeyword.matches("^\\d+$")){
+				TopicExample.Criteria ct2= example.createCriteria().andIdEqualTo(Long.parseLong(searchKeyword));
+				example.or(ct2);
+			}
+		}
+		int count =topicMapper.countByExample(example);
+		int beginRow = (page.getCurrentPage()-1)*page.getPageSize();
+		example.setOrderByClause(" id desc limit "+beginRow+","+page.getPageSize());
+		List<Topic> topicList = topicMapper.selectByExample(example);
+		page.setDataList(topicList);
+		page.setTotalRecords(count);
+		return page;
+	}
+	/**
+	 * 取可串门王国分页
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param page
+	 * @return
+	 */
+	public PageBean<SearchDropAroundTopicDto> getDropAroundKingdomPage(PageBean page,String searchStr) {
+		Map<String,Object> obj = new HashMap<>();
+		obj.put("skip", (page.getCurrentPage()-1) * page.getPageSize());
+		obj.put("limit", page.getPageSize());
+		if(searchStr!=null){
+			obj.put("searchStr", "%"+searchStr+"%");
+		}
+		List<SearchDropAroundTopicDto> topicList = topicDroparoundMapper.getDropAroundKingdomPage(obj);
+		int count = topicDroparoundMapper.countDropAroundKingdomPage(obj);
+		
+		page.setDataList(topicList);
+		page.setTotalRecords(count);
+		return page;
+	}
     public TopicFragmentTemplate getTopicFragmentTemplate(){
         List<TopicFragmentTemplate> list = topicFragmentTemplateMapper.selectByExample(null);
         Collections.shuffle(list);

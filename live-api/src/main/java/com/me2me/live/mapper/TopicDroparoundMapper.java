@@ -1,5 +1,7 @@
 package com.me2me.live.mapper;
 
+import com.me2me.live.dto.SearchDropAroundTopicDto;
+import com.me2me.live.dto.ShowTopicListDto.ShowTopicElement;
 import com.me2me.live.model.TopicDroparound;
 import com.me2me.live.model.TopicDroparoundExample;
 import java.util.List;
@@ -97,5 +99,20 @@ public interface TopicDroparoundMapper {
     int updateByPrimaryKey(TopicDroparound record);
 
     TopicDroparound getRandomDropaRound(Map<String ,String> map);
+    /**
+     * 获取串门王国分页。
+     * @author zhangjiwei
+     * @date Mar 20, 2017
+     * @return
+     */
+    List<SearchDropAroundTopicDto> getDropAroundKingdomPage(Map<String,Object> data);
+    /**
+     * count from droparound kingdom
+     * @author zhangjiwei
+     * @date Mar 20, 2017
+     * @param obj
+     * @return
+     */
+	int countDropAroundKingdomPage(Map<String, Object> obj);
 
 }

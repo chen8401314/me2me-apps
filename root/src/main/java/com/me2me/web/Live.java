@@ -596,4 +596,15 @@ public class Live extends BaseController {
         return liveService.dropAround(request.getUid() ,request.getSourceTopicId());
     }
 
+    /**
+     * 王国互动操作接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/myTopicOpt",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response myTopicOpt(TopicOptRequest request){
+        return liveService.myTopicOpt(request.getUid() ,request.getAction() ,request.getTopicId());
+    }
+
 }

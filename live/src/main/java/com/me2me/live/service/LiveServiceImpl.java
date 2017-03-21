@@ -11,6 +11,7 @@ import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
+import com.me2me.common.page.PageBean;
 import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.utils.DateUtil;
 import com.me2me.common.web.Response;
@@ -35,12 +36,12 @@ import com.me2me.live.event.CoreAggregationRemindEvent;
 import com.me2me.live.event.RemindAndJpushAtMessageEvent;
 import com.me2me.live.event.SpeakEvent;
 import com.me2me.live.event.TopicNoticeEvent;
+import com.me2me.live.mapper.TopicFragmentTemplateMapper;
 import com.me2me.live.model.*;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.*;
 import com.me2me.user.service.UserService;
 
-import com.plusnet.common.util.collection.ArrayHashSet;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -89,6 +90,7 @@ public class LiveServiceImpl implements LiveService {
 
     @Autowired
     private ActivityService activityService;
+    
 
     @Value("#{app.live_web}")
     private String live_web;
@@ -3799,6 +3801,7 @@ public class LiveServiceImpl implements LiveService {
         int dr =0;
         String now = new SimpleDateFormat("yyyyMMdd").format(new Date());
         String number = cacheService.hGet("droparound" ,uid+"@"+now);
+        log.info("cache number:"+number);
         if(!StringUtils.isEmpty(number)){
             //有的话取
             dr = Integer.parseInt(number);
@@ -3834,6 +3837,24 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(dto);
     }
 
+    @Override
+    public Response myTopicOpt(long uid, int action, long topicId) {
+        TopicUserConfig config = liveMybatisDao.getTopicUserConfig(uid ,topicId);
+        if(config != null){
+            config.setIsTop(action);
+            liveMybatisDao.updateTopicUserConfig(config);
+            log.info("update topic_user_config success");
+        }else {
+            TopicUserConfig topicUserConfig = new TopicUserConfig();
+            topicUserConfig.setUid(uid);
+            topicUserConfig.setIsTop(action);
+            topicUserConfig.setTopicId(topicId);
+            liveMybatisDao.insertTopicUserConfig(topicUserConfig);
+            log.info("insert topic_user_config success");
+        }
+        return Response.success(200 ,"操作成功");
+    }
+
     public void setDropaRoundDto(DropAroundDto dto ,long uid ,String set){
         Map<String ,String> map = Maps.newHashMap();
         map.put("uid",String.valueOf(uid));
@@ -3861,7 +3882,7 @@ public class LiveServiceImpl implements LiveService {
                 dto.setTrackContent(topicFragmentTemplate.getContent());
             }
         }
-
+            log.info("setDropaRoundDto is ok");
     }
 
     //算法取
@@ -3893,7 +3914,7 @@ public class LiveServiceImpl implements LiveService {
         if(topicFragmentTemplate != null){
             dto.setTrackContent(topicFragmentTemplate.getContent());
         }
-
+        log.info("setDropaRoundDtoAlgorithm is ok");
     }
 
     private static final String DEFAULT_KINGDOM_ACTIVITY_CONTENT = "<p style=\"text-align:center;\"><span style=\"font-family:宋体;\"><span style=\"font-size:16px;\">米汤新版本已登场！</span></span></p><p style=\"text-align:center;\"><span style=\"font-family:宋体;\"><span style=\"font-size:16px;\">您目前的米汤版本太低，不升级的话是无法看到帅气新界面的哦。</span></span></p><p style=\"text-align: center;\"><span style=\"font-family:宋体;\"><span style=\"font-size:16px;\"><strong>请及时下载更新至最新版本。</strong></span></span></p>";
@@ -3979,5 +4000,101 @@ public class LiveServiceImpl implements LiveService {
 			return 51;
 		}
 		return oldContentType;
+	}
+
+	
+
+	@Override
+	public List<TopicFragmentTemplate> getFragmentTplList(String queryStr) {
+		 List<TopicFragmentTemplate> tpls = liveMybatisDao.getFragmentTplList(queryStr);
+		 return tpls;
+	}
+
+	@Override
+	public void addFragmentTpl(TopicFragmentTemplate obj) {
+		liveMybatisDao.addFragmentTpl(obj);
+	}
+
+	@Override
+	public TopicFragmentTemplate getFragmentTplById(Long id) {
+		TopicFragmentTemplate tt = liveMybatisDao.getFragmentTplById(id);
+		return tt;
+	}
+
+	@Override
+	public void deleteFragmentTpl(Long msgId) {
+		liveMybatisDao.deleteFragmentTplById(msgId);
+	}
+
+	@Override
+	public void updateFragmentTpl(TopicFragmentTemplate obj) {
+		liveMybatisDao.updateFragmentTpl(obj);
+		
+	}
+
+	@Override
+	public void copyKingdomToDropAroundKingdom(int tropicId,int sort) {
+		if(!liveMybatisDao.existsDropAroundKingdom(tropicId)){
+			liveMybatisDao.addDropAroundKingdom(tropicId,sort);
+		}else{
+			log.info("topicId{} exists.",tropicId);
+		}
+	}
+
+	@Override
+	public void delDropAroundKingdom(int tropicId) {
+		liveMybatisDao.deleteDropAroundKingdom(tropicId);
+	}
+
+	@Override
+	public void updateDropAroundKingdom(TopicDroparound td) {
+		liveMybatisDao.updateDropAroundKingdom(td);
+	}
+
+	@Override
+	public PageBean<SearchDropAroundTopicDto> getTopicPage(PageBean page, String searchKeyword) {
+		   //获取所有更新中直播主笔的信息
+		PageBean<Topic> page2 = liveMybatisDao.getTopicPage(page, searchKeyword);
+        List<Topic> list = page2.getDataList();
+        List<SearchDropAroundTopicDto> showElementList= buildShowTopicList(list);
+        page.setDataList(showElementList);
+        page.setTotalRecords(page2.getTotalRecords());
+        return page;
+        
+	}
+	List<SearchDropAroundTopicDto> buildShowTopicList(List<Topic> list){
+	 	List<Long> uidList = new ArrayList<Long>();
+    	for(Topic topic :list){
+    		if(!uidList.contains(topic.getUid())){
+    			uidList.add(topic.getUid());
+    		}
+    	}
+        Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
+        List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
+        if(null != profileList && profileList.size() > 0){
+        	for(UserProfile up : profileList){
+        		profileMap.put(String.valueOf(up.getUid()), up);
+        	}
+        }
+        // 合并
+        List<SearchDropAroundTopicDto> showElementList = new ArrayList<>();
+        for(int i=0;i<list.size();i++){
+        	SearchDropAroundTopicDto ele = new SearchDropAroundTopicDto();
+        	Topic topic = list.get(i);
+        	UserProfile profile = profileMap.get(topic.getUid()+"");
+        	if(profile!=null){
+        		ele.setNickName(profile.getNickName());
+            	ele.setUid(profile.getId().intValue());
+            	ele.setvLv(profile.getvLv());
+        	}
+        	ele.setTitle(topic.getTitle());
+        	ele.setTopicId(topic.getId().intValue());
+        	showElementList.add(ele);
+        }
+		return showElementList;
+	}
+	@Override
+	public PageBean<SearchDropAroundTopicDto> getDropAroundKingdomPage(PageBean page,String queryStr) {
+		return liveMybatisDao.getDropAroundKingdomPage(page,queryStr);
 	}
 }

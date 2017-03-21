@@ -1,5 +1,6 @@
 package com.me2me.live.mapper;
 
+import com.me2me.live.dto.ShowLiveDto;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.Topic2;
 import com.me2me.live.model.TopicExample;
@@ -100,5 +101,20 @@ public interface TopicMapper {
     Topic getRandomDropaRoundAlgorithm(Map<String ,String> map);
 
     List<Topic2> getMyLivesByUpdateTimeNew(Map map);
-
+    /**
+     * 获取一个王国分页。
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param map
+     * @return
+     */
+    List<ShowLiveDto> getTopicPage(Map map);
+    /**
+     * 王国分页统计
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param map
+     * @return
+     */
+    long countTopicForPage(Map map);
 }
