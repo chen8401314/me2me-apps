@@ -134,6 +134,8 @@ public interface ContentService{
 
     Response Attention(int sinceId,long uid, int vFlag);
 
+    List<Content> getAttention(long sinceId , long uid, int vFlag);
+
     Response createReview(ReviewDto reviewDto);
 
     Response option(long id, int optionAction, int action);

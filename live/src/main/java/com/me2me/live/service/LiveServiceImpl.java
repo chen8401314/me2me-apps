@@ -1949,6 +1949,23 @@ public class LiveServiceImpl implements LiveService {
     public Response getMyTopic(long uid, long updateTime) {
         log.info("getMyLives start ...");
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
+        //查询5个用户关注
+        List<Content> attentionList = contentService.getAttention(Integer.MAX_VALUE ,uid, 1);
+        if (attentionList.size() > 0 && attentionList != null) {
+            int size = 0;
+            for (Content content : attentionList) {
+                size++;
+                ShowTopicListDto.AttentionElement attentionElement = showTopicListDto.createAttentionElement();
+                UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+                attentionElement.setAvatar(userProfile.getAvatar());
+                attentionElement.setUid(content.getUid());
+                attentionElement.setV_lv(userProfile.getvLv());
+                showTopicListDto.getAttentionData().add(attentionElement);
+                if(size == 5){
+                    break;
+                }
+            }
+        }
         List<Long> topics = liveMybatisDao.getTopicId(uid);
         Calendar calendar = Calendar.getInstance();
         if (updateTime == 0) {

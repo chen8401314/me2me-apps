@@ -2647,7 +2647,13 @@ private void localJpush(long toUid){
         log.info("monitor");
         return Response.success(showAttentionDto);
     }
-    
+
+    @Override
+    public List<Content> getAttention(long sinceId, long uid, int vFlag) {
+        List<Content> attentionList = contentMybatisDao.getAttention(sinceId ,uid, vFlag);
+        return attentionList;
+    }
+
     //判断核心圈身份
     private int getInternalStatus(Map<String, Object> topic, long uid) {
     	int internalStatus = 0;
