@@ -3858,8 +3858,8 @@ private void localJpush(long toUid){
                 bangDanInnerData.setIsFollowMe(isFollowMe);
                 bangDanInnerData.setContentType(contentType);
                 bangDanInnerData.setFavorite(contentMybatisDao.isFavorite(targetId,currentUid));
-                bangDanInnerData.setId(billBoardRelation.getId());
                 Content content = com.me2me.common.utils.Lists.getSingle(contentMybatisDao.getContentByTopicId(targetId));
+                bangDanInnerData.setId(content.getId());
                 bangDanInnerData.setCid(content.getId());
                 bangDanInnerData.setTopicId(targetId);
                 bangDanInnerData.setForwardCid(targetId);
@@ -3926,6 +3926,19 @@ private void localJpush(long toUid){
 		}
 		return result;
 	}
+    
+    @Override
+    public void insertBillboardList(List<BillBoardList> insertList, String key){
+    	if(null == insertList || insertList.size() == 0 || StringUtils.isEmpty(key)){
+    		return;
+    	}
+    	
+    	contentMybatisDao.deleteBillBoardListByKey(key);
+    	
+    	for(BillBoardList bbl : insertList){
+    		contentMybatisDao.insertBillBoardList(bbl);
+    	}
+    }
 
     @Override
     public Response showListDetail(long currentUid, long bid) {
@@ -3967,8 +3980,8 @@ private void localJpush(long toUid){
                 bangDanInnerData.setIsFollowMe(isFollowMe);
                 bangDanInnerData.setContentType(contentType);
                 bangDanInnerData.setFavorite(contentMybatisDao.isFavorite(targetId,currentUid));
-                bangDanInnerData.setId(billBoardRelation.getId());
                 Content content = com.me2me.common.utils.Lists.getSingle(contentMybatisDao.getContentByTopicId(targetId));
+                bangDanInnerData.setId(content.getId());
                 bangDanInnerData.setCid(content.getId());
                 bangDanInnerData.setTopicId(targetId);
                 bangDanInnerData.setForwardCid(targetId);
