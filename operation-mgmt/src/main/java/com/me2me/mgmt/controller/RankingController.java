@@ -26,7 +26,7 @@ import com.plusnet.sso.api.vo.JsonResult;
  * @author zhangjiwei
  * @date Mar 21, 2017
  */
-@Controller
+@Controller  
 @RequestMapping("/ranking")
 public class RankingController {
 	
