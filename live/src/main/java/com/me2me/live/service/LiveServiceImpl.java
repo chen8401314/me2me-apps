@@ -1184,7 +1184,8 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setCreateTime(topic.getCreateTime());
             showTopicElement.setTopicId(topic.getId());
             showTopicElement.setStatus(topic.getStatus());
-            showTopicElement.setUpdateTime(topic.getLongTime());
+            //取这个排序
+            showTopicElement.setUpdateTime(topic.getLongTimes());
             if(null != followMap.get(uid+"_"+topic.getUid().toString())){
                 showTopicElement.setIsFollowed(1);
             }else{
@@ -1222,7 +1223,7 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLastType((Integer) lastFragment.get("type"));
                 showTopicElement.setLastStatus((Integer)lastFragment.get("status"));
                 showTopicElement.setLastExtra((String)lastFragment.get("extra"));
-                showTopicElement.setIsTop(topic.getIstop());
+                showTopicElement.setIsTop(topic.getIsTop());
             } else {
                 showTopicElement.setLastContentType(-1);
             }
@@ -1952,7 +1953,7 @@ public class LiveServiceImpl implements LiveService {
         List<Long> topics = liveMybatisDao.getTopicId(uid);
         Calendar calendar = Calendar.getInstance();
         if (updateTime == 0) {
-            updateTime = calendar.getTimeInMillis();
+            updateTime = Long.MAX_VALUE;
         }
         List<Topic2> topicList = liveMybatisDao.getMyLivesByUpdateTimeNew(uid ,updateTime);
         log.info("getMyLives data success");

@@ -3859,7 +3859,7 @@ private void localJpush(long toUid){
                 bangDanInnerData.setForwardCid(targetId);
                 bangDanInnerData.setTitle(title);
                 bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + liveImage);
-                bangDanInnerData.setInternalStatus(contentType);
+                bangDanInnerData.setInternalStatus(getInternalStatus(map,currentUid));
                 bangDanInnerData.setFavoriteCount(content.getFavoriteCount()+1);
                 bangDanInnerData.setReadCount(content.getReadCountDummy());
                 bangDanInnerData.setLikeCount(content.getLikeCount());

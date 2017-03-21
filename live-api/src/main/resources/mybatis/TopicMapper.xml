@@ -47,7 +47,8 @@
     <result column="ac_publish_type" jdbcType="INTEGER" property="acPublishType" />
     <result column="rights" jdbcType="INTEGER" property="rights" />
     <result column="summary" jdbcType="VARCHAR" property="summary" />
-    <result column="istop" jdbcType="INTEGER" property="istop" />
+    <result column="istop" jdbcType="INTEGER" property="isTop" />
+    <result column="longtimes" jdbcType="BIGINT" property="longTimes" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <!--
@@ -501,7 +502,7 @@
   <select id="getMyLivesByUpdateTimeNew" resultMap="BaseResultMap2" parameterType="java.util.Map">
     SELECT * FROM (
     SELECT m.*,CASE WHEN c.is_top=1 THEN 1 ELSE 0 END AS istop,
-    CASE WHEN c.is_top=1 THEN m.long_time*100 ELSE m.long_time END AS longtime
+    CASE WHEN c.is_top=1 THEN m.long_time*100 ELSE m.long_time END AS longtimes
     FROM
     (SELECT t.*
     FROM topic t,live_favorite f
@@ -512,8 +513,8 @@
     FROM topic t1
     ) m LEFT JOIN topic_user_config c ON m.id=c.topic_id AND c.uid=#{uid}
     ) n
-    WHERE n.longtime &lt; #{updateTime}
-    ORDER BY n.longtime DESC
+    WHERE n.longtimes &lt; #{updateTime}
+    ORDER BY n.longtimes DESC
     LIMIT 10;
   </select>
   
