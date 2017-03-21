@@ -226,10 +226,10 @@
                  -->
                  
                  <!-- billboard task -->
-                 <ref bean="popularPeopleBillboardTaskJobDetail" />
-                 <ref bean="jayPeopleBillboardTaskJobDetail" />
-                 <ref bean="colorfulKingdomBillBoardTaskJobDetail" />
-                 <ref bean="lonelyKingdomBillboardTaskJobDetail" />
+                 <ref bean="popularPeopleBillboardTaskTriggers" />
+                 <ref bean="jayPeopleBillboardTaskTriggers" />
+                 <ref bean="colorfulKingdomBillBoardTaskTriggers" />
+                 <ref bean="lonelyKingdomBillboardTaskTriggers" />
                  
             </list>
         </property>
