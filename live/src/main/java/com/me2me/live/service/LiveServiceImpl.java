@@ -40,7 +40,6 @@ import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.*;
 import com.me2me.user.service.UserService;
 
-import com.plusnet.common.util.collection.ArrayHashSet;
 import lombok.extern.slf4j.Slf4j;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -3832,6 +3831,24 @@ public class LiveServiceImpl implements LiveService {
         liveMybatisDao.createTopicDroparoundTrail(trail);
 
         return Response.success(dto);
+    }
+
+    @Override
+    public Response myTopicOpt(long uid, int action, long topicId) {
+        TopicUserConfig config = liveMybatisDao.getTopicUserConfig(uid ,topicId);
+        if(config != null){
+            config.setIsTop(action);
+            liveMybatisDao.updateTopicUserConfig(config);
+            log.info("update topic_user_config success");
+        }else {
+            TopicUserConfig topicUserConfig = new TopicUserConfig();
+            topicUserConfig.setUid(uid);
+            topicUserConfig.setIsTop(action);
+            topicUserConfig.setTopicId(topicId);
+            liveMybatisDao.insertTopicUserConfig(topicUserConfig);
+            log.info("insert topic_user_config success");
+        }
+        return Response.success(200 ,"操作成功");
     }
 
     public void setDropaRoundDto(DropAroundDto dto ,long uid ,String set){
