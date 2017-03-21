@@ -395,4 +395,118 @@
       status = #{status,jdbcType=INTEGER}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="loadBillBoardBySinceId" resultType="com.me2me.content.model.BillBoardRelation">
+    select
+    id as id,
+	source_id as sourceId,
+	target_id as targetId,
+	type as type,
+	sort as sort
+    from billboard_relation where source_id=#{sourceId} and sort > #{sinceId} limit 10
+  </select>
+
+  <select id="loadBillBoardCover" resultType="long">
+
+    select vv.sourceId as sourceId from (SELECT
+	v.id as id,
+	v.source_id as sourceId,
+	v.target_id as targetId,
+	v.type as type,
+	v.sort as sort
+
+FROM
+	(
+		(
+			SELECT
+				*
+			FROM
+				billboard_relation
+			WHERE
+				source_id = 1
+			ORDER BY
+				sort ASC
+			LIMIT 10
+		)
+		UNION ALL
+			(
+				SELECT
+					*
+				FROM
+					billboard_relation
+				WHERE
+					source_id = 2
+				ORDER BY
+					sort ASC
+				LIMIT 10
+			)
+		UNION ALL
+			(
+				SELECT
+					*
+				FROM
+					billboard_relation
+				WHERE
+					source_id = 3
+				ORDER BY
+					sort ASC
+				LIMIT 3
+			)
+	) AS v
+LEFT JOIN billboard_details d ON v.source_id = d.bid
+WHERE
+	d.type = 1) vv GROUP BY vv.sourceId
+
+  </select>
+
+  <!-- 找组织找谁的接口 -->
+  <select id="loadBillBoard" resultType="com.me2me.content.model.BillBoardRelation">
+    SELECT
+        v.id as id,
+        v.source_id as sourceId,
+        v.target_id as targetId,
+        v.type as type,
+        v.sort as sort
+    FROM
+        (
+            (
+                SELECT
+                    *
+                FROM
+                    billboard_relation
+                WHERE
+                    source_id = 1
+                ORDER BY
+                    sort ASC
+                LIMIT 10
+            )
+            UNION ALL
+                (
+                    SELECT
+                        *
+                    FROM
+                        billboard_relation
+                    WHERE
+                        source_id = 2
+                    ORDER BY
+                        sort ASC
+                    LIMIT 10
+                )
+            UNION ALL
+                (
+                    SELECT
+                        *
+                    FROM
+                        billboard_relation
+                    WHERE
+                        source_id = 3
+                    ORDER BY
+                        sort ASC
+                    LIMIT 3
+                )
+        ) AS v
+    LEFT JOIN billboard_details d ON v.source_id = d.bid
+    WHERE
+        d.type = #{type}
+  </select>
 </mapper>

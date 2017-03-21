@@ -653,4 +653,23 @@ public class ContentMybatisDao {
     public void insertBillBoardList(BillBoardList bbl){
     	billBoardListMapper.insertSelective(bbl);
     }
+
+    public List<BillBoardRelation> loadBillBoardRelations(int type){
+        return billBoardMapper.loadBillBoard(type);
+    }
+
+    public List<BillBoardRelation> loadBillBoardRelationsBySinceId(long sinceId,long sourceId){
+        return billBoardMapper.loadBillBoardBySinceId(sourceId,sinceId);
+    }
+
+    public List<Long> loadBillBoardCover(int type){
+        return billBoardMapper.loadBillBoardCover(type);
+    }
+
+    public List<BillBoard> loadBillBoardByBids(List<Long> ids) {
+        BillBoardExample example = new BillBoardExample();
+        BillBoardExample.Criteria criteria = example.createCriteria();
+        criteria.andIdIn(ids);
+        return billBoardMapper.selectByExample(example);
+    }
 }

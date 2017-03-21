@@ -3,6 +3,8 @@ package com.me2me.content.mapper;
 import com.me2me.content.model.BillBoard;
 import com.me2me.content.model.BillBoardExample;
 import java.util.List;
+
+import com.me2me.content.model.BillBoardRelation;
 import org.apache.ibatis.annotations.Param;
 
 public interface BillBoardMapper {
@@ -93,4 +95,26 @@ public interface BillBoardMapper {
      * @mbggenerated Mon Mar 20 13:48:53 CST 2017
      */
     int updateByPrimaryKey(BillBoard record);
+
+    /**
+     * 找组织|找谁的
+     * @param type
+     * @return
+     */
+    List<BillBoardRelation> loadBillBoard(@Param("type") int type);
+
+    /**
+     * 获取榜单封面信息
+     * @param type
+     * @return
+     */
+    List<Long> loadBillBoardCover(@Param("type") int type);
+
+    /**
+     * 分页显示榜单信息
+     * @param sourceId
+     * @param sinceId
+     * @return
+     */
+    List<BillBoardRelation> loadBillBoardBySinceId(@Param("sourceId") long sourceId,@Param("sinceId") long sinceId);
 }

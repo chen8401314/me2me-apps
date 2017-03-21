@@ -3798,8 +3798,9 @@ private void localJpush(long toUid){
     @Override
     public Response showBangDanList(int type,long currentUid) {
         BangDanDto bangDanDto = new BangDanDto();
-        // billboard
-        List<BillBoard> data = contentMybatisDao.loadBillBoard();
+	    List<BillBoardRelation> billBoardRelations = contentMybatisDao.loadBillBoardRelations(type);
+	    List<Long> bids = contentMybatisDao.loadBillBoardCover(type);
+        List<BillBoard> data = contentMybatisDao.loadBillBoardByBids(bids);
         for(BillBoard billBoard : data){
             BangDanDto.BangDanData bangDanData = new BangDanDto.BangDanData();
             bangDanData.setSummary(billBoard.getSummary());
@@ -3810,17 +3811,72 @@ private void localJpush(long toUid){
             bangDanData.setCoverWidth(billBoard.getImgWidth());
             bangDanData.setCoverHeight(billBoard.getImgHeight());
             bangDanData.setBgColor(billBoard.getBgColor());
-            bangDanData.setType(billBoard.getType());
+            // 是否是榜单集合类型
+            bangDanData.setType((billBoard.getType()==3)?2:1);
             bangDanData.setSinceId(0);
-            bangDanData.setSubList(loadBangDanInnerData(billBoard.getId(),currentUid));
-            bangDanDto.getListData().add(bangDanData);
-        }
-        for(BangDanDto.BangDanData temp : bangDanDto.getListData()){
-            BangDanDto.BangDanData.BangDanInnerData bangDanInnerData = com.me2me.common.utils.Lists.getSingle(temp.getSubList());
-            if(bangDanInnerData!=null){
-                temp.setSubType(bangDanInnerData.getSubType());
+            bangDanData.setSubType(billBoard.getType());
+            for(BillBoardRelation billBoardRelation : billBoardRelations){
+                // 关系对应
+                if(billBoard.getId()==billBoardRelation.getSourceId()){
+                    BangDanDto.BangDanData.BangDanInnerData bangDanInnerData = new BangDanDto.BangDanData.BangDanInnerData();
+                    long targetId = billBoardRelation.getTargetId();
+                    bangDanInnerData.setSubType(billBoardRelation.getType());
+                    if(billBoardRelation.getType()==1){
+                        // 王国数据
+                        Map map = billBoardJdbcDao.getTopicById(targetId);
+                        String title = map.get("title").toString();
+                        long uid = Long.valueOf(map.get("uid").toString());
+                        int contentType = Integer.valueOf(map.get("type").toString());
+                        String liveImage = map.get("live_image").toString();
+                        bangDanInnerData.setSubListId(billBoardRelation.getId());
+                        bangDanInnerData.setUid(uid);
+                        UserProfile userProfile = userService.getUserProfileByUid(uid);
+                        bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                        bangDanInnerData.setNickName(userProfile.getNickName());
+                        bangDanInnerData.setV_lv(userProfile.getvLv());
+                        int isFollowed = userService.isFollow(uid,currentUid);
+                        bangDanInnerData.setIsFollowed(isFollowed);
+                        int isFollowMe = userService.isFollow(currentUid,uid);
+                        bangDanInnerData.setIsFollowMe(isFollowMe);
+                        bangDanInnerData.setContentType(contentType);
+                        bangDanInnerData.setFavorite(contentMybatisDao.isFavorite(targetId,currentUid));
+                        Content content = com.me2me.common.utils.Lists.getSingle(contentMybatisDao.getContentByTopicId(targetId));
+                        bangDanInnerData.setId(content.getId());
+                        bangDanInnerData.setCid(content.getId());
+                        bangDanInnerData.setTopicId(targetId);
+                        bangDanInnerData.setForwardCid(targetId);
+                        bangDanInnerData.setTitle(title);
+                        bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + liveImage);
+                        bangDanInnerData.setInternalStatus(getInternalStatus(map,currentUid));
+                        bangDanInnerData.setFavoriteCount(content.getFavoriteCount()+1);
+                        bangDanInnerData.setReadCount(content.getReadCountDummy());
+                        bangDanInnerData.setLikeCount(content.getLikeCount());
+                        bangDanInnerData.setReviewCount(content.getReviewCount());
+                    }else if(billBoardRelation.getType()==2){
+                        // 人
+                        bangDanInnerData.setUid(targetId);
+                        UserProfile userProfile = userService.getUserProfileByUid(targetId);
+                        bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                        bangDanInnerData.setNickName(userProfile.getNickName());
+                        bangDanInnerData.setV_lv(userProfile.getvLv());
+                        int isFollowed = userService.isFollow(targetId,currentUid);
+                        bangDanInnerData.setIsFollowed(isFollowed);
+                        int isFollowMe = userService.isFollow(currentUid,targetId);
+                        bangDanInnerData.setIsFollowMe(isFollowMe);
+                        bangDanInnerData.setId(billBoardRelation.getId());
+                        bangDanInnerData.setIntroduced(userProfile.getIntroduced());
+                    }else if(billBoardRelation.getType()==3){
+                        // 榜单集合
+                        BillBoard bb = contentMybatisDao.loadBillBoardById(targetId);
+                        bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
+                        bangDanInnerData.setId(bb.getId());
+                        bangDanInnerData.setTitle(bb.getName());
+                        bangDanInnerData.setSubListId(bb.getId());
+                    }
+                    bangDanData.getSubList().add(bangDanInnerData);
+                }
             }
-            continue;
+            bangDanDto.getListData().add(bangDanData);
         }
         return Response.success(bangDanDto);
     }
@@ -3893,6 +3949,7 @@ private void localJpush(long toUid){
                 BillBoard billBoard = contentMybatisDao.loadBillBoardById(targetId);
                 bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
                 bangDanInnerData.setId(billBoard.getId());
+                bangDanInnerData.setTitle(billBoard.getName());
             }
             ret.add(bangDanInnerData);
         }
@@ -3935,7 +3992,7 @@ private void localJpush(long toUid){
     }
 
     @Override
-    public Response showListDetail(long currentUid, long bid) {
+    public Response showListDetail(long currentUid, long bid,long sinceId) {
 	    BillBoardDetailsDto billBoardDetailsDto = new BillBoardDetailsDto();
 
 	    BillBoard billBoard = contentMybatisDao.loadBillBoardById(bid);
@@ -3950,7 +4007,7 @@ private void localJpush(long toUid){
         billBoardDetailsDto.setType(billBoard.getType());
 
         // 记载榜单旗下的列表数据
-	    List<BillBoardRelation> data =  contentMybatisDao.loadBillBoardRelation(bid);
+	    List<BillBoardRelation> data =  contentMybatisDao.loadBillBoardRelationsBySinceId(sinceId,bid);
         for(BillBoardRelation billBoardRelation : data){
             BillBoardDetailsDto.InnerDetailData bangDanInnerData = new BillBoardDetailsDto.InnerDetailData();
             long targetId = billBoardRelation.getTargetId();
@@ -4003,6 +4060,8 @@ private void localJpush(long toUid){
                 BillBoard bb = contentMybatisDao.loadBillBoardById(targetId);
                 bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
                 bangDanInnerData.setId(bb.getId());
+                bangDanInnerData.setTitle(bb.getName());
+                // bangDanInnerData.setSubType();
             }
             billBoardDetailsDto.getSubList().add(bangDanInnerData);
         }

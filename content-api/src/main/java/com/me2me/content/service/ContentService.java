@@ -251,5 +251,5 @@ public interface ContentService{
      * @param bid
      * @return
      */
-    Response showListDetail(long currentUid,long bid);
+    Response showListDetail(long currentUid, long bid,long sinceId);
 }
