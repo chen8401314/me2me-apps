@@ -345,12 +345,12 @@ public class LiveForContentJdbcDao {
      */
     public List<Map<String, Object>> getInteractionHottestBillboard(long sinceId, int pageSize){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select t.*,m.cc as sinceId from topic t,(");
+    	sb.append("select t.*,m.cc as sinceId from topic t,content c,(");
     	sb.append("select f.topic_id,count(1) as cc");
     	sb.append(" from topic_fragment f where f.type not in (0,12,13)");
     	sb.append(" and f.create_time>date_add(now(), interval -1 day)");
-    	sb.append(" group by f.topic_id) m where t.id=m.topic_id");
-    	sb.append(" and m.cc<").append(sinceId);
+    	sb.append(" group by f.topic_id) m where t.id=c.forward_cid and c.type=3");
+    	sb.append(" and t.id=m.topic_id and m.cc<").append(sinceId);
     	sb.append(" order by cc DESC limit ").append(pageSize);
     	
     	return jdbcTemplate.queryForList(sb.toString());

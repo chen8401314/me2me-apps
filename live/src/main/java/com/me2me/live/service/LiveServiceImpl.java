@@ -36,7 +36,6 @@ import com.me2me.live.event.CoreAggregationRemindEvent;
 import com.me2me.live.event.RemindAndJpushAtMessageEvent;
 import com.me2me.live.event.SpeakEvent;
 import com.me2me.live.event.TopicNoticeEvent;
-import com.me2me.live.mapper.TopicFragmentTemplateMapper;
 import com.me2me.live.model.*;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.*;
@@ -1897,7 +1896,7 @@ public class LiveServiceImpl implements LiveService {
         log.info("myLivesAllByUpdateTime end ...");
         return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status, ResponseStatus.GET_MY_LIVE_SUCCESS.message, showTopicListDto);
     }
-    
+
     /**
      * 获取我关注的直播，和我的直播列表
      *
@@ -1949,6 +1948,23 @@ public class LiveServiceImpl implements LiveService {
     public Response getMyTopic(long uid, long updateTime) {
         log.info("getMyLives start ...");
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
+        //查询5个用户关注
+        List<Content> attentionList = contentService.getAttention(Integer.MAX_VALUE ,uid, 1);
+        if (attentionList.size() > 0 && attentionList != null) {
+            int size = 0;
+            for (Content content : attentionList) {
+                size++;
+                ShowTopicListDto.AttentionElement attentionElement = showTopicListDto.createAttentionElement();
+                UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+                attentionElement.setAvatar(Constant.QINIU_DOMAIN+"/"+userProfile.getAvatar());
+                attentionElement.setUid(content.getUid());
+                attentionElement.setV_lv(userProfile.getvLv());
+                showTopicListDto.getAttentionData().add(attentionElement);
+                if(size == 5){
+                    break;
+                }
+            }
+        }
         List<Long> topics = liveMybatisDao.getTopicId(uid);
         Calendar calendar = Calendar.getInstance();
         if (updateTime == 0) {
@@ -3879,7 +3895,11 @@ public class LiveServiceImpl implements LiveService {
             cacheService.sadd("list:user@" + uid, String.valueOf(droparound.getTopicid()));
             TopicFragmentTemplate topicFragmentTemplate = liveMybatisDao.getTopicFragmentTemplate();
             if (topicFragmentTemplate != null) {
-                dto.setTrackContent(topicFragmentTemplate.getContent());
+                String text = topicFragmentTemplate.getContent();
+                String trackImage = text.substring(text.indexOf("##")+2);
+                String trackContent = text.substring(0,text.indexOf("##"));
+                dto.setTrackContent(trackContent);
+                dto.setTrackImage(Constant.QINIU_DOMAIN+"/"+trackImage);
             }
         }
             log.info("setDropaRoundDto is ok");
@@ -3888,7 +3908,6 @@ public class LiveServiceImpl implements LiveService {
     //算法取
     public void setDropaRoundDtoAlgorithm(DropAroundDto dto ,long uid ,String set){
         Map<String ,String> map = Maps.newHashMap();
-        System.out.println(set);
         map.put("uid",String.valueOf(uid));
         map.put("set",set);
         //随机获取一条王国
@@ -3912,7 +3931,11 @@ public class LiveServiceImpl implements LiveService {
         cacheService.sadd("list:user@"+uid ,String.valueOf(topicInfo.getId()));
         TopicFragmentTemplate topicFragmentTemplate = liveMybatisDao.getTopicFragmentTemplate();
         if(topicFragmentTemplate != null){
-            dto.setTrackContent(topicFragmentTemplate.getContent());
+            String text = topicFragmentTemplate.getContent();
+            String trackImage = text.substring(text.indexOf("##")+2);
+            String trackContent = text.substring(0,text.indexOf("##"));
+            dto.setTrackContent(trackContent);
+            dto.setTrackImage(Constant.QINIU_DOMAIN+"/"+trackImage);
         }
         log.info("setDropaRoundDtoAlgorithm is ok");
     }
