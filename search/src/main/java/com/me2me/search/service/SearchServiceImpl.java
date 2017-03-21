@@ -19,15 +19,12 @@ public class SearchServiceImpl implements SearchService {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private ElasticsearchTemplate elasticsearchTemplate;
+//    @Autowired
+//    private ElasticsearchTemplate elasticsearchTemplate;
 
 
     @Override
     public Response search(String keyword,int page,int pageSize,long uid,int isSearchFans) {
-
-        System.out.println(elasticsearchTemplate);
-
         if(isSearchFans == Specification.SearchType.FANS.index){
             return userService.searchFans(keyword, page, pageSize, uid);
         }else {
