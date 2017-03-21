@@ -6,6 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.me2me.user.model.UserProfile;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -275,5 +280,79 @@ public class LiveForContentJdbcDao {
     
     public List<Map<String, Object>> queryBySql(String sql){
     	return jdbcTemplate.queryForList(sql);
+    }
+    
+    /**
+     * 最活跃的米汤新鲜人
+     * @param sinceId
+     * @param pageSize
+     * @return
+     */
+    public List<UserProfile> getActiveUserBillboard(long sinceId, int pageSize){
+    	List<UserProfile> result = new ArrayList<UserProfile>();
+    	
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select m.uid,m.tid from (select t.uid,max(t.id) as tid");
+    	sb.append(" from topic t where t.status=0 group by t.uid) m");
+    	sb.append(" where m.tid<").append(sinceId);
+    	sb.append(" order by m.tid desc limit ").append(pageSize);
+    	
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	if(null != list && list.size() > 0){
+    		StringBuilder usb = new StringBuilder();
+    		usb.append("select * from user_profile u");
+    		usb.append(" where u.id in (");
+    		for(Map<String, Object> m : list){
+    			usb.append((Long)m.get("uid"));
+    		}
+    		usb.append(") order by u.id desc");
+    		List<Map<String, Object>> ulist = jdbcTemplate.queryForList(usb.toString());
+    		Map<String, UserProfile> uMap = new HashMap<String, UserProfile>();
+    		UserProfile up = null;
+    		for(Map<String, Object> m : ulist){
+    			up = new UserProfile();
+    			up.setId((Long)m.get("id"));
+    			up.setUid((Long)m.get("uid"));
+    			up.setMobile((String)m.get("mobile"));
+    			up.setNickName((String)m.get("nick_name"));
+    			up.setGender((Integer)m.get("gender"));
+    			up.setBirthday((String)m.get("birthday"));
+    			up.setAvatar((String)m.get("avatar"));
+    			up.setIntroduced((String)m.get("introduced"));
+    			up.setCreateTime((Date)m.get("create_time"));
+    			up.setUpdateTime((Date)m.get("update_time"));
+    			up.setIsPromoter((Integer)m.get("is_promoter"));
+    			up.setThirdPartBind((String)m.get("third_part_bind"));
+    			up.setvLv((Integer)m.get("v_lv"));
+    			uMap.put(String.valueOf(up.getUid()), up);
+    		}
+    		for(Map<String, Object> m : list){
+    			up = uMap.get(String.valueOf(m.get("uid")));
+    			if(null != up){
+    				result.add(up);
+    			}
+    		}
+    	}
+    	
+    	return result;
+    }
+    
+    /**
+     * 这里的互动最热闹
+     * @param sinceId
+     * @param pageSize
+     * @return
+     */
+    public List<Map<String, Object>> getInteractionHottestBillboard(long sinceId, int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select t.*,m.cc as sinceId from topic t,(");
+    	sb.append("select f.topic_id,count(1) as cc");
+    	sb.append(" from topic_fragment f where f.type not in (0,12,13)");
+    	sb.append(" and f.create_time>date_add(now(), interval -1 day)");
+    	sb.append(" group by f.topic_id) m where t.id=m.topic_id");
+    	sb.append(" and m.cc<").append(sinceId);
+    	sb.append(" order by cc DESC limit ").append(pageSize);
+    	
+    	return jdbcTemplate.queryForList(sb.toString());
     }
 }
