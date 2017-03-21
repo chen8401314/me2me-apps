@@ -3852,8 +3852,8 @@ private void localJpush(long toUid){
                 bangDanInnerData.setIsFollowMe(isFollowMe);
                 bangDanInnerData.setContentType(contentType);
                 bangDanInnerData.setFavorite(contentMybatisDao.isFavorite(targetId,currentUid));
-                bangDanInnerData.setId(billBoardRelation.getId());
                 Content content = com.me2me.common.utils.Lists.getSingle(contentMybatisDao.getContentByTopicId(targetId));
+                bangDanInnerData.setId(content.getId());
                 bangDanInnerData.setCid(content.getId());
                 bangDanInnerData.setTopicId(targetId);
                 bangDanInnerData.setForwardCid(targetId);
@@ -3961,8 +3961,8 @@ private void localJpush(long toUid){
                 bangDanInnerData.setIsFollowMe(isFollowMe);
                 bangDanInnerData.setContentType(contentType);
                 bangDanInnerData.setFavorite(contentMybatisDao.isFavorite(targetId,currentUid));
-                bangDanInnerData.setId(billBoardRelation.getId());
                 Content content = com.me2me.common.utils.Lists.getSingle(contentMybatisDao.getContentByTopicId(targetId));
+                bangDanInnerData.setId(content.getId());
                 bangDanInnerData.setCid(content.getId());
                 bangDanInnerData.setTopicId(targetId);
                 bangDanInnerData.setForwardCid(targetId);
