@@ -48,7 +48,7 @@
         <!--<table tableName="article_likes_details" domainObjectName="ArticleLikesDetails"/>-->
         <!--<table tableName="article_review" domainObjectName="ArticleReview"/>-->
         <!--<table tableName="article_tags_details" domainObjectName="ArticleTagsDetails"/>-->
-        <!--<table tableName="billboard" domainObjectName="BillBoard"/>-->
+        <table tableName="billboard" domainObjectName="BillBoard"/>
         <!--<table tableName="billboard_details" domainObjectName="BillBoardDetails"/>-->
         <!--<table tableName="billboard_relation" domainObjectName="BillBoardRelation"/>-->
         <!--<table tableName="billboard_list" domainObjectName="BillBoardList"/>-->

@@ -38,11 +38,9 @@
     <profiles>
         <profile>
             <id>dev</id>
-            <!-- 
             <activation>
-            <activeByDefault>true</activeByDefault>
+                <activeByDefault>true</activeByDefault>
             </activation>
-             -->
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>

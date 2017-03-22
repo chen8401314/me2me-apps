@@ -1210,7 +1210,7 @@ public class LiveServiceImpl implements LiveService {
                     showTopicElement.setAcCount(0);
                 }
             }
-            processCache(uid,topic,showTopicElement);
+            processCache2(uid,topic,showTopicElement);
             lastFragment = lastFragmentMap.get(String.valueOf(topic.getId()));
             if (null != lastFragment) {
                 showTopicElement.setLastContentType((Integer)lastFragment.get("content_type"));
@@ -1283,6 +1283,23 @@ public class LiveServiceImpl implements LiveService {
         if (!StringUtils.isEmpty(isUpdate)) {
             showTopicElement.setIsUpdate(Integer.parseInt(isUpdate));
         }
+    }
+
+    private void processCache2(long uid, Topic topic, ShowTopicListDto.ShowTopicElement showTopicElement) {
+        MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topic.getId() + "", "0");
+        String isUpdate = cacheService.hGet(cacheModel.getKey(), topic.getId() + "");
+        if(StringUtils.isEmpty(isUpdate) || Integer.parseInt(isUpdate) == 0){
+            showTopicElement.setIsUpdate(0);
+        }else {
+            showTopicElement.setIsUpdate(1);
+//            liveMybatisDao.createTopic();
+        }
+
+        if (!StringUtils.isEmpty(isUpdate)) {
+            showTopicElement.setIsUpdate(Integer.parseInt(isUpdate));
+        }
+       //判断 at_uid 是否等于自己 type in (10 ,11 ,15) oder by id desc limit 1
+
     }
 
     /**
