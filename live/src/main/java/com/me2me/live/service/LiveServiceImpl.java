@@ -1210,7 +1210,7 @@ public class LiveServiceImpl implements LiveService {
                     showTopicElement.setAcCount(0);
                 }
             }
-            processCache2(uid,topic,showTopicElement);
+
             lastFragment = lastFragmentMap.get(String.valueOf(topic.getId()));
             if (null != lastFragment) {
                 showTopicElement.setLastContentType((Integer)lastFragment.get("content_type"));
@@ -1225,6 +1225,7 @@ public class LiveServiceImpl implements LiveService {
             } else {
                 showTopicElement.setLastContentType(-1);
             }
+            processCache2(uid,topic,showTopicElement);
             if(null != reviewCountMap.get(String.valueOf(topic.getId()))){
                 showTopicElement.setReviewCount(reviewCountMap.get(String.valueOf(topic.getId())).intValue());
             }else{
@@ -1292,14 +1293,21 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setIsUpdate(0);
         }else {
             showTopicElement.setIsUpdate(1);
-//            liveMybatisDao.createTopic();
+            Map map = Maps.newHashMap();
+            map.put("fid" ,isUpdate);
+            map.put("uid" ,uid);
+            TopicFragment topicFragment = liveMybatisDao.getFragmentByAT(map);
+            if(topicFragment != null){
+                showTopicElement.setLastContentType(topicFragment.getContentType());
+                showTopicElement.setLastFragment(topicFragment.getFragment());
+                showTopicElement.setLastFragmentImage(topicFragment.getFragmentImage());
+                showTopicElement.setLastUpdateTime(topicFragment.getCreateTime().getTime());
+                //新增
+                showTopicElement.setLastType(topicFragment.getType());
+                showTopicElement.setLastStatus(topicFragment.getStatus());
+                showTopicElement.setLastExtra(topicFragment.getExtra());
+            }
         }
-
-        if (!StringUtils.isEmpty(isUpdate)) {
-            showTopicElement.setIsUpdate(Integer.parseInt(isUpdate));
-        }
-       //判断 at_uid 是否等于自己 type in (10 ,11 ,15) oder by id desc limit 1
-
     }
 
     /**
