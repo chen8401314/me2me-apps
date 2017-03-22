@@ -100,7 +100,10 @@ public class SpeakListener {
         //非国王发言着提醒国王王国更新红点
         if(topic.getUid()!=speakEvent.getUid()){
             cacheModel = new MySubscribeCacheModel(topic.getUid(), speakEvent.getTopicId() + "", speakEvent.getFragmentId()+"");
-            cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+            String values = cacheService.hGet(cacheModel.getKey(), cacheModel.getField());
+            if(StringUtils.isEmpty(values) || Integer.parseInt(values) == 0){
+                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+            }
         }
         LiveLastUpdate liveLastUpdate = new LiveLastUpdate(speakEvent.getTopicId(),"1");
         
@@ -153,7 +156,11 @@ public class SpeakListener {
 
             MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(cid, speakEvent.getTopicId() + "", speakEvent.getFragmentId()+"");
             log.info("speak by fans start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
-            cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+            String values = cacheService.hGet(cacheModel.getKey(), cacheModel.getField());
+            if(StringUtils.isEmpty(values) || Integer.parseInt(values) == 0){
+                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+            }
+
             if(speakEvent.getAtUids().indexOf(CommonUtils.wrapString(cid,","))>-1){
                 continue;
             }
