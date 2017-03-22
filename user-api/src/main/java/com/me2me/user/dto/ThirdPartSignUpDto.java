@@ -49,4 +49,6 @@ public class ThirdPartSignUpDto extends UserSignUpDto {
 
     private String channel;
 
+    private String params;
+
 }

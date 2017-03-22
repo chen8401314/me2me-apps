@@ -1019,10 +1019,15 @@ public class LiveMybatisDao {
 		page.setTotalRecords(count);
 		return page;
 	}
+
     public TopicFragmentTemplate getTopicFragmentTemplate(){
         List<TopicFragmentTemplate> list = topicFragmentTemplateMapper.selectByExample(null);
         Collections.shuffle(list);
         return list.size() > 0 && list != null ? list.get(0):null;
+    }
+
+    public TopicFragment getFragmentByAT(Map map){
+        return topicFragmentMapper.getFragmentByAT(map);
     }
 
 }

@@ -29,10 +29,9 @@
     <profiles>
         <profile>
             <id>dev</id>
-           <!-- <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>-->
-            <!--
+           <!--<activation>-->
+                <!--<activeByDefault>true</activeByDefault>-->
+            <!--</activation>-->
             <build>
                 <plugins>
                     <plugin>
@@ -72,7 +71,6 @@
                     </plugin>
                 </plugins>
             </build>
-             -->
         </profile>
     </profiles>
 </project>

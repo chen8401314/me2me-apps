@@ -620,6 +620,7 @@ public class StatController {
 			for(Map<String, Object> u : list){
 				item = new UserRegisterDetailQueryDTO.Item();
 				item.setChannelCode((String)u.get("channel"));
+				item.setRegisterVersion((String)u.get("register_version"));
 				fansCount = fansMap.get(String.valueOf(u.get("uid")));
 				if(null != fansCount){
 					item.setFansCount(fansCount.longValue());
@@ -786,6 +787,7 @@ public class StatController {
 			for(Map<String, Object> u : list){
 				item = new UserRegisterDetailQueryDTO.Item();
 				item.setChannelCode((String)u.get("channel"));
+				item.setRegisterVersion((String)u.get("register_version"));
 				fansCount = fansMap.get(String.valueOf(u.get("uid")));
 				if(null != fansCount){
 					item.setFansCount(fansCount.longValue());

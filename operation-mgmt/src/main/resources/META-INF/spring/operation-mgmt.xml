@@ -147,6 +147,70 @@
     </bean>
     <!-- task 8 end-->
 
+	<!-- task 9 start-->
+    <bean id="popularPeopleBillboardTaskJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="popularPeopleBillboardTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="popularPeopleBillboardTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="popularPeopleBillboardTaskJobDetail">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 0 * * ?</value>
+        </property>
+    </bean>
+    <!-- task 9 end-->
+    
+    <!-- task 10 start-->
+    <bean id="jayPeopleBillboardTaskJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="jayPeopleBillboardTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="jayPeopleBillboardTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jayPeopleBillboardTaskJobDetail">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 0 * * ?</value>
+        </property>
+    </bean>
+    <!-- task 10 end-->
+    
+    <!-- task 11 start-->
+    <bean id="colorfulKingdomBillBoardTaskJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="colorfulKingdomBillBoardTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="colorfulKingdomBillBoardTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="colorfulKingdomBillBoardTaskJobDetail">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 0 * * ?</value>
+        </property>
+    </bean>
+    <!-- task 11 end-->
+    
+    <!-- task 12 start-->
+    <bean id="lonelyKingdomBillboardTaskJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="lonelyKingdomBillboardTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="lonelyKingdomBillboardTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="lonelyKingdomBillboardTaskJobDetail">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 * * * ?</value>
+        </property>
+    </bean>
+    <!-- task 12 end-->
+
     <bean name="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
             <list>
@@ -160,6 +224,13 @@
                 <ref bean="springPushTop10TaskTriggers" />
                 <ref bean="springStartNoticeTaskTriggers" />
                  -->
+                 
+                 <!-- billboard task -->
+                 <ref bean="popularPeopleBillboardTaskTriggers" />
+                 <ref bean="jayPeopleBillboardTaskTriggers" />
+                 <ref bean="colorfulKingdomBillBoardTaskTriggers" />
+                 <ref bean="lonelyKingdomBillboardTaskTriggers" />
+                 
             </list>
         </property>
     </bean>

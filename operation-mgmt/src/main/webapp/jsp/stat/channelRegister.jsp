@@ -23,6 +23,32 @@
 <script src="${ctx}/js/jquery-ui-1.9.2.custom.min.js"></script>
 <script src="${ctx}/js/jquery-migrate-1.2.1.min.js"></script>
 <script src="${ctx}/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+$(function(){
+	$("#checkall").click(function(){
+		$("input[name='checkItem']").attr("checked",this.checked);
+	});
+	$("#totalBtn").click(function(){
+		var uCount = 0;
+		var kCount = 0;
+		
+		var chkCount =0;
+		$('input[name="checkItem"]:checked').each(function(){
+			chkCount++;
+			var tt = $(this).val().split(",");
+			uCount = uCount + parseInt(tt[0]);
+			kCount = kCount + parseInt(tt[1]);
+		});
+		if(chkCount==0){
+			alert('请至少选择一个渠道');
+		}else{
+			$("#totalRegisterCount").val(uCount);
+			$("#totalKingdomCount").val(kCount);
+			$("#alertModal").modal();
+		}
+	});
+});
+</script>
 </head>
 <body>
 	<section id="container" class="">
@@ -65,7 +91,7 @@
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								| 渠道列表 
+								| 渠道列表&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type="button" value="合计" class="btn btn-info" id="totalBtn">
 								<span class="tools pull-right">
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>
@@ -75,6 +101,7 @@
 									<table class="display table table-bordered table-striped" id="dynamic-table">
 										<thead>
 											<tr>
+												<th><input type="checkbox" name="checkall" id="checkall"/></th>
 												<th>渠道标识</th>
 												<th>注册数</th>
 												<th>王国创建数</th>
@@ -84,6 +111,7 @@
 										<tbody>
 											<c:forEach items="${dataObj.result}" var="item">
 												<tr class="gradeX">
+													<td><input type="checkbox" name="checkItem" value="${item.registerCount },${item.kingdomCount }"/></td>
 													<td>${item.channelCode }</td>
 													<td>${item.registerCount }</td>
 													<td>${item.kingdomCount }</td>
@@ -93,14 +121,6 @@
 												</tr>
 											</c:forEach>
 										</tbody>
-										<tfoot>
-											<tr>
-												<th>渠道标识</th>
-												<th>注册数</th>
-												<th>王国创建数</th>
-												<th>操作</th>
-											</tr>
-										</tfoot>
 									</table>
 								</div>
 							</div>
@@ -120,6 +140,32 @@
 		<%@include file="../common/footer.jsp"%>
 		<!--footer end-->
 	</section>
+	
+	<!-- modal VIEW -->
+	<div class="modal fade" id="alertModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">渠道合计信息</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="exampleInputEmail1">合计注册数</label>
+                        <input type="text" id="totalRegisterCount" name="totalRegisterCount" class="form-control" style="width: 100%" readonly>
+					</div>
+					<div class="form-group">
+						<label for="exampleInputEmail1">合计王国创建数</label>
+                        <input type="text" id="totalKingdomCount" name="totalKingdomCount" class="form-control" style="width: 100%" readonly>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button data-dismiss="modal" class="btn btn-default" type="button">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
+	
 	<!-- js placed at the end of the document so the pages load faster -->
 	<script class="include" type="text/javascript" src="${ctx}/js/jquery.dcjqaccordion.2.7.js"></script>
 	<script src="${ctx}/js/jquery.scrollTo.min.js"></script>

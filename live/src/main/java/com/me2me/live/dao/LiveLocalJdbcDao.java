@@ -1,7 +1,5 @@
 package com.me2me.live.dao;
 
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +12,6 @@ import org.springframework.stereotype.Repository;
 import com.me2me.live.dto.KingdomSearchDTO;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.LiveFavoriteDelete;
-import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicBarrage;
 
 @Repository

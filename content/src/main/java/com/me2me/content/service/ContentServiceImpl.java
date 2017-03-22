@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.gson.JsonObject;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.service.ActivityService;
+import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
@@ -88,6 +89,9 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private JPushService jPushService;
+    
+    @Autowired
+    private CacheService cacheService;
 
     @Autowired
     private LiveForContentJdbcDao liveForContentJdbcDao;
@@ -2647,7 +2651,13 @@ private void localJpush(long toUid){
         log.info("monitor");
         return Response.success(showAttentionDto);
     }
-    
+
+    @Override
+    public List<Content> getAttention(long sinceId, long uid, int vFlag) {
+        List<Content> attentionList = contentMybatisDao.getAttention(sinceId ,uid, vFlag);
+        return attentionList;
+    }
+
     //判断核心圈身份
     private int getInternalStatus(Map<String, Object> topic, long uid) {
     	int internalStatus = 0;
@@ -3794,12 +3804,129 @@ private void localJpush(long toUid){
 		
 		return Response.success(result);
 	}
+	
+	@Override
+	public Response showBangDanList(long sinceId, int type,long currentUid) {
+		BangDanDto bangDanDto = new BangDanDto();
+		int searchType = 2;//找组织
+		if(type == 1){
+			searchType = 1;//找谁
+		}
+		List<BillBoardDetails> showList = contentMybatisDao.getShowListPageByType((int)sinceId, searchType);
+		if(null != showList && showList.size() > 0){
+			//为减少在for循环里查询sql，这里统一将一些数据一次性查出使用
+			List<Long> bidList = new ArrayList<Long>();
+			for(BillBoardDetails bbd : showList){
+				bidList.add(bbd.getBid());
+			}
+			//一次性查询所有榜单相关信息
+			Map<String, BillBoard> bMap = new HashMap<String, BillBoard>();
+			List<BillBoard> bList = contentMybatisDao.loadBillBoardByBids(bidList);
+			for(BillBoard bb : bList){
+				bMap.put(bb.getId().toString(), bb);
+			}
+			
+			BillBoard billBoard = null;
+			BangDanDto.BangDanData bangDanData = null;
+			List<BillBoardRelation> relationList = null;
+			BangDanDto.BangDanData.BangDanInnerData bangDanInnerData = null;
+			for(BillBoardDetails bbd : showList){
+				billBoard = bMap.get(bbd.getBid().toString());
+				if(null == billBoard){
+					continue;
+				}
+				bangDanData = new BangDanDto.BangDanData();
+				bangDanData.setSummary(billBoard.getSummary());
+	            bangDanData.setTitle(billBoard.getName());
+	            bangDanData.setListId(billBoard.getId());
+	            bangDanData.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
+	            bangDanData.setIsShowName(billBoard.getShowName());
+	            bangDanData.setCoverWidth(billBoard.getImgWidth());
+	            bangDanData.setCoverHeight(billBoard.getImgHeight());
+	            bangDanData.setBgColor(billBoard.getBgColor());
+	            // 是否是榜单集合类型
+	            bangDanData.setType((billBoard.getType()==3)?2:1);
+	            bangDanData.setSinceId(bbd.getSort());
+	            bangDanData.setSubType(billBoard.getType());
+	            
+	            //获取榜单里的具体内容（王国3个，人5个，如果是榜单集则显示所有榜单）
+	            int pageSize = 0;//榜单集是所有
+	            if(billBoard.getType() == 1){
+	            	pageSize = 3;//王国
+	            }else if(billBoard.getType() == 2){
+	            	pageSize = 5;//人
+	            }
+	            if(billBoard.getMode() > 0){//自动榜单
+	            	this.buildAutoBillBoardSimple(bangDanData, billBoard.getId(), billBoard.getMode(), currentUid, billBoard.getType(), pageSize);
+	            }else{//人工榜单
+	            	relationList = contentMybatisDao.getRelationListPage(billBoard.getId(), -1, pageSize);
+		            if(null != relationList && relationList.size() > 0){
+		            	for(BillBoardRelation billBoardRelation : relationList){
+		            		bangDanInnerData = new BangDanDto.BangDanData.BangDanInnerData();
+		                    long targetId = billBoardRelation.getTargetId();
+		                    bangDanInnerData.setSubType(billBoardRelation.getType());
+		                    if(billBoardRelation.getType()==1){// 王国数据
+		                    	bangDanInnerData.setSubListId(billBoard.getId());
+		                        Map<String,Object> map = billBoardJdbcDao.getTopicById(targetId);
+		                        long uid = (Long)map.get("uid");
+		                        String liveImage = map.get("live_image").toString();
+		                        bangDanInnerData.setUid(uid);
+		                        UserProfile userProfile = userService.getUserProfileByUid(uid);
+		                        bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+		                        bangDanInnerData.setNickName(userProfile.getNickName());
+		                        bangDanInnerData.setV_lv(userProfile.getvLv());
+		                        int isFollowed = userService.isFollow(uid,currentUid);
+		                        bangDanInnerData.setIsFollowed(isFollowed);
+		                        int isFollowMe = userService.isFollow(currentUid,uid);
+		                        bangDanInnerData.setIsFollowMe(isFollowMe);
+		                        bangDanInnerData.setContentType((Integer)map.get("type"));
+		                        bangDanInnerData.setFavorite(contentMybatisDao.isFavorite(targetId,currentUid));
+		                        Content content = com.me2me.common.utils.Lists.getSingle(contentMybatisDao.getContentByTopicId(targetId));
+		                        bangDanInnerData.setId(content.getId());
+		                        bangDanInnerData.setCid(content.getId());
+		                        bangDanInnerData.setTopicId(targetId);
+		                        bangDanInnerData.setForwardCid(targetId);
+		                        bangDanInnerData.setTitle((String)map.get("title"));
+		                        bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + liveImage);
+		                        bangDanInnerData.setInternalStatus(getInternalStatus(map,currentUid));
+		                        bangDanInnerData.setFavoriteCount(content.getFavoriteCount()+1);
+		                        bangDanInnerData.setReadCount(content.getReadCountDummy());
+		                        bangDanInnerData.setLikeCount(content.getLikeCount());
+		                        bangDanInnerData.setReviewCount(content.getReviewCount());
+		                    }else if(billBoardRelation.getType()==2){// 人
+		                    	bangDanInnerData.setSubListId(billBoard.getId());
+		                        bangDanInnerData.setUid(targetId);
+		                        UserProfile userProfile = userService.getUserProfileByUid(targetId);
+		                        bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+		                        bangDanInnerData.setNickName(userProfile.getNickName());
+		                        bangDanInnerData.setV_lv(userProfile.getvLv());
+		                        int isFollowed = userService.isFollow(targetId,currentUid);
+		                        bangDanInnerData.setIsFollowed(isFollowed);
+		                        int isFollowMe = userService.isFollow(currentUid,targetId);
+		                        bangDanInnerData.setIsFollowMe(isFollowMe);
+		                        bangDanInnerData.setIntroduced(userProfile.getIntroduced());
+		                    }else if(billBoardRelation.getType()==3){// 榜单集合
+		                        BillBoard bb = contentMybatisDao.loadBillBoardById(targetId);
+		                        bangDanInnerData.setSubListId(bb.getId());
+		                        bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
+		                        bangDanInnerData.setTitle(bb.getName());
+		                    }
+		                    bangDanData.getSubList().add(bangDanInnerData);
+			            }
+		            }
+	            }
+	            bangDanDto.getListData().add(bangDanData);
+			}
+		}
+		
+		return Response.success(bangDanDto);
+	}
 
-    @Override
-    public Response showBangDanList(int type,long currentUid) {
+    public Response showBangDanList2(int type,long currentUid) {
         BangDanDto bangDanDto = new BangDanDto();
-        // billboard
-        List<BillBoard> data = contentMybatisDao.loadBillBoard();
+	    List<BillBoardRelation> billBoardRelations = contentMybatisDao.loadBillBoardRelations(type);
+	    List<Long> bids = contentMybatisDao.loadBillBoardCover(type);
+        List<BillBoard> data = contentMybatisDao.loadBillBoardByBids(bids);
         for(BillBoard billBoard : data){
             BangDanDto.BangDanData bangDanData = new BangDanDto.BangDanData();
             bangDanData.setSummary(billBoard.getSummary());
@@ -3810,17 +3937,72 @@ private void localJpush(long toUid){
             bangDanData.setCoverWidth(billBoard.getImgWidth());
             bangDanData.setCoverHeight(billBoard.getImgHeight());
             bangDanData.setBgColor(billBoard.getBgColor());
-            bangDanData.setType(billBoard.getType());
+            // 是否是榜单集合类型
+            bangDanData.setType((billBoard.getType()==3)?2:1);
             bangDanData.setSinceId(0);
-            bangDanData.setSubList(loadBangDanInnerData(billBoard.getId(),currentUid));
-            bangDanDto.getListData().add(bangDanData);
-        }
-        for(BangDanDto.BangDanData temp : bangDanDto.getListData()){
-            BangDanDto.BangDanData.BangDanInnerData bangDanInnerData = com.me2me.common.utils.Lists.getSingle(temp.getSubList());
-            if(bangDanInnerData!=null){
-                temp.setSubType(bangDanInnerData.getSubType());
+            bangDanData.setSubType(billBoard.getType());
+            for(BillBoardRelation billBoardRelation : billBoardRelations){
+                // 关系对应
+                if(billBoard.getId()==billBoardRelation.getSourceId()){
+                    BangDanDto.BangDanData.BangDanInnerData bangDanInnerData = new BangDanDto.BangDanData.BangDanInnerData();
+                    long targetId = billBoardRelation.getTargetId();
+                    bangDanInnerData.setSubType(billBoardRelation.getType());
+                    if(billBoardRelation.getType()==1){
+                        // 王国数据
+                        Map map = billBoardJdbcDao.getTopicById(targetId);
+                        String title = map.get("title").toString();
+                        long uid = Long.valueOf(map.get("uid").toString());
+                        int contentType = Integer.valueOf(map.get("type").toString());
+                        String liveImage = map.get("live_image").toString();
+                        bangDanInnerData.setSubListId(billBoardRelation.getId());
+                        bangDanInnerData.setUid(uid);
+                        UserProfile userProfile = userService.getUserProfileByUid(uid);
+                        bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                        bangDanInnerData.setNickName(userProfile.getNickName());
+                        bangDanInnerData.setV_lv(userProfile.getvLv());
+                        int isFollowed = userService.isFollow(uid,currentUid);
+                        bangDanInnerData.setIsFollowed(isFollowed);
+                        int isFollowMe = userService.isFollow(currentUid,uid);
+                        bangDanInnerData.setIsFollowMe(isFollowMe);
+                        bangDanInnerData.setContentType(contentType);
+                        bangDanInnerData.setFavorite(contentMybatisDao.isFavorite(targetId,currentUid));
+                        Content content = com.me2me.common.utils.Lists.getSingle(contentMybatisDao.getContentByTopicId(targetId));
+                        bangDanInnerData.setId(content.getId());
+                        bangDanInnerData.setCid(content.getId());
+                        bangDanInnerData.setTopicId(targetId);
+                        bangDanInnerData.setForwardCid(targetId);
+                        bangDanInnerData.setTitle(title);
+                        bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + liveImage);
+                        bangDanInnerData.setInternalStatus(getInternalStatus(map,currentUid));
+                        bangDanInnerData.setFavoriteCount(content.getFavoriteCount()+1);
+                        bangDanInnerData.setReadCount(content.getReadCountDummy());
+                        bangDanInnerData.setLikeCount(content.getLikeCount());
+                        bangDanInnerData.setReviewCount(content.getReviewCount());
+                    }else if(billBoardRelation.getType()==2){
+                        // 人
+                        bangDanInnerData.setUid(targetId);
+                        UserProfile userProfile = userService.getUserProfileByUid(targetId);
+                        bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                        bangDanInnerData.setNickName(userProfile.getNickName());
+                        bangDanInnerData.setV_lv(userProfile.getvLv());
+                        int isFollowed = userService.isFollow(targetId,currentUid);
+                        bangDanInnerData.setIsFollowed(isFollowed);
+                        int isFollowMe = userService.isFollow(currentUid,targetId);
+                        bangDanInnerData.setIsFollowMe(isFollowMe);
+                        bangDanInnerData.setId(billBoardRelation.getId());
+                        bangDanInnerData.setIntroduced(userProfile.getIntroduced());
+                    }else if(billBoardRelation.getType()==3){
+                        // 榜单集合
+                        BillBoard bb = contentMybatisDao.loadBillBoardById(targetId);
+                        bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
+                        bangDanInnerData.setId(bb.getId());
+                        bangDanInnerData.setTitle(bb.getName());
+                        bangDanInnerData.setSubListId(bb.getId());
+                    }
+                    bangDanData.getSubList().add(bangDanInnerData);
+                }
             }
-            continue;
+            bangDanDto.getListData().add(bangDanData);
         }
         return Response.success(bangDanDto);
     }
@@ -3852,8 +4034,8 @@ private void localJpush(long toUid){
                 bangDanInnerData.setIsFollowMe(isFollowMe);
                 bangDanInnerData.setContentType(contentType);
                 bangDanInnerData.setFavorite(contentMybatisDao.isFavorite(targetId,currentUid));
-                bangDanInnerData.setId(billBoardRelation.getId());
                 Content content = com.me2me.common.utils.Lists.getSingle(contentMybatisDao.getContentByTopicId(targetId));
+                bangDanInnerData.setId(content.getId());
                 bangDanInnerData.setCid(content.getId());
                 bangDanInnerData.setTopicId(targetId);
                 bangDanInnerData.setForwardCid(targetId);
@@ -3893,6 +4075,7 @@ private void localJpush(long toUid){
                 BillBoard billBoard = contentMybatisDao.loadBillBoardById(targetId);
                 bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
                 bangDanInnerData.setId(billBoard.getId());
+                bangDanInnerData.setTitle(billBoard.getName());
             }
             ret.add(bangDanInnerData);
         }
@@ -3935,7 +4118,7 @@ private void localJpush(long toUid){
     }
 
     @Override
-    public Response showListDetail(long currentUid, long bid) {
+    public Response showListDetail(long currentUid, long bid,long sinceId) {
 	    BillBoardDetailsDto billBoardDetailsDto = new BillBoardDetailsDto();
 
 	    BillBoard billBoard = contentMybatisDao.loadBillBoardById(bid);
@@ -3947,66 +4130,258 @@ private void localJpush(long toUid){
         billBoardDetailsDto.setCoverWidth(billBoard.getImgWidth());
         billBoardDetailsDto.setCoverHeight(billBoard.getImgHeight());
         billBoardDetailsDto.setBgColor(billBoard.getBgColor());
-        billBoardDetailsDto.setType(billBoard.getType());
+        billBoardDetailsDto.setType(billBoard.getType()==3?2:1);
+        billBoardDetailsDto.setSubType(billBoard.getType());
 
-        // 记载榜单旗下的列表数据
-	    List<BillBoardRelation> data =  contentMybatisDao.loadBillBoardRelation(bid);
-        for(BillBoardRelation billBoardRelation : data){
-            BillBoardDetailsDto.InnerDetailData bangDanInnerData = new BillBoardDetailsDto.InnerDetailData();
-            long targetId = billBoardRelation.getTargetId();
-            int type = billBoardRelation.getType();
-            bangDanInnerData.setSubType(type);
-            if(type==1){
-                // 王国
-                Map map = billBoardJdbcDao.getTopicById(targetId);
-                String title = map.get("title").toString();
-                long uid = Long.valueOf(map.get("uid").toString());
-                int contentType = Integer.valueOf(map.get("type").toString());
-                String liveImage = map.get("live_image").toString();
-                bangDanInnerData.setUid(uid);
-                UserProfile userProfile = userService.getUserProfileByUid(uid);
-                bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-                bangDanInnerData.setNickName(userProfile.getNickName());
-                bangDanInnerData.setV_lv(userProfile.getvLv());
-                int isFollowed = userService.isFollow(uid,currentUid);
-                bangDanInnerData.setIsFollowed(isFollowed);
-                int isFollowMe = userService.isFollow(currentUid,uid);
-                bangDanInnerData.setIsFollowMe(isFollowMe);
-                bangDanInnerData.setContentType(contentType);
-                bangDanInnerData.setFavorite(contentMybatisDao.isFavorite(targetId,currentUid));
-                bangDanInnerData.setId(billBoardRelation.getId());
-                Content content = com.me2me.common.utils.Lists.getSingle(contentMybatisDao.getContentByTopicId(targetId));
-                bangDanInnerData.setCid(content.getId());
-                bangDanInnerData.setTopicId(targetId);
-                bangDanInnerData.setForwardCid(targetId);
-                bangDanInnerData.setTitle(title);
-                bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + liveImage);
-                bangDanInnerData.setInternalStatus(getInternalStatus(map,currentUid));
-                bangDanInnerData.setFavoriteCount(content.getFavoriteCount()+1);
-                bangDanInnerData.setReadCount(content.getReadCountDummy());
-                bangDanInnerData.setLikeCount(content.getLikeCount());
-                bangDanInnerData.setReviewCount(content.getReviewCount());
-            }else if(type==2){
-                bangDanInnerData.setUid(targetId);
-                UserProfile userProfile = userService.getUserProfileByUid(targetId);
-                bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-                bangDanInnerData.setNickName(userProfile.getNickName());
-                bangDanInnerData.setV_lv(userProfile.getvLv());
-                int isFollowed = userService.isFollow(targetId,currentUid);
-                bangDanInnerData.setIsFollowed(isFollowed);
-                int isFollowMe = userService.isFollow(currentUid,targetId);
-                bangDanInnerData.setIsFollowMe(isFollowMe);
-                bangDanInnerData.setId(billBoardRelation.getId());
-                bangDanInnerData.setIntroduced(userProfile.getIntroduced());
-            }else if(type==3){
-                // 榜单
-                BillBoard bb = contentMybatisDao.loadBillBoardById(targetId);
-                bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
-                bangDanInnerData.setId(bb.getId());
+        if(billBoard.getMode() > 0){//自动榜单
+        	this.buildAutoBillBoardDetails(billBoardDetailsDto, billBoard.getMode(), (int)sinceId, currentUid, billBoard.getType());
+        }else{//人工榜单
+        	// 记载榜单旗下的列表数据
+        	List<BillBoardRelation> data =  contentMybatisDao.loadBillBoardRelationsBySinceId(sinceId,bid);
+            for(BillBoardRelation billBoardRelation : data){
+                BillBoardDetailsDto.InnerDetailData bangDanInnerData = new BillBoardDetailsDto.InnerDetailData();
+                long targetId = billBoardRelation.getTargetId();
+                int type = billBoardRelation.getType();
+                bangDanInnerData.setSubType(type);
+                if(type==1){// 王国
+                    Map<String, Object> map = billBoardJdbcDao.getTopicById(targetId);
+                    long uid = Long.valueOf(map.get("uid").toString());
+                    bangDanInnerData.setUid(uid);
+                    UserProfile userProfile = userService.getUserProfileByUid(uid);
+                    bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                    bangDanInnerData.setNickName(userProfile.getNickName());
+                    bangDanInnerData.setV_lv(userProfile.getvLv());
+                    int isFollowed = userService.isFollow(uid,currentUid);
+                    bangDanInnerData.setIsFollowed(isFollowed);
+                    int isFollowMe = userService.isFollow(currentUid,uid);
+                    bangDanInnerData.setIsFollowMe(isFollowMe);
+                    bangDanInnerData.setContentType((Integer)map.get("type"));
+                    bangDanInnerData.setFavorite(contentMybatisDao.isFavorite(targetId,currentUid));
+                    Content content = com.me2me.common.utils.Lists.getSingle(contentMybatisDao.getContentByTopicId(targetId));
+                    bangDanInnerData.setId(content.getId());
+                    bangDanInnerData.setCid(content.getId());
+                    bangDanInnerData.setTopicId(targetId);
+                    bangDanInnerData.setForwardCid(targetId);
+                    bangDanInnerData.setTitle((String)map.get("title"));
+                    bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)map.get("live_image"));
+                    bangDanInnerData.setInternalStatus(getInternalStatus(map,currentUid));
+                    bangDanInnerData.setFavoriteCount(content.getFavoriteCount()+1);
+                    bangDanInnerData.setReadCount(content.getReadCountDummy());
+                    bangDanInnerData.setLikeCount(content.getLikeCount());
+                    bangDanInnerData.setReviewCount(content.getReviewCount());
+                }else if(type==2){//人
+                    bangDanInnerData.setUid(targetId);
+                    UserProfile userProfile = userService.getUserProfileByUid(targetId);
+                    bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                    bangDanInnerData.setNickName(userProfile.getNickName());
+                    bangDanInnerData.setV_lv(userProfile.getvLv());
+                    int isFollowed = userService.isFollow(targetId,currentUid);
+                    bangDanInnerData.setIsFollowed(isFollowed);
+                    int isFollowMe = userService.isFollow(currentUid,targetId);
+                    bangDanInnerData.setIsFollowMe(isFollowMe);
+                    bangDanInnerData.setIntroduced(userProfile.getIntroduced());
+                }else if(type==3){// 榜单
+                    BillBoard bb = contentMybatisDao.loadBillBoardById(targetId);
+                    bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
+                    bangDanInnerData.setId(bb.getId());
+                    bangDanInnerData.setTitle(bb.getName());
+                }
+                billBoardDetailsDto.getSubList().add(bangDanInnerData);
             }
-            billBoardDetailsDto.getSubList().add(bangDanInnerData);
         }
+        
         return Response.success(billBoardDetailsDto);
+    }
+    
+    private List<BillBoardList> getAutoBillBoardList(int mode, int sinceId, int pageSize){
+    	List<BillBoardList> result = null;
+    	String currentCacheKey = null;
+    	switch(mode){
+    	case 1://最活跃的米汤新鲜人
+    		//实时统计
+    		if(sinceId < 0){
+    			sinceId = Integer.MAX_VALUE;
+    		}
+    		result = liveForContentJdbcDao.getActiveUserBillboard(sinceId, pageSize);
+    		break;
+    	case 2://最受追捧的米汤大咖
+    		currentCacheKey = cacheService.get(Constant.BILLBOARD_KEY_POPULAR_PEOPLE);
+    		if(StringUtils.isEmpty(currentCacheKey)){
+    			currentCacheKey = Constant.BILLBOARD_KEY_TARGET1;
+			}
+    		result = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_POPULAR_PEOPLE+currentCacheKey, sinceId, pageSize);
+    		break;
+    	case 3://最爱叨逼叨的话痨王国
+    		currentCacheKey = cacheService.get(Constant.BILLBOARD_KEY_JAY_PEOPLE);
+    		if(StringUtils.isEmpty(currentCacheKey)){
+    			currentCacheKey = Constant.BILLBOARD_KEY_TARGET1;
+			}
+    		result = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_JAY_PEOPLE+currentCacheKey, sinceId, pageSize);
+    		break;
+    	case 4://这里的互动最热闹
+    		//实时统计
+    		if(sinceId < 0){
+    			sinceId = Integer.MAX_VALUE;
+    		}
+    		result = liveForContentJdbcDao.getInteractionHottestKingdomBillboard(sinceId, pageSize);
+    		break;
+    	case 5://最丰富多彩的王国
+    		currentCacheKey = cacheService.get(Constant.BILLBOARD_KEY_COLOURFUL_KINGDOM);
+    		if(StringUtils.isEmpty(currentCacheKey)){
+    			currentCacheKey = Constant.BILLBOARD_KEY_TARGET1;
+			}
+    		result = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_COLOURFUL_KINGDOM+currentCacheKey, sinceId, pageSize);
+    		break;
+    	case 6://求安慰的孤独王国
+    		currentCacheKey = cacheService.get(Constant.BILLBOARD_KEY_LONELY_KINGDOM);
+    		if(StringUtils.isEmpty(currentCacheKey)){
+    			currentCacheKey = Constant.BILLBOARD_KEY_TARGET1;
+			}
+    		result = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_LONELY_KINGDOM+currentCacheKey, sinceId, pageSize);
+    		break;
+    	default:
+    		break;
+    	}
+    	
+    	return result;
+    }
+    
+    private void buildAutoBillBoardSimple(BangDanDto.BangDanData bangDanData, long bid, int mode, long currentUid, int type, int pageSize){
+    	List<BillBoardList> result = this.getAutoBillBoardList(mode, -1, pageSize);
+    	
+    	if(null != result && result.size() > 0){
+    		BangDanDto.BangDanData.BangDanInnerData bangDanInnerData = null;
+    		for(BillBoardList bbl : result){
+    			bangDanInnerData = new BangDanDto.BangDanData.BangDanInnerData();
+                bangDanInnerData.setSubType(type);
+                if(type==1){// 王国数据
+                	bangDanInnerData.setSubListId(bid);
+                    Map<String,Object> map = billBoardJdbcDao.getTopicById(bbl.getTargetId());
+                    long uid = (Long)map.get("uid");
+                    String liveImage = map.get("live_image").toString();
+                   
+                    bangDanInnerData.setUid(uid);
+                    UserProfile userProfile = userService.getUserProfileByUid(uid);
+                    bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                    bangDanInnerData.setNickName(userProfile.getNickName());
+                    bangDanInnerData.setV_lv(userProfile.getvLv());
+                    int isFollowed = userService.isFollow(uid,currentUid);
+                    bangDanInnerData.setIsFollowed(isFollowed);
+                    int isFollowMe = userService.isFollow(currentUid,uid);
+                    bangDanInnerData.setIsFollowMe(isFollowMe);
+                    bangDanInnerData.setContentType((Integer)map.get("type"));
+                    bangDanInnerData.setFavorite(contentMybatisDao.isFavorite(bbl.getTargetId(), currentUid));
+                    Content content = com.me2me.common.utils.Lists.getSingle(contentMybatisDao.getContentByTopicId(bbl.getTargetId()));
+                    bangDanInnerData.setId(content.getId());
+                    bangDanInnerData.setCid(content.getId());
+                    bangDanInnerData.setTopicId(bbl.getTargetId());
+                    bangDanInnerData.setForwardCid(bbl.getTargetId());
+                    bangDanInnerData.setTitle((String)map.get("title"));
+                    bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + liveImage);
+                    bangDanInnerData.setInternalStatus(getInternalStatus(map,currentUid));
+                    bangDanInnerData.setFavoriteCount(content.getFavoriteCount()+1);
+                    bangDanInnerData.setReadCount(content.getReadCountDummy());
+                    bangDanInnerData.setLikeCount(content.getLikeCount());
+                    bangDanInnerData.setReviewCount(content.getReviewCount());
+                }else if(type==2){// 人
+                	bangDanInnerData.setSubListId(bid);
+                    bangDanInnerData.setUid(bbl.getTargetId());
+                    UserProfile userProfile = userService.getUserProfileByUid(bbl.getTargetId());
+                    bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                    bangDanInnerData.setNickName(userProfile.getNickName());
+                    bangDanInnerData.setV_lv(userProfile.getvLv());
+                    int isFollowed = userService.isFollow(bbl.getTargetId(),currentUid);
+                    bangDanInnerData.setIsFollowed(isFollowed);
+                    int isFollowMe = userService.isFollow(currentUid,bbl.getTargetId());
+                    bangDanInnerData.setIsFollowMe(isFollowMe);
+                    bangDanInnerData.setIntroduced(userProfile.getIntroduced());
+                }
+                bangDanData.getSubList().add(bangDanInnerData);
+    		}
+    	}
+    }
+    
+    /**
+     * 处理自动榜单详情
+     * @param billBoardDetailsDto
+     * @param mode
+     * @return
+     */
+    private void buildAutoBillBoardDetails(BillBoardDetailsDto billBoardDetailsDto, int mode, int sinceId, long currentUid, int type){
+    	List<BillBoardList> result = this.getAutoBillBoardList(mode, sinceId, 20);
+    	
+    	if(null != result && result.size() > 0){
+    		List<Long> idList = new ArrayList<Long>();
+    		for(BillBoardList bbl : result){
+    			idList.add(bbl.getTargetId());
+    		}
+    		Map<String, Map<String, Object>> topicMap = new HashMap<String, Map<String, Object>>();
+    		Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+    		if(type == 1){
+    			List<Map<String, Object>> topicList = liveForContentJdbcDao.getTopicListByIds(idList);
+    			if(null != topicList && topicList.size() > 0){
+    				for(Map<String, Object> topic : topicList){
+    					topicMap.put(String.valueOf(topic.get("id")), topic);
+    				}
+    			}
+    		}else if(type == 2){
+    			List<UserProfile> userList = userService.getUserProfilesByUids(idList);
+    			if(null != userList && userList.size() > 0){
+    				for(UserProfile u : userList){
+    					userMap.put(u.getUid().toString(), u);
+    				}
+    			}
+    		}
+    		BillBoardDetailsDto.InnerDetailData bangDanInnerData = null;
+    		for(BillBoardList bbl : result){
+    			bangDanInnerData = new BillBoardDetailsDto.InnerDetailData();
+                bangDanInnerData.setSubType(type);
+                bangDanInnerData.setSinceId(bbl.getSinceId());
+                if(type==1){// 王国
+                    Map<String, Object> map = topicMap.get(bbl.getTargetId().toString());
+                    if(null == map){
+                    	continue;
+                    }
+                    long uid = Long.valueOf(map.get("uid").toString());
+                    bangDanInnerData.setUid(uid);
+                    UserProfile userProfile = userService.getUserProfileByUid(uid);
+                    bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                    bangDanInnerData.setNickName(userProfile.getNickName());
+                    bangDanInnerData.setV_lv(userProfile.getvLv());
+                    int isFollowed = userService.isFollow(uid,currentUid);
+                    bangDanInnerData.setIsFollowed(isFollowed);
+                    int isFollowMe = userService.isFollow(currentUid,uid);
+                    bangDanInnerData.setIsFollowMe(isFollowMe);
+                    bangDanInnerData.setContentType((Integer)map.get("type"));
+                    bangDanInnerData.setFavorite(contentMybatisDao.isFavorite(bbl.getTargetId(), currentUid));
+                    Content content = com.me2me.common.utils.Lists.getSingle(contentMybatisDao.getContentByTopicId(bbl.getTargetId()));
+                    bangDanInnerData.setId(content.getId());
+                    bangDanInnerData.setCid(content.getId());
+                    bangDanInnerData.setTopicId(bbl.getTargetId());
+                    bangDanInnerData.setForwardCid(bbl.getTargetId());
+                    bangDanInnerData.setTitle((String)map.get("title"));
+                    bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)map.get("live_image"));
+                    bangDanInnerData.setInternalStatus(getInternalStatus(map,currentUid));
+                    bangDanInnerData.setFavoriteCount(content.getFavoriteCount()+1);
+                    bangDanInnerData.setReadCount(content.getReadCountDummy());
+                    bangDanInnerData.setLikeCount(content.getLikeCount());
+                    bangDanInnerData.setReviewCount(content.getReviewCount());
+                    billBoardDetailsDto.getSubList().add(bangDanInnerData);
+                }else if(type==2){//人
+                    bangDanInnerData.setUid(bbl.getTargetId());
+                    UserProfile userProfile = userService.getUserProfileByUid(bbl.getTargetId());
+                    bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                    bangDanInnerData.setNickName(userProfile.getNickName());
+                    bangDanInnerData.setV_lv(userProfile.getvLv());
+                    int isFollowed = userService.isFollow(bbl.getTargetId(), currentUid);
+                    bangDanInnerData.setIsFollowed(isFollowed);
+                    int isFollowMe = userService.isFollow(currentUid, bbl.getTargetId());
+                    bangDanInnerData.setIsFollowMe(isFollowMe);
+                    bangDanInnerData.setIntroduced(userProfile.getIntroduced());
+                    billBoardDetailsDto.getSubList().add(bangDanInnerData);
+                }
+    		}
+    	}
     }
 
 	@Override

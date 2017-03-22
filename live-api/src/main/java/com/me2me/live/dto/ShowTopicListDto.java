@@ -36,6 +36,12 @@ public class ShowTopicListDto implements BaseEntity{
         return new UpdateLives();
     }
 
+    private List<AttentionElement> attentionData = Lists.newArrayList();
+
+    public static AttentionElement createAttentionElement(){
+        return  new AttentionElement();
+    }
+
     @Data
     public static  class ShowTopicElement implements BaseEntity{
 
@@ -135,4 +141,16 @@ public class ShowTopicListDto implements BaseEntity{
 
         private int v_lv;
     }
+
+    @Data
+    public static class AttentionElement implements BaseEntity{
+
+        private long uid;
+
+        private String avatar;
+
+        private int v_lv;
+
+    }
+
 }

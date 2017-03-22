@@ -187,7 +187,7 @@ public interface UserService {
     
     void updateUserSex(long uid, int sex);
 
-    Response versionControl(String version,int platform,String ip,String channel,String device ,String params);
+    Response versionControl(String version,int platform,String ip,String channel,String device);
 
     Response updateVersion(VersionDto versionDto);
 

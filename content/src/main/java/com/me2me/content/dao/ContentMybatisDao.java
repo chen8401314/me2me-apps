@@ -59,6 +59,9 @@ public class ContentMybatisDao {
 
     @Autowired
     private BillBoardMapper billBoardMapper;
+    
+    @Autowired
+    private BillBoardDetailsMapper billBoardDetailsMapper;
 
     @Autowired
     private BillBoardRelationMapper billBoardRelationMapper;
@@ -642,6 +645,19 @@ public class ContentMybatisDao {
         example.setOrderByClause(" sort asc,id desc");
         return billBoardRelationMapper.selectByExample(example);
     }
+    
+    public List<BillBoardRelation> getRelationListPage(long bid, int sinceId, int pageSize){
+    	BillBoardRelationExample example = new BillBoardRelationExample();
+        BillBoardRelationExample.Criteria criteria = example.createCriteria();
+        criteria.andSourceIdEqualTo(bid);
+        criteria.andSortGreaterThan(sinceId);
+        if(pageSize > 0){
+        	example.setOrderByClause(" sort asc limit " + pageSize);
+        }else{
+        	example.setOrderByClause(" sort asc ");
+        }
+        return billBoardRelationMapper.selectByExample(example);
+    }
 
     public BillBoard loadBillBoardById(long id){
        return billBoardMapper.selectByPrimaryKey(id);
@@ -656,6 +672,48 @@ public class ContentMybatisDao {
     
     public void insertBillBoardList(BillBoardList bbl){
     	billBoardListMapper.insertSelective(bbl);
+    }
+        
+    public List<BillBoardList> getBillBoardListPage(String key, int sinceId, int pageSize){
+    	BillBoardListExample example = new BillBoardListExample();
+    	BillBoardListExample.Criteria criteria = example.createCriteria();
+    	criteria.andListKeyEqualTo(key);
+    	criteria.andSinceIdGreaterThan(sinceId);
+    	if(pageSize > 0){
+    		example.setOrderByClause(" since_id asc limit " + pageSize);
+    	}else{
+    		example.setOrderByClause(" since_id asc ");
+    	}
+    	return billBoardListMapper.selectByExample(example);
+    }
+
+    public List<BillBoardRelation> loadBillBoardRelations(int type){
+        return billBoardMapper.loadBillBoard(type);
+    }
+
+    public List<BillBoardRelation> loadBillBoardRelationsBySinceId(long sinceId,long sourceId){
+        return billBoardMapper.loadBillBoardBySinceId(sourceId,sinceId);
+    }
+
+    public List<Long> loadBillBoardCover(int type){
+        return billBoardMapper.loadBillBoardCover(type);
+    }
+
+    public List<BillBoard> loadBillBoardByBids(List<Long> ids) {
+        BillBoardExample example = new BillBoardExample();
+        BillBoardExample.Criteria criteria = example.createCriteria();
+        criteria.andIdIn(ids);
+        return billBoardMapper.selectByExample(example);
+    }
+    
+    public List<BillBoardDetails> getShowListPageByType(int sinceId, int type){
+    	BillBoardDetailsExample example = new BillBoardDetailsExample();
+    	BillBoardDetailsExample.Criteria criteria = example.createCriteria();
+    	criteria.andTypeEqualTo(type);
+    	criteria.andSortGreaterThan(sinceId);
+    	criteria.andStatusEqualTo(1);//只要上架的
+    	example.setOrderByClause(" sort asc limit 10");
+    	return billBoardDetailsMapper.selectByExample(example);
     }
     /**
      * 修改榜单

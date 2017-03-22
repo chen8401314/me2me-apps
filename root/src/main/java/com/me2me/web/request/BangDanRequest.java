@@ -14,4 +14,7 @@ public class BangDanRequest extends Request {
     // 0 找组织，1找谁
     private int listType;
 
+    // 榜单ID
+    private int listId;
+
 }

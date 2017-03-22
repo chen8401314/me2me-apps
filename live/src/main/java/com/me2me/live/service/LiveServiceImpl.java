@@ -36,7 +36,6 @@ import com.me2me.live.event.CoreAggregationRemindEvent;
 import com.me2me.live.event.RemindAndJpushAtMessageEvent;
 import com.me2me.live.event.SpeakEvent;
 import com.me2me.live.event.TopicNoticeEvent;
-import com.me2me.live.mapper.TopicFragmentTemplateMapper;
 import com.me2me.live.model.*;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.*;
@@ -489,13 +488,13 @@ public class LiveServiceImpl implements LiveService {
 	@Override
     public Response speak(SpeakDto speakDto) {
         log.info("speak start ...");
+        SpeakEvent speakEvent = new SpeakEvent();
         //如果是主播发言更新cache
         if (speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index||speakDto.getType()==Specification.LiveSpeakType.AT_CORE_CIRCLE.index||speakDto.getType()==Specification.LiveSpeakType.ANCHOR_AT.index||speakDto.getType()==Specification.LiveSpeakType.FANS.index||speakDto.getType()==Specification.LiveSpeakType.AT.index) {
             //只更新大王发言,如果是主播(大王)发言更新cache
 //            Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
 //            //小王发言更新cache（topic.getUid() == speakDto.getUid()为该王国国王 通知所有人）
 //            if(topic.getUid() == speakDto.getUid()) {
-            SpeakEvent speakEvent = new SpeakEvent();
             speakEvent.setTopicId(speakDto.getTopicId());
             speakEvent.setType(speakDto.getType());
             speakEvent.setUid(speakDto.getUid());
@@ -511,7 +510,6 @@ public class LiveServiceImpl implements LiveService {
             }
             speakEvent.setAtUids(atUids);
 
-            applicationEventBus.post(speakEvent);
 //            }
             //粉丝有留言提醒主播
         } else {
@@ -568,7 +566,8 @@ public class LiveServiceImpl implements LiveService {
             log.info("updateTopic updateTime");
             
             fid = topicFragment.getId();
-            
+            speakEvent.setFragmentId(fid);
+            applicationEventBus.post(speakEvent);
             //--add update kingdom cache -- modify by zcl -- begin --
             //此处暂不考虑原子操作
             int total = liveMybatisDao.countFragmentByTopicId(speakDto.getTopicId());
@@ -1211,7 +1210,7 @@ public class LiveServiceImpl implements LiveService {
                     showTopicElement.setAcCount(0);
                 }
             }
-            processCache(uid,topic,showTopicElement);
+
             lastFragment = lastFragmentMap.get(String.valueOf(topic.getId()));
             if (null != lastFragment) {
                 showTopicElement.setLastContentType((Integer)lastFragment.get("content_type"));
@@ -1226,6 +1225,7 @@ public class LiveServiceImpl implements LiveService {
             } else {
                 showTopicElement.setLastContentType(-1);
             }
+            processCache2(uid,topic,showTopicElement);
             if(null != reviewCountMap.get(String.valueOf(topic.getId()))){
                 showTopicElement.setReviewCount(reviewCountMap.get(String.valueOf(topic.getId())).intValue());
             }else{
@@ -1283,6 +1283,30 @@ public class LiveServiceImpl implements LiveService {
         String isUpdate = cacheService.hGet(cacheModel.getKey(), topic.getId() + "");
         if (!StringUtils.isEmpty(isUpdate)) {
             showTopicElement.setIsUpdate(Integer.parseInt(isUpdate));
+        }
+    }
+
+    private void processCache2(long uid, Topic topic, ShowTopicListDto.ShowTopicElement showTopicElement) {
+        MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topic.getId() + "", "0");
+        String isUpdate = cacheService.hGet(cacheModel.getKey(), topic.getId() + "");
+        if(StringUtils.isEmpty(isUpdate) || Integer.parseInt(isUpdate) == 0){
+            showTopicElement.setIsUpdate(0);
+        }else {
+            showTopicElement.setIsUpdate(1);
+            Map map = Maps.newHashMap();
+            map.put("fid" ,isUpdate);
+            map.put("uid" ,uid);
+            TopicFragment topicFragment = liveMybatisDao.getFragmentByAT(map);
+            if(topicFragment != null){
+                showTopicElement.setLastContentType(topicFragment.getContentType());
+                showTopicElement.setLastFragment(topicFragment.getFragment());
+                showTopicElement.setLastFragmentImage(topicFragment.getFragmentImage());
+                showTopicElement.setLastUpdateTime(topicFragment.getCreateTime().getTime());
+                //新增
+                showTopicElement.setLastType(topicFragment.getType());
+                showTopicElement.setLastStatus(topicFragment.getStatus());
+                showTopicElement.setLastExtra(topicFragment.getExtra());
+            }
         }
     }
 
@@ -1897,7 +1921,7 @@ public class LiveServiceImpl implements LiveService {
         log.info("myLivesAllByUpdateTime end ...");
         return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status, ResponseStatus.GET_MY_LIVE_SUCCESS.message, showTopicListDto);
     }
-    
+
     /**
      * 获取我关注的直播，和我的直播列表
      *
@@ -1949,6 +1973,23 @@ public class LiveServiceImpl implements LiveService {
     public Response getMyTopic(long uid, long updateTime) {
         log.info("getMyLives start ...");
         ShowTopicListDto showTopicListDto = new ShowTopicListDto();
+        //查询5个用户关注
+        List<Content> attentionList = contentService.getAttention(Integer.MAX_VALUE ,uid, 1);
+        if (attentionList.size() > 0 && attentionList != null) {
+            int size = 0;
+            for (Content content : attentionList) {
+                size++;
+                ShowTopicListDto.AttentionElement attentionElement = showTopicListDto.createAttentionElement();
+                UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+                attentionElement.setAvatar(Constant.QINIU_DOMAIN+"/"+userProfile.getAvatar());
+                attentionElement.setUid(content.getUid());
+                attentionElement.setV_lv(userProfile.getvLv());
+                showTopicListDto.getAttentionData().add(attentionElement);
+                if(size == 5){
+                    break;
+                }
+            }
+        }
         List<Long> topics = liveMybatisDao.getTopicId(uid);
         Calendar calendar = Calendar.getInstance();
         if (updateTime == 0) {
@@ -3879,7 +3920,11 @@ public class LiveServiceImpl implements LiveService {
             cacheService.sadd("list:user@" + uid, String.valueOf(droparound.getTopicid()));
             TopicFragmentTemplate topicFragmentTemplate = liveMybatisDao.getTopicFragmentTemplate();
             if (topicFragmentTemplate != null) {
-                dto.setTrackContent(topicFragmentTemplate.getContent());
+                String text = topicFragmentTemplate.getContent();
+                String trackImage = text.substring(text.indexOf("##")+2);
+                String trackContent = text.substring(0,text.indexOf("##"));
+                dto.setTrackContent(trackContent);
+                dto.setTrackImage(Constant.QINIU_DOMAIN+"/"+trackImage);
             }
         }
             log.info("setDropaRoundDto is ok");
@@ -3888,7 +3933,6 @@ public class LiveServiceImpl implements LiveService {
     //算法取
     public void setDropaRoundDtoAlgorithm(DropAroundDto dto ,long uid ,String set){
         Map<String ,String> map = Maps.newHashMap();
-        System.out.println(set);
         map.put("uid",String.valueOf(uid));
         map.put("set",set);
         //随机获取一条王国
@@ -3912,7 +3956,11 @@ public class LiveServiceImpl implements LiveService {
         cacheService.sadd("list:user@"+uid ,String.valueOf(topicInfo.getId()));
         TopicFragmentTemplate topicFragmentTemplate = liveMybatisDao.getTopicFragmentTemplate();
         if(topicFragmentTemplate != null){
-            dto.setTrackContent(topicFragmentTemplate.getContent());
+            String text = topicFragmentTemplate.getContent();
+            String trackImage = text.substring(text.indexOf("##")+2);
+            String trackContent = text.substring(0,text.indexOf("##"));
+            dto.setTrackContent(trackContent);
+            dto.setTrackImage(Constant.QINIU_DOMAIN+"/"+trackImage);
         }
         log.info("setDropaRoundDtoAlgorithm is ok");
     }

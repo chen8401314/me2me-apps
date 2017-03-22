@@ -35,6 +35,17 @@ public class PopularPeopleBillboardTask {
 		logger.info("[最受追捧的米汤大咖]榜单任务开始...");
 		long s = System.currentTimeMillis();
 		
+		try{
+			this.execTask();
+		}catch(Exception e){
+			logger.error("[最受追捧的米汤大咖]榜单任务执行失败", e);
+		}
+
+		long e = System.currentTimeMillis();
+		logger.info("[最受追捧的米汤大咖]榜单任务结束，共耗时"+(e-s)/1000+"秒");
+	}
+	
+	private void execTask(){
 		Map<String, Long> resultUserDataMap = new HashMap<String, Long>();
 		
 		//获取所有关注增量
@@ -122,23 +133,22 @@ public class PopularPeopleBillboardTask {
 			List<BillBoardList> insertList = new ArrayList<BillBoardList>();
 			BillBoardList bbl = null;
 			String listKey = Constant.BILLBOARD_KEY_POPULAR_PEOPLE + nextCacheKey;
+			int s = 1;
 			for(int i=0;i<resultList.size()&&i<100;i++){
 				item = resultList.get(i);
 				bbl = new BillBoardList();
 				bbl.setListKey(listKey);
 				bbl.setTargetId(item.getUid());
 				bbl.setType(0);
-				bbl.setSinceId((int)item.getCount());
+				bbl.setSinceId(s);
 				insertList.add(bbl);
+				s++;
 			}
 			//3存入数据库
 			contentService.insertBillboardList(insertList, listKey);
 			//4将新的列表提交到缓存
 			cacheService.set(Constant.BILLBOARD_KEY_POPULAR_PEOPLE, nextCacheKey);
 		}
-
-		long e = System.currentTimeMillis();
-		logger.info("[最受追捧的米汤大咖]榜单任务结束，共耗时"+(e-s)/1000+"秒");
 	}
 	
 	@Data
@@ -148,9 +158,9 @@ public class PopularPeopleBillboardTask {
 		
 		@Override
 		public int compareTo(UserCountItem o) {
-			if(this.count > o.getCount()){
+			if(this.count < o.getCount()){
 				return 1;
-			}else if(this.count < o.getCount()){
+			}else if(this.count > o.getCount()){
 				return -1;
 			}else{
 				return 0;

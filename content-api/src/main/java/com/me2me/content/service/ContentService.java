@@ -134,6 +134,8 @@ public interface ContentService{
 
     Response Attention(int sinceId,long uid, int vFlag);
 
+    List<Content> getAttention(long sinceId , long uid, int vFlag);
+
     Response createReview(ReviewDto reviewDto);
 
     Response option(long id, int optionAction, int action);
@@ -228,7 +230,7 @@ public interface ContentService{
      * 榜单列表
      * @return
      */
-    Response showBangDanList(int type,long currentUid);
+    Response showBangDanList(long sinceId, int type,long currentUid);
 
     /**
      * 给IMS系统开的后门，直接通过sql查询结果
@@ -251,7 +253,7 @@ public interface ContentService{
      * @param bid
      * @return
      */
-    Response showListDetail(long currentUid,long bid);
+     Response showListDetail(long currentUid, long bid,long sinceId);
     /**
      * 获取所有的榜单
      * @author zhangjiwei
