@@ -51,6 +51,7 @@ public class WapxIosListener {
                 boolean b = fileTransferService.IosWapxActivate(iosWapx.getCallbackurl());
                 if(b){
                     iosWapx.setStatus(1);
+                    iosWapx.setUid(event.getUid());
                     userMybatisDao.updateWapx(iosWapx);
                     log.info("update wapx success");
                 }else {

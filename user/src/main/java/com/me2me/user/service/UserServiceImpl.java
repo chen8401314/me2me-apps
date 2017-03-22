@@ -125,6 +125,20 @@ public class UserServiceImpl implements UserService {
         user.setStatus(Specification.UserStatus.NORMAL.index);
         user.setUserName(userSignUpDto.getMobile());
         userMybatisDao.createUser(user);
+
+        //万普
+        if(!StringUtils.isEmpty(userSignUpDto.getParams())) {
+            WapxIosEvent event = new WapxIosEvent();
+            try {
+                WapxParams wapxParams = com.alibaba.dubbo.common.json.JSON.parse(userSignUpDto.getParams(), WapxParams.class);
+                event.setIdfa(wapxParams.getIdfa());
+                event.setUid(user.getUid());
+            } catch (ParseException e) {
+                log.error("params parse error");
+            }
+            applicationEventBus.post(event);
+        }
+
         log.info("user is create");
         UserProfile userProfile = new UserProfile();
         userProfile.setUid(user.getUid());
@@ -136,6 +150,7 @@ public class UserServiceImpl implements UserService {
         userProfile.setUpdateTime(new Date());
         userProfile.setChannel(userSignUpDto.getChannel());
         userProfile.setPlatform(userSignUpDto.getPlatform());
+        userProfile.setRegisterVersion(userSignUpDto.getRegisterVersion());
 
         List<UserAccountBindStatusDto> array = Lists.newArrayList();
         // 添加手机绑定
@@ -1212,17 +1227,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response versionControl(String version,int platform,String ip,String channel,String device ,String params) {
-        if(!StringUtils.isEmpty(params)) {
-            WapxIosEvent event = new WapxIosEvent();
-            try {
-                WapxParams wapxParams = com.alibaba.dubbo.common.json.JSON.parse(params, WapxParams.class);
-                event.setIdfa(wapxParams.getIdfa());
-            } catch (ParseException e) {
-                log.error("params parse error");
-            }
-            applicationEventBus.post(event);
-        }
+    public Response versionControl(String version,int platform,String ip,String channel,String device) {
+//        if(!StringUtils.isEmpty(params)) {
+//            WapxIosEvent event = new WapxIosEvent();
+//            try {
+//                WapxParams wapxParams = com.alibaba.dubbo.common.json.JSON.parse(params, WapxParams.class);
+//                event.setIdfa(wapxParams.getIdfa());
+//            } catch (ParseException e) {
+//                log.error("params parse error");
+//            }
+//            applicationEventBus.post(event);
+//        }
         //记录打开次数
         log.info("ip address :" + ip);
         log.info("add channel count start ...");
@@ -2020,6 +2035,19 @@ public class UserServiceImpl implements UserService {
         userMybatisDao.createUser(user);
         log.info("user is create");
 
+        //万普
+        if(!StringUtils.isEmpty(thirdPartSignUpDto.getParams())) {
+            WapxIosEvent event = new WapxIosEvent();
+            try {
+                WapxParams wapxParams = com.alibaba.dubbo.common.json.JSON.parse(thirdPartSignUpDto.getParams(), WapxParams.class);
+                event.setIdfa(wapxParams.getIdfa());
+                event.setUid(user.getUid());
+            } catch (ParseException e) {
+                log.error("params parse error");
+            }
+            applicationEventBus.post(event);
+        }
+
         log.info("get user by username");
         User user1 = userMybatisDao.getUserByUserName(thirdPartSignUpDto.getThirdPartOpenId());
         UserProfile userProfile = new UserProfile();
@@ -2031,6 +2059,7 @@ public class UserServiceImpl implements UserService {
         userProfile.setCreateTime(new Date());
         userProfile.setChannel(thirdPartSignUpDto.getChannel());
         userProfile.setPlatform(thirdPartSignUpDto.getPlatform());
+        userProfile.setRegisterVersion(thirdPartSignUpDto.getRegisterVersion());
         //第三方h5微信登录首次登录设置为1 下一次app登录的时候如果是1 app弹出修改昵称页面 0为不需要修改(默认为0)
         if(thirdPartSignUpDto.getH5type() ==1){
             userProfile.setIsClientLogin(1);

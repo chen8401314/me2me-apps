@@ -59,6 +59,8 @@ public class Users extends BaseController {
         userSignUpDto.setOs(request.getOs());
         userSignUpDto.setIntroduced(request.getIntroduced());
         userSignUpDto.setChannel(request.getChannel());
+        userSignUpDto.setRegisterVersion(request.getRegisterVersion());
+        userSignUpDto.setParams(request.getParams());
 
         //埋点
 //        kafkaService.saveClientLog(request,req.getHeader("User-Agent"),Specification.ClientLogAction.REG_PAGE2_SAVE);
@@ -483,7 +485,7 @@ public class Users extends BaseController {
             }
             catch (UnknownHostException unknownhostexception) {
             }
-        return userService.versionControl(request.getVersion(),request.getPlatform(),ip,request.getChannel(),request.getDevice() ,request.getParams());
+        return userService.versionControl(request.getVersion(),request.getPlatform(),ip,request.getChannel(),request.getDevice());
     }
 
     /**
@@ -605,6 +607,8 @@ public class Users extends BaseController {
         dto.setNewNickName(request.getNewNickName());
         dto.setChannel(request.getChannel());
         dto.setPlatform(request.getPlatform());
+        dto.setRegisterVersion(request.getRegisterVersion());
+        dto.setParams(request.getParams());
         return userService.thirdPartLogin(dto);
     }
 
