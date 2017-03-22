@@ -1,5 +1,6 @@
 package com.me2me.user.dao;
 
+import com.me2me.common.page.PageBean;
 import com.me2me.common.web.Specification;
 import com.me2me.sms.dto.PushLogDto;
 import com.me2me.user.dto.*;
@@ -15,6 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -1017,4 +1019,12 @@ public class UserMybatisDao {
     public void deleteVersionChannelDownload(long id){
     	versionChannelDownloadMapper.deleteByPrimaryKey(id);
     }
+
+	public PageBean<SearchUserDto> searchUserPage(PageBean page, Map<String, Object> queries) {
+		queries.put("skip", (page.getCurrentPage()-1)*page.getPageSize());
+		queries.put("limit", page.getPageSize());
+		List<SearchUserDto> list = userProfileMapper.searchUserPage(queries);
+		page.setDataList(list);
+		return page;
+	}
 }

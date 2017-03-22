@@ -4008,4 +4008,122 @@ private void localJpush(long toUid){
         }
         return Response.success(billBoardDetailsDto);
     }
+
+	@Override
+	public List<BillBoard> getAllBillBoard() {
+		return contentMybatisDao.loadBillBoard();
+	}
+
+	@Override
+	public void updateBillBoard(BillBoard bb) {
+		contentMybatisDao.updateBillBoard(bb);
+	}
+
+	@Override
+	public void deleteBillBoardById(long id) {
+		//删除榜单对应数据
+		List<BillBoardRelation> relationList = contentMybatisDao.loadBillBoardRelation(id);
+		for(BillBoardRelation br :relationList){
+			contentMybatisDao.delBillBoardRelationById(br.getId());
+		}
+		//删除对应的上线配置项
+		contentMybatisDao.deleteBillBoardDetailByBId(id);
+		//删除榜单。
+		contentMybatisDao.deleteBillBoardByKey(id);
+	}
+
+	@Override
+	public BillBoard getBillBoardById(long id) {
+		return contentMybatisDao.loadBillBoardById(id);
+	}
+
+	@Override
+	public void addBillBoard(BillBoard bb) {
+		contentMybatisDao.insertBillBoard(bb);
+	}
+
+	@Override
+	public List<BillBoardRelationDto> getRelationsByBillBoardId(long id) {
+		List<BillBoardRelation> relationList = contentMybatisDao.loadBillBoardRelation(id);
+		List<BillBoardRelationDto> retList = new ArrayList<>(); 
+		for(BillBoardRelation billBoardRelation :relationList){
+			BillBoardRelationDto bangDanInnerData = new BillBoardRelationDto();
+            long targetId = billBoardRelation.getTargetId();
+            int type = billBoardRelation.getType();
+            if(type==1){  // 王国
+              
+                Map map = billBoardJdbcDao.getTopicById(targetId);
+                String title = map.get("title").toString();
+                long uid = Long.valueOf(map.get("uid").toString());
+                int contentType = Integer.valueOf(map.get("type").toString());
+                String liveImage = map.get("live_image").toString();
+                bangDanInnerData.setTitle(title);
+                bangDanInnerData.setCover(liveImage);
+                bangDanInnerData.setTopicId(targetId);
+                
+            }else if(type==2){	// 人
+                bangDanInnerData.setUid(targetId);
+                UserProfile userProfile = userService.getUserProfileByUid(targetId);
+                bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                bangDanInnerData.setNickName(userProfile.getNickName());
+                bangDanInnerData.setvLv(userProfile.getvLv());
+                bangDanInnerData.setUserRegDate(userProfile.getCreateTime());
+            }else if(type==3){// 榜单
+                BillBoard billBoard = contentMybatisDao.loadBillBoardById(targetId);
+                bangDanInnerData.setRankingCover(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
+                bangDanInnerData.setRankingId(billBoard.getId());
+                bangDanInnerData.setRankingName(billBoard.getName());
+                bangDanInnerData.setRankingType(billBoard.getType());
+            }
+            retList.add(bangDanInnerData);
+		}
+		return retList;
+	}
+
+	@Override
+	public void addRelationToBillBoard(BillBoardRelation br) {
+		contentMybatisDao.insertBillBoardRelation(br);
+	}
+
+	@Override
+	public void delBillBoardRelationById(long rid) {
+		contentMybatisDao.delBillBoardRelationById(rid);
+	}
+
+	@Override
+	public void updateBillBoardRelation(BillBoardRelation br) {
+		contentMybatisDao.updateBillBoardRelation(br);
+	}
+
+	@Override
+	public List<OnlineBillBoardDto> getOnlineBillBoardListByType(int type) {
+		List<BillBoardDetails> detailList = contentMybatisDao.getBillBoardDetailsByType(type);
+		List<OnlineBillBoardDto> dtoList = new ArrayList<>();
+		for(BillBoardDetails detail:detailList){
+			OnlineBillBoardDto dto= new OnlineBillBoardDto();
+			BillBoard billbord=contentMybatisDao.loadBillBoardById(detail.getBid());
+			dto.setDetail(detail);
+			dto.setBillbord(billbord);
+			dtoList.add(dto);
+		}
+		return dtoList;
+	}
+
+	@Override
+	public void addOnlineBillBoard(BillBoardDetails br) {
+		List<BillBoardDetails> list = contentMybatisDao.getBillBoardDetailByBidAndType(br.getBid(),br.getType());
+		if(list==null || list.isEmpty()){
+			contentMybatisDao.insertBillBoardDetail(br);
+		}
+	}
+
+	@Override
+	public void delOnlineBillBoardById(long rid) {
+		contentMybatisDao.delBillBoardDetailById(rid);
+	}
+
+	@Override
+	public void updateOnlineBillBoard(BillBoardDetails br) {
+		contentMybatisDao.updateBillBoardDetailById(br);
+	}
 }

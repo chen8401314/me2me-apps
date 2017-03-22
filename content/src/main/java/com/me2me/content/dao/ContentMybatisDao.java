@@ -65,6 +65,9 @@ public class ContentMybatisDao {
     
     @Autowired
     private BillBoardListMapper billBoardListMapper;
+    
+    @Autowired
+    private BillBoardDetailsMapper  billBoardDetailMapper;
 
     public List<Content> loadSquareData(int sinceId){
         return contentMapper.loadSquareData(sinceId);
@@ -636,6 +639,7 @@ public class ContentMybatisDao {
         BillBoardRelationExample example = new BillBoardRelationExample();
         BillBoardRelationExample.Criteria criteria = example.createCriteria();
         criteria.andSourceIdEqualTo(sourceId);
+        example.setOrderByClause(" sort asc,id desc");
         return billBoardRelationMapper.selectByExample(example);
     }
 
@@ -653,4 +657,74 @@ public class ContentMybatisDao {
     public void insertBillBoardList(BillBoardList bbl){
     	billBoardListMapper.insertSelective(bbl);
     }
+    /**
+     * 修改榜单
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param bb
+     */
+	public void updateBillBoard(BillBoard bb) {
+		billBoardMapper.updateByPrimaryKeySelective(bb);
+	}
+	/**
+	 * 删除榜单
+	 * @author zhangjiwei
+	 * @date Mar 21, 2017
+	 * @param id
+	 */
+	public void deleteBillBoardByKey(long id) {
+		billBoardMapper.deleteByPrimaryKey(id);
+	}
+
+	public void insertBillBoard(BillBoard bb) {
+		billBoardMapper.insertSelective(bb);
+	}
+
+	public void insertBillBoardRelation(BillBoardRelation br) {
+		billBoardRelationMapper.insertSelective(br);
+	}
+
+	public void delBillBoardRelationById(long rid) {
+		billBoardRelationMapper.deleteByPrimaryKey(rid);
+	}
+
+	public void updateBillBoardRelation(BillBoardRelation br) {
+		billBoardRelationMapper.updateByPrimaryKeySelective(br);
+	}
+	/**
+	 * 按榜单ID删除detail.
+	 * @author zhangjiwei
+	 * @date Mar 21, 2017
+	 * @param id
+	 */
+	public void deleteBillBoardDetailByBId(long bid) {
+		BillBoardDetailsExample example = new BillBoardDetailsExample();
+		example.createCriteria().andBidEqualTo(bid);
+		billBoardDetailMapper.deleteByExample(example);
+	}
+
+	public List<BillBoardDetails> getBillBoardDetailByBidAndType(Long bid,int type) {
+		BillBoardDetailsExample example = new BillBoardDetailsExample();
+		example.createCriteria().andBidEqualTo(bid).andTypeEqualTo(type);
+		List<BillBoardDetails> details =billBoardDetailMapper.selectByExample(example);
+		return details;
+	}
+	public List<BillBoardDetails> getBillBoardDetailsByType(int type){
+		BillBoardDetailsExample example = new BillBoardDetailsExample();
+		example.createCriteria().andTypeEqualTo(type);
+		example.setOrderByClause("sort asc,id desc");
+		return billBoardDetailMapper.selectByExample(example);
+	}
+	public void insertBillBoardDetail(BillBoardDetails br) {
+		billBoardDetailMapper.insertSelective(br);
+	}
+
+	public void delBillBoardDetailById(long rid) {
+		billBoardDetailMapper.deleteByPrimaryKey(rid);
+	}
+
+	public void updateBillBoardDetailById(BillBoardDetails br) {
+		billBoardDetailMapper.updateByPrimaryKeySelective(br);
+	}
+
 }

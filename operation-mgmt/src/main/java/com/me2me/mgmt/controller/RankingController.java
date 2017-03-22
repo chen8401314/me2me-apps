@@ -2,24 +2,21 @@ package com.me2me.mgmt.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-import com.me2me.common.page.PageBean;
-import com.me2me.live.dto.SearchDropAroundTopicDto;
-import com.me2me.live.model.TopicDroparound;
-import com.me2me.live.model.TopicFragmentTemplate;
-import com.me2me.live.service.LiveService;
+import com.me2me.content.dto.OnlineBillBoardDto;
+import com.me2me.content.model.BillBoard;
+import com.me2me.content.model.BillBoardDetails;
+import com.me2me.content.service.ContentService;
 import com.me2me.mgmt.syslog.SystemControllerLog;
-import com.me2me.mgmt.vo.DatatablePage;
+import com.me2me.user.service.UserService;
 import com.plusnet.sso.api.vo.JsonResult;
 /**
  * 榜单管理
@@ -31,130 +28,128 @@ import com.plusnet.sso.api.vo.JsonResult;
 public class RankingController {
 	
 	@Autowired
-    private LiveService liveService;
+    private ContentService contentService;
+	
+	@Autowired
+	private UserService userService;
 	
 	
 	@RequestMapping(value = "/list_ranking")
-	@SystemControllerLog(description = "足迹语言模板列表")
+	@SystemControllerLog(description = "榜单列表")
 	public String list_ranking(HttpServletRequest request) throws Exception {
-		String queryStr = request.getParameter("query");
-		if(!StringUtils.isEmpty(queryStr)){
-			queryStr=new String(queryStr.getBytes("iso-8859-1"),"utf-8");
-		}
-		List<TopicFragmentTemplate> list =liveService.getFragmentTplList(queryStr);
+		List<BillBoard> list =contentService.getAllBillBoard();
 		request.setAttribute("dataList",list);
-		return "topicFragmentTemplate/query";
+		return "ranking_list/list_ranking";
 	}
-	@RequestMapping(value = "/add")
-	@SystemControllerLog(description = "添加语言模板")
-	public String add(HttpServletRequest request) throws Exception {
-		return "topicFragmentTemplate/add";
+	@ResponseBody
+	@RequestMapping(value = "/ajaxLoadUsers")
+	@SystemControllerLog(description = "载入系统用户")
+	public String ajaxLoadUsers(HttpServletRequest request) throws Exception {
+		List<BillBoard> list =contentService.getAllBillBoard();
+		request.setAttribute("dataList",list);
+		return "ranking_list/list_ranking";
 	}
-	@RequestMapping(value = "/modify")
-	@SystemControllerLog(description = "添加语言模板")
-	public String modify(HttpServletRequest request) throws Exception {
-		String id = request.getParameter("id");
-		TopicFragmentTemplate item =liveService.getFragmentTplById(Long.parseLong(id));
-		request.setAttribute("item",item);
-		return "topicFragmentTemplate/add";
+	@ResponseBody
+	@RequestMapping(value = "/ajaxLoadKingdoms")
+	@SystemControllerLog(description = "载入系统王国")
+	public String ajaxLoadKingdoms(HttpServletRequest request) throws Exception {
+		List<BillBoard> list =contentService.getAllBillBoard();
+		request.setAttribute("dataList",list);
+		return "ranking_list/list_ranking";
 	}
 	
-	@RequestMapping(value = "/doSave")
-	@SystemControllerLog(description = "保存足迹语言模板")
-	public String doSave(HttpServletRequest request,TopicFragmentTemplate tpl) throws Exception {
+	@RequestMapping(value = "/add_ranking")
+	@SystemControllerLog(description = "添加榜单")
+	public String add_ranking(HttpServletRequest request) throws Exception {
+		return "ranking_list/add_ranking";
+	}
+	
+	@RequestMapping(value = "/modify_ranking")
+	@SystemControllerLog(description = "修改榜单")
+	public String modify_ranking(HttpServletRequest request) throws Exception {
+		String id = request.getParameter("id");
+		BillBoard item= contentService.getBillBoardById(Long.parseLong(id));
+		request.setAttribute("item",item);
+		return "ranking_list/add_ranking";
+	}
+	@RequestMapping(value = "/ranking_data_mgr")
+	@SystemControllerLog(description = "榜单数据管理")
+	public String ranking_data_mgr(HttpServletRequest request) throws Exception {
+		String id = request.getParameter("id");
+		BillBoard item= contentService.getBillBoardById(Long.parseLong(id));
+		request.setAttribute("item",item);
+		return "ranking_list/ranking_data_mgr";
+	}
+	
+	@RequestMapping(value = "/doSaveRanking")
+	@SystemControllerLog(description = "保存榜单")
+	public String doSaveRanking(HttpServletRequest request,BillBoard tpl) throws Exception {
 		try{
 			if(tpl.getId()!=null){
-				liveService.updateFragmentTpl(tpl);
+				contentService.updateBillBoard(tpl);
 			}else{
-				liveService.addFragmentTpl(tpl);
+				contentService.addBillBoard(tpl);
 			}
-			return "redirect:./query";
+			return "redirect:./list_ranking";
 		}catch(Exception e){
 			request.setAttribute("item",tpl);
-			return add(request);
+			return add_ranking(request);
 		}
 	}
-	@RequestMapping(value = "/delete")
-	@SystemControllerLog(description = "删除足迹语言模板")
-	public String delete(HttpServletRequest request) throws Exception {
+	@RequestMapping(value = "/deleteRanking")
+	@SystemControllerLog(description = "删除榜单")
+	public String deleteRanking(HttpServletRequest request) throws Exception {
 		String id = request.getParameter("id");
-		liveService.deleteFragmentTpl(Long.parseLong(id));
-		return "redirect:./query";
+		contentService.deleteBillBoardById(Long.parseLong(id));
+		return "redirect:./list_ranking";
 	}
-	@RequestMapping(value = "/dropAroundKingdomMgr")
-	@SystemControllerLog(description = "串门王国管理")
-	public String dropAroundKingdomMgr(HttpServletRequest request) throws Exception {
-		return "topicFragmentTemplate/dropAroundKingdomMgr";
+	
+	
+	@RequestMapping(value = "/list_online_ranking")
+	@SystemControllerLog(description = "上线榜单列表")
+	public String list_online_ranking(HttpServletRequest request) throws Exception {
+		String type = request.getParameter("type");
+		List<BillBoard> list =contentService.getAllBillBoard();
+		request.setAttribute("dataList",list);
+		
+		List<OnlineBillBoardDto> myDataList =contentService.getOnlineBillBoardListByType(Integer.parseInt(type));
+		request.setAttribute("myDataList",myDataList);
+		return "ranking_list/list_online_ranking";
 	}
 	
 	@ResponseBody
-	@RequestMapping("addDropAroundKingdom")
-	@SystemControllerLog(description = "添加串门王国")
-	public JsonResult addDropAroundKingdom(HttpServletRequest request){
+	@RequestMapping(value = "/doSaveOnlineRanking")
+	@SystemControllerLog(description = "保存上线榜单")
+	public JsonResult doSaveOnlineRanking(HttpServletRequest request,BillBoardDetails tpl) throws Exception {
 		try{
-			String json = request.getParameter("data");
-			JSONArray kingdoms = JSON.parseArray(json);
-			for(int i=0;i<kingdoms.size();i++){
-				JSONObject object = kingdoms.getJSONObject(i);
-				Integer topicId = (object.getInteger("topicId"));
-				this.liveService.copyKingdomToDropAroundKingdom(topicId,-1);
+			contentService.addOnlineBillBoard(tpl);
+			return JsonResult.success();
+		}catch(Exception e){
+			return JsonResult.error();
+		}
+	}
+	@ResponseBody
+	@RequestMapping(value = "/deleteOnlineRanking")
+	@SystemControllerLog(description = "删除上线榜单")
+	public JsonResult deleteOnlineRanking(HttpServletRequest request) throws Exception {
+		String id = request.getParameter("id");
+		contentService.delOnlineBillBoardById(Long.parseLong(id));
+		return JsonResult.success();
+	}
+	@ResponseBody
+	@RequestMapping(value = "/updateOnlineRanking")
+	@SystemControllerLog(description = "修改上线榜单")
+	public JsonResult updateOnlineRanking(HttpServletRequest request) throws Exception{
+		String json = request.getParameter("json");
+		try{
+			List<BillBoardDetails> details = JSON.parseArray(json, BillBoardDetails.class);
+			for(BillBoardDetails detail:details){
+				contentService.updateOnlineBillBoard(detail);
 			}
 			return JsonResult.success();
 		}catch(Exception e){
 			e.printStackTrace();
-			return JsonResult.error("添加王国失败");
+			return JsonResult.error("保存排序错误。");
 		}
-	}
-	@ResponseBody
-	@RequestMapping("delMyKingdom")
-	@SystemControllerLog(description = "删除串门王国")
-	public JsonResult delMyKingdom(HttpServletRequest request){
-		try{
-			String id = request.getParameter("id");
-			this.liveService.delDropAroundKingdom(Integer.parseInt(id));
-			return JsonResult.success();
-		}catch(Exception e){
-			e.printStackTrace();
-			return JsonResult.error("删除王国失败");
-		}
-	}
-	// 修改顺序。
-	@ResponseBody
-	@RequestMapping("updateDropAroundKingdomOrder")
-	@SystemControllerLog(description = "修改王国管理")
-	public JsonResult updateDropAroundKingdomOrder(HttpServletRequest request,TopicDroparound td){
-		try{
-			this.liveService.updateDropAroundKingdom(td);
-			return JsonResult.success();
-		}catch(Exception e){
-			return JsonResult.error("添加王国失败");
-		}
-	}
-	@ResponseBody
-	@RequestMapping("/loadSourceKingdomPage")
-	public DatatablePage loadSourceKingdomPage(DatatablePage dpage, HttpServletRequest request) throws Exception {
-		PageBean page = dpage.toPageBean();
-		String keyword =  request.getParameter("keyword");
-		if(keyword!=null){
-			keyword=new String(keyword.getBytes("iso-8859-1"),"utf-8");
-		}
-		PageBean<SearchDropAroundTopicDto>  result = liveService.getTopicPage(page, keyword);
-		dpage.setData(result.getDataList());
-		dpage.setRecordsTotal((int)result.getTotalRecords());
-		return dpage;
-	}
-	
-	@ResponseBody
-	@RequestMapping("loadMyKingdomPage")
-	public DatatablePage loadMyKingdomPage(DatatablePage dpage, HttpServletRequest request) throws Exception{
-		
-		String keyword=request.getParameter("keyword");
-		if(keyword!=null){
-			keyword=new String(keyword.getBytes("iso-8859-1"),"utf-8");
-		}
-		PageBean page2= this.liveService.getDropAroundKingdomPage(dpage.toPageBean(),keyword);
-		dpage.setData(page2.getDataList());
-		dpage.setRecordsTotal((int)page2.getTotalRecords());
-		return dpage;
 	}
 }

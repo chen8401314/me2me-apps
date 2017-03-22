@@ -113,6 +113,16 @@ String sub = request.getParameter("s");
                 	<li <%if("9_3".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/spring/milidata/query">米粒管理</a></li>
                 </ul>
             </li>
+            <li class="sub-menu">
+                <a href="javascript:;" <%if("10".equals(tab)){ %>class="active"<%} %>>
+                    <i class="fa fa-bar-chart-o"></i>
+                    <span>榜单管理</span>
+                </a>
+                <ul class="sub">
+                	<li <%if("10_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/ranking/list_ranking">榜单列表</a></li>
+                	<li <%if("10_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/ranking/list_online_ranking?type=1">上线榜单管理</a></li>
+                </ul>
+            </li>
         </ul>
         <!-- sidebar menu end-->
     </div>

@@ -34,6 +34,7 @@
     <result column="channel" jdbcType="VARCHAR" property="channel" />
     <result column="platform" jdbcType="INTEGER" property="platform" />
   </resultMap>
+  
   <sql id="Example_Where_Clause">
     <!--
       WARNING - @mbggenerated
@@ -632,5 +633,54 @@
     from user_profile p
     where p.uid in (SELECT f.source_uid FROM user_follow f WHERE f.target_uid = #{uid,jdbcType=BIGINT})
     and p.nick_name like #{nickName,jdbcType=VARCHAR}
+  </select>
+  <resultMap id="searchUserDtoMap" type="com.me2me.user.dto.SearchUserDto" >
+  	 <association property="userProfile" javaType="com.me2me.user.model.UserProfile" resultMap="BaseResultMap"/>
+  </resultMap>
+  <select id="searchUserPage" parameterType="map" resultType="com.me2me.user.dto.SearchUserDto">
+		select * from user_profile p,
+		(select uid,count(1) kingdomCount from topic where `status`=0 group by uid) a ,
+		(select source_uid,count(1) focusCount from user_follow group by source_uid) b,
+		(select target_uid,count(1) fansCount from user_follow group by target_uid) c 
+		where a.uid=p.uid and b.source_uid=p.uid and c.target_uid=p.uid 
+  		<if test="kingdomCount_min!=null">
+  			and kingdomCount &gt;= #{kingdomCount_min}
+  		</if>
+  		<if test="kingdomCount_max!=null">
+  			and kingdomCount &lt;= #{kingdomCount_max}
+  		</if>
+  		<if test="focusCount_min!=null">
+  			and focusCount &gt;= #{focusCount_min}
+  		</if>
+  		<if test="focusCount_max!=null">
+  			and focusCount &lt;= #{focusCount_max}
+  		</if>
+   		<if test="fansCount_min!=null">
+  			and fansCount &gt;= #{fansCount_min}
+  		</if>
+  		<if test="fansCount_max!=null">
+  			and fansCount &lt;= #{fansCount_max}
+  		</if>
+  		<if test="nick_name!=null">
+  			and nick_name like #{nick_name}
+  		</if>
+  		
+  		<if test="nick_name!=null">
+  			and nick_name like #{nick_name}
+  		</if>
+  		<if test="create_time_min!=null">
+  			and date(create_time) &gt;= #{create_time_min}
+  		</if>
+  		<if test="create_time_max!=null">
+  			and date(create_time) &lt;= #{create_time_max}
+  		</if>
+  		<if test="v_lv!=null">
+  			and v_lv= #{v_lv}
+  		</if>
+  		
+	  	<if test="orderBy!=null and order!=null">
+	  		order by #{orderBy} #{order}
+	  	</if>
+  	
   </select>
 </mapper>
