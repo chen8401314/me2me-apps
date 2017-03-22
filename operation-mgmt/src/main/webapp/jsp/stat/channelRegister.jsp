@@ -198,7 +198,8 @@ $(function(){
 		startView: 2,
 		autoclose:true,
 		weekStart:1,
-		todayBtn:  1
+		todayBtn:  1,
+		minView:2
 		});
 	$('#endTime').datetimepicker({
 		format: 'yyyy-mm-dd hh:ii:ss',
@@ -206,7 +207,8 @@ $(function(){
 		startView: 2,
 		autoclose:true,
 		weekStart:1,
-		todayBtn:  1
+		todayBtn:  1,
+		minView:2
 		});
 	</script>
 </body>
