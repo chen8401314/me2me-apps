@@ -99,8 +99,11 @@ public class SpeakListener {
         MySubscribeCacheModel cacheModel= null;
         //非国王发言着提醒国王王国更新红点
         if(topic.getUid()!=speakEvent.getUid()){
-            cacheModel = new MySubscribeCacheModel(topic.getUid(), speakEvent.getTopicId() + "", "1");
-            cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+            cacheModel = new MySubscribeCacheModel(topic.getUid(), speakEvent.getTopicId() + "", speakEvent.getFragmentId()+"");
+            String values = cacheService.hGet(cacheModel.getKey(), cacheModel.getField());
+            if(StringUtils.isEmpty(values) || Integer.parseInt(values) == 0){
+                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+            }
         }
         LiveLastUpdate liveLastUpdate = new LiveLastUpdate(speakEvent.getTopicId(),"1");
         
@@ -151,9 +154,13 @@ public class SpeakListener {
         for(int i=0;i<cores.size();i++){
             long cid = cores.getLongValue(i);
 
-            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(cid, speakEvent.getTopicId() + "", "1");
+            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(cid, speakEvent.getTopicId() + "", speakEvent.getFragmentId()+"");
             log.info("speak by fans start update hset cache key{} field {} value {}",cacheModel.getKey(),cacheModel.getField(),cacheModel.getValue());
-            cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+            String values = cacheService.hGet(cacheModel.getKey(), cacheModel.getField());
+            if(StringUtils.isEmpty(values) || Integer.parseInt(values) == 0){
+                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+            }
+
             if(speakEvent.getAtUids().indexOf(CommonUtils.wrapString(cid,","))>-1){
                 continue;
             }

@@ -488,13 +488,13 @@ public class LiveServiceImpl implements LiveService {
 	@Override
     public Response speak(SpeakDto speakDto) {
         log.info("speak start ...");
+        SpeakEvent speakEvent = new SpeakEvent();
         //如果是主播发言更新cache
         if (speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index||speakDto.getType()==Specification.LiveSpeakType.AT_CORE_CIRCLE.index||speakDto.getType()==Specification.LiveSpeakType.ANCHOR_AT.index||speakDto.getType()==Specification.LiveSpeakType.FANS.index||speakDto.getType()==Specification.LiveSpeakType.AT.index) {
             //只更新大王发言,如果是主播(大王)发言更新cache
 //            Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
 //            //小王发言更新cache（topic.getUid() == speakDto.getUid()为该王国国王 通知所有人）
 //            if(topic.getUid() == speakDto.getUid()) {
-            SpeakEvent speakEvent = new SpeakEvent();
             speakEvent.setTopicId(speakDto.getTopicId());
             speakEvent.setType(speakDto.getType());
             speakEvent.setUid(speakDto.getUid());
@@ -510,7 +510,6 @@ public class LiveServiceImpl implements LiveService {
             }
             speakEvent.setAtUids(atUids);
 
-            applicationEventBus.post(speakEvent);
 //            }
             //粉丝有留言提醒主播
         } else {
@@ -567,7 +566,8 @@ public class LiveServiceImpl implements LiveService {
             log.info("updateTopic updateTime");
             
             fid = topicFragment.getId();
-            
+            speakEvent.setFragmentId(fid);
+            applicationEventBus.post(speakEvent);
             //--add update kingdom cache -- modify by zcl -- begin --
             //此处暂不考虑原子操作
             int total = liveMybatisDao.countFragmentByTopicId(speakDto.getTopicId());
@@ -1210,7 +1210,7 @@ public class LiveServiceImpl implements LiveService {
                     showTopicElement.setAcCount(0);
                 }
             }
-            processCache2(uid,topic,showTopicElement);
+
             lastFragment = lastFragmentMap.get(String.valueOf(topic.getId()));
             if (null != lastFragment) {
                 showTopicElement.setLastContentType((Integer)lastFragment.get("content_type"));
@@ -1225,6 +1225,7 @@ public class LiveServiceImpl implements LiveService {
             } else {
                 showTopicElement.setLastContentType(-1);
             }
+            processCache2(uid,topic,showTopicElement);
             if(null != reviewCountMap.get(String.valueOf(topic.getId()))){
                 showTopicElement.setReviewCount(reviewCountMap.get(String.valueOf(topic.getId())).intValue());
             }else{
@@ -1292,14 +1293,21 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setIsUpdate(0);
         }else {
             showTopicElement.setIsUpdate(1);
-//            liveMybatisDao.createTopic();
+            Map map = Maps.newHashMap();
+            map.put("fid" ,isUpdate);
+            map.put("uid" ,uid);
+            TopicFragment topicFragment = liveMybatisDao.getFragmentByAT(map);
+            if(topicFragment != null){
+                showTopicElement.setLastContentType(topicFragment.getContentType());
+                showTopicElement.setLastFragment(topicFragment.getFragment());
+                showTopicElement.setLastFragmentImage(topicFragment.getFragmentImage());
+                showTopicElement.setLastUpdateTime(topicFragment.getCreateTime().getTime());
+                //新增
+                showTopicElement.setLastType(topicFragment.getType());
+                showTopicElement.setLastStatus(topicFragment.getStatus());
+                showTopicElement.setLastExtra(topicFragment.getExtra());
+            }
         }
-
-        if (!StringUtils.isEmpty(isUpdate)) {
-            showTopicElement.setIsUpdate(Integer.parseInt(isUpdate));
-        }
-       //判断 at_uid 是否等于自己 type in (10 ,11 ,15) oder by id desc limit 1
-
     }
 
     /**

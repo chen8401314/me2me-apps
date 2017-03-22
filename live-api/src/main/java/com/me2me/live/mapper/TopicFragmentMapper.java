@@ -125,4 +125,7 @@ public interface TopicFragmentMapper {
     Map<String,Long> countFragmentByTopicIdWithSince(GetLiveUpdateDto getLiveUpdateDto);
 
     List<TopicFragment> getTopicFragmentForPage(GetLiveDetailDto getLiveDetailDto);
+
+    TopicFragment getFragmentByAT(Map map);
+
 }

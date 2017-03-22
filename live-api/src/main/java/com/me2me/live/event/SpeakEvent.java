@@ -21,4 +21,6 @@ public class SpeakEvent implements BaseEntity {
 
     private String atUids;
 
+    private long fragmentId;
+
 }
