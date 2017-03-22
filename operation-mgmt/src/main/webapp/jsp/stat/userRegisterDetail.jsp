@@ -107,6 +107,7 @@ var buildTableBody = function(dataList){
 			bodyHtml = bodyHtml + "<th>"+dataList[i].registerMode+"</th>";
 			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].registerDate))+"</th>";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].channelCode+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].registerVersion+"</th>";
 			bodyHtml = bodyHtml + "<th>";
 			if(dataList[i].platform == 1){
 				bodyHtml = bodyHtml + "安卓";
@@ -230,6 +231,7 @@ if(errMsg && errMsg != 'null' && errMsg != ''){
 												<th>账号类型</th>
 												<th>注册时间</th>
 												<th>渠道</th>
+												<th>注册版本</th>
 												<th>终端类型</th>
 												<th>建立王国数</th>
 												<th>粉丝数</th>
@@ -243,6 +245,7 @@ if(errMsg && errMsg != 'null' && errMsg != ''){
 													<th>${item.registerMode }</th>
 													<th><fmt:formatDate value="${item.registerDate }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
 													<th>${item.channelCode }</th>
+													<th>${item.registerVersion }</th>
 													<th>
 													<c:choose>
                                                 		<c:when test="${item.platform == '1'}">

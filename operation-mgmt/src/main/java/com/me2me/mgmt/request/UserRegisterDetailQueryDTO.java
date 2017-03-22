@@ -58,6 +58,9 @@ public class UserRegisterDetailQueryDTO {
 		private String channelCode;
 		@Getter
 		@Setter
+		private String registerVersion;
+		@Getter
+		@Setter
 		private int platform;
 		@Getter
 		@Setter
