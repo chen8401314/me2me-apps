@@ -159,7 +159,7 @@ public class Home extends BaseController {
     @RequestMapping(value = "/showList ")
     @ResponseBody
     public Response showList(BangDanRequest request){
-        return contentService.showBangDanList(request.getListType(),request.getUid());
+        return contentService.showBangDanList(request.getSinceId(), request.getListType(),request.getUid());
     }
 
     @RequestMapping(value = "/showListDetail ")

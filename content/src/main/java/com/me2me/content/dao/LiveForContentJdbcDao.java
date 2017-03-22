@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.me2me.content.model.BillBoardList;
 import com.me2me.user.model.UserProfile;
 
 import java.util.ArrayList;
@@ -288,8 +289,8 @@ public class LiveForContentJdbcDao {
      * @param pageSize
      * @return
      */
-    public List<UserProfile> getActiveUserBillboard(long sinceId, int pageSize){
-    	List<UserProfile> result = new ArrayList<UserProfile>();
+    public List<BillBoardList> getActiveUserBillboard(long sinceId, int pageSize){
+    	List<BillBoardList> result = new ArrayList<BillBoardList>();
     	
     	StringBuilder sb = new StringBuilder();
     	sb.append("select m.uid,m.tid from (select t.uid,max(t.id) as tid");
@@ -299,38 +300,13 @@ public class LiveForContentJdbcDao {
     	
     	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
     	if(null != list && list.size() > 0){
-    		StringBuilder usb = new StringBuilder();
-    		usb.append("select * from user_profile u");
-    		usb.append(" where u.id in (");
+    		BillBoardList bbl = null;
     		for(Map<String, Object> m : list){
-    			usb.append((Long)m.get("uid"));
-    		}
-    		usb.append(") order by u.id desc");
-    		List<Map<String, Object>> ulist = jdbcTemplate.queryForList(usb.toString());
-    		Map<String, UserProfile> uMap = new HashMap<String, UserProfile>();
-    		UserProfile up = null;
-    		for(Map<String, Object> m : ulist){
-    			up = new UserProfile();
-    			up.setId((Long)m.get("id"));
-    			up.setUid((Long)m.get("uid"));
-    			up.setMobile((String)m.get("mobile"));
-    			up.setNickName((String)m.get("nick_name"));
-    			up.setGender((Integer)m.get("gender"));
-    			up.setBirthday((String)m.get("birthday"));
-    			up.setAvatar((String)m.get("avatar"));
-    			up.setIntroduced((String)m.get("introduced"));
-    			up.setCreateTime((Date)m.get("create_time"));
-    			up.setUpdateTime((Date)m.get("update_time"));
-    			up.setIsPromoter((Integer)m.get("is_promoter"));
-    			up.setThirdPartBind((String)m.get("third_part_bind"));
-    			up.setvLv((Integer)m.get("v_lv"));
-    			uMap.put(String.valueOf(up.getUid()), up);
-    		}
-    		for(Map<String, Object> m : list){
-    			up = uMap.get(String.valueOf(m.get("uid")));
-    			if(null != up){
-    				result.add(up);
-    			}
+    			bbl = new BillBoardList();
+    			bbl.setTargetId((Long)m.get("uid"));
+    			bbl.setType(2);
+    			bbl.setSinceId(((Long)m.get("tid")).intValue());
+    			result.add(bbl);
     		}
     	}
     	
@@ -343,9 +319,9 @@ public class LiveForContentJdbcDao {
      * @param pageSize
      * @return
      */
-    public List<Map<String, Object>> getInteractionHottestBillboard(long sinceId, int pageSize){
+    public List<BillBoardList> getInteractionHottestKingdomBillboard(long sinceId, int pageSize){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select t.*,m.cc as sinceId from topic t,content c,(");
+    	sb.append("select t.id,m.cc as sinceId from topic t,content c,(");
     	sb.append("select f.topic_id,count(1) as cc");
     	sb.append(" from topic_fragment f where f.type not in (0,12,13)");
     	sb.append(" and f.create_time>date_add(now(), interval -1 day)");
@@ -353,6 +329,20 @@ public class LiveForContentJdbcDao {
     	sb.append(" and t.id=m.topic_id and m.cc<").append(sinceId);
     	sb.append(" order by cc DESC limit ").append(pageSize);
     	
-    	return jdbcTemplate.queryForList(sb.toString());
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	
+    	List<BillBoardList> result = new ArrayList<BillBoardList>();
+    	if(null != list && list.size() > 0){
+    		BillBoardList bbl = null;
+    		for(Map<String, Object> m : list){
+    			bbl = new BillBoardList();
+    			bbl.setTargetId((Long)m.get("id"));
+    			bbl.setType(1);
+    			bbl.setSinceId(((Long)m.get("cc")).intValue());
+    			result.add(bbl);
+    		}
+    	}
+    	
+    	return result;
     }
 }
