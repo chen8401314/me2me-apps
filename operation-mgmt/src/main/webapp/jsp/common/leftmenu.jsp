@@ -39,6 +39,7 @@ String sub = request.getParameter("s");
                     <li <%if("3_7".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/stat/userRegister/detail/query">注册用户明细统计</a></li>
                     <li <%if("3_8".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/stat/kingdomCreate/detail/query">新建王国明细统计</a></li>
                     <li <%if("3_9".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/stat/userRegister/query">用户注册统计</a></li>
+                    <li <%if("3_10".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/stat/iosWapx/query">IOS万普激活统计</a></li>
                 </ul>
             </li>
             <li class="sub-menu">
