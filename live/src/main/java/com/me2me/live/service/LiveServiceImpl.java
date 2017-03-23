@@ -3841,15 +3841,14 @@ public class LiveServiceImpl implements LiveService {
     public Response dropAround(long uid, long sourceTopicId) {
         int dr =0;
         String now = new SimpleDateFormat("yyyyMMdd").format(new Date());
-        String number = cacheService.hGet("droparound" ,uid+"@"+now);
+        String number = cacheService.get("droparound:"+uid+"@"+now);
         if(!StringUtils.isEmpty(number)){
             //有的话取
             dr = Integer.parseInt(number);
         }
         //每次进来+1 控制每人每天五次
-        cacheService.hSet("droparound" ,uid+"@"+now ,String.valueOf(dr+1));
-        log.info("key:droparound filed:{}@{} value: {}" ,uid , now ,dr+1);
-        cacheService.expire(uid+"@"+now ,3600*24);//24小时过期
+        cacheService.set("droparound:"+uid+"@"+now ,String.valueOf(dr+1));
+        cacheService.expire("droparound:"+uid+"@"+now ,3600*24);//24小时过期
 
         //控制每个用户避免进入重复的
         Set<String> s = cacheService.smembers("list:user@"+uid );
