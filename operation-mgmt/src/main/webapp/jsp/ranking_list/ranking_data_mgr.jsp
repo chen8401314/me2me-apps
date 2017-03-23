@@ -60,7 +60,7 @@
 	                                		榜单集合
 	                                	</c:if>
                                 	</b>&emsp;
-                                	<button onclick="history.back(-1)" class="btn btn-primary">返回</button>
+                                	<button onclick="location.href='./list_ranking'" class="btn btn-primary">返回</button>
                                 	<c:if test="${item.type==1}">
                                 		<a class="btn btn-danger dialog" href="./listKingdoms">添加王国</a>
                                 	</c:if>
@@ -211,7 +211,8 @@
 		        	if(data!=null){
 			        	var map ={0:"普通王国",1000:"聚合王国"};
 			        	return map[data];
-		        	}},
+		        	}
+		        }},
 			</c:if>
 			<c:if test="${item.type==2}">
 			 	{data: "nickName",title: "昵称"},

@@ -24,58 +24,55 @@
 </head>
 <body>
 	<section id="container" class="container">
+		<p>
 		<div class="panel panel-default">
 			<div class="panel-body">
-				<form class="form form-inline" method="get" action="" id="search_form">
-					<p>
-						<div class="form-group">
-							<lable class="control-label">用户名</lable>
-							<input type="text" name="nick_name" class="form-control"/>
-						</div>
-						<div class="form-group">
-							<lable class="control-label">注册时间</lable>
-							<input type="text" name="create_time_min" class="form-control date"/>-
-							<input type="text" name="create_time_max" class="form-control date"/>
-						</div>
-						<div class="form-group">
-							<lable class="control-label">大V</lable>
-							<select name="v_lv" class="form-control">
-								<option value="">全部</option>
-								<option value="0">否</option>
-								<option value="1">是</option>
-							</select>
-						</div>
-					</p>
-					<p>
-						<div class="form-group">
-							<lable class="control-label">发布王国数量</lable>
-							<input type="text" name="kingdomCount_min" class="form-control" style="width:50px;"/>-
-							<input type="text" name="kingdomCount_max" class="form-control" style="width:50px;"/>
-						</div>
-						<div class="form-group">
-							<lable class="control-label">关注别人数量</lable>
-							<input type="text" name="focusCount_min" class="form-control" style="width:50px;"/>-
-							<input type="text" name="focusCount_max" class="form-control" style="width:50px;"/>
-						</div>
-						<div class="form-group">
-							<lable class="control-label">粉丝数量</lable>
-							<input type="text" name="fansCount_min" class="form-control" style="width:50px;"/>-
-							<input type="text" name="fansCount_max" class="form-control" style="width:50px;"/>
-						</div>
-						<div class="form-group">
-							<button type="submit" class="btn btn-primary">
-								<i  class=" fa fa-search "></i> 搜索
-							</button>
-						</div>
-					</p>
-				</form>
 				<button type="button" class="btn btn-danger" onclick="addBatch()">
 					<i  class=" fa fa-plus "></i> 批量加入
 				</button>
 			</div>
 		</div>
+		</p>
 		<div class="adv-table">
 			<table class="display table table-bordered table-striped" id="mytable" width="100%">
+				<thead>
+					<tr>
+						<th width="50">
+							<button class='btn btn-warning btn-xs'>全/反选</button> 
+						</th>
+						<th>序号</th>
+						<th>类型</th>
+						<th>名称</th>
+						<th>操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					<c:forEach items="${dataList}" var="item" varStatus="status">
+						<tr class="gradeX" data-bid="${item.id}">
+							<td><input type='checkbox'/></td>
+							<td>${status.index + 1}</td>
+							<td>
+								<c:choose>
+                              		<c:when test="${item.type == '1'}">
+                              			王国榜单
+                              		</c:when>
+                              		<c:when test="${item.type == '2'}">
+                              			用户榜单
+                              		</c:when>
+                             			<c:when test="${item.type == '3'}">
+                             				榜单集合
+                             			</c:when>
+                              	</c:choose>
+							</td>
+							<td >
+								${item.name }
+							</td>
+							<td>
+								<button class="btn btn-danger btn-xs btnAdd" >加入</button>
+							</td>
+						</tr>
+					</c:forEach>
+				</tbody>
 			</table>
 		</div>
 	</section>
@@ -130,10 +127,7 @@
 	$.fn.dataTable.ext.errMode="console";
 	$.extend( $.fn.dataTable.defaults, {
 		pageLength: 10,
-		searching: false,
-        dom: 'tp',
-	    processing: true,
-	    serverSide: true,
+		searching: true,
     	language: {
     		processing:     "加载中...",
     	    search:         "搜索中&nbsp;:",
@@ -158,44 +152,9 @@
     	    decimal: ","
         }
 	} );
-	
-	
 	var sourceTable=$('#mytable').DataTable( {
-	    "ajax":"./ajaxLoadUsers",
-	    "columns": [
-			{title:"<button class='btn btn-warning btn-xs'>全/反选</button> ",width:50,orderable:false,render:function(data, type, row, meta){
-				var txt= "<input type='checkbox'/> ";
-				return txt;
-			}},
-	        {data: "userProfile.uid",title: "用户ID",style:"num"},
-	        {data: "userProfile.nickName",title: "用户名",style:"num"},
-	        {data: "userProfile.createTime",title: "注册时间",render:function(data,type,row,meta){
-	        	if(row.userProfile!=null){
-	        		return new Date(row.userProfile.createTime).Format("yyyy-MM-dd hh:mm:ss");
-	        	}
-	        }},
-	        {data: "userProfile.vLv",title: "大V",render:function(data,type,row,meta){
-	        	//console.log(data)
-	        	if(data!=null){
-		        	var map ={0:"否",1:"是"};
-		        	return map[data];
-	        	}
-	        }},
-	        {data: "kingdomCount",title: "发布王国数量",style:"num"},
-	        {data: "focusCount",title: "关注数量",style:"num"},
-	        {data: "fansCount",title: "粉丝数量",style:"num"},
-	        {title:"操作",width:60,render:function(data, type, row, meta){
-	        	var txt= "<a href='#stop' title='uid:"+row.userProfile.uid+"' class='btn btn-danger btn-xs btnAdd'>加入</a> ";
-	        	return txt;
-	        }}
-	     ]
 	});
-	$("#search_form").on("submit",function(){
-		var data= $(this).serialize();
-		var url = "./ajaxLoadUsers?"+data;
-		sourceTable.ajax.url(url).load();
-		return false;
-	})
+	
 	$("#mytable").on("click","th:eq(0)",function(){
 		$("input[type='checkbox']").each(function(){
 			if($(this).attr("checked")!=null){
@@ -207,16 +166,15 @@
 	})
 	$(document).on("click",".btnAdd",function(){		// 父窗口添加选中用户。
 		var tr = $(this).closest("tr");
-		var data =sourceTable.row(tr).data();
-		
-		parent.onAdd([data.userProfile.uid]);
+		var data =tr.attr("data-bid")
+		parent.onAdd([data]);
 	})
 	function addBatch(){
 		var dataArr=[]
 		$("#mytable input:checked").each(function(){
 			var tr = $(this).closest("tr");
-			var data =sourceTable.row(tr).data()
-			dataArr.push(data.userProfile.uid);
+			var data =tr.attr("data-bid")
+			dataArr.push(data);
 		})
 		parent.onAdd(dataArr);
 	}

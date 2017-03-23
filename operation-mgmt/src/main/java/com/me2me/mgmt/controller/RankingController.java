@@ -102,11 +102,17 @@ public class RankingController {
 	}
 	@RequestMapping("listUsers")
 	public String listUsers(HttpServletRequest request){
-		return "ranking_list/list_user";
+		return "ranking_list/ajax_list_user";
 	}
 	@RequestMapping("listKingdoms")
 	public String lisKingdoms(HttpServletRequest request){
-		return "ranking_list/list_kingdom";
+		return "ranking_list/ajax_list_kingdom";
+	}
+	@RequestMapping("listRankings")
+	public String listRankings(HttpServletRequest request){
+		List<BillBoard> list =contentService.getAllBillBoard();
+		request.setAttribute("dataList",list);
+		return "ranking_list/ajax_list_ranking";
 	}
 	@ResponseBody
 	@RequestMapping(value = "/ajaxLoadUsers")
@@ -156,6 +162,7 @@ public class RankingController {
 		request.setAttribute("dataList",list);
 		return "ranking_list/list_ranking";
 	}
+	
 	@ResponseBody
 	@RequestMapping(value = "/updateRankingData")
 	@SystemControllerLog(description = "修改排行数据")
