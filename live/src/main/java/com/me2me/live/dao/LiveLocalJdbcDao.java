@@ -546,22 +546,21 @@ public class LiveLocalJdbcDao {
 		return jdbcTemplate.queryForList(sb.toString());
 	}
 
-	public List<Map<String, Object>> getLastCoreCircleFragmentByTopicIds2(List<Long> topicIds){
+	public List<Map<String, Object>> getLastFragmentByTopicIds(List<Long> topicIds){
 		if(null == topicIds || topicIds.size() == 0){
 			return null;
 		}
 		StringBuilder sb = new StringBuilder();
 		sb.append("select p.* from topic_fragment p, (");
-		sb.append("select max(f.id) as fid from topic_fragment f, topic t ");
-		sb.append("where f.topic_id=t.id and t.id in (");
+		sb.append("select f.topic_id, max(f.id) as fid from topic_fragment f ");
+		sb.append("where f.status=1 and f.topic_id in (");
 		for(int i=0;i<topicIds.size();i++){
 			if(i>0){
 				sb.append(",");
 			}
 			sb.append(topicIds.get(i));
 		}
-		sb.append(") ");
-		sb.append(" group by t.id) m where p.id=m.fid order by id desc");
+		sb.append(") group by f.topic_id) m where p.id=m.fid");
 
 		return jdbcTemplate.queryForList(sb.toString());
 	}

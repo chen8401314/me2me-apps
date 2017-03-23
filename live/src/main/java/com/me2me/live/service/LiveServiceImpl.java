@@ -1134,9 +1134,9 @@ public class LiveServiceImpl implements LiveService {
                 reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
             }
         }
-        //一次性查询所有王国的最新一条核心圈更新
+        //一次性查询所有王国的最新一条数据
         Map<String, Map<String, Object>> lastFragmentMap = new HashMap<String, Map<String, Object>>();
-        List<Map<String, Object>> lastFragmentList = liveLocalJdbcDao.getLastCoreCircleFragmentByTopicIds2(tidList);
+        List<Map<String, Object>> lastFragmentList = liveLocalJdbcDao.getLastFragmentByTopicIds(tidList);
         if(null != lastFragmentList && lastFragmentList.size() > 0){
             for(Map<String, Object> m : lastFragmentList){
                 lastFragmentMap.put(String.valueOf(m.get("topic_id")), m);
@@ -1979,7 +1979,7 @@ public class LiveServiceImpl implements LiveService {
             int size = 0;
             for (Content content : attentionList) {
                 size++;
-                ShowTopicListDto.AttentionElement attentionElement = showTopicListDto.createAttentionElement();
+                ShowTopicListDto.AttentionElement attentionElement = ShowTopicListDto.createAttentionElement();
                 UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
                 attentionElement.setAvatar(Constant.QINIU_DOMAIN+"/"+userProfile.getAvatar());
                 attentionElement.setUid(content.getUid());
@@ -1990,33 +1990,13 @@ public class LiveServiceImpl implements LiveService {
                 }
             }
         }
-        List<Long> topics = liveMybatisDao.getTopicId(uid);
-        Calendar calendar = Calendar.getInstance();
         if (updateTime == 0) {
             updateTime = Long.MAX_VALUE;
         }
         List<Topic2> topicList = liveMybatisDao.getMyLivesByUpdateTimeNew(uid ,updateTime);
         log.info("getMyLives data success");
         builderWithCache2(uid, showTopicListDto, topicList);
-        log.info("getMyLives start ...");
-        int inactiveLiveCount = liveMybatisDao.getInactiveLiveCount(uid, topics);
-        showTopicListDto.setInactiveLiveCount(inactiveLiveCount);
-        calendar.add(Calendar.DAY_OF_YEAR, -3);
-        List<Topic> live = liveMybatisDao.getInactiveLive(uid, topics, calendar.getTimeInMillis());
-        if (live.size() > 0) {
-            showTopicListDto.setLiveTitle(live.get(0).getTitle());
-        }
-        //获取所有更新中直播主笔的信息
-        List<Topic> list = liveMybatisDao.getLives(Long.MAX_VALUE);
-        for (Topic topic : list) {
-            ShowTopicListDto.UpdateLives updateLives = ShowTopicListDto.createUpdateLivesElement();
-            UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
-            updateLives.setV_lv(userProfile.getvLv());
-            updateLives.setUid(userProfile.getUid());
-            updateLives.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-            showTopicListDto.getUpdateLives().add(updateLives);
-        }
-        showTopicListDto.setLiveCount(liveMybatisDao.countLives());
+        
         MyLivesStatusModel myLivesStatusModel = new MyLivesStatusModel(uid, "0");
         String isUpdate = cacheService.hGet(myLivesStatusModel.getKey(), myLivesStatusModel.getField());
         if (!StringUtils.isEmpty(isUpdate)) {
