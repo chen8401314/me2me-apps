@@ -10,6 +10,7 @@ import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
+import com.me2me.common.page.PageBean;
 import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.utils.DateUtil;
@@ -2763,4 +2764,9 @@ public class UserServiceImpl implements UserService {
     public void deleteVersionChannelDownload(long id){
     	userMybatisDao.deleteVersionChannelDownload(id);
     }
+
+	@Override
+	public PageBean<SearchUserDto> searchUserPage(PageBean page, Map<String, Object> queries) {
+		return userMybatisDao.searchUserPage(page,queries);
+	}
 }

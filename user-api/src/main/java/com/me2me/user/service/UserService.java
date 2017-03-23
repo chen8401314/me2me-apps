@@ -1,5 +1,6 @@
 package com.me2me.user.service;
 
+import com.me2me.common.page.PageBean;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseWapx;
 import com.me2me.sms.dto.AwardXMDto;
@@ -327,4 +328,13 @@ public interface UserService {
     void updateVersionChannelDownload(VersionChannelDownload vcd);
     
     void deleteVersionChannelDownload(long id);
+    /**
+     * 搜索用户，供管理后台使用。
+     * @author zhangjiwei
+     * @date Mar 22, 2017
+     * @param page
+     * @param queries
+     * @return
+     */
+    PageBean<SearchUserDto> searchUserPage(PageBean page,Map<String,Object> queries);
 }

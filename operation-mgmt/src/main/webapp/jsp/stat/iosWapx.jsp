@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta charset="utf-8" />
 
-<title>ZX_IMS 2.0 - 注册用户明细统计</title>
+<title>ZX_IMS 2.0 - 万普激活统计</title>
 
 <link href="${ctx}/css/bootstrap.min.css" rel="stylesheet" />
 <link href="${ctx}/css/bootstrap-reset.css" rel="stylesheet" />
@@ -45,7 +45,7 @@ var previous = function(){
 	var page = currPage-1;
 	
 	$.ajax({
-		url : "${ctx}/stat/userRegister/detail/page?nickName="+$("#nickName").val()+"&channelCode="+$("#channelCode").val()+"&startTime="+$("#startTime").val()+"&endTime="+$("#endTime").val()+"&page="+page+"&pageSize="+pageSize,
+		url : "${ctx}/stat/iosWapx/page?startTime="+$("#startTime").val()+"&endTime="+$("#endTime").val()+"&page="+page+"&pageSize="+pageSize,
 		async : false,
 		type : "GET",
 		contentType : "application/json;charset=UTF-8",
@@ -66,7 +66,7 @@ var next = function(type){
 	var page = currPage+1;
 	
 	$.ajax({
-		url : "${ctx}/stat/userRegister/detail/page?nickName="+$("#nickName").val()+"&channelCode="+$("#channelCode").val()+"&startTime="+$("#startTime").val()+"&endTime="+$("#endTime").val()+"&page="+page+"&pageSize="+pageSize,
+		url : "${ctx}/stat/iosWapx/page?startTime="+$("#startTime").val()+"&endTime="+$("#endTime").val()+"&page="+page+"&pageSize="+pageSize,
 		async : false,
 		type : "GET",
 		contentType : "application/json;charset=UTF-8",
@@ -102,25 +102,19 @@ var buildTableBody = function(dataList){
 	if(dataList && dataList.length > 0){
 		for(var i=0;i<dataList.length;i++){
 			bodyHtml = bodyHtml + "<tr class=\"gradeX\">";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].uid+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].nickName+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].registerMode+"</th>";
-			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].registerDate))+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].channelCode+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].registerVersion+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].idfa+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].os+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].callbackurl+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].ip+"</th>";
 			bodyHtml = bodyHtml + "<th>";
-			if(dataList[i].platform == 1){
-				bodyHtml = bodyHtml + "安卓";
-			}else if(dataList[i].platform == 2){
-				bodyHtml = bodyHtml + "IOS";
-			}else if(dataList[i].platform == 3){
-				bodyHtml = bodyHtml + "H5";
+			if(dataList[i].status == 0){
+				bodyHtml = bodyHtml + "<font color='red'>未激活</font>";
 			}else{
-				bodyHtml = bodyHtml + "未知";
+				bodyHtml = bodyHtml + "<font color='green'>已激活</font>";
 			}
 			bodyHtml = bodyHtml + "</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].kingdomCount+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].fansCount+"</th>";
+			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].optTime))+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].uid+"</th>";
 			bodyHtml = bodyHtml + "</tr>";
 		}
 	}
@@ -166,11 +160,6 @@ var parserDatetimeStr = function(time){
 	}
 	return year+"-"+month+"-"+date+" "+hour+":"+minute+":"+second;
 }
-
-var errMsg = '${errMsg}';
-if(errMsg && errMsg != 'null' && errMsg != ''){
-	alert(errMsg);
-}
 </script>
 </head>
 <body>
@@ -182,28 +171,24 @@ if(errMsg && errMsg != 'null' && errMsg != ''){
 		<!--sidebar start-->
 		<jsp:include page="../common/leftmenu.jsp" flush="false">
 			<jsp:param name="t" value="3" />
-			<jsp:param name="s" value="3_7" />
+			<jsp:param name="s" value="3_10" />
 		</jsp:include>
 		<!--sidebar end-->
 
 		<!--main content start-->
 		<section id="main-content">
 			<section class="wrapper">
-				<form id="form1" action="${ctx}/stat/userRegister/detail/query" method="post">
+				<form id="form1" action="${ctx}/stat/iosWapx/query" method="post">
 					<div class="row">
 						<div class="col-lg-12">
 							<section class="panel">
 								<header class="panel-heading">执行操作</header>
 								<div class="panel-body">
 									<div class="form-inline" role="form">
-										渠道标识
-										<input type="text" id="channelCode" name="channelCode" value="${dataObj.channelCode }" class="form-control">&nbsp;&nbsp;
-										昵称
-										<input type="text" id="nickName" name="nickName" value="${dataObj.nickName }" class="form-control">&nbsp;&nbsp;
 										开始时间
-										<input type="text" id="startTime" name="startTime" value="${dataObj.startTime }" class="form-control" required>&nbsp;&nbsp;
+										<input type="text" id="startTime" name="startTime" value="${dataObj.startTime }" class="form-control">&nbsp;&nbsp;
 										结束时间
-										<input type="text" id="endTime" name="endTime" value="${dataObj.endTime }" class="form-control" required>&nbsp;&nbsp;
+										<input type="text" id="endTime" name="endTime" value="${dataObj.endTime }" class="form-control">
 										<input type="submit" id="btnSearch" name="btnSearch" value="搜索" class="btn btn-info" />
 									</div>
 								</div>
@@ -216,7 +201,38 @@ if(errMsg && errMsg != 'null' && errMsg != ''){
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								| 注册用户详细
+								| 总计
+								<span class="tools pull-right">
+									<a href="javascript:;" class="fa fa-chevron-down"></a>
+								</span>
+							</header>
+							<div class="panel-body">
+								<div class="adv-table">
+									<table class="display table table-bordered table-striped" id="table0">
+										<thead>
+											<tr>
+												<th>未激活数</th>
+												<th>已激活数</th>
+											</tr>
+										</thead>
+										<tbody id="tbody0">
+												<tr class="gradeX">
+													<th>${dataObj.totalItem.totalNoticeCount}</th>
+													<th>${dataObj.totalItem.totalActiveCount}</th>
+												</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
+						</section>
+					</div>
+				</div>
+				
+				<div class="row">
+					<div class="col-sm-12">
+						<section class="panel">
+							<header class="panel-heading">
+								| 明细列表
 								<span class="tools pull-right">
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>
@@ -226,44 +242,34 @@ if(errMsg && errMsg != 'null' && errMsg != ''){
 									<table class="display table table-bordered table-striped" id="table">
 										<thead>
 											<tr>
+												<th>IDFA</th>
+												<th>OS</th>
+												<th>CallBackUrl</th>
+												<th>IP</th>
+												<th>状态</th>
+												<th>操作时间</th>
 												<th>UID</th>
-												<th>昵称</th>
-												<th>账号类型</th>
-												<th>注册时间</th>
-												<th>渠道</th>
-												<th>注册版本</th>
-												<th>终端类型</th>
-												<th>建立王国数</th>
-												<th>粉丝数</th>
 											</tr>
 										</thead>
 										<tbody id="tbody">
 											<c:forEach items="${dataObj.result}" var="item">
 												<tr class="gradeX">
-													<th>${item.uid }</th>
-													<th>${item.nickName }</th>
-													<th>${item.registerMode }</th>
-													<th><fmt:formatDate value="${item.registerDate }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
-													<th>${item.channelCode }</th>
-													<th>${item.registerVersion }</th>
+													<th>${item.idfa }</th>
+													<th>${item.os }</th>
+													<th>${item.callbackurl }</th>
+													<th>${item.ip }</th>
 													<th>
 													<c:choose>
-                                                		<c:when test="${item.platform == '1'}">
-                                                			安卓
-                                                		</c:when>
-                                                		<c:when test="${item.platform == '2'}">
-                                                			IOS
-                                                		</c:when>
-                                                		<c:when test="${item.platform == '3'}">
-                                                			H5
+                                                		<c:when test="${item.status == '0'}">
+                                                			<font color='red'>未激活</font>
                                                 		</c:when>
                                                 		<c:otherwise>
-                                                			未知
+                                                			<font color='green'>已激活</font>
                                                 		</c:otherwise>
                                                 	</c:choose>
 													</th>
-													<th>${item.kingdomCount }</th>
-													<th>${item.fansCount }</th>
+													<th><fmt:formatDate value="${item.optTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
+													<th>${item.uid }</th>
 												</tr>
 											</c:forEach>
 										</tbody>

@@ -1,9 +1,12 @@
 package com.me2me.user.mapper;
 
 import com.me2me.user.dto.SearchFansDto;
+import com.me2me.user.dto.SearchUserDto;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserProfileExample;
 import java.util.List;
+import java.util.Map;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface UserProfileMapper {
@@ -98,4 +101,13 @@ public interface UserProfileMapper {
     List<UserProfile> searchFans(SearchFansDto searchFansDto);
 
     int countFans(SearchFansDto searchFansDto);
+    
+    /**
+     * 搜索用户。
+     * @author zhangjiwei
+     * @date Mar 22, 2017
+     * @param queries
+     * @return
+     */
+	List<SearchUserDto> searchUserPage(Map<String, Object> queries);
 }

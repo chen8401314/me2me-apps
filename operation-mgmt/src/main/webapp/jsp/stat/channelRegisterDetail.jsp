@@ -345,7 +345,8 @@ if(errMsg && errMsg != 'null' && errMsg != ''){
 		startView: 2,
 		autoclose:true,
 		weekStart:1,
-		todayBtn:  1
+		todayBtn:  1,
+		minView:2
 		});
 	$('#endTime').datetimepicker({
 		format: 'yyyy-mm-dd hh:ii:ss',
@@ -353,7 +354,8 @@ if(errMsg && errMsg != 'null' && errMsg != ''){
 		startView: 2,
 		autoclose:true,
 		weekStart:1,
-		todayBtn:  1
+		todayBtn:  1,
+		minView:2
 		});
 	</script>
 </body>

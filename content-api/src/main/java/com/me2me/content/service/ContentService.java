@@ -253,5 +253,102 @@ public interface ContentService{
      * @param bid
      * @return
      */
-    Response showListDetail(long currentUid, long bid,long sinceId);
+     Response showListDetail(long currentUid, long bid,long sinceId);
+    /**
+     * 获取所有的榜单
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @return
+     */
+    List<BillBoard> getAllBillBoard();
+    /**
+     * 修改一个榜单
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param bb
+     */
+    void updateBillBoard(BillBoard bb);
+    /**
+     * 按ID删除榜单
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param id
+     */
+    void deleteBillBoardById(long id);
+    /**
+     * 按ID取一个榜单
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param id
+     * @return
+     */
+    BillBoard getBillBoardById(long id);
+    /**
+     * 添加榜单
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param bb
+     */
+    void addBillBoard(BillBoard bb);
+    /**
+     * 根据榜单ID取榜单下的排名数据。（王国、人、子榜单）
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param id 榜单ID。
+     * @return
+     */
+    List<BillBoardRelationDto> getRelationsByBillBoardId(long id);
+   /**
+    * 添加一个榜单排名数据。
+    * @author zhangjiwei
+    * @date Mar 21, 2017
+    * @param br
+    */
+    void addRelationToBillBoard(BillBoardRelation br);
+    /**
+     * 删除一个排名数据
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param rid
+     */
+    void delBillBoardRelationById(long rid);
+    /**
+     * 修改一个排名数据。
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param br
+     */
+    void updateBillBoardRelation(BillBoardRelation br);
+    
+   //---上线榜单管理------------
+    
+    /**
+     * 找人、找组织 上线榜单列表
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param id 榜单ID。
+     * @return
+     */
+    List<OnlineBillBoardDto> getOnlineBillBoardListByType(int type);
+   /**
+    * 添加一个上线榜单。
+    * @author zhangjiwei
+    * @date Mar 21, 2017
+    * @param br
+    */
+    void addOnlineBillBoard(BillBoardDetails br);
+    /**
+     * 删除一个上线榜单
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param rid
+     */
+    void delOnlineBillBoardById(long rid);
+    /**
+     * 修改一个上线榜单。
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param br
+     */
+    void updateOnlineBillBoard(BillBoardDetails br);
 }

@@ -3626,8 +3626,8 @@ public class LiveServiceImpl implements LiveService {
     	obj.put("content", ceFragmentContent);
     	obj.put("linkType", 72);//王国内链
     	obj.put("linkColor", "#8B572A");
-    	obj.put("linkColor", 2);//从0算起
-    	obj.put("linkColor", acTopic.getTitle().length()+2);
+    	obj.put("linkStart", 2);//从0算起
+    	obj.put("linkEnd", acTopic.getTitle().length()+2);
     	//组装链接
     	JSONObject linkObj = new JSONObject();
     	linkObj.put("type", "link");
@@ -3674,8 +3674,8 @@ public class LiveServiceImpl implements LiveService {
     	obj2.put("content", acFragmentContent);
     	obj2.put("linkType", 72);//王国内链
     	obj2.put("linkColor", "#8B572A");
-    	obj2.put("linkColor", 2);//从0算起
-    	obj2.put("linkColor", acFragmentContent.length());
+    	obj2.put("linkStart", 10);//从0算起
+    	obj2.put("linkEnd", acFragmentContent.length());
     	//组装链接
     	JSONObject linkObj2 = new JSONObject();
     	linkObj2.put("type", "link");
@@ -4109,7 +4109,8 @@ public class LiveServiceImpl implements LiveService {
         return page;
         
 	}
-	List<SearchDropAroundTopicDto> buildShowTopicList(List<Topic> list){
+	
+	private List<SearchDropAroundTopicDto> buildShowTopicList(List<Topic> list){
 	 	List<Long> uidList = new ArrayList<Long>();
     	for(Topic topic :list){
     		if(!uidList.contains(topic.getUid())){
@@ -4140,6 +4141,7 @@ public class LiveServiceImpl implements LiveService {
         }
 		return showElementList;
 	}
+	
 	@Override
 	public PageBean<SearchDropAroundTopicDto> getDropAroundKingdomPage(PageBean page,String queryStr) {
 		return liveMybatisDao.getDropAroundKingdomPage(page,queryStr);

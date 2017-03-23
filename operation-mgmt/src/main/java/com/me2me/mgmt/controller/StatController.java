@@ -27,6 +27,7 @@ import com.me2me.content.service.ContentService;
 import com.me2me.mgmt.request.ChannelRegisterDetailDTO;
 import com.me2me.mgmt.request.ChannelRegisterQueryDTO;
 import com.me2me.mgmt.request.DailyActiveDTO;
+import com.me2me.mgmt.request.IosWapxQueryDTO;
 import com.me2me.mgmt.request.KingDayQueryDTO;
 import com.me2me.mgmt.request.KingStatDTO;
 import com.me2me.mgmt.request.KingdomCreateDetailQueryDTO;
@@ -620,6 +621,7 @@ public class StatController {
 			for(Map<String, Object> u : list){
 				item = new UserRegisterDetailQueryDTO.Item();
 				item.setChannelCode((String)u.get("channel"));
+				item.setRegisterVersion((String)u.get("register_version"));
 				fansCount = fansMap.get(String.valueOf(u.get("uid")));
 				if(null != fansCount){
 					item.setFansCount(fansCount.longValue());
@@ -786,6 +788,7 @@ public class StatController {
 			for(Map<String, Object> u : list){
 				item = new UserRegisterDetailQueryDTO.Item();
 				item.setChannelCode((String)u.get("channel"));
+				item.setRegisterVersion((String)u.get("register_version"));
 				fansCount = fansMap.get(String.valueOf(u.get("uid")));
 				if(null != fansCount){
 					item.setFansCount(fansCount.longValue());
@@ -1026,5 +1029,91 @@ public class StatController {
 		ModelAndView view = new ModelAndView("stat/userRegister");
 		view.addObject("dataObj", dto);
 		return view;
+	}
+	
+	@RequestMapping(value = "/iosWapx/query")
+	public ModelAndView iosWapxQuery(IosWapxQueryDTO dto){
+		Date now = new Date();
+		if(null == dto.getStartTime() || "".equals(dto.getStartTime())){
+			dto.setStartTime(DateUtil.date2string(now, "yyyy-MM-dd"));
+		}
+		if(null == dto.getEndTime() || "".equals(dto.getEndTime())){
+			dto.setEndTime(DateUtil.date2string(now, "yyyy-MM-dd"));
+		}
+		
+		this.getIosWapxInfo(dto);
+		
+		ModelAndView view = new ModelAndView("stat/iosWapx");
+		view.addObject("dataObj", dto);
+		return view;
+	}
+	
+	@RequestMapping(value="/iosWapx/page")
+	@ResponseBody
+	public String iosWapxPage(IosWapxQueryDTO dto){
+		this.getIosWapxInfo(dto);
+		
+		JSONObject obj = (JSONObject)JSON.toJSON(dto);
+		return obj.toJSONString();
+	}
+	
+	private void getIosWapxInfo(IosWapxQueryDTO dto){
+		int pageSize = dto.getPageSize();
+		int start = (dto.getPage()-1)*dto.getPageSize();
+		
+		String startTime = dto.getStartTime() + " 00:00:00";
+		String endTime = dto.getEndTime() + " 23:59:59";
+		
+		StringBuilder countSql = new StringBuilder();
+		countSql.append("select count(1) as total,");
+		countSql.append("count(if(t.status=0,TRUE,NULL)) as noticeCount,");
+		countSql.append("count(if(t.status=0,NULL,TRUE)) as activeCount");
+		countSql.append(" from ios_wapx t where t.update_time>='").append(startTime);
+		countSql.append("' and t.update_time<='").append(endTime);
+		countSql.append("'");
+		
+		StringBuilder querySql = new StringBuilder();
+		querySql.append("select * from ios_wapx t where t.update_time>='");
+		querySql.append(startTime).append("' and t.update_time<='");
+		querySql.append(endTime).append("' order by t.update_time asc");
+		querySql.append(" limit ").append(start).append(",").append(pageSize);
+		
+		dto.getResult().clear();
+		List<Map<String, Object>> list = null;
+		List<Map<String, Object>> countList = null;
+		try{
+			countList = contentService.queryEvery(countSql.toString());
+			list = contentService.queryEvery(querySql.toString());
+		}catch(Exception e){
+			logger.error("查询出错", e);
+		}
+		
+		if(null != countList && countList.size() > 0){
+			Map<String, Object> count = countList.get(0);
+			long totalCount = (Long)count.get("total");
+			int totalPage = totalCount%pageSize==0?(int)totalCount/pageSize:((int)totalCount/pageSize)+1;
+			dto.setTotalCount((int)totalCount);
+			dto.setTotalPage(totalPage);
+			dto.getTotalItem().setTotalNoticeCount((Long)count.get("noticeCount"));
+			dto.getTotalItem().setTotalActiveCount((Long)count.get("activeCount"));
+		}
+		
+		if(null != list && list.size() > 0){
+			IosWapxQueryDTO.Item item = null;
+			for(Map<String, Object> map : list){
+				item = new IosWapxQueryDTO.Item();
+				item.setApp((String)map.get("app"));
+				item.setCallbackurl((String)map.get("callbackurl"));
+				item.setIdfa((String)map.get("idfa"));
+				item.setIp((String)map.get("ip"));
+				item.setOpenudid((String)map.get("openudid"));
+				item.setOptTime((Date)map.get("update_time"));
+				item.setOs((String)map.get("os"));
+				item.setStatus((Integer)map.get("status"));
+				item.setUdid((String)map.get("udid"));
+				item.setUid((Long)map.get("uid"));
+				dto.getResult().add(item);
+			}
+		}
 	}
 }
