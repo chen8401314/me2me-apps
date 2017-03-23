@@ -784,5 +784,19 @@ public class ContentMybatisDao {
 	public void updateBillBoardDetailById(BillBoardDetails br) {
 		billBoardDetailMapper.updateByPrimaryKeySelective(br);
 	}
+	/**
+	 * 判断排行数据是否存在
+	 * @author zhangjiwei
+	 * @date Mar 23, 2017
+	 * @param br
+	 * @return
+	 */
+	public boolean existsBillBoardRelation(BillBoardRelation br) {
+		// 判断 srouceId ，targetid.
+		BillBoardRelationExample example = new BillBoardRelationExample();
+		example.createCriteria().andSourceIdEqualTo(br.getSourceId()).andTargetIdEqualTo(br.getTargetId());
+		int count = billBoardRelationMapper.countByExample(example);
+		return count>0;
+	}
 
 }

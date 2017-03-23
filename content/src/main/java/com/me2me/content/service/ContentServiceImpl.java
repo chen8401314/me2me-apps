@@ -35,6 +35,7 @@ import com.plusnet.search.content.domain.User;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -4494,6 +4495,7 @@ private void localJpush(long toUid){
 			BillBoardRelationDto bangDanInnerData = new BillBoardRelationDto();
             long targetId = billBoardRelation.getTargetId();
             int type = billBoardRelation.getType();
+            BeanUtils.copyProperties(billBoardRelation, bangDanInnerData);
             if(type==1){  // 王国
               
                 Map map = billBoardJdbcDao.getTopicById(targetId);
@@ -4504,7 +4506,7 @@ private void localJpush(long toUid){
                 bangDanInnerData.setTitle(title);
                 bangDanInnerData.setCover(liveImage);
                 bangDanInnerData.setTopicId(targetId);
-                
+                bangDanInnerData.setAggregation((Integer) map.get("type"));
             }else if(type==2){	// 人
                 bangDanInnerData.setUid(targetId);
                 UserProfile userProfile = userService.getUserProfileByUid(targetId);
@@ -4526,7 +4528,14 @@ private void localJpush(long toUid){
 
 	@Override
 	public void addRelationToBillBoard(BillBoardRelation br) {
-		contentMybatisDao.insertBillBoardRelation(br);
+		// 防重复
+		if(br.getTargetId()==0||br.getSourceId()==0||br.getType()==0){
+			throw new RuntimeException("数据不完整");
+		}
+		boolean exists = contentMybatisDao.existsBillBoardRelation(br);
+		if(!exists){
+			contentMybatisDao.insertBillBoardRelation(br);
+		}
 	}
 
 	@Override

@@ -21,12 +21,19 @@ public class BillBoardRelationDto extends BillBoardRelation implements Serializa
 	private long topicId;
 	private String cover;
 	private String title;
+	private int aggregation;
 	//------榜单属性
 	private long rankingId;
 	private String rankingCover;
 	private String rankingName;
 	private Integer rankingType;
 	
+	public int getAggregation() {
+		return aggregation;
+	}
+	public void setAggregation(int aggregation) {
+		this.aggregation = aggregation;
+	}
 	public long getTopicId() {
 		return topicId;
 	}

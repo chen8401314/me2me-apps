@@ -3,7 +3,7 @@
 	<parent>
 		<artifactId>me2me</artifactId>
 		<groupId>com.me2me</groupId>
-		<version>2.0.8</version>
+		<version>${project.version}</version>
 	</parent>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>operation-mgmt</artifactId>
@@ -37,6 +37,13 @@
 					<groupId>com.me2me</groupId>
 					<artifactId>core</artifactId>
 					<version>${project.version}</version>
+					<exclusions>
+						<exclusion>
+							<groupId>log4j</groupId>
+							<artifactId>log4j</artifactId>
+							<version>1.2.14</version>
+						</exclusion>
+					</exclusions>
 				</dependency>
 				<dependency>
 					<groupId>com.me2me</groupId>
