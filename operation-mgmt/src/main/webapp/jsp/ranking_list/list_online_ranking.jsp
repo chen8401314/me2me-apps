@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta charset="utf-8" />
 
-<title>ZX_IMS 2.0 - 串门语言管理</title>
+<title>ZX_IMS 2.0 - 上线榜单管理</title>
 
 <link href="${ctx}/css/bootstrap.min.css" rel="stylesheet" />
 <link href="${ctx}/css/bootstrap-reset.css" rel="stylesheet" />
@@ -41,7 +41,7 @@
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								| 模板列表 
+								| 上线榜单管理 
 								<span class="tools pull-right">
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>

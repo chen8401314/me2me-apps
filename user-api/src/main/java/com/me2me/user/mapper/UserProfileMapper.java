@@ -110,4 +110,6 @@ public interface UserProfileMapper {
      * @return
      */
 	List<SearchUserDto> searchUserPage(Map<String, Object> queries);
+	
+	 int countSearchUserForPage(Map<String, Object> queries);
 }
