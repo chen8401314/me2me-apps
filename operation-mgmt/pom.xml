@@ -14,9 +14,6 @@
 		<!--开发环境 -->
 		<profile>
 			<id>dev</id>
-			<activation>
-				<activeByDefault>true</activeByDefault>
-			</activation>
 			<properties>
 				<mode>dev</mode>
 			</properties>
@@ -41,7 +38,6 @@
 						<exclusion>
 							<groupId>log4j</groupId>
 							<artifactId>log4j</artifactId>
-							<version>1.2.14</version>
 						</exclusion>
 					</exclusions>
 				</dependency>
@@ -170,12 +166,133 @@
 				</filters>
 			</build>
 		</profile>
+		<profile>
+			<id>test</id>
+			<properties>
+				<mode>test</mode>
+			</properties>
 
+			<dependencies>
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-webmvc</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>commons-fileupload</groupId>
+					<artifactId>commons-fileupload</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>javax.servlet</groupId>
+					<artifactId>javax.servlet-api</artifactId>
+				</dependency>
+				<dependency>
+					<groupId>com.me2me</groupId>
+					<artifactId>core</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.me2me</groupId>
+					<artifactId>common</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.me2me</groupId>
+					<artifactId>activity-api</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.me2me</groupId>
+					<artifactId>io-api</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.me2me</groupId>
+					<artifactId>live-api</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.me2me</groupId>
+					<artifactId>content-api</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.me2me</groupId>
+					<artifactId>user-api</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.me2me</groupId>
+					<artifactId>cache-api</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.me2me</groupId>
+					<artifactId>sms-api</artifactId>
+					<version>${project.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>com.plusnet.sso</groupId>
+					<artifactId>sso-client</artifactId>
+					<version>1.0.3</version>
+				</dependency>
+				<dependency>
+					<groupId>com.plusnet.sso</groupId>
+					<artifactId>sso-api</artifactId>
+					<version>1.0.3</version>
+				</dependency>
+				<dependency>
+					<groupId>org.apache.httpcomponents</groupId>
+					<artifactId>fluent-hc</artifactId>
+					<version>4.5.2</version>
+				</dependency>
+				<dependency>
+					<groupId>org.quartz-scheduler</groupId>
+					<artifactId>quartz</artifactId>
+					<version>2.2.1</version>
+				</dependency>
+				<dependency>
+					<groupId>org.mortbay.jetty</groupId>
+					<artifactId>jetty</artifactId>
+					<version>${jetty.version}</version>
+					<exclusions>
+						<exclusion>
+							<groupId>org.mortbay.jetty</groupId>
+							<artifactId>servlet-api</artifactId>
+						</exclusion>
+					</exclusions>
+				</dependency>
+				<dependency>
+					<groupId>org.mortbay.jetty</groupId>
+					<artifactId>jetty-util</artifactId>
+					<version>${jetty.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>org.mortbay.jetty</groupId>
+					<artifactId>jetty-plus</artifactId>
+					<version>${jetty.version}</version>
+				</dependency>
+				<dependency>
+					<groupId>org.apache.commons</groupId>
+					<artifactId>commons-lang3</artifactId>
+					<version>3.4</version>
+				</dependency>
+				<!-- https://mvnrepository.com/artifact/javax.servlet/jstl -->
+				<dependency>
+					<groupId>javax.servlet</groupId>
+					<artifactId>jstl</artifactId>
+					<version>1.2</version>
+				</dependency>
+
+			</dependencies>
+
+			<build>
+				<filters>
+					<filter>src/main/filter/test.properties</filter>
+				</filters>
+			</build>
+		</profile>
 		<profile>
 			<id>product</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
 			<properties>
 				<mode>product</mode>
 			</properties>
