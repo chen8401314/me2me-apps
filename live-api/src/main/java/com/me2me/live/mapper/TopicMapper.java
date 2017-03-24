@@ -99,6 +99,10 @@ public interface TopicMapper {
      */
     int updateByPrimaryKey(Topic record);
 
+    void truncateKingdomCountDay();
+    
+    void statKingdomCountDay();
+    
     Topic getRandomDropaRoundAlgorithm(Map<String ,String> map);
 
     List<Topic2> getMyLivesByUpdateTimeNew(Map map);
