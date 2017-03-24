@@ -4027,7 +4027,13 @@ public class LiveServiceImpl implements LiveService {
 		return oldContentType;
 	}
 
-	
+    @Override
+    public void statKingdomCountDay(){
+    	//先删除掉库的记录
+    	liveMybatisDao.truncateKingdomCountDay();
+    	//再加上统计记录
+    	liveMybatisDao.statKingdomCountDay();
+    }
 
 	@Override
 	public List<TopicFragmentTemplate> getFragmentTplList(String queryStr) {

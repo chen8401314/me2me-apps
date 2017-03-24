@@ -203,6 +203,10 @@ public interface LiveService {
     
     Response myTopicOpt(long uid ,int action ,long topicId);
 
+    /**
+     * 王国信息统计
+     */
+    void statKingdomCountDay();
 	
 	/**
 	 * 获取所有足迹提示

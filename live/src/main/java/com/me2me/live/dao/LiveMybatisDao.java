@@ -1020,6 +1020,14 @@ public class LiveMybatisDao {
 		return page;
 	}
 
+	public void truncateKingdomCountDay(){
+		topicMapper.truncateKingdomCountDay();
+	}
+	
+	public void statKingdomCountDay(){
+		topicMapper.statKingdomCountDay();
+	}
+	
     public TopicFragmentTemplate getTopicFragmentTemplate(){
         List<TopicFragmentTemplate> list = topicFragmentTemplateMapper.selectByExample(null);
         Collections.shuffle(list);

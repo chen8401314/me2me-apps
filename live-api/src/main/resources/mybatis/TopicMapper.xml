@@ -519,6 +519,46 @@
     LIMIT 10;
   </select>
   
+  <select id="truncateKingdomCountDay">
+	  truncate table kingdom_count_day
+  </select>
+  
+  <select id="statKingdomCountDay">
+	  INSERT INTO kingdom_count_day(refresh_date,`content_type`, `forward_cid`, `person_count`, `review_count`, `like_count`, `favorite_count`, `read_count`, `read_count_dummy`, `title`, `create_time`, `update_time`, `type`, `live_image`, `uid`, `nick_name`, `v_lv`, `avatar`, `topic_id`, `textCount`, `imgCount`, `videoCount`, `audioCount`, `updateCount`)
+	SELECT now(),aa.* from (
+	  select 
+				c.content_type,
+	  		c.forward_cid,
+	  		c.person_count ,
+	  		c.review_count ,
+	  		c.like_count ,
+	  		c.favorite_count ,
+	  		c.read_count ,
+	  		c.read_count_dummy,
+				t.title,
+				t.create_time,
+				t.update_time,
+				t.type,
+				t.live_image,
+				u.*,
+				m.*
+		from topic t,content c,
+		(
+		select f.topic_id,
+		count(if(f.type=0 and f.content_type=0,TRUE, NULL)) as textCount,
+		count(if(f.type=0 and f.content_type=1,TRUE, NULL)) as imgCount,
+		count(if(f.type=12, TRUE, NULL)) as videoCount,
+		count(if(f.type=13, TRUE, NULL)) as audioCount,
+		count(if(f.type in (0,11,12,13,15,52,55), TRUE, NULL)) as updateCount
+		from topic_fragment f
+		where f.`status`=1
+		group by f.topic_id
+		) m,
+		(select uid,nick_name,v_lv,avatar from user_profile ) u
+		where t.id=c.forward_cid and c.type=3 and c.status=0 and t.id=m.topic_id and u.uid=t.uid
+	) aa
+  </select>
+  
   <select id="getTopicPage" resultType="com.me2me.live.dto.ShowLiveDto">
 	  select 
 	  	tp.id as topicId,
