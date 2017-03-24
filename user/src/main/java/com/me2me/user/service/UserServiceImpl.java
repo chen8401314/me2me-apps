@@ -2753,7 +2753,12 @@ public class UserServiceImpl implements UserService {
     	userMybatisDao.deleteVersionChannelDownload(id);
     }
 
-	@Override
+    @Override
+    public int spreadCheckUnique(int spreadChannel, String idfa) {
+        return userMybatisDao.spreadIdfaExists(spreadChannel,idfa)?1:0;
+    }
+
+    @Override
 	public PageBean<SearchUserDto> searchUserPage(PageBean page, Map<String, Object> queries) {
 		if(queries.containsKey("nick_name")){
 			String nickName = (String) queries.get("nick_name");
