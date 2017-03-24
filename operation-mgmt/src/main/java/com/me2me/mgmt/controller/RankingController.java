@@ -5,11 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.mortbay.log.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +21,6 @@ import com.me2me.content.model.BillBoard;
 import com.me2me.content.model.BillBoardDetails;
 import com.me2me.content.model.BillBoardRelation;
 import com.me2me.content.service.ContentService;
-import com.me2me.live.dto.Live4H5Dto.Live;
 import com.me2me.live.dto.SearchTopicDto;
 import com.me2me.live.service.LiveService;
 import com.me2me.mgmt.dal.utils.HttpUtils;

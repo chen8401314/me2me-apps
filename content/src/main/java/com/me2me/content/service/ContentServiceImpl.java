@@ -4804,6 +4804,73 @@ private void localJpush(long toUid){
 		}
 		return retList;
 	}
+	
+	@Override
+	public List<BillBoardRelationDto> getRelationsByMode(int mode){
+		List<BillBoardRelationDto> result = Lists.newArrayList();
+		
+		int type = 1;//默认王国
+		if(mode == 1 || mode == 2 || mode == 3){
+			type = 2;
+		}
+		
+		List<BillBoardList> list = this.getAutoBillBoardList(mode, -1, 100);
+		if(null != list && list.size() > 0){
+			List<Long> idList = Lists.newArrayList();
+			for(BillBoardList bbl : list){
+				if(!idList.contains(bbl.getTargetId())){
+					idList.add(bbl.getTargetId());
+				}
+			}
+			
+			Map<String, Map<String, Object>> topicMap = new HashMap<String, Map<String, Object>>();
+			Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+			if(type == 1){//王国
+				List<Map<String, Object>> topicList = liveForContentJdbcDao.getTopicListByIds(idList);
+				if(null != topicList && topicList.size() > 0){
+					for(Map<String, Object> m : topicList){
+						topicMap.put(String.valueOf(m.get("id")), m);
+					}
+				}
+			}else{//人
+				List<UserProfile> userList = userService.getUserProfilesByUids(idList);
+				if(null != userList && userList.size() > 0){
+					for(UserProfile u : userList){
+						userMap.put(u.getUid().toString(), u);
+					}
+				}
+			}
+			BillBoardRelationDto bbrdto = null;
+			UserProfile userProfile = null;
+			Map<String, Object> topic = null;
+			for(BillBoardList bbl : list){
+				bbrdto = new BillBoardRelationDto();
+				if(type == 1){//王国属性
+					topic = topicMap.get(bbl.getTargetId().toString());
+					if(null == topic){
+						continue;
+					}
+					bbrdto.setTopicId((Long)topic.get("id"));
+					bbrdto.setTitle((String)topic.get("title"));
+					bbrdto.setCover((String)topic.get("live_image"));
+					bbrdto.setAggregation((Integer)topic.get("type"));
+				}else{//人属性
+					userProfile = userMap.get(bbl.getTargetId().toString());
+					if(null == userProfile){
+						continue;
+					}
+					bbrdto.setNickName(userProfile.getNickName());
+					bbrdto.setUid(userProfile.getUid());
+					bbrdto.setUserRegDate(userProfile.getCreateTime());
+					bbrdto.setvLv(userProfile.getvLv());
+					bbrdto.setAvatar(userProfile.getAvatar());
+				}
+				result.add(bbrdto);
+			}
+		}
+		
+		return result;
+	}
 
 	@Override
 	public void addRelationToBillBoard(BillBoardRelation br) {
