@@ -39,7 +39,8 @@
         <module>config-center</module>
         <module>message-channel-api</module>
         <module>message-channel</module>
-        <module>operation-mgmt</module>
+		<!--
+        <module>operation-mgmt</module>-->
     </modules>
     <name>${project.artifactId}</name>
     <description>the parent project of mysites</description>

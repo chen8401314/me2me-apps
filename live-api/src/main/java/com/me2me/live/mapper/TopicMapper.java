@@ -1,5 +1,6 @@
 package com.me2me.live.mapper;
 
+import com.me2me.live.dto.SearchTopicDto;
 import com.me2me.live.dto.ShowLiveDto;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.Topic2;
@@ -106,19 +107,21 @@ public interface TopicMapper {
 
     List<Topic2> getMyLivesByUpdateTimeNew(Map map);
     /**
-     * 获取一个王国分页。
+     * 获取一个王国分页。包含统计字段， 巨慢，仅供后台使用。
      * @author zhangjiwei
      * @date Mar 21, 2017
      * @param map
      * @return
      */
-    List<ShowLiveDto> getTopicPage(Map map);
+    @Deprecated
+    List<SearchTopicDto> getTopicPage(Map map);
     /**
-     * 王国分页统计
+     * 王国分页统计 巨慢，包含统计字段，仅供后台使用。
      * @author zhangjiwei
      * @date Mar 21, 2017
      * @param map
      * @return
      */
+    @Deprecated
     long countTopicForPage(Map map);
 }

@@ -12,6 +12,7 @@ import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicUserConfig;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -288,4 +289,15 @@ public interface LiveService {
 	 * @return
 	 */
 	PageBean<SearchDropAroundTopicDto> getTopicPage(PageBean page,String searchKeyword);
+	
+	/**
+	 * 
+	 * 搜索王国，带统计字段。
+	 * @author zhangjiwei
+	 * @date Mar 24, 2017
+	 * @param page
+	 * @param params
+	 * @return
+	 */
+	PageBean<SearchTopicDto> getTopicPage(PageBean page,Map<String,Object> params);
 }

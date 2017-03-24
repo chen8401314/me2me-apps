@@ -4774,9 +4774,11 @@ private void localJpush(long toUid){
             int type = billBoardRelation.getType();
             BeanUtils.copyProperties(billBoardRelation, bangDanInnerData);
             if(type==1){  // 王国
-              
                 Map map = billBoardJdbcDao.getTopicById(targetId);
-                String title = map.get("title").toString();
+                if(map==null){
+                	continue;
+                }
+                String title = (String)map.get("title");
                 long uid = Long.valueOf(map.get("uid").toString());
                 int contentType = Integer.valueOf(map.get("type").toString());
                 String liveImage = map.get("live_image").toString();

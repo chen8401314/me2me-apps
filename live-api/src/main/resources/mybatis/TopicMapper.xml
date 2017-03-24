@@ -518,6 +518,222 @@
     ORDER BY n.longtimes DESC
     LIMIT 10;
   </select>
+   <resultMap type="com.me2me.live.dto.SearchTopicDto" id="searchTopicDtoMap">
+  		<result column="nick_name" property="nickName" />
+  		<result column="avatar" property="avatar" />
+  		<result column="v_lv" property="vLv" />
+	    <result column="uid" jdbcType="BIGINT" property="uid" />
+  		
+  		<result column="forward_cid" property="topicId" />
+	    <result column="title" jdbcType="VARCHAR" property="title" />
+	    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+	    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+	    <result column="type" jdbcType="INTEGER" property="type" />
+	    <result column="content_type" jdbcType="INTEGER" property="contentType" />
+	    
+	    
+	    <result column="person_count" property="personCount" />
+	    <result column="review_count"  property="reviewCount" />
+	    <result column="like_count"  property="likeCount" />
+	    <result column="favorite_count"  property="favoriteCount" />
+	    <result column="read_count"  property="readCount" />
+	    <result column="read_count_dummy"  property="readCountDummy" />
+	    
+	    
+  		
+  </resultMap>
+  <select id="getTopicPage" resultMap="searchTopicDtoMap">
+	 
+	   select  * from kingdom_count_day where 1=1
+		
+	  	<if test="title!=null">
+  			and title like #{title}
+  		</if>
+  		
+  		<if test="nick_name!=null">
+  			and nick_name like #{nick_name}
+  		</if>
+  		
+  		<if test="type!=null">
+  			and type = #{type}
+  		</if>
+  		<if test="v_lv!=null">
+  			and v_lv= #{v_lv}
+  		</if>
+  		
+  		<if test="create_time_min!=null">
+  			and DATE_FORMAT(create_time,'%Y-%m-%d') &gt;= #{create_time_min}
+  		</if>
+  		<if test="create_time_max!=null">
+  			and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= #{create_time_max}
+  		</if>
+  		
+		<if test="update_time_min!=null">
+  			and DATE_FORMAT(update_time,'%Y-%m-%d') &gt;= #{update_time_min}
+  		</if>
+  		<if test="update_time_max!=null">
+  			and DATE_FORMAT(update_time,'%Y-%m-%d') &lt;= #{update_time_max}
+  		</if>
+  		
+  		<!-- num filter -->
+   		<if test="read_count_dummy_min!=null">
+  			and read_count_dummy &gt;= #{read_count_dummy_min}
+  		</if>
+  		<if test="read_count_dummy_max!=null">
+  			and read_count_dummy &lt;= #{read_count_dummy_max}
+  		</if>
+  		
+  		<if test="review_count_min!=null">
+  			and review_count &gt;= #{review_count_min}
+  		</if>
+  		<if test="review_count_max!=null">
+  			and review_count &lt;= #{review_count_max}
+  		</if>
+  		
+  		<if test="like_count_min!=null">
+  			and like_count &gt;= #{like_count_min}
+  		</if>
+  		<if test="like_count_max!=null">
+  			and like_count &lt;= #{like_count_max}
+  		</if>
+  		
+  		<if test="favorite_count_min!=null">
+  			and favorite_count &gt;= #{favorite_count_min}
+  		</if>
+  		<if test="favorite_count_max!=null">
+  			and favorite_count &lt;= #{favorite_count_max}
+  		</if>
+  		
+  		<if test="updateCount_min!=null">
+  			and updateCount &gt;= #{updateCount_min}
+  		</if>
+  		<if test="updateCount_max!=null">
+  			and updateCount &lt;= #{updateCount_max}
+  		</if>
+  		<if test="imgCount_min!=null">
+  			and imgCount &gt;= #{imgCount_min}
+  		</if>
+  		<if test="imgCount_max!=null">
+  			and imgCount &lt;= #{imgCount_max}
+  		</if>
+  		<if test="audioCount_min!=null">
+  			and audioCount &gt;= #{audioCount_min}
+  		</if>
+  		<if test="audioCount_max!=null">
+  			and audioCount &lt;= #{audioCount_max}
+  		</if>
+  		<if test="videoCount_min!=null">
+  			and videoCount &gt;= #{videoCount_min}
+  		</if>
+  		<if test="videoCount_max!=null">
+  			and videoCount &lt;= #{videoCount_max}
+  		</if>
+  		<if test="textCount_min!=null">
+  			and textCount &gt;= #{textCount_min}
+  		</if>
+  		<if test="textCount_max!=null">
+  			and textCount &lt;= #{textCount_max}
+  		</if>
+  		
+	  	<if test="order!=null and orderBy!=null">
+	  		order by ${orderBy} ${order}
+	  	</if>
+  		limit #{skip},#{limit}
+	  	
+  </select>
+ 
+  <select id="countTopicForPage"  resultType="long">
+		select  count(*) from kingdom_count_day where 1=1
+		
+	  	<if test="title!=null">
+  			and title like #{title}
+  		</if>
+  		
+  		<if test="nick_name!=null">
+  			and nick_name like #{nick_name}
+  		</if>
+  		
+  		<if test="type!=null">
+  			and type = #{type}
+  		</if>
+  		<if test="v_lv!=null">
+  			and v_lv= #{v_lv}
+  		</if>
+  		
+  		<if test="create_time_min!=null">
+  			and DATE_FORMAT(create_time,'%Y-%m-%d') &gt;= #{create_time_min}
+  		</if>
+  		<if test="create_time_max!=null">
+  			and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= #{create_time_max}
+  		</if>
+  		
+		<if test="update_time_min!=null">
+  			and DATE_FORMAT(update_time,'%Y-%m-%d') &gt;= #{update_time_min}
+  		</if>
+  		<if test="update_time_max!=null">
+  			and DATE_FORMAT(update_time,'%Y-%m-%d') &lt;= #{update_time_max}
+  		</if>
+  		
+  		<!-- num filter -->
+   		<if test="read_count_dummy_min!=null">
+  			and read_count_dummy &gt;= #{read_count_dummy_min}
+  		</if>
+  		<if test="read_count_dummy_max!=null">
+  			and read_count_dummy &lt;= #{read_count_dummy_max}
+  		</if>
+  		
+  		<if test="review_count_min!=null">
+  			and review_count &gt;= #{review_count_min}
+  		</if>
+  		<if test="review_count_max!=null">
+  			and review_count &lt;= #{review_count_max}
+  		</if>
+  		
+  		<if test="like_count_min!=null">
+  			and like_count &gt;= #{like_count_min}
+  		</if>
+  		<if test="like_count_max!=null">
+  			and like_count &lt;= #{like_count_max}
+  		</if>
+  		
+  		<if test="favorite_count_min!=null">
+  			and favorite_count &gt;= #{favorite_count_min}
+  		</if>
+  		<if test="favorite_count_max!=null">
+  			and favorite_count &lt;= #{favorite_count_max}
+  		</if>
+  		
+  		<if test="updateCount_min!=null">
+  			and updateCount &gt;= #{updateCount_min}
+  		</if>
+  		<if test="updateCount_max!=null">
+  			and updateCount &lt;= #{updateCount_max}
+  		</if>
+  		<if test="imgCount_min!=null">
+  			and imgCount &gt;= #{imgCount_min}
+  		</if>
+  		<if test="imgCount_max!=null">
+  			and imgCount &lt;= #{imgCount_max}
+  		</if>
+  		<if test="audioCount_min!=null">
+  			and audioCount &gt;= #{audioCount_min}
+  		</if>
+  		<if test="audioCount_max!=null">
+  			and audioCount &lt;= #{audioCount_max}
+  		</if>
+  		<if test="videoCount_min!=null">
+  			and videoCount &gt;= #{videoCount_min}
+  		</if>
+  		<if test="videoCount_max!=null">
+  			and videoCount &lt;= #{videoCount_max}
+  		</if>
+  		<if test="textCount_min!=null">
+  			and textCount &gt;= #{textCount_min}
+  		</if>
+  		<if test="textCount_max!=null">
+  			and textCount &lt;= #{textCount_max}
+  		</if>
+  </select>
   
   <select id="truncateKingdomCountDay">
 	  truncate table kingdom_count_day
@@ -583,4 +799,5 @@
 	  		where up.nick_name like #{searchStr} or tp.title like #{searchStr}
 	  	</if>
   </select>
+
 </mapper>
