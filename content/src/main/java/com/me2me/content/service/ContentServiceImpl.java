@@ -4766,6 +4766,11 @@ private void localJpush(long toUid){
 
 	@Override
 	public List<BillBoardRelationDto> getRelationsByBillBoardId(long id) {
+		BillBoard bb = contentMybatisDao.loadBillBoardById(id);
+		if(null != bb && bb.getMode().intValue() > 0){
+			return this.getRelationsByMode(bb.getMode().intValue());
+		}
+		
 		List<BillBoardRelation> relationList = contentMybatisDao.loadBillBoardRelation(id);
 		List<BillBoardRelationDto> retList = new ArrayList<>(); 
 		for(BillBoardRelation billBoardRelation :relationList){
@@ -4804,9 +4809,8 @@ private void localJpush(long toUid){
 		}
 		return retList;
 	}
-	
-	@Override
-	public List<BillBoardRelationDto> getRelationsByMode(int mode){
+
+	private List<BillBoardRelationDto> getRelationsByMode(int mode){
 		List<BillBoardRelationDto> result = Lists.newArrayList();
 		
 		int type = 1;//默认王国

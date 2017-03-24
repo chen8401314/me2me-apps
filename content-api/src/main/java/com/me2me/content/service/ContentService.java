@@ -299,14 +299,6 @@ public interface ContentService{
      */
     List<BillBoardRelationDto> getRelationsByBillBoardId(long id);
     
-    /**
-     * 自动榜单，根据mode获取榜单列表
-     * 运营系统调用
-     * @param mode
-     * @return
-     */
-    List<BillBoardRelationDto> getRelationsByMode(int mode);
-    
    /**
     * 添加一个榜单排名数据。
     * @author zhangjiwei
