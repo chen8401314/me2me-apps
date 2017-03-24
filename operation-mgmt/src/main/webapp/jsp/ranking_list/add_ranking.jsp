@@ -21,6 +21,14 @@
     <link href="${ctx}/css/slidebars.css" rel="stylesheet">
     <link href="${ctx}/css/style.css" rel="stylesheet">
     <link href="${ctx}/css/style-responsive.css" rel="stylesheet" />
+      <script src="${ctx}/js/jquery.js"></script>
+        <script src="${ctx}/js/jquery-ui-1.9.2.custom.min.js"></script>
+        <script src="${ctx}/js/jquery-migrate-1.2.1.min.js"></script>
+        <script src="${ctx}/js/bootstrap.min.js"></script>
+        <script class="include" type="text/javascript" src="${ctx}/js/jquery.dcjqaccordion.2.7.js"></script>
+        <script src="${ctx}/js/jquery.scrollTo.min.js"></script>
+        <script src="${ctx}/js/jquery.nicescroll.js" type="text/javascript"></script>
+        <script src="${ctx}/js/respond.min.js"></script>
     <script type="text/javascript">
     var errMsg = '${errMsg}';
     if(errMsg && errMsg != 'null' && errMsg != ''){
@@ -59,28 +67,45 @@
 	                                            <input name="name"  class="form-control" value="${item.name}" required/>
 	                                        </div>
 	                                       <c:if test="${item==null }">
-	                                       <div class="form-group">
-	                                            <label for="exampleInputEmail1">榜单模式</label>
-	                                            <select name="mode" class="form-control" value="${item.type}">
-													<option value="0">手动榜单</option>
-													<option value="1">最活跃的米汤新鲜人</option>
-													<option value="2">最受追捧的米汤大咖</option>
-													<option value="3">最爱叨逼叨的话痨国王</option>
-													<option value="4">这里的互动最热闹</option>
-													<option value="5">最丰富多彩的王国</option>
-													<option value="6">求安慰的孤独王国</option>
-												</select>
-												<label class="text-danger">保存之后不可修改。</label>
-	                                        </div>
-	                                        <div class="form-group">
-	                                            <label for="exampleInputEmail1">榜单类型</label>
-	                                            <select name="type" class="form-control" value="${item.type}">
-													<option value="1">王国榜单</option>
-													<option value="2">用户榜单</option>
-													<option value="3">榜单集合</option>
-												</select>
-												<label class="text-danger">保存之后不可修改。</label>
-	                                        </div>
+		                                       <div class="form-group">
+		                                            <label for="exampleInputEmail1">榜单模式</label>
+		                                            <select name="mode" class="form-control" value="${item.type}">
+														<option value="0">手动榜单</option>
+														<option value="1">最活跃的米汤新鲜人</option>
+														<option value="2">最受追捧的米汤大咖</option>
+														<option value="3">最爱叨逼叨的话痨国王</option>
+														<option value="4">这里的互动最热闹</option>
+														<option value="5">最丰富多彩的王国</option>
+														<option value="6">求安慰的孤独王国</option>
+													</select>
+													<label class="text-danger">保存之后不可修改。</label>
+		                                        </div>
+		                                        <div class="form-group">
+		                                            <label for="exampleInputEmail1">榜单类型</label>
+		                                            <select name="type" class="form-control" value="${item.type}">
+														<option value="1">王国榜单</option>
+														<option value="2">用户榜单</option>
+														<option value="3">榜单集合</option>
+													</select>
+													<label class="text-danger">保存之后不可修改。</label>
+		                                        </div>
+		                                        <script type="text/javascript">
+		                                        	var target=$("select[name='type']");
+		                                        	$("select[name='mode']").change(function(){
+		                                        		target.find("option[selected]").removeAttr("selected");
+		                                        		var val =$(this).val();
+		                                        		if(val=="0"){
+		                                        			target.removeAttr("readonly");
+		                                        		}else{
+		                                        			target.attr("readonly","readonly")
+		                                        			if(val=="1" || val=="2" || val=="3" ){
+		                                        				target.find("option[value='2']").attr("selected","selected");
+		                                        			}else{
+		                                        				target.find("option[value='1']").attr("selected","selected");
+		                                        			}
+		                                        		}
+		                                        	})
+		                                        </script>
 	                                        </c:if>
 	                                        <div class="form-group">
 	                                            <label for="exampleInputFile">摘要内容</label>
@@ -143,16 +168,7 @@
         </section>
 
 
-        <script src="${ctx}/js/jquery.js"></script>
-        <script src="${ctx}/js/jquery-ui-1.9.2.custom.min.js"></script>
-        <script src="${ctx}/js/jquery-migrate-1.2.1.min.js"></script>
-        <script src="${ctx}/js/bootstrap.min.js"></script>
-        <script class="include" type="text/javascript" src="${ctx}/js/jquery.dcjqaccordion.2.7.js"></script>
-        <script src="${ctx}/js/jquery.scrollTo.min.js"></script>
-        <script src="${ctx}/js/jquery.nicescroll.js" type="text/javascript"></script>
-        <script type="text/javascript" src="${ctx}/assets/advanced-datatable/media/js/jquery.dataTables.js"></script>
-        <script type="text/javascript" src="${ctx}/assets/data-tables/DT_bootstrap.js"></script>
-        <script src="${ctx}/js/respond.min.js"></script>
+      
 
         <!--this page plugins-->
 
@@ -173,17 +189,13 @@
         <!--right slidebar-->
         <script src="${ctx}/js/slidebars.min.js"></script>
 
-        <!--dynamic table initialization -->
-        <script src="${ctx}/js/dynamic_table_init.js"></script>
         <!--custom switch-->
         <script src="${ctx}/js/bootstrap-switch.js"></script>
         <!--custom tagsinput-->
         <script src="${ctx}/js/jquery.tagsinput.js"></script>
         <!--script for this page-->
-        <script src="${ctx}/js/form-component.js"></script>
         <!--common script for all pages-->
         <script src="${ctx}/js/common-scripts.js"></script>
-        <script src="${ctx}/js/advanced-form-components.js"></script>
 
         <script src="${ctx}/js/xheditor-1.2.2.min.js"></script>
         <script src="${ctx}/js/xheditor_lang/zh-cn.js"></script>

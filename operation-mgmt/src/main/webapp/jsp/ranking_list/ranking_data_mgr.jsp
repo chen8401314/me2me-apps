@@ -48,7 +48,16 @@
                     <div class="row">
                         <div class="col-lg-12">
                             <section class="panel">
-                                <header class="panel-heading">榜单：${item.name}，类型：
+                                <header class="panel-heading">榜单：${item.name}， 模式：
+                                	<b class="text-danger">
+                               	 	<c:if test="${item.mode==0}">
+	                                	手动
+                                	</c:if>
+                                	<c:if test="${item.mode!=0}">
+                                		自动
+                                	</c:if>
+                                	</b>，
+                                	类型：
                                 	<b class="text-danger">
 	                                	<c:if test="${item.type==1}">
 	                                		王国榜单
@@ -61,15 +70,17 @@
 	                                	</c:if>
                                 	</b>&emsp;
                                 	<button onclick="location.href='./list_ranking'" class="btn btn-primary">返回</button>
-                                	<c:if test="${item.type==1}">
+                                	<c:if test="${item.type==1 && item.mode==0}">
                                 		<a class="btn btn-danger dialog" href="./listKingdoms">添加王国</a>
                                 	</c:if>
-                                	<c:if test="${item.type==2}">
+                                	<c:if test="${item.type==2 && item.mode==0 }">
                                 		<a class="btn btn-danger dialog" href="./listUsers">添加用户</a>
                                 	</c:if>
-                                	<c:if test="${item.type==3}">
+                                	<c:if test="${item.type==3 && item.mode==0}">
                                 		<a class="btn btn-danger dialog" href="./listRankings">添加榜单</a>
                                 	</c:if>
+                                	
+                                	
                                 </header>
                                 <div class="panel-body">
                                 	
@@ -177,7 +188,7 @@
 	}  
 	$.fn.dataTable.ext.errMode="console";
 	$.extend( $.fn.dataTable.defaults, {
-		pageLength: 10,
+		pageLength: 999999,
 		searching: false,
 		sorting:false,
         dom: 'tp',
@@ -245,14 +256,16 @@
 			        	var map ={1:"王国榜单",2:"用户榜单",3:"榜单"};
 			        	return map[data];
 		        	}
-		        }},
+		        }}
 	    	</c:if>
-	        {title:"操作",width:160,render:function(data, type, row, meta){
+	    	<c:if test="${item.mode==0}">
+	        ,{title:"操作",width:160,render:function(data, type, row, meta){
 	        	var txt='<a class="btn btn-danger btn-xs del" href="#">删除</a>&nbsp;&nbsp;'
 	        	txt+='<a class="btn btn-warning btn-xs moveup" href="#">上移</a>&nbsp;&nbsp;'
 	        	txt+='<a class="btn btn-warning btn-xs movedown" href="#">下移</a>'
 	        	return txt;
 	        }}
+	        </c:if>
 	     ]
 	});
 	$(document).on("click",".del",function(){

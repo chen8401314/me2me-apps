@@ -635,6 +635,7 @@ public class ContentMybatisDao {
     public List<BillBoard> loadBillBoard(){
         BillBoardExample example = new BillBoardExample();
         BillBoardExample.Criteria criteria = example.createCriteria();
+        example.setOrderByClause("id desc");
         return billBoardMapper.selectByExample(example);
     }
 

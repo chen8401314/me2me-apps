@@ -5,18 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.mortbay.log.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.alibaba.fastjson.JSON;
 import com.me2me.common.page.PageBean;
@@ -28,7 +25,6 @@ import com.me2me.content.model.BillBoardDetails;
 import com.me2me.content.model.BillBoardRelation;
 import com.me2me.content.service.ContentService;
 import com.me2me.io.service.FileTransferService;
-import com.me2me.live.dto.Live4H5Dto.Live;
 import com.me2me.live.dto.SearchTopicDto;
 import com.me2me.live.service.LiveService;
 import com.me2me.mgmt.dal.utils.HttpUtils;
@@ -201,6 +197,14 @@ public class RankingController {
 		if(map.containsKey("nick_name")){
 			map.put("nick_name", HttpUtils.toUTF8(request.getParameter("nick_name")));
 		}
+		Map<String,String> colMap = new HashMap<>();
+		colMap.put("reviewCount", "review_count");
+		colMap.put("readCountDummy", "read_count_dummy");
+		colMap.put("likeCount", "like_count");
+		colMap.put("favoriteCount", "favorite_count");
+		colMap.put("topicId", "topic_id");
+		colMap.put("vLv", "v_lv");
+		colMap.put("updateTime", "update_time");
 		
 		// order
 		String orderBy =request.getParameter("order[0][column]");
@@ -208,7 +212,12 @@ public class RankingController {
 		if(orderBy!=null && order!=null){
 			String canOrder = request.getParameter("columns["+orderBy+"][orderable]");
 			if("true".equals(canOrder)){
+				
 				orderBy = request.getParameter("columns["+orderBy+"][data]");
+				String orderBy2 = colMap.get(orderBy);
+				if(orderBy2!=null){
+					orderBy=orderBy2;
+				}
 				map.put("orderBy", orderBy);
 				map.put("order", order);
 			}

@@ -224,7 +224,7 @@
 				var txt= "<input type='checkbox'/> ";
 				return txt;
 			}},
-	        {data: "title",title: "王国名称",render:function(data,type,row,meta){
+	        {data: "title",orderable:false,title: "王国名称",render:function(data,type,row,meta){
 	        	if(data!=null){
 	        		return "<a target='_blank' href='"+baseKingdomURL+row.topicId+"'>"+data+"</a>";
 	        	}
@@ -234,7 +234,7 @@
 	        		return new Date(data).Format("yyyy-MM-dd hh:mm:ss");
 	        	}
 	        }},
-	        {data: "nickName",title: "用户名"},
+	        {data: "nickName",orderable:false,title: "用户名"},
 	        {data: "vLv",title: "大V",render:function(data,type,row,meta){
 	        	if(data!=null){
 		        	var map ={0:"否",1:"是"};
@@ -257,7 +257,7 @@
 	        {data: "videoCount",title: "视频数量"},
 	        {data: "textCount",title: "文字数量"},
 	        {data: "topicId",title: "王国ID"},
-	        {title:"操作",width:60,render:function(data, type, row, meta){
+	        {title:"操作",orderable:false,width:60,render:function(data, type, row, meta){
 	        	var txt= "<a href='#stop' class='btn btn-danger btn-xs btnAdd'>加入</a> ";
 	        	return txt;
 	        }}
