@@ -4026,7 +4026,13 @@ public class LiveServiceImpl implements LiveService {
 		return oldContentType;
 	}
 
-	
+    @Override
+    public void statKingdomCountDay(){
+    	//先删除掉库的记录
+    	liveMybatisDao.truncateKingdomCountDay();
+    	//再加上统计记录
+    	liveMybatisDao.statKingdomCountDay();
+    }
 
 	@Override
 	public List<TopicFragmentTemplate> getFragmentTplList(String queryStr) {
@@ -4122,5 +4128,16 @@ public class LiveServiceImpl implements LiveService {
 	@Override
 	public PageBean<SearchDropAroundTopicDto> getDropAroundKingdomPage(PageBean page,String queryStr) {
 		return liveMybatisDao.getDropAroundKingdomPage(page,queryStr);
+	}
+
+	@Override
+	public PageBean<SearchTopicDto> getTopicPage(PageBean page, Map<String, Object> params) {
+		if(params.containsKey("favoriteCount_min")){		// 成员数筛选，小朱说=favoriteCount-1
+			params.put("favoriteCount_min",Integer.parseInt((String) params.get("favoriteCount_min"))-1);
+		}
+		if(params.containsKey("favoriteCount_max")){
+			params.put("favoriteCount_max", Integer.parseInt((String) params.get("favoriteCount_max"))-1);
+		}
+		return liveMybatisDao.getTopicPage(page,params);
 	}
 }

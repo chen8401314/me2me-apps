@@ -21,6 +21,12 @@
 <script src="${ctx}/js/bootstrap.min.js"></script>
 <link rel="stylesheet" href="${ctx}/js/DataTables-1.10.11/media/css/jquery.dataTables.min.css" />
 
+
+<script src="${ctx}/js/messager/js/messenger.min.js"></script>
+<script src="${ctx}/js/messager/js/messenger-theme-flat.js"></script>
+<link rel="stylesheet" href="${ctx}/js/messager/css/messenger.css" />
+<link rel="stylesheet" href="${ctx}/js/messager/css/messenger-theme-flat.css" />
+
 </head>
 <body>
 	<section id="container" class="">
@@ -39,22 +45,8 @@
 		<section id="main-content">
 			<section class="wrapper">
 				<div class="row ">
-					<div class="col-xs-6 ">
-						<div class="row">
-							<div class="col-xs-10">
-								<div class="input-group">
-									<input type="text" id="keyword" class="form-control" placeholder="可搜王国ID、标题"> <span class="input-group-btn">
-										<button class="btn btn-primary" type="button" id="btnSearchSourceKingdom">搜索</button>
-									</span>
-								</div>
-							</div>
-							<div class="col-xs-2">
-							<button class="btn btn-danger" onclick="addBatchKingdoms()">批量加入</button>
-							</div>
-						</div>
-						<table id="sourceKingdomList" class="table hover" width="100%"></table>
-					</div>
-					<div class="col-xs-6 ">
+					
+					<div class="col-xs-12 ">
 						<form class="form-inline">
 							<div class="form-group">
 								<div class="input-group">
@@ -65,6 +57,10 @@
 										</span>
 								</div>
 							</div>
+							<div class="form-group">
+								<a class="btn btn-danger dialog" href="../ranking/listKingdoms">添加王国</a>
+							</div>
+							
 						</form>
 						<table id="myKingdomList" class="table hover" width="100%"></table>
 					</div>
@@ -90,7 +86,7 @@
 	<script src="${ctx}/js/jquery.tagsinput.js"></script>
 	<script src="${ctx}/js/common-scripts.js"></script>
 	<script src="${ctx}/js/jquery.json-2.4.min.js"></script>
-	
+	 <script type="text/javascript" src="${ctx}/js/bootbox.min.js"></script>
 	<script>
 	$.fn.dataTable.ext.errMode="console";
 	$.extend( $.fn.dataTable.defaults, {
@@ -127,6 +123,10 @@
     	    decimal: ","
         }
 	} );
+	Messenger.options = {
+		    extraClasses: 'messenger-fixed messenger-on-top',
+		    theme: 'flat'
+		}
 		function addMyKingodms(dataArr){
 			
 			var jsonStr = $.toJSON(dataArr);
@@ -135,52 +135,11 @@
 					alert(data.desc);
 				}else{
 					myKingdomTable.ajax.reload();
+					Messenger().post({message:"添加成功！",hideAfter: 2});
 				}
 			})
 		}
-		var sourceTable=$('#sourceKingdomList').DataTable( {
-		    "ajax":"./loadSourceKingdomPage",
-		    "columns": [
-				{title:"全选",width:50,render:function(data, type, row, meta){
-					var txt= "<input type='checkbox'/> ";
-					return txt;
-				}},
-		        {data: "title",title: "标题"},
-		        {data: "nickName",title: "作者"},
-		        {title:"操作",width:60,render:function(data, type, row, meta){
-		        	var txt= "<a href='#stop' title='topicId:"+row.topicId+",uid:"+row.uid+"' class='btn btn-danger btn-xs btnAddKingdom'>加入</a> ";
-		        	return txt;
-		        }}
-		     ]
-		});
-		$("#sourceKingdomList").on("click","th:eq(0)",function(){
-			if($(this).text()=="全选"){
-				$("input[type='checkbox']").attr("checked","checked")
-				$(this).text("反选");
-			}else{
-				$("input[type='checkbox']").removeAttr("checked")
-				$(this).text("全选");
-			}
-		})
-		$("#keyword").on("keydown",function(e){
-			 if(e && e.keyCode==13){ // enter 键
-				 $("#btnSearchSourceKingdom").trigger('click')
-		    }
-		})
-		
-		$("#btnSearchSourceKingdom").click(function(){
-			var url = "loadSourceKingdomPage?keyword="+$("#keyword").val();
-			sourceTable.ajax.url(url).load();
-		})
-		function addBatchKingdoms(){
-			var dataArr=[]
-			$("input:checked").each(function(){
-				var tr = $(this).closest("tr");
-				var data =sourceTable.row(tr).data()
-				dataArr.push(data);
-			})
-			addMyKingodms(dataArr)
-		}
+	
 		$(document).on("click",".btnAddKingdom",function(){
 			var tr = $(this).closest("tr");
 			var data =sourceTable.row(tr).data()
@@ -222,6 +181,19 @@
 				 $("#btnSearchMyKingodm").trigger('click')
 		    }
 		})
+		var sort= 0;
+		// 子窗口添加数据
+		function onAdd(dataArr){
+			addMyKingodms(dataArr);
+		}
+		$("a.dialog").click(function(){
+    		var url =$(this).attr("href");
+    		bootbox.dialog({ 
+    			size:"large",
+    			message: "<iframe src='"+url+"' style='width:100%;min-height:750px;border:0px;'></iframe>" 
+    		})
+    		return false;
+    	})
 	</script>
 </body>
 </html>
