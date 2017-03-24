@@ -38,32 +38,19 @@ public class LonelyKingdomBillboardTask {
 		long e = System.currentTimeMillis();
 		logger.info("[求安慰的孤独王国]榜单任务结束，共耗时"+(e-s)/1000+"秒");
 	}
-	/*
-	select m.topic_id,POW(m.ucount,2)-if(m.rcount>0,POW(m.rcount,2),0) as sinceId
-	from content c,(
-	select f.topic_id,
-	count(if(f.type in (0,11,12,13,15,52,55),TRUE,NULL)) as ucount,
-	count(if(f.type in (0,11,12,13,15,52,55),NULL,TRUE)) as rcount
-	from topic_fragment f
-	where f.status=1
-	and f.create_time>date_add(now(), interval -3 DAY_HOUR)
-	group by f.topic_id
-	) m
-	where c.forward_cid=m.topic_id and c.type=3
-	and c.read_count_dummy>150
-	and m.ucount>m.rcount
-	order by sinceId desc limit 100;
-	*/
+
 	private void execTask(){
 		StringBuilder sb = new StringBuilder();
 		sb.append("select m.topic_id,POW(m.ucount,2)-if(m.rcount>0,POW(m.rcount,2),0) as sinceId");
-		sb.append(" from (select f.topic_id,");
+		sb.append(" from content c,(select f.topic_id,");
 		sb.append("count(if(f.type in (0,11,12,13,15,52,55),TRUE,NULL)) as ucount,");
 		sb.append("count(if(f.type in (0,11,12,13,15,52,55),NULL,TRUE)) as rcount");
 		sb.append(" from topic_fragment f where f.status=1");
-		sb.append(" and f.create_time>date_add(now(), interval -3 DAY_HOUR)");
-		sb.append(" group by f.topic_id) m where m.ucount>m.rcount");
-		sb.append(" order by sinceId desc limit 100");
+		sb.append(" and f.create_time>date_add(now(), interval -3 day)");
+		sb.append(" group by f.topic_id) m");
+		sb.append(" where c.forward_cid=m.topic_id and c.type=3");
+		sb.append(" and c.read_count_dummy>150 and m.ucount>m.rcount");
+		sb.append(" order by sinceId desc limit 100;");
 
 		List<Map<String, Object>> searchList = contentService.queryEvery(sb.toString());
 		if(null != searchList && searchList.size() > 0){

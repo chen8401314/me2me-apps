@@ -1023,7 +1023,14 @@ public class UserMybatisDao {
 	public PageBean<SearchUserDto> searchUserPage(PageBean page, Map<String, Object> queries) {
 		queries.put("skip", (page.getCurrentPage()-1)*page.getPageSize());
 		queries.put("limit", page.getPageSize());
+		String order = (String) queries.get("order");
+		String orderBy = (String) queries.get("orderBy");
+		if(order!=null && orderBy!=null){
+			queries.put("order", orderBy+" "+order);
+		}
 		List<SearchUserDto> list = userProfileMapper.searchUserPage(queries);
+		int totalRecords=userProfileMapper.countSearchUserForPage(queries);
+		page.setTotalRecords(totalRecords);
 		page.setDataList(list);
 		return page;
 	}

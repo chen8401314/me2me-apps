@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta charset="utf-8" />
 
-<title>ZX_IMS 2.0 - 串门语言管理</title>
+<title>ZX_IMS 2.0 - 榜单列表</title>
 
 <link href="${ctx}/css/bootstrap.min.css" rel="stylesheet" />
 <link href="${ctx}/css/bootstrap-reset.css" rel="stylesheet" />
@@ -44,7 +44,7 @@
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								| 模板列表 
+								| 榜单列表
 								<span class="tools pull-right">
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>
@@ -95,9 +95,9 @@
 														${item.image }
 													</td>
 													<td>
-														<a href="./modify_ranking?id=${item.id}">编辑</a>
-														<a href="./deleteRanking?id=${item.id}" onclick="return confirm('确认删除吗？')">删除</a>
-														<a href="./ranking_data_mgr?id=${item.id}">排行管理</a>
+														<a class="btn btn-warning btn-xs " href="./modify_ranking?id=${item.id}">编辑</a>
+														<a class="btn btn-danger btn-xs " href="./deleteRanking?id=${item.id}" onclick="return confirm('确认删除吗？')">删除</a>
+														<a class="btn btn-primary btn-xs " href="./ranking_data_mgr?id=${item.id}">排行管理</a>
 													</td>
 												</tr>
 											</c:forEach>

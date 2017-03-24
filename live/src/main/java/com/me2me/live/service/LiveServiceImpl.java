@@ -1134,9 +1134,9 @@ public class LiveServiceImpl implements LiveService {
                 reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
             }
         }
-        //一次性查询所有王国的最新一条核心圈更新
+        //一次性查询所有王国的最新一条数据
         Map<String, Map<String, Object>> lastFragmentMap = new HashMap<String, Map<String, Object>>();
-        List<Map<String, Object>> lastFragmentList = liveLocalJdbcDao.getLastCoreCircleFragmentByTopicIds2(tidList);
+        List<Map<String, Object>> lastFragmentList = liveLocalJdbcDao.getLastFragmentByTopicIds(tidList);
         if(null != lastFragmentList && lastFragmentList.size() > 0){
             for(Map<String, Object> m : lastFragmentList){
                 lastFragmentMap.put(String.valueOf(m.get("topic_id")), m);
@@ -1216,7 +1216,6 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLastContentType((Integer)lastFragment.get("content_type"));
                 showTopicElement.setLastFragment((String)lastFragment.get("fragment"));
                 showTopicElement.setLastFragmentImage((String)lastFragment.get("fragment_image"));
-                showTopicElement.setLastUpdateTime(((Date)lastFragment.get("create_time")).getTime());
                 //新增
                 showTopicElement.setLastType((Integer) lastFragment.get("type"));
                 showTopicElement.setLastStatus((Integer)lastFragment.get("status"));
@@ -1301,7 +1300,6 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLastContentType(topicFragment.getContentType());
                 showTopicElement.setLastFragment(topicFragment.getFragment());
                 showTopicElement.setLastFragmentImage(topicFragment.getFragmentImage());
-                showTopicElement.setLastUpdateTime(topicFragment.getCreateTime().getTime());
                 //新增
                 showTopicElement.setLastType(topicFragment.getType());
                 showTopicElement.setLastStatus(topicFragment.getStatus());
@@ -1979,7 +1977,7 @@ public class LiveServiceImpl implements LiveService {
             int size = 0;
             for (Content content : attentionList) {
                 size++;
-                ShowTopicListDto.AttentionElement attentionElement = showTopicListDto.createAttentionElement();
+                ShowTopicListDto.AttentionElement attentionElement = ShowTopicListDto.createAttentionElement();
                 UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
                 attentionElement.setAvatar(Constant.QINIU_DOMAIN+"/"+userProfile.getAvatar());
                 attentionElement.setUid(content.getUid());
@@ -1990,33 +1988,13 @@ public class LiveServiceImpl implements LiveService {
                 }
             }
         }
-        List<Long> topics = liveMybatisDao.getTopicId(uid);
-        Calendar calendar = Calendar.getInstance();
         if (updateTime == 0) {
             updateTime = Long.MAX_VALUE;
         }
         List<Topic2> topicList = liveMybatisDao.getMyLivesByUpdateTimeNew(uid ,updateTime);
         log.info("getMyLives data success");
         builderWithCache2(uid, showTopicListDto, topicList);
-        log.info("getMyLives start ...");
-        int inactiveLiveCount = liveMybatisDao.getInactiveLiveCount(uid, topics);
-        showTopicListDto.setInactiveLiveCount(inactiveLiveCount);
-        calendar.add(Calendar.DAY_OF_YEAR, -3);
-        List<Topic> live = liveMybatisDao.getInactiveLive(uid, topics, calendar.getTimeInMillis());
-        if (live.size() > 0) {
-            showTopicListDto.setLiveTitle(live.get(0).getTitle());
-        }
-        //获取所有更新中直播主笔的信息
-        List<Topic> list = liveMybatisDao.getLives(Long.MAX_VALUE);
-        for (Topic topic : list) {
-            ShowTopicListDto.UpdateLives updateLives = ShowTopicListDto.createUpdateLivesElement();
-            UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
-            updateLives.setV_lv(userProfile.getvLv());
-            updateLives.setUid(userProfile.getUid());
-            updateLives.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-            showTopicListDto.getUpdateLives().add(updateLives);
-        }
-        showTopicListDto.setLiveCount(liveMybatisDao.countLives());
+        
         MyLivesStatusModel myLivesStatusModel = new MyLivesStatusModel(uid, "0");
         String isUpdate = cacheService.hGet(myLivesStatusModel.getKey(), myLivesStatusModel.getField());
         if (!StringUtils.isEmpty(isUpdate)) {
@@ -3627,8 +3605,8 @@ public class LiveServiceImpl implements LiveService {
     	obj.put("content", ceFragmentContent);
     	obj.put("linkType", 72);//王国内链
     	obj.put("linkColor", "#8B572A");
-    	obj.put("linkColor", 2);//从0算起
-    	obj.put("linkColor", acTopic.getTitle().length()+2);
+    	obj.put("linkStart", 2);//从0算起
+    	obj.put("linkEnd", acTopic.getTitle().length()+2);
     	//组装链接
     	JSONObject linkObj = new JSONObject();
     	linkObj.put("type", "link");
@@ -3675,8 +3653,8 @@ public class LiveServiceImpl implements LiveService {
     	obj2.put("content", acFragmentContent);
     	obj2.put("linkType", 72);//王国内链
     	obj2.put("linkColor", "#8B572A");
-    	obj2.put("linkColor", 2);//从0算起
-    	obj2.put("linkColor", acFragmentContent.length());
+    	obj2.put("linkStart", 10);//从0算起
+    	obj2.put("linkEnd", acFragmentContent.length());
     	//组装链接
     	JSONObject linkObj2 = new JSONObject();
     	linkObj2.put("type", "link");
@@ -3842,15 +3820,14 @@ public class LiveServiceImpl implements LiveService {
     public Response dropAround(long uid, long sourceTopicId) {
         int dr =0;
         String now = new SimpleDateFormat("yyyyMMdd").format(new Date());
-        String number = cacheService.hGet("droparound" ,uid+"@"+now);
+        String number = cacheService.get("droparound:"+uid+"@"+now);
         if(!StringUtils.isEmpty(number)){
             //有的话取
             dr = Integer.parseInt(number);
         }
         //每次进来+1 控制每人每天五次
-        cacheService.hSet("droparound" ,uid+"@"+now ,String.valueOf(dr+1));
-        log.info("key:droparound filed:{}@{} value: {}" ,uid , now ,dr+1);
-        cacheService.expire(uid+"@"+now ,3600*24);//24小时过期
+        cacheService.set("droparound:"+uid+"@"+now ,String.valueOf(dr+1));
+        cacheService.expire("droparound:"+uid+"@"+now ,3600*24);//24小时过期
 
         //控制每个用户避免进入重复的
         Set<String> s = cacheService.smembers("list:user@"+uid );
@@ -4111,7 +4088,8 @@ public class LiveServiceImpl implements LiveService {
         return page;
         
 	}
-	List<SearchDropAroundTopicDto> buildShowTopicList(List<Topic> list){
+	
+	private List<SearchDropAroundTopicDto> buildShowTopicList(List<Topic> list){
 	 	List<Long> uidList = new ArrayList<Long>();
     	for(Topic topic :list){
     		if(!uidList.contains(topic.getUid())){
@@ -4142,6 +4120,7 @@ public class LiveServiceImpl implements LiveService {
         }
 		return showElementList;
 	}
+	
 	@Override
 	public PageBean<SearchDropAroundTopicDto> getDropAroundKingdomPage(PageBean page,String queryStr) {
 		return liveMybatisDao.getDropAroundKingdomPage(page,queryStr);
