@@ -511,6 +511,7 @@
     UNION
     SELECT t1.*
     FROM topic t1
+    WHERE FIND_IN_SET(#{uid}, SUBSTR(t1.core_circle FROM 2 FOR LENGTH(t1.core_circle)-2))
     ) m LEFT JOIN topic_user_config c ON m.id=c.topic_id AND c.uid=#{uid}
     ) n
     WHERE n.longtimes &lt; #{updateTime}

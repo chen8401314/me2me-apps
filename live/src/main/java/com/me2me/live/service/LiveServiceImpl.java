@@ -1216,7 +1216,6 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLastContentType((Integer)lastFragment.get("content_type"));
                 showTopicElement.setLastFragment((String)lastFragment.get("fragment"));
                 showTopicElement.setLastFragmentImage((String)lastFragment.get("fragment_image"));
-                showTopicElement.setLastUpdateTime(((Date)lastFragment.get("create_time")).getTime());
                 //新增
                 showTopicElement.setLastType((Integer) lastFragment.get("type"));
                 showTopicElement.setLastStatus((Integer)lastFragment.get("status"));
@@ -1301,7 +1300,6 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLastContentType(topicFragment.getContentType());
                 showTopicElement.setLastFragment(topicFragment.getFragment());
                 showTopicElement.setLastFragmentImage(topicFragment.getFragmentImage());
-                showTopicElement.setLastUpdateTime(topicFragment.getCreateTime().getTime());
                 //新增
                 showTopicElement.setLastType(topicFragment.getType());
                 showTopicElement.setLastStatus(topicFragment.getStatus());
