@@ -531,7 +531,6 @@ public class LiveServiceImpl implements LiveService {
 //                }
 //            }
         }
-        long fid = 0;
         if (speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {
             TopicFragment topicFragment = new TopicFragment();
             topicFragment.setFragmentImage(speakDto.getFragmentImage());
@@ -564,8 +563,8 @@ public class LiveServiceImpl implements LiveService {
             topic.setLongTime(calendar.getTimeInMillis());
             liveMybatisDao.updateTopic(topic);
             log.info("updateTopic updateTime");
-            
-            fid = topicFragment.getId();
+
+            long fid = topicFragment.getId();
             speakEvent.setFragmentId(fid);
             applicationEventBus.post(speakEvent);
             //--add update kingdom cache -- modify by zcl -- begin --
@@ -1220,6 +1219,7 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLastType((Integer) lastFragment.get("type"));
                 showTopicElement.setLastStatus((Integer)lastFragment.get("status"));
                 showTopicElement.setLastExtra((String)lastFragment.get("extra"));
+                showTopicElement.setLastAtUid((Long)lastFragment.get("at_uid"));
                 showTopicElement.setIsTop(topic.getIsTop());
             } else {
                 showTopicElement.setLastContentType(-1);
@@ -1304,6 +1304,7 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLastType(topicFragment.getType());
                 showTopicElement.setLastStatus(topicFragment.getStatus());
                 showTopicElement.setLastExtra(topicFragment.getExtra());
+                showTopicElement.setLastAtUid(topicFragment.getAtUid());
             }
         }
     }
@@ -2159,6 +2160,7 @@ public class LiveServiceImpl implements LiveService {
         LiveQRCodeDto liveQRCodeDto = new LiveQRCodeDto();
         try {
             Topic topic = getTopicById(TopicId);
+            liveQRCodeDto.setSummary(topic.getSummary());
             if (StringUtils.isEmpty(topic.getQrcode())) {
                 byte[] image = QRCodeUtil.encode(live_web + TopicId);
                 String key = UUID.randomUUID().toString();
