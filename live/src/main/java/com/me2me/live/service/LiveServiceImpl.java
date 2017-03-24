@@ -1219,6 +1219,7 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLastType((Integer) lastFragment.get("type"));
                 showTopicElement.setLastStatus((Integer)lastFragment.get("status"));
                 showTopicElement.setLastExtra((String)lastFragment.get("extra"));
+                showTopicElement.setLastAtUid((Long)lastFragment.get("at_uid"));
                 showTopicElement.setIsTop(topic.getIsTop());
             } else {
                 showTopicElement.setLastContentType(-1);
@@ -1303,6 +1304,7 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLastType(topicFragment.getType());
                 showTopicElement.setLastStatus(topicFragment.getStatus());
                 showTopicElement.setLastExtra(topicFragment.getExtra());
+                showTopicElement.setLastAtUid(topicFragment.getAtUid());
             }
         }
     }
