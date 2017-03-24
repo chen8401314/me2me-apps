@@ -328,6 +328,9 @@ public interface UserService {
     void updateVersionChannelDownload(VersionChannelDownload vcd);
     
     void deleteVersionChannelDownload(long id);
+
+    int spreadCheckUnique(int spreadChannel,String idfa);
+
     /**
      * 搜索用户，供管理后台使用。
      * @author zhangjiwei

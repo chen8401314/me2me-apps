@@ -1034,4 +1034,13 @@ public class UserMybatisDao {
 		page.setDataList(list);
 		return page;
 	}
+
+    public boolean spreadIdfaExists(int spreadChannel, String idfa) {
+        IosWapxExample example = new IosWapxExample();
+        IosWapxExample.Criteria criteria = example.createCriteria();
+        criteria.andChannelTypEqualTo(spreadChannel);
+        criteria.andIdfaEqualTo(idfa);
+        List<IosWapx> list = iosWapxMapper.selectByExample(example);
+        return (list!=null&&list.size()>0)?Boolean.TRUE :Boolean.FALSE;
+    }
 }

@@ -13,4 +13,7 @@ import lombok.Data;
 public class LiveQRCodeDto implements BaseEntity{
 
     private String  liveQrCodeUrl;
+
+    private String summary;
+
 }

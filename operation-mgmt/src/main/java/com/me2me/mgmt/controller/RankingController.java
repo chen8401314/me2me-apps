@@ -11,19 +11,24 @@ import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.alibaba.fastjson.JSON;
 import com.me2me.common.page.PageBean;
+import com.me2me.common.security.SecurityUtils;
 import com.me2me.content.dto.BillBoardRelationDto;
 import com.me2me.content.dto.OnlineBillBoardDto;
 import com.me2me.content.model.BillBoard;
 import com.me2me.content.model.BillBoardDetails;
 import com.me2me.content.model.BillBoardRelation;
 import com.me2me.content.service.ContentService;
+import com.me2me.io.service.FileTransferService;
 import com.me2me.live.dto.SearchTopicDto;
 import com.me2me.live.service.LiveService;
 import com.me2me.mgmt.dal.utils.HttpUtils;
+import com.me2me.mgmt.services.LocalConfigService;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.mgmt.vo.DatatablePage;
 import com.me2me.user.dto.SearchUserDto;
@@ -50,6 +55,12 @@ public class RankingController {
 	@Autowired
 	private LiveService liveService;
 	
+	@Autowired
+	private LocalConfigService config;
+	@Autowired
+	private FileTransferService fileTransferService;
+	
+	
 	@RequestMapping(value = "/list_ranking")
 	@SystemControllerLog(description = "榜单列表")
 	public String list_ranking(HttpServletRequest request) throws Exception {
@@ -73,17 +84,23 @@ public class RankingController {
 	}
 	@RequestMapping(value = "/doSaveRanking")
 	@SystemControllerLog(description = "保存榜单")
-	public String doSaveRanking(HttpServletRequest request,BillBoard tpl) throws Exception {
+	public String doSaveRanking(BillBoard tpl,@RequestParam("image2")MultipartFile file,HttpServletRequest mrequest) throws Exception {
 		try{
+			if(file!=null && StringUtils.isNotEmpty(file.getOriginalFilename()) && file.getSize()>0){
+				String imgName = SecurityUtils.md5(mrequest.getSession().getId()+System.currentTimeMillis(), "1");
+	    		fileTransferService.upload(file.getBytes(), imgName);
+	    		tpl.setImage(imgName);
+			}
 			if(tpl.getId()!=null){
 				contentService.updateBillBoard(tpl);
 			}else{
+				
 				contentService.addBillBoard(tpl);
 			}
 			return "redirect:./list_ranking";
 		}catch(Exception e){
-			request.setAttribute("item",tpl);
-			return add_ranking(request);
+			mrequest.setAttribute("item",tpl);
+			return add_ranking(mrequest);
 		}
 	}
 	@RequestMapping(value = "/deleteRanking")
@@ -100,6 +117,8 @@ public class RankingController {
 	public String ranking_data_mgr(HttpServletRequest request) throws Exception {
 		String id = request.getParameter("id");
 		BillBoard item= contentService.getBillBoardById(Long.parseLong(id));
+		String baseKingdomURL = config.getWebappUrl();
+		request.setAttribute("baseKingdomURL", baseKingdomURL);
 		request.setAttribute("item",item);
 		return "ranking_list/ranking_data_mgr";
 	}
@@ -109,6 +128,8 @@ public class RankingController {
 	}
 	@RequestMapping("listKingdoms")
 	public String lisKingdoms(HttpServletRequest request){
+		String baseKingdomURL = config.getWebappUrl();
+		request.setAttribute("baseKingdomURL", baseKingdomURL);
 		return "ranking_list/ajax_list_kingdom";
 	}
 	@RequestMapping("listRankings")
@@ -176,6 +197,14 @@ public class RankingController {
 		if(map.containsKey("nick_name")){
 			map.put("nick_name", HttpUtils.toUTF8(request.getParameter("nick_name")));
 		}
+		Map<String,String> colMap = new HashMap<>();
+		colMap.put("reviewCount", "review_count");
+		colMap.put("readCountDummy", "read_count_dummy");
+		colMap.put("likeCount", "like_count");
+		colMap.put("favoriteCount", "favorite_count");
+		colMap.put("topicId", "topic_id");
+		colMap.put("vLv", "v_lv");
+		colMap.put("updateTime", "update_time");
 		
 		// order
 		String orderBy =request.getParameter("order[0][column]");
@@ -183,7 +212,12 @@ public class RankingController {
 		if(orderBy!=null && order!=null){
 			String canOrder = request.getParameter("columns["+orderBy+"][orderable]");
 			if("true".equals(canOrder)){
+				
 				orderBy = request.getParameter("columns["+orderBy+"][data]");
+				String orderBy2 = colMap.get(orderBy);
+				if(orderBy2!=null){
+					orderBy=orderBy2;
+				}
 				map.put("orderBy", orderBy);
 				map.put("order", order);
 			}

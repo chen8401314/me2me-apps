@@ -338,7 +338,7 @@ public class LiveForContentJdbcDao {
     			bbl = new BillBoardList();
     			bbl.setTargetId((Long)m.get("id"));
     			bbl.setType(1);
-    			bbl.setSinceId(((Long)m.get("cc")).intValue());
+    			bbl.setSinceId(((Long)m.get("sinceId")).intValue());
     			result.add(bbl);
     		}
     	}
