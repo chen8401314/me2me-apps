@@ -531,7 +531,6 @@ public class LiveServiceImpl implements LiveService {
 //                }
 //            }
         }
-        long fid = 0;
         if (speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {
             TopicFragment topicFragment = new TopicFragment();
             topicFragment.setFragmentImage(speakDto.getFragmentImage());
@@ -564,8 +563,8 @@ public class LiveServiceImpl implements LiveService {
             topic.setLongTime(calendar.getTimeInMillis());
             liveMybatisDao.updateTopic(topic);
             log.info("updateTopic updateTime");
-            
-            fid = topicFragment.getId();
+
+            long fid = topicFragment.getId();
             speakEvent.setFragmentId(fid);
             applicationEventBus.post(speakEvent);
             //--add update kingdom cache -- modify by zcl -- begin --
@@ -1220,6 +1219,7 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLastType((Integer) lastFragment.get("type"));
                 showTopicElement.setLastStatus((Integer)lastFragment.get("status"));
                 showTopicElement.setLastExtra((String)lastFragment.get("extra"));
+                showTopicElement.setLastAtUid((Long)lastFragment.get("at_uid"));
                 showTopicElement.setIsTop(topic.getIsTop());
             } else {
                 showTopicElement.setLastContentType(-1);
@@ -1304,6 +1304,7 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLastType(topicFragment.getType());
                 showTopicElement.setLastStatus(topicFragment.getStatus());
                 showTopicElement.setLastExtra(topicFragment.getExtra());
+                showTopicElement.setLastAtUid(topicFragment.getAtUid());
             }
         }
     }
@@ -4028,7 +4029,13 @@ public class LiveServiceImpl implements LiveService {
 		return oldContentType;
 	}
 
-	
+    @Override
+    public void statKingdomCountDay(){
+    	//先删除掉库的记录
+    	liveMybatisDao.truncateKingdomCountDay();
+    	//再加上统计记录
+    	liveMybatisDao.statKingdomCountDay();
+    }
 
 	@Override
 	public List<TopicFragmentTemplate> getFragmentTplList(String queryStr) {
@@ -4124,5 +4131,16 @@ public class LiveServiceImpl implements LiveService {
 	@Override
 	public PageBean<SearchDropAroundTopicDto> getDropAroundKingdomPage(PageBean page,String queryStr) {
 		return liveMybatisDao.getDropAroundKingdomPage(page,queryStr);
+	}
+
+	@Override
+	public PageBean<SearchTopicDto> getTopicPage(PageBean page, Map<String, Object> params) {
+		if(params.containsKey("favoriteCount_min")){		// 成员数筛选，小朱说=favoriteCount-1
+			params.put("favoriteCount_min",Integer.parseInt((String) params.get("favoriteCount_min"))-1);
+		}
+		if(params.containsKey("favoriteCount_max")){
+			params.put("favoriteCount_max", Integer.parseInt((String) params.get("favoriteCount_max"))-1);
+		}
+		return liveMybatisDao.getTopicPage(page,params);
 	}
 }

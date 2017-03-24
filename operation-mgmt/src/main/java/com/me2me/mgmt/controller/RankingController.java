@@ -5,11 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
-import org.mortbay.log.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +21,9 @@ import com.me2me.content.model.BillBoard;
 import com.me2me.content.model.BillBoardDetails;
 import com.me2me.content.model.BillBoardRelation;
 import com.me2me.content.service.ContentService;
+import com.me2me.live.dto.SearchTopicDto;
+import com.me2me.live.service.LiveService;
+import com.me2me.mgmt.dal.utils.HttpUtils;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.mgmt.vo.DatatablePage;
 import com.me2me.user.dto.SearchUserDto;
@@ -46,6 +47,8 @@ public class RankingController {
 	@Autowired
 	private UserService userService;
 	
+	@Autowired
+	private LiveService liveService;
 	
 	@RequestMapping(value = "/list_ranking")
 	@SystemControllerLog(description = "榜单列表")
@@ -157,10 +160,40 @@ public class RankingController {
 	@ResponseBody
 	@RequestMapping(value = "/ajaxLoadKingdoms")
 	@SystemControllerLog(description = "载入系统王国")
-	public String ajaxLoadKingdoms(HttpServletRequest request) throws Exception {
-		List<BillBoard> list =contentService.getAllBillBoard();
-		request.setAttribute("dataList",list);
-		return "ranking_list/list_ranking";
+	public DatatablePage ajaxLoadKingdoms(HttpServletRequest request,DatatablePage page) throws Exception {
+		Map<String,Object> map = new HashMap<>();
+		Enumeration<String> nameeum = request.getParameterNames();
+		while(nameeum.hasMoreElements()){
+			String name = nameeum.nextElement();
+			String val = request.getParameter(name);
+			if(!name.contains("][") && !StringUtils.isEmpty(val)){
+				map.put(name, val);
+			}
+		}
+		if(map.containsKey("title")){
+			map.put("title", HttpUtils.toUTF8(request.getParameter("title")));
+		}
+		if(map.containsKey("nick_name")){
+			map.put("nick_name", HttpUtils.toUTF8(request.getParameter("nick_name")));
+		}
+		
+		// order
+		String orderBy =request.getParameter("order[0][column]");
+		String order =request.getParameter("order[0][dir]");
+		if(orderBy!=null && order!=null){
+			String canOrder = request.getParameter("columns["+orderBy+"][orderable]");
+			if("true".equals(canOrder)){
+				orderBy = request.getParameter("columns["+orderBy+"][data]");
+				map.put("orderBy", orderBy);
+				map.put("order", order);
+			}
+		}
+		PageBean pb = page.toPageBean();
+		PageBean<SearchTopicDto> list =liveService.getTopicPage(pb, map);
+		page.setData(list.getDataList());
+		page.setRecordsTotal((int) list.getTotalRecords());
+		return page;
+		
 	}
 	
 	@ResponseBody

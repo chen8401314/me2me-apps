@@ -91,8 +91,7 @@ public class TopicFragmentTemplateController {
 			String json = request.getParameter("data");
 			JSONArray kingdoms = JSON.parseArray(json);
 			for(int i=0;i<kingdoms.size();i++){
-				JSONObject object = kingdoms.getJSONObject(i);
-				Integer topicId = (object.getInteger("topicId"));
+				Integer topicId = kingdoms.getInteger(i);
 				this.liveService.copyKingdomToDropAroundKingdom(topicId,-1);
 			}
 			return JsonResult.success();

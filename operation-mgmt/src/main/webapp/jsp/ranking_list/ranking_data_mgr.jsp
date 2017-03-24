@@ -136,7 +136,17 @@
         <script src="${ctx}/js/xheditor-1.2.2.min.js"></script>
         <script src="${ctx}/js/xheditor_lang/zh-cn.js"></script>
         <script src="${ctx}/js/xheditSelf.js"></script>
+        <script src="${ctx}/js/messager/js/messenger.min.js"></script>
+		<script src="${ctx}/js/messager/js/messenger-theme-flat.js"></script>
+		<link rel="stylesheet" href="${ctx}/js/messager/css/messenger.css" />
+		<link rel="stylesheet" href="${ctx}/js/messager/css/messenger-theme-flat.css" />
+
     <script>
+    Messenger.options = {
+    		hideAfter:1,
+		    extraClasses: 'messenger-fixed messenger-on-top',
+		    theme: 'flat'
+		}
     	$("a.dialog").click(function(){
     		var url =$(this).attr("href");
     		bootbox.dialog({ 
@@ -247,6 +257,7 @@
 			$.post("./deleteRankingData",{id:data.id,r:Math.random()},function(data){
 				if(data.code==1){
 					dataTable.ajax.reload();
+					
 				}else{
 					alert(data.desc);
 				}
@@ -297,6 +308,7 @@
 		$.post("./doSaveRankingData",{json:json,r:Math.random()},function(data){
 			if(data.code==1){
 				dataTable.ajax.reload();
+				Messenger().post({message:"添加成功！",hideAfter: 2});
 			}else{
 				alert(data.desc);
 			}

@@ -207,6 +207,22 @@
         </property>
     </bean>
     <!-- task 12 end-->
+    
+    <!-- task 13 start-->
+    <bean id="kingdomCountDayTaskJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="kingdomCountDayTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="kingdomCountDayTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="kingdomCountDayTaskJobDetail">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 8 * * ?</value>
+        </property>
+    </bean>
+    <!-- task 13 end-->
 
     <bean name="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
         <property name="triggers">
@@ -227,6 +243,7 @@
                  <ref bean="jayPeopleBillboardTaskTriggers" />
                  <ref bean="colorfulKingdomBillBoardTaskTriggers" />
                  <ref bean="lonelyKingdomBillboardTaskTriggers" />
+                 <ref bean="kingdomCountDayTaskTriggers" />
                  
             </list>
         </property>

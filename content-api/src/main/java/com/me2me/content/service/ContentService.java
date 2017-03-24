@@ -298,6 +298,7 @@ public interface ContentService{
      * @return
      */
     List<BillBoardRelationDto> getRelationsByBillBoardId(long id);
+    
    /**
     * 添加一个榜单排名数据。
     * @author zhangjiwei

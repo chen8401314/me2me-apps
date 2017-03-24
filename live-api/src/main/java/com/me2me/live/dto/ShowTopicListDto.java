@@ -108,6 +108,8 @@ public class ShowTopicListDto implements BaseEntity{
         private int isTop;
 
         private int lastType;
+
+        private long lastAtUid;
         
         //0圈外 1圈内 2核心圈
         private int internalStatus;
