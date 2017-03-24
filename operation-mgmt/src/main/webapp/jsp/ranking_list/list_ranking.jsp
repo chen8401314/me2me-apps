@@ -92,7 +92,7 @@
 														${item.summary }
 													</td>
 													<td >
-														${item.image }
+														<img src="http://cdn.me-to-me.com/${item.image }" height="50"/>
 													</td>
 													<td>
 														<a class="btn btn-warning btn-xs " href="./modify_ranking?id=${item.id}">编辑</a>

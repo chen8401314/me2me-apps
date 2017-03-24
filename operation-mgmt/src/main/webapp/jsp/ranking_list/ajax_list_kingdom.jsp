@@ -143,6 +143,7 @@
 	<link rel="stylesheet" href="${ctx}/js/DataTables-1.10.11/media/css/jquery.dataTables.min.css" />
 	<script type="text/javascript" src="${ctx}/js/DataTables-1.10.11/media/js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript">
+	var baseKingdomURL = "${baseKingdomURL}";
 	$.fn.datetimepicker.dates['zh'] = {  
             days:       ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六","星期日"],  
             daysShort:  ["日", "一", "二", "三", "四", "五", "六","日"],  
@@ -223,7 +224,11 @@
 				var txt= "<input type='checkbox'/> ";
 				return txt;
 			}},
-	        {data: "title",title: "王国名称"},
+	        {data: "title",title: "王国名称",render:function(data,type,row,meta){
+	        	if(data!=null){
+	        		return "<a target='_blank' href='"+baseKingdomURL+row.topicId+"'>"+data+"</a>";
+	        	}
+	        }},
 	        {data: "updateTime",title: "更新时间",render:function(data,type,row,meta){
 	        	if(data!=null){
 	        		return new Date(data).Format("yyyy-MM-dd hh:mm:ss");
@@ -254,7 +259,6 @@
 	        {data: "topicId",title: "王国ID"},
 	        {title:"操作",width:60,render:function(data, type, row, meta){
 	        	var txt= "<a href='#stop' class='btn btn-danger btn-xs btnAdd'>加入</a> ";
-	        	txt+= "<a href='#stop' target='_blank' class='btn btn-danger btn-xs btnView'>浏览</a>";
 	        	return txt;
 	        }}
 	     ]
@@ -279,13 +283,6 @@
 		var data =sourceTable.row(tr).data();
 		
 		parent.onAdd([data.topicId]);
-	})
-	$(document).on("click",".btnView",function(){		// 父窗口添加选中用户。
-		var tr = $(this).closest("tr");
-		var data =sourceTable.row(tr).data();
-		var url ="http://webapp.me-to-me.com/ld/"+data.topicId;
-		window.open(url);
-		return false;
 	})
 	function addBatch(){
 		var dataArr=[]

@@ -17,6 +17,7 @@
     <link rel="stylesheet" type="text/css" href="${ctx}/assets/bootstrap-colorpicker/css/colorpicker.css" />
     <link rel="stylesheet" type="text/css" href="${ctx}/assets/bootstrap-daterangepicker/daterangepicker-bs3.css" />
     <link rel="stylesheet" type="text/css" href="${ctx}/assets/bootstrap-datetimepicker/css/datetimepicker.css" />
+    
     <link href="${ctx}/css/slidebars.css" rel="stylesheet">
     <link href="${ctx}/css/style.css" rel="stylesheet">
     <link href="${ctx}/css/style-responsive.css" rel="stylesheet" />
@@ -42,7 +43,7 @@
 
             <!--main content start-->
             <section id="main-content">
-            	<form id="form1" action="./doSaveRanking" method="POST">
+            	<form id="form1" action="./doSaveRanking" method="POST"  enctype="multipart/form-data">
             		<input type="hidden" name="id" value="${item.id}"/>
                 <section class="wrapper">
                     <!-- page start-->
@@ -58,6 +59,19 @@
 	                                            <input name="name"  class="form-control" value="${item.name}" required/>
 	                                        </div>
 	                                       <c:if test="${item==null }">
+	                                       <div class="form-group">
+	                                            <label for="exampleInputEmail1">榜单模式</label>
+	                                            <select name="mode" class="form-control" value="${item.type}">
+													<option value="0">手动榜单</option>
+													<option value="1">最活跃的米汤新鲜人</option>
+													<option value="2">最受追捧的米汤大咖</option>
+													<option value="3">最爱叨逼叨的话痨国王</option>
+													<option value="4">这里的互动最热闹</option>
+													<option value="5">最丰富多彩的王国</option>
+													<option value="6">求安慰的孤独王国</option>
+												</select>
+												<label class="text-danger">保存之后不可修改。</label>
+	                                        </div>
 	                                        <div class="form-group">
 	                                            <label for="exampleInputEmail1">榜单类型</label>
 	                                            <select name="type" class="form-control" value="${item.type}">
@@ -78,9 +92,31 @@
 	                                            <label for="exampleInputFile">背景色</label>
 	                                            <input name="bgColor"  class="form-control" value="${item.bgColor}" required/>
 	                                        </div>
+	                                        
 	                                        <div class="form-group">
 	                                            <label for="exampleInputFile">背景图</label>
-	                                            <input name="image"  class="form-control" value="${item.image}" required/>
+                                                <div class="fileupload fileupload-new" data-provides="fileupload">
+                                                    <div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
+                                                        <img src="http://cdn.me-to-me.com/${item.image}" alt="" />
+                                                    </div>
+                                                    <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
+                                                    <div>
+                                                        <span class="btn btn-white btn-file">
+                                                            <span class="fileupload-new"><i class="fa fa-paper-clip"></i>Select image</span>
+                                                            <span class="fileupload-exists"><i class="fa fa-undo"></i>Change</span>
+                                                            <input type="file" id="image2" name="image2" class="default">
+                                                        </span>
+                                                        <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="fa fa-trash"></i>Remove</a>
+                                                    </div>
+                                                </div>
+	                                        </div>
+	                                        <div class="form-group">
+	                                            <label for="exampleInputFile">宽</label>
+	                                            <input name="imgWidth"  class="form-control" value="${item.imgWidth}" required/>
+	                                        </div>
+	                                        <div class="form-group">
+	                                            <label for="exampleInputFile">高</label>
+	                                            <input name="imgHeight"  class="form-control" value="${item.imgHeight}" required/>
 	                                        </div>
                                         </div>
                                     </div>

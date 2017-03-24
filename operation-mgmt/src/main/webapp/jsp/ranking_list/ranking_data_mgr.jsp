@@ -142,6 +142,7 @@
 		<link rel="stylesheet" href="${ctx}/js/messager/css/messenger-theme-flat.css" />
 
     <script>
+    var baseKingdomURL = "${baseKingdomURL}";
     Messenger.options = {
     		hideAfter:1,
 		    extraClasses: 'messenger-fixed messenger-on-top',
@@ -216,7 +217,11 @@
 				return txt;
 			}},
 			<c:if test="${item.type==1}">
-				{data: "title",title: "王国名称"},
+			 	{data: "title",title: "王国名称",render:function(data,type,row,meta){
+		        	if(data!=null){
+		        		return "<a target='_blank' href='"+baseKingdomURL+row.topicId+"'>"+data+"</a>";
+		        	}
+		        }},
 		        {data: "aggregation",title: "类型",render:function(data,type,row,meta){
 		        	if(data!=null){
 			        	var map ={0:"普通王国",1000:"聚合王国"};
