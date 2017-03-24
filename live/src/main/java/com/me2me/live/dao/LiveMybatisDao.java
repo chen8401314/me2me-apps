@@ -11,6 +11,7 @@ import com.me2me.common.web.Specification;
 import com.me2me.live.dto.GetLiveDetailDto;
 import com.me2me.live.dto.GetLiveUpdateDto;
 import com.me2me.live.dto.SearchDropAroundTopicDto;
+import com.me2me.live.dto.SearchTopicDto;
 import com.me2me.live.dto.ShowTopicListDto.ShowTopicElement;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.mapper.*;
@@ -1029,5 +1030,22 @@ public class LiveMybatisDao {
     public TopicFragment getFragmentByAT(Map map){
         return topicFragmentMapper.getFragmentByAT(map);
     }
+
+	public PageBean<SearchTopicDto> getTopicPage(PageBean page, Map<String, Object> params) {
+		
+		params.put("skip", (page.getCurrentPage()-1) * page.getPageSize());
+		params.put("limit", page.getPageSize());
+		if(params.containsKey("title")){
+			params.put("title", "%"+params.get("title")+"%");
+		}
+		if(params.containsKey("nick_name")){
+			params.put("nick_name", "%"+params.get("nick_name")+"%");
+		}
+		long count = topicMapper.countTopicForPage(params);
+		List<SearchTopicDto> topicList = topicMapper.getTopicPage(params);
+		page.setDataList(topicList);
+		page.setTotalRecords(count);
+		return page;
+	}
 
 }

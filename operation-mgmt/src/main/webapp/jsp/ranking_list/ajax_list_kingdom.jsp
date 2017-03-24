@@ -30,13 +30,12 @@
 				<form class="form form-inline" method="get" action="" id="search_form">
 					<p>
 						<div class="form-group">
-							<lable class="control-label">用户名</lable>
-							<input type="text" name="nick_name" class="form-control"/>
+							<lable class="control-label">王国标题</lable>
+							<input type="text" name="title" class="form-control"/>
 						</div>
 						<div class="form-group">
-							<lable class="control-label">注册时间</lable>
-							<input type="text" name="create_time_min" class="form-control date"/>-
-							<input type="text" name="create_time_max" class="form-control date"/>
+							<lable class="control-label">用户名</lable>
+							<input type="text" name="nick_name" class="form-control"/>
 						</div>
 						<div class="form-group">
 							<lable class="control-label">大V</lable>
@@ -46,22 +45,76 @@
 								<option value="1">是</option>
 							</select>
 						</div>
+						<div class="form-group">
+							<lable class="control-label">聚合</lable>
+							<select name="type" class="form-control">
+								<option value="">全部</option>
+								<option value="0">否</option>
+								<option value="1000">是</option>
+							</select>
+						</div>
 					</p>
 					<p>
 						<div class="form-group">
-							<lable class="control-label">发布王国数量</lable>
-							<input type="text" name="kingdomCount_min" class="form-control number" style="width:70px;"/>-
-							<input type="text" name="kingdomCount_max" class="form-control number" style="width:70px;"/>
+							<lable class="control-label">更新时间</lable>
+							<input type="text" name="update_time_min" class="form-control date"/>-
+							<input type="text" name="update_time_max" class="form-control date"/>
 						</div>
 						<div class="form-group">
-							<lable class="control-label">关注别人数量</lable>
-							<input type="text" name="focusCount_min" class="form-control number" style="width:70px;"/>-
-							<input type="text" name="focusCount_max" class="form-control number" style="width:70px;"/>
+							<lable class="control-label">创建时间</lable>
+							<input type="text" name="create_time_min" class="form-control date"/>-
+							<input type="text" name="create_time_max" class="form-control date"/>
+						</div>
+					</p>
+					<p>
+						<div class="form-group">
+							<lable class="control-label">阅读数量</lable>
+							<input type="text" name="read_count_dummy_min" class="form-control number" style="width:70px;"/>-
+							<input type="text" name="read_count_dummy_max" class="form-control number" style="width:70px;"/>
 						</div>
 						<div class="form-group">
-							<lable class="control-label">粉丝数量</lable>
-							<input type="text" name="fansCount_min" class="form-control number" style="width:70px;"/>-
-							<input type="text" name="fansCount_max" class="form-control number" style="width:70px;"/>
+							<lable class="control-label">评论数量</lable>
+							<input type="text" name="review_count_min" class="form-control number" style="width:70px;"/>-
+							<input type="text" name="review_count_max" class="form-control number" style="width:70px;"/>
+						</div>
+						<div class="form-group">
+							<lable class="control-label">点赞数量</lable>
+							<input type="text" name="like_count_min" class="form-control number" style="width:70px;"/>-
+							<input type="text" name="like_count_max" class="form-control number" style="width:70px;"/>
+						</div>
+					</p>
+					<p>
+							<div class="form-group">
+							<lable class="control-label">成员数量</lable>
+							<input type="text" name="favorite_count_min" class="form-control number" style="width:70px;"/>-
+							<input type="text" name="favorite_count_max" class="form-control number" style="width:70px;"/>
+						</div>
+							<div class="form-group">
+							<lable class="control-label">更新数量</lable>
+							<input type="text" name="updateCount_min" class="form-control number" style="width:70px;"/>-
+							<input type="text" name="updateCount_max" class="form-control number" style="width:70px;"/>
+						</div>
+							<div class="form-group">
+							<lable class="control-label">图片数量</lable>
+							<input type="text" name="imgCount_min" class="form-control number" style="width:70px;"/>-
+							<input type="text" name="imgCount_max" class="form-control number" style="width:70px;"/>
+						</div>
+					</p>
+					<p>
+							<div class="form-group">
+							<lable class="control-label">音频数量</lable>
+							<input type="text" name="audioCount_min" class="form-control number" style="width:70px;"/>-
+							<input type="text" name="audioCount_max" class="form-control number" style="width:70px;"/>
+						</div>
+							<div class="form-group">
+							<lable class="control-label">视频数量</lable>
+							<input type="text" name="videoCount_min" class="form-control number" style="width:70px;"/>-
+							<input type="text" name="videoCount_max" class="form-control number" style="width:70px;"/>
+						</div>
+							<div class="form-group">
+							<lable class="control-label">文字数量</lable>
+							<input type="text" name="textCount_min" class="form-control number" style="width:70px;"/>-
+							<input type="text" name="textCount_max" class="form-control number" style="width:70px;"/>
 						</div>
 						<div class="form-group">
 							<button type="submit" class="btn btn-primary">
@@ -163,38 +216,52 @@
 	
 	
 	var sourceTable=$('#mytable').DataTable( {
-	    "ajax":"./ajaxLoadUsers",
+	    "ajax":"./ajaxLoadKingdoms",
+	    processing:true,
 	    "columns": [
 			{title:"<button class='btn btn-warning btn-xs'>全/反选</button> ",width:50,orderable:false,render:function(data, type, row, meta){
 				var txt= "<input type='checkbox'/> ";
 				return txt;
 			}},
-	        {data: "userProfile.uid",title: "用户ID",style:"num"},
-	        {data: "userProfile.nickName",title: "用户名",style:"num"},
-	        {data: "userProfile.createTime",title: "注册时间",render:function(data,type,row,meta){
-	        	if(row.userProfile!=null){
-	        		return new Date(row.userProfile.createTime).Format("yyyy-MM-dd hh:mm:ss");
+	        {data: "title",title: "王国名称"},
+	        {data: "updateTime",title: "更新时间",render:function(data,type,row,meta){
+	        	if(data!=null){
+	        		return new Date(data).Format("yyyy-MM-dd hh:mm:ss");
 	        	}
 	        }},
-	        {data: "userProfile.vLv",title: "大V",render:function(data,type,row,meta){
-	        	//console.log(data)
+	        {data: "nickName",title: "用户名"},
+	        {data: "vLv",title: "大V",render:function(data,type,row,meta){
 	        	if(data!=null){
 		        	var map ={0:"否",1:"是"};
 		        	return map[data];
 	        	}
 	        }},
-	        {data: "kingdomCount",title: "发布王国数量",style:"num"},
-	        {data: "focusCount",title: "关注数量",style:"num"},
-	        {data: "fansCount",title: "粉丝数量",style:"num"},
+	        {data: "type",title: "是否聚合",render:function(data,type,row,meta){
+	        	if(data!=null){
+		        	var map ={0:"否",1000:"是"};
+		        	return map[data];
+	        	}
+	        }},
+	        {data: "reviewCount",title: "评论数"},
+	        {data: "readCountDummy",title: "阅读数"},
+	        {data: "likeCount",title: "点赞数"},
+	        {data: "favoriteCount",title: "成员数"},
+	        {data: "updateCount",title: "更新数量"},
+	        {data: "imgCount",title: "图片数量"},
+	        {data: "audioCount",title: "音频数量"},
+	        {data: "videoCount",title: "视频数量"},
+	        {data: "textCount",title: "文字数量"},
+	        {data: "topicId",title: "王国ID"},
 	        {title:"操作",width:60,render:function(data, type, row, meta){
-	        	var txt= "<a href='#stop' title='uid:"+row.userProfile.uid+"' class='btn btn-danger btn-xs btnAdd'>加入</a> ";
+	        	var txt= "<a href='#stop' class='btn btn-danger btn-xs btnAdd'>加入</a> ";
+	        	txt+= "<a href='#stop' target='_blank' class='btn btn-danger btn-xs btnView'>浏览</a>";
 	        	return txt;
 	        }}
 	     ]
 	});
 	$("#search_form").on("submit",function(){
 		var data= $(this).serialize();
-		var url = "./ajaxLoadUsers?"+data;
+		var url = "./ajaxLoadKingdoms?"+data;
 		sourceTable.ajax.url(url).load();
 		return false;
 	})
@@ -211,14 +278,21 @@
 		var tr = $(this).closest("tr");
 		var data =sourceTable.row(tr).data();
 		
-		parent.onAdd([data.userProfile.uid]);
+		parent.onAdd([data.topicId]);
+	})
+	$(document).on("click",".btnView",function(){		// 父窗口添加选中用户。
+		var tr = $(this).closest("tr");
+		var data =sourceTable.row(tr).data();
+		var url ="http://webapp.me-to-me.com/ld/"+data.topicId;
+		window.open(url);
+		return false;
 	})
 	function addBatch(){
 		var dataArr=[]
 		$("#mytable input:checked").each(function(){
 			var tr = $(this).closest("tr");
 			var data =sourceTable.row(tr).data()
-			dataArr.push(data.userProfile.uid);
+			dataArr.push(data.topicId);
 		})
 		parent.onAdd(dataArr);
 	}

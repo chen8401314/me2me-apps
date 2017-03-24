@@ -23,7 +23,7 @@
             <level>debug</level>
         </filter>
     </appender>
-	<logger name="com.me2me" level="info">
+	<logger name="com.me2me" level="debug">
 	 	<appender-ref ref="STDOUT"/>
 	</logger>
 
