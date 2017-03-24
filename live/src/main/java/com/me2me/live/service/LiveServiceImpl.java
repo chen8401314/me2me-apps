@@ -2181,6 +2181,7 @@ public class LiveServiceImpl implements LiveService {
         LiveQRCodeDto liveQRCodeDto = new LiveQRCodeDto();
         try {
             Topic topic = getTopicById(TopicId);
+            liveQRCodeDto.setSummary(topic.getSummary());
             if (StringUtils.isEmpty(topic.getQrcode())) {
                 byte[] image = QRCodeUtil.encode(live_web + TopicId);
                 String key = UUID.randomUUID().toString();
