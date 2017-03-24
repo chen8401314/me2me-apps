@@ -127,18 +127,8 @@ public class UserServiceImpl implements UserService {
         user.setUserName(userSignUpDto.getMobile());
         userMybatisDao.createUser(user);
 
-        //万普
-        if(!StringUtils.isEmpty(userSignUpDto.getParams())) {
-            WapxIosEvent event = new WapxIosEvent();
-            try {
-                WapxParams wapxParams = com.alibaba.dubbo.common.json.JSON.parse(userSignUpDto.getParams(), WapxParams.class);
-                event.setIdfa(wapxParams.getIdfa());
-                event.setUid(user.getUid());
-            } catch (ParseException e) {
-                log.error("params parse error");
-            }
-            applicationEventBus.post(event);
-        }
+        // 第三方推广数据
+        spreadChannelCount(userSignUpDto.getParams(),userSignUpDto.getSpreadChannel(), user);
 
         log.info("user is create");
         UserProfile userProfile = new UserProfile();
@@ -196,6 +186,14 @@ public class UserServiceImpl implements UserService {
         log.info("signUp end ...");
         //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
+    }
+
+    private void spreadChannelCount(String params,int spreadChannel, User user) {
+        if(!StringUtils.isEmpty(params)) {
+            WapxParams wapxParams = JSON.parseObject(params, WapxParams.class);
+            WapxIosEvent event = new WapxIosEvent(wapxParams.getIdfa(),user.getUid(),spreadChannel);
+            applicationEventBus.post(event);
+        }
     }
 
     private void defaultFollow(long uid){
@@ -2035,19 +2033,8 @@ public class UserServiceImpl implements UserService {
         user.setUserName(thirdPartSignUpDto.getThirdPartOpenId());
         userMybatisDao.createUser(user);
         log.info("user is create");
-
-        //万普
-        if(!StringUtils.isEmpty(thirdPartSignUpDto.getParams())) {
-            WapxIosEvent event = new WapxIosEvent();
-            try {
-                WapxParams wapxParams = com.alibaba.dubbo.common.json.JSON.parse(thirdPartSignUpDto.getParams(), WapxParams.class);
-                event.setIdfa(wapxParams.getIdfa());
-                event.setUid(user.getUid());
-            } catch (ParseException e) {
-                log.error("params parse error");
-            }
-            applicationEventBus.post(event);
-        }
+        // 第三方数据统计
+        spreadChannelCount(thirdPartSignUpDto.getParams(),thirdPartSignUpDto.getSpreadChannel(),user);
 
         log.info("get user by username");
         User user1 = userMybatisDao.getUserByUserName(thirdPartSignUpDto.getThirdPartOpenId());

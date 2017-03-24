@@ -14,4 +14,12 @@ public class WapxIosEvent implements BaseEntity {
 
     private long uid;
 
+    private int type;
+
+    public WapxIosEvent(String idfa,long uid,int type){
+        this.idfa = idfa;
+        this.uid = uid;
+        this.type = type;
+    }
+
 }
