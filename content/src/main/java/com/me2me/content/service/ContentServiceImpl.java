@@ -3943,7 +3943,9 @@ private void localJpush(long toUid){
 				bangDanData.setSummary(billBoard.getSummary());
 	            bangDanData.setTitle(billBoard.getName());
 	            bangDanData.setListId(billBoard.getId());
-	            bangDanData.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
+	            if(!StringUtils.isEmpty(billBoard.getImage())){
+	            	bangDanData.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
+	            }
 	            bangDanData.setIsShowName(billBoard.getShowName());
 	            bangDanData.setCoverWidth(billBoard.getImgWidth());
 	            bangDanData.setCoverHeight(billBoard.getImgHeight());
@@ -4049,7 +4051,9 @@ private void localJpush(long toUid){
 		                    		continue;
 		                    	}
 		                        bangDanInnerData.setSubListId(subBillBoard.getId());
-		                        bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + subBillBoard.getImage());
+		                        if(!StringUtils.isEmpty(subBillBoard.getImage())){
+		                        	bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + subBillBoard.getImage());
+		                        }
 		                        bangDanInnerData.setTitle(subBillBoard.getName());
 		                    }
 		                    bangDanData.getSubList().add(bangDanInnerData);
@@ -4192,7 +4196,9 @@ private void localJpush(long toUid){
         billBoardDetailsDto.setSummary(billBoard.getSummary());
         billBoardDetailsDto.setTitle(billBoard.getName());
         billBoardDetailsDto.setListId(billBoard.getId());
-        billBoardDetailsDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
+        if(!StringUtils.isEmpty(billBoard.getImage())){
+        	billBoardDetailsDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
+        }
         billBoardDetailsDto.setCoverWidth(billBoard.getImgWidth());
         billBoardDetailsDto.setCoverHeight(billBoard.getImgHeight());
         billBoardDetailsDto.setBgColor(billBoard.getBgColor());
@@ -4351,7 +4357,9 @@ private void localJpush(long toUid){
                         bangDanInnerData.setIntroduced(userProfile.getIntroduced());
                     }else if(type==3){// 榜单
                         BillBoard bb = contentMybatisDao.loadBillBoardById(targetId);
-                        bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
+                        if(!StringUtils.isEmpty(bb.getImage())){
+                        	bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + bb.getImage());
+                        }
                         bangDanInnerData.setId(bb.getId());
                         bangDanInnerData.setTitle(bb.getName());
                     }
