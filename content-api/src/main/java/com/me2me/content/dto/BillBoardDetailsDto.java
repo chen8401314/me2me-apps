@@ -38,7 +38,7 @@ public class BillBoardDetailsDto implements BaseEntity {
     private List<InnerDetailData> subList = Lists.newArrayList();
 
     @Data
-    public static class InnerDetailData {
+    public static class InnerDetailData implements BaseEntity{
 
     	private int sinceId;
     	

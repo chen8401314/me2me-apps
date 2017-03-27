@@ -3898,12 +3898,15 @@ public class LiveServiceImpl implements LiveService {
             dto.setTopicId(droparound.getTopicid());
             cacheService.sadd("list:user@" + uid, String.valueOf(droparound.getTopicid()));
             TopicFragmentTemplate topicFragmentTemplate = liveMybatisDao.getTopicFragmentTemplate();
-            if (topicFragmentTemplate != null) {
+            if (topicFragmentTemplate != null && StringUtils.isEmpty(topicFragmentTemplate)) {
                 String text = topicFragmentTemplate.getContent();
-                String trackImage = text.substring(text.indexOf("##")+2);
-                String trackContent = text.substring(0,text.indexOf("##"));
-                dto.setTrackContent(trackContent);
-                dto.setTrackImage(Constant.QINIU_DOMAIN+"/"+trackImage);
+                String[] temp = text.split("##");
+                if(null != temp && temp.length > 0){
+                	dto.setTrackContent(temp[0]);
+                	if(temp.length > 1){
+                		dto.setTrackImage(Constant.QINIU_DOMAIN+"/"+temp[1]);
+                	}
+                }
             }
         }
             log.info("setDropaRoundDto is ok");

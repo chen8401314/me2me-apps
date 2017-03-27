@@ -45,7 +45,7 @@ public class BangDanDto implements BaseEntity {
         private List<BangDanInnerData> subList = Lists.newArrayList();
 
         @Data
-        public static class BangDanInnerData {
+        public static class BangDanInnerData implements BaseEntity {
             private long subListId;
 
             private int subType;

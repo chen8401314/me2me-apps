@@ -62,9 +62,11 @@
                                             <label for="exampleInputFile">内容类型</label>
                                             <select name="contenttype" id="contenttype" class="form-control" value="${item.contenttype}">
 												<option value="0">文本</option>
+												<!-- 暂时没有下面的几种类型，等有了再放开
 												<option value="1">图片</option>
 												<option value="2">视频</option>
 												<option value="3">音频</option>
+												 -->
 											</select>
                                         </div>
                                         <div class="form-group">

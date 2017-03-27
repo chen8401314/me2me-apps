@@ -3973,12 +3973,14 @@ private void localJpush(long toUid){
 		                    	bangDanInnerData.setSubListId(billBoard.getId());
 		                    	topic = topicMap.get(String.valueOf(targetId));
 		                    	if(null == topic){
+		                    		log.info("王国[id="+targetId+"]不存在");
 		                    		continue;
 		                    	}
 		                        long uid = (Long)topic.get("uid");
 		                        bangDanInnerData.setUid(uid);
 		                        userProfile = userMap.get(String.valueOf(uid));
 		                        if(null == userProfile){
+		                        	log.info("用户[uid="+uid+"]不存在");
 		                        	continue;
 		                        }
 		                        bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
@@ -4024,6 +4026,7 @@ private void localJpush(long toUid){
 		                        bangDanInnerData.setUid(targetId);
 		                        userProfile = userMap.get(String.valueOf(targetId));
 		                        if(null == userProfile){
+		                        	log.info("用户[uid="+targetId+"]不存在");
 		                        	continue;
 		                        }
 		                        bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
@@ -4172,9 +4175,9 @@ private void localJpush(long toUid){
     	if(null == insertList || insertList.size() == 0 || StringUtils.isEmpty(key)){
     		return;
     	}
-    	
+    	//先删掉原有的
     	contentMybatisDao.deleteBillBoardListByKey(key);
-    	
+    	//再插入新的数据
     	for(BillBoardList bbl : insertList){
     		contentMybatisDao.insertBillBoardList(bbl);
     	}
@@ -4284,12 +4287,14 @@ private void localJpush(long toUid){
                     if(type==1){// 王国
                     	topic = topicMap.get(String.valueOf(targetId));
                     	if(null == topic){
+                    		log.info("王国[id="+targetId+"]不存在");
                     		continue;
                     	}
                         long uid = Long.valueOf(topic.get("uid").toString());
                         bangDanInnerData.setUid(uid);
                         userProfile = userMap.get(String.valueOf(uid));
                         if(null == userProfile){
+                        	log.info("用户[uid="+uid+"]不存在");
                         	continue;
                         }
                         bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
@@ -4495,12 +4500,14 @@ private void localJpush(long toUid){
                 	bangDanInnerData.setSubListId(bid);
                 	topic = topicMap.get(bbl.getTargetId().toString());
                 	if(null == topic){
+                		log.info("王国[id="+bbl.getTargetId()+"]不存在");
                 		continue;
                 	}
                     long uid = (Long)topic.get("uid");
                     bangDanInnerData.setUid(uid);
                     userProfile = userMap.get(String.valueOf(uid));
                     if(null == userProfile){
+                    	log.info("用户[uid="+uid+"]不存在");
                     	continue;
                     }
                     bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
@@ -4546,6 +4553,7 @@ private void localJpush(long toUid){
                     bangDanInnerData.setUid(bbl.getTargetId());
                     userProfile = userMap.get(bbl.getTargetId().toString());
                     if(null == userProfile){
+                    	log.info("用户[uid="+bbl.getTargetId()+"]不存在");
                     	continue;
                     }
                     bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
@@ -4658,12 +4666,14 @@ private void localJpush(long toUid){
                 if(type==1){// 王国
                 	topic = topicMap.get(bbl.getTargetId().toString());
                     if(null == topic){
+                    	log.info("王国[id="+bbl.getTargetId()+"]不存在");
                     	continue;
                     }
                     long uid = Long.valueOf(topic.get("uid").toString());
                     bangDanInnerData.setUid(uid);
                     userProfile = userMap.get(String.valueOf(uid));
                     if(null == userProfile){
+                    	log.info("用户[uid="+uid+"]不存在");
                     	continue;
                     }
                     bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
@@ -4709,6 +4719,7 @@ private void localJpush(long toUid){
                     bangDanInnerData.setUid(bbl.getTargetId());
                     userProfile = userMap.get(bbl.getTargetId().toString());
                     if(null == userProfile){
+                    	log.info("用户[uid="+bbl.getTargetId()+"]不存在");
                     	continue;
                     }
                     bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
