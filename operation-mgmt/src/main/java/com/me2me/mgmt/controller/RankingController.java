@@ -150,7 +150,7 @@ public class RankingController {
 			String val = request.getParameter(name);
 			
 			if(!name.contains("][") && !StringUtils.isEmpty(val)){
-				if(name.equals("userProfile.nickName")){
+				if(name.equals("nick_name")){
 					val =HttpUtils.toUTF8(val);
 					val = "%"+val+"%";
 				}
