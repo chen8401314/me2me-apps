@@ -1844,34 +1844,9 @@ public class UserServiceImpl implements UserService {
         // TODO: 2016/9/12
         LoginSuccessDto loginSuccessDto = new LoginSuccessDto();
         ThirdPartUser users = userMybatisDao.getThirdPartUser(thirdPartSignUpDto.getThirdPartOpenId() ,thirdPartSignUpDto.getThirdPartType());
-//        ThirdPartUser h5Users = userMybatisDao.getThirdPartUser(thirdPartSignUpDto.getUnionId() ,thirdPartSignUpDto.getThirdPartType());
-//
-//        if(users != null) {
-//            //老版本 为1为禁用账户
-//            User oldUser = userMybatisDao.getUserByUid(users.getUid());
-//            if (oldUser != null) {
-//                if (oldUser.getDisableUser() == 1) {
-//                    return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
-//                }
-//            }
-//            //新版
-//            User newUser = userMybatisDao.getUserByUid(users.getUid());
-//            if (newUser != null) {
-//                if (newUser.getDisableUser() == 1) {
-//                    return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
-//                }
-//            }
-//        }else if(h5Users != null){
-//            User user = userMybatisDao.getUserByUid(h5Users.getUid());
-//            if(user != null){
-//                if (user.getDisableUser() == 1) {
-//                    return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
-//                }
-//            }
-//        }
 
         //先判断是否H5微信登陆过 如果登陆过 isClientLogin为1 需要修改昵称
-        if(!StringUtils.isEmpty(thirdPartSignUpDto.getNewNickName())){
+        if(!StringUtils.isEmpty(thirdPartSignUpDto.getNewNickName()) && !StringUtils.isEmpty(thirdPartSignUpDto.getUnionId())){
             List<ThirdPartUser> thirdPartUsers = userMybatisDao.getThirdPartUserByUnionId(thirdPartSignUpDto.getUnionId() ,thirdPartSignUpDto.getThirdPartType());
             if(thirdPartUsers.size()>0 && thirdPartUsers !=null && StringUtils.isEmpty(thirdPartUsers.get(0).getThirdPartOpenId())){
                 long uid = thirdPartUsers.get(0).getUid();
