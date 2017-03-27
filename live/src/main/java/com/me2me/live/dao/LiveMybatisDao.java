@@ -1043,12 +1043,6 @@ public class LiveMybatisDao {
 		
 		params.put("skip", (page.getCurrentPage()-1) * page.getPageSize());
 		params.put("limit", page.getPageSize());
-		if(params.containsKey("title")){
-			params.put("title", "%"+params.get("title")+"%");
-		}
-		if(params.containsKey("nick_name")){
-			params.put("nick_name", "%"+params.get("nick_name")+"%");
-		}
 		long count = topicMapper.countTopicForPage(params);
 		List<SearchTopicDto> topicList = topicMapper.getTopicPage(params);
 		page.setDataList(topicList);

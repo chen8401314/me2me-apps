@@ -2760,15 +2760,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
 	public PageBean<SearchUserDto> searchUserPage(PageBean page, Map<String, Object> queries) {
-		if(queries.containsKey("nick_name")){
-			String nickName = (String) queries.get("nick_name");
-			try {
-				nickName =new String(nickName.getBytes("iso-8859-1"),"utf-8");
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			}
-			queries.put("nick_name", "%"+nickName+"%");
-		}
 		return userMybatisDao.searchUserPage(page,queries);
 	}
 }

@@ -1,12 +1,14 @@
 package com.me2me.user.dto;
 
+import java.io.Serializable;
+
 import com.me2me.user.model.UserProfile;
 /**
  * 用户信息
  * @author zhangjiwei
  * @date Mar 21, 2017
  */
-public class SearchUserDto {
+public class SearchUserDto implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private UserProfile userProfile;
 	private int kingdomCount;
