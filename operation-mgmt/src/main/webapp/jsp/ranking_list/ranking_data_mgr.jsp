@@ -223,10 +223,10 @@
 	var dataTable=$('#dataTable').DataTable( {
 	    "ajax":"./ajaxLoadRankingData?id=${param.id}",
 	    "columns": [
-			{title:"<button class='btn btn-warning btn-xs'>全/反选</button> ",width:50,orderable:false,render:function(data, type, row, meta){
-				var txt= "<input type='checkbox'/> ";
-				return txt;
-			}},
+			//{title:"<button class='btn btn-warning btn-xs'>全/反选</button> ",width:50,orderable:false,render:function(data, type, row, meta){
+			//	var txt= "<input type='checkbox'/> ";
+			//	return txt;
+			//}},
 			<c:if test="${item.type==1}">
 			 	{data: "title",title: "王国名称",render:function(data,type,row,meta){
 		        	if(data!=null){

@@ -11,6 +11,7 @@ $(function() {
 //        cookie: 'dcjq-accordion-1',
         classExpand: 'dcjq-current-parent'
     });
+    $("[required]").prev().append($("<b class='text-danger'>*</b>"));
 });
 
 // right slidebar

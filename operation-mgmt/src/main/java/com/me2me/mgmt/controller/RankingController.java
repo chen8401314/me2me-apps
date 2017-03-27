@@ -1,5 +1,6 @@
 package com.me2me.mgmt.controller;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -147,9 +148,16 @@ public class RankingController {
 		while(nameeum.hasMoreElements()){
 			String name = nameeum.nextElement();
 			String val = request.getParameter(name);
+			
 			if(!name.contains("][") && !StringUtils.isEmpty(val)){
+				if(name.equals("userProfile.nickName")){
+					val =HttpUtils.toUTF8(val);
+					val = "%"+val+"%";
+				}
+				
 				map.put(name, val);
 			}
+			
 		}
 		Map<String,String> colMap = new HashMap<>();
 		colMap.put("userProfile.nickName", "nick_name");
@@ -191,11 +199,12 @@ public class RankingController {
 				map.put(name, val);
 			}
 		}
+		
 		if(map.containsKey("title")){
-			map.put("title", HttpUtils.toUTF8(request.getParameter("title")));
+			map.put("title","%"+HttpUtils.toUTF8(request.getParameter("title")+"%"));
 		}
 		if(map.containsKey("nick_name")){
-			map.put("nick_name", HttpUtils.toUTF8(request.getParameter("nick_name")));
+			map.put("nick_name", "%"+HttpUtils.toUTF8(request.getParameter("nick_name"))+"%");
 		}
 		Map<String,String> colMap = new HashMap<>();
 		colMap.put("reviewCount", "review_count");

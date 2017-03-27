@@ -109,39 +109,41 @@
 	                                        </c:if>
 	                                        <div class="form-group">
 	                                            <label for="exampleInputFile">摘要内容</label>
-	                                            <textarea rows="4" style="width:100%" name="summary" required>${item.summary}</textarea>
+	                                            <textarea rows="4" style="width:100%" name="summary" >${item.summary}</textarea>
 	                                        </div>
                                         </div>
                                         <div class="col-md-6">
                                        		<div class="form-group">
 	                                            <label for="exampleInputFile">背景色</label>
-	                                            <input name="bgColor"  class="form-control" value="${item.bgColor}" required/>
+	                                            <input name="bgColor"  class="form-control" value="${item.bgColor}" />
 	                                        </div>
 	                                        
 	                                        <div class="form-group">
 	                                            <label for="exampleInputFile">背景图</label>
                                                 <div class="fileupload fileupload-new" data-provides="fileupload">
                                                     <div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
+                                                    	<c:if test="${item.image!=null }">
                                                         <img src="http://cdn.me-to-me.com/${item.image}" alt="" />
+                                                        </c:if>
                                                     </div>
                                                     <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
                                                     <div>
                                                         <span class="btn btn-white btn-file">
-                                                            <span class="fileupload-new"><i class="fa fa-paper-clip"></i>Select image</span>
-                                                            <span class="fileupload-exists"><i class="fa fa-undo"></i>Change</span>
+                                                            <span class="fileupload-new"><i class="fa fa-paper-clip"></i>选择上传图片</span>
+                                                            <span class="fileupload-exists"><i class="fa fa-undo"></i>修改</span>
                                                             <input type="file" id="image2" name="image2" class="default">
                                                         </span>
-                                                        <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="fa fa-trash"></i>Remove</a>
+                                                        <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="fa fa-trash"></i>删除</a>
                                                     </div>
                                                 </div>
 	                                        </div>
 	                                        <div class="form-group">
 	                                            <label for="exampleInputFile">宽</label>
-	                                            <input name="imgWidth"  class="form-control" value="${item.imgWidth}" required/>
+	                                            <input name="imgWidth"  class="form-control" value="${item.imgWidth}" />
 	                                        </div>
 	                                        <div class="form-group">
 	                                            <label for="exampleInputFile">高</label>
-	                                            <input name="imgHeight"  class="form-control" value="${item.imgHeight}" required/>
+	                                            <input name="imgHeight"  class="form-control" value="${item.imgHeight}" />
 	                                        </div>
                                         </div>
                                     </div>
@@ -200,6 +202,5 @@
         <script src="${ctx}/js/xheditor-1.2.2.min.js"></script>
         <script src="${ctx}/js/xheditor_lang/zh-cn.js"></script>
         <script src="${ctx}/js/xheditSelf.js"></script>
-    
 </body>
 </html>
