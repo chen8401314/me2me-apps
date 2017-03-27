@@ -418,7 +418,7 @@
 	target_id as targetId,
 	type as type,
 	sort as sort
-    from billboard_relation where source_id=#{sourceId} and sort &gt; #{sinceId} limit 10
+    from billboard_relation where source_id=#{sourceId} and sort &gt; #{sinceId} order by sort asc limit 10
   </select>
 
   <select id="loadBillBoardCover" resultType="long">

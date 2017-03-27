@@ -1031,8 +1031,10 @@ public class LiveMybatisDao {
 	
     public TopicFragmentTemplate getTopicFragmentTemplate(){
         List<TopicFragmentTemplate> list = topicFragmentTemplateMapper.selectByExample(null);
-        Collections.shuffle(list);
-        return list.size() > 0 && list != null ? list.get(0):null;
+        if(null != list && list.size() > 1){
+        	Collections.shuffle(list);
+        }
+        return list != null && list.size() > 0 ? list.get(0):null;
     }
 
     public TopicFragment getFragmentByAT(Map map){

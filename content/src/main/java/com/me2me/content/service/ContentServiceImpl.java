@@ -3943,7 +3943,9 @@ private void localJpush(long toUid){
 				bangDanData.setSummary(billBoard.getSummary());
 	            bangDanData.setTitle(billBoard.getName());
 	            bangDanData.setListId(billBoard.getId());
-	            bangDanData.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
+	            if(!StringUtils.isEmpty(billBoard.getImage())){
+	            	bangDanData.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
+	            }
 	            bangDanData.setIsShowName(billBoard.getShowName());
 	            bangDanData.setCoverWidth(billBoard.getImgWidth());
 	            bangDanData.setCoverHeight(billBoard.getImgHeight());
@@ -3973,12 +3975,14 @@ private void localJpush(long toUid){
 		                    	bangDanInnerData.setSubListId(billBoard.getId());
 		                    	topic = topicMap.get(String.valueOf(targetId));
 		                    	if(null == topic){
+		                    		log.info("王国[id="+targetId+"]不存在");
 		                    		continue;
 		                    	}
 		                        long uid = (Long)topic.get("uid");
 		                        bangDanInnerData.setUid(uid);
 		                        userProfile = userMap.get(String.valueOf(uid));
 		                        if(null == userProfile){
+		                        	log.info("用户[uid="+uid+"]不存在");
 		                        	continue;
 		                        }
 		                        bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
@@ -4024,6 +4028,7 @@ private void localJpush(long toUid){
 		                        bangDanInnerData.setUid(targetId);
 		                        userProfile = userMap.get(String.valueOf(targetId));
 		                        if(null == userProfile){
+		                        	log.info("用户[uid="+targetId+"]不存在");
 		                        	continue;
 		                        }
 		                        bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
@@ -4046,7 +4051,9 @@ private void localJpush(long toUid){
 		                    		continue;
 		                    	}
 		                        bangDanInnerData.setSubListId(subBillBoard.getId());
-		                        bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + subBillBoard.getImage());
+		                        if(!StringUtils.isEmpty(subBillBoard.getImage())){
+		                        	bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + subBillBoard.getImage());
+		                        }
 		                        bangDanInnerData.setTitle(subBillBoard.getName());
 		                    }
 		                    bangDanData.getSubList().add(bangDanInnerData);
@@ -4172,9 +4179,9 @@ private void localJpush(long toUid){
     	if(null == insertList || insertList.size() == 0 || StringUtils.isEmpty(key)){
     		return;
     	}
-    	
+    	//先删掉原有的
     	contentMybatisDao.deleteBillBoardListByKey(key);
-    	
+    	//再插入新的数据
     	for(BillBoardList bbl : insertList){
     		contentMybatisDao.insertBillBoardList(bbl);
     	}
@@ -4189,7 +4196,9 @@ private void localJpush(long toUid){
         billBoardDetailsDto.setSummary(billBoard.getSummary());
         billBoardDetailsDto.setTitle(billBoard.getName());
         billBoardDetailsDto.setListId(billBoard.getId());
-        billBoardDetailsDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
+        if(!StringUtils.isEmpty(billBoard.getImage())){
+        	billBoardDetailsDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
+        }
         billBoardDetailsDto.setCoverWidth(billBoard.getImgWidth());
         billBoardDetailsDto.setCoverHeight(billBoard.getImgHeight());
         billBoardDetailsDto.setBgColor(billBoard.getBgColor());
@@ -4284,12 +4293,14 @@ private void localJpush(long toUid){
                     if(type==1){// 王国
                     	topic = topicMap.get(String.valueOf(targetId));
                     	if(null == topic){
+                    		log.info("王国[id="+targetId+"]不存在");
                     		continue;
                     	}
                         long uid = Long.valueOf(topic.get("uid").toString());
                         bangDanInnerData.setUid(uid);
                         userProfile = userMap.get(String.valueOf(uid));
                         if(null == userProfile){
+                        	log.info("用户[uid="+uid+"]不存在");
                         	continue;
                         }
                         bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
@@ -4346,7 +4357,9 @@ private void localJpush(long toUid){
                         bangDanInnerData.setIntroduced(userProfile.getIntroduced());
                     }else if(type==3){// 榜单
                         BillBoard bb = contentMybatisDao.loadBillBoardById(targetId);
-                        bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + billBoard.getImage());
+                        if(!StringUtils.isEmpty(bb.getImage())){
+                        	bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + bb.getImage());
+                        }
                         bangDanInnerData.setId(bb.getId());
                         bangDanInnerData.setTitle(bb.getName());
                     }
@@ -4495,12 +4508,14 @@ private void localJpush(long toUid){
                 	bangDanInnerData.setSubListId(bid);
                 	topic = topicMap.get(bbl.getTargetId().toString());
                 	if(null == topic){
+                		log.info("王国[id="+bbl.getTargetId()+"]不存在");
                 		continue;
                 	}
                     long uid = (Long)topic.get("uid");
                     bangDanInnerData.setUid(uid);
                     userProfile = userMap.get(String.valueOf(uid));
                     if(null == userProfile){
+                    	log.info("用户[uid="+uid+"]不存在");
                     	continue;
                     }
                     bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
@@ -4546,6 +4561,7 @@ private void localJpush(long toUid){
                     bangDanInnerData.setUid(bbl.getTargetId());
                     userProfile = userMap.get(bbl.getTargetId().toString());
                     if(null == userProfile){
+                    	log.info("用户[uid="+bbl.getTargetId()+"]不存在");
                     	continue;
                     }
                     bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
@@ -4658,12 +4674,14 @@ private void localJpush(long toUid){
                 if(type==1){// 王国
                 	topic = topicMap.get(bbl.getTargetId().toString());
                     if(null == topic){
+                    	log.info("王国[id="+bbl.getTargetId()+"]不存在");
                     	continue;
                     }
                     long uid = Long.valueOf(topic.get("uid").toString());
                     bangDanInnerData.setUid(uid);
                     userProfile = userMap.get(String.valueOf(uid));
                     if(null == userProfile){
+                    	log.info("用户[uid="+uid+"]不存在");
                     	continue;
                     }
                     bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
@@ -4709,6 +4727,7 @@ private void localJpush(long toUid){
                     bangDanInnerData.setUid(bbl.getTargetId());
                     userProfile = userMap.get(bbl.getTargetId().toString());
                     if(null == userProfile){
+                    	log.info("用户[uid="+bbl.getTargetId()+"]不存在");
                     	continue;
                     }
                     bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
