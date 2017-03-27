@@ -18,7 +18,6 @@ import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicUserConfig;
 import com.me2me.sms.service.JPushService;
-import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;

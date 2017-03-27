@@ -261,6 +261,15 @@ public class ContentServiceImpl implements ContentService {
         	}
         }
         
+        //一次性查询所有王国的成员数
+        Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
+        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
+        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
+        	for(Map<String, Object> m : topicFavoriteCountList){
+        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
+        	}
+        }
+        
         UserProfile userProfile = null;
         Map<String, Object> topicUserProfile = null;
 		for (Content content : contents) {
@@ -302,7 +311,7 @@ public class ContentServiceImpl implements ContentService {
 			log.info(" get isFollow success");
 			squareDataElement.setIsFollowed(follow);
 			squareDataElement.setIsFollowMe(followMe);
-			
+			squareDataElement.setFavoriteCount(content.getFavoriteCount()+1);
 			// 如果是直播需要一个直播状态
 			if (content.getType() == Specification.ArticleType.LIVE.index
 					|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index) {
@@ -312,6 +321,12 @@ public class ContentServiceImpl implements ContentService {
             		if(null != topicUserProfile){
             			squareDataElement.setForwardUid((Long)topicUserProfile.get("uid"));
             			squareDataElement.setForwardNickName((String)topicUserProfile.get("nick_name"));
+            		}
+            	}else{
+            		if(null != topicMemberCountMap.get(content.getForwardCid().toString())){
+            			squareDataElement.setFavoriteCount(topicMemberCountMap.get(content.getForwardCid().toString()).intValue());
+            		}else{
+            			squareDataElement.setFavoriteCount(1);
             		}
             	}
 				
@@ -342,7 +357,6 @@ public class ContentServiceImpl implements ContentService {
 			}
 			squareDataElement.setLikeCount(content.getLikeCount());
 			squareDataElement.setPersonCount(content.getPersonCount());
-			squareDataElement.setFavoriteCount(content.getFavoriteCount()+1);
 			squareDataElement.setRights(content.getRights());
 			squareDataElement.setIsLike(isLike(content.getId(), uid));
 			int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
@@ -1073,6 +1087,16 @@ private void localJpush(long toUid){
         		topicMap.put(topicId.toString(), map);
         	}
         }
+        //一次性查询所有王国的成员数
+        Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
+        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
+        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
+        	for(Map<String, Object> m : topicFavoriteCountList){
+        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
+        	}
+        }
+        
+        
         Map<String, Object> topicUserProfile = null;
         for (Content content : contents){
             ShowMyPublishDto.MyPublishElement contentElement = ShowMyPublishDto.createElement();
@@ -1120,6 +1144,7 @@ private void localJpush(long toUid){
                 }
             }
             contentElement.setTag(content.getFeeling());
+            contentElement.setFavoriteCount(content.getFavoriteCount()+1);
             //查询直播状态
             if(content.getType() == Specification.ArticleType.LIVE.index
             		|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index) {
@@ -1129,6 +1154,12 @@ private void localJpush(long toUid){
             		if(null != topicUserProfile){
             			contentElement.setForwardUid((Long)topicUserProfile.get("uid"));
             			contentElement.setForwardNickName((String)topicUserProfile.get("nick_name"));
+            		}
+            	}else{
+            		if(null != topicMemberCountMap.get(content.getForwardCid().toString())){
+            			contentElement.setFavoriteCount(topicMemberCountMap.get(content.getForwardCid().toString()).intValue());
+            		}else{
+            			contentElement.setFavoriteCount(1);
             		}
             	}
             	
@@ -1160,7 +1191,6 @@ private void localJpush(long toUid){
             contentElement.setIsLike(isLike(content.getId(),currentUid));
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setPersonCount(content.getPersonCount());
-            contentElement.setFavoriteCount(content.getFavoriteCount()+1);
             ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
             if(contentImage != null) {
                 contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
@@ -2408,6 +2438,14 @@ private void localJpush(long toUid){
         		topicMap.put(topicId.toString(), map);
         	}
         }
+        //一次性查询所有王国的成员数
+        Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
+        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
+        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
+        	for(Map<String, Object> m : topicFavoriteCountList){
+        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
+        	}
+        }
         
         UserProfile userProfile = null;
         Map<String, Object> topicUserProfile = null;
@@ -2446,6 +2484,7 @@ private void localJpush(long toUid){
             contentElement.setTag(content.getFeeling());
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setContentType(content.getContentType());
+            contentElement.setFavoriteCount(content.getFavoriteCount()+1);
             if(content.getType() == Specification.ArticleType.ORIGIN.index){
                 //获取内容图片数量
                 int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
@@ -2458,6 +2497,12 @@ private void localJpush(long toUid){
             		if(null != topicUserProfile){
             			contentElement.setForwardUid((Long)topicUserProfile.get("uid"));
             			contentElement.setForwardNickName((String)topicUserProfile.get("nick_name"));
+            		}
+            	}else{
+            		if(null != topicMemberCountMap.get(content.getForwardCid().toString())){
+            			contentElement.setFavoriteCount(topicMemberCountMap.get(content.getForwardCid().toString()).intValue());
+            		}else{
+            			contentElement.setFavoriteCount(1);
             		}
             	}
             	
@@ -2488,7 +2533,6 @@ private void localJpush(long toUid){
             contentElement.setIsFollowMe(followMe);
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setPersonCount(content.getPersonCount());
-            contentElement.setFavoriteCount(content.getFavoriteCount()+1);
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
             showNewestDto.getNewestData().add(contentElement);
@@ -2550,6 +2594,14 @@ private void localJpush(long toUid){
         	for(Map<String,Object>  map : topicList){
         		topicId = (Long)map.get("id");
         		topicMap.put(topicId.toString(), map);
+        	}
+        }
+        //一次性查询所有王国的成员数
+        Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
+        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
+        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
+        	for(Map<String, Object> m : topicFavoriteCountList){
+        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
         	}
         }
         
@@ -2615,6 +2667,12 @@ private void localJpush(long toUid){
             		if(null != topicUserProfile){
             			contentElement.setForwardUid((Long)topicUserProfile.get("uid"));
             			contentElement.setForwardNickName((String)topicUserProfile.get("nick_name"));
+            		}
+            	}else{//王国的，需要实际的成员数
+            		if(null != topicMemberCountMap.get(content.getForwardCid().toString())){
+            			contentElement.setFavoriteCount(topicMemberCountMap.get(content.getForwardCid().toString()).intValue());
+            		}else{
+            			contentElement.setFavoriteCount(1);
             		}
             	}
             	
@@ -3407,7 +3465,15 @@ private void localJpush(long toUid){
         		reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
         	}
         }
-		
+        //一次性查询所有王国的成员数
+        Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
+        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
+        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
+        	for(Map<String, Object> m : topicFavoriteCountList){
+        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
+        	}
+        }
+        
         Map<String, Object> topic = null;
         Content topicContent = null;
         UserProfile userProfile = null;
@@ -3511,7 +3577,11 @@ private void localJpush(long toUid){
 					ceKingdomElement.setContentType((Integer)topic.get("type"));
 					ceKingdomElement.setInternalStatus(this.getInternalStatus(topic, uid));
 				}
-				ceKingdomElement.setFavoriteCount(ce.getFavoriteCount()+1);
+				if(null == topicMemberCountMap.get(ce.getForwardCid().toString())){
+					ceKingdomElement.setFavoriteCount(1);//默认只有国王一个成员
+				}else{
+					ceKingdomElement.setFavoriteCount(topicMemberCountMap.get(ce.getForwardCid().toString()).intValue());
+				}
 				if(null != acCountMap.get(ce.getForwardCid().toString())){
 					ceKingdomElement.setAcCount(acCountMap.get(ce.getForwardCid().toString()).intValue());
 				}else{
@@ -3605,7 +3675,11 @@ private void localJpush(long toUid){
 						contentElement.setLastStatus((Integer)lastFragment.get("status"));
 						contentElement.setLastExtra((String)lastFragment.get("extra"));
 					}
-					contentElement.setFavoriteCount(c.getFavoriteCount()+1);
+					if(null == topicMemberCountMap.get(c.getForwardCid().toString())){
+						contentElement.setFavoriteCount(1);//默认只有国王一个成员
+					}else{
+						contentElement.setFavoriteCount(topicMemberCountMap.get(c.getForwardCid().toString()).intValue());
+					}
 					if(null != reviewCountMap.get(c.getForwardCid().toString())){
 						contentElement.setReviewCount(reviewCountMap.get(c.getForwardCid().toString()).intValue());
 		            }else{
@@ -3720,6 +3794,14 @@ private void localJpush(long toUid){
 	        		}
 	        	}
 	        }
+	        //一次性查询所有王国的成员数
+	        Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
+	        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
+	        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
+	        	for(Map<String, Object> m : topicFavoriteCountList){
+	        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
+	        	}
+	        }
 			
 			ShowHotCeKingdomListDTO.HotCeKingdomElement ceKingdomElement = null;
 			ShowHotCeKingdomListDTO.AcTopElement acTopElement = null;
@@ -3766,7 +3848,12 @@ private void localJpush(long toUid){
 					ceKingdomElement.setContentType((Integer)topic.get("type"));
 					ceKingdomElement.setInternalStatus(this.getInternalStatus(topic, uid));
 				}
-				ceKingdomElement.setFavoriteCount(ce.getFavoriteCount()+1);
+				if(null != topicMemberCountMap.get(ce.getForwardCid().toString())){
+					ceKingdomElement.setFavoriteCount(topicMemberCountMap.get(ce.getForwardCid().toString()).intValue());
+				}else{
+					ceKingdomElement.setFavoriteCount(1);
+				}
+				
 				if(null != acCountMap.get(ce.getForwardCid().toString())){
 					ceKingdomElement.setAcCount(acCountMap.get(ce.getForwardCid().toString()).intValue());
 				}else{
@@ -3867,6 +3954,7 @@ private void localJpush(long toUid){
     		Map<String, String> liveFavouriteMap = new HashMap<String, String>();//王国订阅信息
     		Map<String, Content> topicContentMap = new HashMap<String, Content>();//王国内容表信息
     		Map<String, Long> reviewCountMap = new HashMap<String, Long>();//王国评论信息
+    		Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();//王国成员数信息
     		if(topicIdList.size() > 0){
 				List<Map<String, Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
 				if(null != topicList && topicList.size() > 0){
@@ -3895,6 +3983,12 @@ private void localJpush(long toUid){
 		        if(null != tcList && tcList.size() > 0){
 		        	for(Map<String, Object> m : tcList){
 		        		reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
+		        	}
+		        }
+		        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
+		        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
+		        	for(Map<String, Object> m : topicFavoriteCountList){
+		        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
 		        	}
 		        }
 			}
@@ -4015,7 +4109,11 @@ private void localJpush(long toUid){
 		                        bangDanInnerData.setTitle((String)topic.get("title"));
 		                        bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
 		                        bangDanInnerData.setInternalStatus(getInternalStatus(topic,currentUid));
-		                        bangDanInnerData.setFavoriteCount(topicContent.getFavoriteCount()+1);
+		                        if(null != topicMemberCountMap.get(String.valueOf(targetId))){
+		                        	bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(String.valueOf(targetId)).intValue());
+		                        }else{
+		                        	bangDanInnerData.setFavoriteCount(1);
+		                        }
 		                        bangDanInnerData.setReadCount(topicContent.getReadCountDummy());
 		                        bangDanInnerData.setLikeCount(topicContent.getLikeCount());
 		                        if(null != reviewCountMap.get(String.valueOf(targetId))){
@@ -4232,6 +4330,7 @@ private void localJpush(long toUid){
         		Map<String, String> liveFavouriteMap = new HashMap<String, String>();//王国订阅信息
         		Map<String, Content> topicContentMap = new HashMap<String, Content>();//王国内容表信息
         		Map<String, Long> reviewCountMap = new HashMap<String, Long>();//王国评论信息
+        		Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();//王国成员信息
         		if(topicIdList.size() > 0){
     				List<Map<String, Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
     				if(null != topicList && topicList.size() > 0){
@@ -4260,6 +4359,12 @@ private void localJpush(long toUid){
     		        if(null != tcList && tcList.size() > 0){
     		        	for(Map<String, Object> m : tcList){
     		        		reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
+    		        	}
+    		        }
+    		        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
+    		        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
+    		        	for(Map<String, Object> m : topicFavoriteCountList){
+    		        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
     		        	}
     		        }
     			}
@@ -4330,7 +4435,11 @@ private void localJpush(long toUid){
                         bangDanInnerData.setTitle((String)topic.get("title"));
                         bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
                         bangDanInnerData.setInternalStatus(getInternalStatus(topic,currentUid));
-                        bangDanInnerData.setFavoriteCount(topicContent.getFavoriteCount()+1);
+                        if(null != topicMemberCountMap.get(String.valueOf(targetId))){
+                        	bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(String.valueOf(targetId)).intValue());
+                        }else{
+                        	bangDanInnerData.setFavoriteCount(1);
+                        }
                         bangDanInnerData.setReadCount(topicContent.getReadCountDummy());
                         bangDanInnerData.setLikeCount(topicContent.getLikeCount());
                         if(null != reviewCountMap.get(String.valueOf(targetId))){
@@ -4448,6 +4557,7 @@ private void localJpush(long toUid){
     		Map<String, String> liveFavouriteMap = new HashMap<String, String>();
     		Map<String, Content> topicContentMap = new HashMap<String, Content>();
     		Map<String, Long> reviewCountMap = new HashMap<String, Long>();
+    		Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
     		if(topicIdList.size() > 0){
 				List<Map<String, Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
 				if(null != topicList && topicList.size() > 0){
@@ -4476,6 +4586,12 @@ private void localJpush(long toUid){
 		        if(null != tcList && tcList.size() > 0){
 		        	for(Map<String, Object> m : tcList){
 		        		reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
+		        	}
+		        }
+		        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
+		        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
+		        	for(Map<String, Object> m : topicFavoriteCountList){
+		        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
 		        	}
 		        }
 			}
@@ -4548,7 +4664,11 @@ private void localJpush(long toUid){
                     bangDanInnerData.setTitle((String)topic.get("title"));
                     bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.get("live_image").toString());
                     bangDanInnerData.setInternalStatus(getInternalStatus(topic,currentUid));
-                    bangDanInnerData.setFavoriteCount(topicContent.getFavoriteCount()+1);
+                    if(null != topicMemberCountMap.get(bbl.getTargetId().toString())){
+                    	bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(bbl.getTargetId().toString()).intValue());
+                    }else{
+                    	bangDanInnerData.setFavoriteCount(1);
+                    }
                     bangDanInnerData.setReadCount(topicContent.getReadCountDummy());
                     bangDanInnerData.setLikeCount(topicContent.getLikeCount());
                     if(null != reviewCountMap.get(bbl.getTargetId().toString())){
@@ -4614,6 +4734,7 @@ private void localJpush(long toUid){
     		Map<String, String> liveFavouriteMap = new HashMap<String, String>();
     		Map<String, Content> topicContentMap = new HashMap<String, Content>();
     		Map<String, Long> reviewCountMap = new HashMap<String, Long>();
+    		Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
     		if(topicIdList.size() > 0){
 				List<Map<String, Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
 				if(null != topicList && topicList.size() > 0){
@@ -4642,6 +4763,12 @@ private void localJpush(long toUid){
 		        if(null != tcList && tcList.size() > 0){
 		        	for(Map<String, Object> m : tcList){
 		        		reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
+		        	}
+		        }
+		        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
+		        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
+		        	for(Map<String, Object> m : topicFavoriteCountList){
+		        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
 		        	}
 		        }
 			}
@@ -4714,7 +4841,11 @@ private void localJpush(long toUid){
                     bangDanInnerData.setTitle((String)topic.get("title"));
                     bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
                     bangDanInnerData.setInternalStatus(getInternalStatus(topic,currentUid));
-                    bangDanInnerData.setFavoriteCount(topicContent.getFavoriteCount()+1);
+                    if(null != topicMemberCountMap.get(bbl.getTargetId().toString())){
+                    	bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(bbl.getTargetId().toString()).intValue());
+                    }else{
+                    	bangDanInnerData.setFavoriteCount(1);
+                    }
                     bangDanInnerData.setReadCount(topicContent.getReadCountDummy());
                     bangDanInnerData.setLikeCount(topicContent.getLikeCount());
                     if(null != reviewCountMap.get(bbl.getTargetId().toString())){

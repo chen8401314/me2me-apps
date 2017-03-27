@@ -553,7 +553,7 @@ public class LiveLocalJdbcDao {
 		StringBuilder sb = new StringBuilder();
 		sb.append("select p.* from topic_fragment p, (");
 		sb.append("select f.topic_id, max(f.id) as fid from topic_fragment f ");
-		sb.append("where f.status=1 and f.topic_id in (");
+		sb.append("where f.status=1 and f.type!=1000 and f.topic_id in (");
 		for(int i=0;i<topicIds.size();i++){
 			if(i>0){
 				sb.append(",");
@@ -579,4 +579,21 @@ public class LiveLocalJdbcDao {
     	return jdbcTemplate.queryForList(sb.toString());
     }
 
+	public List<Map<String, Object>> getTopicFavoriteCount(List<Long> topicIdList){
+    	if(null == topicIdList || topicIdList.size() == 0){
+    		return null;
+    	}
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select f.topic_id,count(1) cc from live_favorite f");
+    	sb.append(" where f.topic_id in (");
+    	for(int i=0;i<topicIdList.size();i++){
+    		if(i>0){
+    			sb.append(",");
+    		}
+    		sb.append(topicIdList.get(i));
+    	}
+    	sb.append(") group by f.topic_id");
+    	
+    	return jdbcTemplate.queryForList(sb.toString());
+    }
 }

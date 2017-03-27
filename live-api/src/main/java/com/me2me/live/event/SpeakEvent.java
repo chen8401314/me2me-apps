@@ -1,6 +1,5 @@
 package com.me2me.live.event;
 
-import com.alibaba.fastjson.JSONArray;
 import com.me2me.common.web.BaseEntity;
 import lombok.Data;
 
