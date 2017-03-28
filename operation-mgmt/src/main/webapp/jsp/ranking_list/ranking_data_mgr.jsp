@@ -219,7 +219,7 @@
         }
 	} );
 
-	
+	var maxSortNum= 0;
 	var dataTable=$('#dataTable').DataTable( {
 	    "ajax":"./ajaxLoadRankingData?id=${param.id}",
 	    "columns": [
@@ -267,7 +267,13 @@
 	        }}
 	        </c:if>
 	     ]
-	});
+	}).on('xhr.dt', function ( e, settings, json, xhr ) {		// 获取最大order值。
+        for ( var i=0 ; i<json.data.length ; i++ ) {
+        	if(json.data[i].sort>maxSortNum){
+        		maxSortNum=json.data[i].sort;
+        	}
+        }
+    });
 	$(document).on("click",".del",function(){
 		var tr=$(this).closest("tr");
 		var data =dataTable.row(tr).data();
@@ -309,7 +315,7 @@
 			}
 		})
 	})
-	var sort= 0;
+	
 	// 子窗口添加数据
 	function onAdd(dataArr){
 		var objs=[];		
@@ -318,7 +324,7 @@
 			objs.push({
 				sourceId:${param.id},
 				targetId:item,
-				sort:++sort,
+				sort:++maxSortNum,
 				type:${item.type}
 			})
 		}		
