@@ -78,6 +78,7 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         WHITE_LIST.add("/api/activity/getlightboxInfo");
         WHITE_LIST.add("/api/user/IOSWapxUserRegist");
         WHITE_LIST.add("/api/spread/check");
+        WHITE_LIST.add("/api/spread/click");
 
 
         INTERNAL_WHITE_LIST.add("/api/console/showContents");
@@ -94,6 +95,7 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         INTERNAL_WHITE_LIST.add("/api/console/kingTopic");
         INTERNAL_WHITE_LIST.add("/api/user/IOSWapxUserRegist");
         INTERNAL_WHITE_LIST.add("/api/spread/check");
+        INTERNAL_WHITE_LIST.add("/api/spread/click");
 
 
         TRUST_REQUEST_LIST.add("/api/user/getSpecialUserProfile");

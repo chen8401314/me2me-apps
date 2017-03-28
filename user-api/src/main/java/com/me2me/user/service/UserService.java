@@ -331,6 +331,8 @@ public interface UserService {
 
     int spreadCheckUnique(int spreadChannel,String idfa);
 
+    Response click(int type ,DaoDaoDto daoDaoDto);
+
     /**
      * 搜索用户，供管理后台使用。
      * @author zhangjiwei

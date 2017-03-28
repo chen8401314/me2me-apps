@@ -35,4 +35,6 @@ public interface FileTransferService {
 
     boolean IosWapxActivate(String callbackUrl);
 
+    int DaodaoActivate(String callbackUrl);
+
 }

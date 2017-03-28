@@ -1,6 +1,5 @@
 package com.me2me.user.service;
 
-import com.alibaba.dubbo.common.json.ParseException;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -41,7 +40,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.io.UnsupportedEncodingException;
 import java.util.*;
 
 /**
@@ -2685,7 +2683,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ResponseWapx iosWapxUserRegist(WapxIosDto dto) {
-        IosWapx iosWapx = userMybatisDao.getWapxByIdfa(dto.getIdfa());
+        IosWapx iosWapx = userMybatisDao.getWapxByIdfa(dto.getIdfa() ,0);
         IosWapx wapx = new IosWapx();
         BeanUtils.copyProperties(dto ,wapx);
         if(iosWapx != null){
@@ -2731,6 +2729,26 @@ public class UserServiceImpl implements UserService {
     @Override
     public int spreadCheckUnique(int spreadChannel, String idfa) {
         return userMybatisDao.spreadIdfaExists(spreadChannel,idfa)?1:0;
+    }
+
+    @Override
+    public Response click(int type, DaoDaoDto daoDaoDto) {
+        IosWapx iosWapx = userMybatisDao.getWapxByIdfa(daoDaoDto.getIdfa() ,type);
+        if(iosWapx == null){
+            IosWapx daodao = new IosWapx();
+            daodao.setChannelTyp(type);
+            daodao.setApp(String.valueOf(daoDaoDto.getAppid()));
+            daodao.setCallbackurl(daoDaoDto.getCallback());
+            daodao.setIp(daoDaoDto.getIp());
+            daodao.setIdfa(daoDaoDto.getIdfa());
+            daodao.setStatus(0);
+            daodao.setUid(0l);
+            userMybatisDao.createWapx(daodao);
+            log.info("create daodao success");
+        }else {
+            return Response.failure("数据已存在");
+        }
+        return Response.success();
     }
 
     @Override

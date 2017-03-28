@@ -973,11 +973,24 @@ public class UserMybatisDao {
         iosWapxMapper.insert(iosWapx);
     }
 
-    public IosWapx getWapxByIdfa(String idfa){
+//    public IosWapx getWapxByIdfa(String idfa){
+//        IosWapxExample example = new IosWapxExample();
+//        example.createCriteria().andIdfaEqualTo(idfa);
+//        List<IosWapx> list = iosWapxMapper.selectByExample(example);
+//        return list.size()>0&&list!=null?list.get(0):null;
+//    }
+
+    public IosWapx getWapxByIdfa(String idfa ,int type){
         IosWapxExample example = new IosWapxExample();
-        example.createCriteria().andIdfaEqualTo(idfa);
+        example.createCriteria().andIdfaEqualTo(idfa).andChannelTypEqualTo(type);
         List<IosWapx> list = iosWapxMapper.selectByExample(example);
         return list.size()>0&&list!=null?list.get(0):null;
+    }
+
+    public List<IosWapx> getWapxByIdfaList(String idfa){
+        IosWapxExample example = new IosWapxExample();
+        example.createCriteria().andIdfaEqualTo(idfa);
+        return iosWapxMapper.selectByExample(example);
     }
 
     public void updateWapx(IosWapx iosWapx){

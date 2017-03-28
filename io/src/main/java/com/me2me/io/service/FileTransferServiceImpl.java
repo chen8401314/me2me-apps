@@ -152,6 +152,22 @@ public class FileTransferServiceImpl implements FileTransferService{
         return b;
     }
 
+    @Override
+    public int DaodaoActivate(String callbackUrl) {
+        String json = HttpUtil.get(callbackUrl);
+        JSONObject jsonObject = null;
+        //默认激活失败-1
+        int code = -1;
+        try {
+            jsonObject = new JSONObject(json);
+            code = jsonObject.getInt("code");
+        } catch (JSONException e) {
+            log.error(e.getMessage());
+        }
+        return code;
+    }
+
+
     //获取上传七牛后的图片key
     private String getQNImageKey(String headimgurl) throws Exception {
         URL url = new URL(headimgurl);

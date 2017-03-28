@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Author: 马秀成
@@ -42,20 +43,38 @@ public class WapxIosListener {
 
     @Subscribe
     public void wapxIOS(WapxIosEvent event){
-        IosWapx iosWapx = userMybatisDao.getWapxByIdfa(event.getIdfa());
-        if(iosWapx != null){
-            long hours = DateUtil.getHoursBetween2Date(new Date() ,iosWapx.getUpdateTime());
-            //控制在一小时
-            if(iosWapx.getStatus() == 0 && hours <= 1){
-                //去激活
-                boolean b = fileTransferService.IosWapxActivate(iosWapx.getCallbackurl());
-                if(b){
-                    iosWapx.setStatus(1);
-                    iosWapx.setUid(event.getUid());
-                    userMybatisDao.updateWapx(iosWapx);
-                    log.info("update wapx success");
-                }else {
-                    log.info("update wapx failure success:false");
+        List<IosWapx> iosWapx = userMybatisDao.getWapxByIdfaList(event.getIdfa());
+        for(IosWapx iosWapxList : iosWapx) {
+            if (iosWapx.size() > 0 && iosWapx != null) {
+                if(iosWapxList.getChannelTyp() == 0) {
+                    long hours = DateUtil.getHoursBetween2Date(new Date(), iosWapxList.getUpdateTime());
+                    //控制在一小时
+                    if (iosWapxList.getStatus() == 0 && hours <= 1) {
+                        //去激活
+                        boolean b = fileTransferService.IosWapxActivate(iosWapxList.getCallbackurl());
+                        if (b) {
+                            iosWapxList.setStatus(1);
+                            iosWapxList.setUid(event.getUid());
+                            userMybatisDao.updateWapx(iosWapxList);
+                            log.info("update wapx success");
+                        } else {
+                            log.info("update wapx failure success:false");
+                        }
+                    }
+                }else if (iosWapxList.getChannelTyp() == 1){
+                    long hours = DateUtil.getHoursBetween2Date(new Date(), iosWapxList.getUpdateTime());
+                    //控制在一小时
+                    if (iosWapxList.getStatus() == 0 && hours <= 1) {
+                        int code = fileTransferService.DaodaoActivate(iosWapxList.getCallbackurl());
+                        if(code == 0){
+                            iosWapxList.setStatus(1);
+                            iosWapxList.setUid(event.getUid());
+                            userMybatisDao.updateWapx(iosWapxList);
+                            log.info("update daodao success");
+                        }else {
+                            log.info("activation daodao failure");
+                        }
+                    }
                 }
             }
         }
