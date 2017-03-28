@@ -970,7 +970,7 @@ public class UserMybatisDao {
     }
 
     public void createWapx(IosWapx iosWapx){
-        iosWapxMapper.insert(iosWapx);
+        iosWapxMapper.insertSelective(iosWapx);
     }
 
 //    public IosWapx getWapxByIdfa(String idfa){
