@@ -87,17 +87,18 @@ public class RemindAndJpushAtMessageListener {
 	            jsonObject.addProperty("AtUid",speakDto.getUid());
 	            jsonObject.addProperty("NickName",userProfile.getNickName());
 	            String alias = String.valueOf(atUid);
-	            jPushService.payloadByIdExtra(alias, userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
+	            jPushService.payloadByIdExtra(alias, topic.getTitle()+" "+userProfile.getNickName() + "@了你 "+event.getSpeakDto().getFragment(), JPushUtils.packageExtra(jsonObject));
             }
         }
         log.info("remindAndPush end");
 	}
 	
+	//at的这里更改了逻辑，不受推送开关控制
 	private boolean checkTopicPush(long topicId, long uid){
-    	TopicUserConfig tuc = liveMybatisDao.getTopicUserConfig(uid, topicId);
-    	if(null != tuc && tuc.getPushType().intValue() == 1){
-    		return false;
-    	}
+//    	TopicUserConfig tuc = liveMybatisDao.getTopicUserConfig(uid, topicId);
+//    	if(null != tuc && tuc.getPushType().intValue() == 1){
+//    		return false;
+//    	}
     	return true;
     }
 	

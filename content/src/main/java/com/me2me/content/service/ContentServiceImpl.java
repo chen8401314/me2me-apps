@@ -4290,6 +4290,10 @@ private void localJpush(long toUid){
 	    BillBoardDetailsDto billBoardDetailsDto = new BillBoardDetailsDto();
 
 	    BillBoard billBoard = contentMybatisDao.loadBillBoardById(bid);
+	    if(null == billBoard){
+	    	return Response.failure(ResponseStatus.DATA_DOES_NOT_EXIST.status, ResponseStatus.DATA_DOES_NOT_EXIST.message);
+	    }
+	    
 	    // 加载榜单基本信息
         billBoardDetailsDto.setSummary(billBoard.getSummary());
         billBoardDetailsDto.setTitle(billBoard.getName());

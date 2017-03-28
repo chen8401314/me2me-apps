@@ -30,6 +30,7 @@ import com.me2me.live.cache.MyLivesStatusModel;
 import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.event.AggregationPublishEvent;
+import com.me2me.live.event.SpeakNewEvent;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicAggregation;
@@ -105,6 +106,7 @@ public class AggregationPublishListener {
 			
 			Topic subTopic = null;
 			String only = null;
+			SpeakNewEvent speakNewEvent = null;
 			for(TopicAggregation ta : taList){
 				subTopic = liveMybatisDao.getTopicById(ta.getSubTopicId());
 				if(null != subTopic){//有可能已经被删除掉了
@@ -130,54 +132,14 @@ public class AggregationPublishListener {
                         String value = lastFragmentId + "," + total;
                         cacheService.hSet(LiveServiceImpl.TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + subTopic.getId(), value);
 						
-						//红点&&推送
-                        //当核心圈发言，需要通知所有订阅者
-                        MySubscribeCacheModel cacheModel= null;
-                        //非国王发言，提醒国王红点
-            	    	if(subTopic.getUid().longValue() != event.getUid()){
-            	            cacheModel = new MySubscribeCacheModel(subTopic.getUid(), String.valueOf(subTopic.getId()), "1");
-            	            cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-            	        }
-            	    	
-            	    	LiveLastUpdate liveLastUpdate = new LiveLastUpdate(subTopic.getId(),"1");
-            	        
-            	    	boolean isInvalid = true;//1小时缓存是否已失效
-            	    	if(!StringUtils.isEmpty(cacheService.hGet(liveLastUpdate.getKey(),liveLastUpdate.getField()))){
-            	        	isInvalid = false;
-            	        }
-            	    	//已失效的重新设置缓存时间
-            	        if(isInvalid) {
-            	            log.info("set cache timeout");
-            	            cacheService.hSet(liveLastUpdate.getKey(), liveLastUpdate.getField(), liveLastUpdate.getValue());
-            	            cacheService.expire(liveLastUpdate.getKey(), 3600);
-            	        }
-            			
-            			List<LiveFavorite> liveFavorites = liveMybatisDao.getFavoriteAll(subTopic.getId());
-            			if(null != liveFavorites && liveFavorites.size() > 0){
-            				for(LiveFavorite liveFavorite : liveFavorites){
-            					if(liveFavorite.getUid().longValue() != event.getUid()) {
-            						//一级菜单红点
-            						MyLivesStatusModel livesStatusModel = new MyLivesStatusModel(liveFavorite.getUid(),"1");
-            			            cacheService.hSet(livesStatusModel.getKey(),livesStatusModel.getField(),"1");
-            			            //王国列表的单个王国上红点
-            						cacheModel = new MySubscribeCacheModel(liveFavorite.getUid(), liveFavorite.getTopicId().toString(), "1");
-            						cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-            						
-            						//推送
-            						if(isInvalid && this.checkTopicPush(liveFavorite.getTopicId(), liveFavorite.getUid())){
-            							JsonObject jsonObject = new JsonObject();
-            			                jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
-            			                jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
-            			                jsonObject.addProperty("topicId",subTopic.getId());
-            			                jsonObject.addProperty("contentType", subTopic.getType());
-            			                jsonObject.addProperty("internalStatus", this.getInternalStatus(subTopic, liveFavorite.getUid()));
-            			                jsonObject.addProperty("fromInternalStatus", Specification.SnsCircle.CORE.index);//主播发言的，都是核心圈
-            			                String alias = String.valueOf(liveFavorite.getUid());
-            			                userService.pushWithExtra(alias,  "『"+subTopic.getTitle() + "』有更新", JPushUtils.packageExtra(jsonObject));
-            						}
-            					}
-            				}
-            			}
+                        speakNewEvent = new SpeakNewEvent();
+                        speakNewEvent.setTopicId(subTopic.getId());
+                    	speakNewEvent.setType(newtf.getType());
+                    	speakNewEvent.setContentType(newtf.getContentType());
+                    	speakNewEvent.setUid(event.getUid());
+                    	speakNewEvent.setFragmentId(lastFragmentId);
+                    	speakNewEvent.setFragmentContent(newtf.getFragment());
+                        applicationEventBus.post(speakNewEvent);
 					}
 				}
 			}

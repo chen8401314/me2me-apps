@@ -35,6 +35,7 @@ import com.me2me.live.event.CacheLiveEvent;
 import com.me2me.live.event.CoreAggregationRemindEvent;
 import com.me2me.live.event.RemindAndJpushAtMessageEvent;
 import com.me2me.live.event.SpeakEvent;
+import com.me2me.live.event.SpeakNewEvent;
 import com.me2me.live.event.TopicNoticeEvent;
 import com.me2me.live.model.*;
 import com.me2me.sms.service.JPushService;
@@ -493,24 +494,6 @@ public class LiveServiceImpl implements LiveService {
 	@Override
     public Response speak(SpeakDto speakDto) {
         log.info("speak start ...");
-        SpeakEvent speakEvent = new SpeakEvent();
-        //如果是主播发言更新cache
-        if (speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index||speakDto.getType()==Specification.LiveSpeakType.AT_CORE_CIRCLE.index||speakDto.getType()==Specification.LiveSpeakType.ANCHOR_AT.index||speakDto.getType()==Specification.LiveSpeakType.FANS.index||speakDto.getType()==Specification.LiveSpeakType.AT.index) {
-            speakEvent.setTopicId(speakDto.getTopicId());
-            speakEvent.setType(speakDto.getType());
-            speakEvent.setUid(speakDto.getUid());
-            String atUids = "";
-            if(speakDto.getAtUid()==-1){
-                JSONObject fragment = JSON.parseObject(speakDto.getFragment());
-                if(fragment!=null){
-                    JSONArray array = fragment.containsKey("atArray")?fragment.getJSONArray("atArray"):null;
-                    atUids = array.toJSONString().replaceAll("[\\[|\\]]",",");
-                }
-            }else{
-               atUids =CommonUtils.wrapString(speakDto.getAtUid(),",");
-            }
-            speakEvent.setAtUids(atUids);
-        }
         if (speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {
             TopicFragment topicFragment = new TopicFragment();
             topicFragment.setFragmentImage(speakDto.getFragmentImage());
@@ -545,8 +528,15 @@ public class LiveServiceImpl implements LiveService {
             log.info("updateTopic updateTime");
 
             long fid = topicFragment.getId();
-            speakEvent.setFragmentId(fid);
-            applicationEventBus.post(speakEvent);
+            
+            SpeakNewEvent speakNewEvent = new SpeakNewEvent();
+            speakNewEvent.setTopicId(speakDto.getTopicId());
+        	speakNewEvent.setType(speakDto.getType());
+        	speakNewEvent.setContentType(speakDto.getContentType());
+        	speakNewEvent.setUid(speakDto.getUid());
+        	speakNewEvent.setFragmentId(fid);
+        	speakNewEvent.setFragmentContent(speakDto.getFragment());
+            applicationEventBus.post(speakNewEvent);
             //--add update kingdom cache -- modify by zcl -- begin --
             //此处暂不考虑原子操作
             int total = liveMybatisDao.countFragmentByTopicId(speakDto.getTopicId());
@@ -2756,6 +2746,15 @@ public class LiveServiceImpl implements LiveService {
 					int total = liveMybatisDao.countFragmentByTopicId(topic.getId());
 					String value = lastFragmentId + "," + total;
 					cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
+					
+					SpeakNewEvent speakNewEvent = new SpeakNewEvent();
+                    speakNewEvent.setTopicId(topicFragment.getTopicId());
+                	speakNewEvent.setType(topicFragment.getType());
+                	speakNewEvent.setContentType(topicFragment.getContentType());
+                	speakNewEvent.setUid(topicFragment.getUid());
+                	speakNewEvent.setFragmentId(lastFragmentId);
+                	speakNewEvent.setFragmentContent(topicFragment.getFragment());
+                    applicationEventBus.post(speakNewEvent);
 				}
 
 				return Response.success();
@@ -3647,6 +3646,14 @@ public class LiveServiceImpl implements LiveService {
         String ceValue = ceLastFragmentId + "," + ceTotal;
         cacheService.hSet(LiveServiceImpl.TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + ceTopic.getId(), ceValue);
     	
+        SpeakNewEvent speakNewEvent = new SpeakNewEvent();
+        speakNewEvent.setTopicId(ceFragment.getTopicId());
+    	speakNewEvent.setType(ceFragment.getType());
+    	speakNewEvent.setContentType(ceFragment.getContentType());
+    	speakNewEvent.setUid(ceFragment.getUid());
+    	speakNewEvent.setFragmentId(ceLastFragmentId);
+    	speakNewEvent.setFragmentContent(ceFragment.getFragment());
+        applicationEventBus.post(speakNewEvent);
         
         //2在子王国里插入
         String acFragmentContent = "本王国已加入聚合王国"+ceTopic.getTitle();
@@ -3694,6 +3701,15 @@ public class LiveServiceImpl implements LiveService {
         int acTotal = liveMybatisDao.countFragmentByTopicId(acTopic.getId());
         String acValue = acLastFragmentId + "," + acTotal;
         cacheService.hSet(LiveServiceImpl.TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + acTopic.getId(), acValue);
+        
+        speakNewEvent = new SpeakNewEvent();
+        speakNewEvent.setTopicId(acFragment.getTopicId());
+    	speakNewEvent.setType(acFragment.getType());
+    	speakNewEvent.setContentType(acFragment.getContentType());
+    	speakNewEvent.setUid(acFragment.getUid());
+    	speakNewEvent.setFragmentId(acLastFragmentId);
+    	speakNewEvent.setFragmentContent(acFragment.getFragment());
+        applicationEventBus.post(speakNewEvent);
     }
     
     @Override
@@ -3769,12 +3785,10 @@ public class LiveServiceImpl implements LiveService {
 		newtf.setExtra(obj.toJSONString());
 		liveMybatisDao.createTopicFragment(newtf);
 		
-//		if(isCoreUser){//如果是核心圈的发言，则需要更新评论缓存
-			Calendar calendar = Calendar.getInstance();
-			targetTopic.setUpdateTime(calendar.getTime());
-			targetTopic.setLongTime(calendar.getTimeInMillis());
-            liveMybatisDao.updateTopic(targetTopic);
-//		}
+		Calendar calendar = Calendar.getInstance();
+		targetTopic.setUpdateTime(calendar.getTime());
+		targetTopic.setLongTime(calendar.getTimeInMillis());
+        liveMybatisDao.updateTopic(targetTopic);
 		
 		//更新缓存
 		long lastFragmentId = newtf.getId();
@@ -3782,9 +3796,14 @@ public class LiveServiceImpl implements LiveService {
         String value = lastFragmentId + "," + total;
         cacheService.hSet(LiveServiceImpl.TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + targetTopicId, value);
     	
-        //推送&&红点等设置
-        TopicNoticeEvent event = new TopicNoticeEvent(uid, targetTopicId);
-        this.applicationEventBus.post(event);
+        SpeakNewEvent speakNewEvent = new SpeakNewEvent();
+        speakNewEvent.setTopicId(targetTopicId);
+    	speakNewEvent.setType(newtf.getType());
+    	speakNewEvent.setContentType(newtf.getContentType());
+    	speakNewEvent.setUid(uid);
+    	speakNewEvent.setFragmentId(lastFragmentId);
+    	speakNewEvent.setFragmentContent(newtf.getFragment());
+        applicationEventBus.post(speakNewEvent);
         
     	return Response.success(200, "转发成功");
     }

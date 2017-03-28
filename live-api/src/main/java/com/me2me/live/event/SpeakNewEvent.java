@@ -10,6 +10,8 @@ public class SpeakNewEvent implements BaseEntity {
 
 	private long topicId = 0;
     private int type = 0;
+    private int contentType = 0;
+    private String fragmentContent;
     private long uid = 0;
     private long atUid = 0;
     private long fragmentId = 0;
