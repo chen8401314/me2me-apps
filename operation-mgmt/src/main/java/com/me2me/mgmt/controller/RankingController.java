@@ -8,6 +8,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -201,10 +203,14 @@ public class RankingController {
 		}
 		
 		if(map.containsKey("title")){
+		
 			map.put("title","%"+HttpUtils.toUTF8(request.getParameter("title")+"%"));
 		}
 		if(map.containsKey("nick_name")){
-			map.put("nick_name", "%"+HttpUtils.toUTF8(request.getParameter("nick_name"))+"%");
+			String nickName =request.getParameter("nick_name");
+			String nickNameTranslated= HttpUtils.toUTF8(nickName);
+			map.put("nick_name", "%"+nickNameTranslated+"%");
+			
 		}
 		Map<String,String> colMap = new HashMap<>();
 		colMap.put("reviewCount", "review_count");
