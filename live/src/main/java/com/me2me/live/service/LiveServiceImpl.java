@@ -1275,8 +1275,12 @@ public class LiveServiceImpl implements LiveService {
     private void processCache(long uid, Topic topic, ShowTopicListDto.ShowTopicElement showTopicElement) {
         MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(uid, topic.getId() + "", "0");
         String isUpdate = cacheService.hGet(cacheModel.getKey(), topic.getId() + "");
+        showTopicElement.setIsUpdate(0);
         if (!StringUtils.isEmpty(isUpdate)) {
-            showTopicElement.setIsUpdate(Integer.parseInt(isUpdate));
+        	int update = Integer.parseInt(isUpdate);
+        	if(update > 0){
+        		showTopicElement.setIsUpdate(1);
+        	}
         }
     }
 
