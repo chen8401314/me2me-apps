@@ -1137,12 +1137,9 @@ public class LiveServiceImpl implements LiveService {
             }
         }
         //一次性查询所有王国的成员数
-        Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
-        List<Map<String, Object>> topicFavoriteCountList = liveLocalJdbcDao.getTopicFavoriteCount(tidList);
-        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
-        	for(Map<String, Object> m : topicFavoriteCountList){
-        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
-        	}
+        Map<String, Long> topicMemberCountMap = liveLocalJdbcDao.getTopicMembersCount(tidList);
+        if(null == topicMemberCountMap){
+        	topicMemberCountMap = new HashMap<String, Long>();
         }
 
         UserProfile userProfile = null;
@@ -2884,12 +2881,9 @@ public class LiveServiceImpl implements LiveService {
         	}
         }
         //一次性查询所有王国的成员数
-        Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
-        List<Map<String, Object>> topicFavoriteCountList = liveLocalJdbcDao.getTopicFavoriteCount(tidList);
-        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
-        	for(Map<String, Object> m : topicFavoriteCountList){
-        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
-        	}
+        Map<String, Long> topicMemberCountMap = liveLocalJdbcDao.getTopicMembersCount(tidList);
+        if(null == topicMemberCountMap){
+        	topicMemberCountMap = new HashMap<String, Long>();
         }
         
         UserProfile userProfile = null;

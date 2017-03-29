@@ -197,7 +197,7 @@ public class SpeakNewListener {
 			            jsonObject.addProperty("contentType", topic.getType());
 			            jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//这里是给核心圈的通知，所以直接显示核心圈即可
 			            String alias = String.valueOf(uid);
-			            userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
+//			            userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
 					}
 				}
 			}
@@ -212,7 +212,7 @@ public class SpeakNewListener {
 			            jsonObject.addProperty("contentType", topic.getType());
 			            jsonObject.addProperty("internalStatus", Specification.SnsCircle.OUT.index);//圈外人
 			            String alias = String.valueOf(uid);
-			            userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
+//			            userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
 					}
 				}
 			}
@@ -232,7 +232,7 @@ public class SpeakNewListener {
 			            	jsonObject.addProperty("internalStatus", Specification.SnsCircle.OUT.index);//圈外人
 			            }
 			            String alias = String.valueOf(uid);
-			            userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
+//			            userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
 					}
 				}
 			}

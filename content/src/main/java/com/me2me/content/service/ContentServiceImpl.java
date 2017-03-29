@@ -262,12 +262,9 @@ public class ContentServiceImpl implements ContentService {
         }
         
         //一次性查询所有王国的成员数
-        Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
-        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
-        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
-        	for(Map<String, Object> m : topicFavoriteCountList){
-        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
-        	}
+        Map<String, Long> topicMemberCountMap = liveForContentJdbcDao.getTopicMembersCount(topicIdList);
+        if(null == topicMemberCountMap){
+        	topicMemberCountMap = new HashMap<String, Long>();
         }
         
         UserProfile userProfile = null;
@@ -1088,14 +1085,10 @@ private void localJpush(long toUid){
         	}
         }
         //一次性查询所有王国的成员数
-        Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
-        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
-        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
-        	for(Map<String, Object> m : topicFavoriteCountList){
-        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
-        	}
+        Map<String, Long> topicMemberCountMap = liveForContentJdbcDao.getTopicMembersCount(topicIdList);
+        if(null == topicMemberCountMap){
+        	topicMemberCountMap = new HashMap<String, Long>();
         }
-        
         
         Map<String, Object> topicUserProfile = null;
         for (Content content : contents){
@@ -2439,12 +2432,9 @@ private void localJpush(long toUid){
         	}
         }
         //一次性查询所有王国的成员数
-        Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
-        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
-        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
-        	for(Map<String, Object> m : topicFavoriteCountList){
-        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
-        	}
+        Map<String, Long> topicMemberCountMap = liveForContentJdbcDao.getTopicMembersCount(topicIdList);
+        if(null == topicMemberCountMap){
+        	topicMemberCountMap = new HashMap<String, Long>();
         }
         
         UserProfile userProfile = null;
@@ -2597,12 +2587,9 @@ private void localJpush(long toUid){
         	}
         }
         //一次性查询所有王国的成员数
-        Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
-        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
-        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
-        	for(Map<String, Object> m : topicFavoriteCountList){
-        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
-        	}
+        Map<String, Long> topicMemberCountMap = liveForContentJdbcDao.getTopicMembersCount(topicIdList);
+        if(null == topicMemberCountMap){
+        	topicMemberCountMap = new HashMap<String, Long>();
         }
         
         UserProfile userProfile = null;
@@ -3466,12 +3453,9 @@ private void localJpush(long toUid){
         	}
         }
         //一次性查询所有王国的成员数
-        Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
-        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
-        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
-        	for(Map<String, Object> m : topicFavoriteCountList){
-        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
-        	}
+        Map<String, Long> topicMemberCountMap = liveForContentJdbcDao.getTopicMembersCount(topicIdList);
+        if(null == topicMemberCountMap){
+        	topicMemberCountMap = new HashMap<String, Long>();
         }
         
         Map<String, Object> topic = null;
@@ -3795,12 +3779,9 @@ private void localJpush(long toUid){
 	        	}
 	        }
 	        //一次性查询所有王国的成员数
-	        Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
-	        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
-	        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
-	        	for(Map<String, Object> m : topicFavoriteCountList){
-	        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
-	        	}
+	        Map<String, Long> topicMemberCountMap = liveForContentJdbcDao.getTopicMembersCount(topicIdList);
+	        if(null == topicMemberCountMap){
+	        	topicMemberCountMap = new HashMap<String, Long>();
 	        }
 			
 			ShowHotCeKingdomListDTO.HotCeKingdomElement ceKingdomElement = null;
@@ -3954,7 +3935,7 @@ private void localJpush(long toUid){
     		Map<String, String> liveFavouriteMap = new HashMap<String, String>();//王国订阅信息
     		Map<String, Content> topicContentMap = new HashMap<String, Content>();//王国内容表信息
     		Map<String, Long> reviewCountMap = new HashMap<String, Long>();//王国评论信息
-    		Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();//王国成员数信息
+    		Map<String, Long> topicMemberCountMap = null;//王国成员数信息
     		if(topicIdList.size() > 0){
 				List<Map<String, Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
 				if(null != topicList && topicList.size() > 0){
@@ -3985,13 +3966,11 @@ private void localJpush(long toUid){
 		        		reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
 		        	}
 		        }
-		        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
-		        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
-		        	for(Map<String, Object> m : topicFavoriteCountList){
-		        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
-		        	}
-		        }
+		        topicMemberCountMap = liveForContentJdbcDao.getTopicMembersCount(topicIdList);
 			}
+    		if(null == topicMemberCountMap){
+	        	topicMemberCountMap = new HashMap<String, Long>();
+	        }
     		//人相关
     		Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();//用户信息
             Map<String, String> followMap = new HashMap<String, String>();//关注信息
@@ -4334,7 +4313,7 @@ private void localJpush(long toUid){
         		Map<String, String> liveFavouriteMap = new HashMap<String, String>();//王国订阅信息
         		Map<String, Content> topicContentMap = new HashMap<String, Content>();//王国内容表信息
         		Map<String, Long> reviewCountMap = new HashMap<String, Long>();//王国评论信息
-        		Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();//王国成员信息
+        		Map<String, Long> topicMemberCountMap = null;//王国成员信息
         		if(topicIdList.size() > 0){
     				List<Map<String, Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
     				if(null != topicList && topicList.size() > 0){
@@ -4365,13 +4344,11 @@ private void localJpush(long toUid){
     		        		reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
     		        	}
     		        }
-    		        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
-    		        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
-    		        	for(Map<String, Object> m : topicFavoriteCountList){
-    		        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
-    		        	}
-    		        }
+    		        topicMemberCountMap = liveForContentJdbcDao.getTopicMembersCount(topicIdList);
     			}
+        		if(null == topicMemberCountMap){
+        			topicMemberCountMap = new HashMap<String, Long>();
+        		}
         		//人相关
         		Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();//用户信息
                 Map<String, String> followMap = new HashMap<String, String>();//关注信息
@@ -4561,7 +4538,7 @@ private void localJpush(long toUid){
     		Map<String, String> liveFavouriteMap = new HashMap<String, String>();
     		Map<String, Content> topicContentMap = new HashMap<String, Content>();
     		Map<String, Long> reviewCountMap = new HashMap<String, Long>();
-    		Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
+    		Map<String, Long> topicMemberCountMap = null;
     		if(topicIdList.size() > 0){
 				List<Map<String, Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
 				if(null != topicList && topicList.size() > 0){
@@ -4592,13 +4569,11 @@ private void localJpush(long toUid){
 		        		reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
 		        	}
 		        }
-		        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
-		        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
-		        	for(Map<String, Object> m : topicFavoriteCountList){
-		        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
-		        	}
-		        }
+		        topicMemberCountMap = liveForContentJdbcDao.getTopicMembersCount(topicIdList);
 			}
+    		if(null == topicMemberCountMap){
+    			topicMemberCountMap = new HashMap<String, Long>();
+    		}
     		Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
     		//一次性查询关注信息
             Map<String, String> followMap = new HashMap<String, String>();
@@ -4738,7 +4713,7 @@ private void localJpush(long toUid){
     		Map<String, String> liveFavouriteMap = new HashMap<String, String>();
     		Map<String, Content> topicContentMap = new HashMap<String, Content>();
     		Map<String, Long> reviewCountMap = new HashMap<String, Long>();
-    		Map<String, Long> topicMemberCountMap = new HashMap<String, Long>();
+    		Map<String, Long> topicMemberCountMap = null;
     		if(topicIdList.size() > 0){
 				List<Map<String, Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
 				if(null != topicList && topicList.size() > 0){
@@ -4769,13 +4744,11 @@ private void localJpush(long toUid){
 		        		reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
 		        	}
 		        }
-		        List<Map<String, Object>> topicFavoriteCountList = liveForContentJdbcDao.getTopicFavoriteCount(topicIdList);
-		        if(null != topicFavoriteCountList && topicFavoriteCountList.size() > 0){
-		        	for(Map<String, Object> m : topicFavoriteCountList){
-		        		topicMemberCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc")+1);
-		        	}
-		        }
+		        topicMemberCountMap = liveForContentJdbcDao.getTopicMembersCount(topicIdList);
 			}
+    		if(null == topicMemberCountMap){
+    			topicMemberCountMap = new HashMap<String, Long>();
+    		}
     		Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
     		//一次性查询关注信息
             Map<String, String> followMap = new HashMap<String, String>();
