@@ -1237,7 +1237,7 @@ public class LiveServiceImpl implements LiveService {
             if(null == topicMemberCountMap.get(String.valueOf(topic.getId()))){
             	showTopicElement.setFavoriteCount(1);//默认只有国王一个成员
 			}else{
-				showTopicElement.setFavoriteCount(topicMemberCountMap.get(String.valueOf(topic.getId())).intValue());
+				showTopicElement.setFavoriteCount(topicMemberCountMap.get(String.valueOf(topic.getId())).intValue()+1);
 			}
             //判断是否收藏了
             if (null != liveFavoriteMap.get(String.valueOf(topic.getId()))) {
@@ -2985,7 +2985,7 @@ public class LiveServiceImpl implements LiveService {
                 e.setType(content.getType());
             }
             if(null != topicMemberCountMap.get(String.valueOf(topicId))){
-            	e.setFavoriteCount(topicMemberCountMap.get(String.valueOf(topicId)).intValue());
+            	e.setFavoriteCount(topicMemberCountMap.get(String.valueOf(topicId)).intValue()+1);
             }else{
             	e.setFavoriteCount(1);
             }

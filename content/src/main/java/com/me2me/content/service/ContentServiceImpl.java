@@ -321,7 +321,7 @@ public class ContentServiceImpl implements ContentService {
             		}
             	}else{
             		if(null != topicMemberCountMap.get(content.getForwardCid().toString())){
-            			squareDataElement.setFavoriteCount(topicMemberCountMap.get(content.getForwardCid().toString()).intValue());
+            			squareDataElement.setFavoriteCount(topicMemberCountMap.get(content.getForwardCid().toString()).intValue()+1);
             		}else{
             			squareDataElement.setFavoriteCount(1);
             		}
@@ -1150,7 +1150,7 @@ private void localJpush(long toUid){
             		}
             	}else{
             		if(null != topicMemberCountMap.get(content.getForwardCid().toString())){
-            			contentElement.setFavoriteCount(topicMemberCountMap.get(content.getForwardCid().toString()).intValue());
+            			contentElement.setFavoriteCount(topicMemberCountMap.get(content.getForwardCid().toString()).intValue()+1);
             		}else{
             			contentElement.setFavoriteCount(1);
             		}
@@ -2490,7 +2490,7 @@ private void localJpush(long toUid){
             		}
             	}else{
             		if(null != topicMemberCountMap.get(content.getForwardCid().toString())){
-            			contentElement.setFavoriteCount(topicMemberCountMap.get(content.getForwardCid().toString()).intValue());
+            			contentElement.setFavoriteCount(topicMemberCountMap.get(content.getForwardCid().toString()).intValue()+1);
             		}else{
             			contentElement.setFavoriteCount(1);
             		}
@@ -2657,7 +2657,7 @@ private void localJpush(long toUid){
             		}
             	}else{//王国的，需要实际的成员数
             		if(null != topicMemberCountMap.get(content.getForwardCid().toString())){
-            			contentElement.setFavoriteCount(topicMemberCountMap.get(content.getForwardCid().toString()).intValue());
+            			contentElement.setFavoriteCount(topicMemberCountMap.get(content.getForwardCid().toString()).intValue()+1);
             		}else{
             			contentElement.setFavoriteCount(1);
             		}
@@ -3564,7 +3564,7 @@ private void localJpush(long toUid){
 				if(null == topicMemberCountMap.get(ce.getForwardCid().toString())){
 					ceKingdomElement.setFavoriteCount(1);//默认只有国王一个成员
 				}else{
-					ceKingdomElement.setFavoriteCount(topicMemberCountMap.get(ce.getForwardCid().toString()).intValue());
+					ceKingdomElement.setFavoriteCount(topicMemberCountMap.get(ce.getForwardCid().toString()).intValue()+1);
 				}
 				if(null != acCountMap.get(ce.getForwardCid().toString())){
 					ceKingdomElement.setAcCount(acCountMap.get(ce.getForwardCid().toString()).intValue());
@@ -3830,7 +3830,7 @@ private void localJpush(long toUid){
 					ceKingdomElement.setInternalStatus(this.getInternalStatus(topic, uid));
 				}
 				if(null != topicMemberCountMap.get(ce.getForwardCid().toString())){
-					ceKingdomElement.setFavoriteCount(topicMemberCountMap.get(ce.getForwardCid().toString()).intValue());
+					ceKingdomElement.setFavoriteCount(topicMemberCountMap.get(ce.getForwardCid().toString()).intValue()+1);
 				}else{
 					ceKingdomElement.setFavoriteCount(1);
 				}
@@ -4089,7 +4089,7 @@ private void localJpush(long toUid){
 		                        bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
 		                        bangDanInnerData.setInternalStatus(getInternalStatus(topic,currentUid));
 		                        if(null != topicMemberCountMap.get(String.valueOf(targetId))){
-		                        	bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(String.valueOf(targetId)).intValue());
+		                        	bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(String.valueOf(targetId)).intValue() + 1);
 		                        }else{
 		                        	bangDanInnerData.setFavoriteCount(1);
 		                        }
@@ -4417,7 +4417,7 @@ private void localJpush(long toUid){
                         bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
                         bangDanInnerData.setInternalStatus(getInternalStatus(topic,currentUid));
                         if(null != topicMemberCountMap.get(String.valueOf(targetId))){
-                        	bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(String.valueOf(targetId)).intValue());
+                        	bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(String.valueOf(targetId)).intValue()+1);
                         }else{
                         	bangDanInnerData.setFavoriteCount(1);
                         }
@@ -4644,7 +4644,7 @@ private void localJpush(long toUid){
                     bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.get("live_image").toString());
                     bangDanInnerData.setInternalStatus(getInternalStatus(topic,currentUid));
                     if(null != topicMemberCountMap.get(bbl.getTargetId().toString())){
-                    	bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(bbl.getTargetId().toString()).intValue());
+                    	bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(bbl.getTargetId().toString()).intValue()+1);
                     }else{
                     	bangDanInnerData.setFavoriteCount(1);
                     }
@@ -4819,7 +4819,7 @@ private void localJpush(long toUid){
                     bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
                     bangDanInnerData.setInternalStatus(getInternalStatus(topic,currentUid));
                     if(null != topicMemberCountMap.get(bbl.getTargetId().toString())){
-                    	bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(bbl.getTargetId().toString()).intValue());
+                    	bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(bbl.getTargetId().toString()).intValue()+1);
                     }else{
                     	bangDanInnerData.setFavoriteCount(1);
                     }
