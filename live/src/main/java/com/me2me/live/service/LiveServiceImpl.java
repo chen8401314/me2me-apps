@@ -2171,6 +2171,7 @@ public class LiveServiceImpl implements LiveService {
                 liveQRCodeDto.setLiveQrCodeUrl(Constant.QINIU_DOMAIN + "/" + topic.getQrcode());
             }
         } catch (Exception e) {
+        	log.error("获取二维码失败",e);
             return Response.failure(ResponseStatus.QRCODE_FAILURE.status, ResponseStatus.QRCODE_FAILURE.message);
         }
         return Response.success(ResponseStatus.QRCODE_SUCCESS.status, ResponseStatus.QRCODE_SUCCESS.message, liveQRCodeDto);

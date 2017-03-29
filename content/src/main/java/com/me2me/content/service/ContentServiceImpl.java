@@ -3662,7 +3662,7 @@ private void localJpush(long toUid){
 					if(null == topicMemberCountMap.get(c.getForwardCid().toString())){
 						contentElement.setFavoriteCount(1);//默认只有国王一个成员
 					}else{
-						contentElement.setFavoriteCount(topicMemberCountMap.get(c.getForwardCid().toString()).intValue());
+						contentElement.setFavoriteCount(topicMemberCountMap.get(c.getForwardCid().toString()).intValue()+1);
 					}
 					if(null != reviewCountMap.get(c.getForwardCid().toString())){
 						contentElement.setReviewCount(reviewCountMap.get(c.getForwardCid().toString()).intValue());
