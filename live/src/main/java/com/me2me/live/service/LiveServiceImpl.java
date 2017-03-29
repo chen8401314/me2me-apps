@@ -246,11 +246,19 @@ public class LiveServiceImpl implements LiveService {
         }
 
         // 添加成员数量
-        List<LiveFavorite> list = liveMybatisDao.getFavoriteAll(topicId);
-        if (list != null && list.size() > 0) {
-            liveCoverDto.setMembersCount(list.size()+1);
-        } else {
-            liveCoverDto.setMembersCount(1);
+        Long favoriteCount = Long.valueOf(0);
+        List<Long> topicIdList = new ArrayList<Long>();
+        topicIdList.add(Long.valueOf(topicId));
+        Map<String, Long> memberMap = liveLocalJdbcDao.getTopicMembersCount(topicIdList);
+        if(null != memberMap && memberMap.size() > 0){
+        	if(null != memberMap.get(String.valueOf(topicId))){
+        		favoriteCount = memberMap.get(String.valueOf(topicId));
+        	}
+        }
+        if(favoriteCount.longValue() > 0){
+        	liveCoverDto.setMembersCount(favoriteCount.intValue() + 1);
+        }else{
+        	liveCoverDto.setMembersCount(1);
         }
         
         //聚合相关属性--begin--add by zcl 20170205
@@ -349,9 +357,17 @@ public class LiveServiceImpl implements LiveService {
         showLiveDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
         showLiveDto.setCreateTime(topic.getCreateTime());
         showLiveDto.setUpdateTime(topic.getLongTime());
-        List<LiveFavorite> list = liveMybatisDao.getFavoriteAll(cid);
-        if(null != list && list.size() > 0){
-        	showLiveDto.setFavoriteCount(list.size()+1);
+        Long favoriteCount = Long.valueOf(0);
+        List<Long> topicIdList = new ArrayList<Long>();
+        topicIdList.add(Long.valueOf(cid));
+        Map<String, Long> memberMap = liveLocalJdbcDao.getTopicMembersCount(topicIdList);
+        if(null != memberMap && memberMap.size() > 0){
+        	if(null != memberMap.get(String.valueOf(cid))){
+        		favoriteCount = memberMap.get(String.valueOf(cid));
+        	}
+        }
+        if(favoriteCount.longValue() > 0){
+        	showLiveDto.setFavoriteCount(favoriteCount.intValue() + 1);
         }else{
         	showLiveDto.setFavoriteCount(1);
         }
@@ -2648,9 +2664,17 @@ public class LiveServiceImpl implements LiveService {
             if(content != null) {
                 dto.setReadCount(content.getReadCountDummy());
             }
-            List<LiveFavorite> list = liveMybatisDao.getFavoriteAll(topicId);
-            if(null != list && list.size() > 0){
-            	dto.setFavoriteCount(list.size()+1);
+            Long favoriteCount = Long.valueOf(0);
+            List<Long> topicIdList = new ArrayList<Long>();
+            topicIdList.add(Long.valueOf(topicId));
+            Map<String, Long> memberMap = liveLocalJdbcDao.getTopicMembersCount(topicIdList);
+            if(null != memberMap && memberMap.size() > 0){
+            	if(null != memberMap.get(String.valueOf(topicId))){
+            		favoriteCount = memberMap.get(String.valueOf(topicId));
+            	}
+            }
+            if(favoriteCount.longValue() > 0){
+            	dto.setFavoriteCount(favoriteCount.intValue() + 1);
             }else{
             	dto.setFavoriteCount(1);
             }

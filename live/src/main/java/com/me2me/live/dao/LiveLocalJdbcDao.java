@@ -267,7 +267,7 @@ public class LiveLocalJdbcDao {
 			sb.append(" and not FIND_IN_SET(").append(currentUid);
 			sb.append(",SUBSTR(m3.core_circle FROM 2 FOR LENGTH(m3.core_circle)-2))");
 			sb.append(" and not EXISTS (select 1 from live_favorite f3 where f3.uid=");
-			sb.append(currentUid).append(")");
+			sb.append(currentUid).append(" and f3.topic_id=m3.id)");
 			sb.append(") t");
 			sb.append(" where t.longtime<").append(searchDTO.getUpdateTime());
 			if(searchDTO.getExceptTopicId() > 0){
@@ -614,7 +614,7 @@ public class LiveLocalJdbcDao {
     		sb2.append(topicIdList.get(i));
     	}
     	sb2.append(")");
-    	List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sb.toString());
+    	List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sb2.toString());
     	if(null != list2 && list2.size() > 0){
     		Long count = null;
     		Long coreCount = null;

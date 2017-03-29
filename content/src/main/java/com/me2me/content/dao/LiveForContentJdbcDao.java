@@ -314,12 +314,13 @@ public class LiveForContentJdbcDao {
     		sb2.append(topicIdList.get(i));
     	}
     	sb2.append(")");
-    	List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sb.toString());
+    	List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sb2.toString());
     	if(null != list2 && list2.size() > 0){
     		Long count = null;
     		Long coreCount = null;
     		for(Map<String, Object> m : list2){
     			coreCount = (Long)m.get("coreCount");
+    			
     			if(coreCount > 0){
     				count = result.get(String.valueOf(m.get("id")));
     				if(null == count){
