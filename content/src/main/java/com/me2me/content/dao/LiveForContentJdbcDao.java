@@ -350,7 +350,7 @@ public class LiveForContentJdbcDao {
     	List<BillBoardList> result = new ArrayList<BillBoardList>();
     	
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select m.uid,m.tid from (select t.uid,max(t.id) as tid");
+    	sb.append("select m.uid,m.tid from (select t.uid,min(t.id) as tid");
     	sb.append(" from topic t where t.status=0 group by t.uid) m");
     	sb.append(" where m.tid<").append(sinceId);
     	sb.append(" order by m.tid desc limit ").append(pageSize);
