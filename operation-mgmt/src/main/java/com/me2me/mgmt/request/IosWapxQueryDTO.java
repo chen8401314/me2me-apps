@@ -18,6 +18,9 @@ public class IosWapxQueryDTO {
     @Setter
 	private String endTime;
 	@Getter
+    @Setter
+	private int type = -1;
+	@Getter
 	@Setter
 	private int page = 1;
 	@Getter
@@ -56,5 +59,6 @@ public class IosWapxQueryDTO {
 		private int status;
 		private Date optTime;
 		private long uid;
+		private int channelType;
 	}
 }

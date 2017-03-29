@@ -6,6 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -69,6 +70,14 @@ public class RemindAndJpushAtMessageListener {
             atArray.add(speakDto.getAtUid());
         }
 
+        String message = "";
+        if(!StringUtils.isEmpty(event.getSpeakDto().getFragment()) && event.getSpeakDto().getFragment().trim().startsWith("{")){
+        	JSONObject obj = JSON.parseObject(event.getSpeakDto().getFragment());
+        	if(null != obj){
+        		message = obj.getString("text");
+        	}
+        }
+        
         Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
         UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
         int fromStatus = this.getInternalStatus(topic, speakDto.getUid());
@@ -87,7 +96,7 @@ public class RemindAndJpushAtMessageListener {
 	            jsonObject.addProperty("AtUid",speakDto.getUid());
 	            jsonObject.addProperty("NickName",userProfile.getNickName());
 	            String alias = String.valueOf(atUid);
-	            jPushService.payloadByIdExtra(alias, topic.getTitle()+" "+userProfile.getNickName() + "@了你 "+event.getSpeakDto().getFragment(), JPushUtils.packageExtra(jsonObject));
+	            jPushService.payloadByIdExtra(alias, topic.getTitle()+" "+userProfile.getNickName() + "@了你 " + message, JPushUtils.packageExtra(jsonObject));
             }
         }
         log.info("remindAndPush end");

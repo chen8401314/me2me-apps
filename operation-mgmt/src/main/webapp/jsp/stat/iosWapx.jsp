@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta charset="utf-8" />
 
-<title>ZX_IMS 2.0 - 万普激活统计</title>
+<title>ZX_IMS 2.0 - IOS推广激活统计</title>
 
 <link href="${ctx}/css/bootstrap.min.css" rel="stylesheet" />
 <link href="${ctx}/css/bootstrap-reset.css" rel="stylesheet" />
@@ -45,7 +45,7 @@ var previous = function(){
 	var page = currPage-1;
 	
 	$.ajax({
-		url : "${ctx}/stat/iosWapx/page?startTime="+$("#startTime").val()+"&endTime="+$("#endTime").val()+"&page="+page+"&pageSize="+pageSize,
+		url : "${ctx}/stat/iosWapx/page?type="+$("#type").val()+"&startTime="+$("#startTime").val()+"&endTime="+$("#endTime").val()+"&page="+page+"&pageSize="+pageSize,
 		async : false,
 		type : "GET",
 		contentType : "application/json;charset=UTF-8",
@@ -66,7 +66,7 @@ var next = function(type){
 	var page = currPage+1;
 	
 	$.ajax({
-		url : "${ctx}/stat/iosWapx/page?startTime="+$("#startTime").val()+"&endTime="+$("#endTime").val()+"&page="+page+"&pageSize="+pageSize,
+		url : "${ctx}/stat/iosWapx/page?type="+$("#type").val()+"&startTime="+$("#startTime").val()+"&endTime="+$("#endTime").val()+"&page="+page+"&pageSize="+pageSize,
 		async : false,
 		type : "GET",
 		contentType : "application/json;charset=UTF-8",
@@ -103,14 +103,21 @@ var buildTableBody = function(dataList){
 		for(var i=0;i<dataList.length;i++){
 			bodyHtml = bodyHtml + "<tr class=\"gradeX\">";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].idfa+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].os+"</th>";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].callbackurl+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].ip+"</th>";
 			bodyHtml = bodyHtml + "<th>";
 			if(dataList[i].status == 0){
 				bodyHtml = bodyHtml + "<font color='red'>未激活</font>";
 			}else{
 				bodyHtml = bodyHtml + "<font color='green'>已激活</font>";
+			}
+			bodyHtml = bodyHtml + "</th>";
+			bodyHtml = bodyHtml + "<th>";
+			if(dataList[i].type == 0){
+				bodyHtml = bodyHtml + "万普";
+			}else if(dataList[i].type == 1){
+				bodyHtml = bodyHtml + "刀刀";
+			}else{
+				bodyHtml = bodyHtml + "未知";
 			}
 			bodyHtml = bodyHtml + "</th>";
 			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].optTime))+"</th>";
@@ -186,9 +193,15 @@ var parserDatetimeStr = function(time){
 								<div class="panel-body">
 									<div class="form-inline" role="form">
 										开始时间
-										<input type="text" id="startTime" name="startTime" value="${dataObj.startTime }" class="form-control">&nbsp;&nbsp;
+										<input type="text" id="startTime" name="startTime" value="${dataObj.startTime }" class="form-control">&nbsp;&nbsp;&nbsp;&nbsp;
 										结束时间
-										<input type="text" id="endTime" name="endTime" value="${dataObj.endTime }" class="form-control">
+										<input type="text" id="endTime" name="endTime" value="${dataObj.endTime }" class="form-control">&nbsp;&nbsp;&nbsp;&nbsp;
+										广告商
+										<select name="type" id="type" class="form-control">
+											<option value="-1" ${dataObj.type==-1?'selected':''}>所有</option>
+											<option value="0" ${dataObj.type==0?'selected':''}>万普</option>
+											<option value="1" ${dataObj.type==1?'selected':''}>刀刀</option>
+										</select>&nbsp;&nbsp;&nbsp;&nbsp;
 										<input type="submit" id="btnSearch" name="btnSearch" value="搜索" class="btn btn-info" />
 									</div>
 								</div>
@@ -243,10 +256,9 @@ var parserDatetimeStr = function(time){
 										<thead>
 											<tr>
 												<th>IDFA</th>
-												<th>OS</th>
 												<th>CallBackUrl</th>
-												<th>IP</th>
 												<th>状态</th>
+												<th>广告商</th>
 												<th>操作时间</th>
 												<th>UID</th>
 											</tr>
@@ -255,9 +267,7 @@ var parserDatetimeStr = function(time){
 											<c:forEach items="${dataObj.result}" var="item">
 												<tr class="gradeX">
 													<th>${item.idfa }</th>
-													<th>${item.os }</th>
 													<th>${item.callbackurl }</th>
-													<th>${item.ip }</th>
 													<th>
 													<c:choose>
                                                 		<c:when test="${item.status == '0'}">
@@ -265,6 +275,19 @@ var parserDatetimeStr = function(time){
                                                 		</c:when>
                                                 		<c:otherwise>
                                                 			<font color='green'>已激活</font>
+                                                		</c:otherwise>
+                                                	</c:choose>
+													</th>
+													<th>
+													<c:choose>
+                                                		<c:when test="${item.type == '0'}">
+                                                			万普
+                                                		</c:when>
+                                                		<c:when test="${item.type == '1'}">
+                                                			刀刀
+                                                		</c:when>
+                                                		<c:otherwise>
+                                                			未知
                                                 		</c:otherwise>
                                                 	</c:choose>
 													</th>

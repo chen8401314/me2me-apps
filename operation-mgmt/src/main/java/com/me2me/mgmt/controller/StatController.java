@@ -1071,12 +1071,18 @@ public class StatController {
 		countSql.append(" from ios_wapx t where t.update_time>='").append(startTime);
 		countSql.append("' and t.update_time<='").append(endTime);
 		countSql.append("'");
+		if(dto.getType() >= 0){
+			countSql.append(" and t.channel_typ=").append(dto.getType());
+		}
 		
 		StringBuilder querySql = new StringBuilder();
 		querySql.append("select * from ios_wapx t where t.update_time>='");
 		querySql.append(startTime).append("' and t.update_time<='");
-		querySql.append(endTime).append("' order by t.update_time asc");
-		querySql.append(" limit ").append(start).append(",").append(pageSize);
+		querySql.append(endTime).append("'");
+		if(dto.getType() >= 0){
+			querySql.append(" and t.channel_typ=").append(dto.getType());
+		}
+		querySql.append(" order by t.update_time asc limit ").append(start).append(",").append(pageSize);
 		
 		dto.getResult().clear();
 		List<Map<String, Object>> list = null;
@@ -1112,6 +1118,7 @@ public class StatController {
 				item.setStatus((Integer)map.get("status"));
 				item.setUdid((String)map.get("udid"));
 				item.setUid((Long)map.get("uid"));
+				item.setChannelType((Integer)map.get("channel_typ"));
 				dto.getResult().add(item);
 			}
 		}
