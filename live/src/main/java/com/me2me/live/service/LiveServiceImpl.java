@@ -452,10 +452,11 @@ public class LiveServiceImpl implements LiveService {
             if(!CommonUtils.isNewVersion(getLiveTimeLineDto.getVersion(), "2.2.2")){
             	if(topicFragment.getType() == 51 && topicFragment.getContentType()==16){//足迹
             		liveElement.setStatus(0);
+            		continue;
             	}else if(topicFragment.getType() == 1000){//系统灰条
             		liveElement.setStatus(0);
+            		continue;
             	}
-            	continue;
             }
 
             UserProfile userProfile = userService.getUserProfileByUid(uid);
@@ -2356,10 +2357,11 @@ public class LiveServiceImpl implements LiveService {
             	//系统灰条和足迹不展示
             	if(topicFragment.getType() == 51&&topicFragment.getContentType()==16){//足迹
             		liveElement.setStatus(0);
+            		continue;
             	}else if(topicFragment.getType() == 1000){//系统灰条
             		liveElement.setStatus(0);
+            		continue;
             	}
-            	continue;
             }
 
             UserProfile userProfile = userService.getUserProfileByUid(uid);
