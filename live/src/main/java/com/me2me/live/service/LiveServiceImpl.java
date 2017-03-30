@@ -2975,8 +2975,8 @@ public class LiveServiceImpl implements LiveService {
             
             cacheModel = new MySubscribeCacheModel(uid, String.valueOf(topicId), "0");
             String isUpdate = cacheService.hGet(cacheModel.getKey(), String.valueOf(topicId));
-            if (!StringUtils.isEmpty(isUpdate)) {
-                e.setIsUpdate(Integer.parseInt(isUpdate));
+            if (!StringUtils.isEmpty(isUpdate) && Integer.valueOf(isUpdate) > 0) {
+                e.setIsUpdate(1);
             }
             
             lastFragment = lastFragmentMap.get(String.valueOf(topicId));

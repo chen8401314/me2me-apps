@@ -122,7 +122,7 @@ public class SpeakListener {
             MyLivesStatusModel livesStatusModel = new MyLivesStatusModel(liveFavorite.getUid(),"1");
             cacheService.hSet(livesStatusModel.getKey(),livesStatusModel.getField(),"1");
             if(liveFavorite.getUid()!=speakEvent.getUid()) {
-                cacheModel = new MySubscribeCacheModel(liveFavorite.getUid(), liveFavorite.getTopicId() + "", "1");
+                cacheModel = new MySubscribeCacheModel(liveFavorite.getUid(), liveFavorite.getTopicId() + "", speakEvent.getFragmentId()+"");
                 log.info("speak by master start update hset cache key{} field {} value {}", cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
                 cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
             }

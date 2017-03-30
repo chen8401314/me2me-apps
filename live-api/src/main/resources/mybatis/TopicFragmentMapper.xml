@@ -535,7 +535,8 @@
     <include refid="Base_Column_List"/>
     ,
     <include refid="Blob_Column_List"/>
-    from topic_fragment where id = #{fid} and at_uid = #{uid} and type in (10 ,11 ,15);
+    from topic_fragment where id &gt;= #{fid} and at_uid = #{uid} and type in (10 ,11 ,15)
+    order by id desc limit 1
   </select>
 
 </mapper>

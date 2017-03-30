@@ -102,7 +102,7 @@ public class SpeakNewListener {
 					livesStatusModel = new MyLivesStatusModel(uid,"1");
 		            cacheService.hSet(livesStatusModel.getKey(),livesStatusModel.getField(),"1");
 		            
-		            cacheModel = new MySubscribeCacheModel(topic.getUid(), topic.getId().toString(), String.valueOf(speakNewEvent.getFragmentId()));
+		            cacheModel = new MySubscribeCacheModel(uid, topic.getId().toString(), String.valueOf(speakNewEvent.getFragmentId()));
 		            String values = cacheService.hGet(cacheModel.getKey(), cacheModel.getField());
 		            if(StringUtils.isEmpty(values) || Integer.parseInt(values) == 0){//如果不是0，那么认为有更历史的未读信息，则不进行新的设置
 		                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
@@ -197,7 +197,7 @@ public class SpeakNewListener {
 			            jsonObject.addProperty("contentType", topic.getType());
 			            jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//这里是给核心圈的通知，所以直接显示核心圈即可
 			            String alias = String.valueOf(uid);
-			            userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
+//			            userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
 					}
 				}
 			}
@@ -212,7 +212,7 @@ public class SpeakNewListener {
 			            jsonObject.addProperty("contentType", topic.getType());
 			            jsonObject.addProperty("internalStatus", Specification.SnsCircle.OUT.index);//圈外人
 			            String alias = String.valueOf(uid);
-			            userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
+//			            userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
 					}
 				}
 			}
@@ -232,7 +232,7 @@ public class SpeakNewListener {
 			            	jsonObject.addProperty("internalStatus", Specification.SnsCircle.OUT.index);//圈外人
 			            }
 			            String alias = String.valueOf(uid);
-			            userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
+//			            userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
 					}
 				}
 			}
