@@ -82,6 +82,7 @@ public class Live extends BaseController {
         getLiveTimeLineDto.setSinceId(request.getSinceId());
         getLiveTimeLineDto.setTopicId(request.getTopicId());
         getLiveTimeLineDto.setUid(request.getUid());
+        getLiveTimeLineDto.setVersion(request.getVersion());
         return liveService.getLiveTimeline(getLiveTimeLineDto);
     }
 
@@ -103,6 +104,13 @@ public class Live extends BaseController {
         liveDetailDto.setUid(request.getUid());
         liveDetailDto.setSinceId(request.getSinceId());
         liveDetailDto.setDirection(request.getDirection());
+        liveDetailDto.setVersionFlag(0);
+        
+        String version = request.getVersion();
+    	if(VersionUtil.isNewVersion(version, "2.2.2")){//222版本的限制
+    		liveDetailDto.setVersionFlag(1);
+    	}
+        
         return liveService.getLiveDetail(liveDetailDto);
     }
 

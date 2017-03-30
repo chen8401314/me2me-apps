@@ -27,7 +27,7 @@ public class VersionUtil {
     		}else if(v2 < bv2){
     			return false;
     		}
-    		int v3 = Integer.valueOf(v[2]);
+    		int v3 = Integer.valueOf(v[2].substring(0,1));//第三个版本号只取第一个数字
     		int bv3 = Integer.valueOf(bv[2]);
     		if(v3 >= bv3){
     			return true;

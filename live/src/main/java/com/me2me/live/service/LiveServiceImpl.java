@@ -446,11 +446,16 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setStatus(status);
             liveElement.setId(topicFragment.getId());
             if(status==0){
-                //2.1.3以后的版本返回已删除的记录
-                if(CommonUtils.afterVersion(getLiveTimeLineDto.getVersion(),"2.1.3")){
-                    liveTimeLineDto.getLiveElements().add(liveElement);
-                }
                 continue;
+            }
+            
+            if(!CommonUtils.isNewVersion(getLiveTimeLineDto.getVersion(), "2.2.2")){
+            	if(topicFragment.getType() == 51 && topicFragment.getContentType()==16){//足迹
+            		liveElement.setStatus(0);
+            	}else if(topicFragment.getType() == 1000){//系统灰条
+            		liveElement.setStatus(0);
+            	}
+            	continue;
             }
 
             UserProfile userProfile = userService.getUserProfileByUid(uid);
@@ -2344,6 +2349,17 @@ public class LiveServiceImpl implements LiveService {
             	//删除的不要了
                 //liveDetailDto.getLiveElements().add(liveElement);
                 continue;
+            }
+            
+            //系统灰条过滤处理（预防低版本）
+            if(getLiveDetailDto.getVersionFlag() < 1){//低于V2.2.2版本
+            	//系统灰条和足迹不展示
+            	if(topicFragment.getType() == 51&&topicFragment.getContentType()==16){//足迹
+            		liveElement.setStatus(0);
+            	}else if(topicFragment.getType() == 1000){//系统灰条
+            		liveElement.setStatus(0);
+            	}
+            	continue;
             }
 
             UserProfile userProfile = userService.getUserProfileByUid(uid);

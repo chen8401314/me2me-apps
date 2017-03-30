@@ -25,4 +25,6 @@ public class GetLiveDetailDto implements BaseEntity {
     private int startIndex;
     
     private int direction;
+    
+    private int versionFlag;
 }
