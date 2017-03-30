@@ -2704,7 +2704,7 @@ public class LiveServiceImpl implements LiveService {
             }
             TopicCountDTO topicCountDTO = activityService.getTopicCount(topicId);
             dto.setTopicCount(topicCountDTO.getUpdateCount());
-            dto.setCreateTime(topic.getLongTime());
+            dto.setCreateTime(topic.getCreateTime().getTime());
             dto.setSummary(topic.getSummary());
             if(topic.getType() == 1000){
                 //查子王国
