@@ -1300,6 +1300,7 @@ public class LiveServiceImpl implements LiveService {
             Map map = Maps.newHashMap();
             map.put("fid" ,isUpdate);
             map.put("uid" ,uid);
+            map.put("topicId", topic.getId());
             TopicFragment topicFragment = liveMybatisDao.getFragmentByAT(map);
             if(topicFragment != null){
                 showTopicElement.setLastContentType(topicFragment.getContentType());
