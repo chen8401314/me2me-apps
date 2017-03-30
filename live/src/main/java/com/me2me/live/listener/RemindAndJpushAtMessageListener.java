@@ -20,7 +20,6 @@ import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.event.RemindAndJpushAtMessageEvent;
 import com.me2me.live.model.Topic;
-import com.me2me.live.model.TopicUserConfig;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.JpushToken;
 import com.me2me.user.model.UserNotice;
@@ -96,7 +95,7 @@ public class RemindAndJpushAtMessageListener {
 	            jsonObject.addProperty("AtUid",speakDto.getUid());
 	            jsonObject.addProperty("NickName",userProfile.getNickName());
 	            String alias = String.valueOf(atUid);
-	            jPushService.payloadByIdExtra(alias, topic.getTitle()+" "+userProfile.getNickName() + "@了你 " + message, JPushUtils.packageExtra(jsonObject));
+	            jPushService.payloadByIdExtra(alias, "《"+topic.getTitle()+"》 "+userProfile.getNickName() + "@了你 “" + message + "”", JPushUtils.packageExtra(jsonObject));
             }
         }
         log.info("remindAndPush end");

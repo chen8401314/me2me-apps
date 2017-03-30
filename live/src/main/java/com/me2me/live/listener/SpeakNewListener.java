@@ -138,44 +138,44 @@ public class SpeakNewListener {
 		if(isCoreUser){//核心圈的发言
 			if(speakNewEvent.getType() == Specification.LiveSpeakType.ANCHOR.index){//主播发言
 				if(speakNewEvent.getContentType() == Specification.LiveContent.TEXT.index){//文字
-					message = topic.getTitle() + " " + currentUserProfile.getNickName() + "更新了 " + speakNewEvent.getFragmentContent();
+					message = "《"+topic.getTitle() + "》 " + currentUserProfile.getNickName() + "更新了 “" + speakNewEvent.getFragmentContent() + "”";
 				}else if(speakNewEvent.getContentType() == Specification.LiveContent.IMAGE.index){//图片
-					message = topic.getTitle() + " " + currentUserProfile.getNickName() + "上传了图片";
+					message = "《"+topic.getTitle() + "》 " + currentUserProfile.getNickName() + "上传了图片";
 				}
 			}else if(speakNewEvent.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index){
-				message = topic.getTitle() + " " + currentUserProfile.getNickName() + "更新了 " + speakNewEvent.getFragmentContent();
+				message = "《"+topic.getTitle() + "》 " + currentUserProfile.getNickName() + "更新了 “" + speakNewEvent.getFragmentContent() + "”";
 			}else if(speakNewEvent.getType() == Specification.LiveSpeakType.VIDEO.index){
-				message = topic.getTitle() + " " + currentUserProfile.getNickName() + "上传了视频";
+				message = "《"+topic.getTitle() + "》 " + currentUserProfile.getNickName() + "上传了视频";
 			}else if(speakNewEvent.getType() == Specification.LiveSpeakType.SOUND.index){
-				message = topic.getTitle() + " " + currentUserProfile.getNickName() + "上传了音频";
+				message = "《"+topic.getTitle() + "》 " + currentUserProfile.getNickName() + "上传了音频";
 			}else if(speakNewEvent.getType() == 54 || speakNewEvent.getType() == 55 || speakNewEvent.getType() == 56){//聚合下发/转发内容
 				if(speakNewEvent.getContentType() == 0 || speakNewEvent.getContentType() == 2){
-					message = topic.getTitle() + " " + currentUserProfile.getNickName() + "更新了 " + speakNewEvent.getFragmentContent();
+					message = "《"+topic.getTitle() + "》 " + currentUserProfile.getNickName() + "更新了 “" + speakNewEvent.getFragmentContent()+"”";
 				}else if(speakNewEvent.getContentType() == 1 || speakNewEvent.getContentType() == 51){
-					message = topic.getTitle() + " " + currentUserProfile.getNickName() + "上传了图片";
+					message = "《"+topic.getTitle() + "》 " + currentUserProfile.getNickName() + "上传了图片";
 				}else if(speakNewEvent.getContentType() == 62){
-					message = topic.getTitle() + " " + currentUserProfile.getNickName() + "上传了视频";
+					message = "《"+topic.getTitle() + "》 " + currentUserProfile.getNickName() + "上传了视频";
 				}else if(speakNewEvent.getContentType() == 63){
-					message = topic.getTitle() + " " + currentUserProfile.getNickName() + "上传了音频";
+					message = "《"+topic.getTitle() + "》 " + currentUserProfile.getNickName() + "上传了音频";
 				}
 			}else if(speakNewEvent.getType() == 51 || speakNewEvent.getType() == 52){//分享内链
 				if(speakNewEvent.getContentType() == 70 || speakNewEvent.getContentType() == 71
 						|| speakNewEvent.getContentType() == 72 || speakNewEvent.getContentType() == 73
 						|| speakNewEvent.getContentType() == 74){
-					message = topic.getTitle() + " " + currentUserProfile.getNickName() + "转发了 " + speakNewEvent.getFragmentContent();
+					message = "《"+topic.getTitle() + "》 " + currentUserProfile.getNickName() + "转发了“" + speakNewEvent.getFragmentContent()+"”";
 				}
 			}
 		}else{//非核心圈
 			if(speakNewEvent.getType() == Specification.LiveSpeakType.FANS.index
 					|| speakNewEvent.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index){
-				message = topic.getTitle() + " " + currentUserProfile.getNickName() + "回复了 " + speakNewEvent.getFragmentContent();
+				message = "《"+topic.getTitle() + "》 " + currentUserProfile.getNickName() + "回复了 “" + speakNewEvent.getFragmentContent()+"”";
 			}else if(speakNewEvent.getType() == 51 || speakNewEvent.getType() == 52){//分享内链
 				if(speakNewEvent.getContentType() == 70 || speakNewEvent.getContentType() == 71
 						|| speakNewEvent.getContentType() == 72 || speakNewEvent.getContentType() == 73
 						|| speakNewEvent.getContentType() == 74){
-					message = topic.getTitle() + " " + currentUserProfile.getNickName() + "转发了 " + speakNewEvent.getFragmentContent();
+					message = "《"+topic.getTitle() + "》 " + currentUserProfile.getNickName() + "转发了 “" + speakNewEvent.getFragmentContent()+"”";
 				}else if(speakNewEvent.getContentType() == 16){
-					message = topic.getTitle() + " " + currentUserProfile.getNickName() + "留下了足迹 " + speakNewEvent.getFragmentContent();
+					message = "《"+topic.getTitle() + "》 " + currentUserProfile.getNickName() + "留下了足迹 “" + speakNewEvent.getFragmentContent()+"”";
 				}
 			}
 		}
