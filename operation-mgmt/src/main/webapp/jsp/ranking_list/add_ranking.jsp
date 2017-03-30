@@ -77,6 +77,7 @@
 														<option value="4">这里的互动最热闹</option>
 														<option value="5">最丰富多彩的王国</option>
 														<option value="6">求安慰的孤独王国</option>
+														<option value="7">最新更新的王国</option>
 													</select>
 													<label class="text-danger">保存之后不可修改。</label>
 		                                        </div>

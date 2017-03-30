@@ -40,7 +40,7 @@ public class BillBoardDetailsDto implements BaseEntity {
     @Data
     public static class InnerDetailData implements BaseEntity{
 
-    	private int sinceId;
+    	private long sinceId;
     	
         private int subType;
 

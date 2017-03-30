@@ -4461,14 +4461,15 @@ private void localJpush(long toUid){
         return Response.success(billBoardDetailsDto);
     }
     
-    private List<BillBoardList> getAutoBillBoardList(int mode, int sinceId, int pageSize){
-    	List<BillBoardList> result = null;
+    private List<BillBoardListDTO> getAutoBillBoardList(int mode, long sinceId, int pageSize){
+    	List<BillBoardListDTO> result = null;
     	String currentCacheKey = null;
+    	List<BillBoardList> bbList = null;
     	switch(mode){
     	case 1://最活跃的米汤新鲜人
     		//实时统计
     		if(sinceId < 0){
-    			sinceId = Integer.MAX_VALUE;
+    			sinceId = Long.MAX_VALUE;
     		}
     		result = liveForContentJdbcDao.getActiveUserBillboard(sinceId, pageSize);
     		break;
@@ -4477,19 +4478,21 @@ private void localJpush(long toUid){
     		if(StringUtils.isEmpty(currentCacheKey)){
     			currentCacheKey = Constant.BILLBOARD_KEY_TARGET1;
 			}
-    		result = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_POPULAR_PEOPLE+currentCacheKey, sinceId, pageSize);
+    		bbList = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_POPULAR_PEOPLE+currentCacheKey, (int)sinceId, pageSize);
+    		result = this.genBBLDto(bbList);
     		break;
     	case 3://最爱叨逼叨的话痨王国
     		currentCacheKey = cacheService.get(Constant.BILLBOARD_KEY_JAY_PEOPLE);
     		if(StringUtils.isEmpty(currentCacheKey)){
     			currentCacheKey = Constant.BILLBOARD_KEY_TARGET1;
 			}
-    		result = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_JAY_PEOPLE+currentCacheKey, sinceId, pageSize);
+    		bbList = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_JAY_PEOPLE+currentCacheKey, (int)sinceId, pageSize);
+    		result = this.genBBLDto(bbList);
     		break;
     	case 4://这里的互动最热闹
     		//实时统计
     		if(sinceId < 0){
-    			sinceId = Integer.MAX_VALUE;
+    			sinceId = Long.MAX_VALUE;
     		}
     		result = liveForContentJdbcDao.getInteractionHottestKingdomBillboard(sinceId, pageSize);
     		break;
@@ -4498,14 +4501,23 @@ private void localJpush(long toUid){
     		if(StringUtils.isEmpty(currentCacheKey)){
     			currentCacheKey = Constant.BILLBOARD_KEY_TARGET1;
 			}
-    		result = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_COLOURFUL_KINGDOM+currentCacheKey, sinceId, pageSize);
+    		bbList = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_COLOURFUL_KINGDOM+currentCacheKey, (int)sinceId, pageSize);
+    		result = this.genBBLDto(bbList);
     		break;
     	case 6://求安慰的孤独王国
     		currentCacheKey = cacheService.get(Constant.BILLBOARD_KEY_LONELY_KINGDOM);
     		if(StringUtils.isEmpty(currentCacheKey)){
     			currentCacheKey = Constant.BILLBOARD_KEY_TARGET1;
 			}
-    		result = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_LONELY_KINGDOM+currentCacheKey, sinceId, pageSize);
+    		bbList = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_LONELY_KINGDOM+currentCacheKey, (int)sinceId, pageSize);
+    		result = this.genBBLDto(bbList);
+    		break;
+    	case 7://最新更新的王国
+    		//实时统计
+    		if(sinceId < 0){
+    			sinceId = Long.MAX_VALUE;
+    		}
+    		result = liveForContentJdbcDao.getLivesByUpdateTime(sinceId, pageSize);
     		break;
     	default:
     		break;
@@ -4514,20 +4526,35 @@ private void localJpush(long toUid){
     	return result;
     }
     
+    private List<BillBoardListDTO> genBBLDto(List<BillBoardList> list){
+    	List<BillBoardListDTO> result = new ArrayList<BillBoardListDTO>();
+    	if(null != list && list.size() > 0){
+    		BillBoardListDTO dto = null;
+    		for(BillBoardList bbl : list){
+    			dto = new BillBoardListDTO();
+    			dto.setTargetId(bbl.getTargetId());
+    			dto.setType(bbl.getType());
+    			dto.setSinceId(bbl.getSinceId());
+    			result.add(dto);
+    		}
+    	}
+    	return result;
+    }
+    
     private void buildAutoBillBoardSimple(BangDanDto.BangDanData bangDanData, long bid, int mode, long currentUid, int type, int pageSize){
-    	List<BillBoardList> result = this.getAutoBillBoardList(mode, -1, pageSize);
+    	List<BillBoardListDTO> result = this.getAutoBillBoardList(mode, -1, pageSize);
     	
     	if(null != result && result.size() > 0){
     		List<Long> topicIdList = new ArrayList<Long>();
     		List<Long> uidList = new ArrayList<Long>();
     		if(type == 1){//王国
-    			for(BillBoardList bbl : result){
+    			for(BillBoardListDTO bbl : result){
     				if(!topicIdList.contains(bbl.getTargetId())){
     					topicIdList.add(bbl.getTargetId());
     				}
     			}
     		}else if(type == 2){//人
-    			for(BillBoardList bbl : result){
+    			for(BillBoardListDTO bbl : result){
     				if(!uidList.contains(bbl.getTargetId())){
     					uidList.add(bbl.getTargetId());
     				}
@@ -4596,12 +4623,12 @@ private void localJpush(long toUid){
     		Map<String,Object> topic = null;
     		UserProfile userProfile = null;
     		Content topicContent = null;
-    		for(BillBoardList bbl : result){
+    		for(BillBoardListDTO bbl : result){
     			bangDanInnerData = new BangDanDto.BangDanData.BangDanInnerData();
                 bangDanInnerData.setSubType(type);
                 if(type==1){// 王国数据
                 	bangDanInnerData.setSubListId(bid);
-                	topic = topicMap.get(bbl.getTargetId().toString());
+                	topic = topicMap.get(String.valueOf(bbl.getTargetId()));
                 	if(null == topic){
                 		log.info("王国[id="+bbl.getTargetId()+"]不存在");
                 		continue;
@@ -4627,12 +4654,12 @@ private void localJpush(long toUid){
     					bangDanInnerData.setIsFollowMe(0);
     				}
                     bangDanInnerData.setContentType((Integer)topic.get("type"));
-                    if(liveFavouriteMap.get(bbl.getTargetId().toString()) != null){
+                    if(liveFavouriteMap.get(String.valueOf(bbl.getTargetId())) != null){
                     	bangDanInnerData.setFavorite(1);
                     }else{
                     	bangDanInnerData.setFavorite(0);
                     }
-                    topicContent = topicContentMap.get(bbl.getTargetId().toString());
+                    topicContent = topicContentMap.get(String.valueOf(bbl.getTargetId()));
                     if(null == topicContent){
                     	continue;
                     }
@@ -4643,22 +4670,22 @@ private void localJpush(long toUid){
                     bangDanInnerData.setTitle((String)topic.get("title"));
                     bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.get("live_image").toString());
                     bangDanInnerData.setInternalStatus(getInternalStatus(topic,currentUid));
-                    if(null != topicMemberCountMap.get(bbl.getTargetId().toString())){
-                    	bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(bbl.getTargetId().toString()).intValue()+1);
+                    if(null != topicMemberCountMap.get(String.valueOf(bbl.getTargetId()))){
+                    	bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(String.valueOf(bbl.getTargetId())).intValue()+1);
                     }else{
                     	bangDanInnerData.setFavoriteCount(1);
                     }
                     bangDanInnerData.setReadCount(topicContent.getReadCountDummy());
                     bangDanInnerData.setLikeCount(topicContent.getLikeCount());
-                    if(null != reviewCountMap.get(bbl.getTargetId().toString())){
-                    	bangDanInnerData.setReviewCount(reviewCountMap.get(bbl.getTargetId().toString()).intValue());
+                    if(null != reviewCountMap.get(String.valueOf(bbl.getTargetId()))){
+                    	bangDanInnerData.setReviewCount(reviewCountMap.get(String.valueOf(bbl.getTargetId())).intValue());
                     }else{
                     	bangDanInnerData.setReviewCount(0);
                     }
                 }else if(type==2){// 人
                 	bangDanInnerData.setSubListId(bid);
                     bangDanInnerData.setUid(bbl.getTargetId());
-                    userProfile = userMap.get(bbl.getTargetId().toString());
+                    userProfile = userMap.get(String.valueOf(bbl.getTargetId()));
                     if(null == userProfile){
                     	log.info("用户[uid="+bbl.getTargetId()+"]不存在");
                     	continue;
@@ -4690,19 +4717,19 @@ private void localJpush(long toUid){
      * @return
      */
     private void buildAutoBillBoardDetails(BillBoardDetailsDto billBoardDetailsDto, int mode, int sinceId, long currentUid, int type){
-    	List<BillBoardList> result = this.getAutoBillBoardList(mode, sinceId, 20);
+    	List<BillBoardListDTO> result = this.getAutoBillBoardList(mode, sinceId, 20);
     	
     	if(null != result && result.size() > 0){
     		List<Long> topicIdList = new ArrayList<Long>();
     		List<Long> uidList = new ArrayList<Long>();
     		if(type == 1){//王国
-    			for(BillBoardList bbl : result){
+    			for(BillBoardListDTO bbl : result){
     				if(!topicIdList.contains(bbl.getTargetId())){
     					topicIdList.add(bbl.getTargetId());
     				}
     			}
     		}else if(type == 2){//人
-    			for(BillBoardList bbl : result){
+    			for(BillBoardListDTO bbl : result){
     				if(!uidList.contains(bbl.getTargetId())){
     					uidList.add(bbl.getTargetId());
     				}
@@ -4771,12 +4798,12 @@ private void localJpush(long toUid){
     		Map<String, Object> topic = null;
     		Content topicContent = null;
     		UserProfile userProfile = null;
-    		for(BillBoardList bbl : result){
+    		for(BillBoardListDTO bbl : result){
     			bangDanInnerData = new BillBoardDetailsDto.InnerDetailData();
                 bangDanInnerData.setSubType(type);
                 bangDanInnerData.setSinceId(bbl.getSinceId());
                 if(type==1){// 王国
-                	topic = topicMap.get(bbl.getTargetId().toString());
+                	topic = topicMap.get(String.valueOf(bbl.getTargetId()));
                     if(null == topic){
                     	log.info("王国[id="+bbl.getTargetId()+"]不存在");
                     	continue;
@@ -4802,12 +4829,12 @@ private void localJpush(long toUid){
     					bangDanInnerData.setIsFollowMe(0);
     				}
                     bangDanInnerData.setContentType((Integer)topic.get("type"));
-                    if(null != liveFavouriteMap.get(bbl.getTargetId().toString())){
+                    if(null != liveFavouriteMap.get(String.valueOf(bbl.getTargetId()))){
                     	bangDanInnerData.setFavorite(1);
                     }else{
                     	bangDanInnerData.setFavorite(0);
                     }
-                    topicContent = topicContentMap.get(bbl.getTargetId().toString());
+                    topicContent = topicContentMap.get(String.valueOf(bbl.getTargetId()));
                     if(null == topicContent){
                     	continue;
                     }
@@ -4818,22 +4845,22 @@ private void localJpush(long toUid){
                     bangDanInnerData.setTitle((String)topic.get("title"));
                     bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
                     bangDanInnerData.setInternalStatus(getInternalStatus(topic,currentUid));
-                    if(null != topicMemberCountMap.get(bbl.getTargetId().toString())){
-                    	bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(bbl.getTargetId().toString()).intValue()+1);
+                    if(null != topicMemberCountMap.get(String.valueOf(bbl.getTargetId()))){
+                    	bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(String.valueOf(bbl.getTargetId())).intValue()+1);
                     }else{
                     	bangDanInnerData.setFavoriteCount(1);
                     }
                     bangDanInnerData.setReadCount(topicContent.getReadCountDummy());
                     bangDanInnerData.setLikeCount(topicContent.getLikeCount());
-                    if(null != reviewCountMap.get(bbl.getTargetId().toString())){
-                    	bangDanInnerData.setReviewCount(reviewCountMap.get(bbl.getTargetId().toString()).intValue());
+                    if(null != reviewCountMap.get(String.valueOf(bbl.getTargetId()))){
+                    	bangDanInnerData.setReviewCount(reviewCountMap.get(String.valueOf(bbl.getTargetId())).intValue());
                     }else{
                     	bangDanInnerData.setReviewCount(0);
                     }
                     billBoardDetailsDto.getSubList().add(bangDanInnerData);
                 }else if(type==2){//人
                     bangDanInnerData.setUid(bbl.getTargetId());
-                    userProfile = userMap.get(bbl.getTargetId().toString());
+                    userProfile = userMap.get(String.valueOf(bbl.getTargetId()));
                     if(null == userProfile){
                     	log.info("用户[uid="+bbl.getTargetId()+"]不存在");
                     	continue;
@@ -4841,12 +4868,12 @@ private void localJpush(long toUid){
                     bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                     bangDanInnerData.setNickName(userProfile.getNickName());
                     bangDanInnerData.setV_lv(userProfile.getvLv());
-                    if(null != followMap.get(currentUid+"_"+bbl.getTargetId().toString())){
+                    if(null != followMap.get(currentUid+"_"+String.valueOf(bbl.getTargetId()))){
                     	bangDanInnerData.setIsFollowed(1);
     				}else{
     					bangDanInnerData.setIsFollowed(0);
     				}
-    				if(null != followMap.get(bbl.getTargetId().toString()+"_"+currentUid)){
+    				if(null != followMap.get(String.valueOf(bbl.getTargetId())+"_"+currentUid)){
     					bangDanInnerData.setIsFollowMe(1);
     				}else{
     					bangDanInnerData.setIsFollowMe(0);
@@ -4945,10 +4972,10 @@ private void localJpush(long toUid){
 			type = 2;
 		}
 		
-		List<BillBoardList> list = this.getAutoBillBoardList(mode, -1, 100);
+		List<BillBoardListDTO> list = this.getAutoBillBoardList(mode, -1, 100);
 		if(null != list && list.size() > 0){
 			List<Long> idList = Lists.newArrayList();
-			for(BillBoardList bbl : list){
+			for(BillBoardListDTO bbl : list){
 				if(!idList.contains(bbl.getTargetId())){
 					idList.add(bbl.getTargetId());
 				}
@@ -4974,10 +5001,10 @@ private void localJpush(long toUid){
 			BillBoardRelationDto bbrdto = null;
 			UserProfile userProfile = null;
 			Map<String, Object> topic = null;
-			for(BillBoardList bbl : list){
+			for(BillBoardListDTO bbl : list){
 				bbrdto = new BillBoardRelationDto();
 				if(type == 1){//王国属性
-					topic = topicMap.get(bbl.getTargetId().toString());
+					topic = topicMap.get(String.valueOf(bbl.getTargetId()));
 					if(null == topic){
 						continue;
 					}
@@ -4986,7 +5013,7 @@ private void localJpush(long toUid){
 					bbrdto.setCover((String)topic.get("live_image"));
 					bbrdto.setAggregation((Integer)topic.get("type"));
 				}else{//人属性
-					userProfile = userMap.get(bbl.getTargetId().toString());
+					userProfile = userMap.get(String.valueOf(bbl.getTargetId()));
 					if(null == userProfile){
 						continue;
 					}

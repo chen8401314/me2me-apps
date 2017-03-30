@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.me2me.content.dto.BillBoardListDTO;
 import com.me2me.content.model.BillBoardList;
 import com.me2me.user.model.UserProfile;
 
@@ -346,23 +347,24 @@ public class LiveForContentJdbcDao {
      * @param pageSize
      * @return
      */
-    public List<BillBoardList> getActiveUserBillboard(long sinceId, int pageSize){
-    	List<BillBoardList> result = new ArrayList<BillBoardList>();
+    public List<BillBoardListDTO> getActiveUserBillboard(long sinceId, int pageSize){
+    	List<BillBoardListDTO> result = new ArrayList<BillBoardListDTO>();
     	
     	StringBuilder sb = new StringBuilder();
     	sb.append("select m.uid,m.tid from (select t.uid,min(t.id) as tid");
     	sb.append(" from topic t where t.status=0 group by t.uid) m");
     	sb.append(" where m.tid<").append(sinceId);
+    	sb.append(" and m.uid not in (select u.uid from user_profile u where u.nick_name like '%米汤客服%')");
     	sb.append(" order by m.tid desc limit ").append(pageSize);
     	
     	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
     	if(null != list && list.size() > 0){
-    		BillBoardList bbl = null;
+    		BillBoardListDTO bbl = null;
     		for(Map<String, Object> m : list){
-    			bbl = new BillBoardList();
+    			bbl = new BillBoardListDTO();
     			bbl.setTargetId((Long)m.get("uid"));
     			bbl.setType(2);
-    			bbl.setSinceId(((Long)m.get("tid")).intValue());
+    			bbl.setSinceId((Long)m.get("tid"));
     			result.add(bbl);
     		}
     	}
@@ -376,7 +378,7 @@ public class LiveForContentJdbcDao {
      * @param pageSize
      * @return
      */
-    public List<BillBoardList> getInteractionHottestKingdomBillboard(long sinceId, int pageSize){
+    public List<BillBoardListDTO> getInteractionHottestKingdomBillboard(long sinceId, int pageSize){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select t.id,m.cc as sinceId from topic t,content c,(");
     	sb.append("select f.topic_id,count(1) as cc");
@@ -388,18 +390,46 @@ public class LiveForContentJdbcDao {
     	
     	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
     	
-    	List<BillBoardList> result = new ArrayList<BillBoardList>();
+    	List<BillBoardListDTO> result = new ArrayList<BillBoardListDTO>();
     	if(null != list && list.size() > 0){
-    		BillBoardList bbl = null;
+    		BillBoardListDTO bbl = null;
     		for(Map<String, Object> m : list){
-    			bbl = new BillBoardList();
+    			bbl = new BillBoardListDTO();
     			bbl.setTargetId((Long)m.get("id"));
     			bbl.setType(1);
-    			bbl.setSinceId(((Long)m.get("sinceId")).intValue());
+    			bbl.setSinceId((Long)m.get("sinceId"));
     			result.add(bbl);
     		}
     	}
     	
+    	return result;
+    }
+    
+    /**
+     * 最新更新的王国
+     * @param sinceId
+     * @param pageSize
+     * @return
+     */
+    public List<BillBoardListDTO> getLivesByUpdateTime(long sinceId, int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select t.id,t.long_time from topic t where t.status=0");
+    	sb.append(" and t.long_time<").append(sinceId);
+    	sb.append(" order by t.long_time desc limit ").append(pageSize);
+    	
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	
+    	List<BillBoardListDTO> result = new ArrayList<BillBoardListDTO>();
+    	if(null != list && list.size() > 0){
+    		BillBoardListDTO bbl = null;
+    		for(Map<String, Object> m : list){
+    			bbl = new BillBoardListDTO();
+    			bbl.setTargetId((Long)m.get("id"));
+    			bbl.setType(1);
+    			bbl.setSinceId((Long)m.get("long_time"));
+    			result.add(bbl);
+    		}
+    	}
     	return result;
     }
 }
