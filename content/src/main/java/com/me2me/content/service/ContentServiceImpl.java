@@ -4287,7 +4287,7 @@ private void localJpush(long toUid){
         billBoardDetailsDto.setSubType(billBoard.getType());
 
         if(billBoard.getMode() > 0){//自动榜单
-        	this.buildAutoBillBoardDetails(billBoardDetailsDto, billBoard.getMode(), (int)sinceId, currentUid, billBoard.getType());
+        	this.buildAutoBillBoardDetails(billBoardDetailsDto, billBoard.getMode(), sinceId, currentUid, billBoard.getType());
         }else{//人工榜单
         	// 记载榜单旗下的列表数据
         	List<BillBoardRelation> data =  contentMybatisDao.loadBillBoardRelationsBySinceId(sinceId,bid);
@@ -4716,7 +4716,7 @@ private void localJpush(long toUid){
      * @param mode
      * @return
      */
-    private void buildAutoBillBoardDetails(BillBoardDetailsDto billBoardDetailsDto, int mode, int sinceId, long currentUid, int type){
+    private void buildAutoBillBoardDetails(BillBoardDetailsDto billBoardDetailsDto, int mode, long sinceId, long currentUid, int type){
     	List<BillBoardListDTO> result = this.getAutoBillBoardList(mode, sinceId, 20);
     	
     	if(null != result && result.size() > 0){
