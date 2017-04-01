@@ -46,7 +46,8 @@
         <!--<table tableName="topic_droparound" domainObjectName="TopicDroparound"/>-->
         <!--<table tableName="topic_droparound_trail" domainObjectName="TopicDroparoundTrail"/>-->
         <!--<table tableName="topic_fragment_template" domainObjectName="TopicFragmentTemplate"/>-->
-
+        <!--<table tableName="topic_tag" domainObjectName="TopicTag"/>-->
+        <!--<table tableName="topic_tag_detail" domainObjectName="TopicTagDetail"/>-->
 
     </context>
 </generatorConfiguration>
