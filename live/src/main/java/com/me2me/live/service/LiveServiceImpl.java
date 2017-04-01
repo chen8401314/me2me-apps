@@ -2757,7 +2757,9 @@ public class LiveServiceImpl implements LiveService {
 					contentService.updateContentById(content);
 				}
 				log.info("update cover success");
-				return Response.success();
+                LiveParamsDto paramsDto = new LiveParamsDto();
+                paramsDto.setCoverImage(Constant.QINIU_DOMAIN+"/"+dto.getParams());
+				return Response.success(paramsDto);
 			} else if (dto.getAction() == Specification.SettingModify.SUMMARY.index) {
 				topic.setSummary(dto.getParams());
 				liveMybatisDao.updateTopic(topic);
@@ -2819,7 +2821,12 @@ public class LiveServiceImpl implements LiveService {
 				liveMybatisDao.updateTopic(topic);
 				log.info("update AcPublishType success");
 				return Response.success();
-			}
+			}else if(dto.getAction() == Specification.SettingModify.LIVE_NAME.index){
+                topic.setTitle(dto.getParams());
+                liveMybatisDao.updateTopic(topic);
+                log.info("update live success");
+                return Response.success();
+            }
 		} else {
 			return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
 		}

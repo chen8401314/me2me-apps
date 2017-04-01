@@ -333,6 +333,10 @@ public interface UserService {
 
     Response click(int type ,DaoDaoDto daoDaoDto);
 
+    Response getIMUsertoken(long uid);
+
+    Response registAllIMtoken();
+
     /**
      * 搜索用户，供管理后台使用。
      * @author zhangjiwei
@@ -342,4 +346,5 @@ public interface UserService {
      * @return
      */
     PageBean<SearchUserDto> searchUserPage(PageBean page,Map<String,Object> queries);
+
 }

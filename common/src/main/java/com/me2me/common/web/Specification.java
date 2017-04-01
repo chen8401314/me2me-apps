@@ -1240,7 +1240,9 @@ public interface Specification {
 
         VERIFY("个人王国审核",6),
 
-        ISSUED_MESSAGE("个人王国下发消息",7);
+        ISSUED_MESSAGE("个人王国下发消息",7),
+
+        LIVE_NAME("王国名",8);
 
         public final String name;
         public final int index;

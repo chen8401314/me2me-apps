@@ -12,7 +12,6 @@ import com.me2me.common.Constant;
 import com.me2me.common.page.PageBean;
 import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.utils.CommonUtils;
-import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -128,6 +127,20 @@ public class UserServiceImpl implements UserService {
 
         // 第三方推广数据
         spreadChannelCount(userSignUpDto.getParams(),userSignUpDto.getSpreadChannel(), user);
+
+        //IM新用户获得token
+        try {
+            ImUserInfoDto imUserInfoDto = smsService.getIMUsertoken(user.getUid());
+            if(imUserInfoDto != null){
+                ImConfig imConfig = new ImConfig();
+                imConfig.setUid(user.getUid());
+                imConfig.setToken(imUserInfoDto.getToken());
+                userMybatisDao.createImConfig(imConfig);
+                log.info("create IM Config success");
+            }
+        } catch (Exception e) {
+            log.error("get im token failure");
+        }
 
         log.info("user is create");
         UserProfile userProfile = new UserProfile();
@@ -1995,7 +2008,7 @@ public class UserServiceImpl implements UserService {
     }
 
     //第三方登录公共方法
-    public void buildThirdPart(ThirdPartSignUpDto thirdPartSignUpDto ,LoginSuccessDto loginSuccessDto){
+    public void buildThirdPart(ThirdPartSignUpDto thirdPartSignUpDto ,LoginSuccessDto loginSuccessDto) {
         List<UserAccountBindStatusDto> array = Lists.newArrayList();
         User user = new User();
         user.setCreateTime(new Date());
@@ -2009,6 +2022,20 @@ public class UserServiceImpl implements UserService {
         log.info("user is create");
         // 第三方数据统计
         spreadChannelCount(thirdPartSignUpDto.getParams(),thirdPartSignUpDto.getSpreadChannel(),user);
+
+        //IM新用户获得token
+        try {
+            ImUserInfoDto imUserInfoDto = smsService.getIMUsertoken(user.getUid());
+            if(imUserInfoDto != null){
+                ImConfig imConfig = new ImConfig();
+                imConfig.setUid(user.getUid());
+                imConfig.setToken(imUserInfoDto.getToken());
+                userMybatisDao.createImConfig(imConfig);
+                log.info("create IM Config success");
+            }
+        } catch (Exception e) {
+            log.error("get im token failure");
+        }
 
         log.info("get user by username");
         User user1 = userMybatisDao.getUserByUserName(thirdPartSignUpDto.getThirdPartOpenId());
@@ -2752,7 +2779,42 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public Response getIMUsertoken(long customerId) {
+        ImUserInfoDto dto = new ImUserInfoDto();
+        ImConfig imConfig = userMybatisDao.getImConfig(customerId);
+        if(imConfig != null){
+            dto.setToken(imConfig.getToken());
+            dto.setUserId(String.valueOf(customerId));
+            return Response.success(dto);
+        }
+        return Response.failure(ResponseStatus.QI_QUERY_FAILURE.message);
+    }
+
+    @Override
+    public Response registAllIMtoken() {
+        List<User> userList = userMybatisDao.getAllUser();
+        if(userList.size() > 0 && userList != null){
+            for(User user : userList){
+                try {
+                    ImConfig imConfig = userMybatisDao.getImConfig(user.getUid());
+                    if(imConfig == null) {
+                        ImUserInfoDto imUserInfoDto = smsService.getIMUsertoken(user.getUid());
+                        ImConfig im = new ImConfig();
+                        im.setToken(imUserInfoDto.getToken());
+                        im.setUid(Long.valueOf(imUserInfoDto.getUserId()));
+                        userMybatisDao.createImConfig(im);
+                    }
+                } catch (Exception e) {
+                    return Response.failure("出错了");
+                }
+            }
+        }
+        return Response.success();
+    }
+
+    @Override
 	public PageBean<SearchUserDto> searchUserPage(PageBean page, Map<String, Object> queries) {
 		return userMybatisDao.searchUserPage(page,queries);
 	}
+
 }

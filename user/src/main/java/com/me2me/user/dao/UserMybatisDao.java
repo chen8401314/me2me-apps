@@ -103,6 +103,9 @@ public class UserMybatisDao {
 
     @Autowired
     private IosWapxMapper iosWapxMapper;
+
+    @Autowired
+    private ImConfigMapper imConfigMapper;
     
     @Autowired
     private VersionChannelDownloadMapper versionChannelDownloadMapper;
@@ -172,6 +175,10 @@ public class UserMybatisDao {
         criteria.andStatusEqualTo(Specification.UserStatus.NORMAL.index);
         List<User> users = userMapper.selectByExample(example);
         return (users!=null&&users.size()>0)? users.get(0):null;
+    }
+
+    public List<User> getAllUser(){
+        return userMapper.selectByExample(null);
     }
     
     public User getUserByUidPrimaryKey(long uid){
@@ -1056,4 +1063,16 @@ public class UserMybatisDao {
         List<IosWapx> list = iosWapxMapper.selectByExample(example);
         return (list!=null&&list.size()>0)?Boolean.TRUE :Boolean.FALSE;
     }
+
+    public void createImConfig(ImConfig imConfig){
+        imConfigMapper.insertSelective(imConfig);
+    }
+
+    public ImConfig getImConfig(long customerId){
+        ImConfigExample example = new ImConfigExample();
+        example.createCriteria().andUidEqualTo(customerId);
+        List<ImConfig> list = imConfigMapper.selectByExample(example);
+        return list.size()>0&&list!=null?list.get(0):null;
+    }
+
 }

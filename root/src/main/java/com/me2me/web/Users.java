@@ -1,12 +1,14 @@
 package com.me2me.web;
 
 import com.me2me.common.utils.CommonUtils;
+import com.me2me.common.web.Request;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseWapx;
 import com.me2me.kafka.service.KafkaService;
 import com.me2me.sms.dto.AwardXMDto;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.service.ChannelType;
+import com.me2me.sms.service.SmsService;
 import com.me2me.user.dto.*;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
@@ -40,6 +42,9 @@ public class Users extends BaseController {
 
     @Autowired
     private KafkaService kafkaService;
+
+    @Autowired
+    private SmsService smsService;
 
     /**
      * 用户注册接口
@@ -739,6 +744,27 @@ public class Users extends BaseController {
         }
         CommonUtils.copyDto(request ,dto);
         return userService.iosWapxUserRegist(dto);
+    }
+
+    /**
+     * IM 获取token
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getIMUsertoken",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getIMUsertoken(UserInfoRequest request){
+        return userService.getIMUsertoken(request.getCustomerId());
+    }
+
+    /**
+     * 全量注册userId接口(慎用)
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/registAllIMtoken",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response registAllIMtoken(){
+        return userService.registAllIMtoken();
     }
 
 }

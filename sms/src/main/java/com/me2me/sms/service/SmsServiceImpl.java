@@ -1,12 +1,16 @@
 package com.me2me.sms.service;
 
+import com.alibaba.fastjson.JSON;
 import com.google.common.base.Splitter;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.sms.YunXinSms;
+import com.me2me.common.utils.im.HostType;
+import com.me2me.common.utils.im.IMHttpUtil;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.sms.channel.MessageClient;
+import com.me2me.sms.dto.ImUserInfoDto;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.event.VerifyEvent;
 import com.me2me.sms.exception.SendMessageLimitException;
@@ -15,8 +19,11 @@ import com.me2me.sms.listener.VerifyCodeListener;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.net.HttpURLConnection;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 
@@ -39,6 +46,12 @@ public class SmsServiceImpl implements SmsService {
     private CacheService cacheService;
 
     private static final String VERIFY_PREFIX = "verify:";
+
+    @Value("#{app.IM_APP_KEY}")
+    private String IM_APP_KEY;
+
+    @Value("#{app.IM_APP_SECRET}")
+    private String IM_APP_SECRET;
 
     private Splitter splitter = Splitter.on("@").trimResults();
 
@@ -160,6 +173,11 @@ public class SmsServiceImpl implements SmsService {
     	}
     }
 
+    @Override
+    public ImUserInfoDto getIMUsertoken(long uid) throws Exception {
+        return getToken(String.valueOf(uid),"","");
+    }
+
     /**
      * List转换成String逗号分隔的形式
      *
@@ -169,4 +187,42 @@ public class SmsServiceImpl implements SmsService {
     private String getListToString(List list) {
         return StringUtils.join(list.toArray(), ",");
     }
+
+    /**
+     * Im 获取调用远程接口获取token
+     * @param userId
+     * @param name
+     * @param portraitUri
+     * @return
+     * @throws Exception
+     */
+    public ImUserInfoDto getToken(String userId, String name, String portraitUri) throws Exception {
+        if (userId == null) {
+            throw new IllegalArgumentException("Paramer 'userId' is required");
+        }
+
+        if (name == null) {
+            throw new IllegalArgumentException("Paramer 'name' is required");
+        }
+
+        if (portraitUri == null) {
+            throw new IllegalArgumentException("Paramer 'portraitUri' is required");
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("&userId=").append(URLEncoder.encode(userId.toString(), "UTF-8"));
+        sb.append("&name=").append(URLEncoder.encode(name.toString(), "UTF-8"));
+        sb.append("&portraitUri=").append(URLEncoder.encode(portraitUri.toString(), "UTF-8"));
+        String body = sb.toString();
+        if (body.indexOf("&") == 0) {
+            body = body.substring(1, body.length());
+        }
+
+        HttpURLConnection conn = IMHttpUtil.CreatePostHttpConnection(HostType.API, IM_APP_KEY, IM_APP_SECRET, "/user/getToken.json", "application/x-www-form-urlencoded");
+        IMHttpUtil.setBodyParameter(body, conn);
+        ImUserInfoDto result = JSON.parseObject(IMHttpUtil.returnResult(conn) ,ImUserInfoDto.class);
+
+        return result;
+    }
+
 }
