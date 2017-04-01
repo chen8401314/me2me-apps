@@ -112,9 +112,9 @@ var buildTableBody = function(dataList){
 			}
 			bodyHtml = bodyHtml + "</th>";
 			bodyHtml = bodyHtml + "<th>";
-			if(dataList[i].type == 0){
+			if(dataList[i].channelType == 0){
 				bodyHtml = bodyHtml + "万普";
-			}else if(dataList[i].type == 1){
+			}else if(dataList[i].channelType == 1){
 				bodyHtml = bodyHtml + "刀刀";
 			}else{
 				bodyHtml = bodyHtml + "未知";
@@ -225,7 +225,7 @@ var parserDatetimeStr = function(time){
 										<thead>
 											<tr>
 												<th>未激活数</th>
-												<th>已激活数</th>
+												<th>已注册数</th>
 											</tr>
 										</thead>
 										<tbody id="tbody0">
@@ -280,10 +280,10 @@ var parserDatetimeStr = function(time){
 													</th>
 													<th>
 													<c:choose>
-                                                		<c:when test="${item.type == '0'}">
+                                                		<c:when test="${item.channelType == '0'}">
                                                 			万普
                                                 		</c:when>
-                                                		<c:when test="${item.type == '1'}">
+                                                		<c:when test="${item.channelType == '1'}">
                                                 			刀刀
                                                 		</c:when>
                                                 		<c:otherwise>

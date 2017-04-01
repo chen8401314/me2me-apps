@@ -17,7 +17,7 @@ cp -r ./sns/target/jsw/app-sns-service $myPath
 cp -r ./kafka/target/jsw/app-kafka-service $myPath
 
 echo '##############################################################'
-echo '#                            success                         #'
+echo '#                 product build success                      #'
 echo '##############################################################'
 
 
