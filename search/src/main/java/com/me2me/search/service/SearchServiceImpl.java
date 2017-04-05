@@ -19,8 +19,8 @@ public class SearchServiceImpl implements SearchService {
     @Autowired
     private UserService userService;
 
-//    @Autowired
-//    private ElasticsearchTemplate elasticsearchTemplate;
+    @Autowired
+    private ElasticsearchTemplate elasticsearchTemplate;
 
 
     @Override
