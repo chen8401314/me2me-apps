@@ -2618,6 +2618,33 @@ public class LiveServiceImpl implements LiveService {
         cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
         //--add update kingdom cache -- modify by zcl -- end --
         
+        //add kingdom tags -- begin --
+        if(!StringUtils.isEmpty(createKingdomDto.getTags())){
+        	String[] tags = createKingdomDto.getTags().split(";");
+        	if(null != tags && tags.length > 0){
+        		TopicTag topicTag = null;
+        		TopicTagDetail tagDetail = null;
+        		for(String tag : tags){
+        			tag = tag.trim();
+        			if(!StringUtils.isEmpty(tag)){
+        				topicTag = liveMybatisDao.getTopicTagByTag(tag);
+        				if(null == topicTag){
+        					topicTag = new TopicTag();
+        					topicTag.setTag(tag);
+        					liveMybatisDao.insertTopicTag(topicTag);
+        				}
+        			}
+        			tagDetail = new TopicTagDetail();
+        			tagDetail.setTag(tag);
+        			tagDetail.setTagId(topicTag.getId());
+        			tagDetail.setTopicId(topic.getId());
+        			tagDetail.setUid(createKingdomDto.getUid());
+        			liveMybatisDao.insertTopicTagDetail(tagDetail);
+        		}
+        	}
+        }
+        //add kingdom tags -- end --
+        
         log.info("createKingdom end");
         return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status, ResponseStatus.USER_CREATE_LIVE_SUCCESS.message, speakDto2);
 	}

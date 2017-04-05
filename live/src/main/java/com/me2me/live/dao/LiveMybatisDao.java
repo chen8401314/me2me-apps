@@ -3,8 +3,6 @@ package com.me2me.live.dao;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
-import com.me2me.activity.model.AactivityExample.Criteria;
-import com.me2me.common.page.Page;
 import com.me2me.common.page.PageBean;
 import com.google.common.collect.Maps;
 import com.me2me.common.web.Specification;
@@ -12,7 +10,6 @@ import com.me2me.live.dto.GetLiveDetailDto;
 import com.me2me.live.dto.GetLiveUpdateDto;
 import com.me2me.live.dto.SearchDropAroundTopicDto;
 import com.me2me.live.dto.SearchTopicDto;
-import com.me2me.live.dto.ShowTopicListDto.ShowTopicElement;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.mapper.*;
 import com.me2me.live.model.*;
@@ -87,14 +84,15 @@ public class LiveMybatisDao {
 
     @Autowired
     private TopicDroparoundTrailMapper topicDroparoundTrailMapper;
-
-    
-    @Autowired
-    private TopicFragmentTemplateMapper fragmentTemplateMapper;
     
     @Autowired
     private TopicFragmentTemplateMapper topicFragmentTemplateMapper;
     
+    @Autowired
+    private TopicTagMapper topicTagMapper;
+    
+    @Autowired
+    private TopicTagDetailMapper topicTagDetailMapper;
 
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -891,7 +889,7 @@ public class LiveMybatisDao {
 		if(!StringUtils.isEmpty(queryStr)){
 			tf.createCriteria().andContentLike("%"+queryStr+"%");
 		}
-		List<TopicFragmentTemplate> templates = fragmentTemplateMapper.selectByExample(tf);
+		List<TopicFragmentTemplate> templates = topicFragmentTemplateMapper.selectByExample(tf);
 		return templates;
 	}
 	/**
@@ -901,7 +899,7 @@ public class LiveMybatisDao {
 	 * @param obj
 	 */
 	public void addFragmentTpl(TopicFragmentTemplate obj) {
-		fragmentTemplateMapper.insert(obj);
+		topicFragmentTemplateMapper.insert(obj);
 	}
 	/**
 	 * 根据ID取一个语言模板
@@ -911,7 +909,7 @@ public class LiveMybatisDao {
 	 * @return
 	 */
 	public TopicFragmentTemplate getFragmentTplById(Long id) {
-		return fragmentTemplateMapper.selectByPrimaryKey(id);
+		return topicFragmentTemplateMapper.selectByPrimaryKey(id);
 	}
 	/**
 	 * 删除王国语言模板
@@ -920,7 +918,7 @@ public class LiveMybatisDao {
 	 * @param msgId
 	 */
 	public void deleteFragmentTplById(Long msgId) {
-		fragmentTemplateMapper.deleteByPrimaryKey(msgId);
+		topicFragmentTemplateMapper.deleteByPrimaryKey(msgId);
 	}
 	/**
 	 * 修改王国语言模板
@@ -929,7 +927,7 @@ public class LiveMybatisDao {
 	 * @param obj
 	 */
 	public void updateFragmentTpl(TopicFragmentTemplate obj) {
-		fragmentTemplateMapper.updateByPrimaryKey(obj);
+		topicFragmentTemplateMapper.updateByPrimaryKey(obj);
 	}
 	/**
 	 *  添加可串门的王国
@@ -1051,5 +1049,23 @@ public class LiveMybatisDao {
 		page.setTotalRecords(count);
 		return page;
 	}
+	
+	public TopicTag getTopicTagByTag(String tag){
+		TopicTagExample example = new TopicTagExample();
+		TopicTagExample.Criteria criteria = example.createCriteria();
+		criteria.andTagEqualTo(tag);
+		List<TopicTag> list = topicTagMapper.selectByExample(example);
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
 
+	public void insertTopicTag(TopicTag tag){
+		topicTagMapper.insertSelective(tag);
+	}
+	
+	public void insertTopicTagDetail(TopicTagDetail tagDetail){
+		topicTagDetailMapper.insertSelective(tagDetail);
+	}
 }
