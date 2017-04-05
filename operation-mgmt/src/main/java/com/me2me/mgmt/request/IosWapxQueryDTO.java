@@ -60,5 +60,7 @@ public class IosWapxQueryDTO {
 		private Date optTime;
 		private long uid;
 		private int channelType;
+		private String registerMode;
+		private String registerNo;
 	}
 }

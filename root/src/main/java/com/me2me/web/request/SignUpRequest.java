@@ -57,14 +57,6 @@ public class SignUpRequest extends Request{
 
     @Getter
     @Setter
-    private String channel;
-
-    @Getter
-    @Setter
-    private String registerVersion;
-
-    @Getter
-    @Setter
     private String params;
 
 

@@ -12,6 +12,9 @@ import com.me2me.common.web.BaseEntity;
 public class ShowTopicSearchDTO implements BaseEntity {
 	private static final long serialVersionUID = -5312235639141472373L;
 
+	private long acCount;
+	private long ceCount;
+	
 	private List<TopicElement> resultList = Lists.newArrayList();
 	
 	@Data

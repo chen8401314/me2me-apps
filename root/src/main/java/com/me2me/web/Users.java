@@ -64,7 +64,7 @@ public class Users extends BaseController {
         userSignUpDto.setOs(request.getOs());
         userSignUpDto.setIntroduced(request.getIntroduced());
         userSignUpDto.setChannel(request.getChannel());
-        userSignUpDto.setRegisterVersion(request.getRegisterVersion());
+        userSignUpDto.setRegisterVersion(request.getVersion());
         userSignUpDto.setParams(request.getParams());
 
         //埋点
@@ -606,13 +606,12 @@ public class Users extends BaseController {
         dto.setNickName(request.getNickName());
         dto.setGender(request.getGender());
         dto.setJPushToken(request.getJPushToken());
-//        dto.setUid(request.getUid());
         dto.setUnionId(request.getUnionId());
         dto.setH5type(request.getH5type());
         dto.setNewNickName(request.getNewNickName());
         dto.setChannel(request.getChannel());
         dto.setPlatform(request.getPlatform());
-        dto.setRegisterVersion(request.getRegisterVersion());
+        dto.setRegisterVersion(request.getVersion());
         dto.setParams(request.getParams());
         return userService.thirdPartLogin(dto);
     }

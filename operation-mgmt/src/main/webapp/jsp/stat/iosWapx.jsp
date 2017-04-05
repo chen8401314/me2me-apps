@@ -103,7 +103,6 @@ var buildTableBody = function(dataList){
 		for(var i=0;i<dataList.length;i++){
 			bodyHtml = bodyHtml + "<tr class=\"gradeX\">";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].idfa+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].callbackurl+"</th>";
 			bodyHtml = bodyHtml + "<th>";
 			if(dataList[i].status == 0){
 				bodyHtml = bodyHtml + "<font color='red'>未激活</font>";
@@ -122,6 +121,8 @@ var buildTableBody = function(dataList){
 			bodyHtml = bodyHtml + "</th>";
 			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].optTime))+"</th>";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].uid+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].registerMode+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].registerNo+"</th>";
 			bodyHtml = bodyHtml + "</tr>";
 		}
 	}
@@ -256,18 +257,18 @@ var parserDatetimeStr = function(time){
 										<thead>
 											<tr>
 												<th>IDFA</th>
-												<th>CallBackUrl</th>
 												<th>状态</th>
 												<th>广告商</th>
 												<th>操作时间</th>
 												<th>UID</th>
+												<th>注册方式</th>
+												<th>注册号</th>
 											</tr>
 										</thead>
 										<tbody id="tbody">
 											<c:forEach items="${dataObj.result}" var="item">
 												<tr class="gradeX">
 													<th>${item.idfa }</th>
-													<th>${item.callbackurl }</th>
 													<th>
 													<c:choose>
                                                 		<c:when test="${item.status == '0'}">
@@ -293,6 +294,8 @@ var parserDatetimeStr = function(time){
 													</th>
 													<th><fmt:formatDate value="${item.optTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
 													<th>${item.uid }</th>
+													<th>${item.registerMode }</th>
+													<th>${item.registerNo }</th>
 												</tr>
 											</c:forEach>
 										</tbody>
