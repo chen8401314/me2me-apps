@@ -52,10 +52,6 @@ public class ThirdPartRequest extends Request {
 
     @Getter
     @Setter
-    private long uid;
-
-    @Getter
-    @Setter
     private String mobile;
 
     @Getter
@@ -77,10 +73,6 @@ public class ThirdPartRequest extends Request {
     @Getter
     @Setter
     private int platform;
-
-    @Getter
-    @Setter
-    private String channel;
 
     @Getter
     @Setter
