@@ -76,9 +76,9 @@
     <profiles>
         <profile>
             <id>dev</id>
-          <activation>
-            <activeByDefault>true</activeByDefault>
-            </activation>
+          <!--<activation>-->
+            <!--<activeByDefault>true</activeByDefault>-->
+            <!--</activation>-->
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>
@@ -86,6 +86,7 @@
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
+            <!--
             <build>
                 <plugins>
                     <plugin>
@@ -125,6 +126,7 @@
                     </plugin>
                 </plugins>
             </build>
+             -->
         </profile>
     </profiles>
 </project>
