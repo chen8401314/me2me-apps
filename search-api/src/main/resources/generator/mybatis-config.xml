@@ -32,8 +32,10 @@
         <!--<table tableName="topic" domainObjectName="Topic"/> -->
         <!--<table tableName="topic_fragment" domainObjectName="TopicFragment"/>-->
         <!--<table tableName="live_favorite" domainObjectName="LiveFavorite"/>-->
-        <table tableName="activity" domainObjectName="Activity"/>
-        <table tableName="user_activity" domainObjectName="UserActivity"/>
+        <!--<table tableName="activity" domainObjectName="Activity"/>-->
+        <!--<table tableName="user_activity" domainObjectName="UserActivity"/>-->
+        <table tableName="search_history_count" domainObjectName="SearchHistoryCount"/>
+        <table tableName="hot_keyword" domainObjectName="HotKeyword"/>
 
     </context>
 </generatorConfiguration>
