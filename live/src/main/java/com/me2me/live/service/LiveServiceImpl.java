@@ -2664,12 +2664,32 @@ public class LiveServiceImpl implements LiveService {
 				}
 			}
 		}else{
-			topicList = liveLocalJdbcDao.getKingdomListBySearchScene(currentUid, searchDTO);
+			if(searchDTO.getSearchScene() == 7){
+				//TODO 获取推荐列表
+			}else{
+				topicList = liveLocalJdbcDao.getKingdomListBySearchScene(currentUid, searchDTO);
+			}
 		}
 		
 		ShowTopicSearchDTO showTopicSearchDTO = new ShowTopicSearchDTO();
+		//先将场景需要的一些信息不全，再处理检索列表
+    	if(searchDTO.getSearchScene() > 0){
+    		if(searchDTO.getSearchScene() == 2 && searchDTO.getTopicId() > 0){//聚合王国被动场景
+    			//需要被检索王国的子王国数
+    			int acCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId(searchDTO.getTopicId());
+    			showTopicSearchDTO.setAcCount(acCount);
+    		}else if(searchDTO.getSearchScene() == 4 && searchDTO.getTopicId() > 0){//个人王国被动场景
+    			//需要被检索王国的母王国数
+    			int ceCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId2(searchDTO.getTopicId());
+    			showTopicSearchDTO.setCeCount(ceCount);
+    		}else if(searchDTO.getSearchScene() == 7 && searchDTO.getTopicId() > 0){//聚合王国新主动场景
+    			//需要被检索王国的子王国数
+    			int acCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId(searchDTO.getTopicId());
+    			showTopicSearchDTO.setAcCount(acCount);
+    		}
+    	}
 		if(null != topicList && topicList.size() > 0){
-			this.builderTopicSearch(currentUid, showTopicSearchDTO, topicList, topMap, publishMap, searchDTO);
+			this.builderTopicSearch(currentUid, showTopicSearchDTO, topicList, topMap, publishMap);
 		}
 		return Response.success(showTopicSearchDTO);
 	}
@@ -2835,24 +2855,7 @@ public class LiveServiceImpl implements LiveService {
 	}
 
     private void builderTopicSearch(long uid, ShowTopicSearchDTO showTopicSearchDTO, List<Map<String,Object>> topicList, 
-    		Map<String, String> topMap, Map<String, String> publishMap, KingdomSearchDTO searchDTO) {
-    	//先将场景需要的一些信息不全，再处理检索列表
-    	if(searchDTO.getSearchScene() > 0){
-    		if(searchDTO.getSearchScene() == 2 && searchDTO.getTopicId() > 0){//聚合王国被动场景
-    			//需要被检索王国的子王国数
-    			int acCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId(searchDTO.getTopicId());
-    			showTopicSearchDTO.setAcCount(acCount);
-    		}else if(searchDTO.getSearchScene() == 4 && searchDTO.getTopicId() > 0){//个人王国被动场景
-    			//需要被检索王国的母王国数
-    			int ceCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId2(searchDTO.getTopicId());
-    			showTopicSearchDTO.setCeCount(ceCount);
-    		}else if(searchDTO.getSearchScene() == 7 && searchDTO.getTopicId() > 0){//聚合王国新主动场景
-    			//需要被检索王国的子王国数
-    			int acCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId(searchDTO.getTopicId());
-    			showTopicSearchDTO.setAcCount(acCount);
-    		}
-    	}
-    	
+    		Map<String, String> topMap, Map<String, String> publishMap) {
     	if(null == topicList || topicList.size() == 0){
     		return;
     	}
