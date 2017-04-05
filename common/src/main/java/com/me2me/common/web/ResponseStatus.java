@@ -446,8 +446,15 @@ public enum  ResponseStatus {
 
     YOU_NOT_JOIN_OWNER_TOPIC("你不能加入自己建立/自己是核心圈的王国", "you not join owner topic",50065),
 
+    YOU_DO_NOT_HAVE_PERMISSION("你无权操作","you have no permission",50066),
     
 
+    
+    
+    
+    
+    
+    
     ILLEGAL_REQUEST("非法的请求参数","illegal request",50099);
 
     public final String message;

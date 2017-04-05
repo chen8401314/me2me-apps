@@ -2618,6 +2618,33 @@ public class LiveServiceImpl implements LiveService {
         cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
         //--add update kingdom cache -- modify by zcl -- end --
         
+        //add kingdom tags -- begin --
+        if(!StringUtils.isEmpty(createKingdomDto.getTags())){
+        	String[] tags = createKingdomDto.getTags().split(";");
+        	if(null != tags && tags.length > 0){
+        		TopicTag topicTag = null;
+        		TopicTagDetail tagDetail = null;
+        		for(String tag : tags){
+        			tag = tag.trim();
+        			if(!StringUtils.isEmpty(tag)){
+        				topicTag = liveMybatisDao.getTopicTagByTag(tag);
+        				if(null == topicTag){
+        					topicTag = new TopicTag();
+        					topicTag.setTag(tag);
+        					liveMybatisDao.insertTopicTag(topicTag);
+        				}
+        			}
+        			tagDetail = new TopicTagDetail();
+        			tagDetail.setTag(tag);
+        			tagDetail.setTagId(topicTag.getId());
+        			tagDetail.setTopicId(topic.getId());
+        			tagDetail.setUid(createKingdomDto.getUid());
+        			liveMybatisDao.insertTopicTagDetail(tagDetail);
+        		}
+        	}
+        }
+        //add kingdom tags -- end --
+        
         log.info("createKingdom end");
         return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status, ResponseStatus.USER_CREATE_LIVE_SUCCESS.message, speakDto2);
 	}
@@ -2664,10 +2691,30 @@ public class LiveServiceImpl implements LiveService {
 				}
 			}
 		}else{
-			topicList = liveLocalJdbcDao.getKingdomListBySearchScene(currentUid, searchDTO);
+			if(searchDTO.getSearchScene() == 7){
+				//TODO 获取推荐列表
+			}else{
+				topicList = liveLocalJdbcDao.getKingdomListBySearchScene(currentUid, searchDTO);
+			}
 		}
 		
 		ShowTopicSearchDTO showTopicSearchDTO = new ShowTopicSearchDTO();
+		//先将场景需要的一些信息不全，再处理检索列表
+    	if(searchDTO.getSearchScene() > 0){
+    		if(searchDTO.getSearchScene() == 2 && searchDTO.getTopicId() > 0){//聚合王国被动场景
+    			//需要被检索王国的子王国数
+    			int acCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId(searchDTO.getTopicId());
+    			showTopicSearchDTO.setAcCount(acCount);
+    		}else if(searchDTO.getSearchScene() == 4 && searchDTO.getTopicId() > 0){//个人王国被动场景
+    			//需要被检索王国的母王国数
+    			int ceCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId2(searchDTO.getTopicId());
+    			showTopicSearchDTO.setCeCount(ceCount);
+    		}else if(searchDTO.getSearchScene() == 7 && searchDTO.getTopicId() > 0){//聚合王国新主动场景
+    			//需要被检索王国的子王国数
+    			int acCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId(searchDTO.getTopicId());
+    			showTopicSearchDTO.setAcCount(acCount);
+    		}
+    	}
 		if(null != topicList && topicList.size() > 0){
 			this.builderTopicSearch(currentUid, showTopicSearchDTO, topicList, topMap, publishMap);
 		}

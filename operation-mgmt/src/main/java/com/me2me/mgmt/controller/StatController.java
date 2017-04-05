@@ -1105,7 +1105,41 @@ public class StatController {
 		}
 		
 		if(null != list && list.size() > 0){
+			List<Long> uidList = new ArrayList<Long>();
+			Long uid = null;
+			for(Map<String, Object> map : list){
+				uid = (Long)map.get("uid");
+				if(null != uid && uid.longValue() > 0){
+					uidList.add(uid);
+				}
+			}
+			
+			Map<String, Map<String, Object>> userMap = new HashMap<String, Map<String, Object>>();
+			if(uidList.size() > 0){
+				StringBuilder sb = new StringBuilder();
+				sb.append("select * from user_profile u where u.uid in (");
+				for(int i=0;i<uidList.size();i++){
+					if(i>0){
+						sb.append(",");
+					}
+					sb.append(uidList.get(i).longValue());
+				}
+				sb.append(")");
+				List<Map<String, Object>> uList = null;
+				try{
+					uList = contentService.queryEvery(sb.toString());
+				}catch(Exception e){
+					logger.error("查询出错", e);
+				}
+				if(null != uList && uList.size() > 0){
+					for(Map<String, Object> m : uList){
+						userMap.put(String.valueOf(m.get("uid")), m);
+					}
+				}
+			}
+			
 			IosWapxQueryDTO.Item item = null;
+			Map<String, Object> user = null;
 			for(Map<String, Object> map : list){
 				item = new IosWapxQueryDTO.Item();
 				item.setApp((String)map.get("app"));
@@ -1117,8 +1151,16 @@ public class StatController {
 				item.setOs((String)map.get("os"));
 				item.setStatus((Integer)map.get("status"));
 				item.setUdid((String)map.get("udid"));
-				item.setUid((Long)map.get("uid"));
 				item.setChannelType((Integer)map.get("channel_typ"));
+				uid = (Long)map.get("uid");
+				item.setUid(uid);
+				if(null != uid && uid.longValue() > 0){
+					user = userMap.get(uid.toString());
+					if(null != user){
+						item.setRegisterMode(this.getRegisterMode((String)user.get("third_part_bind")));
+						item.setRegisterNo((String)user.get("mobile"));
+					}
+				}
 				dto.getResult().add(item);
 			}
 		}

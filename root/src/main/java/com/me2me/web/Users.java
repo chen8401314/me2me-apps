@@ -1,7 +1,6 @@
 package com.me2me.web;
 
 import com.me2me.common.utils.CommonUtils;
-import com.me2me.common.web.Request;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseWapx;
 import com.me2me.kafka.service.KafkaService;
@@ -17,6 +16,7 @@ import com.me2me.web.utils.VersionUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -27,15 +27,15 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ThreadPoolExecutor;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 赵朋扬
  * Date: 2016/2/25.
  */
+@Slf4j
 @Controller
 @RequestMapping(value = "/api/user")
 public class Users extends BaseController {
@@ -67,9 +67,14 @@ public class Users extends BaseController {
         userSignUpDto.setOs(request.getOs());
         userSignUpDto.setIntroduced(request.getIntroduced());
         userSignUpDto.setChannel(request.getChannel());
-        userSignUpDto.setRegisterVersion(request.getRegisterVersion());
+        userSignUpDto.setRegisterVersion(request.getVersion());
         userSignUpDto.setParams(request.getParams());
 
+        if(StringUtils.isEmpty(request.getChannel())){
+        	log.info("无渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"]");
+        }else{
+        	log.info("有渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"]");
+        }
         //埋点
 //        kafkaService.saveClientLog(request,req.getHeader("User-Agent"),Specification.ClientLogAction.REG_PAGE2_SAVE);
 
@@ -609,14 +614,20 @@ public class Users extends BaseController {
         dto.setNickName(request.getNickName());
         dto.setGender(request.getGender());
         dto.setJPushToken(request.getJPushToken());
-//        dto.setUid(request.getUid());
         dto.setUnionId(request.getUnionId());
         dto.setH5type(request.getH5type());
         dto.setNewNickName(request.getNewNickName());
         dto.setChannel(request.getChannel());
         dto.setPlatform(request.getPlatform());
-        dto.setRegisterVersion(request.getRegisterVersion());
+        dto.setRegisterVersion(request.getVersion());
         dto.setParams(request.getParams());
+        
+        if(StringUtils.isEmpty(request.getChannel())){
+        	log.info("无渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"]");
+        }else{
+        	log.info("有渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"]");
+        }
+        
         return userService.thirdPartLogin(dto);
     }
 
