@@ -4444,4 +4444,9 @@ public class LiveServiceImpl implements LiveService {
 		
 		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, "正常");
 	}
+	
+	@Override
+	public Response tagKingdoms(String tag, long sinceId){
+		return null;
+	}
 }

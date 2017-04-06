@@ -648,4 +648,15 @@ public class Live extends BaseController {
     public Response topicTagCheck(TopicTagCheckRequest request){
     	return liveService.topicTagCheck(request.getTag());
     }
+    
+    /**
+     * 标签王国查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/tagKingdoms",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response tagKingdoms(TagKingdomsRequest request){
+    	return liveService.tagKingdoms(request.getTag(), request.getSinceId());
+    }
 }
