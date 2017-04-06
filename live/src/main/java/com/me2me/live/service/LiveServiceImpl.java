@@ -224,6 +224,22 @@ public class LiveServiceImpl implements LiveService {
         }else{
         	liveCoverDto.setIsRec(0);
         }
+
+        //标签
+        String tags = "";
+        List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetail(topicId);
+        if(topicTagDetails != null && topicTagDetails.size() > 0){
+            StringBuilder builder = new StringBuilder();
+            for (TopicTagDetail detail : topicTagDetails){
+                String tag = detail.getTag();
+                if(tags.equals("")){
+                    tags = builder.append(tag).toString();
+                }else {
+                    builder.append(";"+tag);
+                }
+            }
+            liveCoverDto.setTags(builder.toString());
+        }
         
         if(content.getReadCount() == 1 || content.getReadCount() == 2){
             liveCoverDto.setReadCount(1);
@@ -392,6 +408,22 @@ public class LiveServiceImpl implements LiveService {
         	showLiveDto.setIsRec(1);
         }else{
         	showLiveDto.setIsRec(0);
+        }
+
+        //标签
+        String tags = "";
+        List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetail(cid);
+        if(topicTagDetails != null && topicTagDetails.size() > 0){
+            StringBuilder builder = new StringBuilder();
+            for (TopicTagDetail detail : topicTagDetails){
+                String tag = detail.getTag();
+                if(tags.equals("")){
+                    tags = builder.append(tag).toString();
+                }else {
+                    builder.append(";"+tag);
+                }
+            }
+            showLiveDto.setTags(builder.toString());
         }
         
         if(topic.getType() == Specification.KingdomType.NORMAL.index){//个人王国
@@ -2767,6 +2799,21 @@ public class LiveServiceImpl implements LiveService {
             dto.setAcPublishType(topic.getAcPublishType());
             dto.setCeAuditType(topic.getCeAuditType());
             dto.setAcAuditType(topic.getAcAuditType());
+            //标签
+            String tags = "";
+            List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetail(topicId);
+            if(topicTagDetails != null && topicTagDetails.size() > 0){
+                StringBuilder builder = new StringBuilder();
+                for (TopicTagDetail detail : topicTagDetails){
+                    String tag = detail.getTag();
+                    if(tags.equals("")){
+                        tags = builder.append(tag).toString();
+                    }else {
+                        builder.append(";"+tag);
+                    }
+                }
+                dto.setTags(builder.toString());
+            }
             log.info("get settings success");
         }
         return Response.success(dto);
