@@ -304,4 +304,6 @@ public interface LiveService {
 	Response topicTags(long uid, long topicId);
 	
 	Response topicTagsModify(long uid, long topicId, String tags);
+	
+	Response topicTagCheck(String tag);
 }

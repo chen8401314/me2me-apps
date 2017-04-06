@@ -4432,4 +4432,16 @@ public class LiveServiceImpl implements LiveService {
 		
 		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message);
 	}
+	
+	@Override
+	public Response topicTagCheck(String tag){
+		if(null != tag && !"".equals(tag.trim())){
+			TopicTag topicTag = liveMybatisDao.getTopicTagByTag(tag.trim());
+			if(null != topicTag && topicTag.getStatus() == 1){
+				return Response.failure(ResponseStatus.TAG_HAS_BEEN_FORBIDDEN.status,ResponseStatus.TAG_HAS_BEEN_FORBIDDEN.message);
+			}
+		}
+		
+		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, "正常");
+	}
 }

@@ -636,4 +636,16 @@ public class Live extends BaseController {
     public Response topicTagsModify(TopicTagsModifyRequest request){
     	return liveService.topicTagsModify(request.getUid(), request.getTopicId(), request.getTags());
     }
+    
+    /**
+     * 王国标签校验接口
+     * 校验是否被禁用
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/topicTagCheck",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response topicTagCheck(TopicTagCheckRequest request){
+    	return liveService.topicTagCheck(request.getTag());
+    }
 }
