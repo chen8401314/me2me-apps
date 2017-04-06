@@ -2845,11 +2845,7 @@ public class LiveServiceImpl implements LiveService {
 			if (dto.getAction() == Specification.SettingModify.COVER.index) {
 				topic.setLiveImage(dto.getParams());
 				liveMybatisDao.updateTopic(topic);
-				Content content = contentService.getContentByTopicId(topic.getId());
-				if(null != content){
-					content.setConverImage(dto.getParams());
-					contentService.updateContentById(content);
-				}
+				liveLocalJdbcDao.updateTopicContentCover(topic.getId(), dto.getParams());
 				log.info("update cover success");
                 LiveParamsDto paramsDto = new LiveParamsDto();
                 paramsDto.setCoverImage(Constant.QINIU_DOMAIN+"/"+dto.getParams());
@@ -2918,6 +2914,7 @@ public class LiveServiceImpl implements LiveService {
 			}else if(dto.getAction() == Specification.SettingModify.LIVE_NAME.index){
                 topic.setTitle(dto.getParams());
                 liveMybatisDao.updateTopic(topic);
+                liveLocalJdbcDao.updateTopicContentTitle(topic.getId(), dto.getParams());
                 log.info("update live success");
                 return Response.success();
             }

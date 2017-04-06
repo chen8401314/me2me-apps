@@ -13,7 +13,6 @@ import com.me2me.live.dto.KingdomSearchDTO;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.LiveFavoriteDelete;
 import com.me2me.live.model.TopicBarrage;
-import com.me2me.live.model.TopicTag;
 
 @Repository
 public class LiveLocalJdbcDao {
@@ -665,5 +664,28 @@ public class LiveLocalJdbcDao {
 		sb.append(" order by t.long_time DESC limit ").append(pageSize);
 		
 		return jdbcTemplate.queryForList(sb.toString());
+	}
+	
+	public void updateTopicContentCover(long topicId, String cover){
+		StringBuilder sb = new StringBuilder();
+		sb.append("update content set conver_image='").append(cover);
+		sb.append("' where forward_cid=").append(topicId);
+		sb.append(" and type in (3,6)");
+		
+		jdbcTemplate.execute(sb.toString());
+	}
+	
+	public void updateTopicContentTitle(long topicId, String title){
+		StringBuilder sb = new StringBuilder();
+		sb.append("update content set title='").append(title);
+		sb.append("' where forward_cid=").append(topicId);
+		sb.append(" and type=3");
+		jdbcTemplate.execute(sb.toString());
+		
+		StringBuilder sb2 = new StringBuilder();
+		sb2.append("update content set forward_title='").append(title);
+		sb2.append("' where forward_cid=").append(topicId);
+		sb2.append(" and type=6");
+		jdbcTemplate.execute(sb2.toString());
 	}
 }
