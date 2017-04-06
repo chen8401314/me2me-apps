@@ -615,4 +615,25 @@ public class Live extends BaseController {
         return liveService.myTopicOpt(request.getUid() ,request.getAction() ,request.getTopicId());
     }
 
+    /**
+     * 王国标签查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/topicTags",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response topicTags(TopicTagsRequest request){
+    	return liveService.topicTags(request.getTopicId());
+    }
+    
+    /**
+     * 王国标签更新接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/topicTagsModify",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response topicTagsModify(TopicTagsModifyRequest request){
+    	return liveService.topicTagsModify(request.getUid(), request.getTopicId(), request.getTags());
+    }
 }
