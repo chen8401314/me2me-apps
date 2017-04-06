@@ -2724,7 +2724,7 @@ public class LiveServiceImpl implements LiveService {
 			}
 		}else{
 			if(searchDTO.getSearchScene() == 7){
-				//TODO 获取推荐列表
+				topicList = liveLocalJdbcDao.getRecTopicByTag(searchDTO.getTopicId(), searchDTO.getUpdateTime(), 20, 0);//查询推荐的个人王国
 			}else{
 				topicList = liveLocalJdbcDao.getKingdomListBySearchScene(currentUid, searchDTO);
 			}
@@ -4641,6 +4641,198 @@ public class LiveServiceImpl implements LiveService {
             	e.setTags("");
             }
 			resultDTO.getKingdomList().add(e);
+		}
+		
+		return Response.success(resultDTO);
+	}
+	
+	@Override
+	public Response recQuery(long topicId, long sinceId, long currentUid){
+		ShowRecQueryDTO resultDTO = new ShowRecQueryDTO();
+		
+		if(sinceId < 0){
+			sinceId = Long.MAX_VALUE;
+		}
+		List<Map<String, Object>> topicList = null;
+		if(topicId > 0){
+			topicList = liveLocalJdbcDao.getRecTopicByTag(topicId, sinceId, 20, -1);
+		}
+		if(null == topicList || topicList.size() == 0){
+			return Response.success(resultDTO);
+		}
+		
+		List<Long> topicIdList = new ArrayList<Long>();
+		List<Long> ceTopicIdList = new ArrayList<Long>();
+		List<Long> uidList = new ArrayList<Long>();
+		for(Map<String, Object> m : topicList){
+			topicIdList.add((Long)m.get("id"));
+			uidList.add((Long)m.get("uid"));
+			if(((Integer)m.get("type")).intValue() == 1000){
+				ceTopicIdList.add((Long)m.get("id"));
+			}
+		}
+		
+		//一次性查询用户属性
+    	Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
+        List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
+        if(null != profileList && profileList.size() > 0){
+        	for(UserProfile up : profileList){
+        		profileMap.put(String.valueOf(up.getUid()), up);
+        	}
+        }
+        //一次性查询关注信息
+        Map<String, String> followMap = new HashMap<String, String>();
+        List<UserFollow> userFollowList = userService.getAllFollows(currentUid, uidList);
+        if(null != userFollowList && userFollowList.size() > 0){
+        	for(UserFollow uf : userFollowList){
+        		followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+        	}
+        }
+        //一次性查询所有王国的国王更新数，以及评论数
+        Map<String, Long> topicCountMap = new HashMap<String, Long>();
+        Map<String, Long> reviewCountMap = new HashMap<String, Long>();
+        List<Map<String, Object>> tcList = liveLocalJdbcDao.getTopicUpdateCount(topicIdList);
+        if(null != tcList && tcList.size() > 0){
+        	for(Map<String, Object> m : tcList){
+        		topicCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("topicCount"));
+        		reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
+        	}
+        }
+        //一次性查询所有topic对应的content
+        Map<String, Content> contentMap = new HashMap<String, Content>();
+        List<Content> contentList = contentService.getContentsByTopicIds(topicIdList);
+        if(null != contentList && contentList.size() > 0){
+        	for(Content c : contentList){
+        		contentMap.put(String.valueOf(c.getForwardCid()), c);
+        	}
+        }
+        //一次性获取当前用户针对于各王国是否收藏过
+        Map<String, LiveFavorite> liveFavoriteMap = new HashMap<String, LiveFavorite>();
+        List<LiveFavorite> liveFavoriteList = liveMybatisDao.getLiveFavoritesByUidAndTopicIds(currentUid, topicIdList);
+        if(null != liveFavoriteList && liveFavoriteList.size() > 0){
+        	for(LiveFavorite lf : liveFavoriteList){
+        		liveFavoriteMap.put(String.valueOf(lf.getTopicId()), lf);
+        	}
+        }
+        //一次性查询所有王国的成员数
+        Map<String, Long> topicMemberCountMap = liveLocalJdbcDao.getTopicMembersCount(topicIdList);
+        if(null == topicMemberCountMap){
+        	topicMemberCountMap = new HashMap<String, Long>();
+        }
+        //一次性查询聚合王国的子王国数
+        Map<String, Long> acCountMap = new HashMap<String, Long>();
+        if(ceTopicIdList.size() > 0){
+        	List<Map<String,Object>> acCountList = liveLocalJdbcDao.getTopicAggregationAcCountByTopicIds(ceTopicIdList);
+        	if(null != acCountList && acCountList.size() > 0){
+        		for(Map<String,Object> a : acCountList){
+        			acCountMap.put(String.valueOf(a.get("topic_id")), (Long)a.get("cc"));
+        		}
+        	}
+        }
+        //一次性查询王国的标签信息
+        Map<String, String> topicTagMap = new HashMap<String, String>();
+        List<TopicTagDetail> topicTagList = liveMybatisDao.getTopicTagDetailListByTopicIds(topicIdList);
+        if(null != topicTagList && topicTagList.size() > 0){
+        	long tid = 0;
+        	String tags = null;
+        	for(TopicTagDetail ttd : topicTagList){
+        		if(ttd.getTopicId().longValue() != tid){
+        			//先插入上一次
+        			if(tid > 0 && !StringUtils.isEmpty(tags)){
+        				topicTagMap.put(String.valueOf(tid), tags);
+        			}
+        			//再初始化新的
+        			tid = ttd.getTopicId().longValue();
+        			tags = null;
+        		}
+        		if(tags != null){
+        			tags = tags + ";" + ttd.getTag();
+        		}else{
+        			tags = ttd.getTag();
+        		}
+        	}
+        	if(tid > 0 && !StringUtils.isEmpty(tags)){
+        		topicTagMap.put(String.valueOf(tid), tags);
+        	}
+        }
+		
+        ShowRecQueryDTO.KingdomElement e = null;
+		UserProfile userProfile = null;
+		Content content = null;
+		Long kingUid = null;
+		Long tid = null;
+		for(Map<String, Object> topic : topicList){
+			kingUid = (Long)topic.get("uid");
+			tid = (Long)topic.get("id");
+			e = new ShowRecQueryDTO.KingdomElement();
+			userProfile = profileMap.get(kingUid.toString());
+			if(null == userProfile){
+				continue;
+			}
+			content = contentMap.get(tid.toString());
+			if(null == content){
+				continue;
+			}
+			e.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+			e.setNickName(userProfile.getNickName());
+			e.setUid(kingUid);
+			e.setV_lv(userProfile.getvLv());
+			if(null != followMap.get(currentUid+"_"+kingUid.longValue())){
+            	e.setIsFollowed(1);
+            }else{
+            	e.setIsFollowed(0);
+            }
+            if(null != followMap.get(kingUid.longValue()+"_"+currentUid)){
+            	e.setIsFollowMe(1);
+            }else{
+            	e.setIsFollowMe(0);
+            }
+            e.setSinceId((Long)topic.get("long_time"));
+            e.setTopicId(tid);
+            e.setTitle((String)topic.get("title"));
+            e.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
+            e.setCreateTime(((Date)topic.get("create_time")).getTime());
+            e.setLastUpdateTime((Long)topic.get("long_time"));
+            e.setUpdateTime((Long)topic.get("long_time"));
+            e.setType(3);//默认王国3
+            e.setContentType((Integer)topic.get("type"));
+            e.setInternalStatus(this.getUserInternalStatus((String)topic.get("core_circle"), currentUid));
+            if(null != topicCountMap.get(tid.toString())){
+            	e.setTopicCount(topicCountMap.get(tid.toString()).longValue());
+            }else{
+            	e.setTopicCount(0);
+            }
+            if(null != reviewCountMap.get(tid.toString())){
+            	e.setReviewCount(reviewCountMap.get(tid.toString()).longValue());
+            }else{
+            	e.setReviewCount(0);
+            }
+            e.setCid(content.getId());
+            e.setLikeCount(content.getLikeCount());
+            e.setReadCount(content.getReadCountDummy());
+            if(null != liveFavoriteMap.get(tid.toString())){
+            	e.setFavorite(1);
+            }else{
+            	e.setFavorite(0);
+            }
+            if(null != topicMemberCountMap.get(tid.toString())){
+            	e.setFavoriteCount(topicMemberCountMap.get(tid.toString()).intValue()+1);
+            }else{
+            	e.setFavoriteCount(1);
+            }
+            if(e.getContentType() == 1000){
+            	if(null != acCountMap.get(tid.toString())){
+            		e.setAcCount(acCountMap.get(tid.toString()).longValue());
+            	}else{
+            		e.setAcCount(0);
+            	}
+            }
+            if(null != topicTagMap.get(tid.toString())){
+            	e.setTags(topicTagMap.get(tid.toString()));
+            }else{
+            	e.setTags("");
+            }
+			resultDTO.getResult().add(e);
 		}
 		
 		return Response.success(resultDTO);

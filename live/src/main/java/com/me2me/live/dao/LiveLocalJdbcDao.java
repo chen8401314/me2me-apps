@@ -688,4 +688,30 @@ public class LiveLocalJdbcDao {
 		sb2.append(" and type=6");
 		jdbcTemplate.execute(sb2.toString());
 	}
+	
+	/**
+	 * 根据王国标签进行推荐
+	 * @param topicId	王国ID
+	 * @param sinceId	分页参数
+	 * @param pageSize	每页个数
+	 * @param topicType	待查询的王国类型，当<0时表示查询所有类型的王国
+	 * @return
+	 */
+	public List<Map<String, Object>> getRecTopicByTag(long topicId, long sinceId, int pageSize, int topicType){
+		if(topicId <= 0){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select t.* from topic t,(select DISTINCT d2.topic_id as tid");
+		sb.append("from topic_tag_detail d2 where d2.status=0 and d2.topic_id!=").append(topicId);
+		sb.append(" and d2.tag_id in (select d.tag_id from topic_tag_detail d");
+		sb.append(" where d.topic_id=").append(topicId).append(" and d.status=0)) m");
+		sb.append(" where t.id=m.tid and t.long_time<").append(sinceId);
+		if(topicType >= 0){
+			sb.append(" and t.type=").append(topicType);
+		}
+		sb.append(" order by t.long_time DESC limit ").append(pageSize);
+		
+		return jdbcTemplate.queryForList(sb.toString());
+	}
 }

@@ -301,11 +301,45 @@ public interface LiveService {
 	 */
 	PageBean<SearchTopicDto> getTopicPage(PageBean page,Map<String,Object> params);
 	
+	/**
+	 * 王国标签查询
+	 * @param uid
+	 * @param topicId
+	 * @return
+	 */
 	Response topicTags(long uid, long topicId);
 	
+	/**
+	 * 王国标签修改
+	 * @param uid
+	 * @param topicId
+	 * @param tags
+	 * @return
+	 */
 	Response topicTagsModify(long uid, long topicId, String tags);
 	
+	/**
+	 * 王国标签校验
+	 * @param tag
+	 * @return
+	 */
 	Response topicTagCheck(String tag);
 	
+	/**
+	 * 标签王国查询
+	 * @param tag
+	 * @param sinceId
+	 * @param currentUid
+	 * @return
+	 */
 	Response tagKingdoms(String tag, long sinceId, long currentUid);
+	
+	/**
+	 * 王国关联推荐查询接口
+	 * @param topicId
+	 * @param sinceId
+	 * @param currentUid
+	 * @return
+	 */
+	Response recQuery(long topicId, long sinceId, long currentUid);
 }

@@ -659,4 +659,15 @@ public class Live extends BaseController {
     public Response tagKingdoms(TagKingdomsRequest request){
     	return liveService.tagKingdoms(request.getTag(), request.getSinceId(), request.getUid());
     }
+    
+    /**
+     * 王国关联推荐获取接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/recQuery",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response recQuery(RecQueryRequest request){
+    	return liveService.recQuery(request.getTopicId(), request.getSinceId(), request.getUid());
+    }
 }
