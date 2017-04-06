@@ -1080,4 +1080,16 @@ public class LiveMybatisDao {
         criteria.andStatusEqualTo(0);
         return topicTagDetailMapper.selectByExample(example);
     }
+	
+	public List<TopicTagDetail> getTopicTagDetailListByTopicIds(List<Long> topicIds){
+		if(null == topicIds || topicIds.size() == 0){
+			return null;
+		}
+		TopicTagDetailExample example = new TopicTagDetailExample();
+        TopicTagDetailExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdIn(topicIds);
+        criteria.andStatusEqualTo(0);
+        example.setOrderByClause(" topic_id asc,id asc ");
+        return topicTagDetailMapper.selectByExample(example);
+	}
 }

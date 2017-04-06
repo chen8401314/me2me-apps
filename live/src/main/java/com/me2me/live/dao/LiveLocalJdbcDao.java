@@ -656,4 +656,14 @@ public class LiveLocalJdbcDao {
 		
 		return jdbcTemplate.queryForList(sb.toString());
 	}
+	
+	public List<Map<String, Object>> getTagKingdomListByTag(String tag, long sinceId, int pageSize){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select t.* from topic_tag_detail d,topic t");
+		sb.append(" where d.tag='").append(tag).append("' and d.status=0");
+		sb.append(" and d.topic_id=t.id and t.long_time<").append(sinceId);
+		sb.append(" order by t.long_time DESC limit ").append(pageSize);
+		
+		return jdbcTemplate.queryForList(sb.toString());
+	}
 }

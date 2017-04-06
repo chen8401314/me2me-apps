@@ -657,6 +657,6 @@ public class Live extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/tagKingdoms",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response tagKingdoms(TagKingdomsRequest request){
-    	return liveService.tagKingdoms(request.getTag(), request.getSinceId());
+    	return liveService.tagKingdoms(request.getTag(), request.getSinceId(), request.getUid());
     }
 }

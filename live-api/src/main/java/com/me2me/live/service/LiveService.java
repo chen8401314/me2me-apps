@@ -307,5 +307,5 @@ public interface LiveService {
 	
 	Response topicTagCheck(String tag);
 	
-	Response tagKingdoms(String tag, long sinceId);
+	Response tagKingdoms(String tag, long sinceId, long currentUid);
 }
