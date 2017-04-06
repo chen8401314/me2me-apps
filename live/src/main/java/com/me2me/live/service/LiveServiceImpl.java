@@ -4271,4 +4271,14 @@ public class LiveServiceImpl implements LiveService {
 		}
 		return liveMybatisDao.getTopicPage(page,params);
 	}
+	
+	@Override
+	public Response topicTags(long topicId){
+		return null;
+	}
+	
+	@Override
+	public Response topicTagsModify(long uid, long topicId, String tags){
+		return null;
+	}
 }

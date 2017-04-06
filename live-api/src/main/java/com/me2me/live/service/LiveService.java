@@ -300,4 +300,8 @@ public interface LiveService {
 	 * @return
 	 */
 	PageBean<SearchTopicDto> getTopicPage(PageBean page,Map<String,Object> params);
+	
+	Response topicTags(long topicId);
+	
+	Response topicTagsModify(long uid, long topicId, String tags);
 }
