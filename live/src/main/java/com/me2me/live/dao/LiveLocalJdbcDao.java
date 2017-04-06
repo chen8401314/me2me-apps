@@ -13,6 +13,7 @@ import com.me2me.live.dto.KingdomSearchDTO;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.LiveFavoriteDelete;
 import com.me2me.live.model.TopicBarrage;
+import com.me2me.live.model.TopicTag;
 
 @Repository
 public class LiveLocalJdbcDao {
@@ -634,4 +635,25 @@ public class LiveLocalJdbcDao {
     	
     	return result;
     }
+	
+	public List<Map<String, Object>> getMyTopicTags(long uid, int pageSize){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select d.tag, max(d.create_time) as maxtime");
+		sb.append(" from topic_tag_detail d,topic_tag t");
+		sb.append(" where d.tag_id = t.id and t.status=0");
+		sb.append(" and d.uid=").append(uid).append(" group by d.tag");
+		sb.append(" order by maxtime desc limit ").append(pageSize);
+		
+		return jdbcTemplate.queryForList(sb.toString());
+	}
+	
+	public List<Map<String, Object>> getRecTopicTags(int pageSize){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select t.tag,count(1) as kcount");
+		sb.append(" from topic_tag_detail d,topic_tag t");
+		sb.append(" where d.tag_id=t.id and t.is_rec=1 and t.status=0");
+		sb.append(" group by t.tag order by kcount DESC limit ").append(pageSize);
+		
+		return jdbcTemplate.queryForList(sb.toString());
+	}
 }

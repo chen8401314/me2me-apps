@@ -301,7 +301,7 @@ public interface LiveService {
 	 */
 	PageBean<SearchTopicDto> getTopicPage(PageBean page,Map<String,Object> params);
 	
-	Response topicTags(long topicId);
+	Response topicTags(long uid, long topicId);
 	
 	Response topicTagsModify(long uid, long topicId, String tags);
 }

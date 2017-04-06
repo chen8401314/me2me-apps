@@ -4320,12 +4320,116 @@ public class LiveServiceImpl implements LiveService {
 	}
 	
 	@Override
-	public Response topicTags(long topicId){
-		return null;
+	public Response topicTags(long uid, long topicId){
+		ShowTopicTagsDTO resultDTO = new ShowTopicTagsDTO();
+		//获取王国本身的王国
+		resultDTO.setTopicTags("");
+		if(topicId > 0){
+			List<TopicTagDetail> tagList = liveMybatisDao.getTopicTagDetail(topicId);
+			if(null != tagList && tagList.size() > 0){
+				StringBuilder topicTags = new StringBuilder();
+				TopicTagDetail ttd = null;
+				for(int i=0;i<tagList.size();i++){
+					ttd = tagList.get(i);
+					if(i>0){
+						topicTags.append(";");
+					}
+					topicTags.append(ttd.getTag());
+				}
+				resultDTO.setTopicTags(topicTags.toString());
+			}
+		}
+		//获取我常用的标签
+		resultDTO.setMyUsedTags("");
+		List<Map<String, Object>> myTags = liveLocalJdbcDao.getMyTopicTags(uid, 20);
+		if(null != myTags && myTags.size() > 0){
+			StringBuilder myTopicTags = new StringBuilder();
+			Map<String, Object> t = null;
+			for(int i=0;i<myTags.size();i++){
+				t = myTags.get(i);
+				if(i>0){
+					myTopicTags.append(";");
+				}
+				myTopicTags.append((String)t.get("tag"));
+			}
+			resultDTO.setMyUsedTags(myTopicTags.toString());
+		}
+		//获取推荐的标签
+		//2.2.3版本暂时先只返回运营推荐的标签
+		List<Map<String, Object>> recTags = liveLocalJdbcDao.getRecTopicTags(10);
+		if(null != recTags && recTags.size() > 0){
+			ShowTopicTagsDTO.TagElement e = null;
+			for(Map<String, Object> m : recTags){
+				e = new ShowTopicTagsDTO.TagElement();
+				e.setTag((String)m.get("tag"));
+				e.setTopicCount((Long)m.get("kcount"));
+				resultDTO.getRecTags().add(e);
+			}
+		}
+		
+		return Response.success(resultDTO);
 	}
 	
 	@Override
 	public Response topicTagsModify(long uid, long topicId, String tags){
-		return null;
+		//判断操作权限，这个操作只有国王、核心圈，以及管理员可以操作
+		Topic topic = liveMybatisDao.getTopicById(topicId);
+		if(null == topic){
+			return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
+		}
+		if(!this.isKing(uid, topic.getUid()) && !this.isInCore(uid, topic.getCoreCircle())
+				&& !userService.isAdmin(uid)){
+			return Response.failure(ResponseStatus.YOU_DO_NOT_HAVE_PERMISSION.status,ResponseStatus.YOU_DO_NOT_HAVE_PERMISSION.message);
+		}
+		
+		List<String> newTagList = new ArrayList<String>();
+		if(!StringUtils.isEmpty(tags)){
+			String[] tmp = tags.split(";");
+			for(String s : tmp){
+				s = s.trim();
+				if(!StringUtils.isEmpty(s)){
+					if(!newTagList.contains(s)){
+						newTagList.add(s);
+					}
+				}
+			}
+		}
+		
+		List<TopicTagDetail> tagList = liveMybatisDao.getTopicTagDetail(topicId);
+		
+		//先将需要删除的删除掉
+		if(null != tagList && tagList.size() > 0){
+			for(TopicTagDetail ttd : tagList){
+				if(newTagList.contains(ttd.getTag())){//已经有了，则不用重新保存一遍
+					newTagList.remove(ttd.getTag());
+				}else{//没有的，则需要删除掉
+					ttd.setStatus(1);
+					liveMybatisDao.updateTopicTagDetail(ttd);
+				}
+			}
+		}
+		
+		//剩下的需要保存到库里面
+		if(newTagList.size() > 0){
+			TopicTagDetail tagDetail = null;
+			TopicTag topicTag = null;
+			for(String tag : newTagList){
+				topicTag = liveMybatisDao.getTopicTagByTag(tag);
+				if(null == topicTag){
+					topicTag = new TopicTag();
+					topicTag.setTag(tag);
+					liveMybatisDao.insertTopicTag(topicTag);
+				}
+				
+    			tagDetail = new TopicTagDetail();
+    			tagDetail.setTag(tag);
+    			tagDetail.setTagId(topicTag.getId());
+    			tagDetail.setTopicId(topicId);
+    			tagDetail.setUid(uid);
+    			liveMybatisDao.insertTopicTagDetail(tagDetail);
+			}
+		}
+		
+		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message);
 	}
 }

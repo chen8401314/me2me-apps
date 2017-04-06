@@ -12,6 +12,7 @@ package com.me2me.common.web;
 public enum  ResponseStatus {
 
 
+	OPERATION_SUCCESS("操作成功", "operation success", 200),
 
     USER_SING_UP_SUCCESS("用户注册成功","user sign up success",2000),
 
@@ -448,7 +449,7 @@ public enum  ResponseStatus {
 
     YOU_DO_NOT_HAVE_PERMISSION("你无权操作","you have no permission",50066),
     
-
+    TAG_HAS_BEEN_FORBIDDEN("此标签已经禁用","tag has been forbidden", 50067),
     
     
     

@@ -623,7 +623,7 @@ public class Live extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/topicTags",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response topicTags(TopicTagsRequest request){
-    	return liveService.topicTags(request.getTopicId());
+    	return liveService.topicTags(request.getUid(), request.getTopicId());
     }
     
     /**
