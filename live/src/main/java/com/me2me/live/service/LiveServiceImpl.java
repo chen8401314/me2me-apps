@@ -3029,6 +3029,32 @@ public class LiveServiceImpl implements LiveService {
         if(null == topicMemberCountMap){
         	topicMemberCountMap = new HashMap<String, Long>();
         }
+        //一次性查询王国的标签信息
+        Map<String, String> topicTagMap = new HashMap<String, String>();
+        List<TopicTagDetail> topicTagList = liveMybatisDao.getTopicTagDetailListByTopicIds(tidList);
+        if(null != topicTagList && topicTagList.size() > 0){
+        	long tid = 0;
+        	String tags = null;
+        	for(TopicTagDetail ttd : topicTagList){
+        		if(ttd.getTopicId().longValue() != tid){
+        			//先插入上一次
+        			if(tid > 0 && !StringUtils.isEmpty(tags)){
+        				topicTagMap.put(String.valueOf(tid), tags);
+        			}
+        			//再初始化新的
+        			tid = ttd.getTopicId().longValue();
+        			tags = null;
+        		}
+        		if(tags != null){
+        			tags = tags + ";" + ttd.getTag();
+        		}else{
+        			tags = ttd.getTag();
+        		}
+        	}
+        	if(tid > 0 && !StringUtils.isEmpty(tags)){
+        		topicTagMap.put(String.valueOf(tid), tags);
+        	}
+        }
         
         UserProfile userProfile = null;
         ShowTopicSearchDTO.TopicElement e = null;
@@ -3139,6 +3165,12 @@ public class LiveServiceImpl implements LiveService {
             }
             
             e.setPageUpdateTime((Long)topic.get("longtime"));
+            
+            if(null != topicTagMap.get(topicId.toString())){
+            	e.setTags(topicTagMap.get(topicId.toString()));
+            }else{
+            	e.setTags("");
+            }
             
             showTopicSearchDTO.getResultList().add(e);
         }

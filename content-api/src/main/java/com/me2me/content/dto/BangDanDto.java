@@ -90,6 +90,7 @@ public class BangDanDto implements BaseEntity {
 
             private String introduced;
 
+            private String tags;
         }
     }
 

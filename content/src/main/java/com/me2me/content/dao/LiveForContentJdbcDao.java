@@ -432,4 +432,22 @@ public class LiveForContentJdbcDao {
     	}
     	return result;
     }
+    
+    public List<Map<String, Object>> getTopicTagDetailListByTopicIds(List<Long> topicIds){
+    	if(null == topicIds || topicIds.size() == 0){
+    		return null;
+    	}
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select * from topic_tag_detail d where d.status=0");
+    	sb.append("and d.topic_id in (");
+    	for(int i=0;i<topicIds.size();i++){
+    		if(i>0){
+    			sb.append(",");
+    		}
+    		sb.append(topicIds.get(i).longValue());
+    	}
+    	sb.append(") order by topic_id asc,id asc");
+    	
+    	return jdbcTemplate.queryForList(sb.toString());
+    }
 }

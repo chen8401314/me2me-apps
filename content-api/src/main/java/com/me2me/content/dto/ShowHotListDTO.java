@@ -73,6 +73,7 @@ public class ShowHotListDTO implements BaseEntity {
 		private int internalStatus;
 		private int acCount;
 		private int favoriteCount;
+		private String tags;
 		
 		private List<AcTopElement> acTopList = Lists.newArrayList();
 		
@@ -136,5 +137,6 @@ public class ShowHotListDTO implements BaseEntity {
 		private int likeCount;
 		private int reviewCount;
 		private String content;
+		private String tags;
 	}
 }
