@@ -7,11 +7,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.me2me.content.dto.BillBoardListDTO;
-import com.me2me.content.model.BillBoardList;
-import com.me2me.user.model.UserProfile;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -431,5 +428,34 @@ public class LiveForContentJdbcDao {
     		}
     	}
     	return result;
+    }
+    
+    /**
+     * 获取有王国的新注册的用户
+     * @param sex		-1全部，0女，1男
+     * @param sinceId
+     * @param pageSize
+     * @return
+     */
+    public List<BillBoardListDTO> getNewPeople(int sex, long sinceId, int pageSize){
+    	return null;
+    }
+    
+    public List<Map<String, Object>> getTopicTagDetailListByTopicIds(List<Long> topicIds){
+    	if(null == topicIds || topicIds.size() == 0){
+    		return null;
+    	}
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select * from topic_tag_detail d where d.status=0");
+    	sb.append(" and d.topic_id in (");
+    	for(int i=0;i<topicIds.size();i++){
+    		if(i>0){
+    			sb.append(",");
+    		}
+    		sb.append(topicIds.get(i).longValue());
+    	}
+    	sb.append(") order by topic_id asc,id asc");
+    	
+    	return jdbcTemplate.queryForList(sb.toString());
     }
 }

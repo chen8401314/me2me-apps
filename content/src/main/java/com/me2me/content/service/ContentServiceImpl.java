@@ -3457,6 +3457,34 @@ private void localJpush(long toUid){
         if(null == topicMemberCountMap){
         	topicMemberCountMap = new HashMap<String, Long>();
         }
+        //一次性查询王国的标签信息
+        Map<String, String> topicTagMap = new HashMap<String, String>();
+        List<Map<String, Object>> topicTagList = liveForContentJdbcDao.getTopicTagDetailListByTopicIds(topicIdList);
+        if(null != topicTagList && topicTagList.size() > 0){
+        	long tid = 0;
+        	String tags = null;
+        	Long topicId = null;
+        	for(Map<String, Object> ttd : topicTagList){
+        		topicId = (Long)ttd.get("topic_id");
+        		if(topicId.longValue() != tid){
+        			//先插入上一次
+        			if(tid > 0 && !StringUtils.isEmpty(tags)){
+        				topicTagMap.put(String.valueOf(tid), tags);
+        			}
+        			//再初始化新的
+        			tid = topicId.longValue();
+        			tags = null;
+        		}
+        		if(tags != null){
+        			tags = tags + ";" + (String)ttd.get("tag");
+        		}else{
+        			tags = (String)ttd.get("tag");
+        		}
+        	}
+        	if(tid > 0 && !StringUtils.isEmpty(tags)){
+        		topicTagMap.put(String.valueOf(tid), tags);
+        	}
+        }
         
         Map<String, Object> topic = null;
         Content topicContent = null;
@@ -3598,6 +3626,11 @@ private void localJpush(long toUid){
 						ceKingdomElement.getMemberList().add(memberElement);
 					}
 				}
+				if(null != topicTagMap.get(ce.getForwardCid().toString())){
+					ceKingdomElement.setTags(topicTagMap.get(ce.getForwardCid().toString()));
+	            }else{
+	            	ceKingdomElement.setTags("");
+	            }
 				result.getHottestCeKingdomData().add(ceKingdomElement);
 			}
 		}
@@ -3674,6 +3707,11 @@ private void localJpush(long toUid){
 					}else{
 						contentElement.setFavorite(0);
 					}
+					if(null != topicTagMap.get(c.getForwardCid().toString())){
+						contentElement.setTags(topicTagMap.get(c.getForwardCid().toString()));
+		            }else{
+		            	contentElement.setTags("");
+		            }
 				}
 				
 				result.getHottestContentData().add(contentElement);
@@ -3783,6 +3821,34 @@ private void localJpush(long toUid){
 	        if(null == topicMemberCountMap){
 	        	topicMemberCountMap = new HashMap<String, Long>();
 	        }
+	        //一次性查询王国的标签信息
+	        Map<String, String> topicTagMap = new HashMap<String, String>();
+	        List<Map<String, Object>> topicTagList = liveForContentJdbcDao.getTopicTagDetailListByTopicIds(topicIdList);
+	        if(null != topicTagList && topicTagList.size() > 0){
+	        	long tid = 0;
+	        	String tags = null;
+	        	Long topicId = null;
+	        	for(Map<String, Object> ttd : topicTagList){
+	        		topicId = (Long)ttd.get("topic_id");
+	        		if(topicId.longValue() != tid){
+	        			//先插入上一次
+	        			if(tid > 0 && !StringUtils.isEmpty(tags)){
+	        				topicTagMap.put(String.valueOf(tid), tags);
+	        			}
+	        			//再初始化新的
+	        			tid = topicId.longValue();
+	        			tags = null;
+	        		}
+	        		if(tags != null){
+	        			tags = tags + ";" + (String)ttd.get("tag");
+	        		}else{
+	        			tags = (String)ttd.get("tag");
+	        		}
+	        	}
+	        	if(tid > 0 && !StringUtils.isEmpty(tags)){
+	        		topicTagMap.put(String.valueOf(tid), tags);
+	        	}
+	        }
 			
 			ShowHotCeKingdomListDTO.HotCeKingdomElement ceKingdomElement = null;
 			ShowHotCeKingdomListDTO.AcTopElement acTopElement = null;
@@ -3867,6 +3933,11 @@ private void localJpush(long toUid){
 						ceKingdomElement.getMemberList().add(memberElement);
 					}
 				}
+				if(null != topicTagMap.get(ce.getForwardCid().toString())){
+					ceKingdomElement.setTags(topicTagMap.get(ce.getForwardCid().toString()));
+	            }else{
+	            	ceKingdomElement.setTags("");
+	            }
 				result.getHottestCeKingdomData().add(ceKingdomElement);
 			}
 		}
@@ -3936,6 +4007,7 @@ private void localJpush(long toUid){
     		Map<String, Content> topicContentMap = new HashMap<String, Content>();//王国内容表信息
     		Map<String, Long> reviewCountMap = new HashMap<String, Long>();//王国评论信息
     		Map<String, Long> topicMemberCountMap = null;//王国成员数信息
+	        Map<String, String> topicTagMap = new HashMap<String, String>();//一次性查询王国的标签信息
     		if(topicIdList.size() > 0){
 				List<Map<String, Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
 				if(null != topicList && topicList.size() > 0){
@@ -3967,6 +4039,32 @@ private void localJpush(long toUid){
 		        	}
 		        }
 		        topicMemberCountMap = liveForContentJdbcDao.getTopicMembersCount(topicIdList);
+		        List<Map<String, Object>> topicTagList = liveForContentJdbcDao.getTopicTagDetailListByTopicIds(topicIdList);
+		        if(null != topicTagList && topicTagList.size() > 0){
+		        	long tid = 0;
+		        	String tags = null;
+		        	Long topicId = null;
+		        	for(Map<String, Object> ttd : topicTagList){
+		        		topicId = (Long)ttd.get("topic_id");
+		        		if(topicId.longValue() != tid){
+		        			//先插入上一次
+		        			if(tid > 0 && !StringUtils.isEmpty(tags)){
+		        				topicTagMap.put(String.valueOf(tid), tags);
+		        			}
+		        			//再初始化新的
+		        			tid = topicId.longValue();
+		        			tags = null;
+		        		}
+		        		if(tags != null){
+		        			tags = tags + ";" + (String)ttd.get("tag");
+		        		}else{
+		        			tags = (String)ttd.get("tag");
+		        		}
+		        	}
+		        	if(tid > 0 && !StringUtils.isEmpty(tags)){
+		        		topicTagMap.put(String.valueOf(tid), tags);
+		        	}
+		        }
 			}
     		if(null == topicMemberCountMap){
 	        	topicMemberCountMap = new HashMap<String, Long>();
@@ -4099,6 +4197,11 @@ private void localJpush(long toUid){
 		                        	bangDanInnerData.setReviewCount(reviewCountMap.get(String.valueOf(targetId)).intValue());
 		                        }else{
 		                        	bangDanInnerData.setReviewCount(0);
+		                        }
+		                        if(null != topicTagMap.get(String.valueOf(targetId))){
+		                        	bangDanInnerData.setTags(topicTagMap.get(String.valueOf(targetId)));
+		                        }else{
+		                        	bangDanInnerData.setTags("");
 		                        }
 		                    }else if(billBoardRelation.getType()==2){// 人
 		                    	bangDanInnerData.setSubListId(billBoard.getId());
@@ -4314,6 +4417,7 @@ private void localJpush(long toUid){
         		Map<String, Content> topicContentMap = new HashMap<String, Content>();//王国内容表信息
         		Map<String, Long> reviewCountMap = new HashMap<String, Long>();//王国评论信息
         		Map<String, Long> topicMemberCountMap = null;//王国成员信息
+        		Map<String, String> topicTagMap = new HashMap<String, String>();
         		if(topicIdList.size() > 0){
     				List<Map<String, Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
     				if(null != topicList && topicList.size() > 0){
@@ -4345,6 +4449,32 @@ private void localJpush(long toUid){
     		        	}
     		        }
     		        topicMemberCountMap = liveForContentJdbcDao.getTopicMembersCount(topicIdList);
+    		        List<Map<String, Object>> topicTagList = liveForContentJdbcDao.getTopicTagDetailListByTopicIds(topicIdList);
+    		        if(null != topicTagList && topicTagList.size() > 0){
+    		        	long tid = 0;
+    		        	String tags = null;
+    		        	Long topicId = null;
+    		        	for(Map<String, Object> ttd : topicTagList){
+    		        		topicId = (Long)ttd.get("topic_id");
+    		        		if(topicId.longValue() != tid){
+    		        			//先插入上一次
+    		        			if(tid > 0 && !StringUtils.isEmpty(tags)){
+    		        				topicTagMap.put(String.valueOf(tid), tags);
+    		        			}
+    		        			//再初始化新的
+    		        			tid = topicId.longValue();
+    		        			tags = null;
+    		        		}
+    		        		if(tags != null){
+    		        			tags = tags + ";" + (String)ttd.get("tag");
+    		        		}else{
+    		        			tags = (String)ttd.get("tag");
+    		        		}
+    		        	}
+    		        	if(tid > 0 && !StringUtils.isEmpty(tags)){
+    		        		topicTagMap.put(String.valueOf(tid), tags);
+    		        	}
+    		        }
     			}
         		if(null == topicMemberCountMap){
         			topicMemberCountMap = new HashMap<String, Long>();
@@ -4427,6 +4557,11 @@ private void localJpush(long toUid){
                         	bangDanInnerData.setReviewCount(reviewCountMap.get(String.valueOf(targetId)).intValue());
                         }else{
                         	bangDanInnerData.setReviewCount(0);
+                        }
+                        if(null != topicTagMap.get(String.valueOf(targetId))){
+                        	bangDanInnerData.setTags(topicTagMap.get(String.valueOf(targetId)));
+                        }else{
+                        	bangDanInnerData.setTags("");
                         }
                     }else if(type==2){//人
                         bangDanInnerData.setUid(targetId);
@@ -4566,6 +4701,7 @@ private void localJpush(long toUid){
     		Map<String, Content> topicContentMap = new HashMap<String, Content>();
     		Map<String, Long> reviewCountMap = new HashMap<String, Long>();
     		Map<String, Long> topicMemberCountMap = null;
+    		Map<String, String> topicTagMap = new HashMap<String, String>();
     		if(topicIdList.size() > 0){
 				List<Map<String, Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
 				if(null != topicList && topicList.size() > 0){
@@ -4597,6 +4733,32 @@ private void localJpush(long toUid){
 		        	}
 		        }
 		        topicMemberCountMap = liveForContentJdbcDao.getTopicMembersCount(topicIdList);
+		        List<Map<String, Object>> topicTagList = liveForContentJdbcDao.getTopicTagDetailListByTopicIds(topicIdList);
+		        if(null != topicTagList && topicTagList.size() > 0){
+		        	long tid = 0;
+		        	String tags = null;
+		        	Long topicId = null;
+		        	for(Map<String, Object> ttd : topicTagList){
+		        		topicId = (Long)ttd.get("topic_id");
+		        		if(topicId.longValue() != tid){
+		        			//先插入上一次
+		        			if(tid > 0 && !StringUtils.isEmpty(tags)){
+		        				topicTagMap.put(String.valueOf(tid), tags);
+		        			}
+		        			//再初始化新的
+		        			tid = topicId.longValue();
+		        			tags = null;
+		        		}
+		        		if(tags != null){
+		        			tags = tags + ";" + (String)ttd.get("tag");
+		        		}else{
+		        			tags = (String)ttd.get("tag");
+		        		}
+		        	}
+		        	if(tid > 0 && !StringUtils.isEmpty(tags)){
+		        		topicTagMap.put(String.valueOf(tid), tags);
+		        	}
+		        }
 			}
     		if(null == topicMemberCountMap){
     			topicMemberCountMap = new HashMap<String, Long>();
@@ -4682,6 +4844,11 @@ private void localJpush(long toUid){
                     }else{
                     	bangDanInnerData.setReviewCount(0);
                     }
+                    if(null != topicTagMap.get(String.valueOf(bbl.getTargetId()))){
+                    	bangDanInnerData.setTags(topicTagMap.get(String.valueOf(bbl.getTargetId())));
+                    }else{
+                    	bangDanInnerData.setTags("");
+                    }
                 }else if(type==2){// 人
                 	bangDanInnerData.setSubListId(bid);
                     bangDanInnerData.setUid(bbl.getTargetId());
@@ -4741,6 +4908,7 @@ private void localJpush(long toUid){
     		Map<String, Content> topicContentMap = new HashMap<String, Content>();
     		Map<String, Long> reviewCountMap = new HashMap<String, Long>();
     		Map<String, Long> topicMemberCountMap = null;
+    		Map<String, String> topicTagMap = new HashMap<String, String>();
     		if(topicIdList.size() > 0){
 				List<Map<String, Object>> topicList = liveForContentJdbcDao.getTopicListByIds(topicIdList);
 				if(null != topicList && topicList.size() > 0){
@@ -4772,6 +4940,32 @@ private void localJpush(long toUid){
 		        	}
 		        }
 		        topicMemberCountMap = liveForContentJdbcDao.getTopicMembersCount(topicIdList);
+		        List<Map<String, Object>> topicTagList = liveForContentJdbcDao.getTopicTagDetailListByTopicIds(topicIdList);
+		        if(null != topicTagList && topicTagList.size() > 0){
+		        	long tid = 0;
+		        	String tags = null;
+		        	Long topicId = null;
+		        	for(Map<String, Object> ttd : topicTagList){
+		        		topicId = (Long)ttd.get("topic_id");
+		        		if(topicId.longValue() != tid){
+		        			//先插入上一次
+		        			if(tid > 0 && !StringUtils.isEmpty(tags)){
+		        				topicTagMap.put(String.valueOf(tid), tags);
+		        			}
+		        			//再初始化新的
+		        			tid = topicId.longValue();
+		        			tags = null;
+		        		}
+		        		if(tags != null){
+		        			tags = tags + ";" + (String)ttd.get("tag");
+		        		}else{
+		        			tags = (String)ttd.get("tag");
+		        		}
+		        	}
+		        	if(tid > 0 && !StringUtils.isEmpty(tags)){
+		        		topicTagMap.put(String.valueOf(tid), tags);
+		        	}
+		        }
 			}
     		if(null == topicMemberCountMap){
     			topicMemberCountMap = new HashMap<String, Long>();
@@ -4856,6 +5050,11 @@ private void localJpush(long toUid){
                     	bangDanInnerData.setReviewCount(reviewCountMap.get(String.valueOf(bbl.getTargetId())).intValue());
                     }else{
                     	bangDanInnerData.setReviewCount(0);
+                    }
+                    if(null != topicTagMap.get(String.valueOf(bbl.getTargetId()))){
+                    	bangDanInnerData.setTags(topicTagMap.get(String.valueOf(bbl.getTargetId())));
+                    }else{
+                    	bangDanInnerData.setTags("");
                     }
                     billBoardDetailsDto.getSubList().add(bangDanInnerData);
                 }else if(type==2){//人

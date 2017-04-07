@@ -12,5 +12,43 @@ public interface SearchService {
     Response search(String keyword,int page,int pageSize,long uid,int isSearchFans);
 
     Response assistant(String keyword);
+    
+    Response associatedWord(String keyword);
+
+    Response allSearch(long uid, String keyword, int searchType, int page, int pageSize);
+ 
+    /**
+     * 索引用户数据
+     * @author zhangjiwei
+     * @date Apr 7, 2017
+     * @param fully 是否全量
+     * @return 索引过的数据量
+     */
+	int indexUserData(boolean fully) throws Exception;
+	/**
+	 * 索引UGC数据
+	 * @author zhangjiwei
+	 * @date Apr 7, 2017
+	 * @param fully 是否全量
+	 * @return 索引过的数据量
+	 */
+	int indexUgcData(boolean fully) throws Exception;
+	/**
+	 * 索引王国数据。
+	 * @author zhangjiwei
+	 * @date Apr 7, 2017
+	 * @param fully 是否全量
+	 * @return 索引过的数据量
+	 */
+	int indexKingdomData(boolean fully) throws Exception;
+	/**
+	 * 搜索历史索引
+	 * @author zhangjiwei
+	 * @date Apr 7, 2017
+	 * @param fully
+	 * @return
+	 * @throws Exception
+	 */
+	int indexSearchHistory(boolean fully) throws Exception;
 
 }

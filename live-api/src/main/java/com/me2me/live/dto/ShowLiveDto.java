@@ -53,6 +53,10 @@ public class ShowLiveDto implements BaseEntity {
     private int isFollowMe;
 
     private int v_lv;
+
+    private String tags;
+
+    private String recTags;
     
     //0圈外 1圈内 2核心圈
     private int internalStatus;

@@ -121,8 +121,16 @@ var buildTableBody = function(dataList){
 			bodyHtml = bodyHtml + "</th>";
 			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].optTime))+"</th>";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].uid+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].registerMode+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].registerNo+"</th>";
+			if(dataList[i].registerMode){
+				bodyHtml = bodyHtml + "<th>"+dataList[i].registerMode+"</th>";
+			}else{
+				bodyHtml = bodyHtml + "<th></th>";
+			}
+			if(dataList[i].registerNo){
+				bodyHtml = bodyHtml + "<th>"+dataList[i].registerNo+"</th>";
+			}else{
+				bodyHtml = bodyHtml + "<th></th>";
+			}
 			bodyHtml = bodyHtml + "</tr>";
 		}
 	}

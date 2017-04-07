@@ -84,13 +84,13 @@ public class LiveMybatisDao {
 
     @Autowired
     private TopicDroparoundTrailMapper topicDroparoundTrailMapper;
-    
+
     @Autowired
     private TopicFragmentTemplateMapper topicFragmentTemplateMapper;
-    
+
     @Autowired
     private TopicTagMapper topicTagMapper;
-    
+
     @Autowired
     private TopicTagDetailMapper topicTagDetailMapper;
 
@@ -101,7 +101,7 @@ public class LiveMybatisDao {
     public Topic getTopicById(long topicId) {
         return topicMapper.selectByPrimaryKey(topicId);
     }
-    
+
     public List<Topic> getTopicsByIds(List<Long> ids){
     	TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
@@ -237,7 +237,7 @@ public class LiveMybatisDao {
         criteria.andStatusNotEqualTo(Specification.LiveStatus.LIVING.index);
         return topicMapper.countByExample(example);
     }
-    
+
     public List<Topic> getALLMyLivesByUpdateTime(long uid, long updateTime, List<Long> topics) {
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
@@ -364,7 +364,7 @@ public class LiveMybatisDao {
         List<LiveFavorite> liveFavoriteList = liveFavoriteMapper.selectByExample(example);
         return (liveFavoriteList != null && liveFavoriteList.size() > 0) ? liveFavoriteList.get(0) : null;
     }
-    
+
     public List<LiveFavorite> getLiveFavoritePageByTopicIdAndExceptUids(long topicId, List<Long> exceptUids, int start, int pageSize){
     	LiveFavoriteExample example = new LiveFavoriteExample();
         LiveFavoriteExample.Criteria criteria = example.createCriteria();
@@ -375,7 +375,7 @@ public class LiveMybatisDao {
         example.setOrderByClause(" id asc limit "+start+","+pageSize);
         return liveFavoriteMapper.selectByExample(example);
     }
-    
+
     public int countLiveFavoriteByTopicIdAndExceptUids(long topicId, List<Long> exceptUids){
     	LiveFavoriteExample example = new LiveFavoriteExample();
         LiveFavoriteExample.Criteria criteria = example.createCriteria();
@@ -385,7 +385,7 @@ public class LiveMybatisDao {
         }
         return liveFavoriteMapper.countByExample(example);
     }
-    
+
     public List<LiveFavorite> getLiveFavoritesByUidAndTopicIds(long uid, List<Long> topicIds){
     	if(null == topicIds || topicIds.size() == 0){
     		return null;
@@ -396,7 +396,7 @@ public class LiveMybatisDao {
         criteria.andTopicIdIn(topicIds);
         return liveFavoriteMapper.selectByExample(example);
     }
-    
+
     public List<LiveFavorite> getLiveFavoritesByUidsAndTopicId(List<Long> uids, long topicId){
     	LiveFavoriteExample example = new LiveFavoriteExample();
         LiveFavoriteExample.Criteria criteria = example.createCriteria();
@@ -501,7 +501,7 @@ public class LiveMybatisDao {
         List<TopicBarrage> topicBarrages = topicBarrageMapper.selectByExampleWithBLOBs(example);
         return com.me2me.common.utils.Lists.getSingle(topicBarrages);
     }
-    
+
     public List<TopicBarrage> getBarrageListByTopicIds(List<Long> topicIds, long topId, long bottomId, int type, long uid){
     	TopicBarrageExample example = new TopicBarrageExample();
         TopicBarrageExample.Criteria criteria = example.createCriteria();
@@ -563,7 +563,7 @@ public class LiveMybatisDao {
         List<LiveFavoriteDelete> list = liveFavoriteDeleteMapper.selectByExample(example);
         return com.me2me.common.utils.Lists.getSingle(list);
     }
-    
+
     public List<LiveFavoriteDelete> getFavoriteDeletesByTopicIds(long uid, List<Long> topicIds){
     	LiveFavoriteDeleteExample example = new LiveFavoriteDeleteExample();
         LiveFavoriteDeleteExample.Criteria criteria = example.createCriteria();
@@ -579,7 +579,7 @@ public class LiveMybatisDao {
         criteria.andTopicIdEqualTo(topicId);
         liveFavoriteDeleteMapper.deleteByExample(example);
     }
-    
+
     public void batchDeleteFavoriteDeletes(long uid, List<Long> topicIds){
     	LiveFavoriteDeleteExample example = new LiveFavoriteDeleteExample();
         LiveFavoriteDeleteExample.Criteria criteria = example.createCriteria();
@@ -587,7 +587,7 @@ public class LiveMybatisDao {
         criteria.andTopicIdIn(topicIds);
         liveFavoriteDeleteMapper.deleteByExample(example);
     }
-    
+
     public void batchDeleteFavoriteDeletesByUids(List<Long> uids, long topicId){
     	LiveFavoriteDeleteExample example = new LiveFavoriteDeleteExample();
         LiveFavoriteDeleteExample.Criteria criteria = example.createCriteria();
@@ -752,7 +752,7 @@ public class LiveMybatisDao {
     public Map<String,Long> countFragmentByTopicIdWithSince(GetLiveUpdateDto getLiveUpdateDto) {
         return topicFragmentMapper.countFragmentByTopicIdWithSince(getLiveUpdateDto);
     }
-    
+
     public TopicFragment getTopicFragmentById(long id){
     	return topicFragmentMapper.selectByPrimaryKey(id);
     }
@@ -769,7 +769,7 @@ public class LiveMybatisDao {
     public void updateTopicUserConfig(TopicUserConfig topicUserConfig) {
         topicUserConfigMapper.updateByPrimaryKeySelective(topicUserConfig);
     }
-    
+
     public void insertTopicUserConfig(TopicUserConfig topicUserConfig) {
     	topicUserConfigMapper.insertSelective(topicUserConfig);
     }
@@ -784,14 +784,14 @@ public class LiveMybatisDao {
     	criteria.andTopicIdEqualTo(topicId);
     	return topicAggregationMapper.selectByExample(example);
     }
-    
+
     public List<TopicAggregation> getTopicAggregationsBySubTopicId(long subTopicId){
     	TopicAggregationExample example = new TopicAggregationExample();
     	TopicAggregationExample.Criteria criteria = example.createCriteria();
     	criteria.andSubTopicIdEqualTo(subTopicId);
     	return topicAggregationMapper.selectByExample(example);
     }
-    
+
     public void updateTopicAggregationApply(TopicAggregationApply topicAggregationApply) {
         topicAggregationApplyMapper.updateByPrimaryKeySelective(topicAggregationApply);
     }
@@ -1013,7 +1013,7 @@ public class LiveMybatisDao {
 		}
 		List<SearchDropAroundTopicDto> topicList = topicDroparoundMapper.getDropAroundKingdomPage(obj);
 		int count = topicDroparoundMapper.countDropAroundKingdomPage(obj);
-		
+
 		page.setDataList(topicList);
 		page.setTotalRecords(count);
 		return page;
@@ -1022,11 +1022,11 @@ public class LiveMybatisDao {
 	public void truncateKingdomCountDay(){
 		topicMapper.truncateKingdomCountDay();
 	}
-	
+
 	public void statKingdomCountDay(){
 		topicMapper.statKingdomCountDay();
 	}
-	
+
     public TopicFragmentTemplate getTopicFragmentTemplate(){
         List<TopicFragmentTemplate> list = topicFragmentTemplateMapper.selectByExample(null);
         if(null != list && list.size() > 1){
@@ -1040,7 +1040,7 @@ public class LiveMybatisDao {
     }
 
 	public PageBean<SearchTopicDto> getTopicPage(PageBean page, Map<String, Object> params) {
-		
+
 		params.put("skip", (page.getCurrentPage()-1) * page.getPageSize());
 		params.put("limit", page.getPageSize());
 		long count = topicMapper.countTopicForPage(params);
@@ -1049,7 +1049,7 @@ public class LiveMybatisDao {
 		page.setTotalRecords(count);
 		return page;
 	}
-	
+
 	public TopicTag getTopicTagByTag(String tag){
 		TopicTagExample example = new TopicTagExample();
 		TopicTagExample.Criteria criteria = example.createCriteria();
@@ -1064,8 +1064,32 @@ public class LiveMybatisDao {
 	public void insertTopicTag(TopicTag tag){
 		topicTagMapper.insertSelective(tag);
 	}
-	
+
 	public void insertTopicTagDetail(TopicTagDetail tagDetail){
 		topicTagDetailMapper.insertSelective(tagDetail);
+	}
+	
+	public void updateTopicTagDetail(TopicTagDetail tagDetail){
+		topicTagDetailMapper.updateByPrimaryKeySelective(tagDetail);
+	}
+
+	public List<TopicTagDetail> getTopicTagDetail(long topicId){
+        TopicTagDetailExample example = new TopicTagDetailExample();
+        TopicTagDetailExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andStatusEqualTo(0);
+        return topicTagDetailMapper.selectByExample(example);
+    }
+	
+	public List<TopicTagDetail> getTopicTagDetailListByTopicIds(List<Long> topicIds){
+		if(null == topicIds || topicIds.size() == 0){
+			return null;
+		}
+		TopicTagDetailExample example = new TopicTagDetailExample();
+        TopicTagDetailExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdIn(topicIds);
+        criteria.andStatusEqualTo(0);
+        example.setOrderByClause(" topic_id asc,id asc ");
+        return topicTagDetailMapper.selectByExample(example);
 	}
 }

@@ -634,4 +634,84 @@ public class LiveLocalJdbcDao {
     	
     	return result;
     }
+	
+	public List<Map<String, Object>> getMyTopicTags(long uid, int pageSize){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select d.tag, max(d.create_time) as maxtime");
+		sb.append(" from topic_tag_detail d,topic_tag t");
+		sb.append(" where d.tag_id = t.id and t.status=0");
+		sb.append(" and d.uid=").append(uid).append(" group by d.tag");
+		sb.append(" order by maxtime desc limit ").append(pageSize);
+		
+		return jdbcTemplate.queryForList(sb.toString());
+	}
+	
+	public List<Map<String, Object>> getRecTopicTags(int pageSize){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select t.tag,count(1) as kcount");
+		sb.append(" from topic_tag_detail d,topic_tag t");
+		sb.append(" where d.tag_id=t.id and t.is_rec=1 and t.status=0");
+		sb.append(" group by t.tag order by kcount DESC limit ").append(pageSize);
+		
+		return jdbcTemplate.queryForList(sb.toString());
+	}
+	
+	public List<Map<String, Object>> getTagKingdomListByTag(String tag, long sinceId, int pageSize){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select t.* from topic_tag_detail d,topic t");
+		sb.append(" where d.tag='").append(tag).append("' and d.status=0");
+		sb.append(" and d.topic_id=t.id and t.long_time<").append(sinceId);
+		sb.append(" order by t.long_time DESC limit ").append(pageSize);
+		
+		return jdbcTemplate.queryForList(sb.toString());
+	}
+	
+	public void updateTopicContentCover(long topicId, String cover){
+		StringBuilder sb = new StringBuilder();
+		sb.append("update content set conver_image='").append(cover);
+		sb.append("' where forward_cid=").append(topicId);
+		sb.append(" and type in (3,6)");
+		
+		jdbcTemplate.execute(sb.toString());
+	}
+	
+	public void updateTopicContentTitle(long topicId, String title){
+		StringBuilder sb = new StringBuilder();
+		sb.append("update content set title='").append(title);
+		sb.append("' where forward_cid=").append(topicId);
+		sb.append(" and type=3");
+		jdbcTemplate.execute(sb.toString());
+		
+		StringBuilder sb2 = new StringBuilder();
+		sb2.append("update content set forward_title='").append(title);
+		sb2.append("' where forward_cid=").append(topicId);
+		sb2.append(" and type=6");
+		jdbcTemplate.execute(sb2.toString());
+	}
+	
+	/**
+	 * 根据王国标签进行推荐
+	 * @param topicId	王国ID
+	 * @param sinceId	分页参数
+	 * @param pageSize	每页个数
+	 * @param topicType	待查询的王国类型，当<0时表示查询所有类型的王国
+	 * @return
+	 */
+	public List<Map<String, Object>> getRecTopicByTag(long topicId, long sinceId, int pageSize, int topicType){
+		if(topicId <= 0){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select t.* from topic t,(select DISTINCT d2.topic_id as tid");
+		sb.append("from topic_tag_detail d2 where d2.status=0 and d2.topic_id!=").append(topicId);
+		sb.append(" and d2.tag_id in (select d.tag_id from topic_tag_detail d");
+		sb.append(" where d.topic_id=").append(topicId).append(" and d.status=0)) m");
+		sb.append(" where t.id=m.tid and t.long_time<").append(sinceId);
+		if(topicType >= 0){
+			sb.append(" and t.type=").append(topicType);
+		}
+		sb.append(" order by t.long_time DESC limit ").append(pageSize);
+		
+		return jdbcTemplate.queryForList(sb.toString());
+	}
 }
