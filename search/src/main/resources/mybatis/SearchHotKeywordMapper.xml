@@ -12,7 +12,7 @@
     </resultMap>
     
   <select id="getHotKeywords"  resultMap="hotKeyword">
-	 select id,keyword,order_num,is_valid,is_top,creation_date from t_hot_keyword 
+	 select * from search_hot_keyword 
 	 order by is_top desc, order_num desc,creation_date desc limit 0,#{limit}
   </select>
   

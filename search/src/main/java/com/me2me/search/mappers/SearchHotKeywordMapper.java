@@ -10,7 +10,7 @@ import com.me2me.search.dto.THotKeyword;
  * @author zhangjiwei
  * @date Apr 5, 2017
  */
-public interface HotKeywordMapper  {
+public interface SearchHotKeywordMapper  {
 	/**
 	 * 获取指定数量的热门关键字。
 	 * @author zhangjiwei

@@ -18,12 +18,8 @@ public interface ElasticSearchHandler {
      */
     void createIndex(String indexName);
     
-    void init();
-
 
     void addIndexData(String indexName,String type, List<String> jsonList) throws IOException;
-    
-    void addIndexData(String type, List<String> jsonList) throws IOException;
     
     /**
      * 指定index，type，并指定每个doc的id
@@ -34,15 +30,6 @@ public interface ElasticSearchHandler {
      */
     void addIndexData(String indexName,String type, Map<String, String> idJsonMap) throws IOException;
     
-    
-    String getIndexName();
-    
-    /**
-     * 通用检索方法，返回的对象需自行组装处理
-     * @param query	检索参数，包含检索表达式和分页相关信息
-     * @return
-     */
-    List<Map<String, Object>> commonSearch(SearchQuery query);
     /**
      * 通用检索方法，此方法包装了关键词高亮、结果总数等信息。
      * @param query	检索参数，包含检索表达式和分页相关信息

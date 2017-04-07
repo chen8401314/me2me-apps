@@ -42,71 +42,34 @@ import org.elasticsearch.search.sort.FieldSortBuilder;
 import org.elasticsearch.search.sort.SortOrder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.stereotype.Service;
 
 import com.alibaba.fastjson.JSONObject;
 import com.me2me.search.ElasticSearchHandler;
+import com.me2me.search.constants.IndexConstants;
 import com.me2me.search.dto.HighlightField;
 import com.me2me.search.dto.QueryOrder;
 import com.me2me.search.dto.SearchQuery;
 import com.me2me.search.dto.SearchResult;
 
-@Service("searchHandler")
+/**
+ * 老徐专用 。
+ * @author zhangjiwei
+ * @date Apr 7, 2017
+ */
+@Deprecated
+//@Service("searchHandler")
 public class ElasticSearchHandlerImpl implements ElasticSearchHandler {
 
     private static Logger logger = LoggerFactory.getLogger(ElasticSearchHandlerImpl.class);
-    @Value("${es.index}")
-    private String indexName;
-    @Value("${es.cluster}")
-    private String clusterName;
-
-    @Value("${es.ip1}")
-    private String host1;
-
-    @Value("${es.ip2}")
-    private String host2;
-
-    @Value("${music.stop}")
-    private boolean musicStop;
     
-    @Value("${music.url}")
-    private String musicUrl;
+    @Autowired
+    private ElasticsearchTemplate template;
     
-    @Value("${es.persona.index}")
-    private String personaIndexName;
-
-    @Value("${sociality.url}")
-    private String socialityUrl;
-    @Value("${sociality.yue.img.url}")
-    private String yueImgUrl;
-    @Value("${sociality.peiban.img.url}")
-    private String peibanImgUrl;
-    @Value("${sociality.xianliao.img.url}")
-    private String xianliaoImgUrl;
-    @Value("${sociality.hangyejiaoliu.img.url}")
-    private String hangyejiaoliuImgUrl;
-    @Value("${es.ugc.index}")
-	private String ugcIndexName;
-	
-	@Value("${es.kingdom.index}")
-    private String kingdomIndexName;
-	
-	@Value("${es.persona.index}")
-    private String persona;
-	
-	@Value("${es.index}")
-    private String articleIndexName;
-
-	@Value("${es.searchHistory.index}")
-	private String searchHistoryIndexName;
-
     private Client client;
-
-	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
-
-    private int tagMaxSize = 6; // 最大查询分项长度
 
     /**
      * 创建索引客户端
@@ -115,21 +78,6 @@ public class ElasticSearchHandlerImpl implements ElasticSearchHandler {
      */
     public ElasticSearchHandlerImpl() {
 
-    }
-
-    @PostConstruct
-    public void init() {
-        Settings settings = ImmutableSettings.settingsBuilder().put("client.transport.sniff", true).put("client", true)
-                .put("data", true).put("cluster.name", clusterName).build();
-
-        // FIXME 是否存在集群配置？for (ConfigObject.ESNodeObject nodeObject :
-        // ConfigObject.getInstance().getEsNodeObjects()) {
-        // client.addTransportAddress(new
-        // InetSocketTransportAddress(nodeObject.getAddress(),
-        // nodeObject.getPort()));
-        // XXX ES客户端对CPU的损耗比较厉害，是否在keepalives下
-        client = new TransportClient(settings).addTransportAddress(new InetSocketTransportAddress(host1, 9300))
-                .addTransportAddress(new InetSocketTransportAddress(host2, 9300));
     }
 
     /*
@@ -141,18 +89,9 @@ public class ElasticSearchHandlerImpl implements ElasticSearchHandler {
      */
     @Override
     public void createIndex(String indexName) {
-        boolean isIndexExists = false;
-        ClusterStateResponse response = client.admin().cluster().prepareState().execute().actionGet();
-        String[] indices = response.getState().getMetaData().getConcreteAllIndices();
-        for (String index : indices) {
-            if (indexName.equals(index)) {
-                isIndexExists = true;
-                break;
-            }
-        }
-        if (!isIndexExists) {
-            client.admin().indices().prepareCreate(indexName).execute().actionGet();
-        }
+		if(! template.indexExists(indexName)){
+		     template.createIndex(indexName);
+		}
     }
 
     /**
@@ -163,7 +102,7 @@ public class ElasticSearchHandlerImpl implements ElasticSearchHandler {
         client.admin().indices().putMapping(mapping).actionGet();
     }
 
-    public void bulkIndex(String type, List<String> jsonData) {
+    public void bulkIndex(String indexName,String type, List<String> jsonData) {
         // createIndex(indexName);
         BulkRequestBuilder bulkRequest = client.prepareBulk();
         XContentBuilder builder = null;
@@ -189,15 +128,6 @@ public class ElasticSearchHandlerImpl implements ElasticSearchHandler {
         }
     }
 
-    /**
-     * 添加索引数据
-     * 
-     * @param jsonString
-     * @throws IOException
-     */
-    public void addIndexData(String type, List<String> jsonData) throws IOException {
-        this.addIndexData(indexName, type, jsonData);
-    }
 
     /**
      * 建立索引到指定的index
@@ -213,12 +143,11 @@ public class ElasticSearchHandlerImpl implements ElasticSearchHandler {
 
         builder = XContentFactory.jsonBuilder().startObject().startObject(type).endObject();
         
-        String name = StringUtils.isBlank(indexName) ? this.indexName : indexName;
 
-        createMapping(name, type, builder);
-        IndexRequestBuilder requestBuilder = client.prepareIndex(name, type).setRefresh(true);
+        createMapping(indexName, type, builder);
+        IndexRequestBuilder requestBuilder = client.prepareIndex(indexName, type).setRefresh(true);
         if (logger.isTraceEnabled())
-        logger.trace("创建索引[{}-{}]: {}", name, type, jsonData);
+        logger.trace("创建索引[{}-{}]: {}", indexName, type, jsonData);
         
         for (int i = 0; i < jsonData.size(); i++) {
             requestBuilder.setSource(jsonData.get(i)).execute().actionGet();
@@ -231,9 +160,6 @@ public class ElasticSearchHandlerImpl implements ElasticSearchHandler {
     }
    
     private SearchHit[] _searcher(QueryBuilder queryBuilder, String indexName, String type, int offset, int pageSize, boolean sorted) {
-        if (StringUtils.isEmpty(indexName)) {
-            indexName = this.indexName;
-        }
         SearchRequestBuilder srb = client.prepareSearch(indexName).setTypes(type);
         if (sorted) {
             FieldSortBuilder fsb = new FieldSortBuilder("level");
@@ -254,9 +180,6 @@ public class ElasticSearchHandlerImpl implements ElasticSearchHandler {
     }
     
     private SearchHits _searcher2(QueryBuilder queryBuilder, String indexName, String type, int offset, int pageSize, boolean sorted) {
-        if (StringUtils.isEmpty(indexName)) {
-            indexName = this.indexName;
-        }
         SearchRequestBuilder srb = client.prepareSearch(indexName).setTypes(type);
         if (sorted) {
             FieldSortBuilder fsb = new FieldSortBuilder("level");
@@ -403,28 +326,7 @@ public class ElasticSearchHandlerImpl implements ElasticSearchHandler {
         return 0;
     }
 
-    private Date dateFormat(String date) throws ParseException {
-        try {
-            return sdf.parse(date);
-        } catch (ParseException e) {
-            try {
-                return sdf2.parse(date);
-            } catch (ParseException e2) {
-                logger.warn("日期转换错误:{}, date:[{}]", e.getMessage(), date);
-                throw e2;
-            }
-        }
-    }
 
-    
-
-    public String getIndexName() {
-        return indexName;
-    }
-
-    public void setIndexName(String indexName) {
-        this.indexName = indexName;
-    }
 
         @Override
 	public void addIndexData(String indexName, String type,
@@ -433,10 +335,9 @@ public class ElasticSearchHandlerImpl implements ElasticSearchHandler {
 
         builder = XContentFactory.jsonBuilder().startObject().startObject(type).endObject();
         
-        String name = StringUtils.isBlank(indexName) ? this.indexName : indexName;
 
-        createMapping(name, type, builder);
-        IndexRequestBuilder requestBuilder = client.prepareIndex(name, type).setRefresh(true);
+        createMapping(indexName, type, builder);
+        IndexRequestBuilder requestBuilder = client.prepareIndex(indexName, type).setRefresh(true);
         
         for(Map.Entry<String, String> entry : idJsonMap.entrySet()){
         	requestBuilder.setId(entry.getKey());
@@ -444,26 +345,6 @@ public class ElasticSearchHandlerImpl implements ElasticSearchHandler {
         }
 	}
 
-    @Override
-	public List<Map<String, Object>> commonSearch(SearchQuery query) {
-		SearchHit[] result = baseSearch(query);
-        
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        if(null != result && result.length > 0){
-        	Map<String, Object> map = null;
-        	for(SearchHit hit : result){
-        		map = hit.getSource();
-        		if(null != map){
-        			list.add(map);
-        		}
-        	}
-        }
-        
-		return list;
-	}
-	
-	
-	
 
     @Override
 	public SearchResult<Map<String, Object>> commonSearchNew(SearchQuery query) {
@@ -624,7 +505,7 @@ public class ElasticSearchHandlerImpl implements ElasticSearchHandler {
 		.should(new PrefixQueryBuilder("pin_yin_short", keyword).boost(0.4f))
 		.should(new PrefixQueryBuilder("pin_yin", keyword).boost(0.3f));
 		
-		SearchResponse resp=client.prepareSearch(searchHistoryIndexName)
+		SearchResponse resp=client.prepareSearch(IndexConstants.SEARCH_HISTORY_INDEX_NAME)
 				.addField("_id")
 				.addSort("count", SortOrder.DESC)
 				.setQuery(bq)
@@ -643,7 +524,7 @@ public class ElasticSearchHandlerImpl implements ElasticSearchHandler {
 	public List<String> getSearchHistoryTopN(int count) {
 		 BoolQueryBuilder boolBuilder = QueryBuilders.boolQuery();
 		
-		SearchResponse resp=client.prepareSearch(searchHistoryIndexName)
+		SearchResponse resp=client.prepareSearch(IndexConstants.SEARCH_HISTORY_INDEX_NAME)
 				.addField("keyword")
 				.addSort("count", SortOrder.DESC)
 				.setQuery(boolBuilder)

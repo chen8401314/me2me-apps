@@ -704,6 +704,12 @@
   		<if test="create_time_max!=null">
   			and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= #{create_time_max}
   		</if>
+  		<if test="update_time_min!=null">
+  			and DATE_FORMAT(update_time,'%Y-%m-%d') &gt;= #{update_time_min}
+  		</if>
+  		<if test="update_time_max!=null">
+  			and DATE_FORMAT(update_time,'%Y-%m-%d') &lt;= #{update_time_max}
+  		</if>
   		<if test="v_lv!=null">
   			and v_lv= #{v_lv}
   		</if>
@@ -749,6 +755,12 @@
   		</if>
   		<if test="create_time_max!=null">
   			and DATE_FORMAT(create_time,'%Y-%m-%d') &lt;= #{create_time_max}
+  		</if>
+  		<if test="update_time_min!=null">
+  			and DATE_FORMAT(update_time,'%Y-%m-%d') &gt;= #{update_time_min}
+  		</if>
+  		<if test="update_time_max!=null">
+  			and DATE_FORMAT(update_time,'%Y-%m-%d') &lt;= #{update_time_max}
   		</if>
   		<if test="v_lv!=null">
   			and v_lv= #{v_lv}

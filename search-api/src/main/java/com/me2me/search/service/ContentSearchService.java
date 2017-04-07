@@ -6,7 +6,6 @@ import com.me2me.search.dto.SearchResultArticle;
 import com.me2me.search.dto.SearchResultKingdom;
 import com.me2me.search.dto.SearchResultUGC;
 import com.me2me.search.dto.SearchResultUser;
-import com.me2me.search.model.SearchHistoryCount;
 
 /**
  * 内容搜索服务，提供UGC、王国、文章库的搜索
@@ -65,4 +64,37 @@ public interface ContentSearchService {
 	 * @return
 	 */
 	public List<String> getHotKeywordList(int count);
+	
+	 /**
+     * 索引用户数据
+     * @author zhangjiwei
+     * @date Apr 7, 2017
+     * @param fully 是否全量
+     * @return 索引过的数据量
+     */
+	int indexUserData(boolean fully) throws Exception;
+	/**
+	 * 索引UGC数据
+	 * @author zhangjiwei
+	 * @date Apr 7, 2017
+	 * @param fully 是否全量
+	 * @return 索引过的数据量
+	 */
+	int indexUgcData(boolean fully) throws Exception;
+	/**
+	 * 索引王国数据。
+	 * @author zhangjiwei
+	 * @date Apr 7, 2017
+	 * @param fully 是否全量
+	 * @return 索引过的数据量
+	 */
+	int indexKingdomData(boolean fully) throws Exception;
+	/**
+	 * 搜索历史索引
+	 * @author zhangjiwei
+	 * @date Apr 7, 2017
+	 * @param fully
+	 * @return
+	 */
+	public int indexSearchHistory(boolean fully) throws Exception;
 }

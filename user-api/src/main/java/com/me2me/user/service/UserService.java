@@ -346,5 +346,6 @@ public interface UserService {
      * @return
      */
     PageBean<SearchUserDto> searchUserPage(PageBean page,Map<String,Object> queries);
+    
 
 }
