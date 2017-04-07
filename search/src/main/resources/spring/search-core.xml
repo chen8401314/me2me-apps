@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:jaxws="http://cxf.apache.org/jaxws"
+	xmlns:spring="http://www.springframework.org/schema/beans" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xsi:schemaLocation="
+	  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	  http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.0.xsd
+	  http://cxf.apache.org/jaxws http://cxf.apache.org/schemas/jaxws.xsd"
+	default-autowire="byName">
+
+
+	<!-- auto register Processor -->
+    <context:annotation-config />
+	<context:component-scan base-package="com.plusnet.search.matching"/>
+	<context:component-scan base-package="com.plusnet.search.manage"/>
+	<context:component-scan base-package="com.plusnet.search.client"/>
+	<context:component-scan base-package="com.plusnet.search.filter"/>
+	<context:component-scan base-package="com.plusnet.search.analytics.queue"/>
+	<context:component-scan base-package="com.plusnet.search.analytics.quality"/>
+	<context:component-scan base-package="com.plusnet.search.analytics.history"/>
+	
+	<bean id="filterChain" abstract="true"
+		class="com.plusnet.search.matching.filter.impl.AbstractFilterChain" />
+		
+	<bean id="needsFilterChain" parent="filterChain" 
+		class="com.plusnet.search.matching.filter.impl.DefaultFilterChainImpl">
+		<property name="next" ref="demographicsFilterChain" />
+		<property name="strategy">
+			<bean class="com.plusnet.search.matching.filter.impl.NeedsStrategyImpl" />
+		</property>
+	</bean>
+	
+	<bean id="demographicsFilterChain" parent="filterChain" 
+		class="com.plusnet.search.matching.filter.impl.DefaultFilterChainImpl">
+		<property name="next" ref="immediatelyEmotionFilterChain" />
+		<property name="strategy">
+			<bean class="com.plusnet.search.matching.filter.impl.DemographicsStrategyImpl" />
+		</property>
+	</bean>
+	
+	<bean id="immediatelyEmotionFilterChain" parent="filterChain" 
+		class="com.plusnet.search.matching.filter.impl.DefaultFilterChainImpl">
+		<property name="next" ref="precisionConsumerAnatomyFilterChain" />
+		<property name="strategy">
+			<bean class="com.plusnet.search.matching.filter.impl.ImmediatelyEmotionStrategyImpl" />
+		</property>
+	</bean>
+
+	<bean id="wideConsumerAnatomyFilterChain" parent="filterChain" 
+		class="com.plusnet.search.matching.filter.impl.DefaultFilterChainImpl">
+		<property name="next" ref="keywordFilterChain" />
+		<property name="strategy">
+			<bean class="com.plusnet.search.matching.filter.impl.WideAnatomyStrategyImpl" />
+		</property>
+	</bean>
+	
+	<bean id="precisionConsumerAnatomyFilterChain" parent="filterChain" 
+		class="com.plusnet.search.matching.filter.impl.DefaultFilterChainImpl">
+		<property name="next" ref="wideConsumerAnatomyFilterChain" />
+		<property name="strategy">
+			<bean class="com.plusnet.search.matching.filter.impl.PrecisionAnatomyStrategyImpl" />
+		</property>
+	</bean>
+	
+	<bean id="keywordFilterChain" parent="filterChain" 
+		class="com.plusnet.search.matching.filter.impl.DefaultFilterChainImpl">
+		<property name="next" ref="emotionKeywordFilterChain" />
+		<property name="strategy">
+			<bean class="com.plusnet.search.matching.filter.impl.KeywordStrategyImpl" />
+		</property>
+	</bean>
+
+	<bean id="emotionKeywordFilterChain" parent="filterChain" 
+		class="com.plusnet.search.matching.filter.impl.DefaultFilterChainImpl">
+		<property name="next" ref="gpsFilterChain" />
+		<property name="strategy">
+			<bean class="com.plusnet.search.matching.filter.impl.EmotionKeywordStrategyImpl" />
+		</property>
+	</bean>
+	
+	<bean id="gpsFilterChain" parent="filterChain" 
+		class="com.plusnet.search.matching.filter.impl.DefaultFilterChainImpl">
+		<property name="strategy">
+			<bean class="com.plusnet.search.matching.filter.impl.GPSStrategyImpl" />
+		</property>
+	</bean>
+	
+	<bean id="qualityFilterChain" parent="filterChain" 
+		class="com.plusnet.search.matching.filter.impl.DefaultFilterChainImpl">
+		<property name="strategy">
+			<bean class="com.plusnet.search.matching.filter.impl.QualityStrategyImpl" />
+		</property>
+	</bean>
+	
+	<bean id="redisHistoryConnectionFactory" class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"  
+        p:host-name="${redis.host}" p:port="${redis.port}" p:password="${redis.pass}"  p:timeout="${redis.timeout}"
+        p:pool-config-ref="jedisPoolConfig" p:database="7">
+    
+    </bean>  
+    <!--   
+    <bean id="sredisTemplate" class="org.springframework.data.redis.core.StringRedisTemplate">  
+        <property name="connectionFactory"   ref="redisConnectionFactory" />  
+    </bean> -->
+    
+    <bean id="redisHistoryTemplate" class="org.springframework.data.redis.core.RedisTemplate"
+        p:connection-factory-ref="redisHistoryConnectionFactory">
+        <property name="keySerializer">
+            <bean
+                class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+        </property>
+        <property name="hashKeySerializer">
+            <bean
+                class="org.springframework.data.redis.serializer.StringRedisSerializer" />
+        </property>
+        <!-- 
+        <property name="valueSerializer">
+            <bean
+                class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" />
+        </property> -->
+        <property name="valueSerializer">
+            <bean
+                class="com.plusnet.core.cache.impl.RedisJsonSerializer" />
+        </property>
+        <property name="hashValueSerializer">
+            <bean
+                class="com.plusnet.core.cache.impl.RedisJsonSerializer" />
+        </property>
+ 	
+    </bean>
+    
+    <bean id="defaultUserContentStatLoader" class="com.plusnet.search.analytics.queue.impl.DefaultUserContentStatLoader">
+    	<!-- <property name="period" value="${userContentCacheTime}" /> -->
+    </bean>
+
+</beans>
