@@ -251,6 +251,7 @@
         <jsoup.version>1.9.1</jsoup.version>
         <project.version>2.0.8</project.version>
         <es.version>1.3.2.RELEASE</es.version>
+        <swagger.version>2.6.1</swagger.version>
         <project.war.name>root</project.war.name>
     </properties>
 	<repositories>
