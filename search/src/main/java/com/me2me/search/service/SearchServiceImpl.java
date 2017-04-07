@@ -40,6 +40,8 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public Response associatedWord(String keyword){
+//    	List<String> list = searchService.recommendKeywordList(keyword, false, count)
+    	
     	return null;
     }
     

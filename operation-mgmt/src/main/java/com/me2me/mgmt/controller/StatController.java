@@ -1066,24 +1066,26 @@ public class StatController {
 		
 		StringBuilder countSql = new StringBuilder();
 		countSql.append("select count(1) as total,");
-		countSql.append("count(if(t.status=0,TRUE,NULL)) as noticeCount,");
-		countSql.append("count(if(t.status=0,NULL,TRUE)) as activeCount");
+		countSql.append("count(if(w.status=0,TRUE,NULL)) as noticeCount,");
+		countSql.append("count(if(w.status=0,NULL,TRUE)) as activeCount");
+		countSql.append(" from ios_wapx w,(select t.idfa,max(t.id) as wid");
 		countSql.append(" from ios_wapx t where t.update_time>='").append(startTime);
 		countSql.append("' and t.update_time<='").append(endTime);
-		countSql.append("'");
+		countSql.append("' group by t.idfa) m where w.id=m.wid");
 		if(dto.getType() >= 0){
-			countSql.append(" and t.channel_typ=").append(dto.getType());
+			countSql.append(" and w.channel_typ=").append(dto.getType());
 		}
 		
 		StringBuilder querySql = new StringBuilder();
-		querySql.append("select * from ios_wapx t where t.update_time>='");
-		querySql.append(startTime).append("' and t.update_time<='");
-		querySql.append(endTime).append("'");
+		querySql.append("select w.* from ios_wapx w,(select t.idfa,max(t.id) as wid");
+		querySql.append(" from ios_wapx t where t.update_time>='").append(startTime);
+		querySql.append("' and t.update_time<='").append(endTime);
+		querySql.append("' group by t.idfa) m where w.id=m.wid");
 		if(dto.getType() >= 0){
-			querySql.append(" and t.channel_typ=").append(dto.getType());
+			countSql.append(" and w.channel_typ=").append(dto.getType());
 		}
-		querySql.append(" order by t.update_time asc limit ").append(start).append(",").append(pageSize);
-		
+		querySql.append(" order by w.update_time asc limit ").append(start).append(",").append(pageSize);
+
 		dto.getResult().clear();
 		List<Map<String, Object>> list = null;
 		List<Map<String, Object>> countList = null;
