@@ -41,9 +41,10 @@ public class JayPeopleBillboardTask {
 	
 	private void execTask(){
 		StringBuilder searchSql = new StringBuilder();
-		searchSql.append("select f.uid,count(1) as cc from topic_fragment f,topic t");
+		searchSql.append("select f.uid,count(1) as cc from topic_fragment f,topic t, user_profile u");
 		searchSql.append(" where f.topic_id=t.id and FIND_IN_SET(f.uid, SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))");
 		searchSql.append(" and f.create_time>date_add(now(), interval -7 day)");
+		searchSql.append(" and f.uid=u.uid and u.nick_name not like '%米汤客服%'");
 		searchSql.append(" group by f.uid order by cc desc limit 100");
 		
 		List<Map<String, Object>> searchList = contentService.queryEvery(searchSql.toString());

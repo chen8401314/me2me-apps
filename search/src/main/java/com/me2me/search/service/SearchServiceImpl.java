@@ -3,9 +3,9 @@ package com.me2me.search.service;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.user.service.UserService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.query.StringQuery;
 import org.springframework.stereotype.Service;
 
 /**
@@ -37,5 +37,13 @@ public class SearchServiceImpl implements SearchService {
         return userService.assistant(keyword);
     }
 
-
+    @Override
+    public Response associatedWord(String keyword){
+    	return null;
+    }
+    
+    @Override
+    public Response allSearch(long uid, String keyword, int searchType, int page, int pageSize){
+    	return null;
+    }
 }

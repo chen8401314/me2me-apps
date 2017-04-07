@@ -103,10 +103,26 @@ public class PopularPeopleBillboardTask {
 		logger.info("处理王国订阅增量完成");
 		
 		logger.info("共有"+resultUserDataMap.size()+"个用户有相关增量数据");
+		
+		//获取所有带“米汤客服”的UID
+		StringBuilder filterUidSql = new StringBuilder();
+		filterUidSql.append("select u.uid from user_profile u where u.nick_name like '%米汤客服%'");
+		List<Map<String, Object>> filterList = contentService.queryEvery(filterUidSql.toString());
+		
+		List<Long> filterUidList = new ArrayList<Long>();
+		if(null != filterList && filterList.size() > 0){
+			for(Map<String, Object> m : filterList){
+				filterUidList.add((Long)m.get("uid"));
+			}
+		}
+		
 		//排序
 		List<UserCountItem> resultList = new ArrayList<UserCountItem>();
 		UserCountItem item = null;
 		for(Map.Entry<String, Long> entry : resultUserDataMap.entrySet()){
+			if(filterUidList.contains(Long.valueOf(entry.getKey()))){
+				continue;
+			}
 			item = new UserCountItem();
 			item.setUid(Long.valueOf(entry.getKey()));
 			item.setCount(entry.getValue());

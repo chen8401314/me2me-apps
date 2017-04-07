@@ -12,5 +12,8 @@ public interface SearchService {
     Response search(String keyword,int page,int pageSize,long uid,int isSearchFans);
 
     Response assistant(String keyword);
+    
+    Response associatedWord(String keyword);
 
+    Response allSearch(long uid, String keyword, int searchType, int page, int pageSize);
 }

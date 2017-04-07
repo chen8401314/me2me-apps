@@ -43,4 +43,25 @@ public class Search extends BaseController {
         return searchService.assistant(searchRequest.getKeyword());
     }
 
+    /**
+     * 大搜索联想词接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/associatedWord",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response associatedWord(AssociatedWordRequest request){
+    	return searchService.associatedWord(request.getKeyword());
+    }
+    
+    /**
+     * 大搜索接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/search",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response allSearch(AllSearchRequest request){
+    	return searchService.allSearch(request.getUid(), request.getKeyword(), request.getSearchType(), request.getPage(), request.getPageSize());
+    }
 }
