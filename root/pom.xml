@@ -89,6 +89,11 @@
                     <artifactId>kafka</artifactId>
                     <version>${project.version}</version>
                 </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>sms</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
             </dependencies>
             <build>
                 <filters>
@@ -175,56 +180,68 @@
         <!--生产环境-->
         <profile>
             <id>prod</id>
-            <!--<activation>-->
-                <!--<activeByDefault>true</activeByDefault>-->
-            <!--</activation>-->
             <properties>
-                <mode>dev</mode>
+                <mode>prod</mode>
             </properties>
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>im</artifactId>
+                    <artifactId>im-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>user</artifactId>
+                    <artifactId>user-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>content</artifactId>
+                    <artifactId>live-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>sns</artifactId>
+                    <artifactId>content-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>io</artifactId>
+                    <artifactId>sns-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>live</artifactId>
+                    <artifactId>io-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>activity</artifactId>
+                    <artifactId>search-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>search</artifactId>
+                    <artifactId>activity-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>kafka</artifactId>
+                    <artifactId>sns-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>cache-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>sms-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>kafka-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
@@ -299,6 +316,11 @@
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>kafka-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>sms-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>

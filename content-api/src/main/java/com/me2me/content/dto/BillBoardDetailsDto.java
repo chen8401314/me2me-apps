@@ -83,6 +83,8 @@ public class BillBoardDetailsDto implements BaseEntity {
         private long reviewCount;
 
         private String introduced;
+        
+        private String tags;
     }
 
 

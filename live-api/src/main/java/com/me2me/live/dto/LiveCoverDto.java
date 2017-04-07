@@ -66,6 +66,10 @@ public class LiveCoverDto implements BaseEntity{
     private int publishLimit;//聚合王国属性，能下发内容的次数
     
     private int isRec;//是否推荐到banner 0否 1是
+
+    private String tags;
+
+    private String recTags;
     
     @Data
     public static class TopicElement implements BaseEntity{

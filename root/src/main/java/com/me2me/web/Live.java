@@ -66,6 +66,7 @@ public class Live extends BaseController {
     	dto.setTitle(request.getTitle());
     	dto.setUid(request.getUid());
     	dto.setKConfig(request.getKConfig());
+    	dto.setTags(request.getTags());
     	return liveService.createKingdom(dto);
     }
 
@@ -614,4 +615,59 @@ public class Live extends BaseController {
         return liveService.myTopicOpt(request.getUid() ,request.getAction() ,request.getTopicId());
     }
 
+    /**
+     * 王国标签查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/topicTags",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response topicTags(TopicTagsRequest request){
+    	return liveService.topicTags(request.getUid(), request.getTopicId());
+    }
+    
+    /**
+     * 王国标签更新接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/topicTagsModify",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response topicTagsModify(TopicTagsModifyRequest request){
+    	return liveService.topicTagsModify(request.getUid(), request.getTopicId(), request.getTags());
+    }
+    
+    /**
+     * 王国标签校验接口
+     * 校验是否被禁用
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/topicTagCheck",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response topicTagCheck(TopicTagCheckRequest request){
+    	return liveService.topicTagCheck(request.getTag());
+    }
+    
+    /**
+     * 标签王国查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/tagKingdoms",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response tagKingdoms(TagKingdomsRequest request){
+    	return liveService.tagKingdoms(request.getTag(), request.getSinceId(), request.getUid());
+    }
+    
+    /**
+     * 王国关联推荐获取接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/recQuery",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response recQuery(RecQueryRequest request){
+    	return liveService.recQuery(request.getTopicId(), request.getSinceId(), request.getUid());
+    }
 }

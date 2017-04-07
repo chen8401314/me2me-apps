@@ -38,6 +38,7 @@ public class ShowHotCeKingdomListDTO implements BaseEntity {
 		private int internalStatus;
 		private int acCount;
 		private int favoriteCount;
+		private String tags;
 		
 		private List<AcTopElement> acTopList = Lists.newArrayList();
 		
