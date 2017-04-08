@@ -9,18 +9,18 @@ import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import com.me2me.search.model.SearchHistoryCount;
 import com.me2me.search.service.ContentSearchService;
 
 /**
+ * 废弃，暂时使用本地线程代替。
  * 同步搜索历史到mongodb.
  * @author zhangjiwei
  * @date Feb 15, 2017
  *
  */
-@Component
+@Deprecated
 public class SearchHistorySyncListener {
 	@Autowired
 	private ContentSearchService searchService;
@@ -59,7 +59,7 @@ public class SearchHistorySyncListener {
                        */
                        SearchHistoryCount count = new SearchHistoryCount();
                        count.setName(msg);
-                       searchService.logSearchHistory(msg);
+                       searchService.addSearchHistory(msg);
                        logger.debug("保存用户日志: {}", msg);
                    } catch(Exception e) {
                        logger.error("消息处理异常：key = {}, value = {}", record.key(), record.value(), e);

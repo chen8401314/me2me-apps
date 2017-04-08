@@ -1,11 +1,11 @@
 package com.me2me.search.service;
 import java.util.List;
 
-import com.me2me.search.dto.SearchResult;
-import com.me2me.search.dto.SearchResultArticle;
-import com.me2me.search.dto.SearchResultKingdom;
-import com.me2me.search.dto.SearchResultUGC;
-import com.me2me.search.dto.SearchResultUser;
+import org.springframework.data.elasticsearch.core.FacetedPage;
+
+import com.me2me.search.esmapping.TopicEsMapping;
+import com.me2me.search.esmapping.UgcEsMapping;
+import com.me2me.search.esmapping.UserEsMapping;
 
 /**
  * 内容搜索服务，提供UGC、王国、文章库的搜索
@@ -20,22 +20,14 @@ public interface ContentSearchService {
 	 * @param title
 	 * @return
 	 */
-	public SearchResult<SearchResultUGC> queryUGC(String content,int page,int pageSize);
+	FacetedPage<UgcEsMapping> queryUGC(String content,int page,int pageSize);
 	/**
 	 * 搜索王国
 	 * @param title
 	 * @return
 	 */
-	public SearchResult<SearchResultKingdom> queryKingdom(String content,int page,int pageSize);
-	/**
-	 * 搜索爬虫文章库
-	 * @param content
-	 * @param beginPos
-	 * @param pageSize
-	 * @return
-	 */
-	public SearchResult<SearchResultArticle> queryArticle(String content,int page,int pageSize);
-	
+	FacetedPage<TopicEsMapping> queryKingdom(String content,int page,int pageSize);
+		
 	/**
 	 * 搜人
 	 * @param content
@@ -43,27 +35,27 @@ public interface ContentSearchService {
 	 * @param pageSize
 	 * @return
 	 */
-	public SearchResult<SearchResultUser> queryUsers(String content,int page,int pageSize);
+	FacetedPage<UserEsMapping> queryUsers(String content,int page,int pageSize);
 	/**
 	 * 保存搜索记录，为热门词推荐提供基础依据
 	 * @param userId
 	 * @param searchContent
 	 */
-	public void logSearchHistory(String searchContent);
+	void addSearchHistory(String searchContent);
 	/**
-	 * 根据输入推荐热词，类似百度的搜索框
+	 * 根据输入联想，类似百度的搜索框
 	 * @param key 用户输入的关键字
-	 * @param isPinYing 是否是拼音输入，如果是拼音，那么自动推荐拼音关联的关键字。
 	 * @param count 推荐数量。
 	 * @return
 	 */
-	public List<String> recommendKeywordList(String key,boolean isPinYing,int count);
+	List<String> associateKeywordList(String key,int count);
 	/**
 	 * 取热门词,自带缓存1分钟。
-	 * @param count
+	 * @param dbCount 从数据库取热词数量，此内容是小编维护的
+	 * @param esCount 从ES中取出按热度排序的搜索关键字数量。
 	 * @return
 	 */
-	public List<String> getHotKeywordList(int count);
+	List<String> getHotKeywordList(int dbCount,int esCount);
 	
 	 /**
      * 索引用户数据
@@ -90,11 +82,11 @@ public interface ContentSearchService {
 	 */
 	int indexKingdomData(boolean fully) throws Exception;
 	/**
-	 * 搜索历史索引
+	 * 索引搜索历史
 	 * @author zhangjiwei
 	 * @date Apr 7, 2017
 	 * @param fully
 	 * @return
 	 */
-	public int indexSearchHistory(boolean fully) throws Exception;
+	int indexSearchHistory(boolean fully) throws Exception;
 }

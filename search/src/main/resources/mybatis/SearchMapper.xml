@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.me2me.search.mappers.SearchMapper">
+
+	<resultMap id="hotKeyword" type="com.me2me.search.model.SearchHotKeyword">
+		<id property="id" column="id" javaType="int" jdbcType="INTEGER"	/>
+		<result property="keyword" column="keyword" javaType="java.lang.String"	jdbcType="VARCHAR" />
+		<result property="orderNum" column="order_num" javaType="java.lang.Integer"	jdbcType="INTEGER" />
+		<result property="isValid" column="is_valid" javaType="java.lang.Integer" jdbcType="INTEGER" />
+		<result property="isTop" column="is_top" javaType="java.lang.Integer" jdbcType="INTEGER" />
+		<result property="creationDate" column="creation_date"	javaType="java.util.Date" jdbcType="TIMESTAMP" />
+	</resultMap>
+
+	<select id="getHotKeywords" resultMap="hotKeyword">
+		select * from search_hot_keyword
+		order by is_top desc, order_num desc,creation_date desc limit 0,#{limit}
+	</select>
+
+	<select id="getUserPageByUpdateDate" resultType="hashmap">
+		select * from user_profile
+		where DATE_FORMAT(update_time,'%Y-%m-%d') &gt;= #{dateBegin}
+		and DATE_FORMAT(update_time,'%Y-%m-%d') &lt;= #{dateEnd}
+		limit #{skip},#{limit}
+	</select>
+
+	<select id="getUgcPageByUpdateDate" resultType="hashmap">
+		select c.*,p.nick_name,p.v_lv,p.avatar from content c left join user_profile p on c.uid=p.uid
+		where 
+		c.type=0 and c.status=0 
+		and DATE_FORMAT(c.create_time,'%Y-%m-%d') &gt;= #{dateBegin}
+		and DATE_FORMAT(c.create_time,'%Y-%m-%d') &lt;= #{dateEnd}
+		limit #{skip},#{limit}
+	</select>
+
+	<select id="getKingdomPageByUpdateDate" resultType="hashmap">
+		select c.*,p.nick_name,p.v_lv,p.avatar from topic c left join user_profile p on c.uid=p.uid
+		where c.status!=2 
+		and DATE_FORMAT(c.update_time,'%Y-%m-%d') &gt;= #{dateBegin}
+		and DATE_FORMAT(c.update_time,'%Y-%m-%d') &lt;= #{dateEnd}
+		limit #{skip},#{limit}
+	</select>
+	<select id="getKingdomFragmentsByTopicId" resultType="string">
+		select fragment from topic_fragment 
+		where topic_id=#{topicId} and status=1
+	</select>
+</mapper>

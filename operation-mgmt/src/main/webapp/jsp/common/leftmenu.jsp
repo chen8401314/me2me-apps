@@ -127,10 +127,11 @@ String sub = request.getParameter("s");
             <li class="sub-menu">
                 <a href="javascript:;" <%if("11".equals(tab)){ %>class="active"<%} %>>
                     <i class="fa fa-bar-chart-o"></i>
-                    <span>标签管理</span>
+                    <span>搜索管理</span>
                 </a>
                 <ul class="sub">
-                	<li <%if("11_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/tag/query">标签列表</a></li>
+                	<li <%if("11_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/search/console">控制台</a></li>
+                	<li <%if("11_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/search/hotkeywordList">上线榜单管理</a></li>
                 </ul>
             </li>
         </ul>
