@@ -18,6 +18,7 @@ public class SearchIndexTask{
 	public boolean userIndexRunning = false;
 	public boolean ugcIndexRunning = false;
 	public boolean kingdomIndexRunning = false;
+	public boolean searchHistoryIndexRunning = false;
 	@Autowired
 	private SearchService searchService;
 	
@@ -66,8 +67,19 @@ public class SearchIndexTask{
         }
 		kingdomIndexRunning=false;
 	}
-	@Scheduled
+	@Scheduled(cron="0 0 0/1 * * ?")
 	public void searchHistoryJob(){
 		
+		if(searchHistoryIndexRunning){
+			return ;
+		}
+		try{
+			searchHistoryIndexRunning = true;
+			int indexCount = searchService.indexSearchHistory(false);
+            logger.info("任务完成,索引数量"+indexCount);
+		}catch(Exception e){
+        	logger.error("任务执行失败", e);
+        }
+		searchHistoryIndexRunning=false;
 	}
 }
