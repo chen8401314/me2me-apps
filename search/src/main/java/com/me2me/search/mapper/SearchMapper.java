@@ -1,4 +1,4 @@
-package com.me2me.search.db.mapper;
+package com.me2me.search.mapper;
 
 import java.util.List;
 import java.util.Map;
