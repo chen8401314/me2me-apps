@@ -23,7 +23,7 @@ public interface SearchVarMapper {
    @Insert("insert into search_vars(strKey,strVal) values(#{0},#{1})")
    public void addVar(String key,String value);
 
-   @Update("update search_vars set #{0}=#{1} where strKey=#{0}")
+   @Update("update search_vars set strVal=#{1} where strKey=#{0}")
    public void updateVar(String key,String value);
    
    @Select("select count(1) from search_vars where strKey=#{0}")

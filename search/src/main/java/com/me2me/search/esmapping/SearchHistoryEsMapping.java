@@ -5,6 +5,7 @@ import java.util.Date;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldIndex;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Mapping;
 
 import com.me2me.search.constants.IndexConstants;
@@ -12,25 +13,25 @@ import com.me2me.search.constants.IndexConstants;
 @Document(indexName=IndexConstants.SEARCH_HISTORY_INDEX_NAME,type=IndexConstants.SEARCH_HISTORY_INDEX_NAME)
 public class SearchHistoryEsMapping{
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer id;		//    主键    必填    必须唯一 
 
-	@Field(index=FieldIndex.analyzed,store=true)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
 	private String name;		//  
 
-	@Field(index=FieldIndex.not_analyzed,store=true)
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.Integer)
 	private Integer search_count;		//  
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Date)
 	private Date last_query_date;		//  
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Date)
 	private Date creation_date;		//  
 	
-	@Field(index=FieldIndex.analyzed,store=true)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
 	private String name_pinyin;
 	
-	@Field(index=FieldIndex.analyzed,store=true)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
 	private String name_pinyin_short;
 
 	public Integer getId() {

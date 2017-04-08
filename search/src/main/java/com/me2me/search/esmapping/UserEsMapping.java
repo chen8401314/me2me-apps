@@ -5,6 +5,7 @@ import java.util.Date;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldIndex;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Mapping;
 
 import com.me2me.search.constants.IndexConstants;
@@ -12,85 +13,85 @@ import com.me2me.search.constants.IndexConstants;
 @Mapping
 @Document(indexName=IndexConstants.USER_INDEX_NAME,type=IndexConstants.USER_INDEX_NAME)
 public class UserEsMapping {
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long id;		//主键，自增    主键   自增长    必填    必须唯一 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long uid;		//用户id     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String mobile;		//用户手机号码     必填 
 
-	@Field(index=FieldIndex.analyzed,store=true)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
 	private String nick_name;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer gender;		//性别，0女1男     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String birthday;		//生日     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String avatar;		//用户头像     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long years_id;		//年代情怀     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long star_id;		//星座     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long social_class;		//社会阶层     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long industry;		//所属行业     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long marriage_status;		//婚恋状态     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long bear_status;		//生育状态     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer excellent;		//0 普通 1 大V     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String introduced;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Date)
 	private Date create_time;		//  
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Date)
 	private Date update_time;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer is_promoter;		//是否是推广员 0 否 1是     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer is_activate;		//是否激活 0未激活 1激活     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long referee_uid;		//推广者uid     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String qrcode;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String third_part_bind;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer v_lv;		//是否是大V(0 否 1 是)     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer is_client_login;		//是否需要检查昵称重复 0 否 1 是     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String channel;		//渠道  
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer platform;		//平台，1安卓，2 IOS，3 H5  
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String register_version;		//注册版本号，v2.2.2版本开始有的     必填 
 
 	public Long getId() {

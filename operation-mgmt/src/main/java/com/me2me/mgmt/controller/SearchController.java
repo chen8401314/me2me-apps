@@ -22,7 +22,10 @@ public class SearchController {
 	private  SearchService searchService;
 	
 	@RequestMapping("/console")
-	public String console(HttpServletRequest request,HttpServletResponse response){
+	public String console(HttpServletRequest request,HttpServletResponse response) throws Exception{
+		String key = request.getParameter("key");
+		key= new String(key.getBytes("iso-8859-1"),"utf-8");
+		//searchService.search(keyword, page, pageSize, uid, isSearchFans)
 		return "search/console";
 	}
 	
