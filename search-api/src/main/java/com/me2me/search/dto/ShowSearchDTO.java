@@ -11,8 +11,8 @@ import com.me2me.common.web.BaseEntity;
 public class ShowSearchDTO implements BaseEntity {
 	private static final long serialVersionUID = 4157093562302727932L;
 
-	private int totalPage;
-	private int totalRecord;
+	private long totalPage;
+	private long totalRecord;
 	private List<UserElement> userData = Lists.newArrayList();
 	private List<KingdomElement> kingdomData = Lists.newArrayList();
 	private List<UgcElement> ugcData = Lists.newArrayList();
