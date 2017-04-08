@@ -131,7 +131,7 @@ String sub = request.getParameter("s");
                 </a>
                 <ul class="sub">
                 	<li <%if("11_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/search/console">控制台</a></li>
-                	<li <%if("11_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/search/hotkeywordList">上线榜单管理</a></li>
+                	<li <%if("11_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/search/hotkeywordList">热词管理</a></li>
                 </ul>
             </li>
         </ul>

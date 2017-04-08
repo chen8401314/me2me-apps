@@ -76,7 +76,7 @@ public class UgcEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer authorization;		//阅读权限 0所有，1自己，2亲密     必填 
 
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.Integer)
 	private Integer rights;		//0仅自己，1公开     必填 
 
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)

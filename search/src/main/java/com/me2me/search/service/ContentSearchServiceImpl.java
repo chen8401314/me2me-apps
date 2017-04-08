@@ -115,6 +115,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	public FacetedPage<UgcEsMapping> queryUGC(String content, int page, int pageSize) {
 		
 		BoolQueryBuilder bq = new BoolQueryBuilder();
+		bq.must(QueryBuilders.termQuery("rights", 1));	// 只查公开
 		bq.should(QueryBuilders.queryStringQuery(content).field("title").boost(3f));
 		bq.should(QueryBuilders.queryStringQuery(content).field("content").boost(2f));
 		
@@ -141,8 +142,8 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	@Override
 	public FacetedPage<UserEsMapping> queryUsers(String content, int page, int pageSize) {
 		BoolQueryBuilder bq = new BoolQueryBuilder();
-		bq.should(QueryBuilders.queryStringQuery(content).field("nick_name").boost(3f));
-		bq.should(QueryBuilders.queryStringQuery(content).field("introduced").boost(2f));
+		bq.should(QueryBuilders.queryStringQuery(content).field("nick_name").boost(2f));
+		//bq.should(QueryBuilders.queryStringQuery(content).field("introduced"));
 		
 		SearchQuery sq = new NativeSearchQuery(bq);
 		sq.setPageable(new PageRequest(page, pageSize));

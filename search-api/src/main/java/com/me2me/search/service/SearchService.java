@@ -1,6 +1,9 @@
 package com.me2me.search.service;
 
+import java.util.List;
+
 import com.me2me.common.web.Response;
+import com.me2me.search.model.SearchHotKeyword;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -50,5 +53,30 @@ public interface SearchService {
 	 * @throws Exception
 	 */
 	int indexSearchHistory(boolean fully) throws Exception;
-
+	/**
+	 * 搜索结果包装成json,仅供后台使用。
+	 * @author zhangjiwei
+	 * @date Apr 8, 2017
+	 * @param key
+	 * @param type
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	public String searchForJSON(String key,String type,int page,int pageSize);
+	/**
+	 * 所有热门词
+	 * @author zhangjiwei
+	 * @date Apr 8, 2017
+	 * @return
+	 */
+	List<SearchHotKeyword> getAllHotKeyword();
+	
+	SearchHotKeyword getHotKeywordById(int id);
+	
+	void addHotKeyword(SearchHotKeyword hk);
+	
+	void updateHotKeyword(SearchHotKeyword hk);
+	
+	void delHotKeyword(int id);
 }

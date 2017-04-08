@@ -50,22 +50,38 @@
 								</span>
 							</header>
 							<div class="panel-body">
+								<p>
+									<form action="" method="post" class="form form-inline">
+										<input type="text" name="keyword" value="${keyword}" class="form-control"/>
+										<select name="type" class="form-control" data-value="${type}">
+											<option value="kingdom">kingdom</option>
+											<option value="ugc">ugc</option>
+											<option value="user">user</option>
+										</select>
+										<button type="submit" class="btn btn-primary">
+											<i  class=" fa fa-plus "></i>
+											查询
+										</button>
+										<a class="btn btn-danger" href="./startTask?task=ugc">
+											<i  class=" fa fa-plus "></i>
+											启动UGC全量索引
+										</a>
+										<a class="btn btn-danger" href="./startTask?task=user">
+											<i  class=" fa fa-plus "></i>
+											启动用户全量索引
+										</a>
+										<a class="btn btn-danger" href="./startTask?task=kingdom">
+											<i  class=" fa fa-plus "></i>
+											启动王国全量索引
+										</a>
+									</form>
+								</p>
 								<div>
-									<a class="btn btn-primary" href="./startTask?task=ugc">
-										<i  class=" fa fa-plus "></i>
-										启动UGC全量索引
-									</a>
-									<a class="btn btn-primary" href="./startTask?task=user">
-										<i  class=" fa fa-plus "></i>
-										启动用户全量索引
-									</a>
-									<a class="btn btn-primary" href="./startTask?task=kingdom">
-										<i  class=" fa fa-plus "></i>
-										启动王国全量索引
-									</a>
-								</div>
-								<div class="adv-table">
-									
+									<ul>
+										<c:forEach items="${dataList }" var="item">
+										<li style="border-bottom:1px solid #eee;padding:5px;">${item.content }  &emsp; ${item.nick_name }</li>
+										</c:forEach>
+									</ul>
 								</div>
 							</div>
 						</section>
@@ -98,5 +114,15 @@
 	<script src="${ctx}/js/form-component.js"></script>
 	<script src="${ctx}/js/common-scripts.js"></script>
 	<script src="${ctx}/js/advanced-form-components.js"></script>
+	<script>
+		$("a.btn-danger").click(function(){
+			return confirm("确定执行此操作吗？索引将会执行一段时间，请不要重复点击或者刷新，请举起双手，或去喝茶")
+		})
+		$("select[data-value]").each(function(){
+			var val = $(this).attr("data-value");
+			console.log(val);
+			$(this).find("option[value='"+val+"']").attr("selected","selected")
+		})
+	</script>
 </body>
 </html>
