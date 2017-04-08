@@ -44,7 +44,7 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public Response associatedWord(String keyword){
-    	List<String> list = searchService.recommendKeywordList(keyword, false, 10);
+    	List<String> list = searchService.associateKeywordList(keyword, 10);
     	
     	ShowAssociatedWordDTO resultDTO = new ShowAssociatedWordDTO();
     	for(String k : list){
