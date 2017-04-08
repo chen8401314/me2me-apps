@@ -1,11 +1,15 @@
 package com.me2me.search.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
+import com.me2me.search.dto.ShowAssociatedWordDTO;
 import com.me2me.user.service.UserService;
 
 /**
@@ -40,9 +44,19 @@ public class SearchServiceImpl implements SearchService {
 
     @Override
     public Response associatedWord(String keyword){
-//    	List<String> list = searchService.recommendKeywordList(keyword, false, count)
+    	List<String> list = searchService.recommendKeywordList(keyword, false, 10);
     	
-    	return null;
+    	ShowAssociatedWordDTO resultDTO = new ShowAssociatedWordDTO();
+    	for(String k : list){
+    		ShowAssociatedWordDTO.WordElement e = null;
+    		if(!StringUtils.isEmpty(k)){
+    			e = new ShowAssociatedWordDTO.WordElement();
+    			e.setSearchWords(k);
+    			resultDTO.getResult().add(e);
+    		}
+    	}
+    	
+    	return Response.success(resultDTO);
     }
     
     @Override
