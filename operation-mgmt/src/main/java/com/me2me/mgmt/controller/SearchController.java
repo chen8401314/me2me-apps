@@ -1,28 +1,45 @@
 package com.me2me.mgmt.controller;
 
+import java.util.Date;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.me2me.mgmt.syslog.SystemControllerLog;
+import com.me2me.search.model.SearchHotKeyword;
 import com.me2me.search.service.SearchService;
 import com.plusnet.sso.api.vo.JsonResult;
 
-import lombok.extern.slf4j.Slf4j;
-
 @Controller  
 @RequestMapping("/search")
-@Slf4j
 public class SearchController {
 		
 	@Autowired
 	private  SearchService searchService;
 	
 	@RequestMapping("/console")
-	public String console(HttpServletRequest request,HttpServletResponse response){
+	public String console(HttpServletRequest request,HttpServletResponse response) throws Exception{
+		String keyword = request.getParameter("keyword");
+		request.setAttribute("keyword", keyword);
+		if(keyword!=null){
+			String type= request.getParameter("type");
+			request.setAttribute("type", type);
+			
+			String json=searchService.searchForJSON(keyword,type, 1, 20);
+			JSONObject obj = JSON.parseObject(json);
+			JSONArray arr = obj.getJSONArray("content");
+			request.setAttribute("dataList", arr);
+		}
 		return "search/console";
 	}
 	
@@ -45,4 +62,72 @@ public class SearchController {
 		return JsonResult.success();
 	}
 	
+	
+	
+	@RequestMapping(value = "/hotkeywordList")
+	@SystemControllerLog(description = "热词列表")
+	public String hotkeywordList(HttpServletRequest request) throws Exception {
+		String queryStr = request.getParameter("query");
+		if(!StringUtils.isEmpty(queryStr)){
+			queryStr=new String(queryStr.getBytes("iso-8859-1"),"utf-8");
+		}
+		List<SearchHotKeyword> list =searchService.getAllHotKeyword();
+		request.setAttribute("dataList",list);
+		return "search/hotkeywordList";
+	}
+	@RequestMapping(value = "/addHotKeyword")
+	@SystemControllerLog(description = "添加热词")
+	public String addHotKeyword(HttpServletRequest request) throws Exception {
+		return "search/addHotKeyword";
+	}
+	@RequestMapping(value = "/modifyHotKeyword")
+	@SystemControllerLog(description = "修改热词")
+	public String modifyHotKeyword(HttpServletRequest request) throws Exception {
+		String id = request.getParameter("id");
+		SearchHotKeyword item =searchService.getHotKeywordById(Integer.parseInt(id));
+		request.setAttribute("item",item);
+		return "search/addHotKeyword";
+	}
+	
+	@RequestMapping(value = "/doSaveHotKeyword")
+	@SystemControllerLog(description = "保存热词")
+	public String doSaveHotKeyword(HttpServletRequest request,SearchHotKeyword tpl) throws Exception {
+		try{
+			if(tpl.getId()!=null){
+				searchService.updateHotKeyword(tpl);
+			}else{
+				tpl.setIsValid(1);
+				tpl.setCreationDate(new Date());
+				searchService.addHotKeyword(tpl);
+			}
+			return "redirect:./hotkeywordList";
+		}catch(Exception e){
+			request.setAttribute("item",tpl);
+			return addHotKeyword(request);
+		}
+	}
+	@ResponseBody
+	@RequestMapping(value = "/updateHotKeyword")
+	@SystemControllerLog(description = "修改热词顺序")
+	public JsonResult updateHotKeyword(HttpServletRequest request) throws Exception{
+		String json = request.getParameter("json");
+		try{
+			List<SearchHotKeyword> details = JSON.parseArray(json, SearchHotKeyword.class);
+			for(SearchHotKeyword detail:details){
+				searchService.updateHotKeyword(detail);
+			}
+			return JsonResult.success();
+		}catch(Exception e){
+			e.printStackTrace();
+			return JsonResult.error("保存排序错误。");
+		}
+	}
+	@ResponseBody
+	@RequestMapping(value = "/deleteHotKeyword")
+	@SystemControllerLog(description = "删除热词")
+	public JsonResult deleteHotKeyword(HttpServletRequest request) throws Exception {
+		String id = request.getParameter("id");
+		searchService.delHotKeyword(Integer.parseInt(id));
+		return JsonResult.success();
+	}
 }

@@ -5,6 +5,7 @@ import java.util.Date;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldIndex;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Mapping;
 
 import com.me2me.search.constants.IndexConstants;
@@ -12,61 +13,61 @@ import com.me2me.search.constants.IndexConstants;
 @Mapping
 @Document(indexName=IndexConstants.KINGDOM_INDEX_NAME,type=IndexConstants.KINGDOM_INDEX_NAME)
 public class TopicEsMapping {
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long id;		//    主键   自增长    必填    必须唯一 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long uid;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String live_image;		//     必填 
 
-	@Field(index=FieldIndex.analyzed,store=true)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
 	private String title;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer status;		//0未结束1结束2移除（移除之后只在我的日志显示不在直播列表显示）     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Date)
 	private Date create_time;		//  
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Date)
 	private Date update_time;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long long_time;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String qrcode;		//直播二维码     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String core_circle;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer type;		//类型，0普通王国，1000聚合王国  
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer ce_audit_type;		//聚合王国属性，是否需要国王审核才能加入此聚合王国，0是，1否  
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer ac_audit_type;		//个人王国属性，是否需要国王审核才能收录此个人王国，0是，1否  
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer ac_publish_type;		//个人王国属性，是否允许聚合王国下发消息，0是，1否  
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer rights;		//可见类型，1公开，2私密  
 
-	@Field(index=FieldIndex.analyzed,store=true)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
 	private String summary;		//王国简介  
 	
-	@Field(index=FieldIndex.analyzed,store=true)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
 	private String nick_name;		//     必填 
 	
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String avatar;		//用户头像     必填 
 	
-	@Field(index=FieldIndex.analyzed,store=false)
+	@Field(index=FieldIndex.analyzed,store=false,type=FieldType.String)
 	private String fragments;
 	
 	

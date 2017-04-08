@@ -25,6 +25,9 @@ import com.me2me.search.esmapping.UgcEsMapping;
 import com.me2me.search.esmapping.UserEsMapping;
 import com.me2me.user.model.UserFollow;
 import com.me2me.user.model.UserProfile;
+import com.me2me.search.mapper.SearchHotKeywordMapper;
+import com.me2me.search.model.SearchHotKeyword;
+import com.me2me.search.model.SearchHotKeywordExample;
 import com.me2me.user.service.UserService;
 
 /**
@@ -45,6 +48,9 @@ public class SearchServiceImpl implements SearchService {
     
     @Autowired
     private ContentForSearchJdbcDao contentForSearchJdbcDao;
+
+    @Autowired
+    private SearchHotKeywordMapper hotkeywordMapper;
     
     @Override
     public Response search(String keyword,int page,int pageSize,long uid,int isSearchFans) {
@@ -356,5 +362,46 @@ public class SearchServiceImpl implements SearchService {
 	@Override
 	public int indexSearchHistory(boolean fully) throws Exception {
 		return searchService.indexSearchHistory(fully);
+	}
+	
+	public String searchForJSON(String key,String type,int page,int pageSize){
+		FacetedPage pagedata =null;
+		if("ugc".equals(type)){
+			pagedata = searchService.queryUGC(key, page, pageSize);
+		}else if("kingdom".equals(type)){
+			pagedata = searchService.queryKingdom(key, page, pageSize);
+		}else if("user".equals(type)){
+			pagedata = searchService.queryUsers(key, page, pageSize);
+		}
+		String str = JSON.toJSONString(pagedata);
+		return str;
+	}
+
+	@Override
+	public List<SearchHotKeyword> getAllHotKeyword() {
+		SearchHotKeywordExample example = new SearchHotKeywordExample();
+		example.createCriteria().andIsValidEqualTo(1);
+		example.setOrderByClause("order_num asc,id desc");
+		return hotkeywordMapper.selectByExample(example);
+	}
+
+	@Override
+	public SearchHotKeyword getHotKeywordById(int id) {
+		return hotkeywordMapper.selectByPrimaryKey(id);
+	}
+
+	@Override
+	public void addHotKeyword(SearchHotKeyword hk) {
+		hotkeywordMapper.insertSelective(hk);
+	}
+
+	@Override
+	public void updateHotKeyword(SearchHotKeyword hk) {
+		hotkeywordMapper.updateByPrimaryKeySelective(hk);
+	}
+
+	@Override
+	public void delHotKeyword(int id) {
+		hotkeywordMapper.deleteByPrimaryKey(id);
 	}
 }
