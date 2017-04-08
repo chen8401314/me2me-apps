@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="com.me2me.search.mappers.SearchMapper">
+<mapper namespace="com.me2me.search.db.mapper.SearchMapper">
 
 	<resultMap id="hotKeyword" type="com.me2me.search.model.SearchHotKeyword">
 		<id property="id" column="id" javaType="int" jdbcType="INTEGER"	/>
@@ -16,14 +16,14 @@
 		order by is_top desc, order_num desc,creation_date desc limit 0,#{limit}
 	</select>
 
-	<select id="getUserPageByUpdateDate" resultType="hashmap">
+	<select id="getUserPageByUpdateDate" resultType="com.me2me.search.esmapping.UserEsMapping">
 		select * from user_profile
 		where DATE_FORMAT(update_time,'%Y-%m-%d') &gt;= #{dateBegin}
 		and DATE_FORMAT(update_time,'%Y-%m-%d') &lt;= #{dateEnd}
 		limit #{skip},#{limit}
 	</select>
 
-	<select id="getUgcPageByUpdateDate" resultType="hashmap">
+	<select id="getUgcPageByUpdateDate" resultType="com.me2me.search.esmapping.UgcEsMapping">
 		select c.*,p.nick_name,p.v_lv,p.avatar from content c left join user_profile p on c.uid=p.uid
 		where 
 		c.type=0 and c.status=0 
@@ -32,7 +32,7 @@
 		limit #{skip},#{limit}
 	</select>
 
-	<select id="getKingdomPageByUpdateDate" resultType="hashmap">
+	<select id="getKingdomPageByUpdateDate" resultType="com.me2me.search.esmapping.TopicEsMapping">
 		select c.*,p.nick_name,p.v_lv,p.avatar from topic c left join user_profile p on c.uid=p.uid
 		where c.status!=2 
 		and DATE_FORMAT(c.update_time,'%Y-%m-%d') &gt;= #{dateBegin}

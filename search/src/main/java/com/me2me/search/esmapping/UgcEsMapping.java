@@ -5,6 +5,7 @@ import java.util.Date;
 import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldIndex;
+import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Mapping;
 
 import com.me2me.search.constants.IndexConstants;
@@ -12,85 +13,85 @@ import com.me2me.search.constants.IndexConstants;
 @Mapping
 @Document(indexName=IndexConstants.UGC_INDEX_NAME,type=IndexConstants.UGC_INDEX_NAME)
 public class UgcEsMapping {
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long id;		//主键    主键   自增长    必填    必须唯一 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long uid;		//用户     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long forward_cid;		//     必填 
 
-	@Field(index=FieldIndex.analyzed,store=true)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
 	private String title;		//     必填 
 
-	@Field(index=FieldIndex.analyzed,store=true)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
 	private String feeling;		//写文章的感受标签     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer type;		//0 原生内容，1 转发原生UGC内容,2小编内容 3，直播，4 活动，5系统,6转发直播，7转发活动,8转发小编文章,9转发系统文章     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String conver_image;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String forward_title;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String forward_url;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer content_type;		//     必填 
 
-	@Field(index=FieldIndex.analyzed,store=true)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
 	private String content;		//内容     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String thumbnail;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer hot_value;		//默认热度为1     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer person_count;		//参与人数     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer review_count;		//评论数     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer like_count;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer favorite_count;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer read_count;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer read_count_dummy;		//虚拟阅读数     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer is_top;		//是否置顶     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer authorization;		//阅读权限 0所有，1自己，2亲密     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer rights;		//0仅自己，1公开     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer author;		//0用户1表示小编     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer status;		//0正常，1删除,2可恢复状态     必填 
 
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.Date)
 	private Date create_time;		//创建时间     必填 
 	
-	@Field(index=FieldIndex.analyzed,store=true)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
 	private String nick_name;		//     必填 
 	
-	@Field(index=FieldIndex.no,store=true)
+	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String avatar;		//用户头像     必填 
 
 	public Long getId() {
