@@ -146,6 +146,16 @@ public class LiveForContentJdbcDao {
     	jdbcTemplate.execute(sb.toString());
     }
     
+    /**
+     * 删除王国的标签
+     * @param topicId
+     */
+    public void deleteTopicTagByTopicId(long topicId){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("delete from topic_tag_detail d where d.topic_id=").append(topicId);
+    	jdbcTemplate.execute(sb.toString());
+    }
+    
     public Map<String,Object> getTopicUserConfig(long topicId, long uid){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select id,uid,topic_id,push_type from topic_user_config ");

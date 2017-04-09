@@ -210,6 +210,7 @@ var parserDatetimeStr = function(time){
 											<option value="1" ${dataObj.isSys==1?'selected':''}>是</option>
 										</select>
 									</div>
+									<br/>
 									<div class="form-inline" role="form">
 										王国数
 										<input type="text" id="topicCountStart" name="topicCountStart" value="${dataObj.topicCountStart }" class="form-control">
@@ -235,6 +236,7 @@ var parserDatetimeStr = function(time){
 							<header class="panel-heading">
 								| 标签列表
 								<span class="tools pull-right">
+									<a href="${ctx}/jsp/tag/tagNew.jsp" class="fa fa-plus add_link" title="新增标签" ></a>
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>
 							</header>
@@ -289,7 +291,10 @@ var parserDatetimeStr = function(time){
 													</th>
 													
 													<th>${item.topicCount }</th>
-													<th></th>
+													<th>
+													<a href="${ctx}/tag/f/${item.id }">编辑</a>
+													|<a href="${ctx}/tag/topicList/${item.id }">查看王国列表</a>
+													</th>
 												</tr>
 											</c:forEach>
 										</tbody>

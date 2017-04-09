@@ -4869,4 +4869,24 @@ public class LiveServiceImpl implements LiveService {
 		
 		return Response.success(resultDTO);
 	}
+	
+	@Override
+	public TopicTag getTopicTagById(long id){
+		return liveMybatisDao.getTopicTagById(id);
+	}
+	
+	@Override
+	public TopicTag getTopicTagByTag(String tag){
+		return liveMybatisDao.getTopicTagByTag(tag);
+	}
+	
+	@Override
+	public void createTopicTag(TopicTag tag){
+		liveMybatisDao.insertTopicTag(tag);
+	}
+	
+	@Override
+	public void updateTopicTag(TopicTag tag){
+		liveMybatisDao.updateTopicTag(tag);
+	}
 }

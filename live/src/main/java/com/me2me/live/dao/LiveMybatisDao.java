@@ -1064,6 +1064,14 @@ public class LiveMybatisDao {
 	public void insertTopicTag(TopicTag tag){
 		topicTagMapper.insertSelective(tag);
 	}
+	
+	public void updateTopicTag(TopicTag tag){
+		topicTagMapper.updateByPrimaryKeySelective(tag);
+	}
+	
+	public TopicTag getTopicTagById(long id){
+		return topicTagMapper.selectByPrimaryKey(id);
+	}
 
 	public void insertTopicTagDetail(TopicTagDetail tagDetail){
 		topicTagDetailMapper.insertSelective(tagDetail);

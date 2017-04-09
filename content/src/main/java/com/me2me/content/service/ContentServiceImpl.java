@@ -1227,6 +1227,8 @@ private void localJpush(long toUid){
           	liveForContentJdbcDao.deleteAggregationTopic(content.getForwardCid());
           	//删除banner上的王国
           	liveForContentJdbcDao.deleteBannerTopic(content.getForwardCid());
+          	//删除这个王国上的所有标签记录
+          	liveForContentJdbcDao.deleteTopicTagByTopicId(content.getForwardCid());
         }else{
         	//记录下删除记录
           	liveForContentJdbcDao.insertDeleteLog(Specification.DeleteObjectType.UGC.index, id, uid);
