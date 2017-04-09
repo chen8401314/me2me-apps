@@ -1,5 +1,6 @@
 package com.me2me.search.dao;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -98,4 +99,98 @@ public class ContentForSearchJdbcDao {
 		
 		return jdbcTemplate.queryForList(sb.toString());
 	}
+	
+	public Map<String, Long> getTopicMembersCount(List<Long> topicIdList){
+		Map<String, Long> result = new HashMap<String, Long>();
+    	if(null == topicIdList || topicIdList.size() == 0){
+    		return result;
+    	}
+    	//查询非核心圈成员
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select f.topic_id,count(1) cc from live_favorite f,topic t");
+    	sb.append(" where f.topic_id=t.id ");
+    	sb.append(" and not FIND_IN_SET(f.uid, SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))");
+    	sb.append(" and f.topic_id in (");
+    	for(int i=0;i<topicIdList.size();i++){
+    		if(i>0){
+    			sb.append(",");
+    		}
+    		sb.append(topicIdList.get(i));
+    	}
+    	sb.append(") group by f.topic_id");
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	if(null != list && list.size() > 0){
+    		for(Map<String, Object> m : list){
+    			result.put(String.valueOf(m.get("topic_id")), (Long)m.get("cc"));
+    		}
+    	}
+    	//查询核心圈成员
+    	StringBuilder sb2 = new StringBuilder();
+    	sb2.append("select t.id, LENGTH(t.core_circle)-LENGTH(replace(t.core_circle,',','')) as coreCount");
+    	sb2.append(" from topic t where t.id in (");
+    	for(int i=0;i<topicIdList.size();i++){
+    		if(i>0){
+    			sb2.append(",");
+    		}
+    		sb2.append(topicIdList.get(i));
+    	}
+    	sb2.append(")");
+    	List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sb2.toString());
+    	if(null != list2 && list2.size() > 0){
+    		Long count = null;
+    		Long coreCount = null;
+    		for(Map<String, Object> m : list2){
+    			coreCount = (Long)m.get("coreCount");
+    			
+    			if(coreCount > 0){
+    				count = result.get(String.valueOf(m.get("id")));
+    				if(null == count){
+    					count = coreCount;
+    				}else{
+    					count = count.longValue() + coreCount.longValue();
+    				}
+    				result.put(String.valueOf(m.get("id")), count);
+    			}
+    		}
+    	}
+    	
+    	return result;
+    }
+	
+	public List<Map<String,Object>> getTopicAggregationAcCountByTopicIds(List<Long> topicIds){
+		if(null == topicIds || topicIds.size() == 0){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select t.topic_id,count(1) as cc");
+		sb.append(" from topic_aggregation t");
+		sb.append(" where t.topic_id in (");
+		for(int i=0;i<topicIds.size();i++){
+			if(i > 0){
+				sb.append(",");
+			}
+			sb.append(topicIds.get(i).longValue());
+		}
+		sb.append(") group by t.topic_id");
+		
+		return jdbcTemplate.queryForList(sb.toString());
+	}
+	
+	public List<Map<String, Object>> getTopicTagDetailListByTopicIds(List<Long> topicIds){
+    	if(null == topicIds || topicIds.size() == 0){
+    		return null;
+    	}
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select * from topic_tag_detail d where d.status=0");
+    	sb.append(" and d.topic_id in (");
+    	for(int i=0;i<topicIds.size();i++){
+    		if(i>0){
+    			sb.append(",");
+    		}
+    		sb.append(topicIds.get(i).longValue());
+    	}
+    	sb.append(") order by topic_id asc,id asc");
+    	
+    	return jdbcTemplate.queryForList(sb.toString());
+    }
 }

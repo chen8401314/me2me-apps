@@ -114,219 +114,343 @@ public class SearchServiceImpl implements SearchService {
     	}
     	
     	if(null != ugcPage){
-    		List<Long> cidList = new ArrayList<Long>();
-    		List<Long> uidList = new ArrayList<Long>();
-        	if(null != ugcPage){
-        		for(UgcEsMapping ugc : ugcPage){
-        			cidList.add(ugc.getId());
-        		}
-        	}
-        	Map<String, Map<String, Object>> contentMap = new HashMap<String, Map<String, Object>>();
-        	if(cidList.size() > 0){
-        		List<Map<String, Object>> contentList = contentForSearchJdbcDao.getUGCContentByIds(cidList);
-        		if(null != contentList && contentList.size() > 0){
-        			for(Map<String, Object> m : contentList){
-        				contentMap.put(String.valueOf(m.get("id")), m);
-        				uidList.add((Long)m.get("uid"));
-        			}
-        		}
-        	}
-        	Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
-        	//一次性查询关注信息
-            Map<String, String> followMap = new HashMap<String, String>();
-        	if(uidList.size() > 0){
-        		List<UserProfile> userList = userService.getUserProfilesByUids(uidList);
-        		if(null != userList && userList.size() > 0){
-        			for(UserProfile u : userList){
-        				userMap.put(u.getUid().toString(), u);
-        			}
-        		}
-        		List<UserFollow> userFollowList = userService.getAllFollows(uid, uidList);
-                if(null != userFollowList && userFollowList.size() > 0){
-                	for(UserFollow uf : userFollowList){
-                		followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
-                	}
-                }
-        	}
-    		
-    		ShowSearchDTO.UgcElement ugcElement = null;
-    		Map<String, Object> content = null;
-    		UserProfile userProfile = null;
-    		for(UgcEsMapping ugc : ugcPage){
-    			ugcElement = new ShowSearchDTO.UgcElement();
-    			content = contentMap.get(ugc.getId().toString());
-    			if(null == content){
-    				continue;
-    			}
-    			userProfile = userMap.get(String.valueOf(content.get("uid")));
-    			if(null == userProfile){
-    				continue;
-    			}
-    			ugcElement.setUid(userProfile.getUid());
-    			ugcElement.setNickName(userProfile.getNickName());
-    			ugcElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-    			ugcElement.setV_lv(userProfile.getvLv());
-    			if(null != followMap.get(uid+"_"+userProfile.getUid())){
-    				ugcElement.setIsFollowed(1);
-				}else{
-					ugcElement.setIsFollowed(0);
-				}
-				if(null != followMap.get(userProfile.getUid()+"_"+uid)){
-					ugcElement.setIsFollowMe(1);
-				}else{
-					ugcElement.setIsFollowMe(0);
-				}
-    			ugcElement.setCid((Long)content.get("id"));
-    			ugcElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)content.get("conver_image"));
-    			ugcElement.setContent((String)content.get("content"));
-    			ugcElement.setTitle((String)content.get("title"));
-    			ugcElement.setType(0);
-    			ugcElement.setReadCount((Integer)content.get("read_count_dummy"));
-    			ugcElement.setReviewCount((Integer)content.get("review_count"));
-    			resultDTO.getUgcData().add(ugcElement);
-    		}
+    		this.buildUgcSearchResult(uid, resultDTO, ugcPage);
     	}
     	
     	if(null != kingdomPage){
-    		List<Long> tidList = new ArrayList<Long>();
-    		for(TopicEsMapping topic : kingdomPage){
-    			tidList.add(topic.getId());
-    		}
-    		List<Long> uidList = new ArrayList<Long>();
-    		Map<String, Map<String, Object>> topicMap = new HashMap<String, Map<String, Object>>();
-    		Map<String, Map<String, Object>> topicContentMap = new HashMap<String, Map<String, Object>>();
-    		//一次性查询王国订阅信息
-            Map<String, String> liveFavouriteMap = new HashMap<String, String>();
-            //一次性查询所有王国的国王更新数，以及评论数
-            Map<String, Long> topicCountMap = new HashMap<String, Long>();
-            Map<String, Long> reviewCountMap = new HashMap<String, Long>();
-    		if(tidList.size() > 0){
-    			List<Map<String, Object>> topicList = contentForSearchJdbcDao.getTopicByIds(tidList);
-    			if(null != topicList && topicList.size() > 0){
-    				Long topicUid = null;
-    				for(Map<String, Object> m : topicList){
-    					topicMap.put(String.valueOf(m.get("id")), m);
-    					topicUid = (Long)m.get("uid");
-    					if(!uidList.contains(topicUid)){
-    						uidList.add(topicUid);
-    					}
-    				}
-    			}
-    			List<Map<String, Object>> topicContentList = contentForSearchJdbcDao.getTopicContentByTopicIds(tidList);
-    			if(null != topicContentList && topicContentList.size() > 0){
-    				for(Map<String, Object> m : topicContentList){
-    					topicContentMap.put(String.valueOf(m.get("forward_cid")), m);
-    				}
-    			}
-    			List<Map<String,Object>> liveFavouriteList = contentForSearchJdbcDao.getLiveFavoritesByUidAndTopicIds(uid, tidList);
-                if(null != liveFavouriteList && liveFavouriteList.size() > 0){
-                	for(Map<String,Object> lf : liveFavouriteList){
-                		liveFavouriteMap.put(((Long)lf.get("topic_id")).toString(), "1");
-                	}
-                }
-                List<Map<String, Object>> tcList = contentForSearchJdbcDao.getTopicUpdateCount(tidList);
-                if(null != tcList && tcList.size() > 0){
-                	for(Map<String, Object> m : tcList){
-                		topicCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("topicCount"));
-                		reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
-                	}
-                }
-    		}
-    		Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
-    		//一次性查询关注信息
-            Map<String, String> followMap = new HashMap<String, String>();
-    		if(uidList.size() > 0){
-    			List<UserProfile> userList = userService.getUserProfilesByUids(uidList);
-    			if(null != userList && userList.size() > 0){
-    				for(UserProfile u : userList){
-    					userMap.put(u.getUid().toString(), u);
-    				}
-    			}
-    			List<UserFollow> userFollowList = userService.getAllFollows(uid, uidList);
-                if(null != userFollowList && userFollowList.size() > 0){
-                	for(UserFollow uf : userFollowList){
-                		followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
-                	}
-                }
-    		}
-    		
-    		Map<String, Object> topic = null;
-    		Map<String, Object> topicContent = null;
-    		UserProfile userProfile = null;
-    		ShowSearchDTO.KingdomElement kingdomElement = null;
-    		for(TopicEsMapping t : kingdomPage){
-    			kingdomElement = new ShowSearchDTO.KingdomElement();
-    			topic = topicMap.get(t.getId().toString());
-    			if(null == topic){
-    				continue;
-    			}
-    			topicContent = topicContentMap.get(t.getId().toString());
-    			if(null == topicContent){
-    				continue;
-    			}
-    			userProfile = userMap.get(String.valueOf(topic.get("uid")));
-    			if(null == userProfile){
-    				continue;
-    			}
-    			kingdomElement.setUid(userProfile.getUid());
-    			kingdomElement.setNickName(userProfile.getNickName());
-    			kingdomElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-    			kingdomElement.setV_lv(userProfile.getvLv());
-    			if(null != followMap.get(uid+"_"+userProfile.getUid())){
-    				kingdomElement.setIsFollowed(1);
-				}else{
-					kingdomElement.setIsFollowed(0);
-				}
-				if(null != followMap.get(userProfile.getUid()+"_"+uid)){
-					kingdomElement.setIsFollowMe(1);
-				}else{
-					kingdomElement.setIsFollowMe(0);
-				}
-    			kingdomElement.setTopicId((Long)topic.get("id"));
-    			kingdomElement.setTitle((String)topic.get("title"));
-    			kingdomElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
-    			kingdomElement.setType(3);
-    			kingdomElement.setContentType((Integer)topic.get("type"));
-    			if(null != topic.get("create_time")){
-    				kingdomElement.setCreateTime(((Date)topic.get("create_time")).getTime());
-    			}
-    			kingdomElement.setUpdateTime(((Date)topic.get("update_time")).getTime());
-    			kingdomElement.setLastUpdateTime((Long)topic.get("long_time"));
-    			kingdomElement.setInternalStatus(this.getInternalStatus((String)topic.get("core_circle"), uid));
-    			kingdomElement.setCid((Long)topicContent.get("id"));
-    			kingdomElement.setLikeCount((Integer)topicContent.get("like_count"));
-    			kingdomElement.setReadCount((Integer)topicContent.get("read_count_dummy"));
-    			if(null != liveFavouriteMap.get(t.getId().toString())){
-    				kingdomElement.setFavorite(1);
-    			}else{
-    				kingdomElement.setFavorite(0);
-    			}
-    			if(null != topicCountMap.get(t.getId().toString())){
-    				kingdomElement.setTopicCount(topicCountMap.get(t.getId().toString()));
-    			}else{
-    				kingdomElement.setTopicCount(0);
-    			}
-    			if(null != reviewCountMap.get(t.getId().toString())){
-    				kingdomElement.setReviewCount(reviewCountMap.get(t.getId().toString()));
-    			}else{
-    				kingdomElement.setReviewCount(0);
-    			}
-    			
-    			
-//    			kingdomElement.setAcCount();
-//    			
-//    			kingdomElement.setFavoriteCount();
-//    			
-//    			kingdomElement.setTags();
-    			
-    			
-    			
-    			
-    		}
-    		
+    		this.buildKingdomSearchResult(uid, resultDTO, kingdomPage);
     	}
     	
-    	return null;
+    	if(null != userPage){
+    		this.buildUserSearchResult(uid, resultDTO, userPage);
+    	}
+    	
+    	return Response.success(resultDTO);
+    }
+    
+    private void buildUgcSearchResult(long uid, ShowSearchDTO resultDTO, FacetedPage<UgcEsMapping> ugcPage){
+    	if(null == ugcPage){
+    		return;
+    	}
+    	List<Long> cidList = new ArrayList<Long>();
+		List<Long> uidList = new ArrayList<Long>();
+    	if(null != ugcPage){
+    		for(UgcEsMapping ugc : ugcPage){
+    			cidList.add(ugc.getId());
+    		}
+    	}
+    	Map<String, Map<String, Object>> contentMap = new HashMap<String, Map<String, Object>>();
+    	if(cidList.size() > 0){
+    		List<Map<String, Object>> contentList = contentForSearchJdbcDao.getUGCContentByIds(cidList);
+    		if(null != contentList && contentList.size() > 0){
+    			for(Map<String, Object> m : contentList){
+    				contentMap.put(String.valueOf(m.get("id")), m);
+    				uidList.add((Long)m.get("uid"));
+    			}
+    		}
+    	}
+    	Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+    	//一次性查询关注信息
+        Map<String, String> followMap = new HashMap<String, String>();
+    	if(uidList.size() > 0){
+    		List<UserProfile> userList = userService.getUserProfilesByUids(uidList);
+    		if(null != userList && userList.size() > 0){
+    			for(UserProfile u : userList){
+    				userMap.put(u.getUid().toString(), u);
+    			}
+    		}
+    		List<UserFollow> userFollowList = userService.getAllFollows(uid, uidList);
+            if(null != userFollowList && userFollowList.size() > 0){
+            	for(UserFollow uf : userFollowList){
+            		followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+            	}
+            }
+    	}
+		
+		ShowSearchDTO.UgcElement ugcElement = null;
+		Map<String, Object> content = null;
+		UserProfile userProfile = null;
+		for(UgcEsMapping ugc : ugcPage){
+			ugcElement = new ShowSearchDTO.UgcElement();
+			content = contentMap.get(ugc.getId().toString());
+			if(null == content){
+				continue;
+			}
+			userProfile = userMap.get(String.valueOf(content.get("uid")));
+			if(null == userProfile){
+				continue;
+			}
+			ugcElement.setUid(userProfile.getUid());
+			ugcElement.setNickName(userProfile.getNickName());
+			ugcElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+			ugcElement.setV_lv(userProfile.getvLv());
+			if(null != followMap.get(uid+"_"+userProfile.getUid())){
+				ugcElement.setIsFollowed(1);
+			}else{
+				ugcElement.setIsFollowed(0);
+			}
+			if(null != followMap.get(userProfile.getUid()+"_"+uid)){
+				ugcElement.setIsFollowMe(1);
+			}else{
+				ugcElement.setIsFollowMe(0);
+			}
+			ugcElement.setCid((Long)content.get("id"));
+			ugcElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)content.get("conver_image"));
+			ugcElement.setContent((String)content.get("content"));
+			ugcElement.setTitle((String)content.get("title"));
+			ugcElement.setType(0);
+			ugcElement.setReadCount((Integer)content.get("read_count_dummy"));
+			ugcElement.setReviewCount((Integer)content.get("review_count"));
+			resultDTO.getUgcData().add(ugcElement);
+		}
+    }
+    
+    private void buildKingdomSearchResult(long uid, ShowSearchDTO resultDTO, FacetedPage<TopicEsMapping> kingdomPage){
+    	if(null == kingdomPage){
+    		return;
+    	}
+    	
+    	List<Long> tidList = new ArrayList<Long>();
+		List<Long> ceTidList = new ArrayList<Long>();
+		for(TopicEsMapping topic : kingdomPage){
+			tidList.add(topic.getId());
+		}
+		List<Long> uidList = new ArrayList<Long>();
+		Map<String, Map<String, Object>> topicMap = new HashMap<String, Map<String, Object>>();
+		Map<String, Map<String, Object>> topicContentMap = new HashMap<String, Map<String, Object>>();
+		//一次性查询王国订阅信息
+        Map<String, String> liveFavouriteMap = new HashMap<String, String>();
+        //一次性查询所有王国的国王更新数，以及评论数
+        Map<String, Long> topicCountMap = new HashMap<String, Long>();
+        Map<String, Long> reviewCountMap = new HashMap<String, Long>();
+        //一次性查询所有王国的成员数
+        Map<String, Long> topicMemberCountMap = contentForSearchJdbcDao.getTopicMembersCount(tidList);
+        if(null == topicMemberCountMap){
+        	topicMemberCountMap = new HashMap<String, Long>();
+        }
+        //一次性查询王国的标签信息
+        Map<String, String> topicTagMap = new HashMap<String, String>();
+		if(tidList.size() > 0){
+			List<Map<String, Object>> topicList = contentForSearchJdbcDao.getTopicByIds(tidList);
+			if(null != topicList && topicList.size() > 0){
+				Long topicUid = null;
+				for(Map<String, Object> m : topicList){
+					topicMap.put(String.valueOf(m.get("id")), m);
+					topicUid = (Long)m.get("uid");
+					if(!uidList.contains(topicUid)){
+						uidList.add(topicUid);
+					}
+					if(((Integer)m.get("type")).intValue() == 1000){//聚合王国
+						ceTidList.add((Long)m.get("id"));
+					}
+				}
+			}
+			List<Map<String, Object>> topicContentList = contentForSearchJdbcDao.getTopicContentByTopicIds(tidList);
+			if(null != topicContentList && topicContentList.size() > 0){
+				for(Map<String, Object> m : topicContentList){
+					topicContentMap.put(String.valueOf(m.get("forward_cid")), m);
+				}
+			}
+			List<Map<String,Object>> liveFavouriteList = contentForSearchJdbcDao.getLiveFavoritesByUidAndTopicIds(uid, tidList);
+            if(null != liveFavouriteList && liveFavouriteList.size() > 0){
+            	for(Map<String,Object> lf : liveFavouriteList){
+            		liveFavouriteMap.put(((Long)lf.get("topic_id")).toString(), "1");
+            	}
+            }
+            List<Map<String, Object>> tcList = contentForSearchJdbcDao.getTopicUpdateCount(tidList);
+            if(null != tcList && tcList.size() > 0){
+            	for(Map<String, Object> m : tcList){
+            		topicCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("topicCount"));
+            		reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
+            	}
+            }
+            List<Map<String, Object>> topicTagList = contentForSearchJdbcDao.getTopicTagDetailListByTopicIds(tidList);
+            if(null != topicTagList && topicTagList.size() > 0){
+            	long tid = 0;
+            	String tags = null;
+            	Long topicId = null;
+            	for(Map<String, Object> ttd : topicTagList){
+            		topicId = (Long)ttd.get("topic_id");
+            		if(topicId.longValue() != tid){
+            			//先插入上一次
+            			if(tid > 0 && !StringUtils.isEmpty(tags)){
+            				topicTagMap.put(String.valueOf(tid), tags);
+            			}
+            			//再初始化新的
+            			tid = topicId.longValue();
+            			tags = null;
+            		}
+            		if(tags != null){
+            			tags = tags + ";" + (String)ttd.get("tag");
+            		}else{
+            			tags = (String)ttd.get("tag");
+            		}
+            	}
+            	if(tid > 0 && !StringUtils.isEmpty(tags)){
+            		topicTagMap.put(String.valueOf(tid), tags);
+            	}
+            }
+		}
+		Map<String, Long> acCountMap = new HashMap<String, Long>();
+        if(ceTidList.size() > 0){
+        	List<Map<String,Object>> acCountList = contentForSearchJdbcDao.getTopicAggregationAcCountByTopicIds(ceTidList);
+        	if(null != acCountList && acCountList.size() > 0){
+        		for(Map<String,Object> a : acCountList){
+        			acCountMap.put(String.valueOf(a.get("topic_id")), (Long)a.get("cc"));
+        		}
+        	}
+        }
+		Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+		//一次性查询关注信息
+        Map<String, String> followMap = new HashMap<String, String>();
+		if(uidList.size() > 0){
+			List<UserProfile> userList = userService.getUserProfilesByUids(uidList);
+			if(null != userList && userList.size() > 0){
+				for(UserProfile u : userList){
+					userMap.put(u.getUid().toString(), u);
+				}
+			}
+			List<UserFollow> userFollowList = userService.getAllFollows(uid, uidList);
+            if(null != userFollowList && userFollowList.size() > 0){
+            	for(UserFollow uf : userFollowList){
+            		followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+            	}
+            }
+		}
+		
+		Map<String, Object> topic = null;
+		Map<String, Object> topicContent = null;
+		UserProfile userProfile = null;
+		ShowSearchDTO.KingdomElement kingdomElement = null;
+		for(TopicEsMapping t : kingdomPage){
+			kingdomElement = new ShowSearchDTO.KingdomElement();
+			topic = topicMap.get(t.getId().toString());
+			if(null == topic){
+				continue;
+			}
+			topicContent = topicContentMap.get(t.getId().toString());
+			if(null == topicContent){
+				continue;
+			}
+			userProfile = userMap.get(String.valueOf(topic.get("uid")));
+			if(null == userProfile){
+				continue;
+			}
+			kingdomElement.setUid(userProfile.getUid());
+			kingdomElement.setNickName(userProfile.getNickName());
+			kingdomElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+			kingdomElement.setV_lv(userProfile.getvLv());
+			if(null != followMap.get(uid+"_"+userProfile.getUid())){
+				kingdomElement.setIsFollowed(1);
+			}else{
+				kingdomElement.setIsFollowed(0);
+			}
+			if(null != followMap.get(userProfile.getUid()+"_"+uid)){
+				kingdomElement.setIsFollowMe(1);
+			}else{
+				kingdomElement.setIsFollowMe(0);
+			}
+			kingdomElement.setTopicId((Long)topic.get("id"));
+			kingdomElement.setTitle((String)topic.get("title"));
+			kingdomElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
+			kingdomElement.setType(3);
+			kingdomElement.setContentType((Integer)topic.get("type"));
+			if(null != topic.get("create_time")){
+				kingdomElement.setCreateTime(((Date)topic.get("create_time")).getTime());
+			}
+			kingdomElement.setUpdateTime(((Date)topic.get("update_time")).getTime());
+			kingdomElement.setLastUpdateTime((Long)topic.get("long_time"));
+			kingdomElement.setInternalStatus(this.getInternalStatus((String)topic.get("core_circle"), uid));
+			kingdomElement.setCid((Long)topicContent.get("id"));
+			kingdomElement.setLikeCount((Integer)topicContent.get("like_count"));
+			kingdomElement.setReadCount((Integer)topicContent.get("read_count_dummy"));
+			if(null != liveFavouriteMap.get(t.getId().toString())){
+				kingdomElement.setFavorite(1);
+			}else{
+				kingdomElement.setFavorite(0);
+			}
+			if(null != topicCountMap.get(t.getId().toString())){
+				kingdomElement.setTopicCount(topicCountMap.get(t.getId().toString()));
+			}else{
+				kingdomElement.setTopicCount(0);
+			}
+			if(null != reviewCountMap.get(t.getId().toString())){
+				kingdomElement.setReviewCount(reviewCountMap.get(t.getId().toString()));
+			}else{
+				kingdomElement.setReviewCount(0);
+			}
+			if(null == topicMemberCountMap.get(t.getId().toString())){
+				kingdomElement.setFavoriteCount(1);//默认只有国王一个成员
+			}else{
+				kingdomElement.setFavoriteCount(topicMemberCountMap.get(t.getId().toString()).intValue()+1);
+			}
+			if(kingdomElement.getContentType() == 1000){//聚合王国需要返回子王国数
+				if(null != acCountMap.get(t.getId().toString())){
+					kingdomElement.setAcCount(acCountMap.get(t.getId().toString()).intValue());
+				}else{
+					kingdomElement.setAcCount(0);
+				}
+			}
+			if(null != topicTagMap.get(t.getId().toString())){
+				kingdomElement.setTags(topicTagMap.get(t.getId().toString()));
+            }else{
+            	kingdomElement.setTags("");
+            }
+			resultDTO.getKingdomData().add(kingdomElement);
+		}
+    }
+    
+    private void buildUserSearchResult(long uid, ShowSearchDTO resultDTO, FacetedPage<UserEsMapping> userPage){
+    	if(null == userPage){
+    		return;
+    	}
+    	List<Long> uidList = new ArrayList<Long>();
+    	for(UserEsMapping user : userPage){
+    		uidList.add(user.getUid());
+    	}
+    	Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+		//一次性查询关注信息
+        Map<String, String> followMap = new HashMap<String, String>();
+		if(uidList.size() > 0){
+			List<UserProfile> userList = userService.getUserProfilesByUids(uidList);
+			if(null != userList && userList.size() > 0){
+				for(UserProfile u : userList){
+					userMap.put(u.getUid().toString(), u);
+				}
+			}
+			List<UserFollow> userFollowList = userService.getAllFollows(uid, uidList);
+            if(null != userFollowList && userFollowList.size() > 0){
+            	for(UserFollow uf : userFollowList){
+            		followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+            	}
+            }
+		}
+    	
+		UserProfile userProfile = null;
+    	ShowSearchDTO.UserElement userElement = null;
+    	for(UserEsMapping user : userPage){
+    		userElement = new ShowSearchDTO.UserElement();
+    		userProfile = userMap.get(user.getUid().toString());
+    		if(null == userProfile){
+    			continue;
+    		}
+    		userElement.setUid(userProfile.getUid());
+    		userElement.setNickName(userProfile.getNickName());
+    		userElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+    		userElement.setV_lv(userProfile.getvLv());
+    		userElement.setIntroduced(userProfile.getIntroduced());
+    		if(null != followMap.get(uid+"_"+userProfile.getUid())){
+    			userElement.setIsFollowed(1);
+			}else{
+				userElement.setIsFollowed(0);
+			}
+			if(null != followMap.get(userProfile.getUid()+"_"+uid)){
+				userElement.setIsFollowMe(1);
+			}else{
+				userElement.setIsFollowMe(0);
+			}
+			resultDTO.getUserData().add(userElement);
+    	}
     }
     
     //判断核心圈身份
