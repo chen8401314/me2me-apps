@@ -75,7 +75,6 @@ public class AppConfigController {
 	}
 	
 	@RequestMapping(value = "/cache/query")
-	@SystemControllerLog(description = "缓存配置查询")
 	public ModelAndView cacheConfigQuery(){
 		List<ConfigItem> result = new ArrayList<ConfigItem>();
 		ConfigItem item = null;

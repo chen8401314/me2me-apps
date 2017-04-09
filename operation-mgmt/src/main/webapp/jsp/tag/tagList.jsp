@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta charset="utf-8" />
 
-<title>ZX_IMS 2.0 - IOS推广激活统计</title>
+<title>ZX_IMS 2.0 - 标签管理</title>
 
 <link href="${ctx}/css/bootstrap.min.css" rel="stylesheet" />
 <link href="${ctx}/css/bootstrap-reset.css" rel="stylesheet" />
@@ -45,7 +45,7 @@ var previous = function(){
 	var page = currPage-1;
 	
 	$.ajax({
-		url : "${ctx}/stat/iosWapx/page?type="+$("#type").val()+"&startTime="+$("#startTime").val()+"&endTime="+$("#endTime").val()+"&page="+page+"&pageSize="+pageSize,
+		url : "${ctx}/tag/page?isRec="+$("#isRec").val()+"&topicCountEnd="+$("#topicCountEnd").val()+"&topicCountStart="+$("#topicCountStart").val()+"&isSys="+$("#isSys").val()+"&tagName="+$("#tagName").val()+"&startTime="+$("#startTime").val()+"&endTime="+$("#endTime").val()+"&page="+page+"&pageSize="+pageSize,
 		async : false,
 		type : "GET",
 		contentType : "application/json;charset=UTF-8",
@@ -66,7 +66,7 @@ var next = function(type){
 	var page = currPage+1;
 	
 	$.ajax({
-		url : "${ctx}/stat/iosWapx/page?type="+$("#type").val()+"&startTime="+$("#startTime").val()+"&endTime="+$("#endTime").val()+"&page="+page+"&pageSize="+pageSize,
+		url : "${ctx}/tag/page?isRec="+$("#isRec").val()+"&topicCountEnd="+$("#topicCountEnd").val()+"&topicCountStart="+$("#topicCountStart").val()+"&isSys="+$("#isSys").val()+"&tagName="+$("#tagName").val()+"&startTime="+$("#startTime").val()+"&endTime="+$("#endTime").val()+"&page="+page+"&pageSize="+pageSize,
 		async : false,
 		type : "GET",
 		contentType : "application/json;charset=UTF-8",
@@ -102,35 +102,31 @@ var buildTableBody = function(dataList){
 	if(dataList && dataList.length > 0){
 		for(var i=0;i<dataList.length;i++){
 			bodyHtml = bodyHtml + "<tr class=\"gradeX\">";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].idfa+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].tagName+"</th>";
+			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].createTime))+"</th>";
+			bodyHtml = bodyHtml + "<th>";
+			if(dataList[i].isSys == 0){
+				bodyHtml = bodyHtml + "否";
+			}else{
+				bodyHtml = bodyHtml + "是";
+			}
+			bodyHtml = bodyHtml + "</th>";
+			bodyHtml = bodyHtml + "<th>";
+			if(dataList[i].isRec == 0){
+				bodyHtml = bodyHtml + "否";
+			}else{
+				bodyHtml = bodyHtml + "是";
+			}
+			bodyHtml = bodyHtml + "</th>";
 			bodyHtml = bodyHtml + "<th>";
 			if(dataList[i].status == 0){
-				bodyHtml = bodyHtml + "<font color='red'>未激活</font>";
+				bodyHtml = bodyHtml + "正常";
 			}else{
-				bodyHtml = bodyHtml + "<font color='green'>已激活</font>";
+				bodyHtml = bodyHtml + "<font color='red'>禁用</font>";
 			}
 			bodyHtml = bodyHtml + "</th>";
-			bodyHtml = bodyHtml + "<th>";
-			if(dataList[i].channelType == 0){
-				bodyHtml = bodyHtml + "万普";
-			}else if(dataList[i].channelType == 1){
-				bodyHtml = bodyHtml + "刀刀";
-			}else{
-				bodyHtml = bodyHtml + "未知";
-			}
-			bodyHtml = bodyHtml + "</th>";
-			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].optTime))+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].uid+"</th>";
-			if(dataList[i].registerMode){
-				bodyHtml = bodyHtml + "<th>"+dataList[i].registerMode+"</th>";
-			}else{
-				bodyHtml = bodyHtml + "<th></th>";
-			}
-			if(dataList[i].registerNo){
-				bodyHtml = bodyHtml + "<th>"+dataList[i].registerNo+"</th>";
-			}else{
-				bodyHtml = bodyHtml + "<th></th>";
-			}
+			bodyHtml = bodyHtml + "<th>"+dataList[i].topicCount+"</th>";
+			bodyHtml = bodyHtml + "<th></th>";
 			bodyHtml = bodyHtml + "</tr>";
 		}
 	}
@@ -186,30 +182,44 @@ var parserDatetimeStr = function(time){
 
 		<!--sidebar start-->
 		<jsp:include page="../common/leftmenu.jsp" flush="false">
-			<jsp:param name="t" value="3" />
-			<jsp:param name="s" value="3_10" />
+			<jsp:param name="t" value="12" />
+			<jsp:param name="s" value="12_1" />
 		</jsp:include>
 		<!--sidebar end-->
 
 		<!--main content start-->
 		<section id="main-content">
 			<section class="wrapper">
-				<form id="form1" action="${ctx}/stat/iosWapx/query" method="post">
+				<form id="form1" action="${ctx}/tag/query" method="post">
 					<div class="row">
 						<div class="col-lg-12">
 							<section class="panel">
 								<header class="panel-heading">执行操作</header>
 								<div class="panel-body">
 									<div class="form-inline" role="form">
-										开始时间
-										<input type="text" id="startTime" name="startTime" value="${dataObj.startTime }" class="form-control">&nbsp;&nbsp;&nbsp;&nbsp;
-										结束时间
+										标签名
+										<input type="text" id="tagName" name="tagName" value="${dataObj.tagName }" class="form-control">&nbsp;&nbsp;&nbsp;&nbsp;
+										创建时间
+										<input type="text" id="startTime" name="startTime" value="${dataObj.startTime }" class="form-control">
+										-
 										<input type="text" id="endTime" name="endTime" value="${dataObj.endTime }" class="form-control">&nbsp;&nbsp;&nbsp;&nbsp;
-										广告商
-										<select name="type" id="type" class="form-control">
-											<option value="-1" ${dataObj.type==-1?'selected':''}>所有</option>
-											<option value="0" ${dataObj.type==0?'selected':''}>万普</option>
-											<option value="1" ${dataObj.type==1?'selected':''}>刀刀</option>
+										是否体系
+										<select name="isSys" id="isSys" class="form-control">
+											<option value="-1" ${dataObj.isSys==-1?'selected':''}>所有</option>
+											<option value="0" ${dataObj.isSys==0?'selected':''}>否</option>
+											<option value="1" ${dataObj.isSys==1?'selected':''}>是</option>
+										</select>
+									</div>
+									<div class="form-inline" role="form">
+										王国数
+										<input type="text" id="topicCountStart" name="topicCountStart" value="${dataObj.topicCountStart }" class="form-control">
+										-
+										<input type="text" id="topicCountEnd" name="topicCountEnd" value="${dataObj.topicCountEnd }" class="form-control">&nbsp;&nbsp;&nbsp;&nbsp;
+										是否推荐
+										<select name="isRec" id="isRec" class="form-control">
+											<option value="-1" ${dataObj.isRec==-1?'selected':''}>所有</option>
+											<option value="0" ${dataObj.isRec==0?'selected':''}>否</option>
+											<option value="1" ${dataObj.isRec==1?'selected':''}>是</option>
 										</select>&nbsp;&nbsp;&nbsp;&nbsp;
 										<input type="submit" id="btnSearch" name="btnSearch" value="搜索" class="btn btn-info" />
 									</div>
@@ -223,38 +233,7 @@ var parserDatetimeStr = function(time){
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								| 总计
-								<span class="tools pull-right">
-									<a href="javascript:;" class="fa fa-chevron-down"></a>
-								</span>
-							</header>
-							<div class="panel-body">
-								<div class="adv-table">
-									<table class="display table table-bordered table-striped" id="table0">
-										<thead>
-											<tr>
-												<th>未激活数</th>
-												<th>已注册数</th>
-											</tr>
-										</thead>
-										<tbody id="tbody0">
-												<tr class="gradeX">
-													<th>${dataObj.totalItem.totalNoticeCount}</th>
-													<th>${dataObj.totalItem.totalActiveCount}</th>
-												</tr>
-										</tbody>
-									</table>
-								</div>
-							</div>
-						</section>
-					</div>
-				</div>
-				
-				<div class="row">
-					<div class="col-sm-12">
-						<section class="panel">
-							<header class="panel-heading">
-								| 明细列表
+								| 标签列表
 								<span class="tools pull-right">
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>
@@ -264,46 +243,53 @@ var parserDatetimeStr = function(time){
 									<table class="display table table-bordered table-striped" id="table">
 										<thead>
 											<tr>
-												<th>IDFA</th>
+												<th>标签名</th>
+												<th>创建时间</th>
+												<th>是否体系</th>
+												<th>是否推荐</th>
 												<th>状态</th>
-												<th>广告商</th>
-												<th>操作时间</th>
-												<th>UID</th>
-												<th>注册方式</th>
-												<th>注册号</th>
+												<th>王国数</th>
+												<th>操作</th>
 											</tr>
 										</thead>
 										<tbody id="tbody">
 											<c:forEach items="${dataObj.result}" var="item">
 												<tr class="gradeX">
-													<th>${item.idfa }</th>
+													<th>${item.tagName }</th>
+													<th><fmt:formatDate value="${item.createTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
+													<th>
+													<c:choose>
+                                                		<c:when test="${item.isSys == '0'}">
+                                                			否
+                                                		</c:when>
+                                                		<c:otherwise>
+                                                			是
+                                                		</c:otherwise>
+                                                	</c:choose>
+													</th>
+													<th>
+													<c:choose>
+                                                		<c:when test="${item.isRec == '0'}">
+                                                			否
+                                                		</c:when>
+                                                		<c:otherwise>
+                                                			是
+                                                		</c:otherwise>
+                                                	</c:choose>
+													</th>
 													<th>
 													<c:choose>
                                                 		<c:when test="${item.status == '0'}">
-                                                			<font color='red'>未激活</font>
+                                                			正常
                                                 		</c:when>
                                                 		<c:otherwise>
-                                                			<font color='green'>已激活</font>
+                                                			<font color='red'>禁用</font>
                                                 		</c:otherwise>
                                                 	</c:choose>
 													</th>
-													<th>
-													<c:choose>
-                                                		<c:when test="${item.channelType == '0'}">
-                                                			万普
-                                                		</c:when>
-                                                		<c:when test="${item.channelType == '1'}">
-                                                			刀刀
-                                                		</c:when>
-                                                		<c:otherwise>
-                                                			未知
-                                                		</c:otherwise>
-                                                	</c:choose>
-													</th>
-													<th><fmt:formatDate value="${item.optTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
-													<th>${item.uid }</th>
-													<th>${item.registerMode }</th>
-													<th>${item.registerNo }</th>
+													
+													<th>${item.topicCount }</th>
+													<th></th>
 												</tr>
 											</c:forEach>
 										</tbody>

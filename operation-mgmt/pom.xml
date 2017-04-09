@@ -14,9 +14,6 @@
 		<!--开发环境 -->
 		<profile>
 			<id>dev</id>
-			<properties>
-				<mode>dev</mode>
-			</properties>
 			<dependencies>
 				<dependency>
 					<groupId>org.springframework</groupId>
@@ -173,10 +170,6 @@
 		</profile>
 		<profile>
 			<id>test</id>
-			<properties>
-				<mode>test</mode>
-			</properties>
-
 			<dependencies>
 				<dependency>
 					<groupId>org.springframework</groupId>
@@ -302,10 +295,6 @@
 		</profile>
 		<profile>
 			<id>product</id>
-			<properties>
-				<mode>product</mode>
-			</properties>
-
 			<dependencies>
 				<dependency>
 					<groupId>org.springframework</groupId>

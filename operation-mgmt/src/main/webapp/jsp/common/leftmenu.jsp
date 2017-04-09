@@ -134,6 +134,15 @@ String sub = request.getParameter("s");
                 	<li <%if("11_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/search/hotkeywordList">热词管理</a></li>
                 </ul>
             </li>
+            <li class="sub-menu">
+                <a href="javascript:;" <%if("12".equals(tab)){ %>class="active"<%} %>>
+                    <i class="fa fa-bar-chart-o"></i>
+                    <span>标签管理</span>
+                </a>
+                <ul class="sub">
+                	<li <%if("12_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/tag/query">标签管理</a></li>
+                </ul>
+            </li>
         </ul>
         <!-- sidebar menu end-->
     </div>
