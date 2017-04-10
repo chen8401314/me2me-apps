@@ -227,10 +227,12 @@ public class LiveServiceImpl implements LiveService {
 
         //标签
         String tags = "";
+        List<Long> tagIdList = new ArrayList<Long>();
         List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetail(topicId);
         if(topicTagDetails != null && topicTagDetails.size() > 0){
             StringBuilder builder = new StringBuilder();
             for (TopicTagDetail detail : topicTagDetails){
+            	tagIdList.add(detail.getTagId());
                 String tag = detail.getTag();
                 if(tags.equals("")){
                     tags = builder.append(tag).toString();
@@ -239,6 +241,14 @@ public class LiveServiceImpl implements LiveService {
                 }
             }
             liveCoverDto.setTags(builder.toString());
+        }
+        
+        if(liveCoverDto.getInternalStatus() == Specification.SnsCircle.CORE.index){//核心圈的，需要返回推荐标签
+        	//第一步，先返回运营指定的推荐标签（1个）
+        	TopicTag recTag = liveMybatisDao.getRecTopicTagWithoutOwn(topicId, tagIdList);
+        	if(null != recTag){
+        		liveCoverDto.setRecTags(recTag.getTag());
+        	}
         }
         
         if(content.getReadCount() == 1 || content.getReadCount() == 2){
@@ -411,11 +421,13 @@ public class LiveServiceImpl implements LiveService {
         }
 
         //标签
+        List<Long> tagIdList = new ArrayList<Long>();
         String tags = "";
         List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetail(cid);
         if(topicTagDetails != null && topicTagDetails.size() > 0){
             StringBuilder builder = new StringBuilder();
             for (TopicTagDetail detail : topicTagDetails){
+            	tagIdList.add(detail.getTagId());
                 String tag = detail.getTag();
                 if(tags.equals("")){
                     tags = builder.append(tag).toString();
@@ -424,6 +436,14 @@ public class LiveServiceImpl implements LiveService {
                 }
             }
             showLiveDto.setTags(builder.toString());
+        }
+        
+        if(showLiveDto.getInternalStatus() == Specification.SnsCircle.CORE.index){//核心圈的，需要返回推荐标签
+        	//第一步，先返回运营指定的推荐标签（1个）
+        	TopicTag recTag = liveMybatisDao.getRecTopicTagWithoutOwn(cid, tagIdList);
+        	if(null != recTag){
+        		showLiveDto.setRecTags(recTag.getTag());
+        	}
         }
         
         if(topic.getType() == Specification.KingdomType.NORMAL.index){//个人王国

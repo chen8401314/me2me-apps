@@ -1060,6 +1060,22 @@ public class LiveMybatisDao {
 		}
 		return null;
 	}
+	
+	public TopicTag getRecTopicTagWithoutOwn(long topicId, List<Long> tagIdList){
+		TopicTagExample example = new TopicTagExample();
+		TopicTagExample.Criteria criteria = example.createCriteria();
+		criteria.andStatusEqualTo(0);//正常的
+		criteria.andIsRecEqualTo(1);//推荐的
+		if(null != tagIdList && tagIdList.size() > 0){
+			criteria.andIdNotIn(tagIdList);
+		}
+		example.setOrderByClause(" id desc limit 1");
+		List<TopicTag> list =  topicTagMapper.selectByExample(example);
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
 
 	public void insertTopicTag(TopicTag tag){
 		topicTagMapper.insertSelective(tag);
