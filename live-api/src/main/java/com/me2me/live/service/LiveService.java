@@ -213,6 +213,10 @@ public interface LiveService {
     
     void updateTopicTag(TopicTag tag);
     
+    void delTagTopic(long tagTopicId);
+    
+    void addTagTopics(long tagId, List<Long> topicIdList);
+    
     /**
      * 王国信息统计
      */

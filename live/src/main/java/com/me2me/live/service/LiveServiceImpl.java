@@ -228,7 +228,7 @@ public class LiveServiceImpl implements LiveService {
         //标签
         String tags = "";
         List<Long> tagIdList = new ArrayList<Long>();
-        List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetail(topicId);
+        List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetailsByTopicId(topicId);
         if(topicTagDetails != null && topicTagDetails.size() > 0){
             StringBuilder builder = new StringBuilder();
             for (TopicTagDetail detail : topicTagDetails){
@@ -423,7 +423,7 @@ public class LiveServiceImpl implements LiveService {
         //标签
         List<Long> tagIdList = new ArrayList<Long>();
         String tags = "";
-        List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetail(cid);
+        List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetailsByTopicId(cid);
         if(topicTagDetails != null && topicTagDetails.size() > 0){
             StringBuilder builder = new StringBuilder();
             for (TopicTagDetail detail : topicTagDetails){
@@ -2821,7 +2821,7 @@ public class LiveServiceImpl implements LiveService {
             dto.setAcAuditType(topic.getAcAuditType());
             //标签
             String tags = "";
-            List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetail(topicId);
+            List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetailsByTopicId(topicId);
             if(topicTagDetails != null && topicTagDetails.size() > 0){
                 StringBuilder builder = new StringBuilder();
                 for (TopicTagDetail detail : topicTagDetails){
@@ -4374,7 +4374,7 @@ public class LiveServiceImpl implements LiveService {
 		//获取王国本身的王国
 		resultDTO.setTopicTags("");
 		if(topicId > 0){
-			List<TopicTagDetail> tagList = liveMybatisDao.getTopicTagDetail(topicId);
+			List<TopicTagDetail> tagList = liveMybatisDao.getTopicTagDetailsByTopicId(topicId);
 			if(null != tagList && tagList.size() > 0){
 				StringBuilder topicTags = new StringBuilder();
 				TopicTagDetail ttd = null;
@@ -4444,7 +4444,7 @@ public class LiveServiceImpl implements LiveService {
 			}
 		}
 		
-		List<TopicTagDetail> tagList = liveMybatisDao.getTopicTagDetail(topicId);
+		List<TopicTagDetail> tagList = liveMybatisDao.getTopicTagDetailsByTopicId(topicId);
 		
 		//先将需要删除的删除掉
 		if(null != tagList && tagList.size() > 0){
@@ -4908,5 +4908,46 @@ public class LiveServiceImpl implements LiveService {
 	@Override
 	public void updateTopicTag(TopicTag tag){
 		liveMybatisDao.updateTopicTag(tag);
+	}
+	
+	@Override
+	public void delTagTopic(long tagTopicId){
+		TopicTagDetail ttd = liveMybatisDao.getTopicTagDetailById(tagTopicId);
+		if(null != ttd){
+			ttd.setStatus(1);
+			liveMybatisDao.updateTopicTagDetail(ttd);
+		}
+	}
+	
+	@Override
+	public void addTagTopics(long tagId, List<Long> topicIdList){
+		if(null == topicIdList || topicIdList.size() == 0 || tagId == 0){
+			return;
+		}
+		TopicTag tag = liveMybatisDao.getTopicTagById(tagId);
+		if(null == tag){
+			return;
+		}
+		
+		List<TopicTagDetail> oldList = liveMybatisDao.getTopicTagDetailsByTagId(tagId);
+		List<Long> oldTopicIdList = new ArrayList<Long>();
+		if(null != oldList && oldList.size() > 0){
+			for(TopicTagDetail ttd : oldList){
+				oldTopicIdList.add(ttd.getTopicId());
+			}
+		}
+		TopicTagDetail ttd = null;
+		for(Long topicId : topicIdList){
+			if(oldTopicIdList.contains(topicId)){
+				continue;//已经有了，就不要重复添加了
+			}
+			ttd = new TopicTagDetail();
+			ttd.setStatus(0);
+			ttd.setTag(tag.getTag());
+			ttd.setTagId(tagId);
+			ttd.setTopicId(topicId);
+			ttd.setUid(Long.valueOf(0));
+			liveMybatisDao.insertTopicTagDetail(ttd);
+		}
 	}
 }

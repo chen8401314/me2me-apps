@@ -648,10 +648,11 @@ public class LiveLocalJdbcDao {
 	
 	public List<Map<String, Object>> getRecTopicTags(int pageSize){
 		StringBuilder sb = new StringBuilder();
-		sb.append("select t.tag,count(1) as kcount");
-		sb.append(" from topic_tag_detail d,topic_tag t");
-		sb.append(" where d.tag_id=t.id and t.is_rec=1 and t.status=0");
-		sb.append(" group by t.tag order by kcount DESC limit ").append(pageSize);
+		sb.append("select t.tag, count(d.topic_id) as kcount");
+		sb.append(" from topic_tag t LEFT JOIN topic_tag_detail d");
+		sb.append(" on t.id=d.tag_id and d.status=0");
+		sb.append(" where t.is_rec=1 and t.status=0");
+		sb.append(" group by t.tag order by kcount desc limit ").append(pageSize);
 		
 		return jdbcTemplate.queryForList(sb.toString());
 	}

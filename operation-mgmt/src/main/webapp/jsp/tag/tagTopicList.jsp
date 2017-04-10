@@ -24,7 +24,7 @@
 <script src="${ctx}/js/jquery-migrate-1.2.1.min.js"></script>
 <script src="${ctx}/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-var pageSize = 10;
+var pageSize = 20;
 
 var currentPage = 1;
 
@@ -80,10 +80,12 @@ var next = function(type){
 var buildTable = function(resp){
 	var result = eval("("+resp+")");
 	var currentPage = getCurrentPage();
-	totalPage = $("#totalPage").val();
 	if(result){
 		buildTableBody(result.result);
 	}
+	
+	totalPage = result.totalPage;
+	$("#totalPage").val(totalPage);
 	
 	//记录分页信息
 	$("#DataTables_Table_info").html("当前第 "+currentPage+" 页，共 "+totalPage+" 页");
@@ -97,6 +99,8 @@ var buildTable = function(resp){
 	}
 }
 
+var tagId = "${dataObj.tagId }";
+
 var buildTableBody = function(dataList){
 	var bodyHtml = "";
 	if(dataList && dataList.length > 0){
@@ -106,7 +110,7 @@ var buildTableBody = function(dataList){
 			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].createTime))+"</th>";
 			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].lastUpdateTime))+"</th>";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].tags+"</th>";
-			bodyHtml = bodyHtml + "<th></th>";
+			bodyHtml = bodyHtml + "<th><a href=\"${ctx}/tag/deltopic/"+tagId+"/"+dataList[i].tagTopicId+"\">移除</a></th>";
 			bodyHtml = bodyHtml + "</tr>";
 		}
 	}
@@ -176,7 +180,7 @@ var parserDatetimeStr = function(time){
 						<input type="hidden" id="tagId" name="tagId" value="${dataObj.tagId }" />
 						<section class="panel">
 							<header class="panel-heading">
-								| 王国列表&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" id="btnSearch" name="btnSearch" value="添加王国" class="btn btn-info" />
+								| 王国列表&nbsp;&nbsp;&nbsp;&nbsp;<a class="btn btn-danger dialog" href="${ctx}/ranking/listKingdoms">添加王国</a>
 								&nbsp;&nbsp;&nbsp;&nbsp;<span class="btn btn-default"><a href="${ctx}/tag/query">返回</a></span>
 								<span class="tools pull-right">
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
@@ -202,7 +206,7 @@ var parserDatetimeStr = function(time){
 													<th><fmt:formatDate value="${item.lastUpdateTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
 													<th>${item.tags }</th>
 													<th>
-														<a href="${ctx}/tag/deltopic/${dataObj.tagId }/${item.id }">移除</a>
+														<a href="${ctx}/tag/deltopic/${dataObj.tagId }/${item.tagTopicId }">移除</a>
 													</th>
 												</tr>
 											</c:forEach>
@@ -254,5 +258,41 @@ var parserDatetimeStr = function(time){
 	<script src="${ctx}/js/common-scripts.js"></script>
 	<script src="${ctx}/js/advanced-form-components.js"></script>
 		<script type="text/javascript" src="${ctx}/assets/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+		<script type="text/javascript" src="${ctx}/js/bootbox.min.js"></script>
+<script type="text/javascript">
+$("a.dialog").click(function(){
+	var url =$(this).attr("href");
+	bootbox.dialog({ 
+		size:"large",
+		message: "<iframe src='"+url+"' style='width:100%;min-height:750px;border:0px;'></iframe>" 
+	})
+	return false;
+});
+
+//子窗口添加数据
+function onAdd(dataArr){
+	var tids = "";
+	for(var i=0;i<dataArr.length;i++){
+		if(i>0){
+			tids = tids + ",";
+		}
+		tids = tids + dataArr[i];
+	}
+	
+	//先添加数据
+	$.ajax({
+		url : "${ctx}/tag/addTagTopic",
+		async : false,
+		type : "GET",
+		data : {topidIds:tids,tagId:$("#tagId").val()},
+		contentType : "application/json;charset=UTF-8",
+		success : function(resp) {
+			//刷新页面
+			currentPage = 2;
+			previous();
+		}
+	});
+}
+</script>
 </body>
 </html>

@@ -1093,17 +1093,29 @@ public class LiveMybatisDao {
 		topicTagDetailMapper.insertSelective(tagDetail);
 	}
 	
+	public TopicTagDetail getTopicTagDetailById(long id){
+		return topicTagDetailMapper.selectByPrimaryKey(id);
+	}
+	
 	public void updateTopicTagDetail(TopicTagDetail tagDetail){
 		topicTagDetailMapper.updateByPrimaryKeySelective(tagDetail);
 	}
 
-	public List<TopicTagDetail> getTopicTagDetail(long topicId){
+	public List<TopicTagDetail> getTopicTagDetailsByTopicId(long topicId){
         TopicTagDetailExample example = new TopicTagDetailExample();
         TopicTagDetailExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andStatusEqualTo(0);
         return topicTagDetailMapper.selectByExample(example);
     }
+	
+	public List<TopicTagDetail> getTopicTagDetailsByTagId(long tagId){
+		TopicTagDetailExample example = new TopicTagDetailExample();
+        TopicTagDetailExample.Criteria criteria = example.createCriteria();
+        criteria.andTagIdEqualTo(tagId);
+        criteria.andStatusEqualTo(0);
+        return topicTagDetailMapper.selectByExample(example);
+	}
 	
 	public List<TopicTagDetail> getTopicTagDetailListByTopicIds(List<Long> topicIds){
 		if(null == topicIds || topicIds.size() == 0){

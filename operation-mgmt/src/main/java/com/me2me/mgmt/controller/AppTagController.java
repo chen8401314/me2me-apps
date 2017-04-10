@@ -244,7 +244,7 @@ public class AppTagController {
 		countSql.append(" where d.topic_id=t.id and d.status=0 and d.tag_id=").append(dto.getTagId());
 		
 		StringBuilder querySql = new StringBuilder();
-		querySql.append("select t.* from topic_tag_detail d,topic t");
+		querySql.append("select t.*,d.id as did from topic_tag_detail d,topic t");
 		querySql.append(" where d.topic_id=t.id and d.status=0");
 		querySql.append(" and d.tag_id=").append(dto.getTagId());
 		querySql.append(" order by d.create_time desc,id");
@@ -323,19 +323,49 @@ public class AppTagController {
 			AppTagTopicListQueryDTO.Item item = null;
 			for(Map<String, Object> m : list){
 				item = new AppTagTopicListQueryDTO.Item();
-				item.setId((Long)m.get("id"));
+				item.setTagTopicId((Long)m.get("did"));
+				item.setTopicId((Long)m.get("id"));
 				item.setCreateTime((Date)m.get("create_time"));
-				item.setH5url(config.getWebappUrl() + item.getId());
+				item.setH5url(config.getWebappUrl() + item.getTopicId());
 				long lut = (Long)m.get("long_time");
 				item.setLastUpdateTime(new Date(lut));
 				item.setTitle((String)m.get("title"));
-				if(null != topicTagMap.get(String.valueOf(item.getId()))){
-					item.setTags(topicTagMap.get(String.valueOf(item.getId())));
+				if(null != topicTagMap.get(String.valueOf(item.getTopicId()))){
+					item.setTags(topicTagMap.get(String.valueOf(item.getTopicId())));
 	            }else{
 	            	item.setTags("");
 	            }
 				dto.getResult().add(item);
 			}
 		}
+	}
+	
+	@RequestMapping(value="/deltopic/{tagId}/{tagTopicId}")
+	public ModelAndView delTagTopic(@PathVariable long tagId, @PathVariable long tagTopicId){
+		liveService.delTagTopic(tagTopicId);
+		
+		ModelAndView view = new ModelAndView("redirect:/tag/topicList/query?tagId="+tagId);
+		return view;
+	}
+	
+	@RequestMapping(value="/addTagTopic")
+	@ResponseBody
+	public String addTagTopic(String topidIds, String tagId){
+		List<Long> topicIdList = new ArrayList<Long>();
+		if(StringUtils.isNotBlank(topidIds)){
+			String[] tmp = topidIds.split(",");
+			if(tmp.length > 0){
+				for(String t : tmp){
+					if(StringUtils.isNotBlank(t)){
+						topicIdList.add(Long.valueOf(t.trim()));
+					}
+				}
+			}
+		}
+		Long tid = Long.valueOf(tagId.trim());
+		
+		liveService.addTagTopics(tid, topicIdList);
+		
+		return "0";
 	}
 }

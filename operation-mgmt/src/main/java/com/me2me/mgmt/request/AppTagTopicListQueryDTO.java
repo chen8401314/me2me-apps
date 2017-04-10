@@ -34,7 +34,8 @@ public class AppTagTopicListQueryDTO {
 	
 	@Data
 	public static class Item{
-		private long id;
+		private long tagTopicId;
+		private long topicId;
 		private String title;
 		private Date createTime;
 		private Date lastUpdateTime;

@@ -217,7 +217,7 @@
 	
 	
 	var sourceTable=$('#mytable').DataTable( {
-	    "ajax":"./ajaxLoadKingdoms",
+	    "ajax": ctx+"/ranking/ajaxLoadKingdoms",
 	    processing:true,
 	    "columns": [
 			{title:"<button class='btn btn-warning btn-xs'>全/反选</button> ",width:50,orderable:false,render:function(data, type, row, meta){
@@ -265,7 +265,7 @@
 	});
 	$("#search_form").on("submit",function(){
 		var data= $(this).serialize();
-		var url = "./ajaxLoadKingdoms?"+data;
+		var url = ctx+"/ranking/ajaxLoadKingdoms?"+data;
 		sourceTable.ajax.url(url).load();
 		return false;
 	})
