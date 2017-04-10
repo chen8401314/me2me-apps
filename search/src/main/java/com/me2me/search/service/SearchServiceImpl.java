@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.FacetedPage;
@@ -37,11 +39,9 @@ import com.me2me.user.service.UserService;
  */
 @Service
 public class SearchServiceImpl implements SearchService {
+	private Logger logger = LoggerFactory.getLogger(SearchServiceImpl.class);
     @Autowired
     private UserService userService;
-	
-    @Autowired
-    private ElasticsearchTemplate elasticsearchTemplate;
     
     @Autowired
     private ContentSearchService searchService;

@@ -10,7 +10,7 @@ import org.springframework.data.elasticsearch.annotations.Mapping;
 
 import com.me2me.search.constants.IndexConstants;
 
-@Mapping
+@Mapping(mappingPath=IndexConstants.USER_INDEX_NAME)
 @Document(indexName=IndexConstants.USER_INDEX_NAME,type=IndexConstants.USER_INDEX_NAME)
 public class UserEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
@@ -22,7 +22,7 @@ public class UserEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String mobile;		//用户手机号码     必填 
 
-	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
 	private String nick_name;		//     必填 
 
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)

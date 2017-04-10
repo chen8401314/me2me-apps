@@ -10,7 +10,7 @@ import org.springframework.data.elasticsearch.annotations.Mapping;
 
 import com.me2me.search.constants.IndexConstants;
 
-@Mapping
+@Mapping(mappingPath=IndexConstants.UGC_INDEX_NAME)
 @Document(indexName=IndexConstants.UGC_INDEX_NAME,type=IndexConstants.UGC_INDEX_NAME)
 public class UgcEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
@@ -22,10 +22,10 @@ public class UgcEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long forward_cid;		//     必填 
 
-	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
 	private String title;		//     必填 
 
-	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
 	private String feeling;		//写文章的感受标签     必填 
 
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
@@ -43,7 +43,7 @@ public class UgcEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer content_type;		//     必填 
 
-	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
 	private String content;		//内容     必填 
 
 	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
@@ -88,7 +88,7 @@ public class UgcEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Date)
 	private Date create_time;		//创建时间     必填 
 	
-	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
 	private String nick_name;		//     必填 
 	
 	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
