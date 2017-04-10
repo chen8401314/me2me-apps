@@ -288,9 +288,6 @@
 			</dependencies>
 
 			<build>
-				<filters>
-					<filter>src/main/filter/test.properties</filter>
-				</filters>
 			</build>
 		</profile>
 		<profile>

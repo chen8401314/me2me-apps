@@ -28,6 +28,7 @@
 	
 	<dubbo:reference interface="com.me2me.live.service.LiveService" id="liveService" />
 	 
+	<dubbo:reference interface="com.me2me.search.service.SearchService" id="searchService" />
 	
 	<dubbo:consumer check="false" />
 </beans>

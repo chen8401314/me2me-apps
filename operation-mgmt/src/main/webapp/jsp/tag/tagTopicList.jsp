@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta charset="utf-8" />
 
-<title>ZX_IMS 2.0 - 标签管理</title>
+<title>ZX_IMS 2.0 - 标签王国列表</title>
 
 <link href="${ctx}/css/bootstrap.min.css" rel="stylesheet" />
 <link href="${ctx}/css/bootstrap-reset.css" rel="stylesheet" />
@@ -45,7 +45,7 @@ var previous = function(){
 	var page = currPage-1;
 	
 	$.ajax({
-		url : "${ctx}/tag/page?isRec="+$("#isRec").val()+"&topicCountEnd="+$("#topicCountEnd").val()+"&topicCountStart="+$("#topicCountStart").val()+"&isSys="+$("#isSys").val()+"&tagName="+$("#tagName").val()+"&startTime="+$("#startTime").val()+"&endTime="+$("#endTime").val()+"&page="+page+"&pageSize="+pageSize,
+		url : "${ctx}/tag/topicList/page?tagId="+$("#tagId").val()+"&page="+page+"&pageSize="+pageSize,
 		async : false,
 		type : "GET",
 		contentType : "application/json;charset=UTF-8",
@@ -66,7 +66,7 @@ var next = function(type){
 	var page = currPage+1;
 	
 	$.ajax({
-		url : "${ctx}/tag/page?isRec="+$("#isRec").val()+"&topicCountEnd="+$("#topicCountEnd").val()+"&topicCountStart="+$("#topicCountStart").val()+"&isSys="+$("#isSys").val()+"&tagName="+$("#tagName").val()+"&startTime="+$("#startTime").val()+"&endTime="+$("#endTime").val()+"&page="+page+"&pageSize="+pageSize,
+		url : "${ctx}/tag/topicList/page?tagId="+$("#tagId").val()+"&page="+page+"&pageSize="+pageSize,
 		async : false,
 		type : "GET",
 		contentType : "application/json;charset=UTF-8",
@@ -102,34 +102,11 @@ var buildTableBody = function(dataList){
 	if(dataList && dataList.length > 0){
 		for(var i=0;i<dataList.length;i++){
 			bodyHtml = bodyHtml + "<tr class=\"gradeX\">";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].tagName+"</th>";
+			bodyHtml = bodyHtml + "<th><a href=\""+dataList[i].h5url+"\" target=\"view_window\">"+dataList[i].title+"</a></th>";
 			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].createTime))+"</th>";
-			bodyHtml = bodyHtml + "<th>";
-			if(dataList[i].isSys == 0){
-				bodyHtml = bodyHtml + "否";
-			}else{
-				bodyHtml = bodyHtml + "是";
-			}
-			bodyHtml = bodyHtml + "</th>";
-			bodyHtml = bodyHtml + "<th>";
-			if(dataList[i].isRec == 0){
-				bodyHtml = bodyHtml + "否";
-			}else{
-				bodyHtml = bodyHtml + "是";
-			}
-			bodyHtml = bodyHtml + "</th>";
-			bodyHtml = bodyHtml + "<th>";
-			if(dataList[i].status == 0){
-				bodyHtml = bodyHtml + "正常";
-			}else{
-				bodyHtml = bodyHtml + "<font color='red'>禁用</font>";
-			}
-			bodyHtml = bodyHtml + "</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].topicCount+"</th>";
-			bodyHtml = bodyHtml + "<th>";
-			bodyHtml = bodyHtml + "<a href=\"${ctx}/tag/f/"+dataList[i].id+"\">编辑</a>";
-			bodyHtml = bodyHtml + "|<a href=\"${ctx}/tag/topicList/query?tagId="+dataList[i].id+"\">查看王国列表</a>";
-			bodyHtml = bodyHtml + "</th>";
+			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].lastUpdateTime))+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].tags+"</th>";
+			bodyHtml = bodyHtml + "<th></th>";
 			bodyHtml = bodyHtml + "</tr>";
 		}
 	}
@@ -193,53 +170,15 @@ var parserDatetimeStr = function(time){
 		<!--main content start-->
 		<section id="main-content">
 			<section class="wrapper">
-				<form id="form1" action="${ctx}/tag/query" method="post">
-					<div class="row">
-						<div class="col-lg-12">
-							<section class="panel">
-								<header class="panel-heading">执行操作</header>
-								<div class="panel-body">
-									<div class="form-inline" role="form">
-										标签名
-										<input type="text" id="tagName" name="tagName" value="${dataObj.tagName }" class="form-control">&nbsp;&nbsp;&nbsp;&nbsp;
-										创建时间
-										<input type="text" id="startTime" name="startTime" value="${dataObj.startTime }" class="form-control">
-										-
-										<input type="text" id="endTime" name="endTime" value="${dataObj.endTime }" class="form-control">&nbsp;&nbsp;&nbsp;&nbsp;
-										是否体系
-										<select name="isSys" id="isSys" class="form-control">
-											<option value="-1" ${dataObj.isSys==-1?'selected':''}>所有</option>
-											<option value="0" ${dataObj.isSys==0?'selected':''}>否</option>
-											<option value="1" ${dataObj.isSys==1?'selected':''}>是</option>
-										</select>
-									</div>
-									<br/>
-									<div class="form-inline" role="form">
-										王国数
-										<input type="text" id="topicCountStart" name="topicCountStart" value="${dataObj.topicCountStart }" class="form-control">
-										-
-										<input type="text" id="topicCountEnd" name="topicCountEnd" value="${dataObj.topicCountEnd }" class="form-control">&nbsp;&nbsp;&nbsp;&nbsp;
-										是否推荐
-										<select name="isRec" id="isRec" class="form-control">
-											<option value="-1" ${dataObj.isRec==-1?'selected':''}>所有</option>
-											<option value="0" ${dataObj.isRec==0?'selected':''}>否</option>
-											<option value="1" ${dataObj.isRec==1?'selected':''}>是</option>
-										</select>&nbsp;&nbsp;&nbsp;&nbsp;
-										<input type="submit" id="btnSearch" name="btnSearch" value="搜索" class="btn btn-info" />
-									</div>
-								</div>
-							</section>
-						</div>
-					</div>
-				</form>
 				<!-- page start-->
 				<div class="row">
 					<div class="col-sm-12">
+						<input type="hidden" id="tagId" name="tagId" value="${dataObj.tagId }" />
 						<section class="panel">
 							<header class="panel-heading">
-								| 标签列表
+								| 王国列表&nbsp;&nbsp;&nbsp;&nbsp;<input type="submit" id="btnSearch" name="btnSearch" value="添加王国" class="btn btn-info" />
+								&nbsp;&nbsp;&nbsp;&nbsp;<span class="btn btn-default"><a href="${ctx}/tag/query">返回</a></span>
 								<span class="tools pull-right">
-									<a href="${ctx}/jsp/tag/tagNew.jsp" class="fa fa-plus add_link" title="新增标签" ></a>
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>
 							</header>
@@ -248,55 +187,22 @@ var parserDatetimeStr = function(time){
 									<table class="display table table-bordered table-striped" id="table">
 										<thead>
 											<tr>
-												<th>标签名</th>
+												<th>王国名</th>
 												<th>创建时间</th>
-												<th>是否体系</th>
-												<th>是否推荐</th>
-												<th>状态</th>
-												<th>王国数</th>
+												<th>最近更新时间</th>
+												<th>标签</th>
 												<th>操作</th>
 											</tr>
 										</thead>
 										<tbody id="tbody">
 											<c:forEach items="${dataObj.result}" var="item">
 												<tr class="gradeX">
-													<th>${item.tagName }</th>
+													<th><a href="${item.h5url }" target="view_window">${item.title }</a></th>
 													<th><fmt:formatDate value="${item.createTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
+													<th><fmt:formatDate value="${item.lastUpdateTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
+													<th>${item.tags }</th>
 													<th>
-													<c:choose>
-                                                		<c:when test="${item.isSys == '0'}">
-                                                			否
-                                                		</c:when>
-                                                		<c:otherwise>
-                                                			是
-                                                		</c:otherwise>
-                                                	</c:choose>
-													</th>
-													<th>
-													<c:choose>
-                                                		<c:when test="${item.isRec == '0'}">
-                                                			否
-                                                		</c:when>
-                                                		<c:otherwise>
-                                                			是
-                                                		</c:otherwise>
-                                                	</c:choose>
-													</th>
-													<th>
-													<c:choose>
-                                                		<c:when test="${item.status == '0'}">
-                                                			正常
-                                                		</c:when>
-                                                		<c:otherwise>
-                                                			<font color='red'>禁用</font>
-                                                		</c:otherwise>
-                                                	</c:choose>
-													</th>
-													
-													<th>${item.topicCount }</th>
-													<th>
-													<a href="${ctx}/tag/f/${item.id }">编辑</a>
-													|<a href="${ctx}/tag/topicList/query?tagId=${item.id }">查看王国列表</a>
+														<a href="${ctx}/tag/deltopic/${dataObj.tagId }/${item.id }">移除</a>
 													</th>
 												</tr>
 											</c:forEach>
@@ -348,35 +254,5 @@ var parserDatetimeStr = function(time){
 	<script src="${ctx}/js/common-scripts.js"></script>
 	<script src="${ctx}/js/advanced-form-components.js"></script>
 		<script type="text/javascript" src="${ctx}/assets/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
-	<script type="text/javascript">
-	$.fn.datetimepicker.dates['zh'] = {  
-            days:       ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六","星期日"],  
-            daysShort:  ["日", "一", "二", "三", "四", "五", "六","日"],  
-            daysMin:    ["日", "一", "二", "三", "四", "五", "六","日"],  
-            months:     ["一月", "二月", "三月", "四月", "五月", "六月", "七月", "八月", "九月", "十月", "十一月","十二月"],  
-            monthsShort:  ["一", "二", "三", "四", "五", "六", "七", "八", "九", "十", "十一", "十二"],  
-            meridiem:    ["上午", "下午"],  
-            //suffix:      ["st", "nd", "rd", "th"],  
-            today:       "今天"  
-    };
-	$('#startTime').datetimepicker({
-		format: 'yyyy-mm-dd',
-		language: 'zh',
-		startView: 2,
-		autoclose:true,
-		weekStart:1,
-		todayBtn:  1,
-		minView:2
-		});
-	$('#endTime').datetimepicker({
-		format: 'yyyy-mm-dd',
-		language: 'zh',
-		startView: 2,
-		autoclose:true,
-		weekStart:1,
-		todayBtn:  1,
-		minView:2
-		});
-	</script>
 </body>
 </html>

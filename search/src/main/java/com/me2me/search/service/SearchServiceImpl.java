@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.FacetedPage;
@@ -36,6 +38,7 @@ import com.me2me.user.service.UserService;
  * Date: 2016/4/27.
  */
 @Service
+@Slf4j
 public class SearchServiceImpl implements SearchService {
     @Autowired
     private UserService userService;
@@ -95,22 +98,32 @@ public class SearchServiceImpl implements SearchService {
     	FacetedPage<UgcEsMapping> ugcPage = null;
     	FacetedPage<TopicEsMapping> kingdomPage = null;
     	FacetedPage<UserEsMapping> userPage = null;
-    	if(searchType == 0){//搜索全部，则返回UGC3个，王国3个，人3个
-    		ugcPage = searchService.queryUGC(keyword, page, pageSize);
-    		kingdomPage = searchService.queryKingdom(keyword, page, pageSize);
-    		userPage = searchService.queryUsers(keyword, page, pageSize);
-    	}else if(searchType == 1){//用户
-    		userPage = searchService.queryUsers(keyword, page, pageSize);
-    		resultDTO.setTotalPage(userPage.getTotalPages());
-    		resultDTO.setTotalRecord(userPage.getTotalElements());
-    	}else if(searchType == 2){//王国
-    		kingdomPage = searchService.queryKingdom(keyword, page, pageSize);
-    		resultDTO.setTotalPage(kingdomPage.getTotalPages());
-    		resultDTO.setTotalRecord(kingdomPage.getTotalElements());
-    	}else if(searchType == 3){//UGC
-    		ugcPage = searchService.queryUGC(keyword, page, pageSize);
-    		resultDTO.setTotalPage(ugcPage.getTotalPages());
-    		resultDTO.setTotalRecord(ugcPage.getTotalElements());
+    	try{
+	    	if(searchType == 0){//搜索全部，则返回UGC3个，王国3个，人3个
+	    		ugcPage = searchService.queryUGC(keyword, page, pageSize);
+	    		kingdomPage = searchService.queryKingdom(keyword, page, pageSize);
+	    		userPage = searchService.queryUsers(keyword, page, pageSize);
+	    	}else if(searchType == 1){//用户
+	    		userPage = searchService.queryUsers(keyword, page, pageSize);
+	    		if(null != userPage){
+		    		resultDTO.setTotalPage(userPage.getTotalPages());
+		    		resultDTO.setTotalRecord(userPage.getTotalElements());
+	    		}
+	    	}else if(searchType == 2){//王国
+	    		kingdomPage = searchService.queryKingdom(keyword, page, pageSize);
+	    		if(null != kingdomPage){
+	    			resultDTO.setTotalPage(kingdomPage.getTotalPages());
+		    		resultDTO.setTotalRecord(kingdomPage.getTotalElements());
+	    		}
+	    	}else if(searchType == 3){//UGC
+	    		ugcPage = searchService.queryUGC(keyword, page, pageSize);
+	    		if(null != ugcPage){
+	    			resultDTO.setTotalPage(ugcPage.getTotalPages());
+		    		resultDTO.setTotalRecord(ugcPage.getTotalElements());
+	    		}
+	    	}
+    	}catch(Exception e){
+    		log.error("检索异常", e);
     	}
     	
     	if(null != ugcPage){
