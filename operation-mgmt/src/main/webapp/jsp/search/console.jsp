@@ -84,10 +84,23 @@
 									<ul>
 										<c:forEach items="${dataList }" var="item">
 										<li style="border-bottom:1px solid #eee;padding:5px;">
-											<b class="text-primary">${item.title}</b> &emsp;<small class="text-muted">${item.nick_name }</small>
+											<c:if test="${param.type=='ugc'}">
+											<h4><a class="text-primary" target="_blank" href="http://webapp.me-to-me.com/fd/${item.id}"><small class="text-muted">${item.nick_name }</small></a></h4>
 											<p>
-											 ${item.content} ${item.fragments}
+												 ${item.content}
 											 </p> 
+											</c:if>
+											<c:if test="${param.type=='user'}">
+											<small class="text-muted">${item.nick_name }</small>
+											
+											</c:if>
+											<c:if test="${param.type=='kingdom'}">
+												<h4><a class="text-primary" target="_blank" href="http://webapp.me-to-me.com/ld/${item.id}">${item.title}</a> &emsp;<small class="text-muted">${item.nick_name }</small></h4>
+												<p>
+												 ${item.fragments}
+												 </p> 
+											</c:if>
+											
 										</li>
 										</c:forEach>
 									</ul>
