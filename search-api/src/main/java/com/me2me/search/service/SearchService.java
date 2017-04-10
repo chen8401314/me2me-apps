@@ -20,6 +20,8 @@ public interface SearchService {
 
     Response allSearch(long uid, String keyword, int searchType, int page, int pageSize);
  
+    Response recWord();
+    
     /**
      * 索引用户数据
      * @author zhangjiwei

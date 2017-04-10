@@ -19,7 +19,9 @@ import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.search.dao.ContentForSearchJdbcDao;
+import com.me2me.search.dao.SearchMybatisDao;
 import com.me2me.search.dto.ShowAssociatedWordDTO;
+import com.me2me.search.dto.ShowRecWordDTO;
 import com.me2me.search.dto.ShowSearchDTO;
 import com.me2me.search.esmapping.TopicEsMapping;
 import com.me2me.search.esmapping.UgcEsMapping;
@@ -51,6 +53,9 @@ public class SearchServiceImpl implements SearchService {
 
     @Autowired
     private SearchHotKeywordMapper hotkeywordMapper;
+    
+    @Autowired
+    private SearchMybatisDao searchMybatisDao;
     
     @Override
     public Response search(String keyword,int page,int pageSize,long uid,int isSearchFans) {
@@ -476,6 +481,24 @@ public class SearchServiceImpl implements SearchService {
             }
         }
         return internalStatus;
+    }
+    
+    @Override
+    public Response recWord(){
+    	ShowRecWordDTO result = new ShowRecWordDTO();
+    	List<SearchHotKeyword> list = searchMybatisDao.getRecWords(8);
+    	if(null != list && list.size() > 0){
+    		ShowRecWordDTO.WordElement e = null;
+    		for(SearchHotKeyword w : list){
+    			if(!StringUtils.isEmpty(w.getKeyword())){
+    				e = new ShowRecWordDTO.WordElement();
+    				e.setWord(w.getKeyword());
+    				result.getWordData().add(e);
+    			}
+    		}
+    	}
+    	
+    	return Response.success(result);
     }
 	
 	@Override

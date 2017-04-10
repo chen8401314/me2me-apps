@@ -64,4 +64,15 @@ public class Search extends BaseController {
     public Response allSearch(AllSearchRequest request){
     	return searchService.allSearch(request.getUid(), request.getKeyword(), request.getSearchType(), request.getPage(), request.getPageSize());
     }
+    
+    /**
+     * 推荐热搜词获取接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/recWord",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response recWord(RecWordRequest request){
+    	return searchService.recWord();
+    }
 }
