@@ -2685,7 +2685,7 @@ public class LiveServiceImpl implements LiveService {
 	public Response kingdomSearch(long currentUid, KingdomSearchDTO searchDTO){
 		List<Map<String,Object>> topicList = new ArrayList<Map<String,Object>>();
 		boolean first = false;
-		if(searchDTO.getUpdateTime() == 0){//第一次
+		if(searchDTO.getUpdateTime() <= 0){//第一次
 			searchDTO.setUpdateTime(Long.MAX_VALUE);
 			first = true;
 		}

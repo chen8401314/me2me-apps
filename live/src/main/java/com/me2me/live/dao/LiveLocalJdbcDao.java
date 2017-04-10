@@ -702,7 +702,7 @@ public class LiveLocalJdbcDao {
 			return null;
 		}
 		StringBuilder sb = new StringBuilder();
-		sb.append("select t.* from topic t,(select DISTINCT d2.topic_id as tid");
+		sb.append("select t.*,t.long_time as longtime from topic t,(select DISTINCT d2.topic_id as tid");
 		sb.append(" from topic_tag_detail d2 where d2.status=0 and d2.topic_id!=").append(topicId);
 		sb.append(" and d2.tag_id in (select d.tag_id from topic_tag_detail d");
 		sb.append(" where d.topic_id=").append(topicId).append(" and d.status=0)) m");
