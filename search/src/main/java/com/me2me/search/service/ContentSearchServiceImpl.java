@@ -250,7 +250,6 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	 * @param indexName
 	 */
 	private String preIndex(boolean fully,String indexName){
-		ClusterAdminClient  cc = client.admin().cluster();
 		String beginDate = DEFAULT_START_TIME;
 		if (fully) {
 			if (esTemplate.indexExists(indexName)) {
@@ -284,6 +283,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 
 	@Override
 	public int indexUserData(boolean fully) throws Exception {
+		log.info("indexUserData started");
 		String indexName = IndexConstants.USER_INDEX_NAME;
 		String beginDate = preIndex(fully, indexName);
 		String endDate = DateUtil.date2string(new Date(), DATE_FORMAT);
@@ -292,7 +292,6 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		int batchSize= 1000;
 		esTemplate.putMapping(UserEsMapping.class);
 		while (true) {
-			
 			List<UserEsMapping> users =searchMapper.getUserPageByUpdateDate(beginDate, endDate, skip, batchSize);
 			if (users == null || users.isEmpty()) {
 				break;
@@ -312,13 +311,15 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			
 			skip += batchSize;
 			count += users.size();
-			log.info("user index processed:"+count);
+			log.info("indexUserData processed:"+count);
 		}
 		updateVarVal(indexName, endDate);
+		log.info("indexUserData finished.");
 		return count;
 	}
 	@Override
 	public int indexUgcData(boolean fully) throws Exception {
+		log.info("indexUgcData started");
 		String indexName = IndexConstants.UGC_INDEX_NAME;
 		String beginDate = preIndex(fully, indexName);
 		String endDate = DateUtil.date2string(new Date(), DATE_FORMAT);
@@ -327,7 +328,6 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		int batchSize= 1000;
 		esTemplate.putMapping(UgcEsMapping.class);
 		while (true) {
-			
 			List<UgcEsMapping> ugcList =searchMapper.getUgcPageByUpdateDate(beginDate, endDate, skip, batchSize);
 			if (ugcList == null || ugcList.isEmpty()) {
 				break;
@@ -347,14 +347,16 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			
 			skip += batchSize;
 			count += ugcList.size();
-			log.info("ugc index processed:"+count);
+			log.info("indexUgcData processed:"+count);
 		}
 		updateVarVal(indexName, endDate);
+		log.info("indexUgcData finished.");
 		return count;
 	}
 
 	@Override
 	public int indexKingdomData(boolean fully) throws Exception {
+		log.info("indexKingdomData started");
 		String indexName = IndexConstants.KINGDOM_INDEX_NAME;
 		String beginDate = preIndex(fully, indexName);
 		String endDate = DateUtil.date2string(new Date(), DATE_FORMAT);
@@ -363,7 +365,6 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		int batchSize= 1000;
 		esTemplate.putMapping(TopicEsMapping.class);
 		while (true) {
-			
 			List<TopicEsMapping> kingdomList =searchMapper.getKingdomPageByUpdateDate(beginDate, endDate, skip, batchSize);
 			if (kingdomList == null || kingdomList.isEmpty()) {
 				break;
@@ -386,15 +387,17 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			
 			skip += batchSize;
 			count += kingdomList.size();
-			log.info("kingdom index processed:"+count);
+			log.info("indexKingdomData processed:"+count);
 		}
 		updateVarVal(indexName, endDate);
+		log.info("indexKingdomData finished.");
 		return count;
 	}
 	
 	
 	@Override
 	public int indexSearchHistory(boolean fully) throws Exception {
+		log.info("indexSearchHistory started");
 		String indexName = IndexConstants.SEARCH_HISTORY_INDEX_NAME;
 		String beginDate=preIndex(fully,indexName);
 		String endDate = DateUtil.date2string(new Date(), DATE_FORMAT);
@@ -427,9 +430,10 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			esTemplate.bulkIndex(indexList);
 			skip += batchSize;
 			count += pageList.size();
-			log.info("history index processed:"+count);
+			log.info("indexSearchHistory processed:"+count);
 		}
 		updateVarVal(indexName, endDate);
+		log.info("indexSearchHistory finished.");
 		return count;
 	}
 
