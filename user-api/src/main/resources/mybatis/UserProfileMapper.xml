@@ -655,24 +655,17 @@
   	 <result column="kingdomCount" property="kingdomCount"/>
   	 <result column="focusCount" property="focusCount"/>
   	 <result column="fansCount" property="fansCount"/>
-  	 <association property="userProfile" javaType="com.me2me.user.model.UserProfile">
-	  	 <result column="uid" jdbcType="BIGINT" property="uid" />
-	    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
-	    <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
-	    <result column="gender" jdbcType="INTEGER" property="gender" />
-	    <result column="birthday" jdbcType="VARCHAR" property="birthday" />
-	    <result column="avatar" jdbcType="VARCHAR" property="avatar" />
-	    <result column="v_lv" jdbcType="INTEGER" property="vLv" />
-	    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
-  	 </association>
+  	 <result column="uid" jdbcType="BIGINT" property="uid" />
+    <result column="mobile" jdbcType="VARCHAR" property="mobile" />
+    <result column="nick_name" jdbcType="VARCHAR" property="nickName" />
+    <result column="gender" jdbcType="INTEGER" property="gender" />
+    <result column="v_lv" jdbcType="INTEGER" property="vLv" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
   </resultMap>
   
   <select id="searchUserPage" parameterType="map" resultMap="searchUserDtoMap" useCache="false">
-		select * from user_profile p,
-		(select uid,count(1) kingdomCount from topic where `status`=0 group by uid) a ,
-		(select source_uid,count(1) focusCount from user_follow group by source_uid) b,
-		(select target_uid,count(1) fansCount from user_follow group by target_uid) c 
-		where a.uid=p.uid and b.source_uid=p.uid and c.target_uid=p.uid 
+		select * from user_count_day where 1=1
   		<if test="kingdomCount_min!=null">
   			and kingdomCount &gt;= #{kingdomCount_min}
   		</if>
@@ -720,11 +713,7 @@
   </select>
   
   <select id="countSearchUserForPage" parameterType="map" resultType="int" useCache="false">
-		select count(*) from user_profile p,
-		(select uid,count(1) kingdomCount from topic where `status`=0 group by uid) a ,
-		(select source_uid,count(1) focusCount from user_follow group by source_uid) b,
-		(select target_uid,count(1) fansCount from user_follow group by target_uid) c 
-		where a.uid=p.uid and b.source_uid=p.uid and c.target_uid=p.uid 
+		select count(*) from user_count_day where 1=1
   		<if test="kingdomCount_min!=null">
   			and kingdomCount &gt;= #{kingdomCount_min}
   		</if>
@@ -766,4 +755,35 @@
   			and v_lv= #{v_lv}
   		</if>
   </select>
+  <delete id="delUserCountDay">
+  		truncate table user_count_day;
+  </delete>
+  <update id="countUserByDay">
+	  	
+		insert into user_count_day(refresh_date, uid, mobile, nick_name, gender, marriage_status,  create_time, update_time,  is_activate, v_lv, kingdomCount, focusCount, fansCount) 
+		 select now(),aa.* from (	
+		
+		select 
+		p.uid,
+		p.mobile,
+		p.nick_name,
+		p.gender,
+		p.marriage_status,
+		p.create_time,
+		p.update_time,
+		p.is_activate,
+		p.v_lv,
+		
+		a.kingdomCount,
+		b.focusCount,
+		c.fansCount
+		
+		 from user_profile p
+				left join (select uid uid1,count(1) kingdomCount from topic where status=0 group by uid) a on a.uid1=p.uid
+				left join (select source_uid,count(1) focusCount from user_follow group by source_uid) b on b.source_uid=p.uid
+				left join (select target_uid,count(1) fansCount from user_follow group by target_uid) c on c.target_uid=p.uid 
+		) aa
+		
+  </update>
+  
 </mapper>

@@ -2817,4 +2817,9 @@ public class UserServiceImpl implements UserService {
 		return userMybatisDao.searchUserPage(page,queries);
 	}
 
+	@Override
+	public void countUserByDay() {
+		userMybatisDao.countUserByDay();
+	}
+
 }

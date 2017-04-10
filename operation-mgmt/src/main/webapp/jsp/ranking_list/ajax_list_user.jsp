@@ -169,14 +169,14 @@
 				var txt= "<input type='checkbox'/> ";
 				return txt;
 			}},
-	        {data: "userProfile.uid",title: "用户ID",style:"num"},
-	        {data: "userProfile.nickName",title: "用户名",style:"num"},
-	        {data: "userProfile.createTime",title: "注册时间",render:function(data,type,row,meta){
+	        {data: "uid",title: "用户ID",style:"num"},
+	        {data: "nickName",title: "用户名",style:"num"},
+	        {data: "createTime",title: "注册时间",render:function(data,type,row,meta){
 	        	if(row.userProfile!=null){
-	        		return new Date(row.userProfile.createTime).Format("yyyy-MM-dd hh:mm:ss");
+	        		return new Date(row.createTime).Format("yyyy-MM-dd hh:mm:ss");
 	        	}
 	        }},
-	        {data: "userProfile.vLv",title: "大V",render:function(data,type,row,meta){
+	        {data: "vLv",title: "大V",render:function(data,type,row,meta){
 	        	//console.log(data)
 	        	if(data!=null){
 		        	var map ={0:"否",1:"是"};
@@ -187,7 +187,7 @@
 	        {data: "focusCount",title: "关注数量",style:"num"},
 	        {data: "fansCount",title: "粉丝数量",style:"num"},
 	        {title:"操作",width:60,render:function(data, type, row, meta){
-	        	var txt= "<a href='#stop' title='uid:"+row.userProfile.uid+"' class='btn btn-danger btn-xs btnAdd'>加入</a> ";
+	        	var txt= "<a href='#stop' title='uid:"+row.uid+"' class='btn btn-danger btn-xs btnAdd'>加入</a> ";
 	        	return txt;
 	        }}
 	     ]
@@ -211,14 +211,14 @@
 		var tr = $(this).closest("tr");
 		var data =sourceTable.row(tr).data();
 		
-		parent.onAdd([data.userProfile.uid]);
+		parent.onAdd([data.uid]);
 	})
 	function addBatch(){
 		var dataArr=[]
 		$("#mytable input:checked").each(function(){
 			var tr = $(this).closest("tr");
 			var data =sourceTable.row(tr).data()
-			dataArr.push(data.userProfile.uid);
+			dataArr.push(data.uid);
 		})
 		parent.onAdd(dataArr);
 	}

@@ -346,6 +346,10 @@ public interface UserService {
      * @return
      */
     PageBean<SearchUserDto> searchUserPage(PageBean page,Map<String,Object> queries);
-    
-
+    /**
+     * 统计用户信息，每日一次
+     * @author zhangjiwei
+     * @date Apr 10, 2017
+     */
+    void countUserByDay();
 }

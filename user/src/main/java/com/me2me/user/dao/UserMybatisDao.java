@@ -1074,5 +1074,10 @@ public class UserMybatisDao {
         List<ImConfig> list = imConfigMapper.selectByExample(example);
         return list.size()>0&&list!=null?list.get(0):null;
     }
+    
+    public void countUserByDay(){
+    	userProfileMapper.delUserCountDay();
+    	userProfileMapper.countUserByDay();
+    }
 
 }

@@ -54,6 +54,8 @@ public class SearchController {
 				searchService.indexKingdomData(true);
 			}else if("user".equals(task)){
 				searchService.indexUserData(true);
+			}else if("history".equals(task)){
+				searchService.indexSearchHistory(true);
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
