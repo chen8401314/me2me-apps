@@ -402,13 +402,14 @@
 					<artifactId>jstl</artifactId>
 					<version>1.2</version>
 				</dependency>
-
+				<dependency>
+					<groupId>com.me2me</groupId>
+					<artifactId>search-api</artifactId>
+					<version>2.0.8</version>
+				</dependency>
 			</dependencies>
 
 			<build>
-				<filters>
-					<filter>src/main/filter/product.properties</filter>
-				</filters>
 			</build>
 		</profile>
 

@@ -448,7 +448,34 @@ public class LiveForContentJdbcDao {
      * @return
      */
     public List<BillBoardListDTO> getNewPeople(int sex, long sinceId, int pageSize){
-    	return null;
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select u.uid,u.id from user_profile u,(");
+    	sb.append("select t.uid,count(1) as cc from topic t");
+    	sb.append(" group by t.uid) m where u.uid=m.uid");
+    	sb.append(" and u.nick_name not like '%米汤客服%'");
+    	sb.append(" and u.id<").append(sinceId);
+    	if(sex == 0){
+    		sb.append(" and u.gender<>1");
+    	}else if(sex == 1){
+    		sb.append(" and u.gender=1");
+    	}
+    	sb.append(" order by u.id DESC limit ").append(pageSize);
+    	
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	
+    	List<BillBoardListDTO> result = new ArrayList<BillBoardListDTO>();
+    	if(null != list && list.size() > 0){
+    		BillBoardListDTO bbl = null;
+    		for(Map<String, Object> m : list){
+    			bbl = new BillBoardListDTO();
+    			bbl.setTargetId((Long)m.get("uid"));
+    			bbl.setType(2);
+    			bbl.setSinceId((Long)m.get("id"));
+    			result.add(bbl);
+    		}
+    	}
+    	
+    	return result;
     }
     
     public List<Map<String, Object>> getTopicTagDetailListByTopicIds(List<Long> topicIds){

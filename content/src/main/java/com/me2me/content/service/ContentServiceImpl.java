@@ -4656,6 +4656,20 @@ private void localJpush(long toUid){
     		}
     		result = liveForContentJdbcDao.getLivesByUpdateTime(sinceId, pageSize);
     		break;
+    	case 8://新注册的帅哥
+    		//实时统计
+    		if(sinceId < 0){
+    			sinceId = Long.MAX_VALUE;
+    		}
+    		result = liveForContentJdbcDao.getNewPeople(1, sinceId, pageSize);
+    		break;
+    	case 9://新注册的美女
+    		//实时统计
+    		if(sinceId < 0){
+    			sinceId = Long.MAX_VALUE;
+    		}
+    		result = liveForContentJdbcDao.getNewPeople(0, sinceId, pageSize);
+    		break;
     	default:
     		break;
     	}
