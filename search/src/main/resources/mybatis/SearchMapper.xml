@@ -41,6 +41,8 @@
 	</select>
 	<select id="getKingdomFragmentsByTopicId" resultType="string">
 		select fragment from topic_fragment 
-		where topic_id=#{topicId} and status=1 and type=0 and content_type=0
+		where topic_id=#{topicId} and status=1 and type=0 and content_type=0 
+		order by id desc
+		limit 100
 	</select>
 </mapper>

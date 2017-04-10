@@ -83,7 +83,12 @@
 								<div>
 									<ul>
 										<c:forEach items="${dataList }" var="item">
-										<li style="border-bottom:1px solid #eee;padding:5px;">${item.content }  &emsp; ${item.nick_name }</li>
+										<li style="border-bottom:1px solid #eee;padding:5px;">
+											<b class="text-primary">${item.title}</b> &emsp;<small class="text-muted">${item.nick_name }</small>
+											<p>
+											 ${item.content} ${item.fragments}
+											 </p> 
+										</li>
 										</c:forEach>
 									</ul>
 								</div>

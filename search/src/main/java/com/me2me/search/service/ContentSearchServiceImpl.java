@@ -15,6 +15,7 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.Client;
 import org.elasticsearch.client.ClusterAdminClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -113,28 +114,32 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 
 	@Override
 	public FacetedPage<UgcEsMapping> queryUGC(String content, int page, int pageSize) {
-		
 		BoolQueryBuilder bq = new BoolQueryBuilder();
-		bq.must(QueryBuilders.termQuery("rights", 1));	// 只查公开
-		bq.should(QueryBuilders.queryStringQuery(content).field("title").boost(3f));
-		bq.should(QueryBuilders.queryStringQuery(content).field("content").boost(2f));
-		
+		if(StringUtils.isEmpty(content)){
+			bq.must(QueryBuilders.matchAllQuery());
+		}else{
+			bq.must(QueryBuilders.termQuery("rights", 1));	// 只查公开
+			bq.should(QueryBuilders.queryStringQuery(content).field("title").boost(2f));
+			bq.should(QueryBuilders.queryStringQuery(content).field("content"));
+		}
 		SearchQuery sq = new NativeSearchQuery(bq);
-		sq.setPageable(new PageRequest(page, pageSize));
+		sq.setPageable(new PageRequest(--page, pageSize));
 		FacetedPage<UgcEsMapping> result = esTemplate.queryForPage(sq, UgcEsMapping.class);
 		return result;
 	}
 
 	@Override
 	public FacetedPage<TopicEsMapping> queryKingdom(String content, int page, int pageSize) {
-
 		BoolQueryBuilder bq = new BoolQueryBuilder();
-		bq.should(QueryBuilders.queryStringQuery(content).field("title").boost(3f));
-		bq.should(QueryBuilders.queryStringQuery(content).field("summary").boost(2f));
-		bq.should(QueryBuilders.queryStringQuery(content).field("fragments").boost(1f));
-		
+		if(StringUtils.isEmpty(content)){
+			bq.must(QueryBuilders.matchAllQuery());
+		}else{
+			bq.should(QueryBuilders.queryStringQuery(content).field("title").boost(3f));
+			bq.should(QueryBuilders.queryStringQuery(content).field("summary").boost(2f));
+			bq.should(QueryBuilders.queryStringQuery(content).field("fragments"));
+		}
 		SearchQuery sq = new NativeSearchQuery(bq);
-		sq.setPageable(new PageRequest(page, pageSize));
+		sq.setPageable(new PageRequest(--page, pageSize));
 		FacetedPage<TopicEsMapping> result = esTemplate.queryForPage(sq, TopicEsMapping.class);
 		return result;
 	}
@@ -142,11 +147,16 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	@Override
 	public FacetedPage<UserEsMapping> queryUsers(String content, int page, int pageSize) {
 		BoolQueryBuilder bq = new BoolQueryBuilder();
-		bq.should(QueryBuilders.queryStringQuery(content).field("nick_name").boost(2f));
-		//bq.should(QueryBuilders.queryStringQuery(content).field("introduced"));
+		if(StringUtils.isEmpty(content)){
+			bq.must(QueryBuilders.matchAllQuery());
+		}else{
+			bq.should(QueryBuilders.queryStringQuery(content).field("nick_name"));
+		}
 		
 		SearchQuery sq = new NativeSearchQuery(bq);
-		sq.setPageable(new PageRequest(page, pageSize));
+		
+		sq.setPageable(new PageRequest(--page, pageSize));
+		
 		FacetedPage<UserEsMapping> result = esTemplate.queryForPage(sq, UserEsMapping.class);
 		return result;
 	}
@@ -167,13 +177,13 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	public List<String> associateKeywordList(String keyword,  int count) {
 		
 		BoolQueryBuilder bq = new BoolQueryBuilder()
-				.should(new PrefixQueryBuilder("keyword", keyword))
-				.should(new PrefixQueryBuilder("pin_yin_short", keyword))
-				.should(new PrefixQueryBuilder("pin_yin", keyword));
+				.should(new PrefixQueryBuilder("name", keyword))
+				.should(new PrefixQueryBuilder("name_pinyin", keyword))
+				.should(new PrefixQueryBuilder("name_pinyin_short", keyword));
 		
 		NativeSearchQuery sq =new  NativeSearchQuery(bq);
-		sq.setPageable(new PageRequest(1, 20));
-		
+		sq.setPageable(new PageRequest(0, count));
+		sq.addSort(new Sort(Direction.DESC,"search_count"));
 		FacetedPage<SearchHistoryEsMapping>  dataList = esTemplate.queryForPage(sq, SearchHistoryEsMapping.class);
 		
 		List<String> ret = new ArrayList<String>();
@@ -201,7 +211,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			QueryBuilder qb = QueryBuilders.matchAllQuery();
 			SearchQuery sq = new NativeSearchQuery(qb);
 			sq.addSort(new Sort(Direction.DESC, "search_count"));
-			sq.setPageable(new PageRequest(1, esCount));
+			sq.setPageable(new PageRequest(0, esCount));
 			FacetedPage<SearchHistoryEsMapping> result = esTemplate.queryForPage(sq, SearchHistoryEsMapping.class);
 			for (SearchHistoryEsMapping keyword : result) {
 				if (!keyList.contains(keyword.getName())) {
