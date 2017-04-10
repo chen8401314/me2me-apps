@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
+import org.mortbay.log.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,6 +55,8 @@ public class SearchController {
 				searchService.indexKingdomData(true);
 			}else if("user".equals(task)){
 				searchService.indexUserData(true);
+			}else if("history".equals(task)){
+				searchService.indexSearchHistory(true);
 			}
 		}catch (Exception e) {
 			e.printStackTrace();

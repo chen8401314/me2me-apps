@@ -312,6 +312,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			
 			skip += batchSize;
 			count += users.size();
+			log.info("user index processed:"+count);
 		}
 		updateVarVal(indexName, endDate);
 		return count;
@@ -346,6 +347,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			
 			skip += batchSize;
 			count += ugcList.size();
+			log.info("ugc index processed:"+count);
 		}
 		updateVarVal(indexName, endDate);
 		return count;
@@ -384,6 +386,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			
 			skip += batchSize;
 			count += kingdomList.size();
+			log.info("kingdom index processed:"+count);
 		}
 		updateVarVal(indexName, endDate);
 		return count;
@@ -424,6 +427,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			esTemplate.bulkIndex(indexList);
 			skip += batchSize;
 			count += pageList.size();
+			log.info("history index processed:"+count);
 		}
 		updateVarVal(indexName, endDate);
 		return count;

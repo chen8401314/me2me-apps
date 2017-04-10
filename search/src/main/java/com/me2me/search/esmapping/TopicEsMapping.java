@@ -10,7 +10,7 @@ import org.springframework.data.elasticsearch.annotations.Mapping;
 
 import com.me2me.search.constants.IndexConstants;
 
-@Mapping
+@Mapping(mappingPath=IndexConstants.KINGDOM_INDEX_NAME)
 @Document(indexName=IndexConstants.KINGDOM_INDEX_NAME,type=IndexConstants.KINGDOM_INDEX_NAME)
 public class TopicEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
@@ -22,7 +22,7 @@ public class TopicEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String live_image;		//     必填 
 
-	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
 	private String title;		//     必填 
 
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
@@ -58,16 +58,16 @@ public class TopicEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer rights;		//可见类型，1公开，2私密  
 
-	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
 	private String summary;		//王国简介  
 	
-	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
 	private String nick_name;		//     必填 
 	
 	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String avatar;		//用户头像     必填 
 	
-	@Field(index=FieldIndex.analyzed,store=false,type=FieldType.String)
+	@Field(index=FieldIndex.analyzed,store=false,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
 	private String fragments;
 	
 	

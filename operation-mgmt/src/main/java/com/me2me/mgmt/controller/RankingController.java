@@ -162,10 +162,10 @@ public class RankingController {
 			
 		}
 		Map<String,String> colMap = new HashMap<>();
-		colMap.put("userProfile.nickName", "nick_name");
-		colMap.put("userProfile.uid", "uid");
-		colMap.put("userProfile.createTime", "create_time");
-		colMap.put("userProfile.vLv", "v_lv");
+		colMap.put("nickName", "nick_name");
+		colMap.put("uid", "uid");
+		colMap.put("createTime", "create_time");
+		colMap.put("vLv", "v_lv");
 		
 		// order
 		String orderBy =request.getParameter("order[0][column]");

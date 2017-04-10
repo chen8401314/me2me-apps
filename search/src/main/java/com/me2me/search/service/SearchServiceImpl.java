@@ -9,7 +9,6 @@ import java.util.Map;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.FacetedPage;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -40,11 +39,9 @@ import com.me2me.user.service.UserService;
 @Service
 @Slf4j
 public class SearchServiceImpl implements SearchService {
-    @Autowired
-    private UserService userService;
 	
     @Autowired
-    private ElasticsearchTemplate elasticsearchTemplate;
+    private UserService userService;
     
     @Autowired
     private ContentSearchService searchService;

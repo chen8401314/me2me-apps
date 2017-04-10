@@ -74,6 +74,10 @@
 											<i  class=" fa fa-plus "></i>
 											启动王国全量索引
 										</a>
+										<a class="btn btn-danger" href="./startTask?task=history">
+											<i  class=" fa fa-plus "></i>
+											搜索历史全量索引
+										</a>
 									</form>
 								</p>
 								<div>

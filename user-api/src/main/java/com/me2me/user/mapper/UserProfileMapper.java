@@ -112,4 +112,16 @@ public interface UserProfileMapper {
 	List<SearchUserDto> searchUserPage(Map<String, Object> queries);
 	
 	 int countSearchUserForPage(Map<String, Object> queries);
+	/**
+	 * 每日统计一下用户数据。
+	 * @author zhangjiwei
+	 * @date Apr 10, 2017
+	 */
+	void countUserByDay();
+	/**
+	 * 删除用户信息统计。
+	 * @author zhangjiwei
+	 * @date Apr 10, 2017
+	 */
+	void delUserCountDay();
 }

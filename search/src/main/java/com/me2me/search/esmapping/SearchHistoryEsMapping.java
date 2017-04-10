@@ -9,14 +9,14 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import org.springframework.data.elasticsearch.annotations.Mapping;
 
 import com.me2me.search.constants.IndexConstants;
-@Mapping
+@Mapping(mappingPath=IndexConstants.SEARCH_HISTORY_INDEX_NAME)
 @Document(indexName=IndexConstants.SEARCH_HISTORY_INDEX_NAME,type=IndexConstants.SEARCH_HISTORY_INDEX_NAME)
 public class SearchHistoryEsMapping{
 
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer id;		//    主键    必填    必须唯一 
 
-	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
 	private String name;		//  
 
 	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.Integer)
@@ -28,10 +28,10 @@ public class SearchHistoryEsMapping{
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Date)
 	private Date creation_date;		//  
 	
-	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
 	private String name_pinyin;
 	
-	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
 	private String name_pinyin_short;
 
 	public Integer getId() {
