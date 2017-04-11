@@ -243,7 +243,8 @@ public class LiveServiceImpl implements LiveService {
             liveCoverDto.setTags(builder.toString());
         }
         
-        if(liveCoverDto.getInternalStatus() == Specification.SnsCircle.CORE.index){//核心圈的，需要返回推荐标签
+        if(liveCoverDto.getInternalStatus() == Specification.SnsCircle.CORE.index
+        		|| userService.isAdmin(uid)){//核心圈的或管理员，需要返回推荐标签
         	//第一步，先返回运营指定的推荐标签（1个）
         	TopicTag recTag = liveMybatisDao.getRecTopicTagWithoutOwn(topicId, tagIdList);
         	if(null != recTag){
@@ -438,7 +439,8 @@ public class LiveServiceImpl implements LiveService {
             showLiveDto.setTags(builder.toString());
         }
         
-        if(showLiveDto.getInternalStatus() == Specification.SnsCircle.CORE.index){//核心圈的，需要返回推荐标签
+        if(showLiveDto.getInternalStatus() == Specification.SnsCircle.CORE.index
+        		|| userService.isAdmin(uid)){//核心圈的或者管理员，需要返回推荐标签
         	//第一步，先返回运营指定的推荐标签（1个）
         	TopicTag recTag = liveMybatisDao.getRecTopicTagWithoutOwn(cid, tagIdList);
         	if(null != recTag){
