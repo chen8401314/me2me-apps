@@ -53,7 +53,7 @@
                                     <div role="form">
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">标签名</label>
-                                            <input type="text" id="tag" name="tag" class="form-control" value="${dataObj.tag }" style="width: 100%" required>
+                                            <input type="text" id="tag" name="tag" class="form-control" value="${dataObj.tag }" maxlength="8" style="width: 100%" required>
                                             <input type="hidden" id="id" name="id" value="${dataObj.id }">
                                         </div>
                                         <div class="form-group">

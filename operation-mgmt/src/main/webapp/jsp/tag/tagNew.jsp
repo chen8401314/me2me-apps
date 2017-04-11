@@ -53,27 +53,27 @@
                                     <div role="form">
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">标签名</label>
-                                            <input type="text" id="tag" name="tag" class="form-control" style="width: 100%" required>
+                                            <input type="text" id="tag" name="tag" class="form-control" value="${dataObj.tag }" style="width: 100%" maxlength="8" required>
                                         </div>
                                         <div class="form-group">
                                             <label for="exampleInputFile">是否体系</label>
                                             <select name="isSys" id="isSys" class="form-control">
-												<option value="0">否</option>
-												<option value="1">是</option>
+												<option value="0" ${dataObj.isSys==0?'selected':''}>否</option>
+												<option value="1" ${dataObj.isSys==1?'selected':''}>是</option>
 											</select>
                                         </div>
                                         <div class="form-group">
                                             <label for="exampleInputFile">是否推荐</label>
                                             <select name="isRec" id="isRec" class="form-control">
-												<option value="0">否</option>
-												<option value="1">是</option>
+												<option value="0" ${dataObj.isRec==0?'selected':''}>否</option>
+												<option value="1" ${dataObj.isRec==1?'selected':''}>是</option>
 											</select>
                                         </div>
                                         <div class="form-group">
                                             <label for="exampleInputFile">状态</label>
                                             <select name="status" id="status" class="form-control">
-												<option value="0">正常</option>
-												<option value="1">禁用</option>
+												<option value="0" ${dataObj.status==0?'selected':''}>正常</option>
+												<option value="1" ${dataObj.status==1?'selected':''}>禁用</option>
 											</select>
                                         </div>
                                     </div>
