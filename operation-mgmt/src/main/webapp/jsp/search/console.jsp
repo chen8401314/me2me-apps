@@ -138,7 +138,8 @@
 	<script src="${ctx}/js/advanced-form-components.js"></script>
 	<script>
 		$("a.btn-danger").click(function(){
-			return confirm("确定执行此操作吗？索引将会执行一段时间，请不要重复点击或者刷新，请举起双手，或去喝茶")
+			$(this).attr("disabled","disabled");
+			return confirm("确定执行此操作吗？索引将会执行一段时间，请不要重复点击或者刷新")
 		})
 		$("select[data-value]").each(function(){
 			var val = $(this).attr("data-value");

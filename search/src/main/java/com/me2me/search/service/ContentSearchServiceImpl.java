@@ -7,6 +7,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
@@ -15,9 +16,6 @@ import java.util.concurrent.TimeUnit;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.lang3.StringUtils;
-import org.elasticsearch.action.search.SearchResponse;
-import org.elasticsearch.client.Client;
-import org.elasticsearch.client.ClusterAdminClient;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.PrefixQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -66,8 +64,6 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	private static final String DEFAULT_START_TIME = "1900-01-01 00:00:00";
 	private static final String DATE_FORMAT="yyyy-MM-dd hh:mm:ss";
 	@Autowired
-	private Client client;
-	@Autowired
 	private SearchVarMapper varMapper;
 	
 	@Autowired
@@ -88,6 +84,9 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 
 	@Autowired
 	private SimpleCache cache;
+	
+	@Autowired
+	private ExecutorService threadPool= Executors.newCachedThreadPool();
 
 	/**
 	 * 系统启动时启动搜索消息同步线程。
@@ -293,158 +292,189 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 
 	@Override
 	public int indexUserData(boolean fully) throws Exception {
-		log.info("indexUserData started");
-		String indexName = IndexConstants.USER_INDEX_NAME;
-		String beginDate = preIndex(fully, indexName);
-		String endDate = DateUtil.date2string(new Date(), DATE_FORMAT);
-		int count = 0;
-		int skip=0;
-		int batchSize= 1000;
-		esTemplate.putMapping(UserEsMapping.class);
-		while (true) {
-			List<UserEsMapping> users =searchMapper.getUserPageByUpdateDate(beginDate, endDate, skip, batchSize);
-			if (users == null || users.isEmpty()) {
-				break;
-			}
-			List<IndexQuery> indexList = new ArrayList<>();
-			for (UserEsMapping data : users) {
-				IndexQuery query = new IndexQuery();
-				String key = data.getUid()+"";
-				
-				query.setId(key);
-				query.setObject(data);
-				query.setIndexName(indexName);
-				query.setType(indexName);
-				indexList.add(query);
-			}
-			esTemplate.bulkIndex(indexList);
+		threadPool.execute(new Runnable() {
 			
-			skip += batchSize;
-			count += users.size();
-			log.info("indexUserData processed:"+count);
-		}
-		updateVarVal(indexName, endDate);
-		log.info("indexUserData finished.");
-		return count;
+			@Override
+			public void run() {
+				log.info("indexUserData started");
+				String indexName = IndexConstants.USER_INDEX_NAME;
+				String beginDate = preIndex(fully, indexName);
+				String endDate = DateUtil.date2string(new Date(), DATE_FORMAT);
+				int count = 0;
+				int skip=0;
+				int batchSize= 1000;
+				esTemplate.putMapping(UserEsMapping.class);
+				while (true) {
+					List<UserEsMapping> users =searchMapper.getUserPageByUpdateDate(beginDate, endDate, skip, batchSize);
+					if (users == null || users.isEmpty()) {
+						break;
+					}
+					List<IndexQuery> indexList = new ArrayList<>();
+					for (UserEsMapping data : users) {
+						IndexQuery query = new IndexQuery();
+						String key = data.getUid()+"";
+						
+						query.setId(key);
+						query.setObject(data);
+						query.setIndexName(indexName);
+						query.setType(indexName);
+						indexList.add(query);
+					}
+					esTemplate.bulkIndex(indexList);
+					
+					skip += batchSize;
+					count += users.size();
+					log.info("indexUserData processed:"+count);
+				}
+				updateVarVal(indexName, endDate);
+				log.info("indexUserData finished.");
+			}
+		});
+		
+		return 0;
 	}
 	@Override
 	public int indexUgcData(boolean fully) throws Exception {
-		log.info("indexUgcData started");
-		String indexName = IndexConstants.UGC_INDEX_NAME;
-		String beginDate = preIndex(fully, indexName);
-		String endDate = DateUtil.date2string(new Date(), DATE_FORMAT);
-		int count = 0;
-		int skip=0;
-		int batchSize= 1000;
-		esTemplate.putMapping(UgcEsMapping.class);
-		while (true) {
-			List<UgcEsMapping> ugcList =searchMapper.getUgcPageByUpdateDate(beginDate, endDate, skip, batchSize);
-			if (ugcList == null || ugcList.isEmpty()) {
-				break;
-			}
-			List<IndexQuery> indexList = new ArrayList<>();
-			for (UgcEsMapping data : ugcList) {
-				IndexQuery query = new IndexQuery();
-				String key =data.getId()+"";
-				
-				query.setId(key);
-				query.setObject(data);
-				query.setIndexName(indexName);
-				query.setType(indexName);
-				indexList.add(query);
-			}
-			esTemplate.bulkIndex(indexList);
+		threadPool.execute(new Runnable() {
 			
-			skip += batchSize;
-			count += ugcList.size();
-			log.info("indexUgcData processed:"+count);
-		}
-		updateVarVal(indexName, endDate);
-		log.info("indexUgcData finished.");
-		return count;
+			@Override
+			public void run() {
+				log.info("indexUgcData started");
+				String indexName = IndexConstants.UGC_INDEX_NAME;
+				String beginDate = preIndex(fully, indexName);
+				String endDate = DateUtil.date2string(new Date(), DATE_FORMAT);
+				int count = 0;
+				int skip=0;
+				int batchSize= 1000;
+				esTemplate.putMapping(UgcEsMapping.class);
+				while (true) {
+					List<UgcEsMapping> ugcList =searchMapper.getUgcPageByUpdateDate(beginDate, endDate, skip, batchSize);
+					if (ugcList == null || ugcList.isEmpty()) {
+						break;
+					}
+					List<IndexQuery> indexList = new ArrayList<>();
+					for (UgcEsMapping data : ugcList) {
+						IndexQuery query = new IndexQuery();
+						String key =data.getId()+"";
+						
+						query.setId(key);
+						query.setObject(data);
+						query.setIndexName(indexName);
+						query.setType(indexName);
+						indexList.add(query);
+					}
+					esTemplate.bulkIndex(indexList);
+					
+					skip += batchSize;
+					count += ugcList.size();
+					log.info("indexUgcData processed:"+count);
+				}
+				updateVarVal(indexName, endDate);
+				log.info("indexUgcData finished.");
+			}
+		});
+		
+		return 0;
 	}
 
 	@Override
 	public int indexKingdomData(boolean fully) throws Exception {
-		log.info("indexKingdomData started");
-		String indexName = IndexConstants.KINGDOM_INDEX_NAME;
-		String beginDate = preIndex(fully, indexName);
-		String endDate = DateUtil.date2string(new Date(), DATE_FORMAT);
-		int count = 0;
-		int skip=0;
-		int batchSize= 1000;
-		esTemplate.putMapping(TopicEsMapping.class);
-		while (true) {
-			List<TopicEsMapping> kingdomList =searchMapper.getKingdomPageByUpdateDate(beginDate, endDate, skip, batchSize);
-			if (kingdomList == null || kingdomList.isEmpty()) {
-				break;
-			}
-			List<IndexQuery> indexList = new ArrayList<>();
-			for (TopicEsMapping data : kingdomList) {
-				IndexQuery query = new IndexQuery();
-				String key = data.getId()+"";
-				List<String> commentList = searchMapper.getKingdomFragmentsByTopicId(Integer.parseInt(key));
-				String comments = StringUtils.join(commentList," \n");
-				data.setFragments(comments);
-				query.setId(key);
-				query.setObject(data);
-				query.setIndexName(indexName);
-				query.setType(indexName);
-				indexList.add(query);
-			}
+	
+		threadPool.execute(new Runnable() {
 			
-			esTemplate.bulkIndex(indexList);
-			
-			skip += batchSize;
-			count += kingdomList.size();
-			log.info("indexKingdomData processed:"+count);
-		}
-		updateVarVal(indexName, endDate);
-		log.info("indexKingdomData finished.");
-		return count;
+			@Override
+			public void run() {
+				log.info("indexKingdomData started");
+				String indexName = IndexConstants.KINGDOM_INDEX_NAME;
+				String beginDate = preIndex(fully, indexName);
+				String endDate = DateUtil.date2string(new Date(), DATE_FORMAT);
+				int count = 0;
+				int skip=0;
+				int batchSize= 1000;
+				esTemplate.putMapping(TopicEsMapping.class);
+				while (true) {
+					List<TopicEsMapping> kingdomList =searchMapper.getKingdomPageByUpdateDate(beginDate, endDate, skip, batchSize);
+					if (kingdomList == null || kingdomList.isEmpty()) {
+						break;
+					}
+					List<IndexQuery> indexList = new ArrayList<>();
+					for (TopicEsMapping data : kingdomList) {
+						IndexQuery query = new IndexQuery();
+						String key = data.getId()+"";
+						List<String> commentList = searchMapper.getKingdomFragmentsByTopicId(Integer.parseInt(key));
+						String comments = StringUtils.join(commentList," \n");
+						data.setFragments(comments);
+						query.setId(key);
+						query.setObject(data);
+						query.setIndexName(indexName);
+						query.setType(indexName);
+						indexList.add(query);
+					}
+					
+					esTemplate.bulkIndex(indexList);
+					
+					skip += batchSize;
+					count += kingdomList.size();
+					log.info("indexKingdomData processed:"+count);
+				}
+				updateVarVal(indexName, endDate);
+				log.info("indexKingdomData finished.");
+				
+			}
+		});
+		
+		return 0;
 	}
 	
 	
 	@Override
 	public int indexSearchHistory(boolean fully) throws Exception {
-		log.info("indexSearchHistory started");
-		String indexName = IndexConstants.SEARCH_HISTORY_INDEX_NAME;
-		String beginDate=preIndex(fully,indexName);
-		String endDate = DateUtil.date2string(new Date(), DATE_FORMAT);
-		int skip = 0;
-		int batchSize = 1000;
-		int count = 0;
-		while (true) {
-			List<SearchHistoryEsMapping> pageList = searchMapper.getSearchHistoryPageByDate(beginDate, endDate, skip, batchSize);
-			if (null == pageList || pageList.isEmpty()) {
-				break;
-			}
-			List<IndexQuery> indexList = new ArrayList<>();
-			for (SearchHistoryEsMapping data : pageList) {
-				IndexQuery query = new IndexQuery();
-				String key =data.getName();
-				try {
-					String pinyin = PinyinHelper.convertToPinyinString(key, "", PinyinFormat.WITHOUT_TONE);
-					String py = PinyinHelper.getShortPinyin(key); // nhsj
-					data.setName_pinyin(pinyin);
-					data.setName_pinyin_short(py);
-				} catch (PinyinException e) {
-					e.printStackTrace();
+		threadPool.execute(new Runnable() {
+			
+			@Override
+			public void run() {
+				log.info("indexSearchHistory started");
+				String indexName = IndexConstants.SEARCH_HISTORY_INDEX_NAME;
+				String beginDate=preIndex(fully,indexName);
+				String endDate = DateUtil.date2string(new Date(), DATE_FORMAT);
+				int skip = 0;
+				int batchSize = 1000;
+				int count = 0;
+				while (true) {
+					List<SearchHistoryEsMapping> pageList = searchMapper.getSearchHistoryPageByDate(beginDate, endDate, skip, batchSize);
+					if (null == pageList || pageList.isEmpty()) {
+						break;
+					}
+					List<IndexQuery> indexList = new ArrayList<>();
+					for (SearchHistoryEsMapping data : pageList) {
+						IndexQuery query = new IndexQuery();
+						String key =data.getName();
+						try {
+							String pinyin = PinyinHelper.convertToPinyinString(key, "", PinyinFormat.WITHOUT_TONE);
+							String py = PinyinHelper.getShortPinyin(key); // nhsj
+							data.setName_pinyin(pinyin);
+							data.setName_pinyin_short(py);
+						} catch (PinyinException e) {
+							e.printStackTrace();
+						}
+						query.setId(key);
+						query.setObject(data);
+						query.setIndexName(indexName);
+						query.setType(indexName);
+						indexList.add(query);
+					}
+					esTemplate.bulkIndex(indexList);
+					skip += batchSize;
+					count += pageList.size();
+					log.info("indexSearchHistory processed:"+count);
 				}
-				query.setId(key);
-				query.setObject(data);
-				query.setIndexName(indexName);
-				query.setType(indexName);
-				indexList.add(query);
+				updateVarVal(indexName, endDate);
+				log.info("indexSearchHistory finished.");
+				
 			}
-			esTemplate.bulkIndex(indexList);
-			skip += batchSize;
-			count += pageList.size();
-			log.info("indexSearchHistory processed:"+count);
-		}
-		updateVarVal(indexName, endDate);
-		log.info("indexSearchHistory finished.");
-		return count;
+		});
+		
+		return 0;
 	}
 
 }
