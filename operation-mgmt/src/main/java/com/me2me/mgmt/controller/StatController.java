@@ -1082,9 +1082,9 @@ public class StatController {
 		querySql.append("' and t.update_time<='").append(endTime);
 		querySql.append("' group by t.idfa) m where w.id=m.wid");
 		if(dto.getType() >= 0){
-			countSql.append(" and w.channel_typ=").append(dto.getType());
+			querySql.append(" and w.channel_typ=").append(dto.getType());
 		}
-		querySql.append(" order by w.update_time asc limit ").append(start).append(",").append(pageSize);
+		querySql.append(" order by w.update_time asc,w.id asc limit ").append(start).append(",").append(pageSize);
 
 		dto.getResult().clear();
 		List<Map<String, Object>> list = null;
