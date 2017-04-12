@@ -53,9 +53,6 @@
                                     	<thead>
                                     	<tr>
                                     		<th>名称</th>
-                                    		<th>状态</th>
-                                    		<th>排序号</th>
-                                    		<th>创建日期</th>
                                     		<th>操作</th>
                                     	</tr>
                                     	</thead>
@@ -63,13 +60,10 @@
                                     	<c:forEach items="${dataList}" var="item">
 	                                    	<tr data-id="${item.id }">
 	                                    		<td>${item.keyword }</td>
-	                                    		<td>${item.isValid }</td>
-	                                    		<td>${item.orderNum }</td>
-	                                    		<td>${item.creationDate }</td>
 	                                    		<td>
 	                                    			<a class="btn btn-warning btn-xs moveup" href="#">上移</a>
-																<a class="btn btn-warning btn-xs movedown" href="#">下移</a>
-																<a class="btn btn-danger btn-xs del" href="#" data-id="${item.id}">删除</a>
+													<a class="btn btn-warning btn-xs movedown" href="#">下移</a>
+													<a class="btn btn-danger btn-xs del" href="#" data-id="${item.id}">删除</a>
 	                                    		</td>
 	                                    	</tr>
                                     	</c:forEach>
