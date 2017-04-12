@@ -39,6 +39,7 @@ import com.github.stuxuhai.jpinyin.PinyinHelper;
 import com.me2me.common.utils.DateUtil;
 import com.me2me.search.cache.SimpleCache;
 import com.me2me.search.constants.IndexConstants;
+import com.me2me.search.dao.ContentForSearchJdbcDao;
 import com.me2me.search.esmapping.SearchHistoryEsMapping;
 import com.me2me.search.esmapping.TopicEsMapping;
 import com.me2me.search.esmapping.UgcEsMapping;
@@ -74,7 +75,8 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	
 	@Autowired
 	private SearchMapper searchMapper;
-
+    @Autowired
+    private ContentForSearchJdbcDao searchJdbcDao;
 	/**
 	 * 消息缓存。用来记录搜索消息
 	 */
@@ -133,6 +135,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			bq.must(QueryBuilders.matchAllQuery());
 		}else{
 			bq.should(QueryBuilders.queryStringQuery(content).field("title").boost(3f));
+			bq.should(QueryBuilders.queryStringQuery(content).field("tags").boost(3f));
 			bq.should(QueryBuilders.queryStringQuery(content).field("summary").boost(2f));
 			bq.should(QueryBuilders.queryStringQuery(content).field("fragments"));
 		}
@@ -396,6 +399,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 					if (kingdomList == null || kingdomList.isEmpty()) {
 						break;
 					}
+					
 					List<IndexQuery> indexList = new ArrayList<>();
 					for (TopicEsMapping data : kingdomList) {
 						IndexQuery query = new IndexQuery();
@@ -403,6 +407,9 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 						List<String> commentList = searchMapper.getKingdomFragmentsByTopicId(Integer.parseInt(key));
 						String comments = StringUtils.join(commentList," \n");
 						data.setFragments(comments);
+						String tags =searchJdbcDao.getTopicTagsByTopicId(data.getId());
+						data.setTags(tags);
+						
 						query.setId(key);
 						query.setObject(data);
 						query.setIndexName(indexName);

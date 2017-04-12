@@ -32,25 +32,13 @@ public class UgcEsMapping {
 	private Integer type;		//0 原生内容，1 转发原生UGC内容,2小编内容 3，直播，4 活动，5系统,6转发直播，7转发活动,8转发小编文章,9转发系统文章     必填 
 
 	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
-	private String conver_image;		//     必填 
-
-	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String forward_title;		//     必填 
-
-	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
-	private String forward_url;		//     必填 
 
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer content_type;		//     必填 
 
 	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
 	private String content;		//内容     必填 
-
-	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
-	private String thumbnail;		//     必填 
-
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
-	private Integer hot_value;		//默认热度为1     必填 
 
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer person_count;		//参与人数     必填 
@@ -73,9 +61,6 @@ public class UgcEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer is_top;		//是否置顶     必填 
 
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
-	private Integer authorization;		//阅读权限 0所有，1自己，2亲密     必填 
-
 	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.Integer)
 	private Integer rights;		//0仅自己，1公开     必填 
 
@@ -91,9 +76,6 @@ public class UgcEsMapping {
 	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
 	private String nick_name;		//     必填 
 	
-	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
-	private String avatar;		//用户头像     必填 
-
 	public Long getId() {
 		return id;
 	}
@@ -142,28 +124,12 @@ public class UgcEsMapping {
 		this.type = type;
 	}
 
-	public String getConver_image() {
-		return conver_image;
-	}
-
-	public void setConver_image(String conver_image) {
-		this.conver_image = conver_image;
-	}
-
 	public String getForward_title() {
 		return forward_title;
 	}
 
 	public void setForward_title(String forward_title) {
 		this.forward_title = forward_title;
-	}
-
-	public String getForward_url() {
-		return forward_url;
-	}
-
-	public void setForward_url(String forward_url) {
-		this.forward_url = forward_url;
 	}
 
 	public Integer getContent_type() {
@@ -180,22 +146,6 @@ public class UgcEsMapping {
 
 	public void setContent(String content) {
 		this.content = content;
-	}
-
-	public String getThumbnail() {
-		return thumbnail;
-	}
-
-	public void setThumbnail(String thumbnail) {
-		this.thumbnail = thumbnail;
-	}
-
-	public Integer getHot_value() {
-		return hot_value;
-	}
-
-	public void setHot_value(Integer hot_value) {
-		this.hot_value = hot_value;
 	}
 
 	public Integer getPerson_count() {
@@ -254,14 +204,6 @@ public class UgcEsMapping {
 		this.is_top = is_top;
 	}
 
-	public Integer getAuthorization() {
-		return authorization;
-	}
-
-	public void setAuthorization(Integer authorization) {
-		this.authorization = authorization;
-	}
-
 	public Integer getRights() {
 		return rights;
 	}
@@ -300,14 +242,6 @@ public class UgcEsMapping {
 
 	public void setNick_name(String nick_name) {
 		this.nick_name = nick_name;
-	}
-
-	public String getAvatar() {
-		return avatar;
-	}
-
-	public void setAvatar(String avatar) {
-		this.avatar = avatar;
 	}
 	
 }

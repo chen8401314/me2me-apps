@@ -34,27 +34,6 @@ public class UserEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String avatar;		//用户头像     必填 
 
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
-	private Long years_id;		//年代情怀     必填 
-
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
-	private Long star_id;		//星座     必填 
-
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
-	private Long social_class;		//社会阶层     必填 
-
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
-	private Long industry;		//所属行业     必填 
-
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
-	private Long marriage_status;		//婚恋状态     必填 
-
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
-	private Long bear_status;		//生育状态     必填 
-
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
-	private Integer excellent;		//0 普通 1 大V     必填 
-
 	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String introduced;		//     必填 
 
@@ -67,23 +46,14 @@ public class UserEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer is_promoter;		//是否是推广员 0 否 1是     必填 
 
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
-	private Integer is_activate;		//是否激活 0未激活 1激活     必填 
-
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long referee_uid;		//推广者uid     必填 
-
-	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
-	private String qrcode;		//     必填 
 
 	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String third_part_bind;		//     必填 
 
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
 	private Integer v_lv;		//是否是大V(0 否 1 是)     必填 
-
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
-	private Integer is_client_login;		//是否需要检查昵称重复 0 否 1 是     必填 
 
 	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String channel;		//渠道  
@@ -150,62 +120,6 @@ public class UserEsMapping {
 		this.avatar = avatar;
 	}
 
-	public Long getYears_id() {
-		return years_id;
-	}
-
-	public void setYears_id(Long years_id) {
-		this.years_id = years_id;
-	}
-
-	public Long getStar_id() {
-		return star_id;
-	}
-
-	public void setStar_id(Long star_id) {
-		this.star_id = star_id;
-	}
-
-	public Long getSocial_class() {
-		return social_class;
-	}
-
-	public void setSocial_class(Long social_class) {
-		this.social_class = social_class;
-	}
-
-	public Long getIndustry() {
-		return industry;
-	}
-
-	public void setIndustry(Long industry) {
-		this.industry = industry;
-	}
-
-	public Long getMarriage_status() {
-		return marriage_status;
-	}
-
-	public void setMarriage_status(Long marriage_status) {
-		this.marriage_status = marriage_status;
-	}
-
-	public Long getBear_status() {
-		return bear_status;
-	}
-
-	public void setBear_status(Long bear_status) {
-		this.bear_status = bear_status;
-	}
-
-	public Integer getExcellent() {
-		return excellent;
-	}
-
-	public void setExcellent(Integer excellent) {
-		this.excellent = excellent;
-	}
-
 	public String getIntroduced() {
 		return introduced;
 	}
@@ -238,28 +152,12 @@ public class UserEsMapping {
 		this.is_promoter = is_promoter;
 	}
 
-	public Integer getIs_activate() {
-		return is_activate;
-	}
-
-	public void setIs_activate(Integer is_activate) {
-		this.is_activate = is_activate;
-	}
-
 	public Long getReferee_uid() {
 		return referee_uid;
 	}
 
 	public void setReferee_uid(Long referee_uid) {
 		this.referee_uid = referee_uid;
-	}
-
-	public String getQrcode() {
-		return qrcode;
-	}
-
-	public void setQrcode(String qrcode) {
-		this.qrcode = qrcode;
 	}
 
 	public String getThird_part_bind() {
@@ -276,14 +174,6 @@ public class UserEsMapping {
 
 	public void setV_lv(Integer v_lv) {
 		this.v_lv = v_lv;
-	}
-
-	public Integer getIs_client_login() {
-		return is_client_login;
-	}
-
-	public void setIs_client_login(Integer is_client_login) {
-		this.is_client_login = is_client_login;
 	}
 
 	public String getChannel() {
