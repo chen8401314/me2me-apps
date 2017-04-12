@@ -193,4 +193,19 @@ public class ContentForSearchJdbcDao {
     	
     	return jdbcTemplate.queryForList(sb.toString());
     }
+	
+	public String getTopicTagsByTopicId(long topicId){
+		String sql = "select * from topic_tag_detail d where d.status = 0 and d.topic_id="+topicId;
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
+		StringBuilder sb = new StringBuilder();
+		if(null != list && list.size() > 0){
+			for(int i=0;i<list.size();i++){
+				if(i>0){
+					sb.append(";");
+				}
+				sb.append((String)list.get(i).get("tag"));
+			}
+		}
+		return sb.toString();
+	}
 }

@@ -101,6 +101,8 @@ public class LiveServiceImpl implements LiveService {
     
     //置顶次数
     private static final String TOP_COUNT = "topCount";
+    
+    private static final String CORECIRCLE_SPECIAL_TOPIC_LIST_KEY = "CORECIRCLE_SPECIAL_TOPIC_LIST";
 
     @SuppressWarnings("rawtypes")
 	@Override
@@ -1580,6 +1582,20 @@ public class LiveServiceImpl implements LiveService {
                 //content表favorite_count+1
                 liveLocalJdbcDao.contentAddFavoriteCount(topicId, 1);
     		}
+    		
+    		//判断是否是特殊王国，如果是特殊王国，则加入王国的同时，加入核心圈--“赛出家乡美”活动需求
+    		Set<String> specialTopicList = cacheService.smembers(CORECIRCLE_SPECIAL_TOPIC_LIST_KEY);
+    		if(null != specialTopicList && specialTopicList.size() > 0 && specialTopicList.contains(String.valueOf(topicId))){
+    			//特殊王国，则加入的同时加入核心圈，无需关心是否超出核心圈上限
+    			if(!this.isInCore(uid, topic.getCoreCircle())){
+    				topic = liveMybatisDao.getTopicById(topicId);//再拉一次，减少并发问题
+    				JSONArray array = JSON.parseArray(topic.getCoreCircle());
+    				array.add(uid);
+    				topic.setCoreCircle(array.toJSONString());
+    				liveMybatisDao.updateTopic(topic);
+    			}
+    		}
+    		
     		resp = Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
     	} else if (action == 1) {//取消订阅
     		if(null != liveFavorite){
