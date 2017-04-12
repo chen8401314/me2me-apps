@@ -36,7 +36,18 @@ public class SearchController {
 			String type= request.getParameter("type");
 			request.setAttribute("type", type);
 			
-			String json=searchService.searchForJSON(keyword,type, 1, 20);
+			String contentType = request.getParameter("contentType");
+			int cType = -1;
+			if(StringUtils.isNotBlank(contentType)){
+				int ct = Integer.valueOf(contentType);
+				if(ct == 1){
+					cType = 0;
+				}else if(ct == 2){
+					cType = 1000;
+				}
+			}
+			
+			String json=searchService.searchForJSON(keyword,type,cType, 1, 20);
 			JSONObject obj = JSON.parseObject(json);
 			JSONArray arr = obj.getJSONArray("content");
 			request.setAttribute("dataList", arr);

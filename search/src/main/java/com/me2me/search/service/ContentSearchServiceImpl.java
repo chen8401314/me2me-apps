@@ -140,7 +140,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			bq.should(QueryBuilders.queryStringQuery(content).field("summary").boost(2f));
 			bq.should(QueryBuilders.queryStringQuery(content).field("fragments"));
 		}
-		if(contentType > 0){
+		if(contentType >= 0){
 			bq.must(QueryBuilders.termQuery("type", contentType));
 		}
 		SearchQuery sq = new NativeSearchQuery(bq);

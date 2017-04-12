@@ -112,7 +112,13 @@ public class SearchServiceImpl implements SearchService {
 		    		resultDTO.setTotalRecord(userPage.getTotalElements());
 	    		}
 	    	}else if(searchType == 2){//王国
-	    		kingdomPage = searchService.queryKingdom(keyword, contentType, page, pageSize);
+	    		int searchKingdomType = -1;
+	    		if(contentType == 1){
+	    			searchKingdomType = 0;
+	    		}else if(contentType == 2){
+	    			searchKingdomType = 1000;
+	    		}
+	    		kingdomPage = searchService.queryKingdom(keyword, searchKingdomType, page, pageSize);
 	    		if(null != kingdomPage){
 	    			resultDTO.setTotalPage(kingdomPage.getTotalPages());
 		    		resultDTO.setTotalRecord(kingdomPage.getTotalElements());
@@ -521,12 +527,12 @@ public class SearchServiceImpl implements SearchService {
 		return searchService.indexSearchHistory(fully);
 	}
 	
-	public String searchForJSON(String key,String type,int page,int pageSize){
+	public String searchForJSON(String key,String type, int contentType, int page,int pageSize){
 		FacetedPage pagedata =null;
 		if("ugc".equals(type)){
 			pagedata = searchService.queryUGC(key, page, pageSize);
 		}else if("kingdom".equals(type)){
-			pagedata = searchService.queryKingdom(key, 0, page, pageSize);
+			pagedata = searchService.queryKingdom(key, contentType, page, pageSize);
 		}else if("user".equals(type)){
 			pagedata = searchService.queryUsers(key, page, pageSize);
 		}

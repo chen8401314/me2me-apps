@@ -65,7 +65,7 @@ public interface SearchService {
 	 * @param pageSize
 	 * @return
 	 */
-	public String searchForJSON(String key,String type,int page,int pageSize);
+	public String searchForJSON(String key,String type,int contentType,int page,int pageSize);
 	/**
 	 * 所有热门词
 	 * @author zhangjiwei
