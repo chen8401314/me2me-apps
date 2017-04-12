@@ -85,7 +85,6 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	@Autowired
 	private SimpleCache cache;
 	
-	@Autowired
 	private ExecutorService threadPool= Executors.newCachedThreadPool();
 
 	/**
