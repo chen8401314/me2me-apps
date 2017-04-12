@@ -18,7 +18,7 @@ public interface SearchService {
     
     Response associatedWord(String keyword);
 
-    Response allSearch(long uid, String keyword, int searchType, int page, int pageSize);
+    Response allSearch(long uid, String keyword, int searchType, int contentType, int page, int pageSize);
  
     Response recWord();
     

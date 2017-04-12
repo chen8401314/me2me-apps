@@ -23,10 +23,13 @@ public interface ContentSearchService {
 	FacetedPage<UgcEsMapping> queryUGC(String content,int page,int pageSize);
 	/**
 	 * 搜索王国
-	 * @param title
+	 * @param content
+	 * @param contentType 王国类型 0全部，1个人王国，2聚合王国
+	 * @param page
+	 * @param pageSize
 	 * @return
 	 */
-	FacetedPage<TopicEsMapping> queryKingdom(String content,int page,int pageSize);
+	FacetedPage<TopicEsMapping> queryKingdom(String content, int contentType, int page,int pageSize);
 		
 	/**
 	 * 搜人

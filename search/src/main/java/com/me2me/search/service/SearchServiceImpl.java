@@ -89,7 +89,7 @@ public class SearchServiceImpl implements SearchService {
     }
     
     @Override
-    public Response allSearch(long uid, String keyword, int searchType, int page, int pageSize){
+    public Response allSearch(long uid, String keyword, int searchType, int contentType, int page, int pageSize){
     	//首先记录搜索词
     	if(!StringUtils.isEmpty(keyword)){
     		searchService.addSearchHistory(keyword);
@@ -102,9 +102,9 @@ public class SearchServiceImpl implements SearchService {
     	FacetedPage<UserEsMapping> userPage = null;
     	try{
 	    	if(searchType == 0){//搜索全部，则返回UGC3个，王国3个，人3个
-	    		ugcPage = searchService.queryUGC(keyword, page, pageSize);
-	    		kingdomPage = searchService.queryKingdom(keyword, page, pageSize);
-	    		userPage = searchService.queryUsers(keyword, page, pageSize);
+	    		ugcPage = searchService.queryUGC(keyword, 1, 3);
+	    		kingdomPage = searchService.queryKingdom(keyword, 0, 1, 3);
+	    		userPage = searchService.queryUsers(keyword, 1, 3);
 	    	}else if(searchType == 1){//用户
 	    		userPage = searchService.queryUsers(keyword, page, pageSize);
 	    		if(null != userPage){
@@ -112,7 +112,7 @@ public class SearchServiceImpl implements SearchService {
 		    		resultDTO.setTotalRecord(userPage.getTotalElements());
 	    		}
 	    	}else if(searchType == 2){//王国
-	    		kingdomPage = searchService.queryKingdom(keyword, page, pageSize);
+	    		kingdomPage = searchService.queryKingdom(keyword, contentType, page, pageSize);
 	    		if(null != kingdomPage){
 	    			resultDTO.setTotalPage(kingdomPage.getTotalPages());
 		    		resultDTO.setTotalRecord(kingdomPage.getTotalElements());
@@ -526,7 +526,7 @@ public class SearchServiceImpl implements SearchService {
 		if("ugc".equals(type)){
 			pagedata = searchService.queryUGC(key, page, pageSize);
 		}else if("kingdom".equals(type)){
-			pagedata = searchService.queryKingdom(key, page, pageSize);
+			pagedata = searchService.queryKingdom(key, 0, page, pageSize);
 		}else if("user".equals(type)){
 			pagedata = searchService.queryUsers(key, page, pageSize);
 		}

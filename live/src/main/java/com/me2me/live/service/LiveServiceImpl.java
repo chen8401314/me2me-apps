@@ -102,7 +102,8 @@ public class LiveServiceImpl implements LiveService {
     //置顶次数
     private static final String TOP_COUNT = "topCount";
     
-    private static final String CORECIRCLE_SPECIAL_TOPIC_LIST_KEY = "CORECIRCLE_SPECIAL_TOPIC_LIST";
+    private static final String ACTIVITY_CORECIRCLE_SPECIAL_TOPIC_LIST_KEY = "ACTIVITY_CORECIRCLE_SPECIAL_TOPIC_LIST";
+    private static final String ACTIVITY_SPECIAL_TOPIC_HANDLE_KEY = "ACTIVITY_SPECIAL_TOPIC_HANDLE";
 
     @SuppressWarnings("rawtypes")
 	@Override
@@ -619,6 +620,8 @@ public class LiveServiceImpl implements LiveService {
             String value = fid + "," + total;
             cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + speakDto.getTopicId(), value);
             //--add update kingdom cache -- modify by zcl -- end --
+            
+            
         }
         //获取最后一次发言FragmentId
         TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(speakDto.getTopicId(), speakDto.getUid());
@@ -725,6 +728,41 @@ public class LiveServiceImpl implements LiveService {
         //直播信息保存
         //saveLiveDisplayData(speakDto);
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status, ResponseStatus.USER_SPEAK_SUCCESS.message, speakDto);
+    }
+    
+    private void activitySpecialTopicHandler(long topicId, int type, int contentType, int optAction){
+    	//附加逻辑，活动需求，特殊王国在发言时增加用户的荣誉值以及该王国的热度
+        String specialSwitch = cacheService.get(ACTIVITY_SPECIAL_TOPIC_HANDLE_KEY);
+        if(!StringUtils.isEmpty(specialSwitch) && "on".equals(specialSwitch)){//开关存在，并且是打开的状态
+        	//判断是否特殊王国
+        	Set<String> specialTopicList = cacheService.smembers(ACTIVITY_CORECIRCLE_SPECIAL_TOPIC_LIST_KEY);
+        	if(null != specialTopicList && specialTopicList.size() > 0 
+        			&& specialTopicList.contains(String.valueOf(topicId))){
+        		if((type == Specification.LiveSpeakType.ANCHOR.index && contentType == Specification.LiveContent.TEXT.index)
+        				|| type == Specification.LiveSpeakType.FANS.index){//主播文本发言 || 粉丝回复
+        			//文本
+        		}else if(type == Specification.LiveSpeakType.ANCHOR.index && contentType == Specification.LiveContent.IMAGE.index){
+        			//图片
+        		}else if(type == Specification.LiveSpeakType.VIDEO.index){
+        			//视频
+        		}else if(type == Specification.LiveSpeakType.SOUND.index){
+        			//音频
+        		}else if(type == Specification.LiveSpeakType.AT.index
+        				|| type == Specification.LiveSpeakType.ANCHOR_AT.index
+        				|| type == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){//普通@，主播@，@核心圈
+        			//@
+        		}
+//        		else if(){
+//        			
+//        		}
+        		
+        		if(optAction == 1){//新增
+        			
+        		}else if(optAction == 2){//删除
+        			
+        		}
+        	}
+        }
     }
 
     /**
@@ -1584,7 +1622,7 @@ public class LiveServiceImpl implements LiveService {
     		}
     		
     		//判断是否是特殊王国，如果是特殊王国，则加入王国的同时，加入核心圈--“赛出家乡美”活动需求
-    		Set<String> specialTopicList = cacheService.smembers(CORECIRCLE_SPECIAL_TOPIC_LIST_KEY);
+    		Set<String> specialTopicList = cacheService.smembers(ACTIVITY_CORECIRCLE_SPECIAL_TOPIC_LIST_KEY);
     		if(null != specialTopicList && specialTopicList.size() > 0 && specialTopicList.contains(String.valueOf(topicId))){
     			//特殊王国，则加入的同时加入核心圈，无需关心是否超出核心圈上限
     			if(!this.isInCore(uid, topic.getCoreCircle())){

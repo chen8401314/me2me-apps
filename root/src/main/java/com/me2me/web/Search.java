@@ -62,7 +62,7 @@ public class Search extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/search",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response allSearch(AllSearchRequest request){
-    	return searchService.allSearch(request.getUid(), request.getKeyword(), request.getSearchType(), request.getPage(), request.getPageSize());
+    	return searchService.allSearch(request.getUid(), request.getKeyword(), request.getSearchType(), request.getContentType(), request.getPage(), request.getPageSize());
     }
     
     /**

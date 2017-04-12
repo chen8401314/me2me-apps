@@ -129,15 +129,19 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	}
 
 	@Override
-	public FacetedPage<TopicEsMapping> queryKingdom(String content, int page, int pageSize) {
+	public FacetedPage<TopicEsMapping> queryKingdom(String content, int contentType, int page, int pageSize) {
 		BoolQueryBuilder bq = new BoolQueryBuilder();
 		if(StringUtils.isEmpty(content)){
 			bq.must(QueryBuilders.matchAllQuery());
 		}else{
-			bq.should(QueryBuilders.queryStringQuery(content).field("title").boost(3f));
+			bq.should(QueryBuilders.queryStringQuery(content).field("title").boost(5f));
+			bq.should(QueryBuilders.queryStringQuery(content).field("nick_name").boost(4f));
 			bq.should(QueryBuilders.queryStringQuery(content).field("tags").boost(3f));
 			bq.should(QueryBuilders.queryStringQuery(content).field("summary").boost(2f));
 			bq.should(QueryBuilders.queryStringQuery(content).field("fragments"));
+		}
+		if(contentType > 0){
+			bq.must(QueryBuilders.termQuery("type", contentType));
 		}
 		SearchQuery sq = new NativeSearchQuery(bq);
 		sq.setPageable(new PageRequest(--page, pageSize));
@@ -151,7 +155,8 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		if(StringUtils.isEmpty(content)){
 			bq.must(QueryBuilders.matchAllQuery());
 		}else{
-			bq.should(QueryBuilders.queryStringQuery(content).field("nick_name"));
+			bq.should(QueryBuilders.queryStringQuery(content).field("nick_name").boost(3f));
+			bq.should(QueryBuilders.queryStringQuery(content).field("introduced"));
 		}
 		
 		SearchQuery sq = new NativeSearchQuery(bq);

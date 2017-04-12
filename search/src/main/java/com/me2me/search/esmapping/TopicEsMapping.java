@@ -37,11 +37,11 @@ public class TopicEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String core_circle;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.Integer)
 	private Integer type;		//类型，0普通王国，1000聚合王国  
  
 
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.Integer)
 	private Integer rights;		//可见类型，1公开，2私密  
 
 	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")

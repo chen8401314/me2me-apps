@@ -19,13 +19,13 @@ public class UserEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long uid;		//用户id     必填 
 
-	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.String)
 	private String mobile;		//用户手机号码     必填 
 
 	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
 	private String nick_name;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.Integer)
 	private Integer gender;		//性别，0女1男     必填 
 
 	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
@@ -34,7 +34,7 @@ public class UserEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String avatar;		//用户头像     必填 
 
-	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String)
 	private String introduced;		//     必填 
 
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Date)
@@ -52,16 +52,16 @@ public class UserEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String third_part_bind;		//     必填 
 
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.Integer)
 	private Integer v_lv;		//是否是大V(0 否 1 是)     必填 
 
-	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.String)
 	private String channel;		//渠道  
 
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Integer)
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.Integer)
 	private Integer platform;		//平台，1安卓，2 IOS，3 H5  
 
-	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.String)
 	private String register_version;		//注册版本号，v2.2.2版本开始有的     必填 
 
 	public Long getId() {

@@ -15,6 +15,9 @@ public class AllSearchRequest extends Request {
 	private int searchType;
 	@Getter
     @Setter
+	private int contentType;
+	@Getter
+    @Setter
 	private int page;
 	@Getter
     @Setter
