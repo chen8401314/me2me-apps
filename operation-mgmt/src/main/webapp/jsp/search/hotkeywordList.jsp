@@ -50,6 +50,7 @@
                             <section class="panel">
                                 <div class="panel-body">
                                     <table class="table  table-striped" id="dataTable" width="100%">
+                                    	<thead>
                                     	<tr>
                                     		<th>名称</th>
                                     		<th>状态</th>
@@ -57,6 +58,8 @@
                                     		<th>创建日期</th>
                                     		<th>操作</th>
                                     	</tr>
+                                    	</thead>
+                                    	<tbody>
                                     	<c:forEach items="${dataList}" var="item">
 	                                    	<tr data-id="${item.id }">
 	                                    		<td>${item.keyword }</td>
@@ -70,6 +73,7 @@
 	                                    		</td>
 	                                    	</tr>
                                     	</c:forEach>
+	                                    </tbody>
                                     </table>
                                 </div>
                             </section>
@@ -120,6 +124,7 @@
         <script type="text/javascript" src="${ctx}/assets/bootstrap-inputmask/bootstrap-inputmask.min.js"></script>
         
         <script type="text/javascript" src="${ctx}/js/bootbox.min.js"></script>
+      
         <!--right slidebar-->
         <script src="${ctx}/js/slidebars.min.js"></script>
 
@@ -178,7 +183,7 @@
 		}
 		// 扫描顺序
 		var data=[];
-		$("tr[data-id]").each(function(index,obj){
+		$("tbody>tr[data-id]").each(function(index,obj){
 			data.push({
 				id:$(this).attr("data-id"),
 				orderNum:index

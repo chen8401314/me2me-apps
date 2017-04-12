@@ -110,8 +110,8 @@
         <script type="text/javascript" src="${ctx}/assets/bootstrap-timepicker/js/bootstrap-timepicker.js"></script>
         <script type="text/javascript" src="${ctx}/assets/jquery-multi-select/js/jquery.multi-select.js"></script>
         <script type="text/javascript" src="${ctx}/assets/jquery-multi-select/js/jquery.quicksearch.js"></script>
-
         <script type="text/javascript" src="${ctx}/assets/bootstrap-inputmask/bootstrap-inputmask.min.js"></script>
+        <script type="text/javascript" src="${ctx}/js/jquery.validate.min.js"></script>
         <!--right slidebar-->
         <script src="${ctx}/js/slidebars.min.js"></script>
 
@@ -126,5 +126,8 @@
         <script src="${ctx}/js/xheditor-1.2.2.min.js"></script>
         <script src="${ctx}/js/xheditor_lang/zh-cn.js"></script>
         <script src="${ctx}/js/xheditSelf.js"></script>
+        <script type="text/javascript">
+        	$("form").validate({})
+        </script>
 </body>
 </html>
