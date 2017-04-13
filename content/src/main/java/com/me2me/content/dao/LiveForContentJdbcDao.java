@@ -152,7 +152,7 @@ public class LiveForContentJdbcDao {
      */
     public void deleteTopicTagByTopicId(long topicId){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("delete from topic_tag_detail where topic_id=").append(topicId);
+    	sb.append("update topic_tag_detail set status=1 where topic_id=").append(topicId);
     	jdbcTemplate.execute(sb.toString());
     }
     
