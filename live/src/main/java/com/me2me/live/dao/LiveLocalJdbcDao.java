@@ -736,7 +736,7 @@ public class LiveLocalJdbcDao {
 		sb.append("select m.topic_id,max(pp) as pp from (");
 		sb.append("select DISTINCT d1.topic_id, 100 as pp");
 		sb.append(" from topic_tag_detail d1 where d1.status=0");
-		sb.append(" d1.topic_id!=").append(topicId);
+		sb.append(" and d1.topic_id!=").append(topicId);
 		sb.append(" and d1.tag_id in (select d11.tag_id from topic_tag_detail d11 where d11.status=0 and d11.topic_id=");
 		sb.append(topicId).append(")");
 		sb.append(" union all ");
