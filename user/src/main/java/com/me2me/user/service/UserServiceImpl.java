@@ -2792,9 +2792,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response registAllIMtoken() {
+    	log.info("im register all user start...");
         List<User> userList = userMybatisDao.getAllUser();
         if(userList.size() > 0 && userList != null){
+        	log.info("total " + userList.size() + " users!");
+        	int count = 0;
             for(User user : userList){
+            	count++;
                 try {
                     ImConfig imConfig = userMybatisDao.getImConfig(user.getUid());
                     if(imConfig == null) {
@@ -2807,8 +2811,16 @@ public class UserServiceImpl implements UserService {
                 } catch (Exception e) {
                     return Response.failure("出错了");
                 }
+                if(count%1000 == 0){
+                	log.info("process 1000 users");
+                	count = 0;
+                }
+            }
+            if(count>0){
+            	log.info("process "+count+" users");
             }
         }
+        log.info("im register all user end!");
         return Response.success();
     }
 

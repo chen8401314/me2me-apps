@@ -8,6 +8,7 @@ import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.FacetedPage;
 import org.springframework.stereotype.Service;
@@ -93,6 +94,7 @@ public class SearchServiceImpl implements SearchService {
     	//首先记录搜索词
     	if(!StringUtils.isEmpty(keyword)){
     		searchService.addSearchHistory(keyword);
+    		keyword = QueryParser.escape(keyword);//将一些不可预见的特殊字符都转义一下
     	}
     	
     	ShowSearchDTO resultDTO = new ShowSearchDTO();
@@ -102,9 +104,9 @@ public class SearchServiceImpl implements SearchService {
     	FacetedPage<UserEsMapping> userPage = null;
     	try{
 	    	if(searchType == 0){//搜索全部，则返回UGC3个，王国3个，人3个
-	    		ugcPage = searchService.queryUGC(keyword, 1, 3);
-	    		kingdomPage = searchService.queryKingdom(keyword, -1, 1, 3);
-	    		userPage = searchService.queryUsers(keyword, 1, 3);
+	    		ugcPage = searchService.queryUGC(keyword, 1, 20);
+	    		kingdomPage = searchService.queryKingdom(keyword, -1, 1, 20);
+	    		userPage = searchService.queryUsers(keyword, 1, 20);
 	    	}else if(searchType == 1){//用户
 	    		userPage = searchService.queryUsers(keyword, page, pageSize);
 	    		if(null != userPage){
@@ -135,21 +137,21 @@ public class SearchServiceImpl implements SearchService {
     	}
     	
     	if(null != ugcPage){
-    		this.buildUgcSearchResult(uid, resultDTO, ugcPage);
+    		this.buildUgcSearchResult(uid, resultDTO, ugcPage, searchType);
     	}
     	
     	if(null != kingdomPage){
-    		this.buildKingdomSearchResult(uid, resultDTO, kingdomPage);
+    		this.buildKingdomSearchResult(uid, resultDTO, kingdomPage, searchType);
     	}
     	
     	if(null != userPage){
-    		this.buildUserSearchResult(uid, resultDTO, userPage);
+    		this.buildUserSearchResult(uid, resultDTO, userPage, searchType);
     	}
     	
     	return Response.success(resultDTO);
     }
     
-    private void buildUgcSearchResult(long uid, ShowSearchDTO resultDTO, FacetedPage<UgcEsMapping> ugcPage){
+    private void buildUgcSearchResult(long uid, ShowSearchDTO resultDTO, FacetedPage<UgcEsMapping> ugcPage, int searchType){
     	if(null == ugcPage){
     		return;
     	}
@@ -191,6 +193,7 @@ public class SearchServiceImpl implements SearchService {
 		ShowSearchDTO.UgcElement ugcElement = null;
 		Map<String, Object> content = null;
 		UserProfile userProfile = null;
+		int i = 0;
 		for(UgcEsMapping ugc : ugcPage){
 			ugcElement = new ShowSearchDTO.UgcElement();
 			content = contentMap.get(ugc.getId().toString());
@@ -223,10 +226,14 @@ public class SearchServiceImpl implements SearchService {
 			ugcElement.setReadCount((Integer)content.get("read_count_dummy"));
 			ugcElement.setReviewCount((Integer)content.get("review_count"));
 			resultDTO.getUgcData().add(ugcElement);
+			i++;
+			if(searchType == 0 && i>= 3){
+				break;
+			}
 		}
     }
     
-    private void buildKingdomSearchResult(long uid, ShowSearchDTO resultDTO, FacetedPage<TopicEsMapping> kingdomPage){
+    private void buildKingdomSearchResult(long uid, ShowSearchDTO resultDTO, FacetedPage<TopicEsMapping> kingdomPage, int searchType){
     	if(null == kingdomPage){
     		return;
     	}
@@ -343,6 +350,7 @@ public class SearchServiceImpl implements SearchService {
 		Map<String, Object> topicContent = null;
 		UserProfile userProfile = null;
 		ShowSearchDTO.KingdomElement kingdomElement = null;
+		int i = 0;
 		for(TopicEsMapping t : kingdomPage){
 			kingdomElement = new ShowSearchDTO.KingdomElement();
 			topic = topicMap.get(t.getId().toString());
@@ -418,10 +426,14 @@ public class SearchServiceImpl implements SearchService {
             	kingdomElement.setTags("");
             }
 			resultDTO.getKingdomData().add(kingdomElement);
+			i++;
+			if(searchType == 0 && i >= 3){
+				break;
+			}
 		}
     }
     
-    private void buildUserSearchResult(long uid, ShowSearchDTO resultDTO, FacetedPage<UserEsMapping> userPage){
+    private void buildUserSearchResult(long uid, ShowSearchDTO resultDTO, FacetedPage<UserEsMapping> userPage, int searchType){
     	if(null == userPage){
     		return;
     	}
@@ -449,6 +461,7 @@ public class SearchServiceImpl implements SearchService {
     	
 		UserProfile userProfile = null;
     	ShowSearchDTO.UserElement userElement = null;
+    	int i=0;
     	for(UserEsMapping user : userPage){
     		userElement = new ShowSearchDTO.UserElement();
     		userProfile = userMap.get(user.getUid().toString());
@@ -471,6 +484,10 @@ public class SearchServiceImpl implements SearchService {
 				userElement.setIsFollowMe(0);
 			}
 			resultDTO.getUserData().add(userElement);
+			i++;
+			if(searchType == 0 && i >= 3){
+				break;
+			}
     	}
     }
     
