@@ -751,10 +751,9 @@ public class LiveServiceImpl implements LiveService {
         				|| type == Specification.LiveSpeakType.ANCHOR_AT.index
         				|| type == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){//普通@，主播@，@核心圈
         			//@
+        		}else if((type==51||type==52) && contentType == 72){//分享王国内链
+        			//分享
         		}
-//        		else if(){
-//        			
-//        		}
         		
         		if(optAction == 1){//新增
         			

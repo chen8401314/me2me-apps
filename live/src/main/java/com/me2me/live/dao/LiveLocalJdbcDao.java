@@ -246,13 +246,16 @@ public class LiveLocalJdbcDao {
 		if(searchDTO.getSearchScene() == 1){//聚合王国主动场景（收录列表）
 			//查询我创建的个人王国+我是核心圈的个人王国+我订阅的个人王国+其他的王国
 			sb.append("select t.* from (");
+			//我是国王
 			sb.append("select m.*,m.long_time*1000 as longtime");
 			sb.append(" from topic m where m.type=0 and m.uid=").append(currentUid);
+			//我是核心圈
 			sb.append(" union ");
 			sb.append("select m1.*,m1.long_time*100 as longtime");
 			sb.append(" from topic m1 where m1.type=0 and m1.status=0 and m1.uid<>").append(currentUid);
 			sb.append(" and FIND_IN_SET(").append(currentUid);
 			sb.append(",SUBSTR(m1.core_circle FROM 2 FOR LENGTH(m1.core_circle)-2))");
+			//我加入的
 			sb.append(" union ");
 			sb.append("select m2.*,m2.long_time*10 as longtime");
 			sb.append(" from topic m2,live_favorite f");
@@ -261,13 +264,13 @@ public class LiveLocalJdbcDao {
 			sb.append(" and not FIND_IN_SET(").append(currentUid);
 			sb.append(",SUBSTR(m2.core_circle FROM 2 FOR LENGTH(m2.core_circle)-2))");
 			sb.append(" and f.uid=").append(currentUid);
-			sb.append(" union ");
-			sb.append(" select m3.*,m3.long_time as longtime");
-			sb.append(" from topic m3 where m3.type=0 and m3.status=0 and m3.uid<>").append(currentUid);
-			sb.append(" and not FIND_IN_SET(").append(currentUid);
-			sb.append(",SUBSTR(m3.core_circle FROM 2 FOR LENGTH(m3.core_circle)-2))");
-			sb.append(" and not EXISTS (select 1 from live_favorite f3 where f3.uid=");
-			sb.append(currentUid).append(" and f3.topic_id=m3.id)");
+//			sb.append(" union ");
+//			sb.append(" select m3.*,m3.long_time as longtime");
+//			sb.append(" from topic m3 where m3.type=0 and m3.status=0 and m3.uid<>").append(currentUid);
+//			sb.append(" and not FIND_IN_SET(").append(currentUid);
+//			sb.append(",SUBSTR(m3.core_circle FROM 2 FOR LENGTH(m3.core_circle)-2))");
+//			sb.append(" and not EXISTS (select 1 from live_favorite f3 where f3.uid=");
+//			sb.append(currentUid).append(" and f3.topic_id=m3.id)");
 			sb.append(") t");
 			sb.append(" where t.longtime<").append(searchDTO.getUpdateTime());
 			if(searchDTO.getExceptTopicId() > 0){
@@ -698,7 +701,7 @@ public class LiveLocalJdbcDao {
 	 * @param topicType	待查询的王国类型，当<0时表示查询所有类型的王国
 	 * @return
 	 */
-	public List<Map<String, Object>> getRecTopicByTag(long topicId, long sinceId, int pageSize, int topicType){
+	public List<Map<String, Object>> getRecTopicByTag22(long topicId, long sinceId, int pageSize, int topicType){
 		if(topicId <= 0){
 			return null;
 		}
@@ -712,6 +715,40 @@ public class LiveLocalJdbcDao {
 			sb.append(" and t.type=").append(topicType);
 		}
 		sb.append(" order by t.long_time DESC limit ").append(pageSize);
+		
+		return jdbcTemplate.queryForList(sb.toString());
+	}
+	
+	/**
+	 * 这个方法是，返回以自身标签为主，附加运营推荐标签
+	 * @param topicId
+	 * @param sinceId
+	 * @param pageSize
+	 * @param topicType
+	 * @return
+	 */
+	public List<Map<String, Object>> getRecTopicByTag(long topicId, long sinceId, int pageSize, int topicType){
+		if(topicId <= 0){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select t.*,t.long_time*n.pp as longtime from topic t,(");
+		sb.append("select m.topic_id,max(pp) as pp from (");
+		sb.append("select DISTINCT d1.topic_id, 100 as pp");
+		sb.append(" from topic_tag_detail d1 where d1.status=0");
+		sb.append(" d1.topic_id!=").append(topicId);
+		sb.append(" and d1.tag_id in (select d11.tag_id from topic_tag_detail d11 where d11.status=0 and d11.topic_id=");
+		sb.append(topicId).append(")");
+		sb.append(" union all ");
+		sb.append("select DISTINCT d2.topic_id, 1 as pp from topic_tag_detail d2");
+		sb.append(" where d2.status=0 and d2.tag_id in (select t22.id from topic_tag t22 where t22.is_rec=1 and t22.status=0)");
+		sb.append(") m group by m.topic_id) n");
+		sb.append(" where t.id=n.topic_id and t.status=0");
+		if(topicType >= 0){
+			sb.append(" and t.type=").append(topicType);
+		}
+		sb.append(" and t.long_time*n.pp<").append(sinceId);
+		sb.append(" order by longtime desc limit ").append(pageSize);
 		
 		return jdbcTemplate.queryForList(sb.toString());
 	}

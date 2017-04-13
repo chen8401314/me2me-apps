@@ -103,7 +103,7 @@ public class SearchServiceImpl implements SearchService {
     	try{
 	    	if(searchType == 0){//搜索全部，则返回UGC3个，王国3个，人3个
 	    		ugcPage = searchService.queryUGC(keyword, 1, 3);
-	    		kingdomPage = searchService.queryKingdom(keyword, 0, 1, 3);
+	    		kingdomPage = searchService.queryKingdom(keyword, -1, 1, 3);
 	    		userPage = searchService.queryUsers(keyword, 1, 3);
 	    	}else if(searchType == 1){//用户
 	    		userPage = searchService.queryUsers(keyword, page, pageSize);
