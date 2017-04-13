@@ -2812,8 +2812,7 @@ public class UserServiceImpl implements UserService {
                     return Response.failure("出错了");
                 }
                 if(count%1000 == 0){
-                	log.info("process 1000 users");
-                	count = 0;
+                	log.info("process "+count+" users");
                 }
             }
             if(count>0){

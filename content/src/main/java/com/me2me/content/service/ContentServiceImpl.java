@@ -3286,7 +3286,7 @@ private void localJpush(long toUid){
 	}
 	
 	@Override
-	public Response hotList(long sinceId, long uid){
+	public Response hotList(long sinceId, long uid, int vflag){
 		boolean isFirst = false;
 		if(sinceId <= 0){
 			isFirst = true;
@@ -3309,6 +3309,19 @@ private void localJpush(long toUid){
 		List<Content2Dto> contentList = contentMybatisDao.getHotContentByType(sinceId, 0, 20);//只要UGC+PGC+个人王国
 		
 		this.buildHotListDTO(uid, result, activityList, userFamousList, ceKingdomList, contentList);
+		
+		if(vflag == 0){
+			if(result.getHottestCeKingdomData().size() > 0){
+				for(ShowHotListDTO.HotCeKingdomElement e : result.getHottestCeKingdomData()){
+					e.setTags(null);
+				}
+			}
+			if(result.getHottestContentData().size() > 0){
+				for(ShowHotListDTO.HotContentElement e : result.getHottestContentData()){
+					e.setTags(null);
+				}
+			}
+		}
 		
 		return Response.success(result);
 	}
@@ -3722,7 +3735,7 @@ private void localJpush(long toUid){
 	}
 	
 	@Override
-	public Response ceKingdomHotList(long sinceId, long uid){
+	public Response ceKingdomHotList(long sinceId, long uid, int vflag){
 		if(sinceId <= 0){
 			sinceId = Long.MAX_VALUE;
 		}
@@ -3935,11 +3948,13 @@ private void localJpush(long toUid){
 						ceKingdomElement.getMemberList().add(memberElement);
 					}
 				}
-				if(null != topicTagMap.get(ce.getForwardCid().toString())){
-					ceKingdomElement.setTags(topicTagMap.get(ce.getForwardCid().toString()));
-	            }else{
-	            	ceKingdomElement.setTags("");
-	            }
+				if(vflag > 0){
+					if(null != topicTagMap.get(ce.getForwardCid().toString())){
+						ceKingdomElement.setTags(topicTagMap.get(ce.getForwardCid().toString()));
+		            }else{
+		            	ceKingdomElement.setTags("");
+		            }
+				}
 				result.getHottestCeKingdomData().add(ceKingdomElement);
 			}
 		}
@@ -3948,7 +3963,7 @@ private void localJpush(long toUid){
 	}
 	
 	@Override
-	public Response showBangDanList(long sinceId, int type,long currentUid) {
+	public Response showBangDanList(long sinceId, int type,long currentUid, int vflag) {
 		BangDanDto bangDanDto = new BangDanDto();
 		int searchType = 2;//找组织
 		if(type == 1){
@@ -4246,6 +4261,18 @@ private void localJpush(long toUid){
 			}
 		}
 		
+		if(vflag == 0){
+			if(bangDanDto.getListData().size() > 0){
+				for(BangDanDto.BangDanData bdd : bangDanDto.getListData()){
+					if(bdd.getSubList().size() > 0){
+						for(BangDanDto.BangDanData.BangDanInnerData data : bdd.getSubList()){
+							data.setTags(null);
+						}
+					}
+				}
+			}
+		}
+		
 		return Response.success(bangDanDto);
 	}
 
@@ -4370,7 +4397,7 @@ private void localJpush(long toUid){
     }
 
     @Override
-    public Response showListDetail(long currentUid, long bid,long sinceId) {
+    public Response showListDetail(long currentUid, long bid,long sinceId, int vflag) {
 	    BillBoardDetailsDto billBoardDetailsDto = new BillBoardDetailsDto();
 
 	    BillBoard billBoard = contentMybatisDao.loadBillBoardById(bid);
@@ -4592,6 +4619,14 @@ private void localJpush(long toUid){
                     }
                     billBoardDetailsDto.getSubList().add(bangDanInnerData);
                 }
+        	}
+        }
+        
+        if(vflag == 0){
+        	if(billBoardDetailsDto.getSubList().size() > 0){
+        		for(BillBoardDetailsDto.InnerDetailData data : billBoardDetailsDto.getSubList()){
+        			data.setTags(null);
+        		}
         	}
         }
         

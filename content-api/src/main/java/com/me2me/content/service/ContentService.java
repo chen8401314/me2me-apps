@@ -222,15 +222,15 @@ public interface ContentService{
     
     Response delUserContent(int type, long id);
     
-    Response hotList(long sinceId, long uid);
+    Response hotList(long sinceId, long uid, int vflag);
     
-    Response ceKingdomHotList(long sinceId, long uid);
+    Response ceKingdomHotList(long sinceId, long uid, int vflag);
 
     /**
      * 榜单列表
      * @return
      */
-    Response showBangDanList(long sinceId, int type,long currentUid);
+    Response showBangDanList(long sinceId, int type,long currentUid, int vflag);
 
     /**
      * 给IMS系统开的后门，直接通过sql查询结果
@@ -253,7 +253,7 @@ public interface ContentService{
      * @param bid
      * @return
      */
-     Response showListDetail(long currentUid, long bid,long sinceId);
+     Response showListDetail(long currentUid, long bid,long sinceId, int vflag);
     /**
      * 获取所有的榜单
      * @author zhangjiwei

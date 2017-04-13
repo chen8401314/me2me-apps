@@ -2,6 +2,7 @@ package com.me2me.web;
 
 import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.web.Response;
+import com.me2me.common.web.ResponseStatus;
 import com.me2me.kafka.service.KafkaService;
 import com.me2me.live.dto.*;
 import com.me2me.live.service.LiveService;
@@ -250,7 +251,8 @@ public class Live extends BaseController {
     @RequestMapping(value = "/finishMyLive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response finishMyLive(FinishMyLiveRequest request){
-        return liveService.finishMyLive(request.getUid(),request.getTopicId());
+    	return Response.success(ResponseStatus.USER_FINISH_LIVE_SUCCESS.status, ResponseStatus.USER_FINISH_LIVE_SUCCESS.message);
+//        return liveService.finishMyLive(request.getUid(),request.getTopicId());
     }
 
     /**
@@ -376,7 +378,11 @@ public class Live extends BaseController {
     @ResponseBody
     public Response liveCover(LiveCoverRequest request,HttpServletResponse response){
         response.setHeader("Access-Control-Allow-Origin", "*");
-        return liveService.liveCover(request.getTopicId(),request.getUid());
+        int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.3")){
+        	vflag = 1;
+        }
+        return liveService.liveCover(request.getTopicId(),request.getUid(),vflag);
     }
 
 
@@ -389,7 +395,11 @@ public class Live extends BaseController {
     @ResponseBody
     public Response getLiveByCid(GetLiveByCidRequest request ,HttpServletResponse response){
         response.setHeader("Access-Control-Allow-Origin", "*");
-        return liveService.getLiveByCid(request.getCid(),request.getUid());
+        int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.3")){
+        	vflag = 1;
+        }
+        return liveService.getLiveByCid(request.getCid(),request.getUid(),vflag);
     }
 
     /**
@@ -504,6 +514,8 @@ public class Live extends BaseController {
     	int vflag = 0;
         if(VersionUtil.isNewVersion(request.getVersion(), "2.2.1")){
         	vflag = 1;
+        }else if(VersionUtil.isNewVersion(request.getVersion(), "2.2.3")){
+        	vflag = 2;
         }
         dto.setVersionFlag(vflag);
         
@@ -518,7 +530,11 @@ public class Live extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/settings",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response settings(KingdomSearchRequest request){
-        return liveService.settings(request.getUid() ,request.getTopicId());
+    	int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.3")){
+        	vflag = 1;
+        }
+        return liveService.settings(request.getUid() ,request.getTopicId(), vflag);
     }
 
     /**

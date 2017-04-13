@@ -4,6 +4,8 @@ import com.me2me.common.web.Response;
 import com.me2me.live.dto.*;
 import com.me2me.live.service.LiveService;
 import com.me2me.web.request.MobileLiveDetailRequest;
+import com.me2me.web.utils.VersionUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -26,7 +28,11 @@ public class Mobile extends BaseController {
     @RequestMapping(value = "/live-cover")
     @ResponseBody
     public Response liveCover(MobileLiveDetailRequest request){
-        return liveService.liveCover(request.getTopicId(),DEFAULT_UID);
+    	int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.3")){
+        	vflag = 1;
+        }
+        return liveService.liveCover(request.getTopicId(),DEFAULT_UID, vflag);
     }
 
     @RequestMapping(value = "/showLiveDetails")
@@ -37,7 +43,11 @@ public class Mobile extends BaseController {
         int pageNo = request.getPageNo()==0?1:request.getPageNo();
 
         // 获取王国基本信息
-        Response response = liveService.getLiveByCid(request.getTopicId(), DEFAULT_UID);
+        int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.3")){
+        	vflag = 1;
+        }
+        Response response = liveService.getLiveByCid(request.getTopicId(), DEFAULT_UID, vflag);
         ShowLiveDto showLiveDto = (ShowLiveDto) response.getData();
         // 总页数
         GetLiveUpdateDto getLiveUpdateDto = new GetLiveUpdateDto();
