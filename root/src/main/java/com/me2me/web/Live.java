@@ -512,11 +512,12 @@ public class Live extends BaseController {
     	dto.setSearchScene(request.getSearchScene());
     	
     	int vflag = 0;
-        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.1")){
-        	vflag = 1;
-        }else if(VersionUtil.isNewVersion(request.getVersion(), "2.2.3")){
+    	if(VersionUtil.isNewVersion(request.getVersion(), "2.2.3")){
         	vflag = 2;
+        }else if(VersionUtil.isNewVersion(request.getVersion(), "2.2.1")){
+        	vflag = 1;
         }
+    	
         dto.setVersionFlag(vflag);
         
     	return liveService.kingdomSearch(request.getUid(), dto);
