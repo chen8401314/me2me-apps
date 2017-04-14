@@ -139,7 +139,7 @@ public class UserServiceImpl implements UserService {
                 log.info("create IM Config success");
             }
         } catch (Exception e) {
-            log.error("get im token failure");
+            log.error("get im token failure", e);
         }
 
         log.info("user is create");

@@ -742,6 +742,8 @@ public class LiveServiceImpl implements LiveService {
         	Set<String> specialTopicList = cacheService.smembers(ACTIVITY_CORECIRCLE_SPECIAL_TOPIC_LIST_KEY);
         	if(null != specialTopicList && specialTopicList.size() > 0 
         			&& specialTopicList.contains(String.valueOf(topicId))){
+        		int personScore = 0;
+        		int topicScore = 0;
         		if((type == Specification.LiveSpeakType.ANCHOR.index && contentType == Specification.LiveContent.TEXT.index)
         				|| type == Specification.LiveSpeakType.FANS.index){//主播文本发言 || 粉丝回复
         			//文本
