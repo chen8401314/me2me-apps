@@ -2,6 +2,7 @@ package com.me2me.web;
 
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.web.Response;
+import com.me2me.io.service.FileTransferService;
 import com.me2me.live.dto.*;
 import com.me2me.live.service.LiveService;
 import com.me2me.web.dto.WxUser;
@@ -33,6 +34,9 @@ public class Mobile extends BaseController {
 
     @Autowired
     private CacheService cacheService;
+
+    @Autowired
+    private FileTransferService fileTransferService;
 
 
     @RequestMapping(value = "/live-cover")
@@ -75,23 +79,25 @@ public class Mobile extends BaseController {
 
     /**
      * 微信授权
-     * @param id
+     * @param id 王国ID
      * @return
      */
     @RequestMapping(value = "/wxOauth")
     public String wxOauth(String id){
         // 过期时间为5分钟
-        cacheService.setex("wxOauth:",id,600);
+        cacheService.setex("wxOauth:"+id,id,600);
         String api = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx06b8675378eb1a62&redirect_uri=https://webapp.me-to-me.com/wx_login_callback&response_type=code&scope=snsapi_login&state="+id+"#wechat_redirect";
         return "redirect:"+api;
     }
-//
-//    @RequestMapping(value = "/wx_login_callback" )
-//    public void wxLoginCallback(HttpServletResponse response , HttpServletRequest request , HttpSession session) throws IOException {
-//        Integer id= (Integer) session.getAttribute("liveDetailId");
-//        if(id==null){
-//            id=Integer.parseInt(request.getParameter("state"));
-//        }
+
+    @RequestMapping(value = "/wx_login_callback" )
+    public void wxLoginCallback(HttpServletResponse response , HttpServletRequest request , HttpSession session) throws IOException {
+//        String id = request.getParameter("state");
+//        String liveId= cacheService.get("wxOauth:"+id);
+////        Integer id= (Integer) session.getAttribute("liveDetailId");
+////        if(id==null){
+////            id=Integer.parseInt(request.getParameter("state"));
+////        }
 //        boolean loginResult = false;
 //        //登录微信
 //        try {
@@ -108,6 +114,9 @@ public class Mobile extends BaseController {
 //            //取得返回的openid和token去请求用户信息
 //            String userInfoUrl = "https://api.weixin.qq.com/sns/userinfo?" +"access_token="+rst.get("access_token")+"&openid="+rst.get("openid");
 //            String userInfoUrlResult =new String(Request.Get(userInfoUrl).execute().returnContent().asBytes(),"utf-8");*/
+//
+//            // 获取用户信息
+//            String userInfoRet = fileTransferService.getUserInfo(code);
 //
 //            SecurityWebController web = new SecurityWebController();
 //            HttpPost post = new HttpPost(ApiUrl+"/api/io/getUserInfo");
@@ -137,65 +146,66 @@ public class Mobile extends BaseController {
 //        }
 //        response.sendRedirect(retUrl);
 //    }
-
-//    private boolean me2meLogin(WxUser wxUser, HttpServletRequest request){
-//        try{
-//            HttpSession session = request.getSession();
-//            Map<String,String> params = new HashMap<String, String>();
-//            params.put("thirdPartOpenId" , wxUser.getOpenid());
-//            params.put("thirdPartToken" , wxUser.getAccess_token());
-//            params.put("avatar" , wxUser.getHeadimgurl());
-//            params.put("thirdPartType" , "2");
-//            params.put("nickName" , wxUser.getNickname());
-//            //微信用户信息性别定义：0未知，1男，2女
-//            //米汤内用户性别定义：0女（默认） 1男
-//            if(null != wxUser.getSex() && "1".equals(wxUser.getSex())){
-//                params.put("gender" , "1");
-//            }else{
-//                params.put("gender" , "0");
-//            }
 //
-//            params.put("unionId" ,  wxUser.getUnionid());
-//            params.put("h5type" , "1");
+////    private boolean me2meLogin(WxUser wxUser, HttpServletRequest request){
+////        try{
+////            HttpSession session = request.getSession();
+////            Map<String,String> params = new HashMap<String, String>();
+////            params.put("thirdPartOpenId" , wxUser.getOpenid());
+////            params.put("thirdPartToken" , wxUser.getAccess_token());
+////            params.put("avatar" , wxUser.getHeadimgurl());
+////            params.put("thirdPartType" , "2");
+////            params.put("nickName" , wxUser.getNickname());
+////            //微信用户信息性别定义：0未知，1男，2女
+////            //米汤内用户性别定义：0女（默认） 1男
+////            if(null != wxUser.getSex() && "1".equals(wxUser.getSex())){
+////                params.put("gender" , "1");
+////            }else{
+////                params.put("gender" , "0");
+////            }
+////
+////            params.put("unionId" ,  wxUser.getUnionid());
+////            params.put("h5type" , "1");
+////
+////
+////            //第三方登录接口未完成对接
+////            JSONObject result = executPostApi(this.ApiUrl+"/api/user/thirdPartLogin",params);
+////            if(result.get("code").toString().equals("20062") || result.get("code").toString().equals("2001")){
+////                //取出uid token设置session中
+////                JSONObject s = result.getJSONObject("data");
+////                Long uid = s.getLong("uid");
+////                String token = s.getString("token");
+////                params.clear();
+////                params.put("uid",uid+"");
+////                params.put("token", token);
+////                // 获取userprofile
+////                JSONObject obj = executPostApi(ApiUrl+"/api/user/getUserProfile",params);
+////                // check userinfo
+////                Object data = obj.get("data");
+////                if(data instanceof java.util.Map){
+////                    if(((java.util.Map) data).get("nickName")!=null){
+////                        session.setAttribute("userProfile", JSON.toJSONString(obj.get("data")));
+////                        session.setAttribute("uid",uid);
+////                        session.setAttribute("token",token);
+////                    }else{
+////                        Log.error("未获取到用户[{}]昵称", uid);
+////                    }
+////                }
+////                Log.debug("user logined."+obj);
+////            }else{
+////                // 出错了。
+////                throw new RuntimeException("第三方登录出错："+result);
+////            }
+////
+////        }catch(Exception e){
+////            e.printStackTrace();
+////            return false;
+////        }
+////        return true;
+////    }
 //
 //
-//            //第三方登录接口未完成对接
-//            JSONObject result = executPostApi(this.ApiUrl+"/api/user/thirdPartLogin",params);
-//            if(result.get("code").toString().equals("20062") || result.get("code").toString().equals("2001")){
-//                //取出uid token设置session中
-//                JSONObject s = result.getJSONObject("data");
-//                Long uid = s.getLong("uid");
-//                String token = s.getString("token");
-//                params.clear();
-//                params.put("uid",uid+"");
-//                params.put("token", token);
-//                // 获取userprofile
-//                JSONObject obj = executPostApi(ApiUrl+"/api/user/getUserProfile",params);
-//                // check userinfo
-//                Object data = obj.get("data");
-//                if(data instanceof java.util.Map){
-//                    if(((java.util.Map) data).get("nickName")!=null){
-//                        session.setAttribute("userProfile", JSON.toJSONString(obj.get("data")));
-//                        session.setAttribute("uid",uid);
-//                        session.setAttribute("token",token);
-//                    }else{
-//                        Log.error("未获取到用户[{}]昵称", uid);
-//                    }
-//                }
-//                Log.debug("user logined."+obj);
-//            }else{
-//                // 出错了。
-//                throw new RuntimeException("第三方登录出错："+result);
-//            }
 //
-//        }catch(Exception e){
-//            e.printStackTrace();
-//            return false;
-//        }
-//        return true;
-//    }
-
-
-
+    }
 
 }
