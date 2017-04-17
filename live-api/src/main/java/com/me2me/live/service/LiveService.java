@@ -111,11 +111,11 @@ public interface LiveService {
 
     Response liveTimeline(GetLiveTimeLineDto getLiveTimeLineDto);
 
-    Response liveCover(long topicId,long uid);
+    Response liveCover(long topicId,long uid,int vflag);
 
     Response barrage(LiveBarrageDto barrageDto);
 
-    Response getLiveByCid(long cid,long uid);
+    Response getLiveByCid(long cid,long uid,int vflag);
 
     /**
      * 获取直播列表按时间线
@@ -179,7 +179,7 @@ public interface LiveService {
 
     Response kingdomSearch(long currentUid, KingdomSearchDTO searchDTO);
 
-    Response settings(long uid ,long topicId);
+    Response settings(long uid ,long topicId, int vflag);
 
     Response settingModify(SettingModifyDto dto);
     

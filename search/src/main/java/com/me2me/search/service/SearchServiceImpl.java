@@ -104,9 +104,11 @@ public class SearchServiceImpl implements SearchService {
     	FacetedPage<UserEsMapping> userPage = null;
     	try{
 	    	if(searchType == 0){//搜索全部，则返回UGC3个，王国3个，人3个
-	    		ugcPage = searchService.queryUGC(keyword, 1, 20);
-	    		kingdomPage = searchService.queryKingdom(keyword, -1, 1, 20);
-	    		userPage = searchService.queryUsers(keyword, 1, 20);
+	    		if(page <= 1){
+		    		ugcPage = searchService.queryUGC(keyword, 1, 20);
+		    		kingdomPage = searchService.queryKingdom(keyword, -1, 1, 20);
+		    		userPage = searchService.queryUsers(keyword, 1, 20);
+	    		}
 	    	}else if(searchType == 1){//用户
 	    		userPage = searchService.queryUsers(keyword, page, pageSize);
 	    		if(null != userPage){

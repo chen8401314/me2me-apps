@@ -193,7 +193,7 @@ public class LiveServiceImpl implements LiveService {
 
     @SuppressWarnings("rawtypes")
 	@Override
-    public Response liveCover(long topicId, long uid) {
+    public Response liveCover(long topicId, long uid, int vflag) {
         log.info("liveCover start ...");
         LiveCoverDto liveCoverDto = new LiveCoverDto();
         Topic topic = liveMybatisDao.getTopicById(topicId);
@@ -229,30 +229,32 @@ public class LiveServiceImpl implements LiveService {
         }
 
         //标签
-        String tags = "";
-        List<Long> tagIdList = new ArrayList<Long>();
-        List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetailsByTopicId(topicId);
-        if(topicTagDetails != null && topicTagDetails.size() > 0){
-            StringBuilder builder = new StringBuilder();
-            for (TopicTagDetail detail : topicTagDetails){
-            	tagIdList.add(detail.getTagId());
-                String tag = detail.getTag();
-                if(tags.equals("")){
-                    tags = builder.append(tag).toString();
-                }else {
-                    builder.append(";"+tag);
-                }
-            }
-            liveCoverDto.setTags(builder.toString());
-        }
-        
-        if(liveCoverDto.getInternalStatus() == Specification.SnsCircle.CORE.index
-        		|| userService.isAdmin(uid)){//核心圈的或管理员，需要返回推荐标签
-        	//第一步，先返回运营指定的推荐标签（1个）
-        	TopicTag recTag = liveMybatisDao.getRecTopicTagWithoutOwn(topicId, tagIdList);
-        	if(null != recTag){
-        		liveCoverDto.setRecTags(recTag.getTag());
-        	}
+        if(vflag > 0){
+	        String tags = "";
+	        List<Long> tagIdList = new ArrayList<Long>();
+	        List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetailsByTopicId(topicId);
+	        if(topicTagDetails != null && topicTagDetails.size() > 0){
+	            StringBuilder builder = new StringBuilder();
+	            for (TopicTagDetail detail : topicTagDetails){
+	            	tagIdList.add(detail.getTagId());
+	                String tag = detail.getTag();
+	                if(tags.equals("")){
+	                    tags = builder.append(tag).toString();
+	                }else {
+	                    builder.append(";"+tag);
+	                }
+	            }
+	            liveCoverDto.setTags(builder.toString());
+	        }
+	        
+	        if(liveCoverDto.getInternalStatus() == Specification.SnsCircle.CORE.index
+	        		|| userService.isAdmin(uid)){//核心圈的或管理员，需要返回推荐标签
+	        	//第一步，先返回运营指定的推荐标签（1个）
+	        	TopicTag recTag = liveMybatisDao.getRecTopicTagWithoutOwn(topicId, tagIdList);
+	        	if(null != recTag){
+	        		liveCoverDto.setRecTags(recTag.getTag());
+	        	}
+	        }
         }
         
         if(content.getReadCount() == 1 || content.getReadCount() == 2){
@@ -370,7 +372,7 @@ public class LiveServiceImpl implements LiveService {
 
     @SuppressWarnings("rawtypes")
 	@Override
-    public Response getLiveByCid(long cid, long uid) {
+    public Response getLiveByCid(long cid, long uid,int vflag) {
         ShowLiveDto showLiveDto = new ShowLiveDto();
         Topic topic = liveMybatisDao.getTopicById(cid);
         if(topic==null){
@@ -424,31 +426,33 @@ public class LiveServiceImpl implements LiveService {
         	showLiveDto.setIsRec(0);
         }
 
-        //标签
-        List<Long> tagIdList = new ArrayList<Long>();
-        String tags = "";
-        List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetailsByTopicId(cid);
-        if(topicTagDetails != null && topicTagDetails.size() > 0){
-            StringBuilder builder = new StringBuilder();
-            for (TopicTagDetail detail : topicTagDetails){
-            	tagIdList.add(detail.getTagId());
-                String tag = detail.getTag();
-                if(tags.equals("")){
-                    tags = builder.append(tag).toString();
-                }else {
-                    builder.append(";"+tag);
+        if(vflag > 0){
+        	//标签
+            List<Long> tagIdList = new ArrayList<Long>();
+            String tags = "";
+            List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetailsByTopicId(cid);
+            if(topicTagDetails != null && topicTagDetails.size() > 0){
+                StringBuilder builder = new StringBuilder();
+                for (TopicTagDetail detail : topicTagDetails){
+                	tagIdList.add(detail.getTagId());
+                    String tag = detail.getTag();
+                    if(tags.equals("")){
+                        tags = builder.append(tag).toString();
+                    }else {
+                        builder.append(";"+tag);
+                    }
                 }
+                showLiveDto.setTags(builder.toString());
             }
-            showLiveDto.setTags(builder.toString());
-        }
-        
-        if(showLiveDto.getInternalStatus() == Specification.SnsCircle.CORE.index
-        		|| userService.isAdmin(uid)){//核心圈的或者管理员，需要返回推荐标签
-        	//第一步，先返回运营指定的推荐标签（1个）
-        	TopicTag recTag = liveMybatisDao.getRecTopicTagWithoutOwn(cid, tagIdList);
-        	if(null != recTag){
-        		showLiveDto.setRecTags(recTag.getTag());
-        	}
+            
+            if(showLiveDto.getInternalStatus() == Specification.SnsCircle.CORE.index
+            		|| userService.isAdmin(uid)){//核心圈的或者管理员，需要返回推荐标签
+            	//第一步，先返回运营指定的推荐标签（1个）
+            	TopicTag recTag = liveMybatisDao.getRecTopicTagWithoutOwn(cid, tagIdList);
+            	if(null != recTag){
+            		showLiveDto.setRecTags(recTag.getTag());
+            	}
+            }
         }
         
         if(topic.getType() == Specification.KingdomType.NORMAL.index){//个人王国
@@ -738,6 +742,8 @@ public class LiveServiceImpl implements LiveService {
         	Set<String> specialTopicList = cacheService.smembers(ACTIVITY_CORECIRCLE_SPECIAL_TOPIC_LIST_KEY);
         	if(null != specialTopicList && specialTopicList.size() > 0 
         			&& specialTopicList.contains(String.valueOf(topicId))){
+        		int personScore = 0;
+        		int topicScore = 0;
         		if((type == Specification.LiveSpeakType.ANCHOR.index && contentType == Specification.LiveContent.TEXT.index)
         				|| type == Specification.LiveSpeakType.FANS.index){//主播文本发言 || 粉丝回复
         			//文本
@@ -2825,11 +2831,20 @@ public class LiveServiceImpl implements LiveService {
 		if(null != topicList && topicList.size() > 0){
 			this.builderTopicSearch(currentUid, showTopicSearchDTO, topicList, topMap, publishMap);
 		}
+		
+		if(searchDTO.getVersionFlag() < 2){
+			if(showTopicSearchDTO.getResultList().size() > 0){
+				for(ShowTopicSearchDTO.TopicElement e : showTopicSearchDTO.getResultList()){
+					e.setTags(null);
+				}
+			}
+		}
+		
 		return Response.success(showTopicSearchDTO);
 	}
 
     @Override
-    public Response settings(long uid, long topicId) {
+    public Response settings(long uid, long topicId, int vflag) {
         SettingsDto dto = new SettingsDto();
         Topic topic = liveMybatisDao.getTopicById(topicId);
         if(topic != null) {
@@ -2875,19 +2890,21 @@ public class LiveServiceImpl implements LiveService {
             dto.setCeAuditType(topic.getCeAuditType());
             dto.setAcAuditType(topic.getAcAuditType());
             //标签
-            String tags = "";
-            List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetailsByTopicId(topicId);
-            if(topicTagDetails != null && topicTagDetails.size() > 0){
-                StringBuilder builder = new StringBuilder();
-                for (TopicTagDetail detail : topicTagDetails){
-                    String tag = detail.getTag();
-                    if(tags.equals("")){
-                        tags = builder.append(tag).toString();
-                    }else {
-                        builder.append(";"+tag);
-                    }
-                }
-                dto.setTags(builder.toString());
+            if(vflag > 0){
+	            String tags = "";
+	            List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetailsByTopicId(topicId);
+	            if(topicTagDetails != null && topicTagDetails.size() > 0){
+	                StringBuilder builder = new StringBuilder();
+	                for (TopicTagDetail detail : topicTagDetails){
+	                    String tag = detail.getTag();
+	                    if(tags.equals("")){
+	                        tags = builder.append(tag).toString();
+	                    }else {
+	                        builder.append(";"+tag);
+	                    }
+	                }
+	                dto.setTags(builder.toString());
+	            }
             }
             log.info("get settings success");
         }

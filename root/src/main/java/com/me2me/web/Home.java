@@ -136,7 +136,11 @@ public class Home extends BaseController {
     @RequestMapping(value = "/hotList ",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response hotList(HotListRequest request){
-    	return contentService.hotList(request.getSinceId(), request.getUid());
+    	int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.3")){
+        	vflag = 1;
+        }
+    	return contentService.hotList(request.getSinceId(), request.getUid(), vflag);
     }
 
     /**
@@ -147,7 +151,11 @@ public class Home extends BaseController {
     @RequestMapping(value = "/ceKingdomHotList ",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response ceKingdomHotList(CeKingdomHotListRequest request){
-    	return contentService.ceKingdomHotList(request.getSinceId(), request.getUid());
+    	int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.3")){
+        	vflag = 1;
+        }
+    	return contentService.ceKingdomHotList(request.getSinceId(), request.getUid(), vflag);
     }
 
     /**
@@ -159,12 +167,20 @@ public class Home extends BaseController {
     @RequestMapping(value = "/showList")
     @ResponseBody
     public Response showList(BangDanRequest request){
-        return contentService.showBangDanList(request.getSinceId(), request.getListType(),request.getUid());
+    	int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.3")){
+        	vflag = 1;
+        }
+        return contentService.showBangDanList(request.getSinceId(), request.getListType(),request.getUid(), vflag);
     }
 
     @RequestMapping(value = "/showListDetail")
     @ResponseBody
     public Response showListDetail(BangDanRequest request){
-        return contentService.showListDetail(request.getUid(),request.getListId(),request.getSinceId());
+    	int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.3")){
+        	vflag = 1;
+        }
+        return contentService.showListDetail(request.getUid(),request.getListId(),request.getSinceId(), vflag);
     }
 }
