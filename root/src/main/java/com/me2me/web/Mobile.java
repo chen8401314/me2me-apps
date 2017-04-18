@@ -1,14 +1,20 @@
 package com.me2me.web;
 
+
+import com.alibaba.fastjson.JSON;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.web.Response;
 import com.me2me.io.service.FileTransferService;
 import com.me2me.live.dto.*;
 import com.me2me.live.service.LiveService;
+import com.me2me.user.dto.ThirdPartSignUpDto;
+import com.me2me.user.service.UserService;
 import com.me2me.web.dto.WxUser;
 import com.me2me.web.request.MobileLiveDetailRequest;
 import com.me2me.web.utils.VersionUtil;
 
+import lombok.extern.slf4j.Slf4j;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +29,7 @@ import java.util.Map;
 /**
  * Created by pc329 on 2017/4/5.
  */
+@Slf4j
 @Controller
 @RequestMapping("/api/mobile")
 @CrossOrigin(origins = "*")
@@ -40,28 +47,31 @@ public class Mobile extends BaseController {
     @Autowired
     private FileTransferService fileTransferService;
 
+    @Autowired
+    private UserService userService;
+
 
     @RequestMapping(value = "/live-cover")
     @ResponseBody
-    public Response liveCover(MobileLiveDetailRequest request){
-    	int vflag = 0;
-        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.3")){
-        	vflag = 1;
+    public Response liveCover(MobileLiveDetailRequest request) {
+        int vflag = 0;
+        if (VersionUtil.isNewVersion(request.getVersion(), "2.2.3")) {
+            vflag = 1;
         }
-        return liveService.liveCover(request.getTopicId(),DEFAULT_UID, vflag);
+        return liveService.liveCover(request.getTopicId(), DEFAULT_UID, vflag);
     }
 
     @RequestMapping(value = "/showLiveDetails")
     @ResponseBody
-    public Response showLiveDetails(MobileLiveDetailRequest request){
+    public Response showLiveDetails(MobileLiveDetailRequest request) {
 
-        int offset = request.getOffset()==0?50:request.getOffset();
-        int pageNo = request.getPageNo()==0?1:request.getPageNo();
+        int offset = request.getOffset() == 0 ? 50 : request.getOffset();
+        int pageNo = request.getPageNo() == 0 ? 1 : request.getPageNo();
 
         // 获取王国基本信息
         int vflag = 0;
-        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.3")){
-        	vflag = 1;
+        if (VersionUtil.isNewVersion(request.getVersion(), "2.2.3")) {
+            vflag = 1;
         }
         Response response = liveService.getLiveByCid(request.getTopicId(), DEFAULT_UID, vflag);
         ShowLiveDto showLiveDto = (ShowLiveDto) response.getData();
@@ -70,7 +80,7 @@ public class Mobile extends BaseController {
         getLiveUpdateDto.setOffset(offset);
         getLiveUpdateDto.setSinceId(request.getSinceId());
         getLiveUpdateDto.setTopicId(request.getTopicId());
-        LiveUpdateDto pagination  = (LiveUpdateDto) liveService.getLiveUpdate(getLiveUpdateDto).getData();
+        LiveUpdateDto pagination = (LiveUpdateDto) liveService.getLiveUpdate(getLiveUpdateDto).getData();
         // 分页取出数据
         MobileLiveDetailsDto mobileLiveDetailsDto = new MobileLiveDetailsDto();
         mobileLiveDetailsDto.setLiveBasicData(showLiveDto);
@@ -89,133 +99,71 @@ public class Mobile extends BaseController {
 
     /**
      * 微信授权
+     *
      * @param id 王国ID
      * @return
      */
     @RequestMapping(value = "/wxOauth")
-    public String wxOauth(String id){
+    public String wxOauth(String id) {
         // 过期时间为5分钟
-        cacheService.setex("wxOauth:"+id,id,600);
-        String api = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx06b8675378eb1a62&redirect_uri=https://webapp.me-to-me.com/wx_login_callback&response_type=code&scope=snsapi_login&state="+id+"#wechat_redirect";
-        return "redirect:"+api;
+        cacheService.setex("wxOauth:" + id, id, 600);
+        // product env
+        /*String api = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx06b8675378eb1a62&redirect_uri=https://webapp.me-to-me.com/wx_login_callback&response_type=code&scope=snsapi_login&state=" + id + "#wechat_redirect";
+        return "redirect:" + api;*/
+
+        // local test env
+        String api = "https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx06b8675378eb1a62&redirect_uri=http://webapp.me-to-me.com/api/mobile/wx_login_callback&response_type=code&scope=snsapi_login&state=" + id + "#wechat_redirect";
+        return "redirect:" + api;
     }
 
-    @RequestMapping(value = "/wx_login_callback" )
-    public void wxLoginCallback(HttpServletResponse response , HttpServletRequest request , HttpSession session) throws IOException {
-//        String id = request.getParameter("state");
-//        String liveId= cacheService.get("wxOauth:"+id);
-////        Integer id= (Integer) session.getAttribute("liveDetailId");
-////        if(id==null){
-////            id=Integer.parseInt(request.getParameter("state"));
-////        }
-//        boolean loginResult = false;
-//        //登录微信
-//        try {
-//            //未拆分的微信请求
-//            String code = request.getParameter("code");
-//
-//      /*      String s1 = "https://api.weixin.qq.com/sns/oauth2/access_token?appid="+WxParam.APPID+"&secret="+ WxParam.SECRET+"&code="+code+"&grant_type=authorization_code";
-//            JSONObject rst =JSON.parseObject(Request.Get(s1).execute().returnContent().asString());
-//
-//            if(rst.containsKey("errcode")) {
-//                throw new RuntimeException("登录微信遇到错误:"+rst);
-//            }
-//
-//            //取得返回的openid和token去请求用户信息
-//            String userInfoUrl = "https://api.weixin.qq.com/sns/userinfo?" +"access_token="+rst.get("access_token")+"&openid="+rst.get("openid");
-//            String userInfoUrlResult =new String(Request.Get(userInfoUrl).execute().returnContent().asBytes(),"utf-8");*/
-//
-//            // 获取用户信息
-//            String userInfoRet = fileTransferService.getUserInfo(code);
-//
-//            SecurityWebController web = new SecurityWebController();
-//            HttpPost post = new HttpPost(ApiUrl+"/api/io/getUserInfo");
-//            //公参(uid token security)每次请求进来重新生成security
-//            String security = web.getSecurity();
-//            org.json.JSONObject jsonObject = web.getApiJson5(request,post,security);
-//
-//            WxUser wxUser =JSON.parseObject(jsonObject.toString(), WxUser.class);
-//            wxUser.setAccess_token((String) jsonObject.get("access_token"));
-//            Log.debug("weixin user logined:"+wxUser);
-//           /* String headimgurl= wxUser.getHeadimgurl();
-//            if(!StringUtils.isEmpty(headimgurl)) {
-//                //获取到七牛key返回给前台
-//                String QnKey = getQNImageKey(headimgurl);
-//                wxUser.setHeadimgurl(QnKey);
-//            }else{
-//            	wxUser.setHeadimgurl("default.jpg");
-//            }*/
-//            // 登录me-to-me
-//            loginResult= me2meLogin(wxUser,request);
-//        }catch(Exception e){
-//            e.printStackTrace();
-//        }
-//        String retUrl =  "https://webapp.me-to-me.com/ld/"+id;
-//        if(!loginResult){
-//            retUrl+="?err=1";
-//        }
-//        response.sendRedirect(retUrl);
-//    }
-//
-////    private boolean me2meLogin(WxUser wxUser, HttpServletRequest request){
-////        try{
-////            HttpSession session = request.getSession();
-////            Map<String,String> params = new HashMap<String, String>();
-////            params.put("thirdPartOpenId" , wxUser.getOpenid());
-////            params.put("thirdPartToken" , wxUser.getAccess_token());
-////            params.put("avatar" , wxUser.getHeadimgurl());
-////            params.put("thirdPartType" , "2");
-////            params.put("nickName" , wxUser.getNickname());
-////            //微信用户信息性别定义：0未知，1男，2女
-////            //米汤内用户性别定义：0女（默认） 1男
-////            if(null != wxUser.getSex() && "1".equals(wxUser.getSex())){
-////                params.put("gender" , "1");
-////            }else{
-////                params.put("gender" , "0");
-////            }
-////
-////            params.put("unionId" ,  wxUser.getUnionid());
-////            params.put("h5type" , "1");
-////
-////
-////            //第三方登录接口未完成对接
-////            JSONObject result = executPostApi(this.ApiUrl+"/api/user/thirdPartLogin",params);
-////            if(result.get("code").toString().equals("20062") || result.get("code").toString().equals("2001")){
-////                //取出uid token设置session中
-////                JSONObject s = result.getJSONObject("data");
-////                Long uid = s.getLong("uid");
-////                String token = s.getString("token");
-////                params.clear();
-////                params.put("uid",uid+"");
-////                params.put("token", token);
-////                // 获取userprofile
-////                JSONObject obj = executPostApi(ApiUrl+"/api/user/getUserProfile",params);
-////                // check userinfo
-////                Object data = obj.get("data");
-////                if(data instanceof java.util.Map){
-////                    if(((java.util.Map) data).get("nickName")!=null){
-////                        session.setAttribute("userProfile", JSON.toJSONString(obj.get("data")));
-////                        session.setAttribute("uid",uid);
-////                        session.setAttribute("token",token);
-////                    }else{
-////                        Log.error("未获取到用户[{}]昵称", uid);
-////                    }
-////                }
-////                Log.debug("user logined."+obj);
-////            }else{
-////                // 出错了。
-////                throw new RuntimeException("第三方登录出错："+result);
-////            }
-////
-////        }catch(Exception e){
-////            e.printStackTrace();
-////            return false;
-////        }
-////        return true;
-////    }
-//
-//
-//
-    }
 
+    @RequestMapping(value = "/wx_login_callback")
+    public void wxLoginCallback(HttpServletResponse response, HttpServletRequest request) throws IOException {
+        //判断是否注册
+        String id = request.getParameter("state");
+        String redirectUrl = "http://192.168.89.76:8080/#/ld/" + id;
+        String code = request.getParameter("code");
+        if (id.equals(cacheService.get("wxOauth:" + id))) {
+            // 已经受过权了
+            // 获取用户信息
+            try {
+                String userInfoRet = fileTransferService.getUserInfo(code);
+                WxUser wxUser = JSON.parseObject(userInfoRet, WxUser.class);
+                ThirdPartSignUpDto thirdPartSignUpDto = new ThirdPartSignUpDto();
+                thirdPartSignUpDto.setThirdPartOpenId(wxUser.getOpenid());
+                thirdPartSignUpDto.setThirdPartToken(wxUser.getAccess_token());
+                thirdPartSignUpDto.setAvatar(wxUser.getHeadimgurl());
+                // 微信登陆
+                thirdPartSignUpDto.setThirdPartType(2);
+                thirdPartSignUpDto.setNickName(wxUser.getNickname());
+                thirdPartSignUpDto.setGender(wxUser.getSex()!=null&&wxUser.getSex().equals("1") ? 1 : 0);
+                // h5方式登陆
+                thirdPartSignUpDto.setH5type(1);
+                thirdPartSignUpDto.setUnionId(wxUser.getUnionid());
+
+                Response loginRet = userService.thirdPartLogin(thirdPartSignUpDto);
+                if (loginRet.getCode() == 2001) {
+                    response.sendRedirect(redirectUrl);
+                } else {
+                    redirectUrl += "?err=1";
+                    response.sendRedirect(redirectUrl);
+                }
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                log.error("invoke userInfo for wx platform has a exception {}", e.getMessage());
+            }
+
+
+        }else{
+            //已经注册直接跳转王国页面
+            response.sendRedirect(redirectUrl);
+        }
+    }
 }
+
+
+
+
+
