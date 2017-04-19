@@ -37,6 +37,7 @@ import com.github.stuxuhai.jpinyin.PinyinException;
 import com.github.stuxuhai.jpinyin.PinyinFormat;
 import com.github.stuxuhai.jpinyin.PinyinHelper;
 import com.me2me.common.utils.DateUtil;
+import com.me2me.search.ThreadPool;
 import com.me2me.search.cache.SimpleCache;
 import com.me2me.search.constants.IndexConstants;
 import com.me2me.search.dao.ContentForSearchJdbcDao;
@@ -61,22 +62,22 @@ import lombok.extern.slf4j.Slf4j;
 @Service("contentSearchServiceImpl")
 public class ContentSearchServiceImpl implements ContentSearchService {
 	
-	private static final String HOT_KEYWORD_CACHE_KEY = "SEARCH_HOT_KEYWORD";
-	private static final String DEFAULT_START_TIME = "1900-01-01 00:00:00";
-	private static final String DATE_FORMAT="yyyy-MM-dd hh:mm:ss";
+	static final String HOT_KEYWORD_CACHE_KEY = "SEARCH_HOT_KEYWORD";
+	static final String DEFAULT_START_TIME = "1900-01-01 00:00:00";
+	static final String DATE_FORMAT="yyyy-MM-dd hh:mm:ss";
 	@Autowired
-	private SearchVarMapper varMapper;
+	protected SearchVarMapper varMapper;
 	
 	@Autowired
-	private SearchHistoryCountMapper shcMapper;
+	protected SearchHistoryCountMapper shcMapper;
 
 	@Autowired
-	private ElasticsearchTemplate esTemplate;
+	protected ElasticsearchTemplate esTemplate;
 	
 	@Autowired
-	private SearchMapper searchMapper;
+	protected SearchMapper searchMapper;
     @Autowired
-    private ContentForSearchJdbcDao searchJdbcDao;
+    protected ContentForSearchJdbcDao searchJdbcDao;
 	/**
 	 * 消息缓存。用来记录搜索消息
 	 */
@@ -87,7 +88,6 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	@Autowired
 	private SimpleCache cache;
 	
-	private ExecutorService threadPool= Executors.newCachedThreadPool();
 
 	/**
 	 * 系统启动时启动搜索消息同步线程。
@@ -250,7 +250,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	 * @param key
 	 * @param val
 	 */
-	private void updateVarVal(String key, String val) {
+	protected void updateVarVal(String key, String val) {
 		if (varMapper.existsVar(key)) {
 			varMapper.updateVar(key, val);
 		} else {
@@ -265,7 +265,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	 * @param fully
 	 * @param indexName
 	 */
-	private String preIndex(boolean fully,String indexName){
+	protected String preIndex(boolean fully,String indexName){
 		String beginDate = DEFAULT_START_TIME;
 		if (fully) {
 			if (esTemplate.indexExists(indexName)) {
@@ -289,7 +289,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	 * @param fields
 	 * @return
 	 */
-	private Map<String,Object> copyMap(Map<String,Object> sourceMap,String fields){
+	protected Map<String,Object> copyMap(Map<String,Object> sourceMap,String fields){
 		LinkedHashMap<String, Object> dataMap = new LinkedHashMap<>();
 		for(String field:fields.split(",")){
 			dataMap.put(field, sourceMap.get(field));
@@ -299,7 +299,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 
 	@Override
 	public int indexUserData(boolean fully) throws Exception {
-		threadPool.execute(new Runnable() {
+		ThreadPool.execute(new Runnable() {
 			
 			@Override
 			public void run() {
@@ -342,7 +342,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	}
 	@Override
 	public int indexUgcData(boolean fully) throws Exception {
-		threadPool.execute(new Runnable() {
+		ThreadPool.execute(new Runnable() {
 			
 			@Override
 			public void run() {
@@ -387,7 +387,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	@Override
 	public int indexKingdomData(boolean fully) throws Exception {
 	
-		threadPool.execute(new Runnable() {
+		ThreadPool.execute(new Runnable() {
 			
 			@Override
 			public void run() {
@@ -440,7 +440,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	
 	@Override
 	public int indexSearchHistory(boolean fully) throws Exception {
-		threadPool.execute(new Runnable() {
+		ThreadPool.execute(new Runnable() {
 			
 			@Override
 			public void run() {
