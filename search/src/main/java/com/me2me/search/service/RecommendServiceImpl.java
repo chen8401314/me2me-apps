@@ -1,34 +1,52 @@
 package com.me2me.search.service;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.query.IndexQuery;
 import org.springframework.stereotype.Service;
 
 import com.me2me.common.utils.DateUtil;
 import com.me2me.search.ThreadPool;
 import com.me2me.search.constants.IndexConstants;
+import com.me2me.search.dao.ContentForSearchJdbcDao;
 import com.me2me.search.esmapping.TopicEsMapping;
 import com.me2me.search.esmapping.UserEsMapping;
 import com.me2me.search.esmapping.UserFeatureMapping;
+import com.me2me.search.mapper.SearchHistoryCountMapper;
 import com.me2me.search.mapper.SearchMapper;
+import com.me2me.search.mapper.SearchVarMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class RecommendServiceImpl extends ContentSearchServiceImpl implements RecommendService {
+public class RecommendServiceImpl implements RecommendService {
+	static final String HOT_KEYWORD_CACHE_KEY = "SEARCH_HOT_KEYWORD";
+	static final String DEFAULT_START_TIME = "1900-01-01 00:00:00";
+	static final String DATE_FORMAT="yyyy-MM-dd hh:mm:ss";
 	@Autowired
-	private SearchMapper searchMapper;
+	protected SearchVarMapper varMapper;
+	
+	@Autowired
+	protected SearchHistoryCountMapper shcMapper;
+
+	@Autowired
+	protected ElasticsearchTemplate esTemplate;
+	
+	@Autowired
+	protected SearchMapper searchMapper;
+    @Autowired
+    protected ContentForSearchJdbcDao searchJdbcDao;
 	
 	private final static SimpleDateFormat BIRTHDAY_FORMATER=new SimpleDateFormat("yyyy-MM-dd");
-
+	@Autowired
+	protected ElasticSearchIndexHelper indexHelper;
+	
 	@Override
 	public List<UserFeatureMapping> getRecommendUserList(int uid) {
 		// TODO Auto-generated method stub
@@ -68,7 +86,7 @@ public class RecommendServiceImpl extends ContentSearchServiceImpl implements Re
 			public void run() {
 				log.info("indexUserData started");
 				String indexName = IndexConstants.USER_FEATURE_INDEX_NAME;
-				String beginDate = preIndex(fully, indexName);
+				String beginDate = indexHelper.preIndex(fully, indexName);
 				String endDate = DateUtil.date2string(new Date(), DATE_FORMAT);
 				int count = 0;
 				int skip = 0;
@@ -108,7 +126,7 @@ public class RecommendServiceImpl extends ContentSearchServiceImpl implements Re
 					count += users.size();
 					log.info("indexUserData processed:" + count);
 				}
-				updateVarVal(indexName, endDate);
+				indexHelper.updateVarVal(indexName, endDate);
 				log.info("indexUserData finished.");
 			}
 		});
