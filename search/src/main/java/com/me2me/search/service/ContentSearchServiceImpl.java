@@ -7,7 +7,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
@@ -64,20 +63,21 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	
 	static final String HOT_KEYWORD_CACHE_KEY = "SEARCH_HOT_KEYWORD";
 	static final String DEFAULT_START_TIME = "1900-01-01 00:00:00";
-	static final String DATE_FORMAT="yyyy-MM-dd hh:mm:ss";
-	@Autowired
-	protected SearchVarMapper varMapper;
+	static final String DATE_FORMAT="yyyy-MM-dd HH:mm:ss";
 	
 	@Autowired
-	protected SearchHistoryCountMapper shcMapper;
+	private SearchVarMapper varMapper;
+	
+	@Autowired
+	private SearchHistoryCountMapper shcMapper;
 
 	@Autowired
-	protected ElasticsearchTemplate esTemplate;
+	private ElasticsearchTemplate esTemplate;
 	
 	@Autowired
-	protected SearchMapper searchMapper;
+	private SearchMapper searchMapper;
     @Autowired
-    protected ContentForSearchJdbcDao searchJdbcDao;
+    private ContentForSearchJdbcDao searchJdbcDao;
 	/**
 	 * 消息缓存。用来记录搜索消息
 	 */
@@ -250,7 +250,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	 * @param key
 	 * @param val
 	 */
-	protected void updateVarVal(String key, String val) {
+	private void updateVarVal(String key, String val) {
 		if (varMapper.existsVar(key)) {
 			varMapper.updateVar(key, val);
 		} else {
@@ -265,7 +265,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	 * @param fully
 	 * @param indexName
 	 */
-	protected String preIndex(boolean fully,String indexName){
+	private String preIndex(boolean fully,String indexName){
 		String beginDate = DEFAULT_START_TIME;
 		if (fully) {
 			if (esTemplate.indexExists(indexName)) {
@@ -289,7 +289,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	 * @param fields
 	 * @return
 	 */
-	protected Map<String,Object> copyMap(Map<String,Object> sourceMap,String fields){
+	private Map<String,Object> copyMap(Map<String,Object> sourceMap,String fields){
 		LinkedHashMap<String, Object> dataMap = new LinkedHashMap<>();
 		for(String field:fields.split(",")){
 			dataMap.put(field, sourceMap.get(field));
@@ -313,6 +313,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 				esTemplate.putMapping(UserEsMapping.class);
 				while (true) {
 					List<UserEsMapping> users =searchMapper.getUserPageByUpdateDate(beginDate, endDate, skip, batchSize);
+					log.info("get users,begin:{} end:{} skip:{} batchSize:{}",beginDate, endDate, skip, batchSize);
 					if (users == null || users.isEmpty()) {
 						break;
 					}
@@ -334,7 +335,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 					log.info("indexUserData processed:"+count);
 				}
 				updateVarVal(indexName, endDate);
-				log.info("indexUserData finished.");
+				log.info("indexUserData finished. end date:"+endDate);
 			}
 		});
 		
@@ -487,5 +488,4 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		
 		return 0;
 	}
-
 }

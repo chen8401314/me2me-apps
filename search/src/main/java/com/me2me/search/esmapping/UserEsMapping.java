@@ -16,7 +16,7 @@ public class UserEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long id;		//主键，自增    主键   自增长    必填    必须唯一 
 
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.Long)
 	private Long uid;		//用户id     必填 
 
 	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.String)

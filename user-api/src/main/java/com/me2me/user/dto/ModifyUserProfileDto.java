@@ -30,4 +30,10 @@ public class ModifyUserProfileDto implements BaseEntity{
     private String hobby;
 
     private String introduced;
+    
+    private int likeGender;		// 性取向
+    private int ageGroup;		// 年龄段
+    private int occupation;		// 职业 
+    
+    
 }
