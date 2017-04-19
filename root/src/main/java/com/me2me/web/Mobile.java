@@ -2,21 +2,26 @@ package com.me2me.web;
 
 
 import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Maps;
 import com.me2me.cache.service.CacheService;
+import com.me2me.common.web.BaseEntity;
 import com.me2me.common.web.Response;
 import com.me2me.io.service.FileTransferService;
 import com.me2me.live.dto.*;
 import com.me2me.live.service.LiveService;
+import com.me2me.user.dto.LoginSuccessDto;
 import com.me2me.user.dto.ThirdPartSignUpDto;
 import com.me2me.user.service.UserService;
 import com.me2me.web.dto.WxUser;
 import com.me2me.web.request.MobileLiveDetailRequest;
 import com.me2me.web.utils.VersionUtil;
 
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -116,12 +121,32 @@ public class Mobile extends BaseController {
         return "redirect:" + api;
     }
 
+/*    @RequestMapping(value = "/wxAuthCallback")
+    @ResponseBody
+    public Response wxAuthCallback(String uid) {
+        // 过期时间为5分钟
+        String loginResponse = cacheService.get("WX-LOGIN:" + uid);
+        if(!StringUtils.isEmpty(loginResponse)){
+            Map object = JSON.parseObject(loginResponse,Map.class);
+            LoginSuccessResponse loginSuccessResponse = new LoginSuccessResponse();
+            loginSuccessResponse.setData(object);
+            return Response.success(200,"ok",loginSuccessResponse);
+        }else{
+            return Response.failure(44444,"获取用户信息失败!");
+        }
+    }*/
+
+/*    @Data
+    class LoginSuccessResponse implements BaseEntity{
+        private Object data;
+    }*/
+
 
     @RequestMapping(value = "/wx_login_callback")
     public void wxLoginCallback(HttpServletResponse response, HttpServletRequest request) throws IOException {
         //判断是否注册
         String id = request.getParameter("state");
-        String redirectUrl = "http://192.168.89.76:8080/#/ld/" + id;
+        String redirectUrl = "http://192.168.89.187:8080/#/ld/" + id;
         String code = request.getParameter("code");
         if (id.equals(cacheService.get("wxOauth:" + id))) {
             // 已经受过权了
@@ -142,8 +167,21 @@ public class Mobile extends BaseController {
                 thirdPartSignUpDto.setUnionId(wxUser.getUnionid());
 
                 Response loginRet = userService.thirdPartLogin(thirdPartSignUpDto);
-                if (loginRet.getCode() == 2001) {
-                    response.sendRedirect(redirectUrl);
+                LoginSuccessDto loginSuccessDto = (LoginSuccessDto) loginRet.getData();
+                // set redis cache data mock j2ee session
+                // avatar : user_info.avatar,
+                //                nickName,
+                //                type : 1,
+                //                contentType : 0,
+                //                fragment : value
+                Map<String,Object> map = Maps.newConcurrentMap();
+                map.put("nickName",loginSuccessDto.getNickName());
+                map.put("avatar",thirdPartSignUpDto.getAvatar());
+                map.put("uid",loginSuccessDto.getUid());
+                String json = JSON.toJSONString(map);
+                cacheService.setex("WX-LOGIN:"+loginSuccessDto.getUid(),json,600);
+                if (loginRet.getCode() == 2001  ||  loginRet.getCode() == 20062) {
+                    response.sendRedirect(redirectUrl+"?uid="+loginSuccessDto.getUid());
                 } else {
                     redirectUrl += "?err=1";
                     response.sendRedirect(redirectUrl);
