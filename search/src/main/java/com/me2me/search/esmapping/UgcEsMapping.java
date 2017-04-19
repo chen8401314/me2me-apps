@@ -13,13 +13,13 @@ import com.me2me.search.constants.IndexConstants;
 @Mapping(mappingPath=IndexConstants.UGC_INDEX_NAME)
 @Document(indexName=IndexConstants.UGC_INDEX_NAME,type=IndexConstants.UGC_INDEX_NAME)
 public class UgcEsMapping {
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.Long)
 	private Long id;		//主键    主键   自增长    必填    必须唯一 
 
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.Long)
 	private Long uid;		//用户     必填 
 
-	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.Long)
 	private Long forward_cid;		//     必填 
 
 	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
