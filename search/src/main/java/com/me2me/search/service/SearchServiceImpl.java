@@ -21,9 +21,14 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.search.dao.ContentForSearchJdbcDao;
 import com.me2me.search.dao.SearchMybatisDao;
+import com.me2me.search.dto.BaseUserInfo;
+import com.me2me.search.dto.RecommendKingdom;
+import com.me2me.search.dto.RecommendUser;
+import com.me2me.search.dto.RecommendListDto;
 import com.me2me.search.dto.ShowAssociatedWordDTO;
 import com.me2me.search.dto.ShowRecWordDTO;
 import com.me2me.search.dto.ShowSearchDTO;
+import com.me2me.search.enums.RecommendReason;
 import com.me2me.search.esmapping.TopicEsMapping;
 import com.me2me.search.esmapping.UgcEsMapping;
 import com.me2me.search.esmapping.UserEsMapping;
@@ -586,4 +591,21 @@ public class SearchServiceImpl implements SearchService {
 	public void delHotKeyword(int id) {
 		hotkeywordMapper.deleteByPrimaryKey(id);
 	}
+
+	public Response recommendUser(int uid,int page,int pageSize){
+		List<RecommendUser> resultpage = this.searchService.getRecommendUserList(uid, page, pageSize);
+		RecommendListDto<RecommendUser> dto = new RecommendListDto<>();
+		dto.setDataList(resultpage);
+		return Response.success(dto);
+	}
+
+	@Override
+	public Response recommendKingdom(int uid, int page, int pageSize) {
+		List<RecommendKingdom> kds = this.searchService.getRecommendKingdomList(uid, page, pageSize);
+		RecommendListDto<RecommendKingdom> dto = new RecommendListDto<>();
+		
+		dto.setDataList(kds);
+		return Response.success(dto);
+	}
+	
 }

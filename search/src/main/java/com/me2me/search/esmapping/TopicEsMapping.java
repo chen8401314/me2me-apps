@@ -33,6 +33,8 @@ public class TopicEsMapping {
 	@Field(index=FieldIndex.no,store=true,type=FieldType.Long)
 	private Long long_time;		//     必填 
 
+	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
+	private String live_image; 
 
 	@Field(index=FieldIndex.no,store=true,type=FieldType.String)
 	private String core_circle;		//     必填 
@@ -135,6 +137,12 @@ public class TopicEsMapping {
 	}
 	public void setTags(String tags) {
 		this.tags = tags;
+	}
+	public String getLive_image() {
+		return live_image;
+	}
+	public void setLive_image(String live_image) {
+		this.live_image = live_image;
 	}
 	
 }

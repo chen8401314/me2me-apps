@@ -64,6 +64,19 @@ public class UserEsMapping {
 	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.String)
 	private String register_version;		//注册版本号，v2.2.2版本开始有的     必填 
 
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.Integer)
+	private Integer like_gender;		//是否是大V(0 否 1 是)     必填 
+	
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.Integer)
+	private Integer age_group;		//是否是大V(0 否 1 是)     必填 
+	
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.Integer)
+	private Integer occupation;		//是否是大V(0 否 1 是)     必填 
+	
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
+	private String tags;		//是否是大V(0 否 1 是)     必填 
+	
+	
 	public Long getId() {
 		return id;
 	}
@@ -198,6 +211,38 @@ public class UserEsMapping {
 
 	public void setRegister_version(String register_version) {
 		this.register_version = register_version;
+	}
+
+	public Integer getLike_gender() {
+		return like_gender;
+	}
+
+	public void setLike_gender(Integer like_gender) {
+		this.like_gender = like_gender;
+	}
+
+	public Integer getAge_group() {
+		return age_group;
+	}
+
+	public void setAge_group(Integer age_group) {
+		this.age_group = age_group;
+	}
+
+	public Integer getOccupation() {
+		return occupation;
+	}
+
+	public void setOccupation(Integer occupation) {
+		this.occupation = occupation;
+	}
+
+	public String getTags() {
+		return tags;
+	}
+
+	public void setTags(String tags) {
+		this.tags = tags;
 	}
 	
 	

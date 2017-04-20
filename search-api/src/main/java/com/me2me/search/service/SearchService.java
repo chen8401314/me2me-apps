@@ -81,4 +81,24 @@ public interface SearchService {
 	void updateHotKeyword(SearchHotKeyword hk);
 	
 	void delHotKeyword(int id);
+	/**
+	 * 推荐用户
+	 * @author zhangjiwei
+	 * @date Apr 20, 2017
+	 * @param uid 推荐与此用户相关的用户。
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	 public Response recommendUser(int uid,int page,int pageSize);
+	 /**
+	 * 推荐王国
+	 * @author zhangjiwei
+	 * @date Apr 20, 2017
+	 * @param uid 推荐与此用户相关的用户。
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	 public Response recommendKingdom(int uid,int page,int pageSize);
 }
