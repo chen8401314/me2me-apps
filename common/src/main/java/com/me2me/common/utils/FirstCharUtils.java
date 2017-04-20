@@ -49,6 +49,8 @@ public class FirstCharUtils {
 		System.out.println(getFirstChar("adfasd"));
 		System.out.println(getFirstChar("ASDF"));
 		System.out.println(getFirstChar("네이버"));
+		System.out.println(getFirstChar("點擊轉換按鈕"));
+		System.out.println(getFirstChar("繁體字"));
 		System.out.println(getFirstChar(String.valueOf((char) 0x2)));// 乱码字符。
 		System.out.println(getFirstChar(String.valueOf((char) 0xee43))); // 乱码
 	}
