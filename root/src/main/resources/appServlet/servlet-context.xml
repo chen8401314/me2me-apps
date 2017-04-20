@@ -3,11 +3,11 @@
        xmlns:mvc="http://www.springframework.org/schema/mvc"
        xmlns:p="http://www.springframework.org/schema/p" xmlns:context="http://www.springframework.org/schema/context"
        xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:util="http://www.springframework.org/schema/util" xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
 		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
-       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+       http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
     <context:component-scan base-package="com.me2me.web"/>
     <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager">
@@ -47,4 +47,17 @@
             <bean class="com.me2me.web.handler.AccessSecurityHandler"/>
         </mvc:interceptor>
     </mvc:interceptors>
+
+
+
+    <bean id="loggerAop" class="com.me2me.web.log.LoggerAop"/>
+
+    <aop:config proxy-target-class="true">
+        <aop:aspect id="b" ref="loggerAop">
+            <aop:pointcut id="log" expression="execution(* com.me2me.web.*.*(..))"/>
+            <aop:before pointcut-ref="log" method="before"/>
+            <aop:after pointcut-ref="log" method="after"/>
+        </aop:aspect>
+    </aop:config>
+
 </beans>
