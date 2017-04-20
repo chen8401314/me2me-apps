@@ -10,7 +10,7 @@ import com.me2me.monitor.model.AccessTrack;
  * Author: 赵朋扬
  * Date: 2016/6/13.
  */
-public interface MonitorService {
+public interface MonitorService{
 
     void mark(AccessTrack accessTrack);
 
