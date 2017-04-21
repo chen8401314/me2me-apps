@@ -23,7 +23,7 @@ public class SearchIndexTask{
 	private SearchService searchService;
 	
 	
-	@Scheduled(cron="0 0 1 * * ?")
+	@Scheduled(cron="0 0/5 * * * ?")
 	public void userIndexJob() {
 		if(userIndexRunning){
 			return ;
@@ -38,7 +38,7 @@ public class SearchIndexTask{
 		userIndexRunning=false;
 	}
 	
-	@Scheduled(cron="0 0 2 * * ?")
+	@Scheduled(cron="0 3/5 * * * ?")
 	public void ugcIndexJob() {
 		if(ugcIndexRunning){
 			return ;
@@ -53,21 +53,21 @@ public class SearchIndexTask{
 		ugcIndexRunning=false;
 	}
 	
-	@Scheduled(cron="0 0 3 * * ?")
+	@Scheduled(cron="0 6/5 * * * ?")
 	public void kingdomIndexJob() {
 		if(kingdomIndexRunning){
 			return ;
 		}
 		try{
 			kingdomIndexRunning = true;
-			int indexCount = searchService.indexUserData(false);
+			int indexCount = searchService.indexKingdomData(false);
             logger.info("任务完成,索引数量"+indexCount);
 		}catch(Exception e){
         	logger.error("任务执行失败", e);
         }
 		kingdomIndexRunning=false;
 	}
-	@Scheduled(cron="0 0 0/1 * * ?")
+	@Scheduled(cron="0 9/5 * * * ?")
 	public void searchHistoryJob(){
 		
 		if(searchHistoryIndexRunning){

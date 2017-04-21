@@ -75,4 +75,15 @@ public class Search extends BaseController {
     public Response recWord(RecWordRequest request){
     	return searchService.recWord();
     }
+    
+    /**
+     * 推荐热搜词获取接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/recUsers",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response recUsers(PageRequest request){
+    	return searchService.recommendUser(request.getUid(), request.getPage(), request.getPageSize());
+    }
 }

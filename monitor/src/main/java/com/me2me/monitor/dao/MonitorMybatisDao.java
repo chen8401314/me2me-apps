@@ -2,7 +2,9 @@ package com.me2me.monitor.dao;
 
 import com.me2me.monitor.dto.MonitorReportDto;
 import com.me2me.monitor.mapper.AccessTrackMapper;
+import com.me2me.monitor.mapper.HttpAccessMapper;
 import com.me2me.monitor.model.AccessTrack;
+import com.me2me.monitor.model.HttpAccess;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -20,6 +22,9 @@ public class MonitorMybatisDao {
 
     @Autowired
     private AccessTrackMapper accessTrackMapper;
+
+    @Autowired
+    private HttpAccessMapper httpAccessMapper;
 
     @Autowired
     private JdbcTemplate jdbcTemplate;
@@ -73,5 +78,9 @@ public class MonitorMybatisDao {
                 monitorReportDto.getEndDate(),
                 monitorReportDto.getChannel()==0?1:monitorReportDto.getChannel());
         return Integer.valueOf(counter.get(0).get("counter").toString());
+    }
+
+    public void saveHttpAccess(HttpAccess httpAccess){
+        httpAccessMapper.insertSelective(httpAccess);
     }
 }
