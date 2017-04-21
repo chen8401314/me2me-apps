@@ -8,11 +8,12 @@ import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.queryparser.classic.QueryParser;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.FacetedPage;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
@@ -21,10 +22,13 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.search.dao.ContentForSearchJdbcDao;
 import com.me2me.search.dao.SearchMybatisDao;
-import com.me2me.search.dto.BaseUserInfo;
 import com.me2me.search.dto.RecommendKingdom;
+import com.me2me.search.dto.RecommendKingdomDto;
 import com.me2me.search.dto.RecommendUser;
+import com.me2me.search.dto.RecommendUserDto;
 import com.me2me.search.dto.RecommendListDto;
+import com.me2me.search.dto.RecommendListDto.RecPerson;
+import com.me2me.search.dto.ShowSearchDTO.KingdomElement;
 import com.me2me.search.dto.ShowAssociatedWordDTO;
 import com.me2me.search.dto.ShowRecWordDTO;
 import com.me2me.search.dto.ShowSearchDTO;
@@ -35,6 +39,7 @@ import com.me2me.search.esmapping.UserEsMapping;
 import com.me2me.user.model.UserFollow;
 import com.me2me.user.model.UserProfile;
 import com.me2me.search.mapper.SearchHotKeywordMapper;
+import com.me2me.search.mapper.SearchMapper;
 import com.me2me.search.model.SearchHotKeyword;
 import com.me2me.search.model.SearchHotKeywordExample;
 import com.me2me.user.service.UserService;
@@ -62,6 +67,8 @@ public class SearchServiceImpl implements SearchService {
     
     @Autowired
     private SearchMybatisDao searchMybatisDao;
+    @Autowired
+	private SearchMapper searchMapper;
     
     @Override
     public Response search(String keyword,int page,int pageSize,long uid,int isSearchFans) {
@@ -592,20 +599,56 @@ public class SearchServiceImpl implements SearchService {
 		hotkeywordMapper.deleteByPrimaryKey(id);
 	}
 
-	public Response recommendUser(int uid,int page,int pageSize){
+	public Response recommendUser(long uid,int page,int pageSize){
 		List<RecommendUser> resultpage = this.searchService.getRecommendUserList(uid, page, pageSize);
-		RecommendListDto<RecommendUser> dto = new RecommendListDto<>();
-		dto.setDataList(resultpage);
+		RecommendUserDto dto = new RecommendUserDto();
+		dto.setRecUserData(resultpage);
 		return Response.success(dto);
 	}
 
-	@Override
-	public Response recommendKingdom(int uid, int page, int pageSize) {
-		List<RecommendKingdom> kds = this.searchService.getRecommendKingdomList(uid, page, pageSize);
-		RecommendListDto<RecommendKingdom> dto = new RecommendListDto<>();
+	public Response recommendIndex(long uid,int page,int pageSize){
+		RecommendListDto indexData = new RecommendListDto();
+		// 查用户画像信息
+		UserProfile profile = userService.getUserProfileByUid(uid);
+		RecommendListDto.RecPerson person = new RecommendListDto.RecPerson();
+		BeanUtils.copyProperties(profile, person);
+		person.setCareer(profile.getOccupation());
+		person.setSexOrientation(profile.getLikeGender());
+		String hobby = StringUtils.join(searchMapper.getUserHobby(uid),",");
+		person.setHobby(hobby);
 		
-		dto.setDataList(kds);
-		return Response.success(dto);
+		float completed=5f;
+		if(StringUtils.isEmpty(hobby)){
+			completed--;
+		}
+		if(StringUtils.isEmpty(profile.getAvatar())){
+			completed--;
+		}
+		if(profile.getAgeGroup()==null || profile.getAgeGroup()==0){
+			completed--;
+		}
+		if(profile.getOccupation()==null|| profile.getOccupation()==0){
+			completed--;
+		}
+		if(profile.getGender()==null || profile.getGender()==0){
+			completed--;
+		}
+		int completion = (int) (completed/5 * 100);
+		person.setCompletion(completion);
+		indexData.setPersona(person);
+		// 查推荐用户
+		
+		// 查内容推荐
+		List<RecommendKingdom> kds = this.searchService.getRecommendKingdomList(uid, page, pageSize);
+		
+		return Response.success(indexData);
 	}
-	
+
+	@Override
+	public Response recommendKingdom(long uid, int page, int pageSize) {
+		List<RecommendKingdom> kingdoms = this.searchService.getRecommendKingdomList(uid, page, pageSize);
+		RecommendKingdomDto dt = new RecommendKingdomDto();
+		dt.setKingdomList(kingdoms);
+		return Response.success(dt);
+	}
 }

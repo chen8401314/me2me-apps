@@ -90,7 +90,7 @@ public interface SearchService {
 	 * @param pageSize
 	 * @return
 	 */
-	 public Response recommendUser(int uid,int page,int pageSize);
+	 public Response recommendUser(long uid,int page,int pageSize);
 	 /**
 	 * 推荐王国
 	 * @author zhangjiwei
@@ -100,5 +100,15 @@ public interface SearchService {
 	 * @param pageSize
 	 * @return
 	 */
-	 public Response recommendKingdom(int uid,int page,int pageSize);
+	 public Response recommendIndex(long uid,int page,int pageSize);
+/**
+ * 推王国
+ * @author zhangjiwei
+ * @date Apr 21, 2017
+ * @param uid
+ * @param page
+ * @param pageSize
+ * @return
+ */
+	Response recommendKingdom(long uid,int page,int pageSize);
 }

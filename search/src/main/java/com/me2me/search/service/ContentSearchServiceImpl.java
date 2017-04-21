@@ -3,7 +3,6 @@ package com.me2me.search.service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -17,7 +16,6 @@ import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -36,7 +34,6 @@ import org.springframework.data.elasticsearch.core.query.IndexQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
-import org.springframework.util.ReflectionUtils;
 
 import com.github.stuxuhai.jpinyin.PinyinException;
 import com.github.stuxuhai.jpinyin.PinyinFormat;
@@ -46,7 +43,6 @@ import com.me2me.search.ThreadPool;
 import com.me2me.search.cache.SimpleCache;
 import com.me2me.search.constants.IndexConstants;
 import com.me2me.search.dao.ContentForSearchJdbcDao;
-import com.me2me.search.dto.BaseUserInfo;
 import com.me2me.search.dto.RecommendKingdom;
 import com.me2me.search.dto.RecommendUser;
 import com.me2me.search.enums.RecommendReason;
@@ -571,7 +567,6 @@ public class ContentSearchServiceImpl implements ContentSearchService {
     		
     		RecommendUser userInfo = new RecommendUser();
     		userInfo.setAvatar(userMap.getAvatar());
-    		userInfo.setIntroduced(userInfo.getIntroduced());
     		userInfo.setNickName(userMap.getNick_name());
     		userInfo.setUid(userMap.getUid());
     		userInfo.setV_lv(userMap.getV_lv());
@@ -584,13 +579,13 @@ public class ContentSearchServiceImpl implements ContentSearchService {
     		}
     		
     		if(user.getLikeGender()!=null && userMap.getLike_gender()==user.getLikeGender()){
-    			userInfo.setRecommendReason(RecommendReason.LIKE_GENDER);
+    			userInfo.setReason(RecommendReason.LIKE_GENDER);
     		}else if(sameTags){
-    			userInfo.setRecommendReason(RecommendReason.SAME_TAG);
+    			userInfo.setReason(RecommendReason.SAME_TAG);
     		}else if(user.getOccupation()!=null && userMap.getOccupation()==user.getOccupation()){
-    			userInfo.setRecommendReason(RecommendReason.SAME_OCCUPATION);
+    			userInfo.setReason(RecommendReason.SAME_OCCUPATION);
     		}else if(user.getAgeGroup()!=null && userMap.getAge_group()==user.getAgeGroup()){
-    			userInfo.setRecommendReason(RecommendReason.SAME_AGE_GROUP);
+    			userInfo.setReason(RecommendReason.SAME_AGE_GROUP);
     		}
     		userList.add(userInfo);
     	}
@@ -672,9 +667,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			kingdom.setTopicId(topic.getId());
 			kingdom.setTags(topic.getTags());
 			kingdom.setTitle(topic.getTitle());
-			BaseUserInfo userInfo = new BaseUserInfo();
-			org.springframework.beans.BeanUtils.copyProperties(profileMap.get(topic.getUid()), userInfo);
-			kingdom.setUserInfo(userInfo);
+			org.springframework.beans.BeanUtils.copyProperties(profileMap.get(topic.getUid()), kingdom);
 			kingdomList.add(kingdom);
 		}
 		
