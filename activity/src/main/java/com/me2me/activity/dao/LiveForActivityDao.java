@@ -453,7 +453,7 @@ public class LiveForActivityDao {
 	public int getAcommonListRank(int type, long activityId, long score, String updateTime){
 		StringBuilder sb = new StringBuilder();
 		sb.append("select count(1) cc from a_common_list t");
-		sb.append("where t.activity_id=").append(activityId);
+		sb.append(" where t.activity_id=").append(activityId);
 		sb.append(" and t.type=").append(type);
 		sb.append(" and (t.score>").append(score);
 		sb.append(" or (t.score=").append(score);

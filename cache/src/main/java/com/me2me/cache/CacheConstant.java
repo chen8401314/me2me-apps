@@ -38,4 +38,9 @@ public class CacheConstant {
 	public static final String SPECIAL_TOPIC_LIMIT = "KINGDOM_LIMIT";
 	
 	public static final String SPECIAL_TOPIC_USER_LIMIT_PRE = "SPECIAL_TOPIC_USER_LIMIT_";
+	
+	public static final String SPECIAL_TOPIC_HOT_LIMIT_DAY = "SPECIAL_TOPIC_HOT_LIMIT_DAY";
+	public static final String SPECIAL_TOPIC_HOT_LIMIT_TOTAL = "SPECIAL_TOPIC_HOT_LIMIT_TOTAL";
+	
+	public static final String SPECIAL_TOPIC_HOT_DAY_PRE = "SPECIAL_TOPIC_HOT_DAY_";
 }

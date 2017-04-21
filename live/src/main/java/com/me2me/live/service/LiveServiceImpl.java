@@ -7,6 +7,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.me2me.activity.dto.CreateActivityDto;
 import com.me2me.activity.dto.TopicCountDTO;
+import com.me2me.activity.model.AcommonList;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.cache.CacheConstant;
@@ -777,6 +778,20 @@ public class LiveServiceImpl implements LiveService {
         			if(limitCount < 1){
         				return;
         			}
+        			AcommonList alist = activityService.getAcommonList(topicId, 3, 1);
+        			if(null == alist){
+        				return;
+        			}
+        			//总限额
+        			String totalLimitStr = cacheService.get(CacheConstant.SPECIAL_TOPIC_HOT_LIMIT_TOTAL);
+        			int totalLimit = 0;
+        			if(!StringUtils.isEmpty(totalLimitStr)){
+        				totalLimit = Integer.valueOf(totalLimitStr);
+        			}
+        			if(alist.getScore().intValue() >= totalLimit){
+        				return;
+        			}
+        			
         			String personLimit = cacheService.get(CacheConstant.SPECIAL_TOPIC_USER_LIMIT_PRE + keyType + CacheConstant.KEY_SEPARATOR_UNDERLINE + uid);
         			if(StringUtils.isEmpty(personLimit)){
         				personLimit = "1";
@@ -790,6 +805,22 @@ public class LiveServiceImpl implements LiveService {
         			}
         			cacheService.set(CacheConstant.SPECIAL_TOPIC_USER_LIMIT_PRE + keyType + CacheConstant.KEY_SEPARATOR_UNDERLINE + uid, personLimit);
         			
+        			//每日限额
+        			boolean isOverDayLimit = false;
+        			String dayLimitStr = cacheService.get(CacheConstant.SPECIAL_TOPIC_HOT_LIMIT_DAY);
+        			int dayLimit = 0;
+        			if(!StringUtils.isEmpty(dayLimitStr)){
+        				dayLimit = Integer.valueOf(dayLimitStr);
+        			}
+        			String topicDayHotStr = cacheService.hGet(CacheConstant.SPECIAL_TOPIC_HOT_DAY_PRE+DateUtil.date2string(new Date(), "yyyyMMdd"), String.valueOf(topicId));
+        			int topicDayHot = 0;
+        			if(!StringUtils.isEmpty(topicDayHotStr)){
+        				topicDayHot = Integer.valueOf(topicDayHotStr);
+        			}
+        			if(topicDayHot>=dayLimit){
+        				isOverDayLimit = true;
+        			}
+        			
         			String personScore = cacheService.hGet(key, CacheConstant.SPECIAL_TOPIC_PERSON+CacheConstant.SPECIAL_TOPIC_ACTION_ADD);
         			String kingdomScore = cacheService.hGet(key, CacheConstant.SPECIAL_TOPIC_KINGDOM+CacheConstant.SPECIAL_TOPIC_ACTION_ADD);
         			int personScoreCount = 0;
@@ -802,12 +833,20 @@ public class LiveServiceImpl implements LiveService {
         			}
         			boolean needDetail = false;
         			if(personScoreCount > 0){
+        				if(isOverDayLimit){
+        					personScoreCount = personScoreCount/2;
+        				}
         				needDetail = true;
         				liveLocalJdbcDao.specialTopicAddHot(uid, 2, 3, personScoreCount);
         			}
         			if(kingdomScoreCount > 0){
+        				if(isOverDayLimit){
+        					kingdomScoreCount = kingdomScoreCount/2;
+        				}
         				needDetail = true;
         				liveLocalJdbcDao.specialTopicAddHot(topicId, 1, 3, kingdomScoreCount);
+        				topicDayHot = topicDayHot + kingdomScoreCount;
+        				cacheService.hSet(CacheConstant.SPECIAL_TOPIC_HOT_DAY_PRE+DateUtil.date2string(new Date(), "yyyyMMdd"), String.valueOf(topicId), String.valueOf(topicDayHot));
         			}
         			if(needDetail){
         				liveLocalJdbcDao.insertSpecialTopicHotDetail(3, fragmentId);

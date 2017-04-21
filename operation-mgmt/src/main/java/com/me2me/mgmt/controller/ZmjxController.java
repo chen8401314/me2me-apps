@@ -179,6 +179,16 @@ public class ZmjxController {
 		if(StringUtils.isNotBlank(specialSwitch) && "on".equals(specialSwitch)){
 			result.setActivitySwitch(1);
 		}
+		//总限额
+		String totalLimitStr = cacheService.get(CacheConstant.SPECIAL_TOPIC_HOT_LIMIT_TOTAL);
+		if(StringUtils.isNotBlank(totalLimitStr)){
+			result.setTotalLimit(Long.valueOf(totalLimitStr));
+		}
+		//每日限额
+		String dayLimitStr = cacheService.get(CacheConstant.SPECIAL_TOPIC_HOT_LIMIT_DAY);
+		if(StringUtils.isNotBlank(dayLimitStr)){
+			result.setDayLimit(Long.valueOf(dayLimitStr));
+		}
 		
 		//分值配置
 		//视频
@@ -287,6 +297,14 @@ public class ZmjxController {
 			alist.setScore(score);
 			activityService.updateAcommonList(alist);
 		}
+		
+		return "0";
+	}
+	
+	@RequestMapping(value = "/config/modify2")
+	@ResponseBody
+	public String kingdomHotModify2(@RequestParam("key") String key, @RequestParam("value") String value){
+		cacheService.set(key, value);
 		
 		return "0";
 	}

@@ -57,6 +57,38 @@ var modifyCommit = function(){
 		}
 	});
 }
+
+var modifyConfig2 = function(key, title, oldValue){
+	$("#mkey").val(key);
+	$("#mtitle").val(title);
+	$("#moldValue").val(oldValue);
+	$("#mnewValue").val('');
+	$("#configModal2").modal();
+}
+
+var modifyCommit2 = function(){
+	var key = $("#mkey").val();
+	var value = $("#mnewValue").val();
+
+	if(value == ''){
+		alert('不能填空');
+		return;
+	}
+	
+	$.ajax({
+		url : "${ctx}/zmjx/config/modify2?key="+key+"&value="+value,
+		async : false,
+		type : "GET",
+		contentType : "application/json;charset=UTF-8",
+		success : function(resp) {
+			if(resp == '0'){
+				window.location.reload();
+			}else{
+				alert(resp);
+			}
+		}
+	});
+}
 </script>
 </head>
 <body>
@@ -97,7 +129,7 @@ var modifyCommit = function(){
 										</thead>
 										<tbody id="tbody0">
 												<tr class="gradeX">
-													<td>分值开关</td>
+													<td>热度计算开关</td>
 													<td>
 													<c:choose>
                                                 		<c:when test="${dataObj.activitySwitch == 1}">
@@ -118,6 +150,16 @@ var modifyCommit = function(){
                                                 		</c:otherwise>
                                                 	</c:choose>
 													</td>
+												</tr>
+												<tr class="gradeX">
+													<td>热度总限额</td>
+													<td>${dataObj.totalLimit }</td>
+													<td><a href="#" onclick="modifyConfig2('SPECIAL_TOPIC_HOT_LIMIT_TOTAL', '热度总限额', '${dataObj.totalLimit }')">修改</a></td>
+												</tr>
+												<tr class="gradeX">
+													<td>热度每日限额</td>
+													<td>${dataObj.dayLimit }</td>
+													<td><a href="#" onclick="modifyConfig2('SPECIAL_TOPIC_HOT_LIMIT_DAY', '热度每日限额', '${dataObj.dayLimit }')">修改</a></td>
 												</tr>
 										</tbody>
 									</table>
@@ -220,6 +262,37 @@ var modifyCommit = function(){
 					<button data-dismiss="modal" class="btn btn-default" type="button">关闭</button>
 				</div>
 			</div>
+		</div>
+		</div>
+	
+		<div class="modal fade" id="configModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">王国配置修改</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="exampleInputEmail1">配置名</label>
+                        <input type="text" id="mtitle" name="mtitle" class="form-control" style="width: 100%" readonly>
+                        <input type="hidden" id="mkey" name="mkey">
+					</div>
+					<div class="form-group">
+						<label for="exampleInputEmail1">原值</label>
+                        <input type="text" id="moldValue" name="moldValue" class="form-control" style="width: 100%" readonly>
+					</div>
+					<div class="form-group">
+						<label for="exampleInputEmail1">新值</label>
+                        <input type="text" id="mnewValue" name="mnewValue" class="form-control" style="width: 100%">
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="modifyCommit2()">更改</button>
+					<button data-dismiss="modal" class="btn btn-default" type="button">关闭</button>
+				</div>
+			</div>
+		</div>
 		</div>
 			</section>
 		</section>
