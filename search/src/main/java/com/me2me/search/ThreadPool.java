@@ -9,4 +9,10 @@ public class ThreadPool {
 	public static void execute(Runnable runnable){
 		pool.execute(runnable);
 	}
+	public static void shutdown(){
+		pool.shutdown();
+	}
+	public static boolean isTerminated() {
+		return pool.isTerminated();
+	}
 }

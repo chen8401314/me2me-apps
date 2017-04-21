@@ -3,9 +3,12 @@ import java.util.List;
 
 import org.springframework.data.elasticsearch.core.FacetedPage;
 
+import com.me2me.search.dto.RecommendKingdom;
+import com.me2me.search.dto.RecommendUser;
 import com.me2me.search.esmapping.TopicEsMapping;
 import com.me2me.search.esmapping.UgcEsMapping;
 import com.me2me.search.esmapping.UserEsMapping;
+import com.me2me.user.model.UserProfile;
 
 /**
  * 内容搜索服务，提供UGC、王国、文章库的搜索
@@ -92,4 +95,29 @@ public interface ContentSearchService {
 	 * @return
 	 */
 	int indexSearchHistory(boolean fully) throws Exception;
+	/**
+	 * 获取与本用户相似的用户列表。
+	 * @author zhangjiwei
+	 * @date Apr 18, 2017
+	 * @param uid
+	 * @return
+	 */
+	public List<RecommendUser> getRecommendUserList(long uid,int page,int pageSize);
+	
+	/**
+	 * 依据内容推荐本内容的标签。
+	 * @author zhangjiwei
+	 * @date Apr 18, 2017
+	 * @param conentet
+	 * @return
+	 */
+	public List<String> getRecommendTagList(String content);
+	/**
+	 * 获取推荐的王国列表。
+	 * @author zhangjiwei
+	 * @date Apr 18, 2017
+	 * @param uid
+	 * @return
+	 */
+	public List<RecommendKingdom>  getRecommendKingdomList(long uid,int page,int pageSize);
 }

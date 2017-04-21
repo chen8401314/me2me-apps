@@ -18,7 +18,7 @@
     <context:component-scan base-package="com.me2me.mgmt.services" />
     
     <import resource="classpath:META-INF/spring/mysql-context.xml" />
-    <import resource="classpath:META-INF/spring/mgmt-dubbo-consumer.xml" />
+    <import resource="classpath:META-INF/spring/mgmt-local-consumer.xml" />
     
     <!-- task 1 start-->
     <bean id="topicHotTaskJobDetailA" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">

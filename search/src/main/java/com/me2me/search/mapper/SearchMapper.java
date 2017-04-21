@@ -83,6 +83,18 @@ public interface SearchMapper  {
 	 */
 	public List<String> getKingdomFragmentsByTopicId(int topicId);
 	
+	
+	/**
+	 * 查询指定王国的所有评论。
+	 * @author zhangjiwei
+	 * @date Apr 7, 2017
+	 * @param topicId
+	 * @return
+	 */
+	@ResultType(Map.class)
+	@Select("select topic_id, fragment from topic_fragment where topic_id in(${ids}) and status=1 and type=0 and content_type=0 order by id desc")
+	public List<Map<String,Object>> getKingdomFragmentsByTopicIds(@Param("ids")String topicIds);
+	
     /**
      * 按日期查询关键字排行 。
      * @author zhangjiwei
@@ -96,4 +108,27 @@ public interface SearchMapper  {
     @ResultType(SearchHistoryEsMapping.class)
     @Select("select * from search_history_count where DATE_FORMAT(last_query_date,'%Y-%m-%d') >= #{0} and DATE_FORMAT(last_query_date,'%Y-%m-%d') <= #{1} limit #{2},#{3}")
     List<SearchHistoryEsMapping> getSearchHistoryPageByDate(String dateBegin,String dateEnd,int skip,int limit);
+    
+    
+    /**
+     * 取用户的偏好。
+     * @author zhangjiwei
+     * @date Apr 19, 2017
+     * @param uid
+     * @return
+     */
+    @ResultType(String.class)
+    @Select("select d.value from user_hobby h left join dictionary d on h.hobby=d.id where h.uid=#{0}")
+    List<String> getUserHobby(long uid);
+    
+    /**
+     * 取用户的偏好。
+     * @author zhangjiwei
+     * @date Apr 19, 2017
+     * @param uid
+     * @return
+     */
+    @ResultType(Map.class)
+    @Select("select h.uid,d.value from user_hobby h left join dictionary d on h.hobby=d.id where h.uid in (${ids})")
+    List<Map<String,Object>> getUserHobbyByUids(@Param("ids")String uids);
 }
