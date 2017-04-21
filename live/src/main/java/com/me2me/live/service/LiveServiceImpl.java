@@ -1296,6 +1296,19 @@ public class LiveServiceImpl implements LiveService {
                 }
             }
         }
+        //一次性查询所有王国的最新一条数据
+        Map<String, Map<String, Object>> lastFragmentMap = new HashMap<String, Map<String, Object>>();
+        List<Map<String, Object>> lastFragmentList = liveLocalJdbcDao.getLastFragmentByTopicIds(tidList);
+        if(null != lastFragmentList && lastFragmentList.size() > 0){
+        	Long fuid = null;
+            for(Map<String, Object> m : lastFragmentList){
+                lastFragmentMap.put(String.valueOf(m.get("topic_id")), m);
+                fuid = (Long)m.get("uid");
+                if(!uidList.contains(fuid)){
+                	uidList.add(fuid);
+                }
+            }
+        }
         Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
         List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
         if(null != profileList && profileList.size() > 0){
@@ -1331,14 +1344,7 @@ public class LiveServiceImpl implements LiveService {
                 reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
             }
         }
-        //一次性查询所有王国的最新一条数据
-        Map<String, Map<String, Object>> lastFragmentMap = new HashMap<String, Map<String, Object>>();
-        List<Map<String, Object>> lastFragmentList = liveLocalJdbcDao.getLastFragmentByTopicIds(tidList);
-        if(null != lastFragmentList && lastFragmentList.size() > 0){
-            for(Map<String, Object> m : lastFragmentList){
-                lastFragmentMap.put(String.valueOf(m.get("topic_id")), m);
-            }
-        }
+        
         List<Long> cidList = new ArrayList<Long>();
         //一次性查询所有topic对应的content
         Map<String, Content> contentMap = new HashMap<String, Content>();
@@ -1371,6 +1377,7 @@ public class LiveServiceImpl implements LiveService {
         }
 
         UserProfile userProfile = null;
+        UserProfile lastUserProfile = null;
         Map<String, Object> lastFragment = null;
         Content content = null;
         for (Topic2 topic : topicList) {
@@ -1424,6 +1431,13 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLastExtra((String)lastFragment.get("extra"));
                 showTopicElement.setLastAtUid((Long)lastFragment.get("at_uid"));
                 showTopicElement.setIsTop(topic.getIsTop());
+                showTopicElement.setLastUid((Long)lastFragment.get("uid"));
+                lastUserProfile = profileMap.get(String.valueOf(lastFragment.get("uid")));
+                if(null != lastUserProfile){
+                	showTopicElement.setLastNickName(lastUserProfile.getNickName());
+                	showTopicElement.setLastAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
+                	showTopicElement.setLastV_lv(lastUserProfile.getvLv());
+                }
             } else {
                 showTopicElement.setLastContentType(-1);
             }
@@ -1517,6 +1531,13 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLastStatus(topicFragment.getStatus());
                 showTopicElement.setLastExtra(topicFragment.getExtra());
                 showTopicElement.setLastAtUid(topicFragment.getAtUid());
+                showTopicElement.setLastUid(topicFragment.getUid());
+                UserProfile lastUserProfile = userService.getUserProfileByUid(topicFragment.getUid());
+                if(null != lastUserProfile){
+                	showTopicElement.setLastNickName(lastUserProfile.getNickName());
+                	showTopicElement.setLastAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
+                	showTopicElement.setLastV_lv(lastUserProfile.getvLv());
+                }
             }
         }
     }
