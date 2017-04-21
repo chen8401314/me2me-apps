@@ -103,6 +103,15 @@ public class ActivityMybatisDao {
     
     @Autowired
     private AppUiControlMapper appUiControlMapper;
+    
+    @Autowired
+    private AcommonListMapper acommonListMapper;
+    
+    @Autowired
+    private AcommonHotDetailMapper acommonHotDetailMapper;
+    
+    @Autowired
+    private AcommonChatMapper acommonChatMapper;
 
     public List<Tchannel> getAppChannel(String code){
     	TchannelExample example = new TchannelExample();
@@ -1395,4 +1404,78 @@ public class ActivityMybatisDao {
         return null != list && list.size()>0 ?list.get(0):null;
     }
 
+    public List<AcommonList> getAcommonListBillboard(int type, long activityId, int limit){
+    	AcommonListExample example = new AcommonListExample();
+    	AcommonListExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityIdEqualTo(activityId);
+    	criteria.andTypeEqualTo(type);
+    	criteria.andScoreGreaterThan(0l);
+    	example.setOrderByClause(" score desc,update_time asc limit " + limit);
+    	return acommonListMapper.selectByExample(example);
+    }
+    
+    public AcommonList getAcommonList(int type, long activityId, long targetId){
+    	AcommonListExample example = new AcommonListExample();
+    	AcommonListExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityIdEqualTo(activityId);
+    	criteria.andTypeEqualTo(type);
+    	criteria.andTargetIdEqualTo(targetId);
+    	List<AcommonList> list = acommonListMapper.selectByExample(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
+    
+    public void createAcommonList(AcommonList alist){
+    	acommonListMapper.insertSelective(alist);
+    }
+    
+    public void updateAcommonList(AcommonList alist){
+    	acommonListMapper.updateByPrimaryKeySelective(alist);
+    }
+    
+    public void deleteAcommonListById(long id){
+    	acommonListMapper.deleteByPrimaryKey(id);
+    }
+    
+    public AcommonHotDetail getAcommonHotDetail(long activityId, long topicId, long uid){
+    	AcommonHotDetailExample example = new AcommonHotDetailExample();
+    	AcommonHotDetailExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityIdEqualTo(activityId);
+    	criteria.andTopicIdEqualTo(topicId);
+    	criteria.andUidEqualTo(uid);
+    	List<AcommonHotDetail> list = acommonHotDetailMapper.selectByExample(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
+    
+    public void saveAcommonHotDetail(AcommonHotDetail ahd){
+    	acommonHotDetailMapper.insertSelective(ahd);
+    }
+    
+    public void saveAcommonChat(AcommonChat chat){
+    	acommonChatMapper.insertSelective(chat);
+    }
+    
+    public List<AcommonChat> getAcommonChats(long sinceId, long activityId, int limit){
+    	AcommonChatExample example = new AcommonChatExample();
+    	AcommonChatExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityIdEqualTo(activityId);
+    	criteria.andTypeLessThan(2);//<2 普通聊天
+    	criteria.andLongTimeGreaterThan(sinceId);
+    	example.setOrderByClause(" long_time asc limit "+limit);
+    	return acommonChatMapper.selectByExample(example);
+    }
+    
+    public List<AcommonChat> getTop10Chats(long activityId){
+    	AcommonChatExample example = new AcommonChatExample();
+    	AcommonChatExample.Criteria criteria = example.createCriteria();
+    	criteria.andActivityIdEqualTo(activityId);
+    	criteria.andTypeEqualTo(2);
+    	example.setOrderByClause(" long_time asc ");
+    	return acommonChatMapper.selectByExample(example);
+    }
 }

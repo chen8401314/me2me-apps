@@ -1,12 +1,17 @@
 package com.me2me.cache.service;
 
 import com.me2me.core.cache.JedisTemplate;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
 import redis.clients.jedis.*;
+
 import javax.annotation.PostConstruct;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -111,6 +116,16 @@ public class CacheServiceImpl implements CacheService {
             @Override
             public <T> T actionResult(Jedis jedis) {
                 return (T) jedis.smembers(key);
+            }
+        });
+    }
+    
+    @Override
+    public void srem(final String key, final String... values){
+    	jedisTemplate.execute(new JedisTemplate.JedisAction() {
+            @Override
+            public void action(Jedis jedis) {
+                jedis.srem(key,values);
             }
         });
     }

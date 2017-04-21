@@ -63,7 +63,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	
 	private static final String HOT_KEYWORD_CACHE_KEY = "SEARCH_HOT_KEYWORD";
 	private static final String DEFAULT_START_TIME = "1900-01-01 00:00:00";
-	private static final String DATE_FORMAT="yyyy-MM-dd hh:mm:ss";
+	private static final String DATE_FORMAT="yyyy-MM-dd HH:mm:ss";
 	@Autowired
 	private SearchVarMapper varMapper;
 	

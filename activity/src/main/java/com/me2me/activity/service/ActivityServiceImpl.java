@@ -194,6 +194,7 @@ public class ActivityServiceImpl implements ActivityService {
             }
             activityElement.setContentUrl(activity.getLinkUrl());
             activityElement.setType(4);
+            activityElement.setLinkUrl("");
             showActivitiesDto.getActivityData().add(activityElement);
         }
         log.info("getActivity end ...");
@@ -5108,5 +5109,263 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public void deleteTchannel(long id){
     	activityMybatisDao.deleteTchannel(id);
+    }
+    
+    @Override
+    public Response specailTopicBillboard(long type, long searchUid){
+    	ShowActivityBillboardDTO result = new ShowActivityBillboardDTO();
+    	
+    	if(type == 1){//地区
+    		List<AcommonList> list = activityMybatisDao.getAcommonListBillboard(1, 3, 10);
+    		if(null != list && list.size() > 0){
+    			AcommonList alist = null;
+    			ShowActivityBillboardDTO.AreaElement e = null;
+    			for(int i=0;i<list.size();i++){
+    				alist = list.get(i);
+    				e = new ShowActivityBillboardDTO.AreaElement();
+    				e.setTopicId(alist.getTargetId());
+    				e.setRank(i+1);
+    				e.setScore(alist.getScore());
+    				e.setName(alist.getAlias());
+    				result.getAreaData().add(e);
+    			}
+    		}
+    	}else if(type==2){//用户
+    		//先查个人的
+    		if(searchUid > 0){
+    			UserProfile u = userService.getUserProfileByUid(searchUid);
+    			if(null != u){
+    				result.getMyUser().setUid(searchUid);
+    				result.getMyUser().setNickName(u.getNickName());
+    				result.getMyUser().setAvatar(Constant.QINIU_DOMAIN_COMMON + "/" + u.getAvatar());
+    				result.getMyUser().setV_lv(u.getvLv());
+    				
+    				AcommonList my = activityMybatisDao.getAcommonList(2, 3, searchUid);
+    				if(null != my && my.getScore().longValue() > 0){
+    					result.getMyUser().setScore(my.getScore());
+    					result.getMyUser().setRank(liveForActivityDao.getAcommonListRank(2, 3, my.getScore(), DateUtil.date2string(my.getUpdateTime(), "yyyy-MM-dd HH:mm:ss")));
+    				}else{
+    					result.getMyUser().setScore(0);
+    					result.getMyUser().setRank(0);
+    				}
+    			}
+    		}
+    		
+    		List<AcommonList> list = activityMybatisDao.getAcommonListBillboard(2, 3, 10);
+    		if(null != list && list.size() > 0){
+    			List<Long> uidList = new ArrayList<Long>();
+    			for(AcommonList a : list){
+    				uidList.add(a.getTargetId());
+    			}
+    			Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+    			List<UserProfile> uList = userService.getUserProfilesByUids(uidList);
+    			if(null != uList && uList.size() > 0){
+    				for(UserProfile u : uList){
+    					userMap.put(u.getUid().toString(), u);
+    				}
+    			}
+    			AcommonList alist = null;
+    			ShowActivityBillboardDTO.UserElement e = null;
+    			UserProfile user = null;
+    			for(int i=0;i<list.size();i++){
+    				alist = list.get(i);
+    				user = userMap.get(alist.getTargetId().toString());
+    				e = new ShowActivityBillboardDTO.UserElement();
+    				if(null != user){
+    					e.setAvatar(Constant.QINIU_DOMAIN_COMMON + "/" + user.getAvatar());
+        				e.setNickName(user.getNickName());
+        				e.setV_lv(user.getvLv());
+    				}
+    				e.setRank(i+1);
+    				e.setScore(alist.getScore());
+    				e.setUid(alist.getTargetId());
+    				result.getUserData().add(e);
+    			}
+    		}
+    	}
+    	
+    	return Response.success(result);
+    }
+    
+    @Override
+    public Response areaHot(long topicId){
+    	ShowAreaHotDTO result = new ShowAreaHotDTO();
+    	result.setTopicId(topicId);
+    	
+    	AcommonList a = activityMybatisDao.getAcommonList(1, 3, topicId);
+    	if(null != a){
+    		result.setName(a.getAlias());
+    		result.setScore(a.getScore());
+    		if(a.getScore() > 0){
+    			result.setRank(liveForActivityDao.getAcommonListRank(1, 3, a.getScore(), DateUtil.date2string(a.getUpdateTime(), "yyyy-MM-dd HH:mm:ss")));
+    		}
+    	}
+    	return Response.success(result);
+    }
+    
+    @Override
+    public Response areaSupport(long optUid, long topicId){
+    	if(optUid <= 0){
+    		return Response.success(500,"必须登录后才能支持");
+    	}
+    	//判断是否已经支持过了
+    	AcommonHotDetail detail = activityMybatisDao.getAcommonHotDetail(3, topicId, optUid);
+    	if(null != detail){
+    		return Response.success(500,"重复操作");
+    	}
+    	//判断该王国是否为活动王国
+    	AcommonList aKingdom = activityMybatisDao.getAcommonList(1, 3, topicId);
+    	if(null == aKingdom){
+    		return Response.success(500,"非活动区域");
+    	}
+    	boolean isTop10 = false;
+    	long score = 1;//默认是+1
+    	//判断是否前10的用户，前10的用户都是加自己的荣誉值
+    	AcommonList a = activityMybatisDao.getAcommonList(2, 3, optUid);
+    	if(null != a && a.getScore() > 0){
+    		int rank = liveForActivityDao.getAcommonListRank(2, 3, a.getScore(), DateUtil.date2string(a.getUpdateTime(), "yyyy-MM-dd HH:mm:ss"));
+    		if(rank <= 10){
+    			score = a.getScore();
+    			isTop10 = true;
+    		}
+    	}
+    	liveForActivityDao.specialTopicAddHot(topicId, 1, 3, (int)score);
+    	//记录历史
+    	detail = new AcommonHotDetail();
+    	detail.setActivityId(3l);
+    	detail.setHot(score);
+    	detail.setTopicId(topicId);
+    	detail.setUid(optUid);
+    	activityMybatisDao.saveAcommonHotDetail(detail);
+    	//记录留言表
+    	AcommonChat chat = new AcommonChat();
+    	Date now = new Date();
+    	chat.setActivityId(3l);
+    	chat.setCreateTime(now);
+    	chat.setLongTime(now.getTime());
+    	chat.setMessage("支持了"+aKingdom.getAlias()+"，"+aKingdom.getAlias()+"热度值 +"+score);
+    	chat.setTopicId(topicId);
+    	if(isTop10){
+    		chat.setType(2);//top10支持
+    	}else{
+    		chat.setType(1);//普通支持
+    	}
+    	chat.setUid(optUid);
+    	activityMybatisDao.saveAcommonChat(chat);
+    	
+    	return Response.success(200, "操作成功");
+    }
+    
+    @Override
+    public Response chatQuery(long sinceId){
+    	ShowAcommonChatQueryDTO result = new ShowAcommonChatQueryDTO();
+    	if(sinceId<=0){//第一页展示，则从当前时间点往前推5分钟开始加载
+    		Date d = new Date();
+    		sinceId = d.getTime() - 5*60*1000;
+    	}
+    	List<AcommonChat> list = activityMybatisDao.getAcommonChats(sinceId, 3, 10);
+    	if(null != list && list.size() > 0){
+    		List<Long> uidList = new ArrayList<Long>();
+    		for(AcommonChat chat : list){
+    			uidList.add(chat.getUid());
+    		}
+    		Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+    		List<UserProfile> uList = userService.getUserProfilesByUids(uidList);
+    		if(null != uList && uList.size() > 0){
+    			for(UserProfile u : uList){
+    				userMap.put(u.getUid().toString(), u);
+    			}
+    		}
+    		
+    		ShowAcommonChatQueryDTO.ChatElement e = null;
+    		UserProfile user = null;
+    		for(AcommonChat chat : list){
+    			e = new ShowAcommonChatQueryDTO.ChatElement();
+    			user = userMap.get(chat.getUid().toString());
+    			if(null == user){
+    				continue;
+    			}
+    			e.setAvatar(Constant.QINIU_DOMAIN_COMMON + "/" + user.getAvatar());
+    			e.setMessage(chat.getMessage());
+    			e.setNickName(user.getNickName());
+    			e.setSinceId(chat.getLongTime());
+    			e.setType(chat.getType());
+    			result.getResult().add(e);
+    		}
+    	}
+    	
+    	return Response.success(result);
+    }
+    
+    @Override
+    public Response top10SupportChatQuery(){
+    	List<AcommonChat> list = activityMybatisDao.getTop10Chats(3);
+    	
+    	ShowTop10SupportChatQuery result = new ShowTop10SupportChatQuery();
+    	if(null != list && list.size() > 0){
+    		ShowTop10SupportChatQuery.Top10ChatElement e = null;
+    		AcommonList userList = null;
+    		AcommonList areaList = null;
+    		UserProfile user = null;
+    		for(AcommonChat chat : list){
+    			e = new ShowTop10SupportChatQuery.Top10ChatElement();
+    			user = userService.getUserProfileByUid(chat.getUid());
+    			if(null != user){
+    				e.setNickName(user.getNickName());
+    			}
+    			userList = activityMybatisDao.getAcommonList(2, 3, chat.getUid());
+    			if(null != userList){
+    				e.setScore(userList.getScore());
+    				if(userList.getScore() > 0){
+    					e.setUserRank(liveForActivityDao.getAcommonListRank(2, 3, userList.getScore(), DateUtil.date2string(userList.getUpdateTime(), "yyyy-MM-dd HH:mm:ss")));
+    				}
+    			}
+    			areaList = activityMybatisDao.getAcommonList(1, 3, chat.getTopicId());
+    			if(null != areaList){
+    				e.setAreaName(areaList.getAlias());
+    			}
+    			result.getResult().add(e);
+    		}
+    	}
+    	
+    	return Response.success(result);
+    }
+    
+    @Override
+    public Response chat(long uid, String message){
+    	if(uid <= 0 || StringUtils.isEmpty(message)){
+    		return Response.success();
+    	}
+    	AcommonChat chat = new AcommonChat();
+    	Date now = new Date();
+    	chat.setActivityId(3l);
+    	chat.setCreateTime(now);
+    	chat.setLongTime(now.getTime());
+    	chat.setMessage(message);
+    	chat.setTopicId(0l);
+    	chat.setType(0);
+    	chat.setUid(uid);
+    	activityMybatisDao.saveAcommonChat(chat);
+    	
+    	return Response.success();
+    }
+    
+    @Override
+    public void saveAcommonList(AcommonList alist){
+    	activityMybatisDao.createAcommonList(alist);
+    }
+    
+    public void updateAcommonList(AcommonList alist){
+    	activityMybatisDao.updateAcommonList(alist);
+    }
+    
+    @Override
+    public void deleteAcommonListById(long id){
+    	activityMybatisDao.deleteAcommonListById(id);
+    }
+    
+    @Override
+    public AcommonList getAcommonList(long targetId, long activityId, int type){
+    	return activityMybatisDao.getAcommonList(type, activityId, targetId);
     }
 }

@@ -55,6 +55,7 @@ public class WapxIosListener {
                         if (b) {
                             iosWapxList.setStatus(1);
                             iosWapxList.setUid(event.getUid());
+                            iosWapxList.setUpdateTime(new Date());
                             userMybatisDao.updateWapx(iosWapxList);
                             log.info("update wapx success");
                         } else {
@@ -69,6 +70,7 @@ public class WapxIosListener {
                         if(code == 0){
                             iosWapxList.setStatus(1);
                             iosWapxList.setUid(event.getUid());
+                            iosWapxList.setUpdateTime(new Date());
                             userMybatisDao.updateWapx(iosWapxList);
                             log.info("update daodao success");
                         }else {

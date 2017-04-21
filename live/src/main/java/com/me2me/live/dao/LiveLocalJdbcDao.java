@@ -752,4 +752,58 @@ public class LiveLocalJdbcDao {
 		
 		return jdbcTemplate.queryForList(sb.toString());
 	}
+
+	/**
+	 * 特殊活动 王国/用户 增加 热度/荣誉
+	 * @param targetId
+	 * @param type			1王国，2用户
+	 * @param activityId
+	 * @param score
+	 */
+	public void specialTopicAddHot(long targetId, int type, long activityId, int score){
+		StringBuilder sb = new StringBuilder();
+		sb.append("update a_common_list set score = score+").append(score);
+		sb.append(" where target_id=").append(targetId);
+		sb.append(" and type=").append(type);
+		sb.append(" and activity_id=").append(activityId);
+		jdbcTemplate.execute(sb.toString());
+	}
+
+	/**
+	 * 特殊活动 王国/用户 减少 热度/荣誉
+	 * @param targetId
+	 * @param type			1王国，2用户
+	 * @param activityId
+	 * @param score
+	 */
+	public void specialTopicReduceHot(long targetId, int type, long activityId, int score){
+		StringBuilder sb = new StringBuilder();
+		sb.append("update a_common_list set score=case when score>=").append(score);
+		sb.append(" then score-").append(score);
+		sb.append(" else 0 end where target_id=").append(targetId);
+		sb.append(" and type=").append(type);
+		sb.append(" and activity_id=").append(activityId);
+		jdbcTemplate.execute(sb.toString());
+	}
+	
+	public void insertSpecialTopicHotDetail(long acitivityId, long targetId){
+		StringBuilder sb = new StringBuilder();
+		sb.append("insert into a_common_hot_detail(target_id,activity_id)");
+		sb.append(" values (").append(targetId).append(",").append(acitivityId);
+		sb.append(")");
+		jdbcTemplate.execute(sb.toString());
+	}
+	
+	public Map<String, Object> getSpecialTopicHotDetail(long activityId, long targetId){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select * from a_common_hot_detail t");
+		sb.append(" where t.target_id=").append(targetId);
+		sb.append(" and t.activity_id=").append(activityId);
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
 }

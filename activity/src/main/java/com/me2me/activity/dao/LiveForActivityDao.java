@@ -449,4 +449,40 @@ public class LiveForActivityDao {
 		}
 		return null;
 	}
+	
+	public int getAcommonListRank(int type, long activityId, long score, String updateTime){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select count(1) cc from a_common_list t");
+		sb.append("where t.activity_id=").append(activityId);
+		sb.append(" and t.type=").append(type);
+		sb.append(" and (t.score>").append(score);
+		sb.append(" or (t.score=").append(score);
+		sb.append(" and t.update_time<'").append(updateTime);
+		sb.append("'))");
+		
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
+		if(null != list && list.size() > 0){
+			Map<String,Object> cc = list.get(0);
+			long count = (Long)cc.get("cc");
+			count++;
+			return (int)count;
+		}
+		return 0;
+	}
+	
+	/**
+	 * 特殊活动 王国/用户 增加 热度/荣誉
+	 * @param targetId
+	 * @param type			1王国，2用户
+	 * @param activityId
+	 * @param score
+	 */
+	public void specialTopicAddHot(long targetId, int type, long activityId, int score){
+		StringBuilder sb = new StringBuilder();
+		sb.append("update a_common_list set score = score+").append(score);
+		sb.append(" where target_id=").append(targetId);
+		sb.append(" and type=").append(type);
+		sb.append(" and activity_id=").append(activityId);
+		jdbcTemplate.execute(sb.toString());
+	}
 }

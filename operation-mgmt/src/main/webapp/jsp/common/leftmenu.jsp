@@ -115,6 +115,16 @@ String sub = request.getParameter("s");
                 </ul>
             </li>
             <li class="sub-menu">
+                <a href="javascript:;" <%if("zmjx".equals(tab)){ %>class="active"<%} %>>
+                    <i class="fa fa-bar-chart-o"></i>
+                    <span>最美家乡活动</span>
+                </a>
+                <ul class="sub">
+                	<li <%if("zmjx_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/zmjx/config/kingdomQuery">活动王国管理</a></li>
+                	<li <%if("zmjx_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/zmjx/config/query">配置管理</a></li>
+                </ul>
+            </li>
+            <li class="sub-menu">
                 <a href="javascript:;" <%if("10".equals(tab)){ %>class="active"<%} %>>
                     <i class="fa fa-bar-chart-o"></i>
                     <span>榜单管理</span>
