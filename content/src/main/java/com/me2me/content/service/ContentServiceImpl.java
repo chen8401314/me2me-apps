@@ -9,6 +9,7 @@ import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
+import com.me2me.common.page.PageBean;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -17,6 +18,9 @@ import com.me2me.content.dao.BillBoardJdbcDao;
 import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dao.LiveForContentJdbcDao;
 import com.me2me.content.dto.*;
+import com.me2me.content.dto.EmojiPackDto.PackageData;
+import com.me2me.content.mapper.EmotionPackDetailMapper;
+import com.me2me.content.mapper.EmotionPackMapper;
 import com.me2me.content.model.*;
 import com.me2me.content.model.ArticleReview;
 import com.me2me.content.model.ContentReview;
@@ -106,6 +110,12 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private BillBoardJdbcDao billBoardJdbcDao;
+    
+    @Autowired
+    private EmotionPackMapper emotionPackMapper;
+    
+    @Autowired
+    private EmotionPackDetailMapper  emotionPackDetailMapper;
 
 
 
@@ -5332,5 +5342,111 @@ private void localJpush(long toUid){
 	@Override
 	public void updateOnlineBillBoard(BillBoardDetails br) {
 		contentMybatisDao.updateBillBoardDetailById(br);
+	}
+
+	@Override
+	public Integer addEmotionPack(EmotionPack pack) {
+		return emotionPackMapper.insertSelective(pack);
+	}
+
+	@Override
+	public void deleteEmotionPackByKey(Integer id) {
+		EmotionPackDetailExample example = new EmotionPackDetailExample();
+		example.createCriteria().andPackIdEqualTo(id);
+		emotionPackDetailMapper.deleteByExample(example);
+		emotionPackMapper.deleteByPrimaryKey(id);
+	}
+
+	@Override
+	public void updateEmotionPackByKey(EmotionPack pack) {
+		emotionPackMapper.updateByPrimaryKeySelective(pack);
+		
+	}
+
+	@Override
+	public EmotionPack getEmotionPackByKey(Integer id) {
+		return emotionPackMapper.selectByPrimaryKey(id);
+	}
+
+	@Override
+	public PageBean<EmotionPack> getEmotionPackPage(PageBean<EmotionPack> page, Map<String, Object> conditions) {
+		
+		return null;
+	}
+
+	@Override
+	public Integer addEmotionPackDetail(EmotionPackDetail detail) {
+		return emotionPackDetailMapper.insertSelective(detail);
+	}
+
+	@Override
+	public void deleteEmotionPackDetailByKey(Integer id) {
+		emotionPackDetailMapper.deleteByPrimaryKey(id);
+	}
+
+	@Override
+	public void updateEmotionPackDetailByKey(EmotionPackDetail detail) {
+		emotionPackDetailMapper.updateByPrimaryKeySelective(detail);
+	}
+
+	@Override
+	public EmotionPackDetail getEmotionPackDetailByKey(Integer id) {
+		return emotionPackDetailMapper.selectByPrimaryKey(id);
+	}
+
+	@Override
+	public PageBean<EmotionPackDetail> getEmotionPackDetailPage(PageBean<EmotionPackDetail> page,
+			Map<String, Object> conditions) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public List<EmotionPackDetail> getAllEmotionPackDetail() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Response emojiPackageQuery() {
+		EmojiPackDto dto = new EmojiPackDto();
+		EmotionPackExample example = new EmotionPackExample();
+		example.createCriteria().andIsValidEqualTo(1);
+		example.setOrderByClause("orderNum desc");
+		List<EmotionPack> packList = emotionPackMapper.selectByExample(example);
+		List<PackageData> pdataList = new ArrayList<>();
+		for(EmotionPack pack:packList){
+			EmojiPackDto.PackageData pdata = new EmojiPackDto.PackageData();
+			BeanUtils.copyProperties(pack, pdata);
+			pdataList.add(pdata);
+		}
+		dto.setPackageData(pdataList);
+		return Response.success(dto);
+	}
+
+	@Override
+	public Response emojiPackageDetail(int packageId) {
+		EmojiPackDetailDto dto = new EmojiPackDetailDto();
+		
+		EmotionPack  pack=	emotionPackMapper.selectByPrimaryKey(packageId);
+		dto.setPackageId(pack.getId());
+		dto.setEmojiType(pack.getEmojiType());
+		dto.setPackageName(pack.getName());
+		dto.setPackageCover(pack.getCover());
+		dto.setPackageVersion(pack.getVersion());
+		dto.setPackagePversion(pack.getpVersion());
+		
+		BeanUtils.copyProperties(pack, dto);
+		
+		EmotionPackDetailExample example = new EmotionPackDetailExample();
+		example.createCriteria().andPackIdEqualTo(packageId);
+		example.setOrderByClause("orderNum desc");
+		List<EmotionPackDetail> detailList = emotionPackDetailMapper.selectByExample(example);
+		for(EmotionPackDetail detail:detailList){
+			EmojiPackDetailDto.PackageDetailData data = new EmojiPackDetailDto.PackageDetailData();
+			BeanUtils.copyProperties(detail, data);
+			dto.addEmojiData(data);
+		}
+		return Response.success(dto);
 	}
 }

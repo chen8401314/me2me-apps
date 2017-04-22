@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletResponse;
@@ -323,4 +324,15 @@ public class Contents extends BaseController {
         return contentService.myPublishByType(request.getCustomerId(),request.getSinceId(),request.getType(),request.getUpdateTime(),request.getUid(),vflag);
     }
 
+    @RequestMapping(value = "/emojiPackageQuery",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response emojiPackageQuery(MyPublishContentRequest request){
+        return contentService.emojiPackageQuery();
+    }
+    @RequestMapping(value = "emojiPackageDetail",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response emojiPackageDetail(MyPublishContentRequest request,@RequestParam("packageId")Integer packageId){
+    	return contentService.emojiPackageDetail(packageId);
+    }
+    
 }

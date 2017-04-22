@@ -3,6 +3,7 @@ package com.me2me.content.service;
 import java.util.List;
 import java.util.Map;
 
+import com.me2me.common.page.PageBean;
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.*;
@@ -352,4 +353,35 @@ public interface ContentService{
      * @param br
      */
     void updateOnlineBillBoard(BillBoardDetails br);
+    
+    public Integer addEmotionPack(EmotionPack pack);
+	
+	public void deleteEmotionPackByKey(Integer id);
+	
+	public void updateEmotionPackByKey(EmotionPack pack);
+	
+	public EmotionPack getEmotionPackByKey(Integer id);
+	
+	public PageBean<EmotionPack> getEmotionPackPage(PageBean<EmotionPack> page,Map<String,Object> conditions);
+	
+	public Integer addEmotionPackDetail(EmotionPackDetail detail);
+	
+	public void deleteEmotionPackDetailByKey(Integer id);
+	
+	public void updateEmotionPackDetailByKey(EmotionPackDetail detail);
+	
+	public EmotionPackDetail getEmotionPackDetailByKey(Integer id);
+	
+	public List<EmotionPackDetail> getAllEmotionPackDetail();
+	
+	public PageBean<EmotionPackDetail> getEmotionPackDetailPage(PageBean<EmotionPackDetail> page,Map<String,Object> conditions);
+	/**
+	 * 查询表情包
+	 * @author zhangjiwei
+	 * @date Apr 22, 2017
+	 * @return
+	 */
+	Response emojiPackageQuery();
+	
+	Response emojiPackageDetail(int packageId);
 }
