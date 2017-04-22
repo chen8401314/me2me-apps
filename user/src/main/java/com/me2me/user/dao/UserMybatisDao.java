@@ -1,12 +1,13 @@
 package com.me2me.user.dao;
 
 import com.me2me.common.page.PageBean;
+import com.me2me.common.utils.FirstCharUtils;
 import com.me2me.common.web.Specification;
 import com.me2me.sms.dto.PushLogDto;
 import com.me2me.user.dto.*;
 import com.me2me.user.mapper.*;
 import com.me2me.user.model.*;
-import com.me2me.user.model.ApplicationSecurity;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -109,6 +110,9 @@ public class UserMybatisDao {
     
     @Autowired
     private VersionChannelDownloadMapper versionChannelDownloadMapper;
+    
+    @Autowired
+    private UserSeekFollowMapper userSeekFollowMapper;
 
     /**
      * 保存用户注册信息
@@ -119,6 +123,7 @@ public class UserMybatisDao {
     }
 
     public void createUserProfile(UserProfile userProfile){
+    	userProfile.setNameGroup(FirstCharUtils.getFirstChar(userProfile.getNickName()));
         userProfileMapper.insertSelective(userProfile);
     }
 
@@ -229,6 +234,9 @@ public class UserMybatisDao {
     }
 
     public void modifyUserProfile(UserProfile userProfile){
+    	if(null != userProfile.getNickName()){
+    		userProfile.setNameGroup(FirstCharUtils.getFirstChar(userProfile.getNickName()));
+    	}
         userProfileMapper.updateByPrimaryKeySelective(userProfile);
     }
 
@@ -240,7 +248,25 @@ public class UserMybatisDao {
         return (lists != null && lists.size() > 0) ? lists.get(0) : null;
     }
     
+    public int getNoNameGroupUserProfileCount(){
+    	UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andNameGroupEqualTo("");
+        return userProfileMapper.countByExample(example);
+    }
+    
+    public List<UserProfile> getNoNameGroupUserProfiles(int pageSize){
+    	UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andNameGroupEqualTo("");
+        example.setOrderByClause(" id asc limit " + pageSize);
+        return userProfileMapper.selectByExample(example);
+    }
+    
     public void updateUserProfile(UserProfile userProfile){
+    	if(null != userProfile.getNickName()){
+    		userProfile.setNameGroup(FirstCharUtils.getFirstChar(userProfile.getNickName()));
+    	}
     	userProfileMapper.updateByPrimaryKeySelective(userProfile);
     }
 
@@ -256,6 +282,14 @@ public class UserMybatisDao {
         UserProfileExample example = new UserProfileExample();
         UserProfileExample.Criteria criteria = example.createCriteria();
         criteria.andUidIn(uids);
+        example.setOrderByClause(" id desc ");
+        return userProfileMapper.selectByExample(example);
+    }
+    
+    public List<UserProfile> getUserProfilesByMobiles(List<String> mobile){
+    	UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andMobileIn(mobile);
         example.setOrderByClause(" id desc ");
         return userProfileMapper.selectByExample(example);
     }
@@ -1080,4 +1114,11 @@ public class UserMybatisDao {
     	userProfileMapper.countUserByDay();
     }
 
+    public List<UserSeekFollow> getUserSeekFollows(int pageSize, long sinceId){
+    	UserSeekFollowExample example = new UserSeekFollowExample();
+    	UserSeekFollowExample.Criteria criteria = example.createCriteria();
+    	criteria.andIdLessThan(sinceId);
+    	example.setOrderByClause(" id desc limit " + pageSize);
+    	return userSeekFollowMapper.selectByExample(example);
+    }
 }

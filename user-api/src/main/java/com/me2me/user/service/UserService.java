@@ -352,4 +352,13 @@ public interface UserService {
      * @date Apr 10, 2017
      */
     void countUserByDay();
+    
+    Response mobileQuery(String mobiles, long uid);
+    
+    Response contacts(int page, String mobiles, long uid);
+    
+    /**
+     * 初始化所有用户的昵称所属的组
+     */
+    void initNameGroup();
 }

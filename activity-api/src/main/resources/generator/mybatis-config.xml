@@ -59,7 +59,9 @@
         <!--<table tableName="a_kingdom_list" domainObjectName="AkingDomList"/>-->
         <!--<table tableName="app_lightbox_source" domainObjectName="AppLightboxSource"/>-->
         <!--<table tableName="app_ui_control" domainObjectName="AppUiControl"/>-->
-
+        <!-- <table tableName="a_common_list" domainObjectName="AcommonList"/> -->
+		<!-- <table tableName="a_common_hot_detail" domainObjectName="AcommonHotDetail"/> -->
+		<!-- <table tableName="a_common_chat" domainObjectName="AcommonChat"/> -->
 
     </context>
 </generatorConfiguration>

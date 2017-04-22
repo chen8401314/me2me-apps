@@ -3,6 +3,7 @@ package com.me2me.activity.service;
 import com.me2me.activity.dto.*;
 import com.me2me.activity.model.Aactivity;
 import com.me2me.activity.model.AactivityStage;
+import com.me2me.activity.model.AcommonList;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.model.AkingDom;
 import com.me2me.activity.model.AmiliData;
@@ -279,4 +280,24 @@ public interface ActivityService {
     void updateTchannel(Tchannel c);
     
     void deleteTchannel(long id);
+    
+    Response specailTopicBillboard(long type, long searchUid);
+    
+    Response areaHot(long topicId);
+    
+    Response areaSupport(long optUid, long topicId);
+    
+    Response chatQuery(long sinceId);
+    
+    Response top10SupportChatQuery();
+    
+    Response chat(long uid, String message);
+    
+    void saveAcommonList(AcommonList alist);
+    
+    void updateAcommonList(AcommonList alist);
+    
+    void deleteAcommonListById(long id);
+    
+    AcommonList getAcommonList(long targetId, long activityId, int type);
 }

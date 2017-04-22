@@ -65,6 +65,8 @@ public class ShowActivitiesDto implements BaseEntity{
         private int topicType;
 
         private int topicInternalStatus;
+        
+        private String linkUrl;
 
     }
 }

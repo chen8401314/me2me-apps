@@ -7,8 +7,10 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.me2me.activity.dto.CreateActivityDto;
 import com.me2me.activity.dto.TopicCountDTO;
+import com.me2me.activity.model.AcommonList;
 import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.service.ActivityService;
+import com.me2me.cache.CacheConstant;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.page.PageBean;
@@ -101,9 +103,6 @@ public class LiveServiceImpl implements LiveService {
     
     //置顶次数
     private static final String TOP_COUNT = "topCount";
-    
-    private static final String ACTIVITY_CORECIRCLE_SPECIAL_TOPIC_LIST_KEY = "ACTIVITY_CORECIRCLE_SPECIAL_TOPIC_LIST";
-    private static final String ACTIVITY_SPECIAL_TOPIC_HANDLE_KEY = "ACTIVITY_SPECIAL_TOPIC_HANDLE";
 
     @SuppressWarnings("rawtypes")
 	@Override
@@ -625,7 +624,7 @@ public class LiveServiceImpl implements LiveService {
             cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + speakDto.getTopicId(), value);
             //--add update kingdom cache -- modify by zcl -- end --
             
-            
+            this.activitySpecialTopicHandler(speakDto.getUid(), speakDto.getTopicId(), fid, speakDto.getType(), speakDto.getContentType(), 1);
         }
         //获取最后一次发言FragmentId
         TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(speakDto.getTopicId(), speakDto.getUid());
@@ -734,37 +733,147 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status, ResponseStatus.USER_SPEAK_SUCCESS.message, speakDto);
     }
     
-    private void activitySpecialTopicHandler(long topicId, int type, int contentType, int optAction){
+    private void activitySpecialTopicHandler(long uid, long topicId, long fragmentId, int type, int contentType, int optAction){
     	//附加逻辑，活动需求，特殊王国在发言时增加用户的荣誉值以及该王国的热度
-        String specialSwitch = cacheService.get(ACTIVITY_SPECIAL_TOPIC_HANDLE_KEY);
+        String specialSwitch = cacheService.get(CacheConstant.ACTIVITY_SPECIAL_TOPIC_HANDLE_KEY);
         if(!StringUtils.isEmpty(specialSwitch) && "on".equals(specialSwitch)){//开关存在，并且是打开的状态
         	//判断是否特殊王国
-        	Set<String> specialTopicList = cacheService.smembers(ACTIVITY_CORECIRCLE_SPECIAL_TOPIC_LIST_KEY);
+        	Set<String> specialTopicList = cacheService.smembers(CacheConstant.ACTIVITY_CORECIRCLE_SPECIAL_TOPIC_LIST_KEY);
         	if(null != specialTopicList && specialTopicList.size() > 0 
         			&& specialTopicList.contains(String.valueOf(topicId))){
-        		int personScore = 0;
-        		int topicScore = 0;
+        		String keyType = null;
         		if((type == Specification.LiveSpeakType.ANCHOR.index && contentType == Specification.LiveContent.TEXT.index)
         				|| type == Specification.LiveSpeakType.FANS.index){//主播文本发言 || 粉丝回复
         			//文本
+        			keyType = CacheConstant.SPECIAL_TOPIC_TYPE_TEXT;
         		}else if(type == Specification.LiveSpeakType.ANCHOR.index && contentType == Specification.LiveContent.IMAGE.index){
         			//图片
+        			keyType = CacheConstant.SPECIAL_TOPIC_TYPE_IMAGE;
         		}else if(type == Specification.LiveSpeakType.VIDEO.index){
         			//视频
+        			keyType = CacheConstant.SPECIAL_TOPIC_TYPE_VIDEO;
         		}else if(type == Specification.LiveSpeakType.SOUND.index){
         			//音频
+        			keyType = CacheConstant.SPECIAL_TOPIC_TYPE_AUDIO;
         		}else if(type == Specification.LiveSpeakType.AT.index
         				|| type == Specification.LiveSpeakType.ANCHOR_AT.index
         				|| type == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){//普通@，主播@，@核心圈
         			//@
+        			keyType = CacheConstant.SPECIAL_TOPIC_TYPE_AT;
         		}else if((type==51||type==52) && contentType == 72){//分享王国内链
         			//分享
+        			keyType = CacheConstant.SPECIAL_TOPIC_TYPE_SHARE;
+        		}
+        		if(null == keyType){
+        			return;//不在我们定义的范围内
         		}
         		
+        		String key = CacheConstant.SPECIAL_TOPIC_KEY_PRE + CacheConstant.KEY_SEPARATOR_UNDERLINE + keyType;
         		if(optAction == 1){//新增
+        			String limit = cacheService.hGet(key, CacheConstant.SPECIAL_TOPIC_LIMIT);
+        			if(StringUtils.isEmpty(limit)){
+        				return;//未设置
+        			}
+        			int limitCount = Integer.valueOf(limit);
+        			if(limitCount < 1){
+        				return;
+        			}
+        			AcommonList alist = activityService.getAcommonList(topicId, 3, 1);
+        			if(null == alist){
+        				return;
+        			}
+        			//总限额
+        			String totalLimitStr = cacheService.get(CacheConstant.SPECIAL_TOPIC_HOT_LIMIT_TOTAL);
+        			int totalLimit = 0;
+        			if(!StringUtils.isEmpty(totalLimitStr)){
+        				totalLimit = Integer.valueOf(totalLimitStr);
+        			}
+        			if(alist.getScore().intValue() >= totalLimit){
+        				return;
+        			}
         			
+        			String personLimit = cacheService.get(CacheConstant.SPECIAL_TOPIC_USER_LIMIT_PRE + keyType + CacheConstant.KEY_SEPARATOR_UNDERLINE + uid);
+        			if(StringUtils.isEmpty(personLimit)){
+        				personLimit = "1";
+        			}else{
+        				int personLimitCount = Integer.valueOf(personLimit);
+        				if(personLimitCount >= limitCount){
+        					return;//已经到上限了
+        				}
+        				personLimitCount++;
+        				personLimit = String.valueOf(personLimitCount);
+        			}
+        			cacheService.set(CacheConstant.SPECIAL_TOPIC_USER_LIMIT_PRE + keyType + CacheConstant.KEY_SEPARATOR_UNDERLINE + uid, personLimit);
+        			
+        			//每日限额
+        			boolean isOverDayLimit = false;
+        			String dayLimitStr = cacheService.get(CacheConstant.SPECIAL_TOPIC_HOT_LIMIT_DAY);
+        			int dayLimit = 0;
+        			if(!StringUtils.isEmpty(dayLimitStr)){
+        				dayLimit = Integer.valueOf(dayLimitStr);
+        			}
+        			String topicDayHotStr = cacheService.hGet(CacheConstant.SPECIAL_TOPIC_HOT_DAY_PRE+DateUtil.date2string(new Date(), "yyyyMMdd"), String.valueOf(topicId));
+        			int topicDayHot = 0;
+        			if(!StringUtils.isEmpty(topicDayHotStr)){
+        				topicDayHot = Integer.valueOf(topicDayHotStr);
+        			}
+        			if(topicDayHot>=dayLimit){
+        				isOverDayLimit = true;
+        			}
+        			
+        			String personScore = cacheService.hGet(key, CacheConstant.SPECIAL_TOPIC_PERSON+CacheConstant.SPECIAL_TOPIC_ACTION_ADD);
+        			String kingdomScore = cacheService.hGet(key, CacheConstant.SPECIAL_TOPIC_KINGDOM+CacheConstant.SPECIAL_TOPIC_ACTION_ADD);
+        			int personScoreCount = 0;
+        			if(!StringUtils.isEmpty(personScore)){
+        				personScoreCount = Integer.valueOf(personScore);
+        			}
+        			int kingdomScoreCount = 0;
+        			if(!StringUtils.isEmpty(kingdomScore)){
+        				kingdomScoreCount = Integer.valueOf(kingdomScore);
+        			}
+        			boolean needDetail = false;
+        			if(personScoreCount > 0){
+        				if(isOverDayLimit){
+        					personScoreCount = personScoreCount/2;
+        				}
+        				needDetail = true;
+        				liveLocalJdbcDao.specialTopicAddHot(uid, 2, 3, personScoreCount);
+        			}
+        			if(kingdomScoreCount > 0){
+        				if(isOverDayLimit){
+        					kingdomScoreCount = kingdomScoreCount/2;
+        				}
+        				needDetail = true;
+        				liveLocalJdbcDao.specialTopicAddHot(topicId, 1, 3, kingdomScoreCount);
+        				topicDayHot = topicDayHot + kingdomScoreCount;
+        				cacheService.hSet(CacheConstant.SPECIAL_TOPIC_HOT_DAY_PRE+DateUtil.date2string(new Date(), "yyyyMMdd"), String.valueOf(topicId), String.valueOf(topicDayHot));
+        			}
+        			if(needDetail){
+        				liveLocalJdbcDao.insertSpecialTopicHotDetail(3, fragmentId);
+        			}
         		}else if(optAction == 2){//删除
+        			//首先查询是否需要减，只有产生过热度或荣誉的那些记录是需要减的
+        			Map<String, Object> detail = liveLocalJdbcDao.getSpecialTopicHotDetail(3, fragmentId);
+        			if(null == detail){
+        				return;
+        			}
         			
+        			String personScore = cacheService.hGet(key, CacheConstant.SPECIAL_TOPIC_PERSON+CacheConstant.SPECIAL_TOPIC_ACTION_DEL);
+        			String kingdomScore = cacheService.hGet(key, CacheConstant.SPECIAL_TOPIC_KINGDOM+CacheConstant.SPECIAL_TOPIC_ACTION_DEL);
+        			int personScoreCount = 0;
+        			if(!StringUtils.isEmpty(personScore)){
+        				personScoreCount = Integer.valueOf(personScore);
+        			}
+        			int kingdomScoreCount = 0;
+        			if(!StringUtils.isEmpty(kingdomScore)){
+        				kingdomScoreCount = Integer.valueOf(kingdomScore);
+        			}
+        			if(personScoreCount > 0){
+        				liveLocalJdbcDao.specialTopicReduceHot(uid, 2, 3, personScoreCount);
+        			}
+        			if(kingdomScoreCount > 0){
+        				liveLocalJdbcDao.specialTopicReduceHot(topicId, 1, 3, kingdomScoreCount);
+        			}
         		}
         	}
         }
@@ -1187,6 +1296,19 @@ public class LiveServiceImpl implements LiveService {
                 }
             }
         }
+        //一次性查询所有王国的最新一条数据
+        Map<String, Map<String, Object>> lastFragmentMap = new HashMap<String, Map<String, Object>>();
+        List<Map<String, Object>> lastFragmentList = liveLocalJdbcDao.getLastFragmentByTopicIds(tidList);
+        if(null != lastFragmentList && lastFragmentList.size() > 0){
+        	Long fuid = null;
+            for(Map<String, Object> m : lastFragmentList){
+                lastFragmentMap.put(String.valueOf(m.get("topic_id")), m);
+                fuid = (Long)m.get("uid");
+                if(!uidList.contains(fuid)){
+                	uidList.add(fuid);
+                }
+            }
+        }
         Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
         List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
         if(null != profileList && profileList.size() > 0){
@@ -1222,14 +1344,7 @@ public class LiveServiceImpl implements LiveService {
                 reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
             }
         }
-        //一次性查询所有王国的最新一条数据
-        Map<String, Map<String, Object>> lastFragmentMap = new HashMap<String, Map<String, Object>>();
-        List<Map<String, Object>> lastFragmentList = liveLocalJdbcDao.getLastFragmentByTopicIds(tidList);
-        if(null != lastFragmentList && lastFragmentList.size() > 0){
-            for(Map<String, Object> m : lastFragmentList){
-                lastFragmentMap.put(String.valueOf(m.get("topic_id")), m);
-            }
-        }
+        
         List<Long> cidList = new ArrayList<Long>();
         //一次性查询所有topic对应的content
         Map<String, Content> contentMap = new HashMap<String, Content>();
@@ -1262,6 +1377,7 @@ public class LiveServiceImpl implements LiveService {
         }
 
         UserProfile userProfile = null;
+        UserProfile lastUserProfile = null;
         Map<String, Object> lastFragment = null;
         Content content = null;
         for (Topic2 topic : topicList) {
@@ -1315,6 +1431,13 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLastExtra((String)lastFragment.get("extra"));
                 showTopicElement.setLastAtUid((Long)lastFragment.get("at_uid"));
                 showTopicElement.setIsTop(topic.getIsTop());
+                showTopicElement.setLastUid((Long)lastFragment.get("uid"));
+                lastUserProfile = profileMap.get(String.valueOf(lastFragment.get("uid")));
+                if(null != lastUserProfile){
+                	showTopicElement.setLastNickName(lastUserProfile.getNickName());
+                	showTopicElement.setLastAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
+                	showTopicElement.setLastV_lv(lastUserProfile.getvLv());
+                }
             } else {
                 showTopicElement.setLastContentType(-1);
             }
@@ -1408,6 +1531,13 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLastStatus(topicFragment.getStatus());
                 showTopicElement.setLastExtra(topicFragment.getExtra());
                 showTopicElement.setLastAtUid(topicFragment.getAtUid());
+                showTopicElement.setLastUid(topicFragment.getUid());
+                UserProfile lastUserProfile = userService.getUserProfileByUid(topicFragment.getUid());
+                if(null != lastUserProfile){
+                	showTopicElement.setLastNickName(lastUserProfile.getNickName());
+                	showTopicElement.setLastAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
+                	showTopicElement.setLastV_lv(lastUserProfile.getvLv());
+                }
             }
         }
     }
@@ -1627,7 +1757,7 @@ public class LiveServiceImpl implements LiveService {
     		}
     		
     		//判断是否是特殊王国，如果是特殊王国，则加入王国的同时，加入核心圈--“赛出家乡美”活动需求
-    		Set<String> specialTopicList = cacheService.smembers(ACTIVITY_CORECIRCLE_SPECIAL_TOPIC_LIST_KEY);
+    		Set<String> specialTopicList = cacheService.smembers(CacheConstant.ACTIVITY_CORECIRCLE_SPECIAL_TOPIC_LIST_KEY);
     		if(null != specialTopicList && specialTopicList.size() > 0 && specialTopicList.contains(String.valueOf(topicId))){
     			//特殊王国，则加入的同时加入核心圈，无需关心是否超出核心圈上限
     			if(!this.isInCore(uid, topic.getCoreCircle())){
@@ -1800,6 +1930,10 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response deleteLiveFragment(long topicId, long fid, long uid) {
         log.info("delete topic fragment start ...");
+        TopicFragment tf = liveMybatisDao.getTopicFragmentById(fid);
+        if(null == tf || tf.getStatus().intValue() == Specification.TopicFragmentStatus.DISABLED.index){
+        	return Response.success(ResponseStatus.TOPIC_FRAGMENT_DELETE_SUCCESS.status, ResponseStatus.TOPIC_FRAGMENT_DELETE_SUCCESS.message);
+        }
         try {
         	//判断当前用户是否有删除本条内容的权限
         	boolean canDel = false;
@@ -1816,7 +1950,6 @@ public class LiveServiceImpl implements LiveService {
         	}
         	if(!canDel){
         		//再判断是否是自己发的内容，自己的内容有可能是可以删
-        		TopicFragment tf = liveMybatisDao.getTopicFragmentById(fid);
         		if(tf.getUid() == uid){
         			//再判断是否是卡片（核心圈发言、核心圈@），卡片不能删
         			if(tf.getType() != Specification.LiveSpeakType.ANCHOR.index
@@ -1840,7 +1973,11 @@ public class LiveServiceImpl implements LiveService {
                 deleteLog.setUid(uid);
 
                 liveMybatisDao.createDeleteLog(deleteLog);
+                
+                //删除特殊王国产生的热度等
+                this.activitySpecialTopicHandler(tf.getUid(), tf.getTopicId(), tf.getId(), tf.getType(), tf.getContentType(), 2);
             }
+            
             //从topicBarrage中删除
             TopicBarrage barrage = liveMybatisDao.getTopicBarrageByFId(fid);
             if (barrage!=null) {

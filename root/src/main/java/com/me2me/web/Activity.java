@@ -7,13 +7,19 @@ import com.me2me.common.web.Response;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.web.request.AcceptTaskRequest;
 import com.me2me.web.request.ActivityMiliRequest;
+import com.me2me.web.request.AreaHotRequest;
+import com.me2me.web.request.AreaSupportRequest;
 import com.me2me.web.request.AwardRequest;
+import com.me2me.web.request.ChatQueryRequest;
+import com.me2me.web.request.ChatRequest;
 import com.me2me.web.request.CheckUserActivityKindomRequest;
 import com.me2me.web.request.GetTaskListRequest;
 import com.me2me.web.request.OptForcedPairingRequest;
 import com.me2me.web.request.QiUserRequest;
 import com.me2me.web.request.RecommendHistoryRequest;
+import com.me2me.web.request.SpecailTopicBillboardRequest;
 import com.me2me.web.request.TaskPublishRequest;
+import com.me2me.web.request.Top10SupportChatQueryRequest;
 import com.me2me.web.request.UserTaskStatusRequest;
 import com.me2me.web.request.forcedPairingRequest;
 
@@ -522,4 +528,69 @@ public class Activity extends BaseController {
         return activityService.getActualAndHistoryList(request.getUid() ,request.getType() ,request.getDate() ,request.getActivityId());
     }
 
+    /**
+     * 活动王国/用户榜单获取接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/billboard")
+    public Response specailTopicBillboard(SpecailTopicBillboardRequest request){
+    	return activityService.specailTopicBillboard(request.getType(), request.getSearchUid());
+    }
+    
+    /**
+     * 地区热度查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/areaHot")
+    public Response areaHot(AreaHotRequest request){
+    	return activityService.areaHot(request.getTopicId());
+    }
+    
+    /**
+     * 地区支持接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/areaSupport")
+    public Response areaSupport(AreaSupportRequest request){
+    	return activityService.areaSupport(request.getOptUid(), request.getTopicId());
+    }
+    
+    /**
+     * 广播聊天查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/chatQuery")
+    public Response chatQuery(ChatQueryRequest request){
+    	return activityService.chatQuery(request.getSinceId());
+    }
+    
+    /**
+     * top10用户支持信息获取接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/top10SupportChatQuery")
+    public Response top10SupportChatQuery(Top10SupportChatQueryRequest request){
+    	return activityService.top10SupportChatQuery();
+    }
+    
+    /**
+     * 广播发言接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/chat")
+    public Response chat(ChatRequest request){
+    	return activityService.chat(request.getChatUid(), request.getMessage());
+    }
 }

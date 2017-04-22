@@ -2837,4 +2837,127 @@ public class UserServiceImpl implements UserService {
 		userMybatisDao.countUserByDay();
 	}
 
+	@Override
+	public Response mobileQuery(String mobiles, long uid){
+		ShowMobileDTO result = new ShowMobileDTO();
+		if(StringUtils.isEmpty(mobiles)){
+			return Response.success(result);
+		}
+		List<String> mobileList = new ArrayList<String>();
+		String[] tmp = mobiles.split(",");
+		if(null != tmp && tmp.length > 0){
+			for(String m : tmp){
+				if(!StringUtils.isEmpty(m)){
+					mobileList.add(m);
+				}
+			}
+		}
+		
+		if(mobileList.size() > 0){
+			List<UserProfile> userList = userMybatisDao.getUserProfilesByMobiles(mobileList);
+			Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+			List<Long> uidList = new ArrayList<Long>();
+			if(null != userList && userList.size() > 0){
+				for(UserProfile u : userList){
+					userMap.put(u.getMobile(), u);
+					uidList.add(u.getUid());
+				}
+				result.setTotalAppUser(userList.size());
+			}
+			
+			//一次性查询关注信息
+	        Map<String, String> followMap = new HashMap<String, String>();
+			if(uidList.size() > 0){
+		        List<UserFollow> userFollowList = userMybatisDao.getAllFollows(uid, uidList);
+		        if(null != userFollowList && userFollowList.size() > 0){
+		            for(UserFollow uf : userFollowList){
+		                followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+		            }
+		        }
+			}
+			
+			ShowMobileDTO.MobileElement e = null;
+			UserProfile user = null;
+			for(String mobile : mobileList){
+				e = new ShowMobileDTO.MobileElement();
+				e.setMobile(mobile);
+				user = userMap.get(mobile);
+				if(null == user){
+					e.setIsAppUser(0);
+				}else{
+					e.setIsAppUser(1);
+					e.setUid(user.getUid());
+					e.setNickName(user.getNickName());
+					e.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+					e.setV_lv(user.getvLv());
+					e.setIntroduced(user.getIntroduced());
+					if(null != followMap.get(uid+"_"+user.getUid().toString())){
+		                e.setIsFollowed(1);
+		            }else{
+		                e.setIsFollowed(0);
+		            }
+		            if(null != followMap.get(user.getUid().toString()+"_"+uid)){
+		                e.setIsFollowMe(1);
+		            }else{
+		                e.setIsFollowMe(0);
+		            }
+				}
+			}
+		}
+		
+		return Response.success(result);
+	}
+	
+	@Override
+	public Response contacts(int page, String mobiles, long uid){
+		int pageSize = 20;
+		if(page < 1){
+			page = 1;
+		}
+		
+		List<String> mobileList = new ArrayList<String>();
+		List<UserSeekFollow> seekList = null;
+		if(page == 1){//第一页，需要返回手机联系人 和 求关注列表
+			//手机联系人电话
+			if(!StringUtils.isEmpty(mobiles)){
+				String[] tmp = mobiles.split(",");
+				if(null != tmp && tmp.length > 0){
+					for(String m : tmp){
+						if(!StringUtils.isEmpty(m)){
+							mobileList.add(m);
+						}
+					}
+				}
+			}
+			//求关注列表
+			seekList = userMybatisDao.getUserSeekFollows(10, Long.MAX_VALUE);
+		}
+		
+		ShowContactsDTO result = new ShowContactsDTO();
+		result.setTotalPage(userMybatisDao.getUserFollowCount(uid));
+		int start = (page-1)*pageSize;
+		
+		
+		return Response.success(result);
+	}
+	
+	@Override
+	public void initNameGroup(){
+		int total = userMybatisDao.getNoNameGroupUserProfileCount();
+		log.info("==本次共["+total+"]个无分组的用户昵称需要调整");
+		List<UserProfile> ulist = null;
+		int count = 0;
+		while(true){
+			ulist = userMybatisDao.getNoNameGroupUserProfiles(1000);
+			if(null == ulist || ulist.size() == 0){
+				break;
+			}
+			for(UserProfile u : ulist){
+				userMybatisDao.updateUserProfile(u);
+			}
+			count = count + ulist.size();
+			log.info("==处理了["+ulist.size()+"]个用户，共处理了["+count+"]个用户");
+		}
+		log.info("==初始化用户昵称分组完成");
+	}
 }

@@ -79,6 +79,12 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         WHITE_LIST.add("/api/user/IOSWapxUserRegist");
         WHITE_LIST.add("/api/spread/check");
         WHITE_LIST.add("/api/spread/click");
+        WHITE_LIST.add("/api/activity/billboard");
+        WHITE_LIST.add("/api/activity/areaHot");
+        WHITE_LIST.add("/api/activity/areaSupport");
+        WHITE_LIST.add("/api/activity/chatQuery");
+        WHITE_LIST.add("/api/activity/top10SupportChatQuery");
+        WHITE_LIST.add("/api/activity/chat");
 
 
         INTERNAL_WHITE_LIST.add("/api/console/showContents");
@@ -96,6 +102,12 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         INTERNAL_WHITE_LIST.add("/api/user/IOSWapxUserRegist");
         INTERNAL_WHITE_LIST.add("/api/spread/check");
         INTERNAL_WHITE_LIST.add("/api/spread/click");
+        INTERNAL_WHITE_LIST.add("/api/activity/billboard");
+        INTERNAL_WHITE_LIST.add("/api/activity/areaHot");
+        INTERNAL_WHITE_LIST.add("/api/activity/areaSupport");
+        INTERNAL_WHITE_LIST.add("/api/activity/chatQuery");
+        INTERNAL_WHITE_LIST.add("/api/activity/top10SupportChatQuery");
+        INTERNAL_WHITE_LIST.add("/api/activity/chat");
 
 
         TRUST_REQUEST_LIST.add("/api/user/getSpecialUserProfile");

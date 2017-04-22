@@ -3541,6 +3541,7 @@ private void localJpush(long toUid){
 						activityElement.setTopicInternalStatus(this.getInternalStatus(topic, uid));
 					}
 				}
+				activityElement.setLinkUrl("");//这个是兼容安卓222版本bug
 				result.getActivityData().add(activityElement);
 			}
 		}

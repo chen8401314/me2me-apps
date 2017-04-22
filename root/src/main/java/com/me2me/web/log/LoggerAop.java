@@ -1,10 +1,13 @@
 package com.me2me.web.log;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializeFilter;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.me2me.monitor.dto.AccessLoggerDto;
 import com.me2me.monitor.service.MonitorService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.HttpResponse;
 import org.aspectj.lang.JoinPoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -12,6 +15,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
@@ -51,19 +55,27 @@ public class LoggerAop {
         AccessLoggerDto accessLoggerDto = new AccessLoggerDto();
         accessLoggerDto.setHeaders(JSON.toJSONString(map));
         accessLoggerDto.setMethod(request.getMethod());
-        String origin = JSON.toJSONString(joinPoint.getArgs());
-        List<Map> paramsMap = JSON.parseArray(origin,Map.class);
-        for(Map m : paramsMap) {
-            if(m.get("uid")!=null) {
-                long uid = Long.valueOf(m.get("uid").toString());
-                accessLoggerDto.setUid(uid);
-                break;
-            }
+        List<Object> args = Lists.newArrayList();
+        Object[] os = joinPoint.getArgs();
+        for(Object o : os) {
+            args.add(o);
         }
-        accessLoggerDto.setUri(request.getRequestURI());
-        accessLoggerDto.setParams(JSON.toJSONString(joinPoint.getArgs()));
-        monitorService.saveAccessLog(accessLoggerDto);
-
+        try{
+            String origin = JSON.toJSONString(args);
+            List<Map> paramsMap = JSON.parseArray(origin,Map.class);
+            for(Map m : paramsMap) {
+                if(m.get("uid")!=null) {
+                    long uid = Long.valueOf(m.get("uid").toString());
+                    accessLoggerDto.setUid(uid);
+                    break;
+                }
+            }
+            accessLoggerDto.setUri(request.getRequestURI());
+            accessLoggerDto.setParams(JSON.toJSONString(joinPoint.getArgs()));
+            monitorService.saveAccessLog(accessLoggerDto);
+        }catch (Exception e){
+            log.info("ex ignore :"+e.getMessage());
+        }
     }
     public void after(JoinPoint joinPoint){
         long execTime = System.currentTimeMillis() - startTime.get();

@@ -113,25 +113,11 @@ public class ShowTopicListDto implements BaseEntity{
         
         //0圈外 1圈内 2核心圈
         private int internalStatus;
-
-        private  List<Tags> tags  =  Lists.newArrayList();
-
-        public static Tags createTags(){
-            return new Tags();
-        }
-
-        @Data
-        public static  class Tags implements BaseEntity{
-
-            private String tag;
-
-            private long tid;
-
-            private int likeCount;
-
-            private long cid;
-        }
-
+        
+        private long lastUid;
+        private String lastNickName;
+        private String lastAvatar;
+        private int lastV_lv;
     }
 
     @Data
