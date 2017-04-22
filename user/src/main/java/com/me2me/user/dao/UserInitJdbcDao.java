@@ -3,6 +3,7 @@ package com.me2me.user.dao;
 import com.me2me.core.dao.BaseJdbcDao;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -138,5 +139,19 @@ public class UserInitJdbcDao extends BaseJdbcDao {
     	}
     	String sql = sb.toString();
     	return super.count(sql);
+    }
+    
+    public List<Map<String, Object>> getUserFollowInfoPage(String nickName, long uid, int start, int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select p.*,case p.name_group when '#' then 'Z#' else p.name_group end as ng");
+    	sb.append(" from user_follow f, user_profile p where f.target_uid=p.uid");
+    	sb.append(" and f.source_uid=").append(uid);
+    	if(!StringUtils.isEmpty(nickName)){
+    		sb.append(" and f.nick_name like '%").append(nickName).append("%'");
+    	}
+    	sb.append(" order by ng asc,p.nick_name ASC");
+    	sb.append(" limit ").append(start).append(",").append(pageSize);
+    	
+    	return super.query(sb.toString());
     }
 }

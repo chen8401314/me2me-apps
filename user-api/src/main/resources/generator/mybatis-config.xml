@@ -61,6 +61,7 @@
         <!--<table tableName="ios_wapx" domainObjectName="IosWapx"/>-->
         <!--<table tableName="version_channel_download" domainObjectName="VersionChannelDownload"/>-->
         <!--<table tableName="im_config" domainObjectName="ImConfig"/>-->
+        <!-- <table tableName="user_seek_follow" domainObjectName="UserSeekFollow"/> -->
 
     </context>
 </generatorConfiguration>

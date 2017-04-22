@@ -2907,4 +2907,57 @@ public class UserServiceImpl implements UserService {
 		
 		return Response.success(result);
 	}
+	
+	@Override
+	public Response contacts(int page, String mobiles, long uid){
+		int pageSize = 20;
+		if(page < 1){
+			page = 1;
+		}
+		
+		List<String> mobileList = new ArrayList<String>();
+		List<UserSeekFollow> seekList = null;
+		if(page == 1){//第一页，需要返回手机联系人 和 求关注列表
+			//手机联系人电话
+			if(!StringUtils.isEmpty(mobiles)){
+				String[] tmp = mobiles.split(",");
+				if(null != tmp && tmp.length > 0){
+					for(String m : tmp){
+						if(!StringUtils.isEmpty(m)){
+							mobileList.add(m);
+						}
+					}
+				}
+			}
+			//求关注列表
+			seekList = userMybatisDao.getUserSeekFollows(10, Long.MAX_VALUE);
+		}
+		
+		ShowContactsDTO result = new ShowContactsDTO();
+		result.setTotalPage(userMybatisDao.getUserFollowCount(uid));
+		int start = (page-1)*pageSize;
+		
+		
+		return Response.success(result);
+	}
+	
+	@Override
+	public void initNameGroup(){
+		int total = userMybatisDao.getNoNameGroupUserProfileCount();
+		log.info("==本次共["+total+"]个无分组的用户昵称需要调整");
+		List<UserProfile> ulist = null;
+		int count = 0;
+		while(true){
+			ulist = userMybatisDao.getNoNameGroupUserProfiles(1000);
+			if(null == ulist || ulist.size() == 0){
+				break;
+			}
+			for(UserProfile u : ulist){
+				userMybatisDao.updateUserProfile(u);
+			}
+			count = count + ulist.size();
+			log.info("==处理了["+ulist.size()+"]个用户，共处理了["+count+"]个用户");
+		}
+		log.info("==初始化用户昵称分组完成");
+	}
 }

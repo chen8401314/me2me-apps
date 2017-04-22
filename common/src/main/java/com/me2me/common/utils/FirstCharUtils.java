@@ -32,7 +32,6 @@ public class FirstCharUtils {
 				}
 			}
 			return result.toUpperCase();
-			
 		} else {
 			return null;
 		}
