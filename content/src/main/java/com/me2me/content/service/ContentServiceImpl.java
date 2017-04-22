@@ -5370,12 +5370,6 @@ private void localJpush(long toUid){
 	}
 
 	@Override
-	public PageBean<EmotionPack> getEmotionPackPage(PageBean<EmotionPack> page, Map<String, Object> conditions) {
-		
-		return null;
-	}
-
-	@Override
 	public Integer addEmotionPackDetail(EmotionPackDetail detail) {
 		return emotionPackDetailMapper.insertSelective(detail);
 	}
@@ -5396,24 +5390,36 @@ private void localJpush(long toUid){
 	}
 
 	@Override
-	public PageBean<EmotionPackDetail> getEmotionPackDetailPage(PageBean<EmotionPackDetail> page,
-			Map<String, Object> conditions) {
-		// TODO Auto-generated method stub
-		return null;
+	public PageBean<EmotionPack> getEmotionPackPage(PageBean<EmotionPack> page, Map<String, Object> conditions) {
+		EmotionPackExample example = new EmotionPackExample();
+		int count = emotionPackMapper.countByExample(example);
+		example.setOrderByClause("order_num desc limit "+((page.getCurrentPage()-1)*page.getPageSize())+","+page.getPageSize());
+		List<EmotionPack> packList=  emotionPackMapper.selectByExample(example);
+		page.setPageSize(count);
+		page.setDataList(packList);
+		return page;
 	}
 
 	@Override
-	public List<EmotionPackDetail> getAllEmotionPackDetail() {
-		// TODO Auto-generated method stub
-		return null;
+	public PageBean<EmotionPackDetail> getEmotionPackDetailPage(PageBean<EmotionPackDetail> page,
+			Map<String, Object> conditions) {
+		EmotionPackDetailExample example = new EmotionPackDetailExample();
+		example.createCriteria().andPackIdEqualTo((Integer)conditions.get("packId"));
+		int count = emotionPackDetailMapper.countByExample(example);
+		example.setOrderByClause("order_num asc limit "+((page.getCurrentPage()-1)*page.getPageSize())+","+page.getPageSize());
+		List<EmotionPackDetail> packList=  emotionPackDetailMapper.selectByExample(example);
+		page.setPageSize(count);
+		page.setDataList(packList);
+		return page;
 	}
+
 
 	@Override
 	public Response emojiPackageQuery() {
 		EmojiPackDto dto = new EmojiPackDto();
 		EmotionPackExample example = new EmotionPackExample();
 		example.createCriteria().andIsValidEqualTo(1);
-		example.setOrderByClause("orderNum desc");
+		example.setOrderByClause("order_num desc");
 		List<EmotionPack> packList = emotionPackMapper.selectByExample(example);
 		List<PackageData> pdataList = new ArrayList<>();
 		for(EmotionPack pack:packList){
@@ -5441,7 +5447,7 @@ private void localJpush(long toUid){
 		
 		EmotionPackDetailExample example = new EmotionPackDetailExample();
 		example.createCriteria().andPackIdEqualTo(packageId);
-		example.setOrderByClause("orderNum desc");
+		example.setOrderByClause("order_num asc");
 		List<EmotionPackDetail> detailList = emotionPackDetailMapper.selectByExample(example);
 		for(EmotionPackDetail detail:detailList){
 			EmojiPackDetailDto.PackageDetailData data = new EmojiPackDetailDto.PackageDetailData();

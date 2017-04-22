@@ -372,7 +372,6 @@ public interface ContentService{
 	
 	public EmotionPackDetail getEmotionPackDetailByKey(Integer id);
 	
-	public List<EmotionPackDetail> getAllEmotionPackDetail();
 	
 	public PageBean<EmotionPackDetail> getEmotionPackDetailPage(PageBean<EmotionPackDetail> page,Map<String,Object> conditions);
 	/**

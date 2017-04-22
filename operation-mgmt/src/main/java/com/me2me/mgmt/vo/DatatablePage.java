@@ -20,6 +20,10 @@ public class DatatablePage{
 	private Integer recordsFiltered;
 	private String error;
 	
+	public DatatablePage() {
+		this.start=0;
+		this.length=15;
+	}
 	public Integer getDraw() {
 		return draw;
 	}

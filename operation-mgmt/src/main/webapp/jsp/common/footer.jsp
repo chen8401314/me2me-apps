@@ -7,3 +7,11 @@
         </a>
     </div>
 </footer>
+<script>
+$("select[data-value]").each(function(){
+	var value= $(this).attr("data-value");
+	$(this).find("option[value='"+value+"']").attr("selected","selected");
+	
+})
+
+</script>
