@@ -182,6 +182,16 @@
 			<id>test</id>
 			<dependencies>
 				<dependency>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+					<version>4.12</version>
+				</dependency>
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-test</artifactId>
+					<version>4.2.6.RELEASE</version>
+				</dependency>
+				<dependency>
 					<groupId>org.springframework</groupId>
 					<artifactId>spring-webmvc</artifactId>
 				</dependency>
@@ -304,6 +314,16 @@
 			<id>prod</id>
 			<dependencies>
 				<dependency>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+					<version>4.12</version>
+				</dependency>
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-test</artifactId>
+					<version>4.2.6.RELEASE</version>
+				</dependency>
+				<dependency>
 					<groupId>org.springframework</groupId>
 					<artifactId>spring-webmvc</artifactId>
 				</dependency>
@@ -425,6 +445,16 @@
 		<profile>
 			<id>product</id>
 			<dependencies>
+				<dependency>
+					<groupId>junit</groupId>
+					<artifactId>junit</artifactId>
+					<version>4.12</version>
+				</dependency>
+				<dependency>
+					<groupId>org.springframework</groupId>
+					<artifactId>spring-test</artifactId>
+					<version>4.2.6.RELEASE</version>
+				</dependency>
 				<dependency>
 					<groupId>org.springframework</groupId>
 					<artifactId>spring-webmvc</artifactId>
