@@ -781,4 +781,14 @@ public class Users extends BaseController {
         return userService.registAllIMtoken();
     }
 
+    /**
+     * 手机联系人查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/mobileQuery",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response mobileQuery(MobileQueryRequest request){
+    	return userService.mobileQuery(request.getMobiles(), request.getUid());
+    }
 }

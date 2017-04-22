@@ -259,6 +259,14 @@ public class UserMybatisDao {
         example.setOrderByClause(" id desc ");
         return userProfileMapper.selectByExample(example);
     }
+    
+    public List<UserProfile> getUserProfilesByMobiles(List<String> mobile){
+    	UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andMobileIn(mobile);
+        example.setOrderByClause(" id desc ");
+        return userProfileMapper.selectByExample(example);
+    }
 
     /**
      * 根据标签内容查找相应的标签

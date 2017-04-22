@@ -34,6 +34,7 @@ public class ShowHotListDTO implements BaseEntity {
 		private long cid;
 		private int topicType;
 		private int topicInternalStatus;
+		private String linkUrl;
 	}
 	
 	@Data

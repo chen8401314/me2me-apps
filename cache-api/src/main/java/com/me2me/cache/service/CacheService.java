@@ -52,6 +52,13 @@ public interface CacheService {
      * @return
      */
     Set<String> smembers(String key);
+    
+    /**
+     * 移除set集合中的一个或多个成员
+     * @param key
+     * @param values
+     */
+    void srem(String key, String... values);
 
     /**
      * 清空缓存数据（当心使用）

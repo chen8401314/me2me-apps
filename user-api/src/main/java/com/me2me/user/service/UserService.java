@@ -352,4 +352,6 @@ public interface UserService {
      * @date Apr 10, 2017
      */
     void countUserByDay();
+    
+    Response mobileQuery(String mobiles, long uid);
 }

@@ -2837,4 +2837,74 @@ public class UserServiceImpl implements UserService {
 		userMybatisDao.countUserByDay();
 	}
 
+	@Override
+	public Response mobileQuery(String mobiles, long uid){
+		ShowMobileDTO result = new ShowMobileDTO();
+		if(StringUtils.isEmpty(mobiles)){
+			return Response.success(result);
+		}
+		List<String> mobileList = new ArrayList<String>();
+		String[] tmp = mobiles.split(",");
+		if(null != tmp && tmp.length > 0){
+			for(String m : tmp){
+				if(!StringUtils.isEmpty(m)){
+					mobileList.add(m);
+				}
+			}
+		}
+		
+		if(mobileList.size() > 0){
+			List<UserProfile> userList = userMybatisDao.getUserProfilesByMobiles(mobileList);
+			Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+			List<Long> uidList = new ArrayList<Long>();
+			if(null != userList && userList.size() > 0){
+				for(UserProfile u : userList){
+					userMap.put(u.getMobile(), u);
+					uidList.add(u.getUid());
+				}
+				result.setTotalAppUser(userList.size());
+			}
+			
+			//一次性查询关注信息
+	        Map<String, String> followMap = new HashMap<String, String>();
+			if(uidList.size() > 0){
+		        List<UserFollow> userFollowList = userMybatisDao.getAllFollows(uid, uidList);
+		        if(null != userFollowList && userFollowList.size() > 0){
+		            for(UserFollow uf : userFollowList){
+		                followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+		            }
+		        }
+			}
+			
+			ShowMobileDTO.MobileElement e = null;
+			UserProfile user = null;
+			for(String mobile : mobileList){
+				e = new ShowMobileDTO.MobileElement();
+				e.setMobile(mobile);
+				user = userMap.get(mobile);
+				if(null == user){
+					e.setIsAppUser(0);
+				}else{
+					e.setIsAppUser(1);
+					e.setUid(user.getUid());
+					e.setNickName(user.getNickName());
+					e.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+					e.setV_lv(user.getvLv());
+					e.setIntroduced(user.getIntroduced());
+					if(null != followMap.get(uid+"_"+user.getUid().toString())){
+		                e.setIsFollowed(1);
+		            }else{
+		                e.setIsFollowed(0);
+		            }
+		            if(null != followMap.get(user.getUid().toString()+"_"+uid)){
+		                e.setIsFollowMe(1);
+		            }else{
+		                e.setIsFollowMe(0);
+		            }
+				}
+			}
+		}
+		
+		return Response.success(result);
+	}
 }
