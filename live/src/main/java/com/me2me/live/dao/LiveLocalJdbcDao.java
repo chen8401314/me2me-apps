@@ -761,6 +761,18 @@ public class LiveLocalJdbcDao {
 	 * @param score
 	 */
 	public void specialTopicAddHot(long targetId, int type, long activityId, int score){
+		if(type == 2){
+			String sql = "select 1 from a_common_list where target_id="+targetId;
+			sql = sql + " and type=2 and activity_id="+activityId;
+			List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
+			if(null == list || list.size() == 0){
+				String insert = "insert into a_common_list(target_id,alias,type,score,activity_id) values (";
+				insert = insert + targetId + ",'',2," + score + ","+activityId+")";
+				jdbcTemplate.execute(insert);
+				return;
+			}
+		}
+		
 		StringBuilder sb = new StringBuilder();
 		sb.append("update a_common_list set score = score+").append(score);
 		sb.append(" where target_id=").append(targetId);
