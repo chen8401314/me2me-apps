@@ -786,17 +786,17 @@ public class LiveLocalJdbcDao {
 		jdbcTemplate.execute(sb.toString());
 	}
 	
-	public void insertSpecialTopicHotDetail(long acitivityId, long targetId){
+	public void insertSpecialTopicHotDetail(long acitivityId, long fragmentId){
 		StringBuilder sb = new StringBuilder();
-		sb.append("insert into a_common_hot_detail(target_id,activity_id)");
-		sb.append(" values (").append(targetId).append(",").append(acitivityId);
+		sb.append("insert into a_common_topic_hot_detail(target_id,activity_id)");
+		sb.append(" values (").append(fragmentId).append(",").append(acitivityId);
 		sb.append(")");
 		jdbcTemplate.execute(sb.toString());
 	}
 	
 	public Map<String, Object> getSpecialTopicHotDetail(long activityId, long targetId){
 		StringBuilder sb = new StringBuilder();
-		sb.append("select * from a_common_hot_detail t");
+		sb.append("select * from a_common_topic_hot_detail t");
 		sb.append(" where t.target_id=").append(targetId);
 		sb.append(" and t.activity_id=").append(activityId);
 		
