@@ -38,6 +38,7 @@ import org.springframework.stereotype.Service;
 import com.github.stuxuhai.jpinyin.PinyinException;
 import com.github.stuxuhai.jpinyin.PinyinFormat;
 import com.github.stuxuhai.jpinyin.PinyinHelper;
+import com.me2me.common.Constant;
 import com.me2me.common.utils.DateUtil;
 import com.me2me.search.ThreadPool;
 import com.me2me.search.cache.SimpleCache;
@@ -536,13 +537,17 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	}
 
 	@Override
-	public List<RecommendUser> getRecommendUserList(long uid,int page,int pageSize) {
+	public List<RecommendUser> getRecommendUserList(long uid,int page,int pageSize, List<Long> noUids) {
 		UserProfile user = userService.getUserProfileByUid(uid);
 		BoolQueryBuilder bq = new BoolQueryBuilder();
 		List<String> userHobbyList = searchMapper.getUserHobby(user.getUid());
 		if(user!=null){
 			String tags= StringUtils.join(userHobbyList," ").trim();
-			bq.mustNot(QueryBuilders.termQuery("uid", user.getUid()));
+			if(null == noUids){
+				noUids = new ArrayList<Long>();
+			}
+			noUids.add(uid);
+			bq.mustNot(QueryBuilders.termsQuery("uid", noUids));//过滤掉不需要的uid
 			if(user.getLikeGender()!=null){
 				bq.must(QueryBuilders.termQuery("like_gender", user.getLikeGender()).boost(0.1f));
 			}
@@ -562,14 +567,35 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		sq.setPageable(new PageRequest(--page, pageSize));
 		
 		FacetedPage<UserEsMapping> result = esTemplate.queryForPage(sq, UserEsMapping.class);
+		List<Long> uidList = new ArrayList<Long>();
+		for(UserEsMapping userMap:result){
+			uidList.add(userMap.getUid());
+		}
+		Map<String, UserProfile> userProfileMap = new HashMap<String, UserProfile>();
+		if(uidList.size() > 0){
+			List<UserProfile> ulist = userService.getUserProfilesByUids(uidList);
+			if(null != ulist && ulist.size() > 0){
+				for(UserProfile u : ulist){
+					userProfileMap.put(u.getUid().toString(), u);
+				}
+			}
+		}
+		
 		List<RecommendUser> userList = new ArrayList<>();
+		RecommendUser userInfo = null;
+		UserProfile userProfile = null;
     	for(UserEsMapping userMap:result){
+    		userInfo = new RecommendUser();
+    		userProfile = userProfileMap.get(String.valueOf(userMap.getUid()));
+    		if(null == userProfile){
+    			continue;
+    		}
     		
-    		RecommendUser userInfo = new RecommendUser();
-    		userInfo.setAvatar(userMap.getAvatar());
-    		userInfo.setNickName(userMap.getNick_name());
-    		userInfo.setUid(userMap.getUid());
-    		userInfo.setV_lv(userMap.getV_lv());
+    		userInfo.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+    		userInfo.setNickName(userProfile.getNickName());
+    		userInfo.setUid(userProfile.getUid());
+    		userInfo.setV_lv(userProfile.getvLv());
+    		
     		boolean sameTags =false;
     		for(String tag:userHobbyList){
     			if(userMap.getTags().contains(tag)){
@@ -577,7 +603,6 @@ public class ContentSearchServiceImpl implements ContentSearchService {
     				break;
     			}
     		}
-    		
     		if(user.getLikeGender()!=null && userMap.getLike_gender()==user.getLikeGender()){
     			userInfo.setReason(RecommendReason.LIKE_GENDER);
     		}else if(sameTags){
@@ -638,7 +663,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		}
 		return resultList;
 	}
-
+	
 	@Override
 	public List<RecommendKingdom> getRecommendKingdomList(long uid,int page,int pageSize) {
 		UserProfile user = userService.getUserProfileByUid(uid);
@@ -672,5 +697,29 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		}
 		
 		return kingdomList;
+	}
+	
+	@Override
+	public List<TopicEsMapping> getTopicEsMappingList(long uid,List<Long> noIds,int page,int pageSize){
+		UserProfile user = userService.getUserProfileByUid(uid);
+		BoolQueryBuilder bq = new BoolQueryBuilder();
+		List<String> userHobbyList = searchMapper.getUserHobby(user.getUid());
+		if(user!=null){
+			String tags= StringUtils.join(userHobbyList," ").trim();
+			bq.mustNot(QueryBuilders.termQuery("uid", user.getUid()));
+			if(null != noIds && noIds.size() > 0){//过滤掉不需要的王国id
+				bq.mustNot(QueryBuilders.termsQuery("id", noIds));
+			}
+			if(tags!=null){
+				bq.should(QueryBuilders.queryStringQuery(tags).field("title"));
+				bq.should(QueryBuilders.queryStringQuery(tags).field("tags").boost(3f));
+			}
+		}
+		
+		SearchQuery sq = new NativeSearchQuery(bq);
+		sq.setPageable(new PageRequest(--page, pageSize));
+		FacetedPage<TopicEsMapping> result = esTemplate.queryForPage(sq, TopicEsMapping.class);
+		
+		return result.getContent();
 	}
 }

@@ -36,7 +36,7 @@ public class RecommendListDto implements BaseEntity {
 	}
 	
 	@Data
-	public class ContentData implements BaseEntity{
+	public static class ContentData implements BaseEntity{
 		private static final long serialVersionUID = 1L;
 		private long uid;
 		private String coverImage;
@@ -63,5 +63,8 @@ public class RecommendListDto implements BaseEntity {
 		private int acCount;
 		private String tags;
 		private String reason;
+		
+		private long contentId;
+		private String linkUrl;
 	}
 }

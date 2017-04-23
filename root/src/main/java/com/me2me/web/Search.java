@@ -77,13 +77,35 @@ public class Search extends BaseController {
     }
     
     /**
-     * 推荐热搜词获取接口
+     * 智能推荐用户接口
      * @param request
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "/recUsers",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response recUsers(PageRequest request){
-    	return searchService.recommendUser(request.getUid(), request.getPage(), request.getPageSize());
+    	return searchService.recommendUser(request.getUid(), request.getPage(), 20);
+    }
+    
+    /**
+     * 推荐内容不喜欢操作接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/recContentDislike",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response recContentDislike(RecContentDislikeRequest request){
+    	return searchService.recContentDislike(request.getUid(), request.getCid(), request.getType());
+    }
+    
+    /**
+     * 推荐列表查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/recList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response recList(RecListRequest request){
+    	return searchService.recommendIndex(request.getUid(), request.getPage());
     }
 }

@@ -122,6 +122,15 @@ public interface SearchMapper  {
     List<String> getUserHobby(long uid);
     
     /**
+     * 获取用户的爱好ID
+     * @param uid
+     * @return
+     */
+    @ResultType(Long.class)
+    @Select("select h.hobby from user_hobby h where h.uid=#{0}")
+    List<Long> getUserHobbyIds(long uid);
+    
+    /**
      * 取用户的偏好。
      * @author zhangjiwei
      * @date Apr 19, 2017

@@ -19,5 +19,5 @@ public class RecommendUser implements BaseEntity{
 	private String nickName;
 	private String avatar;
 	private int v_lv;
-	private int  reason;
+	private String reason;
 }

@@ -19,6 +19,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
+import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.search.dao.ContentForSearchJdbcDao;
 import com.me2me.search.dao.SearchMybatisDao;
@@ -42,6 +43,7 @@ import com.me2me.search.mapper.SearchHotKeywordMapper;
 import com.me2me.search.mapper.SearchMapper;
 import com.me2me.search.model.SearchHotKeyword;
 import com.me2me.search.model.SearchHotKeywordExample;
+import com.me2me.search.model.SearchUserDislike;
 import com.me2me.user.service.UserService;
 
 /**
@@ -600,23 +602,31 @@ public class SearchServiceImpl implements SearchService {
 	}
 
 	public Response recommendUser(long uid,int page,int pageSize){
-		List<RecommendUser> resultpage = this.searchService.getRecommendUserList(uid, page, pageSize);
+		//查出我已关注过的，这些是不能反回的
+		List<Long> myFollowUidList = userService.getFollowList(uid);
+		
+		List<RecommendUser> resultpage = this.searchService.getRecommendUserList(uid, page, pageSize, myFollowUidList);
 		RecommendUserDto dto = new RecommendUserDto();
 		dto.setRecUserData(resultpage);
 		return Response.success(dto);
 	}
 
-	public Response recommendIndex(long uid,int page,int pageSize){
+	public Response recommendIndex(long uid,int page){
 		RecommendListDto indexData = new RecommendListDto();
 		// 查用户画像信息
 		UserProfile profile = userService.getUserProfileByUid(uid);
 		RecommendListDto.RecPerson person = new RecommendListDto.RecPerson();
-		BeanUtils.copyProperties(profile, person);
+		person.setUid(uid);
+		person.setNickName(profile.getNickName());
+		person.setAvatar(Constant.QINIU_DOMAIN + "/" + profile.getAvatar());
+		person.setV_lv(profile.getvLv());
+		person.setSex(profile.getGender());
+		String hobby = StringUtils.join(searchMapper.getUserHobbyIds(uid),",");
+		person.setHobby(hobby);
+		person.setAgeGroup(profile.getAgeGroup());
 		person.setCareer(profile.getOccupation());
 		person.setSexOrientation(profile.getLikeGender());
-		String hobby = StringUtils.join(searchMapper.getUserHobby(uid),",");
-		person.setHobby(hobby);
-		
+		//画像完成度
 		float completed=5f;
 		if(StringUtils.isEmpty(hobby)){
 			completed--;
@@ -633,15 +643,227 @@ public class SearchServiceImpl implements SearchService {
 		if(profile.getGender()==null || profile.getGender()==0){
 			completed--;
 		}
-		int completion = (int) (completed/5 * 100);
+		int completion = (int) ((completed/5) * 100);
 		person.setCompletion(completion);
 		indexData.setPersona(person);
-		// 查推荐用户
 		
-		// 查内容推荐
-		List<RecommendKingdom> kds = this.searchService.getRecommendKingdomList(uid, page, pageSize);
+		// 查推荐用户
+		List<Long> myFollowUidList = userService.getFollowList(uid);
+		List<RecommendUser> resultpage = this.searchService.getRecommendUserList(uid, 1, 10, myFollowUidList);
+		if(null != resultpage && resultpage.size() > 0){
+			indexData.getRecUserData().addAll(resultpage);
+		}
+		
+		// 查内容推荐（取10条王国数据，再取10条文章数据）
+		List<Long> dislistTopicIds = new ArrayList<Long>();
+		List<SearchUserDislike> dislikeList = searchMybatisDao.getSearchUserDislikesByUidsAndType(uid, 3);
+		if(null != dislikeList && dislikeList.size() > 0){
+			for(SearchUserDislike sud : dislikeList){
+				dislistTopicIds.add(sud.getCid());
+			}
+		}
+		List<TopicEsMapping> kingdoms = this.searchService.getTopicEsMappingList(uid, dislistTopicIds, page, 10);
+		this.builderRecKingdomInfo(indexData, kingdoms, uid);
+		//再取10条文章
+		//TODO 
+		
 		
 		return Response.success(indexData);
+	}
+	
+	private void builderRecKingdomInfo(RecommendListDto indexData, List<TopicEsMapping> kingdoms, long uid){
+		if(null == kingdoms || kingdoms.size() == 0){
+    		return;
+    	}
+    	
+    	List<Long> tidList = new ArrayList<Long>();
+		List<Long> ceTidList = new ArrayList<Long>();
+		for(TopicEsMapping topic : kingdoms){
+			tidList.add(topic.getId());
+		}
+		List<Long> uidList = new ArrayList<Long>();
+		Map<String, Map<String, Object>> topicMap = new HashMap<String, Map<String, Object>>();
+		Map<String, Map<String, Object>> topicContentMap = new HashMap<String, Map<String, Object>>();
+		//一次性查询王国订阅信息
+        Map<String, String> liveFavouriteMap = new HashMap<String, String>();
+        //一次性查询所有王国的国王更新数，以及评论数
+        Map<String, Long> topicCountMap = new HashMap<String, Long>();
+        Map<String, Long> reviewCountMap = new HashMap<String, Long>();
+        //一次性查询所有王国的成员数
+        Map<String, Long> topicMemberCountMap = contentForSearchJdbcDao.getTopicMembersCount(tidList);
+        if(null == topicMemberCountMap){
+        	topicMemberCountMap = new HashMap<String, Long>();
+        }
+        //一次性查询王国的标签信息
+        Map<String, String> topicTagMap = new HashMap<String, String>();
+		if(tidList.size() > 0){
+			List<Map<String, Object>> topicList = contentForSearchJdbcDao.getTopicByIds(tidList);
+			if(null != topicList && topicList.size() > 0){
+				Long topicUid = null;
+				for(Map<String, Object> m : topicList){
+					topicMap.put(String.valueOf(m.get("id")), m);
+					topicUid = (Long)m.get("uid");
+					if(!uidList.contains(topicUid)){
+						uidList.add(topicUid);
+					}
+					if(((Integer)m.get("type")).intValue() == 1000){//聚合王国
+						ceTidList.add((Long)m.get("id"));
+					}
+				}
+			}
+			List<Map<String, Object>> topicContentList = contentForSearchJdbcDao.getTopicContentByTopicIds(tidList);
+			if(null != topicContentList && topicContentList.size() > 0){
+				for(Map<String, Object> m : topicContentList){
+					topicContentMap.put(String.valueOf(m.get("forward_cid")), m);
+				}
+			}
+			List<Map<String,Object>> liveFavouriteList = contentForSearchJdbcDao.getLiveFavoritesByUidAndTopicIds(uid, tidList);
+            if(null != liveFavouriteList && liveFavouriteList.size() > 0){
+            	for(Map<String,Object> lf : liveFavouriteList){
+            		liveFavouriteMap.put(((Long)lf.get("topic_id")).toString(), "1");
+            	}
+            }
+            List<Map<String, Object>> tcList = contentForSearchJdbcDao.getTopicUpdateCount(tidList);
+            if(null != tcList && tcList.size() > 0){
+            	for(Map<String, Object> m : tcList){
+            		topicCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("topicCount"));
+            		reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
+            	}
+            }
+            List<Map<String, Object>> topicTagList = contentForSearchJdbcDao.getTopicTagDetailListByTopicIds(tidList);
+            if(null != topicTagList && topicTagList.size() > 0){
+            	long tid = 0;
+            	String tags = null;
+            	Long topicId = null;
+            	for(Map<String, Object> ttd : topicTagList){
+            		topicId = (Long)ttd.get("topic_id");
+            		if(topicId.longValue() != tid){
+            			//先插入上一次
+            			if(tid > 0 && !StringUtils.isEmpty(tags)){
+            				topicTagMap.put(String.valueOf(tid), tags);
+            			}
+            			//再初始化新的
+            			tid = topicId.longValue();
+            			tags = null;
+            		}
+            		if(tags != null){
+            			tags = tags + ";" + (String)ttd.get("tag");
+            		}else{
+            			tags = (String)ttd.get("tag");
+            		}
+            	}
+            	if(tid > 0 && !StringUtils.isEmpty(tags)){
+            		topicTagMap.put(String.valueOf(tid), tags);
+            	}
+            }
+		}
+		Map<String, Long> acCountMap = new HashMap<String, Long>();
+        if(ceTidList.size() > 0){
+        	List<Map<String,Object>> acCountList = contentForSearchJdbcDao.getTopicAggregationAcCountByTopicIds(ceTidList);
+        	if(null != acCountList && acCountList.size() > 0){
+        		for(Map<String,Object> a : acCountList){
+        			acCountMap.put(String.valueOf(a.get("topic_id")), (Long)a.get("cc"));
+        		}
+        	}
+        }
+		Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+		//一次性查询关注信息
+        Map<String, String> followMap = new HashMap<String, String>();
+		if(uidList.size() > 0){
+			List<UserProfile> userList = userService.getUserProfilesByUids(uidList);
+			if(null != userList && userList.size() > 0){
+				for(UserProfile u : userList){
+					userMap.put(u.getUid().toString(), u);
+				}
+			}
+			List<UserFollow> userFollowList = userService.getAllFollows(uid, uidList);
+            if(null != userFollowList && userFollowList.size() > 0){
+            	for(UserFollow uf : userFollowList){
+            		followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+            	}
+            }
+		}
+		
+		Map<String, Object> topic = null;
+		Map<String, Object> topicContent = null;
+		UserProfile userProfile = null;
+		RecommendListDto.ContentData kingdomElement = null;
+		for(TopicEsMapping t : kingdoms){
+			kingdomElement = new RecommendListDto.ContentData();
+			topic = topicMap.get(t.getId().toString());
+			if(null == topic){
+				continue;
+			}
+			topicContent = topicContentMap.get(t.getId().toString());
+			if(null == topicContent){
+				continue;
+			}
+			userProfile = userMap.get(String.valueOf(topic.get("uid")));
+			if(null == userProfile){
+				continue;
+			}
+			kingdomElement.setUid(userProfile.getUid());
+			kingdomElement.setNickName(userProfile.getNickName());
+			kingdomElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+			kingdomElement.setV_lv(userProfile.getvLv());
+			if(null != followMap.get(uid+"_"+userProfile.getUid())){
+				kingdomElement.setIsFollowed(1);
+			}else{
+				kingdomElement.setIsFollowed(0);
+			}
+			if(null != followMap.get(userProfile.getUid()+"_"+uid)){
+				kingdomElement.setIsFollowMe(1);
+			}else{
+				kingdomElement.setIsFollowMe(0);
+			}
+			kingdomElement.setTopicId((Long)topic.get("id"));
+			kingdomElement.setTitle((String)topic.get("title"));
+			kingdomElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
+			kingdomElement.setType(3);
+			kingdomElement.setContentType((Integer)topic.get("type"));
+			if(null != topic.get("create_time")){
+				kingdomElement.setCreateTime(((Date)topic.get("create_time")).getTime());
+			}
+			kingdomElement.setUpdateTime(((Date)topic.get("update_time")).getTime());
+			kingdomElement.setLastUpdateTime((Long)topic.get("long_time"));
+			kingdomElement.setInternalStatus(this.getInternalStatus((String)topic.get("core_circle"), uid));
+			kingdomElement.setCid((Long)topicContent.get("id"));
+			kingdomElement.setLikeCount((Integer)topicContent.get("like_count"));
+			kingdomElement.setReadCount((Integer)topicContent.get("read_count_dummy"));
+			if(null != liveFavouriteMap.get(t.getId().toString())){
+				kingdomElement.setFavorite(1);
+			}else{
+				kingdomElement.setFavorite(0);
+			}
+			if(null != topicCountMap.get(t.getId().toString())){
+				kingdomElement.setTopicCount(topicCountMap.get(t.getId().toString()).intValue());
+			}else{
+				kingdomElement.setTopicCount(0);
+			}
+			if(null != reviewCountMap.get(t.getId().toString())){
+				kingdomElement.setReviewCount(reviewCountMap.get(t.getId().toString()).intValue());
+			}else{
+				kingdomElement.setReviewCount(0);
+			}
+			if(null == topicMemberCountMap.get(t.getId().toString())){
+				kingdomElement.setFavoriteCount(1);//默认只有国王一个成员
+			}else{
+				kingdomElement.setFavoriteCount(topicMemberCountMap.get(t.getId().toString()).intValue()+1);
+			}
+			if(kingdomElement.getContentType() == 1000){//聚合王国需要返回子王国数
+				if(null != acCountMap.get(t.getId().toString())){
+					kingdomElement.setAcCount(acCountMap.get(t.getId().toString()).intValue());
+				}else{
+					kingdomElement.setAcCount(0);
+				}
+			}
+			if(null != topicTagMap.get(t.getId().toString())){
+				kingdomElement.setTags(topicTagMap.get(t.getId().toString()));
+            }else{
+            	kingdomElement.setTags("");
+            }
+			indexData.getRecContentData().add(kingdomElement);
+		}
 	}
 
 	@Override
@@ -650,5 +872,19 @@ public class SearchServiceImpl implements SearchService {
 		RecommendKingdomDto dt = new RecommendKingdomDto();
 		dt.setKingdomList(kingdoms);
 		return Response.success(dt);
+	}
+	
+	public Response recContentDislike(long uid, long cid, int type){
+		SearchUserDislike sud = searchMybatisDao.getSearchUserDislikeByUidAndCidAndType(uid, cid, type);
+		if(null == sud){
+			sud = new SearchUserDislike();
+			sud.setUid(uid);
+			sud.setCid(cid);
+			sud.setType(type);
+			sud.setCreateTime(new Date());
+			searchMybatisDao.saveSearchUserDislike(sud);
+		}
+		
+		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message);
 	}
 }

@@ -102,7 +102,7 @@ public interface ContentSearchService {
 	 * @param uid
 	 * @return
 	 */
-	public List<RecommendUser> getRecommendUserList(long uid,int page,int pageSize);
+	public List<RecommendUser> getRecommendUserList(long uid,int page,int pageSize, List<Long> noUids);
 	
 	/**
 	 * 依据内容推荐本内容的标签。
@@ -120,4 +120,13 @@ public interface ContentSearchService {
 	 * @return
 	 */
 	public List<RecommendKingdom>  getRecommendKingdomList(long uid,int page,int pageSize);
+	
+	/**
+	 * 获取推荐的王国列表（搜索引擎中的数据）
+	 * @param uid
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	public List<TopicEsMapping> getTopicEsMappingList(long uid,List<Long> noIds,int page,int pageSize);
 }

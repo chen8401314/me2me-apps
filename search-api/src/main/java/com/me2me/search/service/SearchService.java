@@ -91,16 +91,8 @@ public interface SearchService {
 	 * @return
 	 */
 	 public Response recommendUser(long uid,int page,int pageSize);
-	 /**
-	 * 推荐王国
-	 * @author zhangjiwei
-	 * @date Apr 20, 2017
-	 * @param uid 推荐与此用户相关的用户。
-	 * @param page
-	 * @param pageSize
-	 * @return
-	 */
-	 public Response recommendIndex(long uid,int page,int pageSize);
+
+	 public Response recommendIndex(long uid,int page);
 /**
  * 推王国
  * @author zhangjiwei
@@ -111,4 +103,6 @@ public interface SearchService {
  * @return
  */
 	Response recommendKingdom(long uid,int page,int pageSize);
+	
+	Response recContentDislike(long uid, long cid, int type);
 }
