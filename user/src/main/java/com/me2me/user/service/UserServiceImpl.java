@@ -3238,4 +3238,47 @@ public class UserServiceImpl implements UserService {
 		
 		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message);
 	}
+	
+	@Override
+	public Response personaModify(long uid, int type, String params){
+		UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+		
+		switch(type){
+		case 1://性别
+			int sex = Integer.valueOf(params);
+			if(sex != 1){
+				sex = 0;
+			}
+			userProfile.setGender(sex);
+			break;
+		case 2://性取向
+			int sexOrientation = Integer.valueOf(params);
+			userProfile.setLikeGender(sexOrientation);
+			break;
+		case 3://兴趣爱好
+			if(!StringUtils.isEmpty(params)){
+	            ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();
+	            modifyUserHobbyDto.setUid(uid);
+	            modifyUserHobbyDto.setHobby(params);
+	            this.modifyUserHobby(modifyUserHobbyDto);
+	            log.info("modify user hobby");
+	        }
+			break;
+		case 4://年龄段
+			int ageGroup = Integer.valueOf(params);
+			userProfile.setAgeGroup(ageGroup);
+			break;
+		case 5://职业
+			int career = Integer.valueOf(params);
+			userProfile.setOccupation(career);
+			break;
+		default:
+			return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
+		}
+		
+		userProfile.setUpdateTime(new Date());
+		userMybatisDao.updateUserProfile(userProfile);
+		
+		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message);
+	}
 }

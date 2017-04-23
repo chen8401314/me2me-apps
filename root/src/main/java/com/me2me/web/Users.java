@@ -191,6 +191,9 @@ public class Users extends BaseController {
         modifyUserProfileDto.setBirthday(request.getBirthday());
         modifyUserProfileDto.setHobby(request.getHobby());
         modifyUserProfileDto.setIntroduced(request.getIntroduced());
+        modifyUserProfileDto.setLikeGender(request.getLikeGender());
+        modifyUserProfileDto.setAgeGroup(request.getAgeGroup());
+        modifyUserProfileDto.setOccupation(request.getOccupation());
        return userService.modifyUserProfile(modifyUserProfileDto);
     }
 
@@ -837,7 +840,7 @@ public class Users extends BaseController {
     }
     
     /**
-     * 批量关注列表
+     * 批量关注接口
      * @param request
      * @return
      */
@@ -845,5 +848,16 @@ public class Users extends BaseController {
     @RequestMapping(value = "/batchFollow",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response batchFollow(BatchFollowRequest request){
     	return userService.batchFollow(request.getUid(), request.getTargetUids());
+    }
+    
+    /**
+     * 用户画像属性修改接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/personaModify",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response personaModify(PersonaModifyRequest request){
+    	return userService.personaModify(request.getUid(), request.getType(), request.getParams());
     }
 }

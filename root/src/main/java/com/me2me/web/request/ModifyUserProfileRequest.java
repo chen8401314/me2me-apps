@@ -43,5 +43,15 @@ public class ModifyUserProfileRequest extends Request{
     @Getter
     @Setter
     private String introduced;
+    
+    @Getter
+    @Setter
+    private int likeGender;		// 性取向
+    @Getter
+    @Setter
+    private int ageGroup;		// 年龄段
+    @Getter
+    @Setter
+    private int occupation;		// 职业 
 
 }

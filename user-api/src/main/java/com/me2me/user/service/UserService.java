@@ -375,4 +375,6 @@ public interface UserService {
     Response myFollowsQuery(long uid, String name, int page);
     
     Response batchFollow(long uid, String targetUids);
+    
+    Response personaModify(long uid, int type, String params);
 }
