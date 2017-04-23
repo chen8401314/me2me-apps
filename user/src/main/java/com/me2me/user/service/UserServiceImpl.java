@@ -3078,4 +3078,96 @@ public class UserServiceImpl implements UserService {
 		}
 		log.info("==初始化用户昵称分组完成");
 	}
+	
+	@Override
+	public Response seekFollowsQuery(long uid, long sinceId){
+		if(sinceId <= 0){
+			sinceId = Long.MAX_VALUE;
+		}
+		
+		ShowSeekFollowsQueryDTO result = new ShowSeekFollowsQueryDTO();
+		//先看看自己有没有求关注过
+		UserSeekFollow seek = userMybatisDao.getUserSeekFollowByUid(uid);
+		if(null != seek){
+			result.setIsSeek(1);
+		}else{
+			result.setIsSeek(0);
+		}
+		
+		List<UserSeekFollow> seekList = userMybatisDao.getUserSeekFollows(20, sinceId);
+		if(null != seekList && seekList.size() > 0){
+			List<Long> uidList = new ArrayList<Long>();
+			for(UserSeekFollow usf : seekList){
+				uidList.add(usf.getUid());
+			}
+			Map<String, UserProfile> userProfileMap = new HashMap<String, UserProfile>();
+			//一次性查询关注信息
+	        Map<String, String> followMap = new HashMap<String, String>();
+			if(uidList.size() > 0){
+				List<UserProfile> userList = userMybatisDao.getUserProfilesByUids(uidList);
+				if(null != userList && userList.size() > 0){
+					for(UserProfile u : userList){
+						userProfileMap.put(u.getUid().toString(), u);
+					}
+				}
+				List<UserFollow> userFollowList = userMybatisDao.getAllFollows(uid, uidList);
+		        if(null != userFollowList && userFollowList.size() > 0){
+		            for(UserFollow uf : userFollowList){
+		                followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+		            }
+		        }
+			}
+			
+			ShowSeekFollowsQueryDTO.SeekFollowElement e = null;
+			UserProfile user = null;
+			for(UserSeekFollow usf : seekList){
+				e = new ShowSeekFollowsQueryDTO.SeekFollowElement();
+				user = userProfileMap.get(usf.getUid().toString());
+				if(null == user){
+					continue;
+				}
+				e.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+				e.setIntroduced(user.getIntroduced());
+				if(null != followMap.get(uid+"_"+user.getUid().toString())){
+	                e.setIsFollowed(1);
+	            }else{
+	                e.setIsFollowed(0);
+	            }
+	            if(null != followMap.get(user.getUid().toString()+"_"+uid)){
+	                e.setIsFollowMe(1);
+	            }else{
+	                e.setIsFollowMe(0);
+	            }
+				e.setNickName(user.getNickName());
+				e.setUid(user.getUid());
+				e.setV_lv(user.getvLv());
+				result.getSeekFollowData().add(e);
+			}
+		}
+		
+		return Response.success(result);
+	}
+	
+	@Override
+	public Response seekFollow(long uid){
+		UserSeekFollow seek = userMybatisDao.getUserSeekFollowByUid(uid);
+		if(null != seek){
+			return Response.success(500, "重复操作");
+		}
+		
+		seek = new UserSeekFollow();
+		seek.setUid(uid);
+		seek.setCreateTime(new Date());
+		userMybatisDao.saveUserSeekFollow(seek);
+		
+		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message);
+	}
+	
+	@Override
+	public void cleanSeekFollow(int hour){
+		Date now = new Date();
+		long lastTime = now.getTime() - hour*60*60*1000l;
+		Date lastDate = new Date(lastTime);
+		userMybatisDao.deleteOvertimeSeek(lastDate);
+	}
 }

@@ -1121,4 +1121,26 @@ public class UserMybatisDao {
     	example.setOrderByClause(" id desc limit " + pageSize);
     	return userSeekFollowMapper.selectByExample(example);
     }
+    
+    public UserSeekFollow getUserSeekFollowByUid(long uid){
+    	UserSeekFollowExample example = new UserSeekFollowExample();
+    	UserSeekFollowExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	List<UserSeekFollow> list = userSeekFollowMapper.selectByExample(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
+    
+    public void saveUserSeekFollow(UserSeekFollow usf){
+    	userSeekFollowMapper.insertSelective(usf);
+    }
+    
+    public void deleteOvertimeSeek(Date lastDate){
+    	UserSeekFollowExample example = new UserSeekFollowExample();
+    	UserSeekFollowExample.Criteria criteria = example.createCriteria();
+    	criteria.andCreateTimeLessThan(lastDate);
+    	userSeekFollowMapper.deleteByExample(example);
+    }
 }

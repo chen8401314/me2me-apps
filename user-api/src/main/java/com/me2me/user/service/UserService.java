@@ -361,4 +361,14 @@ public interface UserService {
      * 初始化所有用户的昵称所属的组
      */
     void initNameGroup();
+    
+    Response seekFollowsQuery(long uid, long sinceId);
+    
+    Response seekFollow(long uid);
+    
+    /**
+     * 清除超过{hour}小时的求关注记录
+     * @param hisDay
+     */
+    void cleanSeekFollow(int hour);
 }

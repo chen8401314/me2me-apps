@@ -18,7 +18,7 @@ public class EmojiPackDto implements BaseEntity{
 	@Data
 	public static class PackageData implements BaseEntity{
 		private static final long serialVersionUID = 1L;
-		long id;
+		int id;
 		String name;
 		String cover;
 		int emojiType;

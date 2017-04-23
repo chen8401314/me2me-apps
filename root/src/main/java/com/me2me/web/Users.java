@@ -802,4 +802,26 @@ public class Users extends BaseController {
     public Response contacts(ContactsRequest request){
     	return userService.contacts(request.getPage(), request.getMobiles(), request.getUid());
     }
+    
+    /**
+     * 求关注列表接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/seekFollowsQuery",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response seekFollowsQuery(SeekFollowsQueryRequest request){
+    	return userService.seekFollowsQuery(request.getUid(), request.getSinceId());
+    }
+    
+    /**
+     * 求关注操作接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/seekFollow",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response seekFollow(SeekFollowRequest request){
+    	return userService.seekFollow(request.getUid());
+    }
 }
