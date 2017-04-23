@@ -2902,6 +2902,7 @@ public class UserServiceImpl implements UserService {
 		                e.setIsFollowMe(0);
 		            }
 				}
+				result.getMobileContactData().add(e);
 			}
 		}
 		
@@ -2936,9 +2937,126 @@ public class UserServiceImpl implements UserService {
 		ShowContactsDTO result = new ShowContactsDTO();
 		result.setTotalPage(userMybatisDao.getUserFollowCount(uid));
 		int start = (page-1)*pageSize;
+		List<Map<String, Object>> followList = userInitJdbcDao.getUserFollowInfoPage(null, uid, start, pageSize);
 		
+		this.builderContactsResult(uid, result, mobileList, seekList, followList);
 		
 		return Response.success(result);
+	}
+	
+	private void builderContactsResult(long uid, ShowContactsDTO result, List<String> mobileList, List<UserSeekFollow> seekList, List<Map<String, Object>> followList){
+		List<Long> uidList = new ArrayList<Long>();
+		if(null != seekList && seekList.size() > 0){
+			for(UserSeekFollow usf : seekList){
+				if(!uidList.contains(usf.getUid())){
+					uidList.add(usf.getUid());
+				}
+			}
+		}
+		
+		Map<String, UserProfile> userProfileMap = new HashMap<String, UserProfile>();
+		if(uidList.size() > 0){
+			List<UserProfile> userList = userMybatisDao.getUserProfilesByUids(uidList);
+			if(null != userList && userList.size() > 0){
+				for(UserProfile u : userList){
+					userProfileMap.put(u.getUid().toString(), u);
+				}
+			}
+		}
+		
+		Map<String, UserProfile> mobileUserMap = new HashMap<String, UserProfile>();
+		if(null != mobileList && mobileList.size() > 0){
+			List<UserProfile> mobileUserList = userMybatisDao.getUserProfilesByMobiles(mobileList);
+			if(null != mobileUserList && mobileUserList.size() > 0){
+				for(UserProfile u : mobileUserList){
+					mobileUserMap.put(u.getUid().toString(), u);
+					if(!uidList.contains(u.getUid())){
+						uidList.add(u.getUid());
+					}
+				}
+			}
+		}
+		//一次性查询关注信息
+        Map<String, String> followMap = new HashMap<String, String>();
+		if(uidList.size() > 0){
+	        List<UserFollow> userFollowList = userMybatisDao.getAllFollows(uid, uidList);
+	        if(null != userFollowList && userFollowList.size() > 0){
+	            for(UserFollow uf : userFollowList){
+	                followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+	            }
+	        }
+		}
+		
+		if(null != mobileList && mobileList.size() > 0){
+			UserProfile user = null;
+			ShowContactsDTO.MobileContactElement e = null;
+			for(String mobile : mobileList){
+				e = new ShowContactsDTO.MobileContactElement();
+				e.setMobile(mobile);
+				user = mobileUserMap.get(mobile);
+				if(null == user){
+					e.setIsAppUser(0);
+				}else{
+					e.setIsAppUser(1);
+					e.setUid(user.getUid());
+					e.setNickName(user.getNickName());
+					e.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+					e.setV_lv(user.getvLv());
+					e.setIntroduced(user.getIntroduced());
+					if(null != followMap.get(uid+"_"+user.getUid().toString())){
+		                e.setIsFollowed(1);
+		            }else{
+		                e.setIsFollowed(0);
+		            }
+		            if(null != followMap.get(user.getUid().toString()+"_"+uid)){
+		                e.setIsFollowMe(1);
+		            }else{
+		                e.setIsFollowMe(0);
+		            }
+				}
+				result.getMobileContactData().add(e);
+			}
+		}
+		if(null != seekList && seekList.size() > 0){
+			ShowContactsDTO.SeekFollowElement e = null;
+			UserProfile user = null;
+			for(UserSeekFollow usf : seekList){
+				e = new ShowContactsDTO.SeekFollowElement();
+				user = userProfileMap.get(usf.getUid().toString());
+				if(null == user){
+					continue;
+				}
+				e.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+				e.setIntroduced(user.getIntroduced());
+				if(null != followMap.get(uid+"_"+user.getUid().toString())){
+	                e.setIsFollowed(1);
+	            }else{
+	                e.setIsFollowed(0);
+	            }
+	            if(null != followMap.get(user.getUid().toString()+"_"+uid)){
+	                e.setIsFollowMe(1);
+	            }else{
+	                e.setIsFollowMe(0);
+	            }
+				e.setNickName(user.getNickName());
+				e.setUid(user.getUid());
+				e.setV_lv(user.getvLv());
+				result.getSeekFollowData().add(e);
+			}
+		}
+		if(null != followList && followList.size() > 0){
+			ShowContactsDTO.MyFollowElement e = null;
+			for(Map<String, Object> followUser : followList){
+				e = new ShowContactsDTO.MyFollowElement();
+				e.setAvatar(Constant.QINIU_DOMAIN + "/" + (String)followUser.get("avatar"));
+				e.setGroup((String)followUser.get("name_group"));
+				e.setIntroduced((String)followUser.get("introduced"));
+				e.setNickName((String)followUser.get("nick_name"));
+				e.setUid((Long)followUser.get("uid"));
+				e.setV_lv((Integer)followUser.get("v_lv"));
+				result.getMyFollowData().add(e);
+			}
+		}
 	}
 	
 	@Override

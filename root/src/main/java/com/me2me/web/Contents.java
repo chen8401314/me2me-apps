@@ -326,13 +326,14 @@ public class Contents extends BaseController {
 
     @RequestMapping(value = "/emojiPackageQuery",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response emojiPackageQuery(MyPublishContentRequest request){
+    public Response emojiPackageQuery(){
         return contentService.emojiPackageQuery();
     }
-    @RequestMapping(value = "emojiPackageDetail",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    
+    @RequestMapping(value = "/emojiPackageDetail",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response emojiPackageDetail(MyPublishContentRequest request,@RequestParam("packageId")Integer packageId){
-    	return contentService.emojiPackageDetail(packageId);
+    public Response emojiPackageDetail(EmojiPackageDetailRequest request){
+    	return contentService.emojiPackageDetail(request.getPackageId());
     }
     
 }
