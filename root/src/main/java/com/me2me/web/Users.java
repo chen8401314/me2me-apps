@@ -824,4 +824,26 @@ public class Users extends BaseController {
     public Response seekFollow(SeekFollowRequest request){
     	return userService.seekFollow(request.getUid());
     }
+    
+    /**
+     * 我的关注列表查询接口（按首字母分组）
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/myFollowsQuery",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response myFollowsQuery(MyFollowsQueryRequest request){
+    	return userService.myFollowsQuery(request.getUid(), request.getName(), request.getPage());
+    }
+    
+    /**
+     * 批量关注列表
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/batchFollow",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response batchFollow(BatchFollowRequest request){
+    	return userService.batchFollow(request.getUid(), request.getTargetUids());
+    }
 }

@@ -2935,7 +2935,8 @@ public class UserServiceImpl implements UserService {
 		}
 		
 		ShowContactsDTO result = new ShowContactsDTO();
-		result.setTotalPage(userMybatisDao.getUserFollowCount(uid));
+		int total = userMybatisDao.getUserFollowCount(uid);
+		result.setTotalPage(total%pageSize==0?(total/pageSize):((total/pageSize)+1));
 		int start = (page-1)*pageSize;
 		List<Map<String, Object>> followList = userInitJdbcDao.getUserFollowInfoPage(null, uid, start, pageSize);
 		
@@ -3169,5 +3170,72 @@ public class UserServiceImpl implements UserService {
 		long lastTime = now.getTime() - hour*60*60*1000l;
 		Date lastDate = new Date(lastTime);
 		userMybatisDao.deleteOvertimeSeek(lastDate);
+	}
+	
+	@Override
+	public Response myFollowsQuery(long uid, String name, int page){
+		int pageSize = 20;
+		int start = (page-1)*pageSize;
+		
+		ShowMyFollowsQueryDTO result = new ShowMyFollowsQueryDTO();
+		int total = userInitJdbcDao.countUserFollowInfo(name, uid);
+		result.setTotalPage(total%pageSize==0?(total/pageSize):((total/pageSize)+1));
+		
+		List<Map<String, Object>> followList = userInitJdbcDao.getUserFollowInfoPage(name, uid, start, pageSize);
+		if(null != followList && followList.size() > 0){
+			ShowMyFollowsQueryDTO.MyFollowElement e = null;
+			for(Map<String, Object> followUser : followList){
+				e = new ShowMyFollowsQueryDTO.MyFollowElement();
+				e.setAvatar(Constant.QINIU_DOMAIN + "/" + (String)followUser.get("avatar"));
+				e.setGroup((String)followUser.get("name_group"));
+				e.setIntroduced((String)followUser.get("introduced"));
+				e.setNickName((String)followUser.get("nick_name"));
+				e.setUid((Long)followUser.get("uid"));
+				e.setV_lv((Integer)followUser.get("v_lv"));
+				result.getMyFollowData().add(e);
+			}
+		}
+		
+		return Response.success(result);
+	}
+	
+	@Override
+	public Response batchFollow(long uid, String targetUids){
+		List<Long> targetUidList = new ArrayList<Long>();
+		if(!StringUtils.isEmpty(targetUids)){
+			String[] tmp = targetUids.split(";");
+			if(null != tmp && tmp.length > 0){
+				Long tuid = null;
+				for(String u : tmp){
+					if(!StringUtils.isEmpty(u)){
+						tuid = Long.valueOf(u);
+						if(!targetUidList.contains(tuid)){
+							targetUidList.add(tuid);
+						}
+					}
+				}
+			}
+		}
+		
+		if(targetUidList.size() > 0){
+			//判断其中是否有已经关注过的用户
+			List<UserFollow> list = userMybatisDao.getUserFollowsBySourceUidAndTargetUids(uid, targetUidList);
+			if(null != list && list.size() > 0){
+				for(UserFollow uf : list){
+					targetUidList.remove(uf.getTargetUid());
+				}
+			}
+		}
+		
+		if(targetUidList.size() > 0){
+			userInitJdbcDao.batchUserFollowInsertIntoDB(uid, targetUidList);
+			//推送
+			BatchFollowEvent event = new BatchFollowEvent();
+			event.setSourceUid(uid);
+			event.setTargetUids(targetUidList);
+			this.applicationEventBus.post(event);
+		}
+		
+		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message);
 	}
 }

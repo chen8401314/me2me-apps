@@ -154,4 +154,29 @@ public class UserInitJdbcDao extends BaseJdbcDao {
     	
     	return super.query(sb.toString());
     }
+    
+    public int countUserFollowInfo(String nickName, long uid){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select count(1) as cc from user_follow f,user_profile p");
+    	sb.append(" where f.target_uid=p.uid and f.source_uid=").append(uid);
+    	if(!StringUtils.isEmpty(nickName)){
+    		sb.append(" and f.nick_name like '%").append(nickName).append("%'");
+    	}
+    	return super.count(sb.toString());
+    }
+    
+    public void batchUserFollowInsertIntoDB(long sourceUid, List<Long> targetUid){
+    	if(null == targetUid || targetUid.size() == 0){
+    		return;
+    	}
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("insert into user_follow(source_uid,target_uid) values ");
+    	for(int i=0;i<targetUid.size();i++){
+    		if(i > 0){
+    			sb.append(",");
+    		}
+    		sb.append("(").append(sourceUid).append(",").append(targetUid.get(i)).append(")");
+    	}
+    	super.execute(sb.toString());
+    }
 }

@@ -460,6 +460,14 @@ public class UserMybatisDao {
         example.or(criteria2);
         return userFollowMapper.selectByExample(example);
     }
+    
+    public List<UserFollow> getUserFollowsBySourceUidAndTargetUids(long sourceUid, List<Long> targetUids){
+    	UserFollowExample example = new UserFollowExample();
+        UserFollowExample.Criteria criteria =  example.createCriteria();
+        criteria.andSourceUidEqualTo(sourceUid);
+        criteria.andTargetUidIn(targetUids);
+        return userFollowMapper.selectByExample(example);
+    }
 
     public List<UserFansDto> getFans(FansParamsDto fansParamsDto){
         return userFollowMapper.getFans(fansParamsDto);

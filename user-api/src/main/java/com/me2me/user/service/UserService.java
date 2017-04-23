@@ -371,4 +371,8 @@ public interface UserService {
      * @param hisDay
      */
     void cleanSeekFollow(int hour);
+    
+    Response myFollowsQuery(long uid, String name, int page);
+    
+    Response batchFollow(long uid, String targetUids);
 }
