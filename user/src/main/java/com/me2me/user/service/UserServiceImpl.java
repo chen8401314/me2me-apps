@@ -3282,6 +3282,7 @@ public class UserServiceImpl implements UserService {
 		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message);
 	}
 	
+	// 170190
 	@Override
 	public Response testSendMessage(long templateId, String mobiles){
 		if(StringUtils.isEmpty(mobiles)){

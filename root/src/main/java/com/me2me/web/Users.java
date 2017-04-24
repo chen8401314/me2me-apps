@@ -860,4 +860,15 @@ public class Users extends BaseController {
     public Response personaModify(PersonaModifyRequest request){
     	return userService.personaModify(request.getUid(), request.getType(), request.getParams());
     }
+    
+    /**
+     * 通用发短信接口(测试用)
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/commonSendMsg",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response commonSendMsg(CommonSendMsgRequest request){
+    	return userService.testSendMessage(request.getTemplateId(), request.getMobiles());
+    }
 }
