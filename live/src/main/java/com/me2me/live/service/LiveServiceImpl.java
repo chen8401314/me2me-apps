@@ -737,11 +737,12 @@ public class LiveServiceImpl implements LiveService {
     	//附加逻辑，活动需求，特殊王国在发言时增加用户的荣誉值以及该王国的热度
         String specialSwitch = cacheService.get(CacheConstant.ACTIVITY_SPECIAL_TOPIC_HANDLE_KEY);
         if(!StringUtils.isEmpty(specialSwitch) && "on".equals(specialSwitch)){//开关存在，并且是打开的状态
+        	String keyType = null;
         	//判断是否特殊王国
         	Set<String> specialTopicList = cacheService.smembers(CacheConstant.ACTIVITY_CORECIRCLE_SPECIAL_TOPIC_LIST_KEY);
+        	//王国内的操作
         	if(null != specialTopicList && specialTopicList.size() > 0 
         			&& specialTopicList.contains(String.valueOf(topicId))){
-        		String keyType = null;
         		if((type == Specification.LiveSpeakType.ANCHOR.index && contentType == Specification.LiveContent.TEXT.index)
         				|| type == Specification.LiveSpeakType.FANS.index){//主播文本发言 || 粉丝回复
         			//文本
@@ -764,118 +765,134 @@ public class LiveServiceImpl implements LiveService {
         			//分享
         			keyType = CacheConstant.SPECIAL_TOPIC_TYPE_SHARE;
         		}
-        		if(null == keyType){
-        			return;//不在我们定义的范围内
-        		}
-        		
-        		String key = CacheConstant.SPECIAL_TOPIC_KEY_PRE + CacheConstant.KEY_SEPARATOR_UNDERLINE + keyType;
-        		if(optAction == 1){//新增
-        			String limit = cacheService.hGet(key, CacheConstant.SPECIAL_TOPIC_LIMIT);
-        			if(StringUtils.isEmpty(limit)){
-        				return;//未设置
-        			}
-        			int limitCount = Integer.valueOf(limit);
-        			if(limitCount < 1){
-        				return;
-        			}
-        			AcommonList alist = activityService.getAcommonList(topicId, 3, 1);
-        			if(null == alist){
-        				return;
-        			}
-        			//总限额
-        			String totalLimitStr = cacheService.get(CacheConstant.SPECIAL_TOPIC_HOT_LIMIT_TOTAL);
-        			int totalLimit = 0;
-        			if(!StringUtils.isEmpty(totalLimitStr)){
-        				totalLimit = Integer.valueOf(totalLimitStr);
-        			}
-        			if(alist.getScore().intValue() >= totalLimit){
-        				return;
-        			}
-        			
-        			String personLimit = cacheService.get(CacheConstant.SPECIAL_TOPIC_USER_LIMIT_PRE + keyType + CacheConstant.KEY_SEPARATOR_UNDERLINE + uid);
-        			if(StringUtils.isEmpty(personLimit)){
-        				personLimit = "1";
-        			}else{
-        				int personLimitCount = Integer.valueOf(personLimit);
-        				if(personLimitCount >= limitCount){
-        					return;//已经到上限了
-        				}
-        				personLimitCount++;
-        				personLimit = String.valueOf(personLimitCount);
-        			}
-        			cacheService.set(CacheConstant.SPECIAL_TOPIC_USER_LIMIT_PRE + keyType + CacheConstant.KEY_SEPARATOR_UNDERLINE + uid, personLimit);
-        			
-        			//每日限额
-        			boolean isOverDayLimit = false;
-        			String dayLimitStr = cacheService.get(CacheConstant.SPECIAL_TOPIC_HOT_LIMIT_DAY);
-        			int dayLimit = 0;
-        			if(!StringUtils.isEmpty(dayLimitStr)){
-        				dayLimit = Integer.valueOf(dayLimitStr);
-        			}
-        			String topicDayHotStr = cacheService.hGet(CacheConstant.SPECIAL_TOPIC_HOT_DAY_PRE+DateUtil.date2string(new Date(), "yyyyMMdd"), String.valueOf(topicId));
-        			int topicDayHot = 0;
-        			if(!StringUtils.isEmpty(topicDayHotStr)){
-        				topicDayHot = Integer.valueOf(topicDayHotStr);
-        			}
-        			if(topicDayHot>=dayLimit){
-        				isOverDayLimit = true;
-        			}
-        			
-        			String personScore = cacheService.hGet(key, CacheConstant.SPECIAL_TOPIC_PERSON+CacheConstant.SPECIAL_TOPIC_ACTION_ADD);
-        			String kingdomScore = cacheService.hGet(key, CacheConstant.SPECIAL_TOPIC_KINGDOM+CacheConstant.SPECIAL_TOPIC_ACTION_ADD);
-        			int personScoreCount = 0;
-        			if(!StringUtils.isEmpty(personScore)){
-        				personScoreCount = Integer.valueOf(personScore);
-        			}
-        			int kingdomScoreCount = 0;
-        			if(!StringUtils.isEmpty(kingdomScore)){
-        				kingdomScoreCount = Integer.valueOf(kingdomScore);
-        			}
-        			boolean needDetail = false;
-        			if(personScoreCount > 0){
-        				if(isOverDayLimit){
-        					personScoreCount = personScoreCount/2;
-        				}
-        				needDetail = true;
-        				liveLocalJdbcDao.specialTopicAddHot(uid, 2, 3, personScoreCount);
-        			}
-        			if(kingdomScoreCount > 0){
-        				if(isOverDayLimit){
-        					kingdomScoreCount = kingdomScoreCount/2;
-        				}
-        				needDetail = true;
-        				liveLocalJdbcDao.specialTopicAddHot(topicId, 1, 3, kingdomScoreCount);
-        				topicDayHot = topicDayHot + kingdomScoreCount;
-        				cacheService.hSet(CacheConstant.SPECIAL_TOPIC_HOT_DAY_PRE+DateUtil.date2string(new Date(), "yyyyMMdd"), String.valueOf(topicId), String.valueOf(topicDayHot));
-        			}
-        			if(needDetail){
-        				liveLocalJdbcDao.insertSpecialTopicHotDetail(3, fragmentId);
-        			}
-        		}else if(optAction == 2){//删除
-        			//首先查询是否需要减，只有产生过热度或荣誉的那些记录是需要减的
-        			Map<String, Object> detail = liveLocalJdbcDao.getSpecialTopicHotDetail(3, fragmentId);
-        			if(null == detail){
-        				return;
-        			}
-        			
-        			String personScore = cacheService.hGet(key, CacheConstant.SPECIAL_TOPIC_PERSON+CacheConstant.SPECIAL_TOPIC_ACTION_DEL);
-        			String kingdomScore = cacheService.hGet(key, CacheConstant.SPECIAL_TOPIC_KINGDOM+CacheConstant.SPECIAL_TOPIC_ACTION_DEL);
-        			int personScoreCount = 0;
-        			if(!StringUtils.isEmpty(personScore)){
-        				personScoreCount = Integer.valueOf(personScore);
-        			}
-        			int kingdomScoreCount = 0;
-        			if(!StringUtils.isEmpty(kingdomScore)){
-        				kingdomScoreCount = Integer.valueOf(kingdomScore);
-        			}
-        			if(personScoreCount > 0){
-        				liveLocalJdbcDao.specialTopicReduceHot(uid, 2, 3, personScoreCount);
-        			}
-        			if(kingdomScoreCount > 0){
-        				liveLocalJdbcDao.specialTopicReduceHot(topicId, 1, 3, kingdomScoreCount);
-        			}
+        	}else if(null != specialTopicList && specialTopicList.size() > 0){
+        		//王国外的操作，这里只有一个对外分享
+        		if((type==51||type==52) && contentType == 72){//首先这个得是分享
+        			TopicFragment tf = liveMybatisDao.getTopicFragmentById(fragmentId);
+            		if(null != tf && !StringUtils.isEmpty(tf.getExtra())){
+            			JSONObject obj = JSON.parseObject(tf.getExtra());
+            			if(null != obj.get("id")){
+            				Long kingdomId = obj.getLong("id");
+            				if(kingdomId.longValue() > 0 && specialTopicList.contains(kingdomId.toString())){
+            					//对外分享的是活动王国
+            					keyType = CacheConstant.SPECIAL_TOPIC_TYPE_OUT_SHARE;
+            				}
+            			}
+            		}
         		}
         	}
+        	
+        	if(null == keyType){
+    			return;//不在我们定义的范围内
+    		}
+        	
+        	String key = CacheConstant.SPECIAL_TOPIC_KEY_PRE + CacheConstant.KEY_SEPARATOR_UNDERLINE + keyType;
+    		if(optAction == 1){//新增
+    			String limit = cacheService.hGet(key, CacheConstant.SPECIAL_TOPIC_LIMIT);
+    			if(StringUtils.isEmpty(limit)){
+    				return;//未设置
+    			}
+    			int limitCount = Integer.valueOf(limit);
+    			if(limitCount < 1){
+    				return;
+    			}
+    			AcommonList alist = activityService.getAcommonList(topicId, 3, 1);
+    			if(null == alist){
+    				return;
+    			}
+    			//总限额
+    			String totalLimitStr = cacheService.get(CacheConstant.SPECIAL_TOPIC_HOT_LIMIT_TOTAL);
+    			int totalLimit = 0;
+    			if(!StringUtils.isEmpty(totalLimitStr)){
+    				totalLimit = Integer.valueOf(totalLimitStr);
+    			}
+    			if(alist.getScore().intValue() >= totalLimit){
+    				return;
+    			}
+    			
+    			String personLimit = cacheService.get(CacheConstant.SPECIAL_TOPIC_USER_LIMIT_PRE + keyType + CacheConstant.KEY_SEPARATOR_UNDERLINE + uid);
+    			if(StringUtils.isEmpty(personLimit)){
+    				personLimit = "1";
+    			}else{
+    				int personLimitCount = Integer.valueOf(personLimit);
+    				if(personLimitCount >= limitCount){
+    					return;//已经到上限了
+    				}
+    				personLimitCount++;
+    				personLimit = String.valueOf(personLimitCount);
+    			}
+    			cacheService.set(CacheConstant.SPECIAL_TOPIC_USER_LIMIT_PRE + keyType + CacheConstant.KEY_SEPARATOR_UNDERLINE + uid, personLimit);
+    			
+    			//每日限额
+    			boolean isOverDayLimit = false;
+    			String dayLimitStr = cacheService.get(CacheConstant.SPECIAL_TOPIC_HOT_LIMIT_DAY);
+    			int dayLimit = 0;
+    			if(!StringUtils.isEmpty(dayLimitStr)){
+    				dayLimit = Integer.valueOf(dayLimitStr);
+    			}
+    			String topicDayHotStr = cacheService.hGet(CacheConstant.SPECIAL_TOPIC_HOT_DAY_PRE+DateUtil.date2string(new Date(), "yyyyMMdd"), String.valueOf(topicId));
+    			int topicDayHot = 0;
+    			if(!StringUtils.isEmpty(topicDayHotStr)){
+    				topicDayHot = Integer.valueOf(topicDayHotStr);
+    			}
+    			if(topicDayHot>=dayLimit){
+    				isOverDayLimit = true;
+    			}
+    			
+    			String personScore = cacheService.hGet(key, CacheConstant.SPECIAL_TOPIC_PERSON+CacheConstant.SPECIAL_TOPIC_ACTION_ADD);
+    			String kingdomScore = cacheService.hGet(key, CacheConstant.SPECIAL_TOPIC_KINGDOM+CacheConstant.SPECIAL_TOPIC_ACTION_ADD);
+    			int personScoreCount = 0;
+    			if(!StringUtils.isEmpty(personScore)){
+    				personScoreCount = Integer.valueOf(personScore);
+    			}
+    			int kingdomScoreCount = 0;
+    			if(!StringUtils.isEmpty(kingdomScore)){
+    				kingdomScoreCount = Integer.valueOf(kingdomScore);
+    			}
+    			boolean needDetail = false;
+    			if(personScoreCount > 0){
+    				if(isOverDayLimit){
+    					personScoreCount = personScoreCount/2;
+    				}
+    				needDetail = true;
+    				liveLocalJdbcDao.specialTopicAddHot(uid, 2, 3, personScoreCount);
+    			}
+    			if(kingdomScoreCount > 0){
+    				if(isOverDayLimit){
+    					kingdomScoreCount = kingdomScoreCount/2;
+    				}
+    				needDetail = true;
+    				liveLocalJdbcDao.specialTopicAddHot(topicId, 1, 3, kingdomScoreCount);
+    				topicDayHot = topicDayHot + kingdomScoreCount;
+    				cacheService.hSet(CacheConstant.SPECIAL_TOPIC_HOT_DAY_PRE+DateUtil.date2string(new Date(), "yyyyMMdd"), String.valueOf(topicId), String.valueOf(topicDayHot));
+    			}
+    			if(needDetail){
+    				liveLocalJdbcDao.insertSpecialTopicHotDetail(3, fragmentId);
+    			}
+    		}else if(optAction == 2){//删除
+    			//首先查询是否需要减，只有产生过热度或荣誉的那些记录是需要减的
+    			Map<String, Object> detail = liveLocalJdbcDao.getSpecialTopicHotDetail(3, fragmentId);
+    			if(null == detail){
+    				return;
+    			}
+    			
+    			String personScore = cacheService.hGet(key, CacheConstant.SPECIAL_TOPIC_PERSON+CacheConstant.SPECIAL_TOPIC_ACTION_DEL);
+    			String kingdomScore = cacheService.hGet(key, CacheConstant.SPECIAL_TOPIC_KINGDOM+CacheConstant.SPECIAL_TOPIC_ACTION_DEL);
+    			int personScoreCount = 0;
+    			if(!StringUtils.isEmpty(personScore)){
+    				personScoreCount = Integer.valueOf(personScore);
+    			}
+    			int kingdomScoreCount = 0;
+    			if(!StringUtils.isEmpty(kingdomScore)){
+    				kingdomScoreCount = Integer.valueOf(kingdomScore);
+    			}
+    			if(personScoreCount > 0){
+    				liveLocalJdbcDao.specialTopicReduceHot(uid, 2, 3, personScoreCount);
+    			}
+    			if(kingdomScoreCount > 0){
+    				liveLocalJdbcDao.specialTopicReduceHot(topicId, 1, 3, kingdomScoreCount);
+    			}
+    		}
         }
     }
 

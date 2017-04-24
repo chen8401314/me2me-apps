@@ -26,6 +26,8 @@ public class CacheConstant {
 	public static final String SPECIAL_TOPIC_TYPE_AT = "AT";
 	/** 特殊王国类型_分享 */
 	public static final String SPECIAL_TOPIC_TYPE_SHARE = "SHARE";
+	/** 特殊王国类型_王国对外分享 */
+	public static final String SPECIAL_TOPIC_TYPE_OUT_SHARE = "OUT_SHARE";
 	
 	//特殊王国操作
 	/** 新增 */

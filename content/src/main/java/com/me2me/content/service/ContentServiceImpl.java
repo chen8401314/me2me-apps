@@ -5439,6 +5439,9 @@ private void localJpush(long toUid){
 	@Override
 	public Response emojiPackageDetail(int packageId) {
 		EmotionPack  pack=	emotionPackMapper.selectByPrimaryKey(packageId);
+		if(null == pack){
+			return Response.failure(500, "表情包不存在");
+		}
 		
 		EmojiPackDetailDto dto = new EmojiPackDetailDto();
 		dto.setPackageId(pack.getId());

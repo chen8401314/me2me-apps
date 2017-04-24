@@ -5,6 +5,7 @@ import com.me2me.core.dao.BaseJdbcDao;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -179,4 +180,21 @@ public class UserInitJdbcDao extends BaseJdbcDao {
     	}
     	super.execute(sb.toString());
     }
+    
+    public List<String> getAllUserMobilesInApp(){
+		String sql = "select DISTINCT t.mobile from user_profile t where t.third_part_bind like '%mobile%' order by t.mobile";
+		List<Map<String,Object>> list = super.query(sql);
+		if(null != list && list.size() > 0){
+			List<String> result = new ArrayList<String>();
+			String m = null;
+			for(Map<String,Object> map : list){
+				m = (String)map.get("mobile");
+				if(!StringUtils.isEmpty(m)){
+					result.add(m);
+				}
+			}
+			return result;
+		}
+		return null;
+	}
 }

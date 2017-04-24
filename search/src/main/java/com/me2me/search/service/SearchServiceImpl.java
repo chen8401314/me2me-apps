@@ -619,9 +619,15 @@ public class SearchServiceImpl implements SearchService {
 		person.setSex(profile.getGender());
 		String hobby = StringUtils.join(searchMapper.getUserHobbyIds(uid),",");
 		person.setHobby(hobby);
-		person.setAgeGroup(profile.getAgeGroup());
-		person.setCareer(profile.getOccupation());
-		person.setSexOrientation(profile.getLikeGender());
+		if(null != profile.getAgeGroup()){
+			person.setAgeGroup(profile.getAgeGroup());
+		}
+		if(null != profile.getOccupation()){
+			person.setCareer(profile.getOccupation());
+		}
+		if(null != profile.getLikeGender()){
+			person.setSexOrientation(profile.getLikeGender());
+		}
 		//画像完成度
 		float completed=5f;
 		if(StringUtils.isEmpty(hobby)){

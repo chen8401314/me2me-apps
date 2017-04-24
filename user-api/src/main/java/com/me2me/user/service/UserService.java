@@ -377,4 +377,6 @@ public interface UserService {
     Response batchFollow(long uid, String targetUids);
     
     Response personaModify(long uid, int type, String params);
+    
+    Response testSendMessage(long templateId, String mobiles);
 }

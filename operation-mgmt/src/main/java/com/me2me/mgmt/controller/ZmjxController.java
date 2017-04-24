@@ -233,6 +233,13 @@ public class ZmjxController {
 		item.setTitle("分享");
 		this.genLimitItem(item, key);
 		result.getLimitList().add(item);
+		//王国对外分享操作
+		key = CacheConstant.SPECIAL_TOPIC_KEY_PRE + CacheConstant.KEY_SEPARATOR_UNDERLINE + CacheConstant.SPECIAL_TOPIC_TYPE_OUT_SHARE;
+		item = new ZmjxConfingDTO.LimitItem();
+		item.setKey(key);
+		item.setTitle("向其他王国分享");
+		this.genLimitItem(item, key);
+		result.getLimitList().add(item);
 		
 		ModelAndView view = new ModelAndView("zmjx/config");
 		view.addObject("dataObj", result);

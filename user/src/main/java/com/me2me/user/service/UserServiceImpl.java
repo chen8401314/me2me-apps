@@ -2970,7 +2970,7 @@ public class UserServiceImpl implements UserService {
 			List<UserProfile> mobileUserList = userMybatisDao.getUserProfilesByMobiles(mobileList);
 			if(null != mobileUserList && mobileUserList.size() > 0){
 				for(UserProfile u : mobileUserList){
-					mobileUserMap.put(u.getUid().toString(), u);
+					mobileUserMap.put(u.getMobile(), u);
 					if(!uidList.contains(u.getUid())){
 						uidList.add(u.getUid());
 					}
@@ -3281,4 +3281,65 @@ public class UserServiceImpl implements UserService {
 		
 		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message);
 	}
+	
+	@Override
+	public Response testSendMessage(long templateId, String mobiles){
+		if(StringUtils.isEmpty(mobiles)){
+			return Response.failure(500, "没有手机号");
+		}
+		List<String> mobileList = new ArrayList<String>();
+		if("ALL".equals(mobiles)){//全体发送
+			List<String> mList = userInitJdbcDao.getAllUserMobilesInApp();
+			if(null != mList && mList.size() > 0){
+				for(String m : mList){
+					if(!StringUtils.isEmpty(m)){
+						mobileList.add(m);
+					}
+				}
+			}
+		}else{
+			String[] tmp = mobiles.split(",");
+			for(String t : tmp){
+				if(!StringUtils.isEmpty(t) && !mobileList.contains(t)){
+					mobileList.add(t);
+				}
+			}
+		}
+		
+		if(mobileList.size() > 0){
+			int total = mobileList.size();
+			log.info("total ["+total+"] mobiles!");
+			List<String> sendList = new ArrayList<String>();
+			int sends = 0;
+			for(String mobile : mobileList){
+				sendList.add(mobile);
+				if(sendList.size() >= 180){
+					smsService.send7dayCommon(String.valueOf(templateId), sendList, null);
+					sends = sends + sendList.size();
+					log.info("send ["+sendList.size()+"], total send ["+sends+"], remian ["+(total-sends)+"]");
+					sendList.clear();
+				}
+			}
+			if(sendList.size() > 0){
+				smsService.send7dayCommon(String.valueOf(templateId), sendList, null);
+				sends = sends + sendList.size();
+				log.info("send ["+sendList.size()+"], total send ["+sends+"], remian ["+(total-sends)+"]");
+			}
+		}
+		
+		return Response.success();
+	}
+	
+	private boolean checkMobile(String mobile){
+    	if(!StringUtils.isEmpty(mobile)){
+    		if(!mobile.startsWith("100") && !mobile.startsWith("111")
+    				&& !mobile.startsWith("123") && !mobile.startsWith("1666")
+    				&& !mobile.startsWith("180000") && !mobile.startsWith("18888888")
+    				&& !mobile.startsWith("18900") && !mobile.startsWith("19000")
+    				&& !mobile.startsWith("2") && !mobile.startsWith("8")){
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 }
