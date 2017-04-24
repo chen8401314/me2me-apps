@@ -1451,6 +1451,18 @@ public class ActivityMybatisDao {
     	}
     	return null;
     }
+
+    public AcommonHotDetail getAcommonHotDetail(long activityId, long uid){
+        AcommonHotDetailExample example = new AcommonHotDetailExample();
+        AcommonHotDetailExample.Criteria criteria = example.createCriteria();
+        criteria.andActivityIdEqualTo(activityId);
+        criteria.andUidEqualTo(uid);
+        List<AcommonHotDetail> list = acommonHotDetailMapper.selectByExample(example);
+        if(null != list && list.size() > 0){
+            return list.get(0);
+        }
+        return null;
+    }
     
     public void saveAcommonHotDetail(AcommonHotDetail ahd){
     	acommonHotDetailMapper.insertSelective(ahd);

@@ -5208,10 +5208,12 @@ public class ActivityServiceImpl implements ActivityService {
     	if(optUid <= 0){
     		return Response.success(500,"必须登录后才能支持");
     	}
-    	//判断是否已经支持过了
-    	AcommonHotDetail detail = activityMybatisDao.getAcommonHotDetail(3, topicId, optUid);
+    	//判断是否已经支持过了 origin code
+//    	AcommonHotDetail detail = activityMybatisDao.getAcommonHotDetail(3, topicId, optUid);
+        // this now modify this by kylin
+        AcommonHotDetail detail = activityMybatisDao.getAcommonHotDetail(3, optUid);
     	if(null != detail){
-    		return Response.success(500,"重复操作");
+    		return Response.success(500,"您已经参与过支持活动");
     	}
     	//判断该王国是否为活动王国
     	AcommonList aKingdom = activityMybatisDao.getAcommonList(1, 3, topicId);
