@@ -2,6 +2,7 @@ package com.me2me.content.dto;
 
 import java.util.List;
 
+import com.google.common.collect.Lists;
 import com.me2me.common.web.BaseEntity;
 
 import lombok.Data;
@@ -13,7 +14,7 @@ public class EmojiPackDto implements BaseEntity{
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	List<PackageData> packageData;
+	private List<PackageData> packageData = Lists.newArrayList();
 	
 	@Data
 	public static class PackageData implements BaseEntity{

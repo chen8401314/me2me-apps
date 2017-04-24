@@ -14,27 +14,25 @@ public class EmojiPackDetailDto implements BaseEntity{
 	 *
 	 */
 	private static final long serialVersionUID = 1L;
-	long packageId;
-	int emojiType;
-	String packageName;
-	String packageCover;
-	int  packageVersion;
-	int  packagePversion;
-	List<PackageDetailData> emojiData=Lists.newArrayList();
-	public void addEmojiData(PackageDetailData data){
-		emojiData.add(data);
-	}
+	private long packageId;
+	private int emojiType;
+	private String packageName;
+	private String packageCover;
+	private int  packageVersion;
+	private int  packagePversion;
+	private List<PackageDetailData> emojiData=Lists.newArrayList();
+
 	@Data
 	public static class PackageDetailData implements BaseEntity{
 		private static final long serialVersionUID = 1L;
-		long id;
-		String title;
-		String image;
-		String thumb;
-		long w;
-		long h;
-		long thumb_w;
-		long thumb_h;
-		String extra;
+		private long id;
+		private String title;
+		private String image;
+		private String thumb;
+		private long w;
+		private long h;
+		private long thumb_w;
+		private long thumb_h;
+		private String extra;
 	}
 }

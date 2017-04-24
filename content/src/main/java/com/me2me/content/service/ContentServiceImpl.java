@@ -5421,38 +5421,50 @@ private void localJpush(long toUid){
 		example.createCriteria().andIsValidEqualTo(1);
 		example.setOrderByClause("order_num desc");
 		List<EmotionPack> packList = emotionPackMapper.selectByExample(example);
-		List<PackageData> pdataList = new ArrayList<>();
+		EmojiPackDto.PackageData pdata = null;
 		for(EmotionPack pack:packList){
-			EmojiPackDto.PackageData pdata = new EmojiPackDto.PackageData();
-			BeanUtils.copyProperties(pack, pdata);
-			pdataList.add(pdata);
+			pdata = new EmojiPackDto.PackageData();
+			pdata.setCover(Constant.QINIU_DOMAIN + "/" + pack.getCover());
+			pdata.setEmojiType(pack.getEmojiType());
+			pdata.setExtra(pack.getExtra());
+			pdata.setId(pack.getId());
+			pdata.setName(pack.getName());
+			pdata.setPVersion(pack.getpVersion());
+			pdata.setVersion(pack.getVersion());
+			dto.getPackageData().add(pdata);
 		}
-		dto.setPackageData(pdataList);
 		return Response.success(dto);
 	}
 
 	@Override
 	public Response emojiPackageDetail(int packageId) {
-		EmojiPackDetailDto dto = new EmojiPackDetailDto();
-		
 		EmotionPack  pack=	emotionPackMapper.selectByPrimaryKey(packageId);
+		
+		EmojiPackDetailDto dto = new EmojiPackDetailDto();
 		dto.setPackageId(pack.getId());
 		dto.setEmojiType(pack.getEmojiType());
 		dto.setPackageName(pack.getName());
-		dto.setPackageCover(pack.getCover());
+		dto.setPackageCover(Constant.QINIU_DOMAIN + "/" + pack.getCover());
 		dto.setPackageVersion(pack.getVersion());
 		dto.setPackagePversion(pack.getpVersion());
-		
-		BeanUtils.copyProperties(pack, dto);
 		
 		EmotionPackDetailExample example = new EmotionPackDetailExample();
 		example.createCriteria().andPackIdEqualTo(packageId);
 		example.setOrderByClause("order_num asc");
 		List<EmotionPackDetail> detailList = emotionPackDetailMapper.selectByExample(example);
+		EmojiPackDetailDto.PackageDetailData data = null;
 		for(EmotionPackDetail detail:detailList){
-			EmojiPackDetailDto.PackageDetailData data = new EmojiPackDetailDto.PackageDetailData();
-			BeanUtils.copyProperties(detail, data);
-			dto.addEmojiData(data);
+			data = new EmojiPackDetailDto.PackageDetailData();
+			data.setExtra(detail.getExtra());
+			data.setH(detail.getH());
+			data.setId(detail.getId());
+			data.setImage(Constant.QINIU_DOMAIN + "/" + detail.getImage());
+			data.setThumb(Constant.QINIU_DOMAIN + "/" + detail.getThumb());
+			data.setThumb_h(detail.getThumbH());
+			data.setThumb_w(detail.getThumbW());
+			data.setTitle(detail.getTitle());
+			data.setW(detail.getW());
+			dto.getEmojiData().add(data);
 		}
 		return Response.success(dto);
 	}
