@@ -5261,11 +5261,19 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public Response chatQuery(long sinceId){
     	ShowAcommonChatQueryDTO result = new ShowAcommonChatQueryDTO();
-    	if(sinceId<=0){//第一页展示，则从当前时间点往前推5分钟开始加载
-    		Date d = new Date();
-    		sinceId = d.getTime() - 5*60*1000;
-    	}
-    	List<AcommonChat> list = activityMybatisDao.getAcommonChats(sinceId, 3, 10);
+        //第一页展示，则从当前时间点往前推5分钟开始加载
+//    	if(sinceId<=0){
+//    		Date d = new Date();
+//    		sinceId = d.getTime() - 120*60*1000;
+//    	}
+        // 获取最新50条数据
+    	List<AcommonChat> list = activityMybatisDao.getAcommonChats(3, 50);
+    	Collections.sort(list, new Comparator<AcommonChat>() {
+            @Override
+            public int compare(AcommonChat o1, AcommonChat o2) {
+                return o1.getLongTime()>o2.getLongTime()?1:-1;
+            }
+        });
     	if(null != list && list.size() > 0){
     		List<Long> uidList = new ArrayList<Long>();
     		for(AcommonChat chat : list){

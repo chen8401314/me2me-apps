@@ -52,30 +52,30 @@ public class LoggerAop {
         log.info("= REQUEST METHOD : " + request.getMethod());
         log.info("= REQUEST INVOKE METHOD : " +joinPoint.getSignature().getDeclaringTypeName()+"."+ joinPoint.getSignature().getName());
         log.info("= REQUEST ARGUMENTS : " + Arrays.toString(joinPoint.getArgs()));
-        AccessLoggerDto accessLoggerDto = new AccessLoggerDto();
-        accessLoggerDto.setHeaders(JSON.toJSONString(map));
-        accessLoggerDto.setMethod(request.getMethod());
-        List<Object> args = Lists.newArrayList();
-        Object[] os = joinPoint.getArgs();
-        for(Object o : os) {
-            args.add(o);
-        }
-        try{
-            String origin = JSON.toJSONString(args);
-            List<Map> paramsMap = JSON.parseArray(origin,Map.class);
-            for(Map m : paramsMap) {
-                if(m.get("uid")!=null) {
-                    long uid = Long.valueOf(m.get("uid").toString());
-                    accessLoggerDto.setUid(uid);
-                    break;
-                }
-            }
-            accessLoggerDto.setUri(request.getRequestURI());
-            accessLoggerDto.setParams(JSON.toJSONString(joinPoint.getArgs()));
-            monitorService.saveAccessLog(accessLoggerDto);
-        }catch (Exception e){
-            log.info("ex ignore :"+e.getMessage());
-        }
+//        AccessLoggerDto accessLoggerDto = new AccessLoggerDto();
+//        accessLoggerDto.setHeaders(JSON.toJSONString(map));
+//        accessLoggerDto.setMethod(request.getMethod());
+//        List<Object> args = Lists.newArrayList();
+//        Object[] os = joinPoint.getArgs();
+//        for(Object o : os) {
+//            args.add(o);
+//        }
+//        try{
+//            String origin = JSON.toJSONString(args);
+//            List<Map> paramsMap = JSON.parseArray(origin,Map.class);
+//            for(Map m : paramsMap) {
+//                if(m.get("uid")!=null) {
+//                    long uid = Long.valueOf(m.get("uid").toString());
+//                    accessLoggerDto.setUid(uid);
+//                    break;
+//                }
+//            }
+//            accessLoggerDto.setUri(request.getRequestURI());
+//            accessLoggerDto.setParams(JSON.toJSONString(joinPoint.getArgs()));
+//            monitorService.saveAccessLog(accessLoggerDto);
+//        }catch (Exception e){
+//            log.info("ex ignore :"+e.getMessage());
+//        }
     }
     public void after(JoinPoint joinPoint){
         long execTime = System.currentTimeMillis() - startTime.get();

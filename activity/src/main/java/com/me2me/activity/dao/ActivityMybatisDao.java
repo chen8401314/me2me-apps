@@ -1472,15 +1472,17 @@ public class ActivityMybatisDao {
     	acommonChatMapper.insertSelective(chat);
     }
     
-    public List<AcommonChat> getAcommonChats(long sinceId, long activityId, int limit){
+    public List<AcommonChat> getAcommonChats(long activityId, int limit){
     	AcommonChatExample example = new AcommonChatExample();
     	AcommonChatExample.Criteria criteria = example.createCriteria();
     	criteria.andActivityIdEqualTo(activityId);
     	criteria.andTypeLessThan(2);//<2 普通聊天
-    	criteria.andLongTimeGreaterThan(sinceId);
-    	example.setOrderByClause(" long_time asc limit "+limit);
+//    	criteria.andLongTimeGreaterThan(sinceId);
+    	example.setOrderByClause(" long_time desc limit "+limit);
     	return acommonChatMapper.selectByExample(example);
     }
+
+
     
     public List<AcommonChat> getTop10Chats(long activityId){
     	AcommonChatExample example = new AcommonChatExample();
