@@ -3,8 +3,10 @@ package com.me2me.search.service;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -597,12 +599,25 @@ public class ContentSearchServiceImpl implements ContentSearchService {
     		userInfo.setV_lv(userProfile.getvLv());
     		
     		boolean sameTags =false;
-    		for(String tag:userHobbyList){
-    			if(userMap.getTags().contains(tag)){
-    				sameTags=true;
-    				break;
+    		String[] userTags = userMap.getTags().split(" ");
+    		if(userTags!=null && userTags.length>0){
+    			List<String> matchedTagList = new ArrayList<>();
+    			List<String> notMatchedTagList = new ArrayList<>();
+    			for( String tag:userTags){
+    				for(String mytag:userHobbyList){
+            			if(mytag.equals(tag)){
+            				matchedTagList.add(mytag);
+            			}else{
+            				notMatchedTagList.add(tag);
+            			}
+            		}
     			}
+    			userInfo.setTagMatchedLength(matchedTagList.size());		// 匹配长度
+    			matchedTagList.addAll(notMatchedTagList);
+    			userInfo.setUserTags(matchedTagList);
+   				sameTags=matchedTagList.size()>0;
     		}
+    		
     		if(user.getLikeGender()!=null && userMap.getLike_gender()==user.getLikeGender()){
     			userInfo.setReason(RecommendReason.LIKE_GENDER);
     		}else if(sameTags){

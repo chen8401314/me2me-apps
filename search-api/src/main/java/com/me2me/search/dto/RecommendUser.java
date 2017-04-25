@@ -1,5 +1,7 @@
 package com.me2me.search.dto;
 
+import java.util.List;
+
 import com.me2me.common.web.BaseEntity;
 
 import lombok.Data;
@@ -20,4 +22,6 @@ public class RecommendUser implements BaseEntity{
 	private String avatar;
 	private int v_lv;
 	private String reason;
+	private List<String> userTags;		// 用户标签
+	private int  tagMatchedLength;	// 匹配标签长度
 }
