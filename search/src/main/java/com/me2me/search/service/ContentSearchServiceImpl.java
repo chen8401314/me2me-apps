@@ -48,6 +48,7 @@ import com.me2me.search.constants.IndexConstants;
 import com.me2me.search.dao.ContentForSearchJdbcDao;
 import com.me2me.search.dto.RecommendKingdom;
 import com.me2me.search.dto.RecommendUser;
+import com.me2me.search.enums.ELikeGender;
 import com.me2me.search.enums.RecommendReason;
 import com.me2me.search.esmapping.SearchHistoryEsMapping;
 import com.me2me.search.esmapping.TopicEsMapping;
@@ -550,8 +551,9 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			}
 			noUids.add(uid);
 			bq.mustNot(QueryBuilders.termsQuery("uid", noUids));//过滤掉不需要的uid
-			if(user.getLikeGender()!=null){
-				bq.must(QueryBuilders.termQuery("like_gender", user.getLikeGender()).boost(0.1f));
+			if(user.getLikeGender()!=null && user.getLikeGender()!=ELikeGender.ALL.getValue()){
+				int likeGender=user.getLikeGender().equals(ELikeGender.BOY.getValue())?1:0;	// 性取向转换为性别。	BOY(1,"爱男神"),	GIRL(2,"爱女神"),ALL(3,"男女通吃");
+				bq.must(QueryBuilders.termQuery("gender", likeGender).boost(0.1f));
 			}
 			if(tags!=null){
 				bq.should(QueryBuilders.queryStringQuery(tags).field("tags").boost(3f));
