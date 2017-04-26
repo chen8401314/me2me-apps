@@ -27,5 +27,5 @@ public class RecommendKingdom implements BaseEntity{
 	private long topicId;
 	private String cover;
 	private String tags;
-	private int  recommendReason;
+	private String  reason;
 }

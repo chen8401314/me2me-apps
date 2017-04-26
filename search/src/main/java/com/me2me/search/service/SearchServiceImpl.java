@@ -30,6 +30,7 @@ import com.me2me.search.dto.RecommendListDto;
 import com.me2me.search.dto.ShowAssociatedWordDTO;
 import com.me2me.search.dto.ShowRecWordDTO;
 import com.me2me.search.dto.ShowSearchDTO;
+import com.me2me.search.enums.RecommendReason;
 import com.me2me.search.esmapping.TopicEsMapping;
 import com.me2me.search.esmapping.UgcEsMapping;
 import com.me2me.search.esmapping.UserEsMapping;
@@ -864,6 +865,7 @@ public class SearchServiceImpl implements SearchService {
             }else{
             	kingdomElement.setTags("");
             }
+			kingdomElement.setReason(RecommendReason.SAME_TAG);
 			indexData.getRecContentData().add(kingdomElement);
 		}
 	}
