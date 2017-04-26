@@ -495,6 +495,7 @@ public class UserServiceImpl implements UserService {
         return Response.success(ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.status,ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.message);
     }
 
+    
 
     /**
      * 获取基础数据
