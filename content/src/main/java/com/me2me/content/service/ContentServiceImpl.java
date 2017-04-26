@@ -5466,6 +5466,7 @@ private void localJpush(long toUid){
 			data.setThumb_h(detail.getThumbH());
 			data.setThumb_w(detail.getThumbW());
 			data.setTitle(detail.getTitle());
+			data.setContent(detail.getExtra());
 			data.setW(detail.getW());
 			data.setEmojiType(pack.getEmojiType());
 			dto.getEmojiData().add(data);

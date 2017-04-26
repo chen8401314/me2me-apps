@@ -84,12 +84,13 @@ public class EmotionController {
 	    		tpl.setCover(imgName);
 			}
 			if(tpl.getId()!=null){
-				contentService.updateEmotionPackByKey(tpl);
+				contentService.updateEmotionPackByKey(tpl); 
 			}else{
 				contentService.addEmotionPack(tpl);
 			}
 			return "redirect:./list_pack";
 		}catch(Exception e){
+			e.printStackTrace();
 			mrequest.setAttribute("item",tpl);
 			return add_pack(mrequest);
 		}

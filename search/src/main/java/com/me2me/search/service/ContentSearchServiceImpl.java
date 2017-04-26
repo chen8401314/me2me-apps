@@ -703,11 +703,13 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		List<RecommendKingdom> kingdomList= new ArrayList<>();
 		for(TopicEsMapping topic:result){
 			RecommendKingdom kingdom = new RecommendKingdom();
+			org.springframework.beans.BeanUtils.copyProperties(profileMap.get(topic.getUid()), kingdom);
+			kingdom.setReason(RecommendReason.SAME_TAG);
 			kingdom.setCover(topic.getLive_image());
 			kingdom.setTopicId(topic.getId());
 			kingdom.setTags(topic.getTags());
 			kingdom.setTitle(topic.getTitle());
-			org.springframework.beans.BeanUtils.copyProperties(profileMap.get(topic.getUid()), kingdom);
+			
 			kingdomList.add(kingdom);
 		}
 		

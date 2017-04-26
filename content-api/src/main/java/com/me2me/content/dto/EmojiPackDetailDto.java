@@ -34,6 +34,7 @@ public class EmojiPackDetailDto implements BaseEntity{
 		private long thumb_w;
 		private long thumb_h;
 		private String extra;
+		private String content;
 		private int emojiType;
 	}
 }
