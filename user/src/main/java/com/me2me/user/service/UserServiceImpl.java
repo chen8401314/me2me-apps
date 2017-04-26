@@ -481,7 +481,7 @@ public class UserServiceImpl implements UserService {
     public Response modifyUserHobby(ModifyUserHobbyDto modifyUserHobbyDto){
         User user = userMybatisDao.getUserByUid(modifyUserHobbyDto.getUid());
         String hobby = modifyUserHobbyDto.getHobby();
-        String [] hobbies = hobby.split(";");
+        String [] hobbies = hobby.split(",");
         UserHobby deleteUserHobby = new UserHobby();
         deleteUserHobby.setUid(user.getUid());
         userMybatisDao.deleteUserHobby(deleteUserHobby);
