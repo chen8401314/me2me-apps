@@ -478,6 +478,7 @@ public class UserServiceImpl implements UserService {
      * @param modifyUserHobbyDto
      * @return
      */
+    
     public Response modifyUserHobby(ModifyUserHobbyDto modifyUserHobbyDto){
         User user = userMybatisDao.getUserByUid(modifyUserHobbyDto.getUid());
         String hobby = modifyUserHobbyDto.getHobby();
