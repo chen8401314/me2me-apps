@@ -13,7 +13,7 @@ import com.me2me.search.service.SearchService;
 public class SearchTest extends AbstractJUnit4SpringContextTests {
 	@Autowired
 	private SearchService searchService;
-	@Test
+	//@Test
 	public void testRecommendUser() {
 		int uid = 298;
 		try {
@@ -23,11 +23,22 @@ public class SearchTest extends AbstractJUnit4SpringContextTests {
 			e.printStackTrace();
 		}
 	}
-	@Test
+	//@Test
 	public void testRecommendKingdom() {
 		int uid = 298;
 		try {
 			Response resp = searchService.recommendKingdom(uid, 1, 10);
+			System.out.println(JSON.toJSONString(resp, true));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Test
+	public void recommendIndex() {
+		int uid = 298;
+		try {
+			Response resp = searchService.recommendIndex(298, 1);
 			System.out.println(JSON.toJSONString(resp, true));
 		} catch (Exception e) {
 			e.printStackTrace();

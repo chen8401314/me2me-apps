@@ -601,8 +601,9 @@ public class ContentSearchServiceImpl implements ContentSearchService {
     		userInfo.setV_lv(userProfile.getvLv());
     		
     		boolean sameTags =false;
-    		String[] userTags = userMap.getTags().split(" ");
-    		if(userTags!=null && userTags.length>0){
+    		
+    		if( userMap.getTags()!=null && userMap.getTags().length()>0){
+    			String[] userTags = userMap.getTags().split(" ");
     			List<String> matchedTagList = new ArrayList<>();
     			List<String> notMatchedTagList = new ArrayList<>();
     			for( String tag:userTags){
