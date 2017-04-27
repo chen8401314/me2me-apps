@@ -576,13 +576,11 @@ public class UserServiceImpl implements UserService {
         //设置为0不需要第三方登录检查昵称了 昵称唯一
 //        userProfile.setIsClientLogin(0);
         //修改用户爱好
-        if(!StringUtils.isEmpty(modifyUserProfileDto.getHobby())){
             ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();
             modifyUserHobbyDto.setUid(modifyUserProfileDto.getUid());
             modifyUserHobbyDto.setHobby(modifyUserProfileDto.getHobby());
             this.modifyUserHobby(modifyUserHobbyDto);
             log.info("modify user hobby");
-        }
         userMybatisDao.modifyUserProfile(userProfile);
         log.info("user modify profile success");
         log.info("modifyUserProfile end ...");
