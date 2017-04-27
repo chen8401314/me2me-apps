@@ -148,7 +148,7 @@ public class UserInitJdbcDao extends BaseJdbcDao {
     	sb.append(" from user_follow f, user_profile p where f.target_uid=p.uid");
     	sb.append(" and f.source_uid=").append(uid);
     	if(!StringUtils.isEmpty(nickName)){
-    		sb.append(" and f.nick_name like '%").append(nickName).append("%'");
+    		sb.append(" and p.nick_name like '%").append(nickName).append("%'");
     	}
     	sb.append(" order by ng asc,p.nick_name ASC");
     	sb.append(" limit ").append(start).append(",").append(pageSize);
@@ -161,7 +161,7 @@ public class UserInitJdbcDao extends BaseJdbcDao {
     	sb.append("select count(1) as count from user_follow f,user_profile p");
     	sb.append(" where f.target_uid=p.uid and f.source_uid=").append(uid);
     	if(!StringUtils.isEmpty(nickName)){
-    		sb.append(" and f.nick_name like '%").append(nickName).append("%'");
+    		sb.append(" and p.nick_name like '%").append(nickName).append("%'");
     	}
     	return super.count(sb.toString());
     }
