@@ -158,7 +158,7 @@ public class UserInitJdbcDao extends BaseJdbcDao {
     
     public int countUserFollowInfo(String nickName, long uid){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select count(1) as cc from user_follow f,user_profile p");
+    	sb.append("select count(1) as count from user_follow f,user_profile p");
     	sb.append(" where f.target_uid=p.uid and f.source_uid=").append(uid);
     	if(!StringUtils.isEmpty(nickName)){
     		sb.append(" and f.nick_name like '%").append(nickName).append("%'");
