@@ -601,6 +601,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
     		userInfo.setV_lv(userProfile.getvLv());
     		
     		boolean sameTags =false;
+    		if(userMap.getTags()!=null && !StringUtils.isEmpty(userMap.getTags())){
     		String[] userTags = userMap.getTags().split(" ");
     		if(userTags!=null && userTags.length>0){
     			List<String> matchedTagList = new ArrayList<>();
@@ -619,7 +620,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
     			userInfo.setUserTags(matchedTagList);
    				sameTags=matchedTagList.size()>0;
     		}
-    		
+    		}
     		if(user.getLikeGender()!=null && userMap.getLike_gender()==user.getLikeGender()){
     			userInfo.setReason(RecommendReason.LIKE_GENDER);
     		}else if(sameTags){
