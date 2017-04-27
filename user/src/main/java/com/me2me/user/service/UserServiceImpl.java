@@ -482,15 +482,17 @@ public class UserServiceImpl implements UserService {
     public Response modifyUserHobby(ModifyUserHobbyDto modifyUserHobbyDto){
         User user = userMybatisDao.getUserByUid(modifyUserHobbyDto.getUid());
         String hobby = modifyUserHobbyDto.getHobby();
-        String [] hobbies = hobby.split(",");
         UserHobby deleteUserHobby = new UserHobby();
         deleteUserHobby.setUid(user.getUid());
         userMybatisDao.deleteUserHobby(deleteUserHobby);
+        if(!StringUtils.isEmpty(hobby)){
+        String [] hobbies = hobby.split(",");
         for(String h : hobbies){
             UserHobby userHobby = new UserHobby();
             userHobby.setHobby(Long.parseLong(h));
             userHobby.setUid(user.getUid());
             userMybatisDao.createUserHobby(userHobby);
+        }
         }
         return Response.success(ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.status,ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.message);
     }
@@ -3258,13 +3260,11 @@ public class UserServiceImpl implements UserService {
 			userProfile.setLikeGender(sexOrientation);
 			break;
 		case 3://兴趣爱好
-			if(!StringUtils.isEmpty(params)){
 	            ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();
 	            modifyUserHobbyDto.setUid(uid);
 	            modifyUserHobbyDto.setHobby(params);
 	            this.modifyUserHobby(modifyUserHobbyDto);
 	            log.info("modify user hobby");
-	        }
 			break;
 		case 4://年龄段
 			int ageGroup = Integer.valueOf(params);
