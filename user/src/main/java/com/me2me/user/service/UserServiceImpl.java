@@ -3023,7 +3023,8 @@ public class UserServiceImpl implements UserService {
 		if(null != seekList && seekList.size() > 0){
 			ShowContactsDTO.SeekFollowElement e = null;
 			UserProfile user = null;
-			for(UserSeekFollow usf : seekList){
+			 for (int i = 0; i < seekList.size(); i++) {
+					UserSeekFollow usf = seekList.get(i);
 				e = new ShowContactsDTO.SeekFollowElement();
 				user = userProfileMap.get(usf.getUid().toString());
 				if(null == user){
@@ -3033,6 +3034,9 @@ public class UserServiceImpl implements UserService {
 				e.setIntroduced(user.getIntroduced());
 				if(null != followMap.get(uid+"_"+user.getUid().toString())){
 	                e.setIsFollowed(1);
+	                seekList.remove(i);
+	                i--;
+	                continue;
 	            }else{
 	                e.setIsFollowed(0);
 	            }
@@ -3047,6 +3051,22 @@ public class UserServiceImpl implements UserService {
 				result.getSeekFollowData().add(e);
 			}
 		}
+		List<Long> followUidList = new ArrayList<Long>();
+		//一次性查询关注信息
+        Map<String, String> MyFollowMap = new HashMap<String, String>();
+    	if(null != followList && followList.size() > 0){
+			for(Map<String, Object> followUser : followList){
+				if(!followUidList.contains((Long)followUser.get("uid"))){
+					followUidList.add((Long)followUser.get("uid"));
+				}
+			}
+		}
+		 List<UserFollow> userFollowList = userMybatisDao.getAllFollows(uid, followUidList);
+	        if(null != userFollowList && userFollowList.size() > 0){
+	            for(UserFollow uf : userFollowList){
+	            	MyFollowMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+	            }
+	        }
 		if(null != followList && followList.size() > 0){
 			ShowContactsDTO.MyFollowElement e = null;
 			for(Map<String, Object> followUser : followList){
@@ -3057,6 +3077,16 @@ public class UserServiceImpl implements UserService {
 				e.setNickName((String)followUser.get("nick_name"));
 				e.setUid((Long)followUser.get("uid"));
 				e.setV_lv((Integer)followUser.get("v_lv"));
+				if(null != MyFollowMap.get(uid+"_"+followUser.get("uid").toString())){
+	                e.setIsFollowed(1);
+	            }else{
+	                e.setIsFollowed(0);
+	            }
+	            if(null != MyFollowMap.get(followUser.get("uid").toString()+"_"+uid)){
+	                e.setIsFollowMe(1);
+	            }else{
+	                e.setIsFollowMe(0);
+	            }
 				result.getMyFollowData().add(e);
 			}
 		}
