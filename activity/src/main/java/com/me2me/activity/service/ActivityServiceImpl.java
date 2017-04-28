@@ -5116,7 +5116,7 @@ public class ActivityServiceImpl implements ActivityService {
     	ShowActivityBillboardDTO result = new ShowActivityBillboardDTO();
     	
     	if(type == 1){//地区
-    		List<AcommonList> list = activityMybatisDao.getAcommonListBillboard(1, 3, 10);
+    		List<AcommonList> list = activityMybatisDao.getAcommonListAreaBillboard(1, 3);
     		if(null != list && list.size() > 0){
     			AcommonList alist = null;
     			ShowActivityBillboardDTO.AreaElement e = null;
