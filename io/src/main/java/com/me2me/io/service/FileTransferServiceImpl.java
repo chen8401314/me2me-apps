@@ -216,10 +216,14 @@ public class FileTransferServiceImpl implements FileTransferService{
     		obj.put("emotion", emotion);
     	}
     	
-    	String reqJson = obj.toJSONString();
-    	String respJson = HttpUtil.post(meappRecUrl, reqJson);
-    	ShowRecContentDTO dto = com.alibaba.fastjson.JSON.parseObject(respJson, ShowRecContentDTO.class);
-    	
+    	ShowRecContentDTO dto = null;
+    	try{
+    		String reqJson = obj.toJSONString();
+        	String respJson = HttpUtil.post(meappRecUrl, reqJson);
+        	dto = com.alibaba.fastjson.JSON.parseObject(respJson, ShowRecContentDTO.class);
+    	}catch(Exception e){
+    		log.error("get rec article error", e);
+    	}
     	return dto;
     }
 }
