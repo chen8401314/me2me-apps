@@ -1413,6 +1413,16 @@ public class ActivityMybatisDao {
     	example.setOrderByClause(" score desc,update_time asc limit " + limit);
     	return acommonListMapper.selectByExample(example);
     }
+
+    public List<AcommonList> getAcommonListAreaBillboard(int type, long activityId){
+        AcommonListExample example = new AcommonListExample();
+        AcommonListExample.Criteria criteria = example.createCriteria();
+        criteria.andActivityIdEqualTo(activityId);
+        criteria.andTypeEqualTo(type);
+//        criteria.andScoreGreaterThan(0L);
+        example.setOrderByClause(" score desc,update_time asc ");
+        return acommonListMapper.selectByExample(example);
+    }
     
     public AcommonList getAcommonList(int type, long activityId, long targetId){
     	AcommonListExample example = new AcommonListExample();
