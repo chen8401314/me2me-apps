@@ -34,14 +34,4 @@ public class SearchTest extends AbstractJUnit4SpringContextTests {
 		}
 	}
 	
-	@Test
-	public void recommendIndex() {
-		int uid = 298;
-		try {
-			Response resp = searchService.recommendIndex(298, 1);
-			System.out.println(JSON.toJSONString(resp, true));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
 }

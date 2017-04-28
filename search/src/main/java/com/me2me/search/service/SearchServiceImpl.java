@@ -1,6 +1,7 @@
 package com.me2me.search.service;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -20,6 +21,8 @@ import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.io.dto.ShowRecContentDTO;
+import com.me2me.io.service.FileTransferService;
 import com.me2me.search.dao.ContentForSearchJdbcDao;
 import com.me2me.search.dao.SearchMybatisDao;
 import com.me2me.search.dto.RecommendKingdom;
@@ -57,6 +60,9 @@ public class SearchServiceImpl implements SearchService {
     
     @Autowired
     private ContentSearchService searchService;
+    
+    @Autowired
+    private FileTransferService fileTransferService;
     
     @Autowired
     private ContentForSearchJdbcDao contentForSearchJdbcDao;
@@ -608,7 +614,7 @@ public class SearchServiceImpl implements SearchService {
 		return Response.success(dto);
 	}
 
-	public Response recommendIndex(long uid,int page){
+	public Response recommendIndex(long uid,int page, String token, String version){
 		RecommendListDto indexData = new RecommendListDto();
 		// 查用户画像信息
 		UserProfile profile = userService.getUserProfileByUid(uid);
@@ -668,8 +674,33 @@ public class SearchServiceImpl implements SearchService {
 		List<TopicEsMapping> kingdoms = this.searchService.getTopicEsMappingList(uid, dislistTopicIds, page, 10);
 		this.builderRecKingdomInfo(indexData, kingdoms, uid);
 		//再取10条文章
-		//TODO 
+		ShowRecContentDTO recContent = fileTransferService.getRecContents(String.valueOf(uid), token, version, "");
+		if(null != recContent && "0".equals(recContent.getResultCode()) 
+				&& null != recContent.getContents() && recContent.getContents().size() > 0){
+			RecommendListDto.ContentData contentData = null;
+			for(ShowRecContentDTO.RecContentElement rc : recContent.getContents()){
+				if(rc.getContentType() > 6){//大于6的是王国和UGC等，这里不要
+					continue;
+				}
+				contentData = new RecommendListDto.ContentData();
+				contentData.setType(5);//文章
+				contentData.setContentType(rc.getContentType());
+				contentData.setContentId(rc.getContentId());
+				contentData.setTitle(rc.getTitle());
+				contentData.setLinkUrl(rc.getLinkUrl());
+				contentData.setCoverImage(rc.getCoverImage());
+				contentData.setUpdateTime(rc.getUpdateTime());
+				contentData.setReason("智能推荐");
+				contentData.setReadCount(rc.getReadCount());
+				contentData.setLikeCount(rc.getLikeCount());
+				contentData.setReviewCount(rc.getReviewCount());
+				indexData.getRecContentData().add(contentData);
+			}
+		}
 		
+		if(indexData.getRecContentData().size() > 1){
+			Collections.shuffle(indexData.getRecContentData());
+		}
 		
 		return Response.success(indexData);
 	}

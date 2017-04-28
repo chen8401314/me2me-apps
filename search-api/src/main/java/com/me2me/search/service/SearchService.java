@@ -92,7 +92,7 @@ public interface SearchService {
 	 */
 	 public Response recommendUser(long uid,int page,int pageSize);
 
-	 public Response recommendIndex(long uid,int page);
+	 public Response recommendIndex(long uid,int page, String token, String version);
 /**
  * 推王国
  * @author zhangjiwei

@@ -106,6 +106,6 @@ public class Search extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/recList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response recList(RecListRequest request){
-    	return searchService.recommendIndex(request.getUid(), request.getPage());
+    	return searchService.recommendIndex(request.getUid(), request.getPage(), request.getToken(), request.getVersion());
     }
 }
