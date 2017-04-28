@@ -636,7 +636,10 @@ public class SearchServiceImpl implements SearchService {
 			person.setSexOrientation(profile.getLikeGender());
 		}
 		//画像完成度
-		float completed=5f;
+		float completed=6f;
+		if(StringUtils.isEmpty(profile.getAvatar()) || StringUtils.equals("default.png", profile.getAvatar())){
+			completed--;
+		}
 		if(StringUtils.isEmpty(hobby)){
 			completed--;
 		}
@@ -652,7 +655,7 @@ public class SearchServiceImpl implements SearchService {
 		if(profile.getGender()==null || profile.getGender()==0){
 			completed--;
 		}
-		int completion = (int) ((completed/5) * 100);
+		int completion = (int) ((completed/6) * 100);
 		person.setCompletion(completion);
 		indexData.setPersona(person);
 		
