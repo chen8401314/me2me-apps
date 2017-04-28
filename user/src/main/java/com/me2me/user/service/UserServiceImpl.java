@@ -2859,11 +2859,16 @@ public class UserServiceImpl implements UserService {
 			Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
 			List<Long> uidList = new ArrayList<Long>();
 			if(null != userList && userList.size() > 0){
+				List<String> mobileUidList = new ArrayList<String>();
 				for(UserProfile u : userList){
 					userMap.put(u.getMobile(), u);
 					uidList.add(u.getUid());
+					
+					if(!mobileUidList.contains(u.getMobile())){
+						mobileUidList.add(u.getMobile());
+					}
 				}
-				result.setTotalAppUser(userList.size());
+				result.setTotalAppUser(mobileUidList.size());
 			}
 			
 			//一次性查询关注信息
