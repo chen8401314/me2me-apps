@@ -38,7 +38,8 @@ public class LoggerAop {
         startTime.set(System.currentTimeMillis());
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = servletRequestAttributes.getRequest();
-        if(request.getRequestURI().startsWith("/api/console")){
+        // 过滤一下接口
+        if(request.getRequestURI().startsWith("/api/console") || request.getRequestURI().startsWith("/api/mobile")){
             return;
         }
         StringBuilder headers = new StringBuilder();
