@@ -1,19 +1,17 @@
 package com.me2me.io.service;
 
 import com.me2me.common.utils.HttpUtil;
-import com.me2me.common.web.BaseEntity;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
-import com.me2me.common.web.ResponseWapx;
 import com.me2me.io.dto.QiniuAccessTokenDto;
+import com.me2me.io.dto.ShowRecContentDTO;
 import com.qiniu.common.QiniuException;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import lombok.Data;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpRequest;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -22,6 +20,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -53,6 +52,8 @@ public class FileTransferServiceImpl implements FileTransferService{
 
     public static final String SECRET = "59114162f6c8f043cb3e9f204a78bede";
 
+    @Value("#{app.meappRecUrl}")
+    private String meappRecUrl;
 
     /**
      * 文件上传
@@ -204,5 +205,21 @@ public class FileTransferServiceImpl implements FileTransferService{
         inStream.close();
         return outStream.toByteArray();
     }
-
+    
+    @Override
+    public ShowRecContentDTO getRecContents(String uid, String token, String version, String emotion){
+    	com.alibaba.fastjson.JSONObject obj = new com.alibaba.fastjson.JSONObject();
+    	obj.put("uid", uid);
+    	obj.put("token", token);
+    	obj.put("version", version);
+    	if(null != emotion){
+    		obj.put("emotion", emotion);
+    	}
+    	
+    	String reqJson = obj.toJSONString();
+    	String respJson = HttpUtil.post(meappRecUrl, reqJson);
+    	ShowRecContentDTO dto = com.alibaba.fastjson.JSON.parseObject(respJson, ShowRecContentDTO.class);
+    	
+    	return dto;
+    }
 }
