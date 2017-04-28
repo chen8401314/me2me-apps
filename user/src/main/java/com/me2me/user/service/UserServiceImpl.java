@@ -480,23 +480,22 @@ public class UserServiceImpl implements UserService {
      */
      
     public Response modifyUserHobby(ModifyUserHobbyDto modifyUserHobbyDto){
-        User user = userMybatisDao.getUserByUid(modifyUserHobbyDto.getUid());
-        String hobby = modifyUserHobbyDto.getHobby();
-        UserHobby deleteUserHobby = new UserHobby();
-        deleteUserHobby.setUid(user.getUid());
-        userMybatisDao.deleteUserHobby(deleteUserHobby);
-        if(!StringUtils.isEmpty(hobby)){
-        String [] hobbies = hobby.split(",");
-        for(String h : hobbies){
-            UserHobby userHobby = new UserHobby();
-            userHobby.setHobby(Long.parseLong(h));
-            userHobby.setUid(user.getUid());
-            userMybatisDao.createUserHobby(userHobby);
-        }
-        }
+		User user = userMybatisDao.getUserByUid(modifyUserHobbyDto.getUid());
+		String hobby = modifyUserHobbyDto.getHobby();
+		UserHobby deleteUserHobby = new UserHobby();
+		deleteUserHobby.setUid(user.getUid());
+		userMybatisDao.deleteUserHobby(deleteUserHobby);
+		if (!StringUtils.isEmpty(hobby)) {
+			String[] hobbies = hobby.split(";");
+			for (String h : hobbies) {
+				UserHobby userHobby = new UserHobby();
+				userHobby.setHobby(Long.parseLong(h));
+				userHobby.setUid(user.getUid());
+				userMybatisDao.createUserHobby(userHobby);
+			}
+		}
         return Response.success(ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.status,ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.message);
     }
-
     
 
     /**
@@ -576,13 +575,11 @@ public class UserServiceImpl implements UserService {
         //设置为0不需要第三方登录检查昵称了 昵称唯一
 //        userProfile.setIsClientLogin(0);
         //修改用户爱好
-        if(!StringUtils.isEmpty(modifyUserProfileDto.getHobby())){
             ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();
             modifyUserHobbyDto.setUid(modifyUserProfileDto.getUid());
             modifyUserHobbyDto.setHobby(modifyUserProfileDto.getHobby());
             this.modifyUserHobby(modifyUserHobbyDto);
             log.info("modify user hobby");
-        }
         userMybatisDao.modifyUserProfile(userProfile);
         log.info("user modify profile success");
         log.info("modifyUserProfile end ...");
@@ -2862,11 +2859,16 @@ public class UserServiceImpl implements UserService {
 			Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
 			List<Long> uidList = new ArrayList<Long>();
 			if(null != userList && userList.size() > 0){
+				List<String> mobileUidList = new ArrayList<String>();
 				for(UserProfile u : userList){
 					userMap.put(u.getMobile(), u);
 					uidList.add(u.getUid());
+					
+					if(!mobileUidList.contains(u.getMobile())){
+						mobileUidList.add(u.getMobile());
+					}
 				}
-				result.setTotalAppUser(userList.size());
+				result.setTotalAppUser(mobileUidList.size());
 			}
 			
 			//一次性查询关注信息
@@ -2981,6 +2983,15 @@ public class UserServiceImpl implements UserService {
 				}
 			}
 		}
+		if(null != followList && followList.size() > 0){
+			Long fu = null;
+			for(Map<String, Object> m : followList){
+				fu = (Long)m.get("uid");
+				if(!uidList.contains(fu)){
+					uidList.add(fu);
+				}
+			}
+		}
 		//一次性查询关注信息
         Map<String, String> followMap = new HashMap<String, String>();
 		if(uidList.size() > 0){
@@ -3025,7 +3036,8 @@ public class UserServiceImpl implements UserService {
 		if(null != seekList && seekList.size() > 0){
 			ShowContactsDTO.SeekFollowElement e = null;
 			UserProfile user = null;
-			for(UserSeekFollow usf : seekList){
+			 for (int i = 0; i < seekList.size(); i++) {
+					UserSeekFollow usf = seekList.get(i);
 				e = new ShowContactsDTO.SeekFollowElement();
 				user = userProfileMap.get(usf.getUid().toString());
 				if(null == user){
@@ -3035,6 +3047,9 @@ public class UserServiceImpl implements UserService {
 				e.setIntroduced(user.getIntroduced());
 				if(null != followMap.get(uid+"_"+user.getUid().toString())){
 	                e.setIsFollowed(1);
+	                seekList.remove(i);
+	                i--;
+	                continue;
 	            }else{
 	                e.setIsFollowed(0);
 	            }
@@ -3049,6 +3064,7 @@ public class UserServiceImpl implements UserService {
 				result.getSeekFollowData().add(e);
 			}
 		}
+
 		if(null != followList && followList.size() > 0){
 			ShowContactsDTO.MyFollowElement e = null;
 			for(Map<String, Object> followUser : followList){
@@ -3059,6 +3075,16 @@ public class UserServiceImpl implements UserService {
 				e.setNickName((String)followUser.get("nick_name"));
 				e.setUid((Long)followUser.get("uid"));
 				e.setV_lv((Integer)followUser.get("v_lv"));
+				if(null != followMap.get(uid+"_"+e.getUid())){
+	                e.setIsFollowed(1);
+	            }else{
+	                e.setIsFollowed(0);
+	            }
+	            if(null != followMap.get(e.getUid()+"_"+uid)){
+	                e.setIsFollowMe(1);
+	            }else{
+	                e.setIsFollowMe(0);
+	            }
 				result.getMyFollowData().add(e);
 			}
 		}
@@ -3187,6 +3213,20 @@ public class UserServiceImpl implements UserService {
 		
 		List<Map<String, Object>> followList = userInitJdbcDao.getUserFollowInfoPage(name, uid, start, pageSize);
 		if(null != followList && followList.size() > 0){
+			List<Long> uidList = new ArrayList<Long>();
+			for(Map<String, Object> followUser : followList){
+				uidList.add((Long)followUser.get("uid"));
+			}
+			Map<String, String> followMap = new HashMap<String, String>();
+			if(uidList.size() > 0){
+				List<UserFollow> userFollowList = userMybatisDao.getAllFollows(uid, uidList);
+		        if(null != userFollowList && userFollowList.size() > 0){
+		            for(UserFollow uf : userFollowList){
+		                followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+		            }
+		        }
+			}
+			
 			ShowMyFollowsQueryDTO.MyFollowElement e = null;
 			for(Map<String, Object> followUser : followList){
 				e = new ShowMyFollowsQueryDTO.MyFollowElement();
@@ -3196,6 +3236,16 @@ public class UserServiceImpl implements UserService {
 				e.setNickName((String)followUser.get("nick_name"));
 				e.setUid((Long)followUser.get("uid"));
 				e.setV_lv((Integer)followUser.get("v_lv"));
+				if(null != followMap.get(uid+"_"+e.getUid())){
+	                e.setIsFollowed(1);
+	            }else{
+	                e.setIsFollowed(0);
+	            }
+	            if(null != followMap.get(e.getUid()+"_"+uid)){
+	                e.setIsFollowMe(1);
+	            }else{
+	                e.setIsFollowMe(0);
+	            }
 				result.getMyFollowData().add(e);
 			}
 		}
@@ -3260,11 +3310,8 @@ public class UserServiceImpl implements UserService {
 			userProfile.setLikeGender(sexOrientation);
 			break;
 		case 3://兴趣爱好
-	            ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();
-	            modifyUserHobbyDto.setUid(uid);
-	            modifyUserHobbyDto.setHobby(params);
-	            this.modifyUserHobby(modifyUserHobbyDto);
-	            log.info("modify user hobby");
+	        this.modifyUserHobby4Persona(uid, params);
+	        log.info("modify user hobby");
 			break;
 		case 4://年龄段
 			int ageGroup = Integer.valueOf(params);
@@ -3282,6 +3329,23 @@ public class UserServiceImpl implements UserService {
 		userMybatisDao.updateUserProfile(userProfile);
 		
 		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message);
+	}
+	
+	private void modifyUserHobby4Persona(long uid, String hobbys){
+		UserHobby deleteUserHobby = new UserHobby();
+		deleteUserHobby.setUid(uid);
+		userMybatisDao.deleteUserHobby(deleteUserHobby);
+		if(!StringUtils.isEmpty(hobbys)){
+			String[] hobbies = hobbys.split(",");
+			for (String h : hobbies) {
+				if(!StringUtils.isEmpty(h)){
+					UserHobby userHobby = new UserHobby();
+					userHobby.setHobby(Long.parseLong(h));
+					userHobby.setUid(uid);
+					userMybatisDao.createUserHobby(userHobby);
+				}
+			}
+		}
 	}
 	
 	// 170190

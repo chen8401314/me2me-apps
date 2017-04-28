@@ -56,5 +56,7 @@ public class ShowContactsDTO implements BaseEntity {
 		private String introduced;
 		private int v_lv;
 		private String group;
+		private int isFollowed;
+		private int isFollowMe;
 	}
 }
