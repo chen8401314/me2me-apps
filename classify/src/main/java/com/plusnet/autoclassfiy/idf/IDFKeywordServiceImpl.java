@@ -24,21 +24,15 @@ import com.plusnet.autoclassfiy.Constant;
 public class IDFKeywordServiceImpl implements IDFKeywordService{
 
 	private KeyGenenerator keyGen;
-	private Map<String,TFIDFKeyword> keyNameMap;
-	private Map<Integer,TFIDFKeyword> keyIndexMap;
+	private Map<String,TFIDFKeyword> keyNameMap=new HashMap<>();
+	private Map<Integer,TFIDFKeyword> keyIndexMap=new HashMap<>();
 	private Integer allDocs=0;
 	private Logger log = LoggerFactory.getLogger(IDFKeywordServiceImpl.class);
 	
 	public IDFKeywordServiceImpl(){
-		try {
-			InputStream fin = IDFKeywordServiceImpl.class.getResourceAsStream( Constant.KEYWORD_FILE);
-			reloadModel(fin);
-			fin.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		keyGen= new KeyGenenerator();
 	}
+
 	/**
 	 * 指定模型。
 	 * @param modelFile 模型文件，json格式。
@@ -56,36 +50,6 @@ public class IDFKeywordServiceImpl implements IDFKeywordService{
 			}
 		}
 	}
-	public void saveTrainResult(File outFile) {		
-		
-		System.out.println(keyNameMap.size()+" pos:"+keyGen.getCurKey());
-		
-		// 修改变更过的关键字
-		List<TFIDFKeyword> argList = new ArrayList<>();
-		// 插入当前文档号。
-		TFIDFKeyword countKeyword = createDocCountKeyword();
-		TFIDFKeyword posKeyword = createCurKeyPosKeyword();
-		argList.add(countKeyword);
-		argList.add(posKeyword);
-		
-		
-		for(TFIDFKeyword keyword:keyNameMap.values()){
-			// 计算IDF
-			double keycount=(double)keyword.getAppearCount();
-			double allDocs =(double)this.allDocs;
-			
-			double idf =Math.log(allDocs/keycount);
-			keyword.setIdf(idf);
-			argList.add(keyword);
-		}
-		String json = JSON.toJSONString(argList,true);
-		try {
-			FileUtils.write(outFile, json,"utf-8");
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	private void reloadModel(List<TFIDFKeyword> keyList){
 		this.keyNameMap=new ConcurrentHashMap<>();
 		this.keyIndexMap= new ConcurrentHashMap<>();
@@ -102,6 +66,7 @@ public class IDFKeywordServiceImpl implements IDFKeywordService{
 			allDocs=countKeyword.getAppearCount();
 			keyGen= new KeyGenenerator(posKeyword.getAppearCount());
 		}
+		log.info("idf keyword loaded, docs:{} ,keywords:{}",allDocs,keyList.size());
 	}
 	/**
 	 * 从文件加载idf模型
@@ -109,10 +74,12 @@ public class IDFKeywordServiceImpl implements IDFKeywordService{
 	 * @throws IOException 
 	 */
 	public  void reloadModel(InputStream modelFile) throws IOException {
-			log.info("loading idf keyword model.");
+		log.info("loading idf keyword model.");
+		if(modelFile!=null){
 			String txt = IOUtils.toString(modelFile, "utf-8");
 			List<TFIDFKeyword> keyList = JSON.parseArray(txt, TFIDFKeyword.class);
 			reloadModel(keyList);
+		}
 	}
 
 	/**
@@ -277,6 +244,36 @@ public class IDFKeywordServiceImpl implements IDFKeywordService{
 		double docCount = (double)allDocs;
 		double val =Math.log(docCount/(keycount));
 		return val;
+	}
+
+	public void saveTrainResult(File outFile) {		
+		
+		System.out.println(keyNameMap.size()+" pos:"+keyGen.getCurKey());
+		
+		// 修改变更过的关键字
+		List<TFIDFKeyword> argList = new ArrayList<>();
+		// 插入当前文档号。
+		TFIDFKeyword countKeyword = createDocCountKeyword();
+		TFIDFKeyword posKeyword = createCurKeyPosKeyword();
+		argList.add(countKeyword);
+		argList.add(posKeyword);
+		
+		
+		for(TFIDFKeyword keyword:keyNameMap.values()){
+			// 计算IDF
+			double keycount=(double)keyword.getAppearCount();
+			double allDocs =(double)this.allDocs;
+			
+			double idf =Math.log(allDocs/keycount);
+			keyword.setIdf(idf);
+			argList.add(keyword);
+		}
+		String json = JSON.toJSONString(argList,true);
+		try {
+			FileUtils.write(outFile, json,"utf-8");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 

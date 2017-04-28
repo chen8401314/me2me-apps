@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
 import com.plusnet.autoclassfiy.Constant;
@@ -24,11 +26,14 @@ import com.plusnet.deduplicate.utils.SVMUtils;
  */
 public abstract class AbsSVMSimplesBuilder {
 	public static final Integer DEFAULT_FEATURE_NUM=100;
-	protected IDFKeywordService keywordService= new IDFKeywordServiceImpl();
+	protected IDFKeywordService keywordService;
+	private Logger log = LoggerFactory.getLogger(AbsSVMSimplesBuilder.class);
 	/**
 	 * 类初始化时会加载词典、分类字典、svm模型文件，比较耗时 
 	 */
 	public AbsSVMSimplesBuilder(){
+		InputStream is = AbsSVMSimplesBuilder.class.getResourceAsStream(Constant.KEYWORD_FILE);
+		 keywordService= new IDFKeywordServiceImpl(is);
 	}
 	/**
 	 * 创建一行
@@ -54,7 +59,7 @@ public abstract class AbsSVMSimplesBuilder {
 				return ret;
 			}
 		});
-
+		log.info("parse content:\n{}\n keywords:\n{}",txt,keywords);
 		StringBuilder sb = new StringBuilder();
 		sb.append(type + " ");
 		for (TFIDFKeyword key : keywords) {

@@ -14,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.plusnet.autoclassfiy.idf.IDFKeywordService;
+import com.plusnet.autoclassfiy.idf.IDFKeywordServiceImpl;
 import com.plusnet.deduplicate.utils.KeyIndexGenerator;
 
 import de.bwaldvogel.liblinear.Train;
@@ -32,13 +34,13 @@ public class ExcelSimplesBuilder extends AbsSVMSimplesBuilder {
 	private final static String MAPPING_FILE_EX = ".mapping";
 	private final static String FILE_CHARSET = "UTF-8";
 	private static Logger loger = LoggerFactory.getLogger(ExcelSimplesBuilder.class);
-
+	
 	public ExcelSimplesBuilder(File inputFile, File outputFile) {
 		super();
 		this.inputFile = inputFile;
 		this.outputFile = outputFile;
 	}
-
+	
 	public void train() {
 		try {
 			KeyIndexGenerator kg = new KeyIndexGenerator();
@@ -57,15 +59,16 @@ public class ExcelSimplesBuilder extends AbsSVMSimplesBuilder {
 					sb.append(line + "\n");
 				}
 			}
-			loger.info("save train file:"+trainFile);
+			
+			loger.info("save train file");
 			trainFile = new File(outputFile.getPath() + TRAIN_FILE_EX);
 			FileUtils.write(trainFile, sb.toString(), FILE_CHARSET);
 			
-			loger.info("save map file:"+trainFile);
+			loger.info("save map file");
 			File mappingFile = new File(outputFile.getPath() + MAPPING_FILE_EX);
 			FileUtils.write(mappingFile, JSON.toJSONString(kg.getTypeMapping(), true), FILE_CHARSET);
 			
-			loger.info("train file:"+trainFile);
+			loger.info("train file");
 			Train.main(new String[] { trainFile.getAbsolutePath(), outputFile.getAbsolutePath() });
 		} catch (Exception e) {
 			e.printStackTrace();

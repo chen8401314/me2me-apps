@@ -17,10 +17,11 @@ import de.bwaldvogel.liblinear.Model;
 import de.bwaldvogel.liblinear.Problem;
 
 public class SVMPredictTest {
-	SVMClassifier classifier = new SVMClassifier();
+	
 
-	@Test
+	//@Test
 	public void predict() {
+		SVMClassifier classifier = new SVMClassifier();
 		String txt = "";
 		try {
 			txt = IOUtils.toString(SVMPredictTest.class.getResourceAsStream("/content.txt"), "utf-8");
@@ -40,7 +41,7 @@ public class SVMPredictTest {
 	 * 
 	 * @throws Exception
 	 */
-	//@Test
+	@Test
 	public void testModelAccuracy() throws Exception {
 		
 		File svmSimpleFile = new File("D:/svm-simples/svm.model.train"); // simples:62600,types:20,accuracy:79.3147%
