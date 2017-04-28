@@ -9,19 +9,15 @@ public class Constant {
 	/**
 	 * idf keyword 模型文件路径
 	 */
-	public static final String KEYWORD_FILE="/conf/ml_keywords.json";
-	/**
-	 * 分类映射文件路径
-	 */
-	public static final String TYPE_DIC_FILE="/conf/ml_types.json";
+	public static final String KEYWORD_FILE="/svm/tfidf_keywords.json";
 	/**
 	 * svm 模型路径
 	 */
-	public static final String SVM_MODEL_FILE="/conf/svm-model-all";
+	public static final String SVM_MODEL_FILE="/svm/svm.model";
 	/**
 	 * 最大特征向量数量
 	 */
-	public static final int MAX_FEATURE_KEYS=100;
+	public static final int MAX_FEATURE_KEYS=200;
 	/**
 	 * 文档总数keyword
 	 */

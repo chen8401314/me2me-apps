@@ -23,21 +23,12 @@ import com.plusnet.deduplicate.utils.SVMUtils;
  *
  */
 public abstract class AbsSVMSimplesBuilder {
-	public static final Integer MAX_FEATURE_NUM=100;
-	protected IDFKeywordService keywordService;
-	protected Map<String, Object> typeDic;
+	public static final Integer DEFAULT_FEATURE_NUM=100;
+	protected IDFKeywordService keywordService= new IDFKeywordServiceImpl();
 	/**
 	 * 类初始化时会加载词典、分类字典、svm模型文件，比较耗时 
 	 */
 	public AbsSVMSimplesBuilder(){
-		InputStream ml_types =AbsSVMSimplesBuilder.class.getResourceAsStream(Constant.TYPE_DIC_FILE);
-		keywordService = new IDFKeywordServiceImpl();
-		try {
-			String dic = IOUtils.toString(ml_types,"utf-8");
-			typeDic = JSON.parseObject(dic);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
 	}
 	/**
 	 * 创建一行
@@ -46,8 +37,12 @@ public abstract class AbsSVMSimplesBuilder {
 	 * @return
 	 */
 	protected String buildLine(String txt, Integer type) {
+		return buildLine( txt, type,DEFAULT_FEATURE_NUM);
+	}
+	
+	protected String buildLine(String txt,Integer type,int maxFeatureCount){
 		// idf 提取100个特征值
-		List<TFIDFKeyword> keywords = this.keywordService.getTFIDFKeywordByDoc(txt, MAX_FEATURE_NUM, true);
+		List<TFIDFKeyword> keywords = this.keywordService.getTFIDFKeywordByDoc(txt, maxFeatureCount, true);
 		if(keywords.isEmpty()){
 			return null;
 		}
@@ -69,15 +64,4 @@ public abstract class AbsSVMSimplesBuilder {
 		}
 		return sb.toString();
 	}
-	
-	protected String getIndexByTypeName(String typeName) {
-		for(Map.Entry<String, Object> obj:this.typeDic.entrySet()){
-			if(obj.getValue().equals(typeName)){
-				return obj.getKey();
-			}
-		}
-		return null;
-	}
-	
-	
 }

@@ -10,6 +10,8 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 
+import com.plusnet.deduplicate.utils.KeyIndexGenerator;
+
 public class FileSimplesBuilder extends AbsSVMSimplesBuilder {
 	ExecutorService pool = Executors.newFixedThreadPool(4);
 
@@ -19,6 +21,7 @@ public class FileSimplesBuilder extends AbsSVMSimplesBuilder {
 
 	public void start(File inputDir, File outPutFile) {
 		try {
+			KeyIndexGenerator kg = new KeyIndexGenerator();
 			final FileWriter fw = new FileWriter(outPutFile);
 			File[] subDirs = inputDir.listFiles();
 			if (subDirs != null) {
@@ -27,7 +30,8 @@ public class FileSimplesBuilder extends AbsSVMSimplesBuilder {
 						File[] files = sub.listFiles();
 						if (files != null) {
 							final String typeStr = sub.getName().replaceAll("\\d", "");
-							final String type = getIndexByTypeName(typeStr);
+							final int type =kg.getKeyIndex(typeStr);
+							
 							final CountDownLatch cd = new CountDownLatch(files.length);
 							System.out.println("create type:" + typeStr + ",simples:" + cd.getCount());
 							for (final File file : files) {
@@ -36,7 +40,7 @@ public class FileSimplesBuilder extends AbsSVMSimplesBuilder {
 									public void run() {
 										try {
 											String txt = FileUtils.readFileToString(file, "utf-8");
-											String line = buildLine(txt, Integer.parseInt(type));
+											String line = buildLine(txt, type);
 											if (line != null) {
 												fw.write(line+"\n");
 												fw.flush();
