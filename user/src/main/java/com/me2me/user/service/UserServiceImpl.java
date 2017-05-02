@@ -2936,7 +2936,7 @@ public class UserServiceImpl implements UserService {
 				}
 			}
 			//求关注列表
-			seekList = userMybatisDao.getUserSeekFollows(10, Long.MAX_VALUE);
+			seekList = userMybatisDao.getUserSeekFollows(uid, Long.MAX_VALUE, 10);
 		}
 		
 		ShowContactsDTO result = new ShowContactsDTO();
@@ -3124,7 +3124,7 @@ public class UserServiceImpl implements UserService {
 			result.setIsSeek(0);
 		}
 		
-		List<UserSeekFollow> seekList = userMybatisDao.getUserSeekFollows(20, sinceId);
+		List<UserSeekFollow> seekList = userMybatisDao.getUserSeekFollows(uid, sinceId, 20);
 		if(null != seekList && seekList.size() > 0){
 			List<Long> uidList = new ArrayList<Long>();
 			for(UserSeekFollow usf : seekList){

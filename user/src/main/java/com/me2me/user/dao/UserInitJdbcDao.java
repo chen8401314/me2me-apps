@@ -1,6 +1,7 @@
 package com.me2me.user.dao;
 
 import com.me2me.core.dao.BaseJdbcDao;
+import com.me2me.user.model.UserSeekFollow;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;

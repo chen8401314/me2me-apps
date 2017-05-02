@@ -631,8 +631,12 @@ public class ContentServiceImpl implements ContentService {
             contentTagElement.setTag(contentTags.getTag());
             showArticleCommentsDto.getTags().add(contentTagElement);
         }
-        ContentStatService contentStatService = contentStatusServiceProxyBean.getTarget();
-        contentStatService.read(uid+"",id);
+        try{
+	        ContentStatService contentStatService = contentStatusServiceProxyBean.getTarget();
+	        contentStatService.read(uid+"",id);
+        }catch(Exception e){
+        	log.error("老徐文章阅读接口调用失败", e);
+        }
         return Response.success(showArticleCommentsDto);
     }
 
