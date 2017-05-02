@@ -2629,6 +2629,15 @@ public class LiveServiceImpl implements LiveService {
             		continue;
             	}
             }
+            //表情包过滤处理（预防低版本）
+            if(getLiveDetailDto.getVersionFlag() < 2){//低于V2.2.4版本
+            	if(topicFragment.getType() == 51 || topicFragment.getType() == 52){
+            		if(topicFragment.getContentType() == 17 || topicFragment.getContentType() == 18){//表情包
+            			liveElement.setStatus(0);
+                		continue;
+            		}
+            	}
+            }
 
             UserProfile userProfile = userService.getUserProfileByUid(uid);
             liveElement.setUid(uid);
