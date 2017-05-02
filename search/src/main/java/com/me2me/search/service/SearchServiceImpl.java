@@ -643,16 +643,16 @@ public class SearchServiceImpl implements SearchService {
 		if(StringUtils.isEmpty(hobby)){
 			completed--;
 		}
-		if(StringUtils.isEmpty(profile.getAvatar())){
+		if(profile.getLikeGender() == null || profile.getLikeGender().intValue() == 0){
 			completed--;
 		}
-		if(profile.getAgeGroup()==null || profile.getAgeGroup()==0){
+		if(profile.getAgeGroup()==null || profile.getAgeGroup().intValue()==0){
 			completed--;
 		}
-		if(profile.getOccupation()==null|| profile.getOccupation()==0){
+		if(profile.getOccupation()==null|| profile.getOccupation().intValue()==0){
 			completed--;
 		}
-		if(profile.getGender()==null || profile.getGender()==0){
+		if(profile.getGender()==null){
 			completed--;
 		}
 		int completion = (int) ((completed/6) * 100);

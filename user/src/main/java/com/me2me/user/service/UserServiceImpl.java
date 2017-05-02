@@ -568,18 +568,17 @@ public class UserServiceImpl implements UserService {
         userProfile.setBirthday(modifyUserProfileDto.getBirthday());
         userProfile.setAvatar(modifyUserProfileDto.getAvatar());
         userProfile.setIntroduced(modifyUserProfileDto.getIntroduced());
-        userProfile.setLikeGender(modifyUserProfileDto.getLikeGender());
-        userProfile.setAgeGroup(modifyUserProfileDto.getAgeGroup());
-        userProfile.setOccupation(modifyUserProfileDto.getOccupation());
         
         //设置为0不需要第三方登录检查昵称了 昵称唯一
 //        userProfile.setIsClientLogin(0);
         //修改用户爱好
+        if(!StringUtils.isEmpty(modifyUserProfileDto.getHobby())){
             ModifyUserHobbyDto modifyUserHobbyDto = new ModifyUserHobbyDto();
             modifyUserHobbyDto.setUid(modifyUserProfileDto.getUid());
             modifyUserHobbyDto.setHobby(modifyUserProfileDto.getHobby());
             this.modifyUserHobby(modifyUserHobbyDto);
             log.info("modify user hobby");
+        }
         userMybatisDao.modifyUserProfile(userProfile);
         log.info("user modify profile success");
         log.info("modifyUserProfile end ...");
@@ -3157,6 +3156,7 @@ public class UserServiceImpl implements UserService {
 				if(null == user){
 					continue;
 				}
+				e.setSinceId(usf.getId());
 				e.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
 				e.setIntroduced(user.getIntroduced());
 				if(null != followMap.get(uid+"_"+user.getUid().toString())){

@@ -19,6 +19,7 @@ public class ShowSeekFollowsQueryDTO implements BaseEntity {
 	public static class SeekFollowElement implements BaseEntity {
 		private static final long serialVersionUID = 3368189181971742440L;
 		
+		private long sinceId;
 		private long uid;
 		private String avatar;
 		private String nickName;
