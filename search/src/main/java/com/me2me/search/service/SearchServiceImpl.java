@@ -636,6 +636,7 @@ public class SearchServiceImpl implements SearchService {
 			person.setSexOrientation(profile.getLikeGender());
 		}
 		//画像完成度
+		int totalPercet = 40;
 		float completed=6f;
 		if(StringUtils.isEmpty(profile.getAvatar()) || StringUtils.equals("default.png", profile.getAvatar())){
 			completed--;
@@ -655,7 +656,7 @@ public class SearchServiceImpl implements SearchService {
 		if(profile.getGender()==null){
 			completed--;
 		}
-		int completion = (int) ((completed/6) * 100);
+		int completion = (int) ((completed/6) * totalPercet);
 		person.setCompletion(completion);
 		indexData.setPersona(person);
 		

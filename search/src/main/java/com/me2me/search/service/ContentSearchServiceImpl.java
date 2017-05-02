@@ -546,6 +546,9 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		UserProfile user = userService.getUserProfileByUid(uid);
 		BoolQueryBuilder bq = new BoolQueryBuilder();
 		List<String> userHobbyList = searchMapper.getUserHobby(user.getUid());
+		if(null == userHobbyList){
+			userHobbyList = new ArrayList<String>();
+		}
 		if(user!=null){
 			String tags= StringUtils.join(userHobbyList," ").trim();
 			if(null == noUids){
@@ -610,41 +613,45 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	    			List<String> notMatchedTagList = new ArrayList<>();
 	    			//兴趣
 	    			for( String tag:userTags){
-	    				for(String mytag:userHobbyList){
-	            			if(mytag.equals(tag)){
-	            				matchedTagList.add(mytag);
-	            			}else if(!matchedTagList.contains(tag)){
-	            				notMatchedTagList.add(tag);
-	            			}
-	            		}
+	    				if(userHobbyList.contains(tag)){
+	    					matchedTagList.add(tag);
+	    				}else{
+	    					notMatchedTagList.add(tag);
+	    				}
 	    			}
 	    			//职业
-	    			if(user.getOccupation()==userMap.getOccupation()){
+	    			if(null != user.getOccupation() && user.getOccupation()==userMap.getOccupation()){
 	    				matchedTagList.add(EOccupation.fromCode(userMap.getOccupation()).getName());
 	    			}else{
-	    				notMatchedTagList.add(EOccupation.fromCode(userMap.getOccupation()).getName());
+	    				if(null != userMap.getOccupation()){
+	    					notMatchedTagList.add(EOccupation.fromCode(userMap.getOccupation()).getName());
+	    				}
 	    			}
 	    			//年龄段
-	    			if(user.getAgeGroup()==userMap.getAge_group()){
+	    			if(null != user.getAgeGroup() && user.getAgeGroup()==userMap.getAge_group()){
 	    				matchedTagList.add(EAgeGroup.fromCode(userMap.getAge_group()).getName());
 	    			}else{
-	    				notMatchedTagList.add(EAgeGroup.fromCode(userMap.getAge_group()).getName());
+	    				if(null != userMap.getAge_group()){
+	    					notMatchedTagList.add(EAgeGroup.fromCode(userMap.getAge_group()).getName());
+	    				}
 	    			}
 	    			//男女
 	    			boolean isSex = false;
-	    			if(user.getLikeGender()==ELikeGender.BOY.getValue() && userMap.getGender()==1){
-	    				matchedTagList.add("男");
-	    				isSex = true;
-	    			}else if(user.getLikeGender()==ELikeGender.GIRL.getValue() && userMap.getGender()==0){
-	    				matchedTagList.add("女");
-	    				isSex = true;
-	    			}else if(user.getLikeGender()==ELikeGender.ALL.getValue()){
-	    				if(userMap.getGender()==1){
-	    					matchedTagList.add("男");
-	    				}else{
-	    					matchedTagList.add("女");
-	    				}
-	    				isSex = true;
+	    			if(null != user.getLikeGender()){
+		    			if(user.getLikeGender()==ELikeGender.BOY.getValue() && userMap.getGender()==1){
+		    				matchedTagList.add("男");
+		    				isSex = true;
+		    			}else if(user.getLikeGender()==ELikeGender.GIRL.getValue() && userMap.getGender()==0){
+		    				matchedTagList.add("女");
+		    				isSex = true;
+		    			}else if(user.getLikeGender()==ELikeGender.ALL.getValue()){
+		    				if(userMap.getGender()==1){
+		    					matchedTagList.add("男");
+		    				}else{
+		    					matchedTagList.add("女");
+		    				}
+		    				isSex = true;
+		    			}
 	    			}
 	    			if(!isSex){
 	    				if(userMap.getGender()==1){
@@ -666,7 +673,9 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	    				matchedTagList = matchedTagList.subList(0, 10);
 	    			}
 	    			
-	    			userInfo.setUserTags(matchedTagList);
+	    			List<String> usertags = new ArrayList<String>();
+	    			usertags.addAll(matchedTagList);
+	    			userInfo.setUserTags(usertags);
 	   				sameTags=matchedTagList.size()>0;
 	    		}
     		}
