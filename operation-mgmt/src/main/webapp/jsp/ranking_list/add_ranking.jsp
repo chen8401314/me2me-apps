@@ -80,6 +80,7 @@
 														<option value="7">最新更新的王国</option>
 														<option value="8">新注册的帅哥</option>
 														<option value="9">新注册的美女</option>
+														<option value="10">新注册的用户</option>
 													</select>
 													<label class="text-danger">保存之后不可修改。</label>
 		                                        </div>
@@ -101,7 +102,7 @@
 		                                        			target.removeAttr("readonly");
 		                                        		}else{
 		                                        			target.attr("readonly","readonly")
-		                                        			if(val=="1" || val=="2" || val=="3" || val=="8" || val=="9" ){
+		                                        			if(val=="1" || val=="2" || val=="3" || val=="8" || val=="9" || val=="10" ){
 		                                        				target.find("option[value='2']").attr("selected","selected");
 		                                        			}else{
 		                                        				target.find("option[value='1']").attr("selected","selected");

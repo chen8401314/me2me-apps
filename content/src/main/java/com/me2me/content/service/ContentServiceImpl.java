@@ -4720,6 +4720,13 @@ private void localJpush(long toUid){
     		}
     		result = liveForContentJdbcDao.getNewPeople(0, sinceId, pageSize);
     		break;
+    	case 10://新注册的用户（无所谓有没有王国）
+    		//实时统计
+    		if(sinceId < 0){
+    			sinceId = Long.MAX_VALUE;
+    		}
+    		result = liveForContentJdbcDao.getNewRegisterUsers(sinceId, pageSize);
+    		break;
     	default:
     		break;
     	}
@@ -5233,7 +5240,7 @@ private void localJpush(long toUid){
 		List<BillBoardRelationDto> result = Lists.newArrayList();
 		
 		int type = 1;//默认王国
-		if(mode == 1 || mode == 2 || mode == 3){
+		if(mode == 1 || mode == 2 || mode == 3 || mode == 8 || mode == 9 || mode == 10){
 			type = 2;
 		}
 		

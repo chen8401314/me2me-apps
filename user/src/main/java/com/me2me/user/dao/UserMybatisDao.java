@@ -525,6 +525,7 @@ public class UserMybatisDao {
         UserFollowExample example = new UserFollowExample();
         UserFollowExample.Criteria criteria =  example.createCriteria();
         criteria.andSourceUidEqualTo(uid);
+        criteria.andTargetUidGreaterThan(Long.valueOf(0));
         return userFollowMapper.countByExample(example);
     }
 
