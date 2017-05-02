@@ -19,7 +19,7 @@ import de.bwaldvogel.liblinear.Problem;
 public class SVMPredictTest {
 	
 
-	//@Test
+	@Test
 	public void predict() {
 		SVMClassifier classifier = new SVMClassifier();
 		String txt = "";
@@ -32,6 +32,9 @@ public class SVMPredictTest {
 		//txt="美食打造震撼微型景观：苹果蛋糕闪光装置 美食打造震撼微型景观：路障设置现场";
 		for (int i = 1; i <= 1; i++) {
 			ClassifierResult result = classifier.predict(txt);
+			System.out.println(txt);
+			System.out.println(result.getFeatureKeyList());
+			System.out.println(result.getSocreTypeList());
 			System.out.println(result);
 		}
 	}

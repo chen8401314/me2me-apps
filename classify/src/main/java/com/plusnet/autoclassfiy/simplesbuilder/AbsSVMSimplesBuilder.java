@@ -59,7 +59,7 @@ public abstract class AbsSVMSimplesBuilder {
 				return ret;
 			}
 		});
-		log.info("parse content:\n{}\n keywords:\n{}",txt,keywords);
+		//log.info("parse content:\n{}\n keywords:\n{}",txt,keywords);
 		StringBuilder sb = new StringBuilder();
 		sb.append(type + " ");
 		for (TFIDFKeyword key : keywords) {

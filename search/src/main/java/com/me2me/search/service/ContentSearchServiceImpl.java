@@ -48,7 +48,9 @@ import com.me2me.search.constants.IndexConstants;
 import com.me2me.search.dao.ContentForSearchJdbcDao;
 import com.me2me.search.dto.RecommendKingdom;
 import com.me2me.search.dto.RecommendUser;
+import com.me2me.search.enums.EAgeGroup;
 import com.me2me.search.enums.ELikeGender;
+import com.me2me.search.enums.EOccupation;
 import com.me2me.search.enums.RecommendReason;
 import com.me2me.search.esmapping.SearchHistoryEsMapping;
 import com.me2me.search.esmapping.TopicEsMapping;
@@ -602,24 +604,71 @@ public class ContentSearchServiceImpl implements ContentSearchService {
     		
     		boolean sameTags =false;
     		if(userMap.getTags()!=null && !StringUtils.isEmpty(userMap.getTags())){
-    		String[] userTags = userMap.getTags().split(" ");
-    		if(userTags!=null && userTags.length>0){
-    			List<String> matchedTagList = new ArrayList<>();
-    			List<String> notMatchedTagList = new ArrayList<>();
-    			for( String tag:userTags){
-    				for(String mytag:userHobbyList){
-            			if(mytag.equals(tag)){
-            				matchedTagList.add(mytag);
-            			}else{
-            				notMatchedTagList.add(tag);
-            			}
-            		}
-    			}
-    			userInfo.setTagMatchedLength(matchedTagList.size());		// 匹配长度
-    			matchedTagList.addAll(notMatchedTagList);
-    			userInfo.setUserTags(matchedTagList);
-   				sameTags=matchedTagList.size()>0;
-    		}
+	    		String[] userTags = userMap.getTags().split(" ");
+	    		if(userTags!=null && userTags.length>0){
+	    			List<String> matchedTagList = new ArrayList<>();
+	    			List<String> notMatchedTagList = new ArrayList<>();
+	    			//兴趣
+	    			for( String tag:userTags){
+	    				for(String mytag:userHobbyList){
+	            			if(mytag.equals(tag)){
+	            				matchedTagList.add(mytag);
+	            			}else if(!matchedTagList.contains(tag)){
+	            				notMatchedTagList.add(tag);
+	            			}
+	            		}
+	    			}
+	    			//职业
+	    			if(user.getOccupation()==userMap.getOccupation()){
+	    				matchedTagList.add(EOccupation.fromCode(userMap.getOccupation()).getName());
+	    			}else{
+	    				notMatchedTagList.add(EOccupation.fromCode(userMap.getOccupation()).getName());
+	    			}
+	    			//年龄段
+	    			if(user.getAgeGroup()==userMap.getAge_group()){
+	    				matchedTagList.add(EAgeGroup.fromCode(userMap.getAge_group()).getName());
+	    			}else{
+	    				notMatchedTagList.add(EAgeGroup.fromCode(userMap.getAge_group()).getName());
+	    			}
+	    			//男女
+	    			boolean isSex = false;
+	    			if(user.getLikeGender()==ELikeGender.BOY.getValue() && userMap.getGender()==1){
+	    				matchedTagList.add("男");
+	    				isSex = true;
+	    			}else if(user.getLikeGender()==ELikeGender.GIRL.getValue() && userMap.getGender()==0){
+	    				matchedTagList.add("女");
+	    				isSex = true;
+	    			}else if(user.getLikeGender()==ELikeGender.ALL.getValue()){
+	    				if(userMap.getGender()==1){
+	    					matchedTagList.add("男");
+	    				}else{
+	    					matchedTagList.add("女");
+	    				}
+	    				isSex = true;
+	    			}
+	    			if(!isSex){
+	    				if(userMap.getGender()==1){
+	    					notMatchedTagList.add("男");
+	    				}else{
+	    					notMatchedTagList.add("女");
+	    				}
+	    				
+	    			}
+	    			
+	    			if(matchedTagList.size()<10){
+	    				userInfo.setTagMatchedLength(matchedTagList.size());		// 匹配长度
+	    				matchedTagList.addAll(notMatchedTagList);
+	    				if(matchedTagList.size()>10){
+	    					matchedTagList = matchedTagList.subList(0, 10);
+	    				}
+	    			}else{
+	    				userInfo.setTagMatchedLength(10);		// 匹配长度
+	    				matchedTagList = matchedTagList.subList(0, 10);
+	    			}
+	    			
+	    			userInfo.setUserTags(matchedTagList);
+	   				sameTags=matchedTagList.size()>0;
+	    		}
     		}
     		if(user.getLikeGender()!=null && userMap.getLike_gender()==user.getLikeGender()){
     			userInfo.setReason(RecommendReason.LIKE_GENDER);
