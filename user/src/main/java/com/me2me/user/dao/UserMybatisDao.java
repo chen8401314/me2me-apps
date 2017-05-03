@@ -1148,4 +1148,8 @@ public class UserMybatisDao {
     	criteria.andCreateTimeLessThan(lastDate);
     	userSeekFollowMapper.deleteByExample(example);
     }
+    
+    public void deleteUserProfile(long id){
+    	userProfileMapper.deleteByPrimaryKey(id);
+    }
 }

@@ -3409,4 +3409,9 @@ public class UserServiceImpl implements UserService {
     	}
     	return false;
     }
+	
+	@Override
+	public void deleteUserProfile(long id){
+		userMybatisDao.deleteUserProfile(id);
+	}
 }
