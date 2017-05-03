@@ -516,6 +516,14 @@ public class LiveServiceImpl implements LiveService {
             		continue;
             	}
             }
+            if(!CommonUtils.isNewVersion(getLiveTimeLineDto.getVersion(), "2.2.4")){
+            	if(topicFragment.getType() == 51 || topicFragment.getType() == 52){
+            		if(topicFragment.getContentType() == 17 || topicFragment.getContentType() == 18){//表情包
+            			liveElement.setStatus(0);
+                		continue;
+            		}
+            	}
+            }
 
             UserProfile userProfile = userService.getUserProfileByUid(uid);
             liveElement.setUid(uid);
