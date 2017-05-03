@@ -49,8 +49,7 @@ public class AppCleanDataTask {
 	/**
 	 * 清除无效的userProfile记录
 	 */
-	//@Scheduled(cron="0 0,15,30,45 * * * ?")
-	@Scheduled(cron="0 */1 * * * ?")
+	@Scheduled(cron="0 0,15,30,45 * * * ?")
 	public void cleanUselessUserProfile(){
 		logger.info("清除无效的userProfile记录任务开始");
 		long s = System.currentTimeMillis();
