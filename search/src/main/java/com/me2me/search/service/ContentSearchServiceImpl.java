@@ -353,6 +353,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 					
 					List<IndexQuery> indexList = new ArrayList<>();
 					for (UserEsMapping data : users) {
+						log.info("add user index. user:{},uid:{}",data.getNick_name(),data.getUid());
 						IndexQuery query = new IndexQuery();
 						String key = data.getUid()+"";
 						data.setTags(hobbyMap.get(data.getUid()));
@@ -396,6 +397,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 					}
 					List<IndexQuery> indexList = new ArrayList<>();
 					for (UgcEsMapping data : ugcList) {
+						log.info("add ugc index. title:{}",data.getContent());
 						IndexQuery query = new IndexQuery();
 						String key =data.getId()+"";
 						
@@ -457,6 +459,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 					
 					List<IndexQuery> indexList = new ArrayList<>();
 					for (TopicEsMapping data : kingdomList) {
+						log.info("add kingdom index. title:{}",data.getTitle());
 						IndexQuery query = new IndexQuery();
 						String key = data.getId()+"";
 						List<String> valueList = textMap.get(data.getId());

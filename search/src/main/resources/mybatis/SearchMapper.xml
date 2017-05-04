@@ -18,8 +18,8 @@
 
 	<select id="getUserPageByUpdateDate" resultType="com.me2me.search.esmapping.UserEsMapping">
 		select * from user_profile
-		where DATE_FORMAT(update_time,'%Y-%m-%d') &gt;= #{dateBegin}
-		and DATE_FORMAT(update_time,'%Y-%m-%d') &lt;= #{dateEnd}
+		where DATE_FORMAT(update_time,'%Y-%m-%d %T') &gt;= #{dateBegin}
+		and DATE_FORMAT(update_time,'%Y-%m-%d %T') &lt;= #{dateEnd}
 		limit #{skip},#{limit}
 	</select>
 
@@ -27,16 +27,16 @@
 		select c.*,p.nick_name,p.v_lv,p.avatar from content c left join user_profile p on c.uid=p.uid
 		where 
 		c.type=0 and c.status=0 
-		and DATE_FORMAT(c.create_time,'%Y-%m-%d') &gt;= #{dateBegin}
-		and DATE_FORMAT(c.create_time,'%Y-%m-%d') &lt;= #{dateEnd}
+		and DATE_FORMAT(c.create_time,'%Y-%m-%d %T') &gt;= #{dateBegin}
+		and DATE_FORMAT(c.create_time,'%Y-%m-%d %T') &lt;= #{dateEnd}
 		limit #{skip},#{limit}
 	</select>
 
 	<select id="getKingdomPageByUpdateDate" resultType="com.me2me.search.esmapping.TopicEsMapping">
 		select c.*,p.nick_name,p.v_lv,p.avatar from topic c left join user_profile p on c.uid=p.uid
 		where c.status!=2 
-		and DATE_FORMAT(c.update_time,'%Y-%m-%d') &gt;= #{dateBegin}
-		and DATE_FORMAT(c.update_time,'%Y-%m-%d') &lt;= #{dateEnd}
+		and DATE_FORMAT(c.update_time,'%Y-%m-%d %T') &gt;= #{dateBegin}
+		and DATE_FORMAT(c.update_time,'%Y-%m-%d %T') &lt;= #{dateEnd}
 		limit #{skip},#{limit}
 	</select>
 	<select id="getKingdomFragmentsByTopicId" resultType="string">
