@@ -583,7 +583,45 @@ public class LiveServiceImpl implements LiveService {
     public Response speak(SpeakDto speakDto) {
         log.info("speak start ...");
         if (speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {
-            TopicFragment topicFragment = new TopicFragment();
+        	//由于低版本前端在at的时候有bug，故关于at这里要做一个保护措施
+            if(speakDto.getType() == Specification.LiveSpeakType.AT.index
+            		|| speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
+            		|| speakDto.getType() == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
+            	if(!StringUtils.isEmpty(speakDto.getExtra())){
+            		JSONObject obj = JSON.parseObject(speakDto.getExtra());
+            		int start = 0;
+            		int end = 0;
+            		if(null != obj.get("atStart")){
+            			start = obj.getIntValue("atStart");
+            		}
+            		if(null != obj.get("atEnd")){
+            			end = obj.getIntValue("atEnd");
+            		}
+            		if(start > end){
+            			obj.put("atStart", 0);
+            			obj.put("atEnd", 0);
+            			speakDto.setExtra(obj.toJSONString());
+            		}
+            	}
+            	if(!StringUtils.isEmpty(speakDto.getFragment())){
+            		JSONObject obj = JSON.parseObject(speakDto.getFragment());
+            		int start = 0;
+            		int end = 0;
+            		if(null != obj.get("atStart")){
+            			start = obj.getIntValue("atStart");
+            		}
+            		if(null != obj.get("atEnd")){
+            			end = obj.getIntValue("atEnd");
+            		}
+            		if(start > end){
+            			obj.put("atStart", 0);
+            			obj.put("atEnd", 0);
+            			speakDto.setFragment(obj.toJSONString());
+            		}
+            	}
+            }
+        	
+        	TopicFragment topicFragment = new TopicFragment();
             topicFragment.setFragmentImage(speakDto.getFragmentImage());
             topicFragment.setFragment(speakDto.getFragment());
             topicFragment.setUid(speakDto.getUid());
