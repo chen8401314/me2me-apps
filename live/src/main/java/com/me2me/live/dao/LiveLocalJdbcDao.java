@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.me2me.common.Constant;
 import com.me2me.live.dto.KingdomSearchDTO;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.LiveFavoriteDelete;
@@ -674,9 +675,15 @@ public class LiveLocalJdbcDao {
 		StringBuilder sb = new StringBuilder();
 		sb.append("update content set conver_image='").append(cover);
 		sb.append("' where forward_cid=").append(topicId);
-		sb.append(" and type in (3,6)");
-		
+		sb.append(" and type=3");
 		jdbcTemplate.execute(sb.toString());
+		
+		StringBuilder sb2 = new StringBuilder();
+		sb2.append("update content set conver_image='").append(Constant.QINIU_DOMAIN).append("/").append(cover);
+		sb2.append("' where forward_cid=").append(topicId);
+		sb2.append(" and type=6");
+		jdbcTemplate.execute(sb2.toString());
+		
 	}
 	
 	public void updateTopicContentTitle(long topicId, String title){
