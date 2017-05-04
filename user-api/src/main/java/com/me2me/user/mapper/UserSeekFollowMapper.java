@@ -93,4 +93,6 @@ public interface UserSeekFollowMapper {
      * @mbggenerated Sat Apr 22 13:54:59 CST 2017
      */
     int updateByPrimaryKey(UserSeekFollow record);
+    
+    List<UserSeekFollow> getUserSeekFollowWithUid(@Param("uid") long uid, @Param("sinceId") long sinceId, @Param("pageSize") int pageSize);
 }

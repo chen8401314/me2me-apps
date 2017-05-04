@@ -1,6 +1,7 @@
 package com.me2me.user.dao;
 
 import com.me2me.core.dao.BaseJdbcDao;
+import com.me2me.user.model.UserSeekFollow;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -146,7 +147,7 @@ public class UserInitJdbcDao extends BaseJdbcDao {
     	StringBuilder sb = new StringBuilder();
     	sb.append("select p.*,case p.name_group when '#' then 'Z#' else p.name_group end as ng");
     	sb.append(" from user_follow f, user_profile p where f.target_uid=p.uid");
-    	sb.append(" and f.source_uid=").append(uid);
+    	sb.append(" and f.target_uid>0 and f.source_uid=").append(uid);
     	if(!StringUtils.isEmpty(nickName)){
     		sb.append(" and p.nick_name like '%").append(nickName).append("%'");
     	}
@@ -159,7 +160,7 @@ public class UserInitJdbcDao extends BaseJdbcDao {
     public int countUserFollowInfo(String nickName, long uid){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select count(1) as count from user_follow f,user_profile p");
-    	sb.append(" where f.target_uid=p.uid and f.source_uid=").append(uid);
+    	sb.append(" where f.target_uid>0 and f.target_uid=p.uid and f.source_uid=").append(uid);
     	if(!StringUtils.isEmpty(nickName)){
     		sb.append(" and p.nick_name like '%").append(nickName).append("%'");
     	}

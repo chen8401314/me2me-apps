@@ -75,6 +75,11 @@
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
+                    <artifactId>io</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
                     <artifactId>search-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
@@ -92,6 +97,11 @@
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>user-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>io-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>
@@ -195,6 +205,11 @@
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
+                    <artifactId>io-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
                     <artifactId>search-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
@@ -290,6 +305,11 @@
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>user-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>io-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
                 <dependency>

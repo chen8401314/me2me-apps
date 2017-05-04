@@ -516,6 +516,14 @@ public class LiveServiceImpl implements LiveService {
             		continue;
             	}
             }
+            if(!CommonUtils.isNewVersion(getLiveTimeLineDto.getVersion(), "2.2.4")){
+            	if(topicFragment.getType() == 51 || topicFragment.getType() == 52){
+            		if(topicFragment.getContentType() == 17 || topicFragment.getContentType() == 18){//表情包
+            			liveElement.setStatus(0);
+                		continue;
+            		}
+            	}
+            }
 
             UserProfile userProfile = userService.getUserProfileByUid(uid);
             liveElement.setUid(uid);
@@ -575,7 +583,45 @@ public class LiveServiceImpl implements LiveService {
     public Response speak(SpeakDto speakDto) {
         log.info("speak start ...");
         if (speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {
-            TopicFragment topicFragment = new TopicFragment();
+        	//由于低版本前端在at的时候有bug，故关于at这里要做一个保护措施
+            if(speakDto.getType() == Specification.LiveSpeakType.AT.index
+            		|| speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
+            		|| speakDto.getType() == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
+            	if(!StringUtils.isEmpty(speakDto.getExtra())){
+            		JSONObject obj = JSON.parseObject(speakDto.getExtra());
+            		int start = 0;
+            		int end = 0;
+            		if(null != obj.get("atStart")){
+            			start = obj.getIntValue("atStart");
+            		}
+            		if(null != obj.get("atEnd")){
+            			end = obj.getIntValue("atEnd");
+            		}
+            		if(start > end){
+            			obj.put("atStart", 0);
+            			obj.put("atEnd", 0);
+            			speakDto.setExtra(obj.toJSONString());
+            		}
+            	}
+            	if(!StringUtils.isEmpty(speakDto.getFragment())){
+            		JSONObject obj = JSON.parseObject(speakDto.getFragment());
+            		int start = 0;
+            		int end = 0;
+            		if(null != obj.get("atStart")){
+            			start = obj.getIntValue("atStart");
+            		}
+            		if(null != obj.get("atEnd")){
+            			end = obj.getIntValue("atEnd");
+            		}
+            		if(start > end){
+            			obj.put("atStart", 0);
+            			obj.put("atEnd", 0);
+            			speakDto.setFragment(obj.toJSONString());
+            		}
+            	}
+            }
+        	
+        	TopicFragment topicFragment = new TopicFragment();
             topicFragment.setFragmentImage(speakDto.getFragmentImage());
             topicFragment.setFragment(speakDto.getFragment());
             topicFragment.setUid(speakDto.getUid());
@@ -2627,6 +2673,15 @@ public class LiveServiceImpl implements LiveService {
             	}else if(topicFragment.getType() == 1000){//系统灰条
             		liveElement.setStatus(0);
             		continue;
+            	}
+            }
+            //表情包过滤处理（预防低版本）
+            if(getLiveDetailDto.getVersionFlag() < 2){//低于V2.2.4版本
+            	if(topicFragment.getType() == 51 || topicFragment.getType() == 52){
+            		if(topicFragment.getContentType() == 17 || topicFragment.getContentType() == 18){//表情包
+            			liveElement.setStatus(0);
+                		continue;
+            		}
             	}
             }
 

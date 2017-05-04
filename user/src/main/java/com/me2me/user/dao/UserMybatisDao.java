@@ -525,6 +525,7 @@ public class UserMybatisDao {
         UserFollowExample example = new UserFollowExample();
         UserFollowExample.Criteria criteria =  example.createCriteria();
         criteria.andSourceUidEqualTo(uid);
+        criteria.andTargetUidGreaterThan(Long.valueOf(0));
         return userFollowMapper.countByExample(example);
     }
 
@@ -1122,12 +1123,8 @@ public class UserMybatisDao {
     	userProfileMapper.countUserByDay();
     }
 
-    public List<UserSeekFollow> getUserSeekFollows(int pageSize, long sinceId){
-    	UserSeekFollowExample example = new UserSeekFollowExample();
-    	UserSeekFollowExample.Criteria criteria = example.createCriteria();
-    	criteria.andIdLessThan(sinceId);
-    	example.setOrderByClause(" id desc limit " + pageSize);
-    	return userSeekFollowMapper.selectByExample(example);
+    public List<UserSeekFollow> getUserSeekFollows(long uid, long sinceId, int pageSize){
+    	return userSeekFollowMapper.getUserSeekFollowWithUid(uid, sinceId, pageSize);
     }
     
     public UserSeekFollow getUserSeekFollowByUid(long uid){
@@ -1150,5 +1147,9 @@ public class UserMybatisDao {
     	UserSeekFollowExample.Criteria criteria = example.createCriteria();
     	criteria.andCreateTimeLessThan(lastDate);
     	userSeekFollowMapper.deleteByExample(example);
+    }
+    
+    public void deleteUserProfile(long id){
+    	userProfileMapper.deleteByPrimaryKey(id);
     }
 }

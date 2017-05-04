@@ -631,8 +631,12 @@ public class ContentServiceImpl implements ContentService {
             contentTagElement.setTag(contentTags.getTag());
             showArticleCommentsDto.getTags().add(contentTagElement);
         }
-        ContentStatService contentStatService = contentStatusServiceProxyBean.getTarget();
-        contentStatService.read(uid+"",id);
+        try{
+	        ContentStatService contentStatService = contentStatusServiceProxyBean.getTarget();
+	        contentStatService.read(uid+"",id);
+        }catch(Exception e){
+        	log.error("老徐文章阅读接口调用失败", e);
+        }
         return Response.success(showArticleCommentsDto);
     }
 
@@ -1181,6 +1185,13 @@ private void localJpush(long toUid){
             			contentElement.setAcCount(acCount);
             		}
             	}
+            }else{
+            	ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
+                if(contentImage != null) {
+                    contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
+                }else{
+                    contentElement.setCoverImage("");
+                }
             }
             if(content.getType() == Specification.ArticleType.ORIGIN.index){
                 //获取内容图片数量
@@ -1194,12 +1205,7 @@ private void localJpush(long toUid){
             contentElement.setIsLike(isLike(content.getId(),currentUid));
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setPersonCount(content.getPersonCount());
-            ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
-            if(contentImage != null) {
-                contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
-            }else{
-                contentElement.setCoverImage("");
-            }
+            
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
             log.info("get content review success");
             for(ContentReview contentReview : contentReviewList){
@@ -4716,6 +4722,13 @@ private void localJpush(long toUid){
     		}
     		result = liveForContentJdbcDao.getNewPeople(0, sinceId, pageSize);
     		break;
+    	case 10://新注册的用户（无所谓有没有王国）
+    		//实时统计
+    		if(sinceId < 0){
+    			sinceId = Long.MAX_VALUE;
+    		}
+    		result = liveForContentJdbcDao.getNewRegisterUsers(sinceId, pageSize);
+    		break;
     	default:
     		break;
     	}
@@ -5229,7 +5242,7 @@ private void localJpush(long toUid){
 		List<BillBoardRelationDto> result = Lists.newArrayList();
 		
 		int type = 1;//默认王国
-		if(mode == 1 || mode == 2 || mode == 3){
+		if(mode == 1 || mode == 2 || mode == 3 || mode == 8 || mode == 9 || mode == 10){
 			type = 2;
 		}
 		

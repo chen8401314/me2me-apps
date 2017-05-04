@@ -15,6 +15,7 @@ public class ClassifierResult {
 	 * 分类结果
 	 */
 	private String resultType;
+	private int result;
 	private List<ScoreType> socreTypeList;
 	private List<TFIDFKeyword> featureKeyList;
 	public String getResultType() {
@@ -40,6 +41,12 @@ public class ClassifierResult {
 	@Override
 	public String toString() {
 		return resultType;
+	}
+	public int getResult() {
+		return result;
+	}
+	public void setResult(int result) {
+		this.result = result;
 	}
 	
 }

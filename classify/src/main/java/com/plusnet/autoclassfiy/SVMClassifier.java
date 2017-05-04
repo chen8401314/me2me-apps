@@ -7,12 +7,14 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.plusnet.autoclassfiy.idf.IDFKeywordService;
 import com.plusnet.autoclassfiy.idf.IDFKeywordServiceImpl;
 import com.plusnet.autoclassfiy.idf.TFIDFKeyword;
@@ -32,18 +34,18 @@ import de.bwaldvogel.liblinear.Model;
 public class SVMClassifier {
 	private IDFKeywordService keywordService;
 	private Model svmModel;
-	private Map<String, Object> typeDic;
+	private JSONObject typeDic;
 	private Logger log = LoggerFactory.getLogger(SVMClassifier.class);
 	/**
 	 * 类初始化时会加载词典、分类字典、svm模型文件，比较耗时 
 	 */
 	public SVMClassifier(){
 		log.info("loading SVMClassifier model.");
-		InputStream ml_types =SVMClassifier.class.getResourceAsStream(Constant.TYPE_DIC_FILE);
-		InputStream model =SVMClassifier.class.getResourceAsStream(Constant.SVM_MODEL_FILE);
-		keywordService = new IDFKeywordServiceImpl();
-		
 		try {
+			InputStream model =SVMClassifier.class.getResourceAsStream(Constant.SVM_MODEL_FILE);
+			InputStream ml_types =SVMClassifier.class.getResourceAsStream(Constant.SVM_MODEL_FILE+".mapping");
+			keywordService = new IDFKeywordServiceImpl();
+			
 			String dic = IOUtils.toString(ml_types,"utf-8");
 			typeDic = JSON.parseObject(dic);
 			svmModel = Model.load(new InputStreamReader(model));
@@ -64,7 +66,8 @@ public class SVMClassifier {
 		
 		for(int i=0;i<dec_values.length;i++){
 			int index = svmModel.getLabels()[i];
-			String typeStr = this.getTypeNameByIndex(index+"");
+			
+			String typeStr = this.getTypeNameByIndex(index);
 			ScoreType type = new ScoreType();
 			type.setIndex(index);
 			type.setScore(dec_values[i]);
@@ -73,10 +76,10 @@ public class SVMClassifier {
 		}
 		Collections.sort(typeList);
 		
-		String type= (String) typeDic.get((int)v+"");
 		ClassifierResult result = new ClassifierResult();
 		result.setFeatureKeyList(keyList);
-		result.setResultType(type);
+		result.setResult((int) v);
+		result.setResultType(getTypeNameByIndex((int) v));
 		result.setSocreTypeList(typeList);
 		return result;
 	}
@@ -91,8 +94,15 @@ public class SVMClassifier {
 		return nodes;
 	}
 	
-	private String getTypeNameByIndex(String index) {
-		return (String) this.typeDic.get(index);
+	private String getTypeNameByIndex(int index) {
+		for(Entry<String, Object> entry:typeDic.entrySet()){
+			String key = entry.getKey();
+			Integer val =(Integer) entry.getValue();
+			if(val==index){
+				return key;
+			}
+		}
+		return null;
 	}
 	
 }

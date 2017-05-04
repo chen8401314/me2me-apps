@@ -379,4 +379,6 @@ public interface UserService {
     Response personaModify(long uid, int type, String params);
     
     Response testSendMessage(long templateId, String mobiles);
+    
+    void deleteUserProfile(long id);
 }
