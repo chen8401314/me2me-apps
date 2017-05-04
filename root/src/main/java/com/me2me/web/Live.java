@@ -13,6 +13,7 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -76,10 +77,10 @@ public class Live extends BaseController {
      * @param request
      * @return
      */
+    @CrossOrigin(origins = "*")
     @RequestMapping(value = "/liveTimeline",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response liveTimeline(LiveTimelineRequest request, HttpServletResponse response){
-        response.setHeader("Access-Control-Allow-Origin", "*");
+    public Response liveTimeline(LiveTimelineRequest request){
         GetLiveTimeLineDto getLiveTimeLineDto = new GetLiveTimeLineDto();
         getLiveTimeLineDto.setSinceId(request.getSinceId());
         getLiveTimeLineDto.setTopicId(request.getTopicId());
@@ -121,12 +122,11 @@ public class Live extends BaseController {
      * @param request
      * @return
      */
+    @CrossOrigin(origins = "*")
     @RequestMapping(value = "/getUpdate",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response getUpdate(LiveUpdateRequest request, HttpServletResponse response){
-        response.setHeader("Access-Control-Allow-Origin", "*");
+    public Response getUpdate(LiveUpdateRequest request){
         GetLiveUpdateDto getLiveUpdateDto = new GetLiveUpdateDto();
-
         int offset = request.getOffset()==0?50:request.getOffset();
         getLiveUpdateDto.setOffset(offset);
         getLiveUpdateDto.setTopicId(request.getTopicId());
@@ -197,7 +197,7 @@ public class Live extends BaseController {
      */
     @RequestMapping(value = "/speak",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response speak(SpeakRequest request,HttpServletRequest req){
+    public Response speak(SpeakRequest request){
         SpeakDto speakDto = new SpeakDto();
         speakDto.setType(request.getType());
         speakDto.setContentType(request.getContentType());
@@ -369,15 +369,16 @@ public class Live extends BaseController {
         return liveService.getFavoriteList(request.getTopicId());
     }
 
+
     /**
      * 直播封面接口（调用时候直播阅读数+1）
      * @param request
      * @return
      */
+    @CrossOrigin(origins = "*")
     @RequestMapping(value = "/liveCover",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response liveCover(LiveCoverRequest request,HttpServletResponse response){
-        response.setHeader("Access-Control-Allow-Origin", "*");
+    public Response liveCover(LiveCoverRequest request){
         int vflag = 0;
         if(VersionUtil.isNewVersion(request.getVersion(), "2.2.3")){
         	vflag = 1;
@@ -391,10 +392,10 @@ public class Live extends BaseController {
      * @param request
      * @return
      */
+    @CrossOrigin(origins = "*")
     @RequestMapping(value = "/getLiveByCid",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response getLiveByCid(GetLiveByCidRequest request ,HttpServletResponse response){
-        response.setHeader("Access-Control-Allow-Origin", "*");
+    public Response getLiveByCid(GetLiveByCidRequest request){
         int vflag = 0;
         if(VersionUtil.isNewVersion(request.getVersion(), "2.2.3")){
         	vflag = 1;
@@ -409,7 +410,7 @@ public class Live extends BaseController {
      */
     @RequestMapping(value = "/inactiveLive",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response getInactiveLive(InactiveLiveRequest request,HttpServletRequest req){
+    public Response getInactiveLive(InactiveLiveRequest request){
         //埋点
 //        kafkaService.saveClientLog(request,req.getHeader("User-Agent"), Specification.ClientLogAction.LIVE_NOT_UPDATED);
 
