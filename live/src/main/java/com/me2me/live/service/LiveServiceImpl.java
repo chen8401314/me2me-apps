@@ -4710,8 +4710,9 @@ public class LiveServiceImpl implements LiveService {
 		if(null == topic){
 			return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
 		}
+		boolean isAdmin = userService.isAdmin(uid);
 		if(!this.isKing(uid, topic.getUid()) && !this.isInCore(uid, topic.getCoreCircle())
-				&& !userService.isAdmin(uid)){
+				&& !isAdmin){
 			return Response.failure(ResponseStatus.YOU_DO_NOT_HAVE_PERMISSION.status,ResponseStatus.YOU_DO_NOT_HAVE_PERMISSION.message);
 		}
 		
@@ -4747,6 +4748,12 @@ public class LiveServiceImpl implements LiveService {
 			TopicTagDetail tagDetail = null;
 			TopicTag topicTag = null;
 			for(String tag : newTagList){
+				//非管理员不能打带“官方”二字的标签
+				if(!isAdmin){
+					if(tag.contains("官方")){
+						continue;
+					}
+				}
 				topicTag = liveMybatisDao.getTopicTagByTag(tag);
 				if(null == topicTag){
 					topicTag = new TopicTag();
