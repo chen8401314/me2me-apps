@@ -1,7 +1,6 @@
 package com.me2me.user.dao;
 
 import com.me2me.core.dao.BaseJdbcDao;
-import com.me2me.user.model.UserSeekFollow;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -198,4 +197,13 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 		}
 		return null;
 	}
+    
+    public void updateUserProfileParam4Number(long uid, int intParam, String paramName){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("update user_profile set ").append(paramName);
+    	sb.append("=").append(intParam).append(",update_time=now() where uid=");
+    	sb.append(uid);
+    	
+    	super.execute(sb.toString());
+    }
 }
