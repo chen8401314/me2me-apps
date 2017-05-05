@@ -94,10 +94,10 @@ public class Live extends BaseController {
      * @param request
      * @return
      */
+    @CrossOrigin(origins = "*")
     @RequestMapping(value = "/detail",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response getLiveDetail(LiveDetailRequest request, HttpServletResponse response){
-        response.setHeader("Access-Control-Allow-Origin", "*");
+    public Response getLiveDetail(LiveDetailRequest request){
         GetLiveDetailDto liveDetailDto = new GetLiveDetailDto();
         liveDetailDto.setTopicId(request.getTopicId());
         int offset = request.getOffset()==0?50:request.getOffset();
