@@ -1061,13 +1061,16 @@ public class LiveMybatisDao {
 		return null;
 	}
 	
-	public TopicTag getRecTopicTagWithoutOwn(long topicId, List<Long> tagIdList){
+	public TopicTag getRecTopicTagWithoutOwn(long topicId, List<Long> tagIdList, boolean isAdmin){
 		TopicTagExample example = new TopicTagExample();
 		TopicTagExample.Criteria criteria = example.createCriteria();
 		criteria.andStatusEqualTo(0);//正常的
 		criteria.andIsRecEqualTo(1);//推荐的
 		if(null != tagIdList && tagIdList.size() > 0){
 			criteria.andIdNotIn(tagIdList);
+		}
+		if(!isAdmin){//不是管理员推荐的标签中不能出现“官方”二字
+			criteria.andTagNotLike("%官方%");
 		}
 		example.setOrderByClause(" id desc limit 1");
 		List<TopicTag> list =  topicTagMapper.selectByExample(example);

@@ -246,10 +246,11 @@ public class LiveServiceImpl implements LiveService {
 	            liveCoverDto.setTags(builder.toString());
 	        }
 	        
+	        boolean isAdmin = userService.isAdmin(uid);
 	        if(liveCoverDto.getInternalStatus() == Specification.SnsCircle.CORE.index
-	        		|| userService.isAdmin(uid)){//核心圈的或管理员，需要返回推荐标签
+	        		|| isAdmin){//核心圈的或管理员，需要返回推荐标签
 	        	//第一步，先返回运营指定的推荐标签（1个）
-	        	TopicTag recTag = liveMybatisDao.getRecTopicTagWithoutOwn(topicId, tagIdList);
+	        	TopicTag recTag = liveMybatisDao.getRecTopicTagWithoutOwn(topicId, tagIdList, isAdmin);
 	        	if(null != recTag){
 	        		liveCoverDto.setRecTags(recTag.getTag());
 	        	}
@@ -444,10 +445,11 @@ public class LiveServiceImpl implements LiveService {
                 showLiveDto.setTags(builder.toString());
             }
             
+            boolean isAdmin = userService.isAdmin(uid);
             if(showLiveDto.getInternalStatus() == Specification.SnsCircle.CORE.index
-            		|| userService.isAdmin(uid)){//核心圈的或者管理员，需要返回推荐标签
+            		|| isAdmin){//核心圈的或者管理员，需要返回推荐标签
             	//第一步，先返回运营指定的推荐标签（1个）
-            	TopicTag recTag = liveMybatisDao.getRecTopicTagWithoutOwn(cid, tagIdList);
+            	TopicTag recTag = liveMybatisDao.getRecTopicTagWithoutOwn(cid, tagIdList, isAdmin);
             	if(null != recTag){
             		showLiveDto.setRecTags(recTag.getTag());
             	}
@@ -4686,7 +4688,8 @@ public class LiveServiceImpl implements LiveService {
 		}
 		//获取推荐的标签
 		//2.2.3版本暂时先只返回运营推荐的标签
-		List<Map<String, Object>> recTags = liveLocalJdbcDao.getRecTopicTags(10);
+		boolean isAdmin = userService.isAdmin(uid);
+		List<Map<String, Object>> recTags = liveLocalJdbcDao.getRecTopicTags(isAdmin, 10);
 		if(null != recTags && recTags.size() > 0){
 			ShowTopicTagsDTO.TagElement e = null;
 			for(Map<String, Object> m : recTags){
@@ -4764,9 +4767,17 @@ public class LiveServiceImpl implements LiveService {
 	}
 	
 	@Override
-	public Response topicTagCheck(String tag){
+	public Response topicTagCheck(long uid, String tag){
 		if(null != tag && !"".equals(tag.trim())){
-			TopicTag topicTag = liveMybatisDao.getTopicTagByTag(tag.trim());
+			tag = tag.trim();
+			//如果是非管理员，则标签中不能出现tag
+			if(!userService.isAdmin(uid)){
+				if(tag.contains("官方")){
+					return Response.failure(ResponseStatus.TAG_HAS_BEEN_FORBIDDEN.status,ResponseStatus.TAG_HAS_BEEN_FORBIDDEN.message);
+				}
+			}
+			
+			TopicTag topicTag = liveMybatisDao.getTopicTagByTag(tag);
 			if(null != topicTag && topicTag.getStatus() == 1){
 				return Response.failure(ResponseStatus.TAG_HAS_BEEN_FORBIDDEN.status,ResponseStatus.TAG_HAS_BEEN_FORBIDDEN.message);
 			}

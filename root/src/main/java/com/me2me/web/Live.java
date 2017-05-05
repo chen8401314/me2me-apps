@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Calendar;
@@ -666,7 +665,7 @@ public class Live extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/topicTagCheck",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response topicTagCheck(TopicTagCheckRequest request){
-    	return liveService.topicTagCheck(request.getTag());
+    	return liveService.topicTagCheck(request.getUid(), request.getTag());
     }
     
     /**

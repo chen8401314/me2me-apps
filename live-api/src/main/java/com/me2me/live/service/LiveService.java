@@ -336,7 +336,7 @@ public interface LiveService {
 	 * @param tag
 	 * @return
 	 */
-	Response topicTagCheck(String tag);
+	Response topicTagCheck(long uid, String tag);
 	
 	/**
 	 * 标签王国查询

@@ -650,12 +650,15 @@ public class LiveLocalJdbcDao {
 		return jdbcTemplate.queryForList(sb.toString());
 	}
 	
-	public List<Map<String, Object>> getRecTopicTags(int pageSize){
+	public List<Map<String, Object>> getRecTopicTags(boolean isAdmin, int pageSize){
 		StringBuilder sb = new StringBuilder();
 		sb.append("select t.tag, count(d.topic_id) as kcount");
 		sb.append(" from topic_tag t LEFT JOIN topic_tag_detail d");
 		sb.append(" on t.id=d.tag_id and d.status=0");
 		sb.append(" where t.is_rec=1 and t.status=0");
+		if(!isAdmin){//不是管理员，则推荐标签中不能出现“官方”二字
+			sb.append(" and t.tag not like '%官方%'");
+		}
 		sb.append(" group by t.tag order by kcount desc limit ").append(pageSize);
 		
 		return jdbcTemplate.queryForList(sb.toString());
