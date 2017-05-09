@@ -3704,6 +3704,7 @@ private void localJpush(long toUid){
 				contentElement.setFavoriteCount(c.getFavoriteCount());
 				
 				if(c.getType() == Specification.ArticleType.LIVE.index){
+					contentElement.setContent(c.getTitle());
 					contentElement.setTopicId(c.getForwardCid());
 					contentElement.setForwardCid(c.getForwardCid());
 					topic = topicMap.get(c.getForwardCid().toString());
