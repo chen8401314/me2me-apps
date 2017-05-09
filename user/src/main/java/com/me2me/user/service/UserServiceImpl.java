@@ -3295,7 +3295,7 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public Response personaModify(long uid, int type, String params){
-		UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+		
 		
 		switch(type){
 		case 1://性别
@@ -3303,30 +3303,30 @@ public class UserServiceImpl implements UserService {
 			if(sex != 1){
 				sex = 0;
 			}
-			userProfile.setGender(sex);
+			userInitJdbcDao.updateUserProfileParam4Number(uid, sex, "gender");
 			break;
 		case 2://性取向
 			int sexOrientation = Integer.valueOf(params);
-			userProfile.setLikeGender(sexOrientation);
+			userInitJdbcDao.updateUserProfileParam4Number(uid, sexOrientation, "like_gender");
 			break;
 		case 3://兴趣爱好
 	        this.modifyUserHobby4Persona(uid, params);
 	        log.info("modify user hobby");
+	        UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+	        userProfile.setUpdateTime(new Date());
+			userMybatisDao.updateUserProfile(userProfile);
 			break;
 		case 4://年龄段
 			int ageGroup = Integer.valueOf(params);
-			userProfile.setAgeGroup(ageGroup);
+			userInitJdbcDao.updateUserProfileParam4Number(uid, ageGroup, "age_group");
 			break;
 		case 5://职业
 			int career = Integer.valueOf(params);
-			userProfile.setOccupation(career);
+			userInitJdbcDao.updateUserProfileParam4Number(uid, career, "occupation");
 			break;
 		default:
 			return Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
 		}
-		
-		userProfile.setUpdateTime(new Date());
-		userMybatisDao.updateUserProfile(userProfile);
 		
 		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message);
 	}

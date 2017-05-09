@@ -1185,6 +1185,13 @@ private void localJpush(long toUid){
             			contentElement.setAcCount(acCount);
             		}
             	}
+            }else{
+            	ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
+                if(contentImage != null) {
+                    contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
+                }else{
+                    contentElement.setCoverImage("");
+                }
             }
             if(content.getType() == Specification.ArticleType.ORIGIN.index){
                 //获取内容图片数量
@@ -1198,12 +1205,7 @@ private void localJpush(long toUid){
             contentElement.setIsLike(isLike(content.getId(),currentUid));
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setPersonCount(content.getPersonCount());
-            ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
-            if(contentImage != null) {
-                contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + contentImage.getImage());
-            }else{
-                contentElement.setCoverImage("");
-            }
+            
             List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
             log.info("get content review success");
             for(ContentReview contentReview : contentReviewList){

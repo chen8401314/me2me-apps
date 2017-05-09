@@ -39,7 +39,9 @@ public class LoggerAop {
         ServletRequestAttributes servletRequestAttributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = servletRequestAttributes.getRequest();
         // 过滤一下接口
-        if(request.getRequestURI().startsWith("/api/console") || request.getRequestURI().startsWith("/api/mobile")){
+        if(request.getRequestURI().startsWith("/api/console")
+                || request.getRequestURI().startsWith("/api/mobile")
+                || request.getRequestURI().startsWith("/api/spread")){
             return;
         }
         StringBuilder headers = new StringBuilder();

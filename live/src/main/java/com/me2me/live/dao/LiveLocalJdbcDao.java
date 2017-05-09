@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.me2me.common.Constant;
 import com.me2me.live.dto.KingdomSearchDTO;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.LiveFavoriteDelete;
@@ -649,12 +650,15 @@ public class LiveLocalJdbcDao {
 		return jdbcTemplate.queryForList(sb.toString());
 	}
 	
-	public List<Map<String, Object>> getRecTopicTags(int pageSize){
+	public List<Map<String, Object>> getRecTopicTags(boolean isAdmin, int pageSize){
 		StringBuilder sb = new StringBuilder();
 		sb.append("select t.tag, count(d.topic_id) as kcount");
 		sb.append(" from topic_tag t LEFT JOIN topic_tag_detail d");
 		sb.append(" on t.id=d.tag_id and d.status=0");
 		sb.append(" where t.is_rec=1 and t.status=0");
+		if(!isAdmin){//不是管理员，则推荐标签中不能出现“官方”二字
+			sb.append(" and t.tag not like '%官方%'");
+		}
 		sb.append(" group by t.tag order by kcount desc limit ").append(pageSize);
 		
 		return jdbcTemplate.queryForList(sb.toString());
@@ -674,9 +678,15 @@ public class LiveLocalJdbcDao {
 		StringBuilder sb = new StringBuilder();
 		sb.append("update content set conver_image='").append(cover);
 		sb.append("' where forward_cid=").append(topicId);
-		sb.append(" and type in (3,6)");
-		
+		sb.append(" and type=3");
 		jdbcTemplate.execute(sb.toString());
+		
+		StringBuilder sb2 = new StringBuilder();
+		sb2.append("update content set conver_image='").append(Constant.QINIU_DOMAIN).append("/").append(cover);
+		sb2.append("' where forward_cid=").append(topicId);
+		sb2.append(" and type=6");
+		jdbcTemplate.execute(sb2.toString());
+		
 	}
 	
 	public void updateTopicContentTitle(long topicId, String title){

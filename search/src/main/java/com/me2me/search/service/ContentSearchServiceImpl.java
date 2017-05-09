@@ -623,18 +623,20 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	    				}
 	    			}
 	    			//职业
-	    			if(null != user.getOccupation() && user.getOccupation()==userMap.getOccupation()){
+	    			if(null != user.getOccupation() && user.getOccupation()==userMap.getOccupation()
+	    					&& null != EOccupation.fromCode(userMap.getOccupation())){
 	    				matchedTagList.add(EOccupation.fromCode(userMap.getOccupation()).getName());
 	    			}else{
-	    				if(null != userMap.getOccupation()){
+	    				if(null != userMap.getOccupation() && null != EOccupation.fromCode(userMap.getOccupation())){
 	    					notMatchedTagList.add(EOccupation.fromCode(userMap.getOccupation()).getName());
 	    				}
 	    			}
 	    			//年龄段
-	    			if(null != user.getAgeGroup() && user.getAgeGroup()==userMap.getAge_group()){
+	    			if(null != user.getAgeGroup() && user.getAgeGroup()==userMap.getAge_group()
+	    					&& null != EAgeGroup.fromCode(userMap.getAge_group())){
 	    				matchedTagList.add(EAgeGroup.fromCode(userMap.getAge_group()).getName());
 	    			}else{
-	    				if(null != userMap.getAge_group()){
+	    				if(null != userMap.getAge_group() && null != EAgeGroup.fromCode(userMap.getAge_group())){
 	    					notMatchedTagList.add(EAgeGroup.fromCode(userMap.getAge_group()).getName());
 	    				}
 	    			}
