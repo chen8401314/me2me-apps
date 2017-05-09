@@ -689,4 +689,15 @@ public class Live extends BaseController {
     public Response recQuery(RecQueryRequest request){
     	return liveService.recQuery(request.getTopicId(), request.getSinceId(), request.getUid());
     }
+    /**
+     * 图库接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/kingdomImgDB",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response recQuery(ImgDBRequest request){
+    	Response resp= liveService.kingdomImgDB(request.getTopicId(), request.getDirection(), request.getFragmentId());
+    	return resp;
+    }
 }

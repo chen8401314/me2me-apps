@@ -118,6 +118,31 @@ public class LiveMybatisDao {
         example.setOrderByClause("id asc limit 50 ");
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
+  /**
+   * 获取王国图库
+   * @author zhangjiwei
+   * @date May 5, 2017
+   * @param topicId
+   * @param sinceId 
+   * @param goDown 是否向下翻
+   * @param size 数量
+   * @return
+   */
+    public List<TopicFragment> getTopicImgFragment(long topicId, long sinceId,boolean goDown,int size) {
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        if(goDown){
+        	criteria.andIdGreaterThan(sinceId);
+        }else{
+        	criteria.andIdLessThan(sinceId);
+        }
+        criteria.andTypeEqualTo(0);
+        criteria.andContentTypeEqualTo(1);
+        criteria.andStatusEqualTo(1);
+        example.setOrderByClause("id asc limit "+size);
+        return topicFragmentMapper.selectByExample(example);
+    }
 
     public List<TopicFragment> getTopicFragmentByMode(long topicId, long sinceId, long uid) {
         TopicFragmentExample example = new TopicFragmentExample();
@@ -1128,4 +1153,6 @@ public class LiveMybatisDao {
         example.setOrderByClause(" topic_id asc,id asc ");
         return topicTagDetailMapper.selectByExample(example);
 	}
+
+
 }

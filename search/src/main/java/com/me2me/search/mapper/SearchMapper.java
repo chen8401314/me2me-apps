@@ -106,7 +106,7 @@ public interface SearchMapper  {
      * @return
      */
     @ResultType(SearchHistoryEsMapping.class)
-    @Select("select * from search_history_count where DATE_FORMAT(last_query_date,'%Y-%m-%d') >= #{0} and DATE_FORMAT(last_query_date,'%Y-%m-%d') <= #{1} limit #{2},#{3}")
+    @Select("select * from search_history_count where DATE_FORMAT(last_query_date,'%Y-%m-%d %T') >= #{0} and DATE_FORMAT(last_query_date,'%Y-%m-%d %T') <= #{1} limit #{2},#{3}")
     List<SearchHistoryEsMapping> getSearchHistoryPageByDate(String dateBegin,String dateEnd,int skip,int limit);
     
     

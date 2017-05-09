@@ -355,4 +355,22 @@ public interface LiveService {
 	 * @return
 	 */
 	Response recQuery(long topicId, long sinceId, long currentUid);
+	/**
+	 * 王国图库查询
+	 * @author zhangjiwei
+	 * @date May 5, 2017
+	 * @param topicId
+	 * @param direction
+	 * @param fragmentId
+	 * @return
+	 */
+	Response kingdomImgDB(long topicId,int direction,long fragmentId);
+	/**
+	 * 移除王国
+	 * @author zhangjiwei
+	 * @date May 5, 2017
+	 * @param topicId
+	 * @return
+	 */
+	Response removeKingdom(long topicId);
 }

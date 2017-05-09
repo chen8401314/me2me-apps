@@ -32,6 +32,7 @@ import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.dao.LiveLocalJdbcDao;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.*;
+import com.me2me.live.dto.Live4H5Dto.Fragment;
 import com.me2me.live.event.AggregationPublishEvent;
 import com.me2me.live.event.CacheLiveEvent;
 import com.me2me.live.event.CoreAggregationRemindEvent;
@@ -5230,5 +5231,53 @@ public class LiveServiceImpl implements LiveService {
 			ttd.setUid(Long.valueOf(0));
 			liveMybatisDao.insertTopicTagDetail(ttd);
 		}
+	}
+
+	@Override
+	public Response kingdomImgDB(long topicId, int direction, long sinceId) {
+		final int pageSize= 200;
+		KingdomImgDB imgDb = new KingdomImgDB();
+		List<TopicFragment> fragmentList=new ArrayList<>();
+		if(direction==0){		//向下
+			fragmentList = liveMybatisDao.getTopicImgFragment(topicId, sinceId, true, pageSize);
+		}else if(direction ==1){		// 向上
+			fragmentList = liveMybatisDao.getTopicImgFragment(topicId, sinceId, false, pageSize);
+			// 计算最后一条所在月份的总数量
+			if(fragmentList.size()>0){
+				String month =DateUtil.date2string(fragmentList.get(0).getCreateTime(),"yyyyMM");
+				imgDb.setTopMonth(month);
+				long monthDataSize = liveLocalJdbcDao.countTopicImgByMonth(topicId, month);
+				imgDb.setTopMonthDataSize(monthDataSize);
+			}
+		}else{		// 中间
+			List<TopicFragment> fgUp = liveMybatisDao.getTopicImgFragment(topicId, sinceId, false, pageSize/2);		// 上100
+			List<TopicFragment> fgDown = liveMybatisDao.getTopicImgFragment(topicId, sinceId, true, pageSize/2);		// 上100
+			if(fgUp.size()>0){
+				String month =DateUtil.date2string(fgUp.get(0).getCreateTime(),"yyyyMM");
+				imgDb.setTopMonth(month);
+				long monthDataSize = liveLocalJdbcDao.countTopicImgByMonth(topicId, month);
+				imgDb.setTopMonthDataSize(monthDataSize);
+			}
+			fragmentList.addAll(fgUp);
+			fragmentList.add(liveMybatisDao.getTopicFragmentById(sinceId));
+			fragmentList.addAll(fgDown);
+		}
+		
+		List<KingdomImgDB.ImgData> imgDataList = new ArrayList<>();
+		for(TopicFragment fg:fragmentList){
+			KingdomImgDB.ImgData imgData= new KingdomImgDB.ImgData();
+			org.springframework.beans.BeanUtils.copyProperties(fg, imgData);
+			String fragmentImage = "https://cdn.me-to-me.com/" +fg.getFragmentImage();
+			imgData.setFragmentImage(fragmentImage);
+			imgDataList.add(imgData);
+		}
+		imgDb.setImgData(imgDataList);
+		return Response.success(imgDb);
+	}
+
+	@Override
+	public Response removeKingdom(long topicId) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }
