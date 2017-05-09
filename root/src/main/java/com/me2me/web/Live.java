@@ -700,4 +700,16 @@ public class Live extends BaseController {
     	Response resp= liveService.kingdomImgDB(request.getTopicId(), request.getDirection(), request.getFragmentId());
     	return resp;
     }
+    /**
+     * 移除王国
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/removeKingdom",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response removeKingdom(RemoveTopicRequest request){
+    	Response resp= liveService.blockUserKingdom(request.getTopicId(),request.getUid());
+    	return resp;
+    }
+    
 }

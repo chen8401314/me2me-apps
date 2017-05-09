@@ -93,6 +93,9 @@ public class LiveMybatisDao {
 
     @Autowired
     private TopicTagDetailMapper topicTagDetailMapper;
+    
+    @Autowired
+    private BlockTopicMapper  blockTopicMapper;
 
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -224,6 +227,8 @@ public class LiveMybatisDao {
     public void createTopicFragment(TopicFragment topicFragment) {
         topicFragment.setStatus(Specification.TopicFragmentStatus.ENABLED.index);
         topicFragmentMapper.insertSelective(topicFragment);
+        // 王国更新的时候去掉用户屏蔽的王国。
+        this.removeBlockedKingodm(topicFragment.getTopicId());
     }
 
     public Topic getTopic(long uid, long topicId) {
@@ -1156,6 +1161,28 @@ public class LiveMybatisDao {
         example.setOrderByClause(" topic_id asc,id asc ");
         return topicTagDetailMapper.selectByExample(example);
 	}
-
-
+	/**
+	 * 屏蔽用户王国
+	 * @author zhangjiwei
+	 * @date May 9, 2017
+	 * @param topicId
+	 * @param uid
+	 */
+	public void blockUserKingdom(long topicId, long uid){
+		BlockTopic bt = new BlockTopic();
+		bt.setUid(uid);
+		bt.setTopicId(topicId);
+		blockTopicMapper.insert(bt);
+	}
+	/**
+	 * 移除屏蔽的王国
+	 * @author zhangjiwei
+	 * @date May 9, 2017
+	 * @param topicId
+	 */
+	public void removeBlockedKingodm(long topicId){
+		BlockTopicExample example = new BlockTopicExample();
+		example.createCriteria().andTopicIdEqualTo(topicId);
+		blockTopicMapper.deleteByExample(example);
+	}
 }

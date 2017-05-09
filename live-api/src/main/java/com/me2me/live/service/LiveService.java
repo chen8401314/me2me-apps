@@ -370,7 +370,8 @@ public interface LiveService {
 	 * @author zhangjiwei
 	 * @date May 5, 2017
 	 * @param topicId
+	 * @param uid 
 	 * @return
 	 */
-	Response removeKingdom(long topicId);
+	Response blockUserKingdom(long topicId, long uid);
 }

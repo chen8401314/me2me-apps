@@ -5294,8 +5294,8 @@ public class LiveServiceImpl implements LiveService {
 	}
 
 	@Override
-	public Response removeKingdom(long topicId) {
-		// TODO Auto-generated method stub
-		return null;
+	public Response blockUserKingdom(long topicId,long uid) {
+		liveMybatisDao.blockUserKingdom(topicId,uid);
+		return Response.success();
 	}
 }

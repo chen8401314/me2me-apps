@@ -48,6 +48,6 @@
         <!--<table tableName="topic_fragment_template" domainObjectName="TopicFragmentTemplate"/>-->
         <!--<table tableName="topic_tag" domainObjectName="TopicTag"/>-->
         <!--<table tableName="topic_tag_detail" domainObjectName="TopicTagDetail"/>-->
-
+		<!-- <table tableName="block_topic" domainObjectName="BlockTopic"/> -->
     </context>
 </generatorConfiguration>
