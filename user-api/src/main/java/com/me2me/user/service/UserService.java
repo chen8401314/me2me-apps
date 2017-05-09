@@ -381,4 +381,6 @@ public interface UserService {
     Response testSendMessage(long templateId, String mobiles);
     
     void deleteUserProfile(long id);
+    
+    Response noticeReddotQuery(long uid);
 }

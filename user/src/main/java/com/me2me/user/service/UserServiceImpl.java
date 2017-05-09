@@ -3414,4 +3414,14 @@ public class UserServiceImpl implements UserService {
 	public void deleteUserProfile(long id){
 		userMybatisDao.deleteUserProfile(id);
 	}
+	
+	@Override
+	public Response noticeReddotQuery(long uid){
+		ShowNoticeReddotQueryDTO result = new ShowNoticeReddotQueryDTO();
+		
+		int unreadCount = userMybatisDao.countUnreadNotice(uid);
+		result.setUnreadCount(unreadCount);
+		
+		return Response.success(result);
+	}
 }

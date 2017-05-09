@@ -113,6 +113,9 @@ public class UserMybatisDao {
     
     @Autowired
     private UserSeekFollowMapper userSeekFollowMapper;
+    
+    @Autowired
+    private UserNoticeUnreadMapper userNoticeUnreadMapper;
 
     /**
      * 保存用户注册信息
@@ -1151,5 +1154,12 @@ public class UserMybatisDao {
     
     public void deleteUserProfile(long id){
     	userProfileMapper.deleteByPrimaryKey(id);
+    }
+    
+    public int countUnreadNotice(long uid){
+    	UserNoticeUnreadExample example = new UserNoticeUnreadExample();
+    	UserNoticeUnreadExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	return userNoticeUnreadMapper.countByExample(example);
     }
 }
