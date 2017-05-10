@@ -21,5 +21,7 @@ public class GetLiveTimeLineDto implements BaseEntity {
     private int direction;
 
     private String version;
+    
+    private int pageSize;
 
 }

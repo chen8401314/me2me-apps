@@ -1291,4 +1291,30 @@ public interface Specification {
         }
     }
 
+    enum UserNoticeUnreadContentType{
+    	KINGDOM("王国相关", 1),
+    	UGC("UGC相关", 2),
+    	ARTICLE("文章相关", 3);
+    	
+    	public final String name;
+        public final int index;
+        
+        UserNoticeUnreadContentType(String name,int index){
+        	this.name = name;
+            this.index = index;
+        }
+    }
+    
+    enum UserNoticeLevel{
+    	LEVEL_1("一级目录", 1),
+    	LEVEL_2("二级目录", 2);
+    	
+    	public final String name;
+        public final int index;
+        
+        UserNoticeLevel(String name,int index){
+        	this.name = name;
+            this.index = index;
+        }
+    }
 }

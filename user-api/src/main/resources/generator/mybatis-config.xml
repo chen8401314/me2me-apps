@@ -62,6 +62,7 @@
         <!--<table tableName="version_channel_download" domainObjectName="VersionChannelDownload"/>-->
         <!--<table tableName="im_config" domainObjectName="ImConfig"/>-->
         <!-- <table tableName="user_seek_follow" domainObjectName="UserSeekFollow"/> -->
+        <!-- <table tableName="user_notice_unread" domainObjectName="UserNoticeUnread"/> -->
 
     </context>
 </generatorConfiguration>

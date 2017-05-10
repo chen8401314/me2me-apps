@@ -113,6 +113,9 @@ public class UserMybatisDao {
     
     @Autowired
     private UserSeekFollowMapper userSeekFollowMapper;
+    
+    @Autowired
+    private UserNoticeUnreadMapper userNoticeUnreadMapper;
 
     /**
      * 保存用户注册信息
@@ -1151,5 +1154,33 @@ public class UserMybatisDao {
     
     public void deleteUserProfile(long id){
     	userProfileMapper.deleteByPrimaryKey(id);
+    }
+    
+    public int countUnreadNotice(long uid){
+    	UserNoticeUnreadExample example = new UserNoticeUnreadExample();
+    	UserNoticeUnreadExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	return userNoticeUnreadMapper.countByExample(example);
+    }
+    
+    public void createUserNoticeUnread(UserNoticeUnread userNoticeUnread){
+    	userNoticeUnreadMapper.insertSelective(userNoticeUnread);
+    }
+    
+    public void clearUserNoticeUnreadByLevel(long uid, int level){
+    	UserNoticeUnreadExample example = new UserNoticeUnreadExample();
+    	UserNoticeUnreadExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	criteria.andLevelEqualTo(level);
+    	userNoticeUnreadMapper.deleteByExample(example);
+    }
+    
+    public void clearUserNoticeUnreadByCid(long uid, int contentType, long cid){
+    	UserNoticeUnreadExample example = new UserNoticeUnreadExample();
+    	UserNoticeUnreadExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	criteria.andContentTypeEqualTo(contentType);
+    	criteria.andCidEqualTo(cid);
+    	userNoticeUnreadMapper.deleteByExample(example);
     }
 }

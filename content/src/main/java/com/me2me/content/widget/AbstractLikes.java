@@ -56,16 +56,16 @@ public class AbstractLikes {
                 }
                 log.info("content like success");
                 //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LIKE.index,0,likeDto.getUid()));
-                log.info("content like monitor success");
+//                log.info("content like monitor success");
                 //自己的和王国的点赞不推送了，防止王国疯狂点赞，导致流量默默的没了。。
-                if(likeDto.getUid()!=content.getUid() && content.getType()!=Specification.ArticleType.LIVE.index) {
-                    JsonObject jsonObject = new JsonObject();
-                    jsonObject.addProperty("messageType", Specification.PushMessageType.LIKE.index);
-                    jsonObject.addProperty("type", Specification.PushObjectType.UGC.index);
-                    jsonObject.addProperty("cid", likeDto.getCid());
-                    String alias = String.valueOf(content.getUid());
-                    userService.pushWithExtra(alias, jsonObject.toString(), null);
-                }
+//                if(likeDto.getUid()!=content.getUid() && content.getType()!=Specification.ArticleType.LIVE.index) {
+//                    JsonObject jsonObject = new JsonObject();
+//                    jsonObject.addProperty("messageType", Specification.PushMessageType.LIKE.index);
+//                    jsonObject.addProperty("type", Specification.PushObjectType.UGC.index);
+//                    jsonObject.addProperty("cid", likeDto.getCid());
+//                    String alias = String.valueOf(content.getUid());
+//                    userService.pushWithExtra(alias, jsonObject.toString(), null);
+//                }
                 return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
             }else{
             	ContentLikesDetails details = contentService.getContentLikesDetails(contentLikesDetails);

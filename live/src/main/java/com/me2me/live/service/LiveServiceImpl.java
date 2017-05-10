@@ -161,10 +161,19 @@ public class LiveServiceImpl implements LiveService {
         LiveTimeLineDto liveTimeLineDto = new LiveTimeLineDto();
         MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(getLiveTimeLineDto.getUid(), getLiveTimeLineDto.getTopicId() + "", "0");
         cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-        List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId());
+        int pageSize = getLiveTimeLineDto.getPageSize();
+        if(pageSize <= 0){
+        	pageSize = 50;
+        }
+        
+        List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), pageSize);
         log.info("get timeLine data");
         buildLiveTimeLine(getLiveTimeLineDto, liveTimeLineDto, fragmentList);
         log.info("buildLiveTimeLine success");
+        
+        //去除当前用户针对于这个王国上的消息红点
+        userService.clearUserNoticeUnreadByCid(getLiveTimeLineDto.getUid(), Specification.UserNoticeUnreadContentType.KINGDOM.index, getLiveTimeLineDto.getTopicId());
+        
         return Response.success(ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.status, ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.message, liveTimeLineDto);
     }
 
@@ -177,13 +186,13 @@ public class LiveServiceImpl implements LiveService {
         List<TopicFragment> fragmentList = Lists.newArrayList();
         if (getLiveTimeLineDto.getDirection() == Specification.LiveTimeLineDirection.FIRST.index) {
             if (liveReadHistory == null) {
-                fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId());
+                fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), 50);
                 liveMybatisDao.createLiveReadHistory(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getUid());
             } else {
                 fragmentList = liveMybatisDao.getPrevTopicFragment(getLiveTimeLineDto.getTopicId(), Integer.MAX_VALUE);
             }
         } else if (getLiveTimeLineDto.getDirection() == Specification.LiveTimeLineDirection.NEXT.index) {
-            fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId());
+            fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), 50);
         } else if (getLiveTimeLineDto.getDirection() == Specification.LiveTimeLineDirection.PREV.index) {
             fragmentList = liveMybatisDao.getPrevTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId());
         }
@@ -2601,6 +2610,9 @@ public class LiveServiceImpl implements LiveService {
             	}
         	}
         }
+        
+        //去除当前用户针对于这个王国上的消息红点
+        userService.clearUserNoticeUnreadByCid(getLiveDetailDto.getUid(), Specification.UserNoticeUnreadContentType.KINGDOM.index, getLiveDetailDto.getTopicId());
         
         log.info("get live detail end ...");
         return  Response.success(ResponseStatus.GET_LIVE_DETAIL_SUCCESS.status, ResponseStatus.GET_LIVE_DETAIL_SUCCESS.message, liveDetailDto);

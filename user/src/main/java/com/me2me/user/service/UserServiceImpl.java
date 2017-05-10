@@ -789,8 +789,12 @@ public class UserServiceImpl implements UserService {
         	}else{
         		showUserNoticeDto.setHasNextNew(0);
         	}
+        	//并且将第一级目录中全部置为已读
+        	userMybatisDao.clearUserNoticeUnreadByLevel(userNoticeDto.getUid(), Specification.UserNoticeLevel.LEVEL_1.index);
         }else if(userNoticeDto.getLevel() == 2){//如果是查看二级页面，则消除二级按钮红点
         	cacheService.set("my:notice:level2:"+userNoticeDto.getUid(), "0");
+        	//并且将第二级目录中全部置为已读
+        	userMybatisDao.clearUserNoticeUnreadByLevel(userNoticeDto.getUid(), Specification.UserNoticeLevel.LEVEL_2.index);
         }
         
         log.info("getUserNotice end ...");
@@ -873,6 +877,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void createUserNotice(UserNotice userNotice) {
         userMybatisDao.createUserNotice(userNotice);
+    }
+    
+    public void createUserNoticeUnread(UserNoticeUnread userNoticeUnread){
+    	userMybatisDao.createUserNoticeUnread(userNoticeUnread);
     }
 
     @Override
@@ -3413,5 +3421,20 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public void deleteUserProfile(long id){
 		userMybatisDao.deleteUserProfile(id);
+	}
+	
+	@Override
+	public Response noticeReddotQuery(long uid){
+		ShowNoticeReddotQueryDTO result = new ShowNoticeReddotQueryDTO();
+		
+		int unreadCount = userMybatisDao.countUnreadNotice(uid);
+		result.setUnreadCount(unreadCount);
+		
+		return Response.success(result);
+	}
+	
+	@Override
+	public void clearUserNoticeUnreadByCid(long uid, int contentType, long cid){
+		userMybatisDao.clearUserNoticeUnreadByCid(uid, contentType, cid);
 	}
 }
