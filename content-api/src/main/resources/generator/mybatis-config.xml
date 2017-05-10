@@ -48,10 +48,15 @@
         <!--<table tableName="article_likes_details" domainObjectName="ArticleLikesDetails"/>-->
         <!--<table tableName="article_review" domainObjectName="ArticleReview"/>-->
         <!--<table tableName="article_tags_details" domainObjectName="ArticleTagsDetails"/>-->
-        <table tableName="emotion_pack" domainObjectName="EmotionPack"/>
-        <table tableName="emotion_pack_detail" domainObjectName="EmotionPackDetail"/>
+        <!-- <table tableName="emotion_pack" domainObjectName="EmotionPack"/> -->
+        <!-- <table tableName="emotion_pack_detail" domainObjectName="EmotionPackDetail"/> -->
         <!--<table tableName="billboard_details" domainObjectName="BillBoardDetails"/>-->
         <!--<table tableName="billboard_relation" domainObjectName="BillBoardRelation"/>-->
         <!--<table tableName="billboard_list" domainObjectName="BillBoardList"/>-->
+        <!-- <table tableName="tease_info" domainObjectName="TeaseInfo"/> -->
+        <table tableName="tease_info" domainObjectName="TeaseInfo"/>
+        <table tableName="vote_info" domainObjectName="VoteInfo"/>
+        <table tableName="vote_option" domainObjectName="VoteOption"/>
+        <table tableName="vote_record" domainObjectName="VoteRecord"/>
     </context>
 </generatorConfiguration>

@@ -871,15 +871,4 @@ public class Users extends BaseController {
     public Response commonSendMsg(CommonSendMsgRequest request){
     	return userService.testSendMessage(request.getTemplateId(), request.getMobiles());
     }
-    
-    /**
-     * 通知红点查询接口
-     * @param request
-     * @return
-     */
-    @ResponseBody
-    @RequestMapping(value = "/noticeReddotQuery",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response noticeReddotQuery(NoticeReddotQueryRequest request){
-    	return userService.noticeReddotQuery(request.getUid());
-    }
 }
