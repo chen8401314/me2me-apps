@@ -843,4 +843,17 @@ public class LiveLocalJdbcDao {
 		sb.append(" LIMIT 0,50");
 		return jdbcTemplate.queryForList(sb.toString());
 	}
+	/**
+	 * 统计某月份的王国图片数量
+	 * @author zhangjiwei
+	 * @date May 5, 2017
+	 * @param topicId
+	 * @param month
+	 * @return
+	 */
+	public long countTopicImgByMonth(long topicId, String month) {
+		String sql = "select count(1) from topic_fragment where topic_id=? and type=0 and content_type=1 and status =1 and DATE_FORMAT(create_time,'%Y%m')=?";
+		long count = jdbcTemplate.queryForObject(sql,new Object[]{topicId,month}, Long.class);
+		return count;
+	}
 }

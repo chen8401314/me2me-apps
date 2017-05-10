@@ -25,6 +25,7 @@ import com.me2me.live.dto.GetLiveUpdateDto;
 import com.me2me.live.dto.SearchDropAroundTopicDto;
 import com.me2me.live.dto.SearchTopicDto;
 import com.me2me.live.dto.SpeakDto;
+import com.me2me.live.mapper.BlockTopicMapper;
 import com.me2me.live.mapper.DeleteLogMapper;
 import com.me2me.live.mapper.LiveDisplayBarrageMapper;
 import com.me2me.live.mapper.LiveDisplayFragmentMapper;
@@ -48,6 +49,8 @@ import com.me2me.live.mapper.TopicUserConfigMapper;
 import com.me2me.live.mapper.VoteInfoMapper;
 import com.me2me.live.mapper.VoteOptionMapper;
 import com.me2me.live.mapper.VoteRecordMapper;
+import com.me2me.live.model.BlockTopic;
+import com.me2me.live.model.BlockTopicExample;
 import com.me2me.live.model.DeleteLog;
 import com.me2me.live.model.LiveDisplayBarrage;
 import com.me2me.live.model.LiveDisplayFragment;
@@ -175,6 +178,8 @@ public class LiveMybatisDao {
     @Autowired
     private VoteRecordMapper voteRecordMapper;
     
+    @Autowired
+    private BlockTopicMapper  blockTopicMapper;
 
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -199,6 +204,31 @@ public class LiveMybatisDao {
 //        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
         example.setOrderByClause("id asc limit 50 ");
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
+    }
+  /**
+   * 获取王国图库
+   * @author zhangjiwei
+   * @date May 5, 2017
+   * @param topicId
+   * @param sinceId 
+   * @param goDown 是否向下翻
+   * @param size 数量
+   * @return
+   */
+    public List<TopicFragment> getTopicImgFragment(long topicId, long sinceId,boolean goDown,int size) {
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        if(goDown){
+        	criteria.andIdGreaterThan(sinceId);
+        }else{
+        	criteria.andIdLessThan(sinceId);
+        }
+        criteria.andTypeEqualTo(0);
+        criteria.andContentTypeEqualTo(1);
+        criteria.andStatusEqualTo(1);
+        example.setOrderByClause("id asc limit "+size);
+        return topicFragmentMapper.selectByExample(example);
     }
 
     public List<TopicFragment> getTopicFragmentByMode(long topicId, long sinceId, long uid) {
@@ -281,6 +311,8 @@ public class LiveMybatisDao {
     public void createTopicFragment(TopicFragment topicFragment) {
         topicFragment.setStatus(Specification.TopicFragmentStatus.ENABLED.index);
         topicFragmentMapper.insertSelective(topicFragment);
+        // 王国更新的时候去掉用户屏蔽的王国。
+        this.removeBlockedKingodm(topicFragment.getTopicId());
     }
 
     public Topic getTopic(long uid, long topicId) {
@@ -1308,4 +1340,28 @@ public class LiveMybatisDao {
         return voteRecordMapper.countByExample(example);
 	}
 	
+	/**
+	 * 屏蔽用户王国
+	 * @author zhangjiwei
+	 * @date May 9, 2017
+	 * @param topicId
+	 * @param uid
+	 */
+	public void blockUserKingdom(long topicId, long uid){
+		BlockTopic bt = new BlockTopic();
+		bt.setUid(uid);
+		bt.setTopicId(topicId);
+		blockTopicMapper.insert(bt);
+	}
+	/**
+	 * 移除屏蔽的王国
+	 * @author zhangjiwei
+	 * @date May 9, 2017
+	 * @param topicId
+	 */
+	public void removeBlockedKingodm(long topicId){
+		BlockTopicExample example = new BlockTopicExample();
+		example.createCriteria().andTopicIdEqualTo(topicId);
+		blockTopicMapper.deleteByExample(example);
+	}
 }

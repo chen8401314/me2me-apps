@@ -400,4 +400,23 @@ public interface LiveService {
 	public Response getTopicVoteInfo(long voteId);
 	
 	public Response getVoteInfo(long voteId,long uid); 
+	/**
+	 * 王国图库查询
+	 * @author zhangjiwei
+	 * @date May 5, 2017
+	 * @param topicId
+	 * @param direction
+	 * @param fragmentId
+	 * @return
+	 */
+	Response kingdomImgDB(long topicId,int direction,long fragmentId);
+	/**
+	 * 移除王国
+	 * @author zhangjiwei
+	 * @date May 5, 2017
+	 * @param topicId
+	 * @param uid 
+	 * @return
+	 */
+	Response blockUserKingdom(long topicId, long uid);
 }

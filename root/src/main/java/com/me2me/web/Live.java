@@ -48,6 +48,7 @@ import com.me2me.web.request.FragmentForwardRequest;
 import com.me2me.web.request.GetLiveByCidRequest;
 import com.me2me.web.request.GetLivesRequest;
 import com.me2me.web.request.GetMyLivesRequest;
+import com.me2me.web.request.ImgDBRequest;
 import com.me2me.web.request.InactiveLiveRequest;
 import com.me2me.web.request.KingdomSearchRequest;
 import com.me2me.web.request.LiveCoverRequest;
@@ -58,6 +59,7 @@ import com.me2me.web.request.LiveTimelineRequest;
 import com.me2me.web.request.LiveUpdateRequest;
 import com.me2me.web.request.RecQueryRequest;
 import com.me2me.web.request.RemoveLiveRequest;
+import com.me2me.web.request.RemoveTopicRequest;
 import com.me2me.web.request.ResendVoteRequest;
 import com.me2me.web.request.SetLiveRequest;
 import com.me2me.web.request.SettingModifyRequest;
@@ -823,4 +825,27 @@ public class Live extends BaseController {
     public Response getVoteInfo(VoteInfoRequest request){
     	return liveService.getVoteInfo(request.getVoteId(),request.getUid());
     }
+    /**
+     * 图库接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/kingdomImgDB",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response recQuery(ImgDBRequest request){
+    	Response resp= liveService.kingdomImgDB(request.getTopicId(), request.getDirection(), request.getFragmentId());
+    	return resp;
+    }
+    /**
+     * 移除王国
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/removeKingdom",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response removeKingdom(RemoveTopicRequest request){
+    	Response resp= liveService.blockUserKingdom(request.getTopicId(),request.getUid());
+    	return resp;
+    }
+    
 }
