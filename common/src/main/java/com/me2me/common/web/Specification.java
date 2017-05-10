@@ -959,7 +959,9 @@ public interface Specification {
         
         LINK("链接跳转", 4),
         
-        NOTICE("消息列表", 5)
+        NOTICE("消息列表", 5),
+        
+        CONTACTS("通讯录", 6)
         ;
 
         public final String name;
