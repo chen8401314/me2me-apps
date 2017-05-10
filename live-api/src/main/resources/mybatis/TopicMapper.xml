@@ -515,6 +515,7 @@
     ) m LEFT JOIN topic_user_config c ON m.id=c.topic_id AND c.uid=#{uid}
     ) n
     WHERE n.longtimes &lt; #{updateTime}
+   	and n.id not in(select topic_id from block_topic where uid=#{uid})
     ORDER BY n.longtimes DESC
     LIMIT 10;
   </select>
