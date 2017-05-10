@@ -136,6 +136,8 @@ public interface UserService {
     Response showUserTags(long uid);
 
     void createUserNotice(UserNotice userNotice);
+    
+    void createUserNoticeUnread(UserNoticeUnread userNoticeUnread);
 
     UserTips getUserTips(UserTips userTips);
 
@@ -383,4 +385,6 @@ public interface UserService {
     void deleteUserProfile(long id);
     
     Response noticeReddotQuery(long uid);
+    
+    void clearUserNoticeUnreadByCid(long uid, int contentType, long cid);
 }

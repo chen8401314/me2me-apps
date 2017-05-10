@@ -169,6 +169,10 @@ public class LiveServiceImpl implements LiveService {
         log.info("get timeLine data");
         buildLiveTimeLine(getLiveTimeLineDto, liveTimeLineDto, fragmentList);
         log.info("buildLiveTimeLine success");
+        
+        //去除当前用户针对于这个王国上的消息红点
+        userService.clearUserNoticeUnreadByCid(getLiveTimeLineDto.getUid(), Specification.UserNoticeUnreadContentType.KINGDOM.index, getLiveTimeLineDto.getTopicId());
+        
         return Response.success(ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.status, ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.message, liveTimeLineDto);
     }
 
@@ -2595,6 +2599,9 @@ public class LiveServiceImpl implements LiveService {
             	}
         	}
         }
+        
+        //去除当前用户针对于这个王国上的消息红点
+        userService.clearUserNoticeUnreadByCid(getLiveDetailDto.getUid(), Specification.UserNoticeUnreadContentType.KINGDOM.index, getLiveDetailDto.getTopicId());
         
         log.info("get live detail end ...");
         return  Response.success(ResponseStatus.GET_LIVE_DETAIL_SUCCESS.status, ResponseStatus.GET_LIVE_DETAIL_SUCCESS.message, liveDetailDto);

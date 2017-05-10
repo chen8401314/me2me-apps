@@ -654,7 +654,6 @@ public class ContentServiceImpl implements ContentService {
         userNotice.setFromUid(userProfile.getUid());
         userNotice.setToNickName(customerProfile.getNickName());
         userNotice.setNoticeType(type);
-        userNotice.setReadStatus(userNotice.getReadStatus());
         userNotice.setCid(content.getId());
         if(contentImage != null){
             userNotice.setCoverImage(contentImage.getImage());
@@ -666,33 +665,54 @@ public class ContentServiceImpl implements ContentService {
             }else{
                 userNotice.setSummary(content.getContent());
             }
-
         }
         userNotice.setToUid(customerProfile.getUid());
         userNotice.setLikeCount(0);
-        if(type == Specification.UserNoticeType.REVIEW.index){
+        if(type == Specification.UserNoticeType.REVIEW.index){//评论
             userNotice.setReview(arg);
             userNotice.setTag("");
-        }else if(type == Specification.UserNoticeType.TAG.index){
+        }else if(type == Specification.UserNoticeType.TAG.index){//贴标
             userNotice.setReview("");
             userNotice.setTag(arg);
-        }else if(type == Specification.UserNoticeType.LIKE.index){
+        }else if(type == Specification.UserNoticeType.LIKE.index){//点赞
             userNotice.setReview("");
             userNotice.setTag("");
         }
         userNotice.setReadStatus(0);
+        
+        boolean needNotice = false;
+        
         UserNotice notice = userService.getUserNotice(userNotice);
         //非直播才提醒
-        if(content.getType() != Specification.ArticleType.LIVE.index) {
+        if(content.getType() != Specification.ArticleType.LIVE.index
+        		|| content.getType() != Specification.ArticleType.FORWARD_LIVE.index) {
             //点赞时候只提醒一次
             if (userNotice.getNoticeType() == Specification.UserNoticeType.LIKE.index) {
                 if (notice == null) {
-                    userService.createUserNotice(userNotice);
+                	needNotice = true;
                 }
             } else {
-                userService.createUserNotice(userNotice);
+            	needNotice = true;
             }
         }
+        
+        if(needNotice){
+        	userService.createUserNotice(userNotice);
+        	
+        	Date now = new Date();
+            //V2.2.5版本开始使用新的红点体系
+            UserNoticeUnread unu = new UserNoticeUnread();
+            unu.setUid(userNotice.getToUid());
+            unu.setCreateTime(now);
+            unu.setNoticeId(userNotice.getId());
+            unu.setNoticeType(type);
+            unu.setContentType(Specification.UserNoticeUnreadContentType.UGC.index);//这里只有UGC的才进行消息
+            unu.setCid(content.getId());
+            unu.setLevel(Specification.UserNoticeLevel.LEVEL_1.index);
+            userService.createUserNoticeUnread(unu);
+        }
+        
+        //一下是老的红点推送相关，这部分代码在过两到三个版本差不多可以干掉了，目前修改版本V2.2.5
         UserTips userTips = new UserTips();
         userTips.setUid(content.getUid());
         userTips.setType(type);
@@ -800,7 +820,6 @@ public class ContentServiceImpl implements ContentService {
         userNotice.setFromUid(userProfile.getUid());
         userNotice.setToNickName(customerProfile.getNickName());
         userNotice.setNoticeType(type);
-        userNotice.setReadStatus(userNotice.getReadStatus());
         userNotice.setCid(content.getId());
         if(!StringUtils.isEmpty(contentImage)){
             userNotice.setCoverImage(contentImage);
@@ -820,6 +839,20 @@ public class ContentServiceImpl implements ContentService {
         userNotice.setTag("");
         userNotice.setReadStatus(0);
         userService.createUserNotice(userNotice);
+        
+        Date now = new Date();
+        //V2.2.5版本开始使用新的红点体系
+        UserNoticeUnread unu = new UserNoticeUnread();
+        unu.setUid(atUid);
+        unu.setCreateTime(now);
+        unu.setNoticeId(userNotice.getId());
+        unu.setNoticeType(type);
+        unu.setContentType(Specification.UserNoticeUnreadContentType.UGC.index);
+        unu.setCid(content.getId());
+        unu.setLevel(Specification.UserNoticeLevel.LEVEL_1.index);
+        userService.createUserNoticeUnread(unu);
+        
+        
         //如果@人和被@人都不是ugc作者，则需要给ugc作者发送一个提醒消息
         if(content.getUid()!=atUid&&content.getUid()!=uid){
             UserProfile autherProfile = userService.getUserProfileByUid(content.getUid());
@@ -827,7 +860,21 @@ public class ContentServiceImpl implements ContentService {
             userNotice.setToNickName(autherProfile.getNickName());
             userNotice.setId(null);
             userService.createUserNotice(userNotice);
+            
+            unu = new UserNoticeUnread();
+            unu.setUid(content.getUid());
+            unu.setCreateTime(now);
+            unu.setNoticeId(userNotice.getId());
+            unu.setNoticeType(type);
+            unu.setContentType(Specification.UserNoticeUnreadContentType.UGC.index);
+            unu.setCid(content.getId());
+            unu.setLevel(Specification.UserNoticeLevel.LEVEL_1.index);
+            userService.createUserNoticeUnread(unu);
         }
+        
+        
+        
+        //一下是老的那套红点通知逻辑，继续保留，因为还是有一部分用户在用户老版本的，等后面几个版本后就可以删掉了，当前版本V2.2.5
         UserTips userTips = new UserTips();
         userTips.setUid(atUid);
         userTips.setType(type);
@@ -1409,6 +1456,10 @@ private void localJpush(long toUid){
         contentMybatisDao.updateContentById(content);
         log.info("update readCount success");
         log.info("getContentDetail end ...");
+        
+        //将当前用户针对于本UGC的相关消息置为已读
+        userService.clearUserNoticeUnreadByCid(uid, Specification.UserNoticeUnreadContentType.UGC.index, id);
+        
         return Response.success(contentDetailDto);
     }
 

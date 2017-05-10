@@ -1162,4 +1162,25 @@ public class UserMybatisDao {
     	criteria.andUidEqualTo(uid);
     	return userNoticeUnreadMapper.countByExample(example);
     }
+    
+    public void createUserNoticeUnread(UserNoticeUnread userNoticeUnread){
+    	userNoticeUnreadMapper.insertSelective(userNoticeUnread);
+    }
+    
+    public void clearUserNoticeUnreadByLevel(long uid, int level){
+    	UserNoticeUnreadExample example = new UserNoticeUnreadExample();
+    	UserNoticeUnreadExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	criteria.andLevelEqualTo(level);
+    	userNoticeUnreadMapper.deleteByExample(example);
+    }
+    
+    public void clearUserNoticeUnreadByCid(long uid, int contentType, long cid){
+    	UserNoticeUnreadExample example = new UserNoticeUnreadExample();
+    	UserNoticeUnreadExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	criteria.andContentTypeEqualTo(contentType);
+    	criteria.andCidEqualTo(cid);
+    	userNoticeUnreadMapper.deleteByExample(example);
+    }
 }
