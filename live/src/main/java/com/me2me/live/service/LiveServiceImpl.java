@@ -5614,6 +5614,7 @@ public class LiveServiceImpl implements LiveService {
 
 	@Override
 	public Response blockUserKingdom(long topicId,long uid) {
+		System.out.println(11);
 		liveMybatisDao.blockUserKingdom(topicId,uid);
 		return Response.success();
 	}
