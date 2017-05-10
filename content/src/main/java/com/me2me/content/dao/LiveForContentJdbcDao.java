@@ -156,6 +156,16 @@ public class LiveForContentJdbcDao {
     	jdbcTemplate.execute(sb.toString());
     }
     
+    /**
+     * 删除王国相关的榜单记录
+     * @param topicId
+     */
+    public void deleteTopicBillboard(long topicId){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("delete from billboard_relation where type=1 and target_id=").append(topicId);
+    	jdbcTemplate.execute(sb.toString());
+    }
+    
     public Map<String,Object> getTopicUserConfig(long topicId, long uid){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select id,uid,topic_id,push_type from topic_user_config ");

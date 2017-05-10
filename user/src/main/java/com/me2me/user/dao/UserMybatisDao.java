@@ -116,6 +116,9 @@ public class UserMybatisDao {
     
     @Autowired
     private UserNoticeUnreadMapper userNoticeUnreadMapper;
+    
+    @Autowired
+    private UserMobileListMapper userMobileListMapper;
 
     /**
      * 保存用户注册信息
@@ -1182,5 +1185,19 @@ public class UserMybatisDao {
     	criteria.andContentTypeEqualTo(contentType);
     	criteria.andCidEqualTo(cid);
     	userNoticeUnreadMapper.deleteByExample(example);
+    }
+    
+    public List<UserMobileList> getUserMobileListByMobile(String mobile){
+    	UserMobileListExample example = new UserMobileListExample();
+    	UserMobileListExample.Criteria criteria = example.createCriteria();
+    	criteria.andMobileEqualTo(mobile);
+    	return userMobileListMapper.selectByExample(example);
+    }
+    
+    public void deleteUserMobileListByUid(long uid){
+    	UserMobileListExample example = new UserMobileListExample();
+    	UserMobileListExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	userMobileListMapper.deleteByExample(example);
     }
 }

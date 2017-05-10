@@ -206,4 +206,20 @@ public class UserInitJdbcDao extends BaseJdbcDao {
     	
     	super.execute(sb.toString());
     }
+    
+    public void batchInsertIntoUserMobileList(long uid, List<String> mobileList){
+    	if(null == mobileList || mobileList.size() == 0){
+    		return;
+    	}
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("insert into user_mobile_list(uid, mobile) values ");
+    	for(int i=0;i<mobileList.size();i++){
+    		if(i>0){
+    			sb.append(",");
+    		}
+    		sb.append("(").append(uid).append(",'").append(mobileList.get(i));
+    		sb.append("')");
+    	}
+    	super.execute(sb.toString());
+    }
 }

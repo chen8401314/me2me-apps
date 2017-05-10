@@ -63,6 +63,7 @@
         <!--<table tableName="im_config" domainObjectName="ImConfig"/>-->
         <!-- <table tableName="user_seek_follow" domainObjectName="UserSeekFollow"/> -->
         <!-- <table tableName="user_notice_unread" domainObjectName="UserNoticeUnread"/> -->
+        <!-- <table tableName="user_mobile_list" domainObjectName="UserMobileList"/> -->
 
     </context>
 </generatorConfiguration>
