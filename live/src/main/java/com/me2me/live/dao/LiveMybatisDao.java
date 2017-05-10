@@ -1,30 +1,99 @@
 package com.me2me.live.dao;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
-import com.me2me.common.page.PageBean;
 import com.google.common.collect.Maps;
+import com.me2me.common.page.PageBean;
 import com.me2me.common.web.Specification;
 import com.me2me.live.dto.GetLiveDetailDto;
 import com.me2me.live.dto.GetLiveUpdateDto;
 import com.me2me.live.dto.SearchDropAroundTopicDto;
 import com.me2me.live.dto.SearchTopicDto;
 import com.me2me.live.dto.SpeakDto;
-import com.me2me.live.mapper.*;
-import com.me2me.live.model.*;
+import com.me2me.live.mapper.DeleteLogMapper;
+import com.me2me.live.mapper.LiveDisplayBarrageMapper;
+import com.me2me.live.mapper.LiveDisplayFragmentMapper;
+import com.me2me.live.mapper.LiveDisplayProtocolMapper;
+import com.me2me.live.mapper.LiveDisplayReviewMapper;
+import com.me2me.live.mapper.LiveFavoriteDeleteMapper;
+import com.me2me.live.mapper.LiveFavoriteMapper;
+import com.me2me.live.mapper.LiveReadHistoryMapper;
+import com.me2me.live.mapper.TeaseInfoMapper;
+import com.me2me.live.mapper.TopicAggregationApplyMapper;
+import com.me2me.live.mapper.TopicAggregationMapper;
+import com.me2me.live.mapper.TopicBarrageMapper;
+import com.me2me.live.mapper.TopicDroparoundMapper;
+import com.me2me.live.mapper.TopicDroparoundTrailMapper;
+import com.me2me.live.mapper.TopicFragmentMapper;
+import com.me2me.live.mapper.TopicFragmentTemplateMapper;
+import com.me2me.live.mapper.TopicMapper;
+import com.me2me.live.mapper.TopicTagDetailMapper;
+import com.me2me.live.mapper.TopicTagMapper;
+import com.me2me.live.mapper.TopicUserConfigMapper;
+import com.me2me.live.mapper.VoteInfoMapper;
+import com.me2me.live.mapper.VoteOptionMapper;
+import com.me2me.live.mapper.VoteRecordMapper;
+import com.me2me.live.model.DeleteLog;
+import com.me2me.live.model.LiveDisplayBarrage;
+import com.me2me.live.model.LiveDisplayFragment;
+import com.me2me.live.model.LiveDisplayFragmentExample;
+import com.me2me.live.model.LiveDisplayProtocol;
+import com.me2me.live.model.LiveDisplayProtocolExample;
+import com.me2me.live.model.LiveDisplayReview;
+import com.me2me.live.model.LiveFavorite;
+import com.me2me.live.model.LiveFavoriteDelete;
+import com.me2me.live.model.LiveFavoriteDeleteExample;
+import com.me2me.live.model.LiveFavoriteExample;
+import com.me2me.live.model.LiveReadHistory;
+import com.me2me.live.model.LiveReadHistoryExample;
+import com.me2me.live.model.TeaseInfo;
+import com.me2me.live.model.TeaseInfoExample;
+import com.me2me.live.model.Topic;
+import com.me2me.live.model.Topic2;
+import com.me2me.live.model.TopicAggregation;
+import com.me2me.live.model.TopicAggregationApply;
+import com.me2me.live.model.TopicAggregationApplyExample;
+import com.me2me.live.model.TopicAggregationExample;
+import com.me2me.live.model.TopicBarrage;
+import com.me2me.live.model.TopicBarrageExample;
+import com.me2me.live.model.TopicDroparound;
+import com.me2me.live.model.TopicDroparoundExample;
+import com.me2me.live.model.TopicDroparoundTrail;
+import com.me2me.live.model.TopicExample;
+import com.me2me.live.model.TopicFragment;
+import com.me2me.live.model.TopicFragmentExample;
+import com.me2me.live.model.TopicFragmentTemplate;
+import com.me2me.live.model.TopicFragmentTemplateExample;
+import com.me2me.live.model.TopicTag;
+import com.me2me.live.model.TopicTagDetail;
+import com.me2me.live.model.TopicTagDetailExample;
+import com.me2me.live.model.TopicTagExample;
+import com.me2me.live.model.TopicUserConfig;
+import com.me2me.live.model.TopicUserConfigExample;
+import com.me2me.live.model.VoteInfo;
+import com.me2me.live.model.VoteInfoExample;
+import com.me2me.live.model.VoteOption;
+import com.me2me.live.model.VoteOptionExample;
+import com.me2me.live.model.VoteRecord;
+import com.me2me.live.model.VoteRecordExample;
 import com.me2me.sns.mapper.SnsCircleMapper;
 import com.me2me.sns.model.SnsCircle;
 import com.me2me.sns.model.SnsCircleExample;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
-import java.util.*;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -93,6 +162,19 @@ public class LiveMybatisDao {
 
     @Autowired
     private TopicTagDetailMapper topicTagDetailMapper;
+    
+    @Autowired
+    private TeaseInfoMapper teaseInfoMapper;
+    
+    @Autowired
+    private VoteInfoMapper voteInfoMapper;
+    
+    @Autowired
+    private VoteOptionMapper voteOptionMapper;
+    
+    @Autowired
+    private VoteRecordMapper voteRecordMapper;
+    
 
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -109,13 +191,13 @@ public class LiveMybatisDao {
         return topicMapper.selectByExample(example);
     }
 
-    public List<TopicFragment> getTopicFragment(long topicId, long sinceId, int pageSize) {
+    public List<TopicFragment> getTopicFragment(long topicId, long sinceId) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andIdGreaterThan(sinceId);
 //        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
-        example.setOrderByClause("id asc limit " + pageSize);
+        example.setOrderByClause("id asc limit 50 ");
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
 
@@ -1131,4 +1213,99 @@ public class LiveMybatisDao {
         example.setOrderByClause(" topic_id asc,id asc ");
         return topicTagDetailMapper.selectByExample(example);
 	}
+	
+	public PageBean<TeaseInfo> getTeaseInfoPage(PageBean<TeaseInfo> page, Map<String, Object> conditions) {
+		TeaseInfoExample example = new TeaseInfoExample();
+		int count = teaseInfoMapper.countByExample(example);
+		example.setOrderByClause("create_time desc limit "+((page.getCurrentPage()-1)*page.getPageSize())+","+page.getPageSize());
+		example.createCriteria().andStatusEqualTo(1);
+		List<TeaseInfo> packList=  teaseInfoMapper.selectByExample(example);
+		page.setPageSize(count);
+		page.setDataList(packList);
+		return page;
+	}
+	public void updateTeaseInfoByKey(TeaseInfo teaseInfo) {
+		teaseInfoMapper.updateByPrimaryKeySelective(teaseInfo);
+	}
+	public Integer addTeaseInfo(TeaseInfo teaseInfo) {
+		return teaseInfoMapper.insertSelective(teaseInfo);
+	}
+	public TeaseInfo getTeaseInfoByKey(Long id) {
+		return teaseInfoMapper.selectByPrimaryKey(id);
+	}
+	public List<TeaseInfo> teaseListQuery(){
+		TeaseInfoExample example = new TeaseInfoExample();
+		example.createCriteria().andStatusEqualTo(1);
+		example.setOrderByClause("create_time asc");
+        return teaseInfoMapper.selectByExample(example);
+	}
+	public Integer addVoteInfo(VoteInfo voteInfo) {
+		return voteInfoMapper.insertSelective(voteInfo);
+	}
+	public Integer addVoteOption(VoteOption voteOption) {
+		return voteOptionMapper.insertSelective(voteOption);
+	}
+	public Integer getVoteInfoCount(long uid){
+		VoteInfoExample example = new VoteInfoExample();
+		VoteInfoExample.Criteria criteria =  example.createCriteria();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String startDate = sdf.format(new Date())+" 00:00:00";
+		String endDate = sdf.format(new Date())+" 23:59:59";
+		try {
+			criteria.andCreateTimeBetween(sdf1.parse(startDate), sdf1.parse(endDate));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		criteria.andUidEqualTo(uid);
+		return voteInfoMapper.countByExample(example);
+	}
+	public Integer addVoteRecord(VoteRecord voteRecord) {
+		return voteRecordMapper.insertSelective(voteRecord);
+	}
+	
+	public VoteInfo getVoteInfoByKey(Long id) {
+		return voteInfoMapper.selectByPrimaryKey(id);
+	}
+	public int getVoteRecordCountByUidAndVoteId(long uid,long voteId){
+		VoteRecordExample example = new VoteRecordExample();
+		VoteRecordExample.Criteria criteria = example.createCriteria();
+		criteria.andUidEqualTo(uid);
+		criteria.andVoteidEqualTo(voteId);
+        return voteRecordMapper.countByExample(example);
+	}
+	public Integer updateVoteInfo(VoteInfo voteInfo) {
+		return voteInfoMapper.updateByPrimaryKeySelective(voteInfo);
+	}
+	public Integer deleteFragmentByIdForPhysics(Long id) {
+		return topicFragmentMapper.deleteByPrimaryKey(id);
+	}
+	
+	public List<VoteOption> getVoteOptionList(Long voteId){
+		VoteOptionExample example = new VoteOptionExample();
+		VoteOptionExample.Criteria criteria = example.createCriteria();
+		criteria.andVoteidEqualTo(voteId);
+        return voteOptionMapper.selectByExample(example);
+	}
+	public int getVoteRecordCountByOptionId(long voteOptionId){
+		VoteRecordExample example = new VoteRecordExample();
+		VoteRecordExample.Criteria criteria = example.createCriteria();
+		criteria.andOptionidEqualTo(voteOptionId);
+        return voteRecordMapper.countByExample(example);
+	}
+	
+	public List<VoteRecord> getMyVoteRecord(Long uid,Long voteId){
+		VoteRecordExample example = new VoteRecordExample();
+		VoteRecordExample.Criteria criteria = example.createCriteria();
+		criteria.andVoteidEqualTo(voteId);
+		criteria.andUidEqualTo(uid);
+        return voteRecordMapper.selectByExample(example);
+	}
+	public int getVoteRecordCountByVoteId(long voteId){
+		VoteRecordExample example = new VoteRecordExample();
+		VoteRecordExample.Criteria criteria = example.createCriteria();
+		criteria.andVoteidEqualTo(voteId);
+        return voteRecordMapper.countByExample(example);
+	}
+	
 }

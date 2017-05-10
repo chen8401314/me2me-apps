@@ -828,4 +828,19 @@ public class LiveLocalJdbcDao {
 		}
 		return null;
 	}
+	
+	/**
+	 * 查询投票用户用户信息
+	 * @param voteId
+	 * @return
+	 */
+	public List<Map<String, Object>> getVoteUserProfileByVoteId(long voteId){
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT DISTINCT u.uid,u.avatar,u.nick_name,u.v_lv ");
+		sb.append(" FROM user_profile u,vote_record v ");
+		sb.append(" WHERE u.uid = v.uid AND v.voteId = ");
+		sb.append(String.valueOf(voteId));
+		sb.append(" LIMIT 0,50");
+		return jdbcTemplate.queryForList(sb.toString());
+	}
 }

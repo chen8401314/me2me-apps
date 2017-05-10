@@ -1,13 +1,9 @@
 package com.me2me.web;
 
-import com.me2me.common.utils.CommonUtils;
-import com.me2me.common.web.Response;
-import com.me2me.common.web.ResponseStatus;
-import com.me2me.kafka.service.KafkaService;
-import com.me2me.live.dto.*;
-import com.me2me.live.service.LiveService;
-import com.me2me.web.request.*;
-import com.me2me.web.utils.VersionUtil;
+import java.lang.reflect.InvocationTargetException;
+import java.util.Calendar;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +14,66 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.Calendar;
+import com.me2me.common.utils.CommonUtils;
+import com.me2me.common.web.Response;
+import com.me2me.common.web.ResponseStatus;
+import com.me2me.kafka.service.KafkaService;
+import com.me2me.live.dto.AggregationOptDto;
+import com.me2me.live.dto.CreateKingdomDto;
+import com.me2me.live.dto.CreateLiveDto;
+import com.me2me.live.dto.CreateVoteDto;
+import com.me2me.live.dto.GetLiveDetailDto;
+import com.me2me.live.dto.GetLiveTimeLineDto;
+import com.me2me.live.dto.GetLiveTimeLineDto2;
+import com.me2me.live.dto.GetLiveUpdateDto;
+import com.me2me.live.dto.KingdomSearchDTO;
+import com.me2me.live.dto.LiveBarrageDto;
+import com.me2me.live.dto.SettingModifyDto;
+import com.me2me.live.dto.SpeakDto;
+import com.me2me.live.dto.TestApiDto;
+import com.me2me.live.service.LiveService;
+import com.me2me.web.request.AggregationOptRequest;
+import com.me2me.web.request.AggregationPublishRequest;
+import com.me2me.web.request.BarrageRequest;
+import com.me2me.web.request.CreateKingdomRequest;
+import com.me2me.web.request.CreateLiveRequest;
+import com.me2me.web.request.CreateVoteRequest;
+import com.me2me.web.request.DeleteLiveFragmentRequest;
+import com.me2me.web.request.DisplayProtocolRequest;
+import com.me2me.web.request.DropAroundRequest;
+import com.me2me.web.request.EditSpeakRequest;
+import com.me2me.web.request.FavoriteListRequest;
+import com.me2me.web.request.FinishMyLiveRequest;
+import com.me2me.web.request.FragmentForwardRequest;
+import com.me2me.web.request.GetLiveByCidRequest;
+import com.me2me.web.request.GetLivesRequest;
+import com.me2me.web.request.GetMyLivesRequest;
+import com.me2me.web.request.InactiveLiveRequest;
+import com.me2me.web.request.KingdomSearchRequest;
+import com.me2me.web.request.LiveCoverRequest;
+import com.me2me.web.request.LiveDetailRequest;
+import com.me2me.web.request.LiveQrcodeRequest;
+import com.me2me.web.request.LiveTimeline2Request;
+import com.me2me.web.request.LiveTimelineRequest;
+import com.me2me.web.request.LiveUpdateRequest;
+import com.me2me.web.request.RecQueryRequest;
+import com.me2me.web.request.RemoveLiveRequest;
+import com.me2me.web.request.ResendVoteRequest;
+import com.me2me.web.request.SetLiveRequest;
+import com.me2me.web.request.SettingModifyRequest;
+import com.me2me.web.request.SignOutLiveRequest;
+import com.me2me.web.request.SpeakRequest;
+import com.me2me.web.request.TagKingdomsRequest;
+import com.me2me.web.request.TestLiveRequest;
+import com.me2me.web.request.TopicOptRequest;
+import com.me2me.web.request.TopicRecommRequest;
+import com.me2me.web.request.TopicTagCheckRequest;
+import com.me2me.web.request.TopicTagsModifyRequest;
+import com.me2me.web.request.TopicTagsRequest;
+import com.me2me.web.request.TopicVoteInfoRequest;
+import com.me2me.web.request.VoteInfoRequest;
+import com.me2me.web.request.VoteRequest;
+import com.me2me.web.utils.VersionUtil;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -38,7 +90,7 @@ public class Live extends BaseController {
 
     @Autowired
     private KafkaService kafkaService;
-
+    
     /**
      * 创建直接
      * @return
@@ -85,7 +137,6 @@ public class Live extends BaseController {
         getLiveTimeLineDto.setTopicId(request.getTopicId());
         getLiveTimeLineDto.setUid(request.getUid());
         getLiveTimeLineDto.setVersion(request.getVersion());
-        getLiveTimeLineDto.setPageSize(request.getPageSize());
         return liveService.getLiveTimeline(getLiveTimeLineDto);
     }
 
@@ -689,5 +740,87 @@ public class Live extends BaseController {
     @RequestMapping(value = "/recQuery",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response recQuery(RecQueryRequest request){
     	return liveService.recQuery(request.getTopicId(), request.getSinceId(), request.getUid());
+    }
+    
+    /**
+     * 逗一逗查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/teaseListQuery",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response teaseListQuery(){
+    	return liveService.teaseListQuery();
+    }
+    /**
+     * 投票创建接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/createVote",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response createVote(CreateVoteRequest request){
+    	CreateVoteDto dto = new CreateVoteDto();
+    	dto.setUid(request.getUid());
+    	dto.setTopicId(request.getTopicId());
+    	dto.setTitle(request.getTitle());
+    	dto.setSource(request.getSource());
+    	dto.setOption(request.getOption());
+    	dto.setType(request.getType());
+    	return liveService.createVote(dto);
+    }
+    /**
+     * 投票接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/vote",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response vote(VoteRequest request){
+    	return liveService.vote(request.getUid(), request.getVoteId(), request.getOptionId());
+    }
+    
+    /**
+     * 结束投票接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/endVote",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response endVote(VoteRequest request){
+    	return liveService.endVote(request.getVoteId() ,request.getUid() );
+    }
+    
+    /**
+     * 投票重新发送接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/resendVote",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response resendVote(ResendVoteRequest request){
+    	return liveService.resendVote(request.getFragmentId(),request.getUid());
+    }
+    
+    /**
+     * 王国详情列表投票信息查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getTopicVoteInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getTopicVoteInfo(TopicVoteInfoRequest request){
+    	return liveService.getTopicVoteInfo(request.getVoteId());
+    }
+    
+    /**
+     * 投票详情查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getVoteInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getVoteInfo(VoteInfoRequest request){
+    	return liveService.getVoteInfo(request.getVoteId(),request.getUid());
     }
 }

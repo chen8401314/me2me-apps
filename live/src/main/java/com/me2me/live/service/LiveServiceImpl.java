@@ -1,5 +1,24 @@
 package com.me2me.live.service;
 
+import java.lang.reflect.InvocationTargetException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.Set;
+import java.util.UUID;
+
+import org.apache.commons.beanutils.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -21,6 +40,7 @@ import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentDto;
 import com.me2me.content.dto.LikeDto;
+import com.me2me.content.dto.TeaseInfoDto;
 import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.model.Content;
 import com.me2me.content.service.ContentService;
@@ -31,29 +51,80 @@ import com.me2me.live.cache.MyLivesStatusModel;
 import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.dao.LiveLocalJdbcDao;
 import com.me2me.live.dao.LiveMybatisDao;
-import com.me2me.live.dto.*;
+import com.me2me.live.dto.AggregationOptDto;
+import com.me2me.live.dto.CreateKingdomDto;
+import com.me2me.live.dto.CreateLiveDto;
+import com.me2me.live.dto.CreateVoteDto;
+import com.me2me.live.dto.DropAroundDto;
+import com.me2me.live.dto.GetLiveDetailDto;
+import com.me2me.live.dto.GetLiveTimeLineDto;
+import com.me2me.live.dto.GetLiveTimeLineDto2;
+import com.me2me.live.dto.GetLiveUpdateDto;
+import com.me2me.live.dto.KingdomSearchDTO;
+import com.me2me.live.dto.Live4H5Dto;
+import com.me2me.live.dto.LiveBarrageDto;
+import com.me2me.live.dto.LiveCoverDto;
+import com.me2me.live.dto.LiveDetailDto;
+import com.me2me.live.dto.LiveDisplayProtocolDto;
+import com.me2me.live.dto.LiveParamsDto;
+import com.me2me.live.dto.LiveQRCodeDto;
+import com.me2me.live.dto.LiveTimeLineDto;
+import com.me2me.live.dto.LiveTimeLineDto2;
+import com.me2me.live.dto.LiveUpdateDto;
+import com.me2me.live.dto.ResendVoteDto;
+import com.me2me.live.dto.SearchDropAroundTopicDto;
+import com.me2me.live.dto.SearchTopicDto;
+import com.me2me.live.dto.SettingModifyDto;
+import com.me2me.live.dto.SettingsDto;
+import com.me2me.live.dto.ShowBarrageDto;
+import com.me2me.live.dto.ShowFavoriteListDto;
+import com.me2me.live.dto.ShowLiveDto;
+import com.me2me.live.dto.ShowRecQueryDTO;
+import com.me2me.live.dto.ShowTagKingdomsDTO;
+import com.me2me.live.dto.ShowTopicListDto;
+import com.me2me.live.dto.ShowTopicSearchDTO;
+import com.me2me.live.dto.ShowTopicTagsDTO;
+import com.me2me.live.dto.SpeakDto;
+import com.me2me.live.dto.TestApiDto;
+import com.me2me.live.dto.TopicVoteInfoDto;
+import com.me2me.live.dto.VoteInfoDto;
 import com.me2me.live.event.AggregationPublishEvent;
 import com.me2me.live.event.CacheLiveEvent;
 import com.me2me.live.event.CoreAggregationRemindEvent;
 import com.me2me.live.event.RemindAndJpushAtMessageEvent;
 import com.me2me.live.event.SpeakNewEvent;
-import com.me2me.live.model.*;
+import com.me2me.live.model.DeleteLog;
+import com.me2me.live.model.LiveDisplayFragment;
+import com.me2me.live.model.LiveDisplayProtocol;
+import com.me2me.live.model.LiveFavorite;
+import com.me2me.live.model.LiveFavoriteDelete;
+import com.me2me.live.model.LiveReadHistory;
+import com.me2me.live.model.TeaseInfo;
+import com.me2me.live.model.Topic;
+import com.me2me.live.model.Topic2;
+import com.me2me.live.model.TopicAggregation;
+import com.me2me.live.model.TopicAggregationApply;
+import com.me2me.live.model.TopicBarrage;
+import com.me2me.live.model.TopicDroparound;
+import com.me2me.live.model.TopicDroparoundTrail;
+import com.me2me.live.model.TopicFragment;
+import com.me2me.live.model.TopicFragmentExample;
+import com.me2me.live.model.TopicFragmentTemplate;
+import com.me2me.live.model.TopicTag;
+import com.me2me.live.model.TopicTagDetail;
+import com.me2me.live.model.TopicUserConfig;
+import com.me2me.live.model.VoteInfo;
+import com.me2me.live.model.VoteOption;
+import com.me2me.live.model.VoteRecord;
 import com.me2me.sms.service.JPushService;
-import com.me2me.user.model.*;
+import com.me2me.user.model.SystemConfig;
+import com.me2me.user.model.UserFollow;
+import com.me2me.user.model.UserNotice;
+import com.me2me.user.model.UserProfile;
+import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
-
-import org.apache.commons.beanutils.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.lang.reflect.InvocationTargetException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -103,6 +174,12 @@ public class LiveServiceImpl implements LiveService {
     
     //置顶次数
     private static final String TOP_COUNT = "topCount";
+    
+    /** 普通用户每天可发起投票数 */
+    private static final String NORMAL_CREATE_VOTE_COUNT = "NORMAL_CREATE_VOTE_COUNT";
+    
+    /** 大V用户每天可发起投票数 */
+    private static final String V_CREATE_VOTE_COUNT = "V_CREATE_VOTE_COUNT";
 
     @SuppressWarnings("rawtypes")
 	@Override
@@ -160,19 +237,10 @@ public class LiveServiceImpl implements LiveService {
         LiveTimeLineDto liveTimeLineDto = new LiveTimeLineDto();
         MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(getLiveTimeLineDto.getUid(), getLiveTimeLineDto.getTopicId() + "", "0");
         cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-        int pageSize = getLiveTimeLineDto.getPageSize();
-        if(pageSize <= 0){
-        	pageSize = 50;
-        }
-        
-        List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), pageSize);
+        List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId());
         log.info("get timeLine data");
         buildLiveTimeLine(getLiveTimeLineDto, liveTimeLineDto, fragmentList);
         log.info("buildLiveTimeLine success");
-        
-        //去除当前用户针对于这个王国上的消息红点
-        userService.clearUserNoticeUnreadByCid(getLiveTimeLineDto.getUid(), Specification.UserNoticeUnreadContentType.KINGDOM.index, getLiveTimeLineDto.getTopicId());
-        
         return Response.success(ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.status, ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.message, liveTimeLineDto);
     }
 
@@ -185,13 +253,13 @@ public class LiveServiceImpl implements LiveService {
         List<TopicFragment> fragmentList = Lists.newArrayList();
         if (getLiveTimeLineDto.getDirection() == Specification.LiveTimeLineDirection.FIRST.index) {
             if (liveReadHistory == null) {
-                fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), 50);
+                fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId());
                 liveMybatisDao.createLiveReadHistory(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getUid());
             } else {
                 fragmentList = liveMybatisDao.getPrevTopicFragment(getLiveTimeLineDto.getTopicId(), Integer.MAX_VALUE);
             }
         } else if (getLiveTimeLineDto.getDirection() == Specification.LiveTimeLineDirection.NEXT.index) {
-            fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), 50);
+            fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId());
         } else if (getLiveTimeLineDto.getDirection() == Specification.LiveTimeLineDirection.PREV.index) {
             fragmentList = liveMybatisDao.getPrevTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId());
         }
@@ -2599,9 +2667,6 @@ public class LiveServiceImpl implements LiveService {
             	}
         	}
         }
-        
-        //去除当前用户针对于这个王国上的消息红点
-        userService.clearUserNoticeUnreadByCid(getLiveDetailDto.getUid(), Specification.UserNoticeUnreadContentType.KINGDOM.index, getLiveDetailDto.getTopicId());
         
         log.info("get live detail end ...");
         return  Response.success(ResponseStatus.GET_LIVE_DETAIL_SUCCESS.status, ResponseStatus.GET_LIVE_DETAIL_SUCCESS.message, liveDetailDto);
@@ -5261,4 +5326,229 @@ public class LiveServiceImpl implements LiveService {
 			liveMybatisDao.insertTopicTagDetail(ttd);
 		}
 	}
+	@Override
+	public PageBean<TeaseInfo> getTeaseInfoPage(PageBean<TeaseInfo> page, Map<String, Object> conditions) {
+		return liveMybatisDao.getTeaseInfoPage(page, conditions);
+	}
+	@Override
+	public void updateTeaseInfoByKey(TeaseInfo teaseInfo) {
+		liveMybatisDao.updateTeaseInfoByKey(teaseInfo);
+	}
+	@Override
+	public Integer addTeaseInfo(TeaseInfo teaseInfo) {
+		return liveMybatisDao.addTeaseInfo(teaseInfo);
+	}
+	@Override
+	public TeaseInfo getTeaseInfoByKey(Long id) {
+		return liveMybatisDao.getTeaseInfoByKey(id);
+	}
+	
+	@Override
+	public Response teaseListQuery() {
+		TeaseInfoDto dto = new TeaseInfoDto();
+		List<TeaseInfo> teaseInfoList = liveMybatisDao.teaseListQuery();
+		TeaseInfoDto.TeaseElement	data = null;
+		for(TeaseInfo teaseInfo:teaseInfoList){
+			data= new TeaseInfoDto.TeaseElement();
+			data.setId(teaseInfo.getId());
+			data.setName(teaseInfo.getName());
+			data.setImage(Constant.QINIU_DOMAIN + "/" + teaseInfo.getImage());
+			data.setAudio(Constant.QINIU_DOMAIN + "/" + teaseInfo.getAudio());
+			data.setExtra(teaseInfo.getExtra());
+			dto.getTeaseData().add(data);
+		}
+		return Response.success(dto);
+	}
+	@Override
+	public Response createVote(CreateVoteDto dto) {
+		UserProfile userProfile =  userService.getUserProfileByUid(dto.getUid());
+		if(userProfile==null){
+			return Response.failure("用户不存在");
+		}
+		int max = 1;
+		if(userProfile.getvLv()==1){
+			 max = 5;
+			String count = cacheService.get(V_CREATE_VOTE_COUNT);
+			if(!StringUtils.isEmpty(count)){
+				max = Integer.valueOf(count);
+			}
+		}else{
+			 max = 1;
+			String count = cacheService.get(NORMAL_CREATE_VOTE_COUNT);
+			if(!StringUtils.isEmpty(count)){
+				max = Integer.valueOf(count);
+			}
+		}
+	    int voteCount = liveMybatisDao.getVoteInfoCount(dto.getUid());
+		if(voteCount>=max){
+			return Response.failure("今天发起投票次数已经超过限制！");
+		}
+		VoteInfo voteInfo = new VoteInfo();
+		voteInfo.setTopicid(dto.getTopicId());
+		voteInfo.setTitle(dto.getTitle());
+		voteInfo.setType(dto.getType());
+		voteInfo.setUid(dto.getUid());
+		voteInfo.setStatus(1);
+		liveMybatisDao.addVoteInfo(voteInfo);
+		String[] options = dto.getOption().split(";");
+		for (int i = 0; i < options.length; i++) {
+			VoteOption vo = new VoteOption();
+			vo.setVoteid(voteInfo.getId());
+			vo.setOptionname(options[i]);
+			liveMybatisDao.addVoteOption(vo);
+		}
+		JSONObject json = new JSONObject();
+		json.put("type", "emoji");
+		json.put("only", "");
+		json.put("from", dto.getSource());
+		json.put("title", dto.getTitle());
+		json.put("id", voteInfo.getId());
+		SpeakDto speakDto = new SpeakDto();
+		speakDto.setType(52);
+		speakDto.setContentType(19);
+		speakDto.setUid(dto.getUid());
+		speakDto.setTopicId(dto.getTopicId());
+		speakDto.setSource(dto.getSource());
+		speakDto.setExtra(json.toJSONString());
+		speak(speakDto);
+		return Response.success(ResponseStatus.CREATE_VOTE_SUCCESS.status, ResponseStatus.CREATE_VOTE_SUCCESS.message);
+	}
+	@Override
+	public Response vote(long uid,long voteId,String optionId) {
+		int count = liveMybatisDao.getVoteRecordCountByUidAndVoteId(uid,voteId);
+		if(count>0){
+			return Response.failure("您已经投过票了！");
+		}
+		VoteInfo voteInfo  =liveMybatisDao.getVoteInfoByKey(voteId);
+		if(voteInfo==null){
+			return Response.failure("没有找到该投票！");
+		}
+		String[] optionIdStr = optionId.split(";");
+		if(voteInfo.getType()==0 &&optionIdStr.length>1){
+			return Response.failure("该投票只能单选！");
+		}
+		for (int i = 0; i < optionIdStr.length; i++) {
+			VoteRecord vr = new VoteRecord();
+			vr.setUid(uid);
+			vr.setOptionid(Long.valueOf(optionIdStr[i]));
+			vr.setVoteid(voteId);
+			liveMybatisDao.addVoteRecord(vr);
+		}
+		return Response.success(ResponseStatus.VOTE_SUCCESS.status, ResponseStatus.VOTE_SUCCESS.message);
+	}
+	@Override
+	public Response endVote(long voteId,long uid) {
+		VoteInfo voteInfo  =liveMybatisDao.getVoteInfoByKey(voteId);
+		if(voteInfo==null){
+			return Response.failure("没有找到该投票！");
+		}
+		Topic topic = liveMybatisDao.getTopicById(voteInfo.getTopicid());
+		if(topic==null){
+			return Response.failure("没有找到该投票王国！");
+		}
+		if(topic.getUid().longValue() != uid && voteInfo.getUid().longValue() != uid ){
+			return Response.failure("您没有结束投票权限！");
+		}
+		VoteInfo updateVoteInfo = new VoteInfo();
+		updateVoteInfo.setId(voteId);
+		updateVoteInfo.setStatus(Specification.VoteStatus.END.index);
+		liveMybatisDao.updateVoteInfo(updateVoteInfo);
+		return Response.success(ResponseStatus.END_VOTE_SUCCESS.status, ResponseStatus.END_VOTE_SUCCESS.message);
+	}
+	
+	@Override
+	public Response resendVote(long fragmentId,long uid) {
+		TopicFragment tf  =liveMybatisDao.getTopicFragmentById(fragmentId);
+		Topic tp  =liveMybatisDao.getTopicById(tf.getTopicId());
+		int internalStatus = getInternalStatus(tp,uid);
+		if(tp.getUid().longValue() != uid && internalStatus!=Specification.SnsCircle.CORE.index){
+			return Response.failure("您没有重新发送投票权限！");
+		}
+		tf.setId(null);
+		liveMybatisDao.createTopicFragment(tf);
+		liveMybatisDao.deleteFragmentByIdForPhysics(fragmentId);
+		ResendVoteDto rv = new ResendVoteDto();
+		rv.setFragmentId(tf.getId());
+		return Response.success(ResponseStatus.RESEND_VOTE_SUCCESS.status, ResponseStatus.RESEND_VOTE_SUCCESS.message,rv);
+	}
+	
+	@Override
+	public Response getTopicVoteInfo(long voteId) {
+		VoteInfo voteInfo =liveMybatisDao.getVoteInfoByKey(voteId);
+		TopicVoteInfoDto dto = new TopicVoteInfoDto();
+		dto.setVoteId(voteInfo.getId());
+		dto.setTitle(voteInfo.getTitle());
+		dto.setType(voteInfo.getType());
+		dto.setStatus(voteInfo.getStatus());
+		List<VoteOption> optionList = liveMybatisDao.getVoteOptionList(voteId);
+		for (int i = 0; i < optionList.size(); i++) {
+			TopicVoteInfoDto.OptionElement data= TopicVoteInfoDto.createElement();
+			VoteOption vo = optionList.get(i);
+			data.setId(vo.getId());
+			data.setOption(vo.getOptionname());
+			int count = liveMybatisDao.getVoteRecordCountByOptionId(vo.getId());
+            data.setCount(count);
+            dto.getLiveElements().add(data);
+		}
+		return Response.success(dto);
+	}
+	
+	@Override
+	public Response getVoteInfo(long voteId,long uid) {
+		VoteInfo voteInfo =liveMybatisDao.getVoteInfoByKey(voteId);
+		UserProfile user =userService.getUserProfileByUid(voteInfo.getUid());
+		VoteInfoDto dto = new VoteInfoDto();
+		dto.setUid(user.getUid());
+		dto.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+		dto.setNickName(user.getNickName());
+		dto.setV_lv(user.getvLv());
+		StringBuffer myVote = new StringBuffer();
+		List<VoteRecord> vrList =liveMybatisDao.getMyVoteRecord(uid,voteId);
+		for (int i = 0; i < vrList.size(); i++) {
+			if(i!=0){
+				myVote.append(";");
+			}
+			VoteRecord vr = vrList.get(i);
+			myVote.append(String.valueOf(vr.getOptionid()));
+		}
+		dto.setMyVote(myVote.toString());
+		dto.setVoteId(voteId);
+		dto.setTitle(voteInfo.getTitle());
+		dto.setType(voteInfo.getType());
+		dto.setStatus(voteInfo.getStatus());
+		Topic topic = liveMybatisDao.getTopicById(voteInfo.getTopicid());
+		if(topic==null){
+			return Response.failure("没有找到该投票王国！");
+		}
+		if(topic.getUid().longValue() == uid || voteInfo.getUid().longValue() == uid ){
+			dto.setCanEnd(1);
+		}else{
+			dto.setCanEnd(0);
+		}
+		int recordCount = liveMybatisDao.getVoteRecordCountByVoteId(voteId);
+		dto.setRecordCount(recordCount);
+		dto.setCreateTime(voteInfo.getCreateTime());
+		List<VoteOption> optionList = liveMybatisDao.getVoteOptionList(voteId);
+		for (int i = 0; i < optionList.size(); i++) {
+			VoteInfoDto.OptionElement data= VoteInfoDto.createOptionElement();
+			VoteOption vo = optionList.get(i);
+			data.setId(vo.getId());
+			data.setOption(vo.getOptionname());
+			int count = liveMybatisDao.getVoteRecordCountByOptionId(vo.getId());
+            data.setCount(count);
+            dto.getOptions().add(data);
+		}
+		List<Map<String, Object>> usersList = liveLocalJdbcDao.getVoteUserProfileByVoteId(voteId);
+		for (int i = 0; i < usersList.size(); i++) {
+			VoteInfoDto.UserElement data= VoteInfoDto.createUserElement();
+			Map<String, Object> map = usersList.get(i);
+			data.setUid(Long.valueOf(map.get("uid").toString()));
+			data.setAvatar(Constant.QINIU_DOMAIN + "/" + map.get("avatar").toString());
+			data.setNickName(map.get("nick_name").toString());
+			data.setV_lv(Integer.valueOf(map.get("v_lv").toString()));
+            dto.getUsers().add(data);
+		}
+		return Response.success(dto);
+	}
+	
 }

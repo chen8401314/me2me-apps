@@ -1,19 +1,36 @@
 package com.me2me.live.service;
 
+import java.util.List;
+import java.util.Map;
+
 import com.me2me.common.page.PageBean;
 import com.me2me.common.web.Response;
-import com.me2me.live.dto.*;
-import com.me2me.live.dto.ShowTopicListDto.ShowTopicElement;
+import com.me2me.live.dto.AggregationOptDto;
+import com.me2me.live.dto.CreateKingdomDto;
+import com.me2me.live.dto.CreateLiveDto;
+import com.me2me.live.dto.CreateVoteDto;
+import com.me2me.live.dto.GetLiveDetailDto;
+import com.me2me.live.dto.GetLiveTimeLineDto;
+import com.me2me.live.dto.GetLiveTimeLineDto2;
+import com.me2me.live.dto.GetLiveUpdateDto;
+import com.me2me.live.dto.KingdomSearchDTO;
+import com.me2me.live.dto.Live4H5Dto;
+import com.me2me.live.dto.LiveBarrageDto;
+import com.me2me.live.dto.SearchDropAroundTopicDto;
+import com.me2me.live.dto.SearchTopicDto;
+import com.me2me.live.dto.SettingModifyDto;
+import com.me2me.live.dto.SpeakDto;
+import com.me2me.live.dto.TestApiDto;
 import com.me2me.live.model.LiveFavorite;
+import com.me2me.live.model.TeaseInfo;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicDroparound;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicUserConfig;
-
-import java.util.List;
-import java.util.Map;
+import com.me2me.live.model.VoteInfo;
+import com.me2me.live.model.VoteOption;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -355,4 +372,32 @@ public interface LiveService {
 	 * @return
 	 */
 	Response recQuery(long topicId, long sinceId, long currentUid);
+	
+	/**
+	 * 投票创建接口
+	 * @param dto
+	 * @return
+	 */
+	public Response createVote(CreateVoteDto dto);
+	
+	
+	public PageBean<TeaseInfo> getTeaseInfoPage(PageBean<TeaseInfo> page,Map<String,Object> conditions);
+	
+	public void updateTeaseInfoByKey(TeaseInfo teaseInfo);
+	
+	public Integer addTeaseInfo(TeaseInfo teaseInfo);
+	
+	public TeaseInfo getTeaseInfoByKey(Long id);
+	
+	Response teaseListQuery();
+	 
+	public Response vote(long uid,long voteId,String optionId);
+	 
+	public Response endVote(long voteId,long uid); 
+	
+	public Response resendVote(long fragmentId,long uid);
+	
+	public Response getTopicVoteInfo(long voteId);
+	
+	public Response getVoteInfo(long voteId,long uid); 
 }
