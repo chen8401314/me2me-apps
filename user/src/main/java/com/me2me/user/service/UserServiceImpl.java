@@ -196,6 +196,13 @@ public class UserServiceImpl implements UserService {
         signUpSuccessDto.setGender(up.getGender());
         signUpSuccessDto.setYearId(up.getYearsId());
         log.info("signUp end ...");
+        
+        //检测手机通讯录推送V2.2.5
+        ContactsMobilePushEvent event = new ContactsMobilePushEvent();
+        event.setUid(user.getUid());
+        event.setMobile(userSignUpDto.getMobile());
+        this.applicationEventBus.post(event);
+        
         //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
@@ -2242,6 +2249,11 @@ public class UserServiceImpl implements UserService {
             // 手机绑定
             bindStatusDtoList.add(new UserAccountBindStatusDto(Specification.ThirdPartType.MOBILE.index,Specification.ThirdPartType.MOBILE.name,1));
 
+            //检测手机通讯录推送V2.2.5
+            ContactsMobilePushEvent event = new ContactsMobilePushEvent();
+            event.setUid(user.getUid());
+            event.setMobile(thirdPartSignUpDto.getMobile());
+            this.applicationEventBus.post(event);
         }else{
             //判断第三方账号是否存在
             ThirdPartUser thirdUser = userMybatisDao.thirdPartIsExist(thirdPartSignUpDto.getThirdPartOpenId() ,thirdPartSignUpDto.getThirdPartType());
@@ -2917,6 +2929,12 @@ public class UserServiceImpl implements UserService {
 				}
 				result.getMobileContactData().add(e);
 			}
+			
+			//保存用户通讯录
+			ContactsMobileEvent event = new ContactsMobileEvent();
+			event.setUid(uid);
+			event.setMobileList(mobileList);
+			this.applicationEventBus.post(event);
 		}
 		
 		return Response.success(result);

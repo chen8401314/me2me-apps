@@ -1187,10 +1187,13 @@ public class UserMybatisDao {
     	userNoticeUnreadMapper.deleteByExample(example);
     }
     
-    public List<UserMobileList> getUserMobileListByMobile(String mobile){
+    public List<UserMobileList> getUserMobileListByMobile(String mobile, long exceptUid){
     	UserMobileListExample example = new UserMobileListExample();
     	UserMobileListExample.Criteria criteria = example.createCriteria();
     	criteria.andMobileEqualTo(mobile);
+    	if(exceptUid > 0){
+    		criteria.andUidNotEqualTo(exceptUid);
+    	}
     	return userMobileListMapper.selectByExample(example);
     }
     
