@@ -49,6 +49,7 @@ import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.io.service.FileTransferService;
 import com.me2me.live.cache.MyLivesStatusModel;
 import com.me2me.live.cache.MySubscribeCacheModel;
+import com.me2me.live.cache.TeaseAutoPlayStatusModel;
 import com.me2me.live.dao.LiveLocalJdbcDao;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.AggregationOptDto;
@@ -605,7 +606,34 @@ public class LiveServiceImpl implements LiveService {
             		}
             	}
             }
-
+            if(!CommonUtils.isNewVersion(getLiveTimeLineDto.getVersion(), "2.2.5")){
+            	if(topicFragment.getType() == 51 || topicFragment.getType() == 52){
+            		if(topicFragment.getContentType() == 20){//逗一逗
+            			liveElement.setStatus(0);
+                		continue;
+            		}
+            	}
+            	if(topicFragment.getType() == 52){
+            		if(topicFragment.getContentType() == 19){//投票
+            			liveElement.setStatus(0);
+                		continue;
+            		}
+            	}
+            }
+            //逗一逗自动播放状态
+            int teaseStatus = 1;
+            if((topicFragment.getType() == 51 || topicFragment.getType() == 52) && topicFragment.getContentType() == 20){
+            	TeaseAutoPlayStatusModel teaseAutoPlayStatusModel =  new TeaseAutoPlayStatusModel(topicFragment.getId(), "0"); 
+            	String isTeaseStatus = cacheService.hGet(teaseAutoPlayStatusModel.getKey(), teaseAutoPlayStatusModel.getField());
+            	  if (!StringUtils.isEmpty(isTeaseStatus)) {
+            		  teaseStatus=0;
+                  } else {
+                	  teaseStatus=1;
+                	  cacheService.hSet(teaseAutoPlayStatusModel.getKey(), teaseAutoPlayStatusModel.getField(), teaseAutoPlayStatusModel.getValue());
+                  }
+            }
+            liveElement.setTeaseStatus(teaseStatus);
+            
             UserProfile userProfile = userService.getUserProfileByUid(uid);
             liveElement.setUid(uid);
             liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
@@ -2775,6 +2803,35 @@ public class LiveServiceImpl implements LiveService {
             		}
             	}
             }
+          //逗一逗和投票（预防低版本）
+            if(getLiveDetailDto.getVersionFlag() < 3){
+            	if(topicFragment.getType() == 51 || topicFragment.getType() == 52){
+            		if(topicFragment.getContentType() == 20){//逗一逗
+            			liveElement.setStatus(0);
+                		continue;
+            		}
+            	}
+            	if(topicFragment.getType() == 52){
+            		if(topicFragment.getContentType() == 19){//投票
+            			liveElement.setStatus(0);
+                		continue;
+            		}
+            	}
+            }
+            //逗一逗自动播放状态
+            int teaseStatus = 1;
+            if((topicFragment.getType() == 51 || topicFragment.getType() == 52) && topicFragment.getContentType() == 20){
+            	TeaseAutoPlayStatusModel teaseAutoPlayStatusModel =  new TeaseAutoPlayStatusModel(topicFragment.getId(), "0"); 
+            	String isTeaseStatus = cacheService.hGet(teaseAutoPlayStatusModel.getKey(), teaseAutoPlayStatusModel.getField());
+            	  if (!StringUtils.isEmpty(isTeaseStatus)) {
+            		  teaseStatus=0;
+                  } else {
+                	  teaseStatus=1;
+                	  cacheService.hSet(teaseAutoPlayStatusModel.getKey(), teaseAutoPlayStatusModel.getField(), teaseAutoPlayStatusModel.getValue());
+                  }
+            }
+            liveElement.setTeaseStatus(teaseStatus);
+            
 
             UserProfile userProfile = userService.getUserProfileByUid(uid);
             liveElement.setUid(uid);

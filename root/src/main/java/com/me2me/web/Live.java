@@ -163,7 +163,9 @@ public class Live extends BaseController {
         liveDetailDto.setVersionFlag(0);
         
         String version = request.getVersion();
-        if(VersionUtil.isNewVersion(version, "2.2.4")){
+        if(VersionUtil.isNewVersion(version, "2.2.5")){
+        	liveDetailDto.setVersionFlag(3);
+        }else if(VersionUtil.isNewVersion(version, "2.2.4")){
         	liveDetailDto.setVersionFlag(2);
         }else if(VersionUtil.isNewVersion(version, "2.2.2")){//222版本的限制
         	liveDetailDto.setVersionFlag(1);

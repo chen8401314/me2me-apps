@@ -60,6 +60,8 @@ public class LiveTimeLineDto implements BaseEntity {
         private int v_lv;
 
         private int status;
+        
+        private int teaseStatus;
 
     }
 
