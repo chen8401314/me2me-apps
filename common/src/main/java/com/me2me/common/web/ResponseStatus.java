@@ -288,11 +288,13 @@ public enum  ResponseStatus {
 
     AGGREGATION_APPLY_SUCCESS("收录成功","apply success",200136),
 
+    CREATE_VOTE_SUCCESS("投票创建成功","create vote success",200137),
+    
+    VOTE_SUCCESS("投票成功","vote success",200138),
 
+    END_VOTE_SUCCESS("结束投票成功","end vote success",200140),
 
-
-
-
+    RESEND_VOTE_SUCCESS("投票重新发送成功","resend vote success",200141),
 
 
 
