@@ -2003,26 +2003,36 @@ public class LiveServiceImpl implements LiveService {
         try {
         	//判断当前用户是否有删除本条内容的权限
         	boolean canDel = false;
+        	//本人可删除自己的内容。
+        	if(tf.getUid() == uid){		
+        		canDel=true;
+        	}
         	//判断是否是管理员，管理员啥都能删
         	if(userService.isAdmin(uid)){
         		canDel = true;
         	}
+        	//再验证是否是国王，国王也啥都能删
+        	Topic topic = liveMybatisDao.getTopicById(topicId);
         	if(!canDel){
-        		//再验证是否是国王，国王也啥都能删
-        		Topic topic = liveMybatisDao.getTopicById(topicId);
         		if(topic.getUid() == uid){
         			canDel = true;
         		}
         	}
+        	// 核心圈可删除非核心圈内容。
         	if(!canDel){
+        		boolean meInCore= this.isInCore(uid, topic.getCoreCircle());
+        		boolean fragmentUserInCore = this.isInCore(tf.getUid(), topic.getCoreCircle());
+        		if(meInCore && !fragmentUserInCore){
+        			canDel=true;
+        		}
         		//再判断是否是自己发的内容，自己的内容有可能是可以删
-        		if(tf.getUid() == uid){
+        		/*if(tf.getUid() == uid){
         			//再判断是否是卡片（核心圈发言、核心圈@），卡片不能删
         			if(tf.getType() != Specification.LiveSpeakType.ANCHOR.index
         					&& tf.getType() != Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
         				canDel = true;
         			}
-        		}
+        		}*/
         	}
         	
         	if(!canDel){
@@ -4472,7 +4482,14 @@ public class LiveServiceImpl implements LiveService {
         createActivityDto.setType(2);
         return createActivityDto;
     }
-
+/**
+ * 是否在核心圈里面
+ * @author zhangjiwei
+ * @date May 10, 2017
+ * @param uid
+ * @param coreCircle
+ * @return
+ */
     private boolean isInCore(long uid, String coreCircle){
 		boolean result = false;
 		if(null != coreCircle && !"".equals(coreCircle)){
