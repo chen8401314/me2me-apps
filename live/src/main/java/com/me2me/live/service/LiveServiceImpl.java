@@ -5614,6 +5614,7 @@ public class LiveServiceImpl implements LiveService {
 
 	@Override
 	public Response blockUserKingdom(long topicId,long uid) {
+		log.info("用户{} 屏蔽王国 {}",uid,topicId);
 		liveMybatisDao.blockUserKingdom(topicId,uid);
 		return Response.success();
 	}
