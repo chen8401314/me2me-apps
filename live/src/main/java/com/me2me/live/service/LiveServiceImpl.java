@@ -5473,7 +5473,7 @@ public class LiveServiceImpl implements LiveService {
 			liveMybatisDao.addVoteOption(vo);
 		}
 		JSONObject json = new JSONObject();
-		json.put("type", "emoji");
+		json.put("type", "vote");
 		json.put("only", UUID.randomUUID().toString()+"-"+new Random().nextInt());
 		json.put("from", dto.getSource());
 		json.put("title", dto.getTitle());
