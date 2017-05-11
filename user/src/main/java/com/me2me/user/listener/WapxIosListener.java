@@ -60,6 +60,8 @@ public class WapxIosListener {
                             log.info("update wapx success");
                         } else {
                             log.info("update wapx failure success:false");
+                            iosWapxList.setUid(event.getUid());
+                            userMybatisDao.updateWapx(iosWapxList);
                         }
                     }
                 }else if (iosWapxList.getChannelTyp() == 1){
@@ -75,6 +77,8 @@ public class WapxIosListener {
                             log.info("update daodao success");
                         }else {
                             log.info("activation daodao failure");
+                            iosWapxList.setUid(event.getUid());
+                            userMybatisDao.updateWapx(iosWapxList);
                         }
                     }
                 }

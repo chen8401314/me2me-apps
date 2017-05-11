@@ -220,7 +220,6 @@ public class LiveServiceImpl implements LiveService {
         contentDto.setRights(Specification.ContentRights.EVERY.index);
         contentService.publish(contentDto);
 
-
         applicationEventBus.post(new CacheLiveEvent(createLiveDto.getUid(), topic.getId()));
 
         SpeakDto speakDto = new SpeakDto();

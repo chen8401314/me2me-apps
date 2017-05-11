@@ -13,7 +13,6 @@ import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.event.CacheLiveEvent;
 import com.me2me.live.model.Topic;
 import com.me2me.live.service.LiveService;
-import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.UserFollow;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
@@ -25,7 +24,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,20 +44,16 @@ public class CacheLiveListener {
 
     private final LiveService liveService;
 
-    private final JPushService jPushService;
-
 
     @Autowired
     public CacheLiveListener(ApplicationEventBus applicationEventBus,
                              UserService userService,
                              CacheService cacheService,
-                             LiveService liveService,
-                             JPushService jPushService){
+                             LiveService liveService){
         this.applicationEventBus = applicationEventBus;
         this.userService = userService;
         this.cacheService = cacheService;
         this.liveService = liveService;
-        this.jPushService = jPushService;
     }
 
     @PostConstruct
@@ -81,22 +75,20 @@ public class CacheLiveListener {
         cacheService.hSet(liveLastUpdate.getKey(), liveLastUpdate.getField(), liveLastUpdate.getValue());
         cacheService.expire(liveLastUpdate.getKey(), 3600);
         
-        List<UserFollow> list = userService.getFans(cacheLiveEvent.getUid());
-        List<Long> sourceUids = new ArrayList<Long>();
-        for(UserFollow uf : list){
-        	sourceUids.add(uf.getSourceUid());
+        //判断这个王国是不是聚合王国，如果是聚合王国，则通知粉丝，不是聚合王国则不需要通知
+        Topic topic = liveService.getTopicById(cacheLiveEvent.getTopicId());
+        if(null == topic || topic.getType().intValue() != Specification.KingdomType.AGGREGATION.index){
+        	return;//非聚合王国，不需要推送
         }
+        
+        List<UserFollow> list = userService.getFans(cacheLiveEvent.getUid());
         log.info("get user fans ... ");
         
-        //强奸逻辑去除
-//        liveService.setLive3WithBatch(sourceUids, cacheLiveEvent.getTopicId());
-        
         UserProfile userProfile = userService.getUserProfileByUid(cacheLiveEvent.getUid());
-        Topic topic = liveService.getTopicById(cacheLiveEvent.getTopicId());
-        
+        String message = userProfile.getNickName()+"新建了聚合王国《"+topic.getTitle()+"》";
         for (UserFollow userFollow : list) {
             //所有订阅的人显示有红点
-            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(userFollow.getSourceUid(), cacheLiveEvent.getTopicId() + "", "1");
+            MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(userFollow.getSourceUid(), String.valueOf(cacheLiveEvent.getTopicId()), "1");
             cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
             
             JsonObject jsonObject = new JsonObject();
@@ -106,8 +98,7 @@ public class CacheLiveListener {
             jsonObject.addProperty("contentType", topic.getType());
             jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, userFollow.getSourceUid()));
             jsonObject.addProperty("fromInternalStatus", Specification.SnsCircle.CORE.index);//主播创建的，肯定是核心圈
-            String alias = String.valueOf(userFollow.getSourceUid());
-            jPushService.payloadByIdExtra(alias,  userProfile.getNickName() + "新建了『" + topic.getTitle()+"』", JPushUtils.packageExtra(jsonObject));
+            userService.pushWithExtra(userFollow.getSourceUid().toString(),  message, JPushUtils.packageExtra(jsonObject));
         }
     }
 
