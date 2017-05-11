@@ -37,6 +37,22 @@ import com.me2me.live.model.VoteOption;
  * Author: 赵朋扬
  * Date: 2016/4/11.
  */
+/**
+ * @author pc308
+ *
+ */
+/**
+ * @author pc308
+ *
+ */
+/**
+ * @author pc308
+ *
+ */
+/**
+ * @author pc308
+ *
+ */
 public interface LiveService {
 
     /**
@@ -381,24 +397,78 @@ public interface LiveService {
 	public Response createVote(CreateVoteDto dto);
 	
 	
+	/**
+	 * 逗一逗后台分页查询
+	 * @param page
+	 * @param conditions
+	 * @return
+	 */
 	public PageBean<TeaseInfo> getTeaseInfoPage(PageBean<TeaseInfo> page,Map<String,Object> conditions);
 	
+	/**
+	 * 修改逗一逗信息
+	 * @param teaseInfo
+	 */
 	public void updateTeaseInfoByKey(TeaseInfo teaseInfo);
 	
+	/**
+	 * 添加逗一逗信息
+	 * @param teaseInfo
+	 * @return
+	 */
 	public Integer addTeaseInfo(TeaseInfo teaseInfo);
 	
+	/**
+	 * 获取逗一逗信息
+	 * @param id
+	 * @return
+	 */
 	public TeaseInfo getTeaseInfoByKey(Long id);
 	
+	/**
+	 * 逗一逗全量查询接口
+	 * @return
+	 */
 	Response teaseListQuery();
 	 
+	/**
+	 * 投票
+	 * @param uid
+	 * @param voteId
+	 * @param optionId
+	 * @return
+	 */
 	public Response vote(long uid,long voteId,String optionId);
 	 
+	/**
+	 * 结束投票
+	 * @param voteId
+	 * @param uid
+	 * @return
+	 */
 	public Response endVote(long voteId,long uid); 
 	
+	/**
+	 * 重新发送投票
+	 * @param fragmentId
+	 * @param uid
+	 * @return
+	 */
 	public Response resendVote(long fragmentId,long uid);
 	
+	/**
+	 * 王国详情列表获取投票详情信息
+	 * @param voteId
+	 * @return
+	 */
 	public Response getTopicVoteInfo(long voteId);
 	
+	/**
+	 * 获取投票详情
+	 * @param voteId
+	 * @param uid
+	 * @return
+	 */
 	public Response getVoteInfo(long voteId,long uid); 
 	/**
 	 * 王国图库查询
