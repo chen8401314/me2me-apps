@@ -5554,6 +5554,9 @@ public class LiveServiceImpl implements LiveService {
 	@Override
 	public Response getTopicVoteInfo(long voteId) {
 		VoteInfo voteInfo =liveMybatisDao.getVoteInfoByKey(voteId);
+		if(voteInfo==null){
+			return Response.failure("没有找到该投票！");
+		}
 		TopicVoteInfoDto dto = new TopicVoteInfoDto();
 		dto.setVoteId(voteInfo.getId());
 		dto.setTitle(voteInfo.getTitle());
@@ -5567,7 +5570,7 @@ public class LiveServiceImpl implements LiveService {
 			data.setOption(vo.getOptionname());
 			int count = liveMybatisDao.getVoteRecordCountByOptionId(vo.getId());
             data.setCount(count);
-            dto.getLiveElements().add(data);
+            dto.getOptions().add(data);
 		}
 		return Response.success(dto);
 	}
@@ -5575,6 +5578,9 @@ public class LiveServiceImpl implements LiveService {
 	@Override
 	public Response getVoteInfo(long voteId,long uid) {
 		VoteInfo voteInfo =liveMybatisDao.getVoteInfoByKey(voteId);
+		if(voteInfo==null){
+			return Response.failure("没有找到该投票！");
+		}
 		UserProfile user =userService.getUserProfileByUid(voteInfo.getUid());
 		VoteInfoDto dto = new VoteInfoDto();
 		dto.setUid(user.getUid());
