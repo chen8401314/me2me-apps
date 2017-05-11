@@ -619,8 +619,10 @@ public class LiveServiceImpl implements LiveService {
             	}
             }
             //逗一逗自动播放状态
-            int teaseStatus = 1;
+            int teaseStatus = 0;
             if((topicFragment.getType() == 51 || topicFragment.getType() == 52) && topicFragment.getContentType() == 20){
+               JSONObject extraJson  = 	 JSONObject.parseObject(topicFragment.getExtra());
+               if((getLiveTimeLineDto.getUid()+"").equals(extraJson.getString("uid"))){
             	TeaseAutoPlayStatusModel teaseAutoPlayStatusModel =  new TeaseAutoPlayStatusModel(topicFragment.getId(), "0"); 
             	String isTeaseStatus = cacheService.hGet(teaseAutoPlayStatusModel.getKey(), teaseAutoPlayStatusModel.getField());
             	  if (!StringUtils.isEmpty(isTeaseStatus)) {
@@ -629,6 +631,7 @@ public class LiveServiceImpl implements LiveService {
                 	  teaseStatus=1;
                 	  cacheService.hSet(teaseAutoPlayStatusModel.getKey(), teaseAutoPlayStatusModel.getField(), teaseAutoPlayStatusModel.getValue());
                   }
+               }
             }
             liveElement.setTeaseStatus(teaseStatus);
             
@@ -2817,8 +2820,10 @@ public class LiveServiceImpl implements LiveService {
             	}
             }
             //逗一逗自动播放状态
-            int teaseStatus = 1;
+            int teaseStatus = 0;
             if((topicFragment.getType() == 51 || topicFragment.getType() == 52) && topicFragment.getContentType() == 20){
+               JSONObject extraJson  = 	 JSONObject.parseObject(topicFragment.getExtra());
+               if((getLiveDetailDto.getUid()+"").equals(extraJson.getString("uid"))){
             	TeaseAutoPlayStatusModel teaseAutoPlayStatusModel =  new TeaseAutoPlayStatusModel(topicFragment.getId(), "0"); 
             	String isTeaseStatus = cacheService.hGet(teaseAutoPlayStatusModel.getKey(), teaseAutoPlayStatusModel.getField());
             	  if (!StringUtils.isEmpty(isTeaseStatus)) {
@@ -2827,6 +2832,7 @@ public class LiveServiceImpl implements LiveService {
                 	  teaseStatus=1;
                 	  cacheService.hSet(teaseAutoPlayStatusModel.getKey(), teaseAutoPlayStatusModel.getField(), teaseAutoPlayStatusModel.getValue());
                   }
+               }
             }
             liveElement.setTeaseStatus(teaseStatus);
             
