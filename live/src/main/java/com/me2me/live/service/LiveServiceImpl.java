@@ -5474,7 +5474,7 @@ public class LiveServiceImpl implements LiveService {
 		}
 		JSONObject json = new JSONObject();
 		json.put("type", "emoji");
-		json.put("only", "");
+		json.put("only", UUID.randomUUID().toString()+"-"+new Random().nextInt());
 		json.put("from", dto.getSource());
 		json.put("title", dto.getTitle());
 		json.put("id", voteInfo.getId());
