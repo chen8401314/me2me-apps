@@ -34,6 +34,17 @@
     if(errMsg && errMsg != 'null' && errMsg != ''){
     	alert(errMsg);
     }
+    function check(){
+    	if($("#file").val()==''){
+    		alert("请选择图片！");
+    		return false;
+    	}
+       	if($("#file1").val()==''){
+    		alert("请选择音频！");
+    		return false;
+    	}
+       	$("#form1").submit();
+    }
     </script>
 </head>
 <body>
@@ -117,7 +128,7 @@
                             </section>
                         </div>
                     </div>
-                    <input type="submit" id="btnSave" value="提交" class="btn btn-danger" />
+                    <input type="button" id="btnSave" value="提交" class="btn btn-danger"  onclick="check()"/>
                     <span class="btn btn-default"><a href="javascript:history.back(-1)">返回</a></span>
                 </section>
                 <!-- page end-->
