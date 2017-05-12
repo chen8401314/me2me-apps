@@ -5606,7 +5606,7 @@ public class LiveServiceImpl implements LiveService {
 		if(topic==null){
 			return Response.failure(500,"没有找到该投票王国！");
 		}
-		if(topic.getUid().longValue() == uid || voteInfo.getUid().longValue() == uid ){
+		if(voteInfo.getUid().longValue() == uid ){
 			dto.setCanEnd(1);
 		}else{
 			dto.setCanEnd(0);
