@@ -5544,6 +5544,7 @@ public class LiveServiceImpl implements LiveService {
 			return Response.failure(500,"您没有重新发送投票权限！");
 		}
 		tf.setId(null);
+		tf.setCreateTime(new Date());
 		liveMybatisDao.createTopicFragment(tf);
 		liveMybatisDao.deleteFragmentByIdForPhysics(fragmentId);
 		ResendVoteDto rv = new ResendVoteDto();
