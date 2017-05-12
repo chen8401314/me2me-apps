@@ -230,6 +230,58 @@ public class LiveMybatisDao {
         example.setOrderByClause("id asc limit "+size);
         return topicFragmentMapper.selectByExample(example);
     }
+    /**
+     * 按月获取王国图库
+     * @author zhangjiwei
+     * @date May 5, 2017
+     * @param topicId
+     * @param sinceId  
+     * @param direction 方向
+     * @return
+     */
+      public List<TopicFragment> getTopicImgFragment2Month(long topicId, long sinceId,int direction) {
+    	  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+          // 取当前月数据。
+    	  TopicFragment curTF = topicFragmentMapper.selectByPrimaryKey(sinceId);
+    	  String month = null;
+          if(direction==2){
+        	  Date date = curTF.getCreateTime();
+        	  month = sdf.format(date);
+          }else if(direction==0){		// 向下
+        	  TopicFragmentExample example = new TopicFragmentExample();
+        	  example.createCriteria()
+        	  .andTopicIdEqualTo(topicId)
+        	  .andTypeEqualTo(0)
+              .andContentTypeEqualTo(1)
+              .andStatusEqualTo(1)
+        	  .andIdGreaterThan(curTF.getId());
+        	  example.setOrderByClause(" id asc limit 1");
+        	  List<TopicFragment> fgs = topicFragmentMapper.selectByExample(example);
+        	  if(fgs.size()>0){
+        		  Date date = fgs.get(0).getCreateTime();
+            	  month = sdf.format(date);
+        	  }
+          }else if(direction==1){		// 向上
+        	  TopicFragmentExample example = new TopicFragmentExample();
+        	  example.createCriteria()
+        	  .andTopicIdEqualTo(topicId)
+        	  .andTypeEqualTo(0)
+              .andContentTypeEqualTo(1)
+              .andStatusEqualTo(1)
+        	  .andIdGreaterThan(curTF.getId());
+        	  example.setOrderByClause(" id desc limit 1");
+        	  List<TopicFragment> fgs = topicFragmentMapper.selectByExample(example);
+        	  if(fgs.size()>0){
+        		  Date date = fgs.get(0).getCreateTime();
+            	  month = sdf.format(date);
+        	  }
+          }
+          if(month==null){
+        	  return new ArrayList<>();
+          }else{
+        	  return topicFragmentMapper.getImgFragmentByMonth(topicId, month);
+          }
+      }
 
     public List<TopicFragment> getTopicFragmentByMode(long topicId, long sinceId, long uid) {
         TopicFragmentExample example = new TopicFragmentExample();

@@ -538,5 +538,14 @@
     from topic_fragment where id &gt;= #{fid} and topic_id=#{topicId} and status=1 and at_uid = #{uid} and type in (10 ,11 ,15)
     order by id desc limit 1
   </select>
+  
+  <select id="getImgFragmentByMonth" resultMap="BaseResultMap">
+    select
+    <include refid="Base_Column_List"/>
+    ,
+    <include refid="Blob_Column_List"/>
+    from topic_fragment where topic_id=#{topicId} and type=0 and content_type=1 and status=1 and DATE_FORMAT(create_time,'%Y-%m')=#{month}
+    order by id desc limit 1
+  </select>
 
 </mapper>

@@ -5635,9 +5635,34 @@ public class LiveServiceImpl implements LiveService {
 		}
 		return Response.success(dto);
 	}
-	
+	// 按月加载图库，for ios.
+	private Response kingdomImgDB2Month(long topicId, int direction, long sinceId){
+		KingdomImgDB imgDb = new KingdomImgDB();
+		List<TopicFragment> fragmentList=liveMybatisDao.getTopicImgFragment2Month(topicId, sinceId, direction);
+		
+		List<KingdomImgDB.ImgData> imgDataList = new ArrayList<>();
+		for(TopicFragment fg:fragmentList){
+			KingdomImgDB.ImgData imgData= new KingdomImgDB.ImgData();
+			String fragmentImage = "https://cdn.me-to-me.com/" +fg.getFragmentImage();
+			imgData.setFragmentImage(fragmentImage);
+			imgData.setFragmentId(fg.getId());
+			imgData.setContentType(fg.getContentType());
+			imgData.setCreateTime(fg.getCreateTime().getTime());
+			imgData.setExtra(fg.getExtra());
+			imgData.setFragment(fg.getFragment());
+			imgData.setType(fg.getType());
+			imgDataList.add(imgData);
+			imgDataList.add(imgData);
+		}
+		imgDb.setImgData(imgDataList);
+		return Response.success(imgDb);
+		
+	}
 	@Override
-	public Response kingdomImgDB(long topicId, int direction, long sinceId) {
+	public Response kingdomImgDB(long topicId, int direction, long sinceId,int type) {
+		if(type==1){
+			return kingdomImgDB2Month( topicId,  direction, sinceId);
+		}
 		final int pageSize= 200;
 		KingdomImgDB imgDb = new KingdomImgDB();
 		List<TopicFragment> fragmentList=new ArrayList<>();
@@ -5669,9 +5694,14 @@ public class LiveServiceImpl implements LiveService {
 		List<KingdomImgDB.ImgData> imgDataList = new ArrayList<>();
 		for(TopicFragment fg:fragmentList){
 			KingdomImgDB.ImgData imgData= new KingdomImgDB.ImgData();
-			org.springframework.beans.BeanUtils.copyProperties(fg, imgData);
 			String fragmentImage = "https://cdn.me-to-me.com/" +fg.getFragmentImage();
 			imgData.setFragmentImage(fragmentImage);
+			imgData.setFragmentId(fg.getId());
+			imgData.setContentType(fg.getContentType());
+			imgData.setCreateTime(fg.getCreateTime().getTime());
+			imgData.setExtra(fg.getExtra());
+			imgData.setFragment(fg.getFragment());
+			imgData.setType(fg.getType());
 			imgDataList.add(imgData);
 		}
 		imgDb.setImgData(imgDataList);

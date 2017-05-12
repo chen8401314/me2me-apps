@@ -17,4 +17,8 @@ public class ImgDBRequest extends Request {
     @Setter
 	private long fragmentId;
 	
+	@Getter
+	@Setter
+	private int type=0;	//0 按数据分页加载，1按月份加载
+	
 }
