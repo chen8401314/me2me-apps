@@ -62,6 +62,10 @@ public class AppConfigController {
 		cacheConfigList.add(ci);
 		ci = new ConfigItem("power:key", "管理员", ConfigItem.ConfigType.SET);
 		cacheConfigList.add(ci);
+		ci = new ConfigItem("NORMAL_CREATE_VOTE_COUNT", "普通用户每天投票次数", ConfigItem.ConfigType.STRING);
+		cacheConfigList.add(ci);
+		ci = new ConfigItem("V_CREATE_VOTE_COUNT", "大V用户每天投票次数", ConfigItem.ConfigType.STRING);
+		cacheConfigList.add(ci);
 		
 		dbConfigList = new ArrayList<ConfigItem>();
 		ci = new ConfigItem(ConfigItem.DBConfig.DEFAULT_FOLLOW.getKey(), ConfigItem.DBConfig.DEFAULT_FOLLOW.getDesc(), ConfigItem.ConfigType.DB);
