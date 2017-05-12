@@ -961,7 +961,9 @@ public interface Specification {
         
         NOTICE("消息列表", 5),
         
-        CONTACTS("通讯录", 6)
+        CONTACTS("通讯录", 6),
+        
+        BILLBOARD("榜单详情", 7)
         ;
 
         public final String name;
