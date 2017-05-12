@@ -19,7 +19,7 @@ public class LiveTest extends AbstractJUnit4SpringContextTests {
 		int topicId = 4;
 		int fId = 100;
 		try {
-			Response resp = liveService.kingdomImgDB(topicId, 2, fId);
+			Response resp = liveService.kingdomImgDB(topicId, 0, fId,1);
 			System.out.println(JSON.toJSONString(resp, true));
 		} catch (Exception e) {
 			e.printStackTrace();

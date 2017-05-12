@@ -127,5 +127,13 @@ public interface TopicFragmentMapper {
     List<TopicFragment> getTopicFragmentForPage(GetLiveDetailDto getLiveDetailDto);
 
     TopicFragment getFragmentByAT(Map map);
+    /**
+     * 取指定月的图片，for 图库
+     * @author zhangjiwei
+     * @date May 12, 2017
+     * @param month  yyyyMM
+     * @return
+     */
+    List<TopicFragment> getImgFragmentByMonth(@Param("topicId")long topicId,@Param("month")String month);
 
 }

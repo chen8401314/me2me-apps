@@ -407,9 +407,10 @@ public interface LiveService {
 	 * @param topicId
 	 * @param direction
 	 * @param fragmentId
+	 * @param type 0老模式，1新模式
 	 * @return
 	 */
-	Response kingdomImgDB(long topicId,int direction,long fragmentId);
+	Response kingdomImgDB(long topicId,int direction,long fragmentId,int type);
 	/**
 	 * 移除王国
 	 * @author zhangjiwei
