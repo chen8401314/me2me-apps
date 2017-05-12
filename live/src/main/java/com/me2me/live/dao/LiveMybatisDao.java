@@ -1301,7 +1301,7 @@ public class LiveMybatisDao {
 	public PageBean<TeaseInfo> getTeaseInfoPage(PageBean<TeaseInfo> page, Map<String, Object> conditions) {
 		TeaseInfoExample example = new TeaseInfoExample();
 		int count = teaseInfoMapper.countByExample(example);
-		example.setOrderByClause("create_time desc limit "+((page.getCurrentPage()-1)*page.getPageSize())+","+page.getPageSize());
+		example.setOrderByClause("id desc limit "+((page.getCurrentPage()-1)*page.getPageSize())+","+page.getPageSize());
 		example.createCriteria().andStatusEqualTo(1);
 		List<TeaseInfo> packList=  teaseInfoMapper.selectByExample(example);
 		page.setPageSize(count);

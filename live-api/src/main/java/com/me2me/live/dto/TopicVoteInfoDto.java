@@ -24,7 +24,7 @@ public class TopicVoteInfoDto implements BaseEntity {
     
     private int status;
 
-    private  List<OptionElement> liveElements = Lists.newArrayList();
+    private  List<OptionElement> options = Lists.newArrayList();
     
     public static OptionElement createElement(){
         return new OptionElement();

@@ -220,7 +220,6 @@ public class LiveServiceImpl implements LiveService {
         contentDto.setRights(Specification.ContentRights.EVERY.index);
         contentService.publish(contentDto);
 
-
         applicationEventBus.post(new CacheLiveEvent(createLiveDto.getUid(), topic.getId()));
 
         SpeakDto speakDto = new SpeakDto();
@@ -620,8 +619,10 @@ public class LiveServiceImpl implements LiveService {
             	}
             }
             //逗一逗自动播放状态
-            int teaseStatus = 1;
+            int teaseStatus = 0;
             if((topicFragment.getType() == 51 || topicFragment.getType() == 52) && topicFragment.getContentType() == 20){
+               JSONObject extraJson  = 	 JSONObject.parseObject(topicFragment.getExtra());
+               if((getLiveTimeLineDto.getUid()+"").equals(extraJson.getString("uid"))){
             	TeaseAutoPlayStatusModel teaseAutoPlayStatusModel =  new TeaseAutoPlayStatusModel(topicFragment.getId(), "0"); 
             	String isTeaseStatus = cacheService.hGet(teaseAutoPlayStatusModel.getKey(), teaseAutoPlayStatusModel.getField());
             	  if (!StringUtils.isEmpty(isTeaseStatus)) {
@@ -630,6 +631,7 @@ public class LiveServiceImpl implements LiveService {
                 	  teaseStatus=1;
                 	  cacheService.hSet(teaseAutoPlayStatusModel.getKey(), teaseAutoPlayStatusModel.getField(), teaseAutoPlayStatusModel.getValue());
                   }
+               }
             }
             liveElement.setTeaseStatus(teaseStatus);
             
@@ -2818,8 +2820,10 @@ public class LiveServiceImpl implements LiveService {
             	}
             }
             //逗一逗自动播放状态
-            int teaseStatus = 1;
+            int teaseStatus = 0;
             if((topicFragment.getType() == 51 || topicFragment.getType() == 52) && topicFragment.getContentType() == 20){
+               JSONObject extraJson  = 	 JSONObject.parseObject(topicFragment.getExtra());
+               if((getLiveDetailDto.getUid()+"").equals(extraJson.getString("uid"))){
             	TeaseAutoPlayStatusModel teaseAutoPlayStatusModel =  new TeaseAutoPlayStatusModel(topicFragment.getId(), "0"); 
             	String isTeaseStatus = cacheService.hGet(teaseAutoPlayStatusModel.getKey(), teaseAutoPlayStatusModel.getField());
             	  if (!StringUtils.isEmpty(isTeaseStatus)) {
@@ -2828,6 +2832,7 @@ public class LiveServiceImpl implements LiveService {
                 	  teaseStatus=1;
                 	  cacheService.hSet(teaseAutoPlayStatusModel.getKey(), teaseAutoPlayStatusModel.getField(), teaseAutoPlayStatusModel.getValue());
                   }
+               }
             }
             liveElement.setTeaseStatus(teaseStatus);
             
@@ -5438,7 +5443,7 @@ public class LiveServiceImpl implements LiveService {
 	public Response createVote(CreateVoteDto dto) {
 		UserProfile userProfile =  userService.getUserProfileByUid(dto.getUid());
 		if(userProfile==null){
-			return Response.failure("用户不存在");
+			return Response.failure(500,"用户不存在");
 		}
 		int max = 1;
 		if(userProfile.getvLv()==1){
@@ -5456,7 +5461,7 @@ public class LiveServiceImpl implements LiveService {
 		}
 	    int voteCount = liveMybatisDao.getVoteInfoCount(dto.getUid());
 		if(voteCount>=max){
-			return Response.failure("今天发起投票次数已经超过限制！");
+			return Response.failure(500,"今天发起投票次数已经超过限制！");
 		}
 		VoteInfo voteInfo = new VoteInfo();
 		voteInfo.setTopicid(dto.getTopicId());
@@ -5473,9 +5478,8 @@ public class LiveServiceImpl implements LiveService {
 			liveMybatisDao.addVoteOption(vo);
 		}
 		JSONObject json = new JSONObject();
-		json.put("type", "emoji");
-		json.put("only", "");
-		json.put("from", dto.getSource());
+		json.put("type", "vote");
+		json.put("only", UUID.randomUUID().toString()+"-"+new Random().nextInt());
 		json.put("title", dto.getTitle());
 		json.put("id", voteInfo.getId());
 		SpeakDto speakDto = new SpeakDto();
@@ -5492,15 +5496,15 @@ public class LiveServiceImpl implements LiveService {
 	public Response vote(long uid,long voteId,String optionId) {
 		int count = liveMybatisDao.getVoteRecordCountByUidAndVoteId(uid,voteId);
 		if(count>0){
-			return Response.failure("您已经投过票了！");
+			return Response.failure(500,"您已经投过票了！");
 		}
 		VoteInfo voteInfo  =liveMybatisDao.getVoteInfoByKey(voteId);
 		if(voteInfo==null){
-			return Response.failure("没有找到该投票！");
+			return Response.failure(500,"没有找到该投票！");
 		}
 		String[] optionIdStr = optionId.split(";");
 		if(voteInfo.getType()==0 &&optionIdStr.length>1){
-			return Response.failure("该投票只能单选！");
+			return Response.failure(500,"该投票只能单选！");
 		}
 		for (int i = 0; i < optionIdStr.length; i++) {
 			VoteRecord vr = new VoteRecord();
@@ -5515,14 +5519,14 @@ public class LiveServiceImpl implements LiveService {
 	public Response endVote(long voteId,long uid) {
 		VoteInfo voteInfo  =liveMybatisDao.getVoteInfoByKey(voteId);
 		if(voteInfo==null){
-			return Response.failure("没有找到该投票！");
+			return Response.failure(500,"没有找到该投票！");
 		}
 		Topic topic = liveMybatisDao.getTopicById(voteInfo.getTopicid());
 		if(topic==null){
-			return Response.failure("没有找到该投票王国！");
+			return Response.failure(500,"没有找到该投票王国！");
 		}
 		if(topic.getUid().longValue() != uid && voteInfo.getUid().longValue() != uid ){
-			return Response.failure("您没有结束投票权限！");
+			return Response.failure(500,"您没有结束投票权限！");
 		}
 		VoteInfo updateVoteInfo = new VoteInfo();
 		updateVoteInfo.setId(voteId);
@@ -5537,7 +5541,7 @@ public class LiveServiceImpl implements LiveService {
 		Topic tp  =liveMybatisDao.getTopicById(tf.getTopicId());
 		int internalStatus = getInternalStatus(tp,uid);
 		if(tp.getUid().longValue() != uid && internalStatus!=Specification.SnsCircle.CORE.index){
-			return Response.failure("您没有重新发送投票权限！");
+			return Response.failure(500,"您没有重新发送投票权限！");
 		}
 		tf.setId(null);
 		liveMybatisDao.createTopicFragment(tf);
@@ -5550,6 +5554,9 @@ public class LiveServiceImpl implements LiveService {
 	@Override
 	public Response getTopicVoteInfo(long voteId) {
 		VoteInfo voteInfo =liveMybatisDao.getVoteInfoByKey(voteId);
+		if(voteInfo==null){
+			return Response.failure(500,"没有找到该投票！");
+		}
 		TopicVoteInfoDto dto = new TopicVoteInfoDto();
 		dto.setVoteId(voteInfo.getId());
 		dto.setTitle(voteInfo.getTitle());
@@ -5563,7 +5570,7 @@ public class LiveServiceImpl implements LiveService {
 			data.setOption(vo.getOptionname());
 			int count = liveMybatisDao.getVoteRecordCountByOptionId(vo.getId());
             data.setCount(count);
-            dto.getLiveElements().add(data);
+            dto.getOptions().add(data);
 		}
 		return Response.success(dto);
 	}
@@ -5571,6 +5578,9 @@ public class LiveServiceImpl implements LiveService {
 	@Override
 	public Response getVoteInfo(long voteId,long uid) {
 		VoteInfo voteInfo =liveMybatisDao.getVoteInfoByKey(voteId);
+		if(voteInfo==null){
+			return Response.failure(500,"没有找到该投票！");
+		}
 		UserProfile user =userService.getUserProfileByUid(voteInfo.getUid());
 		VoteInfoDto dto = new VoteInfoDto();
 		dto.setUid(user.getUid());
@@ -5593,7 +5603,7 @@ public class LiveServiceImpl implements LiveService {
 		dto.setStatus(voteInfo.getStatus());
 		Topic topic = liveMybatisDao.getTopicById(voteInfo.getTopicid());
 		if(topic==null){
-			return Response.failure("没有找到该投票王国！");
+			return Response.failure(500,"没有找到该投票王国！");
 		}
 		if(topic.getUid().longValue() == uid || voteInfo.getUid().longValue() == uid ){
 			dto.setCanEnd(1);

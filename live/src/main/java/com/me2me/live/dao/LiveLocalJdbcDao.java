@@ -416,6 +416,44 @@ public class LiveLocalJdbcDao {
 				}
 			}
 			sb.append(" order by t.longtime desc limit 10");
+		}else if(searchDTO.getSearchScene() == 8){//转发进来的场景
+			//查询我创建的，我是核心圈的，我订阅的
+			sb.append("select t.* from (");
+			//我创建的
+			sb.append("select m.*,m.long_time*1000 as longtime");
+			sb.append(" from topic m where m.uid=").append(currentUid);
+			//我是核心圈的
+			sb.append(" union ");
+			sb.append("select m1.*,m1.long_time*100 as longtime");
+			sb.append(" from topic m1 where m1.uid<>").append(currentUid);
+			sb.append(" and FIND_IN_SET(").append(currentUid);
+			sb.append(",SUBSTR(m1.core_circle FROM 2 FOR LENGTH(m1.core_circle)-2))");
+			//我加入的
+			sb.append(" union ");
+			sb.append("select m2.*,m2.long_time*10 as longtime");
+			sb.append(" from topic m2,live_favorite f");
+			sb.append(" where m2.id=f.topic_id");
+			sb.append(" and m2.uid<>").append(currentUid);
+			sb.append(" and not FIND_IN_SET(").append(currentUid);
+			sb.append(",SUBSTR(m2.core_circle FROM 2 FOR LENGTH(m2.core_circle)-2))");
+			sb.append(" and f.uid=").append(currentUid);
+			//其他的
+			sb.append(" union ");
+			sb.append(" select m3.*,m3.long_time as longtime");
+			sb.append(" from topic m3 where m3.uid<>").append(currentUid);
+			sb.append(" and not FIND_IN_SET(").append(currentUid);
+			sb.append(",SUBSTR(m3.core_circle FROM 2 FOR LENGTH(m3.core_circle)-2))");
+			sb.append(" and not EXISTS (select 1 from live_favorite f3 where f3.uid=");
+			sb.append(currentUid).append(" and f3.topic_id=m3.id)");
+			sb.append(") t");
+			sb.append(" where t.longtime<").append(searchDTO.getUpdateTime());
+			if(searchDTO.getExceptTopicId() > 0){
+				sb.append(" and t.id<>").append(searchDTO.getExceptTopicId());
+			}
+			if(StringUtils.isNotBlank(searchDTO.getKeyword())){
+				sb.append(" and t.title like '%").append(searchDTO.getKeyword()).append("%'");
+			}
+			sb.append(" order by t.longtime desc limit 10");
 		}else{
 			return null;
 		}
