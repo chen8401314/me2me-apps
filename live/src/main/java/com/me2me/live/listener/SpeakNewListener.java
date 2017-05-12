@@ -16,7 +16,6 @@ import com.alibaba.fastjson.JSONArray;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
-import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Specification;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.live.cache.LiveLastUpdate;
@@ -53,6 +52,72 @@ public class SpeakNewListener {
     }
 	
 	@Subscribe
+	public void speakNew2(SpeakNewEvent speakNewEvent){
+		//V2.2.5版本开始使用的新逻辑
+		//1. 核心圈发言为更新，需要通知非核心圈的并且加入王国的人员有更新
+		//2. 非核心圈发言，需要通知国王有评论
+		//3. 如果是足迹，则有个特殊逻辑，如果这个王国连续5天没有更新，并且在此期间有有至少两个足迹，则需要通知国王（该推送只推送一次）
+		Topic topic = liveMybatisDao.getTopicById(speakNewEvent.getTopicId());
+		if(null == topic){
+			return;
+		}
+		long currentUid = speakNewEvent.getUid();
+		long kingUid = topic.getUid().longValue();//国王UID
+		List<Long> coreUidList = new ArrayList<Long>();//核心圈UID集合
+		coreUidList.add(topic.getUid());//国王肯定是核心圈
+		if(!StringUtils.isEmpty(topic.getCoreCircle())){
+			JSONArray array = JSON.parseArray(topic.getCoreCircle());
+			Long uid = null;
+			for (int i = 0; i < array.size(); i++) {
+				uid = array.getLong(i);
+				if(!coreUidList.contains(uid)){
+					coreUidList.add(uid);
+				}
+	        }
+		}
+		List<Long> memberUidList = new ArrayList<Long>();//非核心圈UID集合
+		List<LiveFavorite> lfList = liveMybatisDao.getFavoriteAll(topic.getId());
+		if(null != lfList && lfList.size() > 0){
+			for(LiveFavorite lf : lfList){
+				if(!coreUidList.contains(lf.getUid()) && !memberUidList.contains(lf.getUid())){
+					memberUidList.add(lf.getUid());
+				}
+			}
+		}
+		List<Long> allUidList = new ArrayList<Long>();//所有的成员集合
+		if(coreUidList.size() > 0){
+			allUidList.addAll(coreUidList);
+		}
+		if(memberUidList.size() > 0){
+			allUidList.addAll(memberUidList);
+		}
+		
+		//首先，除发起人外，其他人都要有王国互动红点以及王国cell红点
+		MyLivesStatusModel livesStatusModel = null;
+		MySubscribeCacheModel cacheModel= null;
+		if(allUidList.size() > 0){
+			for(Long uid : allUidList){
+				if(uid.longValue() != currentUid){
+					livesStatusModel = new MyLivesStatusModel(uid,"1");
+		            cacheService.hSet(livesStatusModel.getKey(),livesStatusModel.getField(),"1");
+		            
+		            cacheModel = new MySubscribeCacheModel(uid, topic.getId().toString(), String.valueOf(speakNewEvent.getFragmentId()));
+		            String values = cacheService.hGet(cacheModel.getKey(), cacheModel.getField());
+		            if(StringUtils.isEmpty(values) || Integer.parseInt(values) == 0){//如果不是0，那么认为有更历史的未读信息，则不进行新的设置
+		                cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+		            }
+				}
+			}
+		}
+		
+		//下面开始推送
+		//判断是更新还是评论(卡片为更新，非卡片为评论)
+		boolean isUpdate = false;
+//		if()
+		
+	}
+	
+	
     public void speakNew(SpeakNewEvent speakNewEvent) {
 		//新的逻辑，这里只要是可见内容的发言，都会通知非自己的人（@的因为已经直接通知了，所以这里不需要通知了）
 		//核心圈发言，对核心圈直接发，对非核心圈有1小时延迟逻辑
