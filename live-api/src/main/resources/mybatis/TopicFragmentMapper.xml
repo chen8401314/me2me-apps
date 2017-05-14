@@ -545,7 +545,7 @@
     ,
     <include refid="Blob_Column_List"/>
     from topic_fragment where topic_id=#{topicId} and type=0 and content_type=1 and status=1 and DATE_FORMAT(create_time,'%Y-%m')=#{month}
-    order by id desc
+    order by id asc
   </select>
 
 </mapper>
