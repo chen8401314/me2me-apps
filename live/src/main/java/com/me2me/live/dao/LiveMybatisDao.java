@@ -22,6 +22,7 @@ import com.me2me.common.page.PageBean;
 import com.me2me.common.web.Specification;
 import com.me2me.live.dto.GetLiveDetailDto;
 import com.me2me.live.dto.GetLiveUpdateDto;
+import com.me2me.live.dto.KingdomImgDB;
 import com.me2me.live.dto.SearchDropAroundTopicDto;
 import com.me2me.live.dto.SearchTopicDto;
 import com.me2me.live.dto.SpeakDto;
@@ -239,10 +240,11 @@ public class LiveMybatisDao {
      * @param direction 方向
      * @return
      */
-      public List<TopicFragment> getTopicImgFragment2Month(TopicFragment curTF, long sinceId,int direction) {
+      public KingdomImgDB getTopicImgFragment2Month(long topicId, long sinceId,int direction) {
+		
+		TopicFragment curTF = getTopicFragmentById(sinceId);//topicFragmentMapper.selectByPrimaryKey(sinceId);
     	  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
           // 取当前月数据。
-    	  long topicId= curTF.getTopicId();
     	  String month = null;
           if(direction==2){
         	  Date date = curTF.getCreateTime();
@@ -268,7 +270,7 @@ public class LiveMybatisDao {
         	  .andTypeEqualTo(0)
               .andContentTypeEqualTo(1)
               .andStatusEqualTo(1)
-        	  .andIdGreaterThan(curTF.getId());
+        	  .andIdLessThan(curTF.getId());
         	  example.setOrderByClause(" id desc limit 1");
         	  List<TopicFragment> fgs = topicFragmentMapper.selectByExample(example);
         	  if(fgs.size()>0){
@@ -276,11 +278,31 @@ public class LiveMybatisDao {
             	  month = sdf.format(date);
         	  }
           }
-          if(month==null){
-        	  return new ArrayList<>();
-          }else{
-        	  return topicFragmentMapper.getImgFragmentByMonth(topicId, month);
-          }
+  		
+		KingdomImgDB imgDb = new KingdomImgDB();
+
+		if (month != null) {
+			List<TopicFragment> fragmentList = topicFragmentMapper.getImgFragmentByMonth(topicId, month);
+
+			List<KingdomImgDB.ImgData> imgDataList = new ArrayList<>();
+			for (TopicFragment fg : fragmentList) {
+				KingdomImgDB.ImgData imgData = new KingdomImgDB.ImgData();
+				String fragmentImage = "https://cdn.me-to-me.com/" + fg.getFragmentImage();
+				imgData.setFragmentImage(fragmentImage);
+				imgData.setFragmentId(fg.getId());
+				imgData.setContentType(fg.getContentType());
+				imgData.setCreateTime(fg.getCreateTime().getTime());
+				imgData.setExtra(fg.getExtra());
+				imgData.setFragment(fg.getFragment());
+				imgData.setType(fg.getType());
+				imgDataList.add(imgData);
+			}
+			imgDb.setImgData(imgDataList);
+			imgDb.setTopMonth(month);
+			imgDb.setTopMonthDataSize(fragmentList.size());
+		}
+		return imgDb;
+    		
       }
 
     public List<TopicFragment> getTopicFragmentByMode(long topicId, long sinceId, long uid) {
