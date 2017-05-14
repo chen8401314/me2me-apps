@@ -300,6 +300,8 @@ public interface ContentService{
      */
     List<BillBoardRelationDto> getRelationsByBillBoardId(long id);
     
+    List<BillBoardRelation> getBillBoardRelationByBid(long bid);
+    
    /**
     * 添加一个榜单排名数据。
     * @author zhangjiwei
@@ -383,4 +385,8 @@ public interface ContentService{
 	Response emojiPackageQuery();
 	
 	Response emojiPackageDetail(int packageId);
+	
+	List<Long> getBillboardTopicIds4kingdomPushTask();
+	
+	List<BillBoard> getBillBoardList4kingdomPushTask();
 }

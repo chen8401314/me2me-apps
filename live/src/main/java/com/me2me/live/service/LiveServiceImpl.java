@@ -52,43 +52,6 @@ import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.cache.TeaseAutoPlayStatusModel;
 import com.me2me.live.dao.LiveLocalJdbcDao;
 import com.me2me.live.dao.LiveMybatisDao;
-import com.me2me.live.dto.AggregationOptDto;
-import com.me2me.live.dto.CreateKingdomDto;
-import com.me2me.live.dto.CreateLiveDto;
-import com.me2me.live.dto.CreateVoteDto;
-import com.me2me.live.dto.DropAroundDto;
-import com.me2me.live.dto.GetLiveDetailDto;
-import com.me2me.live.dto.GetLiveTimeLineDto;
-import com.me2me.live.dto.GetLiveTimeLineDto2;
-import com.me2me.live.dto.GetLiveUpdateDto;
-import com.me2me.live.dto.KingdomSearchDTO;
-import com.me2me.live.dto.Live4H5Dto;
-import com.me2me.live.dto.LiveBarrageDto;
-import com.me2me.live.dto.LiveCoverDto;
-import com.me2me.live.dto.LiveDetailDto;
-import com.me2me.live.dto.LiveDisplayProtocolDto;
-import com.me2me.live.dto.LiveParamsDto;
-import com.me2me.live.dto.LiveQRCodeDto;
-import com.me2me.live.dto.LiveTimeLineDto;
-import com.me2me.live.dto.LiveTimeLineDto2;
-import com.me2me.live.dto.LiveUpdateDto;
-import com.me2me.live.dto.ResendVoteDto;
-import com.me2me.live.dto.SearchDropAroundTopicDto;
-import com.me2me.live.dto.SearchTopicDto;
-import com.me2me.live.dto.SettingModifyDto;
-import com.me2me.live.dto.SettingsDto;
-import com.me2me.live.dto.ShowBarrageDto;
-import com.me2me.live.dto.ShowFavoriteListDto;
-import com.me2me.live.dto.ShowLiveDto;
-import com.me2me.live.dto.ShowRecQueryDTO;
-import com.me2me.live.dto.ShowTagKingdomsDTO;
-import com.me2me.live.dto.ShowTopicListDto;
-import com.me2me.live.dto.ShowTopicSearchDTO;
-import com.me2me.live.dto.ShowTopicTagsDTO;
-import com.me2me.live.dto.SpeakDto;
-import com.me2me.live.dto.TestApiDto;
-import com.me2me.live.dto.TopicVoteInfoDto;
-import com.me2me.live.dto.VoteInfoDto;
 import com.me2me.live.dto.*;
 import com.me2me.live.event.AggregationPublishEvent;
 import com.me2me.live.event.CacheLiveEvent;
@@ -772,6 +735,7 @@ public class LiveServiceImpl implements LiveService {
         	speakNewEvent.setUid(speakDto.getUid());
         	speakNewEvent.setFragmentId(fid);
         	speakNewEvent.setFragmentContent(speakDto.getFragment());
+        	speakNewEvent.setFragmentExtra(speakDto.getExtra());
             applicationEventBus.post(speakNewEvent);
             //--add update kingdom cache -- modify by zcl -- begin --
             //此处暂不考虑原子操作
@@ -3342,6 +3306,7 @@ public class LiveServiceImpl implements LiveService {
                 	speakNewEvent.setUid(topicFragment.getUid());
                 	speakNewEvent.setFragmentId(lastFragmentId);
                 	speakNewEvent.setFragmentContent(topicFragment.getFragment());
+                	speakNewEvent.setFragmentExtra(topicFragment.getExtra());
                     applicationEventBus.post(speakNewEvent);
 				}
 
@@ -4276,6 +4241,7 @@ public class LiveServiceImpl implements LiveService {
     	speakNewEvent.setUid(ceFragment.getUid());
     	speakNewEvent.setFragmentId(ceLastFragmentId);
     	speakNewEvent.setFragmentContent(ceFragment.getFragment());
+    	speakNewEvent.setFragmentExtra(ceFragment.getExtra());
         applicationEventBus.post(speakNewEvent);
         
         //2在子王国里插入
@@ -4332,6 +4298,7 @@ public class LiveServiceImpl implements LiveService {
     	speakNewEvent.setUid(acFragment.getUid());
     	speakNewEvent.setFragmentId(acLastFragmentId);
     	speakNewEvent.setFragmentContent(acFragment.getFragment());
+    	speakNewEvent.setFragmentExtra(acFragment.getExtra());
         applicationEventBus.post(speakNewEvent);
     }
     
@@ -4426,6 +4393,7 @@ public class LiveServiceImpl implements LiveService {
     	speakNewEvent.setUid(uid);
     	speakNewEvent.setFragmentId(lastFragmentId);
     	speakNewEvent.setFragmentContent(newtf.getFragment());
+    	speakNewEvent.setFragmentExtra(newtf.getExtra());
         applicationEventBus.post(speakNewEvent);
         
     	return Response.success(200, "转发成功");
@@ -5716,5 +5684,13 @@ public class LiveServiceImpl implements LiveService {
 	public Response blockUserKingdom(long topicId,long uid) {
 		liveMybatisDao.blockUserKingdom(topicId,uid);
 		return Response.success();
+	}
+	
+	@Override
+	public List<Topic> getTopicListByIds(List<Long> ids){
+		if(null == ids && ids.size() == 0){
+			return null;
+		}
+		return liveMybatisDao.getTopicsByIds(ids);
 	}
 }

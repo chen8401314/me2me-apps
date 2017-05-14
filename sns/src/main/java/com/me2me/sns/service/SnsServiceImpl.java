@@ -24,6 +24,7 @@ import com.me2me.sns.dto.*;
 import com.me2me.user.dto.FollowDto;
 import com.me2me.user.model.UserFollow;
 import com.me2me.user.model.UserNotice;
+import com.me2me.user.model.UserNoticeUnread;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
@@ -35,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -700,13 +702,26 @@ public class SnsServiceImpl implements SnsService {
         	userNotice.setExtra(obj.toJSONString());
         }
         userService.createUserNotice(userNotice);
-
+        
+        Date now = new Date();
+        //V2.2.5版本开始使用新的红点体系
+        UserNoticeUnread unu = new UserNoticeUnread();
+        unu.setUid(targetUid);
+        unu.setCreateTime(now);
+        unu.setNoticeId(userNotice.getId());
+        unu.setNoticeType(type);
+        unu.setContentType(Specification.UserNoticeUnreadContentType.KINGDOM.index);
+        unu.setCid(cid);
+        unu.setLevel(Specification.UserNoticeLevel.LEVEL_1.index);
+        
         if(type == Specification.UserNoticeType.CORE_CIRCLE_NOTICE.index
         		|| type == Specification.UserNoticeType.LIVE_INVITED.index
         		|| type == Specification.UserNoticeType.REMOVE_SNS_CIRCLE.index){
         	//增加系统消息红点
         	cacheService.set("my:notice:level2:"+targetUid, "1");
+        	unu.setLevel(Specification.UserNoticeLevel.LEVEL_2.index);
         }
+        userService.createUserNoticeUnread(unu);
         
         UserTips userTips = new UserTips();
         userTips.setUid(targetUid);

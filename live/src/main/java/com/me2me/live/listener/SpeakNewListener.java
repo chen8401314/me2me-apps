@@ -13,12 +13,13 @@ import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonObject;
 import com.me2me.cache.service.CacheService;
+import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Specification;
 import com.me2me.core.event.ApplicationEventBus;
-import com.me2me.live.cache.LiveLastUpdate;
 import com.me2me.live.cache.MyLivesStatusModel;
 import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.dao.LiveMybatisDao;
@@ -26,7 +27,6 @@ import com.me2me.live.event.SpeakNewEvent;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicUserConfig;
-import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 
 @Component
@@ -62,7 +62,6 @@ public class SpeakNewListener {
 			return;
 		}
 		long currentUid = speakNewEvent.getUid();
-		long kingUid = topic.getUid().longValue();//国王UID
 		List<Long> coreUidList = new ArrayList<Long>();//核心圈UID集合
 		coreUidList.add(topic.getUid());//国王肯定是核心圈
 		if(!StringUtils.isEmpty(topic.getCoreCircle())){
@@ -110,14 +109,102 @@ public class SpeakNewListener {
 			}
 		}
 		
+		if(speakNewEvent.getType() == 1000){//系统消息不需要推送
+			return;
+		}
+		
+		List<Long> atUidList = new ArrayList<Long>();//被at的uid集合
+		if(speakNewEvent.getType() == 11 || speakNewEvent.getType() == 10
+				|| speakNewEvent.getType() == 15){
+			if(!StringUtils.isEmpty(speakNewEvent.getFragmentExtra())){
+				JSONObject obj = JSON.parseObject(speakNewEvent.getFragmentExtra());
+				if(null != obj.get("array")){
+					JSONArray arr = obj.getJSONArray("array");
+					if(null != arr && arr.size() > 0){
+						for(int i=0;i<arr.size();i++){
+							if(null != arr.getJSONObject(i).get("atUid")){
+								atUidList.add(arr.getJSONObject(i).getLong("atUid"));
+							}
+						}
+					}
+					if(atUidList.size() == 0){
+						atUidList.add(speakNewEvent.getAtUid());
+					}
+				}else{
+					atUidList.add(speakNewEvent.getAtUid());
+				}
+			}else{
+				atUidList.add(speakNewEvent.getAtUid());
+			}
+		}
+		
 		//下面开始推送
 		//判断是更新还是评论(卡片为更新，非卡片为评论)
 		boolean isUpdate = false;
-//		if()
+		if(speakNewEvent.getType() == 0 || speakNewEvent.getType() == 3
+				|| speakNewEvent.getType() == 15 || speakNewEvent.getType() == 13
+				|| speakNewEvent.getType() == 12 || speakNewEvent.getType() == 52
+				|| speakNewEvent.getType() == 55){//卡片算更新
+			isUpdate = true;
+		}else if(speakNewEvent.getType() == 54 && topic.getUid().longValue() == currentUid){//如果是国王下发的也算更新(和产品沟通的)
+			isUpdate = true;
+		}
 		
+		JsonObject jsonObject = null;
+		if(isUpdate){//卡片，也即王国更新
+			//王国更新一小时逻辑
+			boolean needPush = false;
+			String key = "topic:update:push:status:" + speakNewEvent.getTopicId();
+			if(StringUtils.isEmpty(cacheService.get(key)) && memberUidList.size() > 0){
+				needPush = true;
+				
+				cacheService.set(key, "1");
+				cacheService.expire(key, 3600);//一小时超时时间
+			}
+			
+			if(needPush){
+				//通知非核心圈的并且加入王国的人员有更新
+				String message = "你关注的王国《"+topic.getTitle()+"》更新了";
+				for(Long mid : memberUidList){
+					if(mid.longValue() == currentUid || atUidList.contains(mid)
+							|| !this.checkTopicPush(topic.getId(), mid.longValue())){//1)本人不需要推，2)at的已经有at的推送了，所以也不需要推,3)关闭了推送的也不推
+						continue;
+					}
+					jsonObject = new JsonObject();
+		            jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
+		            jsonObject.addProperty("type", Specification.PushObjectType.LIVE.index);
+		            jsonObject.addProperty("topicId", topic.getId());
+		            jsonObject.addProperty("contentType", topic.getType());
+		            jsonObject.addProperty("internalStatus", Specification.SnsCircle.OUT.index);//圈外人
+		            userService.pushWithExtra(mid.toString(), message, JPushUtils.packageExtra(jsonObject));
+				}
+			}
+		}else{//非卡片，也即王国评论
+			//王国评论一小时逻辑
+			boolean needPush = false;
+			String key = "topic:review:push:status:" + speakNewEvent.getTopicId();
+			if(StringUtils.isEmpty(cacheService.get(key)) && topic.getUid().longValue() != currentUid
+					&& !atUidList.contains(topic.getUid())){
+				needPush = true;
+				
+				cacheService.set(key, "1");
+				cacheService.expire(key, 3600);//一小时超时时间
+			}
+			
+			//需要通知国王有评论
+			if(needPush && this.checkTopicPush(topic.getId(), topic.getUid().longValue())){
+				jsonObject = new JsonObject();
+	            jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
+	            jsonObject.addProperty("type", Specification.PushObjectType.LIVE.index);
+	            jsonObject.addProperty("topicId", topic.getId());
+	            jsonObject.addProperty("contentType", topic.getType());
+	            jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//这里是给核心圈的通知，所以直接显示核心圈即可
+	            userService.pushWithExtra(topic.getUid().toString(), "你的王国《"+topic.getTitle()+"》有新的评论", JPushUtils.packageExtra(jsonObject));
+			}
+		}
 	}
 	
-	
+	/*
     public void speakNew(SpeakNewEvent speakNewEvent) {
 		//新的逻辑，这里只要是可见内容的发言，都会通知非自己的人（@的因为已经直接通知了，所以这里不需要通知了）
 		//核心圈发言，对核心圈直接发，对非核心圈有1小时延迟逻辑
@@ -262,7 +349,7 @@ public class SpeakNewListener {
 			            jsonObject.addProperty("contentType", topic.getType());
 			            jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//这里是给核心圈的通知，所以直接显示核心圈即可
 			            String alias = String.valueOf(uid);
-//			            userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
+			            userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
 					}
 				}
 			}
@@ -277,7 +364,7 @@ public class SpeakNewListener {
 			            jsonObject.addProperty("contentType", topic.getType());
 			            jsonObject.addProperty("internalStatus", Specification.SnsCircle.OUT.index);//圈外人
 			            String alias = String.valueOf(uid);
-//			            userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
+			            userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
 					}
 				}
 			}
@@ -297,12 +384,12 @@ public class SpeakNewListener {
 			            	jsonObject.addProperty("internalStatus", Specification.SnsCircle.OUT.index);//圈外人
 			            }
 			            String alias = String.valueOf(uid);
-//			            userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
+			            userService.pushWithExtra(alias, message, JPushUtils.packageExtra(jsonObject));
 					}
 				}
 			}
 		}
-	}
+	}*/
 
 	private boolean checkTopicPush(long topicId, long uid){
     	TopicUserConfig tuc = liveMybatisDao.getTopicUserConfig(uid, topicId);

@@ -1,5 +1,7 @@
 package com.me2me.live.listener;
 
+import java.util.Date;
+
 import javax.annotation.PostConstruct;
 
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +21,7 @@ import com.me2me.live.event.CoreAggregationRemindEvent;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicUserConfig;
 import com.me2me.user.model.UserNotice;
+import com.me2me.user.model.UserNoticeUnread;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
@@ -105,6 +108,18 @@ public class CoreAggregationRemindListener {
         
         userService.createUserNotice(userNotice);
 
+        Date now = new Date();
+        //V2.2.5版本开始使用新的红点体系
+        UserNoticeUnread unu = new UserNoticeUnread();
+        unu.setUid(targetUid);
+        unu.setCreateTime(now);
+        unu.setNoticeId(userNotice.getId());
+        unu.setNoticeType(type);
+        unu.setContentType(Specification.UserNoticeUnreadContentType.KINGDOM.index);
+        unu.setCid(cid);
+        unu.setLevel(Specification.UserNoticeLevel.LEVEL_2.index);
+        userService.createUserNoticeUnread(unu);
+        
         //添加系统消息红点
         cacheService.set("my:notice:level2:"+targetUid, "1");
         

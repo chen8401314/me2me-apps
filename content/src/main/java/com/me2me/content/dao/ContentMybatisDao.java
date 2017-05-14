@@ -647,6 +647,14 @@ public class ContentMybatisDao {
         return billBoardRelationMapper.selectByExample(example);
     }
     
+    public List<BillBoardRelation> getBillBoardRelationsByBidsAndType(List<Long> bids, int type){
+    	BillBoardRelationExample example = new BillBoardRelationExample();
+        BillBoardRelationExample.Criteria criteria = example.createCriteria();
+        criteria.andSourceIdIn(bids);
+        criteria.andTypeEqualTo(type);
+        return billBoardRelationMapper.selectByExample(example);
+    }
+    
     public List<BillBoardRelation> getRelationListPage(long bid, int sinceId, int pageSize){
     	BillBoardRelationExample example = new BillBoardRelationExample();
         BillBoardRelationExample.Criteria criteria = example.createCriteria();
@@ -707,6 +715,14 @@ public class ContentMybatisDao {
         return billBoardMapper.selectByExample(example);
     }
     
+    public List<BillBoard> loadBillBoardByBidsAndType(List<Long> ids, int type) {
+        BillBoardExample example = new BillBoardExample();
+        BillBoardExample.Criteria criteria = example.createCriteria();
+        criteria.andIdIn(ids);
+        criteria.andTypeEqualTo(type);
+        return billBoardMapper.selectByExample(example);
+    }
+    
     public List<BillBoardDetails> getShowListPageByType(int sinceId, int type){
     	BillBoardDetailsExample example = new BillBoardDetailsExample();
     	BillBoardDetailsExample.Criteria criteria = example.createCriteria();
@@ -716,6 +732,15 @@ public class ContentMybatisDao {
     	example.setOrderByClause(" sort asc limit 10");
     	return billBoardDetailsMapper.selectByExample(example);
     }
+    
+    public List<BillBoardDetails> getBillBoardDetailsByStatusAndType(int status, int type){
+    	BillBoardDetailsExample example = new BillBoardDetailsExample();
+    	BillBoardDetailsExample.Criteria criteria = example.createCriteria();
+    	criteria.andTypeEqualTo(type);
+    	criteria.andStatusEqualTo(status);
+    	return billBoardDetailsMapper.selectByExample(example);
+    }
+    
     /**
      * 修改榜单
      * @author zhangjiwei

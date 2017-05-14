@@ -5247,6 +5247,11 @@ private void localJpush(long toUid){
 	}
 
 	@Override
+	public List<BillBoardRelation> getBillBoardRelationByBid(long bid){
+		return contentMybatisDao.loadBillBoardRelation(bid);
+	}
+	
+	@Override
 	public List<BillBoardRelationDto> getRelationsByBillBoardId(long id) {
 		BillBoard bb = contentMybatisDao.loadBillBoardById(id);
 		if(null != bb && bb.getMode().intValue() > 0){
@@ -5539,5 +5544,53 @@ private void localJpush(long toUid){
 			dto.getEmojiData().add(data);
 		}
 		return Response.success(dto);
+	}
+	
+	@Override
+	public List<Long> getBillboardTopicIds4kingdomPushTask(){
+		List<Long> result = new ArrayList<Long>();
+		
+		//查询所有上线的、王国榜单
+		List<Long> bidList = new ArrayList<Long>();
+		List<BillBoardDetails> list = contentMybatisDao.getBillBoardDetailsByStatusAndType(1, 2);
+		if(null != list && list.size() > 0){
+			for(BillBoardDetails bbd : list){
+				bidList.add(bbd.getBid());
+			}
+		}
+		
+		List<BillBoard> bList = contentMybatisDao.loadBillBoardByBidsAndType(bidList, 1);
+		if(null != bList && bList.size() > 0){
+			List<Long> bids = new ArrayList<Long>();
+			for(BillBoard b : bList){
+				bids.add(b.getId());
+			}
+			List<BillBoardRelation> rList = contentMybatisDao.getBillBoardRelationsByBidsAndType(bids, 1);
+			if(null != rList && rList.size() > 0){
+				
+				for(BillBoardRelation r : rList){
+					if(!result.contains(r.getTargetId())){
+						result.add(r.getTargetId());
+					}
+				}
+			}
+		}
+		
+		return result;
+	}
+	
+	@Override
+	public List<BillBoard> getBillBoardList4kingdomPushTask(){
+		List<Long> bidList = new ArrayList<Long>();
+		List<BillBoardDetails> list = contentMybatisDao.getBillBoardDetailsByStatusAndType(1, 2);
+		if(null != list && list.size() > 0){
+			for(BillBoardDetails bbd : list){
+				bidList.add(bbd.getBid());
+			}
+		}
+		if(null != bidList && bidList.size() > 0){
+			return contentMybatisDao.loadBillBoardByBidsAndType(bidList, 1);
+		}
+		return null;
 	}
 }

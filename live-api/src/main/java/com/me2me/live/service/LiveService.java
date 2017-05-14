@@ -490,4 +490,11 @@ public interface LiveService {
 	 * @return
 	 */
 	Response blockUserKingdom(long topicId, long uid);
+	
+	/**
+	 * 批量获取王国
+	 * @param ids
+	 * @return
+	 */
+	List<Topic> getTopicListByIds(List<Long> ids);
 }

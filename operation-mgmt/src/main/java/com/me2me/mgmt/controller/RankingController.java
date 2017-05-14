@@ -272,6 +272,9 @@ public class RankingController {
 				contentService.addRelationToBillBoard(detail);
 			}
 			
+			
+			
+			
 			return JsonResult.success();
 		}catch(Exception e){
 			return JsonResult.error();
