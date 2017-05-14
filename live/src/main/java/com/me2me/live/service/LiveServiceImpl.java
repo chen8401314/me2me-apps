@@ -5544,6 +5544,7 @@ public class LiveServiceImpl implements LiveService {
 			return Response.failure(500,"您没有重新发送投票权限！");
 		}
 		tf.setId(null);
+		tf.setCreateTime(new Date());
 		liveMybatisDao.createTopicFragment(tf);
 		liveMybatisDao.deleteFragmentByIdForPhysics(fragmentId);
 		ResendVoteDto rv = new ResendVoteDto();
@@ -5605,7 +5606,7 @@ public class LiveServiceImpl implements LiveService {
 		if(topic==null){
 			return Response.failure(500,"没有找到该投票王国！");
 		}
-		if(topic.getUid().longValue() == uid || voteInfo.getUid().longValue() == uid ){
+		if(voteInfo.getUid().longValue() == uid ){
 			dto.setCanEnd(1);
 		}else{
 			dto.setCanEnd(0);

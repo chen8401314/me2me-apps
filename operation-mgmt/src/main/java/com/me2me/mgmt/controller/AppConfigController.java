@@ -62,9 +62,9 @@ public class AppConfigController {
 		cacheConfigList.add(ci);
 		ci = new ConfigItem("power:key", "管理员", ConfigItem.ConfigType.SET);
 		cacheConfigList.add(ci);
-		ci = new ConfigItem("NORMAL_CREATE_VOTE_COUNT", "普通用户每天投票次数", ConfigItem.ConfigType.STRING);
+		ci = new ConfigItem("NORMAL_CREATE_VOTE_COUNT", "普通用户每天发起投票次数限制", ConfigItem.ConfigType.STRING);
 		cacheConfigList.add(ci);
-		ci = new ConfigItem("V_CREATE_VOTE_COUNT", "大V用户每天投票次数", ConfigItem.ConfigType.STRING);
+		ci = new ConfigItem("V_CREATE_VOTE_COUNT", "大V用户每天发起投票次数限制", ConfigItem.ConfigType.STRING);
 		cacheConfigList.add(ci);
 		
 		dbConfigList = new ArrayList<ConfigItem>();
