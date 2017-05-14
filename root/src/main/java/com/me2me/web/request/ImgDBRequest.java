@@ -15,7 +15,7 @@ public class ImgDBRequest extends Request {
 	private int direction;
 	@Getter
     @Setter
-	private long fragmentId;
+	private long fid;
 	
 	@Getter
 	@Setter

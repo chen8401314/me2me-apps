@@ -835,7 +835,7 @@ public class Live extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/kingdomImgDB",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response recQuery(ImgDBRequest request){
-    	Response resp= liveService.kingdomImgDB(request.getTopicId(), request.getDirection(), request.getFragmentId(),request.getType());
+    	Response resp= liveService.kingdomImgDB(request.getTopicId(), request.getDirection(), request.getFid(),request.getType());
     	return resp;
     }
     /**
