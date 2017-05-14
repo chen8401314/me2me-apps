@@ -874,11 +874,12 @@ public class LiveLocalJdbcDao {
 	 */
 	public List<Map<String, Object>> getVoteUserProfileByVoteId(long voteId){
 		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT DISTINCT u.uid,u.avatar,u.nick_name,u.v_lv,v.create_time ");
+		sb.append("SELECT  u.uid,any_value(u.avatar) AS avatar,any_value(u.nick_name) AS nick_name,any_value(u.v_lv) AS v_lv,any_value(v.create_time) AS create_time");
 		sb.append(" FROM user_profile u,vote_record v ");
 		sb.append(" WHERE u.uid = v.uid AND v.voteId = ");
 		sb.append(String.valueOf(voteId));
-		sb.append(" order by v.create_time desc ");
+		sb.append("  GROUP BY uid");
+		sb.append("  ORDER BY create_time DESC");
 		sb.append(" LIMIT 0,50");
 		return jdbcTemplate.queryForList(sb.toString());
 	}
