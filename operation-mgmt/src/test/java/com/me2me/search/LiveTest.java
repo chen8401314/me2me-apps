@@ -14,10 +14,34 @@ import com.me2me.search.service.SearchService;
 public class LiveTest extends AbstractJUnit4SpringContextTests {
 	@Autowired
 	private LiveService liveService;
-	@Test
+	//@Test
 	public void testLiveImgDB() {
-		int topicId = 4;
-		int fId = 100;
+		int topicId = 2519;
+		int fId = 76820;
+		try {
+			Response resp = liveService.kingdomImgDB(topicId, 2, fId,1);
+			System.out.println(JSON.toJSONString(resp, true));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	//@Test
+	public void testLiveImgDBUp() {
+		System.out.println("-----up----------------");
+		int topicId = 2519;
+		int fId = 76820;
+		try {
+			Response resp = liveService.kingdomImgDB(topicId, 1, fId,1);
+			System.out.println(JSON.toJSONString(resp, true));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+	@Test
+	public void testLiveImgDBDown() {
+		System.out.println("-----down----------------");
+		int topicId = 2519;
+		int fId = 76820;
 		try {
 			Response resp = liveService.kingdomImgDB(topicId, 0, fId,1);
 			System.out.println(JSON.toJSONString(resp, true));
