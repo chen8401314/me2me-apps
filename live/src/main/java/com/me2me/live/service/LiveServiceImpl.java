@@ -5638,8 +5638,11 @@ public class LiveServiceImpl implements LiveService {
 	// 按月加载图库，for ios.
 	private Response kingdomImgDB2Month(long topicId, int direction, long sinceId){
 		KingdomImgDB imgDb = new KingdomImgDB();
-		List<TopicFragment> fragmentList=liveMybatisDao.getTopicImgFragment2Month(topicId, sinceId, direction);
-		
+		TopicFragment curTF = liveMybatisDao.getTopicFragmentById(sinceId);//topicFragmentMapper.selectByPrimaryKey(sinceId);
+		List<TopicFragment> fragmentList=liveMybatisDao.getTopicImgFragment2Month(curTF, sinceId, direction);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyyMM");
+		imgDb.setTopMonth(sdf.format(curTF.getCreateTime()));
+		imgDb.setTopMonthDataSize(fragmentList.size());
 		List<KingdomImgDB.ImgData> imgDataList = new ArrayList<>();
 		for(TopicFragment fg:fragmentList){
 			KingdomImgDB.ImgData imgData= new KingdomImgDB.ImgData();

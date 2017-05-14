@@ -239,10 +239,10 @@ public class LiveMybatisDao {
      * @param direction 方向
      * @return
      */
-      public List<TopicFragment> getTopicImgFragment2Month(long topicId, long sinceId,int direction) {
+      public List<TopicFragment> getTopicImgFragment2Month(TopicFragment curTF, long sinceId,int direction) {
     	  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
           // 取当前月数据。
-    	  TopicFragment curTF = topicFragmentMapper.selectByPrimaryKey(sinceId);
+    	  long topicId= curTF.getTopicId();
     	  String month = null;
           if(direction==2){
         	  Date date = curTF.getCreateTime();
