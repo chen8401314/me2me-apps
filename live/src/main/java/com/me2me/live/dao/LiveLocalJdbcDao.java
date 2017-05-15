@@ -453,7 +453,7 @@ public class LiveLocalJdbcDao {
 			if(StringUtils.isNotBlank(searchDTO.getKeyword())){
 				sb.append(" and t.title like '%").append(searchDTO.getKeyword()).append("%'");
 			}
-			sb.append(" order by t.longtime desc limit 10");
+			sb.append(" order by t.longtime desc limit 20");
 		}else{
 			return null;
 		}

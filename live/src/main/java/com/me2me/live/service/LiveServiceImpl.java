@@ -720,12 +720,16 @@ public class LiveServiceImpl implements LiveService {
             topicFragment.setExtra(speakDto.getExtra());
             liveMybatisDao.createTopicFragment(topicFragment);
 
-            Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
-            Calendar calendar = Calendar.getInstance();
-            topic.setUpdateTime(calendar.getTime());
-            topic.setLongTime(calendar.getTimeInMillis());
-            liveMybatisDao.updateTopic(topic);
-            log.info("updateTopic updateTime");
+            //由于系统消息和足迹不参与王国更新排序计算，故这里不需要更新时间
+            if(speakDto.getType() != Specification.LiveSpeakType.SYSTEM.index
+            		&& (speakDto.getType() != 51 || speakDto.getContentType() != 16)){
+            	Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
+                Calendar calendar = Calendar.getInstance();
+                topic.setUpdateTime(calendar.getTime());
+                topic.setLongTime(calendar.getTimeInMillis());
+                liveMybatisDao.updateTopic(topic);
+                log.info("updateTopic updateTime");
+            }
 
             long fid = topicFragment.getId();
             
@@ -1570,6 +1574,9 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLastAtUid((Long)lastFragment.get("at_uid"));
                 showTopicElement.setIsTop(topic.getIsTop());
                 showTopicElement.setLastUid((Long)lastFragment.get("uid"));
+                if(null != lastFragment.get("create_time")){
+                	showTopicElement.setLastUpdateTime(((Date)lastFragment.get("create_time")).getTime());
+                }
                 lastUserProfile = profileMap.get(String.valueOf(lastFragment.get("uid")));
                 if(null != lastUserProfile){
                 	showTopicElement.setLastNickName(lastUserProfile.getNickName());
@@ -1670,6 +1677,7 @@ public class LiveServiceImpl implements LiveService {
                 showTopicElement.setLastExtra(topicFragment.getExtra());
                 showTopicElement.setLastAtUid(topicFragment.getAtUid());
                 showTopicElement.setLastUid(topicFragment.getUid());
+                showTopicElement.setLastUpdateTime(topicFragment.getCreateTime().getTime());
                 UserProfile lastUserProfile = userService.getUserProfileByUid(topicFragment.getUid());
                 if(null != lastUserProfile){
                 	showTopicElement.setLastNickName(lastUserProfile.getNickName());
@@ -4236,10 +4244,11 @@ public class LiveServiceImpl implements LiveService {
     	ceFragment.setExtra(obj.toJSONString());
     	liveMybatisDao.createTopicFragment(ceFragment);
     	
-    	Calendar calendar = Calendar.getInstance();
-    	ceTopic.setUpdateTime(calendar.getTime());
-    	ceTopic.setLongTime(calendar.getTimeInMillis());
-        liveMybatisDao.updateTopic(ceTopic);
+    	//系统信息不参与排序计算，故不需要更新王国更新时间
+//    	Calendar calendar = Calendar.getInstance();
+//    	ceTopic.setUpdateTime(calendar.getTime());
+//    	ceTopic.setLongTime(calendar.getTimeInMillis());
+//        liveMybatisDao.updateTopic(ceTopic);
         
         //更新缓存
         long ceLastFragmentId = ceFragment.getId();
@@ -4293,10 +4302,11 @@ public class LiveServiceImpl implements LiveService {
     	acFragment.setExtra(obj2.toJSONString());
     	liveMybatisDao.createTopicFragment(acFragment);
     	
-    	calendar = Calendar.getInstance();
-    	acTopic.setUpdateTime(calendar.getTime());
-    	acTopic.setLongTime(calendar.getTimeInMillis());
-        liveMybatisDao.updateTopic(acTopic);
+    	//系统信息不参与排序计算，故不需要更新王国更新时间
+//    	calendar = Calendar.getInstance();
+//    	acTopic.setUpdateTime(calendar.getTime());
+//    	acTopic.setLongTime(calendar.getTimeInMillis());
+//        liveMybatisDao.updateTopic(acTopic);
         
         //更新缓存
         long acLastFragmentId = acFragment.getId();
