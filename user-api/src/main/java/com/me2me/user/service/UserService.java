@@ -135,7 +135,7 @@ public interface UserService {
 
     Response showUserTags(long uid);
 
-    void createUserNotice(UserNotice userNotice);
+    long createUserNoticeAndReturnId(UserNotice userNotice);
     
     void createUserNoticeUnread(UserNoticeUnread userNoticeUnread);
 

@@ -150,14 +150,14 @@ public class RemindAndJpushAtMessageListener {
             userNotice.setNoticeType(Specification.UserNoticeType.LIVE_REVIEW.index);
         }
         userNotice.setReadStatus(0);
-        userService.createUserNotice(userNotice);
+        long unid = userService.createUserNoticeAndReturnId(userNotice);
         
         Date now = new Date();
         //V2.2.5版本开始使用新的红点体系
         UserNoticeUnread unu = new UserNoticeUnread();
         unu.setUid(targetUid);
         unu.setCreateTime(now);
-        unu.setNoticeId(userNotice.getId());
+        unu.setNoticeId(unid);
         unu.setNoticeType(type);
         unu.setContentType(Specification.UserNoticeUnreadContentType.KINGDOM.index);
         unu.setCid(cid);

@@ -697,12 +697,12 @@ public class ContentServiceImpl implements ContentService {
         }
         
         if(needNotice){
-        	userService.createUserNotice(userNotice);
+        	long unid = userService.createUserNoticeAndReturnId(userNotice);
         	
         	Date now = new Date();
             //V2.2.5版本开始使用新的红点体系
             UserNoticeUnread unu = new UserNoticeUnread();
-            unu.setUid(userNotice.getToUid());
+            unu.setUid(unid);
             unu.setCreateTime(now);
             unu.setNoticeId(userNotice.getId());
             unu.setNoticeType(type);
@@ -838,14 +838,14 @@ public class ContentServiceImpl implements ContentService {
         userNotice.setReview(arg);
         userNotice.setTag("");
         userNotice.setReadStatus(0);
-        userService.createUserNotice(userNotice);
+        long unid = userService.createUserNoticeAndReturnId(userNotice);
         
         Date now = new Date();
         //V2.2.5版本开始使用新的红点体系
         UserNoticeUnread unu = new UserNoticeUnread();
         unu.setUid(atUid);
         unu.setCreateTime(now);
-        unu.setNoticeId(userNotice.getId());
+        unu.setNoticeId(unid);
         unu.setNoticeType(type);
         unu.setContentType(Specification.UserNoticeUnreadContentType.UGC.index);
         unu.setCid(content.getId());
@@ -859,12 +859,12 @@ public class ContentServiceImpl implements ContentService {
             userNotice.setToUid(content.getUid());
             userNotice.setToNickName(autherProfile.getNickName());
             userNotice.setId(null);
-            userService.createUserNotice(userNotice);
+            long unid2 = userService.createUserNoticeAndReturnId(userNotice);
             
             unu = new UserNoticeUnread();
             unu.setUid(content.getUid());
             unu.setCreateTime(now);
-            unu.setNoticeId(userNotice.getId());
+            unu.setNoticeId(unid2);
             unu.setNoticeType(type);
             unu.setContentType(Specification.UserNoticeUnreadContentType.UGC.index);
             unu.setCid(content.getId());

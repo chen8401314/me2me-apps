@@ -882,8 +882,9 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void createUserNotice(UserNotice userNotice) {
+    public long createUserNoticeAndReturnId(UserNotice userNotice) {
         userMybatisDao.createUserNotice(userNotice);
+        return userNotice.getId();
     }
     
     public void createUserNoticeUnread(UserNoticeUnread userNoticeUnread){

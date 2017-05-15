@@ -85,6 +85,7 @@ import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.SystemConfig;
 import com.me2me.user.model.UserFollow;
 import com.me2me.user.model.UserNotice;
+import com.me2me.user.model.UserNoticeUnread;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
@@ -4158,8 +4159,20 @@ public class LiveServiceImpl implements LiveService {
     	obj.put("coverTopicId", coverTopic.getId());
     	userNotice.setExtra(obj.toJSONString());
         
-        userService.createUserNotice(userNotice);
+        long unid = userService.createUserNoticeAndReturnId(userNotice);
 
+        Date now = new Date();
+        //V2.2.5版本开始使用新的红点体系
+        UserNoticeUnread unu = new UserNoticeUnread();
+        unu.setUid(targetUid);
+        unu.setCreateTime(now);
+        unu.setNoticeId(unid);
+        unu.setNoticeType(type);
+        unu.setContentType(Specification.UserNoticeUnreadContentType.KINGDOM.index);
+        unu.setCid(cid);
+        unu.setLevel(Specification.UserNoticeLevel.LEVEL_2.index);
+        userService.createUserNoticeUnread(unu);
+        
         //添加系统消息红点
         cacheService.set("my:notice:level2:"+targetUid, "1");
         
