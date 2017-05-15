@@ -612,7 +612,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Response getUserNotice(UserNoticeDto userNoticeDto){
+    public Response userNotice(UserNoticeDto userNoticeDto){
         log.info("getUserNotice start ...");
         ShowUserNoticeDto showUserNoticeDto = new ShowUserNoticeDto();
         List<UserNotice> list = userMybatisDao.userNotice(userNoticeDto);

@@ -109,7 +109,7 @@ public interface UserService {
      * @param userNoticeDto
      * @return
      */
-    Response getUserNotice(UserNoticeDto userNoticeDto);
+    Response userNotice(UserNoticeDto userNoticeDto);
 
 
     /**
