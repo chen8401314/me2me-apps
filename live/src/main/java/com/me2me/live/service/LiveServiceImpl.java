@@ -2778,7 +2778,7 @@ public class LiveServiceImpl implements LiveService {
             	}
             }
           //逗一逗和投票（预防低版本）
-            if(getLiveDetailDto.getVersionFlag() < 3){
+            if(getLiveDetailDto.getVersionFlag() < 3){//低于V2.2.5版本
             	if(topicFragment.getType() == 51 || topicFragment.getType() == 52){
             		if(topicFragment.getContentType() == 20){//逗一逗
             			liveElement.setStatus(0);
