@@ -13,6 +13,7 @@ import com.me2me.content.event.ReviewEvent;
 import com.me2me.content.model.Content;
 import com.me2me.content.service.ContentService;
 import com.me2me.core.event.ApplicationEventBus;
+import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 
 import lombok.extern.java.Log;
@@ -77,12 +78,13 @@ public class PublishUGCListener {
 					contentService.remind(content, reviewDto.getUid(), Specification.UserNoticeType.REVIEW.index, reviewDto.getReview(), atUid);
 				}
 
+				UserProfile userProfile = userService.getUserProfileByUid(reviewDto.getUid());
 				JsonObject jsonObject = new JsonObject();
 				jsonObject.addProperty("messageType", Specification.PushMessageType.AT.index);
 				jsonObject.addProperty("type", Specification.PushObjectType.UGC.index);
 				jsonObject.addProperty("cid", content.getId());
 				String alias = String.valueOf(atUid);
-				userService.pushWithExtra(alias, "有人@你", JPushUtils.packageExtra(jsonObject));
+				userService.pushWithExtra(alias, userProfile.getNickName() + "@了你!", JPushUtils.packageExtra(jsonObject));
 			}
 		} else {
 			// 添加提醒

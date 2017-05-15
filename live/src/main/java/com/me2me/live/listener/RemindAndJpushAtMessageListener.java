@@ -81,9 +81,13 @@ public class RemindAndJpushAtMessageListener {
 			atUidList.add(speakDto.getAtUid());
 		}
 
-        String message = "有人@你";
+        
         
         Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
+        UserProfile userProfile = userService.getUserProfileByUid(speakDto.getUid());
+        
+        String message = userProfile.getNickName() + " 在 『"+topic.getTitle()+"』" + " @你了！";
+        
         int fromStatus = this.getInternalStatus(topic, speakDto.getUid());
         for(Long atUid : atUidList){
             this.liveRemind(atUid, speakDto.getUid(), Specification.LiveSpeakType.FANS.index, speakDto.getTopicId(), speakDto.getFragment());

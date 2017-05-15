@@ -307,7 +307,7 @@ public class Users extends BaseController {
         userNoticeDto.setUid(request.getUid());
         userNoticeDto.setSinceId(request.getSinceId());
         userNoticeDto.setLevel(request.getLevel());
-        return userService.getUserNotice(userNoticeDto);
+        return userService.userNotice(userNoticeDto);
     }
 
     /**
