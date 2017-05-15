@@ -5481,7 +5481,10 @@ public class LiveServiceImpl implements LiveService {
 		speakDto.setSource(dto.getSource());
 		speakDto.setExtra(json.toJSONString());
 		speak(speakDto);
-		return Response.success(ResponseStatus.CREATE_VOTE_SUCCESS.status, ResponseStatus.CREATE_VOTE_SUCCESS.message);
+		CreateVoteResponeDto cvd = new CreateVoteResponeDto();
+		cvd.setVoteId(voteInfo.getId());
+		cvd.setFragmentId(speakDto.getFragmentId());
+		return Response.success(ResponseStatus.CREATE_VOTE_SUCCESS.status, ResponseStatus.CREATE_VOTE_SUCCESS.message,cvd);
 	}
 	@Override
 	public Response vote(long uid,long voteId,String optionId) {
