@@ -42,6 +42,15 @@ public interface ContentSearchService {
 	 * @return
 	 */
 	FacetedPage<UserEsMapping> queryUsers(String content,int page,int pageSize);
+	
+	/**
+	 * 给王国at用户使用的搜人
+	 * @param content
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	FacetedPage<UserEsMapping> queryUsers4AtUserList(String content,int page,int pageSize, long searchUid);
 	/**
 	 * 保存搜索记录，为热门词推荐提供基础依据
 	 * @param userId
