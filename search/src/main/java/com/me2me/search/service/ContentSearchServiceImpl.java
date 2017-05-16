@@ -392,6 +392,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 				esTemplate.putMapping(UgcEsMapping.class);
 				while (true) {
 					List<UgcEsMapping> ugcList =searchMapper.getUgcPageByUpdateDate(beginDate, endDate, skip, batchSize);
+					log.info("load ugc data from db,date:{}-{},skip:{},data size:{}",beginDate,endDate,skip,ugcList.size());
 					if (ugcList == null || ugcList.isEmpty()) {
 						break;
 					}
@@ -438,6 +439,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 				esTemplate.putMapping(TopicEsMapping.class);
 				while (true) {
 					List<TopicEsMapping> kingdomList =searchMapper.getKingdomPageByUpdateDate(beginDate, endDate, skip, batchSize);
+					log.info("load kingdom data from db,date:{}-{},skip:{},data size:{}",beginDate,endDate,skip,kingdomList.size());
 					if (kingdomList == null || kingdomList.isEmpty()) {
 						break;
 					}

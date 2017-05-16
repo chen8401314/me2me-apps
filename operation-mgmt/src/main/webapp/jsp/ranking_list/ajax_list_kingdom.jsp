@@ -120,6 +120,9 @@
 							<button type="submit" class="btn btn-primary">
 								<i  class=" fa fa-search "></i> 搜索
 							</button>
+							<button type="button" class="btn btn-danger" id="flushKingdomCache" data-loading-text="刷新中..." >
+								立即刷新王国缓存
+							</button>
 						</div>
 					</p>
 				</form>
@@ -293,6 +296,15 @@
 		})
 		parent.onAdd(dataArr);
 	}
+	$("#flushKingdomCache").click(function(){
+		if(confirm("确认刷新吗？")){
+			 var $btn = $(this).button('loading');
+			 $.getJSON("./ajaxUpdateKingdomsCache",{r:Math.random()},function(d){
+				 alert(d.desc);		 
+				 $btn.button('reset')
+			 })
+		}
+	})
 	</script>
 </body>
 </html>

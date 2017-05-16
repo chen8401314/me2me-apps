@@ -33,6 +33,7 @@ import com.me2me.live.service.LiveService;
 import com.me2me.mgmt.dal.utils.HttpUtils;
 import com.me2me.mgmt.services.LocalConfigService;
 import com.me2me.mgmt.syslog.SystemControllerLog;
+import com.me2me.mgmt.task.billboard.KingdomCountDayTask;
 import com.me2me.mgmt.vo.DatatablePage;
 import com.me2me.user.dto.SearchUserDto;
 import com.me2me.user.service.UserService;
@@ -63,6 +64,8 @@ public class RankingController {
 	@Autowired
 	private FileTransferService fileTransferService;
 	
+	@Autowired
+	KingdomCountDayTask kcDayTask;
 	
 	@RequestMapping(value = "/list_ranking")
 	@SystemControllerLog(description = "榜单列表")
@@ -187,6 +190,13 @@ public class RankingController {
 		page.setData(list.getDataList());
 		page.setRecordsTotal((int)list.getTotalRecords());
 		return page;
+	}
+	@ResponseBody
+	@RequestMapping(value = "/ajaxUpdateKingdomsCache")
+	@SystemControllerLog(description = "刷新系统王国缓存")
+	public JsonResult ajaxUpdateKingdomsCache(HttpServletRequest request) throws Exception {
+		kcDayTask.doTask();
+		return JsonResult.success();
 	}
 	@ResponseBody
 	@RequestMapping(value = "/ajaxLoadKingdoms")
