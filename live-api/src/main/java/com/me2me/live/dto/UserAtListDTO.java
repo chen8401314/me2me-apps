@@ -12,5 +12,4 @@ public class UserAtListDTO implements BaseEntity {
 	private String keyword;
 	private int page;
 	private long topicId;
-	private int searchType;
 }

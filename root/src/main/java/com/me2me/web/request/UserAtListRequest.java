@@ -16,7 +16,4 @@ public class UserAtListRequest extends Request {
 	@Getter
     @Setter
 	private long topicId;
-	@Getter
-    @Setter
-	private int searchType;
 }

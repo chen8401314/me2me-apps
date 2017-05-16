@@ -863,7 +863,6 @@ public class Live extends BaseController {
     	UserAtListDTO dto = new UserAtListDTO();
     	dto.setUid(request.getUid());
     	dto.setKeyword(request.getKeyword());
-    	dto.setSearchType(request.getSearchType());
     	dto.setPage(request.getPage());
     	dto.setTopicId(request.getTopicId());
     	
