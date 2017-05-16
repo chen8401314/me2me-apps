@@ -704,7 +704,7 @@ public class ContentServiceImpl implements ContentService {
             UserNoticeUnread unu = new UserNoticeUnread();
             unu.setUid(unid);
             unu.setCreateTime(now);
-            unu.setNoticeId(userNotice.getId());
+            unu.setNoticeId(unid);
             unu.setNoticeType(type);
             unu.setContentType(Specification.UserNoticeUnreadContentType.UGC.index);//这里只有UGC的才进行消息
             unu.setCid(content.getId());
