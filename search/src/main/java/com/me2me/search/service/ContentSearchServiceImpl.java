@@ -183,6 +183,24 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		FacetedPage<UserEsMapping> result = esTemplate.queryForPage(sq, UserEsMapping.class);
 		return result;
 	}
+	
+	@Override
+	public FacetedPage<UserEsMapping> queryUsers4AtUserList(String content,int page,int pageSize, long searchUid){
+		BoolQueryBuilder bq = new BoolQueryBuilder();
+		if(StringUtils.isEmpty(content)){
+			bq.must(QueryBuilders.matchAllQuery());
+		}else{
+			bq.should(QueryBuilders.queryStringQuery(content).field("nick_name"));
+		}
+		bq.mustNot(QueryBuilders.termQuery("uid", searchUid));//过滤掉不需要的uid
+		
+		SearchQuery sq = new NativeSearchQuery(bq);
+		
+		sq.setPageable(new PageRequest(--page, pageSize));
+		
+		FacetedPage<UserEsMapping> result = esTemplate.queryForPage(sq, UserEsMapping.class);
+		return result;
+	}
 
 	@Override
 	public void addSearchHistory(String searchContent) {

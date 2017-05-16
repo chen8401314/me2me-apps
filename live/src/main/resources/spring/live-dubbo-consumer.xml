@@ -19,5 +19,7 @@
     
     <dubbo:reference interface="com.me2me.activity.service.ActivityService" id="activityService"/>
     
+    <dubbo:reference interface="com.me2me.search.service.SearchService" id="searchService"/>
+    
     <dubbo:consumer check="false" />
 </beans>

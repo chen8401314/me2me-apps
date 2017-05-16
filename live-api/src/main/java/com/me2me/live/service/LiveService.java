@@ -21,6 +21,7 @@ import com.me2me.live.dto.SearchTopicDto;
 import com.me2me.live.dto.SettingModifyDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.dto.TestApiDto;
+import com.me2me.live.dto.UserAtListDTO;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.TeaseInfo;
 import com.me2me.live.model.Topic;
@@ -497,4 +498,11 @@ public interface LiveService {
 	 * @return
 	 */
 	List<Topic> getTopicListByIds(List<Long> ids);
+	
+	/**
+	 * 王国@用户列表获取
+	 * @param atListDTO
+	 * @return
+	 */
+	Response userAtList(UserAtListDTO atListDTO);
 }

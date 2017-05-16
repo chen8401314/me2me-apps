@@ -1,6 +1,7 @@
 package com.me2me.search.service;
 
 import java.util.List;
+import java.util.Map;
 
 import com.me2me.common.web.Response;
 import com.me2me.search.model.SearchHotKeyword;
@@ -105,4 +106,6 @@ public interface SearchService {
 	Response recommendKingdom(long uid,int page,int pageSize);
 	
 	Response recContentDislike(long uid, long cid, int type);
+	
+	List<Map<String, Object>> topicAtUserList(String keyword, long searchUid);
 }

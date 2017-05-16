@@ -31,6 +31,7 @@ import com.me2me.live.dto.LiveBarrageDto;
 import com.me2me.live.dto.SettingModifyDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.dto.TestApiDto;
+import com.me2me.live.dto.UserAtListDTO;
 import com.me2me.live.service.LiveService;
 import com.me2me.web.request.AggregationOptRequest;
 import com.me2me.web.request.AggregationPublishRequest;
@@ -73,6 +74,7 @@ import com.me2me.web.request.TopicTagCheckRequest;
 import com.me2me.web.request.TopicTagsModifyRequest;
 import com.me2me.web.request.TopicTagsRequest;
 import com.me2me.web.request.TopicVoteInfoRequest;
+import com.me2me.web.request.UserAtListRequest;
 import com.me2me.web.request.VoteInfoRequest;
 import com.me2me.web.request.VoteRequest;
 import com.me2me.web.utils.VersionUtil;
@@ -850,4 +852,21 @@ public class Live extends BaseController {
     	return resp;
     }
     
+    /**
+     * 王国@用户列表接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/userAtList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response userAtList(UserAtListRequest request){
+    	UserAtListDTO dto = new UserAtListDTO();
+    	dto.setUid(request.getUid());
+    	dto.setKeyword(request.getKeyword());
+    	dto.setSearchType(request.getSearchType());
+    	dto.setPage(request.getPage());
+    	dto.setTopicId(request.getTopicId());
+    	
+    	return liveService.userAtList(dto);
+    }
 }

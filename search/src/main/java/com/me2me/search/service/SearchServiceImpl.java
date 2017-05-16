@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.me2me.common.Constant;
+import com.me2me.common.web.BaseEntity;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -913,6 +914,7 @@ public class SearchServiceImpl implements SearchService {
 		return Response.success(dt);
 	}
 	
+	@Override
 	public Response recContentDislike(long uid, long cid, int type){
 		SearchUserDislike sud = searchMybatisDao.getSearchUserDislikeByUidAndCidAndType(uid, cid, type);
 		if(null == sud){
@@ -925,5 +927,39 @@ public class SearchServiceImpl implements SearchService {
 		}
 		
 		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message);
+	}
+	
+	@Override
+	public List<Map<String, Object>> topicAtUserList(String keyword, long searchUid){
+		FacetedPage<UserEsMapping> esResult = this.searchService.queryUsers4AtUserList(keyword, 1, 20, searchUid);
+		List<Long> uidList = new ArrayList<Long>();
+		for(UserEsMapping u : esResult){
+			uidList.add(u.getUid());
+		}
+		Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+		if(null != uidList && uidList.size() > 0){
+			List<UserProfile> userList = userService.getUserProfilesByUids(uidList);
+			if(null != userList && userList.size() > 0){
+				for(UserProfile u : userList){
+					userMap.put(u.getUid().toString(), u);
+				}
+			}
+		}
+		
+		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+		UserProfile user = null;
+		Map<String, Object> m = null;
+		for(UserEsMapping u : esResult){
+			user = userMap.get(u.getUid().toString());
+			if(null != user){
+				m = new HashMap<String, Object>();
+				m.put("uid", user.getUid());
+				m.put("nick_name", user.getNickName());
+				m.put("avatar", user.getAvatar());
+				m.put("v_lv", user.getvLv());
+				result.add(m);
+			}
+		}
+		return result;
 	}
 }

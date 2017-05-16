@@ -81,6 +81,7 @@ import com.me2me.live.model.TopicUserConfig;
 import com.me2me.live.model.VoteInfo;
 import com.me2me.live.model.VoteOption;
 import com.me2me.live.model.VoteRecord;
+import com.me2me.search.service.SearchService;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.model.SystemConfig;
 import com.me2me.user.model.UserFollow;
@@ -128,6 +129,8 @@ public class LiveServiceImpl implements LiveService {
     @Autowired
     private ActivityService activityService;
     
+    @Autowired
+    private SearchService searchService;
 
     @Value("#{app.live_web}")
     private String live_web;
@@ -5674,7 +5677,7 @@ public class LiveServiceImpl implements LiveService {
 		List<KingdomImgDB.ImgData> imgDataList = new ArrayList<>();
 		for(TopicFragment fg:fragmentList){
 			KingdomImgDB.ImgData imgData= new KingdomImgDB.ImgData();
-			String fragmentImage = "https://cdn.me-to-me.com/" +fg.getFragmentImage();
+			String fragmentImage = Constant.QINIU_DOMAIN + "/" +fg.getFragmentImage();
 			imgData.setFragmentImage(fragmentImage);
 			imgData.setFragmentId(fg.getId());
 			imgData.setContentType(fg.getContentType());
@@ -5700,5 +5703,63 @@ public class LiveServiceImpl implements LiveService {
 			return null;
 		}
 		return liveMybatisDao.getTopicsByIds(ids);
+	}
+	
+	@Override
+	public Response userAtList(UserAtListDTO atListDTO){
+		Topic topic = liveMybatisDao.getTopicById(atListDTO.getTopicId());
+		if(null == topic){
+			return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
+		}
+		List<Long> coreUidList = new ArrayList<Long>();
+		coreUidList.add(topic.getUid());//国王肯定是核心圈
+		if(!StringUtils.isEmpty(topic.getCoreCircle())){
+			JSONArray array = JSON.parseArray(topic.getCoreCircle());
+			Long uid = null;
+			for (int i = 0; i < array.size(); i++) {
+				uid = array.getLong(i);
+				if(!coreUidList.contains(uid)){
+					coreUidList.add(uid);
+				}
+	        }
+		}
+		
+		ShowUserAtListDTO result = new ShowUserAtListDTO();
+		List<Map<String, Object>> uList = null;
+		if(atListDTO.getSearchType() == 0){//王国内检索
+			int page = atListDTO.getPage();
+			if(page < 1){
+				page = 1;
+			}
+			int pageSize = 20;
+			int start = (page-1)*pageSize;
+			
+			uList = liveLocalJdbcDao.getUserAtListInTopic(atListDTO.getTopicId(), start, pageSize, coreUidList, atListDTO.getUid());
+		}else if(atListDTO.getSearchType() == 1){//全站检索
+			uList = searchService.topicAtUserList(atListDTO.getKeyword(), atListDTO.getUid());
+		}else{
+			//其他，暂不支持
+		}
+		
+		if(null != uList && uList.size() > 0){
+			ShowUserAtListDTO.UserElement e = null;
+			Long uid = null;
+			for(Map<String, Object> u : uList){
+				e = new ShowUserAtListDTO.UserElement();
+				uid = (Long)u.get("uid");
+				e.setUid(uid);
+				e.setNickName((String)u.get("nick_name"));
+				e.setAvatar(Constant.QINIU_DOMAIN + "/" + (String)u.get("avatar"));
+				e.setV_lv((Integer)u.get("v_lv"));
+				if(coreUidList.contains(uid)){
+					e.setInternalStatus(2);
+				}else{
+					e.setInternalStatus(0);
+				}
+				result.getUserData().add(e);
+			}
+		}
+		
+		return Response.success(result);
 	}
 }
