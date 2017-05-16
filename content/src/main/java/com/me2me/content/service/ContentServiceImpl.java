@@ -854,23 +854,23 @@ public class ContentServiceImpl implements ContentService {
         
         
         //如果@人和被@人都不是ugc作者，则需要给ugc作者发送一个提醒消息
-        if(content.getUid()!=atUid&&content.getUid()!=uid){
-            UserProfile autherProfile = userService.getUserProfileByUid(content.getUid());
-            userNotice.setToUid(content.getUid());
-            userNotice.setToNickName(autherProfile.getNickName());
-            userNotice.setId(null);
-            long unid2 = userService.createUserNoticeAndReturnId(userNotice);
-            
-            unu = new UserNoticeUnread();
-            unu.setUid(content.getUid());
-            unu.setCreateTime(now);
-            unu.setNoticeId(unid2);
-            unu.setNoticeType(type);
-            unu.setContentType(Specification.UserNoticeUnreadContentType.UGC.index);
-            unu.setCid(content.getId());
-            unu.setLevel(Specification.UserNoticeLevel.LEVEL_1.index);
-            userService.createUserNoticeUnread(unu);
-        }
+//        if(content.getUid()!=atUid&&content.getUid()!=uid){
+//            UserProfile autherProfile = userService.getUserProfileByUid(content.getUid());
+//            userNotice.setToUid(content.getUid());
+//            userNotice.setToNickName(autherProfile.getNickName());
+//            userNotice.setId(null);
+//            long unid2 = userService.createUserNoticeAndReturnId(userNotice);
+//            
+//            unu = new UserNoticeUnread();
+//            unu.setUid(content.getUid());
+//            unu.setCreateTime(now);
+//            unu.setNoticeId(unid2);
+//            unu.setNoticeType(type);
+//            unu.setContentType(Specification.UserNoticeUnreadContentType.UGC.index);
+//            unu.setCid(content.getId());
+//            unu.setLevel(Specification.UserNoticeLevel.LEVEL_1.index);
+//            userService.createUserNoticeUnread(unu);
+//        }
         
         
         
