@@ -247,8 +247,9 @@ public class LiveMybatisDao {
 	      // 取当前月数据。
 		  String month = null;
 		  boolean isBegin = sinceId==-1;
+		  String coverMonth = sdf.format(topic.getCreateTime());
 		  if(isBegin){
-			  month= sdf.format(topic.getCreateTime());
+			  month= coverMonth;
 		  }else{
 			  TopicFragment curTF = getTopicFragmentById(sinceId);//topicFragmentMapper.selectByPrimaryKey(sinceId);
 			
@@ -292,7 +293,7 @@ public class LiveMybatisDao {
 
 			List<KingdomImgDB.ImgData> imgDataList = new ArrayList<>();
 			// 加入王国封面
-			if(isBegin){
+			if(coverMonth.equals(month)){
 				KingdomImgDB.ImgData imgData = new KingdomImgDB.ImgData();
 				String fragmentImage = Constant.QINIU_DOMAIN + "/"  + topic.getLiveImage();
 				imgData.setFragmentImage(fragmentImage);
