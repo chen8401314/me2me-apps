@@ -586,6 +586,7 @@ public class UserServiceImpl implements UserService {
             this.modifyUserHobby(modifyUserHobbyDto);
             log.info("modify user hobby");
         }
+        userProfile.setUpdateTime(new Date());
         userMybatisDao.modifyUserProfile(userProfile);
         log.info("user modify profile success");
         log.info("modifyUserProfile end ...");
