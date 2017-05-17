@@ -67,14 +67,15 @@ public class JPushServiceImpl implements JPushService{
         try {
             jPushClient.sendPush(payload);
         } catch (APIConnectionException e) {
-            e.printStackTrace();
+        	log.error("push error",e);
         } catch (APIRequestException e) {
-            e.printStackTrace();
+        	log.error("push error",e);
         }
     }
 
     @Override
     public void payloadByIdExtra(String uid,String message,Map<String,String> extraMaps) {
+    	log.info("push[to:"+uid+", msg:"+message+"] start...");
         //默认为false开发环境，true为生产环境
         Options options;
         if("product".equals(env)) {
@@ -99,9 +100,9 @@ public class JPushServiceImpl implements JPushService{
         try {
             jPushClient.sendPush(payload);
         } catch (APIConnectionException e) {
-            e.printStackTrace();
+        	log.error("push error",e);
         } catch (APIRequestException e) {
-            e.printStackTrace();
+        	log.error("push error",e);
         }
     }
 
@@ -117,9 +118,9 @@ public class JPushServiceImpl implements JPushService{
         try {
             jPushClient.sendPush(payload);
         } catch (APIConnectionException e) {
-            e.printStackTrace();
+        	log.error("push error",e);
         } catch (APIRequestException e) {
-            e.printStackTrace();
+        	log.error("push error",e);
         }
     }
     

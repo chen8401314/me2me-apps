@@ -36,7 +36,8 @@ public class KingdomBillboardPushTask {
 	@Autowired
 	private UserService userService;
 	
-	@Scheduled(cron="0 0 8-18 * * ?")
+	//@Scheduled(cron="0 0 8-18 * * ?")
+	@Scheduled(cron="0 */5 * * * ?")
 	public void push(){
 		logger.info("王国榜单推送任务开始...");
 		long s = System.currentTimeMillis();

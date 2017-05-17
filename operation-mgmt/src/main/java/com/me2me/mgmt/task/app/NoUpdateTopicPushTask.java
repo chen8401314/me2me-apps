@@ -33,7 +33,8 @@ public class NoUpdateTopicPushTask {
 	@Autowired
 	private UserService userService;
 	
-	@Scheduled(cron="0 30 10 * * ?")
+	//@Scheduled(cron="0 30 10 * * ?")
+	@Scheduled(cron="0 */5 * * * ?")
 	public void noUpdateTopicPush(){
 		logger.info("无更新推送提醒任务开始");
 		long s = System.currentTimeMillis();
@@ -58,12 +59,14 @@ public class NoUpdateTopicPushTask {
 			List<Map<String, Object>> list = contentService.queryEvery(sb.toString());
 			if(null != list && list.size() > 0){
 				String key = "topic:noupdate:map";
+				String key2 = "topic:noupdateAndHasFootmark:map";
 				String message = "你的王国已经很久没有更新了哦";
 				JsonObject jsonObject = null;
 				String zujiSql = null;
 				for(Map<String, Object> t : list){
 					//判断该王国是否通知过
 					Long topicId = (Long)t.get("id");
+					Long uid = (Long)t.get("uid");
 					if(StringUtils.isEmpty(cacheService.hGet(key, topicId.toString()))){//需要通知
 						cacheService.hSet(key, topicId.toString(), "1");
 						
@@ -72,25 +75,26 @@ public class NoUpdateTopicPushTask {
 		                jsonObject.addProperty("topicId",topicId);
 		                jsonObject.addProperty("contentType", (Integer)t.get("type"));
 		                jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//核心圈
-		                userService.pushWithExtra(topicId.toString(), message, JPushUtils.packageExtra(jsonObject));
+		                userService.pushWithExtra(uid.toString(), message, JPushUtils.packageExtra(jsonObject));
 					}
 					
 					//判断这期间是否有足迹，如果超过2个足迹则有额外推送
-					zujiSql = sb2.toString().replace("#topicId#", topicId.toString());
-					List<Map<String, Object>> countList = contentService.queryEvery(zujiSql);
-					if(null != countList && countList.size() > 0){
-						Map<String, Object> count = countList.get(0);
-						Long cc = (Long)count.get("cc");
-						if(null != cc && cc.intValue() >= 2){
-							jsonObject = new JsonObject();
-			                jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
-			                jsonObject.addProperty("topicId",topicId);
-			                jsonObject.addProperty("contentType", (Integer)t.get("type"));
-			                jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//核心圈
-			                userService.pushWithExtra(topicId.toString(), "好多人在『"+(String)t.get("title")+"』", JPushUtils.packageExtra(jsonObject));
+					if(StringUtils.isEmpty(cacheService.hGet(key2, topicId.toString()))){//推过了就不再推送了
+						zujiSql = sb2.toString().replace("#topicId#", topicId.toString());
+						List<Map<String, Object>> countList = contentService.queryEvery(zujiSql);
+						if(null != countList && countList.size() > 0){
+							Map<String, Object> count = countList.get(0);
+							Long cc = (Long)count.get("cc");
+							if(null != cc && cc.intValue() >= 2){
+								jsonObject = new JsonObject();
+				                jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
+				                jsonObject.addProperty("topicId",topicId);
+				                jsonObject.addProperty("contentType", (Integer)t.get("type"));
+				                jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//核心圈
+				                userService.pushWithExtra(uid.toString(), "好多人在『"+(String)t.get("title")+"』", JPushUtils.packageExtra(jsonObject));
+							}
 						}
 					}
-					
 				}
 			}
 		}catch(Exception ex){
