@@ -287,20 +287,18 @@ public class LiveMybatisDao {
 		      }
 		  }
 		KingdomImgDB imgDb = new KingdomImgDB();
-
+		List<KingdomImgDB.ImgData> imgDataList = new ArrayList<>();
+		// 加入王国封面
+		if(coverMonth.equals(month)){
+			KingdomImgDB.ImgData imgData = new KingdomImgDB.ImgData();
+			String fragmentImage = Constant.QINIU_DOMAIN + "/"  + topic.getLiveImage();
+			imgData.setFragmentImage(fragmentImage);
+			imgData.setFragmentId(-1);
+			imgData.setCreateTime(topic.getCreateTime().getTime());
+			imgDataList.add(imgData);
+		}
 		if (month != null) {
 			List<TopicFragment> fragmentList = topicFragmentMapper.getImgFragmentByMonth(topicId, month);
-
-			List<KingdomImgDB.ImgData> imgDataList = new ArrayList<>();
-			// 加入王国封面
-			if(coverMonth.equals(month)){
-				KingdomImgDB.ImgData imgData = new KingdomImgDB.ImgData();
-				String fragmentImage = Constant.QINIU_DOMAIN + "/"  + topic.getLiveImage();
-				imgData.setFragmentImage(fragmentImage);
-				imgData.setFragmentId(-1);
-				imgData.setCreateTime(topic.getCreateTime().getTime());
-				imgDataList.add(imgData);
-			}
 			
 			for (TopicFragment fg : fragmentList) {
 				KingdomImgDB.ImgData imgData = new KingdomImgDB.ImgData();
@@ -314,12 +312,11 @@ public class LiveMybatisDao {
 				imgData.setType(fg.getType());
 				imgDataList.add(imgData);
 			}
-			
-			
-			imgDb.setImgData(imgDataList);
-			imgDb.setTopMonth(month);
-			imgDb.setTopMonthDataSize(imgDataList.size());
 		}
+		
+		imgDb.setImgData(imgDataList);
+		imgDb.setTopMonth(month);
+		imgDb.setTopMonthDataSize(imgDataList.size());
 		return imgDb;
     		
       }
