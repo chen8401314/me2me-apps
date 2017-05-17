@@ -5636,10 +5636,69 @@ public class LiveServiceImpl implements LiveService {
 	// 按月加载图库，for ios.
 	private Response kingdomImgDB2Month(long topicId, int direction, long sinceId){
 	
-		KingdomImgDB imgDb =liveMybatisDao.getTopicImgFragment2Month(topicId, sinceId, direction);
+		  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+		  Topic topic = this.getTopicById(topicId);
+	      // 取当前月数据。
+		  String month = null;
+		  String coverMonth = sdf.format(topic.getCreateTime());
+		  if(sinceId==-1 && direction ==2){		// 点击封面进来，加载本王国第一张图片所在月份。liveMybatisDao.getNextMonthByImgFragment(topicId,sinceId,true);
+			  month= coverMonth;
+		  }else{
+			  TopicFragment curTF = liveMybatisDao.getTopicFragmentById(sinceId);//topicFragmentMapper.selectByPrimaryKey(sinceId);
+			
+		      if(direction==2){
+		    	  month = sdf.format(curTF.getCreateTime());
+		      }else if(direction==0){		// 向下
+		    	  month= liveMybatisDao.getNextMonthByImgFragment(topicId,sinceId,true);
+		      }else if(direction==1){		// 向上
+		    	  month= liveMybatisDao.getNextMonthByImgFragment(topicId,sinceId,false);
+		      }
+		  }
+		KingdomImgDB imgDb = new KingdomImgDB();
+		List<KingdomImgDB.ImgData> imgDataList = new ArrayList<>();
 		
+		if (month != null) {
+			imgDb.setTopMonth(month);
+			if(month.equals(coverMonth)){	// 点封面进来时，默认加上封面。
+				KingdomImgDB.ImgData imgData = new KingdomImgDB.ImgData();
+				String fragmentImage = Constant.QINIU_DOMAIN + "/"  + topic.getLiveImage();
+				imgData.setFragmentImage(fragmentImage);
+				imgData.setFragmentId(-1);
+				imgData.setCreateTime(topic.getCreateTime().getTime());
+				imgDataList.add(imgData);
+			}
+			
+			List<TopicFragment> fragmentList = liveMybatisDao.getImgFragmentByMonth(topicId, month);
+			for (TopicFragment fg : fragmentList) {
+				KingdomImgDB.ImgData imgData = new KingdomImgDB.ImgData();
+				String fragmentImage = Constant.QINIU_DOMAIN + "/" +  fg.getFragmentImage();
+				imgData.setFragmentImage(fragmentImage);
+				imgData.setFragmentId(fg.getId());
+				imgData.setContentType(fg.getContentType());
+				imgData.setCreateTime(fg.getCreateTime().getTime());
+				imgData.setExtra(fg.getExtra());
+				imgData.setFragment(fg.getFragment());
+				imgData.setType(fg.getType());
+				imgDataList.add(imgData);
+			}
+			
+		}else{	// 加入王国封面，当向上加载时没有更多数据，显示封面。		不再重新加载封面。
+			if(direction==1){
+				imgDb.setTopMonth(coverMonth);
+				
+				KingdomImgDB.ImgData imgData = new KingdomImgDB.ImgData();
+				String fragmentImage = Constant.QINIU_DOMAIN + "/"  + topic.getLiveImage();
+				imgData.setFragmentImage(fragmentImage);
+				imgData.setFragmentId(-1);
+				imgData.setCreateTime(topic.getCreateTime().getTime());
+				imgDataList.add(imgData);
+				
+			}
+		}
+		
+		imgDb.setImgData(imgDataList);
+		imgDb.setTopMonthDataSize(imgDataList.size());
 		return Response.success(imgDb);
-		
 	}
 	@Override
 	public Response kingdomImgDB(long topicId, int direction, long fragmentId,int type) {

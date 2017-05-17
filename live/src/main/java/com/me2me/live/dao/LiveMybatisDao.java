@@ -82,6 +82,7 @@ import com.me2me.live.model.TopicDroparoundTrail;
 import com.me2me.live.model.TopicExample;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicFragmentExample;
+import com.me2me.live.model.TopicFragmentExample.Criteria;
 import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicFragmentTemplateExample;
 import com.me2me.live.model.TopicTag;
@@ -233,93 +234,46 @@ public class LiveMybatisDao {
         return topicFragmentMapper.selectByExample(example);
     }
     /**
-     * 按月获取王国图库
+     * 获取指定ID的上一个或者下一个id的所在月份
      * @author zhangjiwei
-     * @date May 5, 2017
-     * @param topicId
-     * @param sinceId  
-     * @param direction 方向
+     * @date May 17, 2017
+     * @param topicId 王国ID。
+     * @param sinceId 数据起始ID
+     * @param goDown 向下还是向上。
      * @return
      */
-      public KingdomImgDB getTopicImgFragment2Month(long topicId, long sinceId,int direction) {
-		  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
-		  Topic topic = this.getTopicById(topicId);
-	      // 取当前月数据。
-		  String month = null;
-		  boolean isBegin = sinceId==-1;
-		  String coverMonth = sdf.format(topic.getCreateTime());
-		  if(isBegin){
-			  month= coverMonth;
-		  }else{
-			  TopicFragment curTF = getTopicFragmentById(sinceId);//topicFragmentMapper.selectByPrimaryKey(sinceId);
-			
-		      if(direction==2){
-		    	  Date date = curTF.getCreateTime();
-		    	  month = sdf.format(date);
-		      }else if(direction==0){		// 向下
-		    	  TopicFragmentExample example = new TopicFragmentExample();
-		    	  example.createCriteria()
-		    	  .andTopicIdEqualTo(topicId)
-		    	  .andTypeEqualTo(0)
-		          .andContentTypeEqualTo(1)
-		          .andStatusEqualTo(1)
-		    	  .andIdGreaterThan(sinceId);
-		    	  example.setOrderByClause(" id asc limit 1");
-		    	  List<TopicFragment> fgs = topicFragmentMapper.selectByExample(example);
-		    	  if(fgs.size()>0){
-		    		  Date date = fgs.get(0).getCreateTime();
-		        	  month = sdf.format(date);
-		    	  }
-		      }else if(direction==1){		// 向上
-		    	  TopicFragmentExample example = new TopicFragmentExample();
-		    	  example.createCriteria()
-		    	  .andTopicIdEqualTo(topicId)
-		    	  .andTypeEqualTo(0)
-		          .andContentTypeEqualTo(1)
-		          .andStatusEqualTo(1)
-		    	  .andIdLessThan(sinceId);
-		    	  example.setOrderByClause(" id desc limit 1");
-		    	  List<TopicFragment> fgs = topicFragmentMapper.selectByExample(example);
-		    	  if(fgs.size()>0){
-		    		  Date date = fgs.get(0).getCreateTime();
-		        	  month = sdf.format(date);
-		    	  }
-		      }
-		  }
-		KingdomImgDB imgDb = new KingdomImgDB();
-		List<KingdomImgDB.ImgData> imgDataList = new ArrayList<>();
-		// 加入王国封面
-		if(coverMonth.equals(month)){
-			KingdomImgDB.ImgData imgData = new KingdomImgDB.ImgData();
-			String fragmentImage = Constant.QINIU_DOMAIN + "/"  + topic.getLiveImage();
-			imgData.setFragmentImage(fragmentImage);
-			imgData.setFragmentId(-1);
-			imgData.setCreateTime(topic.getCreateTime().getTime());
-			imgDataList.add(imgData);
+	public String getNextMonthByImgFragment(long topicId, long sinceId, boolean goDown) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+		String month = null;
+
+		TopicFragmentExample example = new TopicFragmentExample();
+		Criteria ct =example.createCriteria().andTopicIdEqualTo(topicId).andTypeEqualTo(0).andContentTypeEqualTo(1).andStatusEqualTo(1);
+		if (goDown) {
+			ct.andIdGreaterThan(sinceId);
+			example.setOrderByClause(" id asc limit 1");
+		} else {
+			ct.andIdLessThan(sinceId);
+	    	example.setOrderByClause(" id desc limit 1");
 		}
-		if (month != null) {
-			List<TopicFragment> fragmentList = topicFragmentMapper.getImgFragmentByMonth(topicId, month);
-			
-			for (TopicFragment fg : fragmentList) {
-				KingdomImgDB.ImgData imgData = new KingdomImgDB.ImgData();
-				String fragmentImage = Constant.QINIU_DOMAIN + "/" +  fg.getFragmentImage();
-				imgData.setFragmentImage(fragmentImage);
-				imgData.setFragmentId(fg.getId());
-				imgData.setContentType(fg.getContentType());
-				imgData.setCreateTime(fg.getCreateTime().getTime());
-				imgData.setExtra(fg.getExtra());
-				imgData.setFragment(fg.getFragment());
-				imgData.setType(fg.getType());
-				imgDataList.add(imgData);
-			}
+		List<TopicFragment> fgs = topicFragmentMapper.selectByExample(example);
+		if (fgs.size() > 0) {
+			Date date = fgs.get(0).getCreateTime();
+			month = sdf.format(date);
 		}
-		
-		imgDb.setImgData(imgDataList);
-		imgDb.setTopMonth(month);
-		imgDb.setTopMonthDataSize(imgDataList.size());
-		return imgDb;
-    		
-      }
+
+		return month;
+	}
+	/**
+	 * 按月获取王国图库图片
+	 * @author zhangjiwei
+	 * @date May 17, 2017
+	 * @param topicId
+	 * @param month
+	 * @return
+	 */
+	public List<TopicFragment> getImgFragmentByMonth(long topicId,String month){
+		return topicFragmentMapper.getImgFragmentByMonth(topicId, month);
+	}
 
     public List<TopicFragment> getTopicFragmentByMode(long topicId, long sinceId, long uid) {
         TopicFragmentExample example = new TopicFragmentExample();

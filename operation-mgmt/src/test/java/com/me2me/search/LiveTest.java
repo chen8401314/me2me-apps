@@ -14,37 +14,26 @@ import com.me2me.search.service.SearchService;
 public class LiveTest extends AbstractJUnit4SpringContextTests {
 	@Autowired
 	private LiveService liveService;
-	//@Test
-	public void testLiveImgDB() {
-		int topicId = 2519;
-		int fId = 76820;
-		try {
-			Response resp = liveService.kingdomImgDB(topicId, 2, fId,1);
-			System.out.println(JSON.toJSONString(resp, true));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	//@Test
+
+	@Test
 	public void testLiveImgDBUp() {
-		System.out.println("-----up----------------");
-		int topicId = 2519;
-		int fId = 76820;
+	
+		int topicId = 2762;
+		int fId = 847813;//847813;
 		try {
+			System.out.println("-----up----------------");
 			Response resp = liveService.kingdomImgDB(topicId, 1, fId,1);
 			System.out.println(JSON.toJSONString(resp, true));
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-	}
-	@Test
-	public void testLiveImgDBDown() {
-		System.out.println("-----down----------------");
-		int topicId = 2519;
-		int fId = -1;
-		try {
-			Response resp = liveService.kingdomImgDB(topicId, 0, fId,1);
-			System.out.println(JSON.toJSONString(resp, true));
+			
+			System.out.println("-----down----------------");
+			Response resp2 = liveService.kingdomImgDB(topicId, 0, fId,1);
+			System.out.println(JSON.toJSONString(resp2, true));
+			
+			
+			System.out.println("-----click----------------");
+			
+			Response resp3 = liveService.kingdomImgDB(topicId, 2, fId,1);
+			System.out.println(JSON.toJSONString(resp3, true));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
