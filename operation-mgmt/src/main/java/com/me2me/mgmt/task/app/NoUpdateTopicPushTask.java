@@ -80,6 +80,8 @@ public class NoUpdateTopicPushTask {
 					
 					//判断这期间是否有足迹，如果超过2个足迹则有额外推送
 					if(StringUtils.isEmpty(cacheService.hGet(key2, topicId.toString()))){//推过了就不再推送了
+						cacheService.hSet(key2, topicId.toString(), "1");
+						
 						zujiSql = sb2.toString().replace("#topicId#", topicId.toString());
 						List<Map<String, Object>> countList = contentService.queryEvery(zujiSql);
 						if(null != countList && countList.size() > 0){

@@ -15,7 +15,6 @@ import com.me2me.cache.service.CacheService;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Specification;
 import com.me2me.content.model.BillBoard;
-import com.me2me.content.model.BillBoardDetails;
 import com.me2me.content.model.BillBoardRelation;
 import com.me2me.content.service.ContentService;
 import com.me2me.live.model.Topic;
