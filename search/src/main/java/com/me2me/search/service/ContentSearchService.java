@@ -138,4 +138,15 @@ public interface ContentSearchService {
 	 * @return
 	 */
 	public List<TopicEsMapping> getTopicEsMappingList(long uid,List<Long> noIds,int page,int pageSize);
+	
+	/**
+	 * 推文章。
+	 * @author zhangjiwei
+	 * @date May 17, 2017
+	 * @param uid
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	public List<RecommendKingdom>  getRecommendArticleList(long uid,int page,int pageSize);
 }

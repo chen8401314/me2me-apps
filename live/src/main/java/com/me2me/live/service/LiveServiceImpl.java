@@ -5643,9 +5643,11 @@ public class LiveServiceImpl implements LiveService {
 	}
 	@Override
 	public Response kingdomImgDB(long topicId, int direction, long fragmentId,int type) {
+		
 		if(type==1){
 			return kingdomImgDB2Month( topicId,  direction, fragmentId);
 		}
+		
 		final int pageSize= 200;
 		KingdomImgDB imgDb = new KingdomImgDB();
 		List<TopicFragment> fragmentList=new ArrayList<>();
@@ -5655,7 +5657,7 @@ public class LiveServiceImpl implements LiveService {
 			fragmentList = liveMybatisDao.getTopicImgFragment(topicId, fragmentId, false, pageSize);
 			// 计算最后一条所在月份的总数量
 			if(fragmentList.size()>0){
-				String month =DateUtil.date2string(fragmentList.get(0).getCreateTime(),"yyyyMM");
+				String month =DateUtil.date2string(fragmentList.get(0).getCreateTime(),"yyyy-MM");
 				imgDb.setTopMonth(month);
 				long monthDataSize = liveLocalJdbcDao.countTopicImgByMonth(topicId, month);
 				imgDb.setTopMonthDataSize(monthDataSize);
@@ -5664,7 +5666,7 @@ public class LiveServiceImpl implements LiveService {
 			List<TopicFragment> fgUp = liveMybatisDao.getTopicImgFragment(topicId, fragmentId, false, pageSize/2);		// 上100
 			List<TopicFragment> fgDown = liveMybatisDao.getTopicImgFragment(topicId, fragmentId, true, pageSize/2);		// 上100
 			if(fgUp.size()>0){
-				String month =DateUtil.date2string(fgUp.get(0).getCreateTime(),"yyyyMM");
+				String month =DateUtil.date2string(fgUp.get(0).getCreateTime(),"yyyy-MM");
 				imgDb.setTopMonth(month);
 				long monthDataSize = liveLocalJdbcDao.countTopicImgByMonth(topicId, month);
 				imgDb.setTopMonthDataSize(monthDataSize);

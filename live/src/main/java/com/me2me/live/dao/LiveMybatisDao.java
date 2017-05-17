@@ -18,6 +18,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.me2me.common.Constant;
 import com.me2me.common.page.PageBean;
 import com.me2me.common.web.Specification;
 import com.me2me.live.dto.GetLiveDetailDto;
@@ -241,53 +242,68 @@ public class LiveMybatisDao {
      * @return
      */
       public KingdomImgDB getTopicImgFragment2Month(long topicId, long sinceId,int direction) {
-		
-		TopicFragment curTF = getTopicFragmentById(sinceId);//topicFragmentMapper.selectByPrimaryKey(sinceId);
-    	  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
-          // 取当前月数据。
-    	  String month = null;
-          if(direction==2){
-        	  Date date = curTF.getCreateTime();
-        	  month = sdf.format(date);
-          }else if(direction==0){		// 向下
-        	  TopicFragmentExample example = new TopicFragmentExample();
-        	  example.createCriteria()
-        	  .andTopicIdEqualTo(topicId)
-        	  .andTypeEqualTo(0)
-              .andContentTypeEqualTo(1)
-              .andStatusEqualTo(1)
-        	  .andIdGreaterThan(curTF.getId());
-        	  example.setOrderByClause(" id asc limit 1");
-        	  List<TopicFragment> fgs = topicFragmentMapper.selectByExample(example);
-        	  if(fgs.size()>0){
-        		  Date date = fgs.get(0).getCreateTime();
-            	  month = sdf.format(date);
-        	  }
-          }else if(direction==1){		// 向上
-        	  TopicFragmentExample example = new TopicFragmentExample();
-        	  example.createCriteria()
-        	  .andTopicIdEqualTo(topicId)
-        	  .andTypeEqualTo(0)
-              .andContentTypeEqualTo(1)
-              .andStatusEqualTo(1)
-        	  .andIdLessThan(curTF.getId());
-        	  example.setOrderByClause(" id desc limit 1");
-        	  List<TopicFragment> fgs = topicFragmentMapper.selectByExample(example);
-        	  if(fgs.size()>0){
-        		  Date date = fgs.get(0).getCreateTime();
-            	  month = sdf.format(date);
-        	  }
-          }
-  		
+		  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+		  Topic topic = this.getTopicById(topicId);
+	      // 取当前月数据。
+		  String month = null;
+		  boolean isBegin = sinceId==-1;
+		  if(isBegin){
+			  month= sdf.format(topic.getCreateTime());
+		  }else{
+			  TopicFragment curTF = getTopicFragmentById(sinceId);//topicFragmentMapper.selectByPrimaryKey(sinceId);
+			
+		      if(direction==2){
+		    	  Date date = curTF.getCreateTime();
+		    	  month = sdf.format(date);
+		      }else if(direction==0){		// 向下
+		    	  TopicFragmentExample example = new TopicFragmentExample();
+		    	  example.createCriteria()
+		    	  .andTopicIdEqualTo(topicId)
+		    	  .andTypeEqualTo(0)
+		          .andContentTypeEqualTo(1)
+		          .andStatusEqualTo(1)
+		    	  .andIdGreaterThan(sinceId);
+		    	  example.setOrderByClause(" id asc limit 1");
+		    	  List<TopicFragment> fgs = topicFragmentMapper.selectByExample(example);
+		    	  if(fgs.size()>0){
+		    		  Date date = fgs.get(0).getCreateTime();
+		        	  month = sdf.format(date);
+		    	  }
+		      }else if(direction==1){		// 向上
+		    	  TopicFragmentExample example = new TopicFragmentExample();
+		    	  example.createCriteria()
+		    	  .andTopicIdEqualTo(topicId)
+		    	  .andTypeEqualTo(0)
+		          .andContentTypeEqualTo(1)
+		          .andStatusEqualTo(1)
+		    	  .andIdLessThan(sinceId);
+		    	  example.setOrderByClause(" id desc limit 1");
+		    	  List<TopicFragment> fgs = topicFragmentMapper.selectByExample(example);
+		    	  if(fgs.size()>0){
+		    		  Date date = fgs.get(0).getCreateTime();
+		        	  month = sdf.format(date);
+		    	  }
+		      }
+		  }
 		KingdomImgDB imgDb = new KingdomImgDB();
 
 		if (month != null) {
 			List<TopicFragment> fragmentList = topicFragmentMapper.getImgFragmentByMonth(topicId, month);
 
 			List<KingdomImgDB.ImgData> imgDataList = new ArrayList<>();
+			// 加入王国封面
+			if(isBegin){
+				KingdomImgDB.ImgData imgData = new KingdomImgDB.ImgData();
+				String fragmentImage = Constant.QINIU_DOMAIN + "/"  + topic.getLiveImage();
+				imgData.setFragmentImage(fragmentImage);
+				imgData.setFragmentId(-1);
+				imgData.setCreateTime(topic.getCreateTime().getTime());
+				imgDataList.add(imgData);
+			}
+			
 			for (TopicFragment fg : fragmentList) {
 				KingdomImgDB.ImgData imgData = new KingdomImgDB.ImgData();
-				String fragmentImage = "https://cdn.me-to-me.com/" + fg.getFragmentImage();
+				String fragmentImage = Constant.QINIU_DOMAIN + "/" +  fg.getFragmentImage();
 				imgData.setFragmentImage(fragmentImage);
 				imgData.setFragmentId(fg.getId());
 				imgData.setContentType(fg.getContentType());
@@ -297,9 +313,11 @@ public class LiveMybatisDao {
 				imgData.setType(fg.getType());
 				imgDataList.add(imgData);
 			}
+			
+			
 			imgDb.setImgData(imgDataList);
 			imgDb.setTopMonth(month);
-			imgDb.setTopMonthDataSize(fragmentList.size());
+			imgDb.setTopMonthDataSize(imgDataList.size());
 		}
 		return imgDb;
     		

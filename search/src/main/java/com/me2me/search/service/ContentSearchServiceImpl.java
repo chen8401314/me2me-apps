@@ -825,4 +825,10 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		
 		return result.getContent();
 	}
+
+	@Override
+	public List<RecommendKingdom> getRecommendArticleList(long uid, int page, int pageSize) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

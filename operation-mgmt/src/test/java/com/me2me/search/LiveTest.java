@@ -41,7 +41,7 @@ public class LiveTest extends AbstractJUnit4SpringContextTests {
 	public void testLiveImgDBDown() {
 		System.out.println("-----down----------------");
 		int topicId = 2519;
-		int fId = 76820;
+		int fId = -1;
 		try {
 			Response resp = liveService.kingdomImgDB(topicId, 0, fId,1);
 			System.out.println(JSON.toJSONString(resp, true));
