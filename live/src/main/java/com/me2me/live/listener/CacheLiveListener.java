@@ -70,10 +70,9 @@ public class CacheLiveListener {
         log.info("invocation by event bus ... ");
         
         //增加缓存，当创建王国后一个小时之内的发言不再推送
-        LiveLastUpdate liveLastUpdate = new LiveLastUpdate(cacheLiveEvent.getTopicId(),"1");
-        log.info("set cache timeout");
-        cacheService.hSet(liveLastUpdate.getKey(), liveLastUpdate.getField(), liveLastUpdate.getValue());
-        cacheService.expire(liveLastUpdate.getKey(), 3600);
+        String key = "topic:update:push:status:" + cacheLiveEvent.getTopicId();
+        cacheService.set(key, "1");
+		cacheService.expire(key, 3600);//一小时超时时间
         
         //判断这个王国是不是聚合王国，如果是聚合王国，则通知粉丝，不是聚合王国则不需要通知
         Topic topic = liveService.getTopicById(cacheLiveEvent.getTopicId());
