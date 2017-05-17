@@ -205,7 +205,7 @@ public class LiveServiceImpl implements LiveService {
         LiveTimeLineDto liveTimeLineDto = new LiveTimeLineDto();
         MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(getLiveTimeLineDto.getUid(), getLiveTimeLineDto.getTopicId() + "", "0");
         cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-        List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId());
+        List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), getLiveTimeLineDto.getPageSize());
         log.info("get timeLine data");
         buildLiveTimeLine(getLiveTimeLineDto, liveTimeLineDto, fragmentList);
         log.info("buildLiveTimeLine success");
@@ -221,13 +221,13 @@ public class LiveServiceImpl implements LiveService {
         List<TopicFragment> fragmentList = Lists.newArrayList();
         if (getLiveTimeLineDto.getDirection() == Specification.LiveTimeLineDirection.FIRST.index) {
             if (liveReadHistory == null) {
-                fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId());
+                fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), 50);
                 liveMybatisDao.createLiveReadHistory(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getUid());
             } else {
                 fragmentList = liveMybatisDao.getPrevTopicFragment(getLiveTimeLineDto.getTopicId(), Integer.MAX_VALUE);
             }
         } else if (getLiveTimeLineDto.getDirection() == Specification.LiveTimeLineDirection.NEXT.index) {
-            fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId());
+            fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), 50);
         } else if (getLiveTimeLineDto.getDirection() == Specification.LiveTimeLineDirection.PREV.index) {
             fragmentList = liveMybatisDao.getPrevTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId());
         }
@@ -5728,7 +5728,7 @@ public class LiveServiceImpl implements LiveService {
 		
 		ShowUserAtListDTO result = new ShowUserAtListDTO();
 		List<Map<String, Object>> uList = null;
-		if(atListDTO.getSearchType() == 0){//王国内检索
+		if(StringUtils.isEmpty(atListDTO.getKeyword())){//王国内检索
 			int page = atListDTO.getPage();
 			if(page < 1){
 				page = 1;
@@ -5736,11 +5736,18 @@ public class LiveServiceImpl implements LiveService {
 			int pageSize = 20;
 			int start = (page-1)*pageSize;
 			
+			int totalCount = liveLocalJdbcDao.countUserAtListInTopic(atListDTO.getTopicId(), coreUidList, atListDTO.getUid());
+			int totalPage = totalCount%pageSize==0?(totalCount/pageSize):(totalCount/pageSize)+1;
+			result.setTotalPage(totalPage);
+			
 			uList = liveLocalJdbcDao.getUserAtListInTopic(atListDTO.getTopicId(), start, pageSize, coreUidList, atListDTO.getUid());
-		}else if(atListDTO.getSearchType() == 1){//全站检索
+		}else{//全站检索
 			uList = searchService.topicAtUserList(atListDTO.getKeyword(), atListDTO.getUid());
-		}else{
-			//其他，暂不支持
+			if(null != uList && uList.size() > 0){
+				result.setTotalPage(1);
+			}else{
+				result.setTotalPage(0);
+			}
 		}
 		
 		if(null != uList && uList.size() > 0){

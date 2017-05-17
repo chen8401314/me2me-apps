@@ -11,6 +11,7 @@ import com.me2me.common.web.BaseEntity;
 public class ShowUserAtListDTO implements BaseEntity {
 	private static final long serialVersionUID = 5045396022631656733L;
 
+	private int totalPage;
 	private List<UserElement> userData = Lists.newArrayList();
 	
 	@Data

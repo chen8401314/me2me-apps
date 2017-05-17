@@ -19,4 +19,8 @@ public class LiveTimelineRequest extends Request{
     @Getter
     @Setter
     private int sinceId;
+    
+    @Getter
+    @Setter
+    private int pageSize;
 }

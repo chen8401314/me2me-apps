@@ -64,9 +64,9 @@ public class CoreAggregationRemindListener {
                 
                 //发推送
                 //本消息是由王国发起的，所以需要判断王国的配置
-                if(this.checkTopicPush(event.getTargetTopic().getId(), targetUid)){
-                	userService.noticeMessagePush(targetUid, event.getMessage(), 2);
-                }
+//                if(this.checkTopicPush(event.getTargetTopic().getId(), targetUid)){
+//                	userService.noticeMessagePush(targetUid, event.getMessage(), 2);
+//                }
             }
         }
     }

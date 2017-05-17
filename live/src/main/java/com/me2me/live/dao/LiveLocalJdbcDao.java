@@ -927,4 +927,39 @@ public class LiveLocalJdbcDao {
 		
 		return jdbcTemplate.queryForList(sb.toString());
 	}
+	
+	public int countUserAtListInTopic(long topicId, List<Long> coreUidList, long searchUid){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select count(1) as cc from user_profile uu,(select f.uid as uid,min(f.id) as sinceId");
+		sb.append(" from topic_fragment f where f.topic_id=").append(topicId);
+		sb.append(" group by f.uid");
+		sb.append(" UNION ");
+		sb.append("select DISTINCT l.uid as uid, 9223372036854775807 as sinceId");
+		sb.append(" from live_favorite l where l.topic_id=").append(topicId);
+		sb.append(" and not EXISTS (select 1 from topic_fragment f2 where f2.topic_id=").append(topicId);
+		sb.append(" and f2.uid=l.uid)");
+		sb.append(" UNION ");
+		sb.append(" select u.uid as uid, 9223372036854775807 as sinceId");
+		sb.append(" from user_profile u where u.uid in (");
+		for(int i=0;i<coreUidList.size();i++){
+			if(i > 0){
+				sb.append(",");
+			}
+			sb.append(coreUidList.get(i));
+		}
+		sb.append(") and not EXISTS(select 1 from topic_fragment f3 where f3.topic_id=").append(topicId);
+		sb.append(" and f3.uid=u.uid) and not EXISTS(select 1 from live_favorite l3 where l3.topic_id=");
+		sb.append(topicId).append(" and l3.uid=u.uid)) m");
+		sb.append(" where uu.uid=m.uid");
+		if(searchUid > 0){
+			sb.append(" and uu.uid!=").append(searchUid);
+		}
+		
+		List<Map<String, Object>> countList = jdbcTemplate.queryForList(sb.toString());
+		if(null != countList && countList.size() > 0){
+			Map<String, Object> count = countList.get(0);
+			return ((Long)count.get("cc")).intValue();
+		}
+		return 0;
+	}
 }

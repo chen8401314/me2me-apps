@@ -15,7 +15,6 @@ import com.me2me.cache.service.CacheService;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Specification;
 import com.me2me.content.model.BillBoard;
-import com.me2me.content.model.BillBoardDetails;
 import com.me2me.content.model.BillBoardRelation;
 import com.me2me.content.service.ContentService;
 import com.me2me.live.model.Topic;
@@ -36,7 +35,8 @@ public class KingdomBillboardPushTask {
 	@Autowired
 	private UserService userService;
 	
-	@Scheduled(cron="0 0 8-18 * * ?")
+	//@Scheduled(cron="0 0 8-18 * * ?")
+	@Scheduled(cron="0 */5 * * * ?")
 	public void push(){
 		logger.info("王国榜单推送任务开始...");
 		long s = System.currentTimeMillis();

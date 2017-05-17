@@ -141,6 +141,7 @@ public class Live extends BaseController {
         getLiveTimeLineDto.setTopicId(request.getTopicId());
         getLiveTimeLineDto.setUid(request.getUid());
         getLiveTimeLineDto.setVersion(request.getVersion());
+        getLiveTimeLineDto.setPageSize(request.getPageSize());
         return liveService.getLiveTimeline(getLiveTimeLineDto);
     }
 
@@ -863,7 +864,6 @@ public class Live extends BaseController {
     	UserAtListDTO dto = new UserAtListDTO();
     	dto.setUid(request.getUid());
     	dto.setKeyword(request.getKeyword());
-    	dto.setSearchType(request.getSearchType());
     	dto.setPage(request.getPage());
     	dto.setTopicId(request.getTopicId());
     	
