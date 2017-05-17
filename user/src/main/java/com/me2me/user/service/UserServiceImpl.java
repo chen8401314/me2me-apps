@@ -24,6 +24,7 @@ import com.me2me.sms.dto.*;
 import com.me2me.sms.service.JPushService;
 import com.me2me.sms.service.SmsService;
 import com.me2me.sms.service.XgPushService;
+import com.me2me.user.cache.ContactsReddot;
 import com.me2me.user.dao.*;
 import com.me2me.user.dto.*;
 import com.me2me.user.event.*;
@@ -2861,6 +2862,10 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Response mobileQuery(String mobiles, long uid){
+		//先去通讯录除红点记录
+		ContactsReddot cr = new ContactsReddot(uid, "1");
+		cacheService.hDel(cr.getKey(), cr.getField());
+		
 		ShowMobileDTO result = new ShowMobileDTO();
 		if(StringUtils.isEmpty(mobiles)){
 			return Response.success(result);
@@ -2944,6 +2949,10 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public Response contacts(int page, String mobiles, long uid){
+		//先去通讯录除红点记录
+		ContactsReddot cr = new ContactsReddot(uid, "1");
+		cacheService.hDel(cr.getKey(), cr.getField());
+		
 		int pageSize = 20;
 		if(page < 1){
 			page = 1;
@@ -3449,6 +3458,13 @@ public class UserServiceImpl implements UserService {
 		
 		int unreadCount = userMybatisDao.countUnreadNotice(uid);
 		result.setUnreadCount(unreadCount);
+		
+		ContactsReddot cr = new ContactsReddot(uid, "1");
+		if(StringUtils.isEmpty(cacheService.hGet(cr.getKey(), cr.getField()))){
+			result.setContactReddot(0);
+		}else{
+			result.setContactReddot(1);
+		}
 		
 		return Response.success(result);
 	}

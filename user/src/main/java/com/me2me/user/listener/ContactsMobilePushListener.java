@@ -13,9 +13,11 @@ import org.springframework.util.StringUtils;
 
 import com.google.common.eventbus.Subscribe;
 import com.google.gson.JsonObject;
+import com.me2me.cache.service.CacheService;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Specification;
 import com.me2me.core.event.ApplicationEventBus;
+import com.me2me.user.cache.ContactsReddot;
 import com.me2me.user.dao.UserMybatisDao;
 import com.me2me.user.event.ContactsMobilePushEvent;
 import com.me2me.user.model.UserMobileList;
@@ -28,12 +30,14 @@ public class ContactsMobilePushListener {
 	private final ApplicationEventBus applicationEventBus;
     private final UserMybatisDao userMybatisDao;
     private final UserService userService;
+    private final CacheService cacheService;
     
     @Autowired
-    public ContactsMobilePushListener(ApplicationEventBus applicationEventBus,UserMybatisDao userMybatisDao,UserService userService){
+    public ContactsMobilePushListener(ApplicationEventBus applicationEventBus,UserMybatisDao userMybatisDao,UserService userService,CacheService cacheService){
     	this.applicationEventBus = applicationEventBus;
     	this.userMybatisDao = userMybatisDao;
     	this.userService = userService;
+    	this.cacheService = cacheService;
     }
     
     @PostConstruct
@@ -63,9 +67,14 @@ public class ContactsMobilePushListener {
     			String message = "你有通讯录好友新加入了米汤，快来瞅瞅！";
     			JsonObject jsonObject = null;
     			for(Long uid : uidList){
+    				//推送
     				jsonObject = new JsonObject();
         	        jsonObject.addProperty("type",Specification.PushObjectType.CONTACTS.index);
         	        userService.pushWithExtra(uid.toString(), message, JPushUtils.packageExtra(jsonObject));
+        	        
+        	        //红点
+        	        ContactsReddot cr = new ContactsReddot(uid, "1");
+        	        cacheService.hSet(cr.getKey(), cr.getField(), cr.getValue());
     			}
     		}
     	}
