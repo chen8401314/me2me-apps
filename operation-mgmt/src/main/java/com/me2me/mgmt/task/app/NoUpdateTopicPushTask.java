@@ -33,8 +33,7 @@ public class NoUpdateTopicPushTask {
 	@Autowired
 	private UserService userService;
 	
-	//@Scheduled(cron="0 30 10 * * ?")
-	@Scheduled(cron="0 */5 * * * ?")
+	@Scheduled(cron="0 30 10 * * ?")
 	public void noUpdateTopicPush(){
 		logger.info("无更新推送提醒任务开始");
 		long s = System.currentTimeMillis();

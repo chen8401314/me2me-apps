@@ -51,7 +51,7 @@ public class FollowListener {
 		//关注推送1小时内不再推送
 		boolean needPush = false;
 		String key = "follow:push:status:" + event.getTargetUid();
-		if(!StringUtils.isEmpty(cacheService.get(key))){
+		if(StringUtils.isEmpty(cacheService.get(key))){
 			needPush = true;
 			
 			cacheService.set(key, "1");
