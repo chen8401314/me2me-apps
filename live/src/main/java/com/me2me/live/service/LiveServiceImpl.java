@@ -3829,9 +3829,9 @@ public class LiveServiceImpl implements LiveService {
                     
                     //发推送
                     //本消息是由王国发起的，所以需要判断王国的配置
-                    if(this.checkTopicPush(topic.getId(), topic.getUid())){
-                    	userService.noticeMessagePush(topic.getUid(), "有个人王国退出了你的聚合王国", 2);
-                    }
+//                    if(this.checkTopicPush(topic.getId(), topic.getUid())){
+//                    	userService.noticeMessagePush(topic.getUid(), "有个人王国退出了你的聚合王国", 2);
+//                    }
                 }
                 
                 return Response.success(200, "操作成功");
@@ -4001,9 +4001,9 @@ public class LiveServiceImpl implements LiveService {
                 	
                     //发推送
                     //本消息是由王国发起的，所以需要判断王国的配置
-                    if(this.checkTopicPush(topic.getId(), topic.getUid())){
-                    	userService.noticeMessagePush(topic.getUid(), "有聚合王国踢走了你的个人王国", 2);
-                    }
+//                    if(this.checkTopicPush(topic.getId(), topic.getUid())){
+//                    	userService.noticeMessagePush(topic.getUid(), "有聚合王国踢走了你的个人王国", 2);
+//                    }
                 }
                 
                 return Response.success(200, "操作成功");
@@ -4107,9 +4107,9 @@ public class LiveServiceImpl implements LiveService {
                 //先向对方操作人发消息，这个消息肯定要发的
                 this.aggregationRemind(dto.getUid(), topicAggregationApply.getOperator().longValue(), review, 0, topic, targetTopic, Specification.UserNoticeType.AGGREGATION_NOTICE.index);
                 //本消息是由王国发起的，所以需要判断王国的配置
-                if(this.checkTopicPush(topic.getId(), topicAggregationApply.getOperator().longValue())){
-                	userService.noticeMessagePush(topicAggregationApply.getOperator().longValue(), message, 2);
-                }
+//                if(this.checkTopicPush(topic.getId(), topicAggregationApply.getOperator().longValue())){
+//                	userService.noticeMessagePush(topicAggregationApply.getOperator().longValue(), message, 2);
+//                }
                 
 //                //然后是同意的，则需要向对方国王发消息，当然如果这个国王就是操作人则不需要发了，已经发过了
 //                if (dto.getAction() == 1 && topicAggregationApply.getOperator().longValue() != topic.getUid().longValue()) {
