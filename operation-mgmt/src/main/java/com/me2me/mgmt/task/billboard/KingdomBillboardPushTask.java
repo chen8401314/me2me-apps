@@ -70,6 +70,7 @@ public class KingdomBillboardPushTask {
 									if(needPush){
 										JsonObject jsonObject = new JsonObject();
 										jsonObject.addProperty("type", Specification.PushObjectType.BILLBOARD.index);
+										jsonObject.addProperty("messageType",1);//没有任何定义
 										jsonObject.addProperty("listId", b.getId());
 										jsonObject.addProperty("subType", 1);//王国榜单
 										userService.pushWithExtra(topic.getUid().toString(), "『"+topic.getTitle()+"』上“"+b.getName()+"”了", JPushUtils.packageExtra(jsonObject));
