@@ -209,6 +209,11 @@ public class LiveServiceImpl implements LiveService {
         log.info("get timeLine data");
         buildLiveTimeLine(getLiveTimeLineDto, liveTimeLineDto, fragmentList);
         log.info("buildLiveTimeLine success");
+        
+        //将当前用户针对于本王国的相关消息置为已读
+        userService.clearUserNoticeUnreadByCid(getLiveTimeLineDto.getUid(), Specification.UserNoticeUnreadContentType.KINGDOM.index, getLiveTimeLineDto.getTopicId());
+        
+        
         return Response.success(ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.status, ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.message, liveTimeLineDto);
     }
 
@@ -742,6 +747,7 @@ public class LiveServiceImpl implements LiveService {
         	speakNewEvent.setContentType(speakDto.getContentType());
         	speakNewEvent.setUid(speakDto.getUid());
         	speakNewEvent.setFragmentId(fid);
+        	speakNewEvent.setAtUid(speakDto.getAtUid());
         	speakNewEvent.setFragmentContent(speakDto.getFragment());
         	speakNewEvent.setFragmentExtra(speakDto.getExtra());
             applicationEventBus.post(speakNewEvent);
@@ -2684,6 +2690,9 @@ public class LiveServiceImpl implements LiveService {
             	}
         	}
         }
+        
+        //将当前用户针对于本王国的相关消息置为已读
+        userService.clearUserNoticeUnreadByCid(getLiveDetailDto.getUid(), Specification.UserNoticeUnreadContentType.KINGDOM.index, getLiveDetailDto.getTopicId());
         
         log.info("get live detail end ...");
         return  Response.success(ResponseStatus.GET_LIVE_DETAIL_SUCCESS.status, ResponseStatus.GET_LIVE_DETAIL_SUCCESS.message, liveDetailDto);

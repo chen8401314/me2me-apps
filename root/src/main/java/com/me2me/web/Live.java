@@ -141,7 +141,12 @@ public class Live extends BaseController {
         getLiveTimeLineDto.setTopicId(request.getTopicId());
         getLiveTimeLineDto.setUid(request.getUid());
         getLiveTimeLineDto.setVersion(request.getVersion());
-        getLiveTimeLineDto.setPageSize(request.getPageSize());
+        if(request.getPageSize() <= 0){
+        	getLiveTimeLineDto.setPageSize(50);
+        }else{
+        	getLiveTimeLineDto.setPageSize(request.getPageSize());
+        }
+        
         return liveService.getLiveTimeline(getLiveTimeLineDto);
     }
 
