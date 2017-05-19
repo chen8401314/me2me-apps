@@ -606,10 +606,17 @@ public class SearchServiceImpl implements SearchService {
 	}
 
 	public Response recommendUser(long uid,int page,int pageSize){
-		//查出我已关注过的，这些是不能反回的
-		List<Long> myFollowUidList = userService.getFollowList(uid);
+		UserProfile profile = userService.getUserProfileByUid(uid);
+		String hobby = StringUtils.join(searchMapper.getUserHobbyIds(uid),",");
+		int completion = this.getPersonaCompleted(profile, hobby);
 		
-		List<RecommendUser> resultpage = this.searchService.getRecommendUserList(uid, page, pageSize, myFollowUidList);
+		List<RecommendUser> resultpage = null;
+		if(completion >= 10){
+			//查出我已关注过的，这些是不能反回的
+			List<Long> myFollowUidList = userService.getFollowList(uid);
+			resultpage = this.searchService.getRecommendUserList(uid, page, pageSize, myFollowUidList);
+		}
+		
 		if(null == resultpage){
 			resultpage = new ArrayList<RecommendUser>();
 		}
@@ -688,8 +695,11 @@ public class SearchServiceImpl implements SearchService {
 		indexData.setPersona(person);
 		
 		// 查推荐用户
-		List<Long> myFollowUidList = userService.getFollowList(uid);
-		List<RecommendUser> resultpage = this.searchService.getRecommendUserList(uid, 1, 10, myFollowUidList);
+		List<RecommendUser> resultpage = null;
+		if(completion >= 10){
+			List<Long> myFollowUidList = userService.getFollowList(uid);
+			resultpage = this.searchService.getRecommendUserList(uid, 1, 10, myFollowUidList);
+		}
 		if(null == resultpage){
 			resultpage = new ArrayList<RecommendUser>();
 		}
