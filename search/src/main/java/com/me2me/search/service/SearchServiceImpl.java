@@ -610,11 +610,57 @@ public class SearchServiceImpl implements SearchService {
 		List<Long> myFollowUidList = userService.getFollowList(uid);
 		
 		List<RecommendUser> resultpage = this.searchService.getRecommendUserList(uid, page, pageSize, myFollowUidList);
+		if(null == resultpage){
+			resultpage = new ArrayList<RecommendUser>();
+		}
+		if(page == 1 && resultpage.size() == 0){//第一页就没有数据的话，默认返回“米汤管家”这个用户
+			UserProfile user = userService.getUserByNickName("米汤管家");
+			if(null != user){
+				RecommendUser ruser = new RecommendUser();
+				ruser.setUid(user.getUid());
+				ruser.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+				ruser.setNickName(user.getNickName());
+				ruser.setV_lv(user.getvLv());
+				ruser.setReason("");
+				ruser.setTagMatchedLength(0);
+				ruser.setUserTags(new ArrayList<String>());
+				resultpage.add(ruser);
+			}
+		}
+		
 		RecommendUserDto dto = new RecommendUserDto();
 		dto.setRecUserData(resultpage);
 		return Response.success(dto);
 	}
 
+	/**
+	 * 计算用户画像完成度
+	 * @return
+	 */
+	private int getPersonaCompleted(UserProfile profile, String hobby){
+		int totalPercet = 40;
+		float completed=6f;
+		if(StringUtils.isEmpty(profile.getAvatar()) || StringUtils.equals("default.png", profile.getAvatar())){
+			completed--;
+		}
+		if(StringUtils.isEmpty(hobby)){
+			completed--;
+		}
+		if(profile.getLikeGender() == null || profile.getLikeGender().intValue() == 0){
+			completed--;
+		}
+		if(profile.getAgeGroup()==null || profile.getAgeGroup().intValue()==0){
+			completed--;
+		}
+		if(profile.getOccupation()==null|| profile.getOccupation().intValue()==0){
+			completed--;
+		}
+		if(profile.getGender()==null){
+			completed--;
+		}
+		return (int) ((completed/6) * totalPercet);
+	}
+	
 	public Response recommendIndex(long uid,int page, String token, String version){
 		RecommendListDto indexData = new RecommendListDto();
 		// 查用户画像信息
@@ -637,33 +683,31 @@ public class SearchServiceImpl implements SearchService {
 			person.setSexOrientation(profile.getLikeGender());
 		}
 		//画像完成度
-		int totalPercet = 40;
-		float completed=6f;
-		if(StringUtils.isEmpty(profile.getAvatar()) || StringUtils.equals("default.png", profile.getAvatar())){
-			completed--;
-		}
-		if(StringUtils.isEmpty(hobby)){
-			completed--;
-		}
-		if(profile.getLikeGender() == null || profile.getLikeGender().intValue() == 0){
-			completed--;
-		}
-		if(profile.getAgeGroup()==null || profile.getAgeGroup().intValue()==0){
-			completed--;
-		}
-		if(profile.getOccupation()==null|| profile.getOccupation().intValue()==0){
-			completed--;
-		}
-		if(profile.getGender()==null){
-			completed--;
-		}
-		int completion = (int) ((completed/6) * totalPercet);
+		int completion = this.getPersonaCompleted(profile, hobby);
 		person.setCompletion(completion);
 		indexData.setPersona(person);
 		
 		// 查推荐用户
 		List<Long> myFollowUidList = userService.getFollowList(uid);
 		List<RecommendUser> resultpage = this.searchService.getRecommendUserList(uid, 1, 10, myFollowUidList);
+		if(null == resultpage){
+			resultpage = new ArrayList<RecommendUser>();
+		}
+		if(resultpage.size() == 0){//第一页就没有数据的话，默认返回“米汤管家”这个用户
+			UserProfile user = userService.getUserByNickName("米汤管家");
+			if(null != user){
+				RecommendUser ruser = new RecommendUser();
+				ruser.setUid(user.getUid());
+				ruser.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+				ruser.setNickName(user.getNickName());
+				ruser.setV_lv(user.getvLv());
+				ruser.setReason("");
+				ruser.setTagMatchedLength(0);
+				ruser.setUserTags(new ArrayList<String>());
+				resultpage.add(ruser);
+			}
+		}
+		
 		if(null != resultpage && resultpage.size() > 0){
 			indexData.getRecUserData().addAll(resultpage);
 		}
