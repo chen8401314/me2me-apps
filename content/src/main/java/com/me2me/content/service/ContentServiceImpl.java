@@ -4787,6 +4787,13 @@ private void localJpush(long toUid){
     		}
     		result = liveForContentJdbcDao.getNewRegisterUsers(sinceId, pageSize);
     		break;
+    	case 11://炙手可热的米汤红人
+    		//实时统计
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.fansBillboard(sinceId, pageSize);
+    		break;
     	default:
     		break;
     	}
@@ -5305,7 +5312,7 @@ private void localJpush(long toUid){
 		List<BillBoardRelationDto> result = Lists.newArrayList();
 		
 		int type = 1;//默认王国
-		if(mode == 1 || mode == 2 || mode == 3 || mode == 8 || mode == 9 || mode == 10){
+		if(mode == 1 || mode == 2 || mode == 3 || mode == 8 || mode == 9 || mode == 10 || mode == 11){
 			type = 2;
 		}
 		
