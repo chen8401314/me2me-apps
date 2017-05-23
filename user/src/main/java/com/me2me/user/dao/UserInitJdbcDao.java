@@ -231,4 +231,14 @@ public class UserInitJdbcDao extends BaseJdbcDao {
     	}
     	super.execute(sb.toString());
     }
+    /**
+     * 保存用户
+     * @author zhangjiwei
+     * @date May 23, 2017
+     * @param uid
+     */
+	public void saveMBTIShareResult(long uid) {
+		String sql = "update user_mbti_history set shared=1 where uid=? order by create_time desc limit 1";
+		jdbc.update(sql, uid);
+	}
 }

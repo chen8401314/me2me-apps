@@ -171,6 +171,15 @@ String sub = request.getParameter("s");
                 	<li <%if("14_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/tease/list_tease">逗一逗管理</a></li>
                 </ul>
             </li>
+               <li class="sub-menu">
+                <a href="javascript:;" <%if("15".equals(tab)){ %>class="active"<%} %>>
+                    <i class="fa fa-bar-chart-o"></i>
+                    <span>MBTI王国映射</span>
+                </a>
+                <ul class="sub">
+                	<li <%if("15_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/mbtiMapping/query">MBTI王国映射管理</a></li>
+                </ul>
+            </li>
         </ul>
         <!-- sidebar menu end-->
     </div>
