@@ -583,7 +583,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 				int likeGender=user.getLikeGender().equals(ELikeGender.BOY.getValue())?1:0;	// 性取向转换为性别。	BOY(1,"爱男神"),	GIRL(2,"爱女神"),ALL(3,"男女通吃");
 				bq.must(QueryBuilders.termQuery("gender", likeGender).boost(0.1f));
 			}
-			if(tags!=null){
+			if(!StringUtils.isEmpty(tags)){
 				bq.should(QueryBuilders.queryStringQuery(tags).field("tags").boost(3f));
 			}
 			if(user.getOccupation()!=null){

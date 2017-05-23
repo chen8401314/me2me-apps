@@ -488,6 +488,39 @@ public class LiveForContentJdbcDao {
     	return result;
     }
     
+    /**
+     * 炙手可热的米汤红人
+     * @param sinceId
+     * @param pageSize
+     * @return
+     */
+    public List<BillBoardListDTO> fansBillboard(long start, int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select u.uid,m.fanscount from user_profile u, (");
+    	sb.append("select f.target_uid, count(DISTINCT f.source_uid) as fanscount");
+    	sb.append(" from user_follow f group by f.target_uid) m");
+    	sb.append(" where u.uid=m.target_uid and u.nick_name not like '%米汤客服%'");
+    	sb.append(" order by m.fanscount desc,uid desc limit ");
+    	sb.append(start).append(",").append(pageSize);
+    	
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	
+    	List<BillBoardListDTO> result = new ArrayList<BillBoardListDTO>();
+    	if(null != list && list.size() > 0){
+    		BillBoardListDTO bbl = null;
+    		Map<String, Object> m = null;
+    		for(int i=0;i<list.size();i++){
+    			m = list.get(i);
+    			bbl = new BillBoardListDTO();
+    			bbl.setTargetId((Long)m.get("uid"));
+    			bbl.setType(2);
+    			bbl.setSinceId(start+i+1);
+    			result.add(bbl);
+    		}
+    	}
+    	return result;
+    }
+    
     public List<BillBoardListDTO> getNewRegisterUsers(long sinceId, int pageSize){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select p.uid,p.id from user_profile p");

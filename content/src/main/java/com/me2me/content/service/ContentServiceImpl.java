@@ -654,7 +654,11 @@ public class ContentServiceImpl implements ContentService {
         userNotice.setFromUid(userProfile.getUid());
         userNotice.setToNickName(customerProfile.getNickName());
         userNotice.setNoticeType(type);
-        userNotice.setCid(content.getId());
+        if(type == Specification.UserNoticeType.LIVE_TAG.index){
+        	userNotice.setCid(content.getForwardCid());
+        }else{
+        	userNotice.setCid(content.getId());
+        }
         if(contentImage != null){
             userNotice.setCoverImage(contentImage.getImage());
             userNotice.setSummary("");
@@ -685,7 +689,7 @@ public class ContentServiceImpl implements ContentService {
         UserNotice notice = userService.getUserNotice(userNotice);
         //非直播才提醒
         if(content.getType() != Specification.ArticleType.LIVE.index
-        		|| content.getType() != Specification.ArticleType.FORWARD_LIVE.index) {
+        		&& content.getType() != Specification.ArticleType.FORWARD_LIVE.index) {
             //点赞时候只提醒一次
             if (userNotice.getNoticeType() == Specification.UserNoticeType.LIKE.index) {
                 if (notice == null) {
@@ -702,7 +706,7 @@ public class ContentServiceImpl implements ContentService {
         	Date now = new Date();
             //V2.2.5版本开始使用新的红点体系
             UserNoticeUnread unu = new UserNoticeUnread();
-            unu.setUid(unid);
+            unu.setUid(customerProfile.getUid());
             unu.setCreateTime(now);
             unu.setNoticeId(unid);
             unu.setNoticeType(type);
@@ -4783,6 +4787,13 @@ private void localJpush(long toUid){
     		}
     		result = liveForContentJdbcDao.getNewRegisterUsers(sinceId, pageSize);
     		break;
+    	case 11://炙手可热的米汤红人
+    		//实时统计
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.fansBillboard(sinceId, pageSize);
+    		break;
     	default:
     		break;
     	}
@@ -5301,7 +5312,7 @@ private void localJpush(long toUid){
 		List<BillBoardRelationDto> result = Lists.newArrayList();
 		
 		int type = 1;//默认王国
-		if(mode == 1 || mode == 2 || mode == 3 || mode == 8 || mode == 9 || mode == 10){
+		if(mode == 1 || mode == 2 || mode == 3 || mode == 8 || mode == 9 || mode == 10 || mode == 11){
 			type = 2;
 		}
 		

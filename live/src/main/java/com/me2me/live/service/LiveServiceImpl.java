@@ -209,6 +209,11 @@ public class LiveServiceImpl implements LiveService {
         log.info("get timeLine data");
         buildLiveTimeLine(getLiveTimeLineDto, liveTimeLineDto, fragmentList);
         log.info("buildLiveTimeLine success");
+        
+        //将当前用户针对于本王国的相关消息置为已读
+        userService.clearUserNoticeUnreadByCid(getLiveTimeLineDto.getUid(), Specification.UserNoticeUnreadContentType.KINGDOM.index, getLiveTimeLineDto.getTopicId());
+        
+        
         return Response.success(ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.status, ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.message, liveTimeLineDto);
     }
 
@@ -542,11 +547,47 @@ public class LiveServiceImpl implements LiveService {
     }
 
     private void buildLiveTimeLine(GetLiveTimeLineDto getLiveTimeLineDto, LiveTimeLineDto liveTimeLineDto, List<TopicFragment> fragmentList) {
+    	List<Long> uidList = new ArrayList<Long>();
+    	for (TopicFragment topicFragment : fragmentList) {
+    		if(!uidList.contains(topicFragment.getUid())){
+    			uidList.add(topicFragment.getUid());
+    		}
+    		if (null != topicFragment.getAtUid() && topicFragment.getAtUid() != 0) {
+            	if(topicFragment.getType() == Specification.LiveSpeakType.AT.index
+            			|| topicFragment.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
+            			|| topicFragment.getType() == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
+            		if(!uidList.contains(topicFragment.getAtUid())){
+            			uidList.add(topicFragment.getAtUid());
+            		}
+            	}
+    		}
+    	}
+    	
+    	Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+    	List<UserProfile> userList = userService.getUserProfilesByUids(uidList);
+    	if(null != userList && userList.size() > 0){
+    		for(UserProfile u : userList){
+    			userMap.put(u.getUid().toString(), u);
+    		}
+    	}
+    	
+    	//一次性查询关注信息
+        Map<String, String> followMap = new HashMap<String, String>();
+        List<UserFollow> userFollowList = userService.getAllFollows(getLiveTimeLineDto.getUid(), uidList);
+        if(null != userFollowList && userFollowList.size() > 0){
+        	for(UserFollow uf : userFollowList){
+        		followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+        	}
+        }
+    	
         Topic topic = liveMybatisDao.getTopicById(getLiveTimeLineDto.getTopicId());
+        LiveTimeLineDto.LiveElement liveElement = null;
+        UserProfile atUser = null;
+        UserProfile userProfile = null;
         for (TopicFragment topicFragment : fragmentList) {
             long uid = topicFragment.getUid();
 
-            LiveTimeLineDto.LiveElement liveElement = LiveTimeLineDto.createElement();
+            liveElement = LiveTimeLineDto.createElement();
             int status = topicFragment.getStatus();
             liveElement.setStatus(status);
             liveElement.setId(topicFragment.getId());
@@ -602,20 +643,25 @@ public class LiveServiceImpl implements LiveService {
             }
             liveElement.setTeaseStatus(teaseStatus);
             
-            UserProfile userProfile = userService.getUserProfileByUid(uid);
+            userProfile = userMap.get(String.valueOf(uid));
             liveElement.setUid(uid);
-            liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-            liveElement.setNickName(userProfile.getNickName());
+            if(null != userProfile){
+            	liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                liveElement.setNickName(userProfile.getNickName());
+                liveElement.setV_lv(userProfile.getvLv());
+            }
             liveElement.setFragment(topicFragment.getFragment());
-            liveElement.setV_lv(userProfile.getvLv());
             String fragmentImage = topicFragment.getFragmentImage();
             if (!StringUtils.isEmpty(fragmentImage)) {
                 liveElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
             }
             liveElement.setCreateTime(topicFragment.getCreateTime());
             liveElement.setType(topicFragment.getType());
-            int isFollow = userService.isFollow(topicFragment.getUid(), getLiveTimeLineDto.getUid());
-            liveElement.setIsFollowed(isFollow);
+            if(null != followMap.get(getLiveTimeLineDto.getUid()+"_"+topicFragment.getUid())){
+            	liveElement.setIsFollowed(1);
+            }else{
+            	liveElement.setIsFollowed(0);
+            }
             liveElement.setContentType(topicFragment.getContentType());
             liveElement.setFragmentId(topicFragment.getId());
             liveElement.setSource(topicFragment.getSource());
@@ -628,9 +674,11 @@ public class LiveServiceImpl implements LiveService {
             	if(topicFragment.getType() == Specification.LiveSpeakType.AT.index
             			|| topicFragment.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
             			|| topicFragment.getType() == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
-	                UserProfile atUser = userService.getUserProfileByUid(topicFragment.getAtUid());
-	                liveElement.setAtUid(atUser.getUid());
-	                liveElement.setAtNickName(atUser.getNickName());
+	                atUser = userMap.get(topicFragment.getAtUid().toString());
+	                if(null != atUser){
+		                liveElement.setAtUid(atUser.getUid());
+		                liveElement.setAtNickName(atUser.getNickName());
+	                }
             	}
             }
             liveTimeLineDto.getLiveElements().add(liveElement);
@@ -742,6 +790,7 @@ public class LiveServiceImpl implements LiveService {
         	speakNewEvent.setContentType(speakDto.getContentType());
         	speakNewEvent.setUid(speakDto.getUid());
         	speakNewEvent.setFragmentId(fid);
+        	speakNewEvent.setAtUid(speakDto.getAtUid());
         	speakNewEvent.setFragmentContent(speakDto.getFragment());
         	speakNewEvent.setFragmentExtra(speakDto.getExtra());
             applicationEventBus.post(speakNewEvent);
@@ -2685,6 +2734,9 @@ public class LiveServiceImpl implements LiveService {
         	}
         }
         
+        //将当前用户针对于本王国的相关消息置为已读
+        userService.clearUserNoticeUnreadByCid(getLiveDetailDto.getUid(), Specification.UserNoticeUnreadContentType.KINGDOM.index, getLiveDetailDto.getTopicId());
+        
         log.info("get live detail end ...");
         return  Response.success(ResponseStatus.GET_LIVE_DETAIL_SUCCESS.status, ResponseStatus.GET_LIVE_DETAIL_SUCCESS.message, liveDetailDto);
     }
@@ -2746,7 +2798,44 @@ public class LiveServiceImpl implements LiveService {
         log.info("build live detail start ...");
         liveDetailDto.setPageNo(getLiveDetailDto.getPageNo());
         liveDetailDto.getPageInfo().setEnd(getLiveDetailDto.getPageNo());
+        
+        List<Long> uidList = new ArrayList<Long>();
+        for (TopicFragment topicFragment : fragmentList) {
+    		if(!uidList.contains(topicFragment.getUid())){
+    			uidList.add(topicFragment.getUid());
+    		}
+    		if (null != topicFragment.getAtUid() && topicFragment.getAtUid() != 0) {
+            	if(topicFragment.getType() == Specification.LiveSpeakType.AT.index
+            			|| topicFragment.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
+            			|| topicFragment.getType() == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
+            		if(!uidList.contains(topicFragment.getAtUid())){
+            			uidList.add(topicFragment.getAtUid());
+            		}
+            	}
+    		}
+    	}
+    	
+    	Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+    	List<UserProfile> userList = userService.getUserProfilesByUids(uidList);
+    	if(null != userList && userList.size() > 0){
+    		for(UserProfile u : userList){
+    			userMap.put(u.getUid().toString(), u);
+    		}
+    	}
+    	
+    	//一次性查询关注信息
+        Map<String, String> followMap = new HashMap<String, String>();
+        List<UserFollow> userFollowList = userService.getAllFollows(getLiveDetailDto.getUid(), uidList);
+        if(null != userFollowList && userFollowList.size() > 0){
+        	for(UserFollow uf : userFollowList){
+        		followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+        	}
+        }
+        
+        
         int count = 0;
+        UserProfile userProfile = null;
+        UserProfile atUser = null;
         for (TopicFragment topicFragment : fragmentList) {
             long uid = topicFragment.getUid();
 
@@ -2780,7 +2869,7 @@ public class LiveServiceImpl implements LiveService {
             		}
             	}
             }
-          //逗一逗和投票（预防低版本）
+            //逗一逗和投票（预防低版本）
             if(getLiveDetailDto.getVersionFlag() < 3){//低于V2.2.5版本
             	if(topicFragment.getType() == 51 || topicFragment.getType() == 52){
             		if(topicFragment.getContentType() == 20){//逗一逗
@@ -2812,21 +2901,25 @@ public class LiveServiceImpl implements LiveService {
             }
             liveElement.setTeaseStatus(teaseStatus);
             
-
-            UserProfile userProfile = userService.getUserProfileByUid(uid);
+            userProfile = userMap.get(String.valueOf(uid));
             liveElement.setUid(uid);
-            liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-            liveElement.setNickName(userProfile.getNickName());
+            if(null != userProfile){
+            	liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                liveElement.setNickName(userProfile.getNickName());
+                liveElement.setV_lv(userProfile.getvLv());
+            }
             liveElement.setFragment(topicFragment.getFragment());
-            liveElement.setV_lv(userProfile.getvLv());
             String fragmentImage = topicFragment.getFragmentImage();
             if (!StringUtils.isEmpty(fragmentImage)) {
                 liveElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
             }
             liveElement.setCreateTime(topicFragment.getCreateTime());
             liveElement.setType(topicFragment.getType());
-            int isFollow = userService.isFollow(topicFragment.getUid(), getLiveDetailDto.getUid());
-            liveElement.setIsFollowed(isFollow);
+            if(null != followMap.get(getLiveDetailDto.getUid()+"_"+topicFragment.getUid())){
+            	liveElement.setIsFollowed(1);
+            }else{
+            	liveElement.setIsFollowed(0);
+            }
             liveElement.setContentType(topicFragment.getContentType());
             liveElement.setFragmentId(topicFragment.getId());
             liveElement.setSource(topicFragment.getSource());
@@ -2837,9 +2930,11 @@ public class LiveServiceImpl implements LiveService {
             	if(topicFragment.getType() == Specification.LiveSpeakType.AT.index
             			|| topicFragment.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
             			|| topicFragment.getType() == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
-	                UserProfile atUser = userService.getUserProfileByUid(topicFragment.getAtUid());
-	                liveElement.setAtUid(atUser.getUid());
-	                liveElement.setAtNickName(atUser.getNickName());
+	                atUser = userMap.get(topicFragment.getAtUid().toString());
+	                if(null != atUser){
+	                	liveElement.setAtUid(atUser.getUid());
+		                liveElement.setAtNickName(atUser.getNickName());
+	                }
             	}
             }
             if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){

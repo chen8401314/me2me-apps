@@ -70,6 +70,7 @@ public class ContactsMobilePushListener {
     				//推送
     				jsonObject = new JsonObject();
         	        jsonObject.addProperty("type",Specification.PushObjectType.CONTACTS.index);
+        	        jsonObject.addProperty("messageType",1);//没有任何定义
         	        userService.pushWithExtra(uid.toString(), message, JPushUtils.packageExtra(jsonObject));
         	        
         	        //红点

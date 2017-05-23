@@ -74,19 +74,19 @@ public class AbstractWriteTag {
                 log.info("ugc tag end");
             } else {
                 log.info("live tag start");
-                Map<String,Object> topic = liveForContentJdbcDao.getTopicListByCid(content.getForwardCid());
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("messageType", Specification.PushMessageType.LIVE_TAG.index);
-                jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
-                jsonObject.addProperty("topicId",content.getForwardCid());
-                jsonObject.addProperty("contentType", (Integer)topic.get("type"));
-                jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//此处是给王国创建者发的推送，所以直接设置核心圈
-                jsonObject.addProperty("fromInternalStatus", this.getInternalStatus(content.getForwardCid(), writeTagDto.getUid()));
-                String alias = String.valueOf(content.getUid());
-                contentService.remind(content, writeTagDto.getUid(), Specification.UserNoticeType.LIVE_TAG.index, writeTagDto.getTag());
-                if(this.checkTopicPush(content.getForwardCid(), content.getUid())){
-                	userService.pushWithExtra(alias, "你发布的内容收到了新感受", JPushUtils.packageExtra(jsonObject));
-                }
+//                Map<String,Object> topic = liveForContentJdbcDao.getTopicListByCid(content.getForwardCid());
+//                JsonObject jsonObject = new JsonObject();
+//                jsonObject.addProperty("messageType", Specification.PushMessageType.LIVE_TAG.index);
+//                jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
+//                jsonObject.addProperty("topicId",content.getForwardCid());
+//                jsonObject.addProperty("contentType", (Integer)topic.get("type"));
+//                jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//此处是给王国创建者发的推送，所以直接设置核心圈
+//                jsonObject.addProperty("fromInternalStatus", this.getInternalStatus(content.getForwardCid(), writeTagDto.getUid()));
+//                String alias = String.valueOf(content.getUid());
+//                contentService.remind(content, writeTagDto.getUid(), Specification.UserNoticeType.LIVE_TAG.index, writeTagDto.getTag());
+//                if(this.checkTopicPush(content.getForwardCid(), content.getUid())){
+//                	userService.pushWithExtra(alias, "你发布的内容收到了新感受", JPushUtils.packageExtra(jsonObject));
+//                }
                 log.info("live tag end");
             }
         }
