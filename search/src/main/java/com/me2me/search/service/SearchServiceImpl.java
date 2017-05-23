@@ -18,7 +18,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.me2me.common.Constant;
-import com.me2me.common.web.BaseEntity;
+import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -645,27 +645,37 @@ public class SearchServiceImpl implements SearchService {
 	 * @return
 	 */
 	private int getPersonaCompleted(UserProfile profile, String hobby){
-		int totalPercet = 40;
-		float completed=6f;
-		if(StringUtils.isEmpty(profile.getAvatar()) || StringUtils.equals("default.png", profile.getAvatar())){
-			completed--;
+		int result = 0;
+		//头像
+		if(!StringUtils.isEmpty(profile.getAvatar()) && !StringUtils.equals("default.png", profile.getAvatar())){
+			result = result + 5;
 		}
-		if(StringUtils.isEmpty(hobby)){
-			completed--;
+		//爱好
+		if(!StringUtils.isEmpty(hobby)){
+			result = result + 5;
 		}
-		if(profile.getLikeGender() == null || profile.getLikeGender().intValue() == 0){
-			completed--;
+		//性取向
+		if(profile.getLikeGender() != null && profile.getLikeGender().intValue() > 0){
+			result = result + 5;
 		}
-		if(profile.getAgeGroup()==null || profile.getAgeGroup().intValue()==0){
-			completed--;
+		//年龄段
+		if(profile.getAgeGroup()!=null && profile.getAgeGroup().intValue()>0){
+			result = result + 5;
 		}
-		if(profile.getOccupation()==null|| profile.getOccupation().intValue()==0){
-			completed--;
+		//职业
+		if(profile.getOccupation()!=null && profile.getOccupation().intValue()>0){
+			result = result + 5;
 		}
-		if(profile.getGender()==null){
-			completed--;
+		//性别
+		if(profile.getGender()!=null){
+			result = result + 5;
 		}
-		return (int) ((completed/6) * totalPercet);
+//		if(!StringUtils.isEmpty(profile.get)){
+//			
+//		}
+		
+		
+		return result;
 	}
 	
 	public Response recommendIndex(long uid,int page, String token, String version){
