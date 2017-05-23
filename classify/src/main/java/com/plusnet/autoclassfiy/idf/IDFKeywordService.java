@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.Map;
 /**
  * 词库服务。此服务是NLP学习中的基础服务，提供TF-IDF持续训练，关键词索引等服务。
  * @author jiwei.zhang
@@ -49,7 +50,7 @@ public interface IDFKeywordService {
 	 * @param sort true:按tf-idf值降序，false 不排序。
 	 * @return 关键词列表
 	 */
-	public List<TFIDFKeyword> getTFIDFKeywordByDoc(String doc,int maxKeywordNum,boolean sort);
+	public List<TFIDFKeyword> getTFIDFKeywordByDoc(String doc,int maxKeywordNum,boolean sort,Map<String,Float> weightKeywordMap);
 	
 	public void reloadModel(InputStream modelFile) throws IOException;
 	

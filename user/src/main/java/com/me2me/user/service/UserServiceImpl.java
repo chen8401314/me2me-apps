@@ -3473,4 +3473,55 @@ public class UserServiceImpl implements UserService {
 	public void clearUserNoticeUnreadByCid(long uid, int contentType, long cid){
 		userMybatisDao.clearUserNoticeUnreadByCid(uid, contentType, cid);
 	}
+
+	@Override
+	public Response<MBTIDto> getMBTIResult(long uid) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Response<MBTIDto> saveMBTIResult(long uid, String mbti) {
+		userMybatisDao.saveMBTIResult(uid, mbti);
+		userInitJdbcDao.updateUserProfileParam4String(uid, mbti, "mbti");
+		MBTIDto dto = new MBTIDto();
+		//dto.setKingdomId(kingdomId);
+		return null;
+	}
+
+	@Override
+	public Response saveMBTIShareResult(long uid) {
+		
+		return null;
+	}
+
+	@Override
+	public void addMBTIMapping(MbtiMapping mapping) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void delMBTIMapping(int mappingId) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void modifyMBTIMapping(MbtiMapping mapping) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<MbtiMapping> getMBTIMappingPage() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public MbtiMapping getMappingById(long id) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

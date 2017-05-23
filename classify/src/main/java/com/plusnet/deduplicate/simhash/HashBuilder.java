@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.net.UnknownHostException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Vector;
@@ -135,7 +136,7 @@ public class HashBuilder {
 		boolean ret = false;
 		
 		long begin= System.currentTimeMillis();
-		List<TFIDFKeyword> keyList =TF_IDF.getTFIDFKeywordByDoc(content, 100, true);
+		List<TFIDFKeyword> keyList =TF_IDF.getTFIDFKeywordByDoc(content, 100, true,new HashMap<>());
 		SimHash hash = new SimHash(keyList);
 		int[] hashPart =hash.toFourPart();
 		NumericRangeQuery<Integer> query1 = NumericRangeQuery.newIntRange("part1", hashPart[0], hashPart[0], true, true);
@@ -233,7 +234,7 @@ public class HashBuilder {
 							String content = (String) rst.get("content");
 							String title=(String)rst.get("title");
 							content =  title+" "+Jsoup.parse(content).text();
-							List<TFIDFKeyword> keyList =TF_IDF.getTFIDFKeywordByDoc(content, 100, true);
+							List<TFIDFKeyword> keyList =TF_IDF.getTFIDFKeywordByDoc(content, 100, true,new HashMap<>());
 							SimHash hash = new SimHash(keyList);
 							int[] hashPart =hash.toFourPart();
 							
@@ -334,7 +335,7 @@ public class HashBuilder {
 							String content = (String) rst.get("content");
 							String title=(String) rst.get("title");
 							content =  title+" "+Jsoup.parse(content).text();
-							List<TFIDFKeyword> keyList = TF_IDF.getTFIDFKeywordByDoc(content, 100, true);
+							List<TFIDFKeyword> keyList = TF_IDF.getTFIDFKeywordByDoc(content, 100, true,new HashMap<>());
 							SimHash simHash=new SimHash(keyList);
 							int[] hashPart = simHash.toFourPart();
 							

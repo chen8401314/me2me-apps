@@ -2,6 +2,8 @@ package com.me2me.user.dao;
 
 import com.me2me.core.dao.BaseJdbcDao;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
@@ -16,6 +18,8 @@ import java.util.Map;
  */
 @Repository
 public class UserInitJdbcDao extends BaseJdbcDao {
+	  @Autowired
+	    private JdbcTemplate jdbc;
 
     public void batchInsertMeNumber(List<Integer> values) {
         String sql = "insert into user_no (me_number) values ";
@@ -205,6 +209,11 @@ public class UserInitJdbcDao extends BaseJdbcDao {
     	sb.append(uid);
     	
     	super.execute(sb.toString());
+    }
+    public void updateUserProfileParam4String(long uid, String strParam, String paramName){
+    	String sql ="update user_profile set "+paramName+"=? ,update_time=now() where uid=?";
+    	
+    	jdbc.update(sql, new Object[]{strParam,uid});
     }
     
     public void batchInsertIntoUserMobileList(long uid, List<String> mobileList){
