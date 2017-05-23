@@ -36,6 +36,8 @@
         <module>kafka</module>
         <module>monitor-api</module>
         <module>monitor</module>
+        <module>pay-api</module>
+        <module>pay</module>
         <module>config-center</module>
         <module>message-channel-api</module>
         <module>message-channel</module>
@@ -199,7 +201,16 @@
                 <artifactId>jsoup</artifactId>
                 <version>${jsoup.version}</version>
             </dependency>
-    
+            <dependency>
+                <groupId>com.baomidou</groupId>
+                <artifactId>kisso</artifactId>
+                <version>${kisso.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcprov-jdk14</artifactId>
+                <version>${bcprov-jdk14.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -224,6 +235,8 @@
         </developer>
     </developers>
     <properties>
+        <kisso.version>3.6.10</kisso.version>
+        <bcprov-jdk14.version>1.50</bcprov-jdk14.version>
     	<jetty.version>6.1.22</jetty.version>
         <spring.version>4.2.6.RELEASE</spring.version>
         <fastjson.version>1.2.7</fastjson.version>
