@@ -44,7 +44,7 @@ public class SVMPredictTest {
 	 * 
 	 * @throws Exception
 	 */
-	@Test
+//	@Test
 	public void testModelAccuracy() throws Exception {
 		
 		File svmSimpleFile = new File("D:/svm-simples/svm.model.train"); // simples:62600,types:20,accuracy:79.3147%

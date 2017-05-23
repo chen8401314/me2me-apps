@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,12 +43,13 @@ public abstract class AbsSVMSimplesBuilder {
 	 * @return
 	 */
 	protected String buildLine(String txt, Integer type) {
-		return buildLine( txt, type,DEFAULT_FEATURE_NUM);
+		return buildLine( txt, type,DEFAULT_FEATURE_NUM,new HashMap<>());
 	}
 	
-	protected String buildLine(String txt,Integer type,int maxFeatureCount){
+	protected String buildLine(String txt,Integer type,int maxFeatureCount,Map<String,Float> weightKeywords){
 		// idf 提取100个特征值
-		List<TFIDFKeyword> keywords = this.keywordService.getTFIDFKeywordByDoc(txt, maxFeatureCount, true);
+		//List<TFIDFKeyword> keywords = this.keywordService.getTFIDFKeywordByDoc(txt, maxFeatureCount, true,weightKeywords);
+		List<TFIDFKeyword> keywords = this.keywordService.cutWord(txt);		// IDF提词效果不好，直接切词看看。
 		if(keywords.isEmpty()){
 			return null;
 		}
@@ -63,7 +65,11 @@ public abstract class AbsSVMSimplesBuilder {
 		StringBuilder sb = new StringBuilder();
 		sb.append(type + " ");
 		for (TFIDFKeyword key : keywords) {
-			double v =SVMUtils.to1(key.getTfidf());
+			Float score= weightKeywords.get(key.getName());
+			if(score==null){
+				score=1f;
+			}
+			double v =SVMUtils.to1(score);
 			String sv = String.format("%.6f",v);
 			sb.append(key.getIndex() + ":" + sv+" ");
 		}

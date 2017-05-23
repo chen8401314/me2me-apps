@@ -387,4 +387,40 @@ public interface UserService {
     Response noticeReddotQuery(long uid);
     
     void clearUserNoticeUnreadByCid(long uid, int contentType, long cid);
+    /**
+     * 获取用户mbti数据
+     * @author zhangjiwei
+     * @date May 23, 2017
+     * @param uid
+     * @return
+     */
+    Response<MBTIDto> getMBTIResult(long uid);
+    /**
+     * 保存mbti测试结果。
+     * @author zhangjiwei
+     * @date May 23, 2017
+     * @param uid
+     * @param mbti
+     * @return
+     */
+    Response<MBTIDto> saveMBTIResult(long uid,String mbti);
+    /**
+     * 记录用户分享mbti历史
+     * @author zhangjiwei
+     * @date May 23, 2017
+     * @param uid
+     * @return
+     */
+    Response saveMBTIShareResult(long uid);
+    
+    
+    void addMBTIMapping(MbtiMapping mapping);
+    
+    void delMBTIMapping(int mappingId);
+    
+    void modifyMBTIMapping(MbtiMapping mapping);
+    
+    List<MbtiMapping> getMBTIMappingPage();
+    
+    MbtiMapping getMappingById(long id);
 }

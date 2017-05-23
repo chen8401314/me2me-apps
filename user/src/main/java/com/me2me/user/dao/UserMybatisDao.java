@@ -120,6 +120,8 @@ public class UserMybatisDao {
     @Autowired
     private UserMobileListMapper userMobileListMapper;
 
+    @Autowired
+    private UserMbtiHistoryMapper mbtiHistoryMapper;
     /**
      * 保存用户注册信息
      * @param user
@@ -1202,5 +1204,17 @@ public class UserMybatisDao {
     	UserMobileListExample.Criteria criteria = example.createCriteria();
     	criteria.andUidEqualTo(uid);
     	userMobileListMapper.deleteByExample(example);
+    }
+    
+    public void saveMBTIResult(long uid,String mbti){
+    	UserMbtiHistory history = new UserMbtiHistory();
+    	history.setCreateTime(new Date());
+    	history.setMbti(mbti);
+    	history.setShared(0);
+    	history.setUid(uid);
+    	
+    	mbtiHistoryMapper.insert(history);
+    	// update userProfile
+    	
     }
 }

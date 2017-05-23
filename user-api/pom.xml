@@ -29,12 +29,13 @@
     <profiles>
         <profile>
             <id>dev</id>
-           <!--<activation>-->
-                <!--<activeByDefault>true</activeByDefault>-->
-            <!--</activation>-->
+            <!-- 
+           <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
             <build>
                 <plugins>
-                <!--
+                
                     <plugin>
                         <groupId>org.mybatis.generator</groupId>
                         <artifactId>mybatis-generator-maven-plugin</artifactId>
@@ -70,9 +71,10 @@
                             </dependency>
                         </dependencies>
                     </plugin>
-                     -->
+                     
                 </plugins>
             </build>
+             -->
         </profile>
     </profiles>
 </project>

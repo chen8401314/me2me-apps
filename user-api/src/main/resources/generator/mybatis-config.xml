@@ -64,6 +64,6 @@
         <!-- <table tableName="user_seek_follow" domainObjectName="UserSeekFollow"/> -->
         <!-- <table tableName="user_notice_unread" domainObjectName="UserNoticeUnread"/> -->
         <!-- <table tableName="user_mobile_list" domainObjectName="UserMobileList"/> -->
-
+		<!-- <table tableName="mbti_mapping" domainObjectName="MbtiMapping"/> -->
     </context>
 </generatorConfiguration>

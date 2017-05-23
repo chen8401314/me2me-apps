@@ -24,8 +24,8 @@ import com.plusnet.autoclassfiy.Constant;
 public class IDFKeywordServiceImpl implements IDFKeywordService{
 
 	private KeyGenenerator keyGen;
-	private Map<String,TFIDFKeyword> keyNameMap=new HashMap<>();
-	private Map<Integer,TFIDFKeyword> keyIndexMap=new HashMap<>();
+	private Map<String,TFIDFKeyword> keyNameMap;
+	private Map<Integer,TFIDFKeyword> keyIndexMap;
 	private Integer allDocs=0;
 	private Logger log = LoggerFactory.getLogger(IDFKeywordServiceImpl.class);
 	
@@ -170,11 +170,11 @@ public class IDFKeywordServiceImpl implements IDFKeywordService{
 
 	@Override
 	public List<TFIDFKeyword> getTFIDFKeywordByDoc(String doc) {
-		return getTFIDFKeywordByDoc(doc,Integer.MAX_VALUE,true);
+		return getTFIDFKeywordByDoc(doc,Integer.MAX_VALUE,true,new HashMap<>());
 	}
 
 	@Override
-	public List<TFIDFKeyword> getTFIDFKeywordByDoc(String doc, int maxKeywordNum, boolean sort) {
+	public List<TFIDFKeyword> getTFIDFKeywordByDoc(String doc, int maxKeywordNum, boolean sort,Map<String,Float> weightKeywordMap) {
 		List<TFIDFKeyword> termList = this.cutWord(doc);
 		Map<TFIDFKeyword, Integer> groupMap = new HashMap<>();
 		int validDocKeyCount = 0;
@@ -198,12 +198,13 @@ public class IDFKeywordServiceImpl implements IDFKeywordService{
 		for(Map.Entry<TFIDFKeyword,Integer> entry:groupMap.entrySet()){
 			
 			TFIDFKeyword keyword = entry.getKey();
-			if (keyword.getName().equals("运输车")) {
-				//System.out.println(keyword);
-			}
 			keyword.setIdf(getIDFByKey(keyword));
 			keyword.setTf(getTF(entry.getValue(), validDocKeyCount));
-			keyword.setTfidf(keyword.getTf()*keyword.getIdf());
+			Float score =weightKeywordMap.get(keyword.getName());
+			if(score==null){
+				score=1f;
+			}
+			keyword.setTfidf(keyword.getTf()*keyword.getIdf()*score);
 			
 			keywordList.add(keyword);
 		}
