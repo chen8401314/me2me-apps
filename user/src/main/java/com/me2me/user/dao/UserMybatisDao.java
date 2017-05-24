@@ -30,6 +30,7 @@ import com.me2me.user.mapper.ApplicationSecurityMapper;
 import com.me2me.user.mapper.DictionaryMapper;
 import com.me2me.user.mapper.DictionaryTypeMapper;
 import com.me2me.user.mapper.EmotionInfoMapper;
+import com.me2me.user.mapper.EmotionRecordMapper;
 import com.me2me.user.mapper.EntryPageConfigMapper;
 import com.me2me.user.mapper.ImConfigMapper;
 import com.me2me.user.mapper.IosWapxMapper;
@@ -68,6 +69,7 @@ import com.me2me.user.model.DictionaryType;
 import com.me2me.user.model.DictionaryTypeExample;
 import com.me2me.user.model.EmotionInfo;
 import com.me2me.user.model.EmotionInfoExample;
+import com.me2me.user.model.EmotionRecord;
 import com.me2me.user.model.EntryPageConfig;
 import com.me2me.user.model.EntryPageConfigExample;
 import com.me2me.user.model.ImConfig;
@@ -234,6 +236,9 @@ public class UserMybatisDao {
     
     @Autowired
     private MbtiMappingMapper mbtiMappingMapper;
+    
+    @Autowired
+    private EmotionRecordMapper emotionRecordMapper;
     
     /**
      * 保存用户注册信息
@@ -1395,4 +1400,23 @@ public class UserMybatisDao {
 	public Integer addEmotionInfo(EmotionInfo emotionInfo) {
 		return emotionInfoMapper.insertSelective(emotionInfo);
 	}
+	
+	public EmotionInfo getEmotionInfoByValue(int happyValue,int freeValue) {
+		EmotionInfoExample example = new EmotionInfoExample();
+		EmotionInfoExample.Criteria criteria  = example.createCriteria();
+		criteria.andHappymaxGreaterThanOrEqualTo(happyValue);
+		criteria.andHappyminLessThanOrEqualTo(happyValue);
+		criteria.andFreemaxGreaterThanOrEqualTo(freeValue);
+		criteria.andFreeminLessThanOrEqualTo(freeValue);
+		List<EmotionInfo> list=  emotionInfoMapper.selectByExample(example);
+		if(list.size()>0){
+			return list.get(0);
+		}else{
+			return null;
+		}
+	}
+	public Integer addEmotionRecord(EmotionRecord emotionRecord) {
+		return emotionRecordMapper.insertSelective(emotionRecord);
+	}
+	
 }
