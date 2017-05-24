@@ -122,6 +122,7 @@ import com.me2me.user.model.ApplicationSecurity;
 import com.me2me.user.model.Dictionary;
 import com.me2me.user.model.DictionaryType;
 import com.me2me.user.model.EmotionInfo;
+import com.me2me.user.model.EmotionRecord;
 import com.me2me.user.model.EntryPageConfig;
 import com.me2me.user.model.ImConfig;
 import com.me2me.user.model.IosWapx;
