@@ -285,16 +285,17 @@
 		var tr = $(this).closest("tr");
 		var data =sourceTable.row(tr).data();
 		
-		parent.onAdd([data.topicId]);
+		parent.onAdd([data.topicId],[data]);
 	})
 	function addBatch(){
-		var dataArr=[]
+		var idArr=[],dataArr=[];
 		$("#mytable input:checked").each(function(){
 			var tr = $(this).closest("tr");
 			var data =sourceTable.row(tr).data()
-			dataArr.push(data.topicId);
+			dataArr.push(data);
+			idArr.push(data.topicId);
 		})
-		parent.onAdd(dataArr);
+		parent.onAdd(idArr,dataArr);
 	}
 	$("#flushKingdomCache").click(function(){
 		if(confirm("确认刷新吗？")){

@@ -883,4 +883,35 @@ public class Users extends BaseController {
     public Response noticeReddotQuery(NoticeReddotQueryRequest request){
     	return userService.noticeReddotQuery(request.getUid());
     }
+    
+    /**
+     * 查询MBTI测试结果。
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getMBTIResult",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getMBTIResult(MBTIRequest request){
+    	return userService.getMBTIResult(request.getUid());
+    }
+    /**
+     * 通知红点查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/saveMBTIResult",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response saveMBTIResult(MBTIRequest request){
+    	return userService.saveMBTIResult(request.getUid(),request.getMbti());
+    }
+    /**
+     * 通知红点查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/saveMBTIShareResult",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response saveMBTIShareResult(MBTIRequest request){
+    	return userService.saveMBTIShareResult(request.getUid());
+    }
 }

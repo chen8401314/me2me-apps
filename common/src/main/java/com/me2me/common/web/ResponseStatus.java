@@ -296,7 +296,9 @@ public enum  ResponseStatus {
 
     RESEND_VOTE_SUCCESS("投票重新发送成功","resend vote success",200141),
 
-
+    SEARCH_EMOTION_NOT_EXISTS("未匹配到情绪信息","search emotion not exists",200142),
+    
+    SEARCH_EMOTION_SUMMARY_NOT_EXISTS("未查询到情绪总结记录","search emotion summary not exists",200143),
 
 
 
