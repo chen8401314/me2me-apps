@@ -136,6 +136,7 @@ import com.me2me.user.model.UserFamous;
 import com.me2me.user.model.UserFollow;
 import com.me2me.user.model.UserGag;
 import com.me2me.user.model.UserHobby;
+import com.me2me.user.model.UserMbtiHistory;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserNoticeUnread;
 import com.me2me.user.model.UserProfile;
@@ -3682,5 +3683,6 @@ public class UserServiceImpl implements UserService {
 	public Integer addEmotionInfo(EmotionInfo emotionInfo) {
 		return userMybatisDao.addEmotionInfo(emotionInfo);
 	}
+
 	
 }
