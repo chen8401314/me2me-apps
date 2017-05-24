@@ -76,6 +76,11 @@ public class UserEsMapping {
 	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
 	private String tags;		//是否是大V(0 否 1 是)     必填 
 	
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.String)
+	private String mbit;
+	
+	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
+	private String last_emotions;
 	
 	public Long getId() {
 		return id;
@@ -243,6 +248,22 @@ public class UserEsMapping {
 
 	public void setTags(String tags) {
 		this.tags = tags;
+	}
+
+	public String getMbit() {
+		return mbit;
+	}
+
+	public void setMbit(String mbit) {
+		this.mbit = mbit;
+	}
+
+	public String getLast_emotions() {
+		return last_emotions;
+	}
+
+	public void setLast_emotions(String last_emotions) {
+		this.last_emotions = last_emotions;
 	}
 	
 	

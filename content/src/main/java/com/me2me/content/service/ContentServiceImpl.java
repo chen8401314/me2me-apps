@@ -1,5 +1,21 @@
 package com.me2me.content.service;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -17,18 +33,83 @@ import com.me2me.common.web.Specification;
 import com.me2me.content.dao.BillBoardJdbcDao;
 import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dao.LiveForContentJdbcDao;
-import com.me2me.content.dto.*;
-import com.me2me.content.dto.EmojiPackDto.PackageData;
+import com.me2me.content.dto.BangDanDto;
+import com.me2me.content.dto.BillBoardDetailsDto;
+import com.me2me.content.dto.BillBoardListDTO;
+import com.me2me.content.dto.BillBoardRelationDto;
+import com.me2me.content.dto.Content2Dto;
+import com.me2me.content.dto.ContentDetailDto;
+import com.me2me.content.dto.ContentDto;
+import com.me2me.content.dto.ContentH5Dto;
+import com.me2me.content.dto.ContentReviewDto;
+import com.me2me.content.dto.CreateContentSuccessDto;
+import com.me2me.content.dto.EditorContentDto;
+import com.me2me.content.dto.EmojiPackDetailDto;
+import com.me2me.content.dto.EmojiPackDto;
+import com.me2me.content.dto.HighQualityContentDto;
+import com.me2me.content.dto.KingTopicDto;
+import com.me2me.content.dto.LikeDto;
+import com.me2me.content.dto.MyPublishDto;
+import com.me2me.content.dto.OnlineBillBoardDto;
+import com.me2me.content.dto.RecommendContentDto;
+import com.me2me.content.dto.ResultKingTopicDto;
+import com.me2me.content.dto.ReviewDelDTO;
+import com.me2me.content.dto.ReviewDto;
+import com.me2me.content.dto.ShowArticleCommentsDto;
+import com.me2me.content.dto.ShowArticleReviewDto;
+import com.me2me.content.dto.ShowAttentionDto;
+import com.me2me.content.dto.ShowContentDto;
+import com.me2me.content.dto.ShowContentListDto;
+import com.me2me.content.dto.ShowHotCeKingdomListDTO;
+import com.me2me.content.dto.ShowHotListDTO;
+import com.me2me.content.dto.ShowHottestDto;
+import com.me2me.content.dto.ShowKingTopicDto;
+import com.me2me.content.dto.ShowMyPublishDto;
+import com.me2me.content.dto.ShowNewestDto;
+import com.me2me.content.dto.ShowUGCDetailsDto;
+import com.me2me.content.dto.ShowUserContentsDTO;
+import com.me2me.content.dto.SquareDataDto;
+import com.me2me.content.dto.UserContentSearchDTO;
+import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.mapper.EmotionPackDetailMapper;
 import com.me2me.content.mapper.EmotionPackMapper;
-import com.me2me.content.model.*;
+import com.me2me.content.model.ArticleLikesDetails;
 import com.me2me.content.model.ArticleReview;
+import com.me2me.content.model.ArticleTagsDetails;
+import com.me2me.content.model.BillBoard;
+import com.me2me.content.model.BillBoardDetails;
+import com.me2me.content.model.BillBoardList;
+import com.me2me.content.model.BillBoardRelation;
+import com.me2me.content.model.Content;
+import com.me2me.content.model.ContentImage;
+import com.me2me.content.model.ContentLikesDetails;
 import com.me2me.content.model.ContentReview;
-import com.me2me.content.widget.*;
+import com.me2me.content.model.ContentTags;
+import com.me2me.content.model.ContentTagsDetails;
+import com.me2me.content.model.EmotionPack;
+import com.me2me.content.model.EmotionPackDetail;
+import com.me2me.content.model.EmotionPackDetailExample;
+import com.me2me.content.model.EmotionPackExample;
+import com.me2me.content.model.HighQualityContent;
+import com.me2me.content.widget.ContentRecommendServiceProxyBean;
+import com.me2me.content.widget.ContentStatusServiceProxyBean;
+import com.me2me.content.widget.LikeAdapter;
+import com.me2me.content.widget.PublishContentAdapter;
+import com.me2me.content.widget.ReviewAdapter;
+import com.me2me.content.widget.WriteTagAdapter;
 import com.me2me.sms.service.JPushService;
+import com.me2me.user.dto.EmotionInfoDto;
 import com.me2me.user.dto.UserInfoDto;
 import com.me2me.user.dto.UserInfoDto2;
-import com.me2me.user.model.*;
+import com.me2me.user.model.EmotionInfo;
+import com.me2me.user.model.JpushToken;
+import com.me2me.user.model.SystemConfig;
+import com.me2me.user.model.UserFamous;
+import com.me2me.user.model.UserFollow;
+import com.me2me.user.model.UserNotice;
+import com.me2me.user.model.UserNoticeUnread;
+import com.me2me.user.model.UserProfile;
+import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
 import com.plusnet.forecast.domain.ForecastContent;
 import com.plusnet.search.content.RecommendRequest;
@@ -38,22 +119,6 @@ import com.plusnet.search.content.domain.ContentTO;
 import com.plusnet.search.content.domain.User;
 
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 
 /**
@@ -5604,4 +5669,38 @@ private void localJpush(long toUid){
 		}
 		return null;
 	}
+	@Override
+	public Response getEmotionInfoByValue(int happyValue,int freeValue) {
+		EmotionInfo  emotionInfo=	userService.getEmotionInfoByValue(happyValue, freeValue);
+		if(null == emotionInfo){
+			return Response.failure(500, "未匹配到情绪信息");
+		}
+		EmotionInfoDto dto = new EmotionInfoDto();
+		dto.setEmotionName(emotionInfo.getEmotionname());
+		dto.setFreeMax(emotionInfo.getFreemax());
+		dto.setFreeMin(emotionInfo.getFreemin());
+		dto.setHappyMax(emotionInfo.getHappymax());
+		dto.setHappyMin(emotionInfo.getHappymin());
+		dto.setId(emotionInfo.getId());
+		dto.setTopicId(emotionInfo.getTopicid());
+		EmotionPackDetail  detail=	emotionPackDetailMapper.selectByPrimaryKey(Integer.valueOf(emotionInfo.getEmotionpackid()+""));
+		if(null == detail){
+			return Response.failure(500, "表情不存在");
+		}
+		EmotionInfoDto.EmotionPack ep = EmotionInfoDto.createEmotionPack();
+		ep.setExtra(detail.getExtra());
+		ep.setH(detail.getH());
+		ep.setId(detail.getId());
+		ep.setImage(Constant.QINIU_DOMAIN + "/" + detail.getImage());
+		ep.setThumb(Constant.QINIU_DOMAIN + "/" + detail.getThumb());
+		ep.setThumb_h(detail.getThumbH());
+		ep.setThumb_w(detail.getThumbW());
+		ep.setTitle(detail.getTitle());
+		ep.setContent(detail.getExtra());
+		ep.setW(detail.getW());
+		ep.setEmojiType(1);
+		dto.setEmotionPack(ep);
+		return Response.success(dto);
+	}
+	
 }

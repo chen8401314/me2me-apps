@@ -129,9 +129,6 @@ public class UserMybatisDao {
     
     @Autowired
     private UserMobileListMapper userMobileListMapper;
-
-    @Autowired
-    private EmotionRecordMapper emotionRecordMapper;
     
     @Autowired
     private UserMbtiHistoryMapper mbtiHistoryMapper;
@@ -141,6 +138,9 @@ public class UserMybatisDao {
     
     @Autowired
     private MbtiMappingMapper mbtiMappingMapper;
+    
+    @Autowired
+    private EmotionRecordMapper emotionRecordMapper;
     
     /**
      * 保存用户注册信息
@@ -1324,4 +1324,23 @@ public class UserMybatisDao {
 	public Integer addEmotionInfo(EmotionInfo emotionInfo) {
 		return emotionInfoMapper.insertSelective(emotionInfo);
 	}
+	
+	public EmotionInfo getEmotionInfoByValue(int happyValue,int freeValue) {
+		EmotionInfoExample example = new EmotionInfoExample();
+		EmotionInfoExample.Criteria criteria  = example.createCriteria();
+		criteria.andHappymaxGreaterThanOrEqualTo(happyValue);
+		criteria.andHappyminLessThanOrEqualTo(happyValue);
+		criteria.andFreemaxGreaterThanOrEqualTo(freeValue);
+		criteria.andFreeminLessThanOrEqualTo(freeValue);
+		List<EmotionInfo> list=  emotionInfoMapper.selectByExample(example);
+		if(list.size()>0){
+			return list.get(0);
+		}else{
+			return null;
+		}
+	}
+	public Integer addEmotionRecord(EmotionRecord emotionRecord) {
+		return emotionRecordMapper.insertSelective(emotionRecord);
+	}
+	
 }

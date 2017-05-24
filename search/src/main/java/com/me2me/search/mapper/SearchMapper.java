@@ -140,4 +140,31 @@ public interface SearchMapper  {
     @ResultType(Map.class)
     @Select("select h.uid,d.value from user_hobby h left join dictionary d on h.hobby=d.id where h.uid in (${ids})")
     List<Map<String,Object>> getUserHobbyByUids(@Param("ids")String uids);
+    
+    /**
+     * 获取多个用户最近3次设定的情绪
+     * 由于Mysql没有实现开窗函数，故这里实现了一套伪开窗函数来实现逻辑
+     * @param uids
+     * @return
+     */
+    @ResultType(Map.class)
+    @Select("select m.* from (select t.*,CASE when @preVal = t.uid then @curVal := @curVal+1 when @preVal := t.uid then @curVal := 1 end as rowno from emotion_record t,(select @preVal:=null,@curVal:=null) r where t.uid in (${uids}) order by t.uid asc, t.id desc) m where m.rowno<3")
+    List<Map<String,Object>> getLast3UserEmotionsByUids(@Param("uids")String uids);
+    
+    /**
+     * 获取全量表情数据
+     * @return
+     */
+    @ResultType(Map.class)
+    @Select("select * from emotion_info")
+    List<Map<String,Object>> getAllEmotions();
+    
+    /**
+     * 获取单个用户最近3次设定的情绪名
+     * @param uid
+     * @return
+     */
+    @ResultType(String.class)
+    @Select("select i.emotionName from emotion_record t, emotion_info i where t.emotionId=i.id and t.uid=#{0} order by t.id desc limit 3")
+    List<String> getLast3UserEmotionByUid(long uid);
 }
