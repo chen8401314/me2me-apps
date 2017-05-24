@@ -892,7 +892,7 @@ public class Users extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getMBTIResult",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getMBTIResult(MBTIRequest request){
-    	return userService.getMBTIResult(request.getUid());
+    	return userService.getMBTIResult(request.getCustomUid());
     }
     /**
      * 通知红点查询接口
