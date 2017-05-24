@@ -416,13 +416,13 @@ public interface UserService {
     
     void addMBTIMapping(MbtiMapping mapping);
     
-    void delMBTIMapping(int mappingId);
+    void delMBTIMapping(long mappingId);
     
     void modifyMBTIMapping(MbtiMapping mapping);
     
     List<MbtiMapping> getMBTIMappingPage();
     
-    MbtiMapping getMappingById(long id);
+    MbtiMapping getMBTIMappingById(long id);
     
      List<EmotionInfo> getEmotionInfoList();
      

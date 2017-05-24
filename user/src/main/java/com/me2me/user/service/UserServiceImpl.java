@@ -3588,8 +3588,29 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public Response<MBTIDto> getMBTIResult(long uid) {
-		// TODO Auto-generated method stub
-		return null;
+		List<UserMbtiHistory> userHistory = userMybatisDao.getMBTIHistoryByUid(uid);
+		boolean shared = false;
+		boolean tested = false;
+		
+		for(UserMbtiHistory history:userHistory){
+			tested=true;
+			if(history.getShared()==1){
+				shared=true;
+				break;
+			}
+		}
+		MBTIDto dto = new MBTIDto();
+		if(!userHistory.isEmpty()){
+			String mbti= userHistory.get(0).getMbti();
+			dto.setMbti(mbti);
+			Long kingdomId =userMybatisDao.getKingdomIdByMBTI(mbti);
+			if(kingdomId!=null){
+				dto.setKingdomId(kingdomId);
+			}
+		}
+		dto.setShared(shared);
+		dto.setTested(tested);
+		return Response.success(dto);
 	}
 
 	@Override
@@ -3597,44 +3618,48 @@ public class UserServiceImpl implements UserService {
 		userMybatisDao.saveMBTIResult(uid, mbti);
 		userInitJdbcDao.updateUserProfileParam4String(uid, mbti, "mbti");
 		MBTIDto dto = new MBTIDto();
-		//dto.setKingdomId(kingdomId);
-		return null;
+		Long kingdomId =userMybatisDao.getKingdomIdByMBTI(mbti);
+		if(kingdomId!=null){
+			dto.setKingdomId(kingdomId);
+		}
+		dto.setTested(true);
+		boolean isShared =userMybatisDao.isMBTIShared(uid);
+		dto.setShared(isShared);
+		dto.setMbti(mbti);
+		return Response.success(dto);
 	}
 
 	@Override
 	public Response saveMBTIShareResult(long uid) {
-		
-		return null;
+		userInitJdbcDao.saveMBTIShareResult(uid);
+		return Response.success();
 	}
 
 	@Override
 	public void addMBTIMapping(MbtiMapping mapping) {
-		// TODO Auto-generated method stub
-		
+		mapping.setCreatetime(new Date());
+		this.userMybatisDao.addMBTIMapping(mapping);
 	}
 
 	@Override
-	public void delMBTIMapping(int mappingId) {
-		// TODO Auto-generated method stub
-		
+	public void delMBTIMapping(long mappingId) {
+		this.userMybatisDao.deleteMBTIMappingById(mappingId);
 	}
 
 	@Override
 	public void modifyMBTIMapping(MbtiMapping mapping) {
-		// TODO Auto-generated method stub
+		this.userMybatisDao.updateMBTIMapping(mapping);
 		
 	}
 
 	@Override
 	public List<MbtiMapping> getMBTIMappingPage() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.userMybatisDao.getAllMBTIMapping();
 	}
 
 	@Override
-	public MbtiMapping getMappingById(long id) {
-		// TODO Auto-generated method stub
-		return null;
+	public MbtiMapping getMBTIMappingById(long id) {
+		return this.userMybatisDao.getMBTIMappingById(id);
 	}
 	
 	@Override

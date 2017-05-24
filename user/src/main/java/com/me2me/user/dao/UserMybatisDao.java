@@ -227,6 +227,10 @@ public class UserMybatisDao {
     
     @Autowired
     private EmotionInfoMapper emotionInfoMapper;
+    
+    @Autowired
+    private MbtiMappingMapper mbtiMappingMapper;
+    
     /**
      * 保存用户注册信息
      * @param user
@@ -1319,9 +1323,52 @@ public class UserMybatisDao {
     	history.setUid(uid);
     	
     	mbtiHistoryMapper.insert(history);
-    	// update userProfile
-    	
     }
+    public void addMBTIMapping(MbtiMapping mapping) {
+		mbtiMappingMapper.insertSelective(mapping);
+	}
+
+	public void deleteMBTIMappingById(long mappingId) {
+		mbtiMappingMapper.deleteByPrimaryKey((int)mappingId);
+	}
+
+	public void updateMBTIMapping(MbtiMapping mapping) {
+		mbtiMappingMapper.updateByPrimaryKeySelective(mapping);
+	}
+
+	public MbtiMapping getMBTIMappingById(long id) {
+		return mbtiMappingMapper.selectByPrimaryKey((int)id);
+	}
+
+	public List<MbtiMapping> getAllMBTIMapping() {
+		MbtiMappingExample example = new MbtiMappingExample();
+		example.setOrderByClause("createTime asc");
+		return mbtiMappingMapper.selectByExample(example);
+	}
+
+	public List<UserMbtiHistory> getMBTIHistoryByUid(long uid) {
+		UserMbtiHistoryExample example = new UserMbtiHistoryExample();
+		example.createCriteria().andUidEqualTo(uid);
+		example.setOrderByClause("create_time desc");
+		return mbtiHistoryMapper.selectByExample(example);
+	}
+	
+	public boolean isMBTIShared(long uid) {
+		UserMbtiHistoryExample example = new UserMbtiHistoryExample();
+		example.createCriteria().andUidEqualTo(uid).andSharedEqualTo(1);
+		return mbtiHistoryMapper.countByExample(example)>0;
+	}
+
+	public Long getKingdomIdByMBTI(String mbti) {
+		MbtiMappingExample example = new MbtiMappingExample();
+		example.createCriteria().andNameEqualTo(mbti);
+		List<MbtiMapping> mappings=  mbtiMappingMapper.selectByExample(example);
+		if(mappings.size()>0){
+			return mappings.get(0).getKingdomid();
+		}else{
+			return null;
+		}
+	}
     
 	public List<EmotionInfo> getEmotionInfoList() {
 		EmotionInfoExample example = new EmotionInfoExample();
