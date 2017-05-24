@@ -62,6 +62,15 @@ public class ContentForSearchJdbcDao {
 		return jdbcTemplate.queryForList(sb.toString());
 	}
 	
+	public Map<String, Object> getTopicById(long id){
+		String sql = "select * from topic t where t.id=" + id;
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+	
 	public List<Map<String,Object>> getLiveFavoritesByUidAndTopicIds(long uid, List<Long> topicIds){
     	if(null == topicIds || topicIds.size() == 0){
     		return null;
@@ -207,5 +216,52 @@ public class ContentForSearchJdbcDao {
 			}
 		}
 		return sb.toString();
+	}
+	
+	/**
+	 * 获取用户设置情绪次数
+	 * @param uid
+	 * @param userEmotionId 如果>0则表示查询当前userEmotionId是第几次设置；如果<=0则表示查询所有次数
+	 * @return
+	 */
+	public int countUserEmotions(long uid, long userEmotionId){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select count(1) as cc from emotion_record t");
+		sb.append(" where t.uid=").append(uid);
+		if(userEmotionId > 0){
+			sb.append(" and t.id<=").append(userEmotionId);
+		}
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+		if(null != list && list.size() > 0){
+			Map<String, Object> c = list.get(0);
+			return ((Long)c.get("cc")).intValue();
+		}
+		return 0;
+	}
+	
+	/**
+	 * 根据Id获取表情包表情
+	 * @param eids
+	 * @return
+	 */
+	public List<Map<String, Object>> getEmotionsByIds(List<Long> eids){
+		if(null == eids || eids.size() == 0){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select * from emotion_pack_detail d where d.id in (");
+		for(int i=0;i<eids.size();i++){
+			if(i>0){
+				sb.append(",");
+			}
+			sb.append(eids.get(i));
+		}
+		sb.append(")");
+		return jdbcTemplate.queryForList(sb.toString());
+	}
+	
+	public Map<String, Object> getUserEmotionKingdom(long uid){
+		return null;
 	}
 }

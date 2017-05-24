@@ -18,7 +18,6 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.me2me.common.Constant;
-import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -38,6 +37,8 @@ import com.me2me.search.enums.RecommendReason;
 import com.me2me.search.esmapping.TopicEsMapping;
 import com.me2me.search.esmapping.UgcEsMapping;
 import com.me2me.search.esmapping.UserEsMapping;
+import com.me2me.user.model.EmotionInfo;
+import com.me2me.user.model.EmotionRecord;
 import com.me2me.user.model.UserFollow;
 import com.me2me.user.model.UserProfile;
 import com.me2me.search.mapper.SearchHotKeywordMapper;
@@ -670,66 +671,173 @@ public class SearchServiceImpl implements SearchService {
 		if(profile.getGender()!=null){
 			result = result + 5;
 		}
-//		if(!StringUtils.isEmpty(profile.get)){
-//			
-//		}
-		
+		//MBTI人格
+		if(!StringUtils.isEmpty(profile.getMbti())){
+			result = result + 5;
+		}
+		//用户情绪
+		int userEmotionCount = contentForSearchJdbcDao.countUserEmotions(profile.getUid(), 0);
+		if(userEmotionCount > 0){
+			int e = 10 + userEmotionCount - 1;
+			if(e > 30){
+				e = 30;
+			}
+			result = result + e;
+		}
 		
 		return result;
 	}
 	
 	public Response recommendIndex(long uid,int page, String token, String version){
 		RecommendListDto indexData = new RecommendListDto();
-		// 查用户画像信息
-		UserProfile profile = userService.getUserProfileByUid(uid);
-		RecommendListDto.RecPerson person = new RecommendListDto.RecPerson();
-		person.setUid(uid);
-		person.setNickName(profile.getNickName());
-		person.setAvatar(Constant.QINIU_DOMAIN + "/" + profile.getAvatar());
-		person.setV_lv(profile.getvLv());
-		person.setSex(profile.getGender());
-		String hobby = StringUtils.join(searchMapper.getUserHobbyIds(uid),",");
-		person.setHobby(hobby);
-		if(null != profile.getAgeGroup()){
-			person.setAgeGroup(profile.getAgeGroup());
-		}
-		if(null != profile.getOccupation()){
-			person.setCareer(profile.getOccupation());
-		}
-		if(null != profile.getLikeGender()){
-			person.setSexOrientation(profile.getLikeGender());
-		}
-		//画像完成度
-		int completion = this.getPersonaCompleted(profile, hobby);
-		person.setCompletion(completion);
-		indexData.setPersona(person);
-		
-		// 查推荐用户
-		List<RecommendUser> resultpage = null;
-		if(completion >= 10){
-			List<Long> myFollowUidList = userService.getFollowList(uid);
-			resultpage = this.searchService.getRecommendUserList(uid, 1, 10, myFollowUidList);
-		}
-		if(null == resultpage){
-			resultpage = new ArrayList<RecommendUser>();
-		}
-		if(resultpage.size() == 0){//第一页就没有数据的话，默认返回“米汤管家”这个用户
-			UserProfile user = userService.getUserByNickName("米汤管家");
-			if(null != user){
-				RecommendUser ruser = new RecommendUser();
-				ruser.setUid(user.getUid());
-				ruser.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
-				ruser.setNickName(user.getNickName());
-				ruser.setV_lv(user.getvLv());
-				ruser.setReason("");
-				ruser.setTagMatchedLength(0);
-				ruser.setUserTags(new ArrayList<String>());
-				resultpage.add(ruser);
+		if(page == 1){//第一页需要额外返回用户画像，用户推荐
+			//查用户画像信息
+			UserProfile profile = userService.getUserProfileByUid(uid);
+			RecommendListDto.RecPerson person = new RecommendListDto.RecPerson();
+			person.setUid(uid);
+			person.setNickName(profile.getNickName());
+			person.setAvatar(Constant.QINIU_DOMAIN + "/" + profile.getAvatar());
+			person.setV_lv(profile.getvLv());
+			person.setSex(profile.getGender());
+			String hobby = StringUtils.join(searchMapper.getUserHobbyIds(uid),",");
+			person.setHobby(hobby);
+			if(null != profile.getAgeGroup()){
+				person.setAgeGroup(profile.getAgeGroup());
 			}
-		}
-		
-		if(null != resultpage && resultpage.size() > 0){
-			indexData.getRecUserData().addAll(resultpage);
+			if(null != profile.getOccupation()){
+				person.setCareer(profile.getOccupation());
+			}
+			if(null != profile.getLikeGender()){
+				person.setSexOrientation(profile.getLikeGender());
+			}
+			//画像完成度
+			int completion = this.getPersonaCompleted(profile, hobby);
+			person.setCompletion(completion);
+			person.setMbit(profile.getMbti());
+			
+			EmotionInfo firstUserEmotionInfo = null;
+			List<EmotionRecord> erList = userService.getUserEmotionRecords(uid, 20);
+			if(null != erList && erList.size() > 0){
+				List<Long> emotionIdList = new ArrayList<Long>();
+				for(EmotionRecord er : erList){
+					if(!emotionIdList.contains(er.getEmotionid())){
+						emotionIdList.add(er.getEmotionid());
+					}
+				}
+				Map<String, EmotionInfo> emotionInfoMap = new HashMap<String, EmotionInfo>();
+				Map<String, Map<String, Object>> bigEmotionMap = new HashMap<String, Map<String, Object>>();
+				if(emotionIdList.size() > 0){
+					List<EmotionInfo> eInfoList = userService.getEmotionInfosByIds(emotionIdList);
+					if(null != eInfoList && eInfoList.size() > 0){
+						List<Long> bigEmotionids = new ArrayList<Long>();
+						for(EmotionInfo eInfo : eInfoList){
+							emotionInfoMap.put(eInfo.getId().toString(), eInfo);
+							if(!bigEmotionids.contains(eInfo.getEmotionpackid())){
+								bigEmotionids.add(eInfo.getEmotionpackid());
+							}
+						}
+						if(bigEmotionids.size() > 0){
+							List<Map<String, Object>> bigEmotionList = contentForSearchJdbcDao.getEmotionsByIds(bigEmotionids);
+							if(null != bigEmotionList && bigEmotionList.size() > 0){
+								for(Map<String, Object> m : bigEmotionList){
+									bigEmotionMap.put(m.get("id").toString(), m);
+								}
+							}
+						}
+					}
+				}
+				
+				//查询用户的情绪王国
+				Map<String, Object> userEmotionKingdom = contentForSearchJdbcDao.getUserEmotionKingdom(uid);
+				
+				RecommendListDto.UserEmotion userEmotion = null;
+				EmotionInfo emotionInfo = null;
+				Map<String, Object> bigEmotion = null;
+				RecommendListDto.EmotionPackage emotionPackage = null;
+				for(EmotionRecord er : erList){
+					userEmotion = new RecommendListDto.UserEmotion();
+					userEmotion.setCreateTime(er.getCreateTime().getTime());
+					userEmotion.setFreeValue(er.getFreevalue());
+					userEmotion.setHappyValue(er.getHappyvalue());
+					
+					emotionInfo = emotionInfoMap.get(er.getEmotionid().toString());
+					firstUserEmotionInfo = emotionInfo;
+					if(null != emotionInfo){
+						userEmotion.setEmotionName(emotionInfo.getEmotionname());
+						bigEmotion = bigEmotionMap.get(emotionInfo.getEmotionpackid().toString());
+						if(null != bigEmotion){
+							emotionPackage = new RecommendListDto.EmotionPackage();
+							emotionPackage.setContent((String)bigEmotion.get("extra"));
+							emotionPackage.setEmojiType(1);//默认大表情
+							emotionPackage.setExtra((String)bigEmotion.get("extra"));
+							emotionPackage.setH((Integer)bigEmotion.get("h"));
+							emotionPackage.setId((Long)bigEmotion.get("id"));
+							emotionPackage.setImage(Constant.QINIU_DOMAIN + "/" + (String)bigEmotion.get("image"));
+							emotionPackage.setThumb(Constant.QINIU_DOMAIN + "/" + (String)bigEmotion.get("thumb"));
+							emotionPackage.setThumb_h((Integer)bigEmotion.get("thumb_h"));
+							emotionPackage.setThumb_w((Integer)bigEmotion.get("thumb_w"));
+							emotionPackage.setTitle((String)bigEmotion.get("title"));
+							emotionPackage.setW((Integer)bigEmotion.get("w"));
+							userEmotion.setEmotionPack(emotionPackage);
+						}
+					}
+					userEmotion.setRecordCount(contentForSearchJdbcDao.countUserEmotions(uid, er.getId()));
+					if(null != userEmotionKingdom){
+						userEmotion.setTopicId((Long)userEmotionKingdom.get("id"));
+						userEmotion.setInternalStatus(Specification.SnsCircle.CORE.index);//自己的肯定是核心圈
+					}
+					indexData.getPersona().getEmotionList().add(userEmotion);
+				}
+			}
+			indexData.setPersona(person);
+			
+			//增加用户最近一次设置的情绪对应的公共王国属性
+			if(null != firstUserEmotionInfo){
+				Map<String, Object> topic = contentForSearchJdbcDao.getTopicById(firstUserEmotionInfo.getTopicid());
+				if(null != topic){
+					RecommendListDto.EmotionKingdom emotionKingdom = new RecommendListDto.EmotionKingdom();
+					emotionKingdom.setContentType((Integer)topic.get("type"));
+					emotionKingdom.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
+					emotionKingdom.setInternalStatus(this.getInternalStatus((String)topic.get("core_circle"), uid));
+					emotionKingdom.setTitle((String)topic.get("title"));
+					emotionKingdom.setTopicId(firstUserEmotionInfo.getTopicid());
+					indexData.setEmotionKingdom(emotionKingdom);
+				}
+			}
+			
+			// 查推荐用户
+			//变更逻辑，按匹配度进行计算
+			//1.最大值为99%
+			//2.基本资料匹配44%，心理测试对应22%，最近3次情绪状态匹配33%
+			
+			
+			
+			List<RecommendUser> resultpage = null;
+			if(completion >= 10){
+				List<Long> myFollowUidList = userService.getFollowList(uid);
+				resultpage = this.searchService.getRecommendUserList(uid, 1, 10, myFollowUidList);
+			}
+			if(null == resultpage){
+				resultpage = new ArrayList<RecommendUser>();
+			}
+			if(resultpage.size() == 0){//第一页就没有数据的话，默认返回“米汤管家”这个用户
+				UserProfile user = userService.getUserByNickName("米汤管家");
+				if(null != user){
+					RecommendUser ruser = new RecommendUser();
+					ruser.setUid(user.getUid());
+					ruser.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+					ruser.setNickName(user.getNickName());
+					ruser.setV_lv(user.getvLv());
+					ruser.setReason("");
+					ruser.setTagMatchedLength(0);
+					ruser.setUserTags(new ArrayList<String>());
+					resultpage.add(ruser);
+				}
+			}
+			
+			if(null != resultpage && resultpage.size() > 0){
+				indexData.getRecUserData().addAll(resultpage);
+			}
 		}
 		
 		// 查内容推荐（取10条王国数据，再取10条文章数据）

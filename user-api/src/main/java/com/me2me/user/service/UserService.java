@@ -413,6 +413,8 @@ public interface UserService {
      */
     Response saveMBTIShareResult(long uid);
     
+    List<EmotionRecord> getUserEmotionRecords(long uid, int pageSize);
+    List<EmotionInfo> getEmotionInfosByIds(List<Long> ids);
     
     void addMBTIMapping(MbtiMapping mapping);
     
@@ -432,5 +434,9 @@ public interface UserService {
  	 void updateEmotionInfoByKey(EmotionInfo emotionInfo);
  	
  	 Integer addEmotionInfo(EmotionInfo emotionInfo);
+ 	 
+ 	 EmotionInfo getEmotionInfoByValue(int happyValue,int freeValue); 
+ 	 
+ 	Response addEmotionRecord(EmotionRecord emotionRecord);
  	 
 }

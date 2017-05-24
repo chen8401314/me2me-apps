@@ -1,17 +1,11 @@
 package com.me2me.web;
 
-import com.me2me.common.utils.CommonUtils;
-import com.me2me.common.web.Response;
-import com.me2me.common.web.ResponseWapx;
-import com.me2me.kafka.service.KafkaService;
-import com.me2me.sms.dto.AwardXMDto;
-import com.me2me.sms.dto.VerifyDto;
-import com.me2me.sms.service.ChannelType;
-import com.me2me.sms.service.SmsService;
-import com.me2me.user.dto.*;
-import com.me2me.user.service.UserService;
-import com.me2me.web.request.*;
-import com.me2me.web.utils.VersionUtil;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.URLDecoder;
+import java.net.UnknownHostException;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -21,12 +15,88 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import javax.servlet.http.HttpServletRequest;
-
-import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
-import java.net.URLDecoder;
-import java.net.UnknownHostException;
+import com.me2me.common.utils.CommonUtils;
+import com.me2me.common.web.Response;
+import com.me2me.common.web.ResponseWapx;
+import com.me2me.content.service.ContentService;
+import com.me2me.kafka.service.KafkaService;
+import com.me2me.sms.dto.AwardXMDto;
+import com.me2me.sms.dto.VerifyDto;
+import com.me2me.sms.service.ChannelType;
+import com.me2me.sms.service.SmsService;
+import com.me2me.user.dto.ActivityModelDto;
+import com.me2me.user.dto.BasicDataDto;
+import com.me2me.user.dto.EntryPageDto;
+import com.me2me.user.dto.FansParamsDto;
+import com.me2me.user.dto.FindEncryptDto;
+import com.me2me.user.dto.FollowDto;
+import com.me2me.user.dto.FollowParamsDto;
+import com.me2me.user.dto.GagDto;
+import com.me2me.user.dto.ModifyEncryptDto;
+import com.me2me.user.dto.ModifyUserHobbyDto;
+import com.me2me.user.dto.ModifyUserProfileDto;
+import com.me2me.user.dto.PasteTagDto;
+import com.me2me.user.dto.ThirdPartSignUpDto;
+import com.me2me.user.dto.UserLikeDto;
+import com.me2me.user.dto.UserLoginDto;
+import com.me2me.user.dto.UserNickNameDto;
+import com.me2me.user.dto.UserNoticeDto;
+import com.me2me.user.dto.UserRefereeSignUpDto;
+import com.me2me.user.dto.UserReportDto;
+import com.me2me.user.dto.UserSignUpDto;
+import com.me2me.user.dto.VersionDto;
+import com.me2me.user.dto.WapxIosDto;
+import com.me2me.user.model.EmotionRecord;
+import com.me2me.user.service.UserService;
+import com.me2me.web.request.ActivityRequest;
+import com.me2me.web.request.BasicDataRequest;
+import com.me2me.web.request.BatchFollowRequest;
+import com.me2me.web.request.CheckRequest;
+import com.me2me.web.request.CommonSendMsgRequest;
+import com.me2me.web.request.ContactsRequest;
+import com.me2me.web.request.EmotionInfoRequest;
+import com.me2me.web.request.EmotionRecordRequest;
+import com.me2me.web.request.EntryPageRequest;
+import com.me2me.web.request.FindEncryptRequest;
+import com.me2me.web.request.GagRequest;
+import com.me2me.web.request.GetTagRequest;
+import com.me2me.web.request.LikesRequest;
+import com.me2me.web.request.LoginRequest;
+import com.me2me.web.request.LogoutRequest;
+import com.me2me.web.request.MBTIRequest;
+import com.me2me.web.request.MobileQueryRequest;
+import com.me2me.web.request.ModifyEncryptRequest;
+import com.me2me.web.request.ModifyUserHobbyRequest;
+import com.me2me.web.request.ModifyUserProfileRequest;
+import com.me2me.web.request.MyFollowsQueryRequest;
+import com.me2me.web.request.NoticeReddotQueryRequest;
+import com.me2me.web.request.PersonaModifyRequest;
+import com.me2me.web.request.QrCodeRequest;
+import com.me2me.web.request.RefereeSignUpRequest;
+import com.me2me.web.request.SeekFollowRequest;
+import com.me2me.web.request.SeekFollowsQueryRequest;
+import com.me2me.web.request.ShowFansRequest;
+import com.me2me.web.request.ShowUserTipsRequest;
+import com.me2me.web.request.SignUpRequest;
+import com.me2me.web.request.SpecialUserProfileRequest;
+import com.me2me.web.request.TagRequest;
+import com.me2me.web.request.TestPushRequest;
+import com.me2me.web.request.ThirdPartAuthRequest;
+import com.me2me.web.request.ThirdPartRequest;
+import com.me2me.web.request.UpdateVersionRequest;
+import com.me2me.web.request.UserAwardRequest;
+import com.me2me.web.request.UserExcellentRequest;
+import com.me2me.web.request.UserFamousRequest;
+import com.me2me.web.request.UserFollowRequest;
+import com.me2me.web.request.UserInfoRequest;
+import com.me2me.web.request.UserNoticeRequest;
+import com.me2me.web.request.UserProfileRequest;
+import com.me2me.web.request.UserReportRequest;
+import com.me2me.web.request.UserRequest;
+import com.me2me.web.request.VerifyRequest;
+import com.me2me.web.request.VersionControlRequest;
+import com.me2me.web.request.WapxIosRequest;
+import com.me2me.web.utils.VersionUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -48,6 +118,9 @@ public class Users extends BaseController {
 
     @Autowired
     private SmsService smsService;
+    
+    @Autowired
+    private ContentService contentService;
 
     /**
      * 用户注册接口
@@ -913,5 +986,32 @@ public class Users extends BaseController {
     @RequestMapping(value = "/saveMBTIShareResult",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response saveMBTIShareResult(MBTIRequest request){
     	return userService.saveMBTIShareResult(request.getUid());
+    }
+    
+    /**
+     * 坐标情绪信息查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getEmotionInfoByValue",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getEmotionInfoByValue(EmotionInfoRequest request){
+    	return contentService.getEmotionInfoByValue(request.getHappyValue(), request.getFreeValue());
+    }
+    
+    /**
+     * 情绪确定接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/submitEmotion",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response submitEmotion(EmotionRecordRequest request){
+    	EmotionRecord er = new EmotionRecord();
+    	er.setUid(request.getUid());
+    	er.setEmotionid(request.getEmotionId());
+    	er.setHappyvalue(request.getHappyValue());
+    	er.setFreevalue(request.getFreeValue());
+    	return userService.addEmotionRecord(er);
     }
 }

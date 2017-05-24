@@ -122,6 +122,7 @@ import com.me2me.user.model.ApplicationSecurity;
 import com.me2me.user.model.Dictionary;
 import com.me2me.user.model.DictionaryType;
 import com.me2me.user.model.EmotionInfo;
+import com.me2me.user.model.EmotionRecord;
 import com.me2me.user.model.EntryPageConfig;
 import com.me2me.user.model.ImConfig;
 import com.me2me.user.model.IosWapx;
@@ -3586,6 +3587,16 @@ public class UserServiceImpl implements UserService {
 	public void clearUserNoticeUnreadByCid(long uid, int contentType, long cid){
 		userMybatisDao.clearUserNoticeUnreadByCid(uid, contentType, cid);
 	}
+	
+	@Override
+	public List<EmotionRecord> getUserEmotionRecords(long uid, int pageSize){
+		return userMybatisDao.getUserEmotionRecord(uid, pageSize);
+	}
+	
+	@Override
+	public List<EmotionInfo> getEmotionInfosByIds(List<Long> ids){
+		return userMybatisDao.getEmotionInfosByIds(ids);
+	}
 
 	@Override
 	public Response<MBTIDto> getMBTIResult(long uid) {
@@ -3683,6 +3694,13 @@ public class UserServiceImpl implements UserService {
 	public Integer addEmotionInfo(EmotionInfo emotionInfo) {
 		return userMybatisDao.addEmotionInfo(emotionInfo);
 	}
-
-	
+	@Override
+	public EmotionInfo getEmotionInfoByValue(int happyValue,int freeValue) {
+		return userMybatisDao.getEmotionInfoByValue( happyValue, freeValue);
+	}
+	@Override
+	public Response addEmotionRecord(EmotionRecord emotionRecord) {
+		userMybatisDao.addEmotionRecord(emotionRecord);
+		return Response.success();
+	}
 }

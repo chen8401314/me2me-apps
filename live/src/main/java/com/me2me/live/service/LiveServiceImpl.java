@@ -4573,6 +4573,11 @@ public class LiveServiceImpl implements LiveService {
         //控制每个用户避免进入重复的
         Set<String> s = cacheService.smembers("list:user@"+uid );
         String set = org.apache.commons.lang3.StringUtils.join(s.toArray(), ",");
+        //王国避免自己串自己
+        if(sourceTopicId > 0 && null != s && s.size() > 0 && !s.contains(String.valueOf(sourceTopicId))){
+        	set = set + "," + sourceTopicId;
+        }
+        
         DropAroundDto dto = new DropAroundDto();
 
         if(sourceTopicId == 0){

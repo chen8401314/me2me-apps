@@ -316,21 +316,6 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		
 		return beginDate;
 	}
-	/**
-	 * 复制map中指定的key.
-	 * @author zhangjiwei
-	 * @date Apr 7, 2017
-	 * @param sourceMap
-	 * @param fields
-	 * @return
-	 */
-	private Map<String,Object> copyMap(Map<String,Object> sourceMap,String fields){
-		LinkedHashMap<String, Object> dataMap = new LinkedHashMap<>();
-		for(String field:fields.split(",")){
-			dataMap.put(field, sourceMap.get(field));
-		}
-		return dataMap;
-	}
 
 	@Override
 	public int indexUserData(boolean fully) throws Exception {
@@ -346,6 +331,16 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 				int skip=0;
 				int batchSize= 1000;
 				esTemplate.putMapping(UserEsMapping.class);
+				
+				//获取全量表情数据
+				Map<String, String> emotionMap = new HashMap<>();
+				List<Map<String,Object>> emotionList = searchMapper.getAllEmotions();
+				if(null != emotionList && emotionList.size() > 0){
+					for(Map<String,Object> e : emotionList){
+						emotionMap.put(String.valueOf(e.get("id")), (String)e.get("emotionName"));
+					}
+				}
+				
 				while (true) {
 					List<UserEsMapping> users =searchMapper.getUserPageByUpdateDate(beginDate, endDate, skip, batchSize);
 					
@@ -369,12 +364,30 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 						hobbyMap.put(k, v);
 					}
 					
+					Map<String, String> last3EmotionMap = new HashMap<>();
+					List<Map<String,Object>> last3EmotionList = searchMapper.getLast3UserEmotionsByUids(StringUtils.join(uids,","));
+					if(null != last3EmotionList && last3EmotionList.size() > 0){
+						String key = null;
+						String value = null;
+						for(Map<String,Object> row : last3EmotionList){
+							key = String.valueOf(row.get("uid"));
+							value = emotionMap.get(String.valueOf(row.get("emotionId")));
+							if(!StringUtils.isEmpty(value)){
+								if(last3EmotionMap.containsKey(key)){
+									value = last3EmotionMap.get(key) + "_" + value;
+								}
+								last3EmotionMap.put(key, value);
+							}
+						}
+					}
+					
 					List<IndexQuery> indexList = new ArrayList<>();
 					for (UserEsMapping data : users) {
 						log.info("add user index. user:{},uid:{}",data.getNick_name(),data.getUid());
 						IndexQuery query = new IndexQuery();
 						String key = data.getUid()+"";
 						data.setTags(hobbyMap.get(data.getUid()));
+						data.setLast_emotions(last3EmotionMap.get(key));
 						query.setId(key);
 						query.setObject(data);
 						query.setIndexName(indexName);
@@ -572,17 +585,23 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		if(null == userHobbyList){
 			userHobbyList = new ArrayList<String>();
 		}
+		List<String> last3userEmotionList = searchMapper.getLast3UserEmotionByUid(user.getUid());
+		if(null == last3userEmotionList){
+			last3userEmotionList = new ArrayList<String>();
+		}
 		if(user!=null){
-			String tags= StringUtils.join(userHobbyList," ").trim();
 			if(null == noUids){
 				noUids = new ArrayList<Long>();
 			}
 			noUids.add(uid);
 			bq.mustNot(QueryBuilders.termsQuery("uid", noUids));//过滤掉不需要的uid
+			//TODO 性取向查询
+			
 			if(user.getLikeGender()!=null && user.getLikeGender()!=ELikeGender.ALL.getValue()){
 				int likeGender=user.getLikeGender().equals(ELikeGender.BOY.getValue())?1:0;	// 性取向转换为性别。	BOY(1,"爱男神"),	GIRL(2,"爱女神"),ALL(3,"男女通吃");
 				bq.must(QueryBuilders.termQuery("gender", likeGender).boost(0.1f));
 			}
+			String tags= StringUtils.join(userHobbyList," ").trim();
 			if(!StringUtils.isEmpty(tags)){
 				bq.should(QueryBuilders.queryStringQuery(tags).field("tags").boost(3f));
 			}

@@ -26,104 +26,8 @@ import com.me2me.user.dto.UserFansDto;
 import com.me2me.user.dto.UserFollowDto;
 import com.me2me.user.dto.UserNoticeDto;
 import com.me2me.user.dto.VersionDto;
-import com.me2me.user.mapper.ApplicationSecurityMapper;
-import com.me2me.user.mapper.DictionaryMapper;
-import com.me2me.user.mapper.DictionaryTypeMapper;
-import com.me2me.user.mapper.EmotionInfoMapper;
-import com.me2me.user.mapper.EntryPageConfigMapper;
-import com.me2me.user.mapper.ImConfigMapper;
-import com.me2me.user.mapper.IosWapxMapper;
-import com.me2me.user.mapper.JpushTokenMapper;
-import com.me2me.user.mapper.MbtiMappingMapper;
-import com.me2me.user.mapper.OpenDeviceCountMapper;
-import com.me2me.user.mapper.SystemConfigMapper;
-import com.me2me.user.mapper.ThirdPartUserMapper;
-import com.me2me.user.mapper.UserDeviceMapper;
-import com.me2me.user.mapper.UserFamousMapper;
-import com.me2me.user.mapper.UserFollowMapper;
-import com.me2me.user.mapper.UserGagMapper;
-import com.me2me.user.mapper.UserHobbyMapper;
-import com.me2me.user.mapper.UserMapper;
-import com.me2me.user.mapper.UserMbtiHistoryMapper;
-import com.me2me.user.mapper.UserMobileListMapper;
-import com.me2me.user.mapper.UserNoMapper;
-import com.me2me.user.mapper.UserNoticeMapper;
-import com.me2me.user.mapper.UserNoticeUnreadMapper;
-import com.me2me.user.mapper.UserProfileMapper;
-import com.me2me.user.mapper.UserReportMapper;
-import com.me2me.user.mapper.UserSeekFollowMapper;
-import com.me2me.user.mapper.UserTagsDetailsMapper;
-import com.me2me.user.mapper.UserTagsMapper;
-import com.me2me.user.mapper.UserTagsRecordMapper;
-import com.me2me.user.mapper.UserTipsMapper;
-import com.me2me.user.mapper.UserTokenMapper;
-import com.me2me.user.mapper.VersionChannelDownloadMapper;
-import com.me2me.user.mapper.VersionControlMapper;
-import com.me2me.user.mapper.XingePushLogMapper;
-import com.me2me.user.model.ApplicationSecurity;
-import com.me2me.user.model.ApplicationSecurityExample;
-import com.me2me.user.model.Dictionary;
-import com.me2me.user.model.DictionaryExample;
-import com.me2me.user.model.DictionaryType;
-import com.me2me.user.model.DictionaryTypeExample;
-import com.me2me.user.model.EmotionInfo;
-import com.me2me.user.model.EmotionInfoExample;
-import com.me2me.user.model.EntryPageConfig;
-import com.me2me.user.model.EntryPageConfigExample;
-import com.me2me.user.model.ImConfig;
-import com.me2me.user.model.ImConfigExample;
-import com.me2me.user.model.IosWapx;
-import com.me2me.user.model.IosWapxExample;
-import com.me2me.user.model.JpushToken;
-import com.me2me.user.model.JpushTokenExample;
-import com.me2me.user.model.MbtiMapping;
-import com.me2me.user.model.MbtiMappingExample;
-import com.me2me.user.model.OpenDeviceCount;
-import com.me2me.user.model.SystemConfig;
-import com.me2me.user.model.SystemConfigExample;
-import com.me2me.user.model.ThirdPartUser;
-import com.me2me.user.model.ThirdPartUserExample;
-import com.me2me.user.model.User;
-import com.me2me.user.model.UserDevice;
-import com.me2me.user.model.UserDeviceExample;
-import com.me2me.user.model.UserExample;
-import com.me2me.user.model.UserFamous;
-import com.me2me.user.model.UserFamousExample;
-import com.me2me.user.model.UserFollow;
-import com.me2me.user.model.UserFollowExample;
-import com.me2me.user.model.UserGag;
-import com.me2me.user.model.UserGagExample;
-import com.me2me.user.model.UserHobby;
-import com.me2me.user.model.UserHobbyExample;
-import com.me2me.user.model.UserMbtiHistory;
-import com.me2me.user.model.UserMbtiHistoryExample;
-import com.me2me.user.model.UserMobileList;
-import com.me2me.user.model.UserMobileListExample;
-import com.me2me.user.model.UserNo;
-import com.me2me.user.model.UserNotice;
-import com.me2me.user.model.UserNoticeExample;
-import com.me2me.user.model.UserNoticeUnread;
-import com.me2me.user.model.UserNoticeUnreadExample;
-import com.me2me.user.model.UserProfile;
-import com.me2me.user.model.UserProfileExample;
-import com.me2me.user.model.UserReport;
-import com.me2me.user.model.UserSeekFollow;
-import com.me2me.user.model.UserSeekFollowExample;
-import com.me2me.user.model.UserTags;
-import com.me2me.user.model.UserTagsDetails;
-import com.me2me.user.model.UserTagsDetailsExample;
-import com.me2me.user.model.UserTagsExample;
-import com.me2me.user.model.UserTagsRecord;
-import com.me2me.user.model.UserTagsRecordExample;
-import com.me2me.user.model.UserTips;
-import com.me2me.user.model.UserTipsExample;
-import com.me2me.user.model.UserToken;
-import com.me2me.user.model.UserTokenExample;
-import com.me2me.user.model.VersionChannelDownload;
-import com.me2me.user.model.VersionChannelDownloadExample;
-import com.me2me.user.model.VersionControl;
-import com.me2me.user.model.VersionControlExample;
-import com.me2me.user.model.XingePushLog;
+import com.me2me.user.mapper.*;
+import com.me2me.user.model.*;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -225,7 +129,7 @@ public class UserMybatisDao {
     
     @Autowired
     private UserMobileListMapper userMobileListMapper;
-
+    
     @Autowired
     private UserMbtiHistoryMapper mbtiHistoryMapper;
     
@@ -234,6 +138,9 @@ public class UserMybatisDao {
     
     @Autowired
     private MbtiMappingMapper mbtiMappingMapper;
+    
+    @Autowired
+    private EmotionRecordMapper emotionRecordMapper;
     
     /**
      * 保存用户注册信息
@@ -1319,6 +1226,28 @@ public class UserMybatisDao {
     	userMobileListMapper.deleteByExample(example);
     }
     
+    public List<EmotionRecord> getUserEmotionRecord(long uid, int pageSize){
+    	EmotionRecordExample example = new EmotionRecordExample();
+    	EmotionRecordExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	if(pageSize > 0){
+    		example.setOrderByClause(" create_time desc limit "+pageSize);
+    	}else{
+    		example.setOrderByClause(" create_time desc ");
+    	}
+    	return emotionRecordMapper.selectByExample(example);
+    }
+    
+    public List<EmotionInfo> getEmotionInfosByIds(List<Long> ids){
+    	if(null == ids || ids.size() == 0){
+    		return null;
+    	}
+    	EmotionInfoExample example = new EmotionInfoExample();
+    	EmotionInfoExample.Criteria criteria = example.createCriteria();
+    	criteria.andIdIn(ids);
+    	return emotionInfoMapper.selectByExample(example);
+    }
+    
     public void saveMBTIResult(long uid,String mbti){
     	UserMbtiHistory history = new UserMbtiHistory();
     	history.setCreateTime(new Date());
@@ -1395,4 +1324,23 @@ public class UserMybatisDao {
 	public Integer addEmotionInfo(EmotionInfo emotionInfo) {
 		return emotionInfoMapper.insertSelective(emotionInfo);
 	}
+	
+	public EmotionInfo getEmotionInfoByValue(int happyValue,int freeValue) {
+		EmotionInfoExample example = new EmotionInfoExample();
+		EmotionInfoExample.Criteria criteria  = example.createCriteria();
+		criteria.andHappymaxGreaterThanOrEqualTo(happyValue);
+		criteria.andHappyminLessThanOrEqualTo(happyValue);
+		criteria.andFreemaxGreaterThanOrEqualTo(freeValue);
+		criteria.andFreeminLessThanOrEqualTo(freeValue);
+		List<EmotionInfo> list=  emotionInfoMapper.selectByExample(example);
+		if(list.size()>0){
+			return list.get(0);
+		}else{
+			return null;
+		}
+	}
+	public Integer addEmotionRecord(EmotionRecord emotionRecord) {
+		return emotionRecordMapper.insertSelective(emotionRecord);
+	}
+	
 }
