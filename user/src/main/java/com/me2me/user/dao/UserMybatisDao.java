@@ -121,6 +121,11 @@ public class UserMybatisDao {
     private UserMobileListMapper userMobileListMapper;
 
     @Autowired
+    private EmotionRecordMapper emotionRecordMapper;
+    @Autowired
+    private EmotionInfoMapper emotionInfoMapper;
+    
+    @Autowired
     private UserMbtiHistoryMapper mbtiHistoryMapper;
     /**
      * 保存用户注册信息
@@ -1204,6 +1209,28 @@ public class UserMybatisDao {
     	UserMobileListExample.Criteria criteria = example.createCriteria();
     	criteria.andUidEqualTo(uid);
     	userMobileListMapper.deleteByExample(example);
+    }
+    
+    public List<EmotionRecord> getUserEmotionRecord(long uid, int pageSize){
+    	EmotionRecordExample example = new EmotionRecordExample();
+    	EmotionRecordExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	if(pageSize > 0){
+    		example.setOrderByClause(" create_time desc limit "+pageSize);
+    	}else{
+    		example.setOrderByClause(" create_time desc ");
+    	}
+    	return emotionRecordMapper.selectByExample(example);
+    }
+    
+    public List<EmotionInfo> getEmotionInfosByIds(List<Long> ids){
+    	if(null == ids || ids.size() == 0){
+    		return null;
+    	}
+    	EmotionInfoExample example = new EmotionInfoExample();
+    	EmotionInfoExample.Criteria criteria = example.createCriteria();
+    	criteria.andIdIn(ids);
+    	return emotionInfoMapper.selectByExample(example);
     }
     
     public void saveMBTIResult(long uid,String mbti){

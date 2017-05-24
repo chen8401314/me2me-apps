@@ -413,6 +413,8 @@ public interface UserService {
      */
     Response saveMBTIShareResult(long uid);
     
+    List<EmotionRecord> getUserEmotionRecords(long uid, int pageSize);
+    List<EmotionInfo> getEmotionInfosByIds(List<Long> ids);
     
     void addMBTIMapping(MbtiMapping mapping);
     

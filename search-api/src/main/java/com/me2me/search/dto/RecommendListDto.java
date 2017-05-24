@@ -17,6 +17,7 @@ import lombok.Data;
 public class RecommendListDto implements BaseEntity {
 	private static final long serialVersionUID = -3412681619710644087L;
 	private RecPerson persona;
+	private EmotionKingdom emotionKingdom;
 	private List<RecommendUser> recUserData = Lists.newArrayList();
 	private List<ContentData> recContentData = Lists.newArrayList();
 	
@@ -33,6 +34,51 @@ public class RecommendListDto implements BaseEntity {
 		private int ageGroup;
 		private int career;
 		private String hobby;
+		private String mbit;
+		private List<UserEmotion> emotionList = Lists.newArrayList();
+	}
+	
+	@Data
+	public static class EmotionKingdom implements BaseEntity{
+		private static final long serialVersionUID = -3509135123860722764L;
+		
+		private long topicId;
+		private String title;
+		private String coverImage;
+		private int contentType;
+		private int internalStatus;
+	}
+	
+	@Data
+	public static class UserEmotion implements BaseEntity{
+		private static final long serialVersionUID = -7182601989946502112L;
+		
+		private String emotionName;
+		private int happyValue;
+		private int freeValue;
+		private long topicId;
+		private int internalStatus;
+		private int recordCount;
+		private long createTime;
+		private EmotionPackage emotionPack;
+	}
+	
+	@Data
+	public static class EmotionPackage implements BaseEntity{
+		private static final long serialVersionUID = -6992654088478152412L;
+		
+		private long id;
+		private String title;
+		private String content;
+		private String image;
+		private String thumb;
+		private long w;
+		private long h;
+		private long thumb_w;
+		private long thumb_h;
+		private String extra;
+		private int emojiType;
+		
 	}
 	
 	@Data

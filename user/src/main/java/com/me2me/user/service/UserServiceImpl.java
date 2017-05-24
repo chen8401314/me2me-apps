@@ -3473,6 +3473,16 @@ public class UserServiceImpl implements UserService {
 	public void clearUserNoticeUnreadByCid(long uid, int contentType, long cid){
 		userMybatisDao.clearUserNoticeUnreadByCid(uid, contentType, cid);
 	}
+	
+	@Override
+	public List<EmotionRecord> getUserEmotionRecords(long uid, int pageSize){
+		return userMybatisDao.getUserEmotionRecord(uid, pageSize);
+	}
+	
+	@Override
+	public List<EmotionInfo> getEmotionInfosByIds(List<Long> ids){
+		return userMybatisDao.getEmotionInfosByIds(ids);
+	}
 
 	@Override
 	public Response<MBTIDto> getMBTIResult(long uid) {
