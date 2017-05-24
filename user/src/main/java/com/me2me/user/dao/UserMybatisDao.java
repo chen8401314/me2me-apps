@@ -1,23 +1,125 @@
 package com.me2me.user.dao;
 
-import com.me2me.common.page.PageBean;
-import com.me2me.common.utils.FirstCharUtils;
-import com.me2me.common.web.Specification;
-import com.me2me.sms.dto.PushLogDto;
-import com.me2me.user.dto.*;
-import com.me2me.user.mapper.*;
-import com.me2me.user.model.*;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
-
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
+
+import com.me2me.common.page.PageBean;
+import com.me2me.common.utils.FirstCharUtils;
+import com.me2me.common.web.Specification;
+import com.me2me.sms.dto.PushLogDto;
+import com.me2me.user.dto.BasicDataDto;
+import com.me2me.user.dto.EntryPageDto;
+import com.me2me.user.dto.FansParamsDto;
+import com.me2me.user.dto.FollowParamsDto;
+import com.me2me.user.dto.PasteTagDto;
+import com.me2me.user.dto.SearchFansDto;
+import com.me2me.user.dto.SearchUserDto;
+import com.me2me.user.dto.UserFansDto;
+import com.me2me.user.dto.UserFollowDto;
+import com.me2me.user.dto.UserNoticeDto;
+import com.me2me.user.dto.VersionDto;
+import com.me2me.user.mapper.ApplicationSecurityMapper;
+import com.me2me.user.mapper.DictionaryMapper;
+import com.me2me.user.mapper.DictionaryTypeMapper;
+import com.me2me.user.mapper.EmotionInfoMapper;
+import com.me2me.user.mapper.EntryPageConfigMapper;
+import com.me2me.user.mapper.ImConfigMapper;
+import com.me2me.user.mapper.IosWapxMapper;
+import com.me2me.user.mapper.JpushTokenMapper;
+import com.me2me.user.mapper.OpenDeviceCountMapper;
+import com.me2me.user.mapper.SystemConfigMapper;
+import com.me2me.user.mapper.ThirdPartUserMapper;
+import com.me2me.user.mapper.UserDeviceMapper;
+import com.me2me.user.mapper.UserFamousMapper;
+import com.me2me.user.mapper.UserFollowMapper;
+import com.me2me.user.mapper.UserGagMapper;
+import com.me2me.user.mapper.UserHobbyMapper;
+import com.me2me.user.mapper.UserMapper;
+import com.me2me.user.mapper.UserMbtiHistoryMapper;
+import com.me2me.user.mapper.UserMobileListMapper;
+import com.me2me.user.mapper.UserNoMapper;
+import com.me2me.user.mapper.UserNoticeMapper;
+import com.me2me.user.mapper.UserNoticeUnreadMapper;
+import com.me2me.user.mapper.UserProfileMapper;
+import com.me2me.user.mapper.UserReportMapper;
+import com.me2me.user.mapper.UserSeekFollowMapper;
+import com.me2me.user.mapper.UserTagsDetailsMapper;
+import com.me2me.user.mapper.UserTagsMapper;
+import com.me2me.user.mapper.UserTagsRecordMapper;
+import com.me2me.user.mapper.UserTipsMapper;
+import com.me2me.user.mapper.UserTokenMapper;
+import com.me2me.user.mapper.VersionChannelDownloadMapper;
+import com.me2me.user.mapper.VersionControlMapper;
+import com.me2me.user.mapper.XingePushLogMapper;
+import com.me2me.user.model.ApplicationSecurity;
+import com.me2me.user.model.ApplicationSecurityExample;
+import com.me2me.user.model.Dictionary;
+import com.me2me.user.model.DictionaryExample;
+import com.me2me.user.model.DictionaryType;
+import com.me2me.user.model.DictionaryTypeExample;
+import com.me2me.user.model.EmotionInfo;
+import com.me2me.user.model.EmotionInfoExample;
+import com.me2me.user.model.EntryPageConfig;
+import com.me2me.user.model.EntryPageConfigExample;
+import com.me2me.user.model.ImConfig;
+import com.me2me.user.model.ImConfigExample;
+import com.me2me.user.model.IosWapx;
+import com.me2me.user.model.IosWapxExample;
+import com.me2me.user.model.JpushToken;
+import com.me2me.user.model.JpushTokenExample;
+import com.me2me.user.model.OpenDeviceCount;
+import com.me2me.user.model.SystemConfig;
+import com.me2me.user.model.SystemConfigExample;
+import com.me2me.user.model.ThirdPartUser;
+import com.me2me.user.model.ThirdPartUserExample;
+import com.me2me.user.model.User;
+import com.me2me.user.model.UserDevice;
+import com.me2me.user.model.UserDeviceExample;
+import com.me2me.user.model.UserExample;
+import com.me2me.user.model.UserFamous;
+import com.me2me.user.model.UserFamousExample;
+import com.me2me.user.model.UserFollow;
+import com.me2me.user.model.UserFollowExample;
+import com.me2me.user.model.UserGag;
+import com.me2me.user.model.UserGagExample;
+import com.me2me.user.model.UserHobby;
+import com.me2me.user.model.UserHobbyExample;
+import com.me2me.user.model.UserMbtiHistory;
+import com.me2me.user.model.UserMobileList;
+import com.me2me.user.model.UserMobileListExample;
+import com.me2me.user.model.UserNo;
+import com.me2me.user.model.UserNotice;
+import com.me2me.user.model.UserNoticeExample;
+import com.me2me.user.model.UserNoticeUnread;
+import com.me2me.user.model.UserNoticeUnreadExample;
+import com.me2me.user.model.UserProfile;
+import com.me2me.user.model.UserProfileExample;
+import com.me2me.user.model.UserReport;
+import com.me2me.user.model.UserSeekFollow;
+import com.me2me.user.model.UserSeekFollowExample;
+import com.me2me.user.model.UserTags;
+import com.me2me.user.model.UserTagsDetails;
+import com.me2me.user.model.UserTagsDetailsExample;
+import com.me2me.user.model.UserTagsExample;
+import com.me2me.user.model.UserTagsRecord;
+import com.me2me.user.model.UserTagsRecordExample;
+import com.me2me.user.model.UserTips;
+import com.me2me.user.model.UserTipsExample;
+import com.me2me.user.model.UserToken;
+import com.me2me.user.model.UserTokenExample;
+import com.me2me.user.model.VersionChannelDownload;
+import com.me2me.user.model.VersionChannelDownloadExample;
+import com.me2me.user.model.VersionControl;
+import com.me2me.user.model.VersionControlExample;
+import com.me2me.user.model.XingePushLog;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -122,6 +224,9 @@ public class UserMybatisDao {
 
     @Autowired
     private UserMbtiHistoryMapper mbtiHistoryMapper;
+    
+    @Autowired
+    private EmotionInfoMapper emotionInfoMapper;
     /**
      * 保存用户注册信息
      * @param user
@@ -1217,4 +1322,26 @@ public class UserMybatisDao {
     	// update userProfile
     	
     }
+    
+	public List<EmotionInfo> getEmotionInfoList() {
+		EmotionInfoExample example = new EmotionInfoExample();
+		example.setOrderByClause("id desc");
+		List<Integer> vList = new ArrayList<Integer>();
+		vList.add(1);
+		vList.add(2);
+		example.createCriteria().andStatusIn(vList);
+		List<EmotionInfo> list=  emotionInfoMapper.selectByExample(example);
+		return list;
+	}
+	
+	public EmotionInfo getEmotionInfoByKey(Long id) {
+		return emotionInfoMapper.selectByPrimaryKey(id);
+	}
+	
+	public void updateEmotionInfoByKey(EmotionInfo emotionInfo) {
+		emotionInfoMapper.updateByPrimaryKeySelective(emotionInfo);
+	}
+	public Integer addEmotionInfo(EmotionInfo emotionInfo) {
+		return emotionInfoMapper.insertSelective(emotionInfo);
+	}
 }
