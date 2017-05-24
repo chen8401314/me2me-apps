@@ -1,5 +1,20 @@
 package com.me2me.user.service;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -20,27 +35,122 @@ import com.me2me.common.web.Specification;
 import com.me2me.core.QRCodeUtil;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.io.service.FileTransferService;
-import com.me2me.sms.dto.*;
+import com.me2me.sms.dto.AwardXMDto;
+import com.me2me.sms.dto.ImUserInfoDto;
+import com.me2me.sms.dto.PushLogDto;
+import com.me2me.sms.dto.PushMessageAndroidDto;
+import com.me2me.sms.dto.PushMessageIosDto;
+import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.service.JPushService;
 import com.me2me.sms.service.SmsService;
 import com.me2me.sms.service.XgPushService;
 import com.me2me.user.cache.ContactsReddot;
-import com.me2me.user.dao.*;
-import com.me2me.user.dto.*;
-import com.me2me.user.event.*;
-import com.me2me.user.model.*;
+import com.me2me.user.dao.ActivityJdbcDao;
+import com.me2me.user.dao.LiveForUserJdbcDao;
+import com.me2me.user.dao.OldUserJdbcDao;
+import com.me2me.user.dao.UgcForUserJdbcDao;
+import com.me2me.user.dao.UserInitJdbcDao;
+import com.me2me.user.dao.UserMybatisDao;
+import com.me2me.user.dto.ActivityModelDto;
+import com.me2me.user.dto.BasicDataDto;
+import com.me2me.user.dto.BasicDataSuccessDto;
+import com.me2me.user.dto.DaoDaoDto;
+import com.me2me.user.dto.EntryPageDto;
+import com.me2me.user.dto.EntryPageReturnDto;
+import com.me2me.user.dto.FansParamsDto;
+import com.me2me.user.dto.FindEncryptDto;
+import com.me2me.user.dto.FollowDto;
+import com.me2me.user.dto.FollowParamsDto;
+import com.me2me.user.dto.GagDto;
+import com.me2me.user.dto.LoginSuccessDto;
+import com.me2me.user.dto.MBTIDto;
+import com.me2me.user.dto.ModifyEncryptDto;
+import com.me2me.user.dto.ModifyUserHobbyDto;
+import com.me2me.user.dto.ModifyUserProfileDto;
+import com.me2me.user.dto.PasteTagDto;
+import com.me2me.user.dto.PhotoDto;
+import com.me2me.user.dto.PromoterDto;
+import com.me2me.user.dto.QRCodeDto;
+import com.me2me.user.dto.RefereeProfileDto;
+import com.me2me.user.dto.SearchAssistantDto;
+import com.me2me.user.dto.SearchDto;
+import com.me2me.user.dto.SearchFansDto;
+import com.me2me.user.dto.SearchUserDto;
+import com.me2me.user.dto.SearchUserProfileDto;
+import com.me2me.user.dto.ShowContactsDTO;
+import com.me2me.user.dto.ShowMobileDTO;
+import com.me2me.user.dto.ShowMyFollowsQueryDTO;
+import com.me2me.user.dto.ShowNoticeReddotQueryDTO;
+import com.me2me.user.dto.ShowSeekFollowsQueryDTO;
+import com.me2me.user.dto.ShowUserFansDto;
+import com.me2me.user.dto.ShowUserFollowDto;
+import com.me2me.user.dto.ShowUserNoticeDto;
+import com.me2me.user.dto.ShowUserProfileDto;
+import com.me2me.user.dto.ShowUserTagsDto;
+import com.me2me.user.dto.ShowUserTipsDto;
+import com.me2me.user.dto.ShowUsergagDto;
+import com.me2me.user.dto.ShowVersionControlDto;
+import com.me2me.user.dto.SignUpSuccessDto;
+import com.me2me.user.dto.SpecialUserDto;
+import com.me2me.user.dto.ThirdPartSignUpDto;
+import com.me2me.user.dto.UserAccountBindStatusDto;
+import com.me2me.user.dto.UserFansDto;
+import com.me2me.user.dto.UserFollowDto;
+import com.me2me.user.dto.UserInfoDto;
+import com.me2me.user.dto.UserLikeDto;
+import com.me2me.user.dto.UserLoginDto;
+import com.me2me.user.dto.UserNickNameDto;
+import com.me2me.user.dto.UserNoticeDto;
+import com.me2me.user.dto.UserProfile4H5Dto;
+import com.me2me.user.dto.UserRefereeSignUpDto;
+import com.me2me.user.dto.UserReportDto;
+import com.me2me.user.dto.UserSignUpDto;
+import com.me2me.user.dto.UserVDto;
+import com.me2me.user.dto.VersionControlDto;
+import com.me2me.user.dto.VersionDto;
+import com.me2me.user.dto.WapxIosDto;
+import com.me2me.user.dto.WapxParams;
+import com.me2me.user.event.BatchFollowEvent;
+import com.me2me.user.event.ContactsMobileEvent;
+import com.me2me.user.event.ContactsMobilePushEvent;
+import com.me2me.user.event.FollowEvent;
+import com.me2me.user.event.NoticeCountPushEvent;
+import com.me2me.user.event.NoticeMessagePushEvent;
+import com.me2me.user.event.PushExtraEvent;
+import com.me2me.user.event.WapxIosEvent;
+import com.me2me.user.model.ApplicationSecurity;
 import com.me2me.user.model.Dictionary;
+import com.me2me.user.model.DictionaryType;
+import com.me2me.user.model.EmotionInfo;
+import com.me2me.user.model.EntryPageConfig;
+import com.me2me.user.model.ImConfig;
+import com.me2me.user.model.IosWapx;
+import com.me2me.user.model.JpushToken;
+import com.me2me.user.model.MbtiMapping;
+import com.me2me.user.model.OpenDeviceCount;
+import com.me2me.user.model.SystemConfig;
+import com.me2me.user.model.ThirdPartUser;
+import com.me2me.user.model.User;
+import com.me2me.user.model.UserDevice;
+import com.me2me.user.model.UserFamous;
+import com.me2me.user.model.UserFollow;
+import com.me2me.user.model.UserGag;
+import com.me2me.user.model.UserHobby;
+import com.me2me.user.model.UserNotice;
+import com.me2me.user.model.UserNoticeUnread;
+import com.me2me.user.model.UserProfile;
+import com.me2me.user.model.UserReport;
+import com.me2me.user.model.UserSeekFollow;
+import com.me2me.user.model.UserTags;
+import com.me2me.user.model.UserTagsDetails;
+import com.me2me.user.model.UserTagsRecord;
+import com.me2me.user.model.UserTips;
+import com.me2me.user.model.UserToken;
+import com.me2me.user.model.VersionChannelDownload;
+import com.me2me.user.model.VersionControl;
 import com.me2me.user.widget.MessageNotificationAdapter;
 
 import lombok.extern.slf4j.Slf4j;
-
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
-import java.util.*;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -80,6 +190,8 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ActivityJdbcDao activityJdbcDao;
+    
+    
 
     @Value("#{app.reg_web}")
     private String reg_web;
@@ -3524,4 +3636,26 @@ public class UserServiceImpl implements UserService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public List<EmotionInfo> getEmotionInfoList(){
+		List<EmotionInfo> datas = userMybatisDao.getEmotionInfoList();
+		return userMybatisDao.getEmotionInfoList();
+	}
+
+	@Override
+	public EmotionInfo getEmotionInfoByKey(Long id){
+		return userMybatisDao.getEmotionInfoByKey(id);
+	}
+	
+	@Override
+	public void updateEmotionInfoByKey(EmotionInfo emotionInfo) {
+		userMybatisDao.updateEmotionInfoByKey(emotionInfo);
+	}
+	
+	@Override
+	public Integer addEmotionInfo(EmotionInfo emotionInfo) {
+		return userMybatisDao.addEmotionInfo(emotionInfo);
+	}
+	
 }

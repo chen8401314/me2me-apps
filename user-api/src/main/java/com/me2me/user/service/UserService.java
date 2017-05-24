@@ -423,4 +423,14 @@ public interface UserService {
     List<MbtiMapping> getMBTIMappingPage();
     
     MbtiMapping getMappingById(long id);
+    
+     List<EmotionInfo> getEmotionInfoList();
+     
+ 	 EmotionInfo getEmotionInfoByKey(Long id);
+ 	 
+ 	 
+ 	 void updateEmotionInfoByKey(EmotionInfo emotionInfo);
+ 	
+ 	 Integer addEmotionInfo(EmotionInfo emotionInfo);
+ 	 
 }
