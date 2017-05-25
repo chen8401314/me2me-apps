@@ -30,8 +30,6 @@ import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicUserConfig;
-import com.me2me.live.model.VoteInfo;
-import com.me2me.live.model.VoteOption;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -505,4 +503,6 @@ public interface LiveService {
 	 * @return
 	 */
 	Response userAtList(UserAtListDTO atListDTO);
+	
+	Response submitEmotion(long uid, int source,long emotionId,int happyValue,int freeValue) ;
 }

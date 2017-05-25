@@ -437,6 +437,6 @@ public interface UserService {
  	 
  	 EmotionInfo getEmotionInfoByValue(int happyValue,int freeValue); 
  	 
- 	Response addEmotionRecord(EmotionRecord emotionRecord);
+ 	 Integer addEmotionRecord(EmotionRecord emotionRecord);
  	 
 }

@@ -35,6 +35,10 @@
     	alert(errMsg);
     }
     function check(){
+    	if($("#file").val()==''){
+    		alert("个人情绪王国封面图！");
+    		return false;
+    	}
     	if($("#emotionpackid").val()==''){
     		alert("请选择表情！");
     		return false;
@@ -106,6 +110,26 @@
                                                         
                                                     </div>
 	                                        </div>
+	                                        <div class="form-group">
+	                                            <label for="exampleInputFile">图片</label>
+                                                <div class="fileupload fileupload-new" data-provides="fileupload">
+                                                    <div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
+                                                    	<c:if test="${item.topiccoverphoto!=null }">
+                                                        <img src="http://cdn.me-to-me.com/${item.topiccoverphoto}" alt="" />
+                                                        </c:if>
+                                                    </div>
+                                                    <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
+                                                    <div>
+                                                        <span class="btn btn-white btn-file">
+                                                            <span class="fileupload-new"><i class="fa fa-paper-clip"></i>选择上传图片</span>
+                                                            <span class="fileupload-exists"><i class="fa fa-undo"></i>修改</span>
+                                                            <input type="file" id="file" name="file" class="default">
+                                                        </span>
+                                                        <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="fa fa-trash"></i>删除</a>
+                                                    </div>
+                                                </div>
+	                                        </div>
+	                                        
 	                                        <div class="form-group">
 	                                            <label for="exampleInputFile">王国ID</label>
 	                                            <input name="topicid"  class="form-control" value="${item.topicid}" required/>

@@ -20,6 +20,7 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseWapx;
 import com.me2me.content.service.ContentService;
 import com.me2me.kafka.service.KafkaService;
+import com.me2me.live.service.LiveService;
 import com.me2me.sms.dto.AwardXMDto;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.service.ChannelType;
@@ -121,6 +122,9 @@ public class Users extends BaseController {
     
     @Autowired
     private ContentService contentService;
+    
+    @Autowired
+    private LiveService liveService;
 
     /**
      * 用户注册接口
@@ -1007,11 +1011,6 @@ public class Users extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/submitEmotion",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response submitEmotion(EmotionRecordRequest request){
-    	EmotionRecord er = new EmotionRecord();
-    	er.setUid(request.getUid());
-    	er.setEmotionid(request.getEmotionId());
-    	er.setHappyvalue(request.getHappyValue());
-    	er.setFreevalue(request.getFreeValue());
-    	return userService.addEmotionRecord(er);
+    	return liveService.submitEmotion(request.getUid(), request.getSource(), request.getEmotionId(), request.getHappyValue(), request.getFreeValue());
     }
 }

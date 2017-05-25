@@ -18,4 +18,8 @@ public class EmotionRecordRequest extends Request {
 	@Getter
 	@Setter
 	private int freeValue;
+	
+	@Setter
+    @Getter
+	private int source;
 }

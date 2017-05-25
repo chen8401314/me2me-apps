@@ -1408,4 +1408,20 @@ public class LiveMybatisDao {
 		example.createCriteria().andTopicIdEqualTo(topicId);
 		blockTopicMapper.deleteByExample(example);
 	}
+	
+	/**
+	 * 获取用户情绪王国.
+	 * @author chenxiang
+	 * @date 2017-05-24
+	 * @param uid 用户ID
+	 */
+	public Topic getEmotionTopic(long uid){
+		TopicExample example = new TopicExample();
+		TopicExample.Criteria criteria = example.createCriteria();
+		criteria.andUidEqualTo(uid);
+		criteria.andSubTypeEqualTo(1);
+		int count = topicMapper.countByExample(example);
+		List<Topic> list = topicMapper.selectByExample(example);
+		return list.size()>0?list.get(0):null;
+	}
 }
