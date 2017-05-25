@@ -102,6 +102,7 @@ public class EmotionInfoController {
 	@RequestMapping(value = "/add_emotion")
 	@SystemControllerLog(description = "添加情绪")
 	public String add_emotion(HttpServletRequest request,DatatablePage dpage) throws Exception {
+
 		Map<String,Object> param = new HashMap<>();
 		param.put("packId", 1);
 		PageBean page = dpage.toPageBean();
@@ -129,8 +130,13 @@ public class EmotionInfoController {
 	}
 	@RequestMapping(value = "/doSaveEmotion")
 	@SystemControllerLog(description = "保存情绪")
-	public String doSaveEmotion(EmotionInfo tpl,HttpServletRequest mrequest) throws Exception {
+	public String doSaveEmotion(EmotionInfo tpl,HttpServletRequest mrequest,@RequestParam("file")MultipartFile file) throws Exception {
 		try{
+			if(file!=null && StringUtils.isNotEmpty(file.getOriginalFilename()) && file.getSize()>0){
+				String imgName = SecurityUtils.md5(mrequest.getSession().getId()+System.currentTimeMillis(), "1");
+	    		fileTransferService.upload(file.getBytes(), imgName);
+	    		tpl.setTopiccoverphoto(imgName);
+			}
 			if(tpl.getId()!=null){
 				userService.updateEmotionInfoByKey(tpl); 
 			}else{

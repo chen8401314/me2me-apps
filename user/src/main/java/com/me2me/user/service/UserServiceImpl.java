@@ -3699,8 +3699,7 @@ public class UserServiceImpl implements UserService {
 		return userMybatisDao.getEmotionInfoByValue( happyValue, freeValue);
 	}
 	@Override
-	public Response addEmotionRecord(EmotionRecord emotionRecord) {
-		userMybatisDao.addEmotionRecord(emotionRecord);
-		return Response.success();
+	public Integer addEmotionRecord(EmotionRecord emotionRecord) {
+		return userMybatisDao.addEmotionRecord(emotionRecord);
 	}
 }
