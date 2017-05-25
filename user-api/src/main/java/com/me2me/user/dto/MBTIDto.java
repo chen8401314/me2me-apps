@@ -15,4 +15,8 @@ public class MBTIDto implements BaseEntity {
 	private boolean isShared;
 	private boolean isTested;
 	private long kingdomId;
+	private long uid;
+	private String nickName;
+	private String avatar;
+	private int vLv;
 }

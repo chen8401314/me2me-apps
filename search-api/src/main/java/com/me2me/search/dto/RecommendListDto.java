@@ -60,6 +60,7 @@ public class RecommendListDto implements BaseEntity {
 		private int internalStatus;
 		private int recordCount;
 		private long createTime;
+		private long timeInterval;
 		private EmotionPackage emotionPack;
 	}
 	

@@ -595,21 +595,40 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			}
 			noUids.add(uid);
 			bq.mustNot(QueryBuilders.termsQuery("uid", noUids));//过滤掉不需要的uid
-			//TODO 性取向查询
-			
-			if(user.getLikeGender()!=null && user.getLikeGender()!=ELikeGender.ALL.getValue()){
-				int likeGender=user.getLikeGender().equals(ELikeGender.BOY.getValue())?1:0;	// 性取向转换为性别。	BOY(1,"爱男神"),	GIRL(2,"爱女神"),ALL(3,"男女通吃");
-				bq.must(QueryBuilders.termQuery("gender", likeGender).boost(0.1f));
+			//性取向查询
+			if(null != user.getLikeGender() && user.getLikeGender().intValue() > 0){
+				if(user.getLikeGender().intValue() == ELikeGender.BOY.getValue()){//爱男神，则只要男的
+					bq.must(QueryBuilders.termQuery("gender", 1).boost(1f));
+				}else if(user.getLikeGender().intValue() == ELikeGender.GIRL.getValue()){//爱女神，则只要女的
+					bq.must(QueryBuilders.termQuery("gender", 0).boost(1f));
+				}else{//男女通知，则男的女的都可以
+					int[] g = new int[2];
+					g[0] = 0;
+					g[1] = 1;
+					bq.should(QueryBuilders.termsQuery("gender", g).boost(1f));
+				}
 			}
+			//兴趣
 			String tags= StringUtils.join(userHobbyList," ").trim();
 			if(!StringUtils.isEmpty(tags)){
-				bq.should(QueryBuilders.queryStringQuery(tags).field("tags").boost(3f));
+				bq.should(QueryBuilders.queryStringQuery(tags).field("tags").boost(1f));
 			}
+			//职业
 			if(user.getOccupation()!=null){
-				bq.should(QueryBuilders.termQuery("occupation",user.getOccupation()).boost(2f));
+				bq.should(QueryBuilders.termQuery("occupation",user.getOccupation()).boost(1f));
 			}
+			//年龄段
 			if(user.getAgeGroup()!=null){
-				bq.should(QueryBuilders.termQuery("age_group",user.getAgeGroup()));
+				bq.should(QueryBuilders.termQuery("age_group",user.getAgeGroup()).boost(1f));
+			}
+			//mbti
+			if(!StringUtils.isEmpty(user.getMbti())){
+				bq.should(QueryBuilders.termQuery("mbti",user.getMbti()).boost(2f));
+			}
+			//情绪
+			String emotions = StringUtils.join(last3userEmotionList, " ").trim();
+			if(!StringUtils.isEmpty(emotions)){
+				bq.should(QueryBuilders.queryStringQuery(tags).field("last3userEmotionList").boost(3f));
 			}
 		}
 		
@@ -648,6 +667,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
     		userInfo.setV_lv(userProfile.getvLv());
     		
     		boolean sameTags =false;
+    		int sameTagSize = 0;
     		if(userMap.getTags()!=null && !StringUtils.isEmpty(userMap.getTags())){
 	    		String[] userTags = userMap.getTags().split(" ");
 	    		if(userTags!=null && userTags.length>0){
@@ -657,6 +677,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	    			for( String tag:userTags){
 	    				if(userHobbyList.contains(tag)){
 	    					matchedTagList.add(tag);
+	    					sameTagSize++;
 	    				}else{
 	    					notMatchedTagList.add(tag);
 	    				}
@@ -732,6 +753,55 @@ public class ContentSearchServiceImpl implements ContentSearchService {
     		}else if(user.getAgeGroup()!=null && userMap.getAge_group()==user.getAgeGroup()){
     			userInfo.setReason(RecommendReason.SAME_AGE_GROUP);
     		}
+    		
+    		//设置匹配度
+    		//性别肯定是符合的才返回的，所以性别匹配直接匹配上的
+    		int matching = 11;
+    		//兴趣
+    		if(userHobbyList.size() > 0){
+    			if(sameTagSize >= userHobbyList.size()){
+    				matching = matching + 11;
+    			}else{
+    				matching = matching + (sameTagSize*11)/userHobbyList.size();
+    			}
+    		}
+    		//职业
+    		if(null != user.getOccupation() && user.getOccupation().intValue() > 0
+    				&& null != userMap.getOccupation() && userMap.getOccupation().intValue() > 0){
+    			if(user.getOccupation().intValue() == userMap.getOccupation().intValue()){
+    				matching = matching + 11;
+    			}
+    		}
+    		//年龄段
+    		if(null != user.getAgeGroup() && user.getAgeGroup().intValue() > 0
+    				&& null != userMap.getAge_group() && userMap.getAge_group().intValue() > 0){
+    			if(user.getAgeGroup().intValue() == userMap.getAge_group().intValue()){
+    				matching = matching + 11;
+    			}
+    		}
+    		//mbti
+    		if(!StringUtils.isEmpty(user.getMbti()) && user.getMbti().equals(userMap.getMbit())){
+    			matching = matching + 22;
+    		}
+    		//情绪
+    		if(last3userEmotionList.size() > 0 && !StringUtils.isEmpty(userMap.getLast_emotions())){
+    			int c = 0;
+    			String[] es = userMap.getLast_emotions().split(" ");
+    			if(null != es && es.length > 0){
+    				for(String e : es){
+    					if(!StringUtils.isEmpty(e) && last3userEmotionList.contains(e)){
+    						c++;
+    					}
+    				}
+    			}
+    			if(c >= last3userEmotionList.size()){
+    				matching = matching + 33;
+    			}else{
+    				matching = matching + (c*33)/last3userEmotionList.size();
+    			}
+    		}
+    		
+    		userInfo.setMatching(matching);
     		userList.add(userInfo);
     	}
 		return userList;

@@ -261,7 +261,20 @@ public class ContentForSearchJdbcDao {
 		return jdbcTemplate.queryForList(sb.toString());
 	}
 	
+	/**
+	 * 获取用户情绪王国
+	 * @param uid
+	 * @return
+	 */
 	public Map<String, Object> getUserEmotionKingdom(long uid){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select * from topic t where t.uid=").append(uid);
+		sb.append(" and t.sub_type=1");
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
 		return null;
 	}
 }

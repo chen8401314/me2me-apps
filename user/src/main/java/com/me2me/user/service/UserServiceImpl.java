@@ -3629,6 +3629,11 @@ public class UserServiceImpl implements UserService {
 		}
 		dto.setShared(shared);
 		dto.setTested(tested);
+		UserProfile up = getUserProfileByUid(uid);
+		dto.setUid(up.getUid());
+		dto.setAvatar(up.getAvatar());
+		dto.setNickName(up.getNickName());
+		dto.setVLv(up.getvLv());
 		return Response.success(dto);
 	}
 
