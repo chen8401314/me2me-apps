@@ -47,7 +47,6 @@ import com.me2me.user.dto.UserReportDto;
 import com.me2me.user.dto.UserSignUpDto;
 import com.me2me.user.dto.VersionDto;
 import com.me2me.user.dto.WapxIosDto;
-import com.me2me.user.model.EmotionRecord;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.ActivityRequest;
 import com.me2me.web.request.BasicDataRequest;
@@ -61,6 +60,7 @@ import com.me2me.web.request.EntryPageRequest;
 import com.me2me.web.request.FindEncryptRequest;
 import com.me2me.web.request.GagRequest;
 import com.me2me.web.request.GetTagRequest;
+import com.me2me.web.request.LastEmotionRequest;
 import com.me2me.web.request.LikesRequest;
 import com.me2me.web.request.LoginRequest;
 import com.me2me.web.request.LogoutRequest;
@@ -80,6 +80,7 @@ import com.me2me.web.request.ShowFansRequest;
 import com.me2me.web.request.ShowUserTipsRequest;
 import com.me2me.web.request.SignUpRequest;
 import com.me2me.web.request.SpecialUserProfileRequest;
+import com.me2me.web.request.SummaryEmotionInfoRequest;
 import com.me2me.web.request.TagRequest;
 import com.me2me.web.request.TestPushRequest;
 import com.me2me.web.request.ThirdPartAuthRequest;
@@ -1013,4 +1014,27 @@ public class Users extends BaseController {
     public Response submitEmotion(EmotionRecordRequest request){
     	return liveService.submitEmotion(request.getUid(), request.getSource(), request.getEmotionId(), request.getHappyValue(), request.getFreeValue());
     }
+    
+    /**
+     * 最近一次情绪信息查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getLastEmotionInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getLastEmotionInfo(LastEmotionRequest request){
+    	return contentService.getLastEmotionInfo(request.getUid());
+    }
+    /**
+     * 周总结查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getSummaryEmotionInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getSummaryEmotionInfo(SummaryEmotionInfoRequest request){
+    	return userService.getSummaryEmotionInfo(request.getUid());
+    }
+    
+    
 }

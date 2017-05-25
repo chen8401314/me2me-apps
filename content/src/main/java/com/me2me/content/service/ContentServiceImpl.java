@@ -1,5 +1,7 @@
 package com.me2me.content.service;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -98,10 +100,13 @@ import com.me2me.content.widget.PublishContentAdapter;
 import com.me2me.content.widget.ReviewAdapter;
 import com.me2me.content.widget.WriteTagAdapter;
 import com.me2me.sms.service.JPushService;
+import com.me2me.user.cache.EmotionSummaryModel;
 import com.me2me.user.dto.EmotionInfoDto;
+import com.me2me.user.dto.LastEmotionInfoDto;
 import com.me2me.user.dto.UserInfoDto;
 import com.me2me.user.dto.UserInfoDto2;
 import com.me2me.user.model.EmotionInfo;
+import com.me2me.user.model.EmotionRecord;
 import com.me2me.user.model.JpushToken;
 import com.me2me.user.model.SystemConfig;
 import com.me2me.user.model.UserFamous;
@@ -5702,5 +5707,94 @@ private void localJpush(long toUid){
 		dto.setEmotionPack(ep);
 		return Response.success(dto);
 	}
+	@Override
+	public Response getLastEmotionInfo(long uid) {
+		try {
+		LastEmotionInfoDto  lastEmotionInfoDto = new LastEmotionInfoDto();
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
+		 Calendar cal1 = Calendar.getInstance();
+		 cal1.setTime(date);
+		  int n = -1;
+		  if(cal1.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY){
+			  n=-2;
+		  }
+		  String monday;
+		  cal1.add(Calendar.DATE, n*7);
+		  cal1.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY);
+		  monday = sdf1.format(cal1.getTime());
+		  Date mondayDate=null;
 	
+			mondayDate = sdf1.parse(monday);
+	
+		  
+			 Calendar cal2 = Calendar.getInstance();
+			 cal2.setTime(date);
+			  int m = 0;
+			  if(cal2.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY){
+				  m=-1;
+			  }
+		  String sunday;
+		  cal2.add(Calendar.DATE, m*7);
+		  cal2.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY);
+		  sunday = sdf2.format(cal2.getTime());
+		  Date sundayDate = sdf2.parse(sunday);
+		  
+		  //判断是否周总结
+		  if(userService.exsitEmotionRecord(uid, mondayDate, sundayDate)){
+			  EmotionSummaryModel EmotionSummaryModel =  new EmotionSummaryModel(sdf.format(mondayDate),uid, "0"); 
+          	String isSummaryStr = cacheService.hGet(EmotionSummaryModel.getKey(), EmotionSummaryModel.getField());
+          	  if (!StringUtils.isEmpty(isSummaryStr)) {
+          		lastEmotionInfoDto.setIsSummary(1);
+                } else {
+                	lastEmotionInfoDto.setIsSummary(0);
+                }
+		  }else{
+			  lastEmotionInfoDto.setIsSummary(1);
+		  }
+		  EmotionRecord emotionRecord =   userService.getLastEmotionRecord(uid);
+		  if(emotionRecord==null){
+			  lastEmotionInfoDto.setId(0);
+		  }else{
+				EmotionInfo emotionInfo = userService.getEmotionInfoByKey(emotionRecord.getEmotionid());
+				if (emotionInfo == null) {
+					return Response.failure(500, "没有该情绪信息！");
+				}
+				EmotionPackDetail emotionPackDetail = emotionPackDetailMapper.selectByPrimaryKey(Integer.valueOf(emotionInfo.getEmotionpackid() + ""));
+				if (emotionPackDetail == null) {
+					return Response.failure(500, "没有该情绪大表情信息！");
+				}
+				lastEmotionInfoDto.setId(emotionInfo.getId());
+				lastEmotionInfoDto.setEmotionName(emotionInfo.getEmotionname());
+				lastEmotionInfoDto.setHappyValue(emotionRecord.getHappyvalue());
+				lastEmotionInfoDto.setFreeValue(emotionRecord.getFreevalue());
+				lastEmotionInfoDto.setTopicId(emotionInfo.getTopicid());
+				int recordCount = userService.getEmotionRecordCount(uid);
+				lastEmotionInfoDto.setRecordCount(recordCount);
+				lastEmotionInfoDto.setCreateTime(emotionRecord.getCreateTime());
+				LastEmotionInfoDto.EmotionPack ep =LastEmotionInfoDto.createEmotionPack();
+				ep.setId(emotionPackDetail.getId());
+				ep.setTitle(emotionPackDetail.getTitle());
+				ep.setContent(emotionPackDetail.getExtra());
+				ep.setImage(Constant.QINIU_DOMAIN + "/" + emotionPackDetail.getImage());
+				ep.setThumb(Constant.QINIU_DOMAIN + "/" + emotionPackDetail.getThumb());
+				ep.setW(emotionPackDetail.getW());
+				ep.setH(emotionPackDetail.getH());
+				ep.setThumb_w(emotionPackDetail.getThumbW());
+				ep.setThumb_h(emotionPackDetail.getThumbH());
+				ep.setExtra(emotionPackDetail.getExtra());
+				ep.setEmojiType(1);
+				lastEmotionInfoDto.setEmotionPack(ep);
+				long timeInterval = (date.getTime()-emotionRecord.getCreateTime().getTime())/1000;
+				lastEmotionInfoDto.setTimeInterval(timeInterval);
+		  }
+			return  Response.success(lastEmotionInfoDto);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			return  Response.failure(500,"时间转换错误");
+		}
+	
+	}
 }

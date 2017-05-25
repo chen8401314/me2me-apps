@@ -1343,4 +1343,34 @@ public class UserMybatisDao {
 		return emotionRecordMapper.insertSelective(emotionRecord);
 	}
 	
+	public boolean exsitEmotionRecord(long uid,Date start,Date end) {
+		EmotionRecordExample example = new EmotionRecordExample();
+		EmotionRecordExample.Criteria criteria  = example.createCriteria();
+		criteria.andCreateTimeBetween(start, end);
+		criteria.andUidEqualTo(uid);
+		int conut = emotionRecordMapper.countByExample(example);
+		return conut>0;
+	}
+	
+	public EmotionRecord getLastEmotionRecord(long uid) {
+		EmotionRecordExample example = new EmotionRecordExample();
+		EmotionRecordExample.Criteria criteria  = example.createCriteria();
+		criteria.andUidEqualTo(uid);
+		example.setOrderByClause(" id desc ");
+		List<EmotionRecord> list = emotionRecordMapper.selectByExample(example);
+		if(list.size()>0){
+			return list.get(0);
+		}else{
+			return null;
+		}
+	}
+	
+	public int getEmotionRecordCount(long uid) {
+		EmotionRecordExample example = new EmotionRecordExample();
+		EmotionRecordExample.Criteria criteria  = example.createCriteria();
+		criteria.andUidEqualTo(uid);
+		int conut = emotionRecordMapper.countByExample(example);
+		return conut;
+	}
+	
 }

@@ -6164,4 +6164,183 @@ public class LiveServiceImpl implements LiveService {
 		userService.addEmotionRecord(emotionRecord);
 		return Response.success();
 	}
+	
+/*	
+	@Override
+	public Response startNewEmotionInfo(long uid) {
+		UserProfile userProfile = userService.getUserProfileByUid(uid);
+		if (userProfile == null) {
+			return Response.failure(500, "没有该用户信息！");
+		}
+		Topic topic = liveMybatisDao.getEmotionTopic(uid);
+		if (topic == null) {
+			log.info("createKingdom start...");
+
+			boolean isDouble = false;
+			int type = 0;
+			long uid2 = 0;
+			JSONObject cExtraObj = null;
+
+			Date now = new Date();
+			log.info("create cover..");
+			topic = new Topic();
+			topic.setTitle(userProfile.getNickName() + "情绪记录王国");
+			topic.setLiveImage(emotionInfo.getTopiccoverphoto());
+			topic.setUid(uid);
+			topic.setStatus(Specification.LiveStatus.LIVING.index);
+			topic.setLongTime(now.getTime());
+			topic.setCreateTime(now);
+			topic.setUpdateTime(now);
+			JSONArray array = new JSONArray();
+			array.add(uid);
+			if (isDouble) {
+				array.add(uid2);
+			}
+			topic.setCoreCircle(array.toString());
+			topic.setType(Specification.KingdomType.NORMAL.index);
+			topic.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);// 目前默认公开的，等以后有需求的再说
+			topic.setSummary("在这里记录我的情绪");// 目前，第一次发言即王国简介
+			topic.setCeAuditType(0);// 聚合王国属性，是否需要国王审核才能加入此聚合王国，默认0是
+			topic.setAcAuditType(1);// 个人王国属性，是否需要国王审核才能收录此王国，默认1否
+			topic.setAcPublishType(0);// 个人王国属性，是否接受聚合王国下发的消息，默认0是
+			topic.setSubType(1);//王国子类型，0什么都不是，1情绪王国
+			liveMybatisDao.createTopic(topic);
+
+			// 创建直播之后添加到我的UGC
+			ContentDto contentDto = new ContentDto();
+			contentDto.setContent(topic.getTitle());
+			contentDto.setFeeling(topic.getTitle());
+			contentDto.setTitle(topic.getTitle());
+			contentDto.setImageUrls(topic.getLiveImage());
+			contentDto.setUid(topic.getUid());
+			contentDto.setType(Specification.ArticleType.LIVE.index);
+			contentDto.setForwardCid(topic.getId());
+			contentDto.setRights(Specification.ContentRights.EVERY.index);
+			contentService.publish(contentDto);
+
+			applicationEventBus.post(new CacheLiveEvent(topic.getUid(), topic.getId()));
+
+			SpeakDto speakDto2 = new SpeakDto();
+			speakDto2.setTopicId(topic.getId());
+			UserProfile profile = userService.getUserProfileByUid(topic.getUid());
+			speakDto2.setV_lv(profile.getvLv());
+			// 检查有没有出错的数据，如果有则删除出错数据
+			contentService.clearData();
+
+			log.info("first speak...");
+			long lastFragmentId = 0;
+			long total = 0;
+			TopicFragment topicFragment = new TopicFragment();
+			topicFragment.setFragment("");
+			topicFragment.setUid(uid);
+			topicFragment.setType(52);
+			topicFragment.setContentType(18);
+			topicFragment.setTopicId(topic.getId());
+			topicFragment.setBottomId(0l);
+			topicFragment.setTopId(0l);
+			topicFragment.setSource(source);
+
+			JSONObject extra = new JSONObject();
+			extra.put("type", "emoji");
+			extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
+			JSONObject fromObj = new JSONObject();
+			fromObj.put("uid", uid);
+			fromObj.put("avatar", Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+			fromObj.put("id", topic.getId());
+			Content topicContet = contentService.getContentByTopicId(topic.getId());
+			fromObj.put("cid", topicContet == null ? "" : topicContet.getId());
+			fromObj.put("title", topic.getTitle());
+			fromObj.put("cover", Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
+			fromObj.put("url", live_web + topicContet.getId());
+			extra.put("from", fromObj);
+			extra.put("title", emotionPackDetail.getTitle());
+			extra.put("content", emotionPackDetail.getExtra());
+			extra.put("emojiType", 1);
+			extra.put("image", Constant.QINIU_DOMAIN + "/" + emotionPackDetail.getImage());
+			extra.put("w", emotionPackDetail.getW());
+			extra.put("h", emotionPackDetail.getH());
+			extra.put("thumb", emotionPackDetail.getThumb());
+			extra.put("thumb_w", emotionPackDetail.getThumbW());
+			extra.put("thumb_h", emotionPackDetail.getThumbH());
+			extra.put("packageId", emotionPack.getId());
+			extra.put("packageName", emotionPack.getName());
+			extra.put("packageCover", emotionPack.getCover());
+			topicFragment.setExtra(extra.toJSONString());
+			
+			topicFragment.setCreateTime(now);
+			liveMybatisDao.createTopicFragment(topicFragment);
+			lastFragmentId = topicFragment.getId();
+			total++;
+
+			// --add update kingdom cache -- modify by zcl -- begin --
+			String value = lastFragmentId + "," + total;
+			cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
+			// --add update kingdom cache -- modify by zcl -- end --
+
+			// add kingdom tags -- begin --
+			TopicTag topicTag = null;
+			TopicTagDetail tagDetail = null;
+			String tag = "情绪记录";
+			topicTag = liveMybatisDao.getTopicTagByTag(tag);
+			if (null == topicTag) {
+				topicTag = new TopicTag();
+				topicTag.setTag(tag);
+				liveMybatisDao.insertTopicTag(topicTag);
+			}
+			tagDetail = new TopicTagDetail();
+			tagDetail.setTag(tag);
+			tagDetail.setTagId(topicTag.getId());
+			tagDetail.setTopicId(topic.getId());
+			tagDetail.setUid(uid);
+			liveMybatisDao.insertTopicTagDetail(tagDetail);
+
+			log.info("createKingdom end");
+		} else {
+			SpeakDto speakDto = new SpeakDto();
+			speakDto.setType(52);
+			speakDto.setContentType(18);
+			speakDto.setUid(userProfile.getUid());
+			speakDto.setTopicId(topic.getId());
+			speakDto.setSource(source);
+
+			JSONObject extra = new JSONObject();
+			extra.put("type", "emoji");
+			extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
+			JSONObject fromObj = new JSONObject();
+			fromObj.put("uid", uid);
+			fromObj.put("avatar", Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+			fromObj.put("id", topic.getId());
+			Content topicContet = contentService.getContentByTopicId(topic.getId());
+			fromObj.put("cid", topicContet == null ? "" : topicContet.getId());
+			fromObj.put("title", topic.getTitle());
+			fromObj.put("cover", Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
+			fromObj.put("url", live_web + topicContet.getId());
+			extra.put("from", fromObj);
+			extra.put("title", emotionPackDetail.getTitle());
+			extra.put("content", emotionPackDetail.getExtra());
+			extra.put("emojiType", 1);
+			extra.put("image", Constant.QINIU_DOMAIN + "/" + emotionPackDetail.getImage());
+			extra.put("w", emotionPackDetail.getW());
+			extra.put("h", emotionPackDetail.getH());
+			extra.put("thumb", emotionPackDetail.getThumb());
+			extra.put("thumb_w", emotionPackDetail.getThumbW());
+			extra.put("thumb_h", emotionPackDetail.getThumbH());
+			extra.put("packageId", emotionPack.getId());
+			extra.put("packageName", emotionPack.getName());
+			extra.put("packageCover", emotionPack.getCover());
+
+			speakDto.setExtra(extra.toJSONString());
+			speak(speakDto);
+
+		}
+		EmotionRecord emotionRecord = new EmotionRecord();
+		emotionRecord.setUid(uid);
+		emotionRecord.setEmotionid(emotionId);
+		emotionRecord.setFreevalue(freeValue);
+		emotionRecord.setHappyvalue(happyValue);
+		userService.addEmotionRecord(emotionRecord);
+		return Response.success();
+	}*/
+	
+	
 }

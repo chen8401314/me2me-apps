@@ -391,4 +391,6 @@ public interface ContentService{
 	List<BillBoard> getBillBoardList4kingdomPushTask();
 	
 	Response getEmotionInfoByValue(int happyValue,int freeValue) ;
+	
+	Response getLastEmotionInfo(long uid);
 }

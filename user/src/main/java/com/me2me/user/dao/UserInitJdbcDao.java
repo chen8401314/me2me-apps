@@ -241,4 +241,11 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 		String sql = "update user_mbti_history set shared=1 where uid=? order by create_time desc limit 1";
 		jdbc.update(sql, uid);
 	}
+	
+    public List<Map<String, Object>> getSummaryEmotionInfo(long uid,String dateStart,String dateEnd) {
+        String sql = "SELECT emotionId,COUNT(1) AS countNum,ROUND(AVG(happyValue),0) AS happyValue,ROUND(AVG(freeValue),0) AS freeValue FROM emotion_record "
+        		+ "   where create_time >= '"+dateStart+"' and create_time <= '"+dateEnd+"' and uid = "+uid 
+        		+ "   GROUP BY emotionId";
+        return super.query(sql);
+    }
 }

@@ -1,6 +1,10 @@
 package com.me2me.user.service;
 
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -45,6 +49,7 @@ import com.me2me.sms.service.JPushService;
 import com.me2me.sms.service.SmsService;
 import com.me2me.sms.service.XgPushService;
 import com.me2me.user.cache.ContactsReddot;
+import com.me2me.user.cache.EmotionSummaryModel;
 import com.me2me.user.dao.ActivityJdbcDao;
 import com.me2me.user.dao.LiveForUserJdbcDao;
 import com.me2me.user.dao.OldUserJdbcDao;
@@ -62,6 +67,7 @@ import com.me2me.user.dto.FindEncryptDto;
 import com.me2me.user.dto.FollowDto;
 import com.me2me.user.dto.FollowParamsDto;
 import com.me2me.user.dto.GagDto;
+import com.me2me.user.dto.LastEmotionInfoDto;
 import com.me2me.user.dto.LoginSuccessDto;
 import com.me2me.user.dto.MBTIDto;
 import com.me2me.user.dto.ModifyEncryptDto;
@@ -92,6 +98,7 @@ import com.me2me.user.dto.ShowUsergagDto;
 import com.me2me.user.dto.ShowVersionControlDto;
 import com.me2me.user.dto.SignUpSuccessDto;
 import com.me2me.user.dto.SpecialUserDto;
+import com.me2me.user.dto.SummaryEmotionInfoDto;
 import com.me2me.user.dto.ThirdPartSignUpDto;
 import com.me2me.user.dto.UserAccountBindStatusDto;
 import com.me2me.user.dto.UserFansDto;
@@ -3701,5 +3708,94 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Integer addEmotionRecord(EmotionRecord emotionRecord) {
 		return userMybatisDao.addEmotionRecord(emotionRecord);
+	}
+	@Override
+	public boolean exsitEmotionRecord(long uid,Date mondayDate,Date sundayDate){
+		return userMybatisDao.exsitEmotionRecord( uid, mondayDate, sundayDate);
+	}
+	@Override
+	public EmotionRecord getLastEmotionRecord(long uid) {
+		return userMybatisDao.getLastEmotionRecord( uid);
+	}
+	@Override
+	public int getEmotionRecordCount(long uid){
+		return userMybatisDao.getEmotionRecordCount( uid);
+	}
+	
+	@Override
+	public Response getSummaryEmotionInfo(long uid) {
+		try {
+			SummaryEmotionInfoDto dto = new SummaryEmotionInfoDto();
+		Date date = new Date();
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
+		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
+		 Calendar cal1 = Calendar.getInstance();
+		 cal1.setTime(date);
+		  int n = -1;
+		  if(cal1.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY){
+			  n=-2;
+		  }
+		  String monday;
+		  cal1.add(Calendar.DATE, n*7);
+		  cal1.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY);
+		  monday = sdf1.format(cal1.getTime());
+		  Date mondayDate=null;
+	
+			mondayDate = sdf1.parse(monday);
+	
+		  
+			 Calendar cal2 = Calendar.getInstance();
+			 cal2.setTime(date);
+			  int m = 0;
+			  if(cal2.get(Calendar.DAY_OF_WEEK)==Calendar.SUNDAY){
+				  m=-1;
+			  }
+		  String sunday;
+		  cal2.add(Calendar.DATE, m*7);
+		  cal2.set(Calendar.DAY_OF_WEEK,Calendar.SUNDAY);
+		  sunday = sdf2.format(cal2.getTime());
+		  Date sundayDate = sdf2.parse(sunday);
+		  List<Map<String, Object>> list = userInitJdbcDao.getSummaryEmotionInfo(uid,monday,sunday);
+		  int count = 0;
+		  for (Map<String, Object> map:list) {
+			count+= Integer.parseInt(map.get("countNum").toString());
+		 }
+		  
+		  int max = 0;
+		  int maxIndex = 0;
+		  int percentageCount = 0;
+		  for (int i=0;i<list.size();i++) {
+			  Map<String, Object> map  =list.get(i);
+			  String emotionId = map.get("emotionId").toString();
+			  EmotionInfo emotionInfo = userMybatisDao.getEmotionInfoByKey(Long.valueOf(emotionId));
+			  SummaryEmotionInfoDto.EmotionData emotionData = SummaryEmotionInfoDto.create();
+			  emotionData.setEmotionName(emotionInfo.getEmotionname());
+			  BigDecimal countNum = new BigDecimal(map.get("countNum").toString()).setScale(3, BigDecimal.ROUND_UP);
+			  int  percentage = countNum.divide( new BigDecimal(count),3).multiply(new BigDecimal(100)).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+			  percentageCount+=percentage;
+			  if(percentage>max){
+		    	 max = percentage;
+		    	 maxIndex = i;
+		      }
+			  emotionData.setPercentage(percentage);
+			  emotionData.setHappyValue(Long.valueOf( map.get("happyValue").toString()));
+			  emotionData.setFreeValue(Long.valueOf( map.get("freeValue").toString()));
+			  dto.getEmotionData().add(emotionData);
+		  }
+		  if(percentageCount>100){
+			  int temp = percentageCount-100;
+			  SummaryEmotionInfoDto.EmotionData  emotionData = dto.getEmotionData().get(maxIndex);
+			  emotionData.setPercentage(emotionData.getPercentage()-temp);
+		  }
+		  SimpleDateFormat dsdf = new SimpleDateFormat("MM月dd日");
+		  String dateStr = dsdf.format(mondayDate)+"-"+dsdf.format(sundayDate);
+		  dto.setDateStr(dateStr);
+			return  Response.success(dto);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			return  Response.failure(500,"时间转换错误");
+		}
+	
 	}
 }

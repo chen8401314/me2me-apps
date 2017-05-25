@@ -430,7 +430,6 @@ public interface UserService {
      
  	 EmotionInfo getEmotionInfoByKey(Long id);
  	 
- 	 
  	 void updateEmotionInfoByKey(EmotionInfo emotionInfo);
  	
  	 Integer addEmotionInfo(EmotionInfo emotionInfo);
@@ -439,4 +438,11 @@ public interface UserService {
  	 
  	 Integer addEmotionRecord(EmotionRecord emotionRecord);
  	 
+ 	 boolean exsitEmotionRecord(long uid,Date mondayDate,Date sundayDate);
+ 	 
+ 	 EmotionRecord getLastEmotionRecord(long uid) ;
+ 	 
+ 	 int getEmotionRecordCount(long uid);
+ 	 
+ 	 Response getSummaryEmotionInfo(long uid);
 }
