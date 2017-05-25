@@ -7,5 +7,8 @@ import lombok.Setter;
 public class MBTIRequest extends Request {
 	@Getter
 	@Setter
+	private long customUid;
+	@Getter
+	@Setter
 	private String mbti;
 }
