@@ -2,6 +2,7 @@ package com.me2me.search.service;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -750,13 +751,18 @@ public class SearchServiceImpl implements SearchService {
 				//查询用户的情绪王国
 				Map<String, Object> userEmotionKingdom = contentForSearchJdbcDao.getUserEmotionKingdom(uid);
 				
+				int totalUserEmotionCount = contentForSearchJdbcDao.countUserEmotions(uid, 0);
+				
 				RecommendListDto.UserEmotion userEmotion = null;
 				EmotionInfo emotionInfo = null;
 				Map<String, Object> bigEmotion = null;
 				RecommendListDto.EmotionPackage emotionPackage = null;
+				Date now = new Date();
 				for(EmotionRecord er : erList){
 					userEmotion = new RecommendListDto.UserEmotion();
 					userEmotion.setCreateTime(er.getCreateTime().getTime());
+					long timeInterval = (now.getTime()-er.getCreateTime().getTime())/1000;
+					userEmotion.setTimeInterval(timeInterval);
 					userEmotion.setFreeValue(er.getFreevalue());
 					userEmotion.setHappyValue(er.getHappyvalue());
 					
@@ -781,7 +787,7 @@ public class SearchServiceImpl implements SearchService {
 							userEmotion.setEmotionPack(emotionPackage);
 						}
 					}
-					userEmotion.setRecordCount(contentForSearchJdbcDao.countUserEmotions(uid, er.getId()));
+					userEmotion.setRecordCount(totalUserEmotionCount);
 					if(null != userEmotionKingdom){
 						userEmotion.setTopicId((Long)userEmotionKingdom.get("id"));
 						userEmotion.setInternalStatus(Specification.SnsCircle.CORE.index);//自己的肯定是核心圈
@@ -809,13 +815,10 @@ public class SearchServiceImpl implements SearchService {
 			//变更逻辑，按匹配度进行计算
 			//1.最大值为99%
 			//2.基本资料匹配44%，心理测试对应22%，最近3次情绪状态匹配33%
-			
-			
-			
 			List<RecommendUser> resultpage = null;
 			if(completion >= 10){
 				List<Long> myFollowUidList = userService.getFollowList(uid);
-				resultpage = this.searchService.getRecommendUserList(uid, 1, 10, myFollowUidList);
+				resultpage = this.searchService.getRecommendUserList(uid, 1, 30, myFollowUidList);
 			}
 			if(null == resultpage){
 				resultpage = new ArrayList<RecommendUser>();
@@ -828,11 +831,23 @@ public class SearchServiceImpl implements SearchService {
 					ruser.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
 					ruser.setNickName(user.getNickName());
 					ruser.setV_lv(user.getvLv());
-					ruser.setReason("");
+					ruser.setReason("米汤官方推荐");
 					ruser.setTagMatchedLength(0);
 					ruser.setUserTags(new ArrayList<String>());
 					resultpage.add(ruser);
 				}
+			}else{//有数据的，根据匹配度重新排序后返回
+				Collections.sort(resultpage, new Comparator<RecommendUser>() {
+		            public int compare(RecommendUser a, RecommendUser b) {
+		                if(a.getMatching() > b.getMatching()){
+		                	return -1;
+		                }else if(a.getMatching() == b.getMatching()){
+		                	return 0;
+		                }else{
+		                	return 1;
+		                }
+		            }
+		        });
 			}
 			
 			if(null != resultpage && resultpage.size() > 0){
