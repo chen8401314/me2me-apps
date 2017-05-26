@@ -35,16 +35,22 @@
     	alert(errMsg);
     }
     function check(){
+    	if($("#topicid").val()==null || $("#topicid").val()==''){
+    		alert("请选择王国！");
+    		return false;
+    	}
     	if($("#id").val()==null || $("#id").val()==''){
     	if($("#file").val()==''){
     		alert("个人情绪王国封面图！");
     		return false;
     	}
     	}
+    	
     	if($("#emotionpackid").val()==''){
     		alert("请选择表情！");
     		return false;
     	}
+    	
     	$.ajax({
             cache: true,
             type: "POST",
@@ -123,10 +129,17 @@
 	                                            <label for="exampleInputFile">空闲指数最大值</label>
 	                                            <input name="freemax" type="number"   class="form-control" value="${item.freemax}"  required/>
 	                                        </div>
-	                                        <div class="form-group">
-	                                            <label for="exampleInputFile">王国ID</label>
-	                                            <input name="topicid"  class="form-control" value="${item.topicid}" required/>
-	                                        </div>
+	                                               <div class="form-group">
+                                            <label for="exampleInputEmail1">王国名称</label>
+                                            <p>
+                                            <input type="text" name="kingdomname" class="form-control required" value="${topicTitle}" style="display:inline"/>
+                                            <a class="btn btn-danger dialog" id="selectKingdom" href="${ctx}/ranking/listKingdoms">选择王国</a>
+                                            </p>
+                                        </div>
+                                        <div class="form-group hidden">
+                                            <label for="exampleInputEmail1">王国id</label>
+                                            <input type="text" name="topicid" id="topicid" class="form-control required" value="${item.topicid}"/>
+                                        </div>
 	                                        </div>
 	                                        <div class="col-md-6">
 	                                        <div class="form-group">
@@ -234,6 +247,20 @@
 </div>
         <!--this page plugins-->
 
+        <script src="${ctx}/js/jquery.js"></script>
+        <script src="${ctx}/js/jquery-ui-1.9.2.custom.min.js"></script>
+        <script src="${ctx}/js/jquery.validate.min.js"></script>
+        <script src="${ctx}/js/jquery-migrate-1.2.1.min.js"></script>
+        <script src="${ctx}/js/bootstrap.min.js"></script>
+        <script class="include" type="text/javascript" src="${ctx}/js/jquery.dcjqaccordion.2.7.js"></script>
+        <script src="${ctx}/js/jquery.scrollTo.min.js"></script>
+        <script src="${ctx}/js/jquery.nicescroll.js" type="text/javascript"></script>
+        <script type="text/javascript" src="${ctx}/assets/advanced-datatable/media/js/jquery.dataTables.js"></script>
+        <script type="text/javascript" src="${ctx}/assets/data-tables/DT_bootstrap.js"></script>
+        <script src="${ctx}/js/respond.min.js"></script>
+
+        <!--this page plugins-->
+
         <script type="text/javascript" src="${ctx}/assets/fuelux/js/spinner.min.js"></script>
         <script type="text/javascript" src="${ctx}/assets/bootstrap-fileupload/bootstrap-fileupload.js"></script>
         <script type="text/javascript" src="${ctx}/assets/bootstrap-wysihtml5/wysihtml5-0.3.0.js"></script>
@@ -251,16 +278,39 @@
         <!--right slidebar-->
         <script src="${ctx}/js/slidebars.min.js"></script>
 
+        <!--dynamic table initialization -->
+        <script src="${ctx}/js/dynamic_table_init.js"></script>
         <!--custom switch-->
         <script src="${ctx}/js/bootstrap-switch.js"></script>
         <!--custom tagsinput-->
         <script src="${ctx}/js/jquery.tagsinput.js"></script>
         <!--script for this page-->
+        <script src="${ctx}/js/form-component.js"></script>
         <!--common script for all pages-->
         <script src="${ctx}/js/common-scripts.js"></script>
+        <script src="${ctx}/js/advanced-form-components.js"></script>
 
         <script src="${ctx}/js/xheditor-1.2.2.min.js"></script>
         <script src="${ctx}/js/xheditor_lang/zh-cn.js"></script>
         <script src="${ctx}/js/xheditSelf.js"></script>
+        <script type="text/javascript" src="${ctx}/js/bootbox.min.js"></script>
+        <script type="text/javascript">
+$("form").validate();
+$("#selectKingdom").click(function(){
+	var url =$(this).attr("href");
+	bootbox.dialog({ 
+		size:"large",
+		message: "<iframe src='"+url+"' style='width:100%;min-height:750px;border:0px;'></iframe>" 
+	})
+	return false;
+});
+
+//子窗口添加数据
+function onAdd(idArr,dataArr){
+	$("input[name='kingdomname']").val(dataArr[0].title);
+	$("input[name='topicid']").val(dataArr[0].topicId);
+	bootbox.hideAll();
+}
+</script>
 </body>
 </html>

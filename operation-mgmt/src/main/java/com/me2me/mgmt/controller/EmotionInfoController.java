@@ -125,7 +125,8 @@ public class EmotionInfoController {
 		PageBean page = dpage.toPageBean();
 		page.setPageSize(99999);
 		PageBean<EmotionPackDetail> list =contentService.getEmotionPackDetailPage(page, param);
-		request.setAttribute("dataList2",list.getDataList());
+		Topic topic = liveService.getTopicById(item.getTopicid());
+		request.setAttribute("topicTitle",topic.getTitle());
 		return "emotionInfo/add_emotion";
 	}
 	@RequestMapping(value = "/doSaveEmotion")
