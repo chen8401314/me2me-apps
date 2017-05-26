@@ -4,8 +4,6 @@ import com.me2me.common.web.BaseEntity;
 
 import lombok.extern.slf4j.Slf4j;
 
-import org.springframework.util.StringUtils;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Random;
@@ -98,6 +96,16 @@ public class CommonUtils {
         return new StringBuilder(str.substring(0,1).toUpperCase()).append(str.substring(1)).toString();
     }
 
-
+    /**
+     * 当src为null时返回空串，不为null时，是什么返回什么
+     * @param src
+     * @return
+     */
+    public static String toUsefulString(String src){
+    	if(null == src){
+    		return "";
+    	}
+    	return src;
+    }
 
 }

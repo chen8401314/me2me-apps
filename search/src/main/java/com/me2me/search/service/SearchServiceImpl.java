@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.me2me.common.Constant;
+import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -715,7 +716,7 @@ public class SearchServiceImpl implements SearchService {
 				person.setSexOrientation(profile.getLikeGender());
 			}
 			person.setCompletion(completion);
-			person.setMbit(profile.getMbti());
+			person.setMbit(CommonUtils.toUsefulString(profile.getMbti()));
 			
 			EmotionInfo firstUserEmotionInfo = null;
 			List<EmotionRecord> erList = userService.getUserEmotionRecords(uid, 20);
@@ -802,13 +803,11 @@ public class SearchServiceImpl implements SearchService {
 			if(null != firstUserEmotionInfo){
 				Map<String, Object> topic = contentForSearchJdbcDao.getTopicById(firstUserEmotionInfo.getTopicid());
 				if(null != topic){
-					RecommendListDto.EmotionKingdom emotionKingdom = new RecommendListDto.EmotionKingdom();
-					emotionKingdom.setContentType((Integer)topic.get("type"));
-					emotionKingdom.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
-					emotionKingdom.setInternalStatus(this.getInternalStatus((String)topic.get("core_circle"), uid));
-					emotionKingdom.setTitle((String)topic.get("title"));
-					emotionKingdom.setTopicId(firstUserEmotionInfo.getTopicid());
-					indexData.setEmotionKingdom(emotionKingdom);
+					indexData.getEmotionKingdom().setContentType((Integer)topic.get("type"));
+					indexData.getEmotionKingdom().setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
+					indexData.getEmotionKingdom().setInternalStatus(this.getInternalStatus((String)topic.get("core_circle"), uid));
+					indexData.getEmotionKingdom().setTitle((String)topic.get("title"));
+					indexData.getEmotionKingdom().setTopicId(firstUserEmotionInfo.getTopicid());
 				}
 			}
 			
