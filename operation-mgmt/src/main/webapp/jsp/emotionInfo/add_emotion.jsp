@@ -45,9 +45,10 @@
     	}
        	$("#form1").submit();
     }
-    function packSelect(id,image){
+    function packSelect(id,title,image){
     	$("#emotionpackid").val(id);
     	$("#image").attr("src",image);
+    	$("#packTitle").html(title);
     	$("#myModal").modal('hide');
     }
     function modalShow(){
@@ -86,19 +87,31 @@
 	                                            <input name="emotionname"  class="form-control" value="${item.emotionname}" required/>
 	                                        </div>
 	                                        <div class="form-group">
-	                                            <label for="exampleInputFile">开心指数</label>
-                                    	  <input name="happymin"  class="form-control" value="${item.happymin}"  required/>
-                                    	  -
-	                                      <input name="happymax"  class="form-control" value="${item.happymax}"  required/>
+	                                            <label for="exampleInputFile">开心指数最小值</label>
+                                    	  <input name="happymin" type="number"  class="form-control" value="${item.happymin}"  required/>
+                                    	   </div>
+                                    	     <div class="form-group">
+	                                            <label for="exampleInputFile">开心指数最大值</label>
+	                                      <input name="happymax" type="number"   class="form-control" value="${item.happymax}"  required/>
 	                                        </div>
 	                                        <div class="form-group">
-	                                            <label for="exampleInputFile">空闲指数</label>
-	                                            <input name="freemin"  class="form-control" value="${item.freemin}"  required/>
-	                                            -
-	                                            <input name="freemax"  class="form-control" value="${item.freemax}"  required/>
+	                                            <label for="exampleInputFile">空闲指数最小值</label>
+	                                            <input name="freemin" type="number"   class="form-control" value="${item.freemin}"  required/>
+	                                            </div>
+	                                              <div class="form-group">
+	                                            <label for="exampleInputFile">空闲指数最大值</label>
+	                                            <input name="freemax" type="number"   class="form-control" value="${item.freemax}"  required/>
 	                                        </div>
 	                                        <div class="form-group">
-	                                             <input type="button"  value="选择大表情" class="btn btn-danger"  onclick="modalShow();"/>
+	                                            <label for="exampleInputFile">王国ID</label>
+	                                            <input name="topicid"  class="form-control" value="${item.topicid}" required/>
+	                                        </div>
+	                                        </div>
+	                                        <div class="col-md-6">
+	                                        <div class="form-group">
+	                                        <input type="button"  value="选择大表情" class="btn btn-danger"  onclick="modalShow();"/>&nbsp;<span id="packTitle">${epd.title }</span>
+	                                             </br>
+	                                              </br>
 	                                            <input name="emotionpackid"  id="emotionpackid" class="form-control" value="${item.emotionpackid}" type="hidden"/>
 	                                             <div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
                                                     	<c:if test="${epd.image!=null }">
@@ -111,7 +124,7 @@
                                                     </div>
 	                                        </div>
 	                                        <div class="form-group">
-	                                            <label for="exampleInputFile">图片</label>
+	                                            <label for="exampleInputFile">个人情绪王国封面图片</label>
                                                 <div class="fileupload fileupload-new" data-provides="fileupload">
                                                     <div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
                                                     	<c:if test="${item.topiccoverphoto!=null }">
@@ -129,11 +142,7 @@
                                                     </div>
                                                 </div>
 	                                        </div>
-	                                        
-	                                        <div class="form-group">
-	                                            <label for="exampleInputFile">王国ID</label>
-	                                            <input name="topicid"  class="form-control" value="${item.topicid}" required/>
-	                                        </div>
+	                                   
 	                                      
                                         </div>
                                     </div>
@@ -190,7 +199,7 @@
 														<img src="http://cdn.me-to-me.com/${item.image }" style="max-height:32px;"/>
 													</td>
 													<td>
-														<a class="btn btn-warning btn-xs " href="javascript:packSelect(${item.id},'http://cdn.me-to-me.com/${item.image }');">选择</a>
+														<a class="btn btn-warning btn-xs " href="javascript:packSelect(${item.id},'${item.title}','http://cdn.me-to-me.com/${item.image }');">选择</a>
 													</td>
 												</tr>
 											</c:forEach>
