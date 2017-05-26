@@ -444,5 +444,7 @@ public interface UserService {
  	 
  	 int getEmotionRecordCount(long uid);
  	 
- 	 Response getSummaryEmotionInfo(long uid);
+ 	 Response getSummaryEmotionInfo(long uid,long time);
+ 	 
+ 	 List<EmotionRecord> getEmotionRecordByStartAndEnd(Date start,Date end);
 }

@@ -504,5 +504,27 @@ public interface LiveService {
 	 */
 	Response userAtList(UserAtListDTO atListDTO);
 	
+	
+	/**
+	 * 确认情绪信息
+	 * @param uid
+	 * @param source
+	 * @param emotionId
+	 * @param happyValue
+	 * @param freeValue
+	 * @return
+	 */
 	Response submitEmotion(long uid, int source,long emotionId,int happyValue,int freeValue) ;
+	
+	
+	 /**
+	  * 开启新的一周情绪
+	 * @param uid
+	 * @param source
+	 * @param image
+	 * @param w
+	 * @param h
+	 * @return
+	 */
+	Response startNewEmotionInfo(long uid, int source,String image,int w,int h);
 }

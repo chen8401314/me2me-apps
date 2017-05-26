@@ -3728,10 +3728,15 @@ public class UserServiceImpl implements UserService {
 	}
 	
 	@Override
-	public Response getSummaryEmotionInfo(long uid) {
+	public Response getSummaryEmotionInfo(long uid,long time) {
 		try {
 			SummaryEmotionInfoDto dto = new SummaryEmotionInfoDto();
-		Date date = new Date();
+		Date date = null;
+		if(time==0){
+			date = new Date();
+		}else{
+			date = new Date(time);
+		}
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
 		SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd 23:59:59");
@@ -3746,10 +3751,7 @@ public class UserServiceImpl implements UserService {
 		  cal1.set(Calendar.DAY_OF_WEEK,Calendar.MONDAY);
 		  monday = sdf1.format(cal1.getTime());
 		  Date mondayDate=null;
-	
 			mondayDate = sdf1.parse(monday);
-	
-		  
 			 Calendar cal2 = Calendar.getInstance();
 			 cal2.setTime(date);
 			  int m = 0;
@@ -3796,11 +3798,20 @@ public class UserServiceImpl implements UserService {
 		  SimpleDateFormat dsdf = new SimpleDateFormat("MM月dd日");
 		  String dateStr = dsdf.format(mondayDate)+"-"+dsdf.format(sundayDate);
 		  dto.setDateStr(dateStr);
+		  
+            //周总结状态记录
+			EmotionSummaryModel EmotionSummaryModel = new EmotionSummaryModel(sdf.format(cal1.getTime()), uid, "0");
+			cacheService.hSet(EmotionSummaryModel.getKey(), EmotionSummaryModel.getField(), EmotionSummaryModel.getValue());
+		  
 			return  Response.success(dto);
 		} catch (ParseException e) {
 			// TODO Auto-generated catch block
 			return  Response.failure(500,"时间转换错误");
 		}
 	
+	}
+	@Override
+	public List<EmotionRecord> getEmotionRecordByStartAndEnd(Date start,Date end){
+		return userMybatisDao.getEmotionRecordByStartAndEnd(start, end);
 	}
 }

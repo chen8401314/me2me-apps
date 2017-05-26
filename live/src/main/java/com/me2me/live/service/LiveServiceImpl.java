@@ -125,6 +125,7 @@ import com.me2me.live.model.VoteOption;
 import com.me2me.live.model.VoteRecord;
 import com.me2me.search.service.SearchService;
 import com.me2me.sms.service.JPushService;
+import com.me2me.user.cache.EmotionSummaryModel;
 import com.me2me.user.model.EmotionInfo;
 import com.me2me.user.model.EmotionRecord;
 import com.me2me.user.model.SystemConfig;
@@ -5976,7 +5977,7 @@ public class LiveServiceImpl implements LiveService {
 	}
 
 	@Override
-	public Response submitEmotion(long uid, int source,long emotionId,int happyValue,int freeValue) {
+	public Response submitEmotion(long uid, int source, long emotionId, int happyValue, int freeValue) {
 		UserProfile userProfile = userService.getUserProfileByUid(uid);
 		if (userProfile == null) {
 			return Response.failure(500, "没有该用户信息！");
@@ -6000,9 +6001,7 @@ public class LiveServiceImpl implements LiveService {
 			log.info("createKingdom start...");
 
 			boolean isDouble = false;
-			int type = 0;
 			long uid2 = 0;
-			JSONObject cExtraObj = null;
 
 			Date now = new Date();
 			log.info("create cover..");
@@ -6026,7 +6025,7 @@ public class LiveServiceImpl implements LiveService {
 			topic.setCeAuditType(0);// 聚合王国属性，是否需要国王审核才能加入此聚合王国，默认0是
 			topic.setAcAuditType(1);// 个人王国属性，是否需要国王审核才能收录此王国，默认1否
 			topic.setAcPublishType(0);// 个人王国属性，是否接受聚合王国下发的消息，默认0是
-			topic.setSubType(1);//王国子类型，0什么都不是，1情绪王国
+			topic.setSubType(1);// 王国子类型，0什么都不是，1情绪王国
 			liveMybatisDao.createTopic(topic);
 
 			// 创建直播之后添加到我的UGC
@@ -6089,7 +6088,7 @@ public class LiveServiceImpl implements LiveService {
 			extra.put("packageName", emotionPack.getName());
 			extra.put("packageCover", emotionPack.getCover());
 			topicFragment.setExtra(extra.toJSONString());
-			
+
 			topicFragment.setCreateTime(now);
 			liveMybatisDao.createTopicFragment(topicFragment);
 			lastFragmentId = topicFragment.getId();
@@ -6164,10 +6163,9 @@ public class LiveServiceImpl implements LiveService {
 		userService.addEmotionRecord(emotionRecord);
 		return Response.success();
 	}
-	
-/*	
+
 	@Override
-	public Response startNewEmotionInfo(long uid) {
+	public Response startNewEmotionInfo(long uid, int source, String image, int w, int h) {
 		UserProfile userProfile = userService.getUserProfileByUid(uid);
 		if (userProfile == null) {
 			return Response.failure(500, "没有该用户信息！");
@@ -6177,10 +6175,16 @@ public class LiveServiceImpl implements LiveService {
 			log.info("createKingdom start...");
 
 			boolean isDouble = false;
-			int type = 0;
 			long uid2 = 0;
-			JSONObject cExtraObj = null;
 
+			EmotionRecord emotionRecord = userService.getLastEmotionRecord(uid);
+			if (emotionRecord == null) {
+				return Response.failure(500, "没有该用户情绪记录信息！");
+			}
+			EmotionInfo emotionInfo = userService.getEmotionInfoByKey(emotionRecord.getEmotionid());
+			if (emotionInfo == null) {
+				return Response.failure(500, "没有情绪信息！");
+			}
 			Date now = new Date();
 			log.info("create cover..");
 			topic = new Topic();
@@ -6203,7 +6207,7 @@ public class LiveServiceImpl implements LiveService {
 			topic.setCeAuditType(0);// 聚合王国属性，是否需要国王审核才能加入此聚合王国，默认0是
 			topic.setAcAuditType(1);// 个人王国属性，是否需要国王审核才能收录此王国，默认1否
 			topic.setAcPublishType(0);// 个人王国属性，是否接受聚合王国下发的消息，默认0是
-			topic.setSubType(1);//王国子类型，0什么都不是，1情绪王国
+			topic.setSubType(1);// 王国子类型，0什么都不是，1情绪王国
 			liveMybatisDao.createTopic(topic);
 
 			// 创建直播之后添加到我的UGC
@@ -6233,15 +6237,16 @@ public class LiveServiceImpl implements LiveService {
 			TopicFragment topicFragment = new TopicFragment();
 			topicFragment.setFragment("");
 			topicFragment.setUid(uid);
-			topicFragment.setType(52);
-			topicFragment.setContentType(18);
+			topicFragment.setType(0);
+			topicFragment.setContentType(1);
 			topicFragment.setTopicId(topic.getId());
 			topicFragment.setBottomId(0l);
 			topicFragment.setTopId(0l);
 			topicFragment.setSource(source);
+			topicFragment.setFragmentImage(image);
 
 			JSONObject extra = new JSONObject();
-			extra.put("type", "emoji");
+			extra.put("type", "image");
 			extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
 			JSONObject fromObj = new JSONObject();
 			fromObj.put("uid", uid);
@@ -6253,20 +6258,15 @@ public class LiveServiceImpl implements LiveService {
 			fromObj.put("cover", Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
 			fromObj.put("url", live_web + topicContet.getId());
 			extra.put("from", fromObj);
-			extra.put("title", emotionPackDetail.getTitle());
-			extra.put("content", emotionPackDetail.getExtra());
-			extra.put("emojiType", 1);
-			extra.put("image", Constant.QINIU_DOMAIN + "/" + emotionPackDetail.getImage());
-			extra.put("w", emotionPackDetail.getW());
-			extra.put("h", emotionPackDetail.getH());
-			extra.put("thumb", emotionPackDetail.getThumb());
-			extra.put("thumb_w", emotionPackDetail.getThumbW());
-			extra.put("thumb_h", emotionPackDetail.getThumbH());
-			extra.put("packageId", emotionPack.getId());
-			extra.put("packageName", emotionPack.getName());
-			extra.put("packageCover", emotionPack.getCover());
+			extra.put("w", w);
+			extra.put("h", h);
+			extra.put("length", 0);
+			extra.put("orientation", 1);
+			extra.put("format", "");
+			extra.put("rLen", 0);
+			extra.put("rFmt", "");
 			topicFragment.setExtra(extra.toJSONString());
-			
+
 			topicFragment.setCreateTime(now);
 			liveMybatisDao.createTopicFragment(topicFragment);
 			lastFragmentId = topicFragment.getId();
@@ -6297,14 +6297,15 @@ public class LiveServiceImpl implements LiveService {
 			log.info("createKingdom end");
 		} else {
 			SpeakDto speakDto = new SpeakDto();
-			speakDto.setType(52);
-			speakDto.setContentType(18);
+			speakDto.setType(0);
+			speakDto.setContentType(1);
 			speakDto.setUid(userProfile.getUid());
 			speakDto.setTopicId(topic.getId());
 			speakDto.setSource(source);
+			speakDto.setFragmentImage(image);
 
 			JSONObject extra = new JSONObject();
-			extra.put("type", "emoji");
+			extra.put("type", "image");
 			extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
 			JSONObject fromObj = new JSONObject();
 			fromObj.put("uid", uid);
@@ -6316,31 +6317,19 @@ public class LiveServiceImpl implements LiveService {
 			fromObj.put("cover", Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
 			fromObj.put("url", live_web + topicContet.getId());
 			extra.put("from", fromObj);
-			extra.put("title", emotionPackDetail.getTitle());
-			extra.put("content", emotionPackDetail.getExtra());
-			extra.put("emojiType", 1);
-			extra.put("image", Constant.QINIU_DOMAIN + "/" + emotionPackDetail.getImage());
-			extra.put("w", emotionPackDetail.getW());
-			extra.put("h", emotionPackDetail.getH());
-			extra.put("thumb", emotionPackDetail.getThumb());
-			extra.put("thumb_w", emotionPackDetail.getThumbW());
-			extra.put("thumb_h", emotionPackDetail.getThumbH());
-			extra.put("packageId", emotionPack.getId());
-			extra.put("packageName", emotionPack.getName());
-			extra.put("packageCover", emotionPack.getCover());
-
+			extra.put("w", w);
+			extra.put("h", h);
+			extra.put("length", 0);
+			extra.put("orientation", 1);
+			extra.put("format", "");
+			extra.put("rLen", 0);
+			extra.put("rFmt", "");
 			speakDto.setExtra(extra.toJSONString());
 			speak(speakDto);
 
 		}
-		EmotionRecord emotionRecord = new EmotionRecord();
-		emotionRecord.setUid(uid);
-		emotionRecord.setEmotionid(emotionId);
-		emotionRecord.setFreevalue(freeValue);
-		emotionRecord.setHappyvalue(happyValue);
-		userService.addEmotionRecord(emotionRecord);
 		return Response.success();
-	}*/
+	}
 	
 	
 }

@@ -489,7 +489,9 @@ public interface Specification {
 
         REMOVE_CORE_CIRCLE("从核心圈移除",12),
         
-        QUIT_CORE_CIRCLE("退出核心圈",13);
+        QUIT_CORE_CIRCLE("退出核心圈",13),
+    	
+    	EMOTION_SUMMARY("情绪周总结提醒",14);
 
         public final String name;
 
@@ -963,7 +965,9 @@ public interface Specification {
         
         CONTACTS("通讯录", 6),
         
-        BILLBOARD("榜单详情", 7)
+        BILLBOARD("榜单详情", 7),
+        
+        EMOTION("情绪", 8)
         ;
 
         public final String name;

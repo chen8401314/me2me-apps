@@ -80,6 +80,7 @@ import com.me2me.web.request.ShowFansRequest;
 import com.me2me.web.request.ShowUserTipsRequest;
 import com.me2me.web.request.SignUpRequest;
 import com.me2me.web.request.SpecialUserProfileRequest;
+import com.me2me.web.request.StartNewEmotionInfoRequest;
 import com.me2me.web.request.SummaryEmotionInfoRequest;
 import com.me2me.web.request.TagRequest;
 import com.me2me.web.request.TestPushRequest;
@@ -1033,7 +1034,18 @@ public class Users extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getSummaryEmotionInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getSummaryEmotionInfo(SummaryEmotionInfoRequest request){
-    	return userService.getSummaryEmotionInfo(request.getUid());
+    	return userService.getSummaryEmotionInfo(request.getUid(),request.getTime());
+    }
+    
+    /**
+     * 开启新的一周情绪接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/startNewEmotionInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response startNewEmotionInfo(StartNewEmotionInfoRequest request){
+    	return liveService.startNewEmotionInfo(request.getUid(),request.getSource(),request.getImage(),request.getW(),request.getH());
     }
     
     
