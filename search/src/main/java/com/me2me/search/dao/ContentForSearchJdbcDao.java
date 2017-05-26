@@ -1,5 +1,6 @@
 package com.me2me.search.dao;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -71,6 +72,39 @@ public class ContentForSearchJdbcDao {
 		return null;
 	}
 	
+	public Map<String, Object> getTopicByUidAndTitle(long uid, String title){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select * from topic t where t.uid=").append(uid);
+		sb.append(" and t.title='").append(title).append("'");
+		
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+	
+	public Map<String, Object> getTopicContentByTopicId(long topicId){
+		String sql = "select * from content t where t.forward_cid=" + topicId + " and t.type=3";
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+	
+	public boolean isFavoriteTopic(long uid, long topicId){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select * from live_favorite f where f.uid=").append(uid);
+		sb.append(" and f.topic_id=").append(topicId);
+
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
+		if(null != list && list.size() > 0){
+			return true;
+		}
+		return false;
+	}
+	
 	public List<Map<String,Object>> getLiveFavoritesByUidAndTopicIds(long uid, List<Long> topicIds){
     	if(null == topicIds || topicIds.size() == 0){
     		return null;
@@ -107,6 +141,36 @@ public class ContentForSearchJdbcDao {
 		sb.append(") group by f.topic_id");
 		
 		return jdbcTemplate.queryForList(sb.toString());
+	}
+	
+	/**
+	 * 获取王国成员数（不包含国王）
+	 * @param topicId
+	 * @return
+	 */
+	public int getSingleTopicMemberCount(long topicId){
+		int result = 0;
+		//获取非核心圈人数
+		StringBuilder sb = new StringBuilder();
+    	sb.append("select count(1) as cc from live_favorite f,topic t");
+    	sb.append(" where f.topic_id=t.id ");
+    	sb.append(" and not FIND_IN_SET(f.uid, SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))");
+    	sb.append(" and f.topic_id=").append(topicId);
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	if(null != list && list.size() > 0){
+    		Map<String, Object> cl = list.get(0);
+    		result = result + ((Long)cl.get("cc")).intValue();
+    	}
+		//获取核心圈人数（不包含国王）
+    	StringBuilder sb2 = new StringBuilder();
+    	sb2.append("select t.id, LENGTH(t.core_circle)-LENGTH(replace(t.core_circle,',','')) as coreCount");
+    	sb2.append(" from topic t where t.id=").append(topicId);
+    	list = jdbcTemplate.queryForList(sb2.toString());
+    	if(null != list && list.size() > 0){
+    		Map<String, Object> cl2 = list.get(0);
+    		result = result + ((Long)cl2.get("coreCount")).intValue();
+    	}
+    	return result;
 	}
 	
 	public Map<String, Long> getTopicMembersCount(List<Long> topicIdList){
@@ -166,6 +230,19 @@ public class ContentForSearchJdbcDao {
     	return result;
     }
 	
+	public int getSingleTopicAggregationAcCount(long topicId){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select count(1) as cc");
+		sb.append(" from topic_aggregation t");
+		sb.append(" where t.topic_id=").append(topicId);
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+		if(null != list && list.size() > 0){
+			Map<String, Object> l = list.get(0);
+			return ((Long)l.get("cc")).intValue();
+		}
+		return 0;
+	}
+	
 	public List<Map<String,Object>> getTopicAggregationAcCountByTopicIds(List<Long> topicIds){
 		if(null == topicIds || topicIds.size() == 0){
 			return null;
@@ -183,6 +260,23 @@ public class ContentForSearchJdbcDao {
 		sb.append(") group by t.topic_id");
 		
 		return jdbcTemplate.queryForList(sb.toString());
+	}
+	
+	public List<String> getSingleTopicTag(long topicId){
+		StringBuilder sb = new StringBuilder();
+    	sb.append("select * from topic_tag_detail d where d.status=0");
+    	sb.append(" and d.topic_id=").append(topicId);
+    	sb.append(" order by id asc");
+    	
+    	List<String> result = new ArrayList<String>();
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	if(null != list && list.size() > 0){
+    		for(Map<String, Object> map : list){
+    			result.add((String)map.get("tag"));
+    		}
+    	}
+    	
+    	return result;
 	}
 	
 	public List<Map<String, Object>> getTopicTagDetailListByTopicIds(List<Long> topicIds){
