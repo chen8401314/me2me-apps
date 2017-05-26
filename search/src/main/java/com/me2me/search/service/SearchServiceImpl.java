@@ -691,16 +691,19 @@ public class SearchServiceImpl implements SearchService {
 	
 	public Response recommendIndex(long uid,int page, String token, String version){
 		RecommendListDto indexData = new RecommendListDto();
+		UserProfile profile = userService.getUserProfileByUid(uid);
+		String hobby = StringUtils.join(searchMapper.getUserHobbyIds(uid),",");
+		//画像完成度
+		int completion = this.getPersonaCompleted(profile, hobby);
+		UserProfile meAdmin = null;
 		if(page == 1){//第一页需要额外返回用户画像，用户推荐
 			//查用户画像信息
-			UserProfile profile = userService.getUserProfileByUid(uid);
 			RecommendListDto.RecPerson person = new RecommendListDto.RecPerson();
 			person.setUid(uid);
 			person.setNickName(profile.getNickName());
 			person.setAvatar(Constant.QINIU_DOMAIN + "/" + profile.getAvatar());
 			person.setV_lv(profile.getvLv());
 			person.setSex(profile.getGender());
-			String hobby = StringUtils.join(searchMapper.getUserHobbyIds(uid),",");
 			person.setHobby(hobby);
 			if(null != profile.getAgeGroup()){
 				person.setAgeGroup(profile.getAgeGroup());
@@ -711,8 +714,6 @@ public class SearchServiceImpl implements SearchService {
 			if(null != profile.getLikeGender()){
 				person.setSexOrientation(profile.getLikeGender());
 			}
-			//画像完成度
-			int completion = this.getPersonaCompleted(profile, hobby);
 			person.setCompletion(completion);
 			person.setMbit(profile.getMbti());
 			
@@ -811,87 +812,156 @@ public class SearchServiceImpl implements SearchService {
 				}
 			}
 			
-			// 查推荐用户
-			//变更逻辑，按匹配度进行计算
-			//1.最大值为99%
-			//2.基本资料匹配44%，心理测试对应22%，最近3次情绪状态匹配33%
 			List<RecommendUser> resultpage = null;
-			if(completion >= 10){
+			if(completion >= 10){//完成度大于等于10的才有只能推荐（包括推人和推内容）
+				// 查推荐用户
+				//变更逻辑，按匹配度进行计算
+				//1.最大值为99%
+				//2.基本资料匹配44%，心理测试对应22%，最近3次情绪状态匹配33%
 				List<Long> myFollowUidList = userService.getFollowList(uid);
 				resultpage = this.searchService.getRecommendUserList(uid, 1, 30, myFollowUidList);
-			}
-			if(null == resultpage){
+				if(null == resultpage){
+					resultpage = new ArrayList<RecommendUser>();
+				}
+				if(resultpage.size() > 1){
+					Collections.sort(resultpage, new Comparator<RecommendUser>() {
+			            public int compare(RecommendUser a, RecommendUser b) {
+			                if(a.getMatching() > b.getMatching()){
+			                	return -1;
+			                }else if(a.getMatching() == b.getMatching()){
+			                	return 0;
+			                }else{
+			                	return 1;
+			                }
+			            }
+			        });
+				}
+				
+			}else{
 				resultpage = new ArrayList<RecommendUser>();
-			}
-			if(resultpage.size() == 0){//第一页就没有数据的话，默认返回“米汤管家”这个用户
-				UserProfile user = userService.getUserByNickName("米汤管家");
-				if(null != user){
+				meAdmin = userService.getUserByNickName("米汤管家");
+				if(null != meAdmin){
 					RecommendUser ruser = new RecommendUser();
-					ruser.setUid(user.getUid());
-					ruser.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
-					ruser.setNickName(user.getNickName());
-					ruser.setV_lv(user.getvLv());
+					ruser.setUid(meAdmin.getUid());
+					ruser.setAvatar(Constant.QINIU_DOMAIN + "/" + meAdmin.getAvatar());
+					ruser.setNickName(meAdmin.getNickName());
+					ruser.setV_lv(meAdmin.getvLv());
 					ruser.setReason("米汤官方推荐");
 					ruser.setTagMatchedLength(0);
 					ruser.setUserTags(new ArrayList<String>());
 					resultpage.add(ruser);
 				}
-			}else{//有数据的，根据匹配度重新排序后返回
-				Collections.sort(resultpage, new Comparator<RecommendUser>() {
-		            public int compare(RecommendUser a, RecommendUser b) {
-		                if(a.getMatching() > b.getMatching()){
-		                	return -1;
-		                }else if(a.getMatching() == b.getMatching()){
-		                	return 0;
-		                }else{
-		                	return 1;
-		                }
-		            }
-		        });
 			}
-			
 			if(null != resultpage && resultpage.size() > 0){
 				indexData.getRecUserData().addAll(resultpage);
 			}
 		}
 		
-		// 查内容推荐（取10条王国数据，再取10条文章数据）
-		List<Long> dislistTopicIds = new ArrayList<Long>();
-		List<SearchUserDislike> dislikeList = searchMybatisDao.getSearchUserDislikesByUidsAndType(uid, 3);
-		if(null != dislikeList && dislikeList.size() > 0){
-			for(SearchUserDislike sud : dislikeList){
-				dislistTopicIds.add(sud.getCid());
-			}
-		}
-		List<TopicEsMapping> kingdoms = this.searchService.getTopicEsMappingList(uid, dislistTopicIds, page, 10);
-		this.builderRecKingdomInfo(indexData, kingdoms, uid);
-		//再取10条文章
-		ShowRecContentDTO recContent = fileTransferService.getRecContents(String.valueOf(uid), token, version, "");
-		if(null != recContent && "0".equals(recContent.getResultCode()) 
-				&& null != recContent.getContents() && recContent.getContents().size() > 0){
-			RecommendListDto.ContentData contentData = null;
-			for(ShowRecContentDTO.RecContentElement rc : recContent.getContents()){
-				if(rc.getContentType() > 6){//大于6的是王国和UGC等，这里不要
-					continue;
+		if(completion >= 10){//完成度大于等于10的才有只能推荐（包括推人和推内容）
+			// 查内容推荐（取10条王国数据，再取10条文章数据）
+			List<Long> dislistTopicIds = new ArrayList<Long>();
+			List<SearchUserDislike> dislikeList = searchMybatisDao.getSearchUserDislikesByUidsAndType(uid, 3);
+			if(null != dislikeList && dislikeList.size() > 0){
+				for(SearchUserDislike sud : dislikeList){
+					dislistTopicIds.add(sud.getCid());
 				}
-				contentData = new RecommendListDto.ContentData();
-				contentData.setType(5);//文章
-				contentData.setContentType(rc.getContentType());
-				contentData.setContentId(rc.getContentId());
-				contentData.setTitle(rc.getTitle());
-				contentData.setLinkUrl(rc.getLinkUrl());
-				contentData.setCoverImage(rc.getCoverImage());
-				contentData.setUpdateTime(rc.getUpdateTime());
-				contentData.setReason("智能推荐");
-				contentData.setReadCount(rc.getReadCount());
-				contentData.setLikeCount(rc.getLikeCount());
-				contentData.setReviewCount(rc.getReviewCount());
-				indexData.getRecContentData().add(contentData);
 			}
-		}
-		
-		if(indexData.getRecContentData().size() > 1){
-			Collections.shuffle(indexData.getRecContentData());
+			List<TopicEsMapping> kingdoms = this.searchService.getTopicEsMappingList(uid, dislistTopicIds, page, 10);
+			this.builderRecKingdomInfo(indexData, kingdoms, uid);
+			//再取10条文章
+			ShowRecContentDTO recContent = fileTransferService.getRecContents(String.valueOf(uid), token, version, "");
+			if(null != recContent && "0".equals(recContent.getResultCode()) 
+					&& null != recContent.getContents() && recContent.getContents().size() > 0){
+				RecommendListDto.ContentData contentData = null;
+				for(ShowRecContentDTO.RecContentElement rc : recContent.getContents()){
+					if(rc.getContentType() > 6){//大于6的是王国和UGC等，这里不要
+						continue;
+					}
+					contentData = new RecommendListDto.ContentData();
+					contentData.setType(5);//文章
+					contentData.setContentType(rc.getContentType());
+					contentData.setContentId(rc.getContentId());
+					contentData.setTitle(rc.getTitle());
+					contentData.setLinkUrl(rc.getLinkUrl());
+					contentData.setCoverImage(rc.getCoverImage());
+					contentData.setUpdateTime(rc.getUpdateTime());
+					contentData.setReason("智能推荐");
+					contentData.setReadCount(rc.getReadCount());
+					contentData.setLikeCount(rc.getLikeCount());
+					contentData.setReviewCount(rc.getReviewCount());
+					indexData.getRecContentData().add(contentData);
+				}
+			}
+			
+			if(indexData.getRecContentData().size() > 1){
+				Collections.shuffle(indexData.getRecContentData());
+			}
+		}else{
+			if(page == 1){//不满10%的只有第一页才有一个置顶的王国
+				Map<String, Object> meTopic = null;
+				if(null != meAdmin){
+					meTopic = contentForSearchJdbcDao.getTopicByUidAndTitle(meAdmin.getUid(), "米汤官方发言处");
+				}
+				Map<String, Object> topicContent = null;
+				if(null != meTopic){
+					topicContent = contentForSearchJdbcDao.getTopicContentByTopicId((Long)meTopic.get("id"));
+				}
+				if(null != topicContent){
+					RecommendListDto.ContentData kingdomElement = new RecommendListDto.ContentData();
+					kingdomElement.setUid(meAdmin.getUid());
+					kingdomElement.setNickName(meAdmin.getNickName());
+					kingdomElement.setAvatar(Constant.QINIU_DOMAIN + "/" + meAdmin.getAvatar());
+					kingdomElement.setV_lv(meAdmin.getvLv());
+					kingdomElement.setIsFollowed(userService.isFollow(meAdmin.getUid(), uid));
+					kingdomElement.setIsFollowMe(userService.isFollow(uid, meAdmin.getUid()));
+					kingdomElement.setTopicId((Long)meTopic.get("id"));
+					kingdomElement.setTitle((String)meTopic.get("title"));
+					kingdomElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)meTopic.get("live_image"));
+					kingdomElement.setType(3);
+					kingdomElement.setContentType((Integer)meTopic.get("type"));
+					if(null != meTopic.get("create_time")){
+						kingdomElement.setCreateTime(((Date)meTopic.get("create_time")).getTime());
+					}
+					kingdomElement.setUpdateTime(((Date)meTopic.get("update_time")).getTime());
+					kingdomElement.setLastUpdateTime((Long)meTopic.get("long_time"));
+					kingdomElement.setInternalStatus(this.getInternalStatus((String)meTopic.get("core_circle"), uid));
+					kingdomElement.setCid((Long)topicContent.get("id"));
+					kingdomElement.setLikeCount((Integer)topicContent.get("like_count"));
+					kingdomElement.setReadCount((Integer)topicContent.get("read_count_dummy"));
+					if(contentForSearchJdbcDao.isFavoriteTopic(uid, kingdomElement.getTopicId())){
+						kingdomElement.setFavorite(1);
+					}else{
+						kingdomElement.setFavorite(0);
+					}
+					List<Long> tidList = new ArrayList<Long>();
+					tidList.add(kingdomElement.getTopicId());
+					List<Map<String,Object>> countList = contentForSearchJdbcDao.getTopicUpdateCount(tidList);
+					if(null != countList && countList.size() > 0){
+						Map<String,Object> count = countList.get(0);
+						kingdomElement.setTopicCount(((Long)count.get("topicCount")).intValue());
+						kingdomElement.setReviewCount(((Long)count.get("reviewCount")).intValue());
+					}else{
+						kingdomElement.setTopicCount(0);
+						kingdomElement.setReviewCount(0);
+					}
+					kingdomElement.setFavoriteCount(contentForSearchJdbcDao.getSingleTopicMemberCount(kingdomElement.getTopicId()) + 1);
+					if(kingdomElement.getContentType() == 1000){//聚合王国需要返回子王国数
+						kingdomElement.setAcCount(contentForSearchJdbcDao.getSingleTopicAggregationAcCount(kingdomElement.getTopicId()));
+					}
+					List<String> topicTags = contentForSearchJdbcDao.getSingleTopicTag(kingdomElement.getTopicId());
+					if(null != topicTags && topicTags.size() > 0){
+						String tags = "";
+						for(String s : topicTags){
+							tags = tags + ";" + s;
+						}
+						kingdomElement.setTags(tags.substring(1));
+					}else{
+						kingdomElement.setTags("");
+					}
+					kingdomElement.setReason("米汤官方推荐");
+					indexData.getRecContentData().add(kingdomElement);
+				}
+			}
 		}
 		
 		return Response.success(indexData);
