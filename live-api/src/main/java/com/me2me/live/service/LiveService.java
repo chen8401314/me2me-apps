@@ -527,4 +527,11 @@ public interface LiveService {
 	 * @return
 	 */
 	Response startNewEmotionInfo(long uid, int source,String image,int w,int h);
+	
+	
+	/**
+	 * 获取所有情绪信息列表
+	 * @return
+	 */
+	public Response emotionInfoList();
 }

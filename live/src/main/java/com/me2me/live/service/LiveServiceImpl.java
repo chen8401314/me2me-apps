@@ -125,7 +125,7 @@ import com.me2me.live.model.VoteOption;
 import com.me2me.live.model.VoteRecord;
 import com.me2me.search.service.SearchService;
 import com.me2me.sms.service.JPushService;
-import com.me2me.user.cache.EmotionSummaryModel;
+import com.me2me.user.dto.EmotionInfoListDto;
 import com.me2me.user.model.EmotionInfo;
 import com.me2me.user.model.EmotionRecord;
 import com.me2me.user.model.SystemConfig;
@@ -6330,6 +6330,44 @@ public class LiveServiceImpl implements LiveService {
 		}
 		return Response.success();
 	}
-	
+	@Override
+	public Response emotionInfoList(){
+		List<EmotionInfo> datas = userService.getEmotionInfoList();
+		EmotionInfoListDto dto = new EmotionInfoListDto();
+		for (int i = 0; i < datas.size(); i++) {
+			EmotionInfoListDto.EmotionInfoElement ee = EmotionInfoListDto.createEmotionInfoElement();
+			Map<String,Object> map = new HashMap<String,Object>();
+			EmotionInfo emotionInfo  =datas.get(i);
+			ee.setId(emotionInfo.getId());
+			ee.setEmotionName(emotionInfo.getEmotionname());
+			ee.setHappyMin(emotionInfo.getHappymin());
+			ee.setHappyMax(emotionInfo.getHappymax());
+			ee.setFreeMin(emotionInfo.getFreemin());
+			ee.setFreeMax(emotionInfo.getFreemax());
+			if(emotionInfo.getTopicid()!=null){
+			ee.setTopicId(emotionInfo.getTopicid());
+			Topic topic =  liveMybatisDao.getTopicById(emotionInfo.getTopicid());
+			if(topic!=null){
+				ee.setTopicTitle(topic.getTitle());
+			}
+			}
+			EmotionPackDetail epd = contentService.getEmotionPackDetailByKey(Integer.valueOf(emotionInfo.getEmotionpackid()+""));
+			EmotionInfoListDto.EmotionPack ep = EmotionInfoListDto.createEmotionPack();
+			ep.setId(epd.getId());
+			ep.setTitle(epd.getTitle());
+			ep.setContent(epd.getExtra());
+			ep.setImage(epd.getImage());
+			ep.setThumb(epd.getThumb());
+			ep.setW(epd.getW());
+			ep.setH(epd.getH());
+			ep.setThumb_w(epd.getThumbW());
+			ep.setThumb_h(epd.getThumbH());
+			ep.setExtra(epd.getExtra());
+			ep.setEmojiType(1);
+			ee.setEmotionPack(ep);
+			dto.getEmotionInfoData().add(ee);
+		}
+		return Response.success(dto);
+	}
 	
 }

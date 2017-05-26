@@ -4,6 +4,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.URLDecoder;
 import java.net.UnknownHostException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -18,8 +21,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseWapx;
+import com.me2me.content.model.EmotionPackDetail;
 import com.me2me.content.service.ContentService;
 import com.me2me.kafka.service.KafkaService;
+import com.me2me.live.model.Topic;
 import com.me2me.live.service.LiveService;
 import com.me2me.sms.dto.AwardXMDto;
 import com.me2me.sms.dto.VerifyDto;
@@ -27,6 +32,7 @@ import com.me2me.sms.service.ChannelType;
 import com.me2me.sms.service.SmsService;
 import com.me2me.user.dto.ActivityModelDto;
 import com.me2me.user.dto.BasicDataDto;
+import com.me2me.user.dto.EmotionInfoListDto;
 import com.me2me.user.dto.EntryPageDto;
 import com.me2me.user.dto.FansParamsDto;
 import com.me2me.user.dto.FindEncryptDto;
@@ -47,6 +53,7 @@ import com.me2me.user.dto.UserReportDto;
 import com.me2me.user.dto.UserSignUpDto;
 import com.me2me.user.dto.VersionDto;
 import com.me2me.user.dto.WapxIosDto;
+import com.me2me.user.model.EmotionInfo;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.ActivityRequest;
 import com.me2me.web.request.BasicDataRequest;
@@ -54,6 +61,7 @@ import com.me2me.web.request.BatchFollowRequest;
 import com.me2me.web.request.CheckRequest;
 import com.me2me.web.request.CommonSendMsgRequest;
 import com.me2me.web.request.ContactsRequest;
+import com.me2me.web.request.EmotionInfoListRequest;
 import com.me2me.web.request.EmotionInfoRequest;
 import com.me2me.web.request.EmotionRecordRequest;
 import com.me2me.web.request.EntryPageRequest;
@@ -1047,6 +1055,17 @@ public class Users extends BaseController {
     public Response startNewEmotionInfo(StartNewEmotionInfoRequest request){
     	return liveService.startNewEmotionInfo(request.getUid(),request.getSource(),request.getImage(),request.getW(),request.getH());
     }
+    
+    /**
+     * 情绪信息列表查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/emotionInfoList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+	public Response emotionInfoList(EmotionInfoListRequest request){
+		return liveService.emotionInfoList();
+	}
     
     
 }
