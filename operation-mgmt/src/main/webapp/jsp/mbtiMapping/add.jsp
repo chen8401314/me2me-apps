@@ -138,6 +138,14 @@
         <script src="${ctx}/js/xheditor_lang/zh-cn.js"></script>
         <script src="${ctx}/js/xheditSelf.js"></script>
         <script type="text/javascript" src="${ctx}/js/bootbox.min.js"></script>
+<script>
+$("select[data-value]").each(function(){
+	var value= $(this).attr("data-value");
+	$(this).find("option[value='"+value+"']").attr("selected","selected");
+	
+})
+
+</script>
 <script type="text/javascript">
 $("form").validate();
 $("a.dialog").click(function(){
