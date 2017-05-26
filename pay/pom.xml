@@ -56,12 +56,7 @@
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>activity-api</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.me2me</groupId>
-                    <artifactId>cache-api</artifactId>
+                    <artifactId>pay-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
@@ -83,8 +78,8 @@
                             <target>${project.build.directory}</target>
                             <daemons>
                                 <daemon>
-                                    <id>app-activity-service</id>
-                                    <mainClass>com.me2me.activity.Bootstrap</mainClass>
+                                    <id>app-pay-service</id>
+                                    <mainClass>com.me2me.pay.Bootstrap</mainClass>
                                     <commandLineArguments>
                                         <commandLineArgument>start</commandLineArgument>
                                     </commandLineArguments>
@@ -123,13 +118,6 @@
                                     <jvmSettings>
                                         <initialMemorySize>512M</initialMemorySize>
                                         <maxMemorySize>512M</maxMemorySize>
-                                        <!--                            <systemProperties>
-                                                                            <systemProperty>java.security.policy=conf/policy.all</systemProperty>
-                                                                            <systemProperty>com.sun.management.jmxremote</systemProperty>
-                                                                            <systemProperty>com.sun.management.jmxremote.port=8999</systemProperty>
-                                                                            <systemProperty>com.sun.management.jmxremote.authenticate=false</systemProperty>
-                                                                            <systemProperty>com.sun.management.jmxremote.ssl=false</systemProperty>
-                                                                        </systemProperties>   -->
                                         <extraArguments>
                                             <extraArgument>-server</extraArgument>
                                         </extraArguments>
@@ -160,12 +148,7 @@
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>activity-api</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.me2me</groupId>
-                    <artifactId>cache-api</artifactId>
+                    <artifactId>pay-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
@@ -187,8 +170,8 @@
                             <target>${project.build.directory}</target>
                             <daemons>
                                 <daemon>
-                                    <id>app-activity-service</id>
-                                    <mainClass>com.me2me.activity.Bootstrap</mainClass>
+                                    <id>app-pay-service</id>
+                                    <mainClass>com.me2me.pay.Bootstrap</mainClass>
                                     <commandLineArguments>
                                         <commandLineArgument>start</commandLineArgument>
                                     </commandLineArguments>
@@ -227,13 +210,6 @@
                                     <jvmSettings>
                                         <initialMemorySize>512M</initialMemorySize>
                                         <maxMemorySize>512M</maxMemorySize>
-                                        <!--                            <systemProperties>
-                                                                            <systemProperty>java.security.policy=conf/policy.all</systemProperty>
-                                                                            <systemProperty>com.sun.management.jmxremote</systemProperty>
-                                                                            <systemProperty>com.sun.management.jmxremote.port=8999</systemProperty>
-                                                                            <systemProperty>com.sun.management.jmxremote.authenticate=false</systemProperty>
-                                                                            <systemProperty>com.sun.management.jmxremote.ssl=false</systemProperty>
-                                                                        </systemProperties>   -->
                                         <extraArguments>
                                             <extraArgument>-server</extraArgument>
                                         </extraArguments>
@@ -264,12 +240,7 @@
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>activity-api</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.me2me</groupId>
-                    <artifactId>cache-api</artifactId>
+                    <artifactId>pay-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
@@ -291,8 +262,8 @@
                             <target>${project.build.directory}</target>
                             <daemons>
                                 <daemon>
-                                    <id>app-activity-service</id>
-                                    <mainClass>com.me2me.activity.Bootstrap</mainClass>
+                                    <id>app-pay-service</id>
+                                    <mainClass>com.me2me.pay.Bootstrap</mainClass>
                                     <commandLineArguments>
                                         <commandLineArgument>start</commandLineArgument>
                                     </commandLineArguments>
@@ -331,13 +302,6 @@
                                     <jvmSettings>
                                         <initialMemorySize>1024M</initialMemorySize>
                                         <maxMemorySize>1024M</maxMemorySize>
-                                        <!--                            <systemProperties>
-                                                                            <systemProperty>java.security.policy=conf/policy.all</systemProperty>
-                                                                            <systemProperty>com.sun.management.jmxremote</systemProperty>
-                                                                            <systemProperty>com.sun.management.jmxremote.port=8999</systemProperty>
-                                                                            <systemProperty>com.sun.management.jmxremote.authenticate=false</systemProperty>
-                                                                            <systemProperty>com.sun.management.jmxremote.ssl=false</systemProperty>
-                                                                        </systemProperties>   -->
                                         <extraArguments>
                                             <extraArgument>-server</extraArgument>
                                         </extraArguments>

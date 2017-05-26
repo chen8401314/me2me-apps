@@ -1,6 +1,6 @@
-package com.me2me.activity.service;
+package com.me2me.pay.service;
 
-import com.me2me.activity.channel.PayStrategy;
+import com.me2me.pay.channel.PayStrategy;
 import com.me2me.common.web.Response;
 
 /**

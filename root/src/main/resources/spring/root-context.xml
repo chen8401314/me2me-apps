@@ -34,6 +34,7 @@
         <import resource="classpath:spring/sns-context.xml"/>
         <import resource="classpath:spring/cache-context.xml"/>
         <import resource="classpath:spring/kafka-context.xml"/>
+        <import resource="classpath:spring/pay-context.xml"/>
     </beans>
     <beans profile="product">
         <import resource="classpath:spring/root-dubbo-consumer.xml"/>

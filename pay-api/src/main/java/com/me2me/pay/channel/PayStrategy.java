@@ -1,4 +1,4 @@
-package com.me2me.activity.channel;
+package com.me2me.pay.channel;
 
 /**
  * Created by pc329 on 2017/5/15.

@@ -1,8 +1,6 @@
 package com.me2me.web;
 
-import com.me2me.activity.channel.AliPayStrategy;
-import com.me2me.activity.channel.WxPayStrategy;
-import com.me2me.activity.service.PayService;
+import com.me2me.pay.service.PayService;
 import com.me2me.common.web.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +19,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 @RequestMapping(value = "/api/pay")
 public class Payment extends BaseController {
 
-
     @Autowired
     private PayService payService;
-
-    @Autowired
-    private AliPayStrategy aliPayStrategy;
-
-    @Autowired
-    private WxPayStrategy wxPayStrategy;
 
     /**
      * 充值业务
@@ -37,12 +28,7 @@ public class Payment extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/recharge",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response recharge(int type){
-        if(type==0){
-            return payService.recharge(aliPayStrategy);
-        }else{
-            return payService.recharge(wxPayStrategy);
-        }
-
+    	return null;
     }
 
 

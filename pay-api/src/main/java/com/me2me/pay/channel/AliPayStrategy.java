@@ -1,4 +1,4 @@
-package com.me2me.activity.channel;
+package com.me2me.pay.channel;
 
 import org.springframework.stereotype.Component;
 
@@ -6,9 +6,10 @@ import org.springframework.stereotype.Component;
  * Created by pc329 on 2017/5/15.
  */
 @Component
-public class WxPayStrategy implements PayStrategy {
+public class AliPayStrategy implements PayStrategy {
+
     @Override
     public void pay() {
-        System.out.println("微信支付通道");
+        System.out.println("阿里支付通道");
     }
 }

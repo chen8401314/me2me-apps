@@ -30,6 +30,8 @@
     <dubbo:reference interface="com.me2me.kafka.service.KafkaService" id="kafkaService"/>
     
     <dubbo:reference interface="com.me2me.sms.service.SmsService" id="smsService"/>
+    
+    <dubbo:reference interface="com.me2me.activity.service.PayService" id="payService"/>
 
 	<dubbo:consumer check="false" />
 </beans>

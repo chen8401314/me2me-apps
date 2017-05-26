@@ -15,6 +15,7 @@ cp -r ./sms/target/jsw/app-sms-service $myPath
 cp -r ./monitor/target/jsw/app-monitor-service $myPath
 cp -r ./sns/target/jsw/app-sns-service $myPath
 cp -r ./kafka/target/jsw/app-kafka-service $myPath
+cp -r ./pay/target/jsw/app-pay-service $myPath
 
 echo '##############################################################'
 echo '#                 test build success                         #'

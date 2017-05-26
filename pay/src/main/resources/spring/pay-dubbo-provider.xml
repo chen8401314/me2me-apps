@@ -13,9 +13,9 @@
 
     <dubbo:protocol serialization="nativejava" name="dubbo" port="#{app.dubboPort}" threads="#{app.dubboThreads}" heartbeat="#{app.dubboHeartBeats}"/>
 
-    <dubbo:service interface="com.me2me.activity.service.ActivityService" ref="activityServiceImpl" retries="0" timeout="20000"/>
+    <dubbo:service interface="com.me2me.pay.service.PayService" ref="payServiceImpl" retries="0" timeout="20000"/>
 
     <import resource="mysql-context.xml"/>
 
-    <import resource="activity-context.xml"/>
+    <import resource="pay-context.xml"/>
 </beans>

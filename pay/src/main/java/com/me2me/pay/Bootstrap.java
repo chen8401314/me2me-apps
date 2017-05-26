@@ -1,4 +1,4 @@
-package com.me2me.activity;
+package com.me2me.pay;
 
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 

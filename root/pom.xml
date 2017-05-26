@@ -182,6 +182,11 @@
                     <artifactId>kafka-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>pay-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
             </dependencies>
             <build>
                 <filters>
@@ -255,6 +260,11 @@
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>kafka-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>pay-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
@@ -334,6 +344,11 @@
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>sms-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>pay-api</artifactId>
                     <version>${project.version}</version>
                 </dependency>
             </dependencies>
