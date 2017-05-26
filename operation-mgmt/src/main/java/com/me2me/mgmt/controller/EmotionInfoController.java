@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.me2me.common.page.PageBean;
@@ -18,7 +19,6 @@ import com.me2me.common.security.SecurityUtils;
 import com.me2me.content.model.EmotionPackDetail;
 import com.me2me.content.service.ContentService;
 import com.me2me.io.service.FileTransferService;
-import com.me2me.live.model.TeaseInfo;
 import com.me2me.live.model.Topic;
 import com.me2me.live.service.LiveService;
 import com.me2me.mgmt.services.LocalConfigService;
@@ -160,6 +160,14 @@ public class EmotionInfoController {
 		return "redirect:./list_emotion";
 	}
 	
-	
+	@RequestMapping(value = "/existsEmotionInfoByName")
+	@ResponseBody
+	public String existsEmotionInfoByName(EmotionInfo tpl,HttpServletRequest mrequest) throws Exception {
+			if(userService.existsEmotionInfoByName(tpl)){
+				return "1";
+			}else{
+				return "0";
+			}
+	}
 
 }

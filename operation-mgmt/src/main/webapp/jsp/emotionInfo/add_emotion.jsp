@@ -35,15 +35,36 @@
     	alert(errMsg);
     }
     function check(){
+    	if($("#id").val()==null || $("#id").val()==''){
     	if($("#file").val()==''){
     		alert("个人情绪王国封面图！");
     		return false;
+    	}
     	}
     	if($("#emotionpackid").val()==''){
     		alert("请选择表情！");
     		return false;
     	}
-       	$("#form1").submit();
+    	$.ajax({
+            cache: true,
+            type: "POST",
+            dataType :"json",
+            url:"./existsEmotionInfoByName",
+            data:$('#form1').serialize(),
+            async: true,
+            error: function(request) {
+                alert('服务器出错'); 
+            },
+            success: function(data) {
+            	  if(data=='0'){
+                  	$("#form1").submit();
+                      }else{
+                    	alert("情绪名重复");
+                        }
+            }
+        });
+    	
+       
     }
     function packSelect(id,title,image){
     	$("#emotionpackid").val(id);
@@ -72,7 +93,7 @@
             <!--main content start-->
             <section id="main-content">
             	<form id="form1" action="./doSaveEmotion" method="POST"  enctype="multipart/form-data">
-            		<input type="hidden" name="id" value="${item.id}"/>
+            		<input type="hidden" name="id" value="${item.id}" id="id"/>
                 <section class="wrapper">
                     <!-- page start-->
                     <div class="row">

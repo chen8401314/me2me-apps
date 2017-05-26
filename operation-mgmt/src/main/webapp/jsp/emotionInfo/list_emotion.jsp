@@ -94,7 +94,7 @@
 													</td>
 													<td>
 														<a class="btn btn-warning btn-xs " href="./modify_emotion?id=${item.id}">编辑</a>
-														<a class="btn btn-danger btn-xs " href="./delete_tease?id=${item.id}" onclick="return confirm('确认删除吗？')">删除</a>
+														<a class="btn btn-danger btn-xs " href="./delete_emotion?id=${item.id}" onclick="return confirm('确认删除吗？')">删除</a>
 													</td>
 												</tr>
 											</c:forEach>

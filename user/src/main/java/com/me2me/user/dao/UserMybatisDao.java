@@ -1305,7 +1305,7 @@ public class UserMybatisDao {
     
 	public List<EmotionInfo> getEmotionInfoList() {
 		EmotionInfoExample example = new EmotionInfoExample();
-		example.setOrderByClause("id desc");
+		example.setOrderByClause(" id desc ");
 		List<Integer> vList = new ArrayList<Integer>();
 		vList.add(1);
 		vList.add(2);
@@ -1324,7 +1324,16 @@ public class UserMybatisDao {
 	public Integer addEmotionInfo(EmotionInfo emotionInfo) {
 		return emotionInfoMapper.insertSelective(emotionInfo);
 	}
-	
+	public boolean existsEmotionInfoByName(EmotionInfo emotionInfo) {
+		EmotionInfoExample example = new EmotionInfoExample();
+		EmotionInfoExample.Criteria criteria  = example.createCriteria();
+		criteria.andEmotionnameEqualTo(emotionInfo.getEmotionname());
+		if(emotionInfo.getId()!=null){
+			criteria.andIdNotEqualTo(emotionInfo.getId());
+		}
+		int count = emotionInfoMapper.countByExample(example);
+		return count>0;
+	}
 	public EmotionInfo getEmotionInfoByValue(int happyValue,int freeValue) {
 		EmotionInfoExample example = new EmotionInfoExample();
 		EmotionInfoExample.Criteria criteria  = example.createCriteria();
