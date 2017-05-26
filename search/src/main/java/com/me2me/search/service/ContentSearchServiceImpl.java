@@ -383,7 +383,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 					
 					List<IndexQuery> indexList = new ArrayList<>();
 					for (UserEsMapping data : users) {
-						log.info("add user index. user:{},uid:{}",data.getNick_name(),data.getUid());
+						log.debug("add user index. user:{},uid:{}",data.getNick_name(),data.getUid());
 						IndexQuery query = new IndexQuery();
 						String key = data.getUid()+"";
 						data.setTags(hobbyMap.get(data.getUid()));

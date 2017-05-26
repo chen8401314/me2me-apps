@@ -762,6 +762,7 @@ public class SearchServiceImpl implements SearchService {
 				Date now = new Date();
 				for(EmotionRecord er : erList){
 					userEmotion = new RecommendListDto.UserEmotion();
+					userEmotion.setId(er.getId());
 					userEmotion.setCreateTime(er.getCreateTime().getTime());
 					long timeInterval = (now.getTime()-er.getCreateTime().getTime())/1000;
 					userEmotion.setTimeInterval(timeInterval);

@@ -53,6 +53,7 @@ public class RecommendListDto implements BaseEntity {
 	public static class UserEmotion implements BaseEntity{
 		private static final long serialVersionUID = -7182601989946502112L;
 		
+		private long id;
 		private String emotionName;
 		private int happyValue;
 		private int freeValue;
