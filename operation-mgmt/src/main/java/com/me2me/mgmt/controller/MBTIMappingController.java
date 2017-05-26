@@ -53,6 +53,7 @@ public class MBTIMappingController {
 			}
 			return "redirect:./query";
 		}catch(Exception e){
+			e.printStackTrace();
 			request.setAttribute("item",tpl);
 			return add(request);
 		}
