@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +18,6 @@ import com.me2me.cache.service.CacheService;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Specification;
 import com.me2me.user.cache.EmotionSummaryModel;
-import com.me2me.user.model.EmotionRecord;
 import com.me2me.user.service.UserService;
 
 @Component
@@ -60,12 +60,11 @@ public class EmotionSummaryPushTask {
 			cal2.add(Calendar.DATE, m * 7);
 			cal2.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
 			sunday = sdf2.format(cal2.getTime());
-			Date sundayDate = sdf2.parse(sunday);
 			String message = "上周情绪总结";
 			JsonObject jsonObject = null;
-			List<EmotionRecord> list = userService.getEmotionRecordByStartAndEnd(mondayDate, sundayDate);
-			for (EmotionRecord emotionRecord : list) {
-				long uid = emotionRecord.getUid();
+			List<Map<String,Object>> list = userService.getEmotionRecordByStartAndEnd(monday, sunday);
+			for (Map<String,Object> map : list) {
+				long uid = Long.valueOf(map.get("uid").toString());
 				EmotionSummaryModel EmotionSummaryModel = new EmotionSummaryModel(sdf.format(mondayDate), uid, "0");
 				String isSummaryStr = cacheService.hGet(EmotionSummaryModel.getKey(), EmotionSummaryModel.getField());
 				if (StringUtils.isEmpty(isSummaryStr)) {

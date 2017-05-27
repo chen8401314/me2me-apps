@@ -446,7 +446,7 @@ public interface UserService {
  	 
  	 Response getSummaryEmotionInfo(long uid,long time);
  	 
- 	 List<EmotionRecord> getEmotionRecordByStartAndEnd(Date start,Date end);
+ 	 List<Map<String,Object>> getEmotionRecordByStartAndEnd(String start,String end);
  	 
  	 boolean existsEmotionInfoByName(EmotionInfo emotionInfo);
 }

@@ -3824,8 +3824,8 @@ public class UserServiceImpl implements UserService {
 	
 	}
 	@Override
-	public List<EmotionRecord> getEmotionRecordByStartAndEnd(Date start,Date end){
-		return userMybatisDao.getEmotionRecordByStartAndEnd(start, end);
+	public List<Map<String,Object>> getEmotionRecordByStartAndEnd(String start,String end){
+		return userInitJdbcDao.getEmotionRecordByStartAndEnd(start, end);
 	}
 	@Override
 	public boolean existsEmotionInfoByName(EmotionInfo emotionInfo){

@@ -1382,11 +1382,5 @@ public class UserMybatisDao {
 		return conut;
 	}
 	
-	public List<EmotionRecord> getEmotionRecordByStartAndEnd(Date start,Date end) {
-		EmotionRecordExample example = new EmotionRecordExample();
-		EmotionRecordExample.Criteria criteria  = example.createCriteria();
-		criteria.andCreateTimeBetween(start, end);
-		return emotionRecordMapper.selectByExample(example);
-	}
 	
 }

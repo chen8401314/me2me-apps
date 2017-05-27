@@ -248,4 +248,8 @@ public class UserInitJdbcDao extends BaseJdbcDao {
         		+ "   GROUP BY emotionId";
         return super.query(sql);
     }
+    public List<Map<String, Object>> getEmotionRecordByStartAndEnd(String dateStart,String dateEnd) {
+        String sql = "SELECT uid FROM emotion_record WHERE create_time >='"+dateStart+"' AND create_time<='"+dateEnd+"' GROUP BY uid ";
+        return super.query(sql);
+    }
 }
