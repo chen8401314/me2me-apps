@@ -3795,7 +3795,7 @@ public class UserServiceImpl implements UserService {
 			  SummaryEmotionInfoDto.EmotionData  emotionData = dto.getEmotionData().get(maxIndex);
 			  emotionData.setPercentage(emotionData.getPercentage()-temp);
 		  }
-		  SimpleDateFormat dsdf = new SimpleDateFormat("MM月dd日");
+		  SimpleDateFormat dsdf = new SimpleDateFormat("M月dd日");
 		  String dateStr = dsdf.format(mondayDate)+"-"+dsdf.format(sundayDate);
 		  dto.setDateStr(dateStr);
 		  

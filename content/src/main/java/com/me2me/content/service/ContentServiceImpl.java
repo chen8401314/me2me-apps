@@ -5742,6 +5742,10 @@ private void localJpush(long toUid){
 		  sunday = sdf2.format(cal2.getTime());
 		  Date sundayDate = sdf2.parse(sunday);
 		  
+		  
+		  SimpleDateFormat dsdf = new SimpleDateFormat("M月dd日");
+		  String dateStr = dsdf.format(mondayDate)+"-"+dsdf.format(sundayDate);
+		  lastEmotionInfoDto.setDateStr(dateStr);
 		  //判断是否周总结
 		  if(userService.exsitEmotionRecord(uid, mondayDate, sundayDate)){
 			  EmotionSummaryModel EmotionSummaryModel =  new EmotionSummaryModel(sdf.format(mondayDate),uid, "0"); 

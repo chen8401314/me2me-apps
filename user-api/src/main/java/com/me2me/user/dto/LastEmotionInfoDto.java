@@ -34,6 +34,8 @@ public class LastEmotionInfoDto implements BaseEntity {
      
      private Date createTime;
      
+     private String dateStr;
+     
      private EmotionPack emotionPack;
         
     
