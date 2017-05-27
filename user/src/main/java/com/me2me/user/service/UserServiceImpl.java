@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -67,7 +68,6 @@ import com.me2me.user.dto.FindEncryptDto;
 import com.me2me.user.dto.FollowDto;
 import com.me2me.user.dto.FollowParamsDto;
 import com.me2me.user.dto.GagDto;
-import com.me2me.user.dto.LastEmotionInfoDto;
 import com.me2me.user.dto.LoginSuccessDto;
 import com.me2me.user.dto.MBTIDto;
 import com.me2me.user.dto.ModifyEncryptDto;
@@ -3795,6 +3795,19 @@ public class UserServiceImpl implements UserService {
 			  SummaryEmotionInfoDto.EmotionData  emotionData = dto.getEmotionData().get(maxIndex);
 			  emotionData.setPercentage(emotionData.getPercentage()-temp);
 		  }
+		  //按百分比数值排序
+		    Collections.sort(dto.getEmotionData(), new Comparator<Object>() {
+			      @Override
+			      public int compare(Object o1, Object o2) {
+			    	  int comp1 = ((SummaryEmotionInfoDto.EmotionData)o1).getPercentage();
+			    	  int comp2 = ((SummaryEmotionInfoDto.EmotionData)o2).getPercentage();
+			    	  if(comp1>comp2){
+			    		  return -1;
+			    	  }else{
+			    		  return 1;
+			    	  }
+			      }
+			    });
 		  SimpleDateFormat dsdf = new SimpleDateFormat("M月dd日");
 		  String dateStr = dsdf.format(mondayDate)+"-"+dsdf.format(sundayDate);
 		  dto.setDateStr(dateStr);
