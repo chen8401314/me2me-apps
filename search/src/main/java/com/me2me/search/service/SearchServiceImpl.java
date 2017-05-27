@@ -700,6 +700,7 @@ public class SearchServiceImpl implements SearchService {
 		if(page == 1){//第一页需要额外返回用户画像，用户推荐
 			//查用户画像信息
 			RecommendListDto.RecPerson person = new RecommendListDto.RecPerson();
+			indexData.setPersona(person);
 			person.setUid(uid);
 			person.setNickName(profile.getNickName());
 			person.setAvatar(Constant.QINIU_DOMAIN + "/" + profile.getAvatar());
@@ -780,7 +781,7 @@ public class SearchServiceImpl implements SearchService {
 							emotionPackage.setEmojiType(1);//默认大表情
 							emotionPackage.setExtra((String)bigEmotion.get("extra"));
 							emotionPackage.setH((Integer)bigEmotion.get("h"));
-							emotionPackage.setId((Long)bigEmotion.get("id"));
+							emotionPackage.setId((Integer)bigEmotion.get("id"));
 							emotionPackage.setImage(Constant.QINIU_DOMAIN + "/" + (String)bigEmotion.get("image"));
 							emotionPackage.setThumb(Constant.QINIU_DOMAIN + "/" + (String)bigEmotion.get("thumb"));
 							emotionPackage.setThumb_h((Integer)bigEmotion.get("thumb_h"));
