@@ -393,4 +393,6 @@ public interface ContentService{
 	Response getEmotionInfoByValue(int happyValue,int freeValue) ;
 	
 	Response getLastEmotionInfo(long uid);
+	
+	List<EmotionPackDetail> getEmotionPackDetailBig();
 }

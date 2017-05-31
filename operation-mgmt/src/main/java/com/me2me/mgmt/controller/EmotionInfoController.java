@@ -102,13 +102,8 @@ public class EmotionInfoController {
 	@RequestMapping(value = "/add_emotion")
 	@SystemControllerLog(description = "添加情绪")
 	public String add_emotion(HttpServletRequest request,DatatablePage dpage) throws Exception {
-
-		Map<String,Object> param = new HashMap<>();
-		param.put("packId", 1);
-		PageBean page = dpage.toPageBean();
-		page.setPageSize(99999);
-		PageBean<EmotionPackDetail> list =contentService.getEmotionPackDetailPage(page, param);
-		request.setAttribute("dataList2",list.getDataList());
+		List<EmotionPackDetail> list =contentService.getEmotionPackDetailBig();
+		request.setAttribute("dataList2",list);
 		return "emotionInfo/add_emotion";
 	}
 	
@@ -120,12 +115,8 @@ public class EmotionInfoController {
 		request.setAttribute("item",item);
 	    EmotionPackDetail epd  = contentService.getEmotionPackDetailByKey(Integer.valueOf(item.getEmotionpackid()+"") );
 		request.setAttribute("epd",epd);
-		Map<String,Object> param = new HashMap<>();
-		param.put("packId", 1);
-		PageBean page = dpage.toPageBean();
-		page.setPageSize(99999);
-		PageBean<EmotionPackDetail> list =contentService.getEmotionPackDetailPage(page, param);
-		request.setAttribute("dataList2",list.getDataList());
+		List<EmotionPackDetail> list =contentService.getEmotionPackDetailBig();
+		request.setAttribute("dataList2",list);
 		Topic topic = liveService.getTopicById(item.getTopicid());
 		request.setAttribute("topicTitle",topic.getTitle());
 		return "emotionInfo/add_emotion";

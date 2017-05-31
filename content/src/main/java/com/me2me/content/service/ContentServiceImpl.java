@@ -5566,6 +5566,26 @@ private void localJpush(long toUid){
 		return page;
 	}
 
+	@Override
+	public List<EmotionPackDetail> getEmotionPackDetailBig() {
+		List<EmotionPackDetail> list = new ArrayList<EmotionPackDetail>();
+		EmotionPackExample example = new EmotionPackExample();
+		example.createCriteria().andEmojiTypeEqualTo(1);
+		List<EmotionPack> packList=  emotionPackMapper.selectByExample(example);
+		EmotionPack emotionPack = new EmotionPack();
+		List<Integer> ilist = new ArrayList<Integer>();
+		if(packList.size()>0){
+			for (int i = 0; i < packList.size(); i++) {
+				ilist.add(packList.get(i).getId());
+			}
+		}else{
+			return list;
+		}
+		EmotionPackDetailExample example1 = new EmotionPackDetailExample();
+		example1.createCriteria().andPackIdIn(ilist);
+		list=  emotionPackDetailMapper.selectByExample(example1);
+		return list;
+	}
 
 	@Override
 	public Response emojiPackageQuery() {
