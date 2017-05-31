@@ -37,4 +37,5 @@ public class LoginSuccessDto implements BaseEntity {
 
     private int isClientLogin;
 
+    private int isNew;
 }
