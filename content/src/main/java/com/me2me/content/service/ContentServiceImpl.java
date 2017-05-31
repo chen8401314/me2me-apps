@@ -5751,12 +5751,12 @@ private void localJpush(long toUid){
 			  EmotionSummaryModel EmotionSummaryModel =  new EmotionSummaryModel(sdf.format(mondayDate),uid, "0"); 
           	String isSummaryStr = cacheService.hGet(EmotionSummaryModel.getKey(), EmotionSummaryModel.getField());
           	  if (!StringUtils.isEmpty(isSummaryStr)) {
-          		lastEmotionInfoDto.setIsSummary(1);
+          		lastEmotionInfoDto.setIsSummary(0);
                 } else {
-                	lastEmotionInfoDto.setIsSummary(0);
+                	lastEmotionInfoDto.setIsSummary(1);
                 }
 		  }else{
-			  lastEmotionInfoDto.setIsSummary(1);
+			  lastEmotionInfoDto.setIsSummary(0);
 		  }
 		  EmotionRecord emotionRecord =   userService.getLastEmotionRecord(uid);
 		  if(emotionRecord==null){
