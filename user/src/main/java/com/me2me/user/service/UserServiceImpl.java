@@ -2231,6 +2231,7 @@ public class UserServiceImpl implements UserService {
         loginSuccessDto.setGender(userProfile1.getGender());
         loginSuccessDto.setToken(userToken.getToken());
         loginSuccessDto.setIsClientLogin(userProfile1.getIsClientLogin());
+        loginSuccessDto.setIsNew(1);
 
         if(thirdPartSignUpDto.getH5type() ==1) {//h5微信注册openid不存数据库
             ThirdPartUser thirdPartUser = new ThirdPartUser();
