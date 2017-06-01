@@ -31,7 +31,7 @@ public class TestStatTask {
 	@Autowired
 	private ContentService contentService;
 	
-	@Scheduled(cron="0 13 18 * * ?")
+//	@Scheduled(cron="0 13 18 * * ?")
 	public void doTask(){
 		logger.info("数据导出任务开始...");
 		long start = System.currentTimeMillis();
