@@ -60,7 +60,7 @@ public class EmotionSummaryPushTask {
 			cal2.add(Calendar.DATE, m * 7);
 			cal2.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
 			sunday = sdf2.format(cal2.getTime());
-			String message = "上周情绪总结";
+			String message = "一周结束了，已为你总结了一周情绪，来回顾下你上周的情绪变化吧。";
 			JsonObject jsonObject = null;
 			List<Map<String,Object>> list = userService.getEmotionRecordByStartAndEnd(monday, sunday);
 			for (Map<String,Object> map : list) {
