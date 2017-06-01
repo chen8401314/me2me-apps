@@ -70,6 +70,7 @@ public class EmotionInfoController {
 			ee.setHappyMax(emotionInfo.getHappymax());
 			ee.setFreeMin(emotionInfo.getFreemin());
 			ee.setFreeMax(emotionInfo.getFreemax());
+			ee.setStatus(emotionInfo.getStatus());
 			if(emotionInfo.getTopicid()!=null){
 			ee.setTopicId(emotionInfo.getTopicid());
 			Topic topic =  liveService.getTopicById(emotionInfo.getTopicid());
@@ -152,7 +153,26 @@ public class EmotionInfoController {
 		userService.updateEmotionInfoByKey(emotionInfo);
 		return "redirect:./list_emotion";
 	}
-	
+	@RequestMapping(value = "/up_emotion")
+	@SystemControllerLog(description = "上架情绪")
+	public String upEmotion(HttpServletRequest request) throws Exception {
+		String id = request.getParameter("id");
+		EmotionInfo emotionInfo  = new EmotionInfo();
+		emotionInfo.setId(Long.valueOf(id));
+		emotionInfo.setStatus(1);
+		userService.updateEmotionInfoByKey(emotionInfo);
+		return "redirect:./list_emotion";
+	}
+	@RequestMapping(value = "/off_emotion")
+	@SystemControllerLog(description = "下架情绪")
+	public String offEmotion(HttpServletRequest request) throws Exception {
+		String id = request.getParameter("id");
+		EmotionInfo emotionInfo  = new EmotionInfo();
+		emotionInfo.setId(Long.valueOf(id));
+		emotionInfo.setStatus(2);
+		userService.updateEmotionInfoByKey(emotionInfo);
+		return "redirect:./list_emotion";
+	}
 	@RequestMapping(value = "/existsEmotionInfoByName")
 	@ResponseBody
 	public String existsEmotionInfoByName(EmotionInfo tpl,HttpServletRequest mrequest) throws Exception {

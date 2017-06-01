@@ -44,6 +44,8 @@ public class EmotionInfoListDto implements BaseEntity {
         private long topicId;
         
         private String topicTitle;
+        
+        private int status;
 
         private EmotionPack emotionPack;
       

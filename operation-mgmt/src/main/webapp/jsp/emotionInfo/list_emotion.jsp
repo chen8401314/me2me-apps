@@ -94,6 +94,12 @@
 													</td>
 													<td>
 														<a class="btn btn-warning btn-xs " href="./modify_emotion?id=${item.id}">编辑</a>
+														<c:if test="${item.status==1 }">
+                                                        <a class="btn btn-info btn-xs " href="./off_emotion?id=${item.id}" onclick="return confirm('确认下架吗？')">下架</a>
+                                                        </c:if>
+                                                        <c:if test="${item.status==2 }">
+                                                        <a class="btn btn-primary btn-xs " href="./up_emotion?id=${item.id}">上架</a>
+                                                        </c:if>
 														<a class="btn btn-danger btn-xs " href="./delete_emotion?id=${item.id}" onclick="return confirm('确认删除吗？')">删除</a>
 													</td>
 												</tr>

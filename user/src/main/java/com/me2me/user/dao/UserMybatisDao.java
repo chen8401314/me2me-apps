@@ -1328,6 +1328,7 @@ public class UserMybatisDao {
 		EmotionInfoExample example = new EmotionInfoExample();
 		EmotionInfoExample.Criteria criteria  = example.createCriteria();
 		criteria.andEmotionnameEqualTo(emotionInfo.getEmotionname());
+		criteria.andStatusEqualTo(1);
 		if(emotionInfo.getId()!=null){
 			criteria.andIdNotEqualTo(emotionInfo.getId());
 		}
@@ -1341,6 +1342,7 @@ public class UserMybatisDao {
 		criteria.andHappyminLessThanOrEqualTo(happyValue);
 		criteria.andFreemaxGreaterThanOrEqualTo(freeValue);
 		criteria.andFreeminLessThanOrEqualTo(freeValue);
+		criteria.andStatusEqualTo(1);
 		List<EmotionInfo> list=  emotionInfoMapper.selectByExample(example);
 		if(list.size()>0){
 			return list.get(0);
