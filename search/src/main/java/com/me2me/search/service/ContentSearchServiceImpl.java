@@ -630,6 +630,8 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			if(!StringUtils.isEmpty(emotions)){
 				bq.should(QueryBuilders.queryStringQuery(tags).field("last3userEmotionList").boost(3f));
 			}
+			
+			bq.must(QueryBuilders.matchAllQuery());
 		}
 		
 		SearchQuery sq = new NativeSearchQuery(bq);

@@ -717,7 +717,7 @@ public class SearchServiceImpl implements SearchService {
 				person.setSexOrientation(profile.getLikeGender());
 			}
 			person.setCompletion(completion);
-			person.setMbit(CommonUtils.toUsefulString(profile.getMbti()));
+			person.setMbti(CommonUtils.toUsefulString(profile.getMbti()));
 			
 			EmotionInfo firstUserEmotionInfo = null;
 			List<EmotionRecord> erList = userService.getUserEmotionRecords(uid, 20);

@@ -34,7 +34,7 @@ public class RecommendListDto implements BaseEntity {
 		private int ageGroup;
 		private int career;
 		private String hobby;
-		private String mbit;
+		private String mbti;
 		private List<UserEmotion> emotionList = Lists.newArrayList();
 	}
 	
