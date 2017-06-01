@@ -73,7 +73,7 @@
 										<tbody>
 											<c:forEach items="${data.emotionInfoData}" var="item" varStatus="status">
 												<tr class="gradeX">
-													<td>${item.id}</td>
+													<td>${status.index + 1}</td>
 													<td>
 														${item.emotionName }
 													</td>
