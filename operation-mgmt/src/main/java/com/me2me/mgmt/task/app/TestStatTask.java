@@ -31,7 +31,7 @@ public class TestStatTask {
 	@Autowired
 	private ContentService contentService;
 	
-//	@Scheduled(cron="0 40 16 * * ?")
+	@Scheduled(cron="0 13 18 * * ?")
 	public void doTask(){
 		logger.info("数据导出任务开始...");
 		long start = System.currentTimeMillis();
@@ -162,6 +162,7 @@ public class TestStatTask {
 		Map<String, Object> guestCount = null;
 		JSONObject obj = null;
 		String lastDayStr = null;
+		Map<String, Object> guestDayCount = null;
 		int c = 0;
 		for(Map<String, Object> m : topicList){
 			item = new DataItem();
@@ -265,7 +266,15 @@ public class TestStatTask {
 				item.setTeaseCount(0);
 				item.setWeixinReviewCount(0);
 			}
-			item.setTotalReviewDayCount(this.getGuestDayCount((Long)m.get("topic_id")));
+			guestDayCount = this.getGuestDayCount((Long)m.get("topic_id"));
+			if(null != guestDayCount){
+				item.setTotalReviewDayCount(((Long)guestDayCount.get("reviewDayCount")).intValue());
+				item.setReviewUserCount(((Long)guestDayCount.get("reviewUserCount")).intValue());
+			}else{
+				item.setTotalReviewDayCount(0);
+				item.setReviewUserCount(0);
+			}
+			
 			guestTextList = this.getTextFragmentByTopicId((Long)m.get("topic_id"), false);
 			int guestTextWordCount = 0;
 			if(null != guestTextList && guestTextList.size() > 0){
@@ -284,12 +293,12 @@ public class TestStatTask {
 		logger.info("统计完成，共统计出["+result.size()+"]个内容");
 		
 		logger.info("开始写文件");
-//		String filePath = "/root/tmp/data.csv";
-		String filePath = "d:\\test\\data.csv";
+		String filePath = "/root/tmp/data.csv";
+//		String filePath = "d:\\test\\data.csv";
 		BufferedWriter bw = null;
 		try{
 			bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(filePath), "GBK"));
-			bw.append("王国名,王国ID,用户名,用户ID,是否大v,建立时间,建立天数,实际阅读量,虚拟阅读量,订阅数,更新文字(字数),更新文字(条数),更新视频(条数),更新视频(时长),更新语音(条数),更新语音(时长),更新图片(条数),更新大表情,更新中号表情,更新逗一逗,总更新天数,最后一次更新到5.31号间隔的天数,评论(条数),评论(字数),评论足迹(条数),逗一逗,评论天数,APP外回复数\n");
+			bw.append("王国名,王国ID,用户名,用户ID,是否大v,建立时间,建立天数,实际阅读量,虚拟阅读量,订阅数,更新文字(字数),更新文字(条数),更新视频(条数),更新视频(时长),更新语音(条数),更新语音(时长),更新图片(条数),更新大表情,更新中号表情,更新逗一逗,总更新天数,最后一次更新到5.31号间隔的天数,评论(条数),评论(字数),评论足迹(条数),逗一逗,评论天数,APP外回复数,评论用户数\n");
 			for(DataItem d : result){
 				bw.append(genString(d.getTopicName())).append(",").append(genString(String.valueOf(d.getTopicId()))).append(",");
 				bw.append(genString(d.getKingName())).append(",").append(genString(String.valueOf(d.getKingUid()))).append(",");
@@ -304,7 +313,8 @@ public class TestStatTask {
 				bw.append(genString(String.valueOf(d.getCoreTotalDayCount()))).append(",").append(genString(String.valueOf(d.getCoreLastDayCount()))).append(",");
 				bw.append(genString(String.valueOf(d.getReviewCount()))).append(",").append(genString(String.valueOf(d.getReviewWordCount()))).append(",");
 				bw.append(genString(String.valueOf(d.getFootCount()))).append(",").append(genString(String.valueOf(d.getTeaseCount()))).append(",");
-				bw.append(genString(String.valueOf(d.getTotalReviewDayCount()))).append(",").append(genString(String.valueOf(d.getWeixinReviewCount())));
+				bw.append(genString(String.valueOf(d.getTotalReviewDayCount()))).append(",").append(genString(String.valueOf(d.getWeixinReviewCount()))).append(",");
+				bw.append(genString(String.valueOf(d.getReviewUserCount())));
 				bw.append("\n");
 			}
 			bw.flush();
@@ -352,6 +362,7 @@ public class TestStatTask {
 		private int TeaseCount;
 		private int totalReviewDayCount;
 		private int weixinReviewCount;
+		private int reviewUserCount;
 	}
 	
 	private String genString(String str){
@@ -377,10 +388,11 @@ public class TestStatTask {
 		return null;
 	}
 	
-	private int getGuestDayCount(long topicId){
+	private Map<String, Object> getGuestDayCount(long topicId){
 		StringBuilder sb = new StringBuilder();
-		sb.append("select count(DISTINCT m.datestr) as reviewDayCount");
-		sb.append(" from (select DATE_FORMAT(f.create_time,'%Y%m%d') as datestr");
+		sb.append("select count(DISTINCT m.datestr) as reviewDayCount,");
+		sb.append("count(DISTINCT m.uid) as reviewUserCount");
+		sb.append(" from (select DATE_FORMAT(f.create_time,'%Y%m%d') as datestr, f.uid");
 		sb.append(" from topic_fragment f,topic t where f.topic_id=t.id");
 		sb.append(" and f.status=1 and f.topic_id=").append(topicId);
 		sb.append(" and f.type not in (0,3,11,12,13,15,52,55)");
@@ -388,10 +400,9 @@ public class TestStatTask {
 		
 		List<Map<String, Object>> list = contentService.queryEvery(sb.toString());
 		if(null != list && list.size() > 0){
-			Map<String, Object> c = list.get(0);
-			return ((Long)c.get("reviewDayCount")).intValue();
+			return list.get(0);
 		}
-		return 0;
+		return null;
 	}
 	
 	private Map<String, Object> getCoreCount(long topicId){
