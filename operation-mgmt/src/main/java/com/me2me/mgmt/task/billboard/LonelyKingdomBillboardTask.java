@@ -42,7 +42,7 @@ public class LonelyKingdomBillboardTask {
 	private void execTask(){
 		StringBuilder sb = new StringBuilder();
 		sb.append("select m.topic_id,POW(m.ucount,2)-if(m.rcount>0,POW(m.rcount,2),0) as sinceId");
-		sb.append(" from content c,(select f.topic_id,");
+		sb.append(" from content c  LEFT JOIN topic t ON c.forward_cid = t.id,(select f.topic_id,");
 		sb.append("count(if(f.type in (0,11,12,13,15,52,55),TRUE,NULL)) as ucount,");
 		sb.append("count(if(f.type in (0,11,12,13,15,52,55),NULL,TRUE)) as rcount");
 		sb.append(" from topic_fragment f where f.status=1");
@@ -50,6 +50,7 @@ public class LonelyKingdomBillboardTask {
 		sb.append(" group by f.topic_id) m");
 		sb.append(" where c.forward_cid=m.topic_id and c.type=3");
 		sb.append(" and c.read_count_dummy>150 and m.ucount>m.rcount");
+		sb.append(" AND t.sub_type <>1 ");
 		sb.append(" order by sinceId desc limit 100");
 
 		List<Map<String, Object>> searchList = contentService.queryEvery(sb.toString());

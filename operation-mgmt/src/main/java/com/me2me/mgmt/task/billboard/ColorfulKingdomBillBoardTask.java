@@ -44,7 +44,7 @@ public class ColorfulKingdomBillBoardTask {
 		sb.append("select m.topic_id,if(m.textCount>0,POW(m.textCount,0.8),1)");
 		sb.append("*if(m.imageCount>0,POW(m.imageCount,1.1),1)*if(m.audioCount>0,POW(m.audioCount,1.5),1)");
 		sb.append("*if(m.vedioCount>0,POW(m.vedioCount,1.5),1) as sinceId");
-		sb.append(" from content c,(select f.topic_id,");
+		sb.append(" from content c LEFT JOIN topic t ON c.forward_cid = t.id,(select f.topic_id,");
 		sb.append("count(if(f.type=0 and f.content_type=0, TRUE, NULL)) as textCount,");
 		sb.append("count(if(f.type=0 and f.content_type=1, TRUE, NULL)) as imageCount,");
 		sb.append("count(if(f.type=12, TRUE, NULL)) as vedioCount,");
@@ -55,6 +55,7 @@ public class ColorfulKingdomBillBoardTask {
 		sb.append(" group by f.topic_id) m");
 		sb.append(" where c.forward_cid=m.topic_id and c.type=3");
 		sb.append(" and c.status=0 and c.read_count_dummy>150");
+		sb.append(" AND t.sub_type <>1 ");
 		sb.append(" order by sinceId desc limit 100");
 		
 		List<Map<String, Object>> searchList = contentService.queryEvery(sb.toString());
