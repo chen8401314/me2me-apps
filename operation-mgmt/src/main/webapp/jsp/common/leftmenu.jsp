@@ -147,47 +147,14 @@ String sub = request.getParameter("s");
             <li class="sub-menu">
                 <a href="javascript:;" <%if("12".equals(tab)){ %>class="active"<%} %>>
                     <i class="fa fa-bar-chart-o"></i>
-                    <span>标签管理</span>
+                    <span>素材管理</span>
                 </a>
                 <ul class="sub">
                 	<li <%if("12_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/tag/query">标签管理</a></li>
-                </ul>
-            </li>
-             <li class="sub-menu">
-                <a href="javascript:;" <%if("13".equals(tab)){ %>class="active"<%} %>>
-                    <i class="fa fa-bar-chart-o"></i>
-                    <span>表情包管理</span>
-                </a>
-                <ul class="sub">
-                	<li <%if("13_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/emotion/list_pack">表情包管理</a></li>
-                </ul>
-            </li>
-               <li class="sub-menu">
-                <a href="javascript:;" <%if("14".equals(tab)){ %>class="active"<%} %>>
-                    <i class="fa fa-bar-chart-o"></i>
-                    <span>逗一逗管理</span>
-                </a>
-                <ul class="sub">
-                	<li <%if("14_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/tease/list_tease">逗一逗管理</a></li>
-                </ul>
-            </li>
-             <li class="sub-menu">
-                <a href="javascript:;" <%if("15".equals(tab)){ %>class="active"<%} %>>
-                    <i class="fa fa-bar-chart-o"></i>
-                    <span>MBTI王国映射</span>
-                </a>
-                <ul class="sub">
-                	<li <%if("15_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/mbtiMapping/query">MBTI王国映射管理</a></li>
-                </ul>
-            </li>
-            
-              <li class="sub-menu">
-                <a href="javascript:;" <%if("16".equals(tab)){ %>class="active"<%} %>>
-                    <i class="fa fa-bar-chart-o"></i>
-                    <span>情绪管理</span>
-                </a>
-                <ul class="sub">
-                	<li <%if("16_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/emotionInfo/list_emotion">情绪管理</a></li>
+                	<li <%if("12_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/emotion/list_pack">表情包管理</a></li>
+                	<li <%if("12_3".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/tease/list_tease">逗一逗管理</a></li>
+                	<li <%if("12_4".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/mbtiMapping/query">MBTI王国映射管理</a></li>
+                	<li <%if("12_5".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/emotionInfo/list_emotion">情绪管理</a></li>
                 </ul>
             </li>
         </ul>

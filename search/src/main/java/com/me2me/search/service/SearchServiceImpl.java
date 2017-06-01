@@ -763,7 +763,8 @@ public class SearchServiceImpl implements SearchService {
 				Date now = new Date();
 				for(EmotionRecord er : erList){
 					userEmotion = new RecommendListDto.UserEmotion();
-					userEmotion.setId(er.getId());
+//					userEmotion.setId(er.getId());
+					userEmotion.setRid(er.getId());//表情设定记录ID
 					userEmotion.setCreateTime(er.getCreateTime().getTime());
 					long timeInterval = (now.getTime()-er.getCreateTime().getTime())/1000;
 					userEmotion.setTimeInterval(timeInterval);
@@ -773,6 +774,7 @@ public class SearchServiceImpl implements SearchService {
 					emotionInfo = emotionInfoMap.get(er.getEmotionid().toString());
 					firstUserEmotionInfo = emotionInfo;
 					if(null != emotionInfo){
+						userEmotion.setId(emotionInfo.getId());//坐标表情ID
 						userEmotion.setEmotionName(emotionInfo.getEmotionname());
 						bigEmotion = bigEmotionMap.get(emotionInfo.getEmotionpackid().toString());
 						if(null != bigEmotion){
