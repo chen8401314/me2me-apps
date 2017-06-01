@@ -77,7 +77,7 @@ public class UserEsMapping {
 	private String tags;		//是否是大V(0 否 1 是)     必填 
 	
 	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.String)
-	private String mbit;
+	private String mbti;
 	
 	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
 	private String last_emotions;
@@ -250,12 +250,12 @@ public class UserEsMapping {
 		this.tags = tags;
 	}
 
-	public String getMbit() {
-		return mbit;
+	public String getMbti() {
+		return mbti;
 	}
 
-	public void setMbit(String mbit) {
-		this.mbit = mbit;
+	public void setMbti(String mbti) {
+		this.mbti = mbti;
 	}
 
 	public String getLast_emotions() {

@@ -780,7 +780,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
     			}
     		}
     		//mbti
-    		if(!StringUtils.isEmpty(user.getMbti()) && user.getMbti().equals(userMap.getMbit())){
+    		if(!StringUtils.isEmpty(user.getMbti()) && user.getMbti().equals(userMap.getMbti())){
     			matching = matching + 22;
     		}
     		//情绪

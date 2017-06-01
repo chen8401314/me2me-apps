@@ -772,7 +772,9 @@ public class SearchServiceImpl implements SearchService {
 					userEmotion.setHappyValue(er.getHappyvalue());
 					
 					emotionInfo = emotionInfoMap.get(er.getEmotionid().toString());
-					firstUserEmotionInfo = emotionInfo;
+					if(null == firstUserEmotionInfo){//只取第一个
+						firstUserEmotionInfo = emotionInfo;
+					}
 					if(null != emotionInfo){
 						userEmotion.setId(emotionInfo.getId());//坐标表情ID
 						userEmotion.setEmotionName(emotionInfo.getEmotionname());
