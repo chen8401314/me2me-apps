@@ -17,7 +17,7 @@ import lombok.Data;
 public class RecommendListDto implements BaseEntity {
 	private static final long serialVersionUID = -3412681619710644087L;
 	private RecPerson persona;
-	private EmotionKingdom emotionKingdom = new EmotionKingdom();
+	private EmotionKingdom emotionKingdom;
 	private List<RecommendUser> recUserData = Lists.newArrayList();
 	private List<ContentData> recContentData = Lists.newArrayList();
 	

@@ -807,11 +807,13 @@ public class SearchServiceImpl implements SearchService {
 			if(null != firstUserEmotionInfo){
 				Map<String, Object> topic = contentForSearchJdbcDao.getTopicById(firstUserEmotionInfo.getTopicid());
 				if(null != topic){
-					indexData.getEmotionKingdom().setContentType((Integer)topic.get("type"));
-					indexData.getEmotionKingdom().setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
-					indexData.getEmotionKingdom().setInternalStatus(this.getInternalStatus((String)topic.get("core_circle"), uid));
-					indexData.getEmotionKingdom().setTitle((String)topic.get("title"));
-					indexData.getEmotionKingdom().setTopicId(firstUserEmotionInfo.getTopicid());
+					RecommendListDto.EmotionKingdom emotionKingdom = new RecommendListDto.EmotionKingdom();
+					emotionKingdom.setContentType((Integer)topic.get("type"));
+					emotionKingdom.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
+					emotionKingdom.setInternalStatus(this.getInternalStatus((String)topic.get("core_circle"), uid));
+					emotionKingdom.setTitle((String)topic.get("title"));
+					emotionKingdom.setTopicId(firstUserEmotionInfo.getTopicid());
+					indexData.setEmotionKingdom(emotionKingdom);
 				}
 			}
 			
