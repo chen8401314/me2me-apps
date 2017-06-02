@@ -5998,6 +5998,7 @@ public class LiveServiceImpl implements LiveService {
 		}
 		Topic topic = liveMybatisDao.getEmotionTopic(uid);
 		if (topic == null) {
+			String summary = "在这里记录我的情绪";
 			log.info("createKingdom start...");
 
 			boolean isDouble = false;
@@ -6021,7 +6022,7 @@ public class LiveServiceImpl implements LiveService {
 			topic.setCoreCircle(array.toString());
 			topic.setType(Specification.KingdomType.NORMAL.index);
 			topic.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);// 目前默认公开的，等以后有需求的再说
-			topic.setSummary("在这里记录我的情绪");// 目前，第一次发言即王国简介
+			topic.setSummary(summary);// 目前，第一次发言即王国简介
 			topic.setCeAuditType(0);// 聚合王国属性，是否需要国王审核才能加入此聚合王国，默认0是
 			topic.setAcAuditType(1);// 个人王国属性，是否需要国王审核才能收录此王国，默认1否
 			topic.setAcPublishType(0);// 个人王国属性，是否接受聚合王国下发的消息，默认0是
@@ -6052,19 +6053,9 @@ public class LiveServiceImpl implements LiveService {
 			log.info("first speak...");
 			long lastFragmentId = 0;
 			long total = 0;
-			TopicFragment topicFragment = new TopicFragment();
-			topicFragment.setFragment("");
-			topicFragment.setUid(uid);
-			topicFragment.setType(52);
-			topicFragment.setContentType(18);
-			topicFragment.setTopicId(topic.getId());
-			topicFragment.setBottomId(0l);
-			topicFragment.setTopId(0l);
-			topicFragment.setSource(source);
-
-			JSONObject extra = new JSONObject();
-			extra.put("type", "emoji");
-			extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
+			
+			
+			
 			JSONObject fromObj = new JSONObject();
 			fromObj.put("uid", uid);
 			fromObj.put("avatar", Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
@@ -6074,24 +6065,59 @@ public class LiveServiceImpl implements LiveService {
 			fromObj.put("title", topic.getTitle());
 			fromObj.put("cover", Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
 			fromObj.put("url", live_web + topicContet.getId());
-			extra.put("from", fromObj);
-			extra.put("title", emotionPackDetail.getTitle());
-			extra.put("content", emotionPackDetail.getExtra());
-			extra.put("emojiType", 1);
-			extra.put("image", Constant.QINIU_DOMAIN + "/" + emotionPackDetail.getImage());
-			extra.put("w", emotionPackDetail.getW());
-			extra.put("h", emotionPackDetail.getH());
-			extra.put("thumb", emotionPackDetail.getThumb());
-			extra.put("thumb_w", emotionPackDetail.getThumbW());
-			extra.put("thumb_h", emotionPackDetail.getThumbH());
-			extra.put("packageId", emotionPack.getId());
-			extra.put("packageName", emotionPack.getName());
-			extra.put("packageCover", emotionPack.getCover());
-			topicFragment.setExtra(extra.toJSONString());
+			
+			TopicFragment topicFragment = new TopicFragment();
+        	topicFragment.setFragment(summary);
+        	topicFragment.setUid(uid);
+        	topicFragment.setType(0);//第一次发言肯定是主播发言
+        	topicFragment.setContentType(0);
+        	topicFragment.setTopicId(topic.getId());
+            topicFragment.setBottomId(0l);
+            topicFragment.setTopId(0l);
+            topicFragment.setSource(source);
+            
+    		JSONObject extra = new JSONObject();
+			extra.put("type", "textNormal");
+			extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
+			extra.put("hAlign", "center");
+            topicFragment.setExtra(extra.toJSONString());
+            topicFragment.setCreateTime(now);
+            liveMybatisDao.createTopicFragment(topicFragment);
+            total++;
+			
+			
+			
+			TopicFragment topicFragment1 = new TopicFragment();
+			topicFragment1.setFragment("");
+			topicFragment1.setUid(uid);
+			topicFragment1.setType(52);
+			topicFragment1.setContentType(18);
+			topicFragment1.setTopicId(topic.getId());
+			topicFragment1.setBottomId(0l);
+			topicFragment1.setTopId(0l);
+			topicFragment1.setSource(source);
 
-			topicFragment.setCreateTime(now);
-			liveMybatisDao.createTopicFragment(topicFragment);
-			lastFragmentId = topicFragment.getId();
+			JSONObject extra1 = new JSONObject();
+			extra1.put("type", "emoji");
+			extra1.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
+			extra1.put("from", fromObj);
+			extra1.put("title", emotionPackDetail.getTitle());
+			extra1.put("content", emotionPackDetail.getExtra());
+			extra1.put("emojiType", 1);
+			extra1.put("image", Constant.QINIU_DOMAIN + "/" + emotionPackDetail.getImage());
+			extra1.put("w", emotionPackDetail.getW());
+			extra1.put("h", emotionPackDetail.getH());
+			extra1.put("thumb", emotionPackDetail.getThumb());
+			extra1.put("thumb_w", emotionPackDetail.getThumbW());
+			extra1.put("thumb_h", emotionPackDetail.getThumbH());
+			extra1.put("packageId", emotionPack.getId());
+			extra1.put("packageName", emotionPack.getName());
+			extra1.put("packageCover", emotionPack.getCover());
+			topicFragment1.setExtra(extra1.toJSONString());
+
+			topicFragment1.setCreateTime(now);
+			liveMybatisDao.createTopicFragment(topicFragment1);
+			lastFragmentId = topicFragment1.getId();
 			total++;
 
 			// --add update kingdom cache -- modify by zcl -- begin --
@@ -6173,7 +6199,7 @@ public class LiveServiceImpl implements LiveService {
 		Topic topic = liveMybatisDao.getEmotionTopic(uid);
 		if (topic == null) {
 			log.info("createKingdom start...");
-
+            String summary = "在这里记录我的情绪";
 			boolean isDouble = false;
 			long uid2 = 0;
 
@@ -6203,7 +6229,7 @@ public class LiveServiceImpl implements LiveService {
 			topic.setCoreCircle(array.toString());
 			topic.setType(Specification.KingdomType.NORMAL.index);
 			topic.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);// 目前默认公开的，等以后有需求的再说
-			topic.setSummary("在这里记录我的情绪");// 目前，第一次发言即王国简介
+			topic.setSummary(summary);// 目前，第一次发言即王国简介
 			topic.setCeAuditType(0);// 聚合王国属性，是否需要国王审核才能加入此聚合王国，默认0是
 			topic.setAcAuditType(1);// 个人王国属性，是否需要国王审核才能收录此王国，默认1否
 			topic.setAcPublishType(0);// 个人王国属性，是否接受聚合王国下发的消息，默认0是
@@ -6234,20 +6260,7 @@ public class LiveServiceImpl implements LiveService {
 			log.info("first speak...");
 			long lastFragmentId = 0;
 			long total = 0;
-			TopicFragment topicFragment = new TopicFragment();
-			topicFragment.setFragment("");
-			topicFragment.setUid(uid);
-			topicFragment.setType(0);
-			topicFragment.setContentType(1);
-			topicFragment.setTopicId(topic.getId());
-			topicFragment.setBottomId(0l);
-			topicFragment.setTopId(0l);
-			topicFragment.setSource(source);
-			topicFragment.setFragmentImage(image);
-
-			JSONObject extra = new JSONObject();
-			extra.put("type", "image");
-			extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
+			
 			JSONObject fromObj = new JSONObject();
 			fromObj.put("uid", uid);
 			fromObj.put("avatar", Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
@@ -6257,19 +6270,54 @@ public class LiveServiceImpl implements LiveService {
 			fromObj.put("title", topic.getTitle());
 			fromObj.put("cover", Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
 			fromObj.put("url", live_web + topicContet.getId());
-			extra.put("from", fromObj);
-			extra.put("w", w);
-			extra.put("h", h);
-			extra.put("length", 0);
-			extra.put("orientation", 1);
-			extra.put("format", "");
-			extra.put("rLen", 0);
-			extra.put("rFmt", "");
-			topicFragment.setExtra(extra.toJSONString());
+			
+			TopicFragment topicFragment = new TopicFragment();
+        	topicFragment.setFragment(summary);
+        	topicFragment.setUid(uid);
+        	topicFragment.setType(0);//第一次发言肯定是主播发言
+        	topicFragment.setContentType(0);
+        	topicFragment.setTopicId(topic.getId());
+            topicFragment.setBottomId(0l);
+            topicFragment.setTopId(0l);
+            topicFragment.setSource(source);
+            
+    		JSONObject extra = new JSONObject();
+			extra.put("type", "textNormal");
+			extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
+			extra.put("hAlign", "center");
+            topicFragment.setExtra(extra.toJSONString());
+            topicFragment.setCreateTime(now);
+            liveMybatisDao.createTopicFragment(topicFragment);
+            total++;
+			
+			
+			TopicFragment topicFragment1 = new TopicFragment();
+			topicFragment1.setFragment("");
+			topicFragment1.setUid(uid);
+			topicFragment1.setType(0);
+			topicFragment1.setContentType(1);
+			topicFragment1.setTopicId(topic.getId());
+			topicFragment1.setBottomId(0l);
+			topicFragment1.setTopId(0l);
+			topicFragment1.setSource(source);
+			topicFragment1.setFragmentImage(image);
 
-			topicFragment.setCreateTime(now);
-			liveMybatisDao.createTopicFragment(topicFragment);
-			lastFragmentId = topicFragment.getId();
+			JSONObject extra1 = new JSONObject();
+			extra1.put("type", "image");
+			extra1.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
+			extra1.put("from", fromObj);
+			extra1.put("w", w);
+			extra1.put("h", h);
+			extra1.put("length", 0);
+			extra1.put("orientation", 1);
+			extra1.put("format", "");
+			extra1.put("rLen", 0);
+			extra1.put("rFmt", "");
+			topicFragment1.setExtra(extra1.toJSONString());
+
+			topicFragment1.setCreateTime(now);
+			liveMybatisDao.createTopicFragment(topicFragment1);
+			lastFragmentId = topicFragment1.getId();
 			total++;
 
 			// --add update kingdom cache -- modify by zcl -- begin --
