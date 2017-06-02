@@ -630,6 +630,8 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			if(!StringUtils.isEmpty(emotions)){
 				bq.should(QueryBuilders.queryStringQuery(tags).field("last3userEmotionList").boost(3f));
 			}
+			
+			bq.must(QueryBuilders.matchAllQuery());
 		}
 		
 		SearchQuery sq = new NativeSearchQuery(bq);
@@ -780,7 +782,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
     			}
     		}
     		//mbti
-    		if(!StringUtils.isEmpty(user.getMbti()) && user.getMbti().equals(userMap.getMbit())){
+    		if(!StringUtils.isEmpty(user.getMbti()) && user.getMbti().equals(userMap.getMbti())){
     			matching = matching + 22;
     		}
     		//情绪
