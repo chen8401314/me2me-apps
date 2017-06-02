@@ -717,7 +717,28 @@ public class SearchServiceImpl implements SearchService {
 				person.setSexOrientation(profile.getLikeGender());
 			}
 			person.setCompletion(completion);
-			person.setMbti(CommonUtils.toUsefulString(profile.getMbti()));
+			Map<String,String> mbtiDic = new HashMap<>();
+			mbtiDic.put("INTJ", "建筑师");
+			mbtiDic.put("INTP", "逻辑学家");
+			mbtiDic.put("ENTJ", "指挥官");
+			mbtiDic.put("ENTP", "辩论家");
+			mbtiDic.put("INFJ", "提倡者");
+			mbtiDic.put("INFP", "调停者");
+			mbtiDic.put("ENFJ", "主人公");
+			mbtiDic.put("ENFP", "竞选者");
+			mbtiDic.put("ISTJ", "物流师");
+			mbtiDic.put("ISFJ", "守卫者");
+			mbtiDic.put("ESTJ", "总经理");
+			mbtiDic.put("ESFJ", "执政官");
+			mbtiDic.put("ISTP", "鉴赏家");
+			mbtiDic.put("ISFP", "探险家");
+			mbtiDic.put("ESTP", "企业家");
+			mbtiDic.put("ESFP", "表演者");
+			String cnMbti = mbtiDic.get(profile.getMbti());
+			if(cnMbti!=null){
+				cnMbti=profile.getMbti()+"\n"+cnMbti;
+			}
+			person.setMbti(CommonUtils.toUsefulString(cnMbti));
 			
 			EmotionInfo firstUserEmotionInfo = null;
 			List<EmotionRecord> erList = userService.getUserEmotionRecords(uid, 20);
