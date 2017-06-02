@@ -6006,7 +6006,7 @@ public class LiveServiceImpl implements LiveService {
 			Date now = new Date();
 			log.info("create cover..");
 			topic = new Topic();
-			topic.setTitle(userProfile.getNickName() + "的情绪记录王国");
+			topic.setTitle(userProfile.getNickName() + "的情绪日常");
 			topic.setLiveImage(emotionInfo.getTopiccoverphoto());
 			topic.setUid(uid);
 			topic.setStatus(Specification.LiveStatus.LIVING.index);
@@ -6188,7 +6188,7 @@ public class LiveServiceImpl implements LiveService {
 			Date now = new Date();
 			log.info("create cover..");
 			topic = new Topic();
-			topic.setTitle(userProfile.getNickName() + "的情绪记录王国");
+			topic.setTitle(userProfile.getNickName() + "的情绪日常");
 			topic.setLiveImage(emotionInfo.getTopiccoverphoto());
 			topic.setUid(uid);
 			topic.setStatus(Specification.LiveStatus.LIVING.index);
