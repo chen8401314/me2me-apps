@@ -3772,6 +3772,8 @@ public class UserServiceImpl implements UserService {
 		  
 		  int max = 0;
 		  int maxIndex = 0;
+		  int min= 101;
+		  int minIndex = 0;
 		  int percentageCount = 0;
 		  for (int i=0;i<list.size();i++) {
 			  Map<String, Object> map  =list.get(i);
@@ -3786,10 +3788,19 @@ public class UserServiceImpl implements UserService {
 		    	 max = percentage;
 		    	 maxIndex = i;
 		      }
+			  if(percentage<min){
+			    	 min = percentage;
+			    	 minIndex = i;
+			      }
 			  emotionData.setPercentage(percentage);
 			  emotionData.setHappyValue(Long.valueOf( map.get("happyValue").toString()));
 			  emotionData.setFreeValue(Long.valueOf( map.get("freeValue").toString()));
 			  dto.getEmotionData().add(emotionData);
+		  }
+		  if(percentageCount<100){
+			  int temp = 100-percentageCount;
+			  SummaryEmotionInfoDto.EmotionData  emotionData = dto.getEmotionData().get(minIndex);
+			  emotionData.setPercentage(emotionData.getPercentage()+temp);
 		  }
 		  if(percentageCount>100){
 			  int temp = percentageCount-100;
