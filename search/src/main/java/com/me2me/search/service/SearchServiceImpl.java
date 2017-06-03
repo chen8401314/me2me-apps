@@ -992,6 +992,13 @@ public class SearchServiceImpl implements SearchService {
 			}
 		}
 		
+		if(null != indexData.getPersona() && null != indexData.getPersona().getEmotionList()
+				&& indexData.getPersona().getEmotionList().size() > 0){
+			RecommendListDto.UserEmotion ue = indexData.getPersona().getEmotionList().get(0);
+			long timeInterval = (new Date().getTime()-ue.getCreateTime())/1000;
+			ue.setTimeInterval(timeInterval);
+		}
+		
 		return Response.success(indexData);
 	}
 	
