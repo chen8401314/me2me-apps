@@ -3765,11 +3765,68 @@ public class UserServiceImpl implements UserService {
 		  sunday = sdf2.format(cal2.getTime());
 		  Date sundayDate = sdf2.parse(sunday);
 		  List<Map<String, Object>> list = userInitJdbcDao.getSummaryEmotionInfo(uid,monday,sunday);
-		  int count = 0;
+		  double count = 0.0;
+//		  int count = 0;
 		  for (Map<String, Object> map:list) {
-			count+= Integer.parseInt(map.get("countNum").toString());
+			  count+=((Long)map.get("countNum")).doubleValue();
+//			count+= Integer.parseInt(map.get("countNum").toString());
 		 }
 		  
+		  int totalPercent = 0;
+		  SummaryEmotionInfoDto.EmotionData emotionData = null;
+		  EmotionInfo emotionInfo = null;
+		  for(Map<String, Object> map : list){
+			  emotionData = SummaryEmotionInfoDto.create();
+			  emotionInfo = userMybatisDao.getEmotionInfoByKey((Long)map.get("emotionId"));
+			  emotionData.setEmotionName(emotionInfo.getEmotionname());
+			  int percentage = new BigDecimal(((Long)map.get("countNum")).doubleValue()/count).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+			  if(percentage == 0){
+				  percentage = 1;
+			  }
+			  totalPercent = totalPercent + percentage;
+			  emotionData.setPercentage(percentage);
+			  emotionData.setHappyValue(Long.valueOf( map.get("happyValue").toString()));
+			  emotionData.setFreeValue(Long.valueOf( map.get("freeValue").toString()));
+			  dto.getEmotionData().add(emotionData);
+		  }
+		  if(dto.getEmotionData().size() > 0){
+			  int t = dto.getEmotionData().size();
+			  SummaryEmotionInfoDto.EmotionData ed = null;
+			  //开始计算偏移量
+			  if(totalPercent > 100){//多了
+				  int offset = totalPercent-100;
+				  //多了，则需要减(从后往前减)
+				  while(offset > 0){
+					  for(int i=t-1;i>=0;i--){
+						  if(offset<=0){
+							  break;
+						  }
+						  ed = dto.getEmotionData().get(i);
+						  int p = ed.getPercentage();
+						  if(p>1){
+							  ed.setPercentage(p-1);
+							  offset--;
+						  }
+					  }
+				  }
+			  }else if(totalPercent < 100){//少了
+				  int offset = 100-totalPercent;
+				  //少了，则需要加(从前往后加)
+				  while(offset > 0){
+					  for(int i=0;i<t;i++){
+						  if(offset<=0){
+							  break;
+						  }
+						  ed = dto.getEmotionData().get(i);
+						  int p = ed.getPercentage();
+						  ed.setPercentage(p+1);
+						  offset--;
+					  }
+				  }
+			  }
+		  }
+		  
+		  /*
 		  int max = 0;
 		  int maxIndex = 0;
 		  int min= 101;
@@ -3807,6 +3864,7 @@ public class UserServiceImpl implements UserService {
 			  SummaryEmotionInfoDto.EmotionData  emotionData = dto.getEmotionData().get(maxIndex);
 			  emotionData.setPercentage(emotionData.getPercentage()-temp);
 		  }
+		  */
 		  //按百分比数值排序
 		    Collections.sort(dto.getEmotionData(), new Comparator<Object>() {
 			      @Override
