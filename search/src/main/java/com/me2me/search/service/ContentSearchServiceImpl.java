@@ -666,15 +666,14 @@ public class ContentSearchServiceImpl implements ContentSearchService {
     		userInfo.setUid(userProfile.getUid());
     		userInfo.setV_lv(userProfile.getvLv());
     		
-    		boolean sameTags =false;
-    		int sameTagSize = 0;
-    		if(userMap.getTags()!=null && !StringUtils.isEmpty(userMap.getTags())){
+    		List<String> matchedTagList = new ArrayList<>();
+			List<String> notMatchedTagList = new ArrayList<>();
+    		//兴趣
+			int sameTagSize = 0;
+    		if(!StringUtils.isEmpty(userMap.getTags())){
 	    		String[] userTags = userMap.getTags().split(" ");
 	    		if(userTags!=null && userTags.length>0){
-	    			List<String> matchedTagList = new ArrayList<>();
-	    			List<String> notMatchedTagList = new ArrayList<>();
-	    			//兴趣
-	    			for( String tag:userTags){
+	    			for(String tag:userTags){
 	    				if(userHobbyList.contains(tag)){
 	    					matchedTagList.add(tag);
 	    					sameTagSize++;
@@ -682,71 +681,74 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	    					notMatchedTagList.add(tag);
 	    				}
 	    			}
-	    			//职业
-	    			if(null != user.getOccupation() && user.getOccupation()==userMap.getOccupation()
-	    					&& null != EOccupation.fromCode(userMap.getOccupation())){
-	    				matchedTagList.add(EOccupation.fromCode(userMap.getOccupation()).getName());
-	    			}else{
-	    				if(null != userMap.getOccupation() && null != EOccupation.fromCode(userMap.getOccupation())){
-	    					notMatchedTagList.add(EOccupation.fromCode(userMap.getOccupation()).getName());
-	    				}
-	    			}
-	    			//年龄段
-	    			if(null != user.getAgeGroup() && user.getAgeGroup()==userMap.getAge_group()
-	    					&& null != EAgeGroup.fromCode(userMap.getAge_group())){
-	    				matchedTagList.add(EAgeGroup.fromCode(userMap.getAge_group()).getName());
-	    			}else{
-	    				if(null != userMap.getAge_group() && null != EAgeGroup.fromCode(userMap.getAge_group())){
-	    					notMatchedTagList.add(EAgeGroup.fromCode(userMap.getAge_group()).getName());
-	    				}
-	    			}
-	    			//男女
-	    			boolean isSex = false;
-	    			if(null != user.getLikeGender()){
-		    			if(user.getLikeGender()==ELikeGender.BOY.getValue() && userMap.getGender()==1){
-		    				matchedTagList.add("男");
-		    				isSex = true;
-		    			}else if(user.getLikeGender()==ELikeGender.GIRL.getValue() && userMap.getGender()==0){
-		    				matchedTagList.add("女");
-		    				isSex = true;
-		    			}else if(user.getLikeGender()==ELikeGender.ALL.getValue()){
-		    				if(userMap.getGender()==1){
-		    					matchedTagList.add("男");
-		    				}else{
-		    					matchedTagList.add("女");
-		    				}
-		    				isSex = true;
-		    			}
-	    			}
-	    			if(!isSex){
-	    				if(userMap.getGender()==1){
-	    					notMatchedTagList.add("男");
-	    				}else{
-	    					notMatchedTagList.add("女");
-	    				}
-	    				
-	    			}
-	    			
-	    			if(matchedTagList.size()<10){
-	    				userInfo.setTagMatchedLength(matchedTagList.size());		// 匹配长度
-	    				matchedTagList.addAll(notMatchedTagList);
-	    				if(matchedTagList.size()>10){
-	    					matchedTagList = matchedTagList.subList(0, 10);
-	    				}
-	    			}else{
-	    				userInfo.setTagMatchedLength(10);		// 匹配长度
-	    				matchedTagList = matchedTagList.subList(0, 10);
-	    			}
-	    			
-	    			List<String> usertags = new ArrayList<String>();
-	    			usertags.addAll(matchedTagList);
-	    			userInfo.setUserTags(usertags);
-	   				sameTags=matchedTagList.size()>0;
 	    		}
     		}
+    		//职业
+			if(null != user.getOccupation() && user.getOccupation()==userMap.getOccupation()
+					&& null != EOccupation.fromCode(userMap.getOccupation())){
+				matchedTagList.add(EOccupation.fromCode(userMap.getOccupation()).getName());
+			}else{
+				if(null != userMap.getOccupation() && null != EOccupation.fromCode(userMap.getOccupation())){
+					notMatchedTagList.add(EOccupation.fromCode(userMap.getOccupation()).getName());
+				}
+			}
+			//年龄段
+			if(null != user.getAgeGroup() && user.getAgeGroup()==userMap.getAge_group()
+					&& null != EAgeGroup.fromCode(userMap.getAge_group())){
+				matchedTagList.add(EAgeGroup.fromCode(userMap.getAge_group()).getName());
+			}else{
+				if(null != userMap.getAge_group() && null != EAgeGroup.fromCode(userMap.getAge_group())){
+					notMatchedTagList.add(EAgeGroup.fromCode(userMap.getAge_group()).getName());
+				}
+			}
+			//男女
+			boolean isSex = false;
+			if(null != user.getLikeGender()){
+    			if(user.getLikeGender()==ELikeGender.BOY.getValue() && userMap.getGender()==1){
+    				matchedTagList.add("男");
+    				isSex = true;
+    			}else if(user.getLikeGender()==ELikeGender.GIRL.getValue() && userMap.getGender()==0){
+    				matchedTagList.add("女");
+    				isSex = true;
+    			}else if(user.getLikeGender()==ELikeGender.ALL.getValue()){
+    				if(userMap.getGender()==1){
+    					matchedTagList.add("男");
+    				}else{
+    					matchedTagList.add("女");
+    				}
+    				isSex = true;
+    			}
+			}
+			if(!isSex){
+				if(userMap.getGender()==1){
+					notMatchedTagList.add("男");
+				}else{
+					notMatchedTagList.add("女");
+				}
+				
+			}
+			
+			if(matchedTagList.size()<10){
+				userInfo.setTagMatchedLength(matchedTagList.size());		// 匹配长度
+				matchedTagList.addAll(notMatchedTagList);
+				if(matchedTagList.size()>10){
+					matchedTagList = matchedTagList.subList(0, 10);
+				}
+			}else{
+				userInfo.setTagMatchedLength(10);		// 匹配长度
+				matchedTagList = matchedTagList.subList(0, 10);
+			}
+			
+			List<String> usertags = new ArrayList<String>();
+			usertags.addAll(matchedTagList);
+			userInfo.setUserTags(usertags);
+    		
+    		
+    		
+    		
     		if(user.getLikeGender()!=null && userMap.getLike_gender()==user.getLikeGender()){
     			userInfo.setReason(RecommendReason.LIKE_GENDER);
-    		}else if(sameTags){
+    		}else if(sameTagSize > 0){
     			userInfo.setReason(RecommendReason.SAME_TAG);
     		}else if(user.getOccupation()!=null && userMap.getOccupation()==user.getOccupation()){
     			userInfo.setReason(RecommendReason.SAME_OCCUPATION);
