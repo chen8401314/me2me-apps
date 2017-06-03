@@ -3779,7 +3779,7 @@ public class UserServiceImpl implements UserService {
 			  emotionData = SummaryEmotionInfoDto.create();
 			  emotionInfo = userMybatisDao.getEmotionInfoByKey((Long)map.get("emotionId"));
 			  emotionData.setEmotionName(emotionInfo.getEmotionname());
-			  int percentage = new BigDecimal(((Long)map.get("countNum")).doubleValue()/count).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+			  int percentage = new BigDecimal(((Long)map.get("countNum")).doubleValue()*100.0/count).setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
 			  if(percentage == 0){
 				  percentage = 1;
 			  }
