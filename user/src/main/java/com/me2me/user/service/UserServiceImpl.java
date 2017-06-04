@@ -3785,8 +3785,10 @@ public class UserServiceImpl implements UserService {
 			  }
 			  totalPercent = totalPercent + percentage;
 			  emotionData.setPercentage(percentage);
-			  emotionData.setHappyValue(Long.valueOf( map.get("happyValue").toString()));
-			  emotionData.setFreeValue(Long.valueOf( map.get("freeValue").toString()));
+			  emotionData.setHappyValue((emotionInfo.getHappymin()+emotionInfo.getHappymax())/2);
+			  emotionData.setFreeValue((emotionInfo.getFreemin()+emotionInfo.getFreemax())/2);
+//			  emotionData.setHappyValue(Long.valueOf( map.get("happyValue").toString()));
+//			  emotionData.setFreeValue(Long.valueOf( map.get("freeValue").toString()));
 			  dto.getEmotionData().add(emotionData);
 		  }
 		  if(dto.getEmotionData().size() > 0){
