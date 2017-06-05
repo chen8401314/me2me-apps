@@ -1367,7 +1367,7 @@ public class UserMybatisDao {
 		EmotionRecordExample example = new EmotionRecordExample();
 		EmotionRecordExample.Criteria criteria  = example.createCriteria();
 		criteria.andUidEqualTo(uid);
-		example.setOrderByClause(" id desc ");
+		example.setOrderByClause(" id desc limit 0,1 ");
 		List<EmotionRecord> list = emotionRecordMapper.selectByExample(example);
 		if(list.size()>0){
 			return list.get(0);
