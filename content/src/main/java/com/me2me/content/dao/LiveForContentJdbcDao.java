@@ -430,7 +430,7 @@ public class LiveForContentJdbcDao {
      */
     public List<BillBoardListDTO> getLivesByUpdateTime(long sinceId, int pageSize){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select t.id,t.long_time from topic t where t.status=0 and t.sub_type <> 1 ");
+    	sb.append("select t.id,t.long_time from topic t where t.status=0 and (t.sub_type <> 1 or t.sub_type is null)");
     	sb.append(" and t.long_time<").append(sinceId);
     	sb.append(" order by t.long_time desc limit ").append(pageSize);
     	

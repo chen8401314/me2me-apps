@@ -55,7 +55,7 @@ public class ColorfulKingdomBillBoardTask {
 		sb.append(" group by f.topic_id) m");
 		sb.append(" where c.forward_cid=m.topic_id and c.type=3");
 		sb.append(" and c.status=0 and c.read_count_dummy>150");
-		sb.append(" AND t.sub_type <>1 ");
+		sb.append(" AND (t.sub_type <>1 or t.sub_type is null) ");
 		sb.append(" order by sinceId desc limit 100");
 		
 		List<Map<String, Object>> searchList = contentService.queryEvery(sb.toString());
