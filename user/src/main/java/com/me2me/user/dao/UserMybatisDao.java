@@ -1231,9 +1231,9 @@ public class UserMybatisDao {
     	EmotionRecordExample.Criteria criteria = example.createCriteria();
     	criteria.andUidEqualTo(uid);
     	if(pageSize > 0){
-    		example.setOrderByClause(" create_time desc limit "+pageSize);
+    		example.setOrderByClause(" id desc limit "+pageSize);
     	}else{
-    		example.setOrderByClause(" create_time desc ");
+    		example.setOrderByClause(" id desc ");
     	}
     	return emotionRecordMapper.selectByExample(example);
     }

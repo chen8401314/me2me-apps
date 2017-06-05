@@ -690,6 +690,28 @@ public class SearchServiceImpl implements SearchService {
 		return result;
 	}
 	
+	private static Map<String, String> mbtiDic = new HashMap<String, String>() {
+		{
+			put("INTJ", "建筑师");
+			put("INTP", "逻辑学家");
+			put("ENTJ", "指挥官");
+			put("ENTP", "辩论家");
+			put("INFJ", "提倡者");
+			put("INFP", "调停者");
+			put("ENFJ", "主人公");
+			put("ENFP", "竞选者");
+			put("ISTJ", "物流师");
+			put("ISFJ", "守卫者");
+			put("ESTJ", "总经理");
+			put("ESFJ", "执政官");
+			put("ISTP", "鉴赏家");
+			put("ISFP", "探险家");
+			put("ESTP", "企业家");
+			put("ESFP", "表演者");
+		}
+	};
+	
+	
 	public Response recommendIndex(long uid,int page, String token, String version){
 		RecommendListDto indexData = new RecommendListDto();
 		UserProfile profile = userService.getUserProfileByUid(uid);
@@ -717,23 +739,7 @@ public class SearchServiceImpl implements SearchService {
 				person.setSexOrientation(profile.getLikeGender());
 			}
 			person.setCompletion(completion);
-			Map<String,String> mbtiDic = new HashMap<>();
-			mbtiDic.put("INTJ", "建筑师");
-			mbtiDic.put("INTP", "逻辑学家");
-			mbtiDic.put("ENTJ", "指挥官");
-			mbtiDic.put("ENTP", "辩论家");
-			mbtiDic.put("INFJ", "提倡者");
-			mbtiDic.put("INFP", "调停者");
-			mbtiDic.put("ENFJ", "主人公");
-			mbtiDic.put("ENFP", "竞选者");
-			mbtiDic.put("ISTJ", "物流师");
-			mbtiDic.put("ISFJ", "守卫者");
-			mbtiDic.put("ESTJ", "总经理");
-			mbtiDic.put("ESFJ", "执政官");
-			mbtiDic.put("ISTP", "鉴赏家");
-			mbtiDic.put("ISFP", "探险家");
-			mbtiDic.put("ESTP", "企业家");
-			mbtiDic.put("ESFP", "表演者");
+			
 			String cnMbti = mbtiDic.get(profile.getMbti());
 			if(cnMbti!=null){
 				cnMbti=profile.getMbti()+"\n"+cnMbti;
