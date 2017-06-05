@@ -919,7 +919,7 @@
     select
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
     c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights
-    from content c left join topic t on c.forward_cid = t.id where c.id &lt; #{sinceId} and c.status != 1 and c.rights = 1 and (t.sub_type &lt;&gt; 1 or t.sub_type is null)
+    from content c left join topic t on c.forward_cid = t.id and c.type=3 where c.id &lt; #{sinceId} and c.status != 1 and c.rights = 1 and (t.sub_type &lt;&gt; 1 or t.sub_type is null)
     <if test="flag == 0">
     and  c.type in (0,3,8,9)
     </if>
