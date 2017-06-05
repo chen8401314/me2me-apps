@@ -631,10 +631,11 @@ public class ContentServiceImpl implements ContentService {
         log.info("getArticleComments start ...");
         ShowArticleCommentsDto showArticleCommentsDto = new ShowArticleCommentsDto();
         List<ArticleLikesDetails> articleLikesDetails =  contentMybatisDao.getArticleLikesDetails(id);
-        List<ArticleReview> articleReviews = contentMybatisDao.getArticleReviews(id ,Integer.MAX_VALUE);
+//        List<ArticleReview> articleReviews = contentMybatisDao.getArticleReviews(id ,Integer.MAX_VALUE);
+        List<ArticleReview> articleReviews = new ArrayList<ArticleReview>();
         showArticleCommentsDto.setLikeCount(articleLikesDetails.size());
-//        showArticleCommentsDto.setReviewCount(articleReviews.size());
-        showArticleCommentsDto.setReviewCount(contentMybatisDao.countArticleReviews(id));
+        showArticleCommentsDto.setReviewCount(articleReviews.size());
+//        showArticleCommentsDto.setReviewCount(contentMybatisDao.countArticleReviews(id));
         showArticleCommentsDto.setIsLike(0);
         //获取用户信息取得是否大V
         UserProfile userProfile1 = userService.getUserProfileByUid(uid);
@@ -2965,7 +2966,8 @@ private void localJpush(long toUid){
         ContentReviewDto contentReviewDto = new ContentReviewDto();
         List<ContentReview> list = null;
         if(type == Specification.ArticleType.SYSTEM.index){
-            list = contentMybatisDao.getArticleReviewByCid(cid,sinceId);
+//            list = contentMybatisDao.getArticleReviewByCid(cid,sinceId);
+        	list = new ArrayList<ContentReview>();
         }else{
             list = contentMybatisDao.getContentReviewByCid(cid,sinceId);
         }

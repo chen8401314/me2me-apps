@@ -908,7 +908,7 @@ public class SearchServiceImpl implements SearchService {
 					&& null != recContent.getContents() && recContent.getContents().size() > 0){
 				RecommendListDto.ContentData contentData = null;
 				for(ShowRecContentDTO.RecContentElement rc : recContent.getContents()){
-					if(rc.getContentType() > 6){//大于6的是王国和UGC等，这里不要
+					if(rc.getContentType() > 1){//只要文章和音乐
 						continue;
 					}
 					contentData = new RecommendListDto.ContentData();

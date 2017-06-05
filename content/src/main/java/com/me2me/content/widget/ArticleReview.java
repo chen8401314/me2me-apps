@@ -29,17 +29,19 @@ public class ArticleReview implements Review{
     private ContentStatusServiceProxyBean contentStatusServiceProxyBean;
 
     public Response createReview(ReviewDto reviewDto) {
-        log.info("ArticleReview createReview");
-        contentService.createArticleReview(reviewDto);
-        log.info("create review success");
-        try{
-        	ContentStatService contentStatService = contentStatusServiceProxyBean.getTarget();
-            contentStatService.comments(reviewDto.getUid()+"",reviewDto.getCid());
-            log.info("contentStatService comments success");
-        }catch(Exception e){
-        	log.error("老徐文章评论接口调用失败", e);
-        }
-        return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
+    	return Response.failure(500, "无法评论");
+    	
+//        log.info("ArticleReview createReview");
+//        contentService.createArticleReview(reviewDto);
+//        log.info("create review success");
+//        try{
+//        	ContentStatService contentStatService = contentStatusServiceProxyBean.getTarget();
+//            contentStatService.comments(reviewDto.getUid()+"",reviewDto.getCid());
+//            log.info("contentStatService comments success");
+//        }catch(Exception e){
+//        	log.error("老徐文章评论接口调用失败", e);
+//        }
+//        return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
     }
 
 	@Override
