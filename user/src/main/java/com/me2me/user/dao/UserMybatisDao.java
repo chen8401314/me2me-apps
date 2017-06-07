@@ -142,6 +142,9 @@ public class UserMybatisDao {
     @Autowired
     private EmotionRecordMapper emotionRecordMapper;
     
+    @Autowired
+    private AppConfigMapper appConfigMapper;
+    
     /**
      * 保存用户注册信息
      * @param user
@@ -1384,5 +1387,28 @@ public class UserMybatisDao {
 		return conut;
 	}
 	
+	public AppConfig getAppConfigByKey(String key){
+		AppConfigExample example = new AppConfigExample();
+		AppConfigExample.Criteria criteria  = example.createCriteria();
+		criteria.andConfigKeyEqualTo(key);
+		List<AppConfig> list = appConfigMapper.selectByExample(example);
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}else{
+			return null;
+		}
+	}
 	
+	public List<AppConfig> getAllAppConfig(){
+		AppConfigExample example = new AppConfigExample();
+		return appConfigMapper.selectByExample(example);
+	}
+	
+	public void saveAppConfig(AppConfig config){
+		appConfigMapper.insertSelective(config);
+	}
+	
+	public void updateAppConfig(AppConfig config){
+		appConfigMapper.updateByPrimaryKeySelective(config);
+	}
 }

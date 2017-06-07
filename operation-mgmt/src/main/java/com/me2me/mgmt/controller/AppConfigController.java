@@ -34,6 +34,7 @@ import com.me2me.mgmt.request.VersionChannelAddrQueryDTO;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.user.dto.ShowVersionControlDto;
 import com.me2me.user.dto.VersionControlDto;
+import com.me2me.user.model.AppConfig;
 import com.me2me.user.model.SystemConfig;
 import com.me2me.user.model.VersionChannelDownload;
 import com.me2me.user.service.UserService;
@@ -127,7 +128,6 @@ public class AppConfigController {
 	}
 	
 	@RequestMapping(value = "/dbconfig/query")
-	@SystemControllerLog(description = "数据库配置查询")
 	public ModelAndView dbConfigQuery(){
 		List<ConfigItem> result = new ArrayList<ConfigItem>();
 		
@@ -164,6 +164,40 @@ public class AppConfigController {
 		}
 		
 		return "";
+	}
+	
+	@RequestMapping(value = "/newconfig/query")
+	public ModelAndView newConfigQuery(){
+		List<ConfigItem> result = new ArrayList<ConfigItem>();
+		
+		List<AppConfig> list = userService.getAllAppConfig();
+		if(null != list && list.size() > 0){
+			ConfigItem item = null;
+			for(AppConfig config : list){
+				item = new ConfigItem(config.getConfigKey(),config.getName(),ConfigItem.ConfigType.DB,config.getConfigValue());
+				result.add(item);
+			}
+		}
+		
+		ModelAndView view = new ModelAndView("appconfig/dbConfig");
+		view.addObject("dataObj",result);
+		
+		return view;
+	}
+	
+	@RequestMapping(value = "/newconfig/modify")
+	@ResponseBody
+	@SystemControllerLog(description = "新APP配置更新")
+	public String modifyNewConfig(@RequestParam("k")String key, 
+			@RequestParam("v")String value){
+		if(StringUtils.isBlank(key)){
+			logger.warn("key不能为空");
+			return "key不能为空";
+		}
+		
+		userService.saveAppConfig(key, value);
+		
+		return "0";
 	}
 	
 	@RequestMapping(value = "/cache/modify")

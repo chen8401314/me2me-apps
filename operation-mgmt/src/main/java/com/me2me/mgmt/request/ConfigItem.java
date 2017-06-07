@@ -17,6 +17,9 @@ public class ConfigItem {
 	@Getter
 	@Setter
 	private ConfigType type;
+	@Getter
+	@Setter
+	private String cacheValue;
 	
 	public ConfigItem(String key, String desc, ConfigType type, String value){
 		this.key = key;

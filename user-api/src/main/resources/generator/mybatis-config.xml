@@ -65,5 +65,6 @@
         <!-- <table tableName="user_notice_unread" domainObjectName="UserNoticeUnread"/> -->
         <!-- <table tableName="user_mobile_list" domainObjectName="UserMobileList"/> -->
 		<!-- <table tableName="mbti_mapping" domainObjectName="MbtiMapping"/> -->
+		<!-- <table tableName="app_config" domainObjectName="AppConfig"/> -->
     </context>
 </generatorConfiguration>
