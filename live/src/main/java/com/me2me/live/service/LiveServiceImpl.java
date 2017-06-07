@@ -3320,7 +3320,8 @@ public class LiveServiceImpl implements LiveService {
 		return Response.success(showTopicSearchDTO);
 	}
 
-    @Override
+
+	@Override
     public Response settings(long uid, long topicId, int vflag) {
         SettingsDto dto = new SettingsDto();
         Topic topic = liveMybatisDao.getTopicById(topicId);
