@@ -33,7 +33,7 @@ public class NoUpdateTopicPushTask {
 	@Autowired
 	private UserService userService;
 	
-	@Scheduled(cron="0 30 10 * * ?")
+//	@Scheduled(cron="0 30 10 * * ?")
 	public void noUpdateTopicPush(){
 		logger.info("无更新推送提醒任务开始");
 		long s = System.currentTimeMillis();
@@ -59,7 +59,7 @@ public class NoUpdateTopicPushTask {
 			if(null != list && list.size() > 0){
 				String key = "topic:noupdate:map";
 				String key2 = "topic:noupdateAndHasFootmark:map";
-				String message = "你的王国已经很久没有更新了哦";
+				String message = "你的王国『#topicName#』已经很久没有更新了哦";
 				JsonObject jsonObject = null;
 				String zujiSql = null;
 				for(Map<String, Object> t : list){
@@ -74,7 +74,7 @@ public class NoUpdateTopicPushTask {
 		                jsonObject.addProperty("topicId",topicId);
 		                jsonObject.addProperty("contentType", (Integer)t.get("type"));
 		                jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//核心圈
-		                userService.pushWithExtra(uid.toString(), message, JPushUtils.packageExtra(jsonObject));
+		                userService.pushWithExtra(uid.toString(), "你的王国『"+(String)t.get("title")+"』已经很久没有更新了哦", JPushUtils.packageExtra(jsonObject));
 					}
 					
 					//判断这期间是否有足迹，如果超过2个足迹则有额外推送

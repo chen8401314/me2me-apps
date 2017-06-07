@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import ch.qos.logback.classic.Logger;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -6417,6 +6419,23 @@ public class LiveServiceImpl implements LiveService {
 			dto.getEmotionInfoData().add(ee);
 		}
 		return Response.success(dto);
+	}
+	
+	private int getTopicFragmentScore(int type, int contentType){
+		int result = 0;
+		
+		String key = "TOPICFRAGMENTSCORE_"+type+"_"+contentType;
+		
+		String res = userService.getAppConfigByKey(key);
+		if(!StringUtils.isEmpty(res)){
+			try{
+				result = Integer.valueOf(res);
+			}catch(Exception e){
+				log.error("数字转换失败", e);
+			}
+		}
+		
+		return result;
 	}
 	
 }

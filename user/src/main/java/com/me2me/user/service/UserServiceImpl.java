@@ -27,6 +27,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.gson.JsonObject;
+import com.me2me.cache.CacheConstant;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.page.PageBean;
@@ -125,6 +126,7 @@ import com.me2me.user.event.NoticeCountPushEvent;
 import com.me2me.user.event.NoticeMessagePushEvent;
 import com.me2me.user.event.PushExtraEvent;
 import com.me2me.user.event.WapxIosEvent;
+import com.me2me.user.model.AppConfig;
 import com.me2me.user.model.ApplicationSecurity;
 import com.me2me.user.model.Dictionary;
 import com.me2me.user.model.DictionaryType;
@@ -3902,5 +3904,58 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public boolean existsEmotionInfoByName(EmotionInfo emotionInfo){
 		return userMybatisDao.existsEmotionInfoByName(emotionInfo);
+	}
+	
+	@Override
+	public String getAppConfigByKey(String key){
+		String result = cacheService.get(CacheConstant.APP_CONFIG_KEY_PRE + key);
+		if(!StringUtils.isEmpty(result)){
+			return result;
+		}
+		AppConfig config = userMybatisDao.getAppConfigByKey(key);
+		if(null != config && !StringUtils.isEmpty(config.getConfigValue())){
+			cacheService.set(CacheConstant.APP_CONFIG_KEY_PRE + key, config.getConfigValue());
+			return config.getConfigValue();
+		}
+		return null;
+	}
+	
+	@Override
+	public Map<String, String> getAppConfigsByKeys(List<String> keys){
+		if(null == keys || keys.size() == 0){
+			return null;
+		}
+		Map<String, String> result = new HashMap<String, String>();
+		String value = null;
+		for(String key : keys){
+			value = this.getAppConfigByKey(key);
+			if(!StringUtils.isEmpty(value)){
+				result.put(key, value);
+			}
+		}
+		return result;
+	}
+	
+	@Override
+	public void saveAppConfig(String key, String value){
+		if(StringUtils.isEmpty(key) || StringUtils.isEmpty(value)){
+			return;
+		}
+		AppConfig config = userMybatisDao.getAppConfigByKey(key);
+		if(null == config){
+			config = new AppConfig();
+			config.setConfigKey(key);
+			config.setConfigValue(value);
+			userMybatisDao.saveAppConfig(config);
+		}else{
+			config.setConfigValue(value);
+			userMybatisDao.updateAppConfig(config);
+		}
+		cacheService.set(CacheConstant.APP_CONFIG_KEY_PRE + key, value);
+	}
+	
+	@Override
+	public List<AppConfig> getAllAppConfig(){
+		return userMybatisDao.getAllAppConfig();
 	}
 }
