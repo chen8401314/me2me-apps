@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -20,10 +21,13 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.me2me.content.service.ContentService;
 import com.me2me.live.service.LiveService;
+import com.me2me.mgmt.request.ConfigItem;
 import com.me2me.mgmt.request.KingdomBusinessDTO;
 import com.me2me.mgmt.request.KingdomDTO;
 import com.me2me.mgmt.request.KingdomQueryDTO;
 import com.me2me.mgmt.request.SearchUserDTO;
+import com.me2me.mgmt.syslog.SystemControllerLog;
+import com.me2me.user.service.UserService;
 
 @Controller
 @RequestMapping("/price")
@@ -35,6 +39,8 @@ public class PriceController {
     private ContentService contentService;
 	@Autowired
 	private LiveService liveService;
+	@Autowired
+	private UserService userService;
 	
 	@RequestMapping(value = "/kingdomQuery")
 	public ModelAndView kingdomQuery(KingdomQueryDTO dto){
@@ -201,5 +207,174 @@ public class PriceController {
 	public String business(KingdomBusinessDTO dto){
 		logger.info("王国国王变更，王国："+dto.getTopicId()+"，新国王UID：" + dto.getNewUid());
 		return liveService.changeTopicKing(dto.getTopicId(), dto.getNewUid());
+	}
+	
+	private static List<String> fragmentScoreKeyList = new ArrayList<String>() {
+		private static final long serialVersionUID = 7846617633906369703L;
+
+		{
+			this.add("TOPICFRAGMENTSCORE_0_0");
+			this.add("TOPICFRAGMENTSCORE_1_0");
+			this.add("TOPICFRAGMENTSCORE_0_1");
+			this.add("TOPICFRAGMENTSCORE_3_0");
+			this.add("TOPICFRAGMENTSCORE_4_0");
+			this.add("TOPICFRAGMENTSCORE_11_11");
+			this.add("TOPICFRAGMENTSCORE_10_10");
+			this.add("TOPICFRAGMENTSCORE_15_15");
+			this.add("TOPICFRAGMENTSCORE_13_13");
+			this.add("TOPICFRAGMENTSCORE_12_12");
+			this.add("TOPICFRAGMENTSCORE_1000_0");
+			this.add("TOPICFRAGMENTSCORE_1000_17");
+			this.add("TOPICFRAGMENTSCORE_1000_72");
+			this.add("TOPICFRAGMENTSCORE_52_70");
+			this.add("TOPICFRAGMENTSCORE_52_71");
+			this.add("TOPICFRAGMENTSCORE_52_72");
+			this.add("TOPICFRAGMENTSCORE_52_73");
+			this.add("TOPICFRAGMENTSCORE_52_74");
+			this.add("TOPICFRAGMENTSCORE_51_70");
+			this.add("TOPICFRAGMENTSCORE_51_71");
+			this.add("TOPICFRAGMENTSCORE_51_72");
+			this.add("TOPICFRAGMENTSCORE_51_73");
+			this.add("TOPICFRAGMENTSCORE_51_74");
+			this.add("TOPICFRAGMENTSCORE_54_0");
+			this.add("TOPICFRAGMENTSCORE_54_51");
+			this.add("TOPICFRAGMENTSCORE_54_2");
+			this.add("TOPICFRAGMENTSCORE_54_63");
+			this.add("TOPICFRAGMENTSCORE_54_62");
+			this.add("TOPICFRAGMENTSCORE_54_70");
+			this.add("TOPICFRAGMENTSCORE_54_71");
+			this.add("TOPICFRAGMENTSCORE_54_72");
+			this.add("TOPICFRAGMENTSCORE_54_73");
+			this.add("TOPICFRAGMENTSCORE_54_74");
+			this.add("TOPICFRAGMENTSCORE_55_0");
+			this.add("TOPICFRAGMENTSCORE_55_51");
+			this.add("TOPICFRAGMENTSCORE_55_2");
+			this.add("TOPICFRAGMENTSCORE_55_63");
+			this.add("TOPICFRAGMENTSCORE_55_62");
+			this.add("TOPICFRAGMENTSCORE_55_70");
+			this.add("TOPICFRAGMENTSCORE_55_71");
+			this.add("TOPICFRAGMENTSCORE_55_72");
+			this.add("TOPICFRAGMENTSCORE_55_73");
+			this.add("TOPICFRAGMENTSCORE_55_74");
+			this.add("TOPICFRAGMENTSCORE_56_0");
+			this.add("TOPICFRAGMENTSCORE_56_51");
+			this.add("TOPICFRAGMENTSCORE_56_2");
+			this.add("TOPICFRAGMENTSCORE_56_63");
+			this.add("TOPICFRAGMENTSCORE_56_62");
+			this.add("TOPICFRAGMENTSCORE_56_70");
+			this.add("TOPICFRAGMENTSCORE_56_71");
+			this.add("TOPICFRAGMENTSCORE_56_72");
+			this.add("TOPICFRAGMENTSCORE_56_73");
+			this.add("TOPICFRAGMENTSCORE_56_74");
+			this.add("TOPICFRAGMENTSCORE_51_16");
+			this.add("TOPICFRAGMENTSCORE_52_17");
+			this.add("TOPICFRAGMENTSCORE_52_18");
+			this.add("TOPICFRAGMENTSCORE_51_17");
+			this.add("TOPICFRAGMENTSCORE_51_18");
+			this.add("TOPICFRAGMENTSCORE_52_19");
+			this.add("TOPICFRAGMENTSCORE_52_20");
+			this.add("TOPICFRAGMENTSCORE_51_20");
+			this.add("TOPICFRAGMENTSCORE_52_21");
+		}
+	};
+	
+	private static Map<String, String> fragmentScoreMap = new HashMap<String, String>() {
+		private static final long serialVersionUID = 7846617633906369703L;
+		{
+			this.put("TOPICFRAGMENTSCORE_0_0", "主播发言");
+			this.put("TOPICFRAGMENTSCORE_1_0", "粉丝回复");
+			this.put("TOPICFRAGMENTSCORE_0_1", "主播发图");
+			this.put("TOPICFRAGMENTSCORE_3_0", "主播贴标");
+			this.put("TOPICFRAGMENTSCORE_4_0", "粉丝贴标");
+			this.put("TOPICFRAGMENTSCORE_11_11", "主播@");
+			this.put("TOPICFRAGMENTSCORE_10_10", "粉丝@");
+			this.put("TOPICFRAGMENTSCORE_15_15", "核心圈@");
+			this.put("TOPICFRAGMENTSCORE_13_13", "主播发语音");
+			this.put("TOPICFRAGMENTSCORE_12_12", "主播发视频");
+			this.put("TOPICFRAGMENTSCORE_1000_0", "系统文本");
+			this.put("TOPICFRAGMENTSCORE_1000_17", "系统链接");
+			this.put("TOPICFRAGMENTSCORE_1000_72", "系统王国链接");
+			this.put("TOPICFRAGMENTSCORE_52_70", "主播UGC链接");
+			this.put("TOPICFRAGMENTSCORE_52_71", "主播PGC链接");
+			this.put("TOPICFRAGMENTSCORE_52_72", "主播王国连接");
+			this.put("TOPICFRAGMENTSCORE_52_73", "主播活动连接");
+			this.put("TOPICFRAGMENTSCORE_52_74", "主播PPGC连接");
+			this.put("TOPICFRAGMENTSCORE_51_70", "粉丝UGC链接");
+			this.put("TOPICFRAGMENTSCORE_51_71", "粉丝PGC链接");
+			this.put("TOPICFRAGMENTSCORE_51_72", "粉丝王国连接");
+			this.put("TOPICFRAGMENTSCORE_51_73", "粉丝活动连接");
+			this.put("TOPICFRAGMENTSCORE_51_74", "粉丝智能推荐连接");
+			this.put("TOPICFRAGMENTSCORE_54_0", "下发文本");
+			this.put("TOPICFRAGMENTSCORE_54_51", "下发图片");
+			this.put("TOPICFRAGMENTSCORE_54_2", "下发标签");
+			this.put("TOPICFRAGMENTSCORE_54_63", "下发音频");
+			this.put("TOPICFRAGMENTSCORE_54_62", "下发视频");
+			this.put("TOPICFRAGMENTSCORE_54_70", "下发UGC链接");
+			this.put("TOPICFRAGMENTSCORE_54_71", "下发PGC链接");
+			this.put("TOPICFRAGMENTSCORE_54_72", "下发王国链接");
+			this.put("TOPICFRAGMENTSCORE_54_73", "下发活动链接");
+			this.put("TOPICFRAGMENTSCORE_54_74", "下发智能推荐链接");
+			this.put("TOPICFRAGMENTSCORE_55_0", "主播转发文本");
+			this.put("TOPICFRAGMENTSCORE_55_51", "主播转发图片");
+			this.put("TOPICFRAGMENTSCORE_55_2", "主播转发标签");
+			this.put("TOPICFRAGMENTSCORE_55_63", "主播转发音频");
+			this.put("TOPICFRAGMENTSCORE_55_62", "主播转发视频");
+			this.put("TOPICFRAGMENTSCORE_55_70", "主播转发UGC链接");
+			this.put("TOPICFRAGMENTSCORE_55_71", "主播转发PGC链接");
+			this.put("TOPICFRAGMENTSCORE_55_72", "主播转发王国链接");
+			this.put("TOPICFRAGMENTSCORE_55_73", "主播转发活动链接");
+			this.put("TOPICFRAGMENTSCORE_55_74", "主播转发智能推荐链接");
+			this.put("TOPICFRAGMENTSCORE_56_0", "粉丝转发文本");
+			this.put("TOPICFRAGMENTSCORE_56_51", "粉丝主播转发图片");
+			this.put("TOPICFRAGMENTSCORE_56_2", "粉丝主播转发标签");
+			this.put("TOPICFRAGMENTSCORE_56_63", "粉丝主播转发音频");
+			this.put("TOPICFRAGMENTSCORE_56_62", "粉丝主播转发视频");
+			this.put("TOPICFRAGMENTSCORE_56_70", "粉丝主播转发UGC链接");
+			this.put("TOPICFRAGMENTSCORE_56_71", "粉丝主播转发PGC链接");
+			this.put("TOPICFRAGMENTSCORE_56_72", "粉丝主播转发王国链接");
+			this.put("TOPICFRAGMENTSCORE_56_73", "粉丝主播转发活动链接");
+			this.put("TOPICFRAGMENTSCORE_56_74", "粉丝主播转发智能推荐链接");
+			this.put("TOPICFRAGMENTSCORE_51_16", "足迹");
+			this.put("TOPICFRAGMENTSCORE_52_17", "主播中表情");
+			this.put("TOPICFRAGMENTSCORE_52_18", "主播大表情");
+			this.put("TOPICFRAGMENTSCORE_51_17", "粉丝中表情");
+			this.put("TOPICFRAGMENTSCORE_51_18", "粉丝大表情");
+			this.put("TOPICFRAGMENTSCORE_52_19", "投票");
+			this.put("TOPICFRAGMENTSCORE_52_20", "主播逗一逗");
+			this.put("TOPICFRAGMENTSCORE_51_20", "粉丝逗一逗");
+			this.put("TOPICFRAGMENTSCORE_52_21", "王国所有权转让书");
+		}
+	};
+	
+	@RequestMapping(value = "/fragmentScoreQuery")
+	public ModelAndView fragmentScoreQuery(){
+		List<ConfigItem> result = new ArrayList<ConfigItem>();
+		
+		Map<String, String> configMap = userService.getAppConfigsByKeys(fragmentScoreKeyList);
+		
+		ConfigItem item = null;
+		for(Map.Entry<String, String> entry : fragmentScoreMap.entrySet()){
+			item = new ConfigItem(entry.getKey(),entry.getValue(),ConfigItem.ConfigType.DB,null==configMap.get(entry.getKey())?"0":configMap.get(entry.getKey()));
+			result.add(item);
+		}
+		
+		ModelAndView view = new ModelAndView("price/fragmentScore");
+		view.addObject("dataObj",result);
+		
+		return view;
+	}
+	
+	@RequestMapping(value = "/fragmentScoreModify")
+	@ResponseBody
+	public String fragmentScoreModify(@RequestParam("k")String key, 
+			@RequestParam("v")String value){
+		if(StringUtils.isBlank(key)){
+			logger.warn("key不能为空");
+			return "key不能为空";
+		}
+		
+		userService.saveAppConfig(key, value, null==fragmentScoreMap.get(key)?"":fragmentScoreMap.get(key));
+		
+		return "0";
 	}
 }

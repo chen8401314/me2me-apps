@@ -165,6 +165,7 @@ String sub = request.getParameter("s");
                 </a>
                 <ul class="sub">
                 	<li <%if("13_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/price/kingdomQuery">王国交易管理</a></li>
+                	<li <%if("13_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/price/fragmentScoreQuery">王国详情分值管理</a></li>
                 </ul>
             </li>
         </ul>

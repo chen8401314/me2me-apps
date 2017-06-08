@@ -3926,18 +3926,18 @@ public class UserServiceImpl implements UserService {
 			return null;
 		}
 		Map<String, String> result = new HashMap<String, String>();
-		String value = null;
-		for(String key : keys){
-			value = this.getAppConfigByKey(key);
-			if(!StringUtils.isEmpty(value)){
-				result.put(key, value);
+		
+		List<AppConfig> list = userMybatisDao.getAppConfigByKeys(keys);
+		if(null != list && list.size() > 0){
+			for(AppConfig c : list){
+				result.put(c.getConfigKey(), c.getConfigValue());
 			}
 		}
 		return result;
 	}
 	
 	@Override
-	public void saveAppConfig(String key, String value){
+	public void saveAppConfig(String key, String value, String desc){
 		if(StringUtils.isEmpty(key) || StringUtils.isEmpty(value)){
 			return;
 		}
@@ -3946,6 +3946,7 @@ public class UserServiceImpl implements UserService {
 			config = new AppConfig();
 			config.setConfigKey(key);
 			config.setConfigValue(value);
+			config.setName(desc);
 			userMybatisDao.saveAppConfig(config);
 		}else{
 			config.setConfigValue(value);
