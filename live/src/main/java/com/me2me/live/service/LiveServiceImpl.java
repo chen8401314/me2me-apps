@@ -6547,7 +6547,7 @@ public class LiveServiceImpl implements LiveService {
 		ttr.setOldUid(oldUser.getUid());
 		ttr.setPrice(topic.getPrice().doubleValue());
 		ttr.setTopicId(topicId);
-		liveMybatisDao.saveTopicTransferRecord(ttr);
+		liveMybatisDao.addTopicTransferRecord(ttr);
 		
 		//3 在该王国的详情中插入转让卡片
 		TopicFragment fragment = new TopicFragment();
