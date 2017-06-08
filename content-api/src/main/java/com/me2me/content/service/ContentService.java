@@ -395,4 +395,6 @@ public interface ContentService{
 	Response getLastEmotionInfo(long uid);
 	
 	List<EmotionPackDetail> getEmotionPackDetailBig();
+	
+	Response shareRecord(long uid, int type, long cid, String shareAddr);
 }

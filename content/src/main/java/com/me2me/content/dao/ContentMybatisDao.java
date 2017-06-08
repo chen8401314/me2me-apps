@@ -71,6 +71,9 @@ public class ContentMybatisDao {
     
     @Autowired
     private BillBoardDetailsMapper  billBoardDetailMapper;
+    
+    @Autowired
+    private ContentShareHistoryMapper contentShareHistoryMapper;
 
     public List<Content> loadSquareData(int sinceId){
         return contentMapper.loadSquareData(sinceId);
@@ -825,4 +828,7 @@ public class ContentMybatisDao {
 		return count>0;
 	}
 
+	public void saveContentShareHistory(ContentShareHistory csh){
+		contentShareHistoryMapper.insertSelective(csh);
+	}
 }
