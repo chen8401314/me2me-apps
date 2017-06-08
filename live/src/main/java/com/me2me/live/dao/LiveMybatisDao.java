@@ -18,12 +18,10 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.me2me.common.Constant;
 import com.me2me.common.page.PageBean;
 import com.me2me.common.web.Specification;
 import com.me2me.live.dto.GetLiveDetailDto;
 import com.me2me.live.dto.GetLiveUpdateDto;
-import com.me2me.live.dto.KingdomImgDB;
 import com.me2me.live.dto.SearchDropAroundTopicDto;
 import com.me2me.live.dto.SearchTopicDto;
 import com.me2me.live.dto.SpeakDto;
@@ -45,6 +43,7 @@ import com.me2me.live.mapper.TopicDroparoundTrailMapper;
 import com.me2me.live.mapper.TopicFragmentMapper;
 import com.me2me.live.mapper.TopicFragmentTemplateMapper;
 import com.me2me.live.mapper.TopicMapper;
+import com.me2me.live.mapper.TopicNewsMapper;
 import com.me2me.live.mapper.TopicTagDetailMapper;
 import com.me2me.live.mapper.TopicTagMapper;
 import com.me2me.live.mapper.TopicUserConfigMapper;
@@ -85,6 +84,8 @@ import com.me2me.live.model.TopicFragmentExample;
 import com.me2me.live.model.TopicFragmentExample.Criteria;
 import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicFragmentTemplateExample;
+import com.me2me.live.model.TopicNews;
+import com.me2me.live.model.TopicNewsExample;
 import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicTagDetail;
 import com.me2me.live.model.TopicTagDetailExample;
@@ -183,6 +184,9 @@ public class LiveMybatisDao {
     
     @Autowired
     private BlockTopicMapper  blockTopicMapper;
+    
+    @Autowired
+    private TopicNewsMapper  topicNewsMapper;
 
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -1423,5 +1427,19 @@ public class LiveMybatisDao {
 		int count = topicMapper.countByExample(example);
 		List<Topic> list = topicMapper.selectByExample(example);
 		return list.size()>0?list.get(0):null;
+	}
+	
+	/**
+	 * 获取过去24小时跑马灯信息列表.
+	 * @author chenxiang
+	 * @date 2017-06-8
+	 * @param date 当前时间
+	 */
+	public List<TopicNews> getTopicNewsList24h(Date  date){
+		TopicNewsExample example = new TopicNewsExample();
+		TopicNewsExample.Criteria criteria = example.createCriteria();
+		criteria.andCreateTimeGreaterThan(date);
+		List<TopicNews> list = topicNewsMapper.selectByExample(example);
+		return list;
 	}
 }

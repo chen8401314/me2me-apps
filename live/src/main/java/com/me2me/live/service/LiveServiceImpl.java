@@ -19,8 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import ch.qos.logback.classic.Logger;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -54,6 +52,7 @@ import com.me2me.io.service.FileTransferService;
 import com.me2me.live.cache.MyLivesStatusModel;
 import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.cache.TeaseAutoPlayStatusModel;
+import com.me2me.live.cache.TopicNewsModel;
 import com.me2me.live.dao.LiveLocalJdbcDao;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.AggregationOptDto;
@@ -119,6 +118,7 @@ import com.me2me.live.model.TopicDroparoundTrail;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicFragmentExample;
 import com.me2me.live.model.TopicFragmentTemplate;
+import com.me2me.live.model.TopicNews;
 import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicTagDetail;
 import com.me2me.live.model.TopicUserConfig;
@@ -432,6 +432,36 @@ public class LiveServiceImpl implements LiveService {
         	//暂不支持
         }
         //聚合相关属性--end--
+        
+        //跑马灯列表信息处理
+		Date date = new Date();
+		 Calendar cal1 = Calendar.getInstance();
+		 cal1.setTime(date);
+		  cal1.add(Calendar.DATE, -1);
+        List<TopicNews> topicNewsList = liveMybatisDao.getTopicNewsList24h(cal1.getTime());
+        for (int i = 0; i < topicNewsList.size(); i++) {
+        	TopicNews topicNews = topicNewsList.get(i);
+        	TopicNewsModel topicNewsModel = new TopicNewsModel(topicNews.getId(),uid,"0");
+        	String isTopicNews= cacheService.hGet(topicNewsModel.getKey(), topicNewsModel.getField());
+        	  if (!StringUtils.isEmpty(isTopicNews)) {
+        		  continue;
+              } else {
+            	  cacheService.hSet(topicNewsModel.getKey(), topicNewsModel.getField(), topicNewsModel.getValue());
+              }
+        			
+        	LiveCoverDto.TopicNewsElement  topicNewsElement = new LiveCoverDto.TopicNewsElement();
+        	topicNewsElement.setId(topicNews.getId());
+        	topicNewsElement.setContent(topicNews.getContent());
+        	topicNewsElement.setType(topicNews.getType());
+        	topicNewsElement.setTopicId(topicNews.getTopicId());
+        	Topic newsTopic  = liveMybatisDao.getTopicById(topicNews.getTopicId());
+        	if(newsTopic==null){
+        		continue;
+        	}
+        	topicNewsElement.setContentType(newsTopic.getType());
+        	topicNewsElement.setInternalStatus(this.getUserInternalStatus(newsTopic.getCoreCircle(), uid));
+        	liveCoverDto.getNewsTopList().add(topicNewsElement);
+		}
         
         return Response.success(ResponseStatus.GET_LIVE_COVER_SUCCESS.status, ResponseStatus.GET_LIVE_COVER_SUCCESS.message, liveCoverDto);
     }
