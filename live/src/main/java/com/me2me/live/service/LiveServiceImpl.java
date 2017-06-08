@@ -728,6 +728,7 @@ public class LiveServiceImpl implements LiveService {
 	                }
             	}
             }
+            liveElement.setScore(topicFragment.getScore());
             liveTimeLineDto.getLiveElements().add(liveElement);
         }
     }
@@ -802,6 +803,9 @@ public class LiveServiceImpl implements LiveService {
             topicFragment.setTopicId(speakDto.getTopicId());
             topicFragment.setBottomId(speakDto.getBottomId());
             topicFragment.setTopId(speakDto.getTopId());
+            int score = getTopicFragmentScore(speakDto.getType(),speakDto.getContentType());
+            topicFragment.setScore(score);
+            speakDto.setScore(score);
             long atUid = speakDto.getAtUid();
             if(atUid==-1){
                 JSONObject fragment = JSON.parseObject(speakDto.getFragment());
@@ -2989,6 +2993,7 @@ public class LiveServiceImpl implements LiveService {
             }else{
             	liveDetailDto.getLiveElements().add(count, liveElement);
             }
+            liveElement.setScore(topicFragment.getScore());
             count++;
         }
         LiveDetailDto.PageDetail pd = new LiveDetailDto.PageDetail();
@@ -5635,6 +5640,7 @@ public class LiveServiceImpl implements LiveService {
 		CreateVoteResponeDto cvd = new CreateVoteResponeDto();
 		cvd.setVoteId(voteInfo.getId());
 		cvd.setFragmentId(speakDto.getFragmentId());
+		cvd.setScore(speakDto.getScore());
 		return Response.success(ResponseStatus.CREATE_VOTE_SUCCESS.status, ResponseStatus.CREATE_VOTE_SUCCESS.message,cvd);
 	}
 	@Override
@@ -6078,7 +6084,8 @@ public class LiveServiceImpl implements LiveService {
             topicFragment.setBottomId(0l);
             topicFragment.setTopId(0l);
             topicFragment.setSource(source);
-            
+            int score = getTopicFragmentScore(0, 0);
+            topicFragment.setScore(score);
     		JSONObject extra = new JSONObject();
 			extra.put("type", "textNormal");
 			extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
@@ -6099,7 +6106,8 @@ public class LiveServiceImpl implements LiveService {
 			topicFragment1.setBottomId(0l);
 			topicFragment1.setTopId(0l);
 			topicFragment1.setSource(source);
-
+            int score1 = getTopicFragmentScore(52, 18);
+            topicFragment1.setScore(score1);
 			JSONObject extra1 = new JSONObject();
 			extra1.put("type", "emoji");
 			extra1.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
@@ -6283,6 +6291,8 @@ public class LiveServiceImpl implements LiveService {
             topicFragment.setBottomId(0l);
             topicFragment.setTopId(0l);
             topicFragment.setSource(source);
+            int score = getTopicFragmentScore(0, 0);
+            topicFragment.setScore(score);
             
     		JSONObject extra = new JSONObject();
 			extra.put("type", "textNormal");
@@ -6304,7 +6314,9 @@ public class LiveServiceImpl implements LiveService {
 			topicFragment1.setTopId(0l);
 			topicFragment1.setSource(source);
 			topicFragment1.setFragmentImage(image);
-
+			 int score1 = getTopicFragmentScore(0, 1);
+			 topicFragment1.setScore(score1);
+			
 			JSONObject extra1 = new JSONObject();
 			extra1.put("type", "image");
 			extra1.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());

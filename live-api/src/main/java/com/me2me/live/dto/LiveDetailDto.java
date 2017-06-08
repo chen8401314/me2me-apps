@@ -71,6 +71,7 @@ public class LiveDetailDto implements BaseEntity {
         
         private int teaseStatus;
 
+        private int score;
     }
 
     @Data
