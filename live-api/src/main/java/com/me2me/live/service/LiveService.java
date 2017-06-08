@@ -534,4 +534,10 @@ public interface LiveService {
 	 * @return
 	 */
 	public Response emotionInfoList();
+	
+	/**
+	 * 王国转让历史查询
+	 * @return
+	 */
+	public Response getKingdomTransferRecord(long topicId,long sinceId);
 }

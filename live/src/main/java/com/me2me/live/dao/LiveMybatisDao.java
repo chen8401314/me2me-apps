@@ -46,6 +46,7 @@ import com.me2me.live.mapper.TopicMapper;
 import com.me2me.live.mapper.TopicNewsMapper;
 import com.me2me.live.mapper.TopicTagDetailMapper;
 import com.me2me.live.mapper.TopicTagMapper;
+import com.me2me.live.mapper.TopicTransferRecordMapper;
 import com.me2me.live.mapper.TopicUserConfigMapper;
 import com.me2me.live.mapper.VoteInfoMapper;
 import com.me2me.live.mapper.VoteOptionMapper;
@@ -90,6 +91,8 @@ import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicTagDetail;
 import com.me2me.live.model.TopicTagDetailExample;
 import com.me2me.live.model.TopicTagExample;
+import com.me2me.live.model.TopicTransferRecord;
+import com.me2me.live.model.TopicTransferRecordExample;
 import com.me2me.live.model.TopicUserConfig;
 import com.me2me.live.model.TopicUserConfigExample;
 import com.me2me.live.model.VoteInfo;
@@ -187,6 +190,10 @@ public class LiveMybatisDao {
     
     @Autowired
     private TopicNewsMapper  topicNewsMapper;
+    
+    @Autowired
+    private TopicTransferRecordMapper  topicTransferRecordMapper;
+    
 
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -1442,4 +1449,20 @@ public class LiveMybatisDao {
 		List<TopicNews> list = topicNewsMapper.selectByExample(example);
 		return list;
 	}
+	/**
+	 * 王国转让历史查询
+	 * @author chenxiang
+	 * @date 2017-06-8
+	 * @param date 当前时间
+	 */
+    public List<TopicTransferRecord> getKingdomTransferRecord(long topicId, long sinceId) {
+    	TopicTransferRecordExample example = new TopicTransferRecordExample();
+    	TopicTransferRecordExample.Criteria criteria = example.createCriteria();
+    	if(sinceId>0){
+        criteria.andIdLessThan(sinceId);
+    	}
+        criteria.andTopicIdEqualTo(topicId);
+        example.setOrderByClause("id desc limit 10");
+        return topicTransferRecordMapper.selectByExample(example);
+    }
 }
