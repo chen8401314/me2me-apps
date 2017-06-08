@@ -19,8 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import ch.qos.logback.classic.Logger;
-
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
@@ -6438,4 +6436,52 @@ public class LiveServiceImpl implements LiveService {
 		return result;
 	}
 	
+	@Override
+	public String changeTopicKing(long topicId, long newUid){
+		if(newUid <= 0){
+			return "未传递新UID";
+		}
+		Topic topic = liveMybatisDao.getTopicById(topicId);
+		if(null == topic){
+			return "王国不存在";
+		}
+		UserProfile u = userService.getUserProfileByUid(newUid);
+		if(null == u){
+			return "新国王不存在";
+		}
+		if(topic.getUid() == newUid){
+			return "王国不能自己给自己";
+		}
+		
+		//老国王先留下，后面有记录要记录的
+		long oldUid = topic.getUid();
+		
+		//1 变更国王
+		Topic updateTopic = new Topic();
+		updateTopic.setId(topic.getId());
+		//1.1 将王国UID变更
+		updateTopic.setUid(newUid);
+		//1.2 由于原国王本身就在核心圈里，所以不需要处理了，但是需要将新国王放入核心圈里（如果已经在了就不需要了）
+		JSONArray array = JSON.parseArray(topic.getCoreCircle());
+		boolean needAdd = true;
+		for (int i = 0; i < array.size(); i++) {
+            if (array.getLong(i) == newUid) {
+            	needAdd = false;
+            	break;
+            }
+        }
+		if(needAdd){
+			array.add(newUid);
+			updateTopic.setCoreCircle(array.toString());
+		}
+		liveMybatisDao.updateTopic(updateTopic);
+		
+		//2 记录转让历史
+//		TopicTransferRecord ttr = new TopicTransferRecord();
+		
+		
+		//2 在该王国的详情中插入转让卡片
+		
+		return "0";
+	}
 }

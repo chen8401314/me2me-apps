@@ -534,4 +534,12 @@ public interface LiveService {
 	 * @return
 	 */
 	public Response emotionInfoList();
+	
+	/**
+	 * 王国国王变更
+	 * @param topicId
+	 * @param newUid
+	 * @return 0表示变更成功，其他变更失败
+	 */
+	String changeTopicKing(long topicId, long newUid);
 }
