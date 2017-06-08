@@ -14,5 +14,7 @@ public class CreateVoteResponeDto implements BaseEntity {
     private long fragmentId ;
 
     private long voteId ;
+    
+    private int score;
 
 }

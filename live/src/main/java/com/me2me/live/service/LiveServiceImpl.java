@@ -52,6 +52,7 @@ import com.me2me.io.service.FileTransferService;
 import com.me2me.live.cache.MyLivesStatusModel;
 import com.me2me.live.cache.MySubscribeCacheModel;
 import com.me2me.live.cache.TeaseAutoPlayStatusModel;
+import com.me2me.live.cache.TopicNewsModel;
 import com.me2me.live.dao.LiveLocalJdbcDao;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.AggregationOptDto;
@@ -92,6 +93,7 @@ import com.me2me.live.dto.ShowTopicTagsDTO;
 import com.me2me.live.dto.ShowUserAtListDTO;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.dto.TestApiDto;
+import com.me2me.live.dto.TopicTransferRecordDto;
 import com.me2me.live.dto.TopicVoteInfoDto;
 import com.me2me.live.dto.UserAtListDTO;
 import com.me2me.live.dto.VoteInfoDto;
@@ -117,8 +119,10 @@ import com.me2me.live.model.TopicDroparoundTrail;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicFragmentExample;
 import com.me2me.live.model.TopicFragmentTemplate;
+import com.me2me.live.model.TopicNews;
 import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicTagDetail;
+import com.me2me.live.model.TopicTransferRecord;
 import com.me2me.live.model.TopicUserConfig;
 import com.me2me.live.model.VoteInfo;
 import com.me2me.live.model.VoteOption;
@@ -431,6 +435,36 @@ public class LiveServiceImpl implements LiveService {
         }
         //聚合相关属性--end--
         
+        //跑马灯列表信息处理
+		Date date = new Date();
+		 Calendar cal1 = Calendar.getInstance();
+		 cal1.setTime(date);
+		  cal1.add(Calendar.DATE, -1);
+        List<TopicNews> topicNewsList = liveMybatisDao.getTopicNewsList24h(cal1.getTime());
+        for (int i = 0; i < topicNewsList.size(); i++) {
+        	TopicNews topicNews = topicNewsList.get(i);
+        	TopicNewsModel topicNewsModel = new TopicNewsModel(topicNews.getId(),uid,"0");
+        	String isTopicNews= cacheService.hGet(topicNewsModel.getKey(), topicNewsModel.getField());
+        	  if (!StringUtils.isEmpty(isTopicNews)) {
+        		  continue;
+              } else {
+            	  cacheService.hSet(topicNewsModel.getKey(), topicNewsModel.getField(), topicNewsModel.getValue());
+              }
+        			
+        	LiveCoverDto.TopicNewsElement  topicNewsElement = new LiveCoverDto.TopicNewsElement();
+        	topicNewsElement.setId(topicNews.getId());
+        	topicNewsElement.setContent(topicNews.getContent());
+        	topicNewsElement.setType(topicNews.getType());
+        	topicNewsElement.setTopicId(topicNews.getTopicId());
+        	Topic newsTopic  = liveMybatisDao.getTopicById(topicNews.getTopicId());
+        	if(newsTopic==null){
+        		continue;
+        	}
+        	topicNewsElement.setContentType(newsTopic.getType());
+        	topicNewsElement.setInternalStatus(this.getUserInternalStatus(newsTopic.getCoreCircle(), uid));
+        	liveCoverDto.getNewsTopList().add(topicNewsElement);
+		}
+        
         return Response.success(ResponseStatus.GET_LIVE_COVER_SUCCESS.status, ResponseStatus.GET_LIVE_COVER_SUCCESS.message, liveCoverDto);
     }
 
@@ -726,6 +760,7 @@ public class LiveServiceImpl implements LiveService {
 	                }
             	}
             }
+            liveElement.setScore(topicFragment.getScore());
             liveTimeLineDto.getLiveElements().add(liveElement);
         }
     }
@@ -800,6 +835,9 @@ public class LiveServiceImpl implements LiveService {
             topicFragment.setTopicId(speakDto.getTopicId());
             topicFragment.setBottomId(speakDto.getBottomId());
             topicFragment.setTopId(speakDto.getTopId());
+            int score = getTopicFragmentScore(speakDto.getType(),speakDto.getContentType());
+            topicFragment.setScore(score);
+            speakDto.setScore(score);
             long atUid = speakDto.getAtUid();
             if(atUid==-1){
                 JSONObject fragment = JSON.parseObject(speakDto.getFragment());
@@ -2987,6 +3025,7 @@ public class LiveServiceImpl implements LiveService {
             }else{
             	liveDetailDto.getLiveElements().add(count, liveElement);
             }
+            liveElement.setScore(topicFragment.getScore());
             count++;
         }
         LiveDetailDto.PageDetail pd = new LiveDetailDto.PageDetail();
@@ -5633,6 +5672,7 @@ public class LiveServiceImpl implements LiveService {
 		CreateVoteResponeDto cvd = new CreateVoteResponeDto();
 		cvd.setVoteId(voteInfo.getId());
 		cvd.setFragmentId(speakDto.getFragmentId());
+		cvd.setScore(speakDto.getScore());
 		return Response.success(ResponseStatus.CREATE_VOTE_SUCCESS.status, ResponseStatus.CREATE_VOTE_SUCCESS.message,cvd);
 	}
 	@Override
@@ -6076,7 +6116,8 @@ public class LiveServiceImpl implements LiveService {
             topicFragment.setBottomId(0l);
             topicFragment.setTopId(0l);
             topicFragment.setSource(source);
-            
+            int score = getTopicFragmentScore(0, 0);
+            topicFragment.setScore(score);
     		JSONObject extra = new JSONObject();
 			extra.put("type", "textNormal");
 			extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
@@ -6097,7 +6138,8 @@ public class LiveServiceImpl implements LiveService {
 			topicFragment1.setBottomId(0l);
 			topicFragment1.setTopId(0l);
 			topicFragment1.setSource(source);
-
+            int score1 = getTopicFragmentScore(52, 18);
+            topicFragment1.setScore(score1);
 			JSONObject extra1 = new JSONObject();
 			extra1.put("type", "emoji");
 			extra1.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
@@ -6281,6 +6323,8 @@ public class LiveServiceImpl implements LiveService {
             topicFragment.setBottomId(0l);
             topicFragment.setTopId(0l);
             topicFragment.setSource(source);
+            int score = getTopicFragmentScore(0, 0);
+            topicFragment.setScore(score);
             
     		JSONObject extra = new JSONObject();
 			extra.put("type", "textNormal");
@@ -6302,7 +6346,9 @@ public class LiveServiceImpl implements LiveService {
 			topicFragment1.setTopId(0l);
 			topicFragment1.setSource(source);
 			topicFragment1.setFragmentImage(image);
-
+			 int score1 = getTopicFragmentScore(0, 1);
+			 topicFragment1.setScore(score1);
+			
 			JSONObject extra1 = new JSONObject();
 			extra1.put("type", "image");
 			extra1.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
@@ -6483,5 +6529,26 @@ public class LiveServiceImpl implements LiveService {
 		//2 在该王国的详情中插入转让卡片
 		
 		return "0";
+	}
+	
+	@Override
+	public Response getKingdomTransferRecord(long topicId,long sinceId){
+		List<TopicTransferRecord> datas = liveMybatisDao.getKingdomTransferRecord(topicId, sinceId);
+		TopicTransferRecordDto dto = new TopicTransferRecordDto();
+		for (int i = 0; i < datas.size(); i++) {
+			TopicTransferRecordDto.TopicTransferRecordElement ee =new TopicTransferRecordDto.TopicTransferRecordElement();
+			TopicTransferRecord topicTransferRecord  =datas.get(i);
+			ee.setSinceId(topicTransferRecord.getId());
+			ee.setTransferPrice(topicTransferRecord.getPrice());
+			UserProfile oldUser = userService.getUserProfileByUid(topicTransferRecord.getOldUid());
+			ee.setOldNickName(oldUser.getNickName());
+			ee.setOldAvatar(Constant.QINIU_DOMAIN + "/" +oldUser.getAvatar());
+			UserProfile newUser = userService.getUserProfileByUid(topicTransferRecord.getNewUid());
+			ee.setNewNickName(newUser.getNickName());
+			ee.setNewAvatar(Constant.QINIU_DOMAIN + "/" +newUser.getAvatar());
+			ee.setCreateTime(topicTransferRecord.getCreateTime().getTime());
+			dto.getTopicTransferRecordList().add(ee);
+		}
+		return Response.success(dto);
 	}
 }

@@ -71,6 +71,8 @@ public class LiveCoverDto implements BaseEntity{
 
     private String recTags;
     
+    //跑马灯信息列表
+    private List<TopicNewsElement> newsTopList = Lists.newArrayList();
     @Data
     public static class TopicElement implements BaseEntity{
 		private static final long serialVersionUID = 1465887396904072679L;
@@ -79,5 +81,17 @@ public class LiveCoverDto implements BaseEntity{
 		private String title;
 		private String coverImage;
 		private int internalStatus;
+    }
+    
+    @Data
+    public static class TopicNewsElement implements BaseEntity{
+		private static final long serialVersionUID = 1465887396905072679L;
+    	
+		private long id;
+		private long topicId;
+		private String content;
+		private int type;
+		private int internalStatus;
+		private int contentType;
     }
 }
