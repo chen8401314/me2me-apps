@@ -19,6 +19,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.me2me.content.service.ContentService;
+import com.me2me.live.service.LiveService;
 import com.me2me.mgmt.request.KingdomBusinessDTO;
 import com.me2me.mgmt.request.KingdomDTO;
 import com.me2me.mgmt.request.KingdomQueryDTO;
@@ -32,6 +33,8 @@ public class PriceController {
 	
 	@Autowired
     private ContentService contentService;
+	@Autowired
+	private LiveService liveService;
 	
 	@RequestMapping(value = "/kingdomQuery")
 	public ModelAndView kingdomQuery(KingdomQueryDTO dto){
@@ -196,6 +199,7 @@ public class PriceController {
 	@RequestMapping(value="/business")
 	@ResponseBody
 	public String business(KingdomBusinessDTO dto){
-		return "0";
+		logger.info("王国国王变更，王国："+dto.getTopicId()+"，新国王UID：" + dto.getNewUid());
+		return liveService.changeTopicKing(dto.getTopicId(), dto.getNewUid());
 	}
 }

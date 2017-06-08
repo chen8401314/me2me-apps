@@ -75,18 +75,27 @@
     }
     
     var business = function(){
-    	var kid = $("#topicId").val();
-    	var ouid = $("#uid").val();
-    	var nuid = $("#newUid").val();
-    	
     	var newNickName = $("#newNickName").val();
     	if(newNickName == ''){
     		alert('请选择一个新的用户');
     		return;
     	}
     	
-    	 if(confirm("确定变更王国["+$("#title").val()+"]的国王由["+$("#nickName").val()+"]变更为["+$("#newNickName").val()+"]？")){
-    		 
+    	 if(confirm("确定变更王国["+$("#title").val()+"]的国王由["+$("#nickName").val()+"]变更为["+newNickName+"]？")){
+    		 $.ajax({
+    	    		url : "${ctx}/price/business?topicId="+$("#topicId").val()+"&newUid="+$("#newUid").val(),
+    	    		async : false,
+    	    		type : "GET",
+    	    		contentType : "application/json;charset=UTF-8",
+    	    		success : function(result) {
+    	    			if(result == '0'){
+    	    				alert('王国国王变更成功!');
+    	    				window.location.href='${ctx}/price/kingdomQuery?title='+$("#title").val();
+    	    			}else{
+    	    				alert(result);
+    	    			}
+    	    		}
+    	    	});
     	 }
     }
     </script>

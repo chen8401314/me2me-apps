@@ -1465,4 +1465,8 @@ public class LiveMybatisDao {
         example.setOrderByClause("id desc limit 10");
         return topicTransferRecordMapper.selectByExample(example);
     }
+    
+    public void saveTopicTransferRecord(TopicTransferRecord ttr){
+    	topicTransferRecordMapper.insertSelective(ttr);
+    }
 }

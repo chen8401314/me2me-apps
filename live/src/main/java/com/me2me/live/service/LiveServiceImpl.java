@@ -6491,17 +6491,21 @@ public class LiveServiceImpl implements LiveService {
 		if(null == topic){
 			return "王国不存在";
 		}
-		UserProfile u = userService.getUserProfileByUid(newUid);
-		if(null == u){
+		UserProfile oldUser = userService.getUserProfileByUid(topic.getUid());
+		if(null == oldUser){
+			return "老国王不存在";
+		}
+		UserProfile newUser = userService.getUserProfileByUid(newUid);
+		if(null == newUser){
 			return "新国王不存在";
 		}
 		if(topic.getUid() == newUid){
 			return "王国不能自己给自己";
 		}
 		
-		//老国王先留下，后面有记录要记录的
-		long oldUid = topic.getUid();
+		log.info("王国["+topic.getTitle()+"]国王变更，老国王："+oldUser.getNickName()+"，新国王：" + newUser.getUid());
 		
+		Date now = new Date();
 		//1 变更国王
 		Topic updateTopic = new Topic();
 		updateTopic.setId(topic.getId());
@@ -6521,12 +6525,51 @@ public class LiveServiceImpl implements LiveService {
 			updateTopic.setCoreCircle(array.toString());
 		}
 		liveMybatisDao.updateTopic(updateTopic);
+		//1.3 如果新国王原先加入过这个王国的，则去除加入关系
+		LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(newUid, topicId);
+		if(null != liveFavorite){
+			liveMybatisDao.deleteLiveFavorite(liveFavorite);
+		}
+		//1.4 将老国王加入到这个王国（因为已经是核心圈了）
+		LiveFavorite oldLiveFavorite = liveMybatisDao.getLiveFavorite(oldUser.getUid(), topicId);
+		if(null == oldLiveFavorite){
+			oldLiveFavorite = new LiveFavorite();
+			oldLiveFavorite.setUid(oldUser.getUid());
+			oldLiveFavorite.setTopicId(topicId);
+			oldLiveFavorite.setCreateTime(now);
+			liveMybatisDao.createLiveFavorite(oldLiveFavorite);
+		}
 		
 		//2 记录转让历史
-//		TopicTransferRecord ttr = new TopicTransferRecord();
+		TopicTransferRecord ttr = new TopicTransferRecord();
+		ttr.setCreateTime(now);
+		ttr.setNewUid(newUid);
+		ttr.setOldUid(oldUser.getUid());
+		ttr.setPrice(topic.getPrice().doubleValue());
+		ttr.setTopicId(topicId);
+		liveMybatisDao.saveTopicTransferRecord(ttr);
 		
-		
-		//2 在该王国的详情中插入转让卡片
+		//3 在该王国的详情中插入转让卡片
+		TopicFragment fragment = new TopicFragment();
+		fragment.setTopicId(topicId);
+		fragment.setUid(newUid);
+		fragment.setType(52);
+		fragment.setContentType(21);//王国内链
+		fragment.setCreateTime(now);
+    	//组装extra
+    	JSONObject extra = new JSONObject();
+    	extra.put("type", "kingdomOTD");
+    	extra.put("only", UUID.randomUUID().toString()+"-"+new Random().nextInt());
+    	extra.put("price", topic.getPrice());
+    	extra.put("uid", newUid);
+    	extra.put("avatar", Constant.QINIU_DOMAIN + "/" +newUser.getAvatar());
+    	extra.put("name", newUser.getNickName());
+    	extra.put("oldUid", oldUser.getUid());
+    	extra.put("oldAvatar", Constant.QINIU_DOMAIN + "/" +oldUser.getAvatar());
+    	extra.put("oldName", oldUser.getNickName());
+    	fragment.setExtra(extra.toJSONString());
+    	fragment.setScore(0);//这个是没有分值的
+    	liveMybatisDao.createTopicFragment(fragment);
 		
 		return "0";
 	}
