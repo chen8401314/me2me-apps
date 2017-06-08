@@ -6571,6 +6571,14 @@ public class LiveServiceImpl implements LiveService {
     	fragment.setScore(0);//这个是没有分值的
     	liveMybatisDao.createTopicFragment(fragment);
 		
+    	//4 记录跑马灯记录
+    	TopicNews topicNews = new TopicNews();
+    	topicNews.setTopicId(topicId);
+    	topicNews.setType(Specification.TopicNewsType.BUSINESS.index);
+    	topicNews.setContent(oldUser.getNickName()+"的《"+topic.getTitle()+"》出售给了"+newUser.getNickName());
+    	topicNews.setCreateTime(now);
+    	liveMybatisDao.addTopicNews(topicNews);
+    	
 		return "0";
 	}
 	
