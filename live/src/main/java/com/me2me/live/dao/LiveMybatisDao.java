@@ -1465,4 +1465,23 @@ public class LiveMybatisDao {
         example.setOrderByClause("id desc limit 10");
         return topicTransferRecordMapper.selectByExample(example);
     }
+	/**
+	 * 保存跑马灯信息记录
+	 * @author chenxiang
+	 * @date 2017-06-8
+	 * @param 
+	 */
+	public Integer addTopicNews(TopicNews topicNews) {
+		return topicNewsMapper.insertSelective(topicNews);
+	}
+	
+	/**
+	 * 保存王国转让信息
+	 * @author chenxiang
+	 * @date 2017-06-8
+	 * @param 
+	 */
+	public Integer addTopicTransferRecord(TopicTransferRecord topicTransferRecord) {
+		return topicTransferRecordMapper.insertSelective(topicTransferRecord);
+	}
 }
