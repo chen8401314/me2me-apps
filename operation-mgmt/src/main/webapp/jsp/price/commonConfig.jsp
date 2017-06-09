@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta charset="utf-8" />
 
-<title>ZX_IMS 2.0 - 王国详情分值管理</title>
+<title>ZX_IMS 2.0 - 基础配置管理</title>
 
 <link href="${ctx}/css/bootstrap.min.css" rel="stylesheet" />
 <link href="${ctx}/css/bootstrap-reset.css" rel="stylesheet" />
@@ -35,7 +35,7 @@ var modifyCommit = function(type){
 	var value = $("#cvalue").val();
 
 	$.ajax({
-		url : "${ctx}/price/configModify/fragmentScore?k="+key+"&v="+value,
+		url : "${ctx}/price/configModify/commonConfig?k="+key+"&v="+value,
 		async : false,
 		type : "GET",
 		contentType : "application/json;charset=UTF-8",
@@ -59,7 +59,7 @@ var modifyCommit = function(type){
 		<!--sidebar start-->
 		<jsp:include page="../common/leftmenu.jsp" flush="false">
 			<jsp:param name="t" value="13" />
-			<jsp:param name="s" value="13_3" />
+			<jsp:param name="s" value="13_2" />
 		</jsp:include>
 		<!--sidebar end-->
 
@@ -81,27 +81,27 @@ var modifyCommit = function(type){
 									<table class="display table table-bordered table-striped" id="dynamic-table">
 										<thead>
 											<tr>
+												<th>描述</th>
 												<th>KEY</th>
 												<th>VALUE</th>
-												<th>描述</th>
 												<th>操作</th>
 											</tr>
 										</thead>
 										<tbody>
 											<c:forEach items="${dataObj}" var="configItem">
 												<tr class="gradeX">
+												<th>${configItem.desc }</th>
 													<th>${configItem.key }</th>
 													<th>${configItem.value }</th>
-													<th>${configItem.desc }</th>
 													<th><a href="#" onclick="modifyConfig('${configItem.key }', '${configItem.desc }')">编辑</a></th>
 												</tr>
 											</c:forEach>
 										</tbody>
 										<tfoot>
 											<tr>
+												<th>描述</th>
 												<th>KEY</th>
 												<th>VALUE</th>
-												<th>描述</th>
 												<th>操作</th>
 											</tr>
 										</tfoot>
@@ -131,7 +131,7 @@ var modifyCommit = function(type){
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					<h4 class="modal-title">王国详情分值更新</h4>
+					<h4 class="modal-title">基础配置更新</h4>
 				</div>
 				<div class="modal-body">
 					<div class="form-group">
