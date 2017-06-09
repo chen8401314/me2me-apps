@@ -1399,6 +1399,16 @@ public class UserMybatisDao {
 		}
 	}
 	
+	public List<AppConfig> getAppConfigByKeys(List<String> keyList){
+		if(null == keyList || keyList.size() == 0){
+			return null;
+		}
+		AppConfigExample example = new AppConfigExample();
+		AppConfigExample.Criteria criteria  = example.createCriteria();
+		criteria.andConfigKeyIn(keyList);
+		return appConfigMapper.selectByExample(example);
+	}
+	
 	public List<AppConfig> getAllAppConfig(){
 		AppConfigExample example = new AppConfigExample();
 		return appConfigMapper.selectByExample(example);

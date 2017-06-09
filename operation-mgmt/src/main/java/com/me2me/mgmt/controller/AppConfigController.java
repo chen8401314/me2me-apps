@@ -195,7 +195,7 @@ public class AppConfigController {
 			return "key不能为空";
 		}
 		
-		userService.saveAppConfig(key, value);
+		userService.saveAppConfig(key, value, "");
 		
 		return "0";
 	}

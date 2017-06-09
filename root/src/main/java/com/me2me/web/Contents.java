@@ -335,4 +335,9 @@ public class Contents extends BaseController {
     	return contentService.emojiPackageDetail(request.getPackageId());
     }
     
+    @RequestMapping(value = "/shareRecord",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response shareRecord(ShareRecordRequest request){
+    	return contentService.shareRecord(request.getUid(), request.getType(), request.getCid(), request.getShareAddr());
+    }
 }

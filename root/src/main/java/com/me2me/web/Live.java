@@ -46,6 +46,7 @@ import com.me2me.web.request.EditSpeakRequest;
 import com.me2me.web.request.FavoriteListRequest;
 import com.me2me.web.request.FinishMyLiveRequest;
 import com.me2me.web.request.FragmentForwardRequest;
+import com.me2me.web.request.GetKingdomTransferRecordRequest;
 import com.me2me.web.request.GetLiveByCidRequest;
 import com.me2me.web.request.GetLivesRequest;
 import com.me2me.web.request.GetMyLivesRequest;
@@ -873,5 +874,16 @@ public class Live extends BaseController {
     	dto.setTopicId(request.getTopicId());
     	
     	return liveService.userAtList(dto);
+    }
+    
+    /**
+     * 王国转让历史查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getKingdomTransferRecord",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getKingdomTransferRecord(GetKingdomTransferRecordRequest request){
+    	return liveService.getKingdomTransferRecord(request.getTopicId(),request.getSinceId());
     }
 }

@@ -7,4 +7,9 @@ public class KingdomDTO {
 
 	private long topicId;
 	private String alias;
+	
+	private String title;
+	private long uid;
+	private String nickName;
+	private int price;
 }

@@ -54,9 +54,10 @@
         <!--<table tableName="billboard_relation" domainObjectName="BillBoardRelation"/>-->
         <!--<table tableName="billboard_list" domainObjectName="BillBoardList"/>-->
         <!-- <table tableName="tease_info" domainObjectName="TeaseInfo"/> -->
-        <table tableName="tease_info" domainObjectName="TeaseInfo"/>
-        <table tableName="vote_info" domainObjectName="VoteInfo"/>
-        <table tableName="vote_option" domainObjectName="VoteOption"/>
-        <table tableName="vote_record" domainObjectName="VoteRecord"/>
+        <!-- <table tableName="tease_info" domainObjectName="TeaseInfo"/> -->
+        <!-- <table tableName="vote_info" domainObjectName="VoteInfo"/> -->
+        <!-- <table tableName="vote_option" domainObjectName="VoteOption"/> -->
+        <!-- <table tableName="vote_record" domainObjectName="VoteRecord"/> -->
+        <!-- <table tableName="content_share_history" domainObjectName="ContentShareHistory"/> -->
     </context>
 </generatorConfiguration>

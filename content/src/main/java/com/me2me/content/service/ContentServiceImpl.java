@@ -89,6 +89,7 @@ import com.me2me.content.model.Content;
 import com.me2me.content.model.ContentImage;
 import com.me2me.content.model.ContentLikesDetails;
 import com.me2me.content.model.ContentReview;
+import com.me2me.content.model.ContentShareHistory;
 import com.me2me.content.model.ContentTags;
 import com.me2me.content.model.ContentTagsDetails;
 import com.me2me.content.model.EmotionPack;
@@ -5840,7 +5841,18 @@ private void localJpush(long toUid){
 			// TODO Auto-generated catch block
 			return  Response.failure(500,"时间转换错误");
 		}
+	}
 	
+	@Override
+	public Response shareRecord(long uid, int type, long cid, String shareAddr){
+		ContentShareHistory csh = new ContentShareHistory();
+		csh.setCid(cid);
+		csh.setCreatetime(new Date());
+		csh.setShareAddr(shareAddr);
+		csh.setType(type);
+		csh.setUid(uid);
+		contentMybatisDao.saveContentShareHistory(csh);
+		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message);
 	}
 
 	

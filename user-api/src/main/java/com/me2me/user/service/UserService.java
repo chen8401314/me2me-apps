@@ -474,7 +474,7 @@ public interface UserService {
 	
 	Map<String, String> getAppConfigsByKeys(List<String> keys);
 	
-	void saveAppConfig(String key, String value);
+	void saveAppConfig(String key, String value, String desc);
 	
 	List<AppConfig> getAllAppConfig();
 }

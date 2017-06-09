@@ -158,6 +158,17 @@ String sub = request.getParameter("s");
                 	<li <%if("12_5".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/emotionInfo/list_emotion">情绪管理</a></li>
                 </ul>
             </li>
+            <li class="sub-menu">
+                <a href="javascript:;" <%if("13".equals(tab)){ %>class="active"<%} %>>
+                    <i class="fa fa-bar-chart-o"></i>
+                    <span>王国价值管理</span>
+                </a>
+                <ul class="sub">
+                	<li <%if("13_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/price/kingdomQuery">王国交易管理</a></li>
+                	<li <%if("13_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/price/configQuery/commonConfig">基础配置</a></li>
+                	<li <%if("13_3".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/price/configQuery/fragmentScore">王国详情分值配置</a></li>
+                </ul>
+            </li>
         </ul>
         <!-- sidebar menu end-->
     </div>

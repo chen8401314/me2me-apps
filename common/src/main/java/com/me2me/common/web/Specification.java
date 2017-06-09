@@ -1342,6 +1342,19 @@ public interface Specification {
             this.index = index;
         }
     }
+    
+    enum TopicNewsType{
+    	BUSINESS("交易信息", 0),
+    	OVERLINE("过线信息", 1);
+    	
+    	public final String name;
+        public final int index;
+
+        TopicNewsType(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
 }
 
     

@@ -404,4 +404,6 @@ public interface ContentService{
 	 * @return
 	 */
 	Response<PricedKingdomDto> getPricedKingdomList(int page,int pageSize,long currentUid);
+	
+	Response shareRecord(long uid, int type, long cid, String shareAddr);
 }
