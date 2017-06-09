@@ -85,6 +85,7 @@ public class BillBoardDetailsDto implements BaseEntity {
         private String introduced;
         
         private String tags;
+        private int price;
     }
 
 

@@ -1632,6 +1632,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setCreateTime(topic.getCreateTime());
             showTopicElement.setTopicId(topic.getId());
             showTopicElement.setStatus(topic.getStatus());
+            showTopicElement.setPrice(topic.getPrice()); //2.2.7 王国估值
             //取这个排序
             showTopicElement.setUpdateTime(topic.getLongTimes());
             if(null != followMap.get(uid+"_"+topic.getUid().toString())){
@@ -3651,6 +3652,7 @@ public class LiveServiceImpl implements LiveService {
             e.setTopicId(topicId);
             e.setStatus((Integer)topic.get("status"));
             e.setUpdateTime((Long)topic.get("long_time"));
+            e.setPrice((Integer)topic.get("price"));		// 2.2.7王国价值
             if(null != followMap.get(uid+"_"+topicUid)){
             	e.setIsFollowed(1);
             }else{
