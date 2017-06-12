@@ -1,5 +1,6 @@
 package com.me2me.live.dao;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.me2me.common.Constant;
+import com.me2me.common.utils.DateUtil;
 import com.me2me.live.dto.KingdomSearchDTO;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.LiveFavoriteDelete;
@@ -962,4 +964,16 @@ public class LiveLocalJdbcDao {
 		}
 		return 0;
 	}
+	/**
+	 * 统计用户某天偷取的王国金币数。
+	 * @author zhangjiwei
+	 * @date Jun 12, 2017
+	 * @param date
+	 * @return
+	 */
+	public List<Map<String,Object>> getUserStealLogByDay(long uid,String day) {
+		String sql = "select * from user_steal_log where uid=? and DATE_FORMAT(create_time,'%Y-%m-%d')=?";
+		return jdbcTemplate.queryForList(sql,new Object[]{uid,day});
+	}
+
 }

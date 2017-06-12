@@ -48,6 +48,7 @@ import com.me2me.live.mapper.TopicTagDetailMapper;
 import com.me2me.live.mapper.TopicTagMapper;
 import com.me2me.live.mapper.TopicTransferRecordMapper;
 import com.me2me.live.mapper.TopicUserConfigMapper;
+import com.me2me.live.mapper.UserStealLogMapper;
 import com.me2me.live.mapper.VoteInfoMapper;
 import com.me2me.live.mapper.VoteOptionMapper;
 import com.me2me.live.mapper.VoteRecordMapper;
@@ -95,6 +96,7 @@ import com.me2me.live.model.TopicTransferRecord;
 import com.me2me.live.model.TopicTransferRecordExample;
 import com.me2me.live.model.TopicUserConfig;
 import com.me2me.live.model.TopicUserConfigExample;
+import com.me2me.live.model.UserStealLog;
 import com.me2me.live.model.VoteInfo;
 import com.me2me.live.model.VoteInfoExample;
 import com.me2me.live.model.VoteOption;
@@ -193,6 +195,9 @@ public class LiveMybatisDao {
     
     @Autowired
     private TopicTransferRecordMapper  topicTransferRecordMapper;
+    
+    @Autowired
+    private UserStealLogMapper  stealLogMapper;
     
 
     public void createTopic(Topic topic) {
@@ -1484,5 +1489,9 @@ public class LiveMybatisDao {
 	 */
 	public Integer addTopicTransferRecord(TopicTransferRecord topicTransferRecord) {
 		return topicTransferRecordMapper.insertSelective(topicTransferRecord);
+	}
+
+	public void addStealLog(UserStealLog log) {
+		stealLogMapper.insert(log);
 	}
 }

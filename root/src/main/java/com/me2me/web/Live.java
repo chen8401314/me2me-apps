@@ -67,6 +67,7 @@ import com.me2me.web.request.SetLiveRequest;
 import com.me2me.web.request.SettingModifyRequest;
 import com.me2me.web.request.SignOutLiveRequest;
 import com.me2me.web.request.SpeakRequest;
+import com.me2me.web.request.StealKingdomCoinRequest;
 import com.me2me.web.request.TagKingdomsRequest;
 import com.me2me.web.request.TestLiveRequest;
 import com.me2me.web.request.TopicOptRequest;
@@ -885,5 +886,16 @@ public class Live extends BaseController {
     @RequestMapping(value = "/getKingdomTransferRecord",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getKingdomTransferRecord(GetKingdomTransferRecordRequest request){
     	return liveService.getKingdomTransferRecord(request.getTopicId(),request.getSinceId());
+    }
+    /**
+     * 偷金币
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/stealKingdomCoin",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response stealKingdomCoin(StealKingdomCoinRequest request){
+    	
+    	return liveService.stealKingdomCoin(request.getUid(),request.getTopicId());
     }
 }

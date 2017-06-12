@@ -49,6 +49,7 @@
         <!--<table tableName="topic_tag" domainObjectName="TopicTag"/>-->
         <!--<table tableName="topic_tag_detail" domainObjectName="TopicTagDetail"/>-->
 <!--          <table tableName="topic_news" domainObjectName="TopicNews"/>
-         <table tableName="topic_transfer_record" domainObjectName="TopicTransferRecord"/> -->
+         <table tableName="topic_transfer_record" domainObjectName="TopicTransferRecord"/>
+         <table tableName="user_steal_log" domainObjectName="UserStealLog" />  -->
     </context>
 </generatorConfiguration>
