@@ -19,7 +19,7 @@ import org.springframework.stereotype.Component;
  * @author zhangjiwei
  * @date Jun 9, 2017
  */
-@Component
+//@Component
 public class ZookeeperLockService  {
 	@Value("#{app.dubboRegistry}")
 	private String zkAddr;

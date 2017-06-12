@@ -6612,6 +6612,64 @@ public class LiveServiceImpl implements LiveService {
 		return Response.success(dto);
 	}
 	/**
+	 * 获取用户在指定的王国下可偷的金币数量。如果可偷，返回具体可偷取的数量；否则抛出异常，提示不可偷取原因
+	 * @author zhangjiwei
+	 * @date Jun 12, 2017
+	 * @param uid
+	 * @param topicId
+	 * @return
+	 * @throws Exception
+	 */
+	private int getAliveCoinsForSteal(long uid,long topicId) throws Exception{
+		//判断用户能不能偷取王国
+		Topic topic = liveMybatisDao.getTopicById(topicId);
+		if(topic.getUid()==uid){
+			throw new RuntimeException("不能偷取自己的王国");
+		}
+		// 本王国今日余额
+		int topicRemainCoins= 10; 		// todo: 此处待实现
+		if(topicRemainCoins<=0){
+			throw new RuntimeException("王国已经达到今日偷取上限了");
+		}
+		// 用户今天已偷
+		String day = DateUtil.date2string(new Date(), "yyyy-MM-dd");
+		// 用户今日可偷
+		List<Map<String,Object>> userStealLog = liveLocalJdbcDao.getUserStealLogByDay(uid,day);
+		int stealedCoins=0;
+		boolean stealed = false;
+		for(Map<String,Object> log:userStealLog){
+			int logCoin = (int)log.get("stealed_coins");
+			stealedCoins+=logCoin;
+			if(topicId==(long)log.get("topic_id")){
+				stealed=true;
+			}
+		}
+		if(stealed){
+			throw new RuntimeException("不能重复偷取此王国");
+		}
+		// 每天可偷数量
+		int userDayLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_COIN_DAY_LIMIT_KEY));
+		int userOnceLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_COIN_ONCE_LIMIT_KEY));
+		int userTopicLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_TOPIC_DAY_LIMIT_KEY));
+		
+		if(userStealLog.size()>=userTopicLimit){
+			throw new RuntimeException("用户已达到今日偷取王国次数上限了");
+		}
+		
+		int userTodayRemain=userDayLimit-stealedCoins;
+		
+		if(userTodayRemain<=0){
+			throw new RuntimeException("用户已达到今日偷取上限了");
+		}
+		
+		int canStealCount = Math.max(userTodayRemain, topicRemainCoins);
+		canStealCount=Math.min(canStealCount, userOnceLimit);
+		// 判断王国剩余价值。
+		//随机数
+		int coins = RandomUtils.nextInt(1, canStealCount+1);
+		return coins;
+	}
+	/**
 	 * 此方法必须同步执行。此实现使用zookeeper实现分布式锁。
 	 */
 	@Override
@@ -6622,55 +6680,16 @@ public class LiveServiceImpl implements LiveService {
 		try {
 			lock = new DistributedLock(addr, "steal-topic-"+topicId);
 			lock.lock();
-			//判断用户能不能偷取王国
-			Topic topic = liveMybatisDao.getTopicById(topicId);
-			if(topic.getUid()==uid){
-				return Response.failure("不能偷取自己的王国");
+			int coins=0;
+			try{
+				coins = getAliveCoinsForSteal(uid, topicId);
+			}catch(Exception e){
+				return Response.failure(e.getMessage());
 			}
-			// 本王国今日余额
-			int topicRemainCoins= 10; 		// todo: 此处待实现
-			if(topicRemainCoins<=0){
-				return Response.failure("王国已经达到今日偷取上限了");
-			}
-			// 用户今天已偷
-			String day = DateUtil.date2string(new Date(), "yyyy-MM-dd");
-			// 用户今日可偷
-			List<Map<String,Object>> userStealLog = liveLocalJdbcDao.getUserStealLogByDay(uid,day);
-			int stealedCoins=0;
-			boolean stealed = false;
-			for(Map<String,Object> log:userStealLog){
-				int logCoin = (int)log.get("stealed_coins");
-				stealedCoins+=logCoin;
-				if(topicId==(long)log.get("topic_id")){
-					stealed=true;
-				}
-			}
-			if(stealed){
-				return Response.failure("不能重复偷取此王国");
-			}
-			// 每天可偷数量
-			int userDayLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_COIN_DAY_LIMIT_KEY));
-			int userOnceLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_COIN_ONCE_LIMIT_KEY));
-			int userTopicLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_TOPIC_DAY_LIMIT_KEY));
-			
-			if(userStealLog.size()>=userTopicLimit){
-				return Response.failure("用户已达到今日偷取王国次数上限了");
-			}
-			
-			int userTodayRemain=userDayLimit-stealedCoins;
-			
-			if(userTodayRemain<=0){
-				return Response.failure("用户已达到今日偷取上限了");
-			}
-			
-			int canStealCount = Math.max(userTodayRemain, topicRemainCoins);
-			canStealCount=Math.min(canStealCount, userOnceLimit);
-			// 判断王国剩余价值。
-			//随机数
-			int coins = RandomUtils.nextInt(1, canStealCount+1);
-			
 			// 修改用户金币数
+			
 			// 修改王国可被偷数
+			
 			// 记录偷取日志
 			UserStealLog log = new UserStealLog();
 			log.setCreateTime(new Date());
@@ -6682,7 +6701,6 @@ public class LiveServiceImpl implements LiveService {
 			StealResultDto dto= new StealResultDto();
 			dto.setStealedCoins(coins);
 			return Response.success(dto);
-			// pa pa pa.
 		} catch (Exception e) {
 			e.printStackTrace();
 			return Response.failure("未知错误，偷取失败");
