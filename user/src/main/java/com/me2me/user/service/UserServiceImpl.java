@@ -1306,7 +1306,7 @@ public class UserServiceImpl implements UserService {
         // todo
         showUserProfileDto.setAvailableCoin(userProfile.getAvailableCoin());
         showUserProfileDto.setLevel(userProfile.getLevel());
-        // showUserProfileDto.setLevelIcon();
+        showUserProfileDto.setLevelIcon("a.jpg");
 
         if(!StringUtils.isEmpty(userProfile.getThirdPartBind())) {
             showUserProfileDto.setThirdPartBind(userProfile.getThirdPartBind());
