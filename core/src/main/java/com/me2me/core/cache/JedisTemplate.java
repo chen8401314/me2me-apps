@@ -50,8 +50,11 @@ public class JedisTemplate {
             jedis = jedisPool.getResource();
             action.action(jedis);
         }catch (JedisException exception){
-            log.error("jedis can't connection form server");
+            log.error("jedis can't connection form server!", exception.getMessage());
             broken = true;
+        }catch (Exception e){
+        	log.error("jedis error!!", e.getMessage());
+        	broken = true;
         }finally {
             Assert.notNull(jedis,"this resource is not null");
             if(broken) {
@@ -62,7 +65,7 @@ public class JedisTemplate {
             }
         }
         log.debug("execute redis no action solution.");
-        action.action(jedis);
+        //action.action(jedis);
     }
 
     public <T> T execute(JedisActionResult action){
@@ -71,10 +74,11 @@ public class JedisTemplate {
         try {
             jedis = jedisPool.getResource();
             return action.actionResult(jedis);
-        }catch (JedisException exception){
+        }catch (Exception exception){
             log.error("jedis can't connection form server");
             broken = handleJedisException(exception);
-            throw exception;
+            //throw exception;
+            return null;
         }finally {
             Assert.notNull(jedis,"this resource is not null");
             if(broken) {
@@ -86,7 +90,7 @@ public class JedisTemplate {
         }
     }
 
-    protected boolean handleJedisException(JedisException jedisException) {
+    protected boolean handleJedisException(Exception jedisException) {
         if(jedisException instanceof JedisConnectionException){
             log.error("Jedis can not connect the server");
         }else if(jedisException instanceof JedisDataException){

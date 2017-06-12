@@ -5,7 +5,7 @@
     <parent>
         <artifactId>me2me</artifactId>
         <groupId>com.me2me</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -16,8 +16,48 @@
         <dependency>
             <groupId>com.me2me</groupId>
             <artifactId>core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
+<!-- https://mvnrepository.com/artifact/org.springframework.data/spring-data-elasticsearch -->
+<dependency>
+    <groupId>org.springframework.data</groupId>
+    <artifactId>spring-data-elasticsearch</artifactId>
+    <version>1.3.6.RELEASE</version>
+</dependency>
+<dependency>
+  <groupId>org.springframework</groupId>
+  <artifactId>spring-aop</artifactId>
+  <version>4.2.6.RELEASE</version>
+</dependency>
+
+
+        <dependency>
+        	<groupId>com.me2me</groupId>
+        	<artifactId>search-api</artifactId>
+        	<version>2.0.8</version>
+        </dependency>
+    
+        <dependency>
+	       <groupId>com.github.stuxuhai</groupId>
+	       <artifactId>jpinyin</artifactId>
+	       <version>1.1.8</version>
+	    </dependency>
+	    <dependency>
+		    <groupId>org.apache.kafka</groupId>
+		    <artifactId>kafka-clients</artifactId>
+		    <version>0.10.0.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-redis</artifactId>
+			<version>1.5.2.RELEASE</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>redis.clients</groupId>
+			<artifactId>jedis</artifactId>
+			<version>2.6.2</version>
+		</dependency>
     </dependencies>
 
     <!--开发环境-->
@@ -31,12 +71,17 @@
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>user</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>io</artifactId>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>search-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
             </dependencies>
             <build>
@@ -51,34 +96,226 @@
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>live-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <artifactId>user-api</artifactId>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>content-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <artifactId>io-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>search-api</artifactId>
+                    <version>${project.version}</version>
                 </dependency>
             </dependencies>
             <build>
                 <filters>
                     <filter>src/main/filter/test.properties</filter>
                 </filters>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>appassembler-maven-plugin</artifactId>
+                        <version>1.10</version>
+                        <configuration>
+                            <repositoryLayout>flat</repositoryLayout>
+                            <repositoryName>lib</repositoryName>
+                            <logsDirectory>logs</logsDirectory>
+                            <includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
+                            <copyConfigurationDirectory>src/main/resources</copyConfigurationDirectory>
+                            <target>${project.build.directory}</target>
+                            <daemons>
+                                <daemon>
+                                    <id>app-search-service</id>
+                                    <mainClass>com.me2me.search.Bootstrap</mainClass>
+                                    <commandLineArguments>
+                                        <commandLineArgument>start</commandLineArgument>
+                                    </commandLineArguments>
+                                    <platforms>
+                                        <platform>jsw</platform>
+                                    </platforms>
+                                    <generatorConfigurations>
+                                        <generatorConfiguration>
+                                            <generator>jsw</generator>
+                                            <includes>
+                                                <include>linux-x86-32</include>
+                                                <include>linux-x86-64</include>
+                                                <include>windows-x86-32</include>
+                                                <include>windows-x86-64</include>
+                                            </includes>
+                                            <configuration>
+                                                <property>
+                                                    <name>configuration.directory.in.classpath.first</name>
+                                                    <value>etc</value>
+                                                </property>
+                                                <property>
+                                                    <name>set.default.REPO_DIR</name>
+                                                    <value>lib</value>
+                                                </property>
+                                                <property>
+                                                    <name>wrapper.logfile</name>
+                                                    <value>../logs/wrapper.log</value>
+                                                </property>
+                                                <property>
+                                                    <name>run.as.user.envvar</name>
+                                                    <value>root</value>
+                                                </property>
+                                            </configuration>
+                                        </generatorConfiguration>
+                                    </generatorConfigurations>
+                                    <jvmSettings>
+                                        <initialMemorySize>512M</initialMemorySize>
+                                        <maxMemorySize>512M</maxMemorySize>
+                                        <!--                            <systemProperties>
+                                                                            <systemProperty>java.security.policy=conf/policy.all</systemProperty>
+                                                                            <systemProperty>com.sun.management.jmxremote</systemProperty>
+                                                                            <systemProperty>com.sun.management.jmxremote.port=8999</systemProperty>
+                                                                            <systemProperty>com.sun.management.jmxremote.authenticate=false</systemProperty>
+                                                                            <systemProperty>com.sun.management.jmxremote.ssl=false</systemProperty>
+                                                                        </systemProperties>   -->
+                                        <extraArguments>
+                                            <extraArgument>-server</extraArgument>
+                                        </extraArguments>
+                                    </jvmSettings>
+                                </daemon>
+                            </daemons>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>generate-jsw-scripts</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>generate-daemons</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
             </build>
         </profile>
-
+		<profile>
+            <id>prod</id>
+            <dependencies>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>user-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>io-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>search-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
+            <build>
+                <filters>
+                    <filter>src/main/filter/prod.properties</filter>
+                </filters>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>appassembler-maven-plugin</artifactId>
+                        <version>1.10</version>
+                        <configuration>
+                            <repositoryLayout>flat</repositoryLayout>
+                            <repositoryName>lib</repositoryName>
+                            <logsDirectory>logs</logsDirectory>
+                            <includeConfigurationDirectoryInClasspath>true</includeConfigurationDirectoryInClasspath>
+                            <copyConfigurationDirectory>src/main/resources</copyConfigurationDirectory>
+                            <target>${project.build.directory}</target>
+                            <daemons>
+                                <daemon>
+                                    <id>app-search-service</id>
+                                    <mainClass>com.me2me.search.Bootstrap</mainClass>
+                                    <commandLineArguments>
+                                        <commandLineArgument>start</commandLineArgument>
+                                    </commandLineArguments>
+                                    <platforms>
+                                        <platform>jsw</platform>
+                                    </platforms>
+                                    <generatorConfigurations>
+                                        <generatorConfiguration>
+                                            <generator>jsw</generator>
+                                            <includes>
+                                                <include>linux-x86-32</include>
+                                                <include>linux-x86-64</include>
+                                                <include>windows-x86-32</include>
+                                                <include>windows-x86-64</include>
+                                            </includes>
+                                            <configuration>
+                                                <property>
+                                                    <name>configuration.directory.in.classpath.first</name>
+                                                    <value>etc</value>
+                                                </property>
+                                                <property>
+                                                    <name>set.default.REPO_DIR</name>
+                                                    <value>lib</value>
+                                                </property>
+                                                <property>
+                                                    <name>wrapper.logfile</name>
+                                                    <value>../logs/wrapper.log</value>
+                                                </property>
+                                                <property>
+                                                    <name>run.as.user.envvar</name>
+                                                    <value>root</value>
+                                                </property>
+                                            </configuration>
+                                        </generatorConfiguration>
+                                    </generatorConfigurations>
+                                    <jvmSettings>
+                                        <initialMemorySize>512M</initialMemorySize>
+                                        <maxMemorySize>512M</maxMemorySize>
+                                        <!--                            <systemProperties>
+                                                                            <systemProperty>java.security.policy=conf/policy.all</systemProperty>
+                                                                            <systemProperty>com.sun.management.jmxremote</systemProperty>
+                                                                            <systemProperty>com.sun.management.jmxremote.port=8999</systemProperty>
+                                                                            <systemProperty>com.sun.management.jmxremote.authenticate=false</systemProperty>
+                                                                            <systemProperty>com.sun.management.jmxremote.ssl=false</systemProperty>
+                                                                        </systemProperties>   -->
+                                        <extraArguments>
+                                            <extraArgument>-server</extraArgument>
+                                        </extraArguments>
+                                    </jvmSettings>
+                                </daemon>
+                            </daemons>
+                        </configuration>
+                        <executions>
+                            <execution>
+                                <id>generate-jsw-scripts</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>generate-daemons</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
         <profile>
             <id>product</id>
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>user-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>io-api</artifactId>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>search-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
             </dependencies>
             <build>

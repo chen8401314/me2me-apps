@@ -28,6 +28,8 @@ public class ContentReviewDto implements BaseEntity {
         private long id;
 
         private long uid;
+        
+        private long cid;
 
         private String nickName;
 
@@ -40,6 +42,10 @@ public class ContentReviewDto implements BaseEntity {
         private long atUid;
 
         private String atNickName;
+
+        private int v_lv;
+
+        private String extra;
 
     }
 

@@ -31,4 +31,8 @@ public class ReviewRequest extends Request{
     @Setter
     @Getter
     private long atUid;
+
+    @Setter
+    @Getter
+    private String extra;
 }

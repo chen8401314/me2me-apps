@@ -3,13 +3,18 @@ package com.me2me.web;
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.*;
 import com.me2me.content.service.ContentService;
+import com.me2me.kafka.service.KafkaService;
 import com.me2me.web.request.*;
+import com.me2me.web.utils.VersionUtil;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import javax.servlet.http.HttpServletResponse;
 
 
 /**
@@ -24,6 +29,8 @@ public class Contents extends BaseController {
     @Autowired
     private ContentService contentService;
 
+    @Autowired
+    private KafkaService kafkaService;
     /**
      * 精选接口(已废)
      * @return
@@ -85,13 +92,16 @@ public class Contents extends BaseController {
      */
     @RequestMapping(value = "/likes",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response likes(LikeRequest request){
+    public Response likes(LikeRequest request,HttpServletResponse req){
         LikeDto likeDto = new LikeDto();
         likeDto.setUid(request.getUid());
         likeDto.setCid(request.getCid());
         likeDto.setAction(request.getAction());
         //兼容老版本
         likeDto.setType(request.getType() == 0 ? 1 : request.getType());
+
+        //埋点
+//        kafkaService.saveClientLog(likeDto,req.getHeader("User-Agent"), Specification.ClientLogAction.UGC_LIKES);
         return contentService.like2(likeDto);
     }
 
@@ -101,7 +111,7 @@ public class Contents extends BaseController {
      */
     @RequestMapping(value = "/writeTag",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response writeTag(WriteTagRequest request){
+    public Response writeTag(WriteTagRequest request,HttpServletResponse req){
         WriteTagDto writeTagDto = new WriteTagDto();
         writeTagDto.setCid(request.getCid());
         writeTagDto.setTag(request.getTag());
@@ -109,6 +119,9 @@ public class Contents extends BaseController {
         writeTagDto.setCustomerId(request.getCustomerId());
         //兼容老版本
         writeTagDto.setType(request.getType() == 0 ? 1 : request.getType());
+
+        //埋点
+//        kafkaService.saveClientLog(writeTagDto,req.getHeader("User-Agent"), Specification.ClientLogAction.UGC_FEEL);
         return contentService.writeTag2(writeTagDto);
     }
 
@@ -119,11 +132,11 @@ public class Contents extends BaseController {
     @RequestMapping(value = "/deleteContent",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response deleteContent(DeleteContentRequest request){
-        return contentService.deleteContent(request.getId());
+        return contentService.deleteContent(request.getId(),request.getUid(),false);
     }
 
     /**
-     * 用户发布列表接口
+     * 用户发布列表接口(0为了兼容老版本/1非直播/2直播)
      * @return
      */
     @RequestMapping(value = "/myPublish",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
@@ -132,7 +145,11 @@ public class Contents extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.myPublish(request.getCustomerId(),request.getSinceId());
+        int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
+        	vflag = 1;
+        }
+        return contentService.myPublish(request.getCustomerId(),request.getUpdateTime(),request.getType(),request.getSinceId(),request.getNewType(),vflag);
     }
 
     /**
@@ -141,7 +158,8 @@ public class Contents extends BaseController {
      */
     @RequestMapping(value = "/getContentDetail",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response getContentDetail(ContentDetailRequest request){
+    public Response getContentDetail(ContentDetailRequest request, HttpServletResponse response ){
+        response.setHeader("Access-Control-Allow-Origin", "*");
         return contentService.contentDetail(request.getId(),request.getUid());
     }
 
@@ -153,7 +171,7 @@ public class Contents extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getUserData",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getUserData(UserInfoRequest request){
-        return  contentService.getUserData(request.getCustomerId(),request.getUid());
+        return contentService.UserData(request.getCustomerId(),request.getUid());
     }
 
     /**
@@ -164,7 +182,11 @@ public class Contents extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getUserData2",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getUserData2(UserInfoRequest request){
-        return  contentService.getUserData2(request.getCustomerId(),request.getUid());
+    	int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
+        	vflag = 1;
+        }
+        return contentService.UserData2(request.getCustomerId(),request.getUid(),vflag);
     }
 
     /**
@@ -178,7 +200,7 @@ public class Contents extends BaseController {
         if(request.getSinceId()==-1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.getSelectedData(request.getSinceId(),request.getUid());
+        return contentService.SelectedData(request.getSinceId(),request.getUid());
     }
 
     /**
@@ -216,7 +238,7 @@ public class Contents extends BaseController {
     @ResponseBody
     public Response activities(ActivitiesRequest request){
 
-        return contentService.getActivities(request.getSinceId(),request.getUid());
+        return contentService.Activities(request.getSinceId(),request.getUid());
     }
 
     /**
@@ -225,16 +247,38 @@ public class Contents extends BaseController {
      */
     @RequestMapping(value = "/review",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response review(ReviewRequest request){
+    public Response review(ReviewRequest request,HttpServletResponse req){
         ReviewDto reviewDto = new ReviewDto();
         reviewDto.setUid(request.getUid());
         reviewDto.setCid(request.getCid());
         reviewDto.setReview(request.getReview());
         reviewDto.setIsAt(request.getIsAt());
         reviewDto.setAtUid(request.getAtUid());
+        reviewDto.setExtra(request.getExtra());
         //兼容老版本
         reviewDto.setType(request.getType() == 0 ? 1 : request.getType());
+
+        //埋点
+//        kafkaService.saveClientLog(reviewDto,req.getHeader("User-Agent"), Specification.ClientLogAction.UGC_REVIEW);
+
         return contentService.createReview(reviewDto);
+    }
+    
+    /**
+     * 文章/UGC等评论删除接口
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/delReview",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response delReview(DelReviewRequest request){
+    	ReviewDelDTO dto = new ReviewDelDTO();
+    	dto.setUid(request.getUid());
+    	dto.setCid(request.getCid());
+    	dto.setRid(request.getRid());
+    	dto.setType(request.getType());
+    	
+    	return contentService.deleteReview(dto);
     }
 
     /**
@@ -243,7 +287,7 @@ public class Contents extends BaseController {
      */
     @RequestMapping(value = "/reviewList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response review(ReviewListRequest request){
+    public Response reviewList(ReviewListRequest request){
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }
@@ -272,6 +316,28 @@ public class Contents extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }
-        return contentService.myPublishByType(request.getCustomerId(),request.getSinceId(),request.getType(),request.getUpdateTime());
+        int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
+        	vflag = 1;
+        }
+        return contentService.myPublishByType(request.getCustomerId(),request.getSinceId(),request.getType(),request.getUpdateTime(),request.getUid(),vflag);
+    }
+
+    @RequestMapping(value = "/emojiPackageQuery",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response emojiPackageQuery(){
+        return contentService.emojiPackageQuery();
+    }
+    
+    @RequestMapping(value = "/emojiPackageDetail",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response emojiPackageDetail(EmojiPackageDetailRequest request){
+    	return contentService.emojiPackageDetail(request.getPackageId());
+    }
+    
+    @RequestMapping(value = "/shareRecord",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response shareRecord(ShareRecordRequest request){
+    	return contentService.shareRecord(request.getUid(), request.getType(), request.getCid(), request.getShareAddr());
     }
 }

@@ -6,8 +6,12 @@ import com.me2me.common.web.Specification;
 import com.me2me.content.dto.*;
 import com.me2me.content.mapper.*;
 import com.me2me.content.model.*;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +57,24 @@ public class ContentMybatisDao {
     @Autowired
     private AtReviewMapper atReviewMapper;
 
+    @Autowired
+    private BillBoardMapper billBoardMapper;
+    
+    @Autowired
+    private BillBoardDetailsMapper billBoardDetailsMapper;
+
+    @Autowired
+    private BillBoardRelationMapper billBoardRelationMapper;
+    
+    @Autowired
+    private BillBoardListMapper billBoardListMapper;
+    
+    @Autowired
+    private BillBoardDetailsMapper  billBoardDetailMapper;
+    
+    @Autowired
+    private ContentShareHistoryMapper contentShareHistoryMapper;
+
     public List<Content> loadSquareData(int sinceId){
         return contentMapper.loadSquareData(sinceId);
     }
@@ -77,6 +99,10 @@ public class ContentMybatisDao {
         contentMapper.updateByPrimaryKeySelective(content);
     }
 
+    public void updateContent(Content content){
+        contentMapper.updateByPrimaryKey(content);
+    }
+
     public void createTag(ContentTags contentTags){
         ContentTagsExample example = new ContentTagsExample();
         ContentTagsExample.Criteria criteria = example.createCriteria();
@@ -89,6 +115,7 @@ public class ContentMybatisDao {
         }
     }
 
+    //获取所有（包括UGC和直播等）
     public List<Content>myPublish(long uid,int sinceId) {
         Map<String,Object> map = Maps.newHashMap();
         map.put("uid",uid);
@@ -96,14 +123,27 @@ public class ContentMybatisDao {
         return contentMapper.loadMyPublishData(map);
     }
 
-    /*
-    public List<LoadAllFeelingDto>loadAllFeeling(long cid , int sinceId) {
-        Map<String,Object> map = new HashMap<String,Object>();
-        map.put("cid",cid);
+    public List<Content>myPublishUgc(long uid,int sinceId,int flag) {
+        Map<String,Object> map = Maps.newHashMap();
+        map.put("uid",uid);
         map.put("sinceId",sinceId);
-        List<LoadAllFeelingDto> result = contentUserLikesMapper.loadAllFeeling(map);
-        return result;
-    }*/
+        map.put("flag", flag);
+        return contentMapper.loadMyPublishUgcData(map);
+    }
+
+    public List<Content>myPublishLive(long uid,long updateTime) {
+        Map<String,Object> map = Maps.newHashMap();
+        map.put("uid",uid);
+        map.put("updateTime",updateTime);
+        return contentMapper.loadMyPublishLiveData(map);
+    }
+
+    public List<Content>myPublishLive2(long uid,int sinceId) {
+        Map<String,Object> map = Maps.newHashMap();
+        map.put("uid",uid);
+        map.put("sinceId",sinceId);
+        return contentMapper.loadMyPublishLiveData2(map);
+    }
 
     public void modifyPGCById(Content content){
         contentMapper.updateByPrimaryKeySelective(content);
@@ -114,7 +154,11 @@ public class ContentMybatisDao {
         ContentTagsDetailsExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(cid);
         criteria.andIdLessThan(sinceId);
-        criteria.andCreateTimeNotEqualTo(createTime);
+        //由于自己的feeling也是感受，两个表存储有可能会有时间差，故这里想自己的去除。
+        Calendar cal = Calendar.getInstance();
+		cal.setTime(createTime);
+		cal.add(Calendar.SECOND, 2);
+		criteria.andCreateTimeGreaterThan(cal.getTime());
         example.setOrderByClause(" create_time desc ");
         return contentTagsDetailsMapper.selectByExample(example);
     }
@@ -167,17 +211,6 @@ public class ContentMybatisDao {
         return list!=null&&list.size()>0?list.get(0):null;
     }
 
-
-
-    public Content getContent(long cid,long uid){
-        ContentExample example = new ContentExample();
-        ContentExample.Criteria criteria = example.createCriteria();
-        criteria.andUidEqualTo(uid);
-        criteria.andForwardCidEqualTo(cid);
-        List<Content> list = contentMapper.selectByExampleWithBLOBs(example);
-        return  (list != null && list.size() >0) ? list.get(0) : null;
-    }
-
     public List<Content> loadSelectedData(int sinceId){
         return contentMapper.loadSelectedData(sinceId);
     }
@@ -198,18 +231,23 @@ public class ContentMybatisDao {
         if(editorContentDto.getArticleType()==1){
             // PGC
             criteria.andTypeEqualTo(Specification.ArticleType.EDITOR.index);
-            ContentExample.Criteria criteria2 = example.createCriteria();
-            criteria.andTitleLike("%"+editorContentDto.getKeyword()+"%");
-            criteria2.andTypeEqualTo(Specification.ArticleType.ACTIVITY.index);
+//            ContentExample.Criteria criteria2 = example.createCriteria();
+            if(StringUtils.isNotBlank(editorContentDto.getKeyword())){
+            	criteria.andTitleLike("%"+editorContentDto.getKeyword()+"%");
+            }
+//            criteria2.andTypeEqualTo(Specification.ArticleType.ACTIVITY.index);
             criteria.andStatusNotEqualTo(1);
-            example.or(criteria2);
+//            example.or(criteria2);
         }else{
             // UGC
             criteria.andTypeEqualTo(Specification.ArticleType.ORIGIN.index);
-            ContentExample.Criteria criteria2 = example.createCriteria();
-            criteria2.andTypeEqualTo(Specification.ArticleType.LIVE.index);
+//            ContentExample.Criteria criteria2 = example.createCriteria();
+            if(StringUtils.isNotBlank(editorContentDto.getKeyword())){
+            	criteria.andTitleLike("%"+editorContentDto.getKeyword()+"%");
+            }
+//            criteria2.andTypeEqualTo(Specification.ArticleType.LIVE.index);
             criteria.andStatusNotEqualTo(1);
-            example.or(criteria2);
+//            example.or(criteria2);
         }
     }
 
@@ -220,8 +258,9 @@ public class ContentMybatisDao {
         return contentMapper.countByExample(example);
     }
 
-    public int getTopicStatus(long topicId){
-       return contentMapper.getTopicStatus(topicId);
+    public Integer getTopicStatus(long topicId){
+       Integer result = contentMapper.getTopicStatus(topicId);
+        return  result == null ? 1 : result;
     }
 
     public void deleteTopicById(long topicId){
@@ -239,8 +278,8 @@ public class ContentMybatisDao {
         return contentMapper.loadHottestContent(sinceId);
     }
 
-    public List<Content> getHottestTopsContent(){
-        return contentMapper.loadHottestTopsContent();
+    public List<Content> getHottestTopsContent(int flag){
+        return contentMapper.loadHottestTopsContent(flag);
     }
 
     public int getContentImageCount(long cid){
@@ -250,25 +289,16 @@ public class ContentMybatisDao {
         return contentImageMapper.countByExample(example);
     }
 
-    public List<Content> getNewest(int sinceId){
-        return contentMapper.loadNewestContent(sinceId);
+    public List<Content> getNewest(int sinceId, int vFlag){
+        return contentMapper.loadNewestContent(sinceId, vFlag);
     }
 
-    public List<Content> getAttention(long sinceId , List<Long> userFollows){
-        ContentExample example = new ContentExample();
-        ContentExample.Criteria criteria = example.createCriteria();
-        criteria.andStatusNotEqualTo(Specification.ContentStatus.DELETE.index);
-        if(userFollows != null && userFollows.size() >0) {
-            criteria.andUidIn(userFollows);
-        }else{
-            criteria.andUidEqualTo(-1L);
-        }
-        criteria.andRightsEqualTo(Specification.ContentRights.EVERY.index);
-        criteria.andIdLessThan(sinceId);
-        example.setOrderByClause(" id desc limit 10 ");
-        return  contentMapper.selectByExampleWithBLOBs(example);
-
-
+    public List<Content> getAttention(long sinceId , long meUid, int vFlag){
+        Map<String,Object> params = Maps.newHashMap();
+        params.put("uid",meUid);
+        params.put("sinceId",sinceId);
+        params.put("flag", vFlag);
+        return contentMapper.getAttention(params);
     }
 
     public void createContentTagsDetails(ContentTagsDetails contentTagsDetails){
@@ -286,12 +316,21 @@ public class ContentMybatisDao {
         criteria.andTypeEqualTo(Specification.ArticleType.LIVE.index);
         return contentMapper.selectByExample(example);
     }
+    
+    public List<Content> getContentByTopicIds(List<Long> topicIds){
+    	ContentExample example = new ContentExample();
+        ContentExample.Criteria criteria =example.createCriteria();
+        criteria.andForwardCidIn(topicIds);
+        criteria.andTypeEqualTo(Specification.ArticleType.LIVE.index);
+        return contentMapper.selectByExample(example);
+    }
 
     public List<ContentReview> getContentReviewByCid(long cid,long sinceId){
         ContentReviewExample example = new ContentReviewExample();
         ContentReviewExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(cid);
         criteria.andIdLessThan(sinceId);
+        criteria.andStatusNotEqualTo(Specification.ContentDelStatus.DELETE.index);//非删除的内容
         example.setOrderByClause(" create_time desc limit 20 ");
         return contentReviewMapper.selectByExample(example);
     }
@@ -302,6 +341,7 @@ public class ContentMybatisDao {
         ArticleReviewExample.Criteria criteria = example.createCriteria();
         criteria.andArticleIdEqualTo(cid);
         criteria.andIdLessThan(sinceId);
+        criteria.andStatusNotEqualTo(Specification.ContentDelStatus.DELETE.index);//非删除的内容
         example.setOrderByClause(" create_time desc limit 20 ");
         List<ArticleReview> list = articleReviewMapper.selectByExample(example);
         for(ArticleReview articleReview : list){
@@ -312,6 +352,7 @@ public class ContentMybatisDao {
             contentReview.setReview(articleReview.getReview());
             contentReview.setUid(articleReview.getUid());
             contentReview.setAtUid(articleReview.getAtUid());
+            contentReview.setExtra(articleReview.getExtra());
             result.add(contentReview);
         }
         return result;
@@ -321,8 +362,32 @@ public class ContentMybatisDao {
         ContentReviewExample example = new ContentReviewExample();
         ContentReviewExample.Criteria criteria = example.createCriteria();
         criteria.andCidEqualTo(cid);
+        criteria.andStatusNotEqualTo(Specification.ContentDelStatus.DELETE.index);
         example.setOrderByClause(" create_time desc limit 20 ");
         return contentReviewMapper.selectByExample(example);
+    }
+    
+    public int countContentReviewByCid(long cid){
+    	ContentReviewExample example = new ContentReviewExample();
+        ContentReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andCidEqualTo(cid);
+        criteria.andStatusNotEqualTo(Specification.ContentDelStatus.DELETE.index);
+        return contentReviewMapper.countByExample(example);
+    }
+    
+    public List<ContentReview> getContentReviewPageByUid(long uid, int start, int pageSize){
+    	ContentReviewExample example = new ContentReviewExample();
+        ContentReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        example.setOrderByClause(" id desc limit "+start+","+pageSize);
+        return contentReviewMapper.selectByExample(example);
+    }
+    
+    public int countContentReviewPageByUid(long uid){
+    	ContentReviewExample example = new ContentReviewExample();
+        ContentReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        return contentReviewMapper.countByExample(example);
     }
 
     public int isLike(long cid, long uid){
@@ -392,6 +457,10 @@ public class ContentMybatisDao {
         review.setReview(reviewDto.getReview());
         review.setUid(reviewDto.getUid());
         review.setAtUid(reviewDto.getAtUid());
+        review.setStatus(Specification.ContentDelStatus.NORMAL.index);
+        if(StringUtils.isNotEmpty(reviewDto.getExtra())){
+            review.setExtra(reviewDto.getExtra());
+        }
         articleReviewMapper.insertSelective(review);
     }
 
@@ -407,8 +476,32 @@ public class ContentMybatisDao {
         ArticleReviewExample.Criteria criteria = example.createCriteria();
         criteria.andArticleIdEqualTo(id);
         criteria.andIdLessThan(sinceId);
+        criteria.andStatusNotEqualTo(Specification.ContentDelStatus.DELETE.index);
         example.setOrderByClause(" id desc limit 20 ");
         return articleReviewMapper.selectByExample(example);
+    }
+    
+    public int countArticleReviews(long id){
+    	ArticleReviewExample example = new ArticleReviewExample();
+        ArticleReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andArticleIdEqualTo(id);
+        criteria.andStatusNotEqualTo(Specification.ContentDelStatus.DELETE.index);
+        return articleReviewMapper.countByExample(example);
+    }
+    
+    public List<ArticleReview> getArticleReviewPageByUid(long uid, int start, int pageSize){
+    	ArticleReviewExample example = new ArticleReviewExample();
+        ArticleReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        example.setOrderByClause(" id desc limit "+start+","+pageSize);
+        return articleReviewMapper.selectByExample(example);
+    }
+    
+    public int countArticleReviewPageByUid(long uid){
+    	ArticleReviewExample example = new ArticleReviewExample();
+        ArticleReviewExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        return articleReviewMapper.countByExample(example);
     }
 
     public void createContentArticleDetails(ArticleTagsDetails articleTagsDetails){
@@ -438,8 +531,9 @@ public class ContentMybatisDao {
         return contentMapper.getTopicCount(topicId);
     }
 
-    public long getTopicLastUpdateTime(long topicId){
-        return contentMapper.getTopicLastUpdateTime(topicId);
+    public Long getTopicLastUpdateTime(long topicId){
+        Long result = contentMapper.getTopicLastUpdateTime(topicId);
+        return result == null ? 0 : result;
     }
 
     public List<Content>myPublishByType(MyPublishDto myPublishDto) {
@@ -464,4 +558,277 @@ public class ContentMybatisDao {
         return com.me2me.common.utils.Lists.getSingle(list);
     }
 
+    public void clearData(){
+        contentMapper.clearData();
+    }
+
+    /**
+     * 
+     * @param sinceId
+     * @param flag   0 2.2.0版本前
+     * @return
+     */
+    public List<Content2Dto> getHottestContentByUpdateTime(int sinceId, int flag){
+        return contentMapper.loadHottestContentByUpdateTime(sinceId, flag);
+    }
+    
+    /**
+     * 
+     * @param sinceId
+     * @param type  0 ugc+个人王国    1 聚合王国
+     * @param pageSize
+     * @return
+     */
+    public List<Content2Dto> getHotContentByType(long sinceId, int type, int pageSize){
+    	return contentMapper.getHotContentByType(sinceId, type, pageSize);
+    }
+
+    public int getUgcCount(long uid){
+        ContentExample example = new ContentExample();
+        ContentExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTypeNotBetween(3,6);
+        criteria.andStatusEqualTo(0);
+        return contentMapper.countByExample(example);
+    }
+
+    public int getLiveCount(long uid){
+        ContentExample example = new ContentExample();
+        ContentExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTypeBetween(3,6);
+        criteria.andStatusEqualTo(0);
+        return contentMapper.countByExample(example);
+    }
+    
+    public ArticleReview getArticleReviewById(long id){
+    	return articleReviewMapper.selectByPrimaryKey(id);
+    }
+    
+    public void updateArticleReview(ArticleReview ar){
+    	articleReviewMapper.updateByPrimaryKeySelective(ar);
+    }
+    
+    public ContentReview getContentReviewById(long id){
+    	return contentReviewMapper.selectByPrimaryKey(id);
+    }
+    
+    public void updateContentReview(ContentReview cr){
+    	contentReviewMapper.updateByPrimaryKeySelective(cr);
+    }
+    
+    public List<Content> getUgcPageByUid(long uid, int start, int pageSize){
+    	ContentExample example = new ContentExample();
+        ContentExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTypeEqualTo(Specification.ArticleType.ORIGIN.index);
+        example.setOrderByClause(" id desc limit "+start+","+pageSize);
+        List<Content> list = contentMapper.selectByExampleWithBLOBs(example);
+    	return list;
+    }
+    
+    public int countUgcPageByUid(long uid){
+    	ContentExample example = new ContentExample();
+        ContentExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTypeEqualTo(Specification.ArticleType.ORIGIN.index);
+        return contentMapper.countByExample(example);
+    }
+
+    public List<BillBoard> loadBillBoard(){
+        BillBoardExample example = new BillBoardExample();
+        BillBoardExample.Criteria criteria = example.createCriteria();
+        example.setOrderByClause("id desc");
+        return billBoardMapper.selectByExample(example);
+    }
+
+    public List<BillBoardRelation> loadBillBoardRelation(long sourceId){
+        BillBoardRelationExample example = new BillBoardRelationExample();
+        BillBoardRelationExample.Criteria criteria = example.createCriteria();
+        criteria.andSourceIdEqualTo(sourceId);
+        example.setOrderByClause(" sort asc,id desc");
+        return billBoardRelationMapper.selectByExample(example);
+    }
+    
+    public List<BillBoardRelation> getBillBoardRelationsByBidsAndType(List<Long> bids, int type){
+    	BillBoardRelationExample example = new BillBoardRelationExample();
+        BillBoardRelationExample.Criteria criteria = example.createCriteria();
+        criteria.andSourceIdIn(bids);
+        criteria.andTypeEqualTo(type);
+        return billBoardRelationMapper.selectByExample(example);
+    }
+    
+    public List<BillBoardRelation> getRelationListPage(long bid, int sinceId, int pageSize){
+    	BillBoardRelationExample example = new BillBoardRelationExample();
+        BillBoardRelationExample.Criteria criteria = example.createCriteria();
+        criteria.andSourceIdEqualTo(bid);
+        criteria.andSortGreaterThan(sinceId);
+        if(pageSize > 0){
+        	example.setOrderByClause(" sort asc limit " + pageSize);
+        }else{
+        	example.setOrderByClause(" sort asc ");
+        }
+        return billBoardRelationMapper.selectByExample(example);
+    }
+
+    public BillBoard loadBillBoardById(long id){
+       return billBoardMapper.selectByPrimaryKey(id);
+    }
+
+    public void deleteBillBoardListByKey(String key){
+    	BillBoardListExample example = new BillBoardListExample();
+    	BillBoardListExample.Criteria criteria = example.createCriteria();
+    	criteria.andListKeyEqualTo(key);
+    	billBoardListMapper.deleteByExample(example);
+    }
+    
+    public void insertBillBoardList(BillBoardList bbl){
+    	billBoardListMapper.insertSelective(bbl);
+    }
+        
+    public List<BillBoardList> getBillBoardListPage(String key, int sinceId, int pageSize){
+    	BillBoardListExample example = new BillBoardListExample();
+    	BillBoardListExample.Criteria criteria = example.createCriteria();
+    	criteria.andListKeyEqualTo(key);
+    	criteria.andSinceIdGreaterThan(sinceId);
+    	if(pageSize > 0){
+    		example.setOrderByClause(" since_id asc limit " + pageSize);
+    	}else{
+    		example.setOrderByClause(" since_id asc ");
+    	}
+    	return billBoardListMapper.selectByExample(example);
+    }
+
+    public List<BillBoardRelation> loadBillBoardRelations(int type){
+        return billBoardMapper.loadBillBoard(type);
+    }
+
+    public List<BillBoardRelation> loadBillBoardRelationsBySinceId(long sinceId,long sourceId){
+        return billBoardMapper.loadBillBoardBySinceId(sourceId,sinceId);
+    }
+
+    public List<Long> loadBillBoardCover(int type){
+        return billBoardMapper.loadBillBoardCover(type);
+    }
+
+    public List<BillBoard> loadBillBoardByBids(List<Long> ids) {
+        BillBoardExample example = new BillBoardExample();
+        BillBoardExample.Criteria criteria = example.createCriteria();
+        criteria.andIdIn(ids);
+        return billBoardMapper.selectByExample(example);
+    }
+    
+    public List<BillBoard> loadBillBoardByBidsAndType(List<Long> ids, int type) {
+        BillBoardExample example = new BillBoardExample();
+        BillBoardExample.Criteria criteria = example.createCriteria();
+        criteria.andIdIn(ids);
+        criteria.andTypeEqualTo(type);
+        return billBoardMapper.selectByExample(example);
+    }
+    
+    public List<BillBoardDetails> getShowListPageByType(int sinceId, int type){
+    	BillBoardDetailsExample example = new BillBoardDetailsExample();
+    	BillBoardDetailsExample.Criteria criteria = example.createCriteria();
+    	criteria.andTypeEqualTo(type);
+    	criteria.andSortGreaterThan(sinceId);
+    	criteria.andStatusEqualTo(1);//只要上架的
+    	example.setOrderByClause(" sort asc limit 10");
+    	return billBoardDetailsMapper.selectByExample(example);
+    }
+    
+    public List<BillBoardDetails> getBillBoardDetailsByStatusAndType(int status, int type){
+    	BillBoardDetailsExample example = new BillBoardDetailsExample();
+    	BillBoardDetailsExample.Criteria criteria = example.createCriteria();
+    	criteria.andTypeEqualTo(type);
+    	criteria.andStatusEqualTo(status);
+    	return billBoardDetailsMapper.selectByExample(example);
+    }
+    
+    /**
+     * 修改榜单
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param bb
+     */
+	public void updateBillBoard(BillBoard bb) {
+		billBoardMapper.updateByPrimaryKeySelective(bb);
+	}
+	/**
+	 * 删除榜单
+	 * @author zhangjiwei
+	 * @date Mar 21, 2017
+	 * @param id
+	 */
+	public void deleteBillBoardByKey(long id) {
+		billBoardMapper.deleteByPrimaryKey(id);
+	}
+
+	public void insertBillBoard(BillBoard bb) {
+		billBoardMapper.insertSelective(bb);
+	}
+
+	public void insertBillBoardRelation(BillBoardRelation br) {
+		billBoardRelationMapper.insertSelective(br);
+	}
+
+	public void delBillBoardRelationById(long rid) {
+		billBoardRelationMapper.deleteByPrimaryKey(rid);
+	}
+
+	public void updateBillBoardRelation(BillBoardRelation br) {
+		billBoardRelationMapper.updateByPrimaryKeySelective(br);
+	}
+	/**
+	 * 按榜单ID删除detail.
+	 * @author zhangjiwei
+	 * @date Mar 21, 2017
+	 * @param id
+	 */
+	public void deleteBillBoardDetailByBId(long bid) {
+		BillBoardDetailsExample example = new BillBoardDetailsExample();
+		example.createCriteria().andBidEqualTo(bid);
+		billBoardDetailMapper.deleteByExample(example);
+	}
+
+	public List<BillBoardDetails> getBillBoardDetailByBidAndType(Long bid,int type) {
+		BillBoardDetailsExample example = new BillBoardDetailsExample();
+		example.createCriteria().andBidEqualTo(bid).andTypeEqualTo(type);
+		List<BillBoardDetails> details =billBoardDetailMapper.selectByExample(example);
+		return details;
+	}
+	public List<BillBoardDetails> getBillBoardDetailsByType(int type){
+		BillBoardDetailsExample example = new BillBoardDetailsExample();
+		example.createCriteria().andTypeEqualTo(type);
+		example.setOrderByClause("sort asc,id desc");
+		return billBoardDetailMapper.selectByExample(example);
+	}
+	public void insertBillBoardDetail(BillBoardDetails br) {
+		billBoardDetailMapper.insertSelective(br);
+	}
+
+	public void delBillBoardDetailById(long rid) {
+		billBoardDetailMapper.deleteByPrimaryKey(rid);
+	}
+
+	public void updateBillBoardDetailById(BillBoardDetails br) {
+		billBoardDetailMapper.updateByPrimaryKeySelective(br);
+	}
+	/**
+	 * 判断排行数据是否存在
+	 * @author zhangjiwei
+	 * @date Mar 23, 2017
+	 * @param br
+	 * @return
+	 */
+	public boolean existsBillBoardRelation(BillBoardRelation br) {
+		// 判断 srouceId ，targetid.
+		BillBoardRelationExample example = new BillBoardRelationExample();
+		example.createCriteria().andSourceIdEqualTo(br.getSourceId()).andTargetIdEqualTo(br.getTargetId());
+		int count = billBoardRelationMapper.countByExample(example);
+		return count>0;
+	}
+
+	public void saveContentShareHistory(ContentShareHistory csh){
+		contentShareHistoryMapper.insertSelective(csh);
+	}
 }

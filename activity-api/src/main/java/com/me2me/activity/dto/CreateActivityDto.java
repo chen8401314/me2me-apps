@@ -36,6 +36,8 @@ public class CreateActivityDto implements BaseEntity {
     // 活动结束时间
     private Date endTime;
 
+    private long cid;
 
+    private int type;
 
 }

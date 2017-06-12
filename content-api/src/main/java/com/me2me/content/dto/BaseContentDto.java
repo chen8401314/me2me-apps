@@ -50,6 +50,8 @@ public class BaseContentDto implements BaseEntity{
     //是否关注
     private int isFollowed;
 
+    private int isFollowMe;
+
     // 点赞数量
     private int likeCount;
 
@@ -86,4 +88,18 @@ public class BaseContentDto implements BaseEntity{
     private long lastUpdateTime;
 
     private int topicCount;
+
+    private int contentType;
+
+    private int v_lv;
+    
+    //0圈外 1圈内 2核心圈
+    private int internalStatus;
+
+    //聚集子王国数量
+    private int acCount;
+    
+    private long forwardUid;
+    
+    private String forwardNickName;
 }

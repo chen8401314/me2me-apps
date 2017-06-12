@@ -3,7 +3,7 @@
     <parent>
         <artifactId>me2me</artifactId>
         <groupId>com.me2me</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>${project.version}</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>root</artifactId>
@@ -27,9 +27,17 @@
             <artifactId>javax.servlet-api</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>kisso</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.bouncycastle</groupId>
+            <artifactId>bcprov-jdk14</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.me2me</groupId>
             <artifactId>core</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 
@@ -47,42 +55,57 @@
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>im</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>user</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>content</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>sns</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>io</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>live</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>activity</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>search</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>kafka</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>sms</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>pay</artifactId>
+                    <version>${project.version}</version>
                 </dependency>
             </dependencies>
             <build>
@@ -92,8 +115,8 @@
             </build>
         </profile>
 
-        <!--测试环境-->
-        <profile>
+		<!-- 测试环境 -->
+		<profile>
             <id>test</id>
             <properties>
                 <mode>test</mode>
@@ -101,38 +124,153 @@
             <dependencies>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>im</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <artifactId>im-api</artifactId>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>user</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <artifactId>user-api</artifactId>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>content</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <artifactId>live-api</artifactId>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>sns</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <artifactId>content-api</artifactId>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>io</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <artifactId>sns-api</artifactId>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
-                    <artifactId>search</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <artifactId>io-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>search-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>activity-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>sns-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>cache-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>sms-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>kafka-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>pay-api</artifactId>
+                    <version>${project.version}</version>
                 </dependency>
             </dependencies>
             <build>
                 <filters>
                     <filter>src/main/filter/test.properties</filter>
+                </filters>
+            </build>
+        </profile>
+
+        <!--生产环境-->
+        <profile>
+            <id>prod</id>
+            <properties>
+                <mode>prod</mode>
+            </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>im-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>user-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>live-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>content-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>sns-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>io-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>search-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>activity-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>sns-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>cache-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>sms-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>kafka-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>pay-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+            </dependencies>
+            <build>
+                <filters>
+                    <filter>src/main/filter/prod.properties</filter>
                 </filters>
             </build>
         </profile>
@@ -146,52 +284,72 @@
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>im-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>user-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>live-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>content-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>sns-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>io-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>search-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>activity-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>sns-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
                 </dependency>
                 <dependency>
                     <groupId>com.me2me</groupId>
                     <artifactId>cache-api</artifactId>
-                    <version>1.0-SNAPSHOT</version>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>sms-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>kafka-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>sms-api</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.me2me</groupId>
+                    <artifactId>pay-api</artifactId>
+                    <version>${project.version}</version>
                 </dependency>
             </dependencies>
             <build>
@@ -216,7 +374,7 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <warSourceExcludes>src/main/resource/generator</warSourceExcludes>
-                    <warName>${project.name}</warName>
+                    <warName>${project.war.name}</warName>
                     <!-- 激活spring profile -->
                     <webResources>
                         <resource>

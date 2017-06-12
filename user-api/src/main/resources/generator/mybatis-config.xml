@@ -31,7 +31,9 @@
 
 
         <!--<table tableName="user" domainObjectName="User"/>-->
+        <!--<table tableName="system_config" domainObjectName="SystemConfig"/>-->
         <!--<table tableName="user_profile" domainObjectName="UserProfile"/>-->
+        <!--<table tableName="user_gag" domainObjectName="UserGag"/>-->
         <!--<table tableName="dictionary" domainObjectName="Dictionary"/>-->
         <!--<table tableName="dictionary_type" domainObjectName="DictionaryType"/>-->
         <!--<table tableName="address" domainObjectName="Address"/>-->
@@ -51,7 +53,18 @@
         <!--<table tableName="user_no" domainObjectName="UserNo" />-->
         <!--<table tableName="user_device" domainObjectName="UserDevice" />-->
         <!--<table tableName="xinge_push_log" domainObjectName="XingePushLog" />-->
-        <table tableName="jpush_token" domainObjectName="JpushToken"/>
-
+        <!--<table tableName="jpush_token" domainObjectName="JpushToken"/>-->
+        <!--<table tableName="third_part_user" domainObjectName="ThirdPartUser"/>-->
+        <!--<table tableName="open_device_count" domainObjectName="OpenDeviceCount"/>-->
+        <!--<table tableName="entry_page_config" domainObjectName="EntryPageConfig"/>-->
+        <!--<table tableName="user_famous" domainObjectName="UserFamous"/>-->
+        <!--<table tableName="ios_wapx" domainObjectName="IosWapx"/>-->
+        <!--<table tableName="version_channel_download" domainObjectName="VersionChannelDownload"/>-->
+        <!--<table tableName="im_config" domainObjectName="ImConfig"/>-->
+        <!-- <table tableName="user_seek_follow" domainObjectName="UserSeekFollow"/> -->
+        <!-- <table tableName="user_notice_unread" domainObjectName="UserNoticeUnread"/> -->
+        <!-- <table tableName="user_mobile_list" domainObjectName="UserMobileList"/> -->
+		<!-- <table tableName="mbti_mapping" domainObjectName="MbtiMapping"/> -->
+		<!-- <table tableName="app_config" domainObjectName="AppConfig"/> -->
     </context>
 </generatorConfiguration>

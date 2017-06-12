@@ -15,15 +15,15 @@ import org.springframework.stereotype.Component;
  * Date: 2016/6/29.
  */
 @Component
-@EnableScheduling
+//@EnableScheduling
 @Slf4j
 public class UserNoticeJobs {
 
     @Autowired
     private UserService userService;
 
-    @Scheduled(fixedDelay = 1000*60*15)
-    @Async("false")
+//    @Scheduled(fixedDelay = 1000*60*5)
+//    @Async("false")
     public void push(){
         log.info("execute schedule by user notice jobs ... ");
         userService.pushMessage();

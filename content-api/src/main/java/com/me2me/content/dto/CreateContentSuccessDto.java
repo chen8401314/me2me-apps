@@ -37,4 +37,6 @@ public class CreateContentSuccessDto  implements BaseEntity{
     private String forwardTitle;
 
     private String forwardUrl;
+
+    private int v_lv;
 }

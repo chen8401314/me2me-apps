@@ -16,6 +16,8 @@ public class UserNoticeRequest extends Request{
     @Setter
     private int sinceId;
 
-
+    @Getter
+    @Setter
+    private int level;//0老版本的， 1一级列表， 2二级列表（系统信息）
 
 }

@@ -2,6 +2,7 @@ package com.me2me.user.dto;
 
 import com.google.common.collect.Lists;
 import com.me2me.common.web.BaseEntity;
+
 import lombok.Data;
 
 import java.util.Date;
@@ -52,6 +53,10 @@ public class UserInfoDto2 implements BaseEntity{
         private int fansCount;
 
         private String introduced;
+
+        private int v_lv;
+        
+        private int isRec;
     }
 
     @Data
@@ -108,6 +113,17 @@ public class UserInfoDto2 implements BaseEntity{
         private long lastUpdateTime;
 
         private int topicCount;
+
+        private int v_lv;
+
+        private int acCount;
+        
+        //0圈外 1圈内 2核心圈
+        private int internalStatus;
+        
+        private long forwardUid;
+        
+        private String forwardNickName;
 
         @Data
         public static class ReviewElement implements BaseEntity{

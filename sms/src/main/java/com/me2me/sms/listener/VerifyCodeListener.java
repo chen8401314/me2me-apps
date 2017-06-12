@@ -8,7 +8,6 @@ import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.sms.channel.MessageChannel;
 import com.me2me.sms.event.VerifyEvent;
 import com.me2me.sms.exception.SendMessageLimitException;
-import com.me2me.sms.exception.SendMessageTimeException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -45,7 +44,7 @@ public class VerifyCodeListener {
     private static final String VERIFY_MOBILE_PREFIX = "verify:mobile:count:";
 
     /**
-     * 每日发送验证码上线次数为10次
+     * 每日发送验证码上线次数为20次
      */
     private static final int SEND_MESSAGE_LIMIT = 20;
 
@@ -65,6 +64,12 @@ public class VerifyCodeListener {
 
     @Subscribe
     public void send(VerifyEvent verifyEvent) {
+    	if(verifyEvent.getIsTest() == 1){
+    		String verifyCode = "1234";
+    		this.cacheService.setex(VERIFY_PREFIX + verifyEvent.getMobile(), verifyCode + "@" + System.currentTimeMillis(), 5 * 60);
+    		return;
+    	}
+    	
         // 尝试从缓存中获取验证码信息
         String verifyCodeAndSendTimeMillis = cacheService.get(VERIFY_PREFIX + verifyEvent.getMobile());
         if (StringUtils.isEmpty(verifyCodeAndSendTimeMillis)) {
@@ -72,7 +77,7 @@ public class VerifyCodeListener {
             String verifyCode = CommonUtils.getRandom("", 4);
             verifyEvent.setVerifyCode(verifyCode);
             if (checkSendLimit(verifyEvent.getMobile())) {
-                this.cacheService.setex(VERIFY_PREFIX + verifyEvent.getMobile(), verifyCode + "@" + System.currentTimeMillis(), 30 * 60);
+                this.cacheService.setex(VERIFY_PREFIX + verifyEvent.getMobile(), verifyCode + "@" + System.currentTimeMillis(), 5 * 60);
                 messageChannel.send(verifyEvent.getChannel(),verifyEvent.getVerifyCode(),verifyEvent.getMobile());
             } else {
                 log.error("手机验证码次数超过上限，每日只能发送" + SEND_MESSAGE_LIMIT + "次短信");
@@ -86,7 +91,7 @@ public class VerifyCodeListener {
                 if (System.currentTimeMillis() - sendTime > TimeUnit.MINUTES.toMillis(1)) {
                     if (checkSendLimit(verifyEvent.getMobile())) {
                         verifyEvent.setVerifyCode(verifyCode);
-                        this.cacheService.setex(VERIFY_PREFIX + verifyEvent.getMobile(), verifyCode + "@" + System.currentTimeMillis(), 30 * 60);
+                        this.cacheService.setex(VERIFY_PREFIX + verifyEvent.getMobile(), verifyCode + "@" + System.currentTimeMillis(), 5 * 60);
                         messageChannel.send(verifyEvent.getChannel(),verifyEvent.getVerifyCode(),verifyEvent.getMobile());
                     }
                 }else {

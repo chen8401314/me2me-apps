@@ -1,5 +1,6 @@
 package com.me2me.cache.service;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -16,6 +17,12 @@ public interface CacheService {
      * @param value
      */
     void set(String key,String value);
+
+    /**
+     * 删除普通键
+     * @param key
+     */
+    void del(String key);
 
     /**
      * 设置一个key并设置他的ttl
@@ -45,6 +52,13 @@ public interface CacheService {
      * @return
      */
     Set<String> smembers(String key);
+    
+    /**
+     * 移除set集合中的一个或多个成员
+     * @param key
+     * @param values
+     */
+    void srem(String key, String... values);
 
     /**
      * 清空缓存数据（当心使用）
@@ -87,5 +101,9 @@ public interface CacheService {
     String hGet(String key,String field);
 
     void hDel(String key,String... field);
+
+    Map<String,String> hGetAll(String key);
+
+    void hSetAll(String key,Map<String,String> stringMap);
 
 }

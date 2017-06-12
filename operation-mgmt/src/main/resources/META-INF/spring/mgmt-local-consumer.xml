@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:util="http://www.springframework.org/schema/util" 
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd">
+ 		
+ 		<import resource="classpath*:spring/user-context.xml"/>
+        <import resource="classpath*:spring/im-context.xml"/>
+        <import resource="classpath*:spring/content-context.xml"/>
+        <import resource="classpath*:spring/io-context.xml"/>
+        <import resource="classpath*:spring/live-context.xml"/>
+        <import resource="classpath*:spring/activity-context.xml"/>
+        <import resource="classpath*:spring/search-context.xml"/>
+        <import resource="classpath*:spring/sms-context.xml"/>
+        <import resource="classpath*:spring/monitor-context.xml"/>
+        <import resource="classpath*:spring/sns-context.xml"/>
+        <import resource="classpath*:spring/cache-context.xml"/>
+        <import resource="classpath*:spring/kafka-context.xml"/>
+        
+</beans>

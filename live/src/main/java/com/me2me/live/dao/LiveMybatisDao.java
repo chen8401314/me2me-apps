@@ -1,15 +1,111 @@
 package com.me2me.live.dao;
 
-import com.google.common.collect.Lists;
-import com.me2me.common.web.Specification;
-import com.me2me.live.dto.SpeakDto;
-import com.me2me.live.mapper.*;
-import com.me2me.live.model.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
-import java.util.Calendar;
-import java.util.List;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.me2me.common.page.PageBean;
+import com.me2me.common.web.Specification;
+import com.me2me.live.dto.GetLiveDetailDto;
+import com.me2me.live.dto.GetLiveUpdateDto;
+import com.me2me.live.dto.SearchDropAroundTopicDto;
+import com.me2me.live.dto.SearchTopicDto;
+import com.me2me.live.dto.SpeakDto;
+import com.me2me.live.mapper.BlockTopicMapper;
+import com.me2me.live.mapper.DeleteLogMapper;
+import com.me2me.live.mapper.LiveDisplayBarrageMapper;
+import com.me2me.live.mapper.LiveDisplayFragmentMapper;
+import com.me2me.live.mapper.LiveDisplayProtocolMapper;
+import com.me2me.live.mapper.LiveDisplayReviewMapper;
+import com.me2me.live.mapper.LiveFavoriteDeleteMapper;
+import com.me2me.live.mapper.LiveFavoriteMapper;
+import com.me2me.live.mapper.LiveReadHistoryMapper;
+import com.me2me.live.mapper.TeaseInfoMapper;
+import com.me2me.live.mapper.TopicAggregationApplyMapper;
+import com.me2me.live.mapper.TopicAggregationMapper;
+import com.me2me.live.mapper.TopicBarrageMapper;
+import com.me2me.live.mapper.TopicDroparoundMapper;
+import com.me2me.live.mapper.TopicDroparoundTrailMapper;
+import com.me2me.live.mapper.TopicFragmentMapper;
+import com.me2me.live.mapper.TopicFragmentTemplateMapper;
+import com.me2me.live.mapper.TopicMapper;
+import com.me2me.live.mapper.TopicNewsMapper;
+import com.me2me.live.mapper.TopicTagDetailMapper;
+import com.me2me.live.mapper.TopicTagMapper;
+import com.me2me.live.mapper.TopicTransferRecordMapper;
+import com.me2me.live.mapper.TopicUserConfigMapper;
+import com.me2me.live.mapper.UserStealLogMapper;
+import com.me2me.live.mapper.VoteInfoMapper;
+import com.me2me.live.mapper.VoteOptionMapper;
+import com.me2me.live.mapper.VoteRecordMapper;
+import com.me2me.live.model.BlockTopic;
+import com.me2me.live.model.BlockTopicExample;
+import com.me2me.live.model.DeleteLog;
+import com.me2me.live.model.LiveDisplayBarrage;
+import com.me2me.live.model.LiveDisplayFragment;
+import com.me2me.live.model.LiveDisplayFragmentExample;
+import com.me2me.live.model.LiveDisplayProtocol;
+import com.me2me.live.model.LiveDisplayProtocolExample;
+import com.me2me.live.model.LiveDisplayReview;
+import com.me2me.live.model.LiveFavorite;
+import com.me2me.live.model.LiveFavoriteDelete;
+import com.me2me.live.model.LiveFavoriteDeleteExample;
+import com.me2me.live.model.LiveFavoriteExample;
+import com.me2me.live.model.LiveReadHistory;
+import com.me2me.live.model.LiveReadHistoryExample;
+import com.me2me.live.model.TeaseInfo;
+import com.me2me.live.model.TeaseInfoExample;
+import com.me2me.live.model.Topic;
+import com.me2me.live.model.Topic2;
+import com.me2me.live.model.TopicAggregation;
+import com.me2me.live.model.TopicAggregationApply;
+import com.me2me.live.model.TopicAggregationApplyExample;
+import com.me2me.live.model.TopicAggregationExample;
+import com.me2me.live.model.TopicBarrage;
+import com.me2me.live.model.TopicBarrageExample;
+import com.me2me.live.model.TopicDroparound;
+import com.me2me.live.model.TopicDroparoundExample;
+import com.me2me.live.model.TopicDroparoundTrail;
+import com.me2me.live.model.TopicExample;
+import com.me2me.live.model.TopicFragment;
+import com.me2me.live.model.TopicFragmentExample;
+import com.me2me.live.model.TopicFragmentExample.Criteria;
+import com.me2me.live.model.TopicFragmentTemplate;
+import com.me2me.live.model.TopicFragmentTemplateExample;
+import com.me2me.live.model.TopicNews;
+import com.me2me.live.model.TopicNewsExample;
+import com.me2me.live.model.TopicTag;
+import com.me2me.live.model.TopicTagDetail;
+import com.me2me.live.model.TopicTagDetailExample;
+import com.me2me.live.model.TopicTagExample;
+import com.me2me.live.model.TopicTransferRecord;
+import com.me2me.live.model.TopicTransferRecordExample;
+import com.me2me.live.model.TopicUserConfig;
+import com.me2me.live.model.TopicUserConfigExample;
+import com.me2me.live.model.UserStealLog;
+import com.me2me.live.model.VoteInfo;
+import com.me2me.live.model.VoteInfoExample;
+import com.me2me.live.model.VoteOption;
+import com.me2me.live.model.VoteOptionExample;
+import com.me2me.live.model.VoteRecord;
+import com.me2me.live.model.VoteRecordExample;
+import com.me2me.sns.mapper.SnsCircleMapper;
+import com.me2me.sns.model.SnsCircle;
+import com.me2me.sns.model.SnsCircleExample;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -44,84 +140,242 @@ public class LiveMybatisDao {
     private LiveDisplayFragmentMapper liveDisplayFragmentMapper;
 
     @Autowired
-    private  LiveDisplayReviewMapper liveDisplayReviewMapper;
+    private LiveDisplayReviewMapper liveDisplayReviewMapper;
 
+    @Autowired
+    private DeleteLogMapper deleteLogMapper;
 
-    public void createTopic(Topic topic){
+    @Autowired
+    private SnsCircleMapper snsCircleMapper;
+
+    @Autowired
+    private LiveDisplayProtocolMapper liveDisplayProtocolMapper;
+
+    @Autowired
+    private TopicUserConfigMapper topicUserConfigMapper;
+
+    @Autowired
+    private TopicAggregationApplyMapper topicAggregationApplyMapper;
+
+    @Autowired
+    private TopicAggregationMapper topicAggregationMapper;
+
+    @Autowired
+    private TopicDroparoundMapper topicDroparoundMapper;
+
+    @Autowired
+    private TopicDroparoundTrailMapper topicDroparoundTrailMapper;
+
+    @Autowired
+    private TopicFragmentTemplateMapper topicFragmentTemplateMapper;
+
+    @Autowired
+    private TopicTagMapper topicTagMapper;
+
+    @Autowired
+    private TopicTagDetailMapper topicTagDetailMapper;
+    
+    @Autowired
+    private TeaseInfoMapper teaseInfoMapper;
+    
+    @Autowired
+    private VoteInfoMapper voteInfoMapper;
+    
+    @Autowired
+    private VoteOptionMapper voteOptionMapper;
+    
+    @Autowired
+    private VoteRecordMapper voteRecordMapper;
+    
+    @Autowired
+    private BlockTopicMapper  blockTopicMapper;
+    
+    @Autowired
+    private TopicNewsMapper  topicNewsMapper;
+    
+    @Autowired
+    private TopicTransferRecordMapper  topicTransferRecordMapper;
+    
+    @Autowired
+    private UserStealLogMapper  stealLogMapper;
+    
+
+    public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
     }
 
-    public Topic getTopicById(long topicId){
+    public Topic getTopicById(long topicId) {
         return topicMapper.selectByPrimaryKey(topicId);
     }
 
-    public List<TopicFragment> getTopicFragment(long topicId,long sinceId ){
+    public List<Topic> getTopicsByIds(List<Long> ids){
+    	TopicExample example = new TopicExample();
+        TopicExample.Criteria criteria = example.createCriteria();
+        criteria.andIdIn(ids);
+        return topicMapper.selectByExample(example);
+    }
+
+    public List<TopicFragment> getTopicFragment(long topicId, long sinceId, int pageSize) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andIdGreaterThan(sinceId);
-        example.setOrderByClause("id asc limit 50 "  );
+//        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
+        example.setOrderByClause("id asc limit "+ pageSize);
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
+  /**
+   * 获取王国图库
+   * @author zhangjiwei
+   * @date May 5, 2017
+   * @param topicId
+   * @param sinceId 
+   * @param goDown 是否向下翻
+   * @param size 数量
+   * @return
+   */
+    public List<TopicFragment> getTopicImgFragment(long topicId, long sinceId,boolean goDown,int size) {
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        if(goDown){
+        	criteria.andIdGreaterThan(sinceId);
+        }else{
+        	criteria.andIdLessThan(sinceId);
+        }
+        criteria.andTypeEqualTo(0);
+        criteria.andContentTypeEqualTo(1);
+        criteria.andStatusEqualTo(1);
+        example.setOrderByClause("id asc limit "+size);
+        return topicFragmentMapper.selectByExample(example);
+    }
+    /**
+     * 获取指定ID的上一个或者下一个id的所在月份
+     * @author zhangjiwei
+     * @date May 17, 2017
+     * @param topicId 王国ID。
+     * @param sinceId 数据起始ID
+     * @param goDown 向下还是向上。
+     * @return
+     */
+	public String getNextMonthByImgFragment(long topicId, long sinceId, boolean goDown) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+		String month = null;
 
-    public List<TopicFragment> getTopicFragmentByMode(long topicId,long sinceId,long uid){
+		TopicFragmentExample example = new TopicFragmentExample();
+		Criteria ct =example.createCriteria().andTopicIdEqualTo(topicId).andTypeEqualTo(0).andContentTypeEqualTo(1).andStatusEqualTo(1);
+		if (goDown) {
+			ct.andIdGreaterThan(sinceId);
+			example.setOrderByClause(" id asc limit 1");
+		} else {
+			ct.andIdLessThan(sinceId);
+	    	example.setOrderByClause(" id desc limit 1");
+		}
+		List<TopicFragment> fgs = topicFragmentMapper.selectByExample(example);
+		if (fgs.size() > 0) {
+			Date date = fgs.get(0).getCreateTime();
+			month = sdf.format(date);
+		}
+
+		return month;
+	}
+	/**
+	 * 按月获取王国图库图片
+	 * @author zhangjiwei
+	 * @date May 17, 2017
+	 * @param topicId
+	 * @param month
+	 * @return
+	 */
+	public List<TopicFragment> getImgFragmentByMonth(long topicId,String month){
+		return topicFragmentMapper.getImgFragmentByMonth(topicId, month);
+	}
+
+    public List<TopicFragment> getTopicFragmentByMode(long topicId, long sinceId, long uid) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andIdGreaterThan(sinceId);
         criteria.andUidEqualTo(uid);
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
         criteria.andTypeNotEqualTo(Specification.LiveSpeakType.ANCHOR_AT.index);
-        example.setOrderByClause("id asc limit 10 "  );
+        example.setOrderByClause("id asc limit 10 ");
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
 
-    public List<TopicFragment> getTopicReviewByMode(long topicId,long sinceId,long uid){
+    public List<TopicFragment> getTopicReviewByMode(long topicId, long sinceId, long uid) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andIdGreaterThan(sinceId);
         criteria.andUidNotEqualTo(uid);
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
         TopicFragmentExample.Criteria criteria2 = example.createCriteria();
         criteria2.andTypeEqualTo(Specification.LiveSpeakType.ANCHOR_AT.index);
         example.or(criteria2);
-        example.setOrderByClause("id asc limit 30 "  );
+        example.setOrderByClause("id asc limit 30 ");
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
 
-    public List<TopicFragment> getPrevTopicFragment(long topicId,long sinceId ){
+    public List<TopicFragment> getPrevTopicFragment(long topicId, long sinceId) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andIdLessThan(sinceId);
-        example.setOrderByClause("id desc limit 10 "  );
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
+        example.setOrderByClause("id desc limit 10 ");
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
 
-    public TopicFragment getLastTopicFragment(long topicId,long uid ){
+    public TopicFragment getLastTopicFragment(long topicId, long uid) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andUidEqualTo(uid);
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
         example.setOrderByClause("id desc limit 1 ");
         List<TopicFragment> topicFragmentList = topicFragmentMapper.selectByExampleWithBLOBs(example);
         return (topicFragmentList != null && topicFragmentList.size() > 0) ? topicFragmentList.get(0) : null;
     }
-    public TopicFragment getLastTopicFragmentByUid(long topicId,long uid ){
+
+    public TopicFragment getLastTopicFragmentByCoreCircle(long topicId, String coreCircle) {
+        JSONArray array = JSON.parseArray(coreCircle);
+        List<Long> list = new ArrayList<>();
+        for (int i = 0; i < array.size(); i++) {
+            list.add(array.getLong(i));
+        }
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andUidIn(list);
+        /*criteria.andTypeNotEqualTo(Specification.LiveSpeakType.AT.index);
+        criteria.andTypeNotEqualTo(Specification.LiveSpeakType.ANCHOR_AT.index);*/
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
+        example.setOrderByClause("id desc limit 1");
+        List<TopicFragment> topicFragmentList = topicFragmentMapper.selectByExampleWithBLOBs(example);
+        return (topicFragmentList != null && topicFragmentList.size() > 0) ? topicFragmentList.get(0) : null;
+    }
+
+    public TopicFragment getLastTopicFragmentByUid(long topicId, long uid) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andUidEqualTo(uid);
         criteria.andTypeEqualTo(Specification.LiveSpeakType.ANCHOR.index);
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
         example.setOrderByClause("id desc limit 1 ");
         List<TopicFragment> topicFragmentList = topicFragmentMapper.selectByExampleWithBLOBs(example);
         return (topicFragmentList != null && topicFragmentList.size() > 0) ? topicFragmentList.get(0) : null;
     }
 
-    public void createTopicFragment(TopicFragment topicFragment){
+    public void createTopicFragment(TopicFragment topicFragment) {
+        topicFragment.setStatus(Specification.TopicFragmentStatus.ENABLED.index);
         topicFragmentMapper.insertSelective(topicFragment);
+        // 王国更新的时候去掉用户屏蔽的王国。
+        this.removeBlockedKingodm(topicFragment.getTopicId());
     }
 
-    public Topic getTopic(long uid,long topicId){
+    public Topic getTopic(long uid, long topicId) {
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
@@ -129,35 +383,54 @@ public class LiveMybatisDao {
         List<Topic> list = topicMapper.selectByExample(example);
         return (list != null && list.size() > 0) ? list.get(0) : null;
     }
-    public void updateTopic(Topic topic){
+
+    public void updateTopic(Topic topic) {
         topicMapper.updateByPrimaryKeySelective(topic);
     }
 
-    public List<Topic> getMyLives(long uid ,long sinceId ,List<Long> topics){
+    public List<Topic> getMyLives(long uid, long sinceId, List<Long> topics) {
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
         criteria.andIdLessThan(sinceId);
         criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
         TopicExample.Criteria criteriaOr = example.createCriteria();
-        if(topics != null && topics.size() > 0) {
+        if (topics != null && topics.size() > 0) {
             criteriaOr.andIdLessThan(sinceId);
             criteriaOr.andUidNotEqualTo(uid);
             criteriaOr.andIdIn(topics);
             example.or(criteriaOr);
         }
-        example.setOrderByClause("id desc, status asc limit 10" );
+        example.setOrderByClause("id desc, status asc limit 10");
         return topicMapper.selectByExample(example);
     }
 
-    public int countLives(){
+    public int countLives() {
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andStatusNotEqualTo(Specification.LiveStatus.LIVING.index);
         return topicMapper.countByExample(example);
     }
 
-    public List<Topic> getMyLivesByUpdateTime(long uid ,long updateTime ,List<Long> topics){
+    public List<Topic> getALLMyLivesByUpdateTime(long uid, long updateTime, List<Long> topics) {
+        TopicExample example = new TopicExample();
+        TopicExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andLongTimeLessThan(updateTime);
+        criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
+        TopicExample.Criteria criteriaOr = example.createCriteria();
+        if (topics != null && topics.size() > 0) {
+            criteriaOr.andLongTimeLessThan(updateTime);
+            criteriaOr.andUidNotEqualTo(uid);
+            criteriaOr.andIdIn(topics);
+            example.or(criteriaOr);
+        }
+        //最后更新时间降序排列
+        example.setOrderByClause("long_time desc limit 10");
+        return topicMapper.selectByExample(example);
+    }
+
+    public List<Topic> getMyLivesByUpdateTime(long uid, long updateTime, List<Long> topics) {
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
@@ -167,7 +440,7 @@ public class LiveMybatisDao {
         criteria.andLongTimeGreaterThan(calendar.getTimeInMillis());
         criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
         TopicExample.Criteria criteriaOr = example.createCriteria();
-        if(topics != null && topics.size() > 0) {
+        if (topics != null && topics.size() > 0) {
             criteriaOr.andLongTimeLessThan(updateTime);
             criteriaOr.andLongTimeGreaterThan(calendar.getTimeInMillis());
             criteriaOr.andUidNotEqualTo(uid);
@@ -175,20 +448,50 @@ public class LiveMybatisDao {
             example.or(criteriaOr);
         }
         //最后更新时间降序排列
-        example.setOrderByClause("long_time desc limit 10" );
+        example.setOrderByClause("long_time desc limit 10");
         return topicMapper.selectByExample(example);
     }
 
-    public int getInactiveLiveCount(long uid , List<Long> topics){
+    public List<Topic2> getMyLivesByUpdateTimeNew(long uid, long updateTime) {
+        Map map = Maps.newHashMap();
+        map.put("uid" ,uid);
+        map.put("updateTime" ,updateTime);
+        return topicMapper.getMyLivesByUpdateTimeNew(map);
+    }
+
+    //获取所有直播红点
+    public List<Topic> getMyLivesByUpdateTime2(long uid, long updateTime, List<Long> topics) {
+        TopicExample example = new TopicExample();
+        TopicExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andLongTimeLessThan(updateTime);
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DAY_OF_YEAR, -3);
+        criteria.andLongTimeGreaterThan(calendar.getTimeInMillis());
+        criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
+        TopicExample.Criteria criteriaOr = example.createCriteria();
+        if (topics != null && topics.size() > 0) {
+            criteriaOr.andLongTimeLessThan(updateTime);
+            criteriaOr.andLongTimeGreaterThan(calendar.getTimeInMillis());
+            criteriaOr.andUidNotEqualTo(uid);
+            criteriaOr.andIdIn(topics);
+            example.or(criteriaOr);
+        }
+        //最后更新时间降序排列（必须获取所有的）
+        example.setOrderByClause("long_time desc");
+        return topicMapper.selectByExample(example);
+    }
+
+    public int getInactiveLiveCount(long uid, List<Long> topics) {
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
         criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
         Calendar calendar = Calendar.getInstance();
-        calendar.add(Calendar.DAY_OF_YEAR,-3);
+        calendar.add(Calendar.DAY_OF_YEAR, -3);
         criteria.andLongTimeLessThan(calendar.getTimeInMillis());
         TopicExample.Criteria criteriaOr = example.createCriteria();
-        if(topics != null && topics.size() > 0) {
+        if (topics != null && topics.size() > 0) {
             criteriaOr.andUidNotEqualTo(uid);
             criteriaOr.andIdIn(topics);
             criteriaOr.andLongTimeLessThan(calendar.getTimeInMillis());
@@ -197,19 +500,19 @@ public class LiveMybatisDao {
         return topicMapper.countByExample(example);
     }
 
-    public List<Long> getTopicId(long uid){
-        List result = Lists.newArrayList();
+    public List<Long> getTopicId(long uid) {
+        List<Long> result = Lists.newArrayList();
         LiveFavoriteExample example = new LiveFavoriteExample();
         LiveFavoriteExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
         List<LiveFavorite> liveFavoriteList = liveFavoriteMapper.selectByExample(example);
-        for(LiveFavorite liveFavorite : liveFavoriteList){
+        for (LiveFavorite liveFavorite : liveFavoriteList) {
             result.add(liveFavorite.getTopicId());
         }
         return result;
     }
 
-    public List<Topic> getLives(long sinceId){
+    public List<Topic> getLives(long sinceId) {
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andIdLessThan(sinceId);
@@ -218,7 +521,7 @@ public class LiveMybatisDao {
         return topicMapper.selectByExample(example);
     }
 
-    public List<Topic> getLivesByUpdateTime(long updateTime){
+    public List<Topic> getLivesByUpdateTime(long updateTime) {
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andLongTimeLessThan(updateTime);
@@ -227,48 +530,90 @@ public class LiveMybatisDao {
         return topicMapper.selectByExample(example);
     }
 
-    public LiveFavorite getLiveFavorite(long uid, long topicId){
+    public LiveFavorite getLiveFavorite(long uid, long topicId) {
         LiveFavoriteExample example = new LiveFavoriteExample();
         LiveFavoriteExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
         criteria.andTopicIdEqualTo(topicId);
         List<LiveFavorite> liveFavoriteList = liveFavoriteMapper.selectByExample(example);
-        return  (liveFavoriteList != null && liveFavoriteList.size() > 0) ? liveFavoriteList.get(0) : null;
+        return (liveFavoriteList != null && liveFavoriteList.size() > 0) ? liveFavoriteList.get(0) : null;
     }
 
-    public void createLiveFavorite(LiveFavorite liveFavorite){
+    public List<LiveFavorite> getLiveFavoritePageByTopicIdAndExceptUids(long topicId, List<Long> exceptUids, int start, int pageSize){
+    	LiveFavoriteExample example = new LiveFavoriteExample();
+        LiveFavoriteExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        if(null != exceptUids && exceptUids.size() > 0){
+        	criteria.andUidNotIn(exceptUids);
+        }
+        example.setOrderByClause(" id asc limit "+start+","+pageSize);
+        return liveFavoriteMapper.selectByExample(example);
+    }
+
+    public int countLiveFavoriteByTopicIdAndExceptUids(long topicId, List<Long> exceptUids){
+    	LiveFavoriteExample example = new LiveFavoriteExample();
+        LiveFavoriteExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        if(null != exceptUids && exceptUids.size() > 0){
+        	criteria.andUidNotIn(exceptUids);
+        }
+        return liveFavoriteMapper.countByExample(example);
+    }
+
+    public List<LiveFavorite> getLiveFavoritesByUidAndTopicIds(long uid, List<Long> topicIds){
+    	if(null == topicIds || topicIds.size() == 0){
+    		return null;
+    	}
+    	LiveFavoriteExample example = new LiveFavoriteExample();
+        LiveFavoriteExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTopicIdIn(topicIds);
+        return liveFavoriteMapper.selectByExample(example);
+    }
+
+    public List<LiveFavorite> getLiveFavoritesByUidsAndTopicId(List<Long> uids, long topicId){
+    	LiveFavoriteExample example = new LiveFavoriteExample();
+        LiveFavoriteExample.Criteria criteria = example.createCriteria();
+        criteria.andUidIn(uids);
+        criteria.andTopicIdEqualTo(topicId);
+        return liveFavoriteMapper.selectByExample(example);
+    }
+
+    public void createLiveFavorite(LiveFavorite liveFavorite) {
         liveFavoriteMapper.insertSelective(liveFavorite);
     }
 
-    public void deleteLiveFavorite(LiveFavorite liveFavorite){
+    public void deleteLiveFavorite(LiveFavorite liveFavorite) {
         liveFavoriteMapper.deleteByPrimaryKey(liveFavorite.getId());
     }
 
-    public int countFragment(long topicId,long uid ){
+    public int countFragment(long topicId, long uid) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andUidNotEqualTo(uid);
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
         return topicFragmentMapper.countByExample(example);
     }
 
-    public int countFragmentByUid(long topicId,long uid ){
+    public int countFragmentByUid(long topicId, long uid) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andUidEqualTo(uid);
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
         return topicFragmentMapper.countByExample(example);
     }
 
-     public List<LiveFavorite> getFavoriteList(long topicId){
-         LiveFavoriteExample example = new LiveFavoriteExample();
-         LiveFavoriteExample.Criteria criteria = example.createCriteria();
-         criteria.andTopicIdEqualTo(topicId);
-         example.setOrderByClause(" id asc limit 20");
-         return liveFavoriteMapper.selectByExample(example);
-     }
+    public List<LiveFavorite> getFavoriteList(long topicId) {
+        LiveFavoriteExample example = new LiveFavoriteExample();
+        LiveFavoriteExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        example.setOrderByClause(" id asc limit 20");
+        return liveFavoriteMapper.selectByExample(example);
+    }
 
-    public List<LiveFavorite> getFavoriteAll(long topicId){
+    public List<LiveFavorite> getFavoriteAll(long topicId) {
         LiveFavoriteExample example = new LiveFavoriteExample();
         LiveFavoriteExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
@@ -276,16 +621,16 @@ public class LiveMybatisDao {
     }
 
 
-    public LiveReadHistory getLiveReadHistory(long topicId,long uid){
+    public LiveReadHistory getLiveReadHistory(long topicId, long uid) {
         LiveReadHistoryExample example = new LiveReadHistoryExample();
         LiveReadHistoryExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andUidEqualTo(uid);
-        List<LiveReadHistory> liveReadHistories =  liveReadHistoryMapper.selectByExample(example);
-        return (liveReadHistories != null && liveReadHistories.size() > 0) ?liveReadHistories.get(0) : null ;
+        List<LiveReadHistory> liveReadHistories = liveReadHistoryMapper.selectByExample(example);
+        return (liveReadHistories != null && liveReadHistories.size() > 0) ? liveReadHistories.get(0) : null;
     }
 
-    public void createLiveReadHistory(long topicId,long uid){
+    public void createLiveReadHistory(long topicId, long uid) {
         LiveReadHistory liveReadHistory = new LiveReadHistory();
         liveReadHistory.setTopicId(topicId);
         liveReadHistory.setUid(uid);
@@ -293,7 +638,7 @@ public class LiveMybatisDao {
 
     }
 
-    public void createTopicBarrage(TopicBarrage topicBarrage){
+    public void createTopicBarrage(TopicBarrage topicBarrage) {
         topicBarrageMapper.insertSelective(topicBarrage);
     }
 
@@ -306,48 +651,62 @@ public class LiveMybatisDao {
         return topicBarrageMapper.selectByExampleWithBLOBsDistinct(topicBarrage);
     }*/
 
-    public List<TopicBarrage> getBarrage(long topicId,long sinceId, long topId ,long bottomId ) {
+    public List<TopicBarrage> getBarrage(long topicId, long sinceId, long topId, long bottomId) {
         TopicBarrageExample example = new TopicBarrageExample();
         TopicBarrageExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andTopIdGreaterThanOrEqualTo(topId);
         criteria.andBottomIdEqualTo(bottomId);
         criteria.andIdGreaterThan(sinceId);
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
         example.setOrderByClause(" id asc limit 20 ");
         return topicBarrageMapper.selectByExampleWithBLOBs(example);
     }
 
-    public TopicBarrage getBarrage(long topicId, long topId ,long bottomId, int type ,long uid ){
+    public TopicBarrage getBarrage(long topicId, long topId, long bottomId, int type, long uid) {
         TopicBarrageExample example = new TopicBarrageExample();
-        TopicBarrageExample.Criteria criteria =example.createCriteria();
+        TopicBarrageExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andTopIdEqualTo(topId);
         criteria.andBottomIdEqualTo(bottomId);
         criteria.andTypeEqualTo(type);
         criteria.andUidEqualTo(uid);
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
         List<TopicBarrage> topicBarrages = topicBarrageMapper.selectByExampleWithBLOBs(example);
         return com.me2me.common.utils.Lists.getSingle(topicBarrages);
     }
 
-    public List<Topic> getInactiveLive(long uid,List<Long> topics,long updateTime){
+    public List<TopicBarrage> getBarrageListByTopicIds(List<Long> topicIds, long topId, long bottomId, int type, long uid){
+    	TopicBarrageExample example = new TopicBarrageExample();
+        TopicBarrageExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdIn(topicIds);
+        criteria.andTopIdEqualTo(topId);
+        criteria.andBottomIdEqualTo(bottomId);
+        criteria.andTypeEqualTo(type);
+        criteria.andUidEqualTo(uid);
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
+        return topicBarrageMapper.selectByExampleWithBLOBs(example);
+    }
+
+    public List<Topic> getInactiveLive(long uid, List<Long> topics, long updateTime) {
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andStatusNotEqualTo(Specification.LiveStatus.REMOVE.index);
         criteria.andLongTimeLessThan(updateTime);
         criteria.andUidEqualTo(uid);
         TopicExample.Criteria criteriaOr = example.createCriteria();
-        if(topics != null && topics.size() > 0) {
+        if (topics != null && topics.size() > 0) {
             criteriaOr.andLongTimeLessThan(updateTime);
             criteriaOr.andUidNotEqualTo(uid);
             criteriaOr.andIdIn(topics);
             example.or(criteriaOr);
         }
         //最后更新时间降序排列
-        example.setOrderByClause(" long_time desc limit 10" );
+        example.setOrderByClause(" long_time desc limit 10");
         return topicMapper.selectByExample(example);
     }
 
-    public List<Topic> getMyTopic(long uid){
+    public List<Topic> getMyTopic(long uid) {
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
@@ -355,7 +714,7 @@ public class LiveMybatisDao {
         return topicMapper.selectByExample(example);
     }
 
-    public void deleteLiveFavoriteByUid(long uid,long topicId){
+    public void deleteLiveFavoriteByUid(long uid, long topicId) {
         LiveFavoriteExample example = new LiveFavoriteExample();
         LiveFavoriteExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
@@ -363,23 +722,31 @@ public class LiveMybatisDao {
         liveFavoriteMapper.deleteByExample(example);
     }
 
-    public void createFavoriteDelete(long uid,long topicId){
+    public void createFavoriteDelete(long uid, long topicId) {
         LiveFavoriteDelete liveFavoriteDelete = new LiveFavoriteDelete();
         liveFavoriteDelete.setUid(uid);
         liveFavoriteDelete.setTopicId(topicId);
         liveFavoriteDeleteMapper.insertSelective(liveFavoriteDelete);
     }
 
-    public LiveFavoriteDelete getFavoriteDelete(long uid,long topicId){
+    public LiveFavoriteDelete getFavoriteDelete(long uid, long topicId) {
         LiveFavoriteDeleteExample example = new LiveFavoriteDeleteExample();
         LiveFavoriteDeleteExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
         criteria.andTopicIdEqualTo(topicId);
         List<LiveFavoriteDelete> list = liveFavoriteDeleteMapper.selectByExample(example);
-       return com.me2me.common.utils.Lists.getSingle(list);
+        return com.me2me.common.utils.Lists.getSingle(list);
     }
 
-    public void deleteFavoriteDelete(long uid,long topicId) {
+    public List<LiveFavoriteDelete> getFavoriteDeletesByTopicIds(long uid, List<Long> topicIds){
+    	LiveFavoriteDeleteExample example = new LiveFavoriteDeleteExample();
+        LiveFavoriteDeleteExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTopicIdIn(topicIds);
+        return liveFavoriteDeleteMapper.selectByExample(example);
+    }
+
+    public void deleteFavoriteDelete(long uid, long topicId) {
         LiveFavoriteDeleteExample example = new LiveFavoriteDeleteExample();
         LiveFavoriteDeleteExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
@@ -387,22 +754,39 @@ public class LiveMybatisDao {
         liveFavoriteDeleteMapper.deleteByExample(example);
     }
 
-    public List<Topic> getMyTopic4Follow(long uid){
+    public void batchDeleteFavoriteDeletes(long uid, List<Long> topicIds){
+    	LiveFavoriteDeleteExample example = new LiveFavoriteDeleteExample();
+        LiveFavoriteDeleteExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTopicIdIn(topicIds);
+        liveFavoriteDeleteMapper.deleteByExample(example);
+    }
+
+    public void batchDeleteFavoriteDeletesByUids(List<Long> uids, long topicId){
+    	LiveFavoriteDeleteExample example = new LiveFavoriteDeleteExample();
+        LiveFavoriteDeleteExample.Criteria criteria = example.createCriteria();
+        criteria.andUidIn(uids);
+        criteria.andTopicIdEqualTo(topicId);
+        liveFavoriteDeleteMapper.deleteByExample(example);
+    }
+
+    public List<Topic> getMyTopic4Follow(long uid) {
         TopicExample example = new TopicExample();
         TopicExample.Criteria criteria = example.createCriteria();
         criteria.andUidEqualTo(uid);
         return topicMapper.selectByExample(example);
     }
 
-    public List<TopicFragment> getTopicFragment(long topicId){
+    public List<TopicFragment> getTopicFragment(long topicId) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
-        example.setOrderByClause("id asc "  );
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
+        example.setOrderByClause("id asc ");
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
 
-    public void createLiveDisplayFragment(SpeakDto speakDto){
+    public void createLiveDisplayFragment(SpeakDto speakDto) {
         LiveDisplayFragment displayFragment = new LiveDisplayFragment();
         displayFragment.setUid(speakDto.getUid());
         displayFragment.setFragment(speakDto.getFragment());
@@ -412,7 +796,7 @@ public class LiveMybatisDao {
         liveDisplayFragmentMapper.insertSelective(displayFragment);
     }
 
-    public void updateLiveDisplayFragment(SpeakDto speakDto){
+    public void updateLiveDisplayFragment(SpeakDto speakDto) {
         LiveDisplayFragmentExample example = new LiveDisplayFragmentExample();
         liveDisplayFragmentMapper.selectByExample(example);
         LiveDisplayFragment displayFragment = new LiveDisplayFragment();
@@ -424,7 +808,7 @@ public class LiveMybatisDao {
         liveDisplayFragmentMapper.insertSelective(displayFragment);
     }
 
-    public void createLiveDisplayReview(SpeakDto speakDto){
+    public void createLiveDisplayReview(SpeakDto speakDto) {
         LiveDisplayReview displayReview = new LiveDisplayReview();
         displayReview.setUid(speakDto.getUid());
         displayReview.setReview(speakDto.getFragment());
@@ -433,7 +817,7 @@ public class LiveMybatisDao {
         liveDisplayReviewMapper.insertSelective(displayReview);
     }
 
-    public void createLiveDisplayBarrage(SpeakDto speakDto){
+    public void createLiveDisplayBarrage(SpeakDto speakDto) {
         LiveDisplayBarrage displayBarrage = new LiveDisplayBarrage();
         displayBarrage.setUid(speakDto.getUid());
         displayBarrage.setBarrage(speakDto.getFragment());
@@ -441,24 +825,673 @@ public class LiveMybatisDao {
         liveDisplayBarrageMapper.insertSelective(displayBarrage);
     }
 
-    public List<LiveDisplayFragment> getDisPlayFragmentByMode(long topicId,long sinceId,long uid){
+    public List<LiveDisplayFragment> getDisPlayFragmentByMode(long topicId, long sinceId, long uid) {
         LiveDisplayFragmentExample example = new LiveDisplayFragmentExample();
         LiveDisplayFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andIdGreaterThan(sinceId);
         criteria.andUidEqualTo(uid);
-        example.setOrderByClause("id asc limit 10 "  );
+        example.setOrderByClause("id asc limit 10 ");
         return liveDisplayFragmentMapper.selectByExample(example);
     }
 
-    public TopicBarrage getTopicBarrageByTopicId(long topicId,long uid){
+    public TopicBarrage getTopicBarrageByTopicId(long topicId, long uid) {
         TopicBarrageExample example = new TopicBarrageExample();
         TopicBarrageExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andUidEqualTo(uid);
         criteria.andTypeEqualTo(Specification.LiveSpeakType.LIKES.index);
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
         List<TopicBarrage> list = topicBarrageMapper.selectByExample(example);
         return com.me2me.common.utils.Lists.getSingle(list);
     }
 
+    public List<SnsCircle> getCoreCircle(long uid) {
+        SnsCircleExample example = new SnsCircleExample();
+        SnsCircleExample.Criteria criteria = example.createCriteria();
+        criteria.andOwnerEqualTo(uid);
+        criteria.andInternalStatusEqualTo(Specification.SnsCircle.CORE.index);
+        return snsCircleMapper.selectByExample(example);
+    }
+
+
+    public int deleteLiveFragmentById(long fid) {
+        TopicFragment fragment = new TopicFragment();
+        fragment.setId(fid);
+        fragment.setStatus(Specification.TopicFragmentStatus.DISABLED.index);
+        return topicFragmentMapper.updateByPrimaryKeySelective(fragment);
+    }
+
+    public void createDeleteLog(DeleteLog deleteLog) {
+        deleteLogMapper.insert(deleteLog);
+    }
+
+    public LiveDisplayProtocol getLiveDisplayProtocol(int vLv) {
+        LiveDisplayProtocolExample examle = new LiveDisplayProtocolExample();
+        examle.or().andVLvEqualTo(Specification.VipLevel.noV.index);
+        examle.or().andVLvEqualTo(vLv);
+        examle.setOrderByClause(" vlv desc limit 1");
+
+        List<LiveDisplayProtocol> list = liveDisplayProtocolMapper.selectByExample(examle);
+        return (list==null||list.isEmpty())?null:list.get(0);
+    }
+
+    public int deleteLiveBarrageById(long bid) {
+        TopicBarrage barrage = new TopicBarrage();
+        barrage.setStatus(Specification.TopicFragmentStatus.DISABLED.index);
+        barrage.setId(bid);
+
+        return topicBarrageMapper.updateByPrimaryKeySelective(barrage);
+    }
+
+    public TopicBarrage getTopicBarrageByFId(long fid) {
+        TopicBarrageExample example= new TopicBarrageExample();
+        TopicBarrageExample.Criteria criteria = example.createCriteria();
+        criteria.andFidEqualTo(fid);
+        criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
+
+        List<TopicBarrage> list = topicBarrageMapper.selectByExampleWithBLOBs(example);
+        return list==null||list.isEmpty()?null:list.get(0);
+    }
+
+    public int updateTopFragmentById(SpeakDto speakDto) {
+        TopicFragment fragment = new TopicFragment();
+        fragment.setId(speakDto.getFragmentId());
+        fragment.setExtra(speakDto.getExtra());
+
+        return topicFragmentMapper.updateByPrimaryKeySelective(fragment);
+    }
+
+    public int countFragmentByTopicId(long topicId) {
+        TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+       return  topicFragmentMapper.countByExample(example);
+    }
+
+    public List<TopicFragment> getTopicFragmentForPage(GetLiveDetailDto getLiveDetailDto) {
+       /* TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(getLiveDetailDto.getTopicId());
+        int pageNo = getLiveDetailDto.getPageNo();
+        String order = "id asc limit "+((pageNo-1)*getLiveDetailDto.getOffset())+","+getLiveDetailDto.getOffset();
+        example.setOrderByClause(order);
+        return topicFragmentMapper.selectByExampleWithBLOBs(example);*/
+
+        int startIndex = (getLiveDetailDto.getPageNo()-1)*getLiveDetailDto.getOffset();
+        getLiveDetailDto.setStartIndex(startIndex);
+        return topicFragmentMapper.getTopicFragmentForPage(getLiveDetailDto);
+    }
+
+    public Map<String,Long> countFragmentByTopicIdWithSince(GetLiveUpdateDto getLiveUpdateDto) {
+        return topicFragmentMapper.countFragmentByTopicIdWithSince(getLiveUpdateDto);
+    }
+
+    public TopicFragment getTopicFragmentById(long id){
+    	return topicFragmentMapper.selectByPrimaryKey(id);
+    }
+
+    public TopicUserConfig getTopicUserConfig(long uid ,long topicId){
+        TopicUserConfigExample example = new TopicUserConfigExample();
+        TopicUserConfigExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andTopicIdEqualTo(topicId);
+        List<TopicUserConfig> list = topicUserConfigMapper.selectByExample(example);
+        return list != null && list.size() > 0?list.get(0):null;
+    }
+
+    public void updateTopicUserConfig(TopicUserConfig topicUserConfig) {
+        topicUserConfigMapper.updateByPrimaryKeySelective(topicUserConfig);
+    }
+
+    public void insertTopicUserConfig(TopicUserConfig topicUserConfig) {
+    	topicUserConfigMapper.insertSelective(topicUserConfig);
+    }
+
+    public void updateTopicAggregation(TopicAggregation topicAggregation) {
+        topicAggregationMapper.updateByPrimaryKeySelective(topicAggregation);
+    }
+
+    public List<TopicAggregation> getTopicAggregationsByTopicId(long topicId){
+    	TopicAggregationExample example = new TopicAggregationExample();
+    	TopicAggregationExample.Criteria criteria = example.createCriteria();
+    	criteria.andTopicIdEqualTo(topicId);
+    	return topicAggregationMapper.selectByExample(example);
+    }
+
+    public List<TopicAggregation> getTopicAggregationsBySubTopicId(long subTopicId){
+    	TopicAggregationExample example = new TopicAggregationExample();
+    	TopicAggregationExample.Criteria criteria = example.createCriteria();
+    	criteria.andSubTopicIdEqualTo(subTopicId);
+    	return topicAggregationMapper.selectByExample(example);
+    }
+
+    public void updateTopicAggregationApply(TopicAggregationApply topicAggregationApply) {
+        topicAggregationApplyMapper.updateByPrimaryKeySelective(topicAggregationApply);
+    }
+
+    public void createTopicAggApply(TopicAggregationApply topicAggregationApply) {
+        topicAggregationApplyMapper.insertSelective(topicAggregationApply);
+    }
+
+    public void createTopicAgg(TopicAggregation topicAggregation) {
+        topicAggregationMapper.insertSelective(topicAggregation);
+    }
+
+    public void deleteTopicAgg(long ceTopicId ,long acTopicId) {
+        TopicAggregationExample example = new TopicAggregationExample();
+        TopicAggregationExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(ceTopicId);
+        criteria.andSubTopicIdEqualTo(acTopicId);
+       topicAggregationMapper.deleteByExample(example);
+    }
+
+    public TopicAggregation getTopicAggregationByTopicIdAndSubId(long topicId ,long subId){
+        TopicAggregationExample example = new TopicAggregationExample();
+        TopicAggregationExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andSubTopicIdEqualTo(subId);
+        List<TopicAggregation> list = topicAggregationMapper.selectByExample(example);
+        return list.size() > 0 && list != null?list.get(0):null;
+    }
+
+    public List<TopicAggregation> getTopicAggregationByTopicIdAndIsTop(long topicId, int isTop){
+        TopicAggregationExample example = new TopicAggregationExample();
+        TopicAggregationExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andIsTopEqualTo(isTop);
+
+        return topicAggregationMapper.selectByExample(example);
+    }
+
+    public TopicAggregationApply getTopicAggregationApplyById(long applyId){
+        TopicAggregationApplyExample example = new TopicAggregationApplyExample();
+        TopicAggregationApplyExample.Criteria criteria = example.createCriteria();
+        criteria.andIdEqualTo(applyId);
+        List<TopicAggregationApply> list = topicAggregationApplyMapper.selectByExample(example);
+        return list.size() > 0 && list != null?list.get(0):null;
+    }
+
+    public List<TopicAggregationApply> getTopicAggregationApplyByTopicAndTargetAndResult(long ownerTopicId ,long targetTopicId ,int type, List<Integer> resultList){
+        TopicAggregationApplyExample example = new TopicAggregationApplyExample();
+        TopicAggregationApplyExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(ownerTopicId);
+        criteria.andTargetTopicIdEqualTo(targetTopicId);
+        criteria.andTypeEqualTo(type);
+        if(null != resultList && resultList.size() > 0){
+        	criteria.andResultIn(resultList);
+        }
+        return topicAggregationApplyMapper.selectByExample(example);
+    }
+
+    /**
+     * 本方法慎用
+     */
+    public List<TopicAggregationApply> getTopicAggregationApplyBySourceIdsAndTargetIdsAndResults(List<Long> sourceIds, List<Long> targetIds, List<Integer> resultList){
+    	TopicAggregationApplyExample example = new TopicAggregationApplyExample();
+        TopicAggregationApplyExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdIn(sourceIds);
+        criteria.andTargetTopicIdIn(targetIds);
+        if(null != resultList && resultList.size() > 0){
+        	criteria.andResultIn(resultList);
+        }
+        return topicAggregationApplyMapper.selectByExample(example);
+    }
+
+    public TopicDroparound getRandomDropaRound(Map<String ,String> map){
+        TopicDroparound topicDroparound = topicDroparoundMapper.getRandomDropaRound(map);
+        return topicDroparound;
+    }
+
+    public Topic getRandomDropaRoundAlgorithm(Map<String ,String> map){
+        Topic topic = topicMapper.getRandomDropaRoundAlgorithm(map);
+        return topic;
+    }
+
+    public void createTopicDroparoundTrail(TopicDroparoundTrail trail){
+        topicDroparoundTrailMapper.insertSelective(trail);
+    }
+	/**
+	 * 获取串门轨迹语言模板列表。返回所有语言模板。
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param queryStr
+	 * @return
+	 */
+	public List<TopicFragmentTemplate> getFragmentTplList(String queryStr) {
+		TopicFragmentTemplateExample tf = new TopicFragmentTemplateExample();
+		if(!StringUtils.isEmpty(queryStr)){
+			tf.createCriteria().andContentLike("%"+queryStr+"%");
+		}
+		List<TopicFragmentTemplate> templates = topicFragmentTemplateMapper.selectByExample(tf);
+		return templates;
+	}
+	/**
+	 * 添加一个语言模板
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param obj
+	 */
+	public void addFragmentTpl(TopicFragmentTemplate obj) {
+		topicFragmentTemplateMapper.insert(obj);
+	}
+	/**
+	 * 根据ID取一个语言模板
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param id
+	 * @return
+	 */
+	public TopicFragmentTemplate getFragmentTplById(Long id) {
+		return topicFragmentTemplateMapper.selectByPrimaryKey(id);
+	}
+	/**
+	 * 删除王国语言模板
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param msgId
+	 */
+	public void deleteFragmentTplById(Long msgId) {
+		topicFragmentTemplateMapper.deleteByPrimaryKey(msgId);
+	}
+	/**
+	 * 修改王国语言模板
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param obj
+	 */
+	public void updateFragmentTpl(TopicFragmentTemplate obj) {
+		topicFragmentTemplateMapper.updateByPrimaryKey(obj);
+	}
+	/**
+	 *  添加可串门的王国
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param tropicId
+	 * @param sort
+	 */
+	public void addDropAroundKingdom(long tropicId, int sort) {
+		TopicDroparound record =new TopicDroparound();
+		record.setSort(sort);
+		record.setTopicid(tropicId);
+		topicDroparoundMapper.insert(record);
+	}
+	/**
+	 * 删除可串门的王国
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param tropicId
+	 */
+	public void deleteDropAroundKingdom(long tropicId) {
+		topicDroparoundMapper.deleteByPrimaryKey(tropicId);
+	}
+	/**
+	 * 查询指定的王国ID是否在可串门的王国列表中。存在返回true,不存在返回false.
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param tropicId 指定的王国ID
+	 */
+	public boolean existsDropAroundKingdom(long tropicId){
+		TopicDroparoundExample example = new TopicDroparoundExample();
+		example.createCriteria().andTopicidEqualTo(tropicId);
+		int count = topicDroparoundMapper.countByExample(example);
+		return count==1;
+	}
+	/**
+	 * 修改串门王国
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param td
+	 */
+	public void updateDropAroundKingdom(TopicDroparound td) {
+		topicDroparoundMapper.updateByPrimaryKeySelective(td);
+	}
+	/**
+	 * 查询王国分页
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param page
+	 * @param searchKeyword
+	 * @return
+	 */
+	public PageBean<Topic> getTopicPage(PageBean page, String searchKeyword) {
+		TopicExample example = new TopicExample();
+		if(!org.apache.commons.lang.StringUtils.isEmpty(searchKeyword)){
+			example.createCriteria().andTitleLike("%"+searchKeyword+"%");
+			if(searchKeyword.matches("^\\d+$")){
+				TopicExample.Criteria ct2= example.createCriteria().andIdEqualTo(Long.parseLong(searchKeyword));
+				example.or(ct2);
+			}
+		}
+		int count =topicMapper.countByExample(example);
+		int beginRow = (page.getCurrentPage()-1)*page.getPageSize();
+		example.setOrderByClause(" id desc limit "+beginRow+","+page.getPageSize());
+		List<Topic> topicList = topicMapper.selectByExample(example);
+		page.setDataList(topicList);
+		page.setTotalRecords(count);
+		return page;
+	}
+	/**
+	 * 取可串门王国分页
+	 * @author zhangjiwei
+	 * @date Mar 20, 2017
+	 * @param page
+	 * @return
+	 */
+	public PageBean<SearchDropAroundTopicDto> getDropAroundKingdomPage(PageBean page,String searchStr) {
+		Map<String,Object> obj = new HashMap<>();
+		obj.put("skip", (page.getCurrentPage()-1) * page.getPageSize());
+		obj.put("limit", page.getPageSize());
+		if(searchStr!=null){
+			obj.put("searchStr", "%"+searchStr+"%");
+		}
+		List<SearchDropAroundTopicDto> topicList = topicDroparoundMapper.getDropAroundKingdomPage(obj);
+		int count = topicDroparoundMapper.countDropAroundKingdomPage(obj);
+
+		page.setDataList(topicList);
+		page.setTotalRecords(count);
+		return page;
+	}
+
+	public void truncateKingdomCountDay(){
+		topicMapper.truncateKingdomCountDay();
+	}
+
+	public void statKingdomCountDay(){
+		topicMapper.statKingdomCountDay();
+	}
+
+    public TopicFragmentTemplate getTopicFragmentTemplate(){
+        List<TopicFragmentTemplate> list = topicFragmentTemplateMapper.selectByExample(null);
+        if(null != list && list.size() > 1){
+        	Collections.shuffle(list);
+        }
+        return list != null && list.size() > 0 ? list.get(0):null;
+    }
+
+    public TopicFragment getFragmentByAT(Map map){
+        return topicFragmentMapper.getFragmentByAT(map);
+    }
+
+	public PageBean<SearchTopicDto> getTopicPage(PageBean page, Map<String, Object> params) {
+
+		params.put("skip", (page.getCurrentPage()-1) * page.getPageSize());
+		params.put("limit", page.getPageSize());
+		long count = topicMapper.countTopicForPage(params);
+		List<SearchTopicDto> topicList = topicMapper.getTopicPage(params);
+		page.setDataList(topicList);
+		page.setTotalRecords(count);
+		return page;
+	}
+
+	public TopicTag getTopicTagByTag(String tag){
+		TopicTagExample example = new TopicTagExample();
+		TopicTagExample.Criteria criteria = example.createCriteria();
+		criteria.andTagEqualTo(tag);
+		List<TopicTag> list = topicTagMapper.selectByExample(example);
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+	
+	public TopicTag getRecTopicTagWithoutOwn(long topicId, List<Long> tagIdList, boolean isAdmin){
+		TopicTagExample example = new TopicTagExample();
+		TopicTagExample.Criteria criteria = example.createCriteria();
+		criteria.andStatusEqualTo(0);//正常的
+		criteria.andIsRecEqualTo(1);//推荐的
+		if(null != tagIdList && tagIdList.size() > 0){
+			criteria.andIdNotIn(tagIdList);
+		}
+		if(!isAdmin){//不是管理员推荐的标签中不能出现“官方”二字
+			criteria.andTagNotLike("%官方%");
+		}
+		example.setOrderByClause(" id desc limit 1");
+		List<TopicTag> list =  topicTagMapper.selectByExample(example);
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+
+	public void insertTopicTag(TopicTag tag){
+		topicTagMapper.insertSelective(tag);
+	}
+	
+	public void updateTopicTag(TopicTag tag){
+		topicTagMapper.updateByPrimaryKeySelective(tag);
+	}
+	
+	public TopicTag getTopicTagById(long id){
+		return topicTagMapper.selectByPrimaryKey(id);
+	}
+
+	public void insertTopicTagDetail(TopicTagDetail tagDetail){
+		topicTagDetailMapper.insertSelective(tagDetail);
+	}
+	
+	public TopicTagDetail getTopicTagDetailById(long id){
+		return topicTagDetailMapper.selectByPrimaryKey(id);
+	}
+	
+	public void updateTopicTagDetail(TopicTagDetail tagDetail){
+		topicTagDetailMapper.updateByPrimaryKeySelective(tagDetail);
+	}
+
+	public List<TopicTagDetail> getTopicTagDetailsByTopicId(long topicId){
+        TopicTagDetailExample example = new TopicTagDetailExample();
+        TopicTagDetailExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andStatusEqualTo(0);
+        return topicTagDetailMapper.selectByExample(example);
+    }
+	
+	public List<TopicTagDetail> getTopicTagDetailsByTagId(long tagId){
+		TopicTagDetailExample example = new TopicTagDetailExample();
+        TopicTagDetailExample.Criteria criteria = example.createCriteria();
+        criteria.andTagIdEqualTo(tagId);
+        criteria.andStatusEqualTo(0);
+        return topicTagDetailMapper.selectByExample(example);
+	}
+	
+	public List<TopicTagDetail> getTopicTagDetailListByTopicIds(List<Long> topicIds){
+		if(null == topicIds || topicIds.size() == 0){
+			return null;
+		}
+		TopicTagDetailExample example = new TopicTagDetailExample();
+        TopicTagDetailExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdIn(topicIds);
+        criteria.andStatusEqualTo(0);
+        example.setOrderByClause(" topic_id asc,id asc ");
+        return topicTagDetailMapper.selectByExample(example);
+	}
+	
+	public PageBean<TeaseInfo> getTeaseInfoPage(PageBean<TeaseInfo> page, Map<String, Object> conditions) {
+		TeaseInfoExample example = new TeaseInfoExample();
+		int count = teaseInfoMapper.countByExample(example);
+		example.setOrderByClause("id desc limit "+((page.getCurrentPage()-1)*page.getPageSize())+","+page.getPageSize());
+		example.createCriteria().andStatusEqualTo(1);
+		List<TeaseInfo> packList=  teaseInfoMapper.selectByExample(example);
+		page.setPageSize(count);
+		page.setDataList(packList);
+		return page;
+	}
+	public void updateTeaseInfoByKey(TeaseInfo teaseInfo) {
+		teaseInfoMapper.updateByPrimaryKeySelective(teaseInfo);
+	}
+	public Integer addTeaseInfo(TeaseInfo teaseInfo) {
+		return teaseInfoMapper.insertSelective(teaseInfo);
+	}
+	public TeaseInfo getTeaseInfoByKey(Long id) {
+		return teaseInfoMapper.selectByPrimaryKey(id);
+	}
+	public List<TeaseInfo> teaseListQuery(){
+		TeaseInfoExample example = new TeaseInfoExample();
+		example.createCriteria().andStatusEqualTo(1);
+		example.setOrderByClause("create_time asc");
+        return teaseInfoMapper.selectByExample(example);
+	}
+	public Integer addVoteInfo(VoteInfo voteInfo) {
+		return voteInfoMapper.insertSelective(voteInfo);
+	}
+	public Integer addVoteOption(VoteOption voteOption) {
+		return voteOptionMapper.insertSelective(voteOption);
+	}
+	public Integer getVoteInfoCount(long uid){
+		VoteInfoExample example = new VoteInfoExample();
+		VoteInfoExample.Criteria criteria =  example.createCriteria();
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		String startDate = sdf.format(new Date())+" 00:00:00";
+		String endDate = sdf.format(new Date())+" 23:59:59";
+		try {
+			criteria.andCreateTimeBetween(sdf1.parse(startDate), sdf1.parse(endDate));
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		criteria.andUidEqualTo(uid);
+		return voteInfoMapper.countByExample(example);
+	}
+	public Integer addVoteRecord(VoteRecord voteRecord) {
+		return voteRecordMapper.insertSelective(voteRecord);
+	}
+	
+	public VoteInfo getVoteInfoByKey(Long id) {
+		return voteInfoMapper.selectByPrimaryKey(id);
+	}
+	public int getVoteRecordCountByUidAndVoteId(long uid,long voteId){
+		VoteRecordExample example = new VoteRecordExample();
+		VoteRecordExample.Criteria criteria = example.createCriteria();
+		criteria.andUidEqualTo(uid);
+		criteria.andVoteidEqualTo(voteId);
+        return voteRecordMapper.countByExample(example);
+	}
+	public Integer updateVoteInfo(VoteInfo voteInfo) {
+		return voteInfoMapper.updateByPrimaryKeySelective(voteInfo);
+	}
+	public Integer deleteFragmentByIdForPhysics(Long id) {
+		return topicFragmentMapper.deleteByPrimaryKey(id);
+	}
+	
+	public List<VoteOption> getVoteOptionList(Long voteId){
+		VoteOptionExample example = new VoteOptionExample();
+		VoteOptionExample.Criteria criteria = example.createCriteria();
+		criteria.andVoteidEqualTo(voteId);
+        return voteOptionMapper.selectByExample(example);
+	}
+	public int getVoteRecordCountByOptionId(long voteOptionId){
+		VoteRecordExample example = new VoteRecordExample();
+		VoteRecordExample.Criteria criteria = example.createCriteria();
+		criteria.andOptionidEqualTo(voteOptionId);
+        return voteRecordMapper.countByExample(example);
+	}
+	
+	public List<VoteRecord> getMyVoteRecord(Long uid,Long voteId){
+		VoteRecordExample example = new VoteRecordExample();
+		VoteRecordExample.Criteria criteria = example.createCriteria();
+		criteria.andVoteidEqualTo(voteId);
+		criteria.andUidEqualTo(uid);
+        return voteRecordMapper.selectByExample(example);
+	}
+	public int getVoteRecordCountByVoteId(long voteId){
+		VoteRecordExample example = new VoteRecordExample();
+		VoteRecordExample.Criteria criteria = example.createCriteria();
+		criteria.andVoteidEqualTo(voteId);
+        return voteRecordMapper.countByExample(example);
+	}
+	
+	/**
+	 * 屏蔽用户王国
+	 * @author zhangjiwei
+	 * @date May 9, 2017
+	 * @param topicId
+	 * @param uid
+	 */
+	public void blockUserKingdom(long topicId, long uid){
+		BlockTopic bt = new BlockTopic();
+		bt.setUid(uid);
+		bt.setTopicId(topicId);
+		blockTopicMapper.insert(bt);
+	}
+	/**
+	 * 移除屏蔽的王国
+	 * @author zhangjiwei
+	 * @date May 9, 2017
+	 * @param topicId
+	 */
+	public void removeBlockedKingodm(long topicId){
+		BlockTopicExample example = new BlockTopicExample();
+		example.createCriteria().andTopicIdEqualTo(topicId);
+		blockTopicMapper.deleteByExample(example);
+	}
+	
+	/**
+	 * 获取用户情绪王国.
+	 * @author chenxiang
+	 * @date 2017-05-24
+	 * @param uid 用户ID
+	 */
+	public Topic getEmotionTopic(long uid){
+		TopicExample example = new TopicExample();
+		TopicExample.Criteria criteria = example.createCriteria();
+		criteria.andUidEqualTo(uid);
+		criteria.andSubTypeEqualTo(1);
+		int count = topicMapper.countByExample(example);
+		List<Topic> list = topicMapper.selectByExample(example);
+		return list.size()>0?list.get(0):null;
+	}
+	
+	/**
+	 * 获取过去24小时跑马灯信息列表.
+	 * @author chenxiang
+	 * @date 2017-06-8
+	 * @param date 当前时间
+	 */
+	public List<TopicNews> getTopicNewsList24h(Date  date){
+		TopicNewsExample example = new TopicNewsExample();
+		TopicNewsExample.Criteria criteria = example.createCriteria();
+		criteria.andCreateTimeGreaterThan(date);
+		List<TopicNews> list = topicNewsMapper.selectByExample(example);
+		return list;
+	}
+	/**
+	 * 王国转让历史查询
+	 * @author chenxiang
+	 * @date 2017-06-8
+	 * @param date 当前时间
+	 */
+    public List<TopicTransferRecord> getKingdomTransferRecord(long topicId, long sinceId) {
+    	TopicTransferRecordExample example = new TopicTransferRecordExample();
+    	TopicTransferRecordExample.Criteria criteria = example.createCriteria();
+    	if(sinceId>0){
+        criteria.andIdLessThan(sinceId);
+    	}
+        criteria.andTopicIdEqualTo(topicId);
+        example.setOrderByClause("id desc limit 10");
+        return topicTransferRecordMapper.selectByExample(example);
+    }
+
+	/**
+	 * 保存跑马灯信息记录
+	 * @author chenxiang
+	 * @date 2017-06-8
+	 * @param 
+	 */
+	public Integer addTopicNews(TopicNews topicNews) {
+		return topicNewsMapper.insertSelective(topicNews);
+	}
+	
+	/**
+	 * 保存王国转让信息
+	 * @author chenxiang
+	 * @date 2017-06-8
+	 * @param 
+	 */
+	public Integer addTopicTransferRecord(TopicTransferRecord topicTransferRecord) {
+		return topicTransferRecordMapper.insertSelective(topicTransferRecord);
+	}
+
+	public void addStealLog(UserStealLog log) {
+		stealLogMapper.insert(log);
+	}
 }

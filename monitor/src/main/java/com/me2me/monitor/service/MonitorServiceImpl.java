@@ -3,10 +3,12 @@ package com.me2me.monitor.service;
 import com.me2me.common.web.Response;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.monitor.dao.MonitorMybatisDao;
+import com.me2me.monitor.dto.AccessLoggerDto;
 import com.me2me.monitor.dto.LoadReportDto;
 import com.me2me.monitor.dto.MonitorReportDto;
 import com.me2me.monitor.event.MonitorEvent;
 import com.me2me.monitor.model.AccessTrack;
+import com.me2me.monitor.model.HttpAccess;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,6 +65,17 @@ public class MonitorServiceImpl implements MonitorService {
         LoadReportDto loadReportDto = new LoadReportDto();
         loadReportDto.setCounter(counter);
         return Response.success(loadReportDto);
+    }
+
+    @Override
+    public void saveAccessLog(AccessLoggerDto accessLoggerDto) {
+        HttpAccess httpAccess = new HttpAccess();
+        httpAccess.setUid(accessLoggerDto.getUid());
+        httpAccess.setHttpHeaders(accessLoggerDto.getHeaders());
+        httpAccess.setHttpRequestMethod(accessLoggerDto.getMethod());
+        httpAccess.setHttpRequestParams(accessLoggerDto.getParams());
+        httpAccess.setHttpUri(accessLoggerDto.getUri());
+        monitorMybatisDao.saveHttpAccess(httpAccess);
     }
 
 }

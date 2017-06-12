@@ -1,10 +1,10 @@
 package com.me2me.web;
 
-import com.google.common.collect.Lists;
 import com.me2me.activity.dto.CreateActivityDto;
 import com.me2me.activity.dto.CreateActivityNoticeDto;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.utils.CommonUtils;
+import com.me2me.common.web.Request;
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.ContentDto;
 import com.me2me.content.dto.EditorContentDto;
@@ -13,6 +13,7 @@ import com.me2me.content.service.ContentService;
 import com.me2me.user.dto.*;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.http.MediaType;
@@ -25,7 +26,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -212,4 +212,10 @@ public class ApplicationConsole extends BaseController {
         return userService.getPhoto(request.getSinceId());
     }
 
+    @RequestMapping(value = "/initNameGroup",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response initNameGroup(){
+    	userService.initNameGroup();
+    	return Response.success();
+    }
 }

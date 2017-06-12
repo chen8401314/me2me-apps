@@ -1,15 +1,22 @@
 package com.me2me.user.dao;
 
+import com.alibaba.fastjson.JSON;
+import com.google.common.collect.Lists;
 import com.me2me.common.Constant;
 import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.web.Specification;
+import com.me2me.user.dto.UserAccountBindStatusDto;
 import com.me2me.user.model.User;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserToken;
+
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +77,13 @@ public class OldUserJdbcDao {
                 } else {
                     userProfile.setGender(0);
                 }
+
+                // 添加手机绑定
+                List<UserAccountBindStatusDto> array = Lists.newArrayList();
+                array.add(new UserAccountBindStatusDto(Specification.ThirdPartType.MOBILE.index,Specification.ThirdPartType.MOBILE.name,1));
+                String mobileBind = JSON.toJSONString(array);
+                userProfile.setThirdPartBind(mobileBind);
+
                 userMybatisDao.createUserProfile(userProfile);
                 log.info("userProfile move success");
                 // 保存用户token信息
@@ -93,5 +107,18 @@ public class OldUserJdbcDao {
             return Integer.parseInt(result == null ? "0" : result.toString());
         }
         return 0;
+    }
+    
+    public List<Long> getAllUids(){
+    	String sql = "select DISTINCT t.uid from user_profile t";
+    	List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
+    	if(null != list && list.size() > 0){
+    		List<Long> result = new ArrayList<Long>();
+    		for(Map<String,Object> m : list){
+    			result.add((Long)m.get("uid"));
+    		}
+    		return result;
+    	}
+    	return null;
     }
 }

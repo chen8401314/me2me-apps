@@ -28,4 +28,8 @@ public class VerifyRequest extends Request{
     @Getter
     @Setter
     private int channelAdapter;
+    
+    @Getter
+    @Setter
+    private int isTest;
 }

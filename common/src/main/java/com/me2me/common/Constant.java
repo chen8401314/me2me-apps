@@ -7,9 +7,11 @@ package com.me2me.common;
  */
 public class Constant {
 
-    public static final String DEFAULT_AVATAR = "default.jpg";
+    public static final String DEFAULT_AVATAR = "default.png";
 
-    public static final String QINIU_DOMAIN = "http://cdn.me-to-me.com";
+    public static final String QINIU_DOMAIN = "https://cdn.me-to-me.com";
+    
+    public static final String QINIU_DOMAIN_COMMON = "//cdn.me-to-me.com";
 
     public static final String FORWARD_URL_TEST = "http://192.168.89.79:5678/console/forward?id=";
 
@@ -17,4 +19,36 @@ public class Constant {
 
     public static final String OLD_USER_ENCRYPT = "123456";
 
+//    public static final String Live_WEB_URL = "http://app2.me-to-me.com/?topicId=";
+
+//    public static final String Live_WEB_URL = "http://webapp.me-to-me.com/h5web/liveDetail/";
+    
+//    public static final String Live_WEB_URL = "https://webapp.me-to-me.com/ld/";
+
+    public static final String AWARD_URL = "http://www.baidu.com";
+
+    public static final String BILLBOARD_KEY_TARGET1 = "_target1";
+    public static final String BILLBOARD_KEY_TARGET2 = "_target2";
+    
+    public static final String BILLBOARD_KEY_POPULAR_PEOPLE = "popular_people";
+    public static final String BILLBOARD_KEY_JAY_PEOPLE = "jay_people";
+    public static final String BILLBOARD_KEY_COLOURFUL_KINGDOM = "colourful_kingdom";
+    public static final String BILLBOARD_KEY_LONELY_KINGDOM = "lonely_kingdom";
+    /**
+     * 上市王国价值配置项KEY
+     */
+    public static final String LISTING_PRICE_KEY = "listing_price";
+    /**
+     * 用户每天可偷数量配置项key
+     */
+    public static final String USER_STEAL_COIN_DAY_LIMIT_KEY = "user_steal_coin_day_limit";
+    /**
+     * 单次限制
+     */
+    public static final String USER_STEAL_COIN_ONCE_LIMIT_KEY = "user_steal_coin_once_limit";
+    /**
+     * 每天可偷王国限制
+     */
+    public static final String USER_STEAL_TOPIC_DAY_LIMIT_KEY = "user_steal_topic_day_limit";
+    
 }

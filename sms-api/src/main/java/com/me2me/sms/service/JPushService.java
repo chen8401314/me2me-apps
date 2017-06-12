@@ -1,7 +1,5 @@
 package com.me2me.sms.service;
 
-import com.google.gson.JsonObject;
-
 import java.util.Map;
 
 /**
@@ -21,14 +19,11 @@ public interface JPushService {
      */
     void payloadAll(String message);
 
-
     void payloadById(String regId,String message);
 
-    void payloadByIdExtra(String regId,String message,JsonObject jsonExtra);
+    void payloadByIdExtra(String uid,String message,Map<String,String> extraMaps);
+    
+    void payloadByIdForMessage(String regId,String message);
 
-
-
-
-
-
+    void payloadByIdsExtra(boolean isAll, String[] uids, String message, Map<String,String> extraMaps);
 }

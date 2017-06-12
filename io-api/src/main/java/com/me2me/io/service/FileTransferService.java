@@ -1,6 +1,8 @@
 package com.me2me.io.service;
 
 import com.me2me.common.web.Response;
+import com.me2me.io.dto.ShowRecContentDTO;
+
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -30,6 +32,11 @@ public interface FileTransferService {
 
     byte[] download(String domain,String key) throws IOException;
 
+    String getUserInfo(String code) throws Exception;
 
+    boolean IosWapxActivate(String callbackUrl);
 
+    int DaodaoActivate(String callbackUrl);
+
+    ShowRecContentDTO getRecContents(String uid, String token, String version, String emotion);
 }

@@ -17,5 +17,7 @@
 
     <dubbo:service interface="com.me2me.sms.service.XgPushService" ref="xgPushServiceImpl" retries="0" timeout="20000"/>
 
+    <dubbo:service interface="com.me2me.sms.service.JPushService" ref="jPushServiceImpl" retries="0" timeout="20000"/>
+
     <import resource="sms-context.xml"/>
 </beans>

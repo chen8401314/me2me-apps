@@ -1,6 +1,10 @@
 package com.me2me.sms.service;
 
+import com.me2me.common.web.Response;
+import com.me2me.sms.dto.ImUserInfoDto;
 import com.me2me.sms.dto.VerifyDto;
+
+import java.util.List;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -9,8 +13,25 @@ import com.me2me.sms.dto.VerifyDto;
  */
 public interface SmsService {
 
-    void send(VerifyDto verifyDto);
+	Response send(VerifyDto verifyDto);
 
     boolean verify(VerifyDto verifyDto);
+
+    boolean sendMessage(String nickName ,String awardName ,String mobile ,String OperateMobile);
+
+    boolean sendQIMessage(String mobile);
+
+    boolean sendQIauditMessage(List mobileList);
+
+    //报名成功
+    void send7daySignUp(String mobile);
+
+    //审核成功 list
+    void send7dayApply(List mobileList);
+
+    //七天活动封装短信接口
+    void send7dayCommon(String templateId, List<String> mobileList, List<String> messageList);
+
+    ImUserInfoDto getIMUsertoken(long uid) throws Exception;
 
 }

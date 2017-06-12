@@ -19,9 +19,7 @@ public class ShowMyPublishDto  implements BaseEntity {
     //内容
     @Data
     public static class MyPublishElement extends BaseContentDto implements BaseEntity{
-
-        private int contentType;
-
+    	
         private List<ReviewElement> reviews = Lists.newArrayList();
 
         public static ReviewElement createReviewElement(){

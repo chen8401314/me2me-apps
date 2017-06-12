@@ -19,4 +19,13 @@ public class VersionControlRequest extends Request{
     @Getter
     @Setter
     private int platform;
+
+    @Getter
+    @Setter
+    private String device;
+
+    @Getter
+    @Setter
+    private String params;
+
 }

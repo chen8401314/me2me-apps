@@ -6,27 +6,29 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.me2me.common.security.SecurityUtils;
-import com.me2me.common.web.BaseEntity;
-import com.me2me.common.web.Response;
 import com.me2me.common.web.Specification;
 import com.me2me.core.exception.AccessSignNotMatchException;
 import com.me2me.core.exception.AppIdException;
 import com.me2me.core.exception.TokenNullException;
 import com.me2me.core.exception.UidAndTokenNotMatchException;
+import com.me2me.core.exception.UserGagException;
 import com.me2me.monitor.event.MonitorEvent;
 import com.me2me.monitor.service.MonitorService;
 import com.me2me.user.dto.BasicDataDto;
 import com.me2me.user.dto.BasicDataSuccessDto;
 import com.me2me.user.model.ApplicationSecurity;
 import com.me2me.user.model.Dictionary;
+import com.me2me.user.model.UserGag;
 import com.me2me.user.model.UserToken;
 import com.me2me.user.service.UserService;
 import com.me2me.web.JsonSecurity;
-import lombok.Data;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -51,6 +53,8 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
     private static List<String> TRUST_REQUEST_LIST = Lists.newArrayList();
 
     private static List<String> MONITOR_INTERCEPTOR_URLS = Lists.newArrayList();
+    
+    private static List<String> NEED_CHECK_GAG_LIST = Lists.newArrayList();
 
     static {
         WHITE_LIST.add("/api/user/login");
@@ -59,6 +63,29 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         WHITE_LIST.add("/api/user/verify");
         WHITE_LIST.add("/api/user/getBasicDataByType");
         WHITE_LIST.add("/api/user/versionControl");
+        WHITE_LIST.add("/api/user/activityModel");
+        WHITE_LIST.add("/api/user/checkNameOpenId");
+        WHITE_LIST.add("/api/user/touristLogin");
+        WHITE_LIST.add("/api/live/testApi");
+        WHITE_LIST.add("/api/activity/enterActivity");
+        WHITE_LIST.add("/api/activity/getActivityUser");
+        WHITE_LIST.add("/api/activity/bindGetActivityUser");
+        WHITE_LIST.add("/api/activity/getActivityInfo");
+        WHITE_LIST.add("/api/activity/oneKeyAudit");
+        WHITE_LIST.add("/api/activity/milidata");
+        WHITE_LIST.add("/api/activity/optForcedPairing");
+        WHITE_LIST.add("/api/activity/recommendHistory");
+        WHITE_LIST.add("/api/activity/getlightboxInfo");
+        WHITE_LIST.add("/api/user/IOSWapxUserRegist");
+        WHITE_LIST.add("/api/spread/check");
+        WHITE_LIST.add("/api/spread/click");
+        WHITE_LIST.add("/api/activity/billboard");
+        WHITE_LIST.add("/api/activity/areaHot");
+        WHITE_LIST.add("/api/activity/areaSupport");
+        WHITE_LIST.add("/api/activity/chatQuery");
+        WHITE_LIST.add("/api/activity/top10SupportChatQuery");
+        WHITE_LIST.add("/api/activity/chat");
+
 
         INTERNAL_WHITE_LIST.add("/api/console/showContents");
         INTERNAL_WHITE_LIST.add("/api/console/showActivity");
@@ -72,6 +99,16 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         INTERNAL_WHITE_LIST.add("/api/monitor/report");
         INTERNAL_WHITE_LIST.add("/api/console/modify");
         INTERNAL_WHITE_LIST.add("/api/console/kingTopic");
+        INTERNAL_WHITE_LIST.add("/api/user/IOSWapxUserRegist");
+        INTERNAL_WHITE_LIST.add("/api/spread/check");
+        INTERNAL_WHITE_LIST.add("/api/spread/click");
+        INTERNAL_WHITE_LIST.add("/api/activity/billboard");
+        INTERNAL_WHITE_LIST.add("/api/activity/areaHot");
+        INTERNAL_WHITE_LIST.add("/api/activity/areaSupport");
+        INTERNAL_WHITE_LIST.add("/api/activity/chatQuery");
+        INTERNAL_WHITE_LIST.add("/api/activity/top10SupportChatQuery");
+        INTERNAL_WHITE_LIST.add("/api/activity/chat");
+
 
         TRUST_REQUEST_LIST.add("/api/user/getSpecialUserProfile");
 
@@ -91,7 +128,14 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
         MONITOR_INTERCEPTOR_URLS.add("/api/home/attention");
 
 
-
+        //需要判断禁言的接口
+        NEED_CHECK_GAG_LIST.add("/api/content/publish");//发布UGC、PGC
+        NEED_CHECK_GAG_LIST.add("/api/content/writeTag");//用户贴标
+        NEED_CHECK_GAG_LIST.add("/api/live/createLive");//发布王国
+        NEED_CHECK_GAG_LIST.add("/api/content/review");//UGC、文章评论
+        NEED_CHECK_GAG_LIST.add("/api/live/speak");//王国发表
+        NEED_CHECK_GAG_LIST.add("/api/live/createKingdom");//新创建王国接口
+        
     }
 
     @Override
@@ -117,6 +161,22 @@ public class AccessSecurityHandler extends HandlerInterceptorAdapter {
                 }
             }
         }
+        //判断禁言
+        if(NEED_CHECK_GAG_LIST.contains(request.getRequestURI())){
+        	String uid = request.getParameter("uid");
+        	if(!Strings.isNullOrEmpty(uid)){
+        		UserGag gag = new UserGag();
+        		gag.setCid(0l);
+        		gag.setGagLevel(0);
+        		gag.setTargetUid(Long.valueOf(uid));
+        		gag.setType(0);
+        		
+        		if(userService.checkGag(gag)){
+        			throw new UserGagException("user is gagged!");
+        		}
+        	}
+        }
+        
         if(!WHITE_LIST.contains(request.getRequestURI())) {
             String uid = request.getParameter("uid");
             String token = request.getParameter("token");

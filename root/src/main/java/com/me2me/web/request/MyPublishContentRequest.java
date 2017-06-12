@@ -29,4 +29,8 @@ public class MyPublishContentRequest extends Request {
     @Getter
     private long updateTime;
 
+    @Setter
+    @Getter
+    private int newType;
+
 }

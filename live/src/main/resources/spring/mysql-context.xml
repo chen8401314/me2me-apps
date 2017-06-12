@@ -42,7 +42,6 @@
 
     <tx:advice id="tx" transaction-manager="dataSourceTransactionManager">
         <tx:attributes>
-            <tx:method name="get*" read-only="true"/>
             <tx:method name="find*" read-only="true"/>
             <tx:method name="load*" read-only="true"/>
             <tx:method name="query*" read-only="true"/>
@@ -50,5 +49,7 @@
         </tx:attributes>
     </tx:advice>
 
-
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+        <property name="dataSource" ref="druidDataSource"/>
+    </bean>
 </beans>

@@ -55,5 +55,9 @@ public class SignUpRequest extends Request{
     @Setter
     private String introduced;
 
+    @Getter
+    @Setter
+    private String params;
+
 
 }

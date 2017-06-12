@@ -29,8 +29,8 @@
             <property name="enableSubPackages" value="true" />
         </javaClientGenerator>
 
-        <table tableName="topic" domainObjectName="Topic"/>
-        <!--<table tableName="topic_fragment" domainObjectName="TopicFragment"/>-->
+        <!--<table tableName="topic" domainObjectName="Topic"/>-->
+        <!-- <table tableName="topic_fragment" domainObjectName="TopicFragment"/> -->
         <!--<table tableName="live_favorite" domainObjectName="LiveFavorite"/>-->
         <!--<table tableName="live_read_history" domainObjectName="LiveReadHistory"/>-->
         <!--<table tableName="topic_barrage" domainObjectName="TopicBarrage"/>-->
@@ -38,7 +38,18 @@
         <!--<table tableName="live_display_barrage" domainObjectName="LiveDisplayBarrage"/>-->
         <!--<table tableName="live_display_fragment" domainObjectName="LiveDisplayFragment"/>-->
         <!--<table tableName="live_display_review" domainObjectName="LiveDisplayReview"/>-->
-
-
+        <!--<table tableName="delete_log" domainObjectName="DeleteLog"/>-->
+        <!--<table tableName="live_display_protocol" domainObjectName="LiveDisplayProtocolDto"/>-->
+        <!--<table tableName="topic_user_config" domainObjectName="TopicUserConfig"/>-->
+        <!--<table tableName="topic_aggregation" domainObjectName="TopicAggregation"/>-->
+        <!--<table tableName="topic_aggregation_apply" domainObjectName="TopicAggregationApply"/>-->
+        <!--<table tableName="topic_droparound" domainObjectName="TopicDroparound"/>-->
+        <!--<table tableName="topic_droparound_trail" domainObjectName="TopicDroparoundTrail"/>-->
+        <!--<table tableName="topic_fragment_template" domainObjectName="TopicFragmentTemplate"/>-->
+        <!--<table tableName="topic_tag" domainObjectName="TopicTag"/>-->
+        <!--<table tableName="topic_tag_detail" domainObjectName="TopicTagDetail"/>-->
+<!--          <table tableName="topic_news" domainObjectName="TopicNews"/>
+         <table tableName="topic_transfer_record" domainObjectName="TopicTransferRecord"/>
+         <table tableName="user_steal_log" domainObjectName="UserStealLog" />  -->
     </context>
 </generatorConfiguration>

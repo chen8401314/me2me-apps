@@ -53,6 +53,18 @@ public class LiveTimeLineDto implements BaseEntity {
 
         private String atNickName;
 
+        private int source;
+
+        private String extra;
+
+        private int v_lv;
+
+        private int status;
+        
+        private int teaseStatus;
+        
+        private int score;
+
     }
 
 }

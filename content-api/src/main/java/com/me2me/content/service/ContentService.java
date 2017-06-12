@@ -1,5 +1,9 @@
 package com.me2me.content.service;
 
+import java.util.List;
+import java.util.Map;
+
+import com.me2me.common.page.PageBean;
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.*;
 import com.me2me.content.model.*;
@@ -49,9 +53,10 @@ public interface ContentService{
     /**
      * 用户发布内容删除
      * @param id
+     * @param uid
      * @return
      */
-    Response deleteContent(long id);
+    Response deleteContent(long id, long uid, boolean isSys);
 
     /**
      * 获取内容详情
@@ -63,10 +68,10 @@ public interface ContentService{
     /**
      * 我发布的内容列表
      * @param uid
-     * @param sinceId
+     * @param updateTime
      * @return
      */
-    Response myPublish(long uid ,int sinceId);
+    Response myPublish(long uid ,long updateTime ,int type ,int sinceId ,int newType,int vFlag);
 
     /**
      * 内容所有感受列表
@@ -87,9 +92,9 @@ public interface ContentService{
      * @param sourceUid
      * @return
      */
-    Response getUserData(long targetUid ,long sourceUid);
+    Response UserData(long targetUid ,long sourceUid);
 
-    Response getUserData2(long targetUid ,long sourceUid);
+    Response UserData2(long targetUid ,long sourceUid,int vFlag);
 
     /**
      * 小编发布接口
@@ -103,7 +108,7 @@ public interface ContentService{
      * @param sinceId
      * @return
      */
-    Response getSelectedData(int sinceId,long uid);
+    Response SelectedData(int sinceId,long uid);
 
     /**
      * 精选首页
@@ -122,25 +127,31 @@ public interface ContentService{
 
     Response showContents(EditorContentDto editorContentDto);
 
-    Response getActivities(int sinceId,long uid);
+    Response Activities(int sinceId,long uid);
 
     Response getHottest(int sinceId,long uid);
 
-    Response getNewest(int sinceId,long uid);
+    Response Newest(int sinceId,long uid, int vFlag);
 
-    Response getAttention(int sinceId,long uid);
+    Response Attention(int sinceId,long uid, int vFlag);
+
+    List<Content> getAttention(long sinceId , long uid, int vFlag);
 
     Response createReview(ReviewDto reviewDto);
 
     Response option(long id, int optionAction, int action);
 
     Content getContentByTopicId(long topicId);
+    
+    List<Content> getContentsByTopicIds(List<Long> topicIds);
 
     Response showUGCDetails(long id);
 
     Response reviewList(long cid,long sinceId,int type);
 
     void updateContentById(Content content);
+    
+    void addContentLikeByCid(long cid, long addNum);
 
     int isLike(long cid,long uid);
 
@@ -192,7 +203,207 @@ public interface ContentService{
 
     Response kingTopic(KingTopicDto kingTopic);
 
-    Response myPublishByType(long uid ,int sinceId ,int type,long updateTime);
+    Response myPublishByType(long uid ,int sinceId ,int type,long updateTime,long currentUid,int vFlag);
 
+    void clearData();
 
+    Response Hottest2(int sinceId,long uid, int flag);
+
+    int getUgcCount(long uid);
+
+    int getLiveCount(long uid);
+    
+    Response deleteReview(ReviewDelDTO delDTO);
+    
+    Response delArticleReview(ReviewDelDTO delDTO, boolean isSys);
+
+    Response delContentReview(ReviewDelDTO delDTO, boolean isSys);
+    
+    Response searchUserContent(UserContentSearchDTO searchDTO);
+    
+    Response delUserContent(int type, long id);
+    
+    Response hotList(long sinceId, long uid, int vflag);
+    
+    Response ceKingdomHotList(long sinceId, long uid, int vflag);
+
+    /**
+     * 榜单列表
+     * @return
+     */
+    Response showBangDanList(long sinceId, int type,long currentUid, int vflag);
+
+    /**
+     * 给IMS系统开的后门，直接通过sql查询结果
+     * 其他地方不建议调用本方法
+     * @param sql
+     * @return
+     */
+    List<Map<String, Object>> queryEvery(String sql);
+
+    /**
+     * 自动榜单列表插入方法(供IMS系统调用)
+     * @param insertList
+     * @param key
+     */
+    void insertBillboardList(List<BillBoardList> insertList, String key);
+
+    /**
+     * 榜单详情接口
+     * @param currentUid
+     * @param bid
+     * @return
+     */
+     Response showListDetail(long currentUid, long bid,long sinceId, int vflag);
+    /**
+     * 获取所有的榜单
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @return
+     */
+    List<BillBoard> getAllBillBoard();
+    /**
+     * 修改一个榜单
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param bb
+     */
+    void updateBillBoard(BillBoard bb);
+    /**
+     * 按ID删除榜单
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param id
+     */
+    void deleteBillBoardById(long id);
+    /**
+     * 按ID取一个榜单
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param id
+     * @return
+     */
+    BillBoard getBillBoardById(long id);
+    /**
+     * 添加榜单
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param bb
+     */
+    void addBillBoard(BillBoard bb);
+    /**
+     * 根据榜单ID取榜单下的排名数据。（王国、人、子榜单）
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param id 榜单ID。
+     * @return
+     */
+    List<BillBoardRelationDto> getRelationsByBillBoardId(long id);
+    
+    List<BillBoardRelation> getBillBoardRelationByBid(long bid);
+    
+   /**
+    * 添加一个榜单排名数据。
+    * @author zhangjiwei
+    * @date Mar 21, 2017
+    * @param br
+    */
+    void addRelationToBillBoard(BillBoardRelation br);
+    /**
+     * 删除一个排名数据
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param rid
+     */
+    void delBillBoardRelationById(long rid);
+    /**
+     * 修改一个排名数据。
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param br
+     */
+    void updateBillBoardRelation(BillBoardRelation br);
+    
+   //---上线榜单管理------------
+    
+    /**
+     * 找人、找组织 上线榜单列表
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param id 榜单ID。
+     * @return
+     */
+    List<OnlineBillBoardDto> getOnlineBillBoardListByType(int type);
+   /**
+    * 添加一个上线榜单。
+    * @author zhangjiwei
+    * @date Mar 21, 2017
+    * @param br
+    */
+    void addOnlineBillBoard(BillBoardDetails br);
+    /**
+     * 删除一个上线榜单
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param rid
+     */
+    void delOnlineBillBoardById(long rid);
+    /**
+     * 修改一个上线榜单。
+     * @author zhangjiwei
+     * @date Mar 21, 2017
+     * @param br
+     */
+    void updateOnlineBillBoard(BillBoardDetails br);
+    
+    public Integer addEmotionPack(EmotionPack pack);
+	
+	public void deleteEmotionPackByKey(Integer id);
+	
+	public void updateEmotionPackByKey(EmotionPack pack);
+	
+	public EmotionPack getEmotionPackByKey(Integer id);
+	
+	public PageBean<EmotionPack> getEmotionPackPage(PageBean<EmotionPack> page,Map<String,Object> conditions);
+	
+	public Integer addEmotionPackDetail(EmotionPackDetail detail);
+	
+	public void deleteEmotionPackDetailByKey(Integer id);
+	
+	public void updateEmotionPackDetailByKey(EmotionPackDetail detail);
+	
+	public EmotionPackDetail getEmotionPackDetailByKey(Integer id);
+	
+	
+	public PageBean<EmotionPackDetail> getEmotionPackDetailPage(PageBean<EmotionPackDetail> page,Map<String,Object> conditions);
+	/**
+	 * 查询表情包
+	 * @author zhangjiwei
+	 * @date Apr 22, 2017
+	 * @return
+	 */
+	Response emojiPackageQuery();
+	
+	Response emojiPackageDetail(int packageId);
+	
+	List<Long> getBillboardTopicIds4kingdomPushTask();
+	
+	List<BillBoard> getBillBoardList4kingdomPushTask();
+	
+	Response getEmotionInfoByValue(int happyValue,int freeValue) ;
+	
+	Response getLastEmotionInfo(long uid);
+	
+	List<EmotionPackDetail> getEmotionPackDetailBig();
+	/**
+	 * 返回价值王国列表。
+	 * @author zhangjiwei
+	 * @date Jun 9, 2017
+	 * @param page 当前页
+	 * @param pageSize 页大小
+	 * @return
+	 */
+	Response<PricedKingdomDto> getPricedKingdomList(int page,int pageSize,long currentUid);
+	
+	Response shareRecord(long uid, int type, long cid, String shareAddr);
 }

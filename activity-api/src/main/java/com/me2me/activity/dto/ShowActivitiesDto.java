@@ -52,6 +52,21 @@ public class ShowActivitiesDto implements BaseEntity{
         //活动更新时间
         private Date updateTime;
 
+        private int contentType;
+
+        private String contentUrl;
+
+        private int type;
+
+        private long topicId;
+
+        private long cid;
+
+        private int topicType;
+
+        private int topicInternalStatus;
+        
+        private String linkUrl;
 
     }
 }

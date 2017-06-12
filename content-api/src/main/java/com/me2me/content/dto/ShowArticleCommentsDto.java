@@ -24,6 +24,8 @@ public class ShowArticleCommentsDto implements BaseEntity{
 
     private int isLike;
 
+    private int v_lv;
+
     private List<ReviewElement> reviews = Lists.newArrayList();
 
     public static ReviewElement createElement(){
@@ -42,6 +44,10 @@ public class ShowArticleCommentsDto implements BaseEntity{
         private String atNickName;
 
         private long atUid;
+        
+        private int v_lv;
+        
+        private String extra;
 
     }
 

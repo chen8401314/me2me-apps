@@ -5,6 +5,7 @@ import com.me2me.sms.dto.PushLogDto;
 import com.me2me.sms.dto.PushMessageAndroidDto;
 import com.me2me.sms.dto.PushMessageIosDto;
 import com.tencent.xinge.*;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -66,7 +67,12 @@ public class XgPushServiceImpl implements XgPushService {
     }
 
     private PushLogDto getPushLog(String content, JSONObject ret) {
-        int result = ret.getInt("ret_code");
+        int result = 0;
+        try {
+            result = ret.getInt("ret_code");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
         if(result != 0){
             PushLogDto pushLogDto = new PushLogDto();
             pushLogDto.setContent(content);

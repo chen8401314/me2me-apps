@@ -49,6 +49,8 @@ public class ShowHottestDto implements BaseEntity {
         //是否关注发活动的人 0未关注 1关注
         private int isFollowed;
 
+        private int isFollowMe;
+
         //活动id
         private long id;
 
@@ -61,40 +63,44 @@ public class ShowHottestDto implements BaseEntity {
         //活动更新时间
         private Date updateTime;
 
-
         private int likeCount;
-
 
         private int reviewCount;
 
+        private int contentType;
 
+        private String contentUrl;
+
+        private int type;
 
     }
 
     //内容
     @Data
     public static class HottestContentElement extends BaseContentDto implements BaseEntity{
+//
+//        private List<ReviewElement> reviews = Lists.newArrayList();
+//
+//        public static ReviewElement createElement(){
+//            return new ReviewElement();
+//        }
+//
+//        @Data
+//        public static class ReviewElement implements BaseEntity{
+//
+//            private long uid;
+//
+//            private String nickName;
+//
+//            private String avatar;
+//
+//            private Date createTime;
+//
+//            private String review;
+//
+//        }
 
-        private List<ReviewElement> reviews = Lists.newArrayList();
-
-        public static ReviewElement createElement(){
-            return new ReviewElement();
-        }
-
-        @Data
-        public static class ReviewElement implements BaseEntity{
-
-            private long uid;
-
-            private String nickName;
-
-            private String avatar;
-
-            private Date createTime;
-
-            private String review;
-
-        }
+        private long sinceId;
 
     }
 }

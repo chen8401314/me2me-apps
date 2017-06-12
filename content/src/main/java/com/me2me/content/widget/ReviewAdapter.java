@@ -1,7 +1,9 @@
 package com.me2me.content.widget;
 
 import com.me2me.common.web.Response;
+import com.me2me.content.dto.ReviewDelDTO;
 import com.me2me.content.dto.ReviewDto;
+
 import org.springframework.stereotype.Component;
 
 /**
@@ -15,5 +17,9 @@ public class ReviewAdapter {
 
     public Response execute(ReviewDto reviewDto){
         return ReviewFactory.getInstance(reviewDto.getType()).createReview(reviewDto);
+    }
+    
+    public Response executeDel(ReviewDelDTO delDTO){
+    	return ReviewFactory.getInstance(delDTO.getType()).delReview(delDTO);
     }
 }

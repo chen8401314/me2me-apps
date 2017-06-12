@@ -30,5 +30,8 @@ public class ShowFavoriteListDto implements BaseEntity {
     private String avatar;
 
     private String nickName;
-}
+
+    private int v_lv;
+
+    }
 }

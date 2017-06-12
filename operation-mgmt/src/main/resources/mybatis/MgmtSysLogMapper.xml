@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.me2me.mgmt.dal.mapper.MgmtSysLogMapper" >
+  <resultMap id="BaseResultMap" type="com.me2me.mgmt.dal.entity.MgmtSysLog" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="description" property="description" jdbcType="VARCHAR" />
+    <result column="request_path" property="requestPath" jdbcType="VARCHAR" />
+    <result column="method" property="method" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="ip" property="ip" jdbcType="VARCHAR" />
+    <result column="user_id" property="userId" jdbcType="BIGINT" />
+    <result column="user_name" property="userName" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, description, request_path, method, type, ip, user_id, user_name, create_time
+  </sql>
+  
+  <insert id="insert" parameterType="com.me2me.mgmt.dal.entity.MgmtSysLog">
+    insert into t_mgmt_syslog (description, request_path, method, type, ip, user_id, user_name, create_time)
+    values (#{description,jdbcType=VARCHAR}, #{requestPath,jdbcType=VARCHAR}, #{method,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, #{ip,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT}, #{userName,jdbcType=VARCHAR},#{createTime,jdbcType=TIMESTAMP})
+  </insert>
+  
+  <select id="queryPageByDescAndTime" resultMap="BaseResultMap" >
+    SELECT
+      <include refid="Base_Column_List" />
+    FROM t_mgmt_syslog 
+    <![CDATA[
+    WHERE create_time > #{startTime,jdbcType=TIMESTAMP} and create_time < #{endTime,jdbcType=TIMESTAMP} 
+	]]>
+    <if test="description != null">
+    and description like CONCAT('%','${description}','%') 
+    </if>
+    order by create_time desc limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+  </select>
+</mapper>

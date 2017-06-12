@@ -1,24 +1,115 @@
 package com.me2me.web;
 
-import com.me2me.common.web.Response;
-import com.me2me.sms.channel.MessageChannel;
-import com.me2me.sms.dto.VerifyDto;
-import com.me2me.user.dto.*;
-import com.me2me.user.service.UserService;
-import com.me2me.web.request.*;
-import com.sun.tools.internal.ws.processor.model.Message;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.URLDecoder;
+import java.net.UnknownHostException;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.me2me.common.utils.CommonUtils;
+import com.me2me.common.web.Response;
+import com.me2me.common.web.ResponseWapx;
+import com.me2me.content.service.ContentService;
+import com.me2me.kafka.service.KafkaService;
+import com.me2me.live.service.LiveService;
+import com.me2me.sms.dto.AwardXMDto;
+import com.me2me.sms.dto.VerifyDto;
+import com.me2me.sms.service.ChannelType;
+import com.me2me.sms.service.SmsService;
+import com.me2me.user.dto.ActivityModelDto;
+import com.me2me.user.dto.BasicDataDto;
+import com.me2me.user.dto.EntryPageDto;
+import com.me2me.user.dto.FansParamsDto;
+import com.me2me.user.dto.FindEncryptDto;
+import com.me2me.user.dto.FollowDto;
+import com.me2me.user.dto.FollowParamsDto;
+import com.me2me.user.dto.GagDto;
+import com.me2me.user.dto.ModifyEncryptDto;
+import com.me2me.user.dto.ModifyUserHobbyDto;
+import com.me2me.user.dto.ModifyUserProfileDto;
+import com.me2me.user.dto.PasteTagDto;
+import com.me2me.user.dto.ThirdPartSignUpDto;
+import com.me2me.user.dto.UserLikeDto;
+import com.me2me.user.dto.UserLoginDto;
+import com.me2me.user.dto.UserNickNameDto;
+import com.me2me.user.dto.UserNoticeDto;
+import com.me2me.user.dto.UserRefereeSignUpDto;
+import com.me2me.user.dto.UserReportDto;
+import com.me2me.user.dto.UserSignUpDto;
+import com.me2me.user.dto.VersionDto;
+import com.me2me.user.dto.WapxIosDto;
+import com.me2me.user.service.UserService;
+import com.me2me.web.request.ActivityRequest;
+import com.me2me.web.request.BasicDataRequest;
+import com.me2me.web.request.BatchFollowRequest;
+import com.me2me.web.request.CheckRequest;
+import com.me2me.web.request.CommonSendMsgRequest;
+import com.me2me.web.request.ContactsRequest;
+import com.me2me.web.request.EmotionInfoListRequest;
+import com.me2me.web.request.EmotionInfoRequest;
+import com.me2me.web.request.EmotionRecordRequest;
+import com.me2me.web.request.EntryPageRequest;
+import com.me2me.web.request.FindEncryptRequest;
+import com.me2me.web.request.GagRequest;
+import com.me2me.web.request.GetTagRequest;
+import com.me2me.web.request.LastEmotionRequest;
+import com.me2me.web.request.LikesRequest;
+import com.me2me.web.request.LoginRequest;
+import com.me2me.web.request.LogoutRequest;
+import com.me2me.web.request.MBTIRequest;
+import com.me2me.web.request.MobileQueryRequest;
+import com.me2me.web.request.ModifyEncryptRequest;
+import com.me2me.web.request.ModifyUserHobbyRequest;
+import com.me2me.web.request.ModifyUserProfileRequest;
+import com.me2me.web.request.MyFollowsQueryRequest;
+import com.me2me.web.request.NoticeReddotQueryRequest;
+import com.me2me.web.request.PersonaModifyRequest;
+import com.me2me.web.request.QrCodeRequest;
+import com.me2me.web.request.RefereeSignUpRequest;
+import com.me2me.web.request.SeekFollowRequest;
+import com.me2me.web.request.SeekFollowsQueryRequest;
+import com.me2me.web.request.ShowFansRequest;
+import com.me2me.web.request.ShowUserTipsRequest;
+import com.me2me.web.request.SignUpRequest;
+import com.me2me.web.request.SpecialUserProfileRequest;
+import com.me2me.web.request.StartNewEmotionInfoRequest;
+import com.me2me.web.request.SummaryEmotionInfoRequest;
+import com.me2me.web.request.TagRequest;
+import com.me2me.web.request.TestPushRequest;
+import com.me2me.web.request.ThirdPartAuthRequest;
+import com.me2me.web.request.ThirdPartRequest;
+import com.me2me.web.request.UpdateVersionRequest;
+import com.me2me.web.request.UserAwardRequest;
+import com.me2me.web.request.UserExcellentRequest;
+import com.me2me.web.request.UserFamousRequest;
+import com.me2me.web.request.UserFollowRequest;
+import com.me2me.web.request.UserInfoRequest;
+import com.me2me.web.request.UserNoticeRequest;
+import com.me2me.web.request.UserProfileRequest;
+import com.me2me.web.request.UserReportRequest;
+import com.me2me.web.request.UserRequest;
+import com.me2me.web.request.VerifyRequest;
+import com.me2me.web.request.VersionControlRequest;
+import com.me2me.web.request.WapxIosRequest;
+import com.me2me.web.utils.VersionUtil;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 赵朋扬
  * Date: 2016/2/25.
  */
+@Slf4j
 @Controller
 @RequestMapping(value = "/api/user")
 public class Users extends BaseController {
@@ -26,13 +117,25 @@ public class Users extends BaseController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private KafkaService kafkaService;
+
+    @Autowired
+    private SmsService smsService;
+    
+    @Autowired
+    private ContentService contentService;
+    
+    @Autowired
+    private LiveService liveService;
+
     /**
      * 用户注册接口
      * @return
      */
     @RequestMapping(value = "/signUp",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response signUp(SignUpRequest request){
+    public Response signUp(SignUpRequest request,HttpServletRequest req){
         UserSignUpDto userSignUpDto = new UserSignUpDto();
         userSignUpDto.setMobile(request.getMobile());
         userSignUpDto.setGender(request.getGender());
@@ -43,6 +146,18 @@ public class Users extends BaseController {
         userSignUpDto.setPlatform(request.getPlatform());
         userSignUpDto.setOs(request.getOs());
         userSignUpDto.setIntroduced(request.getIntroduced());
+        userSignUpDto.setChannel(request.getChannel());
+        userSignUpDto.setRegisterVersion(request.getVersion());
+        userSignUpDto.setParams(request.getParams());
+
+        if(StringUtils.isEmpty(request.getChannel())){
+        	log.info("无渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"]");
+        }else{
+        	log.info("有渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"]");
+        }
+        //埋点
+//        kafkaService.saveClientLog(request,req.getHeader("User-Agent"),Specification.ClientLogAction.REG_PAGE2_SAVE);
+
         return userService.signUp(userSignUpDto);
     }
 
@@ -101,17 +216,42 @@ public class Users extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "/verify",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response verify(VerifyRequest request){
+    public Response verify(VerifyRequest request,HttpServletRequest req){
+        //用的容联
         VerifyDto verifyDto = new VerifyDto();
         verifyDto.setAction(request.getAction());
         verifyDto.setMobile(request.getMobile());
         verifyDto.setVerifyCode(request.getVerifyCode());
         if(request.getChannelAdapter()==0){
             // 兼容老版本
-            verifyDto.setChannel(MessageChannel.ChannelType.NORMAL_SMS.index);
+            verifyDto.setChannel(ChannelType.NORMAL_SMS.index);
+        }else {
+            verifyDto.setChannel(request.getChannelAdapter());
         }
-        verifyDto.setChannel(request.getChannelAdapter());
+        verifyDto.setIsTest(request.getIsTest());
+        
+       //埋点
+       /* if(request.getAction()==0) {
+            kafkaService.saveClientLog(request,req.getHeader("User-Agent"),Specification.ClientLogAction.REG_PAGE1_GET_VERIFY);
+        }else{
+            kafkaService.saveClientLog(request,req.getHeader("User-Agent"),Specification.ClientLogAction.REG_PAGE1_NEXT);
+        }*/
         return userService.verify(verifyDto);
+    }
+
+    /**
+     * 发送中奖信息短信接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/sendAwardMessage",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response sendAwardMessage(UserAwardRequest request){
+        AwardXMDto awardXMDto = new AwardXMDto();
+        awardXMDto.setNickName(request.getNickName());
+        awardXMDto.setAwardName(request.getAwardName());
+        awardXMDto.setMobile(request.getMobile());
+        return userService.sendAwardMessage(awardXMDto);
     }
 
     /**
@@ -131,6 +271,9 @@ public class Users extends BaseController {
         modifyUserProfileDto.setBirthday(request.getBirthday());
         modifyUserProfileDto.setHobby(request.getHobby());
         modifyUserProfileDto.setIntroduced(request.getIntroduced());
+        modifyUserProfileDto.setLikeGender(request.getLikeGender());
+        modifyUserProfileDto.setAgeGroup(request.getAgeGroup());
+        modifyUserProfileDto.setOccupation(request.getOccupation());
        return userService.modifyUserProfile(modifyUserProfileDto);
     }
 
@@ -237,13 +380,14 @@ public class Users extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/userNotice",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response userNotice(UserNoticeRequest request){
-        if(request.getSinceId() == -1){
+        if(request.getSinceId() <= 0){
             request.setSinceId(Integer.MAX_VALUE);
         }
         UserNoticeDto userNoticeDto = new UserNoticeDto();
         userNoticeDto.setUid(request.getUid());
         userNoticeDto.setSinceId(request.getSinceId());
-        return userService.getUserNotice(userNoticeDto);
+        userNoticeDto.setLevel(request.getLevel());
+        return userService.userNotice(userNoticeDto);
     }
 
     /**
@@ -338,7 +482,7 @@ public class Users extends BaseController {
     }
 
     /**
-     * 用户粉丝列表
+     * 用户粉丝列表(根据关注时间排序)
      * @param request
      * @return
      */
@@ -352,11 +496,11 @@ public class Users extends BaseController {
            request.setSinceId(1);
         }
         fansParamsDto.setSinceId((request.getSinceId() - 1) * 10);
-        return userService.getFansOrderByNickName(fansParamsDto);
+        return userService.getFansOrderByTime(fansParamsDto);
     }
 
     /**
-     * 用户关注列表
+     * 用户关注列表(根据关注时间排序)
      * @param request
      * @return
      */
@@ -370,11 +514,11 @@ public class Users extends BaseController {
             request.setSinceId(1);
         }
         followParamsDto.setSinceId((request.getSinceId() - 1) * 10);
-        return userService.getFollowsOrderByNickName(followParamsDto);
+        return userService.getFollowsOrderByTime(followParamsDto);
     }
 
     /**
-     * 用户关注列表(暂未启用)
+     * 用户关注列表(在直播中启用)
      * @param request
      * @return
      */
@@ -392,7 +536,11 @@ public class Users extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getUserProfile",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getUserProfile(UserProfileRequest request){
-        return userService.getUserProfile(request.getUid());
+    	int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
+        	vflag = 1;
+        }
+        return userService.getUserProfile(request.getUid(), vflag);
     }
 
     /**
@@ -412,8 +560,28 @@ public class Users extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "/versionControl",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response versionControl(VersionControlRequest request){
-        return userService.versionControl(request.getVersion(),request.getPlatform());
+    public Response versionControl(VersionControlRequest request ,HttpServletRequest rq){
+        //获取ipaddress信息
+        String ip = rq.getHeader("X-Forwarded-For");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
+            ip = rq.getHeader("Proxy-Client-IP");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
+            ip = rq.getHeader("WL-Proxy-Client-IP");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
+            ip = rq.getHeader("HTTP_CLIENT_IP");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
+            ip = rq.getHeader("HTTP_X_FORWARDED_FOR");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
+        	ip = rq.getHeader("X-Real-IP");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip))
+            ip = rq.getRemoteAddr();
+        if ("127.0.0.1".equals(ip) || "0:0:0:0:0:0:0:1".equals(ip))
+            try {
+                ip = InetAddress.getLocalHost().getHostAddress();
+            }
+            catch (UnknownHostException unknownhostexception) {
+            }
+        return userService.versionControl(request.getVersion(),request.getPlatform(),ip,request.getChannel(),request.getDevice());
     }
 
     /**
@@ -515,4 +683,382 @@ public class Users extends BaseController {
         return userService.getRefereeProfile(request.getUid());
     }
 
+    /**
+     * 第三方登录接口
+     */
+    @ResponseBody
+    @RequestMapping(value = "/thirdPartLogin",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response thirdPartLogin(ThirdPartRequest request){
+        ThirdPartSignUpDto dto = new ThirdPartSignUpDto();
+        dto.setThirdPartOpenId(request.getThirdPartOpenId());
+        dto.setThirdPartToken(request.getThirdPartToken());
+        dto.setAvatar(request.getAvatar());
+        dto.setThirdPartType(request.getThirdPartType());
+        dto.setNickName(request.getNickName());
+        dto.setGender(request.getGender());
+        dto.setJPushToken(request.getJPushToken());
+        dto.setUnionId(request.getUnionId());
+        dto.setH5type(request.getH5type());
+        dto.setNewNickName(request.getNewNickName());
+        dto.setChannel(request.getChannel());
+        dto.setPlatform(request.getPlatform());
+        dto.setRegisterVersion(request.getVersion());
+        dto.setParams(request.getParams());
+        
+        if(StringUtils.isEmpty(request.getChannel())){
+        	log.info("无渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"]");
+        }else{
+        	log.info("有渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"]");
+        }
+        
+        return userService.thirdPartLogin(dto);
+    }
+
+    /**
+     * 广告模式接口
+     *
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/activityModel",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response activityModel(){
+        ActivityModelDto dto = new ActivityModelDto();
+        return userService.activityModel(dto);
+    }
+
+    /**
+     * 检查用户名是否存在接口，判断OPENID是否存在是否还需要上传头像接口
+     */
+    @ResponseBody
+    @RequestMapping(value = "/checkNameOpenId",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response checkNickName(CheckRequest request){
+        UserNickNameDto userNickNameDto = new UserNickNameDto();
+        if(request.getNickName()!=null) {
+            userNickNameDto.setNickName(request.getNickName());
+        }else {
+            userNickNameDto.setOpenid(request.getOpenId());
+            userNickNameDto.setUnionId(request.getUnionId());
+            userNickNameDto.setThirdPartType(request.getThirdPartType());
+        }
+        return userService.checkNameOpenId(userNickNameDto);
+    }
+
+    /**
+     * 绑定接口
+     */
+    @ResponseBody
+    @RequestMapping(value = "/bind",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response bind(ThirdPartRequest request){
+        ThirdPartSignUpDto dto = new ThirdPartSignUpDto();
+        dto.setUid(request.getUid());
+        dto.setThirdPartType(request.getThirdPartType());
+        dto.setMobile(request.getMobile());
+        dto.setEncrypt(request.getEncrypt());
+        dto.setThirdPartOpenId(request.getThirdPartOpenId());
+        dto.setThirdPartToken(request.getThirdPartToken());
+        dto.setUnionId(request.getUnionId());
+        return userService.bind(dto);
+    }
+
+    /**
+     * 禁言接口
+     */
+    @ResponseBody
+    @RequestMapping(value = "/gag",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response gag(GagRequest request){
+        GagDto dto = (GagDto) CommonUtils.copyDto(request,new GagDto());
+
+        return userService.gag(dto);
+    }
+
+    /**
+     * 获取入口页配置接口
+     */
+    @ResponseBody
+    @RequestMapping(value = "/entryPageConfig",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response entryPageConfig(EntryPageRequest request){
+
+        EntryPageDto dto = (EntryPageDto) CommonUtils.copyDto(request,new EntryPageDto());
+
+        return userService.getEntryPageConfig(dto);
+    }
+    /**
+     * 上大V接口
+     */
+//    @ResponseBody
+//    @RequestMapping(value = "/addV",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+//    public Response addV(UserInfoRequest request){
+//        UserVDto vDto = new UserVDto();
+//        vDto.setCustomerId(request.getCustomerId());
+//        return userService.addV(vDto);
+//    }
+
+    /**
+     * 游客模式登录(app)
+     */
+    @ResponseBody
+    @RequestMapping(value = "/touristLogin",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response touristLogin(){
+        return userService.touristLogin();
+    }
+
+    /**
+     * 推送测试入口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/testPush",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response testPush(TestPushRequest request){
+    	return userService.testPush(request.getUid(), request.getMsg(), request.getJsonData());
+    }
+
+    /**
+     * 用户推荐接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/Recommend",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response userRecomm(UserFamousRequest request){
+        return userService.userRecomm(request.getUid() ,request.getTargetUid() ,request.getAction());
+    }
+
+    /**
+     * 万普广告用户登记接口
+     *
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/IOSWapxUserRegist",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseWapx iosWapxUserRegist(WapxIosRequest request){
+        WapxIosDto dto = new WapxIosDto();
+        try {
+            request.setCallbackurl(URLDecoder.decode(request.getCallbackurl() ,"UTF-8"));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        CommonUtils.copyDto(request ,dto);
+        return userService.iosWapxUserRegist(dto);
+    }
+
+    /**
+     * IM 获取token
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getIMUsertoken",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getIMUsertoken(UserInfoRequest request){
+        return userService.getIMUsertoken(request.getCustomerId());
+    }
+
+    /**
+     * 全量注册userId接口(慎用)
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/registAllIMtoken",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response registAllIMtoken(){
+        return userService.registAllIMtoken();
+    }
+
+    /**
+     * 手机联系人查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/mobileQuery",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response mobileQuery(MobileQueryRequest request){
+    	return userService.mobileQuery(request.getMobiles(), request.getUid());
+    }
+    
+    /**
+     * 通讯录查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/contacts",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response contacts(ContactsRequest request){
+    	return userService.contacts(request.getPage(), request.getMobiles(), request.getUid());
+    }
+    
+    /**
+     * 求关注列表接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/seekFollowsQuery",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response seekFollowsQuery(SeekFollowsQueryRequest request){
+    	return userService.seekFollowsQuery(request.getUid(), request.getSinceId());
+    }
+    
+    /**
+     * 求关注操作接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/seekFollow",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response seekFollow(SeekFollowRequest request){
+    	return userService.seekFollow(request.getUid());
+    }
+    
+    /**
+     * 我的关注列表查询接口（按首字母分组）
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/myFollowsQuery",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response myFollowsQuery(MyFollowsQueryRequest request){
+    	return userService.myFollowsQuery(request.getUid(), request.getName(), request.getPage());
+    }
+    
+    /**
+     * 批量关注接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/batchFollow",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response batchFollow(BatchFollowRequest request){
+    	return userService.batchFollow(request.getUid(), request.getTargetUids());
+    }
+    
+    /**
+     * 用户画像属性修改接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/personaModify",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response personaModify(PersonaModifyRequest request){
+    	return userService.personaModify(request.getUid(), request.getType(), request.getParams());
+    }
+    
+    /**
+     * 通用发短信接口(测试用)
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/commonSendMsg",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response commonSendMsg(CommonSendMsgRequest request){
+    	return userService.testSendMessage(request.getTemplateId(), request.getMobiles());
+    }
+    
+    
+    /**
+     * 通知红点查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/noticeReddotQuery",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response noticeReddotQuery(NoticeReddotQueryRequest request){
+    	return userService.noticeReddotQuery(request.getUid());
+    }
+    
+    /**
+     * 查询MBTI测试结果。
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getMBTIResult",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getMBTIResult(MBTIRequest request){
+    	return userService.getMBTIResult(request.getCustomUid());
+    }
+    /**
+     * 通知红点查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/saveMBTIResult",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response saveMBTIResult(MBTIRequest request){
+    	return userService.saveMBTIResult(request.getUid(),request.getMbti());
+    }
+    /**
+     * 通知红点查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/saveMBTIShareResult",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response saveMBTIShareResult(MBTIRequest request){
+    	return userService.saveMBTIShareResult(request.getUid());
+    }
+    
+    /**
+     * 坐标情绪信息查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getEmotionInfoByValue",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getEmotionInfoByValue(EmotionInfoRequest request){
+    	return contentService.getEmotionInfoByValue(request.getHappyValue(), request.getFreeValue());
+    }
+    
+    /**
+     * 情绪确定接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/submitEmotion",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response submitEmotion(EmotionRecordRequest request){
+    	return liveService.submitEmotion(request.getUid(), request.getSource(), request.getEmotionId(), request.getHappyValue(), request.getFreeValue());
+    }
+    
+    /**
+     * 最近一次情绪信息查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getLastEmotionInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getLastEmotionInfo(LastEmotionRequest request){
+    	return contentService.getLastEmotionInfo(request.getUid());
+    }
+    /**
+     * 周总结查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getSummaryEmotionInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getSummaryEmotionInfo(SummaryEmotionInfoRequest request){
+    	return userService.getSummaryEmotionInfo(request.getUid(),request.getTime());
+    }
+    
+    /**
+     * 开启新的一周情绪接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/startNewEmotionInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response startNewEmotionInfo(StartNewEmotionInfoRequest request){
+    	return liveService.startNewEmotionInfo(request.getUid(),request.getSource(),request.getImage(),request.getW(),request.getH());
+    }
+    
+    /**
+     * 情绪信息列表查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/emotionInfoList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+	public Response emotionInfoList(EmotionInfoListRequest request){
+		return liveService.emotionInfoList();
+	}
+    
+    
 }

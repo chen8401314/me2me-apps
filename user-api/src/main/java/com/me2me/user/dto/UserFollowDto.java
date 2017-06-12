@@ -22,4 +22,6 @@ public class UserFollowDto implements BaseEntity {
     private int isFollowMe;
 
     private String introduced;
+
+    private int v_lv;
 }

@@ -22,5 +22,10 @@ public class SnsCircleDto implements BaseEntity {
 
     private int internalStatus;
 
+    private int isFollowed;
+
+    private int isFollowMe;
+
+    private int v_lv;
 
 }

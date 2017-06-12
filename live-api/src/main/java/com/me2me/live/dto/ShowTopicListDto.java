@@ -36,6 +36,12 @@ public class ShowTopicListDto implements BaseEntity{
         return new UpdateLives();
     }
 
+    private List<AttentionElement> attentionData = Lists.newArrayList();
+
+    public static AttentionElement createAttentionElement(){
+        return  new AttentionElement();
+    }
+
     @Data
     public static  class ShowTopicElement implements BaseEntity{
 
@@ -53,7 +59,7 @@ public class ShowTopicListDto implements BaseEntity{
 
         private Date createTime;
 
-        private int LastContentType;
+        private int lastContentType;
 
         private String lastFragment;
 
@@ -79,6 +85,8 @@ public class ShowTopicListDto implements BaseEntity{
 
         private int isFollowed;
 
+        private int isFollowMe;
+
         private long lastUpdateTime;
 
         private int topicCount;
@@ -87,24 +95,30 @@ public class ShowTopicListDto implements BaseEntity{
 
         private int readCount;
 
-        private  List<Tags> tags  =  Lists.newArrayList();
+        private int v_lv;
 
-        public static Tags createTags(){
-            return new Tags();
-        }
+        private int contentType;
 
-        @Data
-        public static  class Tags implements BaseEntity{
+        private int acCount;
 
-            private String tag;
+        private int lastStatus;
 
-            private long tid;
+        private String lastExtra;
 
-            private int likeCount;
+        private int isTop;
 
-            private long cid;
-        }
+        private int lastType;
 
+        private long lastAtUid;
+        
+        //0圈外 1圈内 2核心圈
+        private int internalStatus;
+        
+        private long lastUid;
+        private String lastNickName;
+        private String lastAvatar;
+        private int lastV_lv;
+        private int price;
     }
 
     @Data
@@ -113,5 +127,19 @@ public class ShowTopicListDto implements BaseEntity{
         private long uid;
 
         private String avatar;
+
+        private int v_lv;
     }
+
+    @Data
+    public static class AttentionElement implements BaseEntity{
+
+        private long uid;
+
+        private String avatar;
+
+        private int v_lv;
+
+    }
+
 }

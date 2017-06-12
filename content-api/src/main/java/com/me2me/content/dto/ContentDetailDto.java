@@ -50,6 +50,8 @@ public class ContentDetailDto implements BaseEntity {
 
     private int contentType;
 
+    private int rights;
+
     //是否关注
     private int isFollowed;
 
@@ -58,6 +60,8 @@ public class ContentDetailDto implements BaseEntity {
     private int readCount;
 
     private int isHot;
+
+    private int v_lv;
 
     private List<ImageElement> images = Lists.newArrayList();
 
@@ -101,37 +105,14 @@ public class ContentDetailDto implements BaseEntity {
         private long atUid;
 
         private String atNickName;
+        
+        private long id;
+        
+        private int v_lv;
+
+        private String extra;
 
     }
-
-//    @Data
-//    public static class AtReviewElement implements BaseEntity{
-//
-//        private long fromUid;
-//
-//        private String fromNickName;
-//
-//        private String fromAvatar;
-//
-//        private long reviewId;
-//
-//        private long toUid;
-//
-//        private String toNickName;
-//
-//        private String toAvatar;
-//
-//        private String review;
-//
-//        private Date createTime;
-//
-//    }
-//
-//    private List<AtReviewElement> atReviewElements = Lists.newArrayList();
-//
-//    public static AtReviewElement createAtReviewElement(){
-//        return new AtReviewElement();
-//    }
 
     private List<LikeElement> likeElements = Lists.newArrayList();
 

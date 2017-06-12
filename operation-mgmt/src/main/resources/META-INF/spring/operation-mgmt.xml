@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="
+	http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context.xsd
+   	http://www.springframework.org/schema/task 
+   	http://www.springframework.org/schema/task/spring-task.xsd
+    ">
+	<task:annotation-driven />
+    <context:component-scan base-package="com.me2me.mgmt.manager" />
+    <context:component-scan base-package="com.me2me.mgmt.syslog" />
+    <context:component-scan base-package="com.me2me.mgmt.task" />
+    <context:component-scan base-package="com.me2me.mgmt.services" />
+    
+    <import resource="classpath:META-INF/spring/mysql-context.xml" />
+    <import resource="classpath:META-INF/spring/mgmt-local-consumer.xml" />
+    
+    <!-- task 1 start-->
+    <bean id="topicHotTaskJobDetailA" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="auto7DayTopicHotTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="topicHotTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="topicHotTaskJobDetailA">
+        </property>
+        <property name="cronExpression">
+            <value>0 */15 * * * ?</value>
+        </property>
+    </bean>
+    <!-- task 1 end-->
+    
+    <!-- task 2 start-->
+    <bean id="recommandPushTaskJobDetailA" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="recommandPushTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="recommandPushTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="recommandPushTaskJobDetailA">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 8,10,12,14,16,18,20,22 * * ?</value>
+        </property>
+    </bean>
+    <!-- task 2 end-->
+    
+    <!-- task 3 start-->
+    <bean id="kingdomUpdatePushTaskJobDetailA" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="kingdomUpdatePushTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="kingdomUpdatePushTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="kingdomUpdatePushTaskJobDetailA">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 8,12,16,20 * * ?</value>
+        </property>
+    </bean>
+    <!-- task 3 end-->
+    
+    <!-- task 4 start-->
+    <bean id="springTopicHotTaskJobDetailA" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="springTopicHotTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="springTopicHotTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="springTopicHotTaskJobDetailA">
+        </property>
+        <property name="cronExpression">
+            <value>0 */10 * * * ?</value>
+        </property>
+    </bean>
+    <!-- task 4 end-->
+    
+    <!-- task 5 start-->
+    <bean id="springStartNoticeTaskJobDetailA" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="springStartNoticeTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="springStartNoticeTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="springStartNoticeTaskJobDetailA">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 12 26 1 ?</value>
+        </property>
+    </bean>
+    <!-- task 5 end-->
+    
+    <!-- task 6 start-->
+    <bean id="springPushTop10TaskJobDetailA" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="springPushTop10Task"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="springPushTop10TaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="springPushTop10TaskJobDetailA">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 9 * * ?</value>
+        </property>
+    </bean>
+    <!-- task 6 end-->
+    
+    <!-- task 7 start-->
+    <bean id="springPushActivityStartTaskJobDetailA" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="springPushActivityStartTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="springPushActivityStartTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="springPushActivityStartTaskJobDetailA">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 9 * * ?</value>
+        </property>
+    </bean>
+    <!-- task 7 end-->
+    
+    <!-- task 8 start-->
+    <bean id="springPushNoticeAndHotTaskJobDetailA" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="springPushNoticeAndHotTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="springPushNoticeAndHotTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="springPushNoticeAndHotTaskJobDetailA">
+        </property>
+        <property name="cronExpression">
+            <value>0 5 19 * * ?</value>
+        </property>
+    </bean>
+    <!-- task 8 end-->
+
+	<!-- task 9 start-->
+    <bean id="popularPeopleBillboardTaskJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="popularPeopleBillboardTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="popularPeopleBillboardTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="popularPeopleBillboardTaskJobDetail">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 0 * * ?</value>
+        </property>
+    </bean>
+    <!-- task 9 end-->
+    
+    <!-- task 10 start-->
+    <bean id="jayPeopleBillboardTaskJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="jayPeopleBillboardTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="jayPeopleBillboardTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="jayPeopleBillboardTaskJobDetail">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 0 * * ?</value>
+        </property>
+    </bean>
+    <!-- task 10 end-->
+    
+    <!-- task 11 start-->
+    <bean id="colorfulKingdomBillBoardTaskJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="colorfulKingdomBillBoardTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="colorfulKingdomBillBoardTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="colorfulKingdomBillBoardTaskJobDetail">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 0 * * ?</value>
+        </property>
+    </bean>
+    <!-- task 11 end-->
+    
+    <!-- task 12 start-->
+    <bean id="lonelyKingdomBillboardTaskJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="lonelyKingdomBillboardTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="lonelyKingdomBillboardTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="lonelyKingdomBillboardTaskJobDetail">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 * * * ?</value>
+        </property>
+    </bean>
+    <!-- task 12 end-->
+    
+    <!-- task 13 start-->
+    <bean id="kingdomCountDayTaskJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <property name="targetObject" ref="kingdomCountDayTask"></property>
+        <property name="targetMethod" value="doTask"></property>
+        <property name="concurrent" value="false" />
+    </bean>
+    <bean id="kingdomCountDayTaskTriggers"
+        class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail" ref="kingdomCountDayTaskJobDetail">
+        </property>
+        <property name="cronExpression">
+            <value>0 0 8 * * ?</value>
+        </property>
+    </bean>
+    <!-- task 13 end-->
+
+    <bean name="quartzScheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <list>
+            	<!-- 7 days task
+                <ref bean="topicHotTaskTriggers" />
+                <ref bean="recommandPushTaskTriggers" />
+                <ref bean="kingdomUpdatePushTaskTriggers" />
+                <ref bean="springTopicHotTaskTriggers" />
+                <ref bean="springPushNoticeAndHotTaskTriggers" />
+                <ref bean="springPushActivityStartTaskTriggers" />
+                <ref bean="springPushTop10TaskTriggers" />
+                <ref bean="springStartNoticeTaskTriggers" />
+                 -->
+                 
+                 <!-- billboard task -->
+                 <ref bean="popularPeopleBillboardTaskTriggers" />
+                 <ref bean="jayPeopleBillboardTaskTriggers" />
+                 <ref bean="colorfulKingdomBillBoardTaskTriggers" />
+                 <ref bean="lonelyKingdomBillboardTaskTriggers" />
+                 <ref bean="kingdomCountDayTaskTriggers" />
+                 
+            </list>
+        </property>
+    </bean>
+</beans>

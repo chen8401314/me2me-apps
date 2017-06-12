@@ -10,9 +10,11 @@ import lombok.Data;
  */
 @Data
 public class UserNoticeDto implements BaseEntity {
+	private static final long serialVersionUID = 4823843638329755669L;
 
-    private long uid;
+	private long uid;
 
     private long sinceId ;
 
+    private int level;
 }

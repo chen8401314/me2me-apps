@@ -8,5 +8,7 @@
     <dubbo:registry address="#{app.dubboRegistry}"/>
 
     <dubbo:reference interface="com.me2me.user.service.UserService" id="userService"/>
+    <dubbo:reference interface="com.me2me.io.service.FileTransferService" id="fileTransferService"/>
     
+    <dubbo:consumer check="false" />
 </beans>

@@ -34,9 +34,34 @@
         <!--<table tableName="live_favorite" domainObjectName="LiveFavorite"/>-->
         <!--<table tableName="activity" domainObjectName="Activity"/>-->
         <!--<table tableName="user_activity" domainObjectName="UserActivity"/>-->
-        <table tableName="activity_review" domainObjectName="ActivityReview"/>
+        <!--<table tableName="activity_review" domainObjectName="ActivityReview"/>-->
         <!--<table tableName="activity_tags_details" domainObjectName="ActivityTagsDetails"/>-->
         <!--<table tableName="activity_likes_details" domainObjectName="ActivityLikesDetails"/>-->
+        <!--<table tableName="luck_act" domainObjectName="LuckAct"/>-->
+        <!--<table tableName="luck_prize" domainObjectName="LuckPrize"/>-->
+        <!--<table tableName="luck_count" domainObjectName="LuckCount"/>-->
+        <!--<table tableName="luck_status" domainObjectName="LuckStatus"/>-->
+        <!--<table tableName="luck_winners" domainObjectName="LuckWinners"/>-->
+        <!--<table tableName="a_activity" domainObjectName="Aactivity"/>-->
+        <!--<table tableName="a_activity_stage" domainObjectName="AactivityStage"/>-->
+        <!--<table tableName="a_user" domainObjectName="Auser"/>-->
+        <!--<table tableName="a_user_to_sysuser" domainObjectName="AuserToSysUser"/>-->
+        <!--<table tableName="t_channel" domainObjectName="Tchannel"/>-->
+        <!--<table tableName="a_topic" domainObjectName="Atopic"/>-->
+        <!--<table tableName="a_double_topic_apply" domainObjectName="AdoubleTopicApply"/>-->
+        <!--<table tableName="a_mili_data" domainObjectName="AmiliData"/>-->
+        <!--<table tableName="a_recommend_user" domainObjectName="ArecommendUser"/>-->
+        <!--<table tableName="a_recommend_user_desc" domainObjectName="ArecommendUserDesc"/>-->
+        <!--<table tableName="a_task" domainObjectName="Atask"/>-->
+        <!--<table tableName="a_forced_pairing" domainObjectName="AforcedPairing"/>-->
+        <!--<table tableName="a_task_user" domainObjectName="AtaskUser"/>-->
+        <!--<table tableName="a_kingdom" domainObjectName="AkingDom"/>-->
+        <!--<table tableName="a_kingdom_list" domainObjectName="AkingDomList"/>-->
+        <!--<table tableName="app_lightbox_source" domainObjectName="AppLightboxSource"/>-->
+        <!--<table tableName="app_ui_control" domainObjectName="AppUiControl"/>-->
+        <!-- <table tableName="a_common_list" domainObjectName="AcommonList"/> -->
+		<!-- <table tableName="a_common_hot_detail" domainObjectName="AcommonHotDetail"/> -->
+		<!-- <table tableName="a_common_chat" domainObjectName="AcommonChat"/> -->
 
     </context>
 </generatorConfiguration>

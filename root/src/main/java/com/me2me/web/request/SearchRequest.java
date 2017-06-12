@@ -22,4 +22,8 @@ public class SearchRequest extends Request {
     @Getter
     @Setter
     private int pageSize = 10;
+
+    @Getter
+    @Setter
+    private int isSearchFans ;
 }

@@ -1,15 +1,33 @@
 package com.me2me.sms.service;
+
+import com.alibaba.fastjson.JSON;
 import com.google.common.base.Splitter;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.sms.YunXinSms;
+import com.me2me.common.utils.im.HostType;
+import com.me2me.common.utils.im.IMHttpUtil;
+import com.me2me.common.web.Response;
+import com.me2me.common.web.ResponseStatus;
 import com.me2me.core.event.ApplicationEventBus;
-import com.me2me.sms.channel.MessageChannel;
+import com.me2me.sms.channel.MessageClient;
+import com.me2me.sms.dto.ImUserInfoDto;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.event.VerifyEvent;
+import com.me2me.sms.exception.SendMessageLimitException;
+import com.me2me.sms.exception.SendMessageTimeException;
 import com.me2me.sms.listener.VerifyCodeListener;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
+
+import java.net.HttpURLConnection;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.List;
+
+import lombok.extern.slf4j.Slf4j;
 
 
 /**
@@ -18,6 +36,7 @@ import org.springframework.util.StringUtils;
  * Date: 2016/3/1.
  */
 @Service
+@Slf4j
 public class SmsServiceImpl implements SmsService {
 
     @Autowired
@@ -28,19 +47,36 @@ public class SmsServiceImpl implements SmsService {
 
     private static final String VERIFY_PREFIX = "verify:";
 
+    @Value("#{app.IM_APP_KEY}")
+    private String IM_APP_KEY;
+
+    @Value("#{app.IM_APP_SECRET}")
+    private String IM_APP_SECRET;
+
     private Splitter splitter = Splitter.on("@").trimResults();
 
     @Autowired
     private VerifyCodeListener verifyCodeListener;
+
+    @Autowired
+    private MessageClient messageClient;
 
     /**
      * 发送验证码
      * @param verifyDto
      */
     @Override
-    public void send(VerifyDto verifyDto){
-        // applicationEventBus.post(new VerifyEvent(verifyDto.getMobile(),verifyDto.getVerifyCode(),verifyDto.getChannel()));
-        verifyCodeListener.send(new VerifyEvent(verifyDto.getMobile(),verifyDto.getVerifyCode(),verifyDto.getChannel()));
+    public Response send(VerifyDto verifyDto){
+    	try{
+    		verifyCodeListener.send(new VerifyEvent(verifyDto.getMobile(),verifyDto.getVerifyCode(),verifyDto.getChannel(),verifyDto.getIsTest()));
+    	}catch(Exception e){
+    		if(e instanceof SendMessageLimitException || e instanceof SendMessageTimeException){
+    			return Response.success(20094,e.getMessage());
+    		}else{
+    			return Response.failure(e.getMessage());
+    		}
+    	}
+    	return Response.success(ResponseStatus.USER_VERIFY_GET_SUCCESS.status,ResponseStatus.USER_VERIFY_GET_SUCCESS.message);
     }
 
     /**
@@ -50,7 +86,7 @@ public class SmsServiceImpl implements SmsService {
     @Override
     public boolean verify(VerifyDto verifyDto) {
         // 网易云信通道验证
-        if(verifyDto.getChannel()== MessageChannel.ChannelType.NET_CLOUD_SMS.index) {
+        if(verifyDto.getChannel()== ChannelType.NET_CLOUD_SMS.index) {
             return YunXinSms.verify(verifyDto.getMobile(), verifyDto.getVerifyCode());
         }
         // 获取redis中的数据
@@ -64,5 +100,129 @@ public class SmsServiceImpl implements SmsService {
         return false;
     }
 
+    @Override
+    public boolean sendMessage(String nickName ,String awardName ,String mobile ,String OperateMobile) {
+        Boolean isTrue = YunXinSms.sendSms2(nickName ,awardName ,mobile ,OperateMobile);
+        if(isTrue){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    @Override
+    public boolean sendQIMessage(String mobile) {
+        Boolean isTrue = YunXinSms.sendSms3(mobile);
+        if(isTrue){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    @Override
+    public boolean sendQIauditMessage(List mobileList) {
+        Boolean isTrue = YunXinSms.sendSms4(mobileList);
+        if(isTrue){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    @Override
+    public void send7daySignUp(String mobile) {
+        HashMap<String,Object> result = null;
+        //没有需要传的数据传空，否则报错
+        result = messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobile,"142378",new String[]{""});
+        System.out.println(result);
+    }
+
+    @Override
+    public void send7dayApply(List mobileList) {
+        String mobiles = getListToString(mobileList);
+        HashMap<String,Object> result = null;
+        result = messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobiles,"106877",new String[]{"测试","5"});
+    }
+
+    @Override
+    public void send7dayCommon(String templateId, List<String> mobileList, List<String> messageList) {
+    	StringBuilder msb = new StringBuilder();
+    	if(null != mobileList && mobileList.size() > 0){
+    		for(String m : mobileList){
+    			msb.append(",").append(m.trim());
+    		}
+    	}
+    	String mobile = msb.toString();
+    	if(mobile.length() > 0){
+    		mobile = mobile.substring(1);
+    	}
+    	
+    	try{
+    		if(null == messageList || messageList.size() == 0){
+        		messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobile, templateId, new String[]{""});
+        	}else{
+        		String[] msgs = new String[messageList.size()];
+        		for(int i=0;i<messageList.size();i++){
+        			msgs[i] = messageList.get(i);
+        		}
+        		messageClient.getCcpRestSmsSDK().sendTemplateSMS(mobile, templateId, msgs);
+        	}
+    	}catch(Exception e){
+    		log.error("发送短信失败", e);
+    	}
+    }
+
+    @Override
+    public ImUserInfoDto getIMUsertoken(long uid) throws Exception {
+        return getToken(String.valueOf(uid),"","");
+    }
+
+    /**
+     * List转换成String逗号分隔的形式
+     *
+     * @param list
+     * @return
+     */
+    private String getListToString(List list) {
+        return StringUtils.join(list.toArray(), ",");
+    }
+
+    /**
+     * Im 获取调用远程接口获取token
+     * @param userId
+     * @param name
+     * @param portraitUri
+     * @return
+     * @throws Exception
+     */
+    public ImUserInfoDto getToken(String userId, String name, String portraitUri) throws Exception {
+        if (userId == null) {
+            throw new IllegalArgumentException("Paramer 'userId' is required");
+        }
+
+        if (name == null) {
+            throw new IllegalArgumentException("Paramer 'name' is required");
+        }
+
+        if (portraitUri == null) {
+            throw new IllegalArgumentException("Paramer 'portraitUri' is required");
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("&userId=").append(URLEncoder.encode(userId.toString(), "UTF-8"));
+        sb.append("&name=").append(URLEncoder.encode(name.toString(), "UTF-8"));
+        sb.append("&portraitUri=").append(URLEncoder.encode(portraitUri.toString(), "UTF-8"));
+        String body = sb.toString();
+        if (body.indexOf("&") == 0) {
+            body = body.substring(1, body.length());
+        }
+
+        HttpURLConnection conn = IMHttpUtil.CreatePostHttpConnection(HostType.API, IM_APP_KEY, IM_APP_SECRET, "/user/getToken.json", "application/x-www-form-urlencoded");
+        IMHttpUtil.setBodyParameter(body, conn);
+        ImUserInfoDto result = JSON.parseObject(IMHttpUtil.returnResult(conn) ,ImUserInfoDto.class);
+
+        return result;
+    }
 
 }

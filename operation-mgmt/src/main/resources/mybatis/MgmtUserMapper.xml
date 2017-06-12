@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.me2me.mgmt.dal.mapper.MgmtUserMapper" >
+  <resultMap id="BaseResultMap" type="com.me2me.mgmt.dal.entity.MgmtUser" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="uuid" property="uuid" jdbcType="VARCHAR" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="pwd" property="pwd" jdbcType="VARCHAR" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="app_uid" property="appUid" jdbcType="VARCHAR" />
+    <result column="app_token" property="appToken" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, uuid, name, pwd, type, app_uid, app_token
+  </sql>
+  
+  <select id="getByUuid" resultMap="BaseResultMap" >
+    SELECT
+      <include refid="Base_Column_List" />
+    FROM t_mgmt_user
+    WHERE uuid=#{uuid,jdbcType=VARCHAR}
+  </select>
+  
+  <select id="getListByAppUid" resultMap="BaseResultMap" >
+    SELECT
+      <include refid="Base_Column_List" />
+    FROM t_mgmt_user
+    WHERE app_uid in 
+    <foreach collection="appUids" item="auid" open="(" separator="," close=")">  
+		#{auid,jdbcType=VARCHAR}  
+    </foreach>
+  </select>
+  
+  <select id="getPageByName" resultMap="BaseResultMap" >
+    SELECT
+      <include refid="Base_Column_List" />
+    FROM t_mgmt_user where 1=1 
+    <if test="uname != null">
+    and name like CONCAT('%','${uname}','%') 
+    </if>
+    order by id desc limit #{start,jdbcType=INTEGER},#{pageSize,jdbcType=INTEGER}
+  </select>
+  
+  <insert id="insert" parameterType="com.me2me.mgmt.dal.entity.MgmtUser">
+    insert into t_mgmt_user (uuid, name, pwd, type, app_uid, app_token)
+    values (#{uuid,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{pwd,jdbcType=VARCHAR}, #{type,jdbcType=INTEGER}, #{appUid,jdbcType=VARCHAR}, #{appToken,jdbcType=VARCHAR})
+  </insert>
+  
+  <select id="getById" resultMap="BaseResultMap" >
+    SELECT
+      <include refid="Base_Column_List" />
+    FROM t_mgmt_user
+    WHERE id=#{id,jdbcType=BIGINT}
+  </select>
+  
+  <update id="update" parameterType="com.me2me.mgmt.dal.entity.MgmtUser">
+    update t_mgmt_user
+    <set>
+      <if test="uuid != null">
+        uuid = #{uuid,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        name = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="pwd != null">
+        pwd = #{pwd,jdbcType=VARCHAR},
+      </if>
+      <if test="type != null">
+        type = #{type,jdbcType=INTEGER},
+      </if>
+      <if test="appUid != null">
+        app_uid = #{appUid,jdbcType=VARCHAR},
+      </if>
+      <if test="appToken != null">
+        app_token = #{appToken,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id=#{id,jdbcType=BIGINT}
+  </update>
+  
+  <select id="getByAppUid" resultMap="BaseResultMap" >
+    SELECT
+      <include refid="Base_Column_List" />
+    FROM t_mgmt_user
+    WHERE app_uid=#{appUid,jdbcType=VARCHAR}
+  </select>
+</mapper>

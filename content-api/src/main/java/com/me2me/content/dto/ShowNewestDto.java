@@ -45,6 +45,8 @@ public class ShowNewestDto implements BaseEntity{
 
             private String review;
 
+            private int v_lv;
+
         }
     }
 }

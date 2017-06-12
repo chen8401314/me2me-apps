@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Random;
 
 
 /**
@@ -146,5 +147,15 @@ public class ArticleServiceImpl implements ArticleService {
     public Page<Article> showItemByType(int currentPage,long type) {
         // 每页显示20条数据
         return articleMybatisDao.showArticleByPage(currentPage,20,type);
+    }
+
+    public static void main(String[] args) {
+        Random random = new Random();
+        for(int i = 0;i<1000;i++){
+            int value = random.nextInt(10);
+            System.out.println(value);
+        }
+
+
     }
 }

@@ -1,20 +1,33 @@
 package com.me2me.user.dao;
 
-import com.me2me.common.web.Specification;
-import com.me2me.sms.dto.PushLogDto;
-import com.me2me.user.dto.*;
-import com.me2me.user.mapper.*;
-import com.me2me.user.model.*;
-import com.me2me.user.model.ApplicationSecurity;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
+import com.me2me.common.page.PageBean;
+import com.me2me.common.utils.FirstCharUtils;
+import com.me2me.common.web.Specification;
+import com.me2me.sms.dto.PushLogDto;
+import com.me2me.user.dto.BasicDataDto;
+import com.me2me.user.dto.EntryPageDto;
+import com.me2me.user.dto.FansParamsDto;
+import com.me2me.user.dto.FollowParamsDto;
+import com.me2me.user.dto.PasteTagDto;
+import com.me2me.user.dto.SearchFansDto;
+import com.me2me.user.dto.SearchUserDto;
+import com.me2me.user.dto.UserFansDto;
+import com.me2me.user.dto.UserFollowDto;
+import com.me2me.user.dto.UserNoticeDto;
+import com.me2me.user.dto.VersionDto;
+import com.me2me.user.mapper.*;
+import com.me2me.user.model.*;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -81,6 +94,57 @@ public class UserMybatisDao {
     @Autowired
     private JpushTokenMapper jpushTokenMapper;
 
+    @Autowired
+    private ThirdPartUserMapper thirdPartUserMapper;
+
+    @Autowired
+    private OpenDeviceCountMapper openDeviceCountMapper;
+
+    @Autowired
+    private SystemConfigMapper systemConfigMapper;
+
+    @Autowired
+    private UserGagMapper userGagMapper;
+
+    @Autowired
+    private  EntryPageConfigMapper entryPageConfigMapper;
+
+    @Autowired
+    private UserFamousMapper userFamousMapper;
+
+    @Autowired
+    private IosWapxMapper iosWapxMapper;
+
+    @Autowired
+    private ImConfigMapper imConfigMapper;
+    
+    @Autowired
+    private VersionChannelDownloadMapper versionChannelDownloadMapper;
+    
+    @Autowired
+    private UserSeekFollowMapper userSeekFollowMapper;
+    
+    @Autowired
+    private UserNoticeUnreadMapper userNoticeUnreadMapper;
+    
+    @Autowired
+    private UserMobileListMapper userMobileListMapper;
+    
+    @Autowired
+    private UserMbtiHistoryMapper mbtiHistoryMapper;
+    
+    @Autowired
+    private EmotionInfoMapper emotionInfoMapper;
+    
+    @Autowired
+    private MbtiMappingMapper mbtiMappingMapper;
+    
+    @Autowired
+    private EmotionRecordMapper emotionRecordMapper;
+    
+    @Autowired
+    private AppConfigMapper appConfigMapper;
+    
     /**
      * 保存用户注册信息
      * @param user
@@ -90,6 +154,7 @@ public class UserMybatisDao {
     }
 
     public void createUserProfile(UserProfile userProfile){
+    	userProfile.setNameGroup(FirstCharUtils.getFirstChar(userProfile.getNickName()));
         userProfileMapper.insertSelective(userProfile);
     }
 
@@ -104,6 +169,13 @@ public class UserMybatisDao {
         List<UserToken> lists = userTokenMapper.selectByExample(example);
         return (lists != null && lists.size() > 0) ? lists.get(0) : null;
     }
+    
+    public List<UserToken> getUserTokensByUids(List<Long> uids){
+    	UserTokenExample example = new UserTokenExample();
+        UserTokenExample.Criteria criteria = example.createCriteria();
+        criteria.andUidIn(uids);
+        return userTokenMapper.selectByExample(example);
+    }
 
     public UserToken getUserTokenByUid(long uid ,String token){
         UserTokenExample example = new UserTokenExample();
@@ -112,6 +184,10 @@ public class UserMybatisDao {
         criteria.andTokenEqualTo(token);
         List<UserToken> lists = userTokenMapper.selectByExample(example);
         return (lists != null && lists.size() > 0) ? lists.get(0) : null;
+    }
+    
+    public void updateUserToken(UserToken userToken){
+    	userTokenMapper.updateByPrimaryKeySelective(userToken);
     }
 
     /**
@@ -127,6 +203,7 @@ public class UserMybatisDao {
         return (users!=null&&users.size()>0)? users.get(0):null;
     }
 
+
     public User getUserByUid(long uid){
         UserExample example = new UserExample();
         UserExample.Criteria criteria = example.createCriteria();
@@ -136,6 +213,24 @@ public class UserMybatisDao {
         return (users!=null&&users.size()>0)? users.get(0):null;
     }
 
+    public List<User> getAllUser(){
+        return userMapper.selectByExample(null);
+    }
+    
+    public User getUserByUidPrimaryKey(long uid){
+    	return userMapper.selectByPrimaryKey(uid);
+    }
+
+    public User getUserByUidAndTime(long uid , Date startDate , Date endDate){
+        UserExample example = new UserExample();
+        UserExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        criteria.andCreateTimeGreaterThan(startDate);
+        criteria.andCreateTimeLessThan(endDate);
+        criteria.andStatusEqualTo(Specification.UserStatus.NORMAL.index);
+        List<User> users = userMapper.selectByExample(example);
+        return (users!=null&&users.size()>0)? users.get(0):null;
+    }
 
     public void modifyUser(User user){
         userMapper.updateByPrimaryKeySelective(user);
@@ -170,6 +265,9 @@ public class UserMybatisDao {
     }
 
     public void modifyUserProfile(UserProfile userProfile){
+    	if(null != userProfile.getNickName()){
+    		userProfile.setNameGroup(FirstCharUtils.getFirstChar(userProfile.getNickName()));
+    	}
         userProfileMapper.updateByPrimaryKeySelective(userProfile);
     }
 
@@ -179,6 +277,52 @@ public class UserMybatisDao {
         criteria.andUidEqualTo(uid);
         List<UserProfile> lists = userProfileMapper.selectByExample(example);
         return (lists != null && lists.size() > 0) ? lists.get(0) : null;
+    }
+    
+    public int getNoNameGroupUserProfileCount(){
+    	UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andNameGroupEqualTo("");
+        return userProfileMapper.countByExample(example);
+    }
+    
+    public List<UserProfile> getNoNameGroupUserProfiles(int pageSize){
+    	UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andNameGroupEqualTo("");
+        example.setOrderByClause(" id asc limit " + pageSize);
+        return userProfileMapper.selectByExample(example);
+    }
+    
+    public void updateUserProfile(UserProfile userProfile){
+    	if(null != userProfile.getNickName()){
+    		userProfile.setNameGroup(FirstCharUtils.getFirstChar(userProfile.getNickName()));
+    	}
+    	userProfileMapper.updateByPrimaryKeySelective(userProfile);
+    }
+
+    public UserProfile getUserProfileByMobile(String mobile) {
+        UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andMobileEqualTo(mobile);
+        List<UserProfile> lists = userProfileMapper.selectByExample(example);
+        return (lists != null && lists.size() > 0) ? lists.get(0) : null;
+    }
+
+    public List<UserProfile> getUserProfilesByUids(List<Long> uids) {
+        UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andUidIn(uids);
+        example.setOrderByClause(" id desc ");
+        return userProfileMapper.selectByExample(example);
+    }
+    
+    public List<UserProfile> getUserProfilesByMobiles(List<String> mobile){
+    	UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andMobileIn(mobile);
+        example.setOrderByClause(" id desc ");
+        return userProfileMapper.selectByExample(example);
     }
 
     /**
@@ -249,8 +393,15 @@ public class UserMybatisDao {
         UserNoticeExample.Criteria criteria = example.createCriteria();
         criteria.andToUidEqualTo(userNoticeDto.getUid());
         criteria.andIdLessThan(userNoticeDto.getSinceId());
+        if(userNoticeDto.getLevel() == 1){//一级目录，除核心圈和聚合相关的信息
+        	criteria.andNoticeTypeLessThanOrEqualTo(5);
+        }else if(userNoticeDto.getLevel() == 2){//二级目录，系统消息，核心圈和聚合相关的信息
+        	criteria.andNoticeTypeGreaterThanOrEqualTo(6);
+        }else{//老版本的，则只需要查询2.2.0版本前的消息即可，主要是为了兼容老版本
+        	criteria.andNoticeTypeLessThanOrEqualTo(7);//新的类型不展示。。防止前台不兼容
+        }
         example.setOrderByClause("id desc limit 10 ");
-        return  userNoticeMapper.selectByExample(example);
+        return  userNoticeMapper.selectByExampleWithBLOBs(example);
     }
     public void createUserNotice(UserNotice userNotice){
         userNoticeMapper.insertSelective(userNotice);
@@ -328,6 +479,26 @@ public class UserMybatisDao {
         List<UserFollow> list = userFollowMapper.selectByExample(example);
         return list!=null&&list.size()>0 ? list.get(0) : null;
     }
+    
+    public List<UserFollow> getAllFollows(long uid, List<Long> uids){
+    	UserFollowExample example = new UserFollowExample();
+        UserFollowExample.Criteria criteria =  example.createCriteria();
+        criteria.andSourceUidEqualTo(uid);
+        criteria.andTargetUidIn(uids);
+        UserFollowExample.Criteria criteria2 =  example.createCriteria();
+        criteria2.andSourceUidIn(uids);
+        criteria2.andTargetUidEqualTo(uid);
+        example.or(criteria2);
+        return userFollowMapper.selectByExample(example);
+    }
+    
+    public List<UserFollow> getUserFollowsBySourceUidAndTargetUids(long sourceUid, List<Long> targetUids){
+    	UserFollowExample example = new UserFollowExample();
+        UserFollowExample.Criteria criteria =  example.createCriteria();
+        criteria.andSourceUidEqualTo(sourceUid);
+        criteria.andTargetUidIn(targetUids);
+        return userFollowMapper.selectByExample(example);
+    }
 
     public List<UserFansDto> getFans(FansParamsDto fansParamsDto){
         return userFollowMapper.getFans(fansParamsDto);
@@ -385,6 +556,7 @@ public class UserMybatisDao {
         UserFollowExample example = new UserFollowExample();
         UserFollowExample.Criteria criteria =  example.createCriteria();
         criteria.andSourceUidEqualTo(uid);
+        criteria.andTargetUidGreaterThan(Long.valueOf(0));
         return userFollowMapper.countByExample(example);
     }
 
@@ -442,6 +614,35 @@ public class UserMybatisDao {
         controlMapper.insertSelective(versionControl);
 
     }
+    
+    public List<VersionControl> getVersionListByVersionAndPlatform(String version,int platform){
+    	VersionControlExample example = new VersionControlExample();
+        VersionControlExample.Criteria criteria = example.createCriteria();
+        if(!StringUtils.isEmpty(version)){
+        	criteria.andVersionLike("%"+version+"%");
+        }
+        if(platform > 0){
+        	criteria.andPlatformEqualTo(platform);
+        }
+        example.setOrderByClause(" update_time desc ");
+        List<VersionControl> list =  controlMapper.selectByExample(example);
+        return list;
+    }
+    
+    public VersionControl getVersionById(long id){
+    	return controlMapper.selectByPrimaryKey(id);
+    }
+    
+    public void saveOrUpdateVersion(VersionControl vc){
+    	if(null == vc){
+    		return;
+    	}
+    	if(null != vc.getId() && vc.getId() > 0){
+    		controlMapper.updateByPrimaryKeySelective(vc);
+    	}else{
+    		controlMapper.insertSelectiveNotId(vc);
+    	}
+    }
 
     public Dictionary getDictionaryById(long id){
         return dictionaryMapper.selectByPrimaryKey(id);
@@ -454,7 +655,7 @@ public class UserMybatisDao {
         criteria.andFromUidEqualTo(userNotice.getFromUid());
         criteria.andToUidEqualTo(userNotice.getToUid());
         criteria.andCidEqualTo(userNotice.getCid());
-        List<UserNotice> userNotices = userNoticeMapper.selectByExample(example);
+        List<UserNotice> userNotices = userNoticeMapper.selectByExampleWithBLOBs(example);
         return (userNotices != null && userNotices.size() > 0) ? userNotices.get(0) : null;
     }
 
@@ -530,7 +731,7 @@ public class UserMybatisDao {
         UserNoticeExample.Criteria criteria = example.createCriteria();
         criteria.andToUidEqualTo(uid);
         criteria.andPushStatusEqualTo(Specification.PushStatus.UN_PUSHED.index);
-        return  userNoticeMapper.selectByExample(example);
+        return  userNoticeMapper.selectByExampleWithBLOBs(example);
     }
 
     public List<UserFansDto> getFansOrderByNickName(FansParamsDto fansParamsDto){
@@ -539,6 +740,14 @@ public class UserMybatisDao {
 
     public List<UserFollowDto> getFollowsOrderByNickName(FollowParamsDto followParamsDto){
         return userFollowMapper.getFollowsOrderByNickName(followParamsDto);
+    }
+
+    public List<UserFansDto> getFansOrderByTime(FansParamsDto fansParamsDto){
+        return userFollowMapper.getFansOrderByTime(fansParamsDto);
+    }
+
+    public List<UserFollowDto> getFollowsOrderByTime(FollowParamsDto followParamsDto){
+        return userFollowMapper.getFollowsOrderByTime(followParamsDto);
     }
 
     public List<UserProfile> getPromoter(String nickName){
@@ -612,4 +821,604 @@ public class UserMybatisDao {
         jpushTokenMapper.updateByPrimaryKeySelective(jpushToken);
     }
 
+    public List<UserProfile> searchFans(SearchFansDto searchFansDto){
+        return userProfileMapper.searchFans(searchFansDto);
+    }
+
+    public int totalFans(SearchFansDto searchFansDto){
+        return userProfileMapper.countFans(searchFansDto);
+    }
+
+    //新增第三方登录数据
+    public void creatThirdPartUser(ThirdPartUser thirdPartUser){
+        thirdPartUserMapper.insertSelective(thirdPartUser);
+    }
+
+    public ThirdPartUser getThirdPartUser(String openId ,int type){
+        ThirdPartUserExample example = new ThirdPartUserExample();
+        ThirdPartUserExample.Criteria criteria = example.createCriteria();
+        criteria.andThirdPartOpenIdEqualTo(openId);
+        criteria.andStatusEqualTo(1);
+        criteria.andThirdPartTypeEqualTo(type);
+        List<ThirdPartUser> thirdPartUsers = thirdPartUserMapper.selectByExample(example);
+        return thirdPartUsers.size()>0 && thirdPartUsers !=null ?thirdPartUsers.get(0):null;
+    }
+
+    public List<ThirdPartUser> getThirdPartUserByUnionId(String unionId ,int type){
+        ThirdPartUserExample example = new ThirdPartUserExample();
+        ThirdPartUserExample.Criteria criteria = example.createCriteria();
+        criteria.andThirdPartUnionidEqualTo(unionId);
+        criteria.andStatusEqualTo(1);
+        criteria.andThirdPartTypeEqualTo(type);
+        List<ThirdPartUser> thirdPartUsers = thirdPartUserMapper.selectByExample(example);
+        return thirdPartUsers;
+    }
+
+    public void updateThirdPartUser(ThirdPartUser thirdPartUser){
+        thirdPartUserMapper.updateByPrimaryKeySelective(thirdPartUser);
+    }
+
+    public List<UserProfile> checkUserNickName(String nickName){
+        UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria = example.createCriteria();
+        criteria.andNickNameEqualTo(nickName);
+        return userProfileMapper.selectByExample(example);
+    }
+
+    public ThirdPartUser checkOpenId(String openId){
+        ThirdPartUserExample example = new ThirdPartUserExample();
+        ThirdPartUserExample.Criteria criteria = example.createCriteria();
+        criteria.andThirdPartOpenIdEqualTo(openId);
+        criteria.andStatusEqualTo(1);
+        List<ThirdPartUser> thirdPartUsers = thirdPartUserMapper.selectByExample(example);
+        return thirdPartUsers!=null&&thirdPartUsers.size()>0?thirdPartUsers.get(0):null;
+    }
+
+    public ThirdPartUser checkUnionId(String unionId){
+        ThirdPartUserExample example = new ThirdPartUserExample();
+        ThirdPartUserExample.Criteria criteria = example.createCriteria();
+        criteria.andThirdPartUnionidEqualTo(unionId);
+        criteria.andStatusEqualTo(1);
+        List<ThirdPartUser> thirdPartUsers = thirdPartUserMapper.selectByExample(example);
+        return thirdPartUsers!=null&&thirdPartUsers.size()>0?thirdPartUsers.get(0):null;
+    }
+
+    //检测第三方账号是否存在、根据openId
+    public ThirdPartUser thirdPartIsExist(String openId ,int type){
+        ThirdPartUserExample example = new ThirdPartUserExample();
+        ThirdPartUserExample.Criteria criteria = example.createCriteria();
+        criteria.andThirdPartOpenIdEqualTo(openId);
+        criteria.andThirdPartTypeEqualTo(type);
+        List<ThirdPartUser> thirdPartUsers = thirdPartUserMapper.selectByExample(example);
+        return thirdPartUsers!=null&&thirdPartUsers.size()>0?thirdPartUsers.get(0):null;
+    }
+
+    public void createOpenCount(OpenDeviceCount openDeviceCount){
+        openDeviceCountMapper.insertSelective(openDeviceCount);
+    }
+
+    public SystemConfig getSystemConfig() {
+        SystemConfigExample example = new SystemConfigExample();
+        example.setOrderByClause(" id desc");
+        List<SystemConfig> systemConfigs =systemConfigMapper.selectByExample(example);
+        return systemConfigs.size()>0?systemConfigs.get(0):null;
+    }
+
+    public List<UserProfile> searchByNickNameAndvLv(String nickName, String mobile, int vLv, int page, int pageSize){
+    	UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria =  example.createCriteria();
+        if(null != nickName && !"".equals(nickName)){
+        	criteria.andNickNameLike("%"+nickName+"%");
+        }
+        if(null != mobile && !"".equals(mobile)){
+        	criteria.andMobileLike("%"+mobile+"%");
+        }
+        if(vLv >= 0){
+        	criteria.andVLvEqualTo(vLv);
+        }
+        example.setOrderByClause("create_time desc limit "+((page-1)*pageSize)+", " + pageSize);
+        return userProfileMapper.selectByExample(example);
+    }
+    
+    public int totalByNickNameAndvLv(String nickName, String mobile, int vLv){
+    	UserProfileExample example = new UserProfileExample();
+        UserProfileExample.Criteria criteria =  example.createCriteria();
+        if(null != nickName && !"".equals(nickName)){
+        	criteria.andNickNameLike("%"+nickName+"%");
+        }
+        if(null != mobile && !"".equals(mobile)){
+        	criteria.andMobileLike("%"+mobile+"%");
+        }
+        if(vLv >= 0){
+        	criteria.andVLvEqualTo(vLv);
+        }
+        return userProfileMapper.countByExample(example);
+    }
+
+    public void createGag(UserGag gag) {
+        userGagMapper.insertSelective(gag);
+    }
+
+    public boolean checkGag(UserGag gag) {
+
+        return getUserGag(gag)!=null;
+    }
+
+    public void deleteGag(UserGag gag) {
+        UserGagExample example = new UserGagExample();
+        UserGagExample.Criteria criteria = example.createCriteria();
+        criteria.andTargetUidEqualTo(gag.getTargetUid());
+        criteria.andTypeEqualTo(gag.getType());
+        criteria.andCidEqualTo(gag.getCid());
+        criteria.andGagLevelEqualTo(gag.getGagLevel());
+
+        userGagMapper.deleteByExample(example);
+    }
+
+    public UserGag getUserGag(UserGag gag) {
+        UserGagExample example = new UserGagExample();
+        UserGagExample.Criteria criteria = example.createCriteria();
+        criteria.andTargetUidEqualTo(gag.getTargetUid());
+        List<Integer> intList = new ArrayList<>();
+        intList.add(gag.getType());
+        if(gag.getType()>0){
+            intList.add(0);
+        }
+        criteria.andTypeIn(intList);
+        List<Long> longList = new ArrayList<>();
+        longList.add(gag.getCid());
+        if(gag.getCid()>0){
+            longList.add(0L);
+        }
+        criteria.andCidIn(longList);
+        intList = new ArrayList<>();
+        intList.add(gag.getGagLevel());
+        if(gag.getGagLevel()>0){
+            intList.add(0);
+        }
+        criteria.andGagLevelIn(intList);
+
+        List<UserGag> list = userGagMapper.selectByExample(example);
+        return list!=null&&list.size()>0?list.get(0):null;
+    }
+    
+    public List<UserGag> getGagUserPageByTargetUid(long targetUid, int page, int pageSize){
+    	 UserGagExample example = new UserGagExample();
+         UserGagExample.Criteria criteria = example.createCriteria();
+         if(targetUid > 0){
+        	 criteria.andTargetUidEqualTo(targetUid);
+         }
+         example.setOrderByClause("id desc limit "+((page-1)*pageSize)+", " + pageSize);
+         return userGagMapper.selectByExample(example);
+    }
+    
+    public int countGagUserPageByTargetUid(long targetUid){
+    	UserGagExample example = new UserGagExample();
+        UserGagExample.Criteria criteria = example.createCriteria();
+        if(targetUid > 0){
+        	criteria.andTargetUidEqualTo(targetUid);
+        }
+        return userGagMapper.countByExample(example);
+    }
+    
+    public void deleteGagUserById(long id){
+    	userGagMapper.deleteByPrimaryKey(id);
+    }
+
+    public List<EntryPageConfig> getEntryPageConfig(EntryPageDto dto) {
+        EntryPageConfigExample example = new EntryPageConfigExample();
+        EntryPageConfigExample.Criteria criteria = example.createCriteria();
+        criteria.andCversionGreaterThan(dto.getCversion());
+        if(dto.getType()>0){
+            criteria.andTypeEqualTo(dto.getType());
+        }
+        if(dto.getCversion()==0){
+            //默认情况下只获取有效的数据
+            criteria.andStatusEqualTo(0);
+        }
+        return entryPageConfigMapper.selectByExample(example);
+    }
+    
+    public void updateSystemConfig(SystemConfig config){
+    	systemConfigMapper.updateByPrimaryKeySelective(config);
+    }
+
+    public List<UserFamous> getUserFamousList(int start, int pageSize){
+    	UserFamousExample example = new UserFamousExample();
+    	example.setOrderByClause(" update_time desc limit "+start+","+pageSize);
+    	return userFamousMapper.selectByExample(example);
+    }
+    
+    public UserFamous getUserFamousByUid(long uid){
+        UserFamousExample example = new UserFamousExample();
+        example.createCriteria().andUidEqualTo(uid);
+        List<UserFamous> list = userFamousMapper.selectByExample(example);
+        return list.size()>0&&list!=null?list.get(0):null;
+    }
+
+    public void updateUserFamous(UserFamous userFamous){
+         userFamousMapper.updateByPrimaryKeySelective(userFamous);
+    }
+
+    public void createUserFamous(UserFamous userFamous){
+        userFamousMapper.insert(userFamous);
+    }
+
+    public void deleteUserFamous(long uid){
+        UserFamousExample example = new UserFamousExample();
+        example.createCriteria().andUidEqualTo(uid);
+        userFamousMapper.deleteByExample(example);
+    }
+
+    public void createWapx(IosWapx iosWapx){
+        iosWapxMapper.insertSelective(iosWapx);
+    }
+
+//    public IosWapx getWapxByIdfa(String idfa){
+//        IosWapxExample example = new IosWapxExample();
+//        example.createCriteria().andIdfaEqualTo(idfa);
+//        List<IosWapx> list = iosWapxMapper.selectByExample(example);
+//        return list.size()>0&&list!=null?list.get(0):null;
+//    }
+
+    public IosWapx getWapxByIdfa(String idfa ,int type){
+        IosWapxExample example = new IosWapxExample();
+        example.createCriteria().andIdfaEqualTo(idfa).andChannelTypEqualTo(type);
+        List<IosWapx> list = iosWapxMapper.selectByExample(example);
+        return list.size()>0&&list!=null?list.get(0):null;
+    }
+
+    public List<IosWapx> getWapxByIdfaList(String idfa){
+        IosWapxExample example = new IosWapxExample();
+        example.createCriteria().andIdfaEqualTo(idfa);
+        return iosWapxMapper.selectByExample(example);
+    }
+
+    public void updateWapx(IosWapx iosWapx){
+        iosWapxMapper.updateByPrimaryKeySelective(iosWapx);
+    }
+
+    public List<VersionChannelDownload> queryVersionChannelDownloads(String channel){
+    	VersionChannelDownloadExample example = new VersionChannelDownloadExample();
+    	VersionChannelDownloadExample.Criteria criteria = example.createCriteria();
+    	if(!StringUtils.isEmpty(channel)){
+    		criteria.andChannelLike("%"+channel+"%");
+    	}
+    	return versionChannelDownloadMapper.selectByExample(example);
+    }
+    
+    public VersionChannelDownload getVersionChannelDownloadByChannel(String channel){
+    	VersionChannelDownloadExample example = new VersionChannelDownloadExample();
+    	VersionChannelDownloadExample.Criteria criteria = example.createCriteria();
+    	criteria.andChannelEqualTo(channel);
+    	List<VersionChannelDownload> list = versionChannelDownloadMapper.selectByExample(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
+    
+    public void saveVersionChannelDownload(VersionChannelDownload vcd){
+    	versionChannelDownloadMapper.insertSelective(vcd);
+    }
+    
+    public VersionChannelDownload getVersionChannelDownloadById(long id){
+    	return versionChannelDownloadMapper.selectByPrimaryKey(id);
+    }
+    
+    public void updateVersionChannelDownload(VersionChannelDownload vcd){
+    	versionChannelDownloadMapper.updateByPrimaryKeySelective(vcd);
+    }
+    
+    public void deleteVersionChannelDownload(long id){
+    	versionChannelDownloadMapper.deleteByPrimaryKey(id);
+    }
+
+	public PageBean<SearchUserDto> searchUserPage(PageBean page, Map<String, Object> queries) {
+		queries.put("skip", (page.getCurrentPage()-1)*page.getPageSize());
+		queries.put("limit", page.getPageSize());
+		String order = (String) queries.get("order");
+		String orderBy = (String) queries.get("orderBy");
+		if(order!=null && orderBy!=null){
+			queries.put("order", orderBy+" "+order);
+		}
+		List<SearchUserDto> list = userProfileMapper.searchUserPage(queries);
+		int totalRecords=userProfileMapper.countSearchUserForPage(queries);
+		page.setTotalRecords(totalRecords);
+		page.setDataList(list);
+		return page;
+	}
+
+    public boolean spreadIdfaExists(int spreadChannel, String idfa) {
+        IosWapxExample example = new IosWapxExample();
+        IosWapxExample.Criteria criteria = example.createCriteria();
+        criteria.andChannelTypEqualTo(spreadChannel);
+        criteria.andIdfaEqualTo(idfa);
+        List<IosWapx> list = iosWapxMapper.selectByExample(example);
+        return (list!=null&&list.size()>0)?Boolean.TRUE :Boolean.FALSE;
+    }
+
+    public void createImConfig(ImConfig imConfig){
+        imConfigMapper.insertSelective(imConfig);
+    }
+
+    public ImConfig getImConfig(long customerId){
+        ImConfigExample example = new ImConfigExample();
+        example.createCriteria().andUidEqualTo(customerId);
+        List<ImConfig> list = imConfigMapper.selectByExample(example);
+        return list.size()>0&&list!=null?list.get(0):null;
+    }
+    
+    public void countUserByDay(){
+    	userProfileMapper.delUserCountDay();
+    	userProfileMapper.countUserByDay();
+    }
+
+    public List<UserSeekFollow> getUserSeekFollows(long uid, long sinceId, int pageSize){
+    	return userSeekFollowMapper.getUserSeekFollowWithUid(uid, sinceId, pageSize);
+    }
+    
+    public UserSeekFollow getUserSeekFollowByUid(long uid){
+    	UserSeekFollowExample example = new UserSeekFollowExample();
+    	UserSeekFollowExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	List<UserSeekFollow> list = userSeekFollowMapper.selectByExample(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
+    
+    public void saveUserSeekFollow(UserSeekFollow usf){
+    	userSeekFollowMapper.insertSelective(usf);
+    }
+    
+    public void deleteOvertimeSeek(Date lastDate){
+    	UserSeekFollowExample example = new UserSeekFollowExample();
+    	UserSeekFollowExample.Criteria criteria = example.createCriteria();
+    	criteria.andCreateTimeLessThan(lastDate);
+    	userSeekFollowMapper.deleteByExample(example);
+    }
+    
+    public void deleteUserProfile(long id){
+    	userProfileMapper.deleteByPrimaryKey(id);
+    }
+    
+    public int countUnreadNotice(long uid){
+    	UserNoticeUnreadExample example = new UserNoticeUnreadExample();
+    	UserNoticeUnreadExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	return userNoticeUnreadMapper.countByExample(example);
+    }
+    
+    public void createUserNoticeUnread(UserNoticeUnread userNoticeUnread){
+    	userNoticeUnreadMapper.insertSelective(userNoticeUnread);
+    }
+    
+    public void clearUserNoticeUnreadByLevel(long uid, int level){
+    	UserNoticeUnreadExample example = new UserNoticeUnreadExample();
+    	UserNoticeUnreadExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	criteria.andLevelEqualTo(level);
+    	userNoticeUnreadMapper.deleteByExample(example);
+    }
+    
+    public void clearUserNoticeUnreadByCid(long uid, int contentType, long cid){
+    	UserNoticeUnreadExample example = new UserNoticeUnreadExample();
+    	UserNoticeUnreadExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	criteria.andContentTypeEqualTo(contentType);
+    	criteria.andCidEqualTo(cid);
+    	userNoticeUnreadMapper.deleteByExample(example);
+    }
+    
+    public List<UserMobileList> getUserMobileListByMobile(String mobile, long exceptUid){
+    	UserMobileListExample example = new UserMobileListExample();
+    	UserMobileListExample.Criteria criteria = example.createCriteria();
+    	criteria.andMobileEqualTo(mobile);
+    	if(exceptUid > 0){
+    		criteria.andUidNotEqualTo(exceptUid);
+    	}
+    	return userMobileListMapper.selectByExample(example);
+    }
+    
+    public void deleteUserMobileListByUid(long uid){
+    	UserMobileListExample example = new UserMobileListExample();
+    	UserMobileListExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	userMobileListMapper.deleteByExample(example);
+    }
+    
+    public List<EmotionRecord> getUserEmotionRecord(long uid, int pageSize){
+    	EmotionRecordExample example = new EmotionRecordExample();
+    	EmotionRecordExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	if(pageSize > 0){
+    		example.setOrderByClause(" id desc limit "+pageSize);
+    	}else{
+    		example.setOrderByClause(" id desc ");
+    	}
+    	return emotionRecordMapper.selectByExample(example);
+    }
+    
+    public List<EmotionInfo> getEmotionInfosByIds(List<Long> ids){
+    	if(null == ids || ids.size() == 0){
+    		return null;
+    	}
+    	EmotionInfoExample example = new EmotionInfoExample();
+    	EmotionInfoExample.Criteria criteria = example.createCriteria();
+    	criteria.andIdIn(ids);
+    	return emotionInfoMapper.selectByExample(example);
+    }
+    
+    public void saveMBTIResult(long uid,String mbti){
+    	UserMbtiHistory history = new UserMbtiHistory();
+    	history.setCreateTime(new Date());
+    	history.setMbti(mbti);
+    	history.setShared(0);
+    	history.setUid(uid);
+    	
+    	mbtiHistoryMapper.insert(history);
+    }
+    public void addMBTIMapping(MbtiMapping mapping) {
+		mbtiMappingMapper.insertSelective(mapping);
+	}
+
+	public void deleteMBTIMappingById(long mappingId) {
+		mbtiMappingMapper.deleteByPrimaryKey((int)mappingId);
+	}
+
+	public void updateMBTIMapping(MbtiMapping mapping) {
+		mbtiMappingMapper.updateByPrimaryKeySelective(mapping);
+	}
+
+	public MbtiMapping getMBTIMappingById(long id) {
+		return mbtiMappingMapper.selectByPrimaryKey((int)id);
+	}
+
+	public List<MbtiMapping> getAllMBTIMapping() {
+		MbtiMappingExample example = new MbtiMappingExample();
+		example.setOrderByClause("createTime asc");
+		return mbtiMappingMapper.selectByExample(example);
+	}
+
+	public List<UserMbtiHistory> getMBTIHistoryByUid(long uid) {
+		UserMbtiHistoryExample example = new UserMbtiHistoryExample();
+		example.createCriteria().andUidEqualTo(uid);
+		example.setOrderByClause("create_time desc");
+		return mbtiHistoryMapper.selectByExample(example);
+	}
+	
+	public boolean isMBTIShared(long uid) {
+		UserMbtiHistoryExample example = new UserMbtiHistoryExample();
+		example.createCriteria().andUidEqualTo(uid).andSharedEqualTo(1);
+		return mbtiHistoryMapper.countByExample(example)>0;
+	}
+
+	public Long getKingdomIdByMBTI(String mbti) {
+		MbtiMappingExample example = new MbtiMappingExample();
+		example.createCriteria().andNameEqualTo(mbti);
+		List<MbtiMapping> mappings=  mbtiMappingMapper.selectByExample(example);
+		if(mappings.size()>0){
+			return mappings.get(0).getKingdomid();
+		}else{
+			return null;
+		}
+	}
+    
+	public List<EmotionInfo> getEmotionInfoList() {
+		EmotionInfoExample example = new EmotionInfoExample();
+		example.setOrderByClause(" id desc ");
+		List<Integer> vList = new ArrayList<Integer>();
+		vList.add(1);
+		vList.add(2);
+		example.createCriteria().andStatusIn(vList);
+		List<EmotionInfo> list=  emotionInfoMapper.selectByExample(example);
+		return list;
+	}
+	
+	public EmotionInfo getEmotionInfoByKey(Long id) {
+		return emotionInfoMapper.selectByPrimaryKey(id);
+	}
+	
+	public void updateEmotionInfoByKey(EmotionInfo emotionInfo) {
+		emotionInfoMapper.updateByPrimaryKeySelective(emotionInfo);
+	}
+	public Integer addEmotionInfo(EmotionInfo emotionInfo) {
+		return emotionInfoMapper.insertSelective(emotionInfo);
+	}
+	public boolean existsEmotionInfoByName(EmotionInfo emotionInfo) {
+		EmotionInfoExample example = new EmotionInfoExample();
+		EmotionInfoExample.Criteria criteria  = example.createCriteria();
+		criteria.andEmotionnameEqualTo(emotionInfo.getEmotionname());
+		criteria.andStatusEqualTo(1);
+		if(emotionInfo.getId()!=null){
+			criteria.andIdNotEqualTo(emotionInfo.getId());
+		}
+		int count = emotionInfoMapper.countByExample(example);
+		return count>0;
+	}
+	public EmotionInfo getEmotionInfoByValue(int happyValue,int freeValue) {
+		EmotionInfoExample example = new EmotionInfoExample();
+		EmotionInfoExample.Criteria criteria  = example.createCriteria();
+		criteria.andHappymaxGreaterThanOrEqualTo(happyValue);
+		criteria.andHappyminLessThanOrEqualTo(happyValue);
+		criteria.andFreemaxGreaterThanOrEqualTo(freeValue);
+		criteria.andFreeminLessThanOrEqualTo(freeValue);
+		criteria.andStatusEqualTo(1);
+		List<EmotionInfo> list=  emotionInfoMapper.selectByExample(example);
+		if(list.size()>0){
+			return list.get(0);
+		}else{
+			return null;
+		}
+	}
+	public Integer addEmotionRecord(EmotionRecord emotionRecord) {
+		return emotionRecordMapper.insertSelective(emotionRecord);
+	}
+	
+	public boolean exsitEmotionRecord(long uid,Date start,Date end) {
+		EmotionRecordExample example = new EmotionRecordExample();
+		EmotionRecordExample.Criteria criteria  = example.createCriteria();
+		criteria.andCreateTimeBetween(start, end);
+		criteria.andUidEqualTo(uid);
+		int conut = emotionRecordMapper.countByExample(example);
+		return conut>0;
+	}
+	
+	public EmotionRecord getLastEmotionRecord(long uid) {
+		EmotionRecordExample example = new EmotionRecordExample();
+		EmotionRecordExample.Criteria criteria  = example.createCriteria();
+		criteria.andUidEqualTo(uid);
+		example.setOrderByClause(" id desc limit 0,1 ");
+		List<EmotionRecord> list = emotionRecordMapper.selectByExample(example);
+		if(list.size()>0){
+			return list.get(0);
+		}else{
+			return null;
+		}
+	}
+	
+	public int getEmotionRecordCount(long uid) {
+		EmotionRecordExample example = new EmotionRecordExample();
+		EmotionRecordExample.Criteria criteria  = example.createCriteria();
+		criteria.andUidEqualTo(uid);
+		int conut = emotionRecordMapper.countByExample(example);
+		return conut;
+	}
+	
+	public AppConfig getAppConfigByKey(String key){
+		AppConfigExample example = new AppConfigExample();
+		AppConfigExample.Criteria criteria  = example.createCriteria();
+		criteria.andConfigKeyEqualTo(key);
+		List<AppConfig> list = appConfigMapper.selectByExample(example);
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}else{
+			return null;
+		}
+	}
+	
+	public List<AppConfig> getAppConfigByKeys(List<String> keyList){
+		if(null == keyList || keyList.size() == 0){
+			return null;
+		}
+		AppConfigExample example = new AppConfigExample();
+		AppConfigExample.Criteria criteria  = example.createCriteria();
+		criteria.andConfigKeyIn(keyList);
+		return appConfigMapper.selectByExample(example);
+	}
+	
+	public List<AppConfig> getAllAppConfig(){
+		AppConfigExample example = new AppConfigExample();
+		return appConfigMapper.selectByExample(example);
+	}
+	
+	public void saveAppConfig(AppConfig config){
+		appConfigMapper.insertSelective(config);
+	}
+	
+	public void updateAppConfig(AppConfig config){
+		appConfigMapper.updateByPrimaryKeySelective(config);
+	}
 }
