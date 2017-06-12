@@ -998,6 +998,13 @@ public class Users extends BaseController {
 	    rechargeToKingdomDto.setUid(request.getUid());
         return liveService.rechargeToKingdom(rechargeToKingdomDto);
     }
+
+
+    @ResponseBody
+    @RequestMapping(value = "/getLevelList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getLevelList(){
+        return userService.getLevelList();
+    }
     
     
 }

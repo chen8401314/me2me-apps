@@ -3915,4 +3915,14 @@ public class UserServiceImpl implements UserService {
 		return userMybatisDao.getAllAppConfig();
 	}
 
+    @Override
+    public Response getLevelList() {
+        String value = getAppConfigByKey(USER_PERMISSIONS);
+        UserPermissionDto userPermissionDto = JSON.parseObject(value, UserPermissionDto.class);
+        for(UserPermissionDto.UserLevelDto  userLevelDto : userPermissionDto.getLevels()){
+            userLevelDto.setPermissions(null);
+        }
+        return Response.success(userPermissionDto);
+    }
+
 }
