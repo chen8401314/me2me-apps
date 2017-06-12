@@ -6545,7 +6545,7 @@ public class LiveServiceImpl implements LiveService {
 		ttr.setCreateTime(now);
 		ttr.setNewUid(newUid);
 		ttr.setOldUid(oldUser.getUid());
-		ttr.setPrice(topic.getPrice().doubleValue());
+		ttr.setPrice(topic.getPrice());
 		ttr.setTopicId(topicId);
 		liveMybatisDao.addTopicTransferRecord(ttr);
 		
