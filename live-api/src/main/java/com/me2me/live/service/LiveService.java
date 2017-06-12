@@ -143,7 +143,7 @@ public interface LiveService {
 
     Response liveTimeline(GetLiveTimeLineDto getLiveTimeLineDto);
 
-    Response liveCover(long topicId,long uid,int vflag);
+    Response liveCover(long topicId,long uid,int vflag, int source);
 
     Response barrage(LiveBarrageDto barrageDto);
 

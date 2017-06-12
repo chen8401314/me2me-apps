@@ -120,6 +120,7 @@ import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicFragmentExample;
 import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicNews;
+import com.me2me.live.model.TopicReadHis;
 import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicTagDetail;
 import com.me2me.live.model.TopicTransferRecord;
@@ -291,7 +292,7 @@ public class LiveServiceImpl implements LiveService {
 
     @SuppressWarnings("rawtypes")
 	@Override
-    public Response liveCover(long topicId, long uid, int vflag) {
+    public Response liveCover(long topicId, long uid, int vflag, int source) {
         log.info("liveCover start ...");
         LiveCoverDto liveCoverDto = new LiveCoverDto();
         Topic topic = liveMybatisDao.getTopicById(topicId);
@@ -356,10 +357,23 @@ public class LiveServiceImpl implements LiveService {
 	        }
         }
         
+        //记录阅读历史
+        TopicReadHis trh = new TopicReadHis();
+        trh.setUid(uid);
+        trh.setTopicId(topicId);
+        trh.setReadCount(1);
+        if(source == 0){//APP内
+        	trh.setInApp(1);
+        }else{//APP外
+        	trh.setInApp(0);
+        }
+        trh.setCreateTime(new Date());
+        
         if(content.getReadCount() == 1 || content.getReadCount() == 2){
             liveCoverDto.setReadCount(1);
             content.setReadCountDummy(1);
             contentService.updateContentById(content);
+            trh.setReadCountDummy(1);
         }else {
             SystemConfig systemConfig = userService.getSystemConfig();
             int start = systemConfig.getReadCountStart();
@@ -372,7 +386,10 @@ public class LiveServiceImpl implements LiveService {
             content.setReadCountDummy(readDummy);
             contentService.updateContentById(content);
             liveCoverDto.setReadCount(readDummy);
+            trh.setReadCountDummy(value);
         }
+        liveMybatisDao.saveTopicReadHis(trh);
+        
 
         // 添加成员数量
         Long favoriteCount = Long.valueOf(0);

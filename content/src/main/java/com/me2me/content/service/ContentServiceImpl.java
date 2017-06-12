@@ -5828,7 +5828,7 @@ private void localJpush(long toUid){
 	public Response shareRecord(long uid, int type, long cid, String shareAddr){
 		ContentShareHistory csh = new ContentShareHistory();
 		csh.setCid(cid);
-		csh.setCreatetime(new Date());
+		csh.setCreateTime(new Date());
 		csh.setShareAddr(shareAddr);
 		csh.setType(type);
 		csh.setUid(uid);

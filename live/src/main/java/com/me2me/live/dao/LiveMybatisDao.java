@@ -44,6 +44,7 @@ import com.me2me.live.mapper.TopicFragmentMapper;
 import com.me2me.live.mapper.TopicFragmentTemplateMapper;
 import com.me2me.live.mapper.TopicMapper;
 import com.me2me.live.mapper.TopicNewsMapper;
+import com.me2me.live.mapper.TopicReadHisMapper;
 import com.me2me.live.mapper.TopicTagDetailMapper;
 import com.me2me.live.mapper.TopicTagMapper;
 import com.me2me.live.mapper.TopicTransferRecordMapper;
@@ -87,6 +88,7 @@ import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicFragmentTemplateExample;
 import com.me2me.live.model.TopicNews;
 import com.me2me.live.model.TopicNewsExample;
+import com.me2me.live.model.TopicReadHis;
 import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicTagDetail;
 import com.me2me.live.model.TopicTagDetailExample;
@@ -194,6 +196,8 @@ public class LiveMybatisDao {
     @Autowired
     private TopicTransferRecordMapper  topicTransferRecordMapper;
     
+    @Autowired
+    private TopicReadHisMapper topicReadHisMapper;
 
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -1484,5 +1488,9 @@ public class LiveMybatisDao {
 	 */
 	public Integer addTopicTransferRecord(TopicTransferRecord topicTransferRecord) {
 		return topicTransferRecordMapper.insertSelective(topicTransferRecord);
+	}
+	
+	public void saveTopicReadHis(TopicReadHis trh){
+		topicReadHisMapper.insertSelective(trh);
 	}
 }

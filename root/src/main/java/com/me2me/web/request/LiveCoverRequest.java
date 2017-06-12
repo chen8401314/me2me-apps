@@ -15,4 +15,7 @@ public class LiveCoverRequest extends Request{
     @Getter
     @Setter
     private long topicId;
+    @Getter
+    @Setter
+    private int source;//0APP内，1APP外
 }

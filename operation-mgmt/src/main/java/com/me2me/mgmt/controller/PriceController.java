@@ -350,6 +350,7 @@ public class PriceController {
 		
 		{
 			this.add("EXCHANGE_RATE");
+			this.add("PRICE_TASK_MODE");
 		}
 	};
 	
@@ -358,6 +359,7 @@ public class PriceController {
 		
 		{
 			this.put("EXCHANGE_RATE", "汇率(1RMB=?MB)");
+			this.put("PRICE_TASK_MODE", "王国价值任务运算模式(0增量，1全量)");
 		}
 	};
 	
@@ -380,7 +382,7 @@ public class PriceController {
 			
 			ConfigItem item = null;
 			for(Map.Entry<String, String> entry : paramMap.entrySet()){
-				item = new ConfigItem(entry.getKey(),entry.getValue(),ConfigItem.ConfigType.DB,null==configMap.get(entry.getKey())?"0":configMap.get(entry.getKey()));
+				item = new ConfigItem(entry.getKey(),entry.getValue(),ConfigItem.ConfigType.DB,null==configMap.get(entry.getKey())?"":configMap.get(entry.getKey()));
 				result.add(item);
 			}
 		}

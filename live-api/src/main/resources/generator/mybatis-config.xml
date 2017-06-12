@@ -48,7 +48,8 @@
         <!--<table tableName="topic_fragment_template" domainObjectName="TopicFragmentTemplate"/>-->
         <!--<table tableName="topic_tag" domainObjectName="TopicTag"/>-->
         <!--<table tableName="topic_tag_detail" domainObjectName="TopicTagDetail"/>-->
-<!--          <table tableName="topic_news" domainObjectName="TopicNews"/>
-         <table tableName="topic_transfer_record" domainObjectName="TopicTransferRecord"/> -->
+        <!-- <table tableName="topic_news" domainObjectName="TopicNews"/> -->
+        <!-- <table tableName="topic_transfer_record" domainObjectName="TopicTransferRecord"/> -->
+        <!-- <table tableName="topic_read_his" domainObjectName="TopicReadHis"/> -->
     </context>
 </generatorConfiguration>

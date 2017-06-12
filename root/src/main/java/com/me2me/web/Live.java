@@ -449,7 +449,7 @@ public class Live extends BaseController {
         if(VersionUtil.isNewVersion(request.getVersion(), "2.2.3")){
         	vflag = 1;
         }
-        return liveService.liveCover(request.getTopicId(),request.getUid(),vflag);
+        return liveService.liveCover(request.getTopicId(),request.getUid(),vflag, request.getSource());
     }
 
 
