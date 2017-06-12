@@ -13,6 +13,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+import com.me2me.user.dto.RechargeToKingdomDto;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -6691,5 +6692,29 @@ public class LiveServiceImpl implements LiveService {
 				lock.unlock();
 		}
 	}
+
+    @Override
+    public Response rechargeToKingdom(RechargeToKingdomDto rechargeToKingdomDto) {
+
+
+        UserProfile  userProfile = userService.getUserProfileByUid(rechargeToKingdomDto.getUid());
+        Topic topic = getTopicById(rechargeToKingdomDto.getTopicId());
+        if(topic == null || userProfile == null){
+            return  Response.failure("王国或用户无效");
+        }
+        // 判断当前的用户米汤币是否和传过来的米汤币相等
+        if(rechargeToKingdomDto.getUid() != topic.getUid()){
+            return  Response.failure("王国无效");
+        }
+        // 判断当前的王国是否是自己的王国.
+        if(rechargeToKingdomDto.getAmount() == userProfile.getAvailableCoin()){
+            liveLocalJdbcDao.rechargeToKingDom(rechargeToKingdomDto.getTopicId(),rechargeToKingdomDto.getAmount());
+            liveLocalJdbcDao.zeroMyCoins(rechargeToKingdomDto.getUid());
+            // 更新完成后判断王国的数值是否达到上市标准.如果达标调用跑马灯接口
+            return Response.success();
+        }else {
+            return  Response.failure("充值米汤币与实际不符");
+        }
+    }
 
 }

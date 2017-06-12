@@ -7,6 +7,8 @@ import java.net.UnknownHostException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.me2me.user.dto.*;
+import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -25,81 +27,7 @@ import com.me2me.sms.dto.AwardXMDto;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.service.ChannelType;
 import com.me2me.sms.service.SmsService;
-import com.me2me.user.dto.ActivityModelDto;
-import com.me2me.user.dto.BasicDataDto;
-import com.me2me.user.dto.EntryPageDto;
-import com.me2me.user.dto.FansParamsDto;
-import com.me2me.user.dto.FindEncryptDto;
-import com.me2me.user.dto.FollowDto;
-import com.me2me.user.dto.FollowParamsDto;
-import com.me2me.user.dto.GagDto;
-import com.me2me.user.dto.ModifyEncryptDto;
-import com.me2me.user.dto.ModifyUserHobbyDto;
-import com.me2me.user.dto.ModifyUserProfileDto;
-import com.me2me.user.dto.PasteTagDto;
-import com.me2me.user.dto.ThirdPartSignUpDto;
-import com.me2me.user.dto.UserLikeDto;
-import com.me2me.user.dto.UserLoginDto;
-import com.me2me.user.dto.UserNickNameDto;
-import com.me2me.user.dto.UserNoticeDto;
-import com.me2me.user.dto.UserRefereeSignUpDto;
-import com.me2me.user.dto.UserReportDto;
-import com.me2me.user.dto.UserSignUpDto;
-import com.me2me.user.dto.VersionDto;
-import com.me2me.user.dto.WapxIosDto;
 import com.me2me.user.service.UserService;
-import com.me2me.web.request.ActivityRequest;
-import com.me2me.web.request.BasicDataRequest;
-import com.me2me.web.request.BatchFollowRequest;
-import com.me2me.web.request.CheckRequest;
-import com.me2me.web.request.CommonSendMsgRequest;
-import com.me2me.web.request.ContactsRequest;
-import com.me2me.web.request.EmotionInfoListRequest;
-import com.me2me.web.request.EmotionInfoRequest;
-import com.me2me.web.request.EmotionRecordRequest;
-import com.me2me.web.request.EntryPageRequest;
-import com.me2me.web.request.FindEncryptRequest;
-import com.me2me.web.request.GagRequest;
-import com.me2me.web.request.GetTagRequest;
-import com.me2me.web.request.LastEmotionRequest;
-import com.me2me.web.request.LikesRequest;
-import com.me2me.web.request.LoginRequest;
-import com.me2me.web.request.LogoutRequest;
-import com.me2me.web.request.MBTIRequest;
-import com.me2me.web.request.MobileQueryRequest;
-import com.me2me.web.request.ModifyEncryptRequest;
-import com.me2me.web.request.ModifyUserHobbyRequest;
-import com.me2me.web.request.ModifyUserProfileRequest;
-import com.me2me.web.request.MyFollowsQueryRequest;
-import com.me2me.web.request.NoticeReddotQueryRequest;
-import com.me2me.web.request.PersonaModifyRequest;
-import com.me2me.web.request.QrCodeRequest;
-import com.me2me.web.request.RefereeSignUpRequest;
-import com.me2me.web.request.SeekFollowRequest;
-import com.me2me.web.request.SeekFollowsQueryRequest;
-import com.me2me.web.request.ShowFansRequest;
-import com.me2me.web.request.ShowUserTipsRequest;
-import com.me2me.web.request.SignUpRequest;
-import com.me2me.web.request.SpecialUserProfileRequest;
-import com.me2me.web.request.StartNewEmotionInfoRequest;
-import com.me2me.web.request.SummaryEmotionInfoRequest;
-import com.me2me.web.request.TagRequest;
-import com.me2me.web.request.TestPushRequest;
-import com.me2me.web.request.ThirdPartAuthRequest;
-import com.me2me.web.request.ThirdPartRequest;
-import com.me2me.web.request.UpdateVersionRequest;
-import com.me2me.web.request.UserAwardRequest;
-import com.me2me.web.request.UserExcellentRequest;
-import com.me2me.web.request.UserFamousRequest;
-import com.me2me.web.request.UserFollowRequest;
-import com.me2me.web.request.UserInfoRequest;
-import com.me2me.web.request.UserNoticeRequest;
-import com.me2me.web.request.UserProfileRequest;
-import com.me2me.web.request.UserReportRequest;
-import com.me2me.web.request.UserRequest;
-import com.me2me.web.request.VerifyRequest;
-import com.me2me.web.request.VersionControlRequest;
-import com.me2me.web.request.WapxIosRequest;
 import com.me2me.web.utils.VersionUtil;
 
 import lombok.extern.slf4j.Slf4j;
@@ -1059,6 +987,17 @@ public class Users extends BaseController {
 	public Response emotionInfoList(EmotionInfoListRequest request){
 		return liveService.emotionInfoList();
 	}
+
+
+    @ResponseBody
+    @RequestMapping(value = "/rechargeToKingdom",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response rechargeToKingdom(RechargeToKingdomRequest request){
+	    RechargeToKingdomDto rechargeToKingdomDto = new RechargeToKingdomDto();
+	    rechargeToKingdomDto.setAmount(request.getCoin());
+	    rechargeToKingdomDto.setTopicId(request.getTopicId());
+	    rechargeToKingdomDto.setUid(request.getUid());
+        return liveService.rechargeToKingdom(rechargeToKingdomDto);
+    }
     
     
 }

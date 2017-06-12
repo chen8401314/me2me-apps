@@ -479,5 +479,4 @@ public interface UserService {
 	List<AppConfig> getAllAppConfig();
 
 
-
 }
