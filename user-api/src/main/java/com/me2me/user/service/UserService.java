@@ -477,4 +477,7 @@ public interface UserService {
 	void saveAppConfig(String key, String value, String desc);
 	
 	List<AppConfig> getAllAppConfig();
+
+
+
 }

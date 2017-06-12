@@ -1302,6 +1302,12 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setUgcCount(userInitJdbcDao.getUGCount(uid, vFlag));
         showUserProfileDto.setLiveCount(userInitJdbcDao.getLiveCount(uid));
         showUserProfileDto.setAcCount(userInitJdbcDao.getLiveAcCount(uid));
+        // 获取用户级别和可用米汤币
+        // todo
+        showUserProfileDto.setAvailableCoin(userProfile.getAvailableCoin());
+        showUserProfileDto.setLevel(userProfile.getLevel());
+        // showUserProfileDto.setLevelIcon();
+
         if(!StringUtils.isEmpty(userProfile.getThirdPartBind())) {
             showUserProfileDto.setThirdPartBind(userProfile.getThirdPartBind());
         }

@@ -53,6 +53,13 @@ public class ShowUserProfileDto implements BaseEntity{
 
     private List<Hobby> hobbyList = Lists.newArrayList();
 
+    // 用户级别
+    private int level;
+    // 可用米汤币
+    private int availableCoin;
+    // 用户级别图标
+    private String levelIcon;
+
     public Hobby createHobby(){ return new Hobby();}
 
     @Data
