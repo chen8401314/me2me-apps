@@ -568,4 +568,21 @@ public class LiveForContentJdbcDao {
     	
     	return jdbcTemplate.queryForList(sb.toString());
     }
+
+	public List<Map<String, Object>> getTopPricedKingdomList(int page, int pageSize) {
+		String sql = "select * from topic where status!=2 order by price desc limit ?,?";
+		return jdbcTemplate.queryForList(sql,(page-1)*pageSize,pageSize);
+	}
+	/**
+	 * 取上市王国
+	 * @author zhangjiwei
+	 * @date Jun 9, 2017
+	 * @param page
+	 * @param pageSize
+	 * @return
+	 */
+	public List<Map<String, Object>> getListingKingodms(int minPrice,int page, int pageSize) {
+		String sql = "select * from topic where price>=? listing_time is not null and status!=2 order by listing_time desc limit ?,?";
+		return jdbcTemplate.queryForList(sql,minPrice,(page-1)*pageSize,pageSize);
+	}
 }

@@ -455,8 +455,12 @@ public enum  ResponseStatus {
     
     TAG_HAS_BEEN_FORBIDDEN("此标签已经禁用","tag has been forbidden", 50067),
     
+    /**
+     * 王国偷取相关
+     */
+    ERR_STEAL_SELF("不能偷取自己的王国","cannot steal your self's kingdom",50068),
     
-    
+	ERR_STEAL_MAX_LIMIT("该王国已经达到偷取上限","cannot steal this kingdom.",50069),
     
     
     

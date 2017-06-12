@@ -183,4 +183,10 @@ public class Home extends BaseController {
         }
         return contentService.showListDetail(request.getUid(),request.getListId(),request.getSinceId(), vflag);
     }
+    @RequestMapping(value = "/getPricedKingdomList")
+    @ResponseBody
+    public Response showList(PricedKingdomRequest request){
+        
+        return contentService.getPricedKingdomList(request.getPage(), request.getPageSize(),request.getUid());
+    }
 }

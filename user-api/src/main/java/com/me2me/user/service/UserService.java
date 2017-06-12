@@ -477,4 +477,11 @@ public interface UserService {
 	void saveAppConfig(String key, String value, String desc);
 	
 	List<AppConfig> getAllAppConfig();
+
+	/**
+	 * 获取等级列表
+	 * @return
+	 */
+	Response getLevelList();
+
 }

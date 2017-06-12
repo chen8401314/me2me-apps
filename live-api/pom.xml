@@ -72,6 +72,11 @@
             <artifactId>common</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+			<groupId>com.me2me</groupId>
+			<artifactId>user-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
     </dependencies>
 
     <profiles>
@@ -80,13 +85,6 @@
           <!--   <activation>
                 <activeByDefault>true</activeByDefault>
             </activation> -->
-            <dependencies>
-                <dependency>
-                    <groupId>com.me2me</groupId>
-                    <artifactId>user-api</artifactId>
-                    <version>${project.version}</version>
-                </dependency>
-            </dependencies>
             <build>
                 <plugins>
                 <!-- 

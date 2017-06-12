@@ -395,6 +395,15 @@ public interface ContentService{
 	Response getLastEmotionInfo(long uid);
 	
 	List<EmotionPackDetail> getEmotionPackDetailBig();
+	/**
+	 * 返回价值王国列表。
+	 * @author zhangjiwei
+	 * @date Jun 9, 2017
+	 * @param page 当前页
+	 * @param pageSize 页大小
+	 * @return
+	 */
+	Response<PricedKingdomDto> getPricedKingdomList(int page,int pageSize,long currentUid);
 	
 	Response shareRecord(long uid, int type, long cid, String shareAddr);
 }

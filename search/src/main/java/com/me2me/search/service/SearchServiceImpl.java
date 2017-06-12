@@ -388,6 +388,7 @@ public class SearchServiceImpl implements SearchService {
 			if(null == userProfile){
 				continue;
 			}
+			kingdomElement.setPrice((Integer)topic.get("price"));
 			kingdomElement.setUid(userProfile.getUid());
 			kingdomElement.setNickName(userProfile.getNickName());
 			kingdomElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());

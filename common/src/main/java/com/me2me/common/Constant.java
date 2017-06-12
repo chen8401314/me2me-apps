@@ -34,4 +34,21 @@ public class Constant {
     public static final String BILLBOARD_KEY_JAY_PEOPLE = "jay_people";
     public static final String BILLBOARD_KEY_COLOURFUL_KINGDOM = "colourful_kingdom";
     public static final String BILLBOARD_KEY_LONELY_KINGDOM = "lonely_kingdom";
+    /**
+     * 上市王国价值配置项KEY
+     */
+    public static final String LISTING_PRICE_KEY = "listing_price";
+    /**
+     * 用户每天可偷数量配置项key
+     */
+    public static final String USER_STEAL_COIN_DAY_LIMIT_KEY = "user_steal_coin_day_limit";
+    /**
+     * 单次限制
+     */
+    public static final String USER_STEAL_COIN_ONCE_LIMIT_KEY = "user_steal_coin_once_limit";
+    /**
+     * 每天可偷王国限制
+     */
+    public static final String USER_STEAL_TOPIC_DAY_LIMIT_KEY = "user_steal_topic_day_limit";
+    
 }

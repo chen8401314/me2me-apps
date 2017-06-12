@@ -51,5 +51,6 @@
         <!-- <table tableName="topic_news" domainObjectName="TopicNews"/> -->
         <!-- <table tableName="topic_transfer_record" domainObjectName="TopicTransferRecord"/> -->
         <!-- <table tableName="topic_read_his" domainObjectName="TopicReadHis"/> -->
+        <!-- <table tableName="user_steal_log" domainObjectName="UserStealLog" />  -->
     </context>
 </generatorConfiguration>

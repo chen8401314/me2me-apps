@@ -118,6 +118,7 @@ public class ShowTopicListDto implements BaseEntity{
         private String lastNickName;
         private String lastAvatar;
         private int lastV_lv;
+        private int price;
     }
 
     @Data

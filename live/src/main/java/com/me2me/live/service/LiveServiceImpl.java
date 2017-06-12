@@ -13,7 +13,9 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+import com.me2me.user.dto.RechargeToKingdomDto;
 import org.apache.commons.beanutils.BeanUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -92,6 +94,7 @@ import com.me2me.live.dto.ShowTopicSearchDTO;
 import com.me2me.live.dto.ShowTopicTagsDTO;
 import com.me2me.live.dto.ShowUserAtListDTO;
 import com.me2me.live.dto.SpeakDto;
+import com.me2me.live.dto.StealResultDto;
 import com.me2me.live.dto.TestApiDto;
 import com.me2me.live.dto.TopicTransferRecordDto;
 import com.me2me.live.dto.TopicVoteInfoDto;
@@ -125,6 +128,7 @@ import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicTagDetail;
 import com.me2me.live.model.TopicTransferRecord;
 import com.me2me.live.model.TopicUserConfig;
+import com.me2me.live.model.UserStealLog;
 import com.me2me.live.model.VoteInfo;
 import com.me2me.live.model.VoteOption;
 import com.me2me.live.model.VoteRecord;
@@ -181,10 +185,14 @@ public class LiveServiceImpl implements LiveService {
     
     @Autowired
     private SearchService searchService;
+    
+    @Autowired
+    private ZookeeperLockService lockService;
 
     @Value("#{app.live_web}")
     private String live_web;
-
+    @Value("#{app.dubboRegistry}")
+	private String zkAddr;
     /** 王国发言(评论等)最新ID */
     public static final String TOPIC_FRAGMENT_NEWEST_MAP_KEY = "TOPIC_FRAGMENT_NEWEST";
     
@@ -1685,6 +1693,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setCreateTime(topic.getCreateTime());
             showTopicElement.setTopicId(topic.getId());
             showTopicElement.setStatus(topic.getStatus());
+            showTopicElement.setPrice(topic.getPrice()); //2.2.7 王国估值
             //取这个排序
             showTopicElement.setUpdateTime(topic.getLongTimes());
             if(null != followMap.get(uid+"_"+topic.getUid().toString())){
@@ -3705,6 +3714,7 @@ public class LiveServiceImpl implements LiveService {
             e.setTopicId(topicId);
             e.setStatus((Integer)topic.get("status"));
             e.setUpdateTime((Long)topic.get("long_time"));
+            e.setPrice((Integer)topic.get("price"));		// 2.2.7王国价值
             if(null != followMap.get(uid+"_"+topicUid)){
             	e.setIsFollowed(1);
             }else{
@@ -6562,7 +6572,7 @@ public class LiveServiceImpl implements LiveService {
 		ttr.setCreateTime(now);
 		ttr.setNewUid(newUid);
 		ttr.setOldUid(oldUser.getUid());
-		ttr.setPrice(topic.getPrice().doubleValue());
+		ttr.setPrice(topic.getPrice());
 		ttr.setTopicId(topicId);
 		liveMybatisDao.addTopicTransferRecord(ttr);
 		
@@ -6619,4 +6629,127 @@ public class LiveServiceImpl implements LiveService {
 		}
 		return Response.success(dto);
 	}
+	/**
+	 * 获取用户在指定的王国下可偷的金币数量。如果可偷，返回具体可偷取的数量；否则抛出异常，提示不可偷取原因
+	 * @author zhangjiwei
+	 * @date Jun 12, 2017
+	 * @param uid
+	 * @param topicId
+	 * @return
+	 * @throws Exception
+	 */
+	private int getAliveCoinsForSteal(long uid,long topicId) throws Exception{
+		//判断用户能不能偷取王国
+		Topic topic = liveMybatisDao.getTopicById(topicId);
+		if(topic.getUid()==uid){
+			throw new RuntimeException("不能偷取自己的王国");
+		}
+		// 本王国今日余额
+		int topicRemainCoins= 10; 		// todo: 此处待实现
+		if(topicRemainCoins<=0){
+			throw new RuntimeException("王国已经达到今日偷取上限了");
+		}
+		// 用户今天已偷
+		String day = DateUtil.date2string(new Date(), "yyyy-MM-dd");
+		// 用户今日可偷
+		List<Map<String,Object>> userStealLog = liveLocalJdbcDao.getUserStealLogByDay(uid,day);
+		int stealedCoins=0;
+		boolean stealed = false;
+		for(Map<String,Object> log:userStealLog){
+			int logCoin = (int)log.get("stealed_coins");
+			stealedCoins+=logCoin;
+			if(topicId==(long)log.get("topic_id")){
+				stealed=true;
+			}
+		}
+		if(stealed){
+			throw new RuntimeException("不能重复偷取此王国");
+		}
+		// 每天可偷数量
+		int userDayLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_COIN_DAY_LIMIT_KEY));
+		int userOnceLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_COIN_ONCE_LIMIT_KEY));
+		int userTopicLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_TOPIC_DAY_LIMIT_KEY));
+		
+		if(userStealLog.size()>=userTopicLimit){
+			throw new RuntimeException("用户已达到今日偷取王国次数上限了");
+		}
+		
+		int userTodayRemain=userDayLimit-stealedCoins;
+		
+		if(userTodayRemain<=0){
+			throw new RuntimeException("用户已达到今日偷取上限了");
+		}
+		
+		int canStealCount = Math.max(userTodayRemain, topicRemainCoins);
+		canStealCount=Math.min(canStealCount, userOnceLimit);
+		// 判断王国剩余价值。
+		//随机数
+		int coins = RandomUtils.nextInt(1, canStealCount+1);
+		return coins;
+	}
+	/**
+	 * 此方法必须同步执行。此实现使用zookeeper实现分布式锁。
+	 */
+	@Override
+	public Response stealKingdomCoin(long uid,long topicId) {
+		String addr= zkAddr.replace("zookeeper://", "");
+		
+		DistributedLock lock = null;
+		try {
+			lock = new DistributedLock(addr, "steal-topic-"+topicId);
+			lock.lock();
+			int coins=0;
+			try{
+				coins = getAliveCoinsForSteal(uid, topicId);
+			}catch(Exception e){
+				return Response.failure(e.getMessage());
+			}
+			// 修改用户金币数
+			
+			// 修改王国可被偷数
+			
+			// 记录偷取日志
+			UserStealLog log = new UserStealLog();
+			log.setCreateTime(new Date());
+			log.setStealedCoins(coins);
+			log.setTopicId(topicId);
+			log.setUid(uid);
+			liveMybatisDao.addStealLog(log);
+			
+			StealResultDto dto= new StealResultDto();
+			dto.setStealedCoins(coins);
+			return Response.success(dto);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return Response.failure("未知错误，偷取失败");
+		} finally {
+			if(lock != null)
+				lock.unlock();
+		}
+	}
+
+    @Override
+    public Response rechargeToKingdom(RechargeToKingdomDto rechargeToKingdomDto) {
+
+
+        UserProfile  userProfile = userService.getUserProfileByUid(rechargeToKingdomDto.getUid());
+        Topic topic = getTopicById(rechargeToKingdomDto.getTopicId());
+        if(topic == null || userProfile == null){
+            return  Response.failure("王国或用户无效");
+        }
+        // 判断当前的用户米汤币是否和传过来的米汤币相等
+        if(rechargeToKingdomDto.getUid() != topic.getUid()){
+            return  Response.failure("王国无效");
+        }
+        // 判断当前的王国是否是自己的王国.
+        if(rechargeToKingdomDto.getAmount() == userProfile.getAvailableCoin()){
+            liveLocalJdbcDao.rechargeToKingDom(rechargeToKingdomDto.getTopicId(),rechargeToKingdomDto.getAmount());
+            liveLocalJdbcDao.zeroMyCoins(rechargeToKingdomDto.getUid());
+            // 更新完成后判断王国的数值是否达到上市标准.如果达标调用跑马灯接口
+            return Response.success();
+        }else {
+            return  Response.failure("充值米汤币与实际不符");
+        }
+    }
+
 }

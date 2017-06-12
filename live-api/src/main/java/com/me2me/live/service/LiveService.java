@@ -20,6 +20,7 @@ import com.me2me.live.dto.SearchDropAroundTopicDto;
 import com.me2me.live.dto.SearchTopicDto;
 import com.me2me.live.dto.SettingModifyDto;
 import com.me2me.live.dto.SpeakDto;
+import com.me2me.live.dto.StealResultDto;
 import com.me2me.live.dto.TestApiDto;
 import com.me2me.live.dto.UserAtListDTO;
 import com.me2me.live.model.LiveFavorite;
@@ -30,6 +31,7 @@ import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicUserConfig;
+import com.me2me.user.dto.RechargeToKingdomDto;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -548,4 +550,19 @@ public interface LiveService {
 	 * @return
 	 */
 	public Response getKingdomTransferRecord(long topicId,long sinceId);
+
+	/**
+	 * 偷金币 
+	 * @author zhangjiwei
+	 * @date Jun 9, 2017
+	 * @param topicId
+	 * @return
+	 */
+	public Response<StealResultDto> stealKingdomCoin(long uid,long topicId);
+
+
+	Response rechargeToKingdom(RechargeToKingdomDto rechargeToKingdomDto);
+
+
+
 }

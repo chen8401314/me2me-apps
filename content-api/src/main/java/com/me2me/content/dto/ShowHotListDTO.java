@@ -19,6 +19,7 @@ public class ShowHotListDTO implements BaseEntity {
 	
 	private List<HotContentElement> hottestContentData = Lists.newArrayList();
 	
+	private List<BasicKingdomInfo> listingKingdoms=Lists.newArrayList(); 
 	@Data
 	public static class HotActivityElement implements BaseEntity{
 		private static final long serialVersionUID = -1636362714045596434L;
@@ -75,7 +76,7 @@ public class ShowHotListDTO implements BaseEntity {
 		private int acCount;
 		private int favoriteCount;
 		private String tags;
-		
+		private int price;
 		private List<AcTopElement> acTopList = Lists.newArrayList();
 		
 		private List<MemberElement> memberList = Lists.newArrayList();
@@ -139,5 +140,6 @@ public class ShowHotListDTO implements BaseEntity {
 		private int reviewCount;
 		private String content;
 		private String tags;
+		private int price;
 	}
 }

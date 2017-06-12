@@ -61,5 +61,6 @@ public class ShowTopicSearchDTO implements BaseEntity {
         private long pageUpdateTime;
         
         private String tags;
+        private int price;
 	}
 }
