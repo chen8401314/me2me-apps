@@ -58,6 +58,7 @@ public class ShowSearchDTO implements BaseEntity {
 		private int contentType;
 		private long acCount;
 		private String tags;
+		private int price;
 	}
 	
 	@Data

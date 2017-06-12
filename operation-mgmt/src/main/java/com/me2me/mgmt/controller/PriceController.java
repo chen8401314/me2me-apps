@@ -26,7 +26,6 @@ import com.me2me.mgmt.request.KingdomBusinessDTO;
 import com.me2me.mgmt.request.KingdomDTO;
 import com.me2me.mgmt.request.KingdomQueryDTO;
 import com.me2me.mgmt.request.SearchUserDTO;
-import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.user.service.UserService;
 
 @Controller
@@ -346,34 +345,76 @@ public class PriceController {
 		}
 	};
 	
-	@RequestMapping(value = "/fragmentScoreQuery")
-	public ModelAndView fragmentScoreQuery(){
+	private static List<String> commonConfigKeyList = new ArrayList<String>(){
+		private static final long serialVersionUID = -5775528521716170797L;
+		
+		{
+			this.add("EXCHANGE_RATE");
+		}
+	};
+	
+	private static Map<String, String> commonConfigMap = new HashMap<String, String>(){
+		private static final long serialVersionUID = -5775528521716170797L;
+		
+		{
+			this.put("EXCHANGE_RATE", "汇率(1RMB=?MB)");
+		}
+	};
+	
+	@RequestMapping(value = "/configQuery/{type}")
+	public ModelAndView fragmentScoreQuery(@PathVariable String type){
 		List<ConfigItem> result = new ArrayList<ConfigItem>();
 		
-		Map<String, String> configMap = userService.getAppConfigsByKeys(fragmentScoreKeyList);
-		
-		ConfigItem item = null;
-		for(Map.Entry<String, String> entry : fragmentScoreMap.entrySet()){
-			item = new ConfigItem(entry.getKey(),entry.getValue(),ConfigItem.ConfigType.DB,null==configMap.get(entry.getKey())?"0":configMap.get(entry.getKey()));
-			result.add(item);
+		List<String> keyList = null;
+		Map<String, String> paramMap = null;
+		if("fragmentScore".equals(type)){
+			keyList = fragmentScoreKeyList;
+			paramMap = fragmentScoreMap;
+		}else if("commonConfig".equals(type)){
+			keyList = commonConfigKeyList;
+			paramMap = commonConfigMap;
 		}
 		
-		ModelAndView view = new ModelAndView("price/fragmentScore");
+		if(null != keyList && keyList.size() > 0 && null != paramMap && paramMap.size() > 0){
+			Map<String, String> configMap = userService.getAppConfigsByKeys(keyList);
+			
+			ConfigItem item = null;
+			for(Map.Entry<String, String> entry : paramMap.entrySet()){
+				item = new ConfigItem(entry.getKey(),entry.getValue(),ConfigItem.ConfigType.DB,null==configMap.get(entry.getKey())?"0":configMap.get(entry.getKey()));
+				result.add(item);
+			}
+		}
+		
+		ModelAndView view = new ModelAndView("price/"+type);
 		view.addObject("dataObj",result);
 		
 		return view;
 	}
 	
-	@RequestMapping(value = "/fragmentScoreModify")
+	@RequestMapping(value = "/configModify/{type}")
 	@ResponseBody
 	public String fragmentScoreModify(@RequestParam("k")String key, 
-			@RequestParam("v")String value){
+			@RequestParam("v")String value, @PathVariable String type){
 		if(StringUtils.isBlank(key)){
 			logger.warn("key不能为空");
 			return "key不能为空";
 		}
 		
-		userService.saveAppConfig(key, value, null==fragmentScoreMap.get(key)?"":fragmentScoreMap.get(key));
+		Map<String, String> paramMap = null;
+		if("fragmentScore".equals(type)){
+			paramMap = fragmentScoreMap;
+		}else if("commonConfig".equals(type)){
+			paramMap = commonConfigMap;
+		}
+		String desc = "";
+		if(null != paramMap && paramMap.size() > 0){
+			desc = paramMap.get(key);
+			if(desc == null){
+				desc = "";
+			}
+		}
+		
+		userService.saveAppConfig(key, value, desc);
 		
 		return "0";
 	}

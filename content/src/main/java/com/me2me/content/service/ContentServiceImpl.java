@@ -32,10 +32,12 @@ import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.content.builders.KingdomBuilder;
 import com.me2me.content.dao.BillBoardJdbcDao;
 import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dao.LiveForContentJdbcDao;
 import com.me2me.content.dto.BangDanDto;
+import com.me2me.content.dto.BasicKingdomInfo;
 import com.me2me.content.dto.BillBoardDetailsDto;
 import com.me2me.content.dto.BillBoardListDTO;
 import com.me2me.content.dto.BillBoardRelationDto;
@@ -53,6 +55,7 @@ import com.me2me.content.dto.KingTopicDto;
 import com.me2me.content.dto.LikeDto;
 import com.me2me.content.dto.MyPublishDto;
 import com.me2me.content.dto.OnlineBillBoardDto;
+import com.me2me.content.dto.PricedKingdomDto;
 import com.me2me.content.dto.RecommendContentDto;
 import com.me2me.content.dto.ResultKingTopicDto;
 import com.me2me.content.dto.ReviewDelDTO;
@@ -188,7 +191,8 @@ public class ContentServiceImpl implements ContentService {
     @Autowired
     private EmotionPackDetailMapper  emotionPackDetailMapper;
 
-
+	@Autowired
+	private KingdomBuilder kingdomBuider;
 
 
     @Override
@@ -3455,7 +3459,14 @@ private void localJpush(long toUid){
 		List<Content2Dto> contentList = contentMybatisDao.getHotContentByType(sinceId, 0, 20);//只要UGC+PGC+个人王国
 		
 		this.buildHotListDTO(uid, result, activityList, userFamousList, ceKingdomList, contentList);
-		
+		// 查上市价格, 获取30个上市王国
+		String listingPrice = userService.getAppConfigByKey(Constant.LISTING_PRICE_KEY);
+		if(!StringUtils.isEmpty(listingPrice)){
+			int minPrice = Integer.parseInt(listingPrice);
+			List<Map<String,Object>> listingKingdoms= liveForContentJdbcDao.getListingKingodms(minPrice, 1, 30);
+			List<BasicKingdomInfo> listingKingdomList =kingdomBuider.buildKingdoms(listingKingdoms, uid);
+			result.setListingKingdoms(listingKingdomList);
+		}
 		if(vflag == 0){
 			if(result.getHottestCeKingdomData().size() > 0){
 				for(ShowHotListDTO.HotCeKingdomElement e : result.getHottestCeKingdomData()){
@@ -3722,6 +3733,7 @@ private void localJpush(long toUid){
 				ceKingdomElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
 				ceKingdomElement.setNickName(userProfile.getNickName());
 				ceKingdomElement.setV_lv(userProfile.getvLv());
+				
 				if(null != followMap.get(uid+"_"+ce.getUid())){
 					ceKingdomElement.setIsFollowed(1);
 				}else{
@@ -3742,6 +3754,7 @@ private void localJpush(long toUid){
 				ceKingdomElement.setCid(ce.getId());
 				ceKingdomElement.setId(ce.getId());
 				topic = topicMap.get(ce.getForwardCid().toString());
+				
 				if(null != topic){
 					ceKingdomElement.setTitle((String)topic.get("title"));
 					ceKingdomElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
@@ -3750,6 +3763,7 @@ private void localJpush(long toUid){
 					ceKingdomElement.setLastUpdateTime((Long)topic.get("long_time"));
 					ceKingdomElement.setContentType((Integer)topic.get("type"));
 					ceKingdomElement.setInternalStatus(this.getInternalStatus(topic, uid));
+					ceKingdomElement.setPrice((Integer)topic.get("price"));		//--2.2.7 王国价值
 				}
 				if(null == topicMemberCountMap.get(ce.getForwardCid().toString())){
 					ceKingdomElement.setFavoriteCount(1);//默认只有国王一个成员
@@ -3841,6 +3855,7 @@ private void localJpush(long toUid){
 					if(null != topic){
 						contentElement.setContentType((Integer)topic.get("type"));
 						contentElement.setInternalStatus(this.getInternalStatus(topic, uid));
+						contentElement.setPrice((Integer)topic.get("price"));
 					}
 					lastFragment = lastFragmentMap.get(c.getForwardCid().toString());
 					if(null != lastFragment){
@@ -4291,6 +4306,7 @@ private void localJpush(long toUid){
 	            bangDanData.setSinceId(bbd.getSort());
 	            bangDanData.setSubType(billBoard.getType());
 	            
+	            
 	            //获取榜单里的具体内容（王国3个，人5个，如果是榜单集则显示所有榜单）
 	            int pageSize = 0;//榜单集是所有
 	            if(billBoard.getType() == 1){
@@ -4344,6 +4360,7 @@ private void localJpush(long toUid){
 		                        if(null == topicContent){
 		                        	continue;
 		                        }
+		                        bangDanInnerData.setPrice((Integer)topic.get("price"));
 		                        bangDanInnerData.setId(topicContent.getId());
 		                        bangDanInnerData.setCid(topicContent.getId());
 		                        bangDanInnerData.setTopicId(targetId);
@@ -4710,6 +4727,7 @@ private void localJpush(long toUid){
         					bangDanInnerData.setIsFollowMe(0);
         				}
                         bangDanInnerData.setContentType((Integer)topic.get("type"));
+                        bangDanInnerData.setPrice((Integer)topic.get("price"));		//2.2.7王国价值
                         if(null != liveFavouriteMap.get(String.valueOf(targetId))){
                         	bangDanInnerData.setFavorite(1);
                         }else{
@@ -5245,6 +5263,7 @@ private void localJpush(long toUid){
                     if(null == topicContent){
                     	continue;
                     }
+                    bangDanInnerData.setPrice((Integer)topic.get("price"));
                     bangDanInnerData.setId(topicContent.getId());
                     bangDanInnerData.setCid(topicContent.getId());
                     bangDanInnerData.setTopicId(bbl.getTargetId());
@@ -5834,5 +5853,19 @@ private void localJpush(long toUid){
 		csh.setUid(uid);
 		contentMybatisDao.saveContentShareHistory(csh);
 		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message);
+	}
+
+	
+	@Override
+	public Response<PricedKingdomDto> getPricedKingdomList(int page, int pageSize,long currentUid) {
+		List<Map<String,Object>> topicList = this.liveForContentJdbcDao.getTopPricedKingdomList( page, pageSize);
+		List<BasicKingdomInfo> buildResult = this.kingdomBuider.buildKingdoms(topicList, currentUid);
+		PricedKingdomDto result = new PricedKingdomDto();
+		for(BasicKingdomInfo info:buildResult){
+			PricedKingdomDto.TopicData topicData = new PricedKingdomDto.TopicData();
+			BeanUtils.copyProperties(info, topicData);
+			result.getListData().add(topicData);
+		}
+		return Response.success(result);
 	}
 }
