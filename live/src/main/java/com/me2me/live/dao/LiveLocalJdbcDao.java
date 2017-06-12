@@ -968,7 +968,7 @@ public class LiveLocalJdbcDao {
 	 * 统计用户某天偷取的王国金币数。
 	 * @author zhangjiwei
 	 * @date Jun 12, 2017
-	 * @param date
+	 * @param day
 	 * @return
 	 */
 	public List<Map<String,Object>> getUserStealLogByDay(long uid,String day) {
@@ -976,4 +976,18 @@ public class LiveLocalJdbcDao {
 		return jdbcTemplate.queryForList(sql,new Object[]{uid,day});
 	}
 
+	/**
+	 * 充值到某个王国
+	 * @param topicId
+	 * @param amount
+	 */
+    public void rechargeToKingDom(long topicId, int amount) {
+		String sql = "update topic set price = price+"+amount+" where id = ? ";
+		jdbcTemplate.update(sql,topicId);
+    }
+
+	public void zeroMyCoins(long uid) {
+		String sql = "update user_profile set available_coin = 0 where uid = ?";
+		jdbcTemplate.update(sql,uid);
+	}
 }

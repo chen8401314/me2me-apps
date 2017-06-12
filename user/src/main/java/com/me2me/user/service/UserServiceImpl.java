@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
+import com.me2me.user.dto.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -58,66 +59,6 @@ import com.me2me.user.dao.OldUserJdbcDao;
 import com.me2me.user.dao.UgcForUserJdbcDao;
 import com.me2me.user.dao.UserInitJdbcDao;
 import com.me2me.user.dao.UserMybatisDao;
-import com.me2me.user.dto.ActivityModelDto;
-import com.me2me.user.dto.BasicDataDto;
-import com.me2me.user.dto.BasicDataSuccessDto;
-import com.me2me.user.dto.DaoDaoDto;
-import com.me2me.user.dto.EntryPageDto;
-import com.me2me.user.dto.EntryPageReturnDto;
-import com.me2me.user.dto.FansParamsDto;
-import com.me2me.user.dto.FindEncryptDto;
-import com.me2me.user.dto.FollowDto;
-import com.me2me.user.dto.FollowParamsDto;
-import com.me2me.user.dto.GagDto;
-import com.me2me.user.dto.LoginSuccessDto;
-import com.me2me.user.dto.MBTIDto;
-import com.me2me.user.dto.ModifyEncryptDto;
-import com.me2me.user.dto.ModifyUserHobbyDto;
-import com.me2me.user.dto.ModifyUserProfileDto;
-import com.me2me.user.dto.PasteTagDto;
-import com.me2me.user.dto.PhotoDto;
-import com.me2me.user.dto.PromoterDto;
-import com.me2me.user.dto.QRCodeDto;
-import com.me2me.user.dto.RefereeProfileDto;
-import com.me2me.user.dto.SearchAssistantDto;
-import com.me2me.user.dto.SearchDto;
-import com.me2me.user.dto.SearchFansDto;
-import com.me2me.user.dto.SearchUserDto;
-import com.me2me.user.dto.SearchUserProfileDto;
-import com.me2me.user.dto.ShowContactsDTO;
-import com.me2me.user.dto.ShowMobileDTO;
-import com.me2me.user.dto.ShowMyFollowsQueryDTO;
-import com.me2me.user.dto.ShowNoticeReddotQueryDTO;
-import com.me2me.user.dto.ShowSeekFollowsQueryDTO;
-import com.me2me.user.dto.ShowUserFansDto;
-import com.me2me.user.dto.ShowUserFollowDto;
-import com.me2me.user.dto.ShowUserNoticeDto;
-import com.me2me.user.dto.ShowUserProfileDto;
-import com.me2me.user.dto.ShowUserTagsDto;
-import com.me2me.user.dto.ShowUserTipsDto;
-import com.me2me.user.dto.ShowUsergagDto;
-import com.me2me.user.dto.ShowVersionControlDto;
-import com.me2me.user.dto.SignUpSuccessDto;
-import com.me2me.user.dto.SpecialUserDto;
-import com.me2me.user.dto.SummaryEmotionInfoDto;
-import com.me2me.user.dto.ThirdPartSignUpDto;
-import com.me2me.user.dto.UserAccountBindStatusDto;
-import com.me2me.user.dto.UserFansDto;
-import com.me2me.user.dto.UserFollowDto;
-import com.me2me.user.dto.UserInfoDto;
-import com.me2me.user.dto.UserLikeDto;
-import com.me2me.user.dto.UserLoginDto;
-import com.me2me.user.dto.UserNickNameDto;
-import com.me2me.user.dto.UserNoticeDto;
-import com.me2me.user.dto.UserProfile4H5Dto;
-import com.me2me.user.dto.UserRefereeSignUpDto;
-import com.me2me.user.dto.UserReportDto;
-import com.me2me.user.dto.UserSignUpDto;
-import com.me2me.user.dto.UserVDto;
-import com.me2me.user.dto.VersionControlDto;
-import com.me2me.user.dto.VersionDto;
-import com.me2me.user.dto.WapxIosDto;
-import com.me2me.user.dto.WapxParams;
 import com.me2me.user.event.BatchFollowEvent;
 import com.me2me.user.event.ContactsMobileEvent;
 import com.me2me.user.event.ContactsMobilePushEvent;
@@ -210,6 +151,8 @@ public class UserServiceImpl implements UserService {
     private static final String POWER_KEY = "power:key";
 
     private static final String AD_KEY = "ad:url:key";
+
+    private static final String USER_PERMISSIONS = "USER_PERMISSIONS";
 
     @Autowired
     private JPushService jPushService;
@@ -1303,11 +1246,17 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setLiveCount(userInitJdbcDao.getLiveCount(uid));
         showUserProfileDto.setAcCount(userInitJdbcDao.getLiveAcCount(uid));
         // 获取用户级别和可用米汤币
-        // todo
         showUserProfileDto.setAvailableCoin(userProfile.getAvailableCoin());
         showUserProfileDto.setLevel(userProfile.getLevel());
-//        showUserProfileDto.setLevelIcon("a.jpg");
-
+        String value = getAppConfigByKey(USER_PERMISSIONS);
+        log.info("infos: " + value);
+        UserPermissionDto userPermissionDto = JSON.parseObject(value, UserPermissionDto.class);
+        for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
+            if(userProfile.getLevel()==userLevelDto.getLevel()){
+                showUserProfileDto.setLevelIcon(userLevelDto.getIcon());
+                break;
+            }
+        }
         if(!StringUtils.isEmpty(userProfile.getThirdPartBind())) {
             showUserProfileDto.setThirdPartBind(userProfile.getThirdPartBind());
         }
@@ -3965,4 +3914,15 @@ public class UserServiceImpl implements UserService {
 	public List<AppConfig> getAllAppConfig(){
 		return userMybatisDao.getAllAppConfig();
 	}
+
+    @Override
+    public Response getLevelList() {
+        String value = getAppConfigByKey(USER_PERMISSIONS);
+        UserPermissionDto userPermissionDto = JSON.parseObject(value, UserPermissionDto.class);
+        for(UserPermissionDto.UserLevelDto  userLevelDto : userPermissionDto.getLevels()){
+            userLevelDto.setPermissions(null);
+        }
+        return Response.success(userPermissionDto);
+    }
+
 }

@@ -478,6 +478,10 @@ public interface UserService {
 	
 	List<AppConfig> getAllAppConfig();
 
-
+	/**
+	 * 获取等级列表
+	 * @return
+	 */
+	Response getLevelList();
 
 }
