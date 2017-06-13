@@ -186,8 +186,6 @@ public class LiveServiceImpl implements LiveService {
     @Autowired
     private SearchService searchService;
     
-    @Autowired
-    private ZookeeperLockService lockService;
 
     @Value("#{app.live_web}")
     private String live_web;
