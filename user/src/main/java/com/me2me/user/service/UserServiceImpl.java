@@ -103,6 +103,7 @@ import com.me2me.user.model.VersionControl;
 import com.me2me.user.widget.MessageNotificationAdapter;
 
 import lombok.extern.slf4j.Slf4j;
+import sun.java2d.cmm.Profile;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -153,6 +154,8 @@ public class UserServiceImpl implements UserService {
     private static final String AD_KEY = "ad:url:key";
 
     private static final String USER_PERMISSIONS = "USER_PERMISSIONS";
+
+    private  static  final  String LEVEL_DEFINITION = "LEVEL_DEFINITION";
 
     @Autowired
     private JPushService jPushService;
@@ -3922,7 +3925,47 @@ public class UserServiceImpl implements UserService {
         for(UserPermissionDto.UserLevelDto  userLevelDto : userPermissionDto.getLevels()){
             userLevelDto.setPermissions(null);
         }
+        String levelDefinition = getAppConfigByKey(LEVEL_DEFINITION);
+        userPermissionDto.setLevelDefinition(levelDefinition);
         return Response.success(userPermissionDto);
+    }
+
+    @Override
+    public Response getMyLevel(long uid) {
+	    UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+	    MyLevelDto myLevelDto = new MyLevelDto();
+        MyLevelDto.InnerLevel currentLevel = myLevelDto.createInnerLevel();
+        currentLevel.setLevel( userProfile.getLevel());
+        MyLevelDto.InnerLevel nextLevel = myLevelDto.createInnerLevel();
+        nextLevel.setLevel( userProfile.getLevel()+1);
+        MyLevelDto.InnerLevel preLevel = myLevelDto.createInnerLevel();
+        if (userProfile.getLevel() > 1){
+
+        preLevel.setLevel( userProfile.getLevel()-1);}
+        myLevelDto.setAvailabeCoin(userProfile.getAvailableCoin());
+        myLevelDto.setAvatar(userProfile.getAvatar());
+        String value = getAppConfigByKey(USER_PERMISSIONS);
+        log.info("infos: " + value);
+        UserPermissionDto userPermissionDto = JSON.parseObject(value, UserPermissionDto.class);
+        for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
+            if (userProfile.getLevel() == userLevelDto.getLevel()){
+                currentLevel.setName(userLevelDto.getName());
+            }
+            if (userProfile.getLevel()+1 == userLevelDto.getLevel()){
+                nextLevel.setName(userLevelDto.getName());
+            }
+            if (userProfile.getLevel()-1 == userLevelDto.getLevel() || userProfile.getLevel() > 1 ){
+                preLevel.setName(userLevelDto.getName());
+            }
+            if(userProfile.getLevel() == userLevelDto.getLevel()){
+                myLevelDto.setNextLevelCoin(userLevelDto.getNeedCoins()-userProfile.getAvailableCoin());
+            }
+        }
+        myLevelDto.setCurrentLevel(currentLevel);
+        if (userProfile.getLevel()>1){
+        myLevelDto.setPreLevel(preLevel);}
+        myLevelDto.setNextLevel(nextLevel);
+        return Response.success(myLevelDto);
     }
 
 }

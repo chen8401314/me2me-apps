@@ -383,7 +383,7 @@ public interface UserService {
 	/**
 	 * 清除超过{hour}小时的求关注记录
 	 * 
-	 * @param hisDay
+	 * @param hour
 	 */
 	void cleanSeekFollow(int hour);
 
@@ -483,5 +483,7 @@ public interface UserService {
 	 * @return
 	 */
 	Response getLevelList();
+
+	Response getMyLevel(long uid);
 
 }

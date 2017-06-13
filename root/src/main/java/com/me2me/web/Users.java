@@ -63,7 +63,7 @@ public class Users extends BaseController {
      */
     @RequestMapping(value = "/signUp",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response signUp(SignUpRequest request,HttpServletRequest req){
+    public Response signUp(SignUpRequest request){
         UserSignUpDto userSignUpDto = new UserSignUpDto();
         userSignUpDto.setMobile(request.getMobile());
         userSignUpDto.setGender(request.getGender());
@@ -1005,6 +1005,14 @@ public class Users extends BaseController {
     public Response getLevelList(){
         return userService.getLevelList();
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/getMyLevel",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getMyLevel(StealKingdomCoinRequest request){
+        return userService.getMyLevel(request.getUid());
+    }
+
+
     
     
 }

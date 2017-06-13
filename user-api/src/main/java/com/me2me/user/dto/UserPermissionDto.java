@@ -16,7 +16,8 @@ import java.util.List;
 public class UserPermissionDto implements BaseEntity {
 
     private List<UserLevelDto> levels = Lists.newArrayList();
-
+    //等级定义
+    private String levelDefinition;
     @Data
     public static class UserLevelDto implements BaseEntity{
 
