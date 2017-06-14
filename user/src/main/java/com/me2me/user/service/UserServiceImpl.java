@@ -365,6 +365,7 @@ public class UserServiceImpl implements UserService {
                 loginSuccessDto.setFansCount(userMybatisDao.getUserFansCount(user.getUid()));
                 loginSuccessDto.setFollowedCount(userMybatisDao.getUserFollowCount(user.getUid()));
                 loginSuccessDto.setIntroduced(userProfile.getIntroduced());
+                loginSuccessDto.setLevel(userProfile.getLevel());
                 //保存用户的设备token和用户平台信息
                 UserDevice device = new UserDevice();
                 device.setDeviceNo(userLoginDto.getDeviceNo());
@@ -1981,6 +1982,7 @@ public class UserServiceImpl implements UserService {
                 loginSuccessDto.setGender(userProfile.getGender());
                 loginSuccessDto.setNickName(userProfile.getNickName());
                 loginSuccessDto.setToken(userToken.getToken());
+                loginSuccessDto.setLevel(userProfile.getLevel());
                 if(checkUserDisable(loginSuccessDto.getUid())){
                 	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                 }
@@ -2003,6 +2005,7 @@ public class UserServiceImpl implements UserService {
                     loginSuccessDto.setGender(userProfile.getGender());
                     loginSuccessDto.setNickName(userProfile.getNickName());
                     loginSuccessDto.setToken(userToken.getToken());
+                    loginSuccessDto.setLevel(userProfile.getLevel());
                     if(checkUserDisable(loginSuccessDto.getUid())){
                     	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                     }
@@ -2054,6 +2057,7 @@ public class UserServiceImpl implements UserService {
                     loginSuccessDto.setGender(userProfile.getGender());
                     loginSuccessDto.setNickName(userProfile.getNickName());
                     loginSuccessDto.setToken(userToken.getToken());
+                    loginSuccessDto.setLevel(userProfile.getLevel());
                     //h5先登录了 app未登录过 为首次登录 返回注册过了 但是值是1需要修改昵称
 //                    loginSuccessDto.setIsClientLogin(userProfile.getIsClientLogin());
                     //openId没有unionId有的情况 肯定是h5微信登录的 所以要修改昵称 前台检测过传来的
