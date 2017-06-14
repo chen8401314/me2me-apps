@@ -48,6 +48,8 @@ var modifyCommit = function(type){
 		}
 	});
 }
+
+//var fullExecuteTask = function
 </script>
 </head>
 <body>
@@ -71,7 +73,8 @@ var modifyCommit = function(type){
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								| 王国详情分值列表 
+								| 王国详情分值列表 &nbsp;&nbsp;&nbsp;&nbsp;
+								<input type="button" value="全量运行王国价值任务" onclick="fullExecuteTask()">
 								<span class="tools pull-right">
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>

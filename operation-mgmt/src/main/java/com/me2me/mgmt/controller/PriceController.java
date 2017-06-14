@@ -350,7 +350,6 @@ public class PriceController {
 		
 		{
 			this.add("EXCHANGE_RATE");
-			this.add("PRICE_TASK_MODE");
 		}
 	};
 	
@@ -359,7 +358,6 @@ public class PriceController {
 		
 		{
 			this.put("EXCHANGE_RATE", "汇率(1RMB=?MB)");
-			this.put("PRICE_TASK_MODE", "王国价值任务运算模式(0增量，1全量)");
 		}
 	};
 	

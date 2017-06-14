@@ -4549,6 +4549,11 @@ private void localJpush(long toUid){
 	}
     
     @Override
+    public void executeSql(String sql){
+    	liveForContentJdbcDao.executeSql(sql);
+    }
+    
+    @Override
     public void insertBillboardList(List<BillBoardList> insertList, String key){
     	if(null == insertList || insertList.size() == 0 || StringUtils.isEmpty(key)){
     		return;

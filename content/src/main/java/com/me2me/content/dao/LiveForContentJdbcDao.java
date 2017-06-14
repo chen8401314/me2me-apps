@@ -358,6 +358,10 @@ public class LiveForContentJdbcDao {
     	return jdbcTemplate.queryForList(sql);
     }
     
+    public void executeSql(String sql){
+    	jdbcTemplate.execute(sql);
+    }
+    
     /**
      * 最活跃的米汤新鲜人
      * @param sinceId

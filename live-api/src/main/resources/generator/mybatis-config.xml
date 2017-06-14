@@ -52,5 +52,7 @@
         <!-- <table tableName="topic_transfer_record" domainObjectName="TopicTransferRecord"/> -->
         <!-- <table tableName="topic_read_his" domainObjectName="TopicReadHis"/> -->
         <!-- <table tableName="user_steal_log" domainObjectName="UserStealLog" />  -->
+        <!-- <table tableName="topic_data" domainObjectName="TopicData" /> -->
+        <!-- <table tableName="topic_price_his" domainObjectName="TopicPriceHis" /> -->
     </context>
 </generatorConfiguration>

@@ -240,6 +240,12 @@ public interface ContentService{
      * @return
      */
     List<Map<String, Object>> queryEvery(String sql);
+    
+    /**
+     * 给IMS系统开的后门，直接运行sql
+     * @param sql
+     */
+    void executeSql(String sql);
 
     /**
      * 自动榜单列表插入方法(供IMS系统调用)
