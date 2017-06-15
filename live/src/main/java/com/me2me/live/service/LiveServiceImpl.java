@@ -676,13 +676,14 @@ public class LiveServiceImpl implements LiveService {
         showLiveDto.setTopicPrice(topic.getPrice());
         showLiveDto.setTopicRMB(exchangeKingdomPrice(topic.getPrice()));
         TopicData topicData = liveMybatisDao.getTopicDataByTopicId(cid);
+        int percentage = 0;
         if(topicData==null){
         	showLiveDto.setTopicPriceChanged(0);
         }else{
         	showLiveDto.setTopicPriceChanged(topicData.getLastPriceIncr());
+        	percentage = new BigDecimal((liveMybatisDao.getLessPriceChangeTopicCount(topicData.getLastPriceIncr()) * 100.0 / liveMybatisDao.getTopicDataCount() ))
+    				.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
         }
-        int percentage = new BigDecimal((liveMybatisDao.getLessPriceChangeTopicCount(topicData.getLastPriceIncr()) * 100.0 / liveMybatisDao.getTopicDataCount() ))
-				.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
         showLiveDto.setBeatTopicPercentage(percentage);
         try {
 			int coins= getAliveCoinsForSteal(uid,cid);
