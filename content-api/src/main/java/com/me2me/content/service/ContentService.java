@@ -412,4 +412,6 @@ public interface ContentService{
 	Response<PricedKingdomDto> getPricedKingdomList(int page,int pageSize,long currentUid);
 	
 	Response shareRecord(long uid, int type, long cid, String shareAddr);
+	
+	public int getTopicMembersCount(long topicId);
 }

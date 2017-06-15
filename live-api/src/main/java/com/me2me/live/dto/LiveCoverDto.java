@@ -71,6 +71,17 @@ public class LiveCoverDto implements BaseEntity{
 
     private String recTags;
     
+    private int topicPrice; //王国价值
+    
+    private double topicRMB; //米汤币换算人民币，单位元
+    
+    private int topicPriceChanged;//王国价值增量，大于0增值 小于0贬值
+    
+    private int beatTopicPercentage;//击败王国百分比，整型，贬值默认0
+    
+    private int isSteal;//偷取状态 0 不可偷取 1可偷取 2已偷过
+    
+    
     //跑马灯信息列表
     private List<TopicNewsElement> newsTopList = Lists.newArrayList();
     @Data

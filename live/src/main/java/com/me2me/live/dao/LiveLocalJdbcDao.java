@@ -990,4 +990,16 @@ public class LiveLocalJdbcDao {
 		String sql = "update user_profile set available_coin = 0 where uid = ?";
 		jdbcTemplate.update(sql,uid);
 	}
+
+	public int getReadCount(long topicId) {
+		String sql = "select sum(read_count_dummy) as readCount from topic_read_his where topicId=? group by topic_id";
+		List<Map<String, Object>> list= jdbcTemplate.queryForList(sql, new Object[]{topicId});
+		return Integer.parseInt(list.get(0).get("readCount").toString());
+	}
+
+	public int getReadCountOuter(long topicId) {
+		String sql = "select sum(read_count_dummy) as readCount from topic_read_his where topicId=? and in_app = 0 group by topic_id";
+		List<Map<String, Object>> list= jdbcTemplate.queryForList(sql, new Object[]{topicId});
+		return Integer.parseInt(list.get(0).get("readCount").toString());
+	}
 }

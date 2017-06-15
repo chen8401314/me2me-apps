@@ -563,6 +563,6 @@ public interface LiveService {
 
 	Response rechargeToKingdom(RechargeToKingdomDto rechargeToKingdomDto);
 
-
+	 Response getKingdomPrice(long topicId) ;
 
 }
