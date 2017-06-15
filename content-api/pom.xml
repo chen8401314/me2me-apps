@@ -49,7 +49,7 @@
                 </dependency>
             </dependencies>
 
-            <build>
+           <!--  <build>
                 <plugins>
                     <plugin>
                         <groupId>org.mybatis.generator</groupId>
@@ -87,7 +87,7 @@
                         </dependencies>
                     </plugin>
                 </plugins>
-            </build>
+            </build> -->
 
         </profile>
     </profiles>
