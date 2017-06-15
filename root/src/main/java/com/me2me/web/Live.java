@@ -46,6 +46,7 @@ import com.me2me.web.request.EditSpeakRequest;
 import com.me2me.web.request.FavoriteListRequest;
 import com.me2me.web.request.FinishMyLiveRequest;
 import com.me2me.web.request.FragmentForwardRequest;
+import com.me2me.web.request.GetKingdomPriceRequest;
 import com.me2me.web.request.GetKingdomTransferRecordRequest;
 import com.me2me.web.request.GetLiveByCidRequest;
 import com.me2me.web.request.GetLivesRequest;
@@ -897,5 +898,15 @@ public class Live extends BaseController {
     public Response stealKingdomCoin(StealKingdomCoinRequest request){
     	
     	return liveService.stealKingdomCoin(request.getUid(),request.getTopicId());
+    }
+    /**
+     * 王国价值详情获取接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getKingdomPrice",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getKingdomPrice(GetKingdomPriceRequest request){
+    	return liveService.getKingdomPrice(request.getTopicId());
     }
 }

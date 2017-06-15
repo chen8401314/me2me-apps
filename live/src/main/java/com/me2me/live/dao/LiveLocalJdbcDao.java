@@ -994,15 +994,15 @@ public class LiveLocalJdbcDao {
 	}
 
 	public int getReadCount(long topicId) {
-		String sql = "select sum(read_count_dummy) as readCount from topic_read_his where topicId=? group by topic_id";
+		String sql = "select sum(read_count_dummy) as readCount from topic_read_his where topic_id=? group by topic_id";
 		List<Map<String, Object>> list= jdbcTemplate.queryForList(sql, new Object[]{topicId});
-		return Integer.parseInt(list.get(0).get("readCount").toString());
+		return list.size()>0?Integer.parseInt(list.get(0).get("readCount").toString()):0;
 	}
 
 	public int getReadCountOuter(long topicId) {
-		String sql = "select sum(read_count_dummy) as readCount from topic_read_his where topicId=? and in_app = 0 group by topic_id";
+		String sql = "select sum(read_count_dummy) as readCount from topic_read_his where topic_id=? and in_app = 0 group by topic_id";
 		List<Map<String, Object>> list= jdbcTemplate.queryForList(sql, new Object[]{topicId});
-		return Integer.parseInt(list.get(0).get("readCount").toString());
+		return list.size()>0?Integer.parseInt(list.get(0).get("readCount").toString()):0;
 	}
 	/**
 	 * 获取王国的剩余价值,如果查询失败，返回0

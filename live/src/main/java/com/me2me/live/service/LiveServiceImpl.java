@@ -497,14 +497,25 @@ public class LiveServiceImpl implements LiveService {
         liveCoverDto.setTopicPrice(topic.getPrice());
         liveCoverDto.setTopicRMB(exchangeKingdomPrice(topic.getPrice()));
         TopicData topicData = liveMybatisDao.getTopicDataByTopicId(topicId);
+        int percentage=0;
         if(topicData==null){
         	liveCoverDto.setTopicPriceChanged(0);
         }else{
         	liveCoverDto.setTopicPriceChanged(topicData.getLastPriceIncr());
+        	percentage = new BigDecimal((liveMybatisDao.getLessPriceChangeTopicCount(topicData.getLastPriceIncr()) * 100.0 / liveMybatisDao.getTopicDataCount() ))
+    				.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
         }
-        int percentage = new BigDecimal((liveMybatisDao.getLessPriceChangeTopicCount(topicData.getLastPriceIncr()) * 100.0 / liveMybatisDao.getTopicDataCount() ))
-				.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
         liveCoverDto.setBeatTopicPercentage(percentage);
+        try {
+			int coins= getAliveCoinsForSteal(uid,topicId);
+			liveCoverDto.setIsSteal(1);
+		} catch (KingdomStealException e2) {
+			if(e2.getErrorCode()==KingdomStealException.KINGDOM_STEALED){
+				liveCoverDto.setIsSteal(2);
+			}
+		} catch(Exception e){
+			liveCoverDto.setIsSteal(0);
+		}
         
         return Response.success(ResponseStatus.GET_LIVE_COVER_SUCCESS.status, ResponseStatus.GET_LIVE_COVER_SUCCESS.message, liveCoverDto);
     }
@@ -662,6 +673,27 @@ public class LiveServiceImpl implements LiveService {
         }else{
         	//暂不支持
         }
+        showLiveDto.setTopicPrice(topic.getPrice());
+        showLiveDto.setTopicRMB(exchangeKingdomPrice(topic.getPrice()));
+        TopicData topicData = liveMybatisDao.getTopicDataByTopicId(cid);
+        if(topicData==null){
+        	showLiveDto.setTopicPriceChanged(0);
+        }else{
+        	showLiveDto.setTopicPriceChanged(topicData.getLastPriceIncr());
+        }
+        int percentage = new BigDecimal((liveMybatisDao.getLessPriceChangeTopicCount(topicData.getLastPriceIncr()) * 100.0 / liveMybatisDao.getTopicDataCount() ))
+				.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+        showLiveDto.setBeatTopicPercentage(percentage);
+        try {
+			int coins= getAliveCoinsForSteal(uid,cid);
+			showLiveDto.setIsSteal(1);
+		} catch (KingdomStealException e2) {
+			if(e2.getErrorCode()==KingdomStealException.KINGDOM_STEALED){
+				showLiveDto.setIsSteal(2);
+			}
+		} catch(Exception e){
+			showLiveDto.setIsSteal(0);
+		}
         
         return Response.success(showLiveDto);
     }
