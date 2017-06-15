@@ -656,6 +656,7 @@ public class KingdomPriceTask {
 		if(null != list && list.size() > 0){//有的，则更新
 			saveSql.append("update topic_data set steal_price=").append(kc.getStealPrice());
 			saveSql.append(",last_price=").append(oldPrice);
+			saveSql.append(",last_price_incr=").append(kc.getPrice()-oldPrice);
 			saveSql.append(",diligently=").append(kc.getDiligently());
 			saveSql.append(",approve=").append(kc.getApprove());
 			saveSql.append(",update_text_length=").append(kc.getUpdateTextWordCount());
@@ -672,10 +673,11 @@ public class KingdomPriceTask {
 			saveSql.append(",review_text_length=").append(kc.getReviewTextWordCountInApp()+kc.getReviewTextWordCountOutApp());
 			saveSql.append(" where topic_id=").append(kc.getTopicId());
 		}else{//没有，则新增
-			saveSql.append("insert into topic_data(topic_id,last_price,steal_price,update_time,diligently,approve,update_text_length,");
+			saveSql.append("insert into topic_data(topic_id,last_price,last_price_incr,steal_price,update_time,diligently,approve,update_text_length,");
 			saveSql.append("update_text_count,update_image_count,update_vedio_count,update_vedio_length,update_audio_count,");
 			saveSql.append("update_audio_length,update_vote_count,update_tease_count,update_day_count,review_text_count,review_text_length)");
-			saveSql.append(" values (").append(kc.getTopicId()).append(",").append(oldPrice).append(",").append(kc.getStealPrice()).append(",now(),");
+			saveSql.append(" values (").append(kc.getTopicId()).append(",").append(oldPrice).append(",");
+			saveSql.append(kc.getPrice()-oldPrice).append(",").append(kc.getStealPrice()).append(",now(),");
 			saveSql.append(kc.getDiligently()).append(",").append(kc.getApprove()).append(",").append(kc.getUpdateTextWordCount());
 			saveSql.append(",").append(kc.getUpdateTextCount()).append(",").append(kc.getUpdateImageCount()).append(",");
 			saveSql.append(kc.getUpdateVedioCount()).append(",").append(kc.getUpdateVedioLenght()).append(",").append(kc.getUpdateAudioCount());
