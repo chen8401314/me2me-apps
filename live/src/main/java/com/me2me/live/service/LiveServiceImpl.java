@@ -132,6 +132,7 @@ import com.me2me.live.model.UserStealLog;
 import com.me2me.live.model.VoteInfo;
 import com.me2me.live.model.VoteOption;
 import com.me2me.live.model.VoteRecord;
+import com.me2me.live.service.exceptions.KingdomStealException;
 import com.me2me.search.service.SearchService;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.dto.EmotionInfoListDto;
@@ -6640,12 +6641,13 @@ public class LiveServiceImpl implements LiveService {
 		//判断用户能不能偷取王国
 		Topic topic = liveMybatisDao.getTopicById(topicId);
 		if(topic.getUid()==uid){
-			throw new RuntimeException("不能偷取自己的王国");
+			throw new KingdomStealException("不能偷取自己的王国");
 		}
 		// 本王国今日余额
-		int topicRemainCoins= 10; 		// todo: 此处待实现
+		int topicRemainCoins= this.liveLocalJdbcDao.getTopicRemainPrice(topicId);
+		
 		if(topicRemainCoins<=0){
-			throw new RuntimeException("王国已经达到今日偷取上限了");
+			throw new KingdomStealException("王国已经达到今日偷取上限了");
 		}
 		// 用户今天已偷
 		String day = DateUtil.date2string(new Date(), "yyyy-MM-dd");
@@ -6661,7 +6663,7 @@ public class LiveServiceImpl implements LiveService {
 			}
 		}
 		if(stealed){
-			throw new RuntimeException("不能重复偷取此王国");
+			throw new KingdomStealException(KingdomStealException.KINGDOM_STEALED,"不能重复偷取此王国");
 		}
 		// 每天可偷数量
 		int userDayLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_COIN_DAY_LIMIT_KEY));
@@ -6669,13 +6671,13 @@ public class LiveServiceImpl implements LiveService {
 		int userTopicLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_TOPIC_DAY_LIMIT_KEY));
 		
 		if(userStealLog.size()>=userTopicLimit){
-			throw new RuntimeException("用户已达到今日偷取王国次数上限了");
+			throw new KingdomStealException("用户已达到今日偷取王国次数上限了");
 		}
 		
 		int userTodayRemain=userDayLimit-stealedCoins;
 		
 		if(userTodayRemain<=0){
-			throw new RuntimeException("用户已达到今日偷取上限了");
+			throw new KingdomStealException("用户已达到今日偷取上限了");
 		}
 		
 		int canStealCount = Math.max(userTodayRemain, topicRemainCoins);
@@ -6705,7 +6707,7 @@ public class LiveServiceImpl implements LiveService {
 			// 修改用户金币数
 			
 			// 修改王国可被偷数
-			
+			this.liveLocalJdbcDao.stealTopicPrice(coins, topicId);
 			// 记录偷取日志
 			UserStealLog log = new UserStealLog();
 			log.setCreateTime(new Date());
@@ -6719,7 +6721,7 @@ public class LiveServiceImpl implements LiveService {
 			return Response.success(dto);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return Response.failure("未知错误，偷取失败");
+			return Response.failure(e.getMessage());
 		} finally {
 			if(lock != null)
 				lock.unlock();
@@ -6746,7 +6748,7 @@ public class LiveServiceImpl implements LiveService {
             // 更新完成后判断王国的数值是否达到上市标准.如果达标调用跑马灯接口
             return Response.success();
         }else {
-            return  Response.failure("充值米汤币与实际不符");
+            return Response.failure("充值米汤币与实际不符");
         }
     }
 

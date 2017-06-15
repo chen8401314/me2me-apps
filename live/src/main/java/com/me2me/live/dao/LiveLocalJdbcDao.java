@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -19,7 +21,7 @@ import com.me2me.live.model.TopicBarrage;
 
 @Repository
 public class LiveLocalJdbcDao {
-
+	private static final Logger logger = LoggerFactory.getLogger(LiveLocalJdbcDao.class);
 	@Autowired
     private JdbcTemplate jdbcTemplate;
 	
@@ -989,5 +991,32 @@ public class LiveLocalJdbcDao {
 	public void zeroMyCoins(long uid) {
 		String sql = "update user_profile set available_coin = 0 where uid = ?";
 		jdbcTemplate.update(sql,uid);
+	}
+	/**
+	 * 获取王国的剩余价值,如果查询失败，返回0
+	 * @author zhangjiwei
+	 * @date Jun 15, 2017
+	 * @param topicId 王国ID
+	 * @return
+	 */
+	public int getTopicRemainPrice(long topicId) {
+		int remain=0;
+		try{
+			remain=jdbcTemplate.queryForObject("select steal_price from topic_data where topic_id=?",new Object[]{ topicId},Integer.class);
+		}catch(Exception e){
+			logger.error("未获取到王国["+topicId+"]剩余价值，可能每日统计未完成",e);
+		}
+		return remain;
+	}
+	/**
+	 * 执行偷取王国价值
+	 * @author zhangjiwei
+	 * @date Jun 15, 2017
+	 * @param stealedCoins 偷取的金币数量。
+	 * @param topicId 王国ID
+	 * @return
+	 */
+	public void stealTopicPrice(int stealedCoins,long topicId) {
+		jdbcTemplate.update("update topic_data set steal_price=steal_price-? where topic_id=?",new Object[]{stealedCoins, topicId});
 	}
 }
