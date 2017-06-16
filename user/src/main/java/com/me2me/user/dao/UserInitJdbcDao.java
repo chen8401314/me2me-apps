@@ -252,4 +252,14 @@ public class UserInitJdbcDao extends BaseJdbcDao {
         String sql = "SELECT uid FROM emotion_record WHERE create_time >='"+dateStart+"' AND create_time<='"+dateEnd+"' GROUP BY uid ";
         return super.query(sql);
     }
+
+	public void modifyUserCoin(long uid , int coin) {
+		String sql = "UPDATE user_profile SET available_coin = ? WHERE uid = ? ";
+		jdbc.update(sql,coin,uid);
+	}
+
+	public void modifyUserLevel(long uid , int level) {
+		String sql = "UPDATE user_profile SET level = ? WHERE uid = ? ";
+		jdbc.update(sql,level,uid);
+	}
 }
