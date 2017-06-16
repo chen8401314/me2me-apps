@@ -102,6 +102,7 @@ import com.me2me.live.dto.TopicTransferRecordDto;
 import com.me2me.live.dto.TopicVoteInfoDto;
 import com.me2me.live.dto.UserAtListDTO;
 import com.me2me.live.dto.VoteInfoDto;
+import com.me2me.live.dto.StealResultDto.CurrentLevel;
 import com.me2me.live.event.AggregationPublishEvent;
 import com.me2me.live.event.CacheLiveEvent;
 import com.me2me.live.event.CoreAggregationRemindEvent;
@@ -6747,7 +6748,7 @@ public class LiveServiceImpl implements LiveService {
 		
 		DistributedLock lock = null;
 		try {
-			StealResultDto dto= new StealResultDto();
+			
 			lock = new DistributedLock(addr, "steal-topic-"+topicId);
 			lock.lock();
 			int coins=0;
@@ -6767,10 +6768,19 @@ public class LiveServiceImpl implements LiveService {
 			log.setUid(uid);
 			liveMybatisDao.addStealLog(log);
 			// 修改用户金币数
-			ModifyUserCoinDto modifyDetail=userService.modifyUserCoin(coins);
-			dto.setCurrentLevel(modifyDetail.getCurrentLevel());
-			dto.setUpgrade(modifyDetail.getUpgrade());
+			ModifyUserCoinDto modifyDetail=userService.modifyUserCoin(uid,coins);
+			
+			StealResultDto dto= new StealResultDto();
 			dto.setStealedCoins(coins);
+			dto.setUpgrade(modifyDetail.getUpgrade());
+			if(dto.getUpgrade()==1){
+				CurrentLevel currentLevel= new CurrentLevel();
+				currentLevel.setLevel(modifyDetail.getCurrentLevel());
+				currentLevel.setName(modifyDetail.getName());
+				currentLevel.setPermissions(modifyDetail.getPermissions());
+				dto.setCurrentLevel(currentLevel);
+			}
+			
 			return Response.success(dto);
 		} catch (Exception e) {
 			e.printStackTrace();

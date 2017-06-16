@@ -1,5 +1,7 @@
 package com.me2me.live.dto;
 
+import java.util.List;
+
 import com.me2me.common.web.BaseEntity;
 
 import lombok.Data;
@@ -15,7 +17,12 @@ public class StealResultDto implements BaseEntity{
 	private static final long serialVersionUID = 6369649571729593474L;
 
 	private int stealedCoins;
-    private int currentLevel;
     private int upgrade;
-	
+    private CurrentLevel currentLevel;
+    @Data
+    public static class CurrentLevel{
+    	private int level;
+    	private String name;
+    	private List<String> permissions;
+    }
 }
