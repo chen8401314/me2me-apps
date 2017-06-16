@@ -267,11 +267,12 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 		jdbc.update(sql,level,uid);
 	}
 
-	SimpleDateFormat sdf = new SimpleDateFormat("YYYY-mm-dd");
+	static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
 
 	// 获取今日米汤币累计值
 	public int getDayCoins(long uid) {
-		String sql = "select count(coin) as count from rule_log where uid = ? and DATE_FORMAT(create_time,'%Y-%m-%d') = ?";
+		String sql = "select sum(coin) as count from rule_log where uid = ? and DATE_FORMAT(create_time,'%Y-%m-%d') = ?";
 		String day = sdf.format(new Date());
 		return  Integer.valueOf(Lists.getSingle(super.query(sql,uid,day)).get("count").toString());
 	}

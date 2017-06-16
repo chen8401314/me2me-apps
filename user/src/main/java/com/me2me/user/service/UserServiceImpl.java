@@ -4025,9 +4025,13 @@ public class UserServiceImpl implements UserService {
             }
 
         }else{
-            throw new RuntimeException("超出规则上限");
+//            ModifyUserCoinDto modifyUserCoinDto =   new ModifyUserCoinDto();
+//            modifyUserCoinDto.setCurrentLevel(userProfile.getLevel());
+//            modifyUserCoinDto.setUpgrade(0);
+//            return modifyUserCoinDto;
+            return  modifyUserCoin(uid, 0);
         }
-        return null;
+        return  modifyUserCoin(uid, 0);
     }
 
 

@@ -4,6 +4,9 @@ import com.me2me.common.web.Response;
 import com.me2me.content.dto.*;
 import com.me2me.content.service.ContentService;
 import com.me2me.kafka.service.KafkaService;
+import com.me2me.user.dto.ModifyUserCoinDto;
+import com.me2me.user.rule.Rules;
+import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
 import com.me2me.web.utils.VersionUtil;
 
@@ -31,6 +34,9 @@ public class Contents extends BaseController {
 
     @Autowired
     private KafkaService kafkaService;
+
+    @Autowired
+    private UserService userService;
     /**
      * 精选接口(已废)
      * @return
@@ -79,7 +85,11 @@ public class Contents extends BaseController {
         contentDto.setForwardTitle(request.getForwardTitle());
         if(contentDto.getType() != 2) {
             // 用户UGC入口
-            return contentService.publish2(contentDto);
+            Response response = contentService.publish2(contentDto);
+            ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(contentDto.getUid(), Rules.coinRules.get(Rules.PUBLISH_UGC_KEY));
+            CreateContentSuccessDto createContentSuccessDto = (CreateContentSuccessDto)response.getData();
+            createContentSuccessDto.setModifyUserCoinDto(modifyUserCoinDto);
+            return response;
         }else{
             // 小编发布入口
             return contentService.editorPublish(contentDto);
