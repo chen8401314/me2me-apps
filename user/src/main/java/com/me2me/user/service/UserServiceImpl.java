@@ -3916,7 +3916,7 @@ public class UserServiceImpl implements UserService {
         MyLevelDto.InnerLevel preLevel = myLevelDto.createInnerLevel();
         if (userProfile.getLevel() > 1){
         preLevel.setLevel(userProfile.getLevel()-1);}
-        myLevelDto.setAvailabeCoin(userProfile.getAvailableCoin());
+        myLevelDto.setAvailableCoin(userProfile.getAvailableCoin());
         myLevelDto.setAvatar(Constant.QINIU_DOMAIN + "/"+ userProfile.getAvatar());
         String value = getAppConfigByKey(USER_PERMISSIONS);
         log.info("infos: " + value);
@@ -3968,7 +3968,8 @@ public class UserServiceImpl implements UserService {
     public ModifyUserCoinDto modifyUserCoin(long uid , int coin) {
 	    ModifyUserCoinDto modifyUserCoinDto = new ModifyUserCoinDto();
 	    UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
-	    int modifyCoin = userProfile.getAvailableCoin()+coin;
+        modifyUserCoinDto.setCurrentLevel(userProfile.getLevel());
+        int modifyCoin = userProfile.getAvailableCoin()+coin;
 	    userInitJdbcDao.modifyUserCoin(uid,modifyCoin);
         String permissions = getAppConfigByKey(USER_PERMISSIONS);
         UserPermissionDto userPermissionDto = JSON.parseObject(permissions, UserPermissionDto.class);
@@ -3980,7 +3981,7 @@ public class UserServiceImpl implements UserService {
                 modifyUserCoinDto.setCurrentLevel(userProfile.getLevel());
                 userInitJdbcDao.modifyUserLevel(uid,upLevel);
                 modifyUserCoinDto.setLevel(upLevel);
-                String levelPermissions = getAppConfigByKey("LEVEL"+upLevel);
+                String levelPermissions = getAppConfigByKey("LEVEL_"+upLevel);
                 PermissionDescriptionDto permissionDescriptionDto = JSON.parseObject(levelPermissions, PermissionDescriptionDto.class);
                 for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
                     if(nodeDto.getStatus()>0){
@@ -3988,12 +3989,9 @@ public class UserServiceImpl implements UserService {
                     }
                 }
                 modifyUserCoinDto.setPermissions(list);
-            }else {
-                modifyUserCoinDto.setUpgrade(0);
-                modifyUserCoinDto.setCurrentLevel(userProfile.getLevel());
+                break;
             }
         }
-
         return modifyUserCoinDto;
     }
 

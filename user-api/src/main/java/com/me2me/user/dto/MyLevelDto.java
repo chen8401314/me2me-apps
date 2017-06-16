@@ -17,7 +17,7 @@ public class MyLevelDto implements BaseEntity {
     //头像
     private  String avatar ;
     //当前米汤币
-    private  int availabeCoin ;
+    private  int availableCoin ;
     //下一等级所需米汤币
     private  int nextLevelCoin ;
 

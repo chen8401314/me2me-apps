@@ -259,7 +259,7 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 	}
 
 	public void modifyUserLevel(long uid , int level) {
-		String sql = "UPDATE user_profile SET level = ? WHERE uid = ? ";
+		String sql = "UPDATE user_profile SET `level` = ? WHERE uid = ? ";
 		jdbc.update(sql,level,uid);
 	}
 }
