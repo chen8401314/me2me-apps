@@ -3993,6 +3993,7 @@ public class UserServiceImpl implements UserService {
                 modifyUserCoinDto.setCurrentLevel(userProfile.getLevel());
             }
         }
+
         return modifyUserCoinDto;
     }
 
