@@ -37,18 +37,18 @@ public class Constant {
     /**
      * 上市王国价值配置项KEY
      */
-    public static final String LISTING_PRICE_KEY = "listing_price";
+    public static final String LISTING_PRICE_KEY = "LISTED_PRICE";
     /**
      * 用户每天可偷数量配置项key
      */
-    public static final String USER_STEAL_COIN_DAY_LIMIT_KEY = "user_steal_coin_day_limit";
+    public static final String USER_STEAL_COIN_DAY_LIMIT_KEY = "USER_STEAL_COIN_DAY_LIMIT";
     /**
      * 单次限制
      */
-    public static final String USER_STEAL_COIN_ONCE_LIMIT_KEY = "user_steal_coin_once_limit";
+    public static final String USER_STEAL_COIN_ONCE_LIMIT_KEY = "USER_STEAL_COIN_ONCE_LIMIT";
     /**
      * 每天可偷王国限制
      */
-    public static final String USER_STEAL_TOPIC_DAY_LIMIT_KEY = "user_steal_topic_day_limit";
+    public static final String USER_STEAL_TOPIC_DAY_LIMIT_KEY = "USER_STEAL_TOPIC_DAY_LIMIT";
     
 }
