@@ -2,11 +2,10 @@ package com.me2me.user.dao;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
+import com.me2me.common.utils.Lists;
+import com.me2me.user.model.Dictionary;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -144,6 +143,9 @@ public class UserMybatisDao {
     
     @Autowired
     private AppConfigMapper appConfigMapper;
+
+    @Autowired
+    private PermissionDetailsMapper permissionDetailsMapper;
     
     /**
      * 保存用户注册信息
@@ -1421,4 +1423,12 @@ public class UserMybatisDao {
 	public void updateAppConfig(AppConfig config){
 		appConfigMapper.updateByPrimaryKeySelective(config);
 	}
+
+    public PermissionDetails getPermissionByLevel(int level){
+	    PermissionDetailsExample example = new PermissionDetailsExample();
+	    PermissionDetailsExample.Criteria criteria =  example.createCriteria();
+	    criteria.andLevelEqualTo(level);
+        List<PermissionDetails> list = permissionDetailsMapper.selectByExample(example);
+        return Lists.getSingle(list);
+    }
 }

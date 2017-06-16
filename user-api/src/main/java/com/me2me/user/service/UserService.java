@@ -486,4 +486,12 @@ public interface UserService {
 
 	Response getMyLevel(long uid);
 
+
+	/**
+	 * 修改用户金币
+	 */
+	ModifyUserCoinDto modifyUserCoin(int coin);
+
+
+
 }

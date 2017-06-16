@@ -7,6 +7,7 @@ import java.net.UnknownHostException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.me2me.common.web.Request;
 import com.me2me.user.dto.*;
 import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -1008,7 +1009,8 @@ public class Users extends BaseController {
 
     @ResponseBody
     @RequestMapping(value = "/getMyLevel",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response getMyLevel(StealKingdomCoinRequest request){
+    public Response getMyLevel(GetMyLevelRequest request){
+
         return userService.getMyLevel(request.getUid());
     }
 

@@ -15,6 +15,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.me2me.user.dto.*;
+import com.me2me.user.model.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -67,43 +68,12 @@ import com.me2me.user.event.NoticeCountPushEvent;
 import com.me2me.user.event.NoticeMessagePushEvent;
 import com.me2me.user.event.PushExtraEvent;
 import com.me2me.user.event.WapxIosEvent;
-import com.me2me.user.model.AppConfig;
-import com.me2me.user.model.ApplicationSecurity;
-import com.me2me.user.model.Dictionary;
-import com.me2me.user.model.DictionaryType;
-import com.me2me.user.model.EmotionInfo;
-import com.me2me.user.model.EmotionRecord;
-import com.me2me.user.model.EntryPageConfig;
-import com.me2me.user.model.ImConfig;
-import com.me2me.user.model.IosWapx;
-import com.me2me.user.model.JpushToken;
-import com.me2me.user.model.MbtiMapping;
-import com.me2me.user.model.OpenDeviceCount;
-import com.me2me.user.model.SystemConfig;
-import com.me2me.user.model.ThirdPartUser;
-import com.me2me.user.model.User;
-import com.me2me.user.model.UserDevice;
-import com.me2me.user.model.UserFamous;
-import com.me2me.user.model.UserFollow;
-import com.me2me.user.model.UserGag;
-import com.me2me.user.model.UserHobby;
-import com.me2me.user.model.UserMbtiHistory;
-import com.me2me.user.model.UserNotice;
-import com.me2me.user.model.UserNoticeUnread;
-import com.me2me.user.model.UserProfile;
-import com.me2me.user.model.UserReport;
-import com.me2me.user.model.UserSeekFollow;
-import com.me2me.user.model.UserTags;
-import com.me2me.user.model.UserTagsDetails;
-import com.me2me.user.model.UserTagsRecord;
-import com.me2me.user.model.UserTips;
-import com.me2me.user.model.UserToken;
-import com.me2me.user.model.VersionChannelDownload;
-import com.me2me.user.model.VersionControl;
 import com.me2me.user.widget.MessageNotificationAdapter;
 
 import lombok.extern.slf4j.Slf4j;
 import sun.java2d.cmm.Profile;
+
+import javax.print.attribute.standard.PresentationDirection;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -156,6 +126,8 @@ public class UserServiceImpl implements UserService {
     private static final String USER_PERMISSIONS = "USER_PERMISSIONS";
 
     private  static  final  String LEVEL_DEFINITION = "LEVEL_DEFINITION";
+
+
 
     @Autowired
     private JPushService jPushService;
@@ -3939,15 +3911,14 @@ public class UserServiceImpl implements UserService {
 	    UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
 	    MyLevelDto myLevelDto = new MyLevelDto();
         MyLevelDto.InnerLevel currentLevel = myLevelDto.createInnerLevel();
-        currentLevel.setLevel( userProfile.getLevel());
+        currentLevel.setLevel(userProfile.getLevel());
         MyLevelDto.InnerLevel nextLevel = myLevelDto.createInnerLevel();
         nextLevel.setLevel( userProfile.getLevel()+1);
         MyLevelDto.InnerLevel preLevel = myLevelDto.createInnerLevel();
         if (userProfile.getLevel() > 1){
-
-        preLevel.setLevel( userProfile.getLevel()-1);}
+        preLevel.setLevel(userProfile.getLevel()-1);}
         myLevelDto.setAvailabeCoin(userProfile.getAvailableCoin());
-        myLevelDto.setAvatar(userProfile.getAvatar());
+        myLevelDto.setAvatar(Constant.QINIU_DOMAIN + "/"+ userProfile.getAvatar());
         String value = getAppConfigByKey(USER_PERMISSIONS);
         log.info("infos: " + value);
         UserPermissionDto userPermissionDto = JSON.parseObject(value, UserPermissionDto.class);
@@ -3967,9 +3938,60 @@ public class UserServiceImpl implements UserService {
         }
         myLevelDto.setCurrentLevel(currentLevel);
         if (userProfile.getLevel()>1){
-        myLevelDto.setPreLevel(preLevel);}
+            myLevelDto.setPreLevel(preLevel);
+        }
         myLevelDto.setNextLevel(nextLevel);
+        //获取权限内容
+        String level = userProfile.getLevel().toString();
+        String value2 = getAppConfigByKey("LEVEL_"+level);
+        PermissionDescriptionDto permissionDescriptionDto = JSON.parseObject(value2, PermissionDescriptionDto.class);
+        List<PermissionDescriptionDto.PermissionNodeDto> list = Lists.newArrayList();
+        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
+            if(nodeDto.getIsShow()==1){
+                nodeDto.setIsShow(null);
+                list.add(nodeDto);
+                if(nodeDto.getStatus()!=1){
+                    // 找寻哪个级别开通该功能
+                    int openLevel = checkIsOpenLevel(nodeDto.getName());
+                    nodeDto.setOpenLevel(openLevel);
+                }
+            }
+        }
+        permissionDescriptionDto.setNodes(list);
+
+        myLevelDto.setPermissions(permissionDescriptionDto);
+        //随机获取可偷王国id
         return Response.success(myLevelDto);
+    }
+
+    @Override
+    public ModifyUserCoinDto modifyUserCoin(int coin) {
+	    ModifyUserCoinDto modifyUserCoinDto = new ModifyUserCoinDto();
+	    modifyUserCoinDto.setCurrentLevel(1);
+	    modifyUserCoinDto.setUpgrade(0);
+        return modifyUserCoinDto;
+    }
+
+
+    private List<PermissionDescriptionDto> getPermissionConfig(int lastLevel){
+        List<PermissionDescriptionDto> ret = Lists.newArrayList();
+        for(int i = 1;i<=lastLevel;i++){
+            String configValue = getAppConfigByKey("LEVEL_"+i);
+            PermissionDescriptionDto permissionDescriptionDto = JSON.parseObject(configValue, PermissionDescriptionDto.class);
+            ret.add(permissionDescriptionDto);
+        }
+        return ret;
+    }
+    private int checkIsOpenLevel(String name){
+        List<PermissionDescriptionDto> config = getPermissionConfig(9);
+        for(PermissionDescriptionDto permissionDescriptionDto : config){
+            for(PermissionDescriptionDto.PermissionNodeDto node : permissionDescriptionDto.getNodes()){
+                if(node.getStatus()==1 && node.getName().equals(name)){
+                    return permissionDescriptionDto.getLevel();
+                }
+            }
+        }
+        return 0;
     }
 
 }

@@ -13,7 +13,7 @@ import java.util.List;
 @Data
 public class MyLevelDto implements BaseEntity {
 
-    private List<node> levels = Lists.newArrayList();
+    private PermissionDescriptionDto permissions;
     //头像
     private  String avatar ;
     //当前米汤币
@@ -27,6 +27,8 @@ public class MyLevelDto implements BaseEntity {
 
     private  InnerLevel nextLevel;
 
+    private  long stealTopicId;
+
 
     public InnerLevel createInnerLevel(){
         return new InnerLevel();
@@ -39,20 +41,4 @@ public class MyLevelDto implements BaseEntity {
 
         private  String  name ;
     }
-
-
-    @Data
-    public static  class  node {
-
-        private  long  id ;
-        //权限名称
-        private  String name ;
-        //是否拥有该权限 1 表示 拥有  0 表示 未拥有
-        private  int owner ;
-
-    }
-
-
-
-
 }

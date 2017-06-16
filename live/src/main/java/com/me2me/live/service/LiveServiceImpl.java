@@ -6729,17 +6729,20 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response rechargeToKingdom(RechargeToKingdomDto rechargeToKingdomDto) {
 
-
         UserProfile  userProfile = userService.getUserProfileByUid(rechargeToKingdomDto.getUid());
+
+        rechargeToKingdomDto.setAmount(userProfile.getAvailableCoin());
+
         Topic topic = getTopicById(rechargeToKingdomDto.getTopicId());
+
         if(topic == null || userProfile == null){
             return  Response.failure("王国或用户无效");
         }
-        // 判断当前的用户米汤币是否和传过来的米汤币相等
+        // 判断当前的王国是否是自己的王国.
         if(rechargeToKingdomDto.getUid() != topic.getUid()){
             return  Response.failure("王国无效");
         }
-        // 判断当前的王国是否是自己的王国.
+
         if(rechargeToKingdomDto.getAmount() == userProfile.getAvailableCoin()){
             liveLocalJdbcDao.rechargeToKingDom(rechargeToKingdomDto.getTopicId(),rechargeToKingdomDto.getAmount());
             liveLocalJdbcDao.zeroMyCoins(rechargeToKingdomDto.getUid());
