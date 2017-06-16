@@ -103,6 +103,7 @@ import com.me2me.live.dto.TopicVoteInfoDto;
 import com.me2me.live.dto.UserAtListDTO;
 import com.me2me.live.dto.VoteInfoDto;
 import com.me2me.live.dto.StealResultDto.CurrentLevel;
+import com.me2me.live.dto.StealResultDto.Permission;
 import com.me2me.live.event.AggregationPublishEvent;
 import com.me2me.live.event.CacheLiveEvent;
 import com.me2me.live.event.CoreAggregationRemindEvent;
@@ -6777,7 +6778,14 @@ public class LiveServiceImpl implements LiveService {
 				CurrentLevel currentLevel= new CurrentLevel();
 				currentLevel.setLevel(modifyDetail.getCurrentLevel());
 				currentLevel.setName(modifyDetail.getName());
-				currentLevel.setPermissions(modifyDetail.getPermissions());
+				List<String> permissionList = modifyDetail.getPermissions();
+				if(permissionList!=null ){
+					for(String str:permissionList){
+						Permission p= new Permission();
+						p.setName(str);
+						currentLevel.getPermissions().add(p);
+					}
+				}
 				dto.setCurrentLevel(currentLevel);
 			}
 			
