@@ -6814,7 +6814,7 @@ public class LiveServiceImpl implements LiveService {
 		dto.setTopicPrice(topic.getPrice());
 		dto.setTopicRMB(exchangeKingdomPrice(topic.getPrice()));
 		// 米汤上市界限
-		String listedPriceStr = userService.getAppConfigByKey("LISTED_PRICE");
+		String listedPriceStr = userService.getAppConfigByKey(Constant.LISTING_PRICE_KEY);
 		if (StringUtils.isEmpty(listedPriceStr)) {
 			return Response.failure("米汤上市界限配置错误！");
 		}
