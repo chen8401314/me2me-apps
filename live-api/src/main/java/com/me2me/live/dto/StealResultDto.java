@@ -14,8 +14,8 @@ import lombok.Data;
 public class StealResultDto implements BaseEntity{
 	private static final long serialVersionUID = 6369649571729593474L;
 
-	private long topicId;
 	private int stealedCoins;
-	private int userRealCoins;
-	private int kingdomRealCoins;
+    private int currentLevel;
+    private int upgrade;
+	
 }

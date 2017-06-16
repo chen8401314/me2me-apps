@@ -142,6 +142,7 @@ import com.me2me.live.service.exceptions.KingdomStealException;
 import com.me2me.search.service.SearchService;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.dto.EmotionInfoListDto;
+import com.me2me.user.dto.ModifyUserCoinDto;
 import com.me2me.user.dto.RechargeToKingdomDto;
 import com.me2me.user.model.EmotionInfo;
 import com.me2me.user.model.EmotionRecord;
@@ -6730,7 +6731,7 @@ public class LiveServiceImpl implements LiveService {
 			throw new KingdomStealException("用户已达到今日偷取上限了");
 		}
 		
-		int canStealCount = Math.max(userTodayRemain, topicRemainCoins);
+		int canStealCount = Math.min(userTodayRemain, topicRemainCoins);
 		canStealCount=Math.min(canStealCount, userOnceLimit);
 		// 判断王国剩余价值。
 		//随机数
@@ -6746,6 +6747,7 @@ public class LiveServiceImpl implements LiveService {
 		
 		DistributedLock lock = null;
 		try {
+			StealResultDto dto= new StealResultDto();
 			lock = new DistributedLock(addr, "steal-topic-"+topicId);
 			lock.lock();
 			int coins=0;
@@ -6754,7 +6756,6 @@ public class LiveServiceImpl implements LiveService {
 			}catch(Exception e){
 				return Response.failure(e.getMessage());
 			}
-			// 修改用户金币数
 			
 			// 修改王国可被偷数
 			this.liveLocalJdbcDao.stealTopicPrice(coins, topicId);
@@ -6765,8 +6766,10 @@ public class LiveServiceImpl implements LiveService {
 			log.setTopicId(topicId);
 			log.setUid(uid);
 			liveMybatisDao.addStealLog(log);
-			
-			StealResultDto dto= new StealResultDto();
+			// 修改用户金币数
+			ModifyUserCoinDto modifyDetail=userService.modifyUserCoin(coins);
+			dto.setCurrentLevel(modifyDetail.getCurrentLevel());
+			dto.setUpgrade(modifyDetail.getUpgrade());
 			dto.setStealedCoins(coins);
 			return Response.success(dto);
 		} catch (Exception e) {

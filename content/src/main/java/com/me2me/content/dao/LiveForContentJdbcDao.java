@@ -570,6 +570,7 @@ public class LiveForContentJdbcDao {
     	}
     	sb.append(") order by topic_id asc,id asc");
     	
+    	
     	return jdbcTemplate.queryForList(sb.toString());
     }
 

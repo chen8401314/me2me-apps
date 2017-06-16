@@ -3464,8 +3464,12 @@ private void localJpush(long toUid){
 		if(!StringUtils.isEmpty(listingPrice)){
 			int minPrice = Integer.parseInt(listingPrice);
 			List<Map<String,Object>> listingKingdoms= liveForContentJdbcDao.getListingKingodms(minPrice, 1, 30);
-			List<BasicKingdomInfo> listingKingdomList =kingdomBuider.buildKingdoms(listingKingdoms, uid);
-			result.setListingKingdoms(listingKingdomList);
+			if(listingKingdoms.size()>0){
+				List<BasicKingdomInfo> listingKingdomList =kingdomBuider.buildKingdoms(listingKingdoms, uid);
+				result.setListingKingdoms(listingKingdomList);
+			}else{
+				result.setListingKingdoms(new ArrayList<>());
+			}
 		}
 		if(vflag == 0){
 			if(result.getHottestCeKingdomData().size() > 0){

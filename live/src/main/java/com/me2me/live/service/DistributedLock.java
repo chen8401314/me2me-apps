@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
 public class DistributedLock implements Lock, Watcher{
 	private Logger logger = LoggerFactory.getLogger(DistributedLock.class);
 	private ZooKeeper zk;
-	private final static String root = "/live/locks";//根
+	private final static String root = "/live_locks";//根
 	private String lockName;//竞争资源的标志
 	private String waitNode;//等待前一个锁
 	private String myZnode;//当前锁
@@ -53,7 +53,7 @@ public class DistributedLock implements Lock, Watcher{
 	 * @param zk
 	 * @param lockName
 	 */
-	public DistributedLock(String config, String lockName){
+	public DistributedLock(String config, String lockName) throws Exception{
 		this.lockName = lockName;
 		// 创建一个与服务器的连接
 		 try {
@@ -63,12 +63,8 @@ public class DistributedLock implements Lock, Watcher{
 				// 创建根节点
 				zk.create(root, new byte[0], ZooDefs.Ids.OPEN_ACL_UNSAFE,CreateMode.PERSISTENT); 
 			}
-		} catch (IOException e) {
-			exception.add(e);
-		} catch (KeeperException e) {
-			exception.add(e);
-		} catch (InterruptedException e) {
-			exception.add(e);
+		} catch (Exception e) {
+			throw e;
 		}
 	}
 
