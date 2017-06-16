@@ -20,8 +20,9 @@ public class StealResultDto implements BaseEntity{
     private int upgrade;
     private CurrentLevel currentLevel;
     @Data
-    public static class CurrentLevel{
-    	private int level;
+    public static class CurrentLevel implements BaseEntity{
+		private static final long serialVersionUID = 1L;
+		private int level;
     	private String name;
     	private List<String> permissions;
     }
