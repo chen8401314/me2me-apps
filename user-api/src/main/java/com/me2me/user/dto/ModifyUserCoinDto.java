@@ -17,10 +17,7 @@ public class ModifyUserCoinDto implements BaseEntity {
 
     private int upgrade;
 
-    private int level;
 
-    private String name;
 
-    private List<String> permissions;
 
 }

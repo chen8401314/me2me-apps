@@ -15,6 +15,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+import com.me2me.user.rule.Rules;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -262,6 +263,10 @@ public class LiveServiceImpl implements LiveService {
         speakDto.setV_lv(profile.getvLv());
         //检查有没有出错的数据，如果有则删除出错数据
         contentService.clearData();
+
+
+
+
         return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status, ResponseStatus.USER_CREATE_LIVE_SUCCESS.message, speakDto);
     }
 
@@ -1067,6 +1072,8 @@ public class LiveServiceImpl implements LiveService {
         //2.0.7
         //直播信息保存
         //saveLiveDisplayData(speakDto);
+        //判断是否升级
+        userService.coinRule(speakDto.getUid(), Rules.coinRules.get(Rules.SPEAK_KEY));
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status, ResponseStatus.USER_SPEAK_SUCCESS.message, speakDto);
     }
     
@@ -6745,7 +6752,7 @@ public class LiveServiceImpl implements LiveService {
 	 */
 	@Override
 	public Response stealKingdomCoin(long uid,long topicId) {
-		String addr= zkAddr.replace("zookeeper://", "");
+		/*String addr= zkAddr.replace("zookeeper://", "");
 		
 		DistributedLock lock = null;
 		try {
@@ -6796,7 +6803,8 @@ public class LiveServiceImpl implements LiveService {
 		} finally {
 			if(lock != null)
 				lock.unlock();
-		}
+		}*/
+		return  null;
 	}
 
     @Override

@@ -16,6 +16,8 @@ import java.util.UUID;
 
 import com.me2me.user.dto.*;
 import com.me2me.user.model.*;
+import com.me2me.user.rule.CoinRule;
+import com.me2me.user.rule.Rules;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -71,8 +73,6 @@ import com.me2me.user.event.WapxIosEvent;
 import com.me2me.user.widget.MessageNotificationAdapter;
 
 import lombok.extern.slf4j.Slf4j;
-
-import javax.print.attribute.standard.PresentationDirection;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -1018,8 +1018,13 @@ public class UserServiceImpl implements UserService {
 //            log.info("follow push success");
             //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW.index,0,followDto.getSourceUid()));
 //            log.info("monitor success");
+            CoinRule coinRule =  Rules.coinRules.get(Rules.FOLLOW_USER_KEY);
+            coinRule.setExt(followDto.getTargetUid());
+            ModifyUserCoinDto modifyUserCoinDto = coinRule(followDto.getSourceUid(),coinRule);
             log.info("follow end ...");
-            return Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message);
+           Response response = Response.success(ResponseStatus.USER_FOLLOW_SUCCESS.status, ResponseStatus.USER_FOLLOW_SUCCESS.message);
+           response.setData(modifyUserCoinDto);
+           return response;
         }else if(followDto.getAction() == Specification.UserFollowAction.UN_FOLLOW.index){
             // 取消关注
             log.info("cancel follow");
@@ -3973,26 +3978,56 @@ public class UserServiceImpl implements UserService {
 	    userInitJdbcDao.modifyUserCoin(uid,modifyCoin);
         String permissions = getAppConfigByKey(USER_PERMISSIONS);
         UserPermissionDto userPermissionDto = JSON.parseObject(permissions, UserPermissionDto.class);
-        List<String> list = Lists.newArrayList();
         for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
             if (userProfile.getLevel() == userLevelDto.getLevel() && userProfile.getAvailableCoin()>=userLevelDto.getNeedCoins()){
                 modifyUserCoinDto.setUpgrade(1);
                 int upLevel = userProfile.getLevel()+1;
-                modifyUserCoinDto.setCurrentLevel(userProfile.getLevel());
                 userInitJdbcDao.modifyUserLevel(uid,upLevel);
-                modifyUserCoinDto.setLevel(upLevel);
-                String levelPermissions = getAppConfigByKey("LEVEL_"+upLevel);
-                PermissionDescriptionDto permissionDescriptionDto = JSON.parseObject(levelPermissions, PermissionDescriptionDto.class);
-                for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
-                    if(nodeDto.getStatus()>0){
-                        list.add(nodeDto.getName());
-                    }
-                }
-                modifyUserCoinDto.setPermissions(list);
+                modifyUserCoinDto.setCurrentLevel(upLevel);
                 break;
             }
         }
         return modifyUserCoinDto;
+    }
+
+    @Override
+    public ModifyUserCoinDto coinRule(long uid,CoinRule rule) {
+	    UserProfile userProfile = getUserProfileByUid(uid);
+	    // 根据等级获取今日上限值
+        String limits = getAppConfigByKey("GET_COIN_LEVEL_LIMITS");
+        List<Integer> array = JSON.parseArray(limits,Integer.class);
+        Map<Integer,Integer> map = Maps.newConcurrentMap();
+        for(int i = 0;i<array.size();i++){
+            map.put(i+1,array.get(i));
+        }
+        // 日志拉取今日的累计值
+        int allDayPoints = userInitJdbcDao.getDayCoins(uid);
+        if(allDayPoints < map.get(userProfile.getLevel())){
+            // 并且规则是否允许重复
+            if(!rule.isRepeatable()){
+                boolean result = userInitJdbcDao.isNotExistsRuleLogByDay(rule.getCode(),uid);
+                if(result) {
+                    //记录日志
+                    userInitJdbcDao.writeRuleLog(uid,rule);
+                    return  modifyUserCoin(uid, rule.getPoint());
+                }
+            }else{
+                if(rule.getExt()>0){
+                    boolean result = userInitJdbcDao.isNotExistsRuleLogByDay(rule.getCode(),uid,rule.getExt());
+                    if(result){
+                        userInitJdbcDao.writeRuleLog(uid,rule);
+                        return  modifyUserCoin(uid, rule.getPoint());
+                    }
+                }else{
+                    userInitJdbcDao.writeRuleLog(uid,rule);
+                    return  modifyUserCoin(uid, rule.getPoint());
+                }
+            }
+
+        }else{
+            throw new RuntimeException("超出规则上限");
+        }
+        return null;
     }
 
 

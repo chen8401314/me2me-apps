@@ -29,6 +29,8 @@ public class MyLevelDto implements BaseEntity {
 
     private  long stealTopicId;
 
+    private  long randomTopcId;
+
 
     public InnerLevel createInnerLevel(){
         return new InnerLevel();
