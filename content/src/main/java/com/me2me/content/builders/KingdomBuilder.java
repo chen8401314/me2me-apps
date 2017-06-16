@@ -1,5 +1,7 @@
 package com.me2me.content.builders;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -178,6 +180,7 @@ public class KingdomBuilder {
 				continue;
 			}
 			data.setPrice((Integer) topic.get("price"));
+			data.setPriceRMB(exchangeKingdomPrice(data.getPrice()));
 			data.setId(topicContent.getId());
 			data.setCid(topicContent.getId());
 			data.setTopicId(topicId);
@@ -206,7 +209,20 @@ public class KingdomBuilder {
 		}
 		return result;
 	}
-
+	
+	/**
+	 * 米汤币兑换人名币
+	 * @param price
+	 * @return
+	 */
+	public double exchangeKingdomPrice(int price) {
+		String  result =  userService.getAppConfigByKey("EXCHANGE_RATE");
+		if(StringUtils.isEmpty(result)){
+			return 0;
+		}
+		BigDecimal exchangeRate = new BigDecimal(result);
+		return new BigDecimal(price).divide(exchangeRate, 2, RoundingMode.HALF_UP).doubleValue();
+	}
 	// 判断核心圈身份
 	private int getInternalStatus(Map<String, Object> topic, long uid) {
 		int internalStatus = 0;

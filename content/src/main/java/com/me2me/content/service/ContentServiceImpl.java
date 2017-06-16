@@ -5873,4 +5873,16 @@ private void localJpush(long toUid){
 		}
 		return Response.success(result);
 	}
+	
+	@Override
+	public int getTopicMembersCount(long topicId){
+		List<Long> topicIdList = new ArrayList<Long>();
+		topicIdList.add(topicId);
+		Map<String, Long> map=  liveForContentJdbcDao.getTopicMembersCount(topicIdList);
+		if(map==null){
+			return 0;
+		}else{
+			return Integer.parseInt(map.get(""+topicId).toString());
+		}
+	}
 }

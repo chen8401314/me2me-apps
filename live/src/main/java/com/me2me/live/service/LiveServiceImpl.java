@@ -1,6 +1,8 @@
 package com.me2me.live.service;
 
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -13,7 +15,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-import com.me2me.user.dto.RechargeToKingdomDto;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +64,7 @@ import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.CreateVoteDto;
 import com.me2me.live.dto.CreateVoteResponeDto;
 import com.me2me.live.dto.DropAroundDto;
+import com.me2me.live.dto.GetKingdomPriceDto;
 import com.me2me.live.dto.GetLiveDetailDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
 import com.me2me.live.dto.GetLiveTimeLineDto2;
@@ -117,12 +119,16 @@ import com.me2me.live.model.Topic2;
 import com.me2me.live.model.TopicAggregation;
 import com.me2me.live.model.TopicAggregationApply;
 import com.me2me.live.model.TopicBarrage;
+import com.me2me.live.model.TopicData;
+import com.me2me.live.model.TopicDataExample;
 import com.me2me.live.model.TopicDroparound;
 import com.me2me.live.model.TopicDroparoundTrail;
+import com.me2me.live.model.TopicExample;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicFragmentExample;
 import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicNews;
+import com.me2me.live.model.TopicPriceHis;
 import com.me2me.live.model.TopicReadHis;
 import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicTagDetail;
@@ -132,9 +138,11 @@ import com.me2me.live.model.UserStealLog;
 import com.me2me.live.model.VoteInfo;
 import com.me2me.live.model.VoteOption;
 import com.me2me.live.model.VoteRecord;
+import com.me2me.live.service.exceptions.KingdomStealException;
 import com.me2me.search.service.SearchService;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.dto.EmotionInfoListDto;
+import com.me2me.user.dto.RechargeToKingdomDto;
 import com.me2me.user.model.EmotionInfo;
 import com.me2me.user.model.EmotionRecord;
 import com.me2me.user.model.SystemConfig;
@@ -473,7 +481,6 @@ public class LiveServiceImpl implements LiveService {
               } else {
             	  cacheService.hSet(topicNewsModel.getKey(), topicNewsModel.getField(), topicNewsModel.getValue());
               }
-        			
         	LiveCoverDto.TopicNewsElement  topicNewsElement = new LiveCoverDto.TopicNewsElement();
         	topicNewsElement.setId(topicNews.getId());
         	topicNewsElement.setContent(topicNews.getContent());
@@ -486,6 +493,28 @@ public class LiveServiceImpl implements LiveService {
         	topicNewsElement.setContentType(newsTopic.getType());
         	topicNewsElement.setInternalStatus(this.getUserInternalStatus(newsTopic.getCoreCircle(), uid));
         	liveCoverDto.getNewsTopList().add(topicNewsElement);
+		}
+        liveCoverDto.setTopicPrice(topic.getPrice());
+        liveCoverDto.setTopicRMB(exchangeKingdomPrice(topic.getPrice()));
+        TopicData topicData = liveMybatisDao.getTopicDataByTopicId(topicId);
+        int percentage=0;
+        if(topicData==null){
+        	liveCoverDto.setTopicPriceChanged(0);
+        }else{
+        	liveCoverDto.setTopicPriceChanged(topicData.getLastPriceIncr());
+        	percentage = new BigDecimal((liveMybatisDao.getLessPriceChangeTopicCount(topicData.getLastPriceIncr()) * 100.0 / liveMybatisDao.getTopicDataCount() ))
+    				.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+        }
+        liveCoverDto.setBeatTopicPercentage(percentage);
+        try {
+			int coins= getAliveCoinsForSteal(uid,topicId);
+			liveCoverDto.setIsSteal(1);
+		} catch (KingdomStealException e2) {
+			if(e2.getErrorCode()==KingdomStealException.KINGDOM_STEALED){
+				liveCoverDto.setIsSteal(2);
+			}
+		} catch(Exception e){
+			liveCoverDto.setIsSteal(0);
 		}
         
         return Response.success(ResponseStatus.GET_LIVE_COVER_SUCCESS.status, ResponseStatus.GET_LIVE_COVER_SUCCESS.message, liveCoverDto);
@@ -644,6 +673,28 @@ public class LiveServiceImpl implements LiveService {
         }else{
         	//暂不支持
         }
+        showLiveDto.setTopicPrice(topic.getPrice());
+        showLiveDto.setTopicRMB(exchangeKingdomPrice(topic.getPrice()));
+        TopicData topicData = liveMybatisDao.getTopicDataByTopicId(cid);
+        int percentage = 0;
+        if(topicData==null){
+        	showLiveDto.setTopicPriceChanged(0);
+        }else{
+        	showLiveDto.setTopicPriceChanged(topicData.getLastPriceIncr());
+        	percentage = new BigDecimal((liveMybatisDao.getLessPriceChangeTopicCount(topicData.getLastPriceIncr()) * 100.0 / liveMybatisDao.getTopicDataCount() ))
+    				.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+        }
+        showLiveDto.setBeatTopicPercentage(percentage);
+        try {
+			int coins= getAliveCoinsForSteal(uid,cid);
+			showLiveDto.setIsSteal(1);
+		} catch (KingdomStealException e2) {
+			if(e2.getErrorCode()==KingdomStealException.KINGDOM_STEALED){
+				showLiveDto.setIsSteal(2);
+			}
+		} catch(Exception e){
+			showLiveDto.setIsSteal(0);
+		}
         
         return Response.success(showLiveDto);
     }
@@ -6640,12 +6691,13 @@ public class LiveServiceImpl implements LiveService {
 		//判断用户能不能偷取王国
 		Topic topic = liveMybatisDao.getTopicById(topicId);
 		if(topic.getUid()==uid){
-			throw new RuntimeException("不能偷取自己的王国");
+			throw new KingdomStealException("不能偷取自己的王国");
 		}
 		// 本王国今日余额
-		int topicRemainCoins= 10; 		// todo: 此处待实现
+		int topicRemainCoins= this.liveLocalJdbcDao.getTopicRemainPrice(topicId);
+		
 		if(topicRemainCoins<=0){
-			throw new RuntimeException("王国已经达到今日偷取上限了");
+			throw new KingdomStealException("王国已经达到今日偷取上限了");
 		}
 		// 用户今天已偷
 		String day = DateUtil.date2string(new Date(), "yyyy-MM-dd");
@@ -6661,7 +6713,7 @@ public class LiveServiceImpl implements LiveService {
 			}
 		}
 		if(stealed){
-			throw new RuntimeException("不能重复偷取此王国");
+			throw new KingdomStealException(KingdomStealException.KINGDOM_STEALED,"不能重复偷取此王国");
 		}
 		// 每天可偷数量
 		int userDayLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_COIN_DAY_LIMIT_KEY));
@@ -6669,13 +6721,13 @@ public class LiveServiceImpl implements LiveService {
 		int userTopicLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_TOPIC_DAY_LIMIT_KEY));
 		
 		if(userStealLog.size()>=userTopicLimit){
-			throw new RuntimeException("用户已达到今日偷取王国次数上限了");
+			throw new KingdomStealException("用户已达到今日偷取王国次数上限了");
 		}
 		
 		int userTodayRemain=userDayLimit-stealedCoins;
 		
 		if(userTodayRemain<=0){
-			throw new RuntimeException("用户已达到今日偷取上限了");
+			throw new KingdomStealException("用户已达到今日偷取上限了");
 		}
 		
 		int canStealCount = Math.max(userTodayRemain, topicRemainCoins);
@@ -6705,7 +6757,7 @@ public class LiveServiceImpl implements LiveService {
 			// 修改用户金币数
 			
 			// 修改王国可被偷数
-			
+			this.liveLocalJdbcDao.stealTopicPrice(coins, topicId);
 			// 记录偷取日志
 			UserStealLog log = new UserStealLog();
 			log.setCreateTime(new Date());
@@ -6719,7 +6771,7 @@ public class LiveServiceImpl implements LiveService {
 			return Response.success(dto);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return Response.failure("未知错误，偷取失败");
+			return Response.failure(e.getMessage());
 		} finally {
 			if(lock != null)
 				lock.unlock();
@@ -6749,8 +6801,101 @@ public class LiveServiceImpl implements LiveService {
             // 更新完成后判断王国的数值是否达到上市标准.如果达标调用跑马灯接口
             return Response.success();
         }else {
-            return  Response.failure("充值米汤币与实际不符");
+            return Response.failure("充值米汤币与实际不符");
         }
     }
 
+    
+	@Override
+	public Response getKingdomPrice(long topicId) {
+		Topic topic = getTopicById(topicId);
+		if (topic == null) {
+			return Response.failure("找不到王国");
+		}
+		GetKingdomPriceDto dto = new GetKingdomPriceDto();
+		dto.setTitle(topic.getTitle());
+		dto.setTopicPrice(topic.getPrice());
+		dto.setTopicRMB(exchangeKingdomPrice(topic.getPrice()));
+		// 米汤上市界限
+		String listedPriceStr = userService.getAppConfigByKey(Constant.LISTING_PRICE_KEY);
+		if (StringUtils.isEmpty(listedPriceStr)) {
+			return Response.failure("米汤上市界限配置错误！");
+		}
+		int listedPrice = Integer.parseInt(listedPriceStr);
+		if (topic.getPrice() >= listedPrice) {
+			dto.setIsSell(1);
+			dto.setDistanceListed(0);
+		} else {
+			dto.setIsSell(0);
+			dto.setDistanceListed(listedPrice - topic.getPrice());
+		}
+		// 王国转让客服联系ID
+		String sellUidStr = userService.getAppConfigByKey("SELL_UID");
+		if (StringUtils.isEmpty(sellUidStr)) {
+			return Response.failure("王国转让客服联系ID配置错误！");
+		}
+		dto.setSellUid(Long.parseLong(sellUidStr));
+		List<TopicPriceHis> topicPriceChangedList = liveMybatisDao.getLastTenDaysTopicPrice(topicId);
+		for (int i = topicPriceChangedList.size(); i > 0; i--) {
+			TopicPriceHis topicPriceHis = topicPriceChangedList.get(i - 1);
+			GetKingdomPriceDto.TopicPriceChangeElement topicPriceChangeElement = GetKingdomPriceDto
+					.createTopicPriceChangeElement();
+			topicPriceChangeElement.setTopicPrice(topicPriceHis.getPrice());
+			dto.getTopicPriceChangedList().add(topicPriceChangeElement);
+		}
+		int topicCount = liveMybatisDao.getTopicCount();
+		int lessPriceTopicCount = liveMybatisDao.getLessPriceTopicCount(topic.getPrice());
+		int percentage = new BigDecimal((lessPriceTopicCount * 100.0 / topicCount))
+				.setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
+		dto.setBeatTopicPercentage(percentage);
+		TopicData topicData = liveMybatisDao.getTopicDataByTopicId(topicId);
+		if (topicData == null) {
+			dto.setTopicPriceChanged(0);
+			dto.setUpdateTextCount(0);
+			dto.setUpdateImageCount(0);
+			dto.setUpdateVoiceCount(0);
+			dto.setUpdateVideoCount(0);
+			dto.setVoteCount(0);
+			dto.setTeaseCount(0);
+			dto.setUpdateDaysCount(0);
+			dto.setReplyTextCount(0);
+			dto.setTopicUserCount(0);
+			dto.setReadCount(0);
+			dto.setShareCount(0);
+			dto.setOuterReadCount(0);
+			dto.setCareDegree(0);
+			dto.setApprovalDegree(0);
+		} else {
+			dto.setTopicPriceChanged(topicData.getLastPriceIncr());
+			dto.setUpdateTextCount(topicData.getUpdateTextLength());
+			dto.setUpdateImageCount(topicData.getUpdateImageCount());
+			dto.setUpdateVoiceCount(topicData.getUpdateAudioLength());
+			dto.setUpdateVideoCount(topicData.getUpdateVedioLength());
+			dto.setVoteCount(topicData.getUpdateVoteCount());
+			dto.setTeaseCount(topicData.getUpdateTeaseCount());
+			dto.setUpdateDaysCount(topicData.getUpdateDayCount());
+			dto.setReplyTextCount(topicData.getReviewTextLength());
+			dto.setTopicUserCount(contentService.getTopicMembersCount(topicId));
+			dto.setReadCount(liveLocalJdbcDao.getReadCount(topicId));
+			dto.setOuterReadCount(liveLocalJdbcDao.getReadCountOuter(topicId));
+			dto.setShareCount(0);
+			dto.setCareDegree(topicData.getDiligently());
+			dto.setApprovalDegree(topicData.getApprove());
+		}
+		return Response.success(dto);
+	}
+	
+	/**
+	 * 米汤币兑换人名币
+	 * @param price
+	 * @return
+	 */
+	public double exchangeKingdomPrice(int price) {
+		String  result =  userService.getAppConfigByKey("EXCHANGE_RATE");
+		if(StringUtils.isEmpty(result)){
+			return 0;
+		}
+		BigDecimal exchangeRate = new BigDecimal(result);
+		return new BigDecimal(price).divide(exchangeRate, 2, RoundingMode.HALF_UP).doubleValue();
+	}
 }

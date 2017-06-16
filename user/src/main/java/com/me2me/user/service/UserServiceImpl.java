@@ -71,7 +71,6 @@ import com.me2me.user.event.WapxIosEvent;
 import com.me2me.user.widget.MessageNotificationAdapter;
 
 import lombok.extern.slf4j.Slf4j;
-import sun.java2d.cmm.Profile;
 
 import javax.print.attribute.standard.PresentationDirection;
 

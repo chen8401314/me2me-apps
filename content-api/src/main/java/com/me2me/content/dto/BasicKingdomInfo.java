@@ -53,6 +53,10 @@ public class BasicKingdomInfo {
 	private int reviewCount;
 
 	private String introduced;
+	
 	private String tags;
+	
 	private Integer price;
+	
+	private double priceRMB;
 }

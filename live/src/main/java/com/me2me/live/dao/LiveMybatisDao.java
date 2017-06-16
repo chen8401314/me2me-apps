@@ -38,12 +38,14 @@ import com.me2me.live.mapper.TeaseInfoMapper;
 import com.me2me.live.mapper.TopicAggregationApplyMapper;
 import com.me2me.live.mapper.TopicAggregationMapper;
 import com.me2me.live.mapper.TopicBarrageMapper;
+import com.me2me.live.mapper.TopicDataMapper;
 import com.me2me.live.mapper.TopicDroparoundMapper;
 import com.me2me.live.mapper.TopicDroparoundTrailMapper;
 import com.me2me.live.mapper.TopicFragmentMapper;
 import com.me2me.live.mapper.TopicFragmentTemplateMapper;
 import com.me2me.live.mapper.TopicMapper;
 import com.me2me.live.mapper.TopicNewsMapper;
+import com.me2me.live.mapper.TopicPriceHisMapper;
 import com.me2me.live.mapper.TopicReadHisMapper;
 import com.me2me.live.mapper.TopicTagDetailMapper;
 import com.me2me.live.mapper.TopicTagMapper;
@@ -78,6 +80,8 @@ import com.me2me.live.model.TopicAggregationApplyExample;
 import com.me2me.live.model.TopicAggregationExample;
 import com.me2me.live.model.TopicBarrage;
 import com.me2me.live.model.TopicBarrageExample;
+import com.me2me.live.model.TopicData;
+import com.me2me.live.model.TopicDataExample;
 import com.me2me.live.model.TopicDroparound;
 import com.me2me.live.model.TopicDroparoundExample;
 import com.me2me.live.model.TopicDroparoundTrail;
@@ -89,6 +93,8 @@ import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicFragmentTemplateExample;
 import com.me2me.live.model.TopicNews;
 import com.me2me.live.model.TopicNewsExample;
+import com.me2me.live.model.TopicPriceHis;
+import com.me2me.live.model.TopicPriceHisExample;
 import com.me2me.live.model.TopicReadHis;
 import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicTagDetail;
@@ -203,6 +209,13 @@ public class LiveMybatisDao {
     
     @Autowired
     private TopicReadHisMapper topicReadHisMapper;
+    
+    @Autowired
+    private TopicPriceHisMapper topicPriceHisMapper;
+    
+    @Autowired
+    private TopicDataMapper topicDataMapper;
+    
 
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -1502,4 +1515,84 @@ public class LiveMybatisDao {
 	public void addStealLog(UserStealLog log) {
 		stealLogMapper.insert(log);
 	}
+	/**
+	 * 获取王国总数
+	 * @author chenxiang
+	 * @date 2017-06-15
+	 * @param 
+	 */
+    public int getTopicCount() {
+    	TopicExample example = new TopicExample();
+    	TopicExample.Criteria criteria = example.createCriteria();
+        criteria.andStatusEqualTo(0);
+        return topicMapper.countByExample(example);
+    }
+	/**
+	 * 获取比自己王国价值低的王国数
+	 * @author chenxiang
+	 * @date 2017-06-15
+	 * @param 
+	 */
+    public int getLessPriceTopicCount(int price) {
+    	TopicExample example = new TopicExample();
+    	TopicExample.Criteria criteria = example.createCriteria();
+        criteria.andStatusEqualTo(0);
+        criteria.andPriceLessThan(price);
+        return topicMapper.countByExample(example);
+    }
+    
+	/**
+	 * 查询王国最近10天价值
+	 * @author chenxiang
+	 * @date 2017-6-15
+	 * @param day
+	 * @return
+	 */
+	public List<TopicPriceHis> getLastTenDaysTopicPrice(long topicId) {
+		TopicPriceHisExample example = new TopicPriceHisExample();
+		TopicPriceHisExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        example.setOrderByClause("create_time desc limit 10");
+		return topicPriceHisMapper.selectByExample(example);
+	}
+	
+
+	/**
+	 * 查询王国价值详情
+	 * @author chenxiang
+	 * @date 2017-6-15
+	 * @param day
+	 * @return
+	 */
+	public TopicData getTopicDataByTopicId(long topicId) {
+		TopicDataExample example = new TopicDataExample();
+		TopicDataExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+		List<TopicData>  list = topicDataMapper.selectByExample(example);
+		return list.size()>0?list.get(0):null;
+	}
+	
+	/**
+	 * 获取王国价值总数
+	 * @author chenxiang
+	 * @date 2017-06-15
+	 * @param 
+	 */
+    public int getTopicDataCount() {
+    	TopicDataExample example = new TopicDataExample();
+    	TopicDataExample.Criteria criteria = example.createCriteria();
+        return topicDataMapper.countByExample(example);
+    }
+	/**
+	 * 获取增长比自己低的王国数
+	 * @author chenxiang
+	 * @date 2017-06-15
+	 * @param 
+	 */
+    public int getLessPriceChangeTopicCount(int price) {
+    	TopicDataExample example = new TopicDataExample();
+    	TopicDataExample.Criteria criteria = example.createCriteria();
+        criteria.andLastPriceIncrLessThan(price);
+        return topicDataMapper.countByExample(example);
+    }
 }
