@@ -3967,8 +3967,32 @@ public class UserServiceImpl implements UserService {
     @Override
     public ModifyUserCoinDto modifyUserCoin(long uid , int coin) {
 	    ModifyUserCoinDto modifyUserCoinDto = new ModifyUserCoinDto();
-	    modifyUserCoinDto.setCurrentLevel(1);
-	    modifyUserCoinDto.setUpgrade(0);
+	    UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+	    int modifyCoin = userProfile.getAvailableCoin()+coin;
+	    userInitJdbcDao.modifyUserCoin(uid,modifyCoin);
+        String permissions = getAppConfigByKey(USER_PERMISSIONS);
+        UserPermissionDto userPermissionDto = JSON.parseObject(permissions, UserPermissionDto.class);
+        List<String> list = Lists.newArrayList();
+        for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
+            if (userProfile.getLevel() == userLevelDto.getLevel() && userProfile.getAvailableCoin()>=userLevelDto.getNeedCoins()){
+                modifyUserCoinDto.setUpgrade(1);
+                int upLevel = userProfile.getLevel()+1;
+                modifyUserCoinDto.setCurrentLevel(userProfile.getLevel());
+                userInitJdbcDao.modifyUserLevel(uid,upLevel);
+                modifyUserCoinDto.setLevel(upLevel);
+                String levelPermissions = getAppConfigByKey("LEVEL"+upLevel);
+                PermissionDescriptionDto permissionDescriptionDto = JSON.parseObject(levelPermissions, PermissionDescriptionDto.class);
+                for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
+                    if(nodeDto.getStatus()>0){
+                        list.add(nodeDto.getName());
+                    }
+                }
+                modifyUserCoinDto.setPermissions(list);
+            }else {
+                modifyUserCoinDto.setUpgrade(0);
+                modifyUserCoinDto.setCurrentLevel(userProfile.getLevel());
+            }
+        }
         return modifyUserCoinDto;
     }
 
@@ -3993,5 +4017,6 @@ public class UserServiceImpl implements UserService {
         }
         return 0;
     }
+
 
 }
