@@ -3952,6 +3952,7 @@ public class UserServiceImpl implements UserService {
                 if(nodeDto.getStatus()!=1){
                     // 找寻哪个级别开通该功能
                     int openLevel = checkIsOpenLevel(nodeDto.getName());
+
                     nodeDto.setOpenLevel(openLevel);
                 }
             }
