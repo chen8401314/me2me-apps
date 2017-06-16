@@ -3965,7 +3965,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ModifyUserCoinDto modifyUserCoin(int coin) {
+    public ModifyUserCoinDto modifyUserCoin(long uid , int coin) {
 	    ModifyUserCoinDto modifyUserCoinDto = new ModifyUserCoinDto();
 	    modifyUserCoinDto.setCurrentLevel(1);
 	    modifyUserCoinDto.setUpgrade(0);

@@ -490,7 +490,7 @@ public interface UserService {
 	/**
 	 * 修改用户金币
 	 */
-	ModifyUserCoinDto modifyUserCoin(int coin);
+	ModifyUserCoinDto modifyUserCoin(long uid ,int coin);
 
 
 
