@@ -15,6 +15,7 @@ import java.util.Map;
 public class BangDanDto implements BaseEntity {
 
     private List<BangDanData> listData = Lists.newArrayList();
+    private List<BasicKingdomInfo> listPricedTopic = Lists.newArrayList();
 
 
     @Data
