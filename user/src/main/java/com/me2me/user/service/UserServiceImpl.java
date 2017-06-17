@@ -3968,7 +3968,7 @@ public class UserServiceImpl implements UserService {
         int randomKey = random.nextInt(randomList.size());
         Map<String,Object> map = (Map<String, Object>) randomList.get(randomKey);
         System.out.println((long)map.get("id"));
-        myLevelDto.setRandomTopcId((long)map.get("id"));
+        myLevelDto.setRandomTopicId((long)map.get("id"));
 
 
         return Response.success(myLevelDto);

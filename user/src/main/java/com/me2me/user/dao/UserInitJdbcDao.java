@@ -301,8 +301,8 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 	}
 
 	public List<Map<String, Object>> getCanStealTopicId(long uid) {
-		String sql = "SELECT topic_id FROM topic_data WHERE topic_id not IN (SELECT id FROM topic WHERE uid = ?) AND steal_price > 0";
-		return super.query(sql,uid);
+		String sql = "SELECT topic_id FROM topic_data WHERE topic_id not IN (SELECT id FROM topic WHERE uid = ? AND steal_price > 0) AND topic_id not in (SELECT topic_id FROM user_steal_log WHERE uid = ?)";
+		return super.query(sql,uid,uid);
 	}
 
 	public List<Map<String, Object>> getCanSpeakTopicId(long uid) {
