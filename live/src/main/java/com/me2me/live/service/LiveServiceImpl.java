@@ -15,7 +15,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-import com.me2me.user.rule.CoinRule;
 import com.me2me.user.rule.Rules;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -2724,7 +2723,7 @@ public class LiveServiceImpl implements LiveService {
         Topic topic = liveMybatisDao.getTopicById(getLiveTimeLineDto.getTopicId());
         List<LiveDisplayFragment> fragmentList = liveMybatisDao.getDisPlayFragmentByMode(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), topic.getUid());
         log.info("get getLiveTimeline2 data");
-        // buildTimeLine2(getLiveTimeLineDto, liveTimeLineDto, topic, fragmentList);
+       // buildTimeLine2(getLiveTimeLineDto, liveTimeLineDto, topic, fragmentList);
         log.info("buildLiveTimeLine2 success");
         List<TopicFragment> reviewList = liveMybatisDao.getTopicReviewByMode(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), topic.getUid());
         for (TopicFragment topicFragment : reviewList) {
@@ -2803,7 +2802,7 @@ public class LiveServiceImpl implements LiveService {
                 liveQRCodeDto.setLiveQrCodeUrl(Constant.QINIU_DOMAIN + "/" + topic.getQrcode());
             }
         } catch (Exception e) {
-            log.error("获取二维码失败",e);
+        	log.error("获取二维码失败",e);
             return Response.failure(ResponseStatus.QRCODE_FAILURE.status, ResponseStatus.QRCODE_FAILURE.message);
         }
         return Response.success(ResponseStatus.QRCODE_SUCCESS.status, ResponseStatus.QRCODE_SUCCESS.message, liveQRCodeDto);
@@ -2847,7 +2846,7 @@ public class LiveServiceImpl implements LiveService {
         log.info("get total records...");
         Topic topic = liveMybatisDao.getTopicById(getLiveDetailDto.getTopicId());
         if(null == topic){
-            return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
+        	return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
         }
 
         //消除红点
@@ -2867,40 +2866,40 @@ public class LiveServiceImpl implements LiveService {
 
         int ss = 0;//预防机制。。防止程序出错死循环
         while(true){
-            ss++;
-            if(ss > 100){//预计不会查询超过100页数据的，预防死循环
-                break;
-            }
-            List<TopicFragment> list = liveMybatisDao.getTopicFragmentForPage(getLiveDetailDto);
-            if(null == list || list.size() == 0){//理论上就是到底了
-                if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){
-                    if(ss == 1){//第一次循环就没拉到数据，那么说明就没有数据了。。这里要补全上下页
-                        liveDetailDto.getPageInfo().setEnd(getLiveDetailDto.getPageNo());
-                        LiveDetailDto.PageDetail pd = new LiveDetailDto.PageDetail();
-                        pd.setPage(getLiveDetailDto.getPageNo());
-                        pd.setRecords(0);
-                        pd.setIsFull(2);
-                        liveDetailDto.getPageInfo().getDetail().add(pd);
-                    }
-                    break;
-                }
-            }
-            int flag = buildLiveDetail(getLiveDetailDto,liveDetailDto,list, topic);
-            if(liveDetailDto.getLiveElements().size() >= offset){
-                break;
-            }
-            if(flag == 1){
-                break;
-            }
-            //还没满，则继续查询上一页或下一页
-            if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){
-                getLiveDetailDto.setPageNo(getLiveDetailDto.getPageNo() + 1);
-            }else{
-                getLiveDetailDto.setPageNo(getLiveDetailDto.getPageNo() - 1);
-                if(getLiveDetailDto.getPageNo() < 1){
-                    break;//向上拉到顶了
-                }
-            }
+        	ss++;
+        	if(ss > 100){//预计不会查询超过100页数据的，预防死循环
+        		break;
+        	}
+        	List<TopicFragment> list = liveMybatisDao.getTopicFragmentForPage(getLiveDetailDto);
+        	if(null == list || list.size() == 0){//理论上就是到底了
+        		if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){
+	        		if(ss == 1){//第一次循环就没拉到数据，那么说明就没有数据了。。这里要补全上下页
+	        			liveDetailDto.getPageInfo().setEnd(getLiveDetailDto.getPageNo());
+	        			LiveDetailDto.PageDetail pd = new LiveDetailDto.PageDetail();
+	        	        pd.setPage(getLiveDetailDto.getPageNo());
+	        	        pd.setRecords(0);
+	        	        pd.setIsFull(2);
+	        	        liveDetailDto.getPageInfo().getDetail().add(pd);
+	        		}
+	        		break;
+        		}
+        	}
+        	int flag = buildLiveDetail(getLiveDetailDto,liveDetailDto,list, topic);
+        	if(liveDetailDto.getLiveElements().size() >= offset){
+        		break;
+        	}
+        	if(flag == 1){
+        		break;
+        	}
+        	//还没满，则继续查询上一页或下一页
+        	if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){
+        		getLiveDetailDto.setPageNo(getLiveDetailDto.getPageNo() + 1);
+        	}else{
+        		getLiveDetailDto.setPageNo(getLiveDetailDto.getPageNo() - 1);
+        		if(getLiveDetailDto.getPageNo() < 1){
+            		break;//向上拉到顶了
+            	}
+        	}
         }
 
         //将当前用户针对于本王国的相关消息置为已读
@@ -2919,29 +2918,29 @@ public class LiveServiceImpl implements LiveService {
         long lastFragmentId = 0;
 
         if(getLiveUpdateDto.getSinceId()>0){
-            //newestId,totalCount
-            String value = cacheService.hGet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + getLiveUpdateDto.getTopicId());
-            long newestFragmentId = 0;
-            int cacheTotalCount = 0;
-            if(null != value && !"".equals(value)){
-                String[] tmp = value.split(",");
-                if(tmp.length == 2){
-                    newestFragmentId = Long.valueOf(tmp[0]);
-                    cacheTotalCount = Integer.valueOf(tmp[1]);
-                }
-            }
-            if(newestFragmentId == 0 || newestFragmentId > getLiveUpdateDto.getSinceId()){//没有缓存，或缓存里的数据比传递过来的新，则重新拉取
-                Map<String,Long> result  = liveMybatisDao.countFragmentByTopicIdWithSince(getLiveUpdateDto);
+        	//newestId,totalCount
+        	String value = cacheService.hGet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + getLiveUpdateDto.getTopicId());
+        	long newestFragmentId = 0;
+        	int cacheTotalCount = 0;
+        	if(null != value && !"".equals(value)){
+        		String[] tmp = value.split(",");
+        		if(tmp.length == 2){
+        			newestFragmentId = Long.valueOf(tmp[0]);
+        			cacheTotalCount = Integer.valueOf(tmp[1]);
+        		}
+        	}
+        	if(newestFragmentId == 0 || newestFragmentId > getLiveUpdateDto.getSinceId()){//没有缓存，或缓存里的数据比传递过来的新，则重新拉取
+        		Map<String,Long> result  = liveMybatisDao.countFragmentByTopicIdWithSince(getLiveUpdateDto);
                 totalRecords = result.get("total_records").intValue();
                 updateRecords = result.get("update_records").intValue();
                 lastFragmentId = result.get("lastFragmentId").longValue();
-            }else{
-                totalRecords = cacheTotalCount;
-                updateRecords = 0;//没有更新，则更新数为0
-                lastFragmentId = newestFragmentId;
-            }
+        	}else{
+        		totalRecords = cacheTotalCount;
+        		updateRecords = 0;//没有更新，则更新数为0
+        		lastFragmentId = newestFragmentId;
+        	}
         }else {
-            Map<String,Long> result  = liveMybatisDao.countFragmentByTopicIdWithSince(getLiveUpdateDto);
+        	Map<String,Long> result  = liveMybatisDao.countFragmentByTopicIdWithSince(getLiveUpdateDto);
             totalRecords = result.get("total_records").intValue();
             updateRecords = result.get("update_records").intValue();
             lastFragmentId = result.get("lastFragmentId").longValue();
@@ -2970,35 +2969,35 @@ public class LiveServiceImpl implements LiveService {
 
         List<Long> uidList = new ArrayList<Long>();
         for (TopicFragment topicFragment : fragmentList) {
-            if(!uidList.contains(topicFragment.getUid())){
-                uidList.add(topicFragment.getUid());
-            }
-            if (null != topicFragment.getAtUid() && topicFragment.getAtUid() != 0) {
-                if(topicFragment.getType() == Specification.LiveSpeakType.AT.index
-                        || topicFragment.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
-                        || topicFragment.getType() == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
-                    if(!uidList.contains(topicFragment.getAtUid())){
-                        uidList.add(topicFragment.getAtUid());
-                    }
-                }
-            }
-        }
+    		if(!uidList.contains(topicFragment.getUid())){
+    			uidList.add(topicFragment.getUid());
+    		}
+    		if (null != topicFragment.getAtUid() && topicFragment.getAtUid() != 0) {
+            	if(topicFragment.getType() == Specification.LiveSpeakType.AT.index
+            			|| topicFragment.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
+            			|| topicFragment.getType() == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
+            		if(!uidList.contains(topicFragment.getAtUid())){
+            			uidList.add(topicFragment.getAtUid());
+            		}
+            	}
+    		}
+    	}
 
-        Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
-        List<UserProfile> userList = userService.getUserProfilesByUids(uidList);
-        if(null != userList && userList.size() > 0){
-            for(UserProfile u : userList){
-                userMap.put(u.getUid().toString(), u);
-            }
-        }
+    	Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+    	List<UserProfile> userList = userService.getUserProfilesByUids(uidList);
+    	if(null != userList && userList.size() > 0){
+    		for(UserProfile u : userList){
+    			userMap.put(u.getUid().toString(), u);
+    		}
+    	}
 
-        //一次性查询关注信息
+    	//一次性查询关注信息
         Map<String, String> followMap = new HashMap<String, String>();
         List<UserFollow> userFollowList = userService.getAllFollows(getLiveDetailDto.getUid(), uidList);
         if(null != userFollowList && userFollowList.size() > 0){
-            for(UserFollow uf : userFollowList){
-                followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
-            }
+        	for(UserFollow uf : userFollowList){
+        		followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+        	}
         }
 
 
@@ -3013,67 +3012,67 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setStatus(status);
             liveElement.setId(topicFragment.getId());
             if(status==0){
-                //删除的不要了
+            	//删除的不要了
                 //liveDetailDto.getLiveElements().add(liveElement);
                 continue;
             }
 
             //系统灰条过滤处理（预防低版本）
             if(getLiveDetailDto.getVersionFlag() < 1){//低于V2.2.2版本
-                //系统灰条和足迹不展示
-                if(topicFragment.getType() == 51&&topicFragment.getContentType()==16){//足迹
-                    liveElement.setStatus(0);
-                    continue;
-                }else if(topicFragment.getType() == 1000){//系统灰条
-                    liveElement.setStatus(0);
-                    continue;
-                }
+            	//系统灰条和足迹不展示
+            	if(topicFragment.getType() == 51&&topicFragment.getContentType()==16){//足迹
+            		liveElement.setStatus(0);
+            		continue;
+            	}else if(topicFragment.getType() == 1000){//系统灰条
+            		liveElement.setStatus(0);
+            		continue;
+            	}
             }
             //表情包过滤处理（预防低版本）
             if(getLiveDetailDto.getVersionFlag() < 2){//低于V2.2.4版本
-                if(topicFragment.getType() == 51 || topicFragment.getType() == 52){
-                    if(topicFragment.getContentType() == 17 || topicFragment.getContentType() == 18){//表情包
-                        liveElement.setStatus(0);
-                        continue;
-                    }
-                }
+            	if(topicFragment.getType() == 51 || topicFragment.getType() == 52){
+            		if(topicFragment.getContentType() == 17 || topicFragment.getContentType() == 18){//表情包
+            			liveElement.setStatus(0);
+                		continue;
+            		}
+            	}
             }
             //逗一逗和投票（预防低版本）
             if(getLiveDetailDto.getVersionFlag() < 3){//低于V2.2.5版本
-                if(topicFragment.getType() == 51 || topicFragment.getType() == 52){
-                    if(topicFragment.getContentType() == 20){//逗一逗
-                        liveElement.setStatus(0);
-                        continue;
-                    }
-                }
-                if(topicFragment.getType() == 52){
-                    if(topicFragment.getContentType() == 19){//投票
-                        liveElement.setStatus(0);
-                        continue;
-                    }
-                }
+            	if(topicFragment.getType() == 51 || topicFragment.getType() == 52){
+            		if(topicFragment.getContentType() == 20){//逗一逗
+            			liveElement.setStatus(0);
+                		continue;
+            		}
+            	}
+            	if(topicFragment.getType() == 52){
+            		if(topicFragment.getContentType() == 19){//投票
+            			liveElement.setStatus(0);
+                		continue;
+            		}
+            	}
             }
             //逗一逗自动播放状态
             int teaseStatus = 0;
             if((topicFragment.getType() == 51 || topicFragment.getType() == 52) && topicFragment.getContentType() == 20){
-                JSONObject extraJson  = 	 JSONObject.parseObject(topicFragment.getExtra());
-                if((getLiveDetailDto.getUid()+"").equals(extraJson.getString("uid"))){
-                    TeaseAutoPlayStatusModel teaseAutoPlayStatusModel =  new TeaseAutoPlayStatusModel(topicFragment.getId(), "0");
-                    String isTeaseStatus = cacheService.hGet(teaseAutoPlayStatusModel.getKey(), teaseAutoPlayStatusModel.getField());
-                    if (!StringUtils.isEmpty(isTeaseStatus)) {
-                        teaseStatus=0;
-                    } else {
-                        teaseStatus=1;
-                        cacheService.hSet(teaseAutoPlayStatusModel.getKey(), teaseAutoPlayStatusModel.getField(), teaseAutoPlayStatusModel.getValue());
-                    }
-                }
+               JSONObject extraJson  = 	 JSONObject.parseObject(topicFragment.getExtra());
+               if((getLiveDetailDto.getUid()+"").equals(extraJson.getString("uid"))){
+            	TeaseAutoPlayStatusModel teaseAutoPlayStatusModel =  new TeaseAutoPlayStatusModel(topicFragment.getId(), "0");
+            	String isTeaseStatus = cacheService.hGet(teaseAutoPlayStatusModel.getKey(), teaseAutoPlayStatusModel.getField());
+            	  if (!StringUtils.isEmpty(isTeaseStatus)) {
+            		  teaseStatus=0;
+                  } else {
+                	  teaseStatus=1;
+                	  cacheService.hSet(teaseAutoPlayStatusModel.getKey(), teaseAutoPlayStatusModel.getField(), teaseAutoPlayStatusModel.getValue());
+                  }
+               }
             }
             liveElement.setTeaseStatus(teaseStatus);
 
             userProfile = userMap.get(String.valueOf(uid));
             liveElement.setUid(uid);
             if(null != userProfile){
-                liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            	liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                 liveElement.setNickName(userProfile.getNickName());
                 liveElement.setV_lv(userProfile.getvLv());
             }
@@ -3085,9 +3084,9 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setCreateTime(topicFragment.getCreateTime());
             liveElement.setType(topicFragment.getType());
             if(null != followMap.get(getLiveDetailDto.getUid()+"_"+topicFragment.getUid())){
-                liveElement.setIsFollowed(1);
+            	liveElement.setIsFollowed(1);
             }else{
-                liveElement.setIsFollowed(0);
+            	liveElement.setIsFollowed(0);
             }
             liveElement.setContentType(topicFragment.getContentType());
             liveElement.setFragmentId(topicFragment.getId());
@@ -3096,20 +3095,20 @@ public class LiveServiceImpl implements LiveService {
 
             liveElement.setInternalStatus(getInternalStatus(topic, uid));
             if (null != topicFragment.getAtUid() && topicFragment.getAtUid() > 0){
-                if(topicFragment.getType() == Specification.LiveSpeakType.AT.index
-                        || topicFragment.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
-                        || topicFragment.getType() == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
-                    atUser = userMap.get(topicFragment.getAtUid().toString());
-                    if(null != atUser){
-                        liveElement.setAtUid(atUser.getUid());
-                        liveElement.setAtNickName(atUser.getNickName());
-                    }
-                }
+            	if(topicFragment.getType() == Specification.LiveSpeakType.AT.index
+            			|| topicFragment.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
+            			|| topicFragment.getType() == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
+	                atUser = userMap.get(topicFragment.getAtUid().toString());
+	                if(null != atUser){
+	                	liveElement.setAtUid(atUser.getUid());
+		                liveElement.setAtNickName(atUser.getNickName());
+	                }
+            	}
             }
             if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){
-                liveDetailDto.getLiveElements().add(liveElement);
+            	liveDetailDto.getLiveElements().add(liveElement);
             }else{
-                liveDetailDto.getLiveElements().add(count, liveElement);
+            	liveDetailDto.getLiveElements().add(count, liveElement);
             }
             liveElement.setScore(topicFragment.getScore());
             count++;
@@ -3124,13 +3123,13 @@ public class LiveServiceImpl implements LiveService {
         //判断是否到底或到顶
         int result = 2;
         if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){//向下拉，那么返回的数据不满50条说明到底了
-            if(fragmentList.size() < getLiveDetailDto.getOffset()){
-                result = 1;
-            }
+        	if(fragmentList.size() < getLiveDetailDto.getOffset()){
+        		result = 1;
+        	}
         }else{//向上拉，那么page到第一页时说明就到顶了
-            if(getLiveDetailDto.getPageNo() <= 1){
-                result = 1;
-            }
+        	if(getLiveDetailDto.getPageNo() <= 1){
+        		result = 1;
+        	}
         }
 
         return result;
@@ -3164,57 +3163,57 @@ public class LiveServiceImpl implements LiveService {
         return Response.success();
     }
 
-    @Override
-    public Response createKingdom(CreateKingdomDto createKingdomDto) {
-        log.info("createKingdom start...");
-        if(StringUtils.isEmpty(createKingdomDto.getLiveImage()) || StringUtils.isEmpty(createKingdomDto.getTitle())){
-            log.info("liveImage or title is empty");
-            return Response.failure(ResponseStatus.KINGDOM_CREATE_FAILURE.status, ResponseStatus.KINGDOM_CREATE_FAILURE.message);
+	@Override
+	public Response createKingdom(CreateKingdomDto createKingdomDto) {
+		log.info("createKingdom start...");
+		if(StringUtils.isEmpty(createKingdomDto.getLiveImage()) || StringUtils.isEmpty(createKingdomDto.getTitle())){
+        	log.info("liveImage or title is empty");
+        	return Response.failure(ResponseStatus.KINGDOM_CREATE_FAILURE.status, ResponseStatus.KINGDOM_CREATE_FAILURE.message);
         }
 
-        boolean isDouble = false;
-        int type = 0;
-        long uid2 = 0;
-        String cExtraJson = createKingdomDto.getCExtra();
-        JSONObject cExtraObj = null;
-        //判断特殊王国条件
-        if(createKingdomDto.getKType() != Specification.KingdomType.NORMAL.index
-                && createKingdomDto.getKType() != Specification.KingdomType.AGGREGATION.index){
-            log.info("special kingdom check start...");
-            //目前特殊王国就7天活动，故目前只要判断7天活动王国规则即可
-            if(StringUtils.isEmpty(cExtraJson)){
-                log.info("cExtra is null");
-                return Response.failure(ResponseStatus.KINGDOM_CREATE_FAILURE.status, ResponseStatus.KINGDOM_CREATE_FAILURE.message);
-            }
-            cExtraObj = JSON.parseObject(cExtraJson);
-            type = cExtraObj.getIntValue("type");
-            if(null != cExtraObj.get("uid2")){
-                uid2 = cExtraObj.getLongValue("uid2");
-            }
+		boolean isDouble = false;
+		int type = 0;
+		long uid2 = 0;
+		String cExtraJson = createKingdomDto.getCExtra();
+		JSONObject cExtraObj = null;
+		//判断特殊王国条件
+		if(createKingdomDto.getKType() != Specification.KingdomType.NORMAL.index
+				&& createKingdomDto.getKType() != Specification.KingdomType.AGGREGATION.index){
+			log.info("special kingdom check start...");
+			//目前特殊王国就7天活动，故目前只要判断7天活动王国规则即可
+			if(StringUtils.isEmpty(cExtraJson)){
+				log.info("cExtra is null");
+				return Response.failure(ResponseStatus.KINGDOM_CREATE_FAILURE.status, ResponseStatus.KINGDOM_CREATE_FAILURE.message);
+			}
+			cExtraObj = JSON.parseObject(cExtraJson);
+			type = cExtraObj.getIntValue("type");
+			if(null != cExtraObj.get("uid2")){
+				uid2 = cExtraObj.getLongValue("uid2");
+			}
 
-            Response resp = null;
-            if(type == Specification.ActivityKingdomType.SPRINGKING.index){
-                //春节王国
-                resp = activityService.checkUserActivityKindom4Spring(createKingdomDto.getUid());
-            }else{
-                resp = activityService.checkUserActivityKindom(createKingdomDto.getUid(), type, uid2);
-            }
+			Response resp = null;
+			if(type == Specification.ActivityKingdomType.SPRINGKING.index){
+				//春节王国
+				resp = activityService.checkUserActivityKindom4Spring(createKingdomDto.getUid());
+			}else{
+				resp = activityService.checkUserActivityKindom(createKingdomDto.getUid(), type, uid2);
+			}
 
-            if(null == resp){
-                return Response.failure(ResponseStatus.KINGDOM_CREATE_FAILURE.status, ResponseStatus.KINGDOM_CREATE_FAILURE.message);
-            }else if(resp.getCode() == 500){
-                return Response.failure(ResponseStatus.KINGDOM_CREATE_FAILURE.status, (String)resp.getData());
-            }
-            if(type == Specification.ActivityKingdomType.DOUBLEKING.index){
-                isDouble = true;
-            }
-            log.info("special kingdom check end...");
-        }
+			if(null == resp){
+				return Response.failure(ResponseStatus.KINGDOM_CREATE_FAILURE.status, ResponseStatus.KINGDOM_CREATE_FAILURE.message);
+			}else if(resp.getCode() == 500){
+				return Response.failure(ResponseStatus.KINGDOM_CREATE_FAILURE.status, (String)resp.getData());
+			}
+			if(type == Specification.ActivityKingdomType.DOUBLEKING.index){
+				isDouble = true;
+			}
+			log.info("special kingdom check end...");
+		}
 
-        Date now = new Date();
-        log.info("create cover..");
-        Topic topic = new Topic();
-        topic.setTitle(createKingdomDto.getTitle());
+		Date now = new Date();
+		log.info("create cover..");
+		Topic topic = new Topic();
+		topic.setTitle(createKingdomDto.getTitle());
         topic.setLiveImage(createKingdomDto.getLiveImage());
         topic.setUid(createKingdomDto.getUid());
         topic.setStatus(Specification.LiveStatus.LIVING.index);
@@ -3224,13 +3223,13 @@ public class LiveServiceImpl implements LiveService {
         JSONArray array = new JSONArray();
         array.add(createKingdomDto.getUid());
         if(isDouble){
-            array.add(uid2);
+        	array.add(uid2);
         }
         topic.setCoreCircle(array.toString());
         //聚合版本新加属性
         int kingdomType = Specification.KingdomType.NORMAL.index;
         if(createKingdomDto.getKType() == Specification.KingdomType.AGGREGATION.index){
-            kingdomType = Specification.KingdomType.AGGREGATION.index;
+        	kingdomType = Specification.KingdomType.AGGREGATION.index;
         }
         topic.setType(kingdomType);
         topic.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);//目前默认公开的，等以后有需求的再说
@@ -3265,12 +3264,12 @@ public class LiveServiceImpl implements LiveService {
         long lastFragmentId = 0;
         long total = 0;
         if(createKingdomDto.getContentType() == 0){
-            TopicFragment topicFragment = new TopicFragment();
-            topicFragment.setFragment(createKingdomDto.getFragment());
-            topicFragment.setUid(createKingdomDto.getUid());
-            topicFragment.setType(0);//第一次发言肯定是主播发言
-            topicFragment.setContentType(0);
-            topicFragment.setTopicId(topic.getId());
+        	TopicFragment topicFragment = new TopicFragment();
+        	topicFragment.setFragment(createKingdomDto.getFragment());
+        	topicFragment.setUid(createKingdomDto.getUid());
+        	topicFragment.setType(0);//第一次发言肯定是主播发言
+        	topicFragment.setContentType(0);
+        	topicFragment.setTopicId(topic.getId());
             topicFragment.setBottomId(0l);
             topicFragment.setTopId(0l);
             topicFragment.setSource(createKingdomDto.getSource());
@@ -3280,178 +3279,173 @@ public class LiveServiceImpl implements LiveService {
             lastFragmentId = topicFragment.getId();
             total++;
         }else{//图片
-            String[] imgs = createKingdomDto.getFragment().split(";");
-            Map<String, String> map = new HashMap<String, String>();
-            String extra = createKingdomDto.getExtra();
-            if(!StringUtils.isEmpty(extra)){
-                JSONArray obj = JSON.parseArray(extra);
-                if(!obj.isEmpty()){
-                    for(int i=0;i<obj.size();i++){
-                        map.put(String.valueOf(i), obj.getJSONObject(i).toJSONString());
-                    }
-                }
-            }
+        	String[] imgs = createKingdomDto.getFragment().split(";");
+        	Map<String, String> map = new HashMap<String, String>();
+        	String extra = createKingdomDto.getExtra();
+        	if(!StringUtils.isEmpty(extra)){
+        		JSONArray obj = JSON.parseArray(extra);
+        		if(!obj.isEmpty()){
+        			for(int i=0;i<obj.size();i++){
+        				map.put(String.valueOf(i), obj.getJSONObject(i).toJSONString());
+        			}
+        		}
+        	}
 
-            if(null != imgs && imgs.length > 0){
-                TopicFragment topicFragment = null;
-                String e = null;
-                for(int i=0;i<imgs.length;i++){
-                    topicFragment = new TopicFragment();
-                    topicFragment.setFragmentImage(imgs[i]);
-                    topicFragment.setUid(createKingdomDto.getUid());
-                    topicFragment.setType(0);//第一次发言肯定是主播发言
-                    topicFragment.setContentType(1);
-                    topicFragment.setTopicId(topic.getId());
+        	if(null != imgs && imgs.length > 0){
+        		TopicFragment topicFragment = null;
+        		String e = null;
+        		for(int i=0;i<imgs.length;i++){
+        			topicFragment = new TopicFragment();
+                	topicFragment.setFragmentImage(imgs[i]);
+                	topicFragment.setUid(createKingdomDto.getUid());
+                	topicFragment.setType(0);//第一次发言肯定是主播发言
+                	topicFragment.setContentType(1);
+                	topicFragment.setTopicId(topic.getId());
                     topicFragment.setBottomId(0l);
                     topicFragment.setTopId(0l);
                     topicFragment.setSource(createKingdomDto.getSource());
                     topicFragment.setCreateTime(now);
                     e = map.get(String.valueOf(i));
                     if(null == e){
-                        e = "";
+                    	e = "";
                     }
                     topicFragment.setExtra(e);
                     liveMybatisDao.createTopicFragment(topicFragment);
                     lastFragmentId = topicFragment.getId();
                     total++;
-                }
-            }
+        		}
+        	}
         }
 
         //特殊王国需要做一点特殊处理
         if(createKingdomDto.getKType() != Specification.KingdomType.NORMAL.index
-                && createKingdomDto.getKType() != Specification.KingdomType.AGGREGATION.index){
-            if(type == Specification.ActivityKingdomType.SPRINGKING.index){
-                activityService.createActivityKingdom4Spring(topic.getId(), createKingdomDto.getUid());
-            }else{
-                activityService.createActivityKingdom(topic.getId(), createKingdomDto.getUid(), type, uid2);
-            }
+        		&& createKingdomDto.getKType() != Specification.KingdomType.AGGREGATION.index){
+        	if(type == Specification.ActivityKingdomType.SPRINGKING.index){
+        		activityService.createActivityKingdom4Spring(topic.getId(), createKingdomDto.getUid());
+        	}else{
+        		activityService.createActivityKingdom(topic.getId(), createKingdomDto.getUid(), type, uid2);
+        	}
         }
 
         //--add update kingdom cache -- modify by zcl -- begin --
-        String value = lastFragmentId + "," + total;
+		String value = lastFragmentId + "," + total;
         cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
         //--add update kingdom cache -- modify by zcl -- end --
 
         //add kingdom tags -- begin --
         if(!StringUtils.isEmpty(createKingdomDto.getTags())){
-            String[] tags = createKingdomDto.getTags().split(";");
-            if(null != tags && tags.length > 0){
-                TopicTag topicTag = null;
-                TopicTagDetail tagDetail = null;
-                for(String tag : tags){
-                    tag = tag.trim();
-                    if(!StringUtils.isEmpty(tag)){
-                        topicTag = liveMybatisDao.getTopicTagByTag(tag);
-                        if(null == topicTag){
-                            topicTag = new TopicTag();
-                            topicTag.setTag(tag);
-                            liveMybatisDao.insertTopicTag(topicTag);
-                        }
-                    }
-                    tagDetail = new TopicTagDetail();
-                    tagDetail.setTag(tag);
-                    tagDetail.setTagId(topicTag.getId());
-                    tagDetail.setTopicId(topic.getId());
-                    tagDetail.setUid(createKingdomDto.getUid());
-                    liveMybatisDao.insertTopicTagDetail(tagDetail);
-                }
-            }
+        	String[] tags = createKingdomDto.getTags().split(";");
+        	if(null != tags && tags.length > 0){
+        		TopicTag topicTag = null;
+        		TopicTagDetail tagDetail = null;
+        		for(String tag : tags){
+        			tag = tag.trim();
+        			if(!StringUtils.isEmpty(tag)){
+        				topicTag = liveMybatisDao.getTopicTagByTag(tag);
+        				if(null == topicTag){
+        					topicTag = new TopicTag();
+        					topicTag.setTag(tag);
+        					liveMybatisDao.insertTopicTag(topicTag);
+        				}
+        			}
+        			tagDetail = new TopicTagDetail();
+        			tagDetail.setTag(tag);
+        			tagDetail.setTagId(topicTag.getId());
+        			tagDetail.setTopicId(topic.getId());
+        			tagDetail.setUid(createKingdomDto.getUid());
+        			liveMybatisDao.insertTopicTagDetail(tagDetail);
+        		}
+        	}
         }
         //add kingdom tags -- end --
 
         log.info("createKingdom end");
-        CoinRule coinRule =Rules.coinRules.get(Rules.CREATE_KING_KEY);
-        coinRule.setExt(createKingdomDto.getUid());
-        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(createKingdomDto.getUid(), Rules.coinRules.get(Rules.CREATE_KING_KEY));
-        Response response = Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status, ResponseStatus.USER_CREATE_LIVE_SUCCESS.message, speakDto2);
-        response.setData(modifyUserCoinDto);
-        return response;
-    }
+        return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status, ResponseStatus.USER_CREATE_LIVE_SUCCESS.message, speakDto2);
+	}
 
-    @Override
-    public Response kingdomSearch(long currentUid, KingdomSearchDTO searchDTO){
-        List<Map<String,Object>> topicList = new ArrayList<Map<String,Object>>();
-        boolean first = false;
-        if(searchDTO.getUpdateTime() <= 0){//第一次
-            searchDTO.setUpdateTime(Long.MAX_VALUE);
-            first = true;
-        }
-        Map<String, String> topMap = new HashMap<String, String>();//母查子第一次需要
-        Map<String, String> publishMap = new HashMap<String, String>();//子查母需要
-        if(searchDTO.getSearchScene() == 0){
-            //母查子的第一次需要先将置顶的全部查询出来
-            if(searchDTO.getTopicId() > 0 && searchDTO.getTopicType() == 2){//母查子
-                if(first){//第一次
-                    List<Map<String,Object>> topList = liveLocalJdbcDao.searchTopics(searchDTO, 1);
-                    if(null != topList && topList.size() > 0){
-                        for(Map<String,Object> t : topList){
-                            topMap.put(String.valueOf(t.get("id")), "1");
-                        }
-                        topicList.addAll(topList);
-                    }
-                    List<Map<String,Object>> noList = liveLocalJdbcDao.searchTopics(searchDTO, 0);
-                    if(null != noList && noList.size() > 0){
-                        topicList.addAll(noList);
-                    }
-                }else{
-                    topicList = liveLocalJdbcDao.searchTopics(searchDTO, 0);
-                }
-            }else{
-                topicList = liveLocalJdbcDao.searchTopics(searchDTO, -1);
-            }
-            if(searchDTO.getTopicId() > 0 && searchDTO.getTopicType()==1){//子查母需要知道子对于母是否开启了内容下发
-                List<TopicAggregation> list = liveMybatisDao.getTopicAggregationsBySubTopicId(searchDTO.getTopicId());
-                if(null != list && list.size() > 0){
-                    for(TopicAggregation ta : list){
-                        if(ta.getIsPublish() == 0){
-                            publishMap.put(String.valueOf(ta.getTopicId()), "1");
-                        }
-                    }
-                }
-            }
-        }else{
-            if(searchDTO.getSearchScene() == 7){
-                topicList = liveLocalJdbcDao.getRecTopicByTag(searchDTO.getTopicId(), searchDTO.getUpdateTime(), 20, 0);//查询推荐的个人王国
-            }else{
-                topicList = liveLocalJdbcDao.getKingdomListBySearchScene(currentUid, searchDTO);
-            }
-        }
+	@Override
+	public Response kingdomSearch(long currentUid, KingdomSearchDTO searchDTO){
+		List<Map<String,Object>> topicList = new ArrayList<Map<String,Object>>();
+		boolean first = false;
+		if(searchDTO.getUpdateTime() <= 0){//第一次
+			searchDTO.setUpdateTime(Long.MAX_VALUE);
+			first = true;
+		}
+		Map<String, String> topMap = new HashMap<String, String>();//母查子第一次需要
+		Map<String, String> publishMap = new HashMap<String, String>();//子查母需要
+		if(searchDTO.getSearchScene() == 0){
+			//母查子的第一次需要先将置顶的全部查询出来
+			if(searchDTO.getTopicId() > 0 && searchDTO.getTopicType() == 2){//母查子
+				if(first){//第一次
+					List<Map<String,Object>> topList = liveLocalJdbcDao.searchTopics(searchDTO, 1);
+					if(null != topList && topList.size() > 0){
+						for(Map<String,Object> t : topList){
+							topMap.put(String.valueOf(t.get("id")), "1");
+						}
+						topicList.addAll(topList);
+					}
+					List<Map<String,Object>> noList = liveLocalJdbcDao.searchTopics(searchDTO, 0);
+					if(null != noList && noList.size() > 0){
+						topicList.addAll(noList);
+					}
+				}else{
+					topicList = liveLocalJdbcDao.searchTopics(searchDTO, 0);
+				}
+			}else{
+				topicList = liveLocalJdbcDao.searchTopics(searchDTO, -1);
+			}
+			if(searchDTO.getTopicId() > 0 && searchDTO.getTopicType()==1){//子查母需要知道子对于母是否开启了内容下发
+				List<TopicAggregation> list = liveMybatisDao.getTopicAggregationsBySubTopicId(searchDTO.getTopicId());
+				if(null != list && list.size() > 0){
+					for(TopicAggregation ta : list){
+						if(ta.getIsPublish() == 0){
+							publishMap.put(String.valueOf(ta.getTopicId()), "1");
+						}
+					}
+				}
+			}
+		}else{
+			if(searchDTO.getSearchScene() == 7){
+				topicList = liveLocalJdbcDao.getRecTopicByTag(searchDTO.getTopicId(), searchDTO.getUpdateTime(), 20, 0);//查询推荐的个人王国
+			}else{
+				topicList = liveLocalJdbcDao.getKingdomListBySearchScene(currentUid, searchDTO);
+			}
+		}
 
-        ShowTopicSearchDTO showTopicSearchDTO = new ShowTopicSearchDTO();
-        //先将场景需要的一些信息不全，再处理检索列表
-        if(searchDTO.getSearchScene() > 0){
-            if(searchDTO.getSearchScene() == 2 && searchDTO.getTopicId() > 0){//聚合王国被动场景
-                //需要被检索王国的子王国数
-                int acCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId(searchDTO.getTopicId());
-                showTopicSearchDTO.setAcCount(acCount);
-            }else if(searchDTO.getSearchScene() == 4 && searchDTO.getTopicId() > 0){//个人王国被动场景
-                //需要被检索王国的母王国数
-                int ceCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId2(searchDTO.getTopicId());
-                showTopicSearchDTO.setCeCount(ceCount);
-            }else if(searchDTO.getSearchScene() == 7 && searchDTO.getTopicId() > 0){//聚合王国新主动场景
-                //需要被检索王国的子王国数
-                int acCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId(searchDTO.getTopicId());
-                showTopicSearchDTO.setAcCount(acCount);
-            }
-        }
-        if(null != topicList && topicList.size() > 0){
-            this.builderTopicSearch(currentUid, showTopicSearchDTO, topicList, topMap, publishMap);
-        }
+		ShowTopicSearchDTO showTopicSearchDTO = new ShowTopicSearchDTO();
+		//先将场景需要的一些信息不全，再处理检索列表
+    	if(searchDTO.getSearchScene() > 0){
+    		if(searchDTO.getSearchScene() == 2 && searchDTO.getTopicId() > 0){//聚合王国被动场景
+    			//需要被检索王国的子王国数
+    			int acCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId(searchDTO.getTopicId());
+    			showTopicSearchDTO.setAcCount(acCount);
+    		}else if(searchDTO.getSearchScene() == 4 && searchDTO.getTopicId() > 0){//个人王国被动场景
+    			//需要被检索王国的母王国数
+    			int ceCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId2(searchDTO.getTopicId());
+    			showTopicSearchDTO.setCeCount(ceCount);
+    		}else if(searchDTO.getSearchScene() == 7 && searchDTO.getTopicId() > 0){//聚合王国新主动场景
+    			//需要被检索王国的子王国数
+    			int acCount = liveLocalJdbcDao.getTopicAggregationCountByTopicId(searchDTO.getTopicId());
+    			showTopicSearchDTO.setAcCount(acCount);
+    		}
+    	}
+		if(null != topicList && topicList.size() > 0){
+			this.builderTopicSearch(currentUid, showTopicSearchDTO, topicList, topMap, publishMap);
+		}
 
-        if(searchDTO.getVersionFlag() < 2){
-            if(showTopicSearchDTO.getResultList().size() > 0){
-                for(ShowTopicSearchDTO.TopicElement e : showTopicSearchDTO.getResultList()){
-                    e.setTags(null);
-                }
-            }
-        }
+		if(searchDTO.getVersionFlag() < 2){
+			if(showTopicSearchDTO.getResultList().size() > 0){
+				for(ShowTopicSearchDTO.TopicElement e : showTopicSearchDTO.getResultList()){
+					e.setTags(null);
+				}
+			}
+		}
 
-        return Response.success(showTopicSearchDTO);
-    }
+		return Response.success(showTopicSearchDTO);
+	}
 
 
-    @Override
+	@Override
     public Response settings(long uid, long topicId, int vflag) {
         SettingsDto dto = new SettingsDto();
         Topic topic = liveMybatisDao.getTopicById(topicId);
@@ -3468,14 +3462,14 @@ public class LiveServiceImpl implements LiveService {
             topicIdList.add(Long.valueOf(topicId));
             Map<String, Long> memberMap = liveLocalJdbcDao.getTopicMembersCount(topicIdList);
             if(null != memberMap && memberMap.size() > 0){
-                if(null != memberMap.get(String.valueOf(topicId))){
-                    favoriteCount = memberMap.get(String.valueOf(topicId));
-                }
+            	if(null != memberMap.get(String.valueOf(topicId))){
+            		favoriteCount = memberMap.get(String.valueOf(topicId));
+            	}
             }
             if(favoriteCount.longValue() > 0){
-                dto.setFavoriteCount(favoriteCount.intValue() + 1);
+            	dto.setFavoriteCount(favoriteCount.intValue() + 1);
             }else{
-                dto.setFavoriteCount(1);
+            	dto.setFavoriteCount(1);
             }
             TopicCountDTO topicCountDTO = activityService.getTopicCount(topicId);
             dto.setTopicCount(topicCountDTO.getUpdateCount());
@@ -3499,28 +3493,28 @@ public class LiveServiceImpl implements LiveService {
             dto.setAcAuditType(topic.getAcAuditType());
             //标签
             if(vflag > 0){
-                String tags = "";
-                List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetailsByTopicId(topicId);
-                if(topicTagDetails != null && topicTagDetails.size() > 0){
-                    StringBuilder builder = new StringBuilder();
-                    for (TopicTagDetail detail : topicTagDetails){
-                        String tag = detail.getTag();
-                        if(tags.equals("")){
-                            tags = builder.append(tag).toString();
-                        }else {
-                            builder.append(";"+tag);
-                        }
-                    }
-                    dto.setTags(builder.toString());
-                }
+	            String tags = "";
+	            List<TopicTagDetail> topicTagDetails = liveMybatisDao.getTopicTagDetailsByTopicId(topicId);
+	            if(topicTagDetails != null && topicTagDetails.size() > 0){
+	                StringBuilder builder = new StringBuilder();
+	                for (TopicTagDetail detail : topicTagDetails){
+	                    String tag = detail.getTag();
+	                    if(tags.equals("")){
+	                        tags = builder.append(tag).toString();
+	                    }else {
+	                        builder.append(";"+tag);
+	                    }
+	                }
+	                dto.setTags(builder.toString());
+	            }
             }
             log.info("get settings success");
         }
         return Response.success(dto);
     }
 
-    @Override
-    public Response settingModify(SettingModifyDto dto) {
+	@Override
+	public Response settingModify(SettingModifyDto dto) {
         //每个人都能操作
         if (dto.getAction() == Specification.SettingModify.PUSH.index) {
             int pushType = Integer.valueOf(dto.getParams()).intValue();
@@ -3539,222 +3533,222 @@ public class LiveServiceImpl implements LiveService {
             }
             return Response.success();
         }
-        Topic topic = liveMybatisDao.getTopicById(dto.getTopicId());
-        if (null != topic && topic.getUid() == dto.getUid()) {
-            // 国王操作
-            if (dto.getAction() == Specification.SettingModify.COVER.index) {
-                topic.setLiveImage(dto.getParams());
-                liveMybatisDao.updateTopic(topic);
-                liveLocalJdbcDao.updateTopicContentCover(topic.getId(), dto.getParams());
-                log.info("update cover success");
+		Topic topic = liveMybatisDao.getTopicById(dto.getTopicId());
+		if (null != topic && topic.getUid() == dto.getUid()) {
+			// 国王操作
+			if (dto.getAction() == Specification.SettingModify.COVER.index) {
+				topic.setLiveImage(dto.getParams());
+				liveMybatisDao.updateTopic(topic);
+				liveLocalJdbcDao.updateTopicContentCover(topic.getId(), dto.getParams());
+				log.info("update cover success");
                 LiveParamsDto paramsDto = new LiveParamsDto();
                 paramsDto.setCoverImage(Constant.QINIU_DOMAIN+"/"+dto.getParams());
-                return Response.success(paramsDto);
-            } else if (dto.getAction() == Specification.SettingModify.SUMMARY.index) {
-                topic.setSummary(dto.getParams());
-                liveMybatisDao.updateTopic(topic);
-                log.info("update Summary success");
+				return Response.success(paramsDto);
+			} else if (dto.getAction() == Specification.SettingModify.SUMMARY.index) {
+				topic.setSummary(dto.getParams());
+				liveMybatisDao.updateTopic(topic);
+				log.info("update Summary success");
 
-                // 更新成功需要在当前王国中插入一条国王发言
-                if (!StringUtils.isEmpty(dto.getParams())) {
-                    TopicFragment topicFragment = new TopicFragment();
-                    topicFragment.setFragment("王国简介修改:" + dto.getParams());
-                    topicFragment.setUid(dto.getUid());
-                    topicFragment.setType(0);// 第一次发言肯定是主播发言
-                    topicFragment.setContentType(0);// 文本
-                    topicFragment.setTopicId(topic.getId());
-                    topicFragment.setBottomId(0l);
-                    topicFragment.setTopId(0l);
-                    topicFragment.setSource(0);
-                    // topicFragment.setExtra();
-                    topicFragment.setCreateTime(new Date());
-                    liveMybatisDao.createTopicFragment(topicFragment);
-                    long lastFragmentId = topicFragment.getId();
+				// 更新成功需要在当前王国中插入一条国王发言
+				if (!StringUtils.isEmpty(dto.getParams())) {
+					TopicFragment topicFragment = new TopicFragment();
+					topicFragment.setFragment("王国简介修改:" + dto.getParams());
+					topicFragment.setUid(dto.getUid());
+					topicFragment.setType(0);// 第一次发言肯定是主播发言
+					topicFragment.setContentType(0);// 文本
+					topicFragment.setTopicId(topic.getId());
+					topicFragment.setBottomId(0l);
+					topicFragment.setTopId(0l);
+					topicFragment.setSource(0);
+					// topicFragment.setExtra();
+					topicFragment.setCreateTime(new Date());
+					liveMybatisDao.createTopicFragment(topicFragment);
+					long lastFragmentId = topicFragment.getId();
 
-                    //王国修改简介，肯定是国王操作，这里需要更新更新时间
-                    Calendar calendar = Calendar.getInstance();
-                    topic.setUpdateTime(calendar.getTime());
-                    topic.setLongTime(calendar.getTimeInMillis());
-                    liveMybatisDao.updateTopic(topic);
+					//王国修改简介，肯定是国王操作，这里需要更新更新时间
+					Calendar calendar = Calendar.getInstance();
+					topic.setUpdateTime(calendar.getTime());
+					topic.setLongTime(calendar.getTimeInMillis());
+					liveMybatisDao.updateTopic(topic);
 
-                    // 更新缓存
-                    int total = liveMybatisDao.countFragmentByTopicId(topic.getId());
-                    String value = lastFragmentId + "," + total;
-                    cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
+					// 更新缓存
+					int total = liveMybatisDao.countFragmentByTopicId(topic.getId());
+					String value = lastFragmentId + "," + total;
+					cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
 
-                    SpeakNewEvent speakNewEvent = new SpeakNewEvent();
+					SpeakNewEvent speakNewEvent = new SpeakNewEvent();
                     speakNewEvent.setTopicId(topicFragment.getTopicId());
-                    speakNewEvent.setType(topicFragment.getType());
-                    speakNewEvent.setContentType(topicFragment.getContentType());
-                    speakNewEvent.setUid(topicFragment.getUid());
-                    speakNewEvent.setFragmentId(lastFragmentId);
-                    speakNewEvent.setFragmentContent(topicFragment.getFragment());
-                    speakNewEvent.setFragmentExtra(topicFragment.getExtra());
+                	speakNewEvent.setType(topicFragment.getType());
+                	speakNewEvent.setContentType(topicFragment.getContentType());
+                	speakNewEvent.setUid(topicFragment.getUid());
+                	speakNewEvent.setFragmentId(lastFragmentId);
+                	speakNewEvent.setFragmentContent(topicFragment.getFragment());
+                	speakNewEvent.setFragmentExtra(topicFragment.getExtra());
                     applicationEventBus.post(speakNewEvent);
-                }
+				}
 
-                return Response.success();
-            } else if (dto.getAction() == Specification.SettingModify.TAGS.index) {
-                log.info("暂时不考虑标签");
-            }  else if (dto.getAction() == Specification.SettingModify.AGVERIFY.index) {
-                topic.setCeAuditType(Integer.valueOf(dto.getParams()));
-                liveMybatisDao.updateTopic(topic);
-                log.info("update CeAuditType success");
-                return Response.success();
-            } else if (dto.getAction() == Specification.SettingModify.VERIFY.index) {
-                topic.setAcAuditType(Integer.valueOf(dto.getParams()));
-                liveMybatisDao.updateTopic(topic);
-                log.info("update AcAuditType success");
-                return Response.success();
-            } else if (dto.getAction() == Specification.SettingModify.ISSUED_MESSAGE.index) {
-                // 下发消息
-                topic.setAcPublishType(Integer.valueOf(dto.getParams()));
-                liveMybatisDao.updateTopic(topic);
-                log.info("update AcPublishType success");
-                return Response.success();
-            }else if(dto.getAction() == Specification.SettingModify.LIVE_NAME.index){
+				return Response.success();
+			} else if (dto.getAction() == Specification.SettingModify.TAGS.index) {
+				log.info("暂时不考虑标签");
+			}  else if (dto.getAction() == Specification.SettingModify.AGVERIFY.index) {
+				topic.setCeAuditType(Integer.valueOf(dto.getParams()));
+				liveMybatisDao.updateTopic(topic);
+				log.info("update CeAuditType success");
+				return Response.success();
+			} else if (dto.getAction() == Specification.SettingModify.VERIFY.index) {
+				topic.setAcAuditType(Integer.valueOf(dto.getParams()));
+				liveMybatisDao.updateTopic(topic);
+				log.info("update AcAuditType success");
+				return Response.success();
+			} else if (dto.getAction() == Specification.SettingModify.ISSUED_MESSAGE.index) {
+				// 下发消息
+				topic.setAcPublishType(Integer.valueOf(dto.getParams()));
+				liveMybatisDao.updateTopic(topic);
+				log.info("update AcPublishType success");
+				return Response.success();
+			}else if(dto.getAction() == Specification.SettingModify.LIVE_NAME.index){
                 topic.setTitle(dto.getParams());
                 liveMybatisDao.updateTopic(topic);
                 liveLocalJdbcDao.updateTopicContentTitle(topic.getId(), dto.getParams());
                 log.info("update live success");
                 return Response.success();
             }
-        } else {
-            return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
-        }
+		} else {
+			return Response.failure(ResponseStatus.YOU_ARE_NOT_KING.status, ResponseStatus.YOU_ARE_NOT_KING.message);
+		}
 
-        return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
-    }
+		return Response.failure(ResponseStatus.ACTION_NOT_SUPPORT.status, ResponseStatus.ACTION_NOT_SUPPORT.message);
+	}
 
     private void builderTopicSearch(long uid, ShowTopicSearchDTO showTopicSearchDTO, List<Map<String,Object>> topicList,
-                                    Map<String, String> topMap, Map<String, String> publishMap) {
-        if(null == topicList || topicList.size() == 0){
-            return;
-        }
-        if(null == topMap){
-            topMap = new HashMap<String, String>();
-        }
-        if(null == publishMap){
-            publishMap = new HashMap<String, String>();
-        }
+    		Map<String, String> topMap, Map<String, String> publishMap) {
+    	if(null == topicList || topicList.size() == 0){
+    		return;
+    	}
+    	if(null == topMap){
+    		topMap = new HashMap<String, String>();
+    	}
+    	if(null == publishMap){
+    		publishMap = new HashMap<String, String>();
+    	}
 
-        List<Long> uidList = new ArrayList<Long>();
-        List<Long> tidList = new ArrayList<Long>();
-        List<Long> ceTidList = new ArrayList<Long>();
-        for(Map<String,Object> topic : topicList){
-            Long u = (Long)topic.get("uid");
-            Long id = (Long)topic.get("id");
-            if(!uidList.contains(u)){
-                uidList.add(u);
-            }
-            if(!tidList.contains(id)){
-                tidList.add(id);
-            }
-            if(((Integer)topic.get("type")).intValue() == Specification.KingdomType.AGGREGATION.index){//聚合王国
-                if(!ceTidList.contains(id)){
-                    ceTidList.add(id);
-                }
-            }
-        }
-        //一次性查询用户属性
-        Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
+		List<Long> uidList = new ArrayList<Long>();
+		List<Long> tidList = new ArrayList<Long>();
+		List<Long> ceTidList = new ArrayList<Long>();
+    	for(Map<String,Object> topic : topicList){
+    		Long u = (Long)topic.get("uid");
+    		Long id = (Long)topic.get("id");
+    		if(!uidList.contains(u)){
+    			uidList.add(u);
+    		}
+    		if(!tidList.contains(id)){
+    			tidList.add(id);
+    		}
+    		if(((Integer)topic.get("type")).intValue() == Specification.KingdomType.AGGREGATION.index){//聚合王国
+    			if(!ceTidList.contains(id)){
+    				ceTidList.add(id);
+    			}
+    		}
+    	}
+    	//一次性查询用户属性
+    	Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
         List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
         if(null != profileList && profileList.size() > 0){
-            for(UserProfile up : profileList){
-                profileMap.put(String.valueOf(up.getUid()), up);
-            }
+        	for(UserProfile up : profileList){
+        		profileMap.put(String.valueOf(up.getUid()), up);
+        	}
         }
         //一次性查询关注信息
         Map<String, String> followMap = new HashMap<String, String>();
         List<UserFollow> userFollowList = userService.getAllFollows(uid, uidList);
         if(null != userFollowList && userFollowList.size() > 0){
-            for(UserFollow uf : userFollowList){
-                followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
-            }
+        	for(UserFollow uf : userFollowList){
+        		followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+        	}
         }
         //一次性查询所有王国的国王更新数，以及评论数
         Map<String, Long> topicCountMap = new HashMap<String, Long>();
         Map<String, Long> reviewCountMap = new HashMap<String, Long>();
         List<Map<String, Object>> tcList = liveLocalJdbcDao.getTopicUpdateCount(tidList);
         if(null != tcList && tcList.size() > 0){
-            for(Map<String, Object> m : tcList){
-                topicCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("topicCount"));
-                reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
-            }
+        	for(Map<String, Object> m : tcList){
+        		topicCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("topicCount"));
+        		reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
+        	}
         }
         List<Long> cidList = new ArrayList<Long>();
         //一次性查询所有topic对应的content
         Map<String, Content> contentMap = new HashMap<String, Content>();
         List<Content> contentList = contentService.getContentsByTopicIds(tidList);
         if(null != contentList && contentList.size() > 0){
-            for(Content c : contentList){
-                contentMap.put(String.valueOf(c.getForwardCid()), c);
-                if(!cidList.contains(c.getId())){
-                    cidList.add(c.getId());
-                }
-            }
+        	for(Content c : contentList){
+        		contentMap.put(String.valueOf(c.getForwardCid()), c);
+        		if(!cidList.contains(c.getId())){
+        			cidList.add(c.getId());
+        		}
+        	}
         }
         //一次性查询用户是否点赞过
         Map<String, Long> contentLikeCountMap = liveLocalJdbcDao.getLikeCountByUidAndCids(uid, cidList);
         if(null == contentLikeCountMap){
-            contentLikeCountMap = new HashMap<String, Long>();
+        	contentLikeCountMap = new HashMap<String, Long>();
         }
         //一次性获取当前用户针对于各王国是否收藏过
         Map<String, LiveFavorite> liveFavoriteMap = new HashMap<String, LiveFavorite>();
         List<LiveFavorite> liveFavoriteList = liveMybatisDao.getLiveFavoritesByUidAndTopicIds(uid, tidList);
         if(null != liveFavoriteList && liveFavoriteList.size() > 0){
-            for(LiveFavorite lf : liveFavoriteList){
-                liveFavoriteMap.put(String.valueOf(lf.getTopicId()), lf);
-            }
+        	for(LiveFavorite lf : liveFavoriteList){
+        		liveFavoriteMap.put(String.valueOf(lf.getTopicId()), lf);
+        	}
         }
         //一次性查询所有王国的最新一条核心圈更新
         Map<String, Map<String, Object>> lastFragmentMap = new HashMap<String, Map<String, Object>>();
         List<Map<String, Object>> lastFragmentList = liveLocalJdbcDao.getLastCoreCircleFragmentByTopicIds(tidList);
         if(null != lastFragmentList && lastFragmentList.size() > 0){
-            for(Map<String, Object> m : lastFragmentList){
-                lastFragmentMap.put(String.valueOf(m.get("topic_id")), m);
-            }
+        	for(Map<String, Object> m : lastFragmentList){
+        		lastFragmentMap.put(String.valueOf(m.get("topic_id")), m);
+        	}
         }
         //一次性查询聚合王国的子王国数
         Map<String, Long> acCountMap = new HashMap<String, Long>();
         if(ceTidList.size() > 0){
-            List<Map<String,Object>> acCountList = liveLocalJdbcDao.getTopicAggregationAcCountByTopicIds(ceTidList);
-            if(null != acCountList && acCountList.size() > 0){
-                for(Map<String,Object> a : acCountList){
-                    acCountMap.put(String.valueOf(a.get("topic_id")), (Long)a.get("cc"));
-                }
-            }
+        	List<Map<String,Object>> acCountList = liveLocalJdbcDao.getTopicAggregationAcCountByTopicIds(ceTidList);
+        	if(null != acCountList && acCountList.size() > 0){
+        		for(Map<String,Object> a : acCountList){
+        			acCountMap.put(String.valueOf(a.get("topic_id")), (Long)a.get("cc"));
+        		}
+        	}
         }
         //一次性查询所有王国的成员数
         Map<String, Long> topicMemberCountMap = liveLocalJdbcDao.getTopicMembersCount(tidList);
         if(null == topicMemberCountMap){
-            topicMemberCountMap = new HashMap<String, Long>();
+        	topicMemberCountMap = new HashMap<String, Long>();
         }
         //一次性查询王国的标签信息
         Map<String, String> topicTagMap = new HashMap<String, String>();
         List<TopicTagDetail> topicTagList = liveMybatisDao.getTopicTagDetailListByTopicIds(tidList);
         if(null != topicTagList && topicTagList.size() > 0){
-            long tid = 0;
-            String tags = null;
-            for(TopicTagDetail ttd : topicTagList){
-                if(ttd.getTopicId().longValue() != tid){
-                    //先插入上一次
-                    if(tid > 0 && !StringUtils.isEmpty(tags)){
-                        topicTagMap.put(String.valueOf(tid), tags);
-                    }
-                    //再初始化新的
-                    tid = ttd.getTopicId().longValue();
-                    tags = null;
-                }
-                if(tags != null){
-                    tags = tags + ";" + ttd.getTag();
-                }else{
-                    tags = ttd.getTag();
-                }
-            }
-            if(tid > 0 && !StringUtils.isEmpty(tags)){
-                topicTagMap.put(String.valueOf(tid), tags);
-            }
+        	long tid = 0;
+        	String tags = null;
+        	for(TopicTagDetail ttd : topicTagList){
+        		if(ttd.getTopicId().longValue() != tid){
+        			//先插入上一次
+        			if(tid > 0 && !StringUtils.isEmpty(tags)){
+        				topicTagMap.put(String.valueOf(tid), tags);
+        			}
+        			//再初始化新的
+        			tid = ttd.getTopicId().longValue();
+        			tags = null;
+        		}
+        		if(tags != null){
+        			tags = tags + ";" + ttd.getTag();
+        		}else{
+        			tags = ttd.getTag();
+        		}
+        	}
+        	if(tid > 0 && !StringUtils.isEmpty(tags)){
+        		topicTagMap.put(String.valueOf(tid), tags);
+        	}
         }
 
         UserProfile userProfile = null;
@@ -3765,10 +3759,10 @@ public class LiveServiceImpl implements LiveService {
         Long topicUid = null;
         Long topicId = null;
         for (Map<String,Object> topic : topicList) {
-            e = new ShowTopicSearchDTO.TopicElement();
-            topicUid = (Long)topic.get("uid");
-            topicId = (Long)topic.get("id");
-            userProfile = profileMap.get(String.valueOf(topicUid));
+        	e = new ShowTopicSearchDTO.TopicElement();
+        	topicUid = (Long)topic.get("uid");
+        	topicId = (Long)topic.get("id");
+        	userProfile = profileMap.get(String.valueOf(topicUid));
             e.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             e.setNickName(userProfile.getNickName());
             e.setV_lv(userProfile.getvLv());
@@ -3781,20 +3775,20 @@ public class LiveServiceImpl implements LiveService {
             e.setUpdateTime((Long)topic.get("long_time"));
             e.setPrice((Integer)topic.get("price"));		// 2.2.7王国价值
             if(null != followMap.get(uid+"_"+topicUid)){
-                e.setIsFollowed(1);
+            	e.setIsFollowed(1);
             }else{
-                e.setIsFollowed(0);
+            	e.setIsFollowed(0);
             }
             if(null != followMap.get(topicUid+"_"+uid)){
-                e.setIsFollowMe(1);
+            	e.setIsFollowMe(1);
             }else{
-                e.setIsFollowMe(0);
+            	e.setIsFollowMe(0);
             }
             e.setLastUpdateTime((Long)topic.get("long_time"));
             if(null != topicCountMap.get(String.valueOf(topicId))){
-                e.setTopicCount(topicCountMap.get(String.valueOf(topicId)).intValue());
+            	e.setTopicCount(topicCountMap.get(String.valueOf(topicId)).intValue());
             }else{
-                e.setTopicCount(0);
+            	e.setTopicCount(0);
             }
             e.setInternalStatus(this.getUserInternalStatus((String)topic.get("core_circle"), uid));
 
@@ -3814,9 +3808,9 @@ public class LiveServiceImpl implements LiveService {
                 e.setLastContentType(-1);
             }
             if(null != reviewCountMap.get(String.valueOf(topicId))){
-                e.setReviewCount(reviewCountMap.get(String.valueOf(topicId)).intValue());
+            	e.setReviewCount(reviewCountMap.get(String.valueOf(topicId)).intValue());
             }else{
-                e.setReviewCount(0);
+            	e.setReviewCount(0);
             }
             content = contentMap.get(String.valueOf(topicId));
             if (content != null) {
@@ -3824,18 +3818,18 @@ public class LiveServiceImpl implements LiveService {
                 e.setPersonCount(content.getPersonCount());
                 e.setCid(content.getId());
                 if(null != contentLikeCountMap.get(String.valueOf(content.getId()))
-                        && contentLikeCountMap.get(String.valueOf(content.getId())).longValue() > 0){
-                    e.setIsLike(1);
+                		&& contentLikeCountMap.get(String.valueOf(content.getId())).longValue() > 0){
+                	e.setIsLike(1);
                 }else{
-                    e.setIsLike(0);
+                	e.setIsLike(0);
                 }
                 e.setReadCount(content.getReadCountDummy());
                 e.setType(content.getType());
             }
             if(null != topicMemberCountMap.get(String.valueOf(topicId))){
-                e.setFavoriteCount(topicMemberCountMap.get(String.valueOf(topicId)).intValue()+1);
+            	e.setFavoriteCount(topicMemberCountMap.get(String.valueOf(topicId)).intValue()+1);
             }else{
-                e.setFavoriteCount(1);
+            	e.setFavoriteCount(1);
             }
 
             //判断是否收藏了
@@ -3846,7 +3840,7 @@ public class LiveServiceImpl implements LiveService {
             }
 
             if(null != topMap.get(String.valueOf(topicId))){
-                e.setIsTop(1);
+            	e.setIsTop(1);
             }else{
                 e.setIsTop(0);
             }
