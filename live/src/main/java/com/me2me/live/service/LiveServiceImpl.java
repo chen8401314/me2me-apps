@@ -6891,7 +6891,7 @@ public class LiveServiceImpl implements LiveService {
 			dto.setTopicUserCount(contentService.getTopicMembersCount(topicId));
 			dto.setReadCount(liveLocalJdbcDao.getReadCount(topicId));
 			dto.setOuterReadCount(liveLocalJdbcDao.getReadCountOuter(topicId));
-			dto.setShareCount(0);
+			dto.setShareCount(contentService.getTopicShareCount(topicId));
 			dto.setCareDegree(topicData.getDiligently());
 			dto.setApprovalDegree(topicData.getApprove());
 		}

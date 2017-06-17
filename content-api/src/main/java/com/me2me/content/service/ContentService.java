@@ -414,4 +414,6 @@ public interface ContentService{
 	Response shareRecord(long uid, int type, long cid, String shareAddr);
 	
 	public int getTopicMembersCount(long topicId);
+	
+	public int getTopicShareCount(long topicId);
 }

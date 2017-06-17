@@ -831,4 +831,18 @@ public class ContentMybatisDao {
 	public void saveContentShareHistory(ContentShareHistory csh){
 		contentShareHistoryMapper.insertSelective(csh);
 	}
+	
+	/**
+	 * 查询王国分享次数
+	 * @param topicId
+	 * @return
+	 */
+	public int getTopicShareCount(long topicId){
+		ContentShareHistoryExample example = new ContentShareHistoryExample();
+		ContentShareHistoryExample.Criteria criteria  = example.createCriteria();
+		criteria.andTypeEqualTo(1);
+		criteria.andCidEqualTo(topicId);
+		int count = contentShareHistoryMapper.countByExample(example);
+		return count;
+	}
 }

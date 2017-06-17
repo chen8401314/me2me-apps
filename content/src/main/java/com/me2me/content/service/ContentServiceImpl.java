@@ -5889,4 +5889,8 @@ private void localJpush(long toUid){
 			return Integer.parseInt(map.get(""+topicId).toString());
 		}
 	}
+	@Override
+	public int getTopicShareCount(long topicId){
+		return contentMybatisDao.getTopicShareCount(topicId);
+	}
 }
