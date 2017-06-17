@@ -99,6 +99,7 @@ import com.me2me.live.dto.ShowTopicSearchDTO;
 import com.me2me.live.dto.ShowTopicTagsDTO;
 import com.me2me.live.dto.ShowUserAtListDTO;
 import com.me2me.live.dto.SpeakDto;
+import com.me2me.live.dto.StealResultDto;
 import com.me2me.live.dto.TestApiDto;
 import com.me2me.live.dto.TopicTransferRecordDto;
 import com.me2me.live.dto.TopicVoteInfoDto;
@@ -134,6 +135,7 @@ import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicTagDetail;
 import com.me2me.live.model.TopicTransferRecord;
 import com.me2me.live.model.TopicUserConfig;
+import com.me2me.live.model.UserStealLog;
 import com.me2me.live.model.VoteInfo;
 import com.me2me.live.model.VoteOption;
 import com.me2me.live.model.VoteRecord;
@@ -6753,7 +6755,7 @@ public class LiveServiceImpl implements LiveService {
      */
     @Override
     public Response stealKingdomCoin(long uid,long topicId) {
-		/*String addr= zkAddr.replace("zookeeper://", "");
+		String addr= zkAddr.replace("zookeeper://", "");
 
 		DistributedLock lock = null;
 		try {
@@ -6782,21 +6784,7 @@ public class LiveServiceImpl implements LiveService {
 			StealResultDto dto= new StealResultDto();
 			dto.setStealedCoins(coins);
 			dto.setUpgrade(modifyDetail.getUpgrade());
-			if(dto.getUpgrade()==1){
-				CurrentLevel currentLevel= new CurrentLevel();
-				currentLevel.setLevel(modifyDetail.getCurrentLevel());
-				currentLevel.setName(modifyDetail.getName());
-				List<String> permissionList = modifyDetail.getPermissions();
-				if(permissionList!=null ){
-					for(String str:permissionList){
-						Permission p= new Permission();
-						p.setName(str);
-						currentLevel.getPermissions().add(p);
-					}
-				}
-				dto.setCurrentLevel(currentLevel);
-			}
-
+			dto.setLevel(modifyDetail.getCurrentLevel());
 			return Response.success(dto);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -6804,8 +6792,7 @@ public class LiveServiceImpl implements LiveService {
 		} finally {
 			if(lock != null)
 				lock.unlock();
-		}*/
-        return  null;
+		}
     }
 
     @Override
