@@ -103,8 +103,6 @@ import com.me2me.live.dto.TopicTransferRecordDto;
 import com.me2me.live.dto.TopicVoteInfoDto;
 import com.me2me.live.dto.UserAtListDTO;
 import com.me2me.live.dto.VoteInfoDto;
-import com.me2me.live.dto.StealResultDto.CurrentLevel;
-import com.me2me.live.dto.StealResultDto.Permission;
 import com.me2me.live.event.AggregationPublishEvent;
 import com.me2me.live.event.CacheLiveEvent;
 import com.me2me.live.event.CoreAggregationRemindEvent;
@@ -6781,20 +6779,7 @@ public class LiveServiceImpl implements LiveService {
 			StealResultDto dto= new StealResultDto();
 			dto.setStealedCoins(coins);
 			dto.setUpgrade(modifyDetail.getUpgrade());
-			if(dto.getUpgrade()==1){
-				CurrentLevel currentLevel= new CurrentLevel();
-				currentLevel.setLevel(modifyDetail.getCurrentLevel());
-/*				currentLevel.setName(modifyDetail.getName());
-				List<String> permissionList = modifyDetail.getPermissions();
-				if(permissionList!=null ){
-					for(String str:permissionList){
-						Permission p= new Permission();
-						p.setName(str);
-						currentLevel.getPermissions().add(p);
-					}
-				}*/
-				dto.setCurrentLevel(currentLevel);
-			}
+			dto.setLevel(modifyDetail.getCurrentLevel());
 			
 			return Response.success(dto);
 		} catch (Exception e) {

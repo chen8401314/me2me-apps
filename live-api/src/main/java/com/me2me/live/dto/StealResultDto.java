@@ -19,17 +19,5 @@ public class StealResultDto implements BaseEntity{
 
 	private int stealedCoins;
     private int upgrade;
-    private CurrentLevel currentLevel;
-    @Data
-    public static class CurrentLevel implements BaseEntity{
-		private static final long serialVersionUID = 1L;
-		private int level;
-    	private String name;
-    	private List<Permission> permissions=new ArrayList<>();
-    	
-    }
-    @Data
-	public static class Permission  implements BaseEntity{
-		private String name;
-	}
+	private int level;
 }
