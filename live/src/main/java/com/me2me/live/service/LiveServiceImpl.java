@@ -6752,7 +6752,7 @@ public class LiveServiceImpl implements LiveService {
 	 */
 	@Override
 	public Response stealKingdomCoin(long uid,long topicId) {
-		/*String addr= zkAddr.replace("zookeeper://", "");
+		String addr= zkAddr.replace("zookeeper://", "");
 		
 		DistributedLock lock = null;
 		try {
@@ -6784,7 +6784,7 @@ public class LiveServiceImpl implements LiveService {
 			if(dto.getUpgrade()==1){
 				CurrentLevel currentLevel= new CurrentLevel();
 				currentLevel.setLevel(modifyDetail.getCurrentLevel());
-				currentLevel.setName(modifyDetail.getName());
+/*				currentLevel.setName(modifyDetail.getName());
 				List<String> permissionList = modifyDetail.getPermissions();
 				if(permissionList!=null ){
 					for(String str:permissionList){
@@ -6792,7 +6792,7 @@ public class LiveServiceImpl implements LiveService {
 						p.setName(str);
 						currentLevel.getPermissions().add(p);
 					}
-				}
+				}*/
 				dto.setCurrentLevel(currentLevel);
 			}
 			
@@ -6803,8 +6803,7 @@ public class LiveServiceImpl implements LiveService {
 		} finally {
 			if(lock != null)
 				lock.unlock();
-		}*/
-		return  null;
+		}
 	}
 
     @Override
