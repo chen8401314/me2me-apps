@@ -12,6 +12,8 @@ import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import com.me2me.user.dto.*;
+import com.me2me.user.rule.Rules;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -105,10 +107,6 @@ import com.me2me.content.widget.ReviewAdapter;
 import com.me2me.content.widget.WriteTagAdapter;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.cache.EmotionSummaryModel;
-import com.me2me.user.dto.EmotionInfoDto;
-import com.me2me.user.dto.LastEmotionInfoDto;
-import com.me2me.user.dto.UserInfoDto;
-import com.me2me.user.dto.UserInfoDto2;
 import com.me2me.user.model.EmotionInfo;
 import com.me2me.user.model.EmotionRecord;
 import com.me2me.user.model.JpushToken;
@@ -5867,7 +5865,10 @@ private void localJpush(long toUid){
 		csh.setType(type);
 		csh.setUid(uid);
 		contentMybatisDao.saveContentShareHistory(csh);
-		return Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message);
+        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(uid, Rules.coinRules.get(Rules.SHARE_KING_KEY));
+        Response response = Response.success(Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message));
+        response.setData(modifyUserCoinDto);
+        return response;
 	}
 
 	
