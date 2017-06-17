@@ -1017,7 +1017,7 @@ public class Users extends BaseController {
     }
 
     @ResponseBody
-    @RequestMapping(value = "/aftreShare",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/afterShare",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response afterShare(AfterShareRequest request){
         ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(request.getUid(), Rules.coinRules.get(Rules.SHARE_KING_KEY));
         Response response = Response.success(ResponseStatus.ADD_COIN_SUCCESS.status,ResponseStatus.ADD_COIN_SUCCESS.message);
