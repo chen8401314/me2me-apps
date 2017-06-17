@@ -272,10 +272,14 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 
 	// 获取今日米汤币累计值
 	public int getDayCoins(long uid) {
-		String sql = "select sum(coin) as count from rule_log where uid = ? and DATE_FORMAT(create_time,'%Y-%m-%d') = ?";
+		String sql = "select IFNULL(sum(coin),0) as count from rule_log where uid = ? and DATE_FORMAT(create_time,'%Y-%m-%d') = ?";
 		String day = sdf.format(new Date());
-		if(Integer.valueOf(Lists.getSingle(super.query(sql,uid,day)).get("count").toString()) == null){ return 0;}
-		return  Integer.valueOf(Lists.getSingle(super.query(sql,uid,day)).get("count").toString());
+		List list = super.query(sql,uid,day);
+		if(list==null||list.isEmpty()){
+			return 0;
+		}else {
+			return Integer.valueOf(Lists.getSingle(super.query(sql, uid, day)).get("count").toString());
+		}
 	}
 
 	public boolean isNotExistsRuleLogByDay(int code, long uid) {
@@ -296,7 +300,15 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 		jdbc.update(sql,uid,rule.getCode(),rule.getName(),rule.getPoint(),rule.getExt());
 	}
 
+	public List<Map<String, Object>> getCanStealTopicId(long uid) {
+		String sql = "SELECT topic_id FROM topic_data WHERE topic_id not IN (SELECT id FROM topic WHERE uid = ?) AND steal_price > 0";
+		return super.query(sql,uid);
+	}
 
+	public List<Map<String, Object>> getCanSpeakTopicId(long uid) {
+		String sql = "SELECT id FROM topic WHERE uid != ?  ORDER BY update_time DESC LIMIT 1000";
+		return super.query(sql,uid);
+	}
 
 
 }

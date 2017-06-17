@@ -3,19 +3,11 @@ package com.me2me.user.service;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import com.me2me.user.dto.*;
 import com.me2me.user.model.*;
+import com.me2me.user.model.Dictionary;
 import com.me2me.user.rule.CoinRule;
 import com.me2me.user.rule.Rules;
 import org.springframework.beans.BeanUtils;
@@ -3966,6 +3958,19 @@ public class UserServiceImpl implements UserService {
 
         myLevelDto.setPermissions(permissionDescriptionDto);
         //随机获取可偷王国id
+        List stealList= userInitJdbcDao.getCanStealTopicId(uid);
+        Random random = new Random();
+        int stealKey = random.nextInt(stealList.size());
+        Map<String,Object> stealMap = (Map<String, Object>) stealList.get(stealKey);
+        myLevelDto.setStealTopicId((long)stealMap.get("topic_id"));
+        //随机评论王国id
+        List randomList= userInitJdbcDao.getCanSpeakTopicId(uid);
+        int randomKey = random.nextInt(randomList.size());
+        Map<String,Object> map = (Map<String, Object>) randomList.get(randomKey);
+        System.out.println((long)map.get("id"));
+        myLevelDto.setRandomTopcId((long)map.get("id"));
+
+
         return Response.success(myLevelDto);
     }
 
@@ -3979,7 +3984,7 @@ public class UserServiceImpl implements UserService {
         String permissions = getAppConfigByKey(USER_PERMISSIONS);
         UserPermissionDto userPermissionDto = JSON.parseObject(permissions, UserPermissionDto.class);
         for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
-            if (userProfile.getLevel() == userLevelDto.getLevel() && userProfile.getAvailableCoin()>=userLevelDto.getNeedCoins()){
+            if (userProfile.getLevel() == userLevelDto.getLevel() &&  modifyCoin>=userLevelDto.getNeedCoins()){
                 modifyUserCoinDto.setUpgrade(1);
                 int upLevel = userProfile.getLevel()+1;
                 userInitJdbcDao.modifyUserLevel(uid,upLevel);

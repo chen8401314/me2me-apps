@@ -106,7 +106,11 @@ public enum  ResponseStatus {
 
     CONTENT_REVIEW_SUCCESS("评论成功","content review success",20046),
 
+    ADD_COIN_SUCCESS("加分成功","content review success",200144),
+
     VERSION_UPDATE_SUCCESS("版本已更新","version update success",20047),
+
+    LIKE_SUCCESS("点赞成功","content user likes success",20098),
 
     CONTENT_USER_LIKES_ALREADY("不能重复点赞","content user likes already",20048),
 

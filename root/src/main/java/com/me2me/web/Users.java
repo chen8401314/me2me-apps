@@ -8,7 +8,9 @@ import java.net.UnknownHostException;
 import javax.servlet.http.HttpServletRequest;
 
 import com.me2me.common.web.Request;
+import com.me2me.common.web.ResponseStatus;
 import com.me2me.user.dto.*;
+import com.me2me.user.rule.Rules;
 import com.me2me.web.request.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -1013,6 +1015,16 @@ public class Users extends BaseController {
 
         return userService.getMyLevel(request.getUid());
     }
+
+    @ResponseBody
+    @RequestMapping(value = "/aftreShare",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response afterShare(AfterShareRequest request){
+        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(request.getUid(), Rules.coinRules.get(Rules.SHARE_KING_KEY));
+        Response response = Response.success(ResponseStatus.ADD_COIN_SUCCESS.status,ResponseStatus.ADD_COIN_SUCCESS.message);
+        response.setData(modifyUserCoinDto);
+        return response;
+    }
+
 
 
     

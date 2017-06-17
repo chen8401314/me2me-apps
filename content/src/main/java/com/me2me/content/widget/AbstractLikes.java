@@ -9,6 +9,9 @@ import com.me2me.content.model.Content;
 import com.me2me.content.model.ContentLikesDetails;
 import com.me2me.content.service.ContentService;
 import com.me2me.sms.service.JPushService;
+import com.me2me.user.dto.ModifyUserCoinDto;
+import com.me2me.user.rule.CoinRule;
+import com.me2me.user.rule.Rules;
 import com.me2me.user.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -53,6 +56,7 @@ public class AbstractLikes {
                 if(likeDto.getUid() != content.getUid()&&content.getType()!=Specification.ArticleType.LIVE.index) {
                     contentService.remind(content, likeDto.getUid(), Specification.UserNoticeType.LIKE.index, null);
                     log.info("content like push success");
+
                 }
                 log.info("content like success");
                 //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LIKE.index,0,likeDto.getUid()));
@@ -66,7 +70,12 @@ public class AbstractLikes {
 //                    String alias = String.valueOf(content.getUid());
 //                    userService.pushWithExtra(alias, jsonObject.toString(), null);
 //                }
-                return Response.success(ResponseStatus.CONTENT_USER_LIKES_SUCCESS.status,ResponseStatus.CONTENT_USER_LIKES_SUCCESS.message);
+                CoinRule coinRule =  Rules.coinRules.get(Rules.LIKES_UGC_KEY);
+                coinRule.setExt(content.getId());
+                ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(likeDto.getUid(), Rules.coinRules.get(Rules.LIKES_UGC_KEY));
+                Response response = Response.success(ResponseStatus.LIKE_SUCCESS.status,ResponseStatus.LIKE_SUCCESS.message);
+                response.setData(modifyUserCoinDto);
+                return response;
             }else{
             	ContentLikesDetails details = contentService.getContentLikesDetails(contentLikesDetails);
                 if(details == null) {

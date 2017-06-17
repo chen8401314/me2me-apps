@@ -28,7 +28,7 @@ public class ContentLikes extends AbstractLikes implements Likes {
             contentLikesDetails.setCid(likeDto.getCid());
             ContentLikesDetails contentLikes = contentService.getContentLikesDetails(contentLikesDetails);
             if(contentLikes != null && likeDto.getAction() == Specification.IsLike.LIKE.index){
-                return Response.success(ResponseStatus.CONTENT_USER_LIKES_ALREADY.status,ResponseStatus.CONTENT_USER_LIKES_ALREADY.message);
+                return Response.failure(ResponseStatus.CONTENT_USER_LIKES_ALREADY.status,ResponseStatus.CONTENT_USER_LIKES_ALREADY.message);
             }
             return super.likes(likeDto);
         }else{

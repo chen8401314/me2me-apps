@@ -10,6 +10,9 @@ import com.me2me.content.model.Content;
 import com.me2me.content.service.ContentService;
 import com.me2me.core.event.ApplicationEventBus;
 
+import com.me2me.user.dto.ModifyUserCoinDto;
+import com.me2me.user.rule.Rules;
+import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +34,8 @@ public class ContentReview implements Review{
     private ApplicationEventBus applicationEventBus;
     @Autowired
     private CacheService cacheService;
+    @Autowired
+    private UserService userService;
 
     @Override
     public Response createReview(ReviewDto reviewDto) {
@@ -50,7 +55,10 @@ public class ContentReview implements Review{
         event.setIsOnline(isOnline);
         applicationEventBus.post(event);
         log.info("push success");
-        return Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
+        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(reviewDto.getUid(), Rules.coinRules.get(Rules.REVIEW_UGC_KEY));
+        Response response = Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
+        response.setData(modifyUserCoinDto);
+        return response;
     }
 
 	@Override
