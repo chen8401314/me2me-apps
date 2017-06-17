@@ -22,11 +22,14 @@ import com.me2me.sns.dao.LiveJdbcDao;
 import com.me2me.sns.dao.SnsMybatisDao;
 import com.me2me.sns.dto.*;
 import com.me2me.user.dto.FollowDto;
+import com.me2me.user.dto.ModifyUserCoinDto;
 import com.me2me.user.model.UserFollow;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserNoticeUnread;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
+import com.me2me.user.rule.CoinRule;
+import com.me2me.user.rule.Rules;
 import com.me2me.user.service.UserService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -428,7 +431,7 @@ public class SnsServiceImpl implements SnsService {
         followDto.setAction(action);
         Response response = userService.follow(followDto);
     	log.info("====followNew end...");
-    	return response;
+        return response;
     }
     
     @Override

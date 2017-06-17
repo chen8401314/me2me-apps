@@ -4426,6 +4426,12 @@ private void localJpush(long toUid){
 			            }
 		            }
 	            }
+	           
+	            //榜单集合
+	            List<Map<String,Object>> topicList = this.liveForContentJdbcDao.getTopPricedKingdomList( 1, 3);
+		   	    List<BasicKingdomInfo> buildResult = this.kingdomBuider.buildKingdoms(topicList, currentUid);
+	            bangDanDto.setListPricedTopic(buildResult);
+	            
 	            bangDanDto.getListData().add(bangDanData);
 			}
 		}

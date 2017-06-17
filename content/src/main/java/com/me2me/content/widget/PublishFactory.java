@@ -14,6 +14,7 @@ public class PublishFactory {
         Publish instance = null;
         if(type == Specification.ArticleType.ORIGIN.index){
             instance = SpringContextHolder.getBean(PublishUGC.class);
+
         }else if(type == Specification.ArticleType.LIVE.index){
             instance = SpringContextHolder.getBean(PublishLive.class);
         }else if(type == Specification.ArticleType.FORWARD_ARTICLE.index){

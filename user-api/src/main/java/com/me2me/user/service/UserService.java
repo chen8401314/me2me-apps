@@ -8,6 +8,7 @@ import com.me2me.sms.dto.PushLogDto;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.user.dto.*;
 import com.me2me.user.model.*;
+import com.me2me.user.rule.CoinRule;
 
 import java.util.Date;
 import java.util.List;
@@ -491,6 +492,9 @@ public interface UserService {
 	 * 修改用户金币
 	 */
 	ModifyUserCoinDto modifyUserCoin(long uid ,int coin);
+
+
+	ModifyUserCoinDto coinRule(long uid,CoinRule rule);
 
 
 

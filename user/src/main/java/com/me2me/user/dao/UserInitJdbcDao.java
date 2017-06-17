@@ -1,13 +1,17 @@
 package com.me2me.user.dao;
 
+import com.me2me.common.utils.Lists;
 import com.me2me.core.dao.BaseJdbcDao;
 
+import com.me2me.user.rule.CoinRule;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -259,7 +263,39 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 	}
 
 	public void modifyUserLevel(long uid , int level) {
-		String sql = "UPDATE user_profile SET level = ? WHERE uid = ? ";
+		String sql = "UPDATE user_profile SET `level` = ? WHERE uid = ? ";
 		jdbc.update(sql,level,uid);
 	}
+
+	static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+
+
+	// 获取今日米汤币累计值
+	public int getDayCoins(long uid) {
+		String sql = "select sum(coin) as count from rule_log where uid = ? and DATE_FORMAT(create_time,'%Y-%m-%d') = ?";
+		String day = sdf.format(new Date());
+		return  Integer.valueOf(Lists.getSingle(super.query(sql,uid,day)).get("count").toString());
+	}
+
+	public boolean isNotExistsRuleLogByDay(int code, long uid) {
+		String sql = "SELECT * from rule_log where rule_code = ? and uid = ? and DATE_FORMAT(create_time,'%Y-%m-%d') = ?";
+		String day = sdf.format(new Date());
+		List<Map<String,Object>> list = super.query(sql,code,uid,day);
+		return  (list!=null&&list.size()>0) ? Boolean.FALSE : Boolean.TRUE;
+	}
+
+	public boolean isNotExistsRuleLogByDay(int code, long uid, long ext) {
+		String sql = "SELECT * from rule_log where rule_code = ? and uid = ? and ext = ?";
+		List<Map<String,Object>> list = super.query(sql,code,uid,ext);
+		return  (list!=null&&list.size()>0) ? Boolean.FALSE : Boolean.TRUE;
+	}
+
+	public void writeRuleLog(long uid, CoinRule rule){
+		String sql = "insert into rule_log (uid,rule_code,rule_name,coin,ext) values(?,?,?,?,?)";
+		jdbc.update(sql,uid,rule.getCode(),rule.getName(),rule.getPoint(),rule.getExt());
+	}
+
+
+
+
 }
