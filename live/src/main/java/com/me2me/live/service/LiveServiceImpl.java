@@ -15,6 +15,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+import com.me2me.user.dto.ModifyUserCoinDto;
+import com.me2me.user.rule.CoinRule;
 import com.me2me.user.rule.Rules;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.RandomUtils;
@@ -3353,7 +3355,13 @@ public class LiveServiceImpl implements LiveService {
         //add kingdom tags -- end --
 
         log.info("createKingdom end");
-        return Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status, ResponseStatus.USER_CREATE_LIVE_SUCCESS.message, speakDto2);
+        CoinRule coinRule =Rules.coinRules.get(Rules.CREATE_KING_KEY);
+        coinRule.setExt(createKingdomDto.getUid());
+        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(createKingdomDto.getUid(), Rules.coinRules.get(Rules.CREATE_KING_KEY));
+        Response response = Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status, ResponseStatus.USER_CREATE_LIVE_SUCCESS.message, speakDto2);
+        response.setData(modifyUserCoinDto);
+        return response;
+
 	}
 
 	@Override
