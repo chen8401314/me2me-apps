@@ -274,6 +274,7 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 	public int getDayCoins(long uid) {
 		String sql = "select sum(coin) as count from rule_log where uid = ? and DATE_FORMAT(create_time,'%Y-%m-%d') = ?";
 		String day = sdf.format(new Date());
+		if(Integer.valueOf(Lists.getSingle(super.query(sql,uid,day)).get("count").toString()) == null){ return 0;}
 		return  Integer.valueOf(Lists.getSingle(super.query(sql,uid,day)).get("count").toString());
 	}
 
