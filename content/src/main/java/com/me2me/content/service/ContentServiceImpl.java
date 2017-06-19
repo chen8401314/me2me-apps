@@ -5893,7 +5893,7 @@ private void localJpush(long toUid){
 		if(map==null){
 			return 0;
 		}else{
-			return Integer.parseInt(map.get(""+topicId).toString());
+			return map.get(""+topicId)==null?0:Integer.parseInt(map.get(""+topicId).toString());
 		}
 	}
 	@Override
