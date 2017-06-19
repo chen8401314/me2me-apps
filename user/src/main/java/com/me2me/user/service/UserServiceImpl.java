@@ -3959,15 +3959,19 @@ public class UserServiceImpl implements UserService {
         myLevelDto.setPermissions(permissionDescriptionDto);
         //随机获取可偷王国id
         List stealList= userInitJdbcDao.getCanStealTopicId(uid);
+
         Random random = new Random();
-        int stealKey = random.nextInt(stealList.size());
-        Map<String,Object> stealMap = (Map<String, Object>) stealList.get(stealKey);
-        myLevelDto.setStealTopicId((long)stealMap.get("topic_id"));
+        if(stealList==null||stealList.isEmpty()){
+            myLevelDto.setStealTopicId(0);
+        }else {
+            int stealKey = random.nextInt(stealList.size());
+            Map<String, Object> stealMap = (Map<String, Object>) stealList.get(stealKey);
+            myLevelDto.setStealTopicId((long) stealMap.get("topic_id"));
+        }
         //随机评论王国id
         List randomList= userInitJdbcDao.getCanSpeakTopicId(uid);
         int randomKey = random.nextInt(randomList.size());
         Map<String,Object> map = (Map<String, Object>) randomList.get(randomKey);
-        System.out.println((long)map.get("id"));
         myLevelDto.setRandomTopicId((long)map.get("id"));
 
 
