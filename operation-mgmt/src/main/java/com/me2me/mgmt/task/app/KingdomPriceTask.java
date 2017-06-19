@@ -415,7 +415,7 @@ public class KingdomPriceTask {
 		Date yesterday = DateUtil.addDay(new Date(), -1);
 		String endTime = DateUtil.date2string(yesterday, "yyyy-MM-dd") + " 23:59:59";
 		
-		String topicSql = "select t.id,t.create_time,t.uid from topic t where t.create_time<='"+endTime+"' order by t.id ";
+		String topicSql = "select t.id,t.create_time,t.uid from topic t where t.create_time<='"+endTime+"' order by t.id limit ";
 		
 		logger.info("开始处理王国价值");
 		int start = 0;

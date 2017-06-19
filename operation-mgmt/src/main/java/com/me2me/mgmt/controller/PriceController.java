@@ -26,6 +26,7 @@ import com.me2me.mgmt.request.KingdomBusinessDTO;
 import com.me2me.mgmt.request.KingdomDTO;
 import com.me2me.mgmt.request.KingdomQueryDTO;
 import com.me2me.mgmt.request.SearchUserDTO;
+import com.me2me.mgmt.task.app.KingdomPriceTask;
 import com.me2me.user.service.UserService;
 
 @Controller
@@ -40,6 +41,8 @@ public class PriceController {
 	private LiveService liveService;
 	@Autowired
 	private UserService userService;
+	@Autowired
+	private KingdomPriceTask kingdomPriceTask;
 	
 	@RequestMapping(value = "/kingdomQuery")
 	public ModelAndView kingdomQuery(KingdomQueryDTO dto){
@@ -417,5 +420,12 @@ public class PriceController {
 		userService.saveAppConfig(key, value, desc);
 		
 		return "0";
+	}
+	
+	@RequestMapping(value = "/fullExecuteTask")
+	@ResponseBody
+	public String fullExecuteTask(){
+		kingdomPriceTask.executeFull();
+		return "执行完成";
 	}
 }
