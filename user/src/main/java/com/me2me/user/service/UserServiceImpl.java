@@ -3990,10 +3990,16 @@ public class UserServiceImpl implements UserService {
 	    userInitJdbcDao.modifyUserCoin(uid,modifyCoin);
         String permissions = getAppConfigByKey(USER_PERMISSIONS);
         UserPermissionDto userPermissionDto = JSON.parseObject(permissions, UserPermissionDto.class);
+        int lv = 0;
+        for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
+            if(  modifyCoin >= userLevelDto.getNeedCoins()){
+                lv++;
+            }
+        }
         for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
             if ((userProfile.getLevel()+1) == userLevelDto.getLevel() &&  modifyCoin>=userLevelDto.getNeedCoins() ){
                 modifyUserCoinDto.setUpgrade(1);
-                int upLevel = userProfile.getLevel()+1;
+                int upLevel = userProfile.getLevel()+lv;
                 userInitJdbcDao.modifyUserLevel(uid,upLevel);
                 modifyUserCoinDto.setCurrentLevel(upLevel);
                 break;
