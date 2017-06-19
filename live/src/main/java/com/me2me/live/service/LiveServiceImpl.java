@@ -6814,9 +6814,9 @@ public class LiveServiceImpl implements LiveService {
             return  Response.failure("王国或用户无效");
         }
         // 判断当前的王国是否是自己的王国.
-        if(rechargeToKingdomDto.getUid() != topic.getUid()){
+       /* if(rechargeToKingdomDto.getUid() != topic.getUid()){
             return  Response.failure("王国无效");
-        }
+        }*/
         if(rechargeToKingdomDto.getAmount() == userProfile.getAvailableCoin()){
             liveLocalJdbcDao.rechargeToKingDom(rechargeToKingdomDto.getTopicId(),rechargeToKingdomDto.getAmount());
             liveLocalJdbcDao.zeroMyCoins(rechargeToKingdomDto.getUid());
