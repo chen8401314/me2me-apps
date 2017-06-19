@@ -44,6 +44,8 @@ public class SpeakDto implements BaseEntity{
 
     private int v_lv;
 
-    private ModifyUserCoinDto modifyUserCoinDto;
+    private int upgrade ;
+
+    private int currentLevel;
 
 }

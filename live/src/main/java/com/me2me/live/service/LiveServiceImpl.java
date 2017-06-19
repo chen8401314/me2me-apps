@@ -3360,7 +3360,8 @@ public class LiveServiceImpl implements LiveService {
         CoinRule coinRule =Rules.coinRules.get(Rules.CREATE_KING_KEY);
         coinRule.setExt(createKingdomDto.getUid());
         ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(createKingdomDto.getUid(), Rules.coinRules.get(Rules.CREATE_KING_KEY));
-        speakDto2.setModifyUserCoinDto(modifyUserCoinDto);
+        speakDto2.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
+        speakDto2.setUpgrade(modifyUserCoinDto.getUpgrade());
         Response response = Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status, ResponseStatus.USER_CREATE_LIVE_SUCCESS.message, speakDto2);
         return response;
 
