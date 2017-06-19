@@ -6800,7 +6800,9 @@ public class LiveServiceImpl implements LiveService {
     public Response rechargeToKingdom(RechargeToKingdomDto rechargeToKingdomDto) {
 
         UserProfile  userProfile = userService.getUserProfileByUid(rechargeToKingdomDto.getUid());
-
+        if(rechargeToKingdomDto.getAmount() ==0 && userProfile.getAvailableCoin() ==0){
+            return  Response.failure("没有可充米汤币");
+        }
         rechargeToKingdomDto.setAmount(userProfile.getAvailableCoin());
 
         Topic topic = getTopicById(rechargeToKingdomDto.getTopicId());
@@ -6812,7 +6814,6 @@ public class LiveServiceImpl implements LiveService {
         if(rechargeToKingdomDto.getUid() != topic.getUid()){
             return  Response.failure("王国无效");
         }
-
         if(rechargeToKingdomDto.getAmount() == userProfile.getAvailableCoin()){
             liveLocalJdbcDao.rechargeToKingDom(rechargeToKingdomDto.getTopicId(),rechargeToKingdomDto.getAmount());
             liveLocalJdbcDao.zeroMyCoins(rechargeToKingdomDto.getUid());
