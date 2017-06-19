@@ -3909,10 +3909,13 @@ public class UserServiceImpl implements UserService {
         MyLevelDto.InnerLevel currentLevel = myLevelDto.createInnerLevel();
         currentLevel.setLevel(userProfile.getLevel());
         MyLevelDto.InnerLevel nextLevel = myLevelDto.createInnerLevel();
-        nextLevel.setLevel( userProfile.getLevel()+1);
+        if(userProfile.getLevel() != 9){
+            nextLevel.setLevel( userProfile.getLevel()+1);
+        }
         MyLevelDto.InnerLevel preLevel = myLevelDto.createInnerLevel();
         if (userProfile.getLevel() > 1){
-        preLevel.setLevel(userProfile.getLevel()-1);}
+            preLevel.setLevel(userProfile.getLevel()-1);
+        }
         myLevelDto.setAvailableCoin(userProfile.getAvailableCoin());
         myLevelDto.setAvatar(Constant.QINIU_DOMAIN + "/"+ userProfile.getAvatar());
         String value = getAppConfigByKey(USER_PERMISSIONS);
@@ -3922,10 +3925,10 @@ public class UserServiceImpl implements UserService {
             if (userProfile.getLevel() == userLevelDto.getLevel()){
                 currentLevel.setName(userLevelDto.getName());
             }
-            if (userProfile.getLevel()+1 == userLevelDto.getLevel()){
+            if (userProfile.getLevel()+1 == userLevelDto.getLevel()  && userProfile.getLevel() != 9){
                 nextLevel.setName(userLevelDto.getName());
             }
-            if (userProfile.getLevel()-1 == userLevelDto.getLevel() || userProfile.getLevel() > 1 ){
+            if (userProfile.getLevel()-1 == userLevelDto.getLevel() && userProfile.getLevel() > 1 ){
                 preLevel.setName(userLevelDto.getName());
             }
             if(userProfile.getLevel() == userLevelDto.getLevel()){
