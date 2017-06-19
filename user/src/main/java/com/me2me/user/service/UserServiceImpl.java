@@ -3931,7 +3931,7 @@ public class UserServiceImpl implements UserService {
             if (userProfile.getLevel()-1 == userLevelDto.getLevel() && userProfile.getLevel() > 1 ){
                 preLevel.setName(userLevelDto.getName());
             }
-            if(userProfile.getLevel() == userLevelDto.getLevel()){
+            if((userProfile.getLevel()+1) == userLevelDto.getLevel()){
                 myLevelDto.setNextLevelCoin(userLevelDto.getNeedCoins()-userProfile.getAvailableCoin());
             }
         }
