@@ -3838,13 +3838,13 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public String getAppConfigByKey(String key){
-		String result = cacheService.get(CacheConstant.APP_CONFIG_KEY_PRE + key);
-		if(!StringUtils.isEmpty(result)){
-			return result;
-		}
+		//String result = cacheService.get(CacheConstant.APP_CONFIG_KEY_PRE + key);
+		//if(!StringUtils.isEmpty(result)){
+		//	return result;
+		//}
 		AppConfig config = userMybatisDao.getAppConfigByKey(key);
 		if(null != config && !StringUtils.isEmpty(config.getConfigValue())){
-			cacheService.set(CacheConstant.APP_CONFIG_KEY_PRE + key, config.getConfigValue());
+			//cacheService.set(CacheConstant.APP_CONFIG_KEY_PRE + key, config.getConfigValue());
 			return config.getConfigValue();
 		}
 		return null;
@@ -3882,7 +3882,7 @@ public class UserServiceImpl implements UserService {
 			config.setConfigValue(value);
 			userMybatisDao.updateAppConfig(config);
 		}
-		cacheService.set(CacheConstant.APP_CONFIG_KEY_PRE + key, value);
+		//cacheService.set(CacheConstant.APP_CONFIG_KEY_PRE + key, value);
 	}
 	
 	@Override
