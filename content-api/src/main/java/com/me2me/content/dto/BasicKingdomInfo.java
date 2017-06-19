@@ -1,5 +1,7 @@
 package com.me2me.content.dto;
 
+import com.me2me.common.web.BaseEntity;
+
 import lombok.Data;
 
 /**
@@ -9,7 +11,9 @@ import lombok.Data;
  * @date Jun 9, 2017
  */
 @Data
-public class BasicKingdomInfo {
+public class BasicKingdomInfo implements BaseEntity{
+	private static final long serialVersionUID = 1L;
+
 	private long subListId;
 
 	private int subType;
