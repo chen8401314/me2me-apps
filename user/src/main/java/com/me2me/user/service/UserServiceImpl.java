@@ -2977,6 +2977,7 @@ public class UserServiceImpl implements UserService {
 					e.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
 					e.setV_lv(user.getvLv());
 					e.setIntroduced(user.getIntroduced());
+					e.setLevel(user.getLevel());
 					if(null != followMap.get(uid+"_"+user.getUid().toString())){
 		                e.setIsFollowed(1);
 		            }else{
