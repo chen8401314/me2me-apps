@@ -1825,6 +1825,7 @@ public class UserServiceImpl implements UserService {
             UserProfile userProfile = userMybatisDao.getUserProfileByUid(userFansDto.getUid());
             userFansDto.setIntroduced(userProfile.getIntroduced());
             userFansDto.setV_lv(userProfile.getvLv());
+            userFansDto.setLevel(userProfile.getLevel());
         }
         ShowUserFansDto showUserFansDto = new ShowUserFansDto();
         showUserFansDto.setResult(list);
