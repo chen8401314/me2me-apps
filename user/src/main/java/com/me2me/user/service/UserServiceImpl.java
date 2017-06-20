@@ -3999,9 +3999,9 @@ public class UserServiceImpl implements UserService {
         for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
             if ((userProfile.getLevel()+1) == userLevelDto.getLevel() &&  modifyCoin>=userLevelDto.getNeedCoins() ){
                 modifyUserCoinDto.setUpgrade(1);
-                int upLevel = userProfile.getLevel()+lv;
-                userInitJdbcDao.modifyUserLevel(uid,upLevel);
-                modifyUserCoinDto.setCurrentLevel(upLevel);
+               // int upLevel = userProfile.getLevel()+lv;
+                userInitJdbcDao.modifyUserLevel(uid,lv);
+                modifyUserCoinDto.setCurrentLevel(lv);
                 break;
             }
         }
