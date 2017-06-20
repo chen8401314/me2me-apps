@@ -1758,6 +1758,7 @@ public class UserServiceImpl implements UserService {
         dto.setNickName(userProfile.getNickName());
         dto.setRegUrl(reg_web+uid);
         dto.setV_lv(userProfile.getvLv());
+        dto.setLevel(userProfile.getLevel());
 //        byte[] image = QRCodeUtil.encode(reg_web + uid);
 //        String key = UUID.randomUUID().toString();
 //        fileTransferService.upload(image,key);
@@ -3034,11 +3035,10 @@ public class UserServiceImpl implements UserService {
 		ShowContactsDTO result = new ShowContactsDTO();
 		int total = userMybatisDao.getUserFollowCount(uid);
 		result.setTotalPage(total%pageSize==0?(total/pageSize):((total/pageSize)+1));
+
 		int start = (page-1)*pageSize;
 		List<Map<String, Object>> followList = userInitJdbcDao.getUserFollowInfoPage(null, uid, start, pageSize);
-		
 		this.builderContactsResult(uid, result, mobileList, seekList, followList);
-		
 		return Response.success(result);
 	}
 	

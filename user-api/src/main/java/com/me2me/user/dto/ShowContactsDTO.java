@@ -31,6 +31,7 @@ public class ShowContactsDTO implements BaseEntity {
 		private int v_lv;
 		private int isFollowed;
 		private int isFollowMe;
+		private int level;
 	}
 	
 	@Data
@@ -44,6 +45,7 @@ public class ShowContactsDTO implements BaseEntity {
 		private int v_lv;
 		private int isFollowed;
 		private int isFollowMe;
+		private int level;
 	}
 	
 	@Data
@@ -58,5 +60,6 @@ public class ShowContactsDTO implements BaseEntity {
 		private String group;
 		private int isFollowed;
 		private int isFollowMe;
+		private int level;
 	}
 }
