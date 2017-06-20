@@ -4049,7 +4049,7 @@ public class UserServiceImpl implements UserService {
         }
         if(lv < userProfile.getLevel()){
             return modifyUserCoinDto;
-        }else {
+        }else{
             for (UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()) {
                 if ((lv - 1) == userLevelDto.getLevel() && modifyCoin >= userLevelDto.getNeedCoins()) {
                     modifyUserCoinDto.setUpgrade(1);
