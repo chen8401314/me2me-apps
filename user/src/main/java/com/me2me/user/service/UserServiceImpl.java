@@ -4047,15 +4047,19 @@ public class UserServiceImpl implements UserService {
                 lv++;
             }
         }
-        for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
-            if ((lv-1) == userLevelDto.getLevel() &&  modifyCoin>=userLevelDto.getNeedCoins() ){
-                modifyUserCoinDto.setUpgrade(1);
-                userInitJdbcDao.modifyUserLevel(uid,lv);
-                modifyUserCoinDto.setCurrentLevel(lv);
-                break;
+        if(lv < userProfile.getLevel()){
+            return modifyUserCoinDto;
+        }else {
+            for (UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()) {
+                if ((lv - 1) == userLevelDto.getLevel() && modifyCoin >= userLevelDto.getNeedCoins()) {
+                    modifyUserCoinDto.setUpgrade(1);
+                    userInitJdbcDao.modifyUserLevel(uid, lv);
+                    modifyUserCoinDto.setCurrentLevel(lv);
+                    break;
+                }
             }
+            return modifyUserCoinDto;
         }
-        return modifyUserCoinDto;
     }
 
     @Override
