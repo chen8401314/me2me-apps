@@ -3838,13 +3838,13 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public String getAppConfigByKey(String key){
-		String result = cacheService.get(CacheConstant.APP_CONFIG_KEY_PRE + key);
-		if(!StringUtils.isEmpty(result)){
-			return result;
-		}
+		//String result = cacheService.get(CacheConstant.APP_CONFIG_KEY_PRE + key);
+		//if(!StringUtils.isEmpty(result)){
+		//	return result;
+		//}
 		AppConfig config = userMybatisDao.getAppConfigByKey(key);
 		if(null != config && !StringUtils.isEmpty(config.getConfigValue())){
-			cacheService.set(CacheConstant.APP_CONFIG_KEY_PRE + key, config.getConfigValue());
+			//cacheService.set(CacheConstant.APP_CONFIG_KEY_PRE + key, config.getConfigValue());
 			return config.getConfigValue();
 		}
 		return null;
@@ -3882,7 +3882,7 @@ public class UserServiceImpl implements UserService {
 			config.setConfigValue(value);
 			userMybatisDao.updateAppConfig(config);
 		}
-		cacheService.set(CacheConstant.APP_CONFIG_KEY_PRE + key, value);
+		//cacheService.set(CacheConstant.APP_CONFIG_KEY_PRE + key, value);
 	}
 	
 	@Override
@@ -3931,7 +3931,7 @@ public class UserServiceImpl implements UserService {
             if (userProfile.getLevel()-1 == userLevelDto.getLevel() && userProfile.getLevel() > 1 ){
                 preLevel.setName(userLevelDto.getName());
             }
-            if(userProfile.getLevel() == userLevelDto.getLevel()){
+            if((userProfile.getLevel()+1) == userLevelDto.getLevel()){
                 myLevelDto.setNextLevelCoin(userLevelDto.getNeedCoins()-userProfile.getAvailableCoin());
             }
         }
@@ -3945,10 +3945,45 @@ public class UserServiceImpl implements UserService {
         String value2 = getAppConfigByKey("LEVEL_"+level);
         PermissionDescriptionDto permissionDescriptionDto = JSON.parseObject(value2, PermissionDescriptionDto.class);
         List<PermissionDescriptionDto.PermissionNodeDto> list = Lists.newArrayList();
+/**
+ *                以下为弱智排序
+ */
+        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
+            if(nodeDto.getCode()==1){
+                list.add(nodeDto);
+            }else if (nodeDto.getCode()==2){
+                list.add(nodeDto);
+            }else  if(nodeDto.getCode()==3){
+                list.add(nodeDto);
+                break;
+            }
+        }
+        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
+            if(nodeDto.getCode()==6){
+                list.add(nodeDto);
+                break;
+            }
+        }
+        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
+            if(nodeDto.getCode()==5){
+                list.add(nodeDto);
+                break;
+            }
+        }
+        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
+            if(nodeDto.getCode()==4){
+                list.add(nodeDto);
+
+            }else if(nodeDto.getCode()==7){
+                list.add(nodeDto);
+            }
+        }
+
+
         for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
             if(nodeDto.getIsShow()==1){
                 nodeDto.setIsShow(null);
-                list.add(nodeDto);
+                /*list.add(nodeDto);*/
                 if(nodeDto.getStatus()!=1){
                     // 找寻哪个级别开通该功能
                     int openLevel = checkIsOpenLevel(nodeDto.getName());
@@ -3999,9 +4034,9 @@ public class UserServiceImpl implements UserService {
         for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
             if ((userProfile.getLevel()+1) == userLevelDto.getLevel() &&  modifyCoin>=userLevelDto.getNeedCoins() ){
                 modifyUserCoinDto.setUpgrade(1);
-                int upLevel = userProfile.getLevel()+lv;
-                userInitJdbcDao.modifyUserLevel(uid,upLevel);
-                modifyUserCoinDto.setCurrentLevel(upLevel);
+               // int upLevel = userProfile.getLevel()+lv;
+                userInitJdbcDao.modifyUserLevel(uid,lv);
+                modifyUserCoinDto.setCurrentLevel(lv);
                 break;
             }
         }

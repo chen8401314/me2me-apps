@@ -215,6 +215,9 @@ public class LiveServiceImpl implements LiveService {
     /** 大V用户每天可发起投票数 */
     private static final String V_CREATE_VOTE_COUNT = "V_CREATE_VOTE_COUNT";
 
+    //获取王国上市标准
+    private static final String LISTED_PRICE = "LISTED_PRICE";
+
     @SuppressWarnings("rawtypes")
     @Override
     public Response createLive(CreateLiveDto createLiveDto) {
@@ -6800,7 +6803,9 @@ public class LiveServiceImpl implements LiveService {
     public Response rechargeToKingdom(RechargeToKingdomDto rechargeToKingdomDto) {
 
         UserProfile  userProfile = userService.getUserProfileByUid(rechargeToKingdomDto.getUid());
-
+        if(rechargeToKingdomDto.getAmount() ==0 && userProfile.getAvailableCoin() ==0){
+            return  Response.failure("没有可充米汤币");
+        }
         rechargeToKingdomDto.setAmount(userProfile.getAvailableCoin());
 
         Topic topic = getTopicById(rechargeToKingdomDto.getTopicId());
@@ -6809,14 +6814,21 @@ public class LiveServiceImpl implements LiveService {
             return  Response.failure("王国或用户无效");
         }
         // 判断当前的王国是否是自己的王国.
-        if(rechargeToKingdomDto.getUid() != topic.getUid()){
+       /* if(rechargeToKingdomDto.getUid() != topic.getUid()){
             return  Response.failure("王国无效");
-        }
-
+        }*/
         if(rechargeToKingdomDto.getAmount() == userProfile.getAvailableCoin()){
             liveLocalJdbcDao.rechargeToKingDom(rechargeToKingdomDto.getTopicId(),rechargeToKingdomDto.getAmount());
             liveLocalJdbcDao.zeroMyCoins(rechargeToKingdomDto.getUid());
             // 更新完成后判断王国的数值是否达到上市标准.如果达标调用跑马灯接口
+            //取出达到上市条件的米汤币数量
+            String listedPrice = userService.getAppConfigByKey(LISTED_PRICE);
+            int i = Integer.parseInt( listedPrice, 10);
+            if((topic.getPrice()+rechargeToKingdomDto.getAmount())>= i ){
+                String content = topic.getTitle()+"达到上市标准";
+                liveLocalJdbcDao.writeTopicNews(topic.getId(),content);
+            }
+
             return Response.success();
         }else {
             return Response.failure("充值米汤币与实际不符");
