@@ -11,6 +11,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
@@ -802,7 +803,15 @@ public class ContentSearchServiceImpl implements ContentSearchService {
     				matching = matching + (c*33)/last3userEmotionList.size();
     			}
     		}
-    		
+    		    Random random = new Random();
+    		    int sNum = 10-random.nextInt(21);
+    		    matching+=sNum;
+    		    if(matching<5){
+    		    	matching = 5;
+    		    }
+    		    if(matching>90){
+    		    	matching = 90;
+    		    }
     		userInfo.setMatching(matching);
     		userList.add(userInfo);
     	}
