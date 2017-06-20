@@ -6805,7 +6805,7 @@ public class LiveServiceImpl implements LiveService {
     public Response rechargeToKingdom(RechargeToKingdomDto rechargeToKingdomDto) {
 
         UserProfile  userProfile = userService.getUserProfileByUid(rechargeToKingdomDto.getUid());
-        if(rechargeToKingdomDto.getAmount() ==0 || userProfile.getAvailableCoin() ==0){
+        if(userProfile.getAvailableCoin() ==0){
             return  Response.failure(500,"没有可充米汤币");
         }
         rechargeToKingdomDto.setAmount(userProfile.getAvailableCoin());
