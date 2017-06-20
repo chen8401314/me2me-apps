@@ -19,4 +19,5 @@ public class MBTIDto implements BaseEntity {
 	private String nickName;
 	private String avatar;
 	private int vLv;
+	private int level;
 }

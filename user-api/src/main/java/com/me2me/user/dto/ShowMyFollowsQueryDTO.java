@@ -27,5 +27,6 @@ public class ShowMyFollowsQueryDTO implements BaseEntity {
 		private String group;
 		private int isFollowed;
 		private int isFollowMe;
+		private int level;
 	}
 }

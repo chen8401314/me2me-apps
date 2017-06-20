@@ -3263,6 +3263,7 @@ public class UserServiceImpl implements UserService {
 				e.setNickName(user.getNickName());
 				e.setUid(user.getUid());
 				e.setV_lv(user.getvLv());
+				e.setLevel(user.getLevel());
 				result.getSeekFollowData().add(e);
 			}
 		}
@@ -3327,6 +3328,7 @@ public class UserServiceImpl implements UserService {
 				e.setNickName((String)followUser.get("nick_name"));
 				e.setUid((Long)followUser.get("uid"));
 				e.setV_lv((Integer)followUser.get("v_lv"));
+				e.setLevel((int)followUser.get("level"));
 				if(null != followMap.get(uid+"_"+e.getUid())){
 	                e.setIsFollowed(1);
 	            }else{
@@ -3567,6 +3569,7 @@ public class UserServiceImpl implements UserService {
 		dto.setAvatar(up.getAvatar());
 		dto.setNickName(up.getNickName());
 		dto.setVLv(up.getvLv());
+		dto.setLevel(up.getLevel());
 		return Response.success(dto);
 	}
 
