@@ -1073,7 +1073,9 @@ public class LiveServiceImpl implements LiveService {
         //直播信息保存
         //saveLiveDisplayData(speakDto);
         //判断是否升级
-        userService.coinRule(speakDto.getUid(), Rules.coinRules.get(Rules.SPEAK_KEY));
+        ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), Rules.coinRules.get(Rules.SPEAK_KEY));
+        speakDto.setUpgrade(muDto.getUpgrade());
+        speakDto.setCurrentLevel(muDto.getCurrentLevel());
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status, ResponseStatus.USER_SPEAK_SUCCESS.message, speakDto);
     }
 
