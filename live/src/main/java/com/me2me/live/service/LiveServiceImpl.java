@@ -6803,15 +6803,15 @@ public class LiveServiceImpl implements LiveService {
     public Response rechargeToKingdom(RechargeToKingdomDto rechargeToKingdomDto) {
 
         UserProfile  userProfile = userService.getUserProfileByUid(rechargeToKingdomDto.getUid());
-        if(rechargeToKingdomDto.getAmount() ==0 && userProfile.getAvailableCoin() ==0){
-            return  Response.failure("没有可充米汤币");
+        if(rechargeToKingdomDto.getAmount() ==0 || userProfile.getAvailableCoin() ==0){
+            return  Response.failure(500,"没有可充米汤币");
         }
         rechargeToKingdomDto.setAmount(userProfile.getAvailableCoin());
 
         Topic topic = getTopicById(rechargeToKingdomDto.getTopicId());
 
         if(topic == null || userProfile == null){
-            return  Response.failure("王国或用户无效");
+            return  Response.failure(500,"王国或用户无效");
         }
         // 判断当前的王国是否是自己的王国.
        /* if(rechargeToKingdomDto.getUid() != topic.getUid()){
@@ -6831,7 +6831,7 @@ public class LiveServiceImpl implements LiveService {
 
             return Response.success();
         }else {
-            return Response.failure("充值米汤币与实际不符");
+            return Response.failure(500,"充值米汤币与实际不符");
         }
     }
 

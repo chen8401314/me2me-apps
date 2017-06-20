@@ -3946,7 +3946,7 @@ public class UserServiceImpl implements UserService {
         PermissionDescriptionDto permissionDescriptionDto = JSON.parseObject(value2, PermissionDescriptionDto.class);
         List<PermissionDescriptionDto.PermissionNodeDto> list = Lists.newArrayList();
 /**
- *                以下为弱智排序
+ *                以下4个for循环为弱智排序   by gst
  */
         for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
             if(nodeDto.getCode()==1){
@@ -4025,16 +4025,15 @@ public class UserServiceImpl implements UserService {
 	    userInitJdbcDao.modifyUserCoin(uid,modifyCoin);
         String permissions = getAppConfigByKey(USER_PERMISSIONS);
         UserPermissionDto userPermissionDto = JSON.parseObject(permissions, UserPermissionDto.class);
-        int lv = 0;
+        int lv = 1;
         for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
             if(  modifyCoin >= userLevelDto.getNeedCoins()){
                 lv++;
             }
         }
         for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
-            if ((userProfile.getLevel()+1) == userLevelDto.getLevel() &&  modifyCoin>=userLevelDto.getNeedCoins() ){
+            if ((lv-1) == userLevelDto.getLevel() &&  modifyCoin>=userLevelDto.getNeedCoins() ){
                 modifyUserCoinDto.setUpgrade(1);
-               // int upLevel = userProfile.getLevel()+lv;
                 userInitJdbcDao.modifyUserLevel(uid,lv);
                 modifyUserCoinDto.setCurrentLevel(lv);
                 break;
