@@ -27,6 +27,8 @@ public class UserPermissionDto implements BaseEntity {
 
         private String name;
 
+        private String lvName;
+
         private int needCoins;
 
         private int[] permissions;
