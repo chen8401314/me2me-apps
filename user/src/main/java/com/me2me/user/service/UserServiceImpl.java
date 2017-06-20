@@ -1847,6 +1847,7 @@ public class UserServiceImpl implements UserService {
             UserProfile userProfile = userMybatisDao.getUserProfileByUid(userFollowDto.getUid());
             userFollowDto.setIntroduced(userProfile.getIntroduced());
             userFollowDto.setV_lv(userProfile.getvLv());
+            userFollowDto.setLevel(userProfile.getLevel());
         }
         showUserFollowDto.setResult(list);
         log.info("getFollowsOrderByTime end ...");
