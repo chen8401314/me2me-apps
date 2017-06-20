@@ -3945,10 +3945,45 @@ public class UserServiceImpl implements UserService {
         String value2 = getAppConfigByKey("LEVEL_"+level);
         PermissionDescriptionDto permissionDescriptionDto = JSON.parseObject(value2, PermissionDescriptionDto.class);
         List<PermissionDescriptionDto.PermissionNodeDto> list = Lists.newArrayList();
+/**
+ *                以下为弱智排序
+ */
+        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
+            if(nodeDto.getCode()==1){
+                list.add(nodeDto);
+            }else if (nodeDto.getCode()==2){
+                list.add(nodeDto);
+            }else  if(nodeDto.getCode()==3){
+                list.add(nodeDto);
+                break;
+            }
+        }
+        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
+            if(nodeDto.getCode()==6){
+                list.add(nodeDto);
+                break;
+            }
+        }
+        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
+            if(nodeDto.getCode()==5){
+                list.add(nodeDto);
+                break;
+            }
+        }
+        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
+            if(nodeDto.getCode()==4){
+                list.add(nodeDto);
+
+            }else if(nodeDto.getCode()==7){
+                list.add(nodeDto);
+            }
+        }
+
+
         for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
             if(nodeDto.getIsShow()==1){
                 nodeDto.setIsShow(null);
-                list.add(nodeDto);
+                /*list.add(nodeDto);*/
                 if(nodeDto.getStatus()!=1){
                     // 找寻哪个级别开通该功能
                     int openLevel = checkIsOpenLevel(nodeDto.getName());

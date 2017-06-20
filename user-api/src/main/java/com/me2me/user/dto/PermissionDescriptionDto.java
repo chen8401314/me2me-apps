@@ -39,6 +39,8 @@ public class PermissionDescriptionDto implements BaseEntity {
 
         private Integer openLevel;
 
+        private  Integer sort;
+
 
     }
 
