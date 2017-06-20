@@ -433,6 +433,7 @@ public class ContentServiceImpl implements ContentService {
                         int acCount = liveForContentJdbcDao.getTopicAggregationCountByTopicId((Long) topic.get("id"));
                         squareDataElement.setAcCount(acCount);
                     }
+                    squareDataElement.setPrice((Integer) topic.get("price"));
             	}
 			}
 			squareDataElement.setLikeCount(content.getLikeCount());

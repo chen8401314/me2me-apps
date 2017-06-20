@@ -102,4 +102,6 @@ public class BaseContentDto implements BaseEntity{
     private long forwardUid;
     
     private String forwardNickName;
+    
+    private int price;
 }
