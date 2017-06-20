@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,6 +30,7 @@ import com.me2me.mgmt.request.KingdomDTO;
 import com.me2me.mgmt.request.KingdomQueryDTO;
 import com.me2me.mgmt.request.SearchUserDTO;
 import com.me2me.mgmt.task.app.KingdomPriceTask;
+import com.me2me.user.model.AppConfig;
 import com.me2me.user.service.UserService;
 
 @Controller
@@ -43,6 +47,34 @@ public class PriceController {
 	private UserService userService;
 	@Autowired
 	private KingdomPriceTask kingdomPriceTask;
+	
+	//////新实现
+	
+
+	@RequestMapping(value = "/allConfig")
+	public String allConfig(HttpServletRequest request,HttpServletResponse response){
+		//List<AppConfig> confList = userService.getAppConfigsByType(typeName);
+		List<AppConfig> confList= userService.getAllAppConfig();
+		request.setAttribute("configList", confList);
+		return "price/config";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/saveConfig")
+	public String saveConfig(HttpServletRequest request,HttpServletResponse response,
+			@RequestParam("k")String key, 
+			@RequestParam("v")String value){
+		
+		if(StringUtils.isBlank(key)){
+			logger.warn("key不能为空");
+			return "key不能为空";
+		}
+		
+		userService.saveAppConfig(key, value);
+		
+		return "0";
+	}
+	
 	
 	@RequestMapping(value = "/kingdomQuery")
 	public ModelAndView kingdomQuery(KingdomQueryDTO dto){
@@ -353,6 +385,7 @@ public class PriceController {
 		
 		{
 			this.add("EXCHANGE_RATE");
+			this.add("EXCHANGE_RATE222");
 		}
 	};
 	
@@ -361,6 +394,7 @@ public class PriceController {
 		
 		{
 			this.put("EXCHANGE_RATE", "汇率(1RMB=?MB)");
+			this.put("EXCHANGE_RATE222", "汇率222(1RMB=?MB)");
 		}
 	};
 	
@@ -417,7 +451,7 @@ public class PriceController {
 			}
 		}
 		
-		userService.saveAppConfig(key, value, desc);
+		userService.saveAppConfig(key, value);
 		
 		return "0";
 	}

@@ -16,5 +16,5 @@ public class StealResultDto implements BaseEntity{
 
 	private int stealedCoins;
     private int upgrade;
-	private int level;
+	private int currentLevel;
 }

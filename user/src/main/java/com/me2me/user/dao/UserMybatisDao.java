@@ -1415,6 +1415,19 @@ public class UserMybatisDao {
 		AppConfigExample example = new AppConfigExample();
 		return appConfigMapper.selectByExample(example);
 	}
+	/**
+	 * 按分类返回配置项
+	 * @author zhangjiwei
+	 * @date Jun 20, 2017
+	 * @param type
+	 * @return
+	 */
+	public List<AppConfig> getAllAppConfigByType(String type){
+		AppConfigExample example = new AppConfigExample();
+		example.createCriteria().andTypeNameEqualTo(type);
+		return appConfigMapper.selectByExample(example);
+	}
+	
 	
 	public void saveAppConfig(AppConfig config){
 		appConfigMapper.insertSelective(config);

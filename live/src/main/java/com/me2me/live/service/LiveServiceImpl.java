@@ -6788,7 +6788,7 @@ public class LiveServiceImpl implements LiveService {
 			StealResultDto dto= new StealResultDto();
 			dto.setStealedCoins(coins);
 			dto.setUpgrade(modifyDetail.getUpgrade());
-			dto.setLevel(modifyDetail.getCurrentLevel());
+			dto.setCurrentLevel(modifyDetail.getCurrentLevel());
 			return Response.success(dto);
 		} catch (Exception e) {
 			e.printStackTrace();
