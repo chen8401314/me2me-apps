@@ -434,6 +434,17 @@ public class ContentServiceImpl implements ContentService {
                         squareDataElement.setAcCount(acCount);
                     }
                     squareDataElement.setPrice((Integer) topic.get("price"));
+                    List<Map<String,Object>> list = liveForContentJdbcDao.getTopicTagDetailListByTopicId((Long) topic.get("id"));
+                    StringBuffer tagsSB = new StringBuffer();
+                    for (int i = 0; i < list.size(); i++) {
+                    	Map<String,Object> map = list.get(i);
+                    	if(i!=0){
+                    		tagsSB.append(";");
+                    	}
+                    	tagsSB.append((String)map.get("tag"));
+					}
+                    squareDataElement.setTags(tagsSB.toString());
+                    
             	}
 			}
 			squareDataElement.setLikeCount(content.getLikeCount());
@@ -1311,6 +1322,16 @@ private void localJpush(long toUid){
             			contentElement.setAcCount(acCount);
             		}
             		contentElement.setPrice((Integer)topic.get("price"));
+            		 List<Map<String,Object>> list = liveForContentJdbcDao.getTopicTagDetailListByTopicId((Long) topic.get("id"));
+                     StringBuffer tagsSB = new StringBuffer();
+                     for (int i = 0; i < list.size(); i++) {
+                     	Map<String,Object> map = list.get(i);
+                     	if(i!=0){
+                     		tagsSB.append(";");
+                     	}
+                     	tagsSB.append((String)map.get("tag"));
+ 					}
+                     contentElement.setTags(tagsSB.toString());
             	}
             }else{
             	ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
@@ -3463,7 +3484,7 @@ private void localJpush(long toUid){
 		String listingPrice = userService.getAppConfigByKey(Constant.LISTING_PRICE_KEY);
 		if(!StringUtils.isEmpty(listingPrice)){
 			int minPrice = Integer.parseInt(listingPrice);
-			List<Map<String,Object>> listingKingdoms= liveForContentJdbcDao.getListingKingodms(minPrice, 1, 30);
+			List<Map<String,Object>> listingKingdoms= liveForContentJdbcDao.getListingKingdoms(minPrice, 1, 30);
 			if(listingKingdoms.size()>0){
 				List<BasicKingdomInfo> listingKingdomList =kingdomBuider.buildKingdoms(listingKingdoms, uid);
 				result.setListingKingdoms(listingKingdomList);
@@ -4773,6 +4794,7 @@ private void localJpush(long toUid){
                         }else{
                         	bangDanInnerData.setTags("");
                         }
+                        bangDanInnerData.setPrice((Integer)topic.get("price"));
                     }else if(type==2){//人
                         bangDanInnerData.setUid(targetId);
                         userProfile = userMap.get(String.valueOf(targetId));
@@ -5867,7 +5889,7 @@ private void localJpush(long toUid){
 		csh.setType(type);
 		csh.setUid(uid);
 		contentMybatisDao.saveContentShareHistory(csh);
-        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(uid, Rules.coinRules.get(Rules.SHARE_KING_KEY));
+        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(uid, userService.getCoinRules().get(Rules.SHARE_KING_KEY));
         Response response = Response.success(Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message));
         response.setData(modifyUserCoinDto);
         return response;
@@ -5901,5 +5923,9 @@ private void localJpush(long toUid){
 	@Override
 	public int getTopicShareCount(long topicId){
 		return contentMybatisDao.getTopicShareCount(topicId);
+	}
+	@Override
+	public void updateContentUid(long newUid,long topicId){
+		 liveForContentJdbcDao.updateContentUid(newUid,topicId);
 	}
 }

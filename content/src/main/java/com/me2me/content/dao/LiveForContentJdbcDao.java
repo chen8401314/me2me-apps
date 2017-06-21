@@ -573,7 +573,14 @@ public class LiveForContentJdbcDao {
     	
     	return jdbcTemplate.queryForList(sb.toString());
     }
-
+    public List<Map<String, Object>> getTopicTagDetailListByTopicId(long topicId){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select * from topic_tag_detail d where d.status=0");
+    	sb.append(" and d.topic_id =").append(topicId);
+    	sb.append(" order by topic_id asc,id asc");
+    	return jdbcTemplate.queryForList(sb.toString());
+    }
+    
 	public List<Map<String, Object>> getTopPricedKingdomList(int page, int pageSize) {
 		String sql = "select * from topic where status!=2 order by price desc limit ?,?";
 		return jdbcTemplate.queryForList(sql,(page-1)*pageSize,pageSize);
@@ -586,8 +593,20 @@ public class LiveForContentJdbcDao {
 	 * @param pageSize
 	 * @return
 	 */
-	public List<Map<String, Object>> getListingKingodms(int minPrice,int page, int pageSize) {
+	public List<Map<String, Object>> getListingKingdoms(int minPrice,int page, int pageSize) {
 		String sql = "select * from topic where price>=? and listing_time is not null and status!=2 order by listing_time desc limit ?,?";
 		return jdbcTemplate.queryForList(sql,minPrice,(page-1)*pageSize,pageSize);
 	}
+	
+    /**
+     * 转让王国修改UGC uid
+     * @param topicId
+     */
+    public void updateContentUid(long newUid,long topicId){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("update content set uid=").append(newUid);
+    	sb.append(" where type = 3  ");
+    	sb.append(" and forward_cid = ").append(topicId);
+    	jdbcTemplate.execute(sb.toString());
+    }
 }
