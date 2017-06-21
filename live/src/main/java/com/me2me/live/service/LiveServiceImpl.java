@@ -1040,6 +1040,9 @@ public class LiveServiceImpl implements LiveService {
 //                //userService.push(liveFavorite.getUid(),topic.getUid(),Specification.PushMessageType.UPDATE.index,topic.getTitle());
 //                log.info("update push");
 //            }
+            //更新或者是核心圈跟新加分
+
+
         } else if (speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index) {
             //粉丝贴标提醒
             //Topic live = liveMybatisDao.getTopicById(speakDto.getTopicId());
@@ -1073,6 +1076,12 @@ public class LiveServiceImpl implements LiveService {
         //直播信息保存
         //saveLiveDisplayData(speakDto);
         //判断是否升级
+        log.info("############################################################################");
+        log.info("############################################################################");
+        CoinRule coinRule = Rules.coinRules.get(Rules.SPEAK_KEY);
+        log.info("coinRule info : " + coinRule.getName());
+        log.info("############################################################################");
+        log.info("############################################################################");
         ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), Rules.coinRules.get(Rules.SPEAK_KEY));
         speakDto.setUpgrade(muDto.getUpgrade());
         speakDto.setCurrentLevel(muDto.getCurrentLevel());
@@ -3362,7 +3371,7 @@ public class LiveServiceImpl implements LiveService {
         //add kingdom tags -- end --
 
         log.info("createKingdom end");
-        CoinRule coinRule =Rules.coinRules.get(Rules.CREATE_KING_KEY);
+        CoinRule coinRule = Rules.coinRules.get(Rules.CREATE_KING_KEY);
         coinRule.setExt(createKingdomDto.getUid());
         ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(createKingdomDto.getUid(), Rules.coinRules.get(Rules.CREATE_KING_KEY));
         speakDto2.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());

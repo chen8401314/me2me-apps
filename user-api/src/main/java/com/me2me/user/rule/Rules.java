@@ -58,7 +58,7 @@ public class Rules implements BaseEntity {
         coinRules.put(JOIN_KING_KEY,new CoinRule(JOIN_KING_KEY,"加入一个新王国",Integer.valueOf(userService.getAppConfigByKey("JOIN_KING_KEY")),true));
         coinRules.put(SHARE_KING_KEY,new CoinRule(SHARE_KING_KEY,"对外分享王国/UGC",Integer.valueOf(userService.getAppConfigByKey("SHARE_KING_KEY")),true));
         coinRules.put(CREATE_KING_KEY,new CoinRule(CREATE_KING_KEY,"建立王国/更新王国",Integer.valueOf(userService.getAppConfigByKey("CREATE_KING_KEY")),false));
-        coinRules.put(CREATE_KING_KEY,new CoinRule(LOGIN_KEY,"登录",Integer.valueOf(userService.getAppConfigByKey("LOGIN_KEY")),false));
+        coinRules.put(LOGIN_KEY,new CoinRule(LOGIN_KEY,"登录",Integer.valueOf(userService.getAppConfigByKey("LOGIN_KEY")),false));
     }
 
 
