@@ -4088,7 +4088,7 @@ public class UserServiceImpl implements UserService {
                 lv++;
             }
         }
-        if(lv < userProfile.getLevel()){
+        if(lv <= userProfile.getLevel()){
             return modifyUserCoinDto;
         }else{
             for (UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()) {
