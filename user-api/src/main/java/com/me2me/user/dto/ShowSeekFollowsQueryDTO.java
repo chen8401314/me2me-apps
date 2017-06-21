@@ -27,5 +27,6 @@ public class ShowSeekFollowsQueryDTO implements BaseEntity {
 		private int v_lv;
 		private int isFollowed;
 		private int isFollowMe;
+		private int level;
 	}
 }

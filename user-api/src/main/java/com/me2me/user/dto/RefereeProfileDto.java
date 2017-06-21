@@ -31,4 +31,6 @@ public class RefereeProfileDto implements BaseEntity{
     private String qrCodeUrl;
 
     private int v_lv;
+
+    private int level;
 }

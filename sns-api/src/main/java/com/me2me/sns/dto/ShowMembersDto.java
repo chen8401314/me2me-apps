@@ -35,5 +35,7 @@ public class ShowMembersDto implements BaseEntity {
         private int internalStatus;
 
         private int v_lv;
+
+        private int level;
     }
 }

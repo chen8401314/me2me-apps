@@ -1758,6 +1758,7 @@ public class UserServiceImpl implements UserService {
         dto.setNickName(userProfile.getNickName());
         dto.setRegUrl(reg_web+uid);
         dto.setV_lv(userProfile.getvLv());
+        dto.setLevel(userProfile.getLevel());
 //        byte[] image = QRCodeUtil.encode(reg_web + uid);
 //        String key = UUID.randomUUID().toString();
 //        fileTransferService.upload(image,key);
@@ -1824,6 +1825,7 @@ public class UserServiceImpl implements UserService {
             UserProfile userProfile = userMybatisDao.getUserProfileByUid(userFansDto.getUid());
             userFansDto.setIntroduced(userProfile.getIntroduced());
             userFansDto.setV_lv(userProfile.getvLv());
+            userFansDto.setLevel(userProfile.getLevel());
         }
         ShowUserFansDto showUserFansDto = new ShowUserFansDto();
         showUserFansDto.setResult(list);
@@ -1846,6 +1848,7 @@ public class UserServiceImpl implements UserService {
             UserProfile userProfile = userMybatisDao.getUserProfileByUid(userFollowDto.getUid());
             userFollowDto.setIntroduced(userProfile.getIntroduced());
             userFollowDto.setV_lv(userProfile.getvLv());
+            userFollowDto.setLevel(userProfile.getLevel());
         }
         showUserFollowDto.setResult(list);
         log.info("getFollowsOrderByTime end ...");
@@ -2977,6 +2980,7 @@ public class UserServiceImpl implements UserService {
 					e.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
 					e.setV_lv(user.getvLv());
 					e.setIntroduced(user.getIntroduced());
+					e.setLevel(user.getLevel());
 					if(null != followMap.get(uid+"_"+user.getUid().toString())){
 		                e.setIsFollowed(1);
 		            }else{
@@ -3033,11 +3037,10 @@ public class UserServiceImpl implements UserService {
 		ShowContactsDTO result = new ShowContactsDTO();
 		int total = userMybatisDao.getUserFollowCount(uid);
 		result.setTotalPage(total%pageSize==0?(total/pageSize):((total/pageSize)+1));
+
 		int start = (page-1)*pageSize;
 		List<Map<String, Object>> followList = userInitJdbcDao.getUserFollowInfoPage(null, uid, start, pageSize);
-		
 		this.builderContactsResult(uid, result, mobileList, seekList, followList);
-		
 		return Response.success(result);
 	}
 	
@@ -3263,6 +3266,7 @@ public class UserServiceImpl implements UserService {
 				e.setNickName(user.getNickName());
 				e.setUid(user.getUid());
 				e.setV_lv(user.getvLv());
+				e.setLevel(user.getLevel());
 				result.getSeekFollowData().add(e);
 			}
 		}
@@ -3327,6 +3331,7 @@ public class UserServiceImpl implements UserService {
 				e.setNickName((String)followUser.get("nick_name"));
 				e.setUid((Long)followUser.get("uid"));
 				e.setV_lv((Integer)followUser.get("v_lv"));
+				e.setLevel((int)followUser.get("level"));
 				if(null != followMap.get(uid+"_"+e.getUid())){
 	                e.setIsFollowed(1);
 	            }else{
@@ -3567,6 +3572,7 @@ public class UserServiceImpl implements UserService {
 		dto.setAvatar(up.getAvatar());
 		dto.setNickName(up.getNickName());
 		dto.setVLv(up.getvLv());
+		dto.setLevel(up.getLevel());
 		return Response.success(dto);
 	}
 
@@ -3884,7 +3890,23 @@ public class UserServiceImpl implements UserService {
 		}
 		cacheService.set(CacheConstant.APP_CONFIG_KEY_PRE + key, value);
 	}
-	
+	@Override
+	public void saveAppConfig(String key, String value){
+		if(StringUtils.isEmpty(key) || StringUtils.isEmpty(value)){
+			return;
+		}
+		AppConfig config = userMybatisDao.getAppConfigByKey(key);
+		if(null == config){
+			config = new AppConfig();
+			config.setConfigKey(key);
+			config.setConfigValue(value);
+			userMybatisDao.saveAppConfig(config);
+		}else{
+			config.setConfigValue(value);
+			userMybatisDao.updateAppConfig(config);
+		}
+		cacheService.set(CacheConstant.APP_CONFIG_KEY_PRE + key, value);
+	}
 	@Override
 	public List<AppConfig> getAllAppConfig(){
 		return userMybatisDao.getAllAppConfig();
@@ -3931,7 +3953,7 @@ public class UserServiceImpl implements UserService {
             if (userProfile.getLevel()-1 == userLevelDto.getLevel() && userProfile.getLevel() > 1 ){
                 preLevel.setName(userLevelDto.getName());
             }
-            if(userProfile.getLevel() == userLevelDto.getLevel()){
+            if((userProfile.getLevel()+1) == userLevelDto.getLevel()){
                 myLevelDto.setNextLevelCoin(userLevelDto.getNeedCoins()-userProfile.getAvailableCoin());
             }
         }
@@ -3945,10 +3967,45 @@ public class UserServiceImpl implements UserService {
         String value2 = getAppConfigByKey("LEVEL_"+level);
         PermissionDescriptionDto permissionDescriptionDto = JSON.parseObject(value2, PermissionDescriptionDto.class);
         List<PermissionDescriptionDto.PermissionNodeDto> list = Lists.newArrayList();
+/**
+ *                以下4个for循环为弱智排序   by gst
+ */
+        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
+            if(nodeDto.getCode()==1){
+                list.add(nodeDto);
+            }else if (nodeDto.getCode()==2){
+                list.add(nodeDto);
+            }else  if(nodeDto.getCode()==3){
+                list.add(nodeDto);
+                break;
+            }
+        }
+        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
+            if(nodeDto.getCode()==6){
+                list.add(nodeDto);
+                break;
+            }
+        }
+        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
+            if(nodeDto.getCode()==5){
+                list.add(nodeDto);
+                break;
+            }
+        }
+        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
+            if(nodeDto.getCode()==4){
+                list.add(nodeDto);
+
+            }else if(nodeDto.getCode()==7){
+                list.add(nodeDto);
+            }
+        }
+
+
         for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
             if(nodeDto.getIsShow()==1){
                 nodeDto.setIsShow(null);
-                list.add(nodeDto);
+                /*list.add(nodeDto);*/
                 if(nodeDto.getStatus()!=1){
                     // 找寻哪个级别开通该功能
                     int openLevel = checkIsOpenLevel(nodeDto.getName());
@@ -3990,16 +4047,25 @@ public class UserServiceImpl implements UserService {
 	    userInitJdbcDao.modifyUserCoin(uid,modifyCoin);
         String permissions = getAppConfigByKey(USER_PERMISSIONS);
         UserPermissionDto userPermissionDto = JSON.parseObject(permissions, UserPermissionDto.class);
+        int lv = 1;
         for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
-            if ((userProfile.getLevel()+1) == userLevelDto.getLevel() &&  modifyCoin>=userLevelDto.getNeedCoins() ){
-                modifyUserCoinDto.setUpgrade(1);
-                int upLevel = userProfile.getLevel()+1;
-                userInitJdbcDao.modifyUserLevel(uid,upLevel);
-                modifyUserCoinDto.setCurrentLevel(upLevel);
-                break;
+            if(  modifyCoin >= userLevelDto.getNeedCoins()){
+                lv++;
             }
         }
-        return modifyUserCoinDto;
+        if(lv < userProfile.getLevel()){
+            return modifyUserCoinDto;
+        }else{
+            for (UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()) {
+                if ((lv - 1) == userLevelDto.getLevel() && modifyCoin >= userLevelDto.getNeedCoins()) {
+                    modifyUserCoinDto.setUpgrade(1);
+                    userInitJdbcDao.modifyUserLevel(uid, lv);
+                    modifyUserCoinDto.setCurrentLevel(lv);
+                    break;
+                }
+            }
+            return modifyUserCoinDto;
+        }
     }
 
     @Override
@@ -4067,6 +4133,11 @@ public class UserServiceImpl implements UserService {
         }
         return 0;
     }
+
+	@Override
+	public List<AppConfig> getAppConfigsByType(String type) {
+		return userMybatisDao.getAllAppConfigByType(type);
+	}
 
 
 }

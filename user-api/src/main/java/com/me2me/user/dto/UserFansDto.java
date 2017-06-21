@@ -24,4 +24,6 @@ public class UserFansDto implements BaseEntity {
     private String introduced;
 
     private int v_lv;
+
+    private int level;
 }

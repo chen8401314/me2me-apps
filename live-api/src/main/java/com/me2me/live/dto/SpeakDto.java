@@ -1,6 +1,8 @@
 package com.me2me.live.dto;
 
 import com.me2me.common.web.BaseEntity;
+import com.me2me.user.dto.*;
+import com.me2me.user.dto.ModifyUserCoinDto;
 import lombok.Data;
 
 /**
@@ -41,5 +43,9 @@ public class SpeakDto implements BaseEntity{
     private String extra;
 
     private int v_lv;
+
+    private int upgrade ;
+
+    private int currentLevel;
 
 }

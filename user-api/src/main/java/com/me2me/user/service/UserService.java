@@ -475,6 +475,8 @@ public interface UserService {
 	
 	Map<String, String> getAppConfigsByKeys(List<String> keys);
 	
+	List<AppConfig> getAppConfigsByType(String type);
+	
 	void saveAppConfig(String key, String value, String desc);
 	
 	List<AppConfig> getAllAppConfig();
@@ -495,6 +497,8 @@ public interface UserService {
 
 
 	ModifyUserCoinDto coinRule(long uid,CoinRule rule);
+
+	void saveAppConfig(String key, String value);
 
 
 

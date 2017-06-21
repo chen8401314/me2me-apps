@@ -215,6 +215,9 @@ public class LiveServiceImpl implements LiveService {
     /** 大V用户每天可发起投票数 */
     private static final String V_CREATE_VOTE_COUNT = "V_CREATE_VOTE_COUNT";
 
+    //获取王国上市标准
+    private static final String LISTED_PRICE = "LISTED_PRICE";
+
     @SuppressWarnings("rawtypes")
     @Override
     public Response createLive(CreateLiveDto createLiveDto) {
@@ -1037,6 +1040,9 @@ public class LiveServiceImpl implements LiveService {
 //                //userService.push(liveFavorite.getUid(),topic.getUid(),Specification.PushMessageType.UPDATE.index,topic.getTitle());
 //                log.info("update push");
 //            }
+            //更新或者是核心圈跟新加分
+
+
         } else if (speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index) {
             //粉丝贴标提醒
             //Topic live = liveMybatisDao.getTopicById(speakDto.getTopicId());
@@ -1070,7 +1076,15 @@ public class LiveServiceImpl implements LiveService {
         //直播信息保存
         //saveLiveDisplayData(speakDto);
         //判断是否升级
-        userService.coinRule(speakDto.getUid(), Rules.coinRules.get(Rules.SPEAK_KEY));
+        log.info("############################################################################");
+        log.info("############################################################################");
+        CoinRule coinRule = Rules.coinRules.get(Rules.SPEAK_KEY);
+        log.info("coinRule info : " + coinRule.getName());
+        log.info("############################################################################");
+        log.info("############################################################################");
+        ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), Rules.coinRules.get(Rules.SPEAK_KEY));
+        speakDto.setUpgrade(muDto.getUpgrade());
+        speakDto.setCurrentLevel(muDto.getCurrentLevel());
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status, ResponseStatus.USER_SPEAK_SUCCESS.message, speakDto);
     }
 
@@ -3357,11 +3371,12 @@ public class LiveServiceImpl implements LiveService {
         //add kingdom tags -- end --
 
         log.info("createKingdom end");
-        CoinRule coinRule =Rules.coinRules.get(Rules.CREATE_KING_KEY);
+        CoinRule coinRule = Rules.coinRules.get(Rules.CREATE_KING_KEY);
         coinRule.setExt(createKingdomDto.getUid());
         ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(createKingdomDto.getUid(), Rules.coinRules.get(Rules.CREATE_KING_KEY));
+        speakDto2.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
+        speakDto2.setUpgrade(modifyUserCoinDto.getUpgrade());
         Response response = Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status, ResponseStatus.USER_CREATE_LIVE_SUCCESS.message, speakDto2);
-        response.setData(modifyUserCoinDto);
         return response;
 
 	}
@@ -6784,7 +6799,7 @@ public class LiveServiceImpl implements LiveService {
 			StealResultDto dto= new StealResultDto();
 			dto.setStealedCoins(coins);
 			dto.setUpgrade(modifyDetail.getUpgrade());
-			dto.setLevel(modifyDetail.getCurrentLevel());
+			dto.setCurrentLevel(modifyDetail.getCurrentLevel());
 			return Response.success(dto);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -6799,26 +6814,35 @@ public class LiveServiceImpl implements LiveService {
     public Response rechargeToKingdom(RechargeToKingdomDto rechargeToKingdomDto) {
 
         UserProfile  userProfile = userService.getUserProfileByUid(rechargeToKingdomDto.getUid());
-
+        if(userProfile.getAvailableCoin() ==0){
+            return  Response.failure(500,"没有可充米汤币");
+        }
         rechargeToKingdomDto.setAmount(userProfile.getAvailableCoin());
 
         Topic topic = getTopicById(rechargeToKingdomDto.getTopicId());
 
         if(topic == null || userProfile == null){
-            return  Response.failure("王国或用户无效");
+            return  Response.failure(500,"王国或用户无效");
         }
         // 判断当前的王国是否是自己的王国.
-        if(rechargeToKingdomDto.getUid() != topic.getUid()){
+       /* if(rechargeToKingdomDto.getUid() != topic.getUid()){
             return  Response.failure("王国无效");
-        }
-
+        }*/
         if(rechargeToKingdomDto.getAmount() == userProfile.getAvailableCoin()){
             liveLocalJdbcDao.rechargeToKingDom(rechargeToKingdomDto.getTopicId(),rechargeToKingdomDto.getAmount());
             liveLocalJdbcDao.zeroMyCoins(rechargeToKingdomDto.getUid());
             // 更新完成后判断王国的数值是否达到上市标准.如果达标调用跑马灯接口
+            //取出达到上市条件的米汤币数量
+            String listedPrice = userService.getAppConfigByKey(LISTED_PRICE);
+            int i = Integer.parseInt( listedPrice, 10);
+            if((topic.getPrice()+rechargeToKingdomDto.getAmount())>= i ){
+                String content = topic.getTitle()+"达到上市标准";
+                liveLocalJdbcDao.writeTopicNews(topic.getId(),content);
+            }
+
             return Response.success();
         }else {
-            return Response.failure("充值米汤币与实际不符");
+            return Response.failure(500,"充值米汤币与实际不符");
         }
     }
 

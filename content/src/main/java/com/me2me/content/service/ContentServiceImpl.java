@@ -433,6 +433,7 @@ public class ContentServiceImpl implements ContentService {
                         int acCount = liveForContentJdbcDao.getTopicAggregationCountByTopicId((Long) topic.get("id"));
                         squareDataElement.setAcCount(acCount);
                     }
+                    squareDataElement.setPrice((Integer) topic.get("price"));
             	}
 			}
 			squareDataElement.setLikeCount(content.getLikeCount());
@@ -1309,6 +1310,7 @@ private void localJpush(long toUid){
             			int acCount = liveForContentJdbcDao.getTopicAggregationCountByTopicId((Long) topic.get("id"));
             			contentElement.setAcCount(acCount);
             		}
+            		contentElement.setPrice((Integer)topic.get("price"));
             	}
             }else{
             	ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
@@ -5893,7 +5895,7 @@ private void localJpush(long toUid){
 		if(map==null){
 			return 0;
 		}else{
-			return Integer.parseInt(map.get(""+topicId).toString());
+			return map.get(""+topicId)==null?0:Integer.parseInt(map.get(""+topicId).toString());
 		}
 	}
 	@Override

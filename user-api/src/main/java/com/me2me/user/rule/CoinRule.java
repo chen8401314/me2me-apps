@@ -31,5 +31,6 @@ public class CoinRule implements BaseEntity {
         this.name = name;
         this.point = point;
         this.repeatable = repeatable;
+
     }
 }

@@ -123,6 +123,7 @@ public class SnsServiceImpl implements SnsService {
     	            userElement.setAvatar(Constant.QINIU_DOMAIN + "/" + (String)up.get("avatar"));
     	            userElement.setIntroduced((String)up.get("introduced"));
     	            userElement.setNickName((String)up.get("nick_name"));
+    	            userElement.setLevel((int)up.get("level"));
     	            userElement.setInternalStatus(0);//这里查出来的都是啥都不是的，那么默认0
     	            showMembersDto.getMembers().add(userElement);
     			}
@@ -221,6 +222,7 @@ public class SnsServiceImpl implements SnsService {
     			e.setV_lv(up.getvLv());
                 e.setUid(up.getUid());
                 e.setAvatar(Constant.QINIU_DOMAIN + "/" + up.getAvatar());
+                e.setLevel(up.getLevel());
                 e.setIntroduced(up.getIntroduced());
                 e.setNickName(up.getNickName());
                 e.setInternalStatus(getSnsCircleDto.getType());
