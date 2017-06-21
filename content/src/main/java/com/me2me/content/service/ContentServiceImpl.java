@@ -3484,7 +3484,7 @@ private void localJpush(long toUid){
 		String listingPrice = userService.getAppConfigByKey(Constant.LISTING_PRICE_KEY);
 		if(!StringUtils.isEmpty(listingPrice)){
 			int minPrice = Integer.parseInt(listingPrice);
-			List<Map<String,Object>> listingKingdoms= liveForContentJdbcDao.getListingKingodms(minPrice, 1, 30);
+			List<Map<String,Object>> listingKingdoms= liveForContentJdbcDao.getListingKingdoms(minPrice, 1, 30);
 			if(listingKingdoms.size()>0){
 				List<BasicKingdomInfo> listingKingdomList =kingdomBuider.buildKingdoms(listingKingdoms, uid);
 				result.setListingKingdoms(listingKingdomList);
@@ -4794,6 +4794,7 @@ private void localJpush(long toUid){
                         }else{
                         	bangDanInnerData.setTags("");
                         }
+                        bangDanInnerData.setPrice((Integer)topic.get("price"));
                     }else if(type==2){//人
                         bangDanInnerData.setUid(targetId);
                         userProfile = userMap.get(String.valueOf(targetId));
