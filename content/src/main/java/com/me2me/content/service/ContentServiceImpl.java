@@ -5902,4 +5902,8 @@ private void localJpush(long toUid){
 	public int getTopicShareCount(long topicId){
 		return contentMybatisDao.getTopicShareCount(topicId);
 	}
+	@Override
+	public void updateContentUid(long newUid,long topicId){
+		 liveForContentJdbcDao.updateContentUid(newUid,topicId);
+	}
 }

@@ -6634,7 +6634,8 @@ public class LiveServiceImpl implements LiveService {
             oldLiveFavorite.setCreateTime(now);
             liveMybatisDao.createLiveFavorite(oldLiveFavorite);
         }
-
+        //变更UGC
+        contentService.updateContentUid(newUid, topicId);
         //2 记录转让历史
         TopicTransferRecord ttr = new TopicTransferRecord();
         ttr.setCreateTime(now);
