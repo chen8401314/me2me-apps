@@ -10,6 +10,8 @@ import com.me2me.user.model.*;
 import com.me2me.user.model.Dictionary;
 import com.me2me.user.rule.CoinRule;
 import com.me2me.user.rule.Rules;
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -66,6 +68,8 @@ import com.me2me.user.widget.MessageNotificationAdapter;
 
 import lombok.extern.slf4j.Slf4j;
 
+import javax.annotation.PostConstruct;
+
 /**
  * 上海拙心网络科技有限公司出品
  * Author: 赵朋扬
@@ -74,6 +78,24 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class UserServiceImpl implements UserService {
+
+    @Getter
+    private Map<Integer,CoinRule> coinRules = Maps.newConcurrentMap();
+
+    @PostConstruct
+    @Autowired
+    public void init(){
+        coinRules.put(Rules.SPEAK_KEY,new CoinRule(Rules.SPEAK_KEY,"发言",Integer.valueOf(getAppConfigByKey("SPEAK_KEY")),true));
+        coinRules.put(Rules.PUBLISH_UGC_KEY,new CoinRule(Rules.PUBLISH_UGC_KEY,"发布UGC",Integer.valueOf(getAppConfigByKey("PUBLISH_UGC_KEY")),true));
+        coinRules.put(Rules.REVIEW_UGC_KEY,new CoinRule(Rules.REVIEW_UGC_KEY,"回复UGC",Integer.valueOf(getAppConfigByKey("REVIEW_UGC_KEY")),true));
+        coinRules.put(Rules.LIKES_UGC_KEY,new CoinRule(Rules.LIKES_UGC_KEY,"点赞UGC",Integer.valueOf(getAppConfigByKey("LIKES_UGC_KEY")),true));
+        coinRules.put(Rules.FOLLOW_USER_KEY,new CoinRule(Rules.FOLLOW_USER_KEY,"关注一个新用户",Integer.valueOf(getAppConfigByKey("FOLLOW_USER_KEY")),true));
+        coinRules.put(Rules.JOIN_KING_KEY,new CoinRule(Rules.JOIN_KING_KEY,"加入一个新王国",Integer.valueOf(getAppConfigByKey("JOIN_KING_KEY")),true));
+        coinRules.put(Rules.SHARE_KING_KEY,new CoinRule(Rules.SHARE_KING_KEY,"对外分享王国/UGC",Integer.valueOf(getAppConfigByKey("SHARE_KING_KEY")),true));
+        coinRules.put(Rules.CREATE_KING_KEY,new CoinRule(Rules.CREATE_KING_KEY,"建立王国/更新王国",Integer.valueOf(getAppConfigByKey("CREATE_KING_KEY")),false));
+        coinRules.put(Rules.LOGIN_KEY,new CoinRule(Rules.LOGIN_KEY,"登录",Integer.valueOf(getAppConfigByKey("LOGIN_KEY")),false));
+    }
+
 
     @Autowired
     private UserMybatisDao userMybatisDao;
@@ -105,10 +127,6 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ActivityJdbcDao activityJdbcDao;
 
-    @Autowired
-    private Rules rules;
-    
-    
 
     @Value("#{app.reg_web}")
     private String reg_web;
@@ -1013,7 +1031,7 @@ public class UserServiceImpl implements UserService {
 //            log.info("follow push success");
             //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW.index,0,followDto.getSourceUid()));
 //            log.info("monitor success");
-            CoinRule coinRule =  rules.getCoinRules().get(Rules.FOLLOW_USER_KEY);
+            CoinRule coinRule =  getCoinRules().get(Rules.FOLLOW_USER_KEY);
             coinRule.setExt(followDto.getTargetUid());
             ModifyUserCoinDto modifyUserCoinDto = coinRule(followDto.getSourceUid(),coinRule);
             log.info("follow end ...");

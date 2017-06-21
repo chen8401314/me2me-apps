@@ -40,8 +40,6 @@ public class ContentReview implements Review{
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private Rules rules;
 
     @Override
     public Response createReview(ReviewDto reviewDto) {
@@ -61,7 +59,7 @@ public class ContentReview implements Review{
         event.setIsOnline(isOnline);
         applicationEventBus.post(event);
         log.info("push success");
-        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(reviewDto.getUid(), rules.getCoinRules().get(Rules.REVIEW_UGC_KEY));
+        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(reviewDto.getUid(), userService.getCoinRules().get(Rules.REVIEW_UGC_KEY));
         Response response = Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
         response.setData(modifyUserCoinDto);
         return response;

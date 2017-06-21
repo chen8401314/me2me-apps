@@ -192,9 +192,6 @@ public class ContentServiceImpl implements ContentService {
 	@Autowired
 	private KingdomBuilder kingdomBuider;
 
-	@Autowired
-	private Rules rules;
-
 
     @Override
     public Response recommend(long uid,String emotion) {
@@ -5870,7 +5867,7 @@ private void localJpush(long toUid){
 		csh.setType(type);
 		csh.setUid(uid);
 		contentMybatisDao.saveContentShareHistory(csh);
-        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(uid, rules.getCoinRules().get(Rules.SHARE_KING_KEY));
+        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(uid, userService.getCoinRules().get(Rules.SHARE_KING_KEY));
         Response response = Response.success(Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message));
         response.setData(modifyUserCoinDto);
         return response;

@@ -37,6 +37,7 @@ public class Contents extends BaseController {
 
     @Autowired
     private UserService userService;
+
     /**
      * 精选接口(已废)
      * @return
@@ -86,7 +87,7 @@ public class Contents extends BaseController {
         if(contentDto.getType() != 2) {
             // 用户UGC入口
             Response response = contentService.publish2(contentDto);
-            ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(contentDto.getUid(), rules.getCoinRules().get(Rules.PUBLISH_UGC_KEY));
+            ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(contentDto.getUid(), userService.getCoinRules().get(Rules.PUBLISH_UGC_KEY));
             CreateContentSuccessDto createContentSuccessDto = (CreateContentSuccessDto)response.getData();
             createContentSuccessDto.setModifyUserCoinDto(modifyUserCoinDto);
             return response;
