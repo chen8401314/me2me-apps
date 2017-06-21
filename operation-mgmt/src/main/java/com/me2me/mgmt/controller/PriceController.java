@@ -424,7 +424,7 @@ public class PriceController {
 	
 	@RequestMapping(value = "/fullExecuteTask")
 	@ResponseBody
-	public String fullExecuteTask(){
+	public String fullExecuteTask() throws Exception{
 		kingdomPriceTask.executeFull();
 		return "执行完成";
 	}
