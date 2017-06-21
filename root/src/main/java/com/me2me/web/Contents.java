@@ -5,6 +5,7 @@ import com.me2me.content.dto.*;
 import com.me2me.content.service.ContentService;
 import com.me2me.kafka.service.KafkaService;
 import com.me2me.user.dto.ModifyUserCoinDto;
+import com.me2me.user.rule.CoinRule;
 import com.me2me.user.rule.Rules;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
@@ -84,8 +85,23 @@ public class Contents extends BaseController {
         contentDto.setForwardCid(request.getForwardCid());
         contentDto.setForWardUrl(request.getForwardUrl());
         contentDto.setForwardTitle(request.getForwardTitle());
+    /*    if(request.getType() == 1){
+            Response response = contentService.publish2(contentDto);
+            CoinRule coinRuleShare = userService.getCoinRules().get(Rules.SHARE_KING_KEY);
+            ModifyUserCoinDto muDto= userService.coinRule(request.getUid(), coinRuleShare);
+            CreateContentSuccessDto createContentSuccessDto = (CreateContentSuccessDto)response.getData();
+            createContentSuccessDto.setModifyUserCoinDto(muDto);
+            return response;
+        }*/
         if(contentDto.getType() != 2) {
             // 用户UGC入口
+          /*  if(contentDto.getType() == 1){
+                Response response = contentService.publish2(contentDto);
+                ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(contentDto.getUid(), userService.getCoinRules().get(Rules.PUBLISH_UGC_KEY));
+                CreateContentSuccessDto createContentSuccessDto = (CreateContentSuccessDto)response.getData();
+                createContentSuccessDto.setModifyUserCoinDto(modifyUserCoinDto);
+                return response;
+            }*/
             Response response = contentService.publish2(contentDto);
             ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(contentDto.getUid(), userService.getCoinRules().get(Rules.PUBLISH_UGC_KEY));
             CreateContentSuccessDto createContentSuccessDto = (CreateContentSuccessDto)response.getData();

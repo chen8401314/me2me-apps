@@ -1036,7 +1036,7 @@ public class LiveServiceImpl implements LiveService {
 //            liveMybatisDao.updateTopic(topic);
 //            log.info("updateTopic updateTime");
 //        }
-        CoinRule coinRule = userService.getCoinRules().get(Rules.CREATE_KING_KEY);
+
         int isJion = 0 ;
         if (speakDto.getType() == Specification.LiveSpeakType.ANCHOR.index || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_WRITE_TAG.index) {
 //            List<LiveFavorite> list = liveMybatisDao.getFavoriteList(speakDto.getTopicId());
@@ -1046,6 +1046,7 @@ public class LiveServiceImpl implements LiveService {
 //                log.info("update push");
 //            }
             //更新或者是核心圈跟新加分
+            CoinRule coinRule = userService.getCoinRules().get(Rules.CREATE_KING_KEY);
             isJion = 1;
             coinRule.setExt(speakDto.getUid());
             ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), userService.getCoinRules().get(Rules.CREATE_KING_KEY));
@@ -1089,12 +1090,18 @@ public class LiveServiceImpl implements LiveService {
         if(isJion != 1 ) {
         log.info("############################################################################");
         log.info("############################################################################");
-         coinRule = userService.getCoinRules().get(Rules.SPEAK_KEY);
+        CoinRule coinRule = userService.getCoinRules().get(Rules.SPEAK_KEY);
         log.info("coinRule info : " + coinRule.getName());
         log.info("############################################################################");
         log.info("############################################################################");
 
             ModifyUserCoinDto muDto = userService.coinRule(speakDto.getUid(), userService.getCoinRules().get(Rules.SPEAK_KEY));
+            speakDto.setUpgrade(muDto.getUpgrade());
+            speakDto.setCurrentLevel(muDto.getCurrentLevel());
+        }
+        if(speakDto.getType() == 51){
+            CoinRule coinRuleShare = userService.getCoinRules().get(Rules.SHARE_KING_KEY);
+            ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), coinRuleShare);
             speakDto.setUpgrade(muDto.getUpgrade());
             speakDto.setCurrentLevel(muDto.getCurrentLevel());
         }

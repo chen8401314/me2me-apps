@@ -5,6 +5,9 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import com.me2me.user.dto.ModifyUserCoinDto;
+import com.me2me.user.rule.CoinRule;
+import com.me2me.user.rule.Rules;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -202,6 +205,7 @@ public class SpeakNewListener {
 	            userService.pushWithExtra(topic.getUid().toString(), "你的王国《"+topic.getTitle()+"》有新的评论", JPushUtils.packageExtra(jsonObject));
 			}
 		}
+
 	}
 	
 	/*
