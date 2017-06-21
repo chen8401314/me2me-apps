@@ -1,6 +1,6 @@
 package com.me2me.live.dao;
 
-import java.util.Date;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1055,5 +1055,10 @@ public class LiveLocalJdbcDao {
 	public void writeTopicNews(long topicID , String content){
 		String sql = "insert into topic_news (topic_id , content , `type`) values(?,?,1)";
 		jdbcTemplate.update(sql,topicID,content);
+	}
+
+	public void writeTopicTime(long topicID){
+		String sql = "update topic set listing_time = now() where id = ?";
+		jdbcTemplate.update(sql,topicID);
 	}
 }

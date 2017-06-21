@@ -6869,6 +6869,7 @@ public class LiveServiceImpl implements LiveService {
             if((topic.getPrice()+rechargeToKingdomDto.getAmount())>= i ){
                 String content = topic.getTitle()+"达到上市标准";
                 liveLocalJdbcDao.writeTopicNews(topic.getId(),content);
+                liveLocalJdbcDao.writeTopicTime(topic.getId());
             }
 
             return Response.success();
