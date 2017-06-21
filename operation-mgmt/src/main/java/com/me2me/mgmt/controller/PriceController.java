@@ -456,10 +456,30 @@ public class PriceController {
 		return "0";
 	}
 	
-	@RequestMapping(value = "/fullExecuteTask")
+	@RequestMapping(value = "/runTask")
 	@ResponseBody
-	public String fullExecuteTask() throws Exception{
-		kingdomPriceTask.executeFull();
+	public String runTask(@RequestParam("m")int mode, 
+			@RequestParam("t")String runTime) throws Exception{
+		
+		if(mode == 1){//增量
+			logger.info("增量执行，执行时间："+runTime);
+			kingdomPriceTask.executeIncr(runTime);
+		}else if(mode == 2){//全量
+			logger.info("全量执行，执行时间："+runTime);
+			kingdomPriceTask.executeFull(runTime);
+		}else{
+			return "位置的执行模式";
+		}
+		
+		
 		return "执行完成";
 	}
+	
+	@RequestMapping(value = "/taskConsole")
+	public ModelAndView taskConsole(){
+		ModelAndView view = new ModelAndView("price/taskConsole");
+		return view;
+	}
+	
+	
 }

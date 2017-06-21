@@ -139,7 +139,6 @@ var fullExecuteTask = function(){
 						<section class="panel">
 							<header class="panel-heading">
 								| 基础配置列表 &nbsp;&nbsp;&nbsp;&nbsp;
-								<input id="fullbutton" type="button" value="全量运行王国价值任务" onclick="fullExecuteTask()">
 								<span class="tools pull-right">
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>
