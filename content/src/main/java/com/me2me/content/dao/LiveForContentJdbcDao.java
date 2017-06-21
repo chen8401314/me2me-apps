@@ -573,7 +573,14 @@ public class LiveForContentJdbcDao {
     	
     	return jdbcTemplate.queryForList(sb.toString());
     }
-
+    public List<Map<String, Object>> getTopicTagDetailListByTopicId(long topicId){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select * from topic_tag_detail d where d.status=0");
+    	sb.append(" and d.topic_id =").append(topicId);
+    	sb.append(" order by topic_id asc,id asc");
+    	return jdbcTemplate.queryForList(sb.toString());
+    }
+    
 	public List<Map<String, Object>> getTopPricedKingdomList(int page, int pageSize) {
 		String sql = "select * from topic where status!=2 order by price desc limit ?,?";
 		return jdbcTemplate.queryForList(sql,(page-1)*pageSize,pageSize);
