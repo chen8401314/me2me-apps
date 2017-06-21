@@ -41,15 +41,11 @@ public class Rules implements BaseEntity {
     //每天登录
     public static final Integer LOGIN_KEY = 9;
 
-    public static Map<Integer,CoinRule> coinRules = Maps.newConcurrentMap();
-
-    @Autowired
-    private UserService userService;
-
-
+    private Map<Integer,CoinRule> coinRules = Maps.newConcurrentMap();
 
     @PostConstruct
-    public void fillPointToCoinRules(){
+    @Autowired
+    public void init(UserService userService){
         coinRules.put(SPEAK_KEY,new CoinRule(SPEAK_KEY,"发言",Integer.valueOf(userService.getAppConfigByKey("SPEAK_KEY")),true));
         coinRules.put(PUBLISH_UGC_KEY,new CoinRule(PUBLISH_UGC_KEY,"发布UGC",Integer.valueOf(userService.getAppConfigByKey("PUBLISH_UGC_KEY")),true));
         coinRules.put(REVIEW_UGC_KEY,new CoinRule(REVIEW_UGC_KEY,"回复UGC",Integer.valueOf(userService.getAppConfigByKey("REVIEW_UGC_KEY")),true));
@@ -60,8 +56,5 @@ public class Rules implements BaseEntity {
         coinRules.put(CREATE_KING_KEY,new CoinRule(CREATE_KING_KEY,"建立王国/更新王国",Integer.valueOf(userService.getAppConfigByKey("CREATE_KING_KEY")),false));
         coinRules.put(LOGIN_KEY,new CoinRule(LOGIN_KEY,"登录",Integer.valueOf(userService.getAppConfigByKey("LOGIN_KEY")),false));
     }
-
-
-
 
 }

@@ -36,6 +36,9 @@ public class AbstractLikes {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private Rules rules;
+
     public Response likes(LikeDto likeDto) {
         log.info(" AbstractLikes likes start ...");
         Content content = contentService.getContentById(likeDto.getCid());
@@ -70,9 +73,9 @@ public class AbstractLikes {
 //                    String alias = String.valueOf(content.getUid());
 //                    userService.pushWithExtra(alias, jsonObject.toString(), null);
 //                }
-                CoinRule coinRule =  Rules.coinRules.get(Rules.LIKES_UGC_KEY);
+                CoinRule coinRule =  rules.getCoinRules().get(Rules.LIKES_UGC_KEY);
                 coinRule.setExt(content.getId());
-                ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(likeDto.getUid(), Rules.coinRules.get(Rules.LIKES_UGC_KEY));
+                ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(likeDto.getUid(), rules.getCoinRules().get(Rules.LIKES_UGC_KEY));
                 Response response = Response.success(ResponseStatus.LIKE_SUCCESS.status,ResponseStatus.LIKE_SUCCESS.message);
                 response.setData(modifyUserCoinDto);
                 return response;

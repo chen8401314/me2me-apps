@@ -86,7 +86,7 @@ public class Contents extends BaseController {
         if(contentDto.getType() != 2) {
             // 用户UGC入口
             Response response = contentService.publish2(contentDto);
-            ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(contentDto.getUid(), Rules.coinRules.get(Rules.PUBLISH_UGC_KEY));
+            ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(contentDto.getUid(), rules.getCoinRules().get(Rules.PUBLISH_UGC_KEY));
             CreateContentSuccessDto createContentSuccessDto = (CreateContentSuccessDto)response.getData();
             createContentSuccessDto.setModifyUserCoinDto(modifyUserCoinDto);
             return response;

@@ -104,6 +104,9 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ActivityJdbcDao activityJdbcDao;
+
+    @Autowired
+    private Rules rules;
     
     
 
@@ -1010,7 +1013,7 @@ public class UserServiceImpl implements UserService {
 //            log.info("follow push success");
             //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FOLLOW.index,0,followDto.getSourceUid()));
 //            log.info("monitor success");
-            CoinRule coinRule =  Rules.coinRules.get(Rules.FOLLOW_USER_KEY);
+            CoinRule coinRule =  rules.getCoinRules().get(Rules.FOLLOW_USER_KEY);
             coinRule.setExt(followDto.getTargetUid());
             ModifyUserCoinDto modifyUserCoinDto = coinRule(followDto.getSourceUid(),coinRule);
             log.info("follow end ...");
