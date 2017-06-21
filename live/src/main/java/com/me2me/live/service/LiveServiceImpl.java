@@ -3371,7 +3371,7 @@ public class LiveServiceImpl implements LiveService {
         //add kingdom tags -- end --
 
         log.info("createKingdom end");
-        CoinRule coinRule =Rules.coinRules.get(Rules.CREATE_KING_KEY);
+        CoinRule coinRule = Rules.coinRules.get(Rules.CREATE_KING_KEY);
         coinRule.setExt(createKingdomDto.getUid());
         ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(createKingdomDto.getUid(), Rules.coinRules.get(Rules.CREATE_KING_KEY));
         speakDto2.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
