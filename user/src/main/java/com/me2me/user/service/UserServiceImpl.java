@@ -3944,7 +3944,21 @@ public class UserServiceImpl implements UserService {
         userPermissionDto.setLevelDefinition(levelDefinition);
         return Response.success(userPermissionDto);
     }
-
+    /**
+     * 获取用户权限
+     * @author zhangjiwei
+     * @date Jun 21, 2017
+     * @param uid
+     * @return
+     */
+    public PermissionDescriptionDto getUserPermission(long uid){
+    	UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+    	 //获取权限内容
+        String level = userProfile.getLevel().toString();
+        String value2 = getAppConfigByKey("LEVEL_"+level);
+        PermissionDescriptionDto permissionDescriptionDto = JSON.parseObject(value2, PermissionDescriptionDto.class);
+        return permissionDescriptionDto;
+    }
     @Override
     public Response getMyLevel(long uid) {
 	    UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
