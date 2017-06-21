@@ -16,6 +16,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.me2me.user.dto.ModifyUserCoinDto;
+import com.me2me.user.dto.PermissionDescriptionDto;
+import com.me2me.user.dto.PermissionDescriptionDto.PermissionNodeDto;
 import com.me2me.user.rule.CoinRule;
 import com.me2me.user.rule.Rules;
 import org.apache.commons.beanutils.BeanUtils;
@@ -6744,14 +6746,27 @@ public class LiveServiceImpl implements LiveService {
             throw new KingdomStealException(KingdomStealException.KINGDOM_STEALED,"不能重复偷取此王国");
         }
         // 每天可偷数量
-        int userDayLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_COIN_DAY_LIMIT_KEY));
-        int userOnceLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_COIN_ONCE_LIMIT_KEY));
-        int userTopicLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_TOPIC_DAY_LIMIT_KEY));
-
+        int userDayLimit = 0;//Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_COIN_DAY_LIMIT_KEY));
+        int userOnceLimit = 0;//Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_COIN_ONCE_LIMIT_KEY));
+        int userTopicLimit = 0;//Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_TOPIC_DAY_LIMIT_KEY));
+        PermissionDescriptionDto permisson=  userService.getUserPermission(uid);
+        for(PermissionNodeDto per: permisson.getNodes()){
+        	if(per.getCode()==8){// 可偷王国数量
+        		userTopicLimit=per.getNum();
+        	}
+        	if(per.getCode()==9){// 单次偷取上限
+        		userOnceLimit=per.getNum();
+        	}
+        	if(per.getCode()==10){// 个人每日获取金币上限
+        		userDayLimit=per.getNum();
+        	}
+        }
+        
+        	
         if(userStealLog.size()>=userTopicLimit){
             throw new KingdomStealException("用户已达到今日偷取王国次数上限了");
         }
-
+        stealedCoins=liveLocalJdbcDao.getUserConinsByDay(uid, day);		// 此处重新计算用户当日获取到的总金币数，包括操作所得和偷取所得。
         int userTodayRemain=userDayLimit-stealedCoins;
 
         if(userTodayRemain<=0){

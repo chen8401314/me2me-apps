@@ -488,7 +488,14 @@ public interface UserService {
 	Response getLevelList();
 
 	Response getMyLevel(long uid);
-
+	/**
+	 * 获取用户当前等级拥有的权限
+	 * @author zhangjiwei
+	 * @date Jun 21, 2017
+	 * @param uid
+	 * @return
+	 */
+	PermissionDescriptionDto getUserPermission(long uid);
 
 	/**
 	 * 修改用户金币

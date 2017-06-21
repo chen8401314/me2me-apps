@@ -39,4 +39,10 @@ public class LiveTest extends AbstractJUnit4SpringContextTests {
 		}
 	}
 	
+	
+	@Test
+	public void testStealCoins() {
+		Response resp =liveService.stealKingdomCoin(318, 2852);
+		System.out.println(JSON.toJSONString(resp));
+	}
 }

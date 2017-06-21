@@ -977,7 +977,26 @@ public class LiveLocalJdbcDao {
 		String sql = "select * from user_steal_log where uid=? and DATE_FORMAT(create_time,'%Y-%m-%d')=?";
 		return jdbcTemplate.queryForList(sql,new Object[]{uid,day});
 	}
-
+	/**
+	 * 获取用户当天获得金币总数量，包含操作得币和偷取得币。
+	 * @author zhangjiwei
+	 * @date Jun 21, 2017
+	 * @param uid
+	 * @param day
+	 * @return
+	 */
+	public int getUserConinsByDay(long uid,String day) {
+		String sql="select sum(coins) from("+
+			" select sum(stealed_coins) coins from user_steal_log  where uid=? and DATE_FORMAT(create_time,'%Y-%m-%d')=?"+
+			" UNION"+
+			" select sum(coin) coins from rule_log  where uid=? and DATE_FORMAT(create_time,'%Y-%m-%d')=?"+
+			") c";
+		Integer result =jdbcTemplate.queryForObject(sql,new Object[]{uid,day,uid,day},Integer.class);
+		if(result==null){
+			result =0;
+		}
+		return result;
+	}
 	/**
 	 * 充值到某个王国
 	 * @param topicId
