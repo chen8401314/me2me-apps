@@ -1,7 +1,6 @@
 package com.me2me.mgmt.task.app;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -66,6 +65,9 @@ public class KingdomPriceTask {
 			this.add("ALGORITHM_ABILITYVALUE_WEIGHT");
 			this.add("ALGORITHM_DECAY_BASE_WEIGHT");
 			this.add("ALGORITHM_DECAY_BASEDAYCOUNT_WEIGHT");
+			this.add("ALGORITHM_STEAL_WEIGHT_R0");
+			this.add("ALGORITHM_STEAL_WEIGHT_R1");
+			this.add("LISTED_PRICE");
 		}
 	};
 	
@@ -74,7 +76,7 @@ public class KingdomPriceTask {
 		logger.info("王国价值任务开始");
 		long s = System.currentTimeMillis();
 		try{
-			this.executeIncr();
+			this.executeIncr(null);
 		}catch(Exception e){
 			logger.error("王国价值任务出错", e);
 		}
@@ -86,11 +88,12 @@ public class KingdomPriceTask {
 	 * 增量方式计算
 	 * 每天只计算昨天的增量
 	 */
-	public void executeIncr() throws Exception{
+	public void executeIncr(String dateStr) throws Exception{
 		logger.info("全量计算王国价值开始");
 		//获取各种权重配置
 		Map<String, String> weightConfigMap = userService.getAppConfigsByKeys(weightKeyList);
 		//获取任务需要的当前的各种系数配置
+		double diligentlyWeight = this.getDoubleConfig("ALGORITHM_DILIGENTLY_WEIGHT", weightConfigMap, 1);//用心度权重
 		double updateTextWordCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_TEXTWORDCOUNT_WEIGHT", weightConfigMap, 1);//更新文字字数权重
 		double updateTextCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_TEXTCOUNT_WEIGHT", weightConfigMap, 0);//更新文字条数权重
 		double updateVedioLenghtWeight = this.getDoubleConfig("ALGORITHM_UPDATE_VEDIOLENGHT_WEIGHT", weightConfigMap, 0);//更新视频长度权重
@@ -102,6 +105,7 @@ public class KingdomPriceTask {
 		double updateTeaseCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_TEASECOUNT_WEIGHT", weightConfigMap, 10);//更新逗一逗权重
 		double updateFrequencyWeight = this.getDoubleConfig("ALGORITHM_UPDATE_FREQUENCY_WEIGHT", weightConfigMap, 1);//频度权重
 		
+		double approveWeight = this.getDoubleConfig("ALGORITHM_APPROVE_WEIGHT", weightConfigMap, 1);//认可度权重
 		double reviewTextCountInAppWeight = this.getDoubleConfig("ALGORITHM_REVIEW_TEXTCOUNT_INAPP_WEIGHT", weightConfigMap, 0);//app内评论条数权重
 		double reviewTextCountOutAppWeight = this.getDoubleConfig("ALGORITHM_REVIEW_TEXTCOUNT_OUTAPP_WEIGHT", weightConfigMap, 0);//app外评论条数权重
 		double reviewTextWordCountInAppWeight = this.getDoubleConfig("ALGORITHM_REVIEW_TEXTWORDCOUNT_INAPP_WEIGHT", weightConfigMap, 25);//app内评论字数条数权重
@@ -117,7 +121,26 @@ public class KingdomPriceTask {
 		
 		double vWeight = this.getDoubleConfig("ALGORITHM_V_WEIGHT", weightConfigMap, 0.2);//大V系数权重
 		
-		Date yesterday = DateUtil.addDay(new Date(), -1);
+		double decayBaseWeight = this.getDoubleConfig("ALGORITHM_DECAY_BASE_WEIGHT", weightConfigMap, 1);//衰减基数权重
+		double decayBaseDayCountWeight = this.getDoubleConfig("ALGORITHM_DECAY_BASEDAYCOUNT_WEIGHT", weightConfigMap, 1);//衰减标准天数权重
+		double stealWeightR0 = this.getDoubleConfig("ALGORITHM_STEAL_WEIGHT_R0", weightConfigMap, 0.05);//被偷配置R0
+		double stealWeightR1 = this.getDoubleConfig("ALGORITHM_STEAL_WEIGHT_R1", weightConfigMap, 0.3);//被偷配置R1
+		
+		int listedPrice = this.getIntegerConfig("LISTED_PRICE", weightConfigMap, 20000);
+		
+		//获取补助配置
+		StringBuilder subsidyConfigSql = new StringBuilder();
+		subsidyConfigSql.append("select * from topic_price_subsidy_config t order by t.m1 asc");
+		List<Map<String, Object>> subsidyConfigList = contentService.queryEvery(subsidyConfigSql.toString());
+		
+		
+		Date yesterday = null;
+		if(StringUtils.isNotBlank(dateStr)){
+			yesterday = DateUtil.addDay(DateUtil.string2date(dateStr, "yyyy-MM-dd"), -1);
+		}else{
+			yesterday = DateUtil.addDay(new Date(), -1);
+		}
+		
 		String startTime = DateUtil.date2string(yesterday, "yyyy-MM-dd") + " 00:00:00";
 		String endTime = DateUtil.date2string(yesterday, "yyyy-MM-dd") + " 23:59:59";
 		
@@ -144,6 +167,13 @@ public class KingdomPriceTask {
 		StringBuilder userProfileSql = null;
 		List<Map<String, Object>> userProfileList = null;
 		Map<String, Integer> vlvMap = null;
+		StringBuilder shareSql = null;
+		List<Map<String, Object>> shareList = null;
+		StringBuilder topicDataSql = null;
+		List<Map<String, Object>> topicDataList = null;
+		Map<String, Map<String, Object>> topicDataMap = null;
+		Map<String, Object> topicData = null;
+		Map<String, Object> subsidyConfig = null;
 		while(true){
 			topicList = contentService.queryEvery(topicSql+start+","+pageSize);
 			if(null == topicList || topicList.size() == 0){
@@ -273,11 +303,28 @@ public class KingdomPriceTask {
 			}
 			
 			//分享次数(增量)
+			shareSql = new StringBuilder();
+			shareSql.append("select t.cid,count(1) as cc from content_share_history t");
+			shareSql.append(" where t.create_time>='").append(startTime);
+			shareSql.append("' and t.create_time<='").append(endTime);
+			shareSql.append("' and t.type=1 and t.cid in (");
+			for(int i=0;i<topicList.size();i++){
+				if(i>0){
+					shareSql.append(",");
+				}
+				shareSql.append(String.valueOf(topicList.get(i).get("id")));
+			}
+			shareSql.append(") group by t.cid");
+			shareList = contentService.queryEvery(shareSql.toString());
+			if(null != shareList && shareList.size() > 0){
+				for(Map<String, Object> s : shareList){
+					long topicId = ((Long)s.get("cid")).longValue();
+					kc = kingCountMap.get(String.valueOf(topicId));
+					kc.setShareCount(((Long)s.get("cc")).intValue());
+				}
+			}
 			
-			
-			
-			
-			//参与投票次数
+			//参与投票次数(增量)
 			voteCountSql = new StringBuilder();
 			voteCountSql.append("select i.topicId,count(1) as vcount");
 			voteCountSql.append(" from vote_info i,vote_record r");
@@ -289,6 +336,7 @@ public class KingdomPriceTask {
 				voteCountSql.append(String.valueOf(topicList.get(i).get("id")));
 			}
 			voteCountSql.append(") and r.create_time<='").append(endTime);
+			voteCountSql.append("' and r.create_time>='").append(startTime);
 			voteCountSql.append("' group by i.topicId");
 			voteCountList = contentService.queryEvery(voteCountSql.toString());
 			if(null != voteCountList && voteCountList.size() > 0){
@@ -317,39 +365,101 @@ public class KingdomPriceTask {
 				}
 			}
 			
+			//获取所有的topic data
+			topicDataSql = new StringBuilder();
+			topicDataSql.append("select t.*,p.price from topic_data t,topic p where t.topic_id=p.id and t.topic_id in (");
+			for(int i=0;i<topicList.size();i++){
+				if(i>0){
+					topicDataSql.append(",");
+				}
+				topicDataSql.append(String.valueOf(topicList.get(i).get("id")));
+			}
+			topicDataSql.append(")");
+			topicDataList = contentService.queryEvery(topicDataSql.toString());
+			topicDataMap = new HashMap<String, Map<String, Object>>();
+			if(null != topicDataList && topicDataList.size() > 0){
+				for(Map<String, Object> t : topicDataList){
+					long topicId = ((Long)t.get("topic_id")).longValue();
+					topicDataMap.put(String.valueOf(topicId), t);
+				}
+			}
+			
+			
 			//开始计算
 			for(Map.Entry<String, KingdomCount> entry : kingCountMap.entrySet()){
 				kc = entry.getValue();
 				if(null != vlvMap.get(String.valueOf(kc.getUid())) && vlvMap.get(String.valueOf(kc.getUid())).intValue() == 1){
 					kc.setVlv(true);
 				}
-				double x = (kc.getUpdateTextWordCount()*updateTextWordCountWeight + kc.getUpdateTextCount()*updateTextCountWeight
+				double _x = (kc.getUpdateTextWordCount()*updateTextWordCountWeight + kc.getUpdateTextCount()*updateTextCountWeight
 						+ kc.getUpdateVedioCount()*updateVedioCountWeight + kc.getUpdateVedioLenght()*updateVedioLenghtWeight
 						+ kc.getUpdateAudioCount()*updateAudioCountWeight + kc.getUpdateAudioLenght()*updateAudioLenghtWeight
 						+ kc.getUpdateImageCount()*updateImageCountWeight + kc.getUpdateVoteCount()*updateVoteCountWeight
 						+ kc.getUpdateTeaseCount()*updateTeaseCountWeight)*kc.getUpdateFrequency()*updateFrequencyWeight;
 				if(kc.isVlv()){
-					x = x * (1 + vWeight);
+					_x = _x * (1 + vWeight);
 				}
 				
-				double y = (kc.getReviewTextCountInApp()*reviewTextCountInAppWeight + kc.getReviewTextCountOutApp()*reviewTextCountOutAppWeight
+				double _y = (kc.getReviewTextCountInApp()*reviewTextCountInAppWeight + kc.getReviewTextCountOutApp()*reviewTextCountOutAppWeight
 						+ kc.getReviewTextWordCountInApp()*reviewTextWordCountInAppWeight + kc.getReviewTextWordCountOutApp()*reviewTextWordCountOutAppWeight
 						+ kc.getReadCountInApp()*readCountInAppWeight + kc.getReadCountOutApp()*readCountOutAppWeight
 						+ kc.getSubscribeCount()*subscribeCountWeight + kc.getReviewTeaseCount()*reviewTeaseCountWeight
 						+ kc.getReviewVoteCount()*reviewVoteCountWeight + kc.getShareCount()*shareCountWeight)*(kc.getReviewDayCount()*reviewDayCountWeight
 						+ kc.getReadDayCount()*readDayCountWeight)/kc.getUpdateDayCount();
 
-				int xx = (int)(x*1000);
-				int yy = (int)(y*1000);
-				
-				kc.setApprove(new BigDecimal((double)yy/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
-				kc.setDiligently(new BigDecimal((double)xx/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
-				
-				if(kc.getNoUpdateDayCount()>20){
-					double kv = Math.pow(Math.pow(x, 2)+Math.pow(y, 2),0.5);
+				topicData = topicDataMap.get(String.valueOf(kc.getTopicId()));
+				if(null == topicData){//当天新增的王国
+					int xx = (int)(_x*1000);
+					int yy = (int)(_y*1000);
+					
+					kc.setApprove(new BigDecimal((double)yy/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+					kc.setDiligently(new BigDecimal((double)xx/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+					
+					double kv = Math.pow(Math.pow(_x, 2)+Math.pow(_y, 2),0.5);
 					kc.setPrice((int)kv);
+					
+					this.saveKingdomCount(kc, true, listedPrice);
+				}else{//历史有的，则需要做增量计算
+					int kv0 = ((Integer)topicData.get("price")).intValue();
+					int x0 = ((Integer)topicData.get("diligently")).intValue();
+					int y0 = ((Integer)topicData.get("approve")).intValue();
+					int _kv = (int)((Math.pow(Math.min(1, _x/x0), diligentlyWeight) + Math.pow(Math.min(1, _y/y0), approveWeight))*kv0/2);
+					int d = (int)((kv0/decayBaseDayCountWeight)*Math.pow(decayBaseWeight, kc.getNoUpdateDayCount()));
+					
+					int kv = kv0 + _kv - d - (int)(_kv*stealWeightR0);
+					//特别补助
+					subsidyConfig = this.getSubsidyConfig(kv, subsidyConfigList);
+					if(null != subsidyConfig && subsidyConfig.size() == 3){
+						double k1 = (Double)subsidyConfig.get("k1");
+						double k2 = (Double)subsidyConfig.get("k2");
+						int m2 = (Integer)subsidyConfig.get("m2");
+						int subsidy = (int)(_x*(k1+Math.pow(_y/_x, k2)));
+						kv = kv + subsidy;
+						if(kv > m2){
+							kv = m2;
+						}
+					}
+					
+					int stealPrice = (int)(_kv*stealWeightR0 + d*stealWeightR1);
+					
+					kc.setPrice(kv);
+					kc.setStealPrice(stealPrice);
+					kc.setDiligently(x0+_x);
+					kc.setApprove(y0+_y);
+					kc.setUpdateTextWordCount(((Integer)topicData.get("update_text_length")).intValue() + kc.getUpdateTextWordCount());
+					kc.setUpdateTextCount(((Integer)topicData.get("update_text_count")).intValue() + kc.getUpdateTextCount());
+					kc.setUpdateImageCount(((Integer)topicData.get("update_image_count")).intValue() + kc.getUpdateImageCount());
+					kc.setUpdateVedioCount(((Integer)topicData.get("update_vedio_count")).intValue() + kc.getUpdateVedioCount());
+					kc.setUpdateVedioLenght(((Integer)topicData.get("update_vedio_length")).intValue() + kc.getUpdateVedioLenght());
+					kc.setUpdateAudioCount(((Integer)topicData.get("update_audio_count")).intValue() + kc.getUpdateAudioCount());
+					kc.setUpdateAudioLenght(((Integer)topicData.get("update_audio_length")).intValue() + kc.getUpdateAudioLenght());
+					kc.setUpdateVoteCount(((Integer)topicData.get("update_vote_count")).intValue() + kc.getUpdateVoteCount());
+					kc.setUpdateTeaseCount(((Integer)topicData.get("update_tease_count")).intValue() + kc.getUpdateTeaseCount());
+					kc.setReviewTextCountInApp(((Integer)topicData.get("review_text_count")).intValue() + kc.getReviewTextCountInApp());//这里因为保存的两个相加值，故这里只在一个参数上加上原有值
+					kc.setReviewTextWordCountInApp(((Integer)topicData.get("review_text_length")).intValue() + kc.getReviewTextWordCountInApp());//这里因为保存的两个相加值，故这里只在一个参数上加上原有值
+					
+					this.saveKingdomCount(kc, false, listedPrice);
 				}
-				this.saveKingdomCount(kc);
 			}
 			
 			
@@ -360,151 +470,25 @@ public class KingdomPriceTask {
 		logger.info("王国价值处理完成");
 	}
 	
-	private void executeIncr2(){
-		//获取各种权重配置
-		Map<String, String> weightConfigMap = userService.getAppConfigsByKeys(weightKeyList);
-		//获取任务需要的当前的各种系数配置
-		double diligentlyWeight = this.getDoubleConfig("ALGORITHM_DILIGENTLY_WEIGHT", weightConfigMap, 1);//用心度权重
-		double updateTextWordCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_TEXTWORDCOUNT_WEIGHT", weightConfigMap, 1);//更新文字字数权重
-		double updateTextCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_TEXTCOUNT_WEIGHT", weightConfigMap, 1);//更新文字条数权重
-		double updateVedioLenghtWeight = this.getDoubleConfig("ALGORITHM_UPDATE_VEDIOLENGHT_WEIGHT", weightConfigMap, 1);//更新视频长度权重
-		double updateVedioCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_VEDIOCOUNT_WEIGHT", weightConfigMap, 1);//更新视频条数权重
-		double updateAudioLenghtWeight = this.getDoubleConfig("ALGORITHM_UPDATE_AUDIOLENGHT_WEIGHT", weightConfigMap, 1);//更新语音长度权重
-		double updateAudioCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_AUDIOCOUNT_WEIGHT", weightConfigMap, 1);//更新语音条数权重
-		double updateImageCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_IMAGECOUNT_WEIGHT", weightConfigMap, 1);//更新图片权重
-		double updateVoteCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_VOTECOUNT_WEIGHT", weightConfigMap, 1);//投票权重
-		double updateTeaseCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_TEASECOUNT_WEIGHT", weightConfigMap, 1);//更新逗一逗权重
-		double updateDayCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_DAYCOUNT_WEIGHT", weightConfigMap, 1);//更新天数权重
-		double updateFrequencyWeight = this.getDoubleConfig("ALGORITHM_UPDATE_FREQUENCY_WEIGHT", weightConfigMap, 1);//频度权重
-		
-		double approveWeight = this.getDoubleConfig("ALGORITHM_APPROVE_WEIGHT", weightConfigMap, 1);//认可度权重
-		double reviewTextCountInAppWeight = this.getDoubleConfig("ALGORITHM_REVIEW_TEXTCOUNT_INAPP_WEIGHT", weightConfigMap, 1);//app内评论条数权重
-		double reviewTextCountOutAppWeight = this.getDoubleConfig("ALGORITHM_REVIEW_TEXTCOUNT_OUTAPP_WEIGHT", weightConfigMap, 1);//app外评论条数权重
-		double reviewTextWordCountInAppWeight = this.getDoubleConfig("ALGORITHM_REVIEW_TEXTWORDCOUNT_INAPP_WEIGHT", weightConfigMap, 1);//app内评论字数条数权重
-		double reviewTextWordCountOutAppWeight = this.getDoubleConfig("ALGORITHM_REVIEW_TEXTWORDCOUNT_OUTAPP_WEIGHT", weightConfigMap, 1);//app外评论字数条数权重
-		double readCountInAppWeight = this.getDoubleConfig("ALGORITHM_READCOUNT_INAPP_WEIGHT", weightConfigMap, 1);//app内阅读权重
-		double readCountOutAppWeight = this.getDoubleConfig("ALGORITHM_READCOUNT_OUTAPP_WEIGHT", weightConfigMap, 1);//app外阅读权重
-		double subscribeCountWeight = this.getDoubleConfig("ALGORITHM_SUBSCRIBECOUNT_WEIGHT", weightConfigMap, 1);//订阅数权重
-		double reviewTeaseCountWeight = this.getDoubleConfig("ALGORITHM_REVIEW_TEASECOUNT_WEIGHT", weightConfigMap, 1);//评论逗一逗权重
-		double reviewVoteCountWeight = this.getDoubleConfig("ALGORITHM_REVIEW_VOTECOUNT_WEIGHT", weightConfigMap, 1);//参与投票权重
-		double shareCountWeight = this.getDoubleConfig("ALGORITHM_SHARECOUNT_WEIGHT", weightConfigMap, 1);//分享次数权重
-		double reviewDayCountWeight = this.getDoubleConfig("ALGORITHM_REVIEWDAYCOUNT_WEIGHT", weightConfigMap, 1);//产生品论的天数权重
-		double readDayCountWeight = this.getDoubleConfig("ALGORITHM_READDAYCOUNT_WEIGHT", weightConfigMap, 1);//产生阅读的天数权重
-		
-		double vWeight = this.getDoubleConfig("ALGORITHM_V_WEIGHT", weightConfigMap, 1);//大V系数权重
-		double abilityValueWeight = this.getDoubleConfig("ALGORITHM_ABILITYVALUE_WEIGHT", weightConfigMap, 1);//能力值权重
-		
-		double decayBaseWeight = this.getDoubleConfig("ALGORITHM_DECAY_BASE_WEIGHT", weightConfigMap, 1);//衰减基数权重
-		double decayBaseDayCountWeight = this.getDoubleConfig("ALGORITHM_DECAY_BASEDAYCOUNT_WEIGHT", weightConfigMap, 1);//衰减标准天数权重
-		
-		String yesterday = DateUtil.date2string(DateUtil.addDay(new Date(), -1), "yyyy-MM-dd");
-		String startTime = yesterday + " 00:00:00";
-		String endTime = yesterday + " 23:59:59";
-		
-		String topicSql = "select t.id,t.create_time,t.uid from topic t where t.create_time<='"+endTime+"' order by t.id ";
-		
-		logger.info("开始处理王国价值");
-		int start = 0;
-		int pageSize = 500;
-		int totalCount = 0;
-		List<Map<String, Object>> topicList = null;
-		StringBuilder topicFragmentSql = null;
-		List<Map<String, Object>> fragmentList = null;
-		Map<String, KingdomCount> kingCountMap = null;
-		KingdomCount kc = null;
-		StringBuilder topicDayCountSql = null;
-		List<Map<String, Object>> topicDayCountList = null;
-		while(true){
-			topicList = contentService.queryEvery(topicSql+start+","+pageSize);
-			if(null == topicList || topicList.size() == 0){
+	private Map<String, Object> getSubsidyConfig(int kv, List<Map<String, Object>> subsidyConfigList){
+		if(null == subsidyConfigList || subsidyConfigList.size() == 0){
+			return null;
+		}
+		Map<String, Object> result = null;
+		for(Map<String, Object> s : subsidyConfigList){
+			int m1 = ((Integer)s.get("m1")).intValue();
+			int m2 = ((Integer)s.get("m2")).intValue();
+			if(kv>=m1 && kv<=m2){
+				result = new HashMap<String, Object>();
+				result.put("k1", (Double)s.get("k1"));
+				result.put("k2", (Double)s.get("k2"));
+				result.put("m2", (Integer)s.get("m2"));
 				break;
 			}
-			
-			//处理fragment相关数据
-			topicFragmentSql = new StringBuilder();
-			topicFragmentSql.append("select * from topic_fragment f");
-			topicFragmentSql.append(" where f.status=1 and f.create_time>='").append(startTime);
-			topicFragmentSql.append("' and f.create_time<='").append(endTime).append("' and f.topic_id in (");
-			for(int i=0;i<topicList.size();i++){
-				if(i>0){
-					topicFragmentSql.append(",");
-				}
-				topicFragmentSql.append(String.valueOf(topicList.get(i).get("id")));
-			}
-			topicFragmentSql.append(")");
-			fragmentList = contentService.queryEvery(topicFragmentSql.toString());
-			kingCountMap = new HashMap<String, KingdomCount>();
-			if(null != fragmentList && fragmentList.size() > 0){
-				for(Map<String, Object> f : fragmentList){
-					long topicId = ((Long)f.get("topic_id")).longValue();
-					kc = kingCountMap.get(String.valueOf(topicId));
-					if(null == kc){
-						kc = new KingdomCount();
-						kc.setTopicId(topicId);
-						kingCountMap.put(String.valueOf(topicId), kc);
-					}
-					this.genFragmentKingdomCount(kc, f);
-				}
-			}
-			//处理几个连续数据
-			topicDayCountSql = new StringBuilder();
-			topicDayCountSql.append("select f.topic_id,");
-			topicDayCountSql.append("count(DISTINCT if(f.type in (0,3,11,12,13,15,52,55), DATE_FORMAT(f.create_time,'%Y%m%d'), NULL)) as updateDayCount,");
-			topicDayCountSql.append("count(DISTINCT if(f.type not in (0,3,11,12,13,15,52,55), DATE_FORMAT(f.create_time,'%Y%m%d'), NULL)) as reviewDayCount,");
-			topicDayCountSql.append("MAX(if(f.type in (0,3,11,12,13,15,52,55),f.create_time, NULL)) as lastUpdateTime");
-			topicDayCountSql.append("from topic_fragment f where f.status=1");
-			topicDayCountSql.append(" and f.create_time<='").append(endTime);
-			topicDayCountSql.append("' and f.topic_id in (");
-			for(int i=0;i<topicList.size();i++){
-				if(i>0){
-					topicDayCountSql.append(",");
-				}
-				topicDayCountSql.append(String.valueOf(topicList.get(i).get("id")));
-			}
-			topicDayCountSql.append(") group by f.topic_id");
-			topicDayCountList = contentService.queryEvery(topicDayCountSql.toString());
-			if(null != topicDayCountList && topicDayCountList.size() > 0){
-				for(Map<String, Object> c : topicDayCountList){
-					long topicId = ((Long)c.get("topic_id")).longValue();
-					kc = kingCountMap.get(String.valueOf(topicId));
-					if(null == kc){
-						kc = new KingdomCount();
-						kc.setTopicId(topicId);
-						kingCountMap.put(String.valueOf(topicId), kc);
-					}
-					kc.setUpdateDayCount(((Long)c.get("updateDayCount")).intValue());
-					kc.setReviewDayCount(((Long)c.get("reviewDayCount")).intValue());
-					kc.setLastUpdateTime((Date)c.get("lastUpdateTime"));
-				}
-			}
-			
-			//订阅数
-			
-			
-			
-			
-			
-			
-			for(Map<String, Object> t : topicList){
-				
-			}
-			
-			
-			
-			totalCount = totalCount + topicList.size();
-			logger.info("本次处理了["+topicList.size()+"]个王国，共处理了["+totalCount+"]个王国");
 		}
-		logger.info("王国价值处理完成");
-		
-		
-		
-		
-		
-		
-		
-		
-		
+		return result;
 	}
+	
 	
 	//处理topic_fragment的相关数据
 	private void genFragmentKingdomCount(KingdomCount kc, Map<String, Object> f){
@@ -612,6 +596,21 @@ public class KingdomPriceTask {
 		return result;
 	}
 	
+	private int getIntegerConfig(String key, Map<String, String> configMap, int defaultValue){
+		if(null == configMap || configMap.size() == 0 ||
+				StringUtils.isBlank(key) || StringUtils.isBlank(configMap.get(key))){
+			return defaultValue;
+		}
+		int result = defaultValue;
+		try{
+			result = Integer.valueOf(configMap.get(key)).intValue();
+		}catch(Exception e){
+			logger.error("配置项["+key+"]有问题", e);
+		}
+		
+		return result;
+	}
+	
 	@Data
 	private class KingdomCount{
 		private long topicId;
@@ -659,7 +658,7 @@ public class KingdomPriceTask {
 		private long uid;//国王UID
 	}
 	
-	public void executeFull() throws Exception{
+	public void executeFull(String dateStr) throws Exception{
 		logger.info("全量计算王国价值开始");
 		//获取各种权重配置
 		Map<String, String> weightConfigMap = userService.getAppConfigsByKeys(weightKeyList);
@@ -690,7 +689,15 @@ public class KingdomPriceTask {
 		
 		double vWeight = this.getDoubleConfig("ALGORITHM_V_WEIGHT", weightConfigMap, 0.2);//大V系数权重
 		
-		Date yesterday = DateUtil.addDay(new Date(), -1);
+		int listedPrice = this.getIntegerConfig("LISTED_PRICE", weightConfigMap, 20000);
+		
+		Date yesterday = null;
+		if(StringUtils.isNotBlank(dateStr)){
+			yesterday = DateUtil.addDay(DateUtil.string2date(dateStr, "yyyy-MM-dd"), -1);
+		}else{
+			yesterday = DateUtil.addDay(new Date(), -1);
+		}
+		
 		String endTime = DateUtil.date2string(yesterday, "yyyy-MM-dd") + " 23:59:59";
 		
 		String topicSql = "select t.id,t.create_time,t.uid from topic t where t.create_time<='"+endTime+"' order by t.id limit ";
@@ -716,6 +723,10 @@ public class KingdomPriceTask {
 		StringBuilder userProfileSql = null;
 		List<Map<String, Object>> userProfileList = null;
 		Map<String, Integer> vlvMap = null;
+		StringBuilder topicDataSql = null;
+		List<Map<String, Object>> topicDataList = null;
+		Map<String, Map<String, Object>> topicDataMap = null;
+		Map<String, Object> topicData = null;
 		while(true){
 			topicList = contentService.queryEvery(topicSql+start+","+pageSize);
 			if(null == topicList || topicList.size() == 0){
@@ -877,6 +888,25 @@ public class KingdomPriceTask {
 				}
 			}
 			
+			//获取所有的topic data
+			topicDataSql = new StringBuilder();
+			topicDataSql.append("select * from topic_data t where t.topic_id in (");
+			for(int i=0;i<topicList.size();i++){
+				if(i>0){
+					topicDataSql.append(",");
+				}
+				topicDataSql.append(String.valueOf(topicList.get(i).get("id")));
+			}
+			topicDataSql.append(")");
+			topicDataList = contentService.queryEvery(topicDataSql.toString());
+			topicDataMap = new HashMap<String, Map<String, Object>>();
+			if(null != topicDataList && topicDataList.size() > 0){
+				for(Map<String, Object> t : topicDataList){
+					long topicId = ((Long)t.get("topic_id")).longValue();
+					topicDataMap.put(String.valueOf(topicId), t);
+				}
+			}
+			
 			//开始计算
 			for(Map.Entry<String, KingdomCount> entry : kingCountMap.entrySet()){
 				kc = entry.getValue();
@@ -905,11 +935,17 @@ public class KingdomPriceTask {
 				kc.setApprove(new BigDecimal((double)yy/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 				kc.setDiligently(new BigDecimal((double)xx/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 				
-				if(kc.getNoUpdateDayCount()>20){
+				if(kc.getNoUpdateDayCount()<=20){
 					double kv = Math.pow(Math.pow(x, 2)+Math.pow(y, 2),0.5);
 					kc.setPrice((int)kv);
 				}
-				this.saveKingdomCount(kc);
+				
+				topicData = topicDataMap.get(String.valueOf(kc.getTopicId()));
+				if(null == topicData){//当天新增的王国
+					this.saveKingdomCount(kc, true, listedPrice);
+				}else{
+					this.saveKingdomCount(kc, false, listedPrice);
+				}
 			}
 			
 			
@@ -920,21 +956,20 @@ public class KingdomPriceTask {
 		logger.info("王国价值处理完成");
 	}
 	
-	private void saveKingdomCount(KingdomCount kc){
+	private void saveKingdomCount(KingdomCount kc, boolean isNew, int listedPrice){
 		StringBuilder topicPriceQuerySql = new StringBuilder();
-		topicPriceQuerySql.append("select t.price from topic t where t.id=").append(kc.getTopicId());
+		topicPriceQuerySql.append("select t.title,t.price from topic t where t.id=").append(kc.getTopicId());
 		List<Map<String, Object>> topicPriceList = contentService.queryEvery(topicPriceQuerySql.toString());
 		int oldPrice = 0;
+		String title = "";
 		if(null != topicPriceList && topicPriceList.size() > 0){
 			Map<String, Object> topicPrice = topicPriceList.get(0);
 			oldPrice = (Integer)topicPrice.get("price");
+			title = (String)topicPrice.get("title");
 		}
 		
-		StringBuilder topicDataSql = new StringBuilder();
-		topicDataSql.append("select * from topic_data d where d.topic_id=").append(kc.getTopicId());
-		List<Map<String, Object>> list = contentService.queryEvery(topicDataSql.toString());
 		StringBuilder saveSql = new StringBuilder();
-		if(null != list && list.size() > 0){//有的，则更新
+		if(!isNew){//有的，则更新
 			saveSql.append("update topic_data set steal_price=").append(kc.getStealPrice());
 			saveSql.append(",last_price=").append(oldPrice);
 			saveSql.append(",last_price_incr=").append(kc.getPrice()-oldPrice);
@@ -977,5 +1012,31 @@ public class KingdomPriceTask {
 		StringBuilder updatePriceSql = new StringBuilder();
 		updatePriceSql.append("update topic set price=").append(kc.getPrice()).append(" where id=").append(kc.getTopicId());
 		contentService.executeSql(updatePriceSql.toString());
+		
+		String updatelistedTimeSql = null;
+		if(oldPrice >= listedPrice){
+			if(kc.getPrice() >= listedPrice){
+				//上一次已经上市了，这次就不用上市了
+			}else{
+				//上一次上市，但是这次没上市，需要将时间清空
+				updatelistedTimeSql = "update topic set listing_time=null where id="+kc.getTopicId();
+				contentService.executeSql(updatelistedTimeSql);
+			}
+		}else{
+			if(kc.getPrice() >= listedPrice){
+				//上一次没上市，这次上市了
+				updatelistedTimeSql = "update topic set listing_time=now() where id="+kc.getTopicId();
+				contentService.executeSql(updatelistedTimeSql);
+				//并且添加跑马灯
+				StringBuilder insertTopicNewsSql = new StringBuilder();
+				insertTopicNewsSql.append("insert into topic_news(topic_id,content,type,create_time)");
+				insertTopicNewsSql.append(" values (").append(kc.getTopicId()).append(",'王国《").append(title);
+				insertTopicNewsSql.append("》上市了！',1,now())");
+				contentService.executeSql(insertTopicNewsSql.toString());
+			}else{
+				//上一次没上市，这次还没上市，不用处理啥
+			}
+		}
+		
 	}
 }

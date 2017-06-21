@@ -54,5 +54,6 @@
         <!-- <table tableName="user_steal_log" domainObjectName="UserStealLog" />  -->
         <!-- <table tableName="topic_data" domainObjectName="TopicData" /> -->
         <!-- <table tableName="topic_price_his" domainObjectName="TopicPriceHis" /> -->
+        <!-- <table tableName="topic_price_subsidy_config" domainObjectName="TopicPriceSubsidyConfig" /> -->
     </context>
 </generatorConfiguration>

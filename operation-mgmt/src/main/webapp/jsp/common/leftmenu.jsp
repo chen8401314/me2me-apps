@@ -166,11 +166,7 @@ String sub = request.getParameter("s");
                 <ul class="sub">
                 	<li <%if("13_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/price/kingdomQuery">王国交易管理</a></li>
                 	<li <%if("13_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/price/allConfig">全局系统配置</a></li>
-                	<!-- 
-                	<li <%if("13_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/price/configQuery/commonConfig">基础配置</a></li>
-                	<li <%if("13_3".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/price/configQuery/fragmentScore">王国详情分值配置</a></li>
-                	<li <%if("13_4".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/price/userConfigQuery">用户等级配置</a></li>
-                	 -->
+                	<li <%if("13_3".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/price/taskConsole">任务控制台</a></li>
                 </ul>
             </li>
         </ul>
