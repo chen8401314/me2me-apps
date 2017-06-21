@@ -2158,8 +2158,12 @@ public class LiveServiceImpl implements LiveService {
                     liveMybatisDao.updateTopic(topic);
                 }
             }
+            CoinRule coinRule =userService.getCoinRules().get(Rules.JOIN_KING_KEY);
+            coinRule.setExt(topicId);
+            ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(uid,coinRule);
+            resp  = Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
+            resp.setData(modifyUserCoinDto);
 
-            resp = Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
         } else if (action == 1) {//取消订阅
             if(null != liveFavorite){
                 liveMybatisDao.deleteLiveFavorite(liveFavorite);
