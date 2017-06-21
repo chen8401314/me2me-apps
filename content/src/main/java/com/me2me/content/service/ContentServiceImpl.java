@@ -5888,7 +5888,7 @@ private void localJpush(long toUid){
 		csh.setType(type);
 		csh.setUid(uid);
 		contentMybatisDao.saveContentShareHistory(csh);
-        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(uid, Rules.coinRules.get(Rules.SHARE_KING_KEY));
+        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(uid, userService.getCoinRules().get(Rules.SHARE_KING_KEY));
         Response response = Response.success(Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message));
         response.setData(modifyUserCoinDto);
         return response;

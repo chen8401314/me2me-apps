@@ -24,6 +24,7 @@
 <script src="${ctx}/js/bootstrap.min.js"></script>
 <style>
 .adv-table{margin-top:20px;}
+.changed{background:#E6FED8}
 </style>
 <script type="text/javascript">
 function format(txt,compress/*是否为压缩模式*/){/* 格式化JSON源码(对象转换为JSON文本) */  
@@ -85,14 +86,15 @@ $(document).on("click","a.edit",function(){
 	$("#newConfigModal").modal();
 })
 
-var modifyCommit = function(type){
+var modifyCommit = function(){
 	var key = $("#ckey").val();
 	var value = $("#cvalue").val();
-
+	var $tr=$("tr[key='"+key+"']");
 	$.post("./saveConfig",{k:key,v:value,r:Math.random()},function(data){
 		if(data == '0'){
 			alert("保存成功");
-			location.reload();
+			$tr.find("td:eq(2)").text(value)
+			//location.reload();
 		}else{
 			alert(resp);
 		}
@@ -171,8 +173,8 @@ var fullExecuteTask = function(){
 												<tbody>
 													<c:forEach items="${configList}" var="configItem">
 														<c:if test="${configItem.typeName=='基础配置'}">
-														<tr class="gradeX">
-														<td>${configItem.name }</td>
+														<tr class="gradeX" key="${configItem.configKey }">
+															<td>${configItem.name }</td>
 															<td>${configItem.configKey }</td>
 															<td>${configItem.configValue }</td>
 															<td><a href="#" class="edit">编辑</a></td>
@@ -197,7 +199,7 @@ var fullExecuteTask = function(){
 												<tbody>
 													<c:forEach items="${configList}" var="configItem">
 														<c:if test="${configItem.typeName=='用户等级权限配置'}">
-														<tr class="gradeX">
+														<tr class="gradeX" key="${configItem.configKey }">
 														<td>${configItem.name }</td>
 															<td>${configItem.configKey }</td>
 															<td>${configItem.configValue }</td>
@@ -223,8 +225,8 @@ var fullExecuteTask = function(){
 												<tbody>
 													<c:forEach items="${configList}" var="configItem">
 														<c:if test="${configItem.typeName=='操作分值配置'}">
-														<tr class="gradeX">
-														<td>${configItem.name }</td>
+														<tr class="gradeX" key="${configItem.configKey }">
+															<td>${configItem.name }</td>
 															<td>${configItem.configKey }</td>
 															<td>${configItem.configValue }</td>
 															<td><a href="#" class="edit">编辑</a></td>
@@ -250,7 +252,7 @@ var fullExecuteTask = function(){
 												<tbody>
 													<c:forEach items="${configList}" var="configItem">
 														<c:if test="${configItem.typeName=='个人级别累计分值配置'}">
-														<tr class="gradeX">
+														<tr class="gradeX" key="${configItem.configKey }">
 															<td>${configItem.name }</td>
 															<td>${configItem.configKey }</td>
 															<td>${configItem.configValue }</td>

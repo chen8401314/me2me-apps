@@ -51,6 +51,10 @@ public class ShowUserProfileDto implements BaseEntity{
 
     private int acCount;
 
+    private int upgrade ;
+
+    private int currentLevel;
+
     private List<Hobby> hobbyList = Lists.newArrayList();
 
     // 用户级别

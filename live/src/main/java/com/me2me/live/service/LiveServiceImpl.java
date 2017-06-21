@@ -16,6 +16,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.me2me.user.dto.ModifyUserCoinDto;
+import com.me2me.user.dto.PermissionDescriptionDto;
+import com.me2me.user.dto.PermissionDescriptionDto.PermissionNodeDto;
 import com.me2me.user.rule.CoinRule;
 import com.me2me.user.rule.Rules;
 import org.apache.commons.beanutils.BeanUtils;
@@ -194,6 +196,7 @@ public class LiveServiceImpl implements LiveService {
 
     @Autowired
     private SearchService searchService;
+
 
 
     @Value("#{app.live_web}")
@@ -1078,11 +1081,11 @@ public class LiveServiceImpl implements LiveService {
         //判断是否升级
         log.info("############################################################################");
         log.info("############################################################################");
-        CoinRule coinRule = Rules.coinRules.get(Rules.SPEAK_KEY);
+        CoinRule coinRule = userService.getCoinRules().get(Rules.SPEAK_KEY);
         log.info("coinRule info : " + coinRule.getName());
         log.info("############################################################################");
         log.info("############################################################################");
-        ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), Rules.coinRules.get(Rules.SPEAK_KEY));
+        ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), userService.getCoinRules().get(Rules.SPEAK_KEY));
         speakDto.setUpgrade(muDto.getUpgrade());
         speakDto.setCurrentLevel(muDto.getCurrentLevel());
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status, ResponseStatus.USER_SPEAK_SUCCESS.message, speakDto);
@@ -3371,9 +3374,9 @@ public class LiveServiceImpl implements LiveService {
         //add kingdom tags -- end --
 
         log.info("createKingdom end");
-        CoinRule coinRule = Rules.coinRules.get(Rules.CREATE_KING_KEY);
+        CoinRule coinRule = userService.getCoinRules().get(Rules.CREATE_KING_KEY);
         coinRule.setExt(createKingdomDto.getUid());
-        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(createKingdomDto.getUid(), Rules.coinRules.get(Rules.CREATE_KING_KEY));
+        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(createKingdomDto.getUid(), userService.getCoinRules().get(Rules.CREATE_KING_KEY));
         speakDto2.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
         speakDto2.setUpgrade(modifyUserCoinDto.getUpgrade());
         Response response = Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status, ResponseStatus.USER_CREATE_LIVE_SUCCESS.message, speakDto2);
@@ -6745,14 +6748,27 @@ public class LiveServiceImpl implements LiveService {
             throw new KingdomStealException(KingdomStealException.KINGDOM_STEALED,"不能重复偷取此王国");
         }
         // 每天可偷数量
-        int userDayLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_COIN_DAY_LIMIT_KEY));
-        int userOnceLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_COIN_ONCE_LIMIT_KEY));
-        int userTopicLimit = Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_TOPIC_DAY_LIMIT_KEY));
-
+        int userDayLimit = 0;//Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_COIN_DAY_LIMIT_KEY));
+        int userOnceLimit = 0;//Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_COIN_ONCE_LIMIT_KEY));
+        int userTopicLimit = 0;//Integer.parseInt(userService.getAppConfigByKey(Constant.USER_STEAL_TOPIC_DAY_LIMIT_KEY));
+        PermissionDescriptionDto permisson=  userService.getUserPermission(uid);
+        for(PermissionNodeDto per: permisson.getNodes()){
+        	if(per.getCode()==8){// 可偷王国数量
+        		userTopicLimit=per.getNum();
+        	}
+        	if(per.getCode()==9){// 单次偷取上限
+        		userOnceLimit=per.getNum();
+        	}
+        	if(per.getCode()==10){// 个人每日获取金币上限
+        		userDayLimit=per.getNum();
+        	}
+        }
+        
+        	
         if(userStealLog.size()>=userTopicLimit){
             throw new KingdomStealException("用户已达到今日偷取王国次数上限了");
         }
-
+        stealedCoins=liveLocalJdbcDao.getUserConinsByDay(uid, day);		// 此处重新计算用户当日获取到的总金币数，包括操作所得和偷取所得。
         int userTodayRemain=userDayLimit-stealedCoins;
 
         if(userTodayRemain<=0){
