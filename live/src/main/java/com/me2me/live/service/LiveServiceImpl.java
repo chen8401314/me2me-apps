@@ -1040,6 +1040,9 @@ public class LiveServiceImpl implements LiveService {
 //                //userService.push(liveFavorite.getUid(),topic.getUid(),Specification.PushMessageType.UPDATE.index,topic.getTitle());
 //                log.info("update push");
 //            }
+            //更新或者是核心圈跟新加分
+
+
         } else if (speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index) {
             //粉丝贴标提醒
             //Topic live = liveMybatisDao.getTopicById(speakDto.getTopicId());
