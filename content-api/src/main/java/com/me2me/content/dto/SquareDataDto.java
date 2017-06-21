@@ -28,7 +28,7 @@ public class SquareDataDto implements BaseEntity {
     public static class SquareDataElement extends BaseContentDto implements BaseEntity{
 
         private int contentType;
-
+        
     }
 
 }

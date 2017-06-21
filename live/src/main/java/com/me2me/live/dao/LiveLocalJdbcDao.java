@@ -1035,7 +1035,7 @@ public class LiveLocalJdbcDao {
 		try{
 			remain=jdbcTemplate.queryForObject("select steal_price from topic_data where topic_id=?",new Object[]{ topicId},Integer.class);
 		}catch(Exception e){
-			logger.error("未获取到王国["+topicId+"]剩余价值，可能每日统计未完成",e);
+			logger.error("未获取到王国["+topicId+"]剩余价值，可能每日统计未完成");
 		}
 		return remain;
 	}

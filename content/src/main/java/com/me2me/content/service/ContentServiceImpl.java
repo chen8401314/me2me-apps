@@ -434,6 +434,17 @@ public class ContentServiceImpl implements ContentService {
                         squareDataElement.setAcCount(acCount);
                     }
                     squareDataElement.setPrice((Integer) topic.get("price"));
+                    List<Map<String,Object>> list = liveForContentJdbcDao.getTopicTagDetailListByTopicId((Long) topic.get("id"));
+                    StringBuffer tagsSB = new StringBuffer();
+                    for (int i = 0; i < list.size(); i++) {
+                    	Map<String,Object> map = list.get(i);
+                    	if(i!=0){
+                    		tagsSB.append(";");
+                    	}
+                    	tagsSB.append((String)map.get("tag"));
+					}
+                    squareDataElement.setTags(tagsSB.toString());
+                    
             	}
 			}
 			squareDataElement.setLikeCount(content.getLikeCount());
@@ -1311,6 +1322,16 @@ private void localJpush(long toUid){
             			contentElement.setAcCount(acCount);
             		}
             		contentElement.setPrice((Integer)topic.get("price"));
+            		 List<Map<String,Object>> list = liveForContentJdbcDao.getTopicTagDetailListByTopicId((Long) topic.get("id"));
+                     StringBuffer tagsSB = new StringBuffer();
+                     for (int i = 0; i < list.size(); i++) {
+                     	Map<String,Object> map = list.get(i);
+                     	if(i!=0){
+                     		tagsSB.append(";");
+                     	}
+                     	tagsSB.append((String)map.get("tag"));
+ 					}
+                     contentElement.setTags(tagsSB.toString());
             	}
             }else{
             	ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
