@@ -3974,7 +3974,7 @@ public class UserServiceImpl implements UserService {
             if (userProfile.getLevel()-1 == userLevelDto.getLevel() && userProfile.getLevel() > 1 ){
                 preLevel.setName(userLevelDto.getName());
             }
-            if((userProfile.getLevel()+1) == userLevelDto.getLevel()){
+            if((userProfile.getLevel()) == userLevelDto.getLevel()){
                 myLevelDto.setNextLevelCoin(userLevelDto.getNeedCoins()-userProfile.getAvailableCoin());
             }
         }
@@ -4029,7 +4029,7 @@ public class UserServiceImpl implements UserService {
                 /*list.add(nodeDto);*/
                 if(nodeDto.getStatus()!=1){
                     // 找寻哪个级别开通该功能
-                    int openLevel = checkIsOpenLevel(nodeDto.getName());
+                    int openLevel = checkIsOpenLevel(nodeDto.getCode());
 
                     nodeDto.setOpenLevel(openLevel);
                 }
@@ -4143,11 +4143,11 @@ public class UserServiceImpl implements UserService {
         }
         return ret;
     }
-    private int checkIsOpenLevel(String name){
+    private int checkIsOpenLevel(int code){
         List<PermissionDescriptionDto> config = getPermissionConfig(9);
         for(PermissionDescriptionDto permissionDescriptionDto : config){
             for(PermissionDescriptionDto.PermissionNodeDto node : permissionDescriptionDto.getNodes()){
-                if(node.getStatus()==1 && node.getName().equals(name)){
+                if(node.getStatus()==1 && node.getCode().equals(code)){
                     return permissionDescriptionDto.getLevel();
                 }
             }
