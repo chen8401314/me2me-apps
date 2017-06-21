@@ -416,4 +416,6 @@ public interface ContentService{
 	public int getTopicMembersCount(long topicId);
 	
 	public int getTopicShareCount(long topicId);
+	
+	public void updateContentUid(long newUid,long topicId);
 }

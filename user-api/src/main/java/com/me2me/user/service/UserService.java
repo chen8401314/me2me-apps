@@ -507,6 +507,8 @@ public interface UserService {
 
 	void saveAppConfig(String key, String value);
 
+	Map<Integer,CoinRule> getCoinRules();
+
 
 
 }

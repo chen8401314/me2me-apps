@@ -198,6 +198,7 @@ public class LiveServiceImpl implements LiveService {
     private SearchService searchService;
 
 
+
     @Value("#{app.live_web}")
     private String live_web;
     @Value("#{app.dubboRegistry}")
@@ -1080,11 +1081,11 @@ public class LiveServiceImpl implements LiveService {
         //判断是否升级
         log.info("############################################################################");
         log.info("############################################################################");
-        CoinRule coinRule = Rules.coinRules.get(Rules.SPEAK_KEY);
+        CoinRule coinRule = userService.getCoinRules().get(Rules.SPEAK_KEY);
         log.info("coinRule info : " + coinRule.getName());
         log.info("############################################################################");
         log.info("############################################################################");
-        ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), Rules.coinRules.get(Rules.SPEAK_KEY));
+        ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), userService.getCoinRules().get(Rules.SPEAK_KEY));
         speakDto.setUpgrade(muDto.getUpgrade());
         speakDto.setCurrentLevel(muDto.getCurrentLevel());
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status, ResponseStatus.USER_SPEAK_SUCCESS.message, speakDto);
@@ -3373,9 +3374,9 @@ public class LiveServiceImpl implements LiveService {
         //add kingdom tags -- end --
 
         log.info("createKingdom end");
-        CoinRule coinRule = Rules.coinRules.get(Rules.CREATE_KING_KEY);
+        CoinRule coinRule = userService.getCoinRules().get(Rules.CREATE_KING_KEY);
         coinRule.setExt(createKingdomDto.getUid());
-        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(createKingdomDto.getUid(), Rules.coinRules.get(Rules.CREATE_KING_KEY));
+        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(createKingdomDto.getUid(), userService.getCoinRules().get(Rules.CREATE_KING_KEY));
         speakDto2.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
         speakDto2.setUpgrade(modifyUserCoinDto.getUpgrade());
         Response response = Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status, ResponseStatus.USER_CREATE_LIVE_SUCCESS.message, speakDto2);
@@ -6645,7 +6646,8 @@ public class LiveServiceImpl implements LiveService {
             oldLiveFavorite.setCreateTime(now);
             liveMybatisDao.createLiveFavorite(oldLiveFavorite);
         }
-
+        //变更UGC
+        contentService.updateContentUid(newUid, topicId);
         //2 记录转让历史
         TopicTransferRecord ttr = new TopicTransferRecord();
         ttr.setCreateTime(now);

@@ -590,4 +590,16 @@ public class LiveForContentJdbcDao {
 		String sql = "select * from topic where price>=? and listing_time is not null and status!=2 order by listing_time desc limit ?,?";
 		return jdbcTemplate.queryForList(sql,minPrice,(page-1)*pageSize,pageSize);
 	}
+	
+    /**
+     * 转让王国修改UGC uid
+     * @param topicId
+     */
+    public void updateContentUid(long newUid,long topicId){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("update content set uid=").append(newUid);
+    	sb.append(" where type = 3  ");
+    	sb.append(" and forward_cid = ").append(topicId);
+    	jdbcTemplate.execute(sb.toString());
+    }
 }
