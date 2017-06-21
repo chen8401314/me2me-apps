@@ -1076,6 +1076,12 @@ public class LiveServiceImpl implements LiveService {
         //直播信息保存
         //saveLiveDisplayData(speakDto);
         //判断是否升级
+        log.info("############################################################################");
+        log.info("############################################################################");
+        CoinRule coinRule = Rules.coinRules.get(Rules.SPEAK_KEY);
+        log.info("coinRule info : " + coinRule.getName());
+        log.info("############################################################################");
+        log.info("############################################################################");
         ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), Rules.coinRules.get(Rules.SPEAK_KEY));
         speakDto.setUpgrade(muDto.getUpgrade());
         speakDto.setCurrentLevel(muDto.getCurrentLevel());
