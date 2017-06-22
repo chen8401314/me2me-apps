@@ -3969,6 +3969,7 @@ public class UserServiceImpl implements UserService {
         if(userProfile.getLevel() != 9){
             nextLevel.setLevel( userProfile.getLevel()+1);
         }
+
         MyLevelDto.InnerLevel preLevel = myLevelDto.createInnerLevel();
         if (userProfile.getLevel() > 1){
             preLevel.setLevel(userProfile.getLevel()-1);

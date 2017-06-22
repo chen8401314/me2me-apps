@@ -4382,6 +4382,7 @@ private void localJpush(long toUid){
 		                        bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
 		                        bangDanInnerData.setNickName(userProfile.getNickName());
 		                        bangDanInnerData.setV_lv(userProfile.getvLv());
+		                        bangDanInnerData.setLevel(userProfile.getLevel());
 		                        if(null != followMap.get(currentUid+"_"+uid)){
 		                        	bangDanInnerData.setIsFollowed(1);
 		        				}else{
@@ -4438,6 +4439,7 @@ private void localJpush(long toUid){
 		                        bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
 		                        bangDanInnerData.setNickName(userProfile.getNickName());
 		                        bangDanInnerData.setV_lv(userProfile.getvLv());
+		                        bangDanInnerData.setLevel(userProfile.getLevel());
 		                        if(null != followMap.get(currentUid+"_"+targetId)){
 		                        	bangDanInnerData.setIsFollowed(1);
 		        				}else{
@@ -4527,6 +4529,7 @@ private void localJpush(long toUid){
                         bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                         bangDanInnerData.setNickName(userProfile.getNickName());
                         bangDanInnerData.setV_lv(userProfile.getvLv());
+                        bangDanInnerData.setLevel(userProfile.getLevel());
                         int isFollowed = userService.isFollow(uid,currentUid);
                         bangDanInnerData.setIsFollowed(isFollowed);
                         int isFollowMe = userService.isFollow(currentUid,uid);
@@ -4552,6 +4555,7 @@ private void localJpush(long toUid){
                         bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                         bangDanInnerData.setNickName(userProfile.getNickName());
                         bangDanInnerData.setV_lv(userProfile.getvLv());
+                        bangDanInnerData.setLevel(userProfile.getLevel());
                         int isFollowed = userService.isFollow(targetId,currentUid);
                         bangDanInnerData.setIsFollowed(isFollowed);
                         int isFollowMe = userService.isFollow(currentUid,targetId);
@@ -4769,6 +4773,7 @@ private void localJpush(long toUid){
                         bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                         bangDanInnerData.setNickName(userProfile.getNickName());
                         bangDanInnerData.setV_lv(userProfile.getvLv());
+                        bangDanInnerData.setLevel(userProfile.getLevel());
                         if(null != followMap.get(currentUid+"_"+uid)){
                         	bangDanInnerData.setIsFollowed(1);
         				}else{
@@ -4818,6 +4823,7 @@ private void localJpush(long toUid){
                         bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                         bangDanInnerData.setNickName(userProfile.getNickName());
                         bangDanInnerData.setV_lv(userProfile.getvLv());
+                        bangDanInnerData.setLevel(userProfile.getLevel());
                         if(null != followMap.get(currentUid+"_"+targetId)){
                         	bangDanInnerData.setIsFollowed(1);
         				}else{
@@ -5090,6 +5096,7 @@ private void localJpush(long toUid){
                     bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                     bangDanInnerData.setNickName(userProfile.getNickName());
                     bangDanInnerData.setV_lv(userProfile.getvLv());
+                    bangDanInnerData.setLevel(userProfile.getLevel());
                     if(null != followMap.get(currentUid+"_"+uid)){
                     	bangDanInnerData.setIsFollowed(1);
     				}else{
@@ -5145,6 +5152,7 @@ private void localJpush(long toUid){
                     bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                     bangDanInnerData.setNickName(userProfile.getNickName());
                     bangDanInnerData.setV_lv(userProfile.getvLv());
+                    bangDanInnerData.setLevel(userProfile.getLevel());
                     if(null != followMap.get(currentUid+"_"+bbl.getTargetId())){
                     	bangDanInnerData.setIsFollowed(1);
     				}else{
@@ -5297,6 +5305,7 @@ private void localJpush(long toUid){
                     bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                     bangDanInnerData.setNickName(userProfile.getNickName());
                     bangDanInnerData.setV_lv(userProfile.getvLv());
+                    bangDanInnerData.setLevel(userProfile.getLevel());
                     if(null != followMap.get(currentUid+"_"+uid)){
                     	bangDanInnerData.setIsFollowed(1);
     				}else{
@@ -5353,6 +5362,7 @@ private void localJpush(long toUid){
                     bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                     bangDanInnerData.setNickName(userProfile.getNickName());
                     bangDanInnerData.setV_lv(userProfile.getvLv());
+                    bangDanInnerData.setLevel(userProfile.getLevel());
                     if(null != followMap.get(currentUid+"_"+String.valueOf(bbl.getTargetId()))){
                     	bangDanInnerData.setIsFollowed(1);
     				}else{
