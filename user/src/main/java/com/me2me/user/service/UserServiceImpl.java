@@ -4089,6 +4089,9 @@ public class UserServiceImpl implements UserService {
                 lv++;
             }
         }
+        if ( lv > 9){
+            lv = 9;
+        }
         if(lv <= userProfile.getLevel()){
             return modifyUserCoinDto;
         }else{
@@ -4115,7 +4118,9 @@ public class UserServiceImpl implements UserService {
             map.put(i+1,array.get(i));
         }
         // 日志拉取今日的累计值
-        int allDayPoints = userInitJdbcDao.getDayCoins(uid);
+        int allDayPoints = userInitJdbcDao.getDayCoins(uid) + userInitJdbcDao.getDayCoins2(uid);
+
+
         if(allDayPoints < map.get(userProfile.getLevel())){
             // 并且规则是否允许重复
             if(!rule.isRepeatable()){

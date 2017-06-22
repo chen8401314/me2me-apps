@@ -6912,7 +6912,9 @@ public class LiveServiceImpl implements LiveService {
             String listedPrice = userService.getAppConfigByKey(LISTED_PRICE);
             int i = Integer.parseInt( listedPrice, 10);
             if((topic.getPrice()+rechargeToKingdomDto.getAmount())>= i ){
-                String content = topic.getTitle()+"达到上市标准";
+
+                // XXX的《王国名》挂牌上市了，快来围观抢购吧。
+                String content = userProfile.getNickName()+"的《"+topic.getTitle()+"》挂牌上市了，快来围观抢购吧。";
                 liveLocalJdbcDao.writeTopicNews(topic.getId(),content);
                 liveLocalJdbcDao.writeTopicTime(topic.getId());
             }

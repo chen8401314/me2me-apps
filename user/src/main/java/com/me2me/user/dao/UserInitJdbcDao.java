@@ -281,6 +281,16 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 			return Integer.valueOf(Lists.getSingle(super.query(sql, uid, day)).get("count").toString());
 		}
 	}
+	public int getDayCoins2(long uid) {
+		String sql = "select IFNULL(sum(stealed_coins),0) as count from user_steal_log where uid = ? and DATE_FORMAT(create_time,'%Y-%m-%d') = ?";
+		String day = sdf.format(new Date());
+		List list = super.query(sql,uid,day);
+		if(list==null||list.isEmpty()){
+			return 0;
+		}else {
+			return Integer.valueOf(Lists.getSingle(super.query(sql, uid, day)).get("count").toString());
+		}
+	}
 
 	public boolean isNotExistsRuleLogByDay(int code, long uid) {
 		String sql = "SELECT * from rule_log where rule_code = ? and uid = ? and DATE_FORMAT(create_time,'%Y-%m-%d') = ?";
