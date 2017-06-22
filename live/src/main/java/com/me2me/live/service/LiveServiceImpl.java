@@ -132,6 +132,7 @@ import com.me2me.live.model.TopicFragmentExample;
 import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicNews;
 import com.me2me.live.model.TopicPriceHis;
+import com.me2me.live.model.TopicPriceSubsidyConfig;
 import com.me2me.live.model.TopicReadHis;
 import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicTagDetail;
@@ -6988,4 +6989,25 @@ public class LiveServiceImpl implements LiveService {
         BigDecimal exchangeRate = new BigDecimal(result);
         return new BigDecimal(price).divide(exchangeRate, 2, RoundingMode.HALF_UP).doubleValue();
     }
+    @Override
+    public List<TopicPriceSubsidyConfig> getTopicPriceSubsidyConfigList() {
+    	return liveMybatisDao.getTopicPriceSubsidyConfigList();
+    }
+    @Override
+    public TopicPriceSubsidyConfig getTopicPriceSubsidyConfigById(long id)  {
+    	return liveMybatisDao.getTopicPriceSubsidyConfigById(id);
+    }
+    @Override
+	public void saveTopicPriceSubsidyConfig(TopicPriceSubsidyConfig tpsc){
+		liveMybatisDao.saveTopicPriceSubsidyConfig(tpsc);
+	}
+    @Override
+	public void editTopicPriceSubsidyConfig(TopicPriceSubsidyConfig tpsc){
+		liveMybatisDao.editTopicPriceSubsidyConfig(tpsc);
+	}
+    @Override
+	public void delTopicPriceSubsidyConfig(long id){
+		liveMybatisDao.delTopicPriceSubsidyConfig(id);
+	}
+  
 }
