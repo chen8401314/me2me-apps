@@ -102,6 +102,7 @@ var buildTableBody = function(dataList){
 	if(dataList && dataList.length > 0){
 		for(var i=0;i<dataList.length;i++){
 			bodyHtml = bodyHtml + "<tr class=\"gradeX\">";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].id+"</th>";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].title+"</th>";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].uid+"</th>";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].nickName+"</th>";
@@ -221,6 +222,7 @@ var parserDatetimeStr = function(time){
 									<table class="display table table-bordered table-striped" id="table">
 										<thead>
 											<tr>
+												<th>王国ID</th>
 												<th>王国标题</th>
 												<th>国王UID</th>
 												<th>国王昵称</th>
@@ -234,6 +236,7 @@ var parserDatetimeStr = function(time){
 										<tbody id="tbody">
 											<c:forEach items="${dataObj.result}" var="item">
 												<tr class="gradeX">
+													<th>${item.id }</th>
 													<th>${item.title }</th>
 													<th>${item.uid }</th>
 													<th>${item.nickName }</th>
