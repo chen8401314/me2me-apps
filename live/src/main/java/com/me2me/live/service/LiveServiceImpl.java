@@ -1432,6 +1432,8 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setStatus(topic.getStatus());
             showTopicElement.setLastUpdateTime(topic.getLongTime());
             showTopicElement.setUpdateTime(topic.getLongTime());
+         /*   UserProfile userProfile1 = userService.getUserProfileByUid(topic.getUid());*/
+            showTopicElement.setLevel(userProfile.getLevel());
             if(null != followMap.get(uid+"_"+topic.getUid().toString())){
                 showTopicElement.setIsFollowed(1);
             }else{
