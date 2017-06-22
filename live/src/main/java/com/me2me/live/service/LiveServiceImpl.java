@@ -3277,6 +3277,12 @@ public class LiveServiceImpl implements LiveService {
         int kingdomType = Specification.KingdomType.NORMAL.index;
         if(createKingdomDto.getKType() == Specification.KingdomType.AGGREGATION.index){
         	kingdomType = Specification.KingdomType.AGGREGATION.index;
+        	// 判断聚合王国是否上限
+            int hasCount = 10;
+            int limitCount = 10;
+            if(hasCount > limitCount){
+                return Response.failure(500,"你当前的等级已经达到了创建聚合王国的上限。");
+            }
         }
         topic.setType(kingdomType);
         topic.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);//目前默认公开的，等以后有需求的再说
