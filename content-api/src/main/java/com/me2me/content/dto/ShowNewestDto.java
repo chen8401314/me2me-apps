@@ -47,6 +47,8 @@ public class ShowNewestDto implements BaseEntity{
 
             private int v_lv;
 
+            private int level;
+
         }
     }
 }

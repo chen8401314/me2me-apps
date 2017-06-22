@@ -31,6 +31,8 @@ public class ShowBarrageDto implements BaseEntity{
 
         private String nickName;
 
+        private int level;
+
         private Date createTime;
 
         private int contentType;

@@ -2783,6 +2783,7 @@ private void localJpush(long toUid){
             contentElement.setV_lv(userProfile.getvLv());
             contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             contentElement.setNickName(userProfile.getNickName());
+            contentElement.setLevel(userProfile.getLevel());
             contentElement.setCreateTime(content.getCreateTime());
             contentElement.setRights(content.getRights());
             String contentStr = content.getContent();
@@ -3738,6 +3739,7 @@ private void localJpush(long toUid){
 					famousUserElement.setNickName(userProfile.getNickName());
 					famousUserElement.setIntroduced(userProfile.getIntroduced());
 					famousUserElement.setV_lv(userProfile.getvLv());
+					famousUserElement.setLevel(userProfile.getLevel());
 				}
 				if(null != followMap.get(uid+"_"+uf.getUid())){
 					famousUserElement.setIsFollowed(1);
@@ -3767,6 +3769,8 @@ private void localJpush(long toUid){
 				ceKingdomElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
 				ceKingdomElement.setNickName(userProfile.getNickName());
 				ceKingdomElement.setV_lv(userProfile.getvLv());
+                ceKingdomElement.setLevel(userProfile.getLevel());
+                ceKingdomElement.setLevel(userProfile.getLevel());
 				
 				if(null != followMap.get(uid+"_"+ce.getUid())){
 					ceKingdomElement.setIsFollowed(1);
@@ -3833,6 +3837,7 @@ private void localJpush(long toUid){
 						memberElement.setNickName((String)members.get("nick_name"));
 						memberElement.setAvatar(Constant.QINIU_DOMAIN + "/" + (String)members.get("avatar"));
 						memberElement.setV_lv((Integer)members.get("v_lv"));
+                        memberElement.setLevel((Integer)members.get("level"));
 						ceKingdomElement.getMemberList().add(memberElement);
 					}
 				}
@@ -3857,6 +3862,7 @@ private void localJpush(long toUid){
 					contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
 					contentElement.setNickName(userProfile.getNickName());
 					contentElement.setV_lv(userProfile.getvLv());
+					contentElement.setLevel(userProfile.getLevel());
 				}
 				if(null != followMap.get(uid+"_"+c.getUid())){
 					contentElement.setIsFollowed(1);
@@ -4078,6 +4084,7 @@ private void localJpush(long toUid){
 				ceKingdomElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
 				ceKingdomElement.setNickName(userProfile.getNickName());
 				ceKingdomElement.setV_lv(userProfile.getvLv());
+                ceKingdomElement.setLevel(userProfile.getLevel());
 				if(null != followMap.get(uid+"_"+ce.getUid())){
 					ceKingdomElement.setIsFollowed(1);
 				}else{
@@ -4142,6 +4149,7 @@ private void localJpush(long toUid){
 						memberElement.setNickName((String)members.get("nick_name"));
 						memberElement.setAvatar(Constant.QINIU_DOMAIN + "/" + (String)members.get("avatar"));
 						memberElement.setV_lv((Integer)members.get("v_lv"));
+                        memberElement.setLevel((Integer)members.get("level"));
 						ceKingdomElement.getMemberList().add(memberElement);
 					}
 				}
