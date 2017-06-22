@@ -18,19 +18,28 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.me2me.common.security.SecurityUtils;
+import com.me2me.content.model.EmotionPackDetail;
 import com.me2me.content.service.ContentService;
+import com.me2me.live.model.Topic;
+import com.me2me.live.model.TopicPriceSubsidyConfig;
 import com.me2me.live.service.LiveService;
 import com.me2me.mgmt.request.ConfigItem;
 import com.me2me.mgmt.request.KingdomBusinessDTO;
 import com.me2me.mgmt.request.KingdomDTO;
 import com.me2me.mgmt.request.KingdomQueryDTO;
 import com.me2me.mgmt.request.SearchUserDTO;
+import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.mgmt.task.app.KingdomPriceTask;
+import com.me2me.mgmt.vo.DatatablePage;
+import com.me2me.user.dto.EmotionInfoListDto;
 import com.me2me.user.model.AppConfig;
+import com.me2me.user.model.EmotionInfo;
 import com.me2me.user.service.UserService;
 
 @Controller
@@ -481,5 +490,48 @@ public class PriceController {
 		return view;
 	}
 	
+	@RequestMapping(value = "/listTopicPriceSubsidyConfig")
+	@SystemControllerLog(description = "补贴配置列表")
+	public String listTopicPriceSubsidyConfig(HttpServletRequest request) throws Exception {
+		List<TopicPriceSubsidyConfig> datas = liveService.getTopicPriceSubsidyConfigList();
+		request.setAttribute("data",datas);
+		return "price/listTopicPriceSubsidyConfig";
+	}
+	@RequestMapping(value = "/addTopicPriceSubsidyConfig")
+	@SystemControllerLog(description = "添加补贴配置")
+	public String addTopicPriceSubsidyConfig(HttpServletRequest request,DatatablePage dpage) throws Exception {
+		return "price/addTopicPriceSubsidyConfig";
+	}
 	
+	@RequestMapping(value = "/modifyTopicPriceSubsidyConfig")
+	@SystemControllerLog(description = "修改补贴配置")
+	public String modifyTopicPriceSubsidyConfig(HttpServletRequest request,DatatablePage dpage) throws Exception {
+		String id = request.getParameter("id");
+		TopicPriceSubsidyConfig item= liveService.getTopicPriceSubsidyConfigById(Long.valueOf(id));
+		request.setAttribute("item",item);
+		return "price/addTopicPriceSubsidyConfig";
+	}
+	@RequestMapping(value = "/doSaveTopicPriceSubsidyConfig")
+	@SystemControllerLog(description = "保存补贴配置")
+	public String doSaveTopicPriceSubsidyConfig(TopicPriceSubsidyConfig tpsc,HttpServletRequest mrequest) throws Exception {
+		try{
+			if(tpsc.getId()!=null){
+				liveService.editTopicPriceSubsidyConfig(tpsc);; 
+			}else{
+				liveService.saveTopicPriceSubsidyConfig(tpsc);
+			}
+			return "redirect:./listTopicPriceSubsidyConfig";
+		}catch(Exception e){
+			e.printStackTrace();
+			mrequest.setAttribute("item",tpsc);
+			return "redirect:./doSaveTopicPriceSubsidyConfig";
+		}
+	}
+	@RequestMapping(value = "/delTopicPriceSubsidyConfig")
+	@SystemControllerLog(description = "删除补贴配置")
+	public String delTopicPriceSubsidyConfig(HttpServletRequest request) throws Exception {
+		String id = request.getParameter("id");
+	     liveService.delTopicPriceSubsidyConfig(Long.valueOf(id));
+		return "redirect:./listTopicPriceSubsidyConfig";
+	}
 }

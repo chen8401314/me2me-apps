@@ -46,6 +46,7 @@ import com.me2me.live.mapper.TopicFragmentTemplateMapper;
 import com.me2me.live.mapper.TopicMapper;
 import com.me2me.live.mapper.TopicNewsMapper;
 import com.me2me.live.mapper.TopicPriceHisMapper;
+import com.me2me.live.mapper.TopicPriceSubsidyConfigMapper;
 import com.me2me.live.mapper.TopicReadHisMapper;
 import com.me2me.live.mapper.TopicTagDetailMapper;
 import com.me2me.live.mapper.TopicTagMapper;
@@ -95,6 +96,8 @@ import com.me2me.live.model.TopicNews;
 import com.me2me.live.model.TopicNewsExample;
 import com.me2me.live.model.TopicPriceHis;
 import com.me2me.live.model.TopicPriceHisExample;
+import com.me2me.live.model.TopicPriceSubsidyConfig;
+import com.me2me.live.model.TopicPriceSubsidyConfigExample;
 import com.me2me.live.model.TopicReadHis;
 import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicTagDetail;
@@ -215,6 +218,9 @@ public class LiveMybatisDao {
     
     @Autowired
     private TopicDataMapper topicDataMapper;
+    
+    @Autowired
+    private TopicPriceSubsidyConfigMapper topicPriceSubsidyConfigMapper;
     
 
     public void createTopic(Topic topic) {
@@ -1595,4 +1601,54 @@ public class LiveMybatisDao {
         criteria.andLastPriceIncrLessThan(price);
         return topicDataMapper.countByExample(example);
     }
+	/**
+	 * 获取所有补贴配置
+	 * @author chenxiang
+	 * @date 2017-06-22
+	 * @param 
+	 */
+    public List<TopicPriceSubsidyConfig> getTopicPriceSubsidyConfigList() {
+    	TopicPriceSubsidyConfigExample example = new TopicPriceSubsidyConfigExample();
+        return topicPriceSubsidyConfigMapper.selectByExample(example);
+    }
+    
+	/**
+	 * 获取补贴配置
+	 * @author chenxiang
+	 * @date 2017-06-22
+	 * @param 
+	 */
+    public TopicPriceSubsidyConfig getTopicPriceSubsidyConfigById(long id) {
+    	TopicPriceSubsidyConfigExample example = new TopicPriceSubsidyConfigExample();
+    	example.createCriteria().andIdEqualTo(id);
+    	List<TopicPriceSubsidyConfig> list = topicPriceSubsidyConfigMapper.selectByExample(example);
+    	return list.size()>0?list.get(0):null;
+    }
+	/**
+	 * 添加补贴配置
+	 * @author chenxiang
+	 * @date 2017-06-22
+	 * @param 
+	 */
+	public void saveTopicPriceSubsidyConfig(TopicPriceSubsidyConfig tpsc){
+		topicPriceSubsidyConfigMapper.insertSelective(tpsc);
+	}
+	/**
+	 * 修改补贴配置
+	 * @author chenxiang
+	 * @date 2017-06-22
+	 * @param 
+	 */
+	public void editTopicPriceSubsidyConfig(TopicPriceSubsidyConfig tpsc){
+		topicPriceSubsidyConfigMapper.updateByPrimaryKeySelective(tpsc);
+	}
+	/**
+	 * 删除补贴配置
+	 * @author chenxiang
+	 * @date 2017-06-22
+	 * @param 
+	 */
+	public void delTopicPriceSubsidyConfig(long id){
+		topicPriceSubsidyConfigMapper.deleteByPrimaryKey(id);
+	}
 }
