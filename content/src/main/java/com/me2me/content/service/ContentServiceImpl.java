@@ -706,6 +706,7 @@ public class ContentServiceImpl implements ContentService {
             user = userMap.get(String.valueOf(likesDetails.getUid()));
             likeElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
             likeElement.setNickName(user.getNickName());
+            likeElement.setLevel(user.getLevel());
             showArticleCommentsDto.getLikeElements().add(likeElement);
             if(likesDetails.getUid() == uid){
                 showArticleCommentsDto.setIsLike(1);
@@ -2145,6 +2146,7 @@ private void localJpush(long toUid){
                 UserProfile userProfile = userService.getUserProfileByUid(activity.getUid());
                 activityElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                 activityElement.setNickName(userProfile.getNickName());
+                activityElement.setLevel(userProfile.getLevel());
                 int follow = userService.isFollow(activity.getUid(), uid);
                 activityElement.setIsFollowed(follow);
                 activityElement.setId(activity.getId());

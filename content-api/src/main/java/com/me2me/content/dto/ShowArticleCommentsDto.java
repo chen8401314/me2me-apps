@@ -66,6 +66,8 @@ public class ShowArticleCommentsDto implements BaseEntity{
         private String nickName;
 
         private String avatar;
+
+        private int level;
     }
 
     private List<ContentTagElement> tags = Lists.newArrayList();

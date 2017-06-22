@@ -815,6 +815,7 @@ public class LiveServiceImpl implements LiveService {
                 liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                 liveElement.setNickName(userProfile.getNickName());
                 liveElement.setV_lv(userProfile.getvLv());
+                liveElement.setLevel(userProfile.getLevel());
             }
             liveElement.setFragment(topicFragment.getFragment());
             String fragmentImage = topicFragment.getFragmentImage();
@@ -2773,6 +2774,7 @@ public class LiveServiceImpl implements LiveService {
             UserProfile userProfile = userService.getUserProfileByUid(topicFragment.getUid());
             lastElement.setUid(userProfile.getUid());
             lastElement.setNickName(userProfile.getNickName());
+            lastElement.setLevel(userProfile.getLevel());
             lastElement.setFragment(topicFragment.getFragment());
             String fragmentImage = topicFragment.getFragmentImage();
             if (!StringUtils.isEmpty(fragmentImage)) {
@@ -3117,6 +3119,7 @@ public class LiveServiceImpl implements LiveService {
             	liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                 liveElement.setNickName(userProfile.getNickName());
                 liveElement.setV_lv(userProfile.getvLv());
+                liveElement.setLevel(userProfile.getLevel());
             }
             liveElement.setFragment(topicFragment.getFragment());
             String fragmentImage = topicFragment.getFragmentImage();

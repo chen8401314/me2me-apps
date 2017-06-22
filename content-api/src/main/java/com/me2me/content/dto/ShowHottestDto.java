@@ -43,6 +43,8 @@ public class ShowHottestDto implements BaseEntity {
         //发活动人的图像
         private String avatar;
 
+        private int level;
+
         //发活动人的昵称
         private String nickName;
 
