@@ -816,6 +816,7 @@ public class LiveServiceImpl implements LiveService {
                 liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                 liveElement.setNickName(userProfile.getNickName());
                 liveElement.setV_lv(userProfile.getvLv());
+                liveElement.setLevel(userProfile.getLevel());
             }
             liveElement.setFragment(topicFragment.getFragment());
             String fragmentImage = topicFragment.getFragmentImage();
@@ -2774,6 +2775,7 @@ public class LiveServiceImpl implements LiveService {
             UserProfile userProfile = userService.getUserProfileByUid(topicFragment.getUid());
             lastElement.setUid(userProfile.getUid());
             lastElement.setNickName(userProfile.getNickName());
+            lastElement.setLevel(userProfile.getLevel());
             lastElement.setFragment(topicFragment.getFragment());
             String fragmentImage = topicFragment.getFragmentImage();
             if (!StringUtils.isEmpty(fragmentImage)) {
@@ -3118,6 +3120,7 @@ public class LiveServiceImpl implements LiveService {
             	liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                 liveElement.setNickName(userProfile.getNickName());
                 liveElement.setV_lv(userProfile.getvLv());
+                liveElement.setLevel(userProfile.getLevel());
             }
             liveElement.setFragment(topicFragment.getFragment());
             String fragmentImage = topicFragment.getFragmentImage();
@@ -5910,6 +5913,7 @@ public class LiveServiceImpl implements LiveService {
         dto.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
         dto.setNickName(user.getNickName());
         dto.setV_lv(user.getvLv());
+        dto.setLevel(user.getLevel());
         StringBuffer myVote = new StringBuffer();
         List<VoteRecord> vrList =liveMybatisDao.getMyVoteRecord(uid,voteId);
         for (int i = 0; i < vrList.size(); i++) {
@@ -6144,6 +6148,7 @@ public class LiveServiceImpl implements LiveService {
                 e.setNickName((String)u.get("nick_name"));
                 e.setAvatar(Constant.QINIU_DOMAIN + "/" + (String)u.get("avatar"));
                 e.setV_lv((Integer)u.get("v_lv"));
+                e.setLevel((Integer) u.get("level"));
                 if(coreUidList.contains(uid)){
                     e.setInternalStatus(2);
                 }else{

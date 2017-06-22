@@ -45,6 +45,8 @@ public class ContentReviewDto implements BaseEntity {
 
         private int v_lv;
 
+        private int level;
+
         private String extra;
 
     }

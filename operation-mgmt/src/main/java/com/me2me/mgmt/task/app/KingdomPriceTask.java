@@ -89,7 +89,7 @@ public class KingdomPriceTask {
 	 * 每天只计算昨天的增量
 	 */
 	public void executeIncr(String dateStr) throws Exception{
-		logger.info("全量计算王国价值开始");
+		logger.info("增量计算王国价值开始");
 		//获取各种权重配置
 		Map<String, String> weightConfigMap = userService.getAppConfigsByKeys(weightKeyList);
 		//获取任务需要的当前的各种系数配置
@@ -295,10 +295,18 @@ public class KingdomPriceTask {
 				for(Map<String, Object> r : readCountList){
 					long topicId = ((Long)r.get("topic_id")).longValue();
 					kc = kingCountMap.get(String.valueOf(topicId));
-					kc.setReadCountInApp(((Long)r.get("readInApp")).intValue());
-					kc.setReadCountDummyInApp(((Long)r.get("readDummyInApp")).intValue());
-					kc.setReadCountOutApp(((Long)r.get("readOutApp")).intValue());
-					kc.setReadCountDummyOutApp(((Long)r.get("readDummyOutApp")).intValue());
+					if(null != r.get("readInApp")){
+						kc.setReadCountInApp(((BigDecimal)r.get("readInApp")).intValue());
+					}
+					if(null != r.get("readDummyInApp")){
+						kc.setReadCountDummyInApp(((BigDecimal)r.get("readDummyInApp")).intValue());
+					}
+					if(null != r.get("readOutApp")){
+						kc.setReadCountOutApp(((BigDecimal)r.get("readOutApp")).intValue());
+					}
+					if(null != r.get("readDummyOutApp")){
+						kc.setReadCountDummyOutApp(((BigDecimal)r.get("readDummyOutApp")).intValue());
+					}
 				}
 			}
 			
@@ -408,10 +416,9 @@ public class KingdomPriceTask {
 						+ kc.getReadDayCount()*readDayCountWeight)/kc.getUpdateDayCount();
 
 				topicData = topicDataMap.get(String.valueOf(kc.getTopicId()));
+				int xx = (int)(_x*1000);
+				int yy = (int)(_y*1000);
 				if(null == topicData){//当天新增的王国
-					int xx = (int)(_x*1000);
-					int yy = (int)(_y*1000);
-					
 					kc.setApprove(new BigDecimal((double)yy/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 					kc.setDiligently(new BigDecimal((double)xx/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 					
@@ -421,8 +428,8 @@ public class KingdomPriceTask {
 					this.saveKingdomCount(kc, true, listedPrice);
 				}else{//历史有的，则需要做增量计算
 					int kv0 = ((Integer)topicData.get("price")).intValue();
-					int x0 = ((Integer)topicData.get("diligently")).intValue();
-					int y0 = ((Integer)topicData.get("approve")).intValue();
+					double x0 = ((Double)topicData.get("diligently")).doubleValue();
+					double y0 = ((Double)topicData.get("approve")).doubleValue();
 					int _kv = (int)((Math.pow(Math.min(1, _x/x0), diligentlyWeight) + Math.pow(Math.min(1, _y/y0), approveWeight))*kv0/2);
 					int d = (int)((kv0/decayBaseDayCountWeight)*Math.pow(decayBaseWeight, kc.getNoUpdateDayCount()));
 					
@@ -444,8 +451,8 @@ public class KingdomPriceTask {
 					
 					kc.setPrice(kv);
 					kc.setStealPrice(stealPrice);
-					kc.setDiligently(x0+_x);
-					kc.setApprove(y0+_y);
+					kc.setDiligently(x0+new BigDecimal((double)xx/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
+					kc.setApprove(y0+new BigDecimal((double)yy/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 					kc.setUpdateTextWordCount(((Integer)topicData.get("update_text_length")).intValue() + kc.getUpdateTextWordCount());
 					kc.setUpdateTextCount(((Integer)topicData.get("update_text_count")).intValue() + kc.getUpdateTextCount());
 					kc.setUpdateImageCount(((Integer)topicData.get("update_image_count")).intValue() + kc.getUpdateImageCount());
@@ -966,6 +973,13 @@ public class KingdomPriceTask {
 			Map<String, Object> topicPrice = topicPriceList.get(0);
 			oldPrice = (Integer)topicPrice.get("price");
 			title = (String)topicPrice.get("title");
+		}
+		
+		if(kc.getPrice()<0){
+			kc.setPrice(0);
+		}
+		if(kc.getStealPrice() < 0){
+			kc.setStealPrice(0);
 		}
 		
 		StringBuilder saveSql = new StringBuilder();

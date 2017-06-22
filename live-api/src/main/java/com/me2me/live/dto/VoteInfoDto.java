@@ -23,6 +23,8 @@ public class VoteInfoDto implements BaseEntity {
     private String nickName;
 
     private int v_lv;
+
+    private int level;
     
     private String myVote;
     

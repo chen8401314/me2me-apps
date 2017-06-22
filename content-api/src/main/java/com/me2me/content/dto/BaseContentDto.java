@@ -92,6 +92,8 @@ public class BaseContentDto implements BaseEntity{
     private int contentType;
 
     private int v_lv;
+
+    private int level;
     
     //0圈外 1圈内 2核心圈
     private int internalStatus;

@@ -63,6 +63,8 @@ public class ContentDetailDto implements BaseEntity {
 
     private int v_lv;
 
+    private int level;
+
     private List<ImageElement> images = Lists.newArrayList();
 
     public static ImageElement createImageElement(){
@@ -128,6 +130,7 @@ public class ContentDetailDto implements BaseEntity {
         private String nickName;
 
         private String avatar;
+        private int level;
     }
 
 }

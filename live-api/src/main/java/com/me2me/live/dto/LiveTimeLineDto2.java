@@ -63,6 +63,8 @@ public class LiveTimeLineDto2 implements BaseEntity {
 
         private String nickName;
 
+        private int level;
+
         private int isFollowed;
 
         private long fragmentId;

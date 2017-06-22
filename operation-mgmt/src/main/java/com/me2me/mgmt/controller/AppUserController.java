@@ -1,31 +1,47 @@
 package com.me2me.mgmt.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.me2me.activity.service.ActivityService;
 import com.me2me.common.web.Response;
 import com.me2me.mgmt.request.AppGagUserQueryDTO;
 import com.me2me.mgmt.request.AppUserDTO;
 import com.me2me.mgmt.request.AppUserQueryDTO;
 import com.me2me.mgmt.syslog.SystemControllerLog;
+import com.me2me.sms.service.SmsService;
 import com.me2me.user.dto.SearchUserProfileDto;
 import com.me2me.user.dto.ShowUsergagDto;
 import com.me2me.user.dto.UserSignUpDto;
 import com.me2me.user.model.UserGag;
 import com.me2me.user.service.UserService;
 
+
 @Controller
 @RequestMapping("/appuser")
 public class AppUserController {
 	
+	private static final Logger logger = LoggerFactory.getLogger(AppUserController.class);
+	
 	@Autowired
     private UserService userService;
+	@Autowired
+	private ActivityService activityService;
+	@Autowired
+	private SmsService smsService;
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/query")
@@ -166,4 +182,94 @@ public class AppUserController {
 		ModelAndView view = new ModelAndView("redirect:/appuser/gaguser/query");
 		return view;
 	}
+	
+	@RequestMapping(value="/msgsender")
+	public ModelAndView msgsender(){
+		ModelAndView view = new ModelAndView("/appuser/smsConsole");
+		return view;
+	}
+	
+	@RequestMapping(value = "/sendMsg")
+	@ResponseBody
+	public String sendMsg(@RequestParam("id")String msgId, 
+			@RequestParam("m")int mode, @RequestParam("ms")String mobiles){
+		if(StringUtils.isBlank(msgId)){
+			return "请输入正确的短信模板ID";
+		}
+		if(mode == 1){
+			if(StringUtils.isBlank(mobiles)){
+				return "请指定手机号";
+			}
+			logger.info("指定手机号发送，指定的手机号为：【"+mobiles+"】");
+			String[] tmp = mobiles.split(",");
+			if(null != tmp && tmp.length > 0){
+				long total = 0;
+				List<String> sendList = new ArrayList<String>();
+				for(String t : tmp){
+					if(StringUtils.isNotBlank(t)){
+						total++;
+						sendList.add(t);
+						if(sendList.size() >= 180){
+		    				smsService.send7dayCommon(msgId, sendList, null);
+		                    logger.info("send [" + sendList.size() + "] user! total ["+total+"]");
+		                    sendList.clear();
+		    			}
+					}
+				}
+				if(sendList.size() > 0){
+		    		smsService.send7dayCommon(msgId, sendList, null);
+		            logger.info("send [" + sendList.size() + "] user! total ["+total+"]");
+		            sendList.clear();
+		    	}
+				logger.info("共["+total+"]个手机号发送了消息");
+			}else{
+				logger.info("没有手机号需要发送");
+			}
+		}else if(mode == 2){
+			logger.info("全部注册手机号发送");
+			//先获取所有手机用户手机号
+	    	List<String> mobileList = activityService.getAllUserMobilesInApp();
+	    	if(null == mobileList){
+	    		mobileList = new ArrayList<String>();
+	    	}
+	    	logger.info("共["+mobileList.size()+"]个手机号待发送（这里包含马甲号，下面会去除）");
+	    	
+	    	long total = 0;
+	    	List<String> sendList = new ArrayList<String>();
+	    	for(String mobile : mobileList){
+	    		if(checkMobile(mobile)){
+	    			total++;
+	    			sendList.add(mobile);
+	    			if(sendList.size() >= 180){
+	    				smsService.send7dayCommon(msgId, sendList, null);
+	                    logger.info("send [" + sendList.size() + "] user! total ["+total+"]");
+	                    sendList.clear();
+	    			}
+	    		}
+	    	}
+	    	if(sendList.size() > 0){
+	    		smsService.send7dayCommon(msgId, sendList, null);
+	            logger.info("send [" + sendList.size() + "] user! total ["+total+"]");
+	            sendList.clear();
+	    	}
+	    	logger.info("共["+total+"]个手机号发送了消息");
+		}else{
+			return "不支持的发送模式";
+		}
+		
+		return "执行完成";
+	}
+	
+	private boolean checkMobile(String mobile){
+    	if(!StringUtils.isEmpty(mobile)){
+    		if(!mobile.startsWith("100") && !mobile.startsWith("111")
+    				&& !mobile.startsWith("123") && !mobile.startsWith("1666")
+    				&& !mobile.startsWith("180000") && !mobile.startsWith("18888888")
+    				&& !mobile.startsWith("18900") && !mobile.startsWith("19000")
+    				&& !mobile.startsWith("2") && !mobile.startsWith("8")){
+    			return true;
+    		}
+    	}
+    	return false;
+    }
 }

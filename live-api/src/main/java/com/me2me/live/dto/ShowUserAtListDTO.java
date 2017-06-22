@@ -22,6 +22,7 @@ public class ShowUserAtListDTO implements BaseEntity {
 		private String avatar;
 		private String nickName;
 		private int v_lv;
+		private int level;
 		private int internalStatus;
 	}
 }
