@@ -546,6 +546,7 @@ public class LiveServiceImpl implements LiveService {
             barrageElement.setUid(uid);
             barrageElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             barrageElement.setNickName(userProfile.getNickName());
+            barrageElement.setLevel(userProfile.getLevel());
             if (barrageElement.getContentType() == Specification.LiveContent.TEXT.index) {
                 barrageElement.setFragment(barrage.getFragment());
             } else if (barrageElement.getContentType() == Specification.LiveContent.IMAGE.index) {
