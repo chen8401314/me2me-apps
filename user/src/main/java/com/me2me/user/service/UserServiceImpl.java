@@ -4017,23 +4017,23 @@ public class UserServiceImpl implements UserService {
             }
         }
         for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
-            if(nodeDto.getCode()==6){
-                list.add(nodeDto);
-                break;
-            }
-        }
-        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
             if(nodeDto.getCode()==5){
                 list.add(nodeDto);
+            }else if (nodeDto.getCode() == 6){
+                list.add(nodeDto);
                 break;
             }
         }
         for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
-            if(nodeDto.getCode()==4){
+            if(nodeDto.getCode()==7){
                 list.add(nodeDto);
-
-            }else if(nodeDto.getCode()==7){
+                break;
+            }
+        }
+        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
+            if(nodeDto.getCode()==4) {
                 list.add(nodeDto);
+                break;
             }
         }
 
@@ -4083,7 +4083,7 @@ public class UserServiceImpl implements UserService {
 	    userInitJdbcDao.modifyUserCoin(uid,modifyCoin);
         String permissions = getAppConfigByKey(USER_PERMISSIONS);
         UserPermissionDto userPermissionDto = JSON.parseObject(permissions, UserPermissionDto.class);
-        int lv = 1;
+        int lv = 0;
         for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
             if(  modifyCoin >= userLevelDto.getNeedCoins()){
                 lv++;
