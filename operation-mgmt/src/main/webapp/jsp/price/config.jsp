@@ -102,21 +102,6 @@ var modifyCommit = function(){
 	
 }
 
-var fullExecuteTask = function(){
-	$("#fullbutton").attr("disabled",true);
-	$.ajax({
-		url : "${ctx}/price/fullExecuteTask",
-		async : false,
-		type : "GET",
-		contentType : "application/json;charset=UTF-8",
-		success : function(resp) {
-			alert(resp);
-			$("#fullbutton").attr("disabled",false);
-		}
-	});
-}
-
-//var fullExecuteTask = function
 </script>
 </head>
 <body>
@@ -153,6 +138,7 @@ var fullExecuteTask = function(){
 								    <li role="presentation" class="active"><a href="#t0" aria-controls="home" role="tab" data-toggle="tab">基础配置</a></li>
 								    <li role="presentation"><a href="#t1" aria-controls="profile" role="tab" data-toggle="tab">用户等级权限配置</a></li>
 								    <li role="presentation"><a href="#t2" aria-controls="messages" role="tab" data-toggle="tab">操作分值配置</a></li>
+								    <li role="presentation"><a href="#t3" aria-controls="settings" role="tab" data-toggle="tab">王国价值任务参数</a></li>
 								    <li role="presentation"><a href="#t4" aria-controls="settings" role="tab" data-toggle="tab">个人级别累计分值配置</a></li>
 								  </ul>
 								
@@ -236,7 +222,32 @@ var fullExecuteTask = function(){
 											</table>
 										</div>
 									</div>
-								    
+								    <div role="tabpanel" class="tab-pane" id="t3">
+								    	<div class="adv-table">
+											<table class="display table table-bordered table-striped" id="dynamic-table">
+												<thead>
+													<tr>
+														<th>描述</th>
+														<th>KEY</th>
+														<th width="40%">VALUE</th>
+														<th>操作</th>
+													</tr>
+												</thead>
+												<tbody>
+													<c:forEach items="${configList}" var="configItem">
+														<c:if test="${configItem.typeName=='王国价值任务参数'}">
+														<tr class="gradeX" key="${configItem.configKey }">
+															<td>${configItem.name }</td>
+															<td>${configItem.configKey }</td>
+															<td>${configItem.configValue }</td>
+															<td><a href="#" class="edit">编辑</a></td>
+														</tr>
+														</c:if>
+													</c:forEach>
+												</tbody>
+											</table>
+										</div>
+									</div>
 									<div role="tabpanel" class="tab-pane" id="t4">
 								    	<div class="adv-table">
 											<table class="display table table-bordered table-striped" id="dynamic-table">
