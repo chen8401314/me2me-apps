@@ -2,6 +2,7 @@ package com.me2me.content.widget;
 
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.web.Response;
+import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentDto;
 import com.me2me.content.dto.CreateContentSuccessDto;
@@ -9,6 +10,8 @@ import com.me2me.content.event.PublishUGCEvent;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.monitor.service.MonitorService;
 import com.me2me.monitor.event.MonitorEvent;
+import com.me2me.user.dto.ModifyUserCoinDto;
+import com.me2me.user.rule.Rules;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -48,6 +51,7 @@ public class PublishUGC extends AbstractPublish implements Publish {
             long cid = contentSuccessDto.getId();
             applicationEventBus.post(new PublishUGCEvent(cid));
         }
+
         return response;
     }
 

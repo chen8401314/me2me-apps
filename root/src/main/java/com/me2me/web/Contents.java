@@ -95,17 +95,10 @@ public class Contents extends BaseController {
         }*/
         if(contentDto.getType() != 2) {
             // 用户UGC入口
-          /*  if(contentDto.getType() == 1){
-                Response response = contentService.publish2(contentDto);
-                ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(contentDto.getUid(), userService.getCoinRules().get(Rules.PUBLISH_UGC_KEY));
-                CreateContentSuccessDto createContentSuccessDto = (CreateContentSuccessDto)response.getData();
-                createContentSuccessDto.setModifyUserCoinDto(modifyUserCoinDto);
-                return response;
-            }*/
             Response response = contentService.publish2(contentDto);
-            ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(contentDto.getUid(), userService.getCoinRules().get(Rules.PUBLISH_UGC_KEY));
+  /*          ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(contentDto.getUid(), userService.getCoinRules().get(Rules.PUBLISH_UGC_KEY));
             CreateContentSuccessDto createContentSuccessDto = (CreateContentSuccessDto)response.getData();
-            createContentSuccessDto.setModifyUserCoinDto(modifyUserCoinDto);
+            createContentSuccessDto.setModifyUserCoinDto(modifyUserCoinDto);*/
             return response;
         }else{
             // 小编发布入口

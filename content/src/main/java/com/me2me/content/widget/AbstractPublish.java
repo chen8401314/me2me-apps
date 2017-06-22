@@ -8,7 +8,9 @@ import com.me2me.content.dto.CreateContentSuccessDto;
 import com.me2me.content.model.Content;
 import com.me2me.content.model.ContentImage;
 import com.me2me.content.service.ContentService;
+import com.me2me.user.dto.ModifyUserCoinDto;
 import com.me2me.user.model.UserProfile;
+import com.me2me.user.rule.Rules;
 import com.me2me.user.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +87,10 @@ public class AbstractPublish {
             createContentSuccessDto.setCoverImage("");
         }
         log.info("abstract publish end .....");
-        return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
+        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(contentDto.getUid(), userService.getCoinRules().get(Rules.PUBLISH_UGC_KEY));
+        Response response = Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
+        createContentSuccessDto.setUpgrade(modifyUserCoinDto.getUpgrade());
+        createContentSuccessDto.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
+        return response ;
     }
 }

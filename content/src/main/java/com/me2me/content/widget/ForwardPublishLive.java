@@ -1,5 +1,7 @@
 package com.me2me.content.widget;
 
+import com.me2me.user.dto.ModifyUserCoinDto;
+import com.me2me.user.rule.Rules;
 import lombok.extern.slf4j.Slf4j;
 
 import com.me2me.common.web.Response;
@@ -56,6 +58,11 @@ public class ForwardPublishLive  extends AbstractPublish implements Publish {
         createContentSuccessDto.setForwardUrl(content.getForwardUrl());
     	
     	log.info("ForwardPublishLive end ...");
-    	return Response.success(ResponseStatus.FORWARD_SUCCESS.status,ResponseStatus.FORWARD_SUCCESS.message,createContentSuccessDto);
+        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(contentDto.getUid(), userService.getCoinRules().get(Rules.SHARE_KING_KEY));
+        createContentSuccessDto.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
+        createContentSuccessDto.setUpgrade(modifyUserCoinDto.getUpgrade());
+        Response response =Response.success(ResponseStatus.FORWARD_SUCCESS.status,ResponseStatus.FORWARD_SUCCESS.message,createContentSuccessDto);
+
+    	return response;
     }
 }
