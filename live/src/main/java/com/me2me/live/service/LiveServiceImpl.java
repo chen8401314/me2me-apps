@@ -6717,10 +6717,18 @@ public class LiveServiceImpl implements LiveService {
         liveMybatisDao.createTopicFragment(fragment);
 
         //4 记录跑马灯记录
+        //XXX的《王国名》以XXX元成功转让，欢迎新国王XXX闪亮登场。
+        String exchangeRateConfig = userService.getAppConfigByKey("EXCHANGE_RATE");
+        int exchangeRate = 100;
+        if(!StringUtils.isEmpty(exchangeRateConfig)){
+        	exchangeRate = Integer.valueOf(exchangeRateConfig).intValue();
+        }
+        int rmb = topic.getPrice()/exchangeRate;
+        
         TopicNews topicNews = new TopicNews();
         topicNews.setTopicId(topicId);
         topicNews.setType(Specification.TopicNewsType.BUSINESS.index);
-        topicNews.setContent(oldUser.getNickName()+"的《"+topic.getTitle()+"》出售给了"+newUser.getNickName());
+        topicNews.setContent(oldUser.getNickName()+"的《"+topic.getTitle()+"》以"+rmb+"元成功转让，欢迎新国王"+newUser.getNickName()+"闪亮登场");
         topicNews.setCreateTime(now);
         liveMybatisDao.addTopicNews(topicNews);
 

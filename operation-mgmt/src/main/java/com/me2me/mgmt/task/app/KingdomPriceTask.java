@@ -964,14 +964,16 @@ public class KingdomPriceTask {
 	
 	private void saveKingdomCount(KingdomCount kc, boolean isNew, int listedPrice){
 		StringBuilder topicPriceQuerySql = new StringBuilder();
-		topicPriceQuerySql.append("select t.title,t.price from topic t where t.id=").append(kc.getTopicId());
+		topicPriceQuerySql.append("select t.title,t.price,p.nick_name from topic t,user_profile p where t.uid=p.uid and t.id=").append(kc.getTopicId());
 		List<Map<String, Object>> topicPriceList = contentService.queryEvery(topicPriceQuerySql.toString());
 		int oldPrice = 0;
 		String title = "";
+		String kingName = "";
 		if(null != topicPriceList && topicPriceList.size() > 0){
 			Map<String, Object> topicPrice = topicPriceList.get(0);
 			oldPrice = (Integer)topicPrice.get("price");
 			title = (String)topicPrice.get("title");
+			kingName = (String)topicPrice.get("nick_name");
 		}
 		
 		if(kc.getPrice()<0){
@@ -1043,8 +1045,8 @@ public class KingdomPriceTask {
 				//并且添加跑马灯
 				StringBuilder insertTopicNewsSql = new StringBuilder();
 				insertTopicNewsSql.append("insert into topic_news(topic_id,content,type,create_time)");
-				insertTopicNewsSql.append(" values (").append(kc.getTopicId()).append(",'王国《").append(title);
-				insertTopicNewsSql.append("》上市了！',1,now())");
+				insertTopicNewsSql.append(" values (").append(kc.getTopicId()).append(",'").append(kingName).append("的《").append(title);
+				insertTopicNewsSql.append("》挂牌上市了，快来围观抢购吧。',1,now())");
 				contentService.executeSql(insertTopicNewsSql.toString());
 			}else{
 				//上一次没上市，这次还没上市，不用处理啥
