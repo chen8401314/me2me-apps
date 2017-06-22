@@ -13,6 +13,7 @@
 	<profiles>
 		<!--开发环境 -->
 		<profile>
+			<activation><activeByDefault>true</activeByDefault></activation>
 			<id>dev</id>
 			<dependencies>
 				<dependency>
@@ -308,6 +309,9 @@
 			</dependencies>
 
 			<build>
+				<filters>
+					<filter>src/main/filter/test.properties</filter>
+				</filters>
 			</build>
 		</profile>
 		<profile>
@@ -440,6 +444,9 @@
 			</dependencies>
 
 			<build>
+				<filters>
+					<filter>src/main/filter/prod.properties</filter>
+				</filters>
 			</build>
 		</profile>
 		<profile>
@@ -572,6 +579,9 @@
 			</dependencies>
 
 			<build>
+				<filters>
+					<filter>src/main/filter/product.properties</filter>
+				</filters>
 			</build>
 		</profile>
 

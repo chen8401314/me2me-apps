@@ -2,7 +2,7 @@
 
 mvn clean package -Ptest
 
-myPath="D:/apps"
+myPath="D:/apps-test"
 
 cp -r ./activity/target/jsw/app-activity-service $myPath
 cp -r ./content/target/jsw/app-content-service $myPath
