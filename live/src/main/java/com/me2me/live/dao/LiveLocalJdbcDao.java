@@ -1061,4 +1061,11 @@ public class LiveLocalJdbcDao {
 		String sql = "update topic set listing_time = now() where id = ?";
 		jdbcTemplate.update(sql,topicID);
 	}
+
+	public List<Map<String,Object>> getConvergeTopic(long uid) {
+		String sql = "SELECT id FROM topic WHERE uid = ? and type = 1000";
+		return jdbcTemplate.queryForList(sql,uid);
+	}
+
+
 }

@@ -3278,9 +3278,23 @@ public class LiveServiceImpl implements LiveService {
         if(createKingdomDto.getKType() == Specification.KingdomType.AGGREGATION.index){
         	kingdomType = Specification.KingdomType.AGGREGATION.index;
         	// 判断聚合王国是否上限
-            //''
-            int hasCount = 10;
-            int limitCount = 10;
+            PermissionDescriptionDto permissionDescriptionDto= userService.getUserPermission(createKingdomDto.getUid());
+            List<PermissionNodeDto> perList = permissionDescriptionDto.getNodes();
+            int limitCount = 0;
+            for(PermissionNodeDto p : perList){
+                if (p.getCode() == 7){
+                    if (p.getNum() == null){
+                        limitCount = 0;
+                        break;
+                    }else {
+                    limitCount = p.getNum();
+                    break;
+                    }
+                }
+            }
+            List<Map<String,Object>> list = liveLocalJdbcDao.getConvergeTopic(createKingdomDto.getUid());
+            int hasCount = list.size();
+
             if(hasCount > limitCount){
                 return Response.failure(500,"你当前的等级已经达到了创建聚合王国的上限。");
             }
