@@ -1104,7 +1104,7 @@ public class LiveServiceImpl implements LiveService {
             speakDto.setUpgrade(muDto.getUpgrade());
             speakDto.setCurrentLevel(muDto.getCurrentLevel());
         }
-        if(speakDto.getType() == 51){
+        if(speakDto.getType() == 52 ||speakDto.getType() == 51 || speakDto.getType() == 72 ){
             CoinRule coinRuleShare = userService.getCoinRules().get(Rules.SHARE_KING_KEY);
             ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), coinRuleShare);
             speakDto.setUpgrade(muDto.getUpgrade());
