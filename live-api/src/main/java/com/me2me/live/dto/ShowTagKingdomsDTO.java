@@ -31,6 +31,7 @@ public class ShowTagKingdomsDTO implements BaseEntity {
 		private int isFollowMe;
 		private long topicCount;
 		private int v_lv;
+		private int level;
 		private int internalStatus;
 		private int favorite;
 		private long lastUpdateTime;

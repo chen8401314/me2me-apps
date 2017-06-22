@@ -49,6 +49,8 @@ public class LiveCoverDto implements BaseEntity{
 
     private int v_lv;
 
+    private int level;
+
     private int hasFavorite;
     private int favorite;
     

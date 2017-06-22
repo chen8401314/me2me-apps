@@ -335,6 +335,7 @@ public class LiveServiceImpl implements LiveService {
         liveCoverDto.setReviewCount(liveMybatisDao.countFragment(topic.getId(), topic.getUid()));
         liveCoverDto.setTopicCount(liveMybatisDao.countFragmentByUid(topic.getId(), topic.getUid()));
         liveCoverDto.setV_lv(userProfile.getvLv());
+        liveCoverDto.setLevel(userProfile.getLevel());
 
         LiveFavorite hasFavorite =  liveMybatisDao.getLiveFavorite(uid,topicId);
         liveCoverDto.setHasFavorite(hasFavorite==null?0:1);
@@ -575,6 +576,7 @@ public class LiveServiceImpl implements LiveService {
         showLiveDto.setUid(topic.getUid());
         UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
         showLiveDto.setV_lv(userProfile.getvLv());
+        showLiveDto.setLevel(userProfile.getLevel());
         showLiveDto.setNickName(userProfile.getNickName());
         showLiveDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
         showLiveDto.setCreateTime(topic.getCreateTime());
@@ -1782,6 +1784,7 @@ public class LiveServiceImpl implements LiveService {
             userProfile = profileMap.get(String.valueOf(topic.getUid()));
             showTopicElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             showTopicElement.setNickName(userProfile.getNickName());
+            showTopicElement.setLevel(userProfile.getLevel());
             showTopicElement.setCreateTime(topic.getCreateTime());
             showTopicElement.setTopicId(topic.getId());
             showTopicElement.setStatus(topic.getStatus());
@@ -2541,6 +2544,7 @@ public class LiveServiceImpl implements LiveService {
             favoriteUser.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             favoriteUser.setUid(userProfile.getUid());
             favoriteUser.setNickName(userProfile.getNickName());
+            favoriteUser.setLevel(userProfile.getLevel());
             showFavoriteListFto.getUserElements().add(favoriteUser);
         }
         log.info("getFavoriteList end ...");
@@ -2650,6 +2654,7 @@ public class LiveServiceImpl implements LiveService {
                 attentionElement.setAvatar(Constant.QINIU_DOMAIN+"/"+userProfile.getAvatar());
                 attentionElement.setUid(content.getUid());
                 attentionElement.setV_lv(userProfile.getvLv());
+                attentionElement.setLevel(userProfile.getLevel());
                 showTopicListDto.getAttentionData().add(attentionElement);
                 if(size == 5){
                     break;
@@ -3810,6 +3815,7 @@ public class LiveServiceImpl implements LiveService {
             e.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             e.setNickName(userProfile.getNickName());
             e.setV_lv(userProfile.getvLv());
+            e.setLevel(userProfile.getLevel());
             e.setUid(topicUid);
             e.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
             e.setTitle((String)topic.get("title"));
@@ -5402,6 +5408,7 @@ public class LiveServiceImpl implements LiveService {
             e.setNickName(userProfile.getNickName());
             e.setUid(kingUid);
             e.setV_lv(userProfile.getvLv());
+            e.setLevel(userProfile.getLevel());
             if(null != followMap.get(currentUid+"_"+kingUid.longValue())){
                 e.setIsFollowed(1);
             }else{
@@ -5594,6 +5601,7 @@ public class LiveServiceImpl implements LiveService {
             e.setNickName(userProfile.getNickName());
             e.setUid(kingUid);
             e.setV_lv(userProfile.getvLv());
+            e.setLevel(userProfile.getLevel());
             if(null != followMap.get(currentUid+"_"+kingUid.longValue())){
                 e.setIsFollowed(1);
             }else{

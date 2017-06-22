@@ -33,5 +33,7 @@ public class ShowFavoriteListDto implements BaseEntity {
 
     private int v_lv;
 
+    private int level;
+
     }
 }

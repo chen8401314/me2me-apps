@@ -54,6 +54,8 @@ public class ShowLiveDto implements BaseEntity {
 
     private int v_lv;
 
+    private int level;
+
     private String tags;
 
     private String recTags;

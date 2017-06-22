@@ -34,6 +34,7 @@ public class ShowTopicSearchDTO implements BaseEntity {
         private int isFollowMe;
         private int topicCount;
         private int v_lv;
+        private int level;
         private int internalStatus;//0圈外 1圈内 2核心圈
         private int favorite;
         private int isUpdate;
