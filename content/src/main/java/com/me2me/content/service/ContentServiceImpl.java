@@ -5126,6 +5126,7 @@ private void localJpush(long toUid){
                     }else{
                     	bangDanInnerData.setTags("");
                     }
+                    bangDanInnerData.setPrice((Integer)topic.get("price"));
                 }else if(type==2){// 人
                 	bangDanInnerData.setSubListId(bid);
                     bangDanInnerData.setUid(bbl.getTargetId());
