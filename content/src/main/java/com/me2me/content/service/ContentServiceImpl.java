@@ -375,6 +375,7 @@ public class ContentServiceImpl implements ContentService {
 			squareDataElement.setForwardUrl(content.getForwardUrl());
 			squareDataElement.setForwardCid(content.getForwardCid());
 			squareDataElement.setV_lv(userProfile.getvLv());
+			squareDataElement.setLevel(userProfile.getLevel());
 			if (!StringUtils.isEmpty(content.getConverImage())) {
 				if (content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index
 						|| content.getType() == Specification.ArticleType.FORWARD_LIVE.index) {
@@ -1454,6 +1455,7 @@ private void localJpush(long toUid){
         log.info("get userProfile data success");
         contentDetailDto.setNickName(userProfile.getNickName());
         contentDetailDto.setAvatar(Constant.QINIU_DOMAIN  + "/" + userProfile.getAvatar());
+        contentDetailDto.setLevel(userProfile.getLevel());
         contentDetailDto.setHotValue(content.getHotValue());
         contentDetailDto.setLikeCount(content.getLikeCount());
 //        contentDetailDto.setReviewCount(content.getReviewCount());
@@ -1518,6 +1520,7 @@ private void localJpush(long toUid){
             reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
             reviewElement.setNickName(user.getNickName());
             reviewElement.setV_lv(user.getvLv());
+
             if(review.getAtUid() > 0){
 	            atUser = userMap.get(String.valueOf(review.getAtUid()));
 	            reviewElement.setAtUid(atUser.getUid());
@@ -1535,6 +1538,7 @@ private void localJpush(long toUid){
             user = userMap.get(String.valueOf(contentLikesDetails.getUid()));
             likeElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
             likeElement.setNickName(user.getNickName());
+            likeElement.setLevel(user.getLevel());
             contentDetailDto.getLikeElements().add(likeElement);
         }
         //文章图片
@@ -1809,6 +1813,7 @@ private void localJpush(long toUid){
         userInfoDto.getUser().setFollowedCount(userService.getFollowCount(targetUid));
         userInfoDto.getUser().setFansCount(userService.getFansCount(targetUid));
         userInfoDto.getUser().setIntroduced(userProfile.getIntroduced());
+        userInfoDto.getUser().setLevel(userProfile.getLevel());
         if(userService.isUserFamous(targetUid)){
         	userInfoDto.getUser().setIsRec(1);
         }else{
@@ -1885,6 +1890,7 @@ private void localJpush(long toUid){
             contentElement.setUid(content.getUid());
             UserProfile profile = userService.getUserProfileByUid(content.getUid());
             contentElement.setV_lv(profile.getvLv());
+            contentElement.setLevel(profile.getLevel());
             String cover = content.getConverImage();
             if(!StringUtils.isEmpty(cover)){
                 if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index
@@ -3009,6 +3015,7 @@ private void localJpush(long toUid){
             reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             reviewElement.setId(contentReview.getId());
             reviewElement.setV_lv(userProfile.getvLv());
+            reviewElement.setLevel(userProfile.getLevel());
             if(!StringUtils.isEmpty(contentReview.getExtra())) {
                 reviewElement.setExtra(contentReview.getExtra());
             }

@@ -55,7 +55,9 @@ public class UserInfoDto2 implements BaseEntity{
         private String introduced;
 
         private int v_lv;
-        
+
+        private int level;
+
         private int isRec;
     }
 
@@ -115,6 +117,8 @@ public class UserInfoDto2 implements BaseEntity{
         private int topicCount;
 
         private int v_lv;
+
+        private int level;
 
         private int acCount;
         
