@@ -3278,6 +3278,7 @@ public class LiveServiceImpl implements LiveService {
         if(createKingdomDto.getKType() == Specification.KingdomType.AGGREGATION.index){
         	kingdomType = Specification.KingdomType.AGGREGATION.index;
         	// 判断聚合王国是否上限
+            //''
             int hasCount = 10;
             int limitCount = 10;
             if(hasCount > limitCount){
