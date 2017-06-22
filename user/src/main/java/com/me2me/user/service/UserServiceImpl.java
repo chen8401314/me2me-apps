@@ -3969,6 +3969,7 @@ public class UserServiceImpl implements UserService {
         if(userProfile.getLevel() != 9){
             nextLevel.setLevel( userProfile.getLevel()+1);
         }
+
         MyLevelDto.InnerLevel preLevel = myLevelDto.createInnerLevel();
         if (userProfile.getLevel() > 1){
             preLevel.setLevel(userProfile.getLevel()-1);
@@ -3988,7 +3989,7 @@ public class UserServiceImpl implements UserService {
             if (userProfile.getLevel()-1 == userLevelDto.getLevel() && userProfile.getLevel() > 1 ){
                 preLevel.setName(userLevelDto.getName());
             }
-            if((userProfile.getLevel()) == userLevelDto.getLevel()){
+            if((userProfile.getLevel()+1) == userLevelDto.getLevel()){
                 myLevelDto.setNextLevelCoin(userLevelDto.getNeedCoins()-userProfile.getAvailableCoin());
             }
         }
@@ -4088,6 +4089,9 @@ public class UserServiceImpl implements UserService {
                 lv++;
             }
         }
+        if ( lv > 9){
+            lv = 9;
+        }
         if(lv <= userProfile.getLevel()){
             return modifyUserCoinDto;
         }else{
@@ -4114,7 +4118,9 @@ public class UserServiceImpl implements UserService {
             map.put(i+1,array.get(i));
         }
         // 日志拉取今日的累计值
-        int allDayPoints = userInitJdbcDao.getDayCoins(uid);
+        int allDayPoints = userInitJdbcDao.getDayCoins(uid) + userInitJdbcDao.getDayCoins2(uid);
+
+
         if(allDayPoints < map.get(userProfile.getLevel())){
             // 并且规则是否允许重复
             if(!rule.isRepeatable()){

@@ -8,7 +8,7 @@
 
     <dubbo:application name="application-user"/>
 
-    <dubbo:registry address="${dubboRegistryUrl}"/>
+    <dubbo:registry address="${dubboRegistry}"/>
 
     <dubbo:reference interface="com.me2me.activity.service.ActivityService" id="activityService"/>
 

@@ -547,6 +547,7 @@ public class LiveServiceImpl implements LiveService {
             barrageElement.setUid(uid);
             barrageElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             barrageElement.setNickName(userProfile.getNickName());
+            barrageElement.setLevel(userProfile.getLevel());
             if (barrageElement.getContentType() == Specification.LiveContent.TEXT.index) {
                 barrageElement.setFragment(barrage.getFragment());
             } else if (barrageElement.getContentType() == Specification.LiveContent.IMAGE.index) {
@@ -3276,6 +3277,27 @@ public class LiveServiceImpl implements LiveService {
         int kingdomType = Specification.KingdomType.NORMAL.index;
         if(createKingdomDto.getKType() == Specification.KingdomType.AGGREGATION.index){
         	kingdomType = Specification.KingdomType.AGGREGATION.index;
+        	// 判断聚合王国是否上限
+            PermissionDescriptionDto permissionDescriptionDto= userService.getUserPermission(createKingdomDto.getUid());
+            List<PermissionNodeDto> perList = permissionDescriptionDto.getNodes();
+            int limitCount = 0;
+            for(PermissionNodeDto p : perList){
+                if (p.getCode() == 7){
+                    if (p.getNum() == null){
+                        limitCount = 0;
+                        break;
+                    }else {
+                    limitCount = p.getNum();
+                    break;
+                    }
+                }
+            }
+            List<Map<String,Object>> list = liveLocalJdbcDao.getConvergeTopic(createKingdomDto.getUid());
+            int hasCount = list.size();
+
+            if(hasCount > limitCount){
+                return Response.failure(500,"你当前的等级已经达到了创建聚合王国的上限。");
+            }
         }
         topic.setType(kingdomType);
         topic.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);//目前默认公开的，等以后有需求的再说
@@ -6898,7 +6920,9 @@ public class LiveServiceImpl implements LiveService {
             String listedPrice = userService.getAppConfigByKey(LISTED_PRICE);
             int i = Integer.parseInt( listedPrice, 10);
             if((topic.getPrice()+rechargeToKingdomDto.getAmount())>= i ){
-                String content = topic.getTitle()+"达到上市标准";
+
+                // XXX的《王国名》挂牌上市了，快来围观抢购吧。
+                String content = userProfile.getNickName()+"的《"+topic.getTitle()+"》挂牌上市了，快来围观抢购吧。";
                 liveLocalJdbcDao.writeTopicNews(topic.getId(),content);
                 liveLocalJdbcDao.writeTopicTime(topic.getId());
             }

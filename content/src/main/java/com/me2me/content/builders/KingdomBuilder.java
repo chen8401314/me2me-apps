@@ -159,6 +159,7 @@ public class KingdomBuilder {
 			data.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
 			data.setNickName(userProfile.getNickName());
 			data.setV_lv(userProfile.getvLv());
+			data.setLevel(userProfile.getLevel());
 			if (null != followMap.get(currentUid + "_" + uid)) {
 				data.setIsFollowed(1);
 			} else {

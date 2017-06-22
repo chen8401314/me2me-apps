@@ -22,6 +22,7 @@ public class ShowHotCeKingdomListDTO implements BaseEntity {
 		private String avatar;
 		private String nickName;
 		private int v_lv;
+		private int level;
 		private int isFollowed;
 		private int isFollowMe;
 		private int favorite;
@@ -65,5 +66,6 @@ public class ShowHotCeKingdomListDTO implements BaseEntity {
 		private String avatar;
 		private String nickName;
 		private int v_lv;
+		private int level;
 	}
 }
