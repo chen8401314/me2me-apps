@@ -231,6 +231,7 @@ public class SearchServiceImpl implements SearchService {
 			ugcElement.setNickName(userProfile.getNickName());
 			ugcElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
 			ugcElement.setV_lv(userProfile.getvLv());
+			ugcElement.setLevel(userProfile.getLevel());
 			if(null != followMap.get(uid+"_"+userProfile.getUid())){
 				ugcElement.setIsFollowed(1);
 			}else{
@@ -393,6 +394,7 @@ public class SearchServiceImpl implements SearchService {
 			kingdomElement.setNickName(userProfile.getNickName());
 			kingdomElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
 			kingdomElement.setV_lv(userProfile.getvLv());
+			kingdomElement.setLevel(userProfile.getLevel());
 			if(null != followMap.get(uid+"_"+userProfile.getUid())){
 				kingdomElement.setIsFollowed(1);
 			}else{
@@ -496,6 +498,7 @@ public class SearchServiceImpl implements SearchService {
     		userElement.setNickName(userProfile.getNickName());
     		userElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
     		userElement.setV_lv(userProfile.getvLv());
+    		userElement.setLevel(userProfile.getLevel());
     		userElement.setIntroduced(userProfile.getIntroduced());
     		if(null != followMap.get(uid+"_"+userProfile.getUid())){
     			userElement.setIsFollowed(1);

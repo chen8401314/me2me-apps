@@ -28,6 +28,7 @@ public class ShowSearchDTO implements BaseEntity {
 		private int isFollowMe;
 		private String introduced;
 		private int v_lv;
+		private int level;
 	}
 	
 	@Data
@@ -46,6 +47,7 @@ public class ShowSearchDTO implements BaseEntity {
 		private int isFollowMe;
 		private long topicCount;
 		private int v_lv;
+		private int level;
 		private int internalStatus;
 		private int favorite;
 		private long lastUpdateTime;
@@ -69,6 +71,7 @@ public class ShowSearchDTO implements BaseEntity {
 		private String avatar;
 		private String nickName;
 		private int v_lv;
+		private int level;
 		private int isFollowed;
 		private int isFollowMe;
 		private String coverImage;
