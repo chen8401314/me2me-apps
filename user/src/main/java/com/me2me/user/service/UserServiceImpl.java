@@ -4004,7 +4004,7 @@ public class UserServiceImpl implements UserService {
         PermissionDescriptionDto permissionDescriptionDto = JSON.parseObject(value2, PermissionDescriptionDto.class);
         List<PermissionDescriptionDto.PermissionNodeDto> list = Lists.newArrayList();
 /**
- *                以下4个for循环为弱智排序   by gst
+ *                以下4个for循环为弱智排序
  */
 
         for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){

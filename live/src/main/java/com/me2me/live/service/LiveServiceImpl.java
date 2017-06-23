@@ -1012,6 +1012,7 @@ public class LiveServiceImpl implements LiveService {
 //        }
         log.info("createTopicBarrage success");
         //提醒
+        int like = 0;
         if (speakDto.getType() == Specification.LiveSpeakType.LIKES.index) {
             LikeDto likeDto = new LikeDto();
             //点赞
@@ -1021,6 +1022,13 @@ public class LiveServiceImpl implements LiveService {
             likeDto.setUid(speakDto.getUid());
             likeDto.setType(Specification.LikesType.LIVE.index);
             contentService.like2(likeDto);
+            CoinRule coinRule =  userService.getCoinRules().get(Rules.LIKES_UGC_KEY);
+            coinRule.setExt(content.getId());
+            ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(likeDto.getUid(), coinRule);
+            speakDto.setUpgrade(modifyUserCoinDto.getUpgrade());
+            speakDto.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
+            like = 1 ;
+
         } else if (speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index) {
             //贴标
             Content content = contentService.getContentByTopicId(speakDto.getTopicId());
@@ -1092,7 +1100,7 @@ public class LiveServiceImpl implements LiveService {
         //直播信息保存
         //saveLiveDisplayData(speakDto);
         //判断是否升级
-        if(isJion != 1 ) {
+        if(isJion != 1 && like !=1) {
        /* log.info("############################################################################");
         log.info("############################################################################");*/
         CoinRule coinRule = userService.getCoinRules().get(Rules.SPEAK_KEY);
