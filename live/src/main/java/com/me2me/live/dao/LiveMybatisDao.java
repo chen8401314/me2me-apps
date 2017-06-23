@@ -1306,6 +1306,7 @@ public class LiveMybatisDao {
         TopicTagDetailExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andStatusEqualTo(0);
+        example.setOrderByClause(" create_time asc ");
         return topicTagDetailMapper.selectByExample(example);
     }
 	
