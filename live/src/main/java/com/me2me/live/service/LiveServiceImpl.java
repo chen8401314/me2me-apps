@@ -1787,8 +1787,8 @@ public class LiveServiceImpl implements LiveService {
             userProfile = profileMap.get(String.valueOf(topic.getUid()));
             showTopicElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             showTopicElement.setNickName(userProfile.getNickName());
-            int level =(Integer) liveLocalJdbcDao.getlastUser(topic.getId()).get("level");
-            showTopicElement.setLevel(level);
+            /*int lastLevel =(Integer) liveLocalJdbcDao.getlastUser(topic.getId()).get("level");
+            showTopicElement.setLevel(lastLevel);*/
             showTopicElement.setCreateTime(topic.getCreateTime());
             showTopicElement.setTopicId(topic.getId());
             showTopicElement.setStatus(topic.getStatus());
@@ -1812,6 +1812,7 @@ public class LiveServiceImpl implements LiveService {
             }
             showTopicElement.setLastUpdateTime(topic.getLongTime());
             showTopicElement.setV_lv(userProfile.getvLv());
+            showTopicElement.setLevel(userProfile.getLevel());
             showTopicElement.setInternalStatus(this.getInternalStatus(topic, uid));
             showTopicElement.setContentType(topic.getType());
             if(topic.getType() == 1000){
@@ -1842,6 +1843,7 @@ public class LiveServiceImpl implements LiveService {
                     showTopicElement.setLastNickName(lastUserProfile.getNickName());
                     showTopicElement.setLastAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
                     showTopicElement.setLastV_lv(lastUserProfile.getvLv());
+                    showTopicElement.setLevel(lastUserProfile.getLevel());
                 }
             } else {
                 showTopicElement.setLastContentType(-1);
