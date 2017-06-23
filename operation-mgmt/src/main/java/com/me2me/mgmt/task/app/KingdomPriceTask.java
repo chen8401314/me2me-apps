@@ -430,7 +430,10 @@ public class KingdomPriceTask {
 					double x0 = ((Double)topicData.get("diligently")).doubleValue();
 					double y0 = ((Double)topicData.get("approve")).doubleValue();
 					int _kv = (int)((Math.pow(Math.min(1, _x/x0), diligentlyWeight) + Math.pow(Math.min(1, _y/y0), approveWeight))*kv0/2);
-					int d = (int)((kv0/decayBaseDayCountWeight)*Math.pow(decayBaseWeight, kc.getNoUpdateDayCount()));
+					int d = 0;
+					if(kc.getNoUpdateDayCount() > 0){
+						d = (int)((kv0/decayBaseDayCountWeight)*Math.pow(decayBaseWeight, kc.getNoUpdateDayCount()));
+					}
 					
 					int kv = kv0 + _kv - d - (int)(_kv*stealWeightR0);
 					//特别补助
