@@ -3295,7 +3295,7 @@ public class LiveServiceImpl implements LiveService {
             List<Map<String,Object>> list = liveLocalJdbcDao.getConvergeTopic(createKingdomDto.getUid());
             int hasCount = list.size();
 
-            if(hasCount > limitCount){
+            if(hasCount >= limitCount){
                 return Response.failure(500,"你当前的等级已经达到了创建聚合王国的上限。");
             }
         }
