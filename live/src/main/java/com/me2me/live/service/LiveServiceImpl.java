@@ -708,7 +708,7 @@ public class LiveServiceImpl implements LiveService {
                 showLiveDto.setIsSteal(2);
             }
         } catch(Exception e){
-            showLiveDto.setIsSteal(0);
+            showLiveDto.setIsSteal(1);
         }
 
         return Response.success(showLiveDto);
