@@ -1101,13 +1101,14 @@ public class LiveServiceImpl implements LiveService {
         //saveLiveDisplayData(speakDto);
         //判断是否升级
         int share = 0 ;
-        if(speakDto.getType() == 52 ||speakDto.getType() == 51 || speakDto.getType() == 72  && speakDto.getContentType() != 16 ){
+        if( speakDto.getContentType() != 16 ){
+        if(speakDto.getType() == 52 || speakDto.getType() == 51 || speakDto.getType() == 72 ){
             CoinRule coinRuleShare = userService.getCoinRules().get(Rules.SHARE_KING_KEY);
             ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), coinRuleShare);
             speakDto.setUpgrade(muDto.getUpgrade());
             speakDto.setCurrentLevel(muDto.getCurrentLevel());
             share = 1 ;
-        }
+        }}
         if(isJion != 1 && like !=1 && share != 1) {
        /* log.info("############################################################################");
         log.info("############################################################################");*/

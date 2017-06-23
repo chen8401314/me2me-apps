@@ -1279,6 +1279,10 @@ private void localJpush(long toUid){
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
             contentElement.setUid(content.getUid());
+            UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+            if(userProfile!=null){
+            	contentElement.setLevel(userProfile.getLevel());
+            }
             String cover = content.getConverImage();
 
             if(!StringUtils.isEmpty(cover)){
@@ -1300,6 +1304,7 @@ private void localJpush(long toUid){
             		if(null != topicUserProfile){
             			contentElement.setForwardUid((Long)topicUserProfile.get("uid"));
             			contentElement.setForwardNickName((String)topicUserProfile.get("nick_name"));
+            			contentElement.setLevel((Integer)topicUserProfile.get("level"));
             		}
             	}else{
             		if(null != topicMemberCountMap.get(content.getForwardCid().toString())){
