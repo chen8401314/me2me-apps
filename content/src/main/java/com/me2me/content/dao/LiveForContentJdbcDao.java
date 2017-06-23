@@ -183,7 +183,7 @@ public class LiveForContentJdbcDao {
     		return null;
     	}
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select c.forward_cid as id,p.uid,p.nick_name,p.avatar,p.v_lv");
+    	sb.append("select c.forward_cid as id,p.uid,p.nick_name,p.avatar,p.v_lv,p.level");
     	sb.append(" from user_profile p LEFT JOIN content c on c.uid=p.uid");
     	sb.append(" where c.forward_cid in (");
     	for(int i=0;i<topicIds.size();i++){
