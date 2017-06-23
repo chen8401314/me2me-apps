@@ -527,7 +527,7 @@ public class LiveServiceImpl implements LiveService {
                 liveCoverDto.setIsSteal(2);
             }
         } catch(Exception e){
-            liveCoverDto.setIsSteal(0);
+            liveCoverDto.setIsSteal(1);
         }
 
         return Response.success(ResponseStatus.GET_LIVE_COVER_SUCCESS.status, ResponseStatus.GET_LIVE_COVER_SUCCESS.message, liveCoverDto);
