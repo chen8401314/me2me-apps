@@ -6882,7 +6882,7 @@ public class LiveServiceImpl implements LiveService {
 			try{
 				coins = getAliveCoinsForSteal(uid, topicId);
 			}catch(Exception e){
-				return Response.failure(e.getMessage());
+				return Response.failure(500,e.getMessage());
 			}
 
 			// 修改王国可被偷数
@@ -6904,7 +6904,7 @@ public class LiveServiceImpl implements LiveService {
 			return Response.success(dto);
 		} catch (Exception e) {
 			e.printStackTrace();
-			return Response.failure(e.getMessage());
+			return Response.failure(500,e.getMessage());
 		} finally {
 			if(lock != null)
 				lock.unlock();

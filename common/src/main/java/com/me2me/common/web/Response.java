@@ -74,12 +74,12 @@ public class Response<T extends Serializable> implements BaseEntity  {
     }
 
     /**
-     * 系统默认失败
-     * @param message
+     * 系统默认失败 ,失败并设置data.
+     * @param data 设置data.
      * @return
      */
-    public static Response failure(String message){
-        Response response =  new Response(DEFAULT_CODE_FAILURE,DEFAULT_MESSAGE_FAILURE,message);
+    public static Response failure(String data){
+        Response response =  new Response(DEFAULT_CODE_FAILURE,DEFAULT_MESSAGE_FAILURE,data);
         response.refreshAccessToken();
         return response;
     }
