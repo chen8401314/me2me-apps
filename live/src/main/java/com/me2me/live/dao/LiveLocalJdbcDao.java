@@ -1067,5 +1067,10 @@ public class LiveLocalJdbcDao {
 		return jdbcTemplate.queryForList(sql,uid);
 	}
 
+	public Map<String,Object> getlastUser(long topicId) {
+		String sql = "select u.* from topic_fragment f,user_profile u where f.uid=u.uid and f.topic_id=? order by f.id desc limit 1";
+		return jdbcTemplate.queryForMap(sql,topicId);
+	}
+
 
 }

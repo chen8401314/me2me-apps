@@ -3977,7 +3977,7 @@ public class UserServiceImpl implements UserService {
         myLevelDto.setAvailableCoin(userProfile.getAvailableCoin());
         myLevelDto.setAvatar(Constant.QINIU_DOMAIN + "/"+ userProfile.getAvatar());
         String value = getAppConfigByKey(USER_PERMISSIONS);
-        log.info("infos: " + value);
+      /*  log.info("infos: " + value);*/
         UserPermissionDto userPermissionDto = JSON.parseObject(value, UserPermissionDto.class);
         for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
             if (userProfile.getLevel() == userLevelDto.getLevel()){

@@ -1787,7 +1787,8 @@ public class LiveServiceImpl implements LiveService {
             userProfile = profileMap.get(String.valueOf(topic.getUid()));
             showTopicElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             showTopicElement.setNickName(userProfile.getNickName());
-            showTopicElement.setLevel(lastUserProfile.getLevel());
+            int level =(Integer) liveLocalJdbcDao.getlastUser(topic.getId()).get("level");
+            showTopicElement.setLevel(level);
             showTopicElement.setCreateTime(topic.getCreateTime());
             showTopicElement.setTopicId(topic.getId());
             showTopicElement.setStatus(topic.getStatus());
