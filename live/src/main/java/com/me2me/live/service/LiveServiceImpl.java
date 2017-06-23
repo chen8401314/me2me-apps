@@ -1051,10 +1051,10 @@ public class LiveServiceImpl implements LiveService {
 //                log.info("update push");
 //            }
             //更新或者是核心圈跟新加分
-            CoinRule coinRule = userService.getCoinRules().get(Rules.CREATE_KING_KEY);
+            CoinRule coinRule = userService.getCoinRules().get(Rules.SPEAK_KEY);
             isJion = 1;
-            coinRule.setExt(speakDto.getUid());
-            ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), userService.getCoinRules().get(Rules.CREATE_KING_KEY));
+            /*coinRule.setExt(speakDto.getUid());*/
+            ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), userService.getCoinRules().get(Rules.SPEAK_KEY));
             speakDto.setUpgrade(muDto.getUpgrade());
             speakDto.setCurrentLevel(muDto.getCurrentLevel());
 
@@ -1093,18 +1093,18 @@ public class LiveServiceImpl implements LiveService {
         //saveLiveDisplayData(speakDto);
         //判断是否升级
         if(isJion != 1 ) {
-        log.info("############################################################################");
-        log.info("############################################################################");
+       /* log.info("############################################################################");
+        log.info("############################################################################");*/
         CoinRule coinRule = userService.getCoinRules().get(Rules.SPEAK_KEY);
-        log.info("coinRule info : " + coinRule.getName());
+       /* log.info("coinRule info : " + coinRule.getName());
         log.info("############################################################################");
         log.info("############################################################################");
-
+*/
             ModifyUserCoinDto muDto = userService.coinRule(speakDto.getUid(), userService.getCoinRules().get(Rules.SPEAK_KEY));
             speakDto.setUpgrade(muDto.getUpgrade());
             speakDto.setCurrentLevel(muDto.getCurrentLevel());
         }
-        if(speakDto.getType() == 52 ||speakDto.getType() == 51 || speakDto.getType() == 72 ){
+        if(speakDto.getType() == 52 ||speakDto.getType() == 51 || speakDto.getType() == 72  && speakDto.getContentType() != 16 ){
             CoinRule coinRuleShare = userService.getCoinRules().get(Rules.SHARE_KING_KEY);
             ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), coinRuleShare);
             speakDto.setUpgrade(muDto.getUpgrade());

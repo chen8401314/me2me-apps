@@ -4006,6 +4006,14 @@ public class UserServiceImpl implements UserService {
 /**
  *                以下4个for循环为弱智排序   by gst
  */
+
+        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
+
+            if (nodeDto.getCode() == 6){
+                list.add(nodeDto);
+                break;
+            }
+        }
         for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
             if(nodeDto.getCode()==1){
                 list.add(nodeDto);
@@ -4018,8 +4026,6 @@ public class UserServiceImpl implements UserService {
         }
         for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
             if(nodeDto.getCode()==5){
-                list.add(nodeDto);
-            }else if (nodeDto.getCode() == 6){
                 list.add(nodeDto);
                 break;
             }
