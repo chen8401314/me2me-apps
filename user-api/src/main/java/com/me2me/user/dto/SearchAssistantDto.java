@@ -32,6 +32,8 @@ public class SearchAssistantDto implements BaseEntity {
 
         private int v_lv;
 
+        private int level;
+
     }
 
 }

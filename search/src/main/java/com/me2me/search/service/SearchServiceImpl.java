@@ -635,6 +635,7 @@ public class SearchServiceImpl implements SearchService {
 				ruser.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
 				ruser.setNickName(user.getNickName());
 				ruser.setV_lv(user.getvLv());
+				ruser.setLevel(user.getLevel());
 				ruser.setReason("");
 				ruser.setTagMatchedLength(0);
 				ruser.setUserTags(new ArrayList<String>());
@@ -731,6 +732,7 @@ public class SearchServiceImpl implements SearchService {
 			person.setNickName(profile.getNickName());
 			person.setAvatar(Constant.QINIU_DOMAIN + "/" + profile.getAvatar());
 			person.setV_lv(profile.getvLv());
+			person.setLevel(profile.getLevel());
 			person.setSex(profile.getGender());
 			person.setHobby(hobby);
 			if(null != profile.getAgeGroup()){
@@ -884,6 +886,7 @@ public class SearchServiceImpl implements SearchService {
 					ruser.setAvatar(Constant.QINIU_DOMAIN + "/" + meAdmin.getAvatar());
 					ruser.setNickName(meAdmin.getNickName());
 					ruser.setV_lv(meAdmin.getvLv());
+					ruser.setLevel(meAdmin.getLevel());
 					ruser.setReason("米汤官方推荐");
 					ruser.setTagMatchedLength(0);
 					ruser.setUserTags(new ArrayList<String>());
@@ -950,6 +953,7 @@ public class SearchServiceImpl implements SearchService {
 					kingdomElement.setNickName(meAdmin.getNickName());
 					kingdomElement.setAvatar(Constant.QINIU_DOMAIN + "/" + meAdmin.getAvatar());
 					kingdomElement.setV_lv(meAdmin.getvLv());
+					kingdomElement.setLevel(meAdmin.getLevel());
 					kingdomElement.setIsFollowed(userService.isFollow(meAdmin.getUid(), uid));
 					kingdomElement.setIsFollowMe(userService.isFollow(uid, meAdmin.getUid()));
 					kingdomElement.setTopicId((Long)meTopic.get("id"));

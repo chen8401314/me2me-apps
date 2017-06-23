@@ -28,6 +28,7 @@ public class RecommendListDto implements BaseEntity {
 		private String nickName;
 		private String avatar;
 		private int v_lv;
+		private int level;
 		private int completion;
 		private int sex;
 		private int sexOrientation;
@@ -99,6 +100,7 @@ public class RecommendListDto implements BaseEntity {
 		private int isFollowMe;
 		private int topicCount;
 		private int v_lv;
+		private int level;
 		private int internalStatus;
 		private int favorite;
 		private long lastUpdateTime;

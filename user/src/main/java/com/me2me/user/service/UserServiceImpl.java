@@ -1168,6 +1168,7 @@ public class UserServiceImpl implements UserService {
         for(UserProfile userProfile : list){
             SearchAssistantDto.SearchAssistantElement element = searchAssistantDto.createElement();
             element.setV_lv(userProfile.getvLv());
+            element.setLevel(userProfile.getLevel());
             element.setUid(userProfile.getUid());
             element.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
             element.setNickName(userProfile.getNickName());
@@ -3132,6 +3133,7 @@ public class UserServiceImpl implements UserService {
 					e.setNickName(user.getNickName());
 					e.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
 					e.setV_lv(user.getvLv());
+					e.setLevel(user.getLevel());
 					e.setIntroduced(user.getIntroduced());
 					if(null != followMap.get(uid+"_"+user.getUid().toString())){
 		                e.setIsFollowed(1);
@@ -3175,6 +3177,7 @@ public class UserServiceImpl implements UserService {
 				e.setNickName(user.getNickName());
 				e.setUid(user.getUid());
 				e.setV_lv(user.getvLv());
+				e.setLevel(user.getLevel());
 				result.getSeekFollowData().add(e);
 			}
 		}
@@ -3189,6 +3192,7 @@ public class UserServiceImpl implements UserService {
 				e.setNickName((String)followUser.get("nick_name"));
 				e.setUid((Long)followUser.get("uid"));
 				e.setV_lv((Integer)followUser.get("v_lv"));
+				e.setLevel((Integer)followUser.get("level"));
 				if(null != followMap.get(uid+"_"+e.getUid())){
 	                e.setIsFollowed(1);
 	            }else{

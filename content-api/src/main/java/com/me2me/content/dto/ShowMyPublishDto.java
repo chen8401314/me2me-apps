@@ -35,6 +35,8 @@ public class ShowMyPublishDto  implements BaseEntity {
 
             private String avatar;
 
+            private int level;
+
             private Date createTime;
 
             private String review;

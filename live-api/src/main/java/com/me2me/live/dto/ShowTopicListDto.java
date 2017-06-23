@@ -130,6 +130,8 @@ public class ShowTopicListDto implements BaseEntity{
         private String avatar;
 
         private int v_lv;
+
+        private int level;
     }
 
     @Data

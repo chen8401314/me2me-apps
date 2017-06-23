@@ -1100,7 +1100,15 @@ public class LiveServiceImpl implements LiveService {
         //直播信息保存
         //saveLiveDisplayData(speakDto);
         //判断是否升级
-        if(isJion != 1 && like !=1) {
+        int share = 0 ;
+        if(speakDto.getType() == 52 ||speakDto.getType() == 51 || speakDto.getType() == 72  && speakDto.getContentType() != 16 ){
+            CoinRule coinRuleShare = userService.getCoinRules().get(Rules.SHARE_KING_KEY);
+            ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), coinRuleShare);
+            speakDto.setUpgrade(muDto.getUpgrade());
+            speakDto.setCurrentLevel(muDto.getCurrentLevel());
+            share = 1 ;
+        }
+        if(isJion != 1 && like !=1 && share != 1) {
        /* log.info("############################################################################");
         log.info("############################################################################");*/
         CoinRule coinRule = userService.getCoinRules().get(Rules.SPEAK_KEY);
@@ -1112,12 +1120,7 @@ public class LiveServiceImpl implements LiveService {
             speakDto.setUpgrade(muDto.getUpgrade());
             speakDto.setCurrentLevel(muDto.getCurrentLevel());
         }
-        if(speakDto.getType() == 52 ||speakDto.getType() == 51 || speakDto.getType() == 72  && speakDto.getContentType() != 16 ){
-            CoinRule coinRuleShare = userService.getCoinRules().get(Rules.SHARE_KING_KEY);
-            ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), coinRuleShare);
-            speakDto.setUpgrade(muDto.getUpgrade());
-            speakDto.setCurrentLevel(muDto.getCurrentLevel());
-        }
+
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status, ResponseStatus.USER_SPEAK_SUCCESS.message, speakDto);
     }
 
@@ -1438,6 +1441,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setTitle(topic.getTitle());
             userProfile = profileMap.get(String.valueOf(topic.getUid()));
             showTopicElement.setV_lv(userProfile.getvLv());
+            showTopicElement.setLevel(userProfile.getLevel());
             showTopicElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             showTopicElement.setNickName(userProfile.getNickName());
             showTopicElement.setCreateTime(topic.getCreateTime());
@@ -2590,6 +2594,7 @@ public class LiveServiceImpl implements LiveService {
             ShowTopicListDto.UpdateLives updateLives = ShowTopicListDto.createUpdateLivesElement();
             UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
             updateLives.setV_lv(userProfile.getvLv());
+            updateLives.setLevel(userProfile.getLevel());
             updateLives.setUid(userProfile.getUid());
             updateLives.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             showTopicListDto.getUpdateLives().add(updateLives);
@@ -2638,6 +2643,7 @@ public class LiveServiceImpl implements LiveService {
             ShowTopicListDto.UpdateLives updateLives = ShowTopicListDto.createUpdateLivesElement();
             UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
             updateLives.setV_lv(userProfile.getvLv());
+            updateLives.setLevel(userProfile.getLevel());
             updateLives.setUid(userProfile.getUid());
             updateLives.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             showTopicListDto.getUpdateLives().add(updateLives);

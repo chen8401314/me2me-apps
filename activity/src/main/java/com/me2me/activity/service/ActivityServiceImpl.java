@@ -5139,6 +5139,7 @@ public class ActivityServiceImpl implements ActivityService {
     				result.getMyUser().setNickName(u.getNickName());
     				result.getMyUser().setAvatar(Constant.QINIU_DOMAIN_COMMON + "/" + u.getAvatar());
     				result.getMyUser().setV_lv(u.getvLv());
+    				result.getMyUser().setLevel(u.getLevel());
     				
     				AcommonList my = activityMybatisDao.getAcommonList(2, 3, searchUid);
     				if(null != my && my.getScore().longValue() > 0){
@@ -5175,6 +5176,7 @@ public class ActivityServiceImpl implements ActivityService {
     					e.setAvatar(Constant.QINIU_DOMAIN_COMMON + "/" + user.getAvatar());
         				e.setNickName(user.getNickName());
         				e.setV_lv(user.getvLv());
+        				e.setLevel(user.getLevel());
     				}
     				e.setRank(i+1);
     				e.setScore(alist.getScore());

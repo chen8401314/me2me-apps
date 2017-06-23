@@ -1364,6 +1364,7 @@ private void localJpush(long toUid){
                 UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
                 reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
                 reviewElement.setNickName(user.getNickName());
+                reviewElement.setLevel(user.getLevel());
                 reviewElement.setCreateTime(contentReview.getCreateTime());
                 reviewElement.setReview(contentReview.getReview());
                 contentElement.getReviews().add(reviewElement);
@@ -2627,6 +2628,7 @@ private void localJpush(long toUid){
             // 获取用户信息
             userProfile = profileMap.get(String.valueOf(content.getUid()));
             contentElement.setV_lv(userProfile.getvLv());
+            contentElement.setLevel(userProfile.getLevel());
             contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             contentElement.setNickName(userProfile.getNickName());
             contentElement.setCreateTime(content.getCreateTime());
@@ -3770,7 +3772,7 @@ private void localJpush(long toUid){
 				ceKingdomElement.setNickName(userProfile.getNickName());
 				ceKingdomElement.setV_lv(userProfile.getvLv());
                 ceKingdomElement.setLevel(userProfile.getLevel());
-                ceKingdomElement.setLevel(userProfile.getLevel());
+
 				
 				if(null != followMap.get(uid+"_"+ce.getUid())){
 					ceKingdomElement.setIsFollowed(1);
