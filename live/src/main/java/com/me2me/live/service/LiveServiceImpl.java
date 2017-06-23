@@ -519,15 +519,15 @@ public class LiveServiceImpl implements LiveService {
                     .setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
         }
         liveCoverDto.setBeatTopicPercentage(percentage);
+        liveCoverDto.setIsSteal(1);
         try {
             int coins= getAliveCoinsForSteal(uid,topicId);
-            liveCoverDto.setIsSteal(1);
         } catch (KingdomStealException e2) {
             if(e2.getErrorCode()==KingdomStealException.KINGDOM_STEALED){
                 liveCoverDto.setIsSteal(2);
             }
         } catch(Exception e){
-            liveCoverDto.setIsSteal(1);
+        	
         }
 
         return Response.success(ResponseStatus.GET_LIVE_COVER_SUCCESS.status, ResponseStatus.GET_LIVE_COVER_SUCCESS.message, liveCoverDto);
@@ -700,15 +700,15 @@ public class LiveServiceImpl implements LiveService {
                     .setScale(0, BigDecimal.ROUND_HALF_UP).intValue();
         }
         showLiveDto.setBeatTopicPercentage(percentage);
+        showLiveDto.setIsSteal(1);
         try {
             int coins= getAliveCoinsForSteal(uid,cid);
-            showLiveDto.setIsSteal(1);
         } catch (KingdomStealException e2) {
             if(e2.getErrorCode()==KingdomStealException.KINGDOM_STEALED){
                 showLiveDto.setIsSteal(2);
             }
         } catch(Exception e){
-            showLiveDto.setIsSteal(1);
+        	
         }
 
         return Response.success(showLiveDto);
