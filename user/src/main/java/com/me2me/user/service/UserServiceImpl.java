@@ -4086,6 +4086,7 @@ public class UserServiceImpl implements UserService {
         int lv = 0;
         for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
             if(  modifyCoin >= userLevelDto.getNeedCoins()){
+
                 lv++;
             }
         }
