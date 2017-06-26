@@ -171,7 +171,7 @@ public class SearchServiceImpl implements SearchService {
     	if(null != userPage){
     		this.buildUserSearchResult(uid, resultDTO, userPage, searchType);
     	}
-    	System.out.println("search all, uid:"+uid+",keyword:"+keyword+",searchType:"+searchType+",contentType:"+contentType+",page:"+page+",pageSize:"+pageSize+",ret:\n"+JSON.toJSONString(resultDTO, true));
+    	//System.out.println("search all, uid:"+uid+",keyword:"+keyword+",searchType:"+searchType+",contentType:"+contentType+",page:"+page+",pageSize:"+pageSize+",ret:\n"+JSON.toJSONString(resultDTO, true));
     	return Response.success(resultDTO);
     }
     
@@ -583,7 +583,7 @@ public class SearchServiceImpl implements SearchService {
 			pagedata = searchService.queryUsers(key, page, pageSize);
 		}
 		String str = JSON.toJSONString(pagedata);
-		System.out.println("search for json, key:"+key+",type:"+type+",contentType:"+contentType+",page:"+page+",pageSize:"+pageSize+",ret:\n"+str);
+		//System.out.println("search for json, key:"+key+",type:"+type+",contentType:"+contentType+",page:"+page+",pageSize:"+pageSize+",ret:\n"+str);
 		return str;
 	}
 

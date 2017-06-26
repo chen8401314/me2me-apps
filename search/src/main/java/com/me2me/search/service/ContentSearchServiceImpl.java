@@ -183,8 +183,8 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		sq.setPageable(new PageRequest(--page, pageSize));
 		
 		FacetedPage<UserEsMapping> result = esTemplate.queryForPage(sq, UserEsMapping.class);
-		logger.info("search:{},page:{},pageSize:{},result:{}",content,page,pageSize,JSON.toJSONString(result, true));
-		System.out.println("search:"+content+",page:"+page+",pageSize:"+pageSize+",result:"+JSON.toJSONString(result, true));
+		//logger.info("search:{},page:{},pageSize:{},result:{}",content,page,pageSize,JSON.toJSONString(result, true));
+		//System.out.println("search:"+content+",page:"+page+",pageSize:"+pageSize+",result:"+JSON.toJSONString(result, true));
 		return result;
 	}
 	
