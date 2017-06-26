@@ -4079,8 +4079,9 @@ public class UserServiceImpl implements UserService {
         int randomKey = random.nextInt(randomList.size());
         Map<String,Object> map = (Map<String, Object>) randomList.get(randomKey);
         myLevelDto.setRandomTopicId((long)map.get("id"));
-
-
+        // 排序结果集合
+        List<PermissionDescriptionDto.PermissionNodeDto> nodes = myLevelDto.getPermissions().getNodes();
+        Collections.sort(nodes);
         return Response.success(myLevelDto);
     }
 

@@ -5,6 +5,7 @@ import com.google.common.collect.Lists;
 import com.me2me.common.web.BaseEntity;
 import lombok.Data;
 
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -23,7 +24,7 @@ public class PermissionDescriptionDto implements BaseEntity {
 
 
     @Data
-    public static class PermissionNodeDto implements BaseEntity{
+    public static class PermissionNodeDto implements BaseEntity,Comparable<PermissionNodeDto>{
 
         private  Integer code ;
 
@@ -44,6 +45,17 @@ public class PermissionDescriptionDto implements BaseEntity {
         private  Integer minOpenLevel;
 
 
+        @Override
+        public int compareTo(PermissionNodeDto o) {
+
+            if(code>o.getCode()){
+                return 1;
+            }else if(code==o.getCode()){
+                return 0;
+            }else{
+                return -1;
+            }
+        }
     }
 
     public static PermissionNodeDto create(PermissionDescriptionDto root,String name,Integer num,Integer seconds,int status , Integer isShow ,Integer code ){
