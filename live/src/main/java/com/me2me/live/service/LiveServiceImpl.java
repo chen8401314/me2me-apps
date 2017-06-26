@@ -6814,7 +6814,7 @@ public class LiveServiceImpl implements LiveService {
         int topicRemainCoins= this.liveLocalJdbcDao.getTopicRemainPrice(topicId);
 
         if(topicRemainCoins<=0){
-            throw new KingdomStealException("王国已经达到今日偷取上限了");
+            throw new KingdomStealException("该王国没有可偷的金币了");
         }
         // 用户今天已偷
         String day = DateUtil.date2string(new Date(), "yyyy-MM-dd");
@@ -6851,13 +6851,13 @@ public class LiveServiceImpl implements LiveService {
         
         	
         if(userStealLog.size()>=userTopicLimit){
-            throw new KingdomStealException("用户已达到今日偷取王国次数上限了");
+            throw new KingdomStealException("您已达到今日王国偷取次数上限了");
         }
         stealedCoins=liveLocalJdbcDao.getUserConinsByDay(uid, day);		// 此处重新计算用户当日获取到的总金币数，包括操作所得和偷取所得。
         int userTodayRemain=userDayLimit-stealedCoins;
 
         if(userTodayRemain<=0){
-            throw new KingdomStealException("用户已达到今日偷取上限了");
+            throw new KingdomStealException("您已达到今日金币偷取上限了");
         }
 
         int canStealCount = Math.min(userTodayRemain, topicRemainCoins);
