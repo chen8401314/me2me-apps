@@ -145,6 +145,12 @@ public class KingdomPriceTask {
 		
 		String topicSql = "select t.id,t.create_time,t.uid from topic t where t.create_time<='"+endTime+"' order by t.id limit ";
 		
+//		String topicSql = "select t.id,t.create_time,t.uid from topic t,(select f.topic_id,";
+//		topicSql = topicSql + "MAX(if(f.type in (0,3,11,12,13,15,52,55),f.create_time, NULL)) as lastUpdateTime";
+//		topicSql = topicSql + " from topic_fragment f where f.status=1 group by f.topic_id) m";
+//		topicSql = topicSql + " where t.id=m.topic_id and m.lastUpdateTime>'2017-05-15 00:00:00'";
+//		topicSql = topicSql + " and t.create_time<'" + endTime + "' order by t.id limit ";
+		
 		logger.info("开始处理王国价值");
 		int start = 0;
 		int pageSize = 500;
@@ -273,64 +279,64 @@ public class KingdomPriceTask {
 				}
 			}
 			
-//			readCountSql = new StringBuilder();
-//			readCountSql.append("select c.forward_cid,c.read_count,c.read_count_dummy");
-//			readCountSql.append(" from content c where c.type=3 and c.forward_cid in (");
-//			for(int i=0;i<topicList.size();i++){
-//				if(i>0){
-//					readCountSql.append(",");
-//				}
-//				readCountSql.append(String.valueOf(topicList.get(i).get("id")));
-//			}
-//			readCountSql.append(")");
-//			readCountList = contentService.queryEvery(readCountSql.toString());
-//			if(null != readCountList && readCountList.size() > 0){
-//				for(Map<String, Object> r : readCountList){
-//					long topicId = ((Long)r.get("forward_cid")).longValue();
-//					kc = kingCountMap.get(String.valueOf(topicId));
-//					int readCount = (Integer)r.get("read_count");
-//					int readCountDummy = (Integer)r.get("read_count_dummy");
-//					int totalDayNum = (int)DateUtil.getDaysBetween2Date(kc.getCreateTime(), now);
-//					kc.setReadCountInApp(readCount/totalDayNum);
-//					kc.setReadCountDummyInApp(readCountDummy/totalDayNum);
-//				}
-//			}
-			
-			//阅读数(增量)
 			readCountSql = new StringBuilder();
-			readCountSql.append("select t.topic_id,SUM(if(t.in_app=1,t.read_count,NULL)) as readInApp,");
-			readCountSql.append("SUM(if(t.in_app=1,t.read_count_dummy,NULL)) as readDummyInApp,");
-			readCountSql.append("SUM(if(t.in_app=0,t.read_count,NULL)) as readOutApp,");
-			readCountSql.append("SUM(if(t.in_app=0,t.read_count_dummy,NULL)) as readDummyOutApp");
-			readCountSql.append(" from topic_read_his t where t.create_time>='").append(startTime);
-			readCountSql.append("' and t.create_time<='").append(endTime);
-			readCountSql.append("' and t.topic_id in (");
+			readCountSql.append("select c.forward_cid,c.read_count,c.read_count_dummy");
+			readCountSql.append(" from content c where c.type=3 and c.forward_cid in (");
 			for(int i=0;i<topicList.size();i++){
 				if(i>0){
 					readCountSql.append(",");
 				}
 				readCountSql.append(String.valueOf(topicList.get(i).get("id")));
 			}
-			readCountSql.append(") group by t.topic_id");
+			readCountSql.append(")");
 			readCountList = contentService.queryEvery(readCountSql.toString());
 			if(null != readCountList && readCountList.size() > 0){
 				for(Map<String, Object> r : readCountList){
-					long topicId = ((Long)r.get("topic_id")).longValue();
+					long topicId = ((Long)r.get("forward_cid")).longValue();
 					kc = kingCountMap.get(String.valueOf(topicId));
-					if(null != r.get("readInApp")){
-						kc.setReadCountInApp(((BigDecimal)r.get("readInApp")).intValue());
-					}
-					if(null != r.get("readDummyInApp")){
-						kc.setReadCountDummyInApp(((BigDecimal)r.get("readDummyInApp")).intValue());
-					}
-					if(null != r.get("readOutApp")){
-						kc.setReadCountOutApp(((BigDecimal)r.get("readOutApp")).intValue());
-					}
-					if(null != r.get("readDummyOutApp")){
-						kc.setReadCountDummyOutApp(((BigDecimal)r.get("readDummyOutApp")).intValue());
-					}
+					int readCount = (Integer)r.get("read_count");
+					int readCountDummy = (Integer)r.get("read_count_dummy");
+					int totalDayNum = (int)DateUtil.getDaysBetween2Date(kc.getCreateTime(), now);
+					kc.setReadCountInApp(readCount/totalDayNum);
+					kc.setReadCountDummyInApp(readCountDummy/totalDayNum);
 				}
 			}
+			
+			//阅读数(增量)
+//			readCountSql = new StringBuilder();
+//			readCountSql.append("select t.topic_id,SUM(if(t.in_app=1,t.read_count,NULL)) as readInApp,");
+//			readCountSql.append("SUM(if(t.in_app=1,t.read_count_dummy,NULL)) as readDummyInApp,");
+//			readCountSql.append("SUM(if(t.in_app=0,t.read_count,NULL)) as readOutApp,");
+//			readCountSql.append("SUM(if(t.in_app=0,t.read_count_dummy,NULL)) as readDummyOutApp");
+//			readCountSql.append(" from topic_read_his t where t.create_time>='").append(startTime);
+//			readCountSql.append("' and t.create_time<='").append(endTime);
+//			readCountSql.append("' and t.topic_id in (");
+//			for(int i=0;i<topicList.size();i++){
+//				if(i>0){
+//					readCountSql.append(",");
+//				}
+//				readCountSql.append(String.valueOf(topicList.get(i).get("id")));
+//			}
+//			readCountSql.append(") group by t.topic_id");
+//			readCountList = contentService.queryEvery(readCountSql.toString());
+//			if(null != readCountList && readCountList.size() > 0){
+//				for(Map<String, Object> r : readCountList){
+//					long topicId = ((Long)r.get("topic_id")).longValue();
+//					kc = kingCountMap.get(String.valueOf(topicId));
+//					if(null != r.get("readInApp")){
+//						kc.setReadCountInApp(((BigDecimal)r.get("readInApp")).intValue());
+//					}
+//					if(null != r.get("readDummyInApp")){
+//						kc.setReadCountDummyInApp(((BigDecimal)r.get("readDummyInApp")).intValue());
+//					}
+//					if(null != r.get("readOutApp")){
+//						kc.setReadCountOutApp(((BigDecimal)r.get("readOutApp")).intValue());
+//					}
+//					if(null != r.get("readDummyOutApp")){
+//						kc.setReadCountDummyOutApp(((BigDecimal)r.get("readDummyOutApp")).intValue());
+//					}
+//				}
+//			}
 			
 			//分享次数(增量)
 			shareSql = new StringBuilder();
@@ -735,6 +741,12 @@ public class KingdomPriceTask {
 		
 		String topicSql = "select t.id,t.create_time,t.uid from topic t where t.create_time<='"+endTime+"' order by t.id limit ";
 		
+//		String topicSql = "select t.id,t.create_time,t.uid from topic t,(select f.topic_id,";
+//		topicSql = topicSql + "MAX(if(f.type in (0,3,11,12,13,15,52,55),f.create_time, NULL)) as lastUpdateTime";
+//		topicSql = topicSql + " from topic_fragment f where f.status=1 group by f.topic_id) m";
+//		topicSql = topicSql + " where t.id=m.topic_id and m.lastUpdateTime>'2017-05-15 00:00:00'";
+//		topicSql = topicSql + " and t.create_time<'" + endTime + "' order by t.id limit ";
+		
 		logger.info("开始处理王国价值");
 		int start = 0;
 		int pageSize = 500;
@@ -1055,7 +1067,7 @@ public class KingdomPriceTask {
 		contentService.executeSql(saveHisSql.toString());
 		
 		StringBuilder updatePriceSql = new StringBuilder();
-		updatePriceSql.append("update topic set price=").append(kc.getPrice()).append(" where id=").append(kc.getTopicId());
+		updatePriceSql.append("update topic set price=").append(kc.getPrice()).append(",update_time=update_time where id=").append(kc.getTopicId());
 		contentService.executeSql(updatePriceSql.toString());
 		
 		String updatelistedTimeSql = null;
@@ -1064,15 +1076,17 @@ public class KingdomPriceTask {
 				//上一次已经上市了，这次就不用上市了
 			}else{
 				//上一次上市，但是这次没上市，需要将时间清空
-				updatelistedTimeSql = "update topic set listing_time=null where id="+kc.getTopicId();
+				updatelistedTimeSql = "update topic set listing_time=null,update_time=update_time where id="+kc.getTopicId();
 				contentService.executeSql(updatelistedTimeSql);
 			}
 		}else{
 			if(kc.getPrice() >= listedPrice){
 				//上一次没上市，这次上市了
-				updatelistedTimeSql = "update topic set listing_time=now() where id="+kc.getTopicId();
+				updatelistedTimeSql = "update topic set listing_time=now(),update_time=update_time where id="+kc.getTopicId();
 				contentService.executeSql(updatelistedTimeSql);
 				//并且添加跑马灯
+				kingName = kingName.replaceAll("'", "''");
+				title = title.replaceAll("'", "''");
 				StringBuilder insertTopicNewsSql = new StringBuilder();
 				insertTopicNewsSql.append("insert into topic_news(topic_id,content,type,create_time)");
 				insertTopicNewsSql.append(" values (").append(kc.getTopicId()).append(",'").append(kingName).append("的《").append(title);

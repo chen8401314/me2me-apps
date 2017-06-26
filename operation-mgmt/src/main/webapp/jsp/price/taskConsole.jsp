@@ -44,6 +44,20 @@ var runTask = function(){
 		}
 	});
 }
+
+var initPrice = function(){
+	$("#btnSearch2").attr("disabled",true);
+	$.ajax({
+		url : "${ctx}/price/initPrice",
+		async : false,
+		type : "GET",
+		contentType : "application/json;charset=UTF-8",
+		success : function(resp) {
+			alert(resp);
+			$("#btnSearch2").attr("disabled",false);
+		}
+	});
+}
 </script>
 </head>
 <body>
@@ -79,7 +93,8 @@ var runTask = function(){
 										<input type="text" id="startTime" name="startTime" class="form-control" readonly="readonly">
 									</div>
 									<div class="form-inline" role="form">
-										<input type="button" id="btnSearch" name="btnSearch" value="开始执行" onclick="runTask()" class="btn btn-info" />
+										<input type="button" id="btnSearch" name="btnSearch" value="开始执行" onclick="runTask()" class="btn btn-info" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										<input type="button" id="btnSearch2" name="btnSearch2" value="初始化价值数据" onclick="initPrice()" class="btn btn-info" />
 									</div>
 								</div>
 							</section>

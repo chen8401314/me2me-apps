@@ -112,7 +112,7 @@ public class PriceController {
 		}
 		int pageSize = dto.getPageSize();
 		if(pageSize < 1){
-			pageSize = 10;
+			pageSize = 100;
 		}
 		
 		int start = (page-1)*pageSize;
@@ -491,18 +491,40 @@ public class PriceController {
 	public String runTask(@RequestParam("m")int mode, 
 			@RequestParam("t")String runTime) throws Exception{
 		
-		if(mode == 1){//增量
-			logger.info("增量执行，执行时间："+runTime);
-			kingdomPriceTask.executeIncr(runTime);
-		}else if(mode == 2){//全量
-			logger.info("全量执行，执行时间："+runTime);
-			kingdomPriceTask.executeFull(runTime);
-		}else{
-			return "位置的执行模式";
+		try{
+			if(mode == 1){//增量
+				logger.info("增量执行，执行时间："+runTime);
+				kingdomPriceTask.executeIncr(runTime);
+			}else if(mode == 2){//全量
+				logger.info("全量执行，执行时间："+runTime);
+				kingdomPriceTask.executeFull(runTime);
+			}else{
+				return "未知的执行模式";
+			}
+		}catch(Exception e){
+			logger.error("任务执行失败", e);
+			return "执行失败";
 		}
 		
-		
 		return "执行完成";
+	}
+	
+	@RequestMapping(value = "/initPrice")
+	@ResponseBody
+	public String initPrice(){
+		try{
+			String sql1 = "update topic set price=0,listing_time=null,update_time=update_time";
+			String sql2 = "delete from topic_data";
+			String sql3 = "delete from topic_price_his";
+			
+			contentService.executeSql(sql1);
+			contentService.executeSql(sql2);
+			contentService.executeSql(sql3);
+		}catch(Exception e){
+			logger.error("初始化失败", e);
+			return "初始化失败";
+		}
+		return "初始化完成";
 	}
 	
 	@RequestMapping(value = "/taskConsole")
