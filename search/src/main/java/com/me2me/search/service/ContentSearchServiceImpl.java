@@ -934,4 +934,5 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 }

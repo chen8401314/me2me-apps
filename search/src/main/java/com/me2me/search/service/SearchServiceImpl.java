@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.FacetedPage;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.dubbo.common.json.JSONObject;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.me2me.common.Constant;
@@ -170,7 +171,7 @@ public class SearchServiceImpl implements SearchService {
     	if(null != userPage){
     		this.buildUserSearchResult(uid, resultDTO, userPage, searchType);
     	}
-    	
+    	System.out.println("search all, uid:"+uid+",keyword:"+keyword+",searchType:"+searchType+",contentType:"+contentType+",page:"+page+",pageSize:"+pageSize+",ret:\n"+JSON.toJSONString(resultDTO, true));
     	return Response.success(resultDTO);
     }
     
@@ -573,6 +574,7 @@ public class SearchServiceImpl implements SearchService {
 	
 	public String searchForJSON(String key,String type, int contentType, int page,int pageSize){
 		FacetedPage pagedata =null;
+		
 		if("ugc".equals(type)){
 			pagedata = searchService.queryUGC(key, page, pageSize);
 		}else if("kingdom".equals(type)){
@@ -581,6 +583,7 @@ public class SearchServiceImpl implements SearchService {
 			pagedata = searchService.queryUsers(key, page, pageSize);
 		}
 		String str = JSON.toJSONString(pagedata);
+		System.out.println("search for json, key:"+key+",type:"+type+",contentType:"+contentType+",page:"+page+",pageSize:"+pageSize+",ret:\n"+str);
 		return str;
 	}
 
