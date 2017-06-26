@@ -31,5 +31,9 @@ public class KingdomQueryDTO {
 		private Date updateTime;
 		private int type;
 		private int price;
+		
+		private double diligently=0;
+		private double approve = 0;
+		private int stealPrice = 0;
 	}
 }

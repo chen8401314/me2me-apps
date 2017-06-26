@@ -70,7 +70,7 @@ public class KingdomPriceTask {
 		}
 	};
 	
-	@Scheduled(cron="0 2 0 * * ?")
+//	@Scheduled(cron="0 2 0 * * ?")
 	public void doTask(){
 		logger.info("王国价值任务开始");
 		long s = System.currentTimeMillis();
@@ -132,12 +132,12 @@ public class KingdomPriceTask {
 		subsidyConfigSql.append("select * from topic_price_subsidy_config t order by t.m1 asc");
 		List<Map<String, Object>> subsidyConfigList = contentService.queryEvery(subsidyConfigSql.toString());
 		
-		
+		Date now = new Date();
 		Date yesterday = null;
 		if(StringUtils.isNotBlank(dateStr)){
 			yesterday = DateUtil.addDay(DateUtil.string2date(dateStr, "yyyy-MM-dd"), -1);
 		}else{
-			yesterday = DateUtil.addDay(new Date(), -1);
+			yesterday = DateUtil.addDay(now, -1);
 		}
 		
 		String startTime = DateUtil.date2string(yesterday, "yyyy-MM-dd") + " 00:00:00";
@@ -272,6 +272,29 @@ public class KingdomPriceTask {
 					kc.setSubscribeCount(((Long)f.get("fcount")).intValue());
 				}
 			}
+			
+//			readCountSql = new StringBuilder();
+//			readCountSql.append("select c.forward_cid,c.read_count,c.read_count_dummy");
+//			readCountSql.append(" from content c where c.type=3 and c.forward_cid in (");
+//			for(int i=0;i<topicList.size();i++){
+//				if(i>0){
+//					readCountSql.append(",");
+//				}
+//				readCountSql.append(String.valueOf(topicList.get(i).get("id")));
+//			}
+//			readCountSql.append(")");
+//			readCountList = contentService.queryEvery(readCountSql.toString());
+//			if(null != readCountList && readCountList.size() > 0){
+//				for(Map<String, Object> r : readCountList){
+//					long topicId = ((Long)r.get("forward_cid")).longValue();
+//					kc = kingCountMap.get(String.valueOf(topicId));
+//					int readCount = (Integer)r.get("read_count");
+//					int readCountDummy = (Integer)r.get("read_count_dummy");
+//					int totalDayNum = (int)DateUtil.getDaysBetween2Date(kc.getCreateTime(), now);
+//					kc.setReadCountInApp(readCount/totalDayNum);
+//					kc.setReadCountDummyInApp(readCountDummy/totalDayNum);
+//				}
+//			}
 			
 			//阅读数(增量)
 			readCountSql = new StringBuilder();
@@ -700,11 +723,12 @@ public class KingdomPriceTask {
 		
 		int listedPrice = this.getIntegerConfig("LISTED_PRICE", weightConfigMap, 20000);
 		
+		Date now = new Date();
 		Date yesterday = null;
 		if(StringUtils.isNotBlank(dateStr)){
 			yesterday = DateUtil.addDay(DateUtil.string2date(dateStr, "yyyy-MM-dd"), -1);
 		}else{
-			yesterday = DateUtil.addDay(new Date(), -1);
+			yesterday = DateUtil.addDay(now, -1);
 		}
 		
 		String endTime = DateUtil.date2string(yesterday, "yyyy-MM-dd") + " 23:59:59";
@@ -850,8 +874,12 @@ public class KingdomPriceTask {
 				for(Map<String, Object> r : readCountList){
 					long topicId = ((Long)r.get("forward_cid")).longValue();
 					kc = kingCountMap.get(String.valueOf(topicId));
-					kc.setReadCountInApp((Integer)r.get("read_count"));
-					kc.setReadCountDummyInApp((Integer)r.get("read_count_dummy"));
+					int readCount = (Integer)r.get("read_count");
+					int readCountDummy = (Integer)r.get("read_count_dummy");
+					int dayNum = (int)DateUtil.getDaysBetween2Date(kc.getCreateTime(), yesterday)+1;
+					int totalDayNum = (int)DateUtil.getDaysBetween2Date(kc.getCreateTime(), now);
+					kc.setReadCountInApp(readCount*dayNum/totalDayNum);
+					kc.setReadCountDummyInApp(readCountDummy*dayNum/totalDayNum);
 				}
 			}
 			
@@ -935,8 +963,7 @@ public class KingdomPriceTask {
 						+ kc.getReviewTextWordCountInApp()*reviewTextWordCountInAppWeight + kc.getReviewTextWordCountOutApp()*reviewTextWordCountOutAppWeight
 						+ kc.getReadCountInApp()*readCountInAppWeight + kc.getReadCountOutApp()*readCountOutAppWeight
 						+ kc.getSubscribeCount()*subscribeCountWeight + kc.getReviewTeaseCount()*reviewTeaseCountWeight
-						+ kc.getReviewVoteCount()*reviewVoteCountWeight + kc.getShareCount()*shareCountWeight)*(kc.getReviewDayCount()*reviewDayCountWeight
-						+ kc.getReadDayCount()*readDayCountWeight)/kc.getUpdateDayCount();
+						+ kc.getReviewVoteCount()*reviewVoteCountWeight + kc.getShareCount()*shareCountWeight);
 
 				int xx = (int)(x*1000);
 				int yy = (int)(y*1000);

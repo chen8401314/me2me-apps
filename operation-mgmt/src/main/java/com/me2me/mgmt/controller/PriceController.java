@@ -143,6 +143,7 @@ public class PriceController {
 		
 		List<Map<String, Object>> queryList = contentService.queryEvery(querySql);
 		if(null != queryList && queryList.size() > 0){
+			List<Long> topicIdList = new ArrayList<Long>();
 			List<Long> uidList = new ArrayList<Long>();
 			Long uid = null;
 			for(Map<String, Object> m : queryList){
@@ -150,6 +151,7 @@ public class PriceController {
 				if(!uidList.contains(uid)){
 					uidList.add(uid);
 				}
+				topicIdList.add((Long)m.get("id"));
 			}
 			
 			StringBuilder userSql = new StringBuilder();
@@ -169,6 +171,24 @@ public class PriceController {
 				}
 			}
 			
+			StringBuilder topicDataSql = new StringBuilder();
+			topicDataSql.append("select * from topic_data t where t.topic_id in (");
+			for(int i=0;i<topicIdList.size();i++){
+				if(i>0){
+					topicDataSql.append(",");
+				}
+				topicDataSql.append(topicIdList.get(i));
+			}
+			topicDataSql.append(")");
+			List<Map<String, Object>> topicDataList = contentService.queryEvery(topicDataSql.toString());
+			Map<String, Map<String, Object>> topicDataMap = new HashMap<String, Map<String, Object>>();
+			if(null != topicDataList && topicDataList.size() > 0){
+				for(Map<String, Object> m : topicDataList){
+					topicDataMap.put(String.valueOf(m.get("topic_id")), m);
+				}
+			}
+			
+			Map<String, Object> topicData = null;
 			KingdomQueryDTO.Item item = null;
 			for(Map<String, Object> m : queryList){
 				item = new KingdomQueryDTO.Item();
@@ -180,6 +200,13 @@ public class PriceController {
 				item.setTitle((String)m.get("title"));
 				item.setType((Integer)m.get("type"));
 				item.setUpdateTime((Date)m.get("update_time"));
+				topicData = topicDataMap.get(String.valueOf(item.getId()));
+				if(null != topicData){
+					item.setStealPrice((Integer)topicData.get("steal_price"));
+					item.setDiligently((Double)topicData.get("diligently"));
+					item.setApprove((Double)topicData.get("approve"));
+				}
+				
 				dto.getResult().add(item);
 			}
 		}

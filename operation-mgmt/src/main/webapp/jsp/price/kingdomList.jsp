@@ -116,6 +116,9 @@ var buildTableBody = function(dataList){
 			}
 			bodyHtml = bodyHtml + "</th>";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].price+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].stealPrice+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].diligently+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].approve+"</th>";
 			bodyHtml = bodyHtml + "<th><a href=\"${ctx}/price/kingdom/"+dataList[i].id+"\">交易</a></th>";
 			bodyHtml = bodyHtml + "</tr>";
 		}
@@ -230,6 +233,9 @@ var parserDatetimeStr = function(time){
 												<th>更新时间</th>
 												<th>王国类型</th>
 												<th>价值</th>
+												<th>可被偷</th>
+												<th>用心度x</th>
+												<th>认可度y</th>
 												<th>操作</th>
 											</tr>
 										</thead>
@@ -253,6 +259,9 @@ var parserDatetimeStr = function(time){
                                                 	</c:choose>
 													</th>
 													<th>${item.price }</th>
+													<th>${item.stealPrice }</th>
+													<th>${item.diligently }</th>
+													<th>${item.approve }</th>
 													<th>
 													<a href="${ctx}/price/kingdom/${item.id }">交易</a>
 													</th>

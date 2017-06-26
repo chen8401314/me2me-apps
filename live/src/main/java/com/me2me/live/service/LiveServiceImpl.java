@@ -6763,7 +6763,9 @@ public class LiveServiceImpl implements LiveService {
         if(!StringUtils.isEmpty(exchangeRateConfig)){
         	exchangeRate = Integer.valueOf(exchangeRateConfig).intValue();
         }
-        int rmb = topic.getPrice()/exchangeRate;
+        double rmb = (double)topic.getPrice()/(double)exchangeRate;
+        
+        rmb = new BigDecimal(rmb).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
         
         TopicNews topicNews = new TopicNews();
         topicNews.setTopicId(topicId);
