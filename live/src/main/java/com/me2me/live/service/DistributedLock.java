@@ -1,6 +1,5 @@
 package com.me2me.live.service;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -161,13 +160,16 @@ public class DistributedLock implements Lock, Watcher{
 
 	public void unlock() {
 		try {
-			logger.info("unlock " + myZnode);
+			logger.debug("unlock " + myZnode);
 			zk.delete(myZnode,-1);
 			myZnode = null;
-		} catch (InterruptedException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (KeeperException e) {
-			e.printStackTrace();
+		}
+		try{
+			zk.close();
+			logger.debug("lock closed");
+		}catch (Exception e) {
 		}
 	}
 
