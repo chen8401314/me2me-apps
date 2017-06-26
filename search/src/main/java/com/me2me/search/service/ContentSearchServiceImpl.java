@@ -38,6 +38,7 @@ import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.github.stuxuhai.jpinyin.PinyinException;
 import com.github.stuxuhai.jpinyin.PinyinFormat;
 import com.github.stuxuhai.jpinyin.PinyinHelper;
@@ -173,7 +174,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		if(StringUtils.isEmpty(content)){
 			bq.must(QueryBuilders.matchAllQuery());
 		}else{
-			bq.should(QueryBuilders.queryStringQuery(content).field("nick_name").boost(3f));
+			bq.should(QueryBuilders.queryStringQuery(content).field("nick_name"));
 			bq.should(QueryBuilders.queryStringQuery(content).field("introduced"));
 		}
 		
@@ -182,6 +183,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		sq.setPageable(new PageRequest(--page, pageSize));
 		
 		FacetedPage<UserEsMapping> result = esTemplate.queryForPage(sq, UserEsMapping.class);
+		log.info("search:{},page:{},pageSize:{},result:{}",content,page,pageSize,JSON.toJSONString(result, true));
 		return result;
 	}
 	
