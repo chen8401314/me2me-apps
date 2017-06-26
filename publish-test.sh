@@ -1,8 +1,14 @@
 #!/bin/sh
 
-mvn clean package -Ptest
-
 myPath="D:/apps-test"
+
+if [ ! -d "$myPath" ]; then  
+¡¡¡¡mkdir "$myPath"
+    echo "created dir:$myPath"
+fi
+rm -rf $myPath/*
+
+mvn clean package -Ptest
 
 cp -r ./activity/target/jsw/app-activity-service $myPath
 cp -r ./content/target/jsw/app-content-service $myPath
@@ -16,6 +22,12 @@ cp -r ./monitor/target/jsw/app-monitor-service $myPath
 cp -r ./sns/target/jsw/app-sns-service $myPath
 cp -r ./kafka/target/jsw/app-kafka-service $myPath
 cp -r ./pay/target/jsw/app-pay-service $myPath
+
+#war
+cp -r ./root/target/*.war $myPath
+cp -r ./operation-mgmt/target/*.war $myPath
+
+#zip -r $myPath/app-test.zip $myPath
 
 echo '##############################################################'
 echo '#                 test build success                         #'
