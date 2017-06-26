@@ -48,7 +48,7 @@ public class PermissionDescriptionDto implements BaseEntity {
         @Override
         public int compareTo(PermissionNodeDto o) {
 
-            if(code>o.getCode()){
+            if(openLevel>o.getOpenLevel()){
                 return 1;
             }else if(code==o.getCode()){
                 return 0;
