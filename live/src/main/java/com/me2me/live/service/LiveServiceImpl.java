@@ -6917,7 +6917,7 @@ public class LiveServiceImpl implements LiveService {
 
         UserProfile  userProfile = userService.getUserProfileByUid(rechargeToKingdomDto.getUid());
         if(userProfile.getAvailableCoin() ==0){
-            return  Response.failure(500,"没有可充米汤币");
+            return  Response.failure(500,"没有可转移米汤币");
         }
         rechargeToKingdomDto.setAmount(userProfile.getAvailableCoin());
 
