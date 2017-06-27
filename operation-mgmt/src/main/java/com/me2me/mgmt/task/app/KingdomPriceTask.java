@@ -451,22 +451,9 @@ public class KingdomPriceTask {
 					kc.setDiligently(new BigDecimal((double)xx/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 					
 					double kv = Math.pow(Math.pow(_x, 2)+Math.pow(_y, 2),0.5);
-					kc.setPrice((int)kv);
 					
-					this.saveKingdomCount(kc, true, listedPrice);
-				}else{//历史有的，则需要做增量计算
-					int kv0 = ((Integer)topicData.get("price")).intValue();
-					double x0 = ((Double)topicData.get("diligently")).doubleValue();
-					double y0 = ((Double)topicData.get("approve")).doubleValue();
-					int _kv = (int)((Math.pow(Math.min(1, _x/x0), diligentlyWeight) + Math.pow(Math.min(1, _y/y0), approveWeight))*kv0/2);
-					int d = 0;
-					if(kc.getNoUpdateDayCount() > 0){
-						d = (int)((kv0/decayBaseDayCountWeight)*Math.pow(decayBaseWeight, kc.getNoUpdateDayCount()));
-					}
-					
-					int kv = kv0 + _kv - d - (int)(_kv*stealWeightR0);
 					//特别补助
-					subsidyConfig = this.getSubsidyConfig(kv, subsidyConfigList);
+					subsidyConfig = this.getSubsidyConfig((int)kv, subsidyConfigList);
 					if(null != subsidyConfig && subsidyConfig.size() == 3){
 						double k1 = (Double)subsidyConfig.get("k1");
 						double k2 = (Double)subsidyConfig.get("k2");
@@ -478,10 +465,73 @@ public class KingdomPriceTask {
 						}
 					}
 					
-					int stealPrice = (int)(_kv*stealWeightR0 + d*stealWeightR1);
+					if(kv > 0){
+						int stealPrice = (int)(kv*stealWeightR0);//d不存在了
+						if(stealPrice<10){
+							int need = 10-stealPrice;
+							stealPrice = 10;
+							if(kv>=need){
+								kv = kv-need;
+							}else{
+								kv = 0;
+							}
+						}
+						kc.setStealPrice(stealPrice);
+					}else{
+						kc.setStealPrice(0);
+					}
+					
+					kc.setPrice((int)kv);
+					this.saveKingdomCount(kc, true, listedPrice, yesterday);
+				}else{//历史有的，则需要做增量计算
+					int kv0 = ((Integer)topicData.get("price")).intValue();
+					double x0 = ((Double)topicData.get("diligently")).doubleValue();
+					double y0 = ((Double)topicData.get("approve")).doubleValue();
+					int _kv = (int)((Math.pow(Math.min(1, _x/x0), diligentlyWeight) + Math.pow(Math.min(1, _y/y0), approveWeight))*kv0/2);
+					int d = 0;
+					if(kc.getNoUpdateDayCount() > 0){
+						d = (int)((kv0/decayBaseDayCountWeight)*Math.pow(decayBaseWeight, kc.getNoUpdateDayCount()));
+						if(d < 2){
+							d = 2;
+						}
+					}
+					
+					int kv = kv0 + _kv - d - (int)(_kv*stealWeightR0);
+					if(kv < 0){
+						kv = 0;
+					}
+					//特别补助
+					if(kv > kv0){
+						subsidyConfig = this.getSubsidyConfig(kv, subsidyConfigList);
+						if(null != subsidyConfig && subsidyConfig.size() == 3){
+							double k1 = (Double)subsidyConfig.get("k1");
+							double k2 = (Double)subsidyConfig.get("k2");
+							int m2 = (Integer)subsidyConfig.get("m2");
+							int subsidy = (int)(_x*(k1+Math.pow(_y/_x, k2)));
+							kv = kv + subsidy;
+							if(kv > m2){
+								kv = m2;
+							}
+						}
+					}
+					
+					if(kv > 0){
+						int stealPrice = (int)(_kv*stealWeightR0 + d*stealWeightR1);
+						if(stealPrice<10){
+							int need = 10-stealPrice;
+							stealPrice = 10;
+							if(kv>=need){
+								kv = kv-need;
+							}else{
+								kv = 0;
+							}
+						}
+						kc.setStealPrice(stealPrice);
+					}else{
+						kc.setStealPrice(0);
+					}
 					
 					kc.setPrice(kv);
-					kc.setStealPrice(stealPrice);
 					kc.setDiligently(x0+new BigDecimal((double)xx/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 					kc.setApprove(y0+new BigDecimal((double)yy/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 					kc.setUpdateTextWordCount(((Integer)topicData.get("update_text_length")).intValue() + kc.getUpdateTextWordCount());
@@ -496,7 +546,7 @@ public class KingdomPriceTask {
 					kc.setReviewTextCountInApp(((Integer)topicData.get("review_text_count")).intValue() + kc.getReviewTextCountInApp());//这里因为保存的两个相加值，故这里只在一个参数上加上原有值
 					kc.setReviewTextWordCountInApp(((Integer)topicData.get("review_text_length")).intValue() + kc.getReviewTextWordCountInApp());//这里因为保存的两个相加值，故这里只在一个参数上加上原有值
 					
-					this.saveKingdomCount(kc, false, listedPrice);
+					this.saveKingdomCount(kc, false, listedPrice, yesterday);
 				}
 			}
 			
@@ -990,9 +1040,9 @@ public class KingdomPriceTask {
 				
 				topicData = topicDataMap.get(String.valueOf(kc.getTopicId()));
 				if(null == topicData){//当天新增的王国
-					this.saveKingdomCount(kc, true, listedPrice);
+					this.saveKingdomCount(kc, true, listedPrice, yesterday);
 				}else{
-					this.saveKingdomCount(kc, false, listedPrice);
+					this.saveKingdomCount(kc, false, listedPrice, yesterday);
 				}
 			}
 			
@@ -1004,7 +1054,7 @@ public class KingdomPriceTask {
 		logger.info("王国价值处理完成");
 	}
 	
-	private void saveKingdomCount(KingdomCount kc, boolean isNew, int listedPrice){
+	private void saveKingdomCount(KingdomCount kc, boolean isNew, int listedPrice, Date recordTime){
 		StringBuilder topicPriceQuerySql = new StringBuilder();
 		topicPriceQuerySql.append("select t.title,t.price,p.nick_name from topic t,user_profile p where t.uid=p.uid and t.id=").append(kc.getTopicId());
 		List<Map<String, Object>> topicPriceList = contentService.queryEvery(topicPriceQuerySql.toString());
@@ -1063,7 +1113,8 @@ public class KingdomPriceTask {
 		StringBuilder saveHisSql = new StringBuilder();
 		saveHisSql.append("insert into topic_price_his(topic_id,price,create_time)");
 		saveHisSql.append(" values (").append(kc.getTopicId()).append(",").append(kc.getPrice());
-		saveHisSql.append(",now())");
+		saveHisSql.append(",'").append(DateUtil.date2string(recordTime, "yyyy-MM-dd HH:mm:ss"));
+		saveHisSql.append("')");
 		contentService.executeSql(saveHisSql.toString());
 		
 		StringBuilder updatePriceSql = new StringBuilder();
