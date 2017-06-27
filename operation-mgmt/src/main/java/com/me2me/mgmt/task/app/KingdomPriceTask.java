@@ -531,6 +531,11 @@ public class KingdomPriceTask {
 						kc.setStealPrice(0);
 					}
 					
+					//有增加，但是王国价值没变，则数字不足+1
+					if(_kv > 0 && kv == kv0){
+						kv = kv + 1;
+					}
+					
 					kc.setPrice(kv);
 					kc.setDiligently(x0+new BigDecimal((double)xx/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 					kc.setApprove(y0+new BigDecimal((double)yy/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
