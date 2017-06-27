@@ -491,9 +491,15 @@ public class KingdomPriceTask {
 					int d = 0;
 					if(kc.getNoUpdateDayCount() > 0){
 						d = (int)((kv0/decayBaseDayCountWeight)*Math.pow(decayBaseWeight, kc.getNoUpdateDayCount()));
+						if(d < 2){
+							d = 2;
+						}
 					}
 					
 					int kv = kv0 + _kv - d - (int)(_kv*stealWeightR0);
+					if(kv < 0){
+						kv = 0;
+					}
 					//特别补助
 					subsidyConfig = this.getSubsidyConfig(kv, subsidyConfigList);
 					if(null != subsidyConfig && subsidyConfig.size() == 3){
