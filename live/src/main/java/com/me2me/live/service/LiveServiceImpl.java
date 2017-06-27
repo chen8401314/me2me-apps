@@ -3326,6 +3326,17 @@ public class LiveServiceImpl implements LiveService {
         topic.setCeAuditType(0);//聚合王国属性，是否需要国王审核才能加入此聚合王国，默认0是
         topic.setAcAuditType(1);//个人王国属性，是否需要国王审核才能收录此王国，默认1否
         topic.setAcPublishType(0);//个人王国属性，是否接受聚合王国下发的消息，默认0是
+        //初始化王国价值，默认估值:米汤币为15,随机增减0-8
+        int price = 15;
+        Random random = new Random();
+        int incr = random.nextInt(9);
+        int flag = random.nextInt(2);
+        if(flag == 0){
+        	price = price - incr;
+        }else{
+        	price = price + incr;
+        }
+        topic.setPrice(price);
         liveMybatisDao.createTopic(topic);
 
         //创建直播之后添加到我的UGC

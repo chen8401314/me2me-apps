@@ -3,7 +3,7 @@
 myPath="D:/apps-test"
 
 if [ ! -d "$myPath" ]; then  
-¡¡¡¡mkdir "$myPath"
+	mkdir "$myPath"
     echo "created dir:$myPath"
 fi
 rm -rf $myPath/*
