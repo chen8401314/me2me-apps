@@ -1101,14 +1101,17 @@ public class LiveServiceImpl implements LiveService {
         //saveLiveDisplayData(speakDto);
         //判断是否升级
         int share = 0 ;
-        if( speakDto.getContentType() != 16 ){
-        if(speakDto.getType() == 52 || speakDto.getType() == 51 || speakDto.getType() == 72 ){
+        //判断不是足迹 和不是大表情
+        if( speakDto.getContentType() != 16 && speakDto.getContentType() != 17  ){
+            //判断是分享的Type
+            if(speakDto.getType() == 52 || speakDto.getType() == 51 || speakDto.getType() == 72 ){
             CoinRule coinRuleShare = userService.getCoinRules().get(Rules.SHARE_KING_KEY);
             ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), coinRuleShare);
             speakDto.setUpgrade(muDto.getUpgrade());
             speakDto.setCurrentLevel(muDto.getCurrentLevel());
             share = 1 ;
         }}
+        //如果不是 加入王国  喜欢王国  分享王国 进入 只加2分
         if(isJion != 1 && like !=1 && share != 1) {
        /* log.info("############################################################################");
         log.info("############################################################################");*/

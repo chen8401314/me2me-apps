@@ -773,6 +773,10 @@ public class UserServiceImpl implements UserService {
             userNoticeElement.setToUid(userNotice.getToUid());
             userNoticeElement.setReview(userNotice.getReview());
             userNoticeElement.setV_lv(fromUser.getvLv());
+            if (fromUser.getLevel() != null){
+                userNoticeElement.setLevel(fromUser.getLevel());
+            }
+
             toUser = userProfileMap.get(String.valueOf(userNotice.getToUid()));
             userNoticeElement.setTo_v_lv(toUser.getvLv());
             userNoticeElement.setToNickName(toUser.getNickName());
@@ -4007,17 +4011,14 @@ public class UserServiceImpl implements UserService {
         String value2 = getAppConfigByKey("LEVEL_"+level);
         PermissionDescriptionDto permissionDescriptionDto = JSON.parseObject(value2, PermissionDescriptionDto.class);
         List<PermissionDescriptionDto.PermissionNodeDto> list = Lists.newArrayList();
+     /*   for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
+            list.add(nodeDto);
+        }*/
+
 /**
- *                以下4个for循环为弱智排序
+ *                以下3个for循环为弱智排序
  */
 
-        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
-
-            if (nodeDto.getCode() == 6){
-                list.add(nodeDto);
-                break;
-            }
-        }
         for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
             if(nodeDto.getCode()==1){
                 list.add(nodeDto);
@@ -4025,27 +4026,26 @@ public class UserServiceImpl implements UserService {
                 list.add(nodeDto);
             }else  if(nodeDto.getCode()==3){
                 list.add(nodeDto);
+            }else if(nodeDto.getCode()==6){
+                list.add(nodeDto);
                 break;
             }
         }
         for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
             if(nodeDto.getCode()==5){
                 list.add(nodeDto);
-                break;
-            }
-        }
-        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
-            if(nodeDto.getCode()==7){
+            }else if(nodeDto.getCode()==7){
                 list.add(nodeDto);
                 break;
             }
         }
         for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
-            if(nodeDto.getCode()==4) {
+            if(nodeDto.getCode()==4){
                 list.add(nodeDto);
                 break;
             }
         }
+
 
 
         for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
@@ -4080,8 +4080,27 @@ public class UserServiceImpl implements UserService {
         Map<String,Object> map = (Map<String, Object>) randomList.get(randomKey);
         myLevelDto.setRandomTopicId((long)map.get("id"));
         // 排序结果集合
-        List<PermissionDescriptionDto.PermissionNodeDto> nodes = myLevelDto.getPermissions().getNodes();
-        Collections.sort(nodes);
+      /* List<PermissionDescriptionDto.PermissionNodeDto> nodes = myLevelDto.getPermissions().getNodes();*/
+    /*   int k = 0 ;
+        for (int i = 0 ; i<= list.size()-k ; i++){
+            if (list.get(i).getIsShow() != null){
+            if (list.get(i).getIsShow() == 0){
+                list.remove(i);
+                k++;
+            }}
+            if (list.get(i).getCode()== 4){
+                list.remove(i);
+                k++;
+            }
+        }
+        Collections.sort(list);
+        for(PermissionDescriptionDto.PermissionNodeDto nodeDto : permissionDescriptionDto.getNodes()){
+            if (nodeDto.getCode() == 4){
+                list.add(nodeDto);
+            }
+        }*/
+
+
         return Response.success(myLevelDto);
     }
 
