@@ -501,15 +501,17 @@ public class KingdomPriceTask {
 						kv = 0;
 					}
 					//特别补助
-					subsidyConfig = this.getSubsidyConfig(kv, subsidyConfigList);
-					if(null != subsidyConfig && subsidyConfig.size() == 3){
-						double k1 = (Double)subsidyConfig.get("k1");
-						double k2 = (Double)subsidyConfig.get("k2");
-						int m2 = (Integer)subsidyConfig.get("m2");
-						int subsidy = (int)(_x*(k1+Math.pow(_y/_x, k2)));
-						kv = kv + subsidy;
-						if(kv > m2){
-							kv = m2;
+					if(kv > kv0){
+						subsidyConfig = this.getSubsidyConfig(kv, subsidyConfigList);
+						if(null != subsidyConfig && subsidyConfig.size() == 3){
+							double k1 = (Double)subsidyConfig.get("k1");
+							double k2 = (Double)subsidyConfig.get("k2");
+							int m2 = (Integer)subsidyConfig.get("m2");
+							int subsidy = (int)(_x*(k1+Math.pow(_y/_x, k2)));
+							kv = kv + subsidy;
+							if(kv > m2){
+								kv = m2;
+							}
 						}
 					}
 					
