@@ -102,6 +102,20 @@ var modifyCommit = function(){
 	
 }
 
+var refreshCache = function(){
+	$("#btnSearch2").attr("disabled",true);
+	$.ajax({
+		url : "${ctx}/price/refreshCache",
+		async : false,
+		type : "GET",
+		contentType : "application/json;charset=UTF-8",
+		success : function(resp) {
+			alert(resp);
+			$("#btnSearch2").attr("disabled",false);
+		}
+	});
+}
+
 </script>
 </head>
 <body>
@@ -125,7 +139,8 @@ var modifyCommit = function(){
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								| 基础配置列表 &nbsp;&nbsp;&nbsp;&nbsp;
+								| 基础配置列表 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<input type="button" id="btnSearch2" name="btnSearch2" value="全量刷新缓存" onclick="refreshCache()" class="btn btn-info" />
 								<span class="tools pull-right">
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>

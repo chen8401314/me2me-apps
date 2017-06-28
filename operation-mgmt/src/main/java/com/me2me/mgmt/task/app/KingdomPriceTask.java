@@ -20,6 +20,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.me2me.common.utils.DateUtil;
 import com.me2me.content.service.ContentService;
+import com.me2me.mgmt.dao.LocalJdbcDao;
 import com.me2me.user.service.UserService;
 
 @Component
@@ -30,7 +31,7 @@ public class KingdomPriceTask {
 	@Autowired
 	private UserService userService;
 	@Autowired
-	private ContentService contentService;
+	private LocalJdbcDao localJdbcDao;
 	
 	private static List<String> weightKeyList = new ArrayList<String>(){
 		private static final long serialVersionUID = -7635500651260154850L;
@@ -130,7 +131,7 @@ public class KingdomPriceTask {
 		//获取补助配置
 		StringBuilder subsidyConfigSql = new StringBuilder();
 		subsidyConfigSql.append("select * from topic_price_subsidy_config t order by t.m1 asc");
-		List<Map<String, Object>> subsidyConfigList = contentService.queryEvery(subsidyConfigSql.toString());
+		List<Map<String, Object>> subsidyConfigList = localJdbcDao.queryEvery(subsidyConfigSql.toString());
 		
 		Date now = new Date();
 		Date yesterday = null;
@@ -180,7 +181,7 @@ public class KingdomPriceTask {
 		Map<String, Object> topicData = null;
 		Map<String, Object> subsidyConfig = null;
 		while(true){
-			topicList = contentService.queryEvery(topicSql+start+","+pageSize);
+			topicList = localJdbcDao.queryEvery(topicSql+start+","+pageSize);
 			if(null == topicList || topicList.size() == 0){
 				break;
 			}
@@ -214,7 +215,7 @@ public class KingdomPriceTask {
 				topicFragmentSql.append(String.valueOf(topicList.get(i).get("id")));
 			}
 			topicFragmentSql.append(")");
-			fragmentList = contentService.queryEvery(topicFragmentSql.toString());
+			fragmentList = localJdbcDao.queryEvery(topicFragmentSql.toString());
 			if(null != fragmentList && fragmentList.size() > 0){
 				for(Map<String, Object> f : fragmentList){
 					long topicId = ((Long)f.get("topic_id")).longValue();
@@ -238,7 +239,7 @@ public class KingdomPriceTask {
 				topicDayCountSql.append(String.valueOf(topicList.get(i).get("id")));
 			}
 			topicDayCountSql.append(") group by f.topic_id");
-			topicDayCountList = contentService.queryEvery(topicDayCountSql.toString());
+			topicDayCountList = localJdbcDao.queryEvery(topicDayCountSql.toString());
 			if(null != topicDayCountList && topicDayCountList.size() > 0){
 				for(Map<String, Object> c : topicDayCountList){
 					long topicId = ((Long)c.get("topic_id")).longValue();
@@ -248,7 +249,11 @@ public class KingdomPriceTask {
 						kc.setUpdateDayCount(1);
 					}
 					kc.setReviewDayCount(((Long)c.get("reviewDayCount")).intValue());
-					kc.setLastUpdateTime(DateUtil.string2date((String)c.get("lastUpdateTime"), "yyyy-MM-dd HH:mm:ss"));
+					if(null != c.get("lastUpdateTime") && StringUtils.isNotBlank((String)c.get("lastUpdateTime"))){
+						kc.setLastUpdateTime(DateUtil.string2date((String)c.get("lastUpdateTime"), "yyyy-MM-dd HH:mm:ss"));
+					}else{
+						kc.setLastUpdateTime(kc.getCreateTime());
+					}
 					long dayCount = DateUtil.getDaysBetween2Date(kc.getCreateTime(), kc.getLastUpdateTime()) + 1;
 					kc.setReadDayCount((int)dayCount);//老数据处理，产生阅读的天数，即为从创建到最后一次更新的天数
 					kc.setUpdateFrequency((double)kc.getUpdateDayCount()/(double)dayCount);
@@ -270,7 +275,7 @@ public class KingdomPriceTask {
 				favouriteSql.append(String.valueOf(topicList.get(i).get("id")));
 			}
 			favouriteSql.append(") group by f.topic_id");
-			favouriteCountList = contentService.queryEvery(favouriteSql.toString());
+			favouriteCountList = localJdbcDao.queryEvery(favouriteSql.toString());
 			if(null != favouriteCountList && favouriteCountList.size() > 0){
 				for(Map<String, Object> f : favouriteCountList){
 					long topicId = ((Long)f.get("topic_id")).longValue();
@@ -289,7 +294,7 @@ public class KingdomPriceTask {
 				readCountSql.append(String.valueOf(topicList.get(i).get("id")));
 			}
 			readCountSql.append(")");
-			readCountList = contentService.queryEvery(readCountSql.toString());
+			readCountList = localJdbcDao.queryEvery(readCountSql.toString());
 			if(null != readCountList && readCountList.size() > 0){
 				for(Map<String, Object> r : readCountList){
 					long topicId = ((Long)r.get("forward_cid")).longValue();
@@ -351,7 +356,7 @@ public class KingdomPriceTask {
 				shareSql.append(String.valueOf(topicList.get(i).get("id")));
 			}
 			shareSql.append(") group by t.cid");
-			shareList = contentService.queryEvery(shareSql.toString());
+			shareList = localJdbcDao.queryEvery(shareSql.toString());
 			if(null != shareList && shareList.size() > 0){
 				for(Map<String, Object> s : shareList){
 					long topicId = ((Long)s.get("cid")).longValue();
@@ -374,7 +379,7 @@ public class KingdomPriceTask {
 			voteCountSql.append(") and r.create_time<='").append(endTime);
 			voteCountSql.append("' and r.create_time>='").append(startTime);
 			voteCountSql.append("' group by i.topicId");
-			voteCountList = contentService.queryEvery(voteCountSql.toString());
+			voteCountList = localJdbcDao.queryEvery(voteCountSql.toString());
 			if(null != voteCountList && voteCountList.size() > 0){
 				for(Map<String, Object> v : voteCountList){
 					long topicId = ((Long)v.get("topicId")).longValue();
@@ -394,7 +399,7 @@ public class KingdomPriceTask {
 				userProfileSql.append(uidList.get(i));
 			}
 			userProfileSql.append(")");
-			userProfileList = contentService.queryEvery(userProfileSql.toString());
+			userProfileList = localJdbcDao.queryEvery(userProfileSql.toString());
 			if(null != userProfileList && userProfileList.size() > 0){
 				for(Map<String, Object> u : userProfileList){
 					vlvMap.put(String.valueOf(u.get("uid")), (Integer)u.get("v_lv"));
@@ -411,7 +416,7 @@ public class KingdomPriceTask {
 				topicDataSql.append(String.valueOf(topicList.get(i).get("id")));
 			}
 			topicDataSql.append(")");
-			topicDataList = contentService.queryEvery(topicDataSql.toString());
+			topicDataList = localJdbcDao.queryEvery(topicDataSql.toString());
 			topicDataMap = new HashMap<String, Map<String, Object>>();
 			if(null != topicDataList && topicDataList.size() > 0){
 				for(Map<String, Object> t : topicDataList){
@@ -424,6 +429,15 @@ public class KingdomPriceTask {
 			//开始计算
 			for(Map.Entry<String, KingdomCount> entry : kingCountMap.entrySet()){
 				kc = entry.getValue();
+				//几个时间处理下
+				if(null == kc.getLastUpdateTime()){
+					kc.setLastUpdateTime(kc.getCreateTime());
+					kc.setReadDayCount(1);
+					kc.setUpdateDayCount(1);
+					kc.setUpdateFrequency(1);
+					long noUpdateDayCount = DateUtil.getDaysBetween2Date(kc.getLastUpdateTime(), yesterday);
+					kc.setNoUpdateDayCount((int)noUpdateDayCount);
+				}
 				if(null != vlvMap.get(String.valueOf(kc.getUid())) && vlvMap.get(String.valueOf(kc.getUid())).intValue() == 1){
 					kc.setVlv(true);
 				}
@@ -487,7 +501,13 @@ public class KingdomPriceTask {
 					int kv0 = ((Integer)topicData.get("price")).intValue();
 					double x0 = ((Double)topicData.get("diligently")).doubleValue();
 					double y0 = ((Double)topicData.get("approve")).doubleValue();
-					int _kv = (int)((Math.pow(Math.min(1, _x/x0), diligentlyWeight) + Math.pow(Math.min(1, _y/y0), approveWeight))*kv0/2);
+					int _kv = 0;
+					if(kv0 == 0){
+						_kv = (int)Math.pow(Math.pow(_x, 2)+Math.pow(_y, 2),0.5);
+					}else{
+						_kv = (int)((Math.pow(Math.min(1, _x/x0), diligentlyWeight) + Math.pow(Math.min(1, _y/y0), approveWeight))*kv0/2);
+					}
+					
 					int d = 0;
 					if(kc.getNoUpdateDayCount() > 0){
 						d = (int)((kv0/decayBaseDayCountWeight)*Math.pow(decayBaseWeight, kc.getNoUpdateDayCount()));
@@ -685,7 +705,7 @@ public class KingdomPriceTask {
 		}catch(Exception e){
 			logger.error("配置项["+key+"]有问题", e);
 		}
-		
+		logger.info("配置["+key+"]==["+result+"]");
 		return result;
 	}
 	
@@ -700,7 +720,7 @@ public class KingdomPriceTask {
 		}catch(Exception e){
 			logger.error("配置项["+key+"]有问题", e);
 		}
-		
+		logger.info("配置["+key+"]==["+result+"]");
 		return result;
 	}
 	
@@ -828,7 +848,7 @@ public class KingdomPriceTask {
 		Map<String, Map<String, Object>> topicDataMap = null;
 		Map<String, Object> topicData = null;
 		while(true){
-			topicList = contentService.queryEvery(topicSql+start+","+pageSize);
+			topicList = localJdbcDao.queryEvery(topicSql+start+","+pageSize);
 			if(null == topicList || topicList.size() == 0){
 				break;
 			}
@@ -861,7 +881,7 @@ public class KingdomPriceTask {
 				topicFragmentSql.append(String.valueOf(topicList.get(i).get("id")));
 			}
 			topicFragmentSql.append(")");
-			fragmentList = contentService.queryEvery(topicFragmentSql.toString());
+			fragmentList = localJdbcDao.queryEvery(topicFragmentSql.toString());
 			if(null != fragmentList && fragmentList.size() > 0){
 				for(Map<String, Object> f : fragmentList){
 					long topicId = ((Long)f.get("topic_id")).longValue();
@@ -885,7 +905,7 @@ public class KingdomPriceTask {
 				topicDayCountSql.append(String.valueOf(topicList.get(i).get("id")));
 			}
 			topicDayCountSql.append(") group by f.topic_id");
-			topicDayCountList = contentService.queryEvery(topicDayCountSql.toString());
+			topicDayCountList = localJdbcDao.queryEvery(topicDayCountSql.toString());
 			if(null != topicDayCountList && topicDayCountList.size() > 0){
 				for(Map<String, Object> c : topicDayCountList){
 					long topicId = ((Long)c.get("topic_id")).longValue();
@@ -895,7 +915,11 @@ public class KingdomPriceTask {
 						kc.setUpdateDayCount(1);
 					}
 					kc.setReviewDayCount(((Long)c.get("reviewDayCount")).intValue());
-					kc.setLastUpdateTime(DateUtil.string2date((String)c.get("lastUpdateTime"), "yyyy-MM-dd HH:mm:ss"));
+					if(null != c.get("lastUpdateTime") && StringUtils.isNotBlank((String)c.get("lastUpdateTime"))){
+						kc.setLastUpdateTime(DateUtil.string2date((String)c.get("lastUpdateTime"), "yyyy-MM-dd HH:mm:ss"));
+					}else{
+						kc.setLastUpdateTime(kc.getCreateTime());
+					}
 					long dayCount = DateUtil.getDaysBetween2Date(kc.getCreateTime(), kc.getLastUpdateTime()) + 1;
 					kc.setReadDayCount((int)dayCount);//老数据处理，产生阅读的天数，即为从创建到最后一次更新的天数
 					kc.setUpdateFrequency((double)kc.getUpdateDayCount()/(double)dayCount);
@@ -916,7 +940,7 @@ public class KingdomPriceTask {
 				favouriteSql.append(String.valueOf(topicList.get(i).get("id")));
 			}
 			favouriteSql.append(") group by f.topic_id");
-			favouriteCountList = contentService.queryEvery(favouriteSql.toString());
+			favouriteCountList = localJdbcDao.queryEvery(favouriteSql.toString());
 			if(null != favouriteCountList && favouriteCountList.size() > 0){
 				for(Map<String, Object> f : favouriteCountList){
 					long topicId = ((Long)f.get("topic_id")).longValue();
@@ -936,7 +960,7 @@ public class KingdomPriceTask {
 				readCountSql.append(String.valueOf(topicList.get(i).get("id")));
 			}
 			readCountSql.append(")");
-			readCountList = contentService.queryEvery(readCountSql.toString());
+			readCountList = localJdbcDao.queryEvery(readCountSql.toString());
 			if(null != readCountList && readCountList.size() > 0){
 				for(Map<String, Object> r : readCountList){
 					long topicId = ((Long)r.get("forward_cid")).longValue();
@@ -965,7 +989,7 @@ public class KingdomPriceTask {
 			}
 			voteCountSql.append(") and r.create_time<='").append(endTime);
 			voteCountSql.append("' group by i.topicId");
-			voteCountList = contentService.queryEvery(voteCountSql.toString());
+			voteCountList = localJdbcDao.queryEvery(voteCountSql.toString());
 			if(null != voteCountList && voteCountList.size() > 0){
 				for(Map<String, Object> v : voteCountList){
 					long topicId = ((Long)v.get("topicId")).longValue();
@@ -985,7 +1009,7 @@ public class KingdomPriceTask {
 				userProfileSql.append(uidList.get(i));
 			}
 			userProfileSql.append(")");
-			userProfileList = contentService.queryEvery(userProfileSql.toString());
+			userProfileList = localJdbcDao.queryEvery(userProfileSql.toString());
 			if(null != userProfileList && userProfileList.size() > 0){
 				for(Map<String, Object> u : userProfileList){
 					vlvMap.put(String.valueOf(u.get("uid")), (Integer)u.get("v_lv"));
@@ -1002,7 +1026,7 @@ public class KingdomPriceTask {
 				topicDataSql.append(String.valueOf(topicList.get(i).get("id")));
 			}
 			topicDataSql.append(")");
-			topicDataList = contentService.queryEvery(topicDataSql.toString());
+			topicDataList = localJdbcDao.queryEvery(topicDataSql.toString());
 			topicDataMap = new HashMap<String, Map<String, Object>>();
 			if(null != topicDataList && topicDataList.size() > 0){
 				for(Map<String, Object> t : topicDataList){
@@ -1014,6 +1038,16 @@ public class KingdomPriceTask {
 			//开始计算
 			for(Map.Entry<String, KingdomCount> entry : kingCountMap.entrySet()){
 				kc = entry.getValue();
+				//几个时间处理下
+				if(null == kc.getLastUpdateTime()){
+					kc.setLastUpdateTime(kc.getCreateTime());
+					kc.setReadDayCount(1);
+					kc.setUpdateDayCount(1);
+					kc.setUpdateFrequency(1);
+					long noUpdateDayCount = DateUtil.getDaysBetween2Date(kc.getLastUpdateTime(), yesterday);
+					kc.setNoUpdateDayCount((int)noUpdateDayCount);
+				}
+				
 				if(null != vlvMap.get(String.valueOf(kc.getUid())) && vlvMap.get(String.valueOf(kc.getUid())).intValue() == 1){
 					kc.setVlv(true);
 				}
@@ -1062,7 +1096,7 @@ public class KingdomPriceTask {
 	private void saveKingdomCount(KingdomCount kc, boolean isNew, int listedPrice, Date recordTime){
 		StringBuilder topicPriceQuerySql = new StringBuilder();
 		topicPriceQuerySql.append("select t.title,t.price,p.nick_name from topic t,user_profile p where t.uid=p.uid and t.id=").append(kc.getTopicId());
-		List<Map<String, Object>> topicPriceList = contentService.queryEvery(topicPriceQuerySql.toString());
+		List<Map<String, Object>> topicPriceList = localJdbcDao.queryEvery(topicPriceQuerySql.toString());
 		int oldPrice = 0;
 		String title = "";
 		String kingName = "";
@@ -1113,18 +1147,18 @@ public class KingdomPriceTask {
 			saveSql.append(kc.getUpdateTeaseCount()).append(",").append(kc.getUpdateDayCount()).append(",").append(kc.getReviewTextCountInApp()+kc.getReviewTextCountOutApp());
 			saveSql.append(",").append(kc.getReviewTextWordCountInApp()+kc.getReviewTextWordCountOutApp()).append(")");
 		}
-		contentService.executeSql(saveSql.toString());
+		localJdbcDao.executeSql(saveSql.toString());
 		
 		StringBuilder saveHisSql = new StringBuilder();
 		saveHisSql.append("insert into topic_price_his(topic_id,price,create_time)");
 		saveHisSql.append(" values (").append(kc.getTopicId()).append(",").append(kc.getPrice());
 		saveHisSql.append(",'").append(DateUtil.date2string(recordTime, "yyyy-MM-dd HH:mm:ss"));
 		saveHisSql.append("')");
-		contentService.executeSql(saveHisSql.toString());
+		localJdbcDao.executeSql(saveHisSql.toString());
 		
 		StringBuilder updatePriceSql = new StringBuilder();
 		updatePriceSql.append("update topic set price=").append(kc.getPrice()).append(",update_time=update_time where id=").append(kc.getTopicId());
-		contentService.executeSql(updatePriceSql.toString());
+		localJdbcDao.executeSql(updatePriceSql.toString());
 		
 		String updatelistedTimeSql = null;
 		if(oldPrice >= listedPrice){
@@ -1133,13 +1167,13 @@ public class KingdomPriceTask {
 			}else{
 				//上一次上市，但是这次没上市，需要将时间清空
 				updatelistedTimeSql = "update topic set listing_time=null,update_time=update_time where id="+kc.getTopicId();
-				contentService.executeSql(updatelistedTimeSql);
+				localJdbcDao.executeSql(updatelistedTimeSql);
 			}
 		}else{
 			if(kc.getPrice() >= listedPrice){
 				//上一次没上市，这次上市了
 				updatelistedTimeSql = "update topic set listing_time=now(),update_time=update_time where id="+kc.getTopicId();
-				contentService.executeSql(updatelistedTimeSql);
+				localJdbcDao.executeSql(updatelistedTimeSql);
 				//并且添加跑马灯
 				kingName = kingName.replaceAll("'", "''");
 				title = title.replaceAll("'", "''");
@@ -1147,7 +1181,7 @@ public class KingdomPriceTask {
 				insertTopicNewsSql.append("insert into topic_news(topic_id,content,type,create_time)");
 				insertTopicNewsSql.append(" values (").append(kc.getTopicId()).append(",'").append(kingName).append("的《").append(title);
 				insertTopicNewsSql.append("》挂牌上市了，快来围观抢购吧。',1,now())");
-				contentService.executeSql(insertTopicNewsSql.toString());
+				localJdbcDao.executeSql(insertTopicNewsSql.toString());
 			}else{
 				//上一次没上市，这次还没上市，不用处理啥
 			}

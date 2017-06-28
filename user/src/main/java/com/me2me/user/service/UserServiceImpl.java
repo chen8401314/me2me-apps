@@ -4210,5 +4210,13 @@ public class UserServiceImpl implements UserService {
 		return userMybatisDao.getAllAppConfigByType(type);
 	}
 
-
+	@Override
+	public void refreshConfigCache(){
+		List<AppConfig> list = userMybatisDao.getAllAppConfig();
+		if(null != list){
+			for(AppConfig c : list){
+				cacheService.set(CacheConstant.APP_CONFIG_KEY_PRE + c.getConfigKey(), c.getConfigValue());
+			}
+		}
+	}
 }

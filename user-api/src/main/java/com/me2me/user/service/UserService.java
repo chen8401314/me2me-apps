@@ -509,6 +509,6 @@ public interface UserService {
 
 	Map<Integer,CoinRule> getCoinRules();
 
-
+	void refreshConfigCache();
 
 }

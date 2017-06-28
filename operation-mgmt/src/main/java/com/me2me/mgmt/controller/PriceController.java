@@ -527,6 +527,18 @@ public class PriceController {
 		return "初始化完成";
 	}
 	
+	@RequestMapping(value = "/refreshCache")
+	@ResponseBody
+	public String refreshCache(){
+		try{
+			userService.refreshConfigCache();
+		}catch(Exception e){
+			logger.error("刷新缓存失败", e);
+			return "刷新缓存失败";
+		}
+		return "刷新缓存成功";
+	}
+	
 	@RequestMapping(value = "/taskConsole")
 	public ModelAndView taskConsole(){
 		ModelAndView view = new ModelAndView("price/taskConsole");
