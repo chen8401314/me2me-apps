@@ -7,6 +7,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
+
 import lombok.Data;
 
 import org.apache.commons.lang.StringUtils;
@@ -33,43 +35,42 @@ public class KingdomPriceTask {
 	@Autowired
 	private LocalJdbcDao localJdbcDao;
 	
-	private static List<String> weightKeyList = new ArrayList<String>(){
-		private static final long serialVersionUID = -7635500651260154850L;
-
-		{
-			this.add("ALGORITHM_DILIGENTLY_WEIGHT");
-			this.add("ALGORITHM_UPDATE_TEXTWORDCOUNT_WEIGHT");
-			this.add("ALGORITHM_UPDATE_TEXTCOUNT_WEIGHT");
-			this.add("ALGORITHM_UPDATE_VEDIOLENGHT_WEIGHT");
-			this.add("ALGORITHM_UPDATE_VEDIOCOUNT_WEIGHT");
-			this.add("ALGORITHM_UPDATE_AUDIOLENGHT_WEIGHT");
-			this.add("ALGORITHM_UPDATE_AUDIOCOUNT_WEIGHT");
-			this.add("ALGORITHM_UPDATE_IMAGECOUNT_WEIGHT");
-			this.add("ALGORITHM_UPDATE_VOTECOUNT_WEIGHT");
-			this.add("ALGORITHM_UPDATE_TEASECOUNT_WEIGHT");
-			this.add("ALGORITHM_UPDATE_FREQUENCY_WEIGHT");
-			this.add("ALGORITHM_APPROVE_WEIGHT");
-			this.add("ALGORITHM_REVIEW_TEXTCOUNT_INAPP_WEIGHT");
-			this.add("ALGORITHM_REVIEW_TEXTCOUNT_OUTAPP_WEIGHT");
-			this.add("ALGORITHM_REVIEW_TEXTWORDCOUNT_INAPP_WEIGHT");
-			this.add("ALGORITHM_REVIEW_TEXTWORDCOUNT_OUTAPP_WEIGHT");
-			this.add("ALGORITHM_READCOUNT_INAPP_WEIGHT");
-			this.add("ALGORITHM_READCOUNT_OUTAPP_WEIGHT");
-			this.add("ALGORITHM_SUBSCRIBECOUNT_WEIGHT");
-			this.add("ALGORITHM_REVIEW_TEASECOUNT_WEIGHT");
-			this.add("ALGORITHM_REVIEW_VOTECOUNT_WEIGHT");
-			this.add("ALGORITHM_SHARECOUNT_WEIGHT");
-			this.add("ALGORITHM_REVIEWDAYCOUNT_WEIGHT");
-			this.add("ALGORITHM_READDAYCOUNT_WEIGHT");
-			this.add("ALGORITHM_V_WEIGHT");
-			this.add("ALGORITHM_ABILITYVALUE_WEIGHT");
-			this.add("ALGORITHM_DECAY_BASE_WEIGHT");
-			this.add("ALGORITHM_DECAY_BASEDAYCOUNT_WEIGHT");
-			this.add("ALGORITHM_STEAL_WEIGHT_R0");
-			this.add("ALGORITHM_STEAL_WEIGHT_R1");
-			this.add("LISTED_PRICE");
-		}
-	};
+	private static List<String> weightKeyList = new ArrayList<String>();
+	
+	@PostConstruct
+	public void init(){
+		weightKeyList.add("ALGORITHM_DILIGENTLY_WEIGHT");
+		weightKeyList.add("ALGORITHM_UPDATE_TEXTWORDCOUNT_WEIGHT");
+		weightKeyList.add("ALGORITHM_UPDATE_TEXTCOUNT_WEIGHT");
+		weightKeyList.add("ALGORITHM_UPDATE_VEDIOLENGHT_WEIGHT");
+		weightKeyList.add("ALGORITHM_UPDATE_VEDIOCOUNT_WEIGHT");
+		weightKeyList.add("ALGORITHM_UPDATE_AUDIOLENGHT_WEIGHT");
+		weightKeyList.add("ALGORITHM_UPDATE_AUDIOCOUNT_WEIGHT");
+		weightKeyList.add("ALGORITHM_UPDATE_IMAGECOUNT_WEIGHT");
+		weightKeyList.add("ALGORITHM_UPDATE_VOTECOUNT_WEIGHT");
+		weightKeyList.add("ALGORITHM_UPDATE_TEASECOUNT_WEIGHT");
+		weightKeyList.add("ALGORITHM_UPDATE_FREQUENCY_WEIGHT");
+		weightKeyList.add("ALGORITHM_APPROVE_WEIGHT");
+		weightKeyList.add("ALGORITHM_REVIEW_TEXTCOUNT_INAPP_WEIGHT");
+		weightKeyList.add("ALGORITHM_REVIEW_TEXTCOUNT_OUTAPP_WEIGHT");
+		weightKeyList.add("ALGORITHM_REVIEW_TEXTWORDCOUNT_INAPP_WEIGHT");
+		weightKeyList.add("ALGORITHM_REVIEW_TEXTWORDCOUNT_OUTAPP_WEIGHT");
+		weightKeyList.add("ALGORITHM_READCOUNT_INAPP_WEIGHT");
+		weightKeyList.add("ALGORITHM_READCOUNT_OUTAPP_WEIGHT");
+		weightKeyList.add("ALGORITHM_SUBSCRIBECOUNT_WEIGHT");
+		weightKeyList.add("ALGORITHM_REVIEW_TEASECOUNT_WEIGHT");
+		weightKeyList.add("ALGORITHM_REVIEW_VOTECOUNT_WEIGHT");
+		weightKeyList.add("ALGORITHM_SHARECOUNT_WEIGHT");
+		weightKeyList.add("ALGORITHM_REVIEWDAYCOUNT_WEIGHT");
+		weightKeyList.add("ALGORITHM_READDAYCOUNT_WEIGHT");
+		weightKeyList.add("ALGORITHM_V_WEIGHT");
+		weightKeyList.add("ALGORITHM_ABILITYVALUE_WEIGHT");
+		weightKeyList.add("ALGORITHM_DECAY_BASE_WEIGHT");
+		weightKeyList.add("ALGORITHM_DECAY_BASEDAYCOUNT_WEIGHT");
+		weightKeyList.add("ALGORITHM_STEAL_WEIGHT_R0");
+		weightKeyList.add("ALGORITHM_STEAL_WEIGHT_R1");
+		weightKeyList.add("LISTED_PRICE");
+	}
 	
 //	@Scheduled(cron="0 2 0 * * ?")
 	public void doTask(){
@@ -775,6 +776,8 @@ public class KingdomPriceTask {
 		logger.info("全量计算王国价值开始");
 		//获取各种权重配置
 		Map<String, String> weightConfigMap = userService.getAppConfigsByKeys(weightKeyList);
+		logger.info("共["+weightKeyList.size()+"]个配置");
+		logger.info("共["+weightConfigMap.size()+"]个配置，有参数值=="+weightConfigMap);
 		//获取任务需要的当前的各种系数配置
 		double updateTextWordCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_TEXTWORDCOUNT_WEIGHT", weightConfigMap, 1);//更新文字字数权重
 		double updateTextCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_TEXTCOUNT_WEIGHT", weightConfigMap, 0);//更新文字条数权重

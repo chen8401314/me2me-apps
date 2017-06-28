@@ -3888,7 +3888,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public Map<String, String> getAppConfigsByKeys(List<String> keys){
 		if(null == keys || keys.size() == 0){
+			log.info("====1");
 			return null;
+		}else{
+			log.info("===="+keys.size());
+			log.info("===="+keys);
 		}
 		Map<String, String> result = new HashMap<String, String>();
 		

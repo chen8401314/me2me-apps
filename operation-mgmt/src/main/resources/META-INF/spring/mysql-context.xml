@@ -8,13 +8,13 @@
     <bean id="druidDataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
     	<property name="driverClassName" value="${jdbcDriver}" />
         <property name="url" value="${jdbcUrl}" />
+        
         <property name="username" value="${jdbcUserName}" />
         <property name="password" value="${jdbcPassword}" />
         <property name="maxActive" value="${jdbcMaxActive}" />
         <property name="initialSize" value="${jdbcInitialSize}" />
         <property name="maxWait" value="${jdbcMaxWait}" />
         <property name="minIdle" value="${jdbcMinIdle}" />
-        <property name="defaultAutoCommit" value="false"/>
         <property name="timeBetweenEvictionRunsMillis" value="3000" />
         <property name="minEvictableIdleTimeMillis" value="300000" />
         <property name="validationQuery" value="SELECT 'x'" />

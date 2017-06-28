@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -12,6 +14,8 @@ import org.springframework.stereotype.Repository;
 @Repository
 public class LocalJdbcDao {
 
+	private static final Logger logger = LoggerFactory.getLogger(LocalJdbcDao.class);
+	
 	@Autowired
     private JdbcTemplate jdbcTemplate;
 	
@@ -37,6 +41,7 @@ public class LocalJdbcDao {
 	}
 	
 	public void executeSql(String sql){
+//		logger.info(sql);
 		jdbcTemplate.update(sql);
     }
 }
