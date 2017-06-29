@@ -266,7 +266,10 @@ public class AppUserController {
     				&& !mobile.startsWith("123") && !mobile.startsWith("1666")
     				&& !mobile.startsWith("180000") && !mobile.startsWith("18888888")
     				&& !mobile.startsWith("18900") && !mobile.startsWith("19000")
-    				&& !mobile.startsWith("2") && !mobile.startsWith("8")){
+    				&& !mobile.startsWith("2") && !mobile.startsWith("3")
+    				&& !mobile.startsWith("4") && !mobile.startsWith("5")
+    				&& !mobile.startsWith("6") && !mobile.startsWith("7")
+    				&& !mobile.startsWith("8") && !mobile.startsWith("9")){
     			return true;
     		}
     	}
