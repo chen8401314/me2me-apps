@@ -2204,8 +2204,9 @@ public class LiveServiceImpl implements LiveService {
                 //content表favorite_count-1
                 liveLocalJdbcDao.contentAddFavoriteCount(topicId, 0);
             }
-            //如果是核心圈的，取消订阅的同时，需要退出核心圈
-            if(null != topic.getCoreCircle() && !"".equals(topic.getCoreCircle())){
+            //如果是核心圈的，取消订阅的同时，需要退出核心圈(国王不能退出核心圈)
+            if(null != topic.getCoreCircle() && !"".equals(topic.getCoreCircle())
+            		&& uid != topic.getUid().longValue()){
                 JSONArray array = JSON.parseArray(topic.getCoreCircle());
                 boolean needUpdate = false;
                 for (int i = 0; i < array.size(); i++) {
