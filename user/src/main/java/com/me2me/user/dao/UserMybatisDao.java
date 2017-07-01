@@ -1444,4 +1444,11 @@ public class UserMybatisDao {
         List<PermissionDetails> list = permissionDetailsMapper.selectByExample(example);
         return Lists.getSingle(list);
     }
+    
+    public UserNo getUserNoByMeNumber(long meNumber){
+    	UserNoExample example = new UserNoExample();
+    	example.createCriteria().andMeNumberEqualTo(meNumber);
+    	List<UserNo> list = userNoMapper.selectByExample(example);
+        return list.size()>0?list.get(0):null;
+    }
 }

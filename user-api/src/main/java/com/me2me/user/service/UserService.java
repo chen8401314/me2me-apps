@@ -511,4 +511,5 @@ public interface UserService {
 
 	void refreshConfigCache();
 
+	 UserNo getUserNoByMeNumber(long meNumber);
 }

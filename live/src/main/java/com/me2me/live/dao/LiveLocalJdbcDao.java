@@ -1071,6 +1071,40 @@ public class LiveLocalJdbcDao {
 		String sql = "select u.* from topic_fragment f,user_profile u where f.uid=u.uid and f.topic_id=? order by f.id desc limit 1";
 		return jdbcTemplate.queryForMap(sql,topicId);
 	}
-
-
+    public int countTopicListedByStatus(int status){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select count(1) as count ");
+    	sb.append("from topic_listed  ");
+    	sb.append("where 1=1  ");
+    	if(status==0){
+          sb.append(" and (status=0 or status=1)  ");
+    	}else{
+    		sb.append(" and status= ");	
+    		sb.append(status);
+    	}
+    	String sql = sb.toString();
+    	Integer count=0;
+		try{
+			count=jdbcTemplate.queryForObject(sql, Integer.class);
+		}catch(Exception e){
+			count=0;
+		}
+    	return count;
+    }
+    public List<Map<String,Object>> getTopicListedListByStatus(int status,int start,int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("SELECT tl.id,t.title,t.price,tl.price_RMB AS frozenPrice,u.nick_name,tl.create_time,tl.status,un.me_number,tl.buy_uid");
+    	sb.append(" FROM topic_listed tl LEFT JOIN topic t ON tl.topic_id = t.id LEFT JOIN user_profile u ON u.uid = t.uid ");
+    	sb.append(" left join user_no un on un.uid = u.uid ");
+    	sb.append("where 1=1  ");
+    	if(status==0){
+          sb.append(" and (tl.status=0 or tl.status=1)  ");
+    	}else{
+    		sb.append(" and tl.status= ");	
+    		sb.append(status);
+    	}
+    	sb.append(" order by tl.buy_time desc limit ").append(start).append(",").append(pageSize);
+    	String sql = sb.toString();
+		return jdbcTemplate.queryForList(sql);
+    }
 }

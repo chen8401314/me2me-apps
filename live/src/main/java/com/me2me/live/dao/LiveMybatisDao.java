@@ -43,6 +43,7 @@ import com.me2me.live.mapper.TopicDroparoundMapper;
 import com.me2me.live.mapper.TopicDroparoundTrailMapper;
 import com.me2me.live.mapper.TopicFragmentMapper;
 import com.me2me.live.mapper.TopicFragmentTemplateMapper;
+import com.me2me.live.mapper.TopicListedMapper;
 import com.me2me.live.mapper.TopicMapper;
 import com.me2me.live.mapper.TopicNewsMapper;
 import com.me2me.live.mapper.TopicPriceHisMapper;
@@ -92,6 +93,7 @@ import com.me2me.live.model.TopicFragmentExample;
 import com.me2me.live.model.TopicFragmentExample.Criteria;
 import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicFragmentTemplateExample;
+import com.me2me.live.model.TopicListed;
 import com.me2me.live.model.TopicNews;
 import com.me2me.live.model.TopicNewsExample;
 import com.me2me.live.model.TopicPriceHis;
@@ -221,6 +223,9 @@ public class LiveMybatisDao {
     
     @Autowired
     private TopicPriceSubsidyConfigMapper topicPriceSubsidyConfigMapper;
+    
+    @Autowired
+    private TopicListedMapper topicListedMapper;
     
 
     public void createTopic(Topic topic) {
@@ -1651,5 +1656,23 @@ public class LiveMybatisDao {
 	 */
 	public void delTopicPriceSubsidyConfig(long id){
 		topicPriceSubsidyConfigMapper.deleteByPrimaryKey(id);
+	}
+	/**
+	 * 修改上市王国信息
+	 * @author chenxiang
+	 * @date 2017-06-22
+	 * @param 
+	 */
+	public void updateTopicListed(TopicListed topicListed){
+		topicListedMapper.updateByPrimaryKeySelective(topicListed);
+	}
+	/**
+	 * 获取上市王国信息
+	 * @author chenxiang
+	 * @date 2017-06-22
+	 * @param 
+	 */
+	public TopicListed getTopicListedById(long id){
+		return topicListedMapper.selectByPrimaryKey(id);
 	}
 }

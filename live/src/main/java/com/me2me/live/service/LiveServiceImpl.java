@@ -22,6 +22,7 @@ import com.me2me.user.rule.CoinRule;
 import com.me2me.user.rule.Rules;
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.lucene.index.LiveIndexWriterConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -89,6 +90,7 @@ import com.me2me.live.dto.LiveUpdateDto;
 import com.me2me.live.dto.ResendVoteDto;
 import com.me2me.live.dto.SearchDropAroundTopicDto;
 import com.me2me.live.dto.SearchTopicDto;
+import com.me2me.live.dto.SearchTopicListedListDto;
 import com.me2me.live.dto.SettingModifyDto;
 import com.me2me.live.dto.SettingsDto;
 import com.me2me.live.dto.ShowBarrageDto;
@@ -130,6 +132,7 @@ import com.me2me.live.model.TopicDroparoundTrail;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicFragmentExample;
 import com.me2me.live.model.TopicFragmentTemplate;
+import com.me2me.live.model.TopicListed;
 import com.me2me.live.model.TopicNews;
 import com.me2me.live.model.TopicPriceHis;
 import com.me2me.live.model.TopicPriceSubsidyConfig;
@@ -147,10 +150,12 @@ import com.me2me.search.service.SearchService;
 import com.me2me.sms.service.JPushService;
 import com.me2me.user.dto.EmotionInfoListDto;
 import com.me2me.user.dto.RechargeToKingdomDto;
+import com.me2me.user.dto.SearchUserProfileDto;
 import com.me2me.user.model.EmotionInfo;
 import com.me2me.user.model.EmotionRecord;
 import com.me2me.user.model.SystemConfig;
 import com.me2me.user.model.UserFollow;
+import com.me2me.user.model.UserNo;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserNoticeUnread;
 import com.me2me.user.model.UserProfile;
@@ -7081,5 +7086,60 @@ public class LiveServiceImpl implements LiveService {
 	public void delTopicPriceSubsidyConfig(long id){
 		liveMybatisDao.delTopicPriceSubsidyConfig(id);
 	}
-  
+    @Override
+    public Response searchTopicListedPage(int status,int page, int pageSize){
+    	int totalRecord = liveLocalJdbcDao.countTopicListedByStatus(status);
+    	int totalPage = (totalRecord + pageSize - 1) / pageSize;
+    	if(page<1){
+    		page=1;
+    	}
+    	if(page>totalPage){
+    		page=totalPage;
+    	}
+    	int start = (page-1)*pageSize;
+    	List<Map<String, Object>> list = liveLocalJdbcDao.getTopicListedListByStatus(status,start, pageSize);
+    	SearchTopicListedListDto dto = new SearchTopicListedListDto();
+        dto.setTotalRecord(totalRecord);
+        dto.setTotalPage(totalPage);
+        for(Map<String, Object> map : list){
+        	SearchTopicListedListDto.TopicListedElement e = dto.createTopicListedElement();
+        	 e.setId((Long)map.get("id"));
+        	 e.setTitle((String)map.get("title"));
+        	 int statusD = (Integer)map.get("status");
+        	 e.setStatus(statusD);
+        	 if(statusD==1){
+        		 e.setPrice((Double)map.get("frozenPrice"));
+        	 }else if(statusD==0){
+        		 e.setPrice(exchangeKingdomPrice((Integer)map.get("price")));
+        	 }else if(statusD==2){
+        		 int buyUid = Integer.parseInt(map.get("buy_uid").toString());
+        		 if(buyUid==0){
+        			 e.setPrice(exchangeKingdomPrice((Integer)map.get("price")));
+        		 }else{
+        			 e.setPrice((Double)map.get("frozenPrice")); 
+        			 e.setMeNumber(map.get("me_number").toString());
+        		 }
+        	 }
+             e.setNickName((String)map.get("nick_name"));
+             e.setCreateTime((Date)map.get("create_time"));
+            dto.getResult().add(e);
+        }
+        return Response.success(dto);
+    }
+    @Override
+    public void updateTopicListed(TopicListed topicListed){
+		liveMybatisDao.updateTopicListed(topicListed);
+	}
+    @Override
+	public String handleTransaction(long id,long meNumber){
+    	UserNo userNo  =userService.getUserNoByMeNumber(meNumber);
+    	if(userNo==null){
+    		return "userNo为空";
+    	}
+    	TopicListed topicListed = liveMybatisDao.getTopicListedById(id);
+    	if(topicListed==null){
+    		return "topicListed为空";
+    	}
+		return changeTopicKing(topicListed.getTopicId(), userNo.getUid());
+	}
 }
