@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.me2me.common.web.Response;
+import com.me2me.search.dto.RecommendTagDto;
 import com.me2me.search.model.SearchHotKeyword;
 
 /**
@@ -118,5 +119,5 @@ public interface SearchService {
 	 */
 	int indexTagSample() throws Exception;
 	
-	Response recommendTags(String content,int count);
+	Response<RecommendTagDto> recommendTags(String content,int count);
 }

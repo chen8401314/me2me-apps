@@ -52,36 +52,46 @@
 							<div class="panel-body">
 								<p>
 									<form action="" method="post" class="form form-inline">
-										<input type="text" name="keyword" value="${keyword}" class="form-control"/>
-										<select name="type" class="form-control" data-value="${type}">
-											<option value="kingdom">kingdom</option>
-											<option value="ugc">ugc</option>
-											<option value="user">user</option>
-										</select>
-										<button type="submit" class="btn btn-primary">
-											<i  class=" fa fa-plus "></i>
-											查询
-										</button>
-										<a class="btn btn-danger" href="./startTask?task=ugc">
-											<i  class=" fa fa-plus "></i>
-											启动UGC全量索引
-										</a>
-										<a class="btn btn-danger" href="./startTask?task=user">
-											<i  class=" fa fa-plus "></i>
-											启动用户全量索引
-										</a>
-										<a class="btn btn-danger" href="./startTask?task=kingdom">
-											<i  class=" fa fa-plus "></i>
-											启动王国全量索引
-										</a>
-										<a class="btn btn-danger" href="./startTask?task=history">
-											<i  class=" fa fa-plus "></i>
-											搜索历史全量索引
-										</a>
-										<a class="btn btn-danger" href="./startTask?task=tagSamples">
-											<i  class=" fa fa-plus "></i>
-											标签关键词训练样本
-										</a>
+										<p>
+											<input type="text" name="keyword" value="${keyword}" class="form-control"/>
+											<select name="type" class="form-control" data-value="${type}">
+												<option value="kingdom">kingdom</option>
+												<option value="ugc">ugc</option>
+												<option value="user">user</option>
+											</select>
+											<button type="submit" class="btn btn-primary">
+												<i  class=" fa fa-plus "></i>
+												查询
+											</button>
+											<a class="btn btn-danger" href="./startTask?task=ugc">
+												<i  class=" fa fa-plus "></i>
+												启动UGC全量索引
+											</a>
+											<a class="btn btn-danger" href="./startTask?task=user">
+												<i  class=" fa fa-plus "></i>
+												启动用户全量索引
+											</a>
+											<a class="btn btn-danger" href="./startTask?task=kingdom">
+												<i  class=" fa fa-plus "></i>
+												启动王国全量索引
+											</a>
+											<a class="btn btn-danger" href="./startTask?task=history">
+												<i  class=" fa fa-plus "></i>
+												搜索历史全量索引
+											</a>
+										</p>
+										<p>
+											<input type="text" name="words" id="words" class="form-control" style="width:600px;"/>
+											<a class="btn btn-primary" href="./recommendTag" id="recommendTag">
+												<i  class=" fa fa-plus "></i>
+												推荐标签
+											</a>
+											<a class="btn btn-danger" href="./startTask?task=tagSamples">
+												<i  class=" fa fa-plus "></i>
+												训练标签关键词样本
+											</a>
+										</p>
+										<p id="msg"></p>
 									</form>
 								</p>
 								<div>
@@ -137,10 +147,14 @@
 	<script src="${ctx}/js/dynamic_table_init_0_asc.js"></script>
 	<script src="${ctx}/js/bootstrap-switch.js"></script>
 	<script src="${ctx}/js/jquery.tagsinput.js"></script>
-	<script src="${ctx}/js/form-component.js"></script>
 	<script src="${ctx}/js/common-scripts.js"></script>
-	<script src="${ctx}/js/advanced-form-components.js"></script>
 	<script>
+		$("#recommendTag").click(function(){
+			$.post("./recommendTag",{words:$("#words").val()},function(data){
+				$("#msg").text(data.data);
+			})
+			return false;
+		})
 		$("a.btn-danger").click(function(){
 			$(this).attr("disabled","disabled");
 			return confirm("确定执行此操作吗？索引将会执行一段时间，请不要重复点击或者刷新")

@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.me2me.common.web.Response;
 import com.me2me.mgmt.syslog.SystemControllerLog;
+import com.me2me.search.dto.RecommendTagDto;
 import com.me2me.search.model.SearchHotKeyword;
 import com.me2me.search.service.SearchService;
 import com.plusnet.sso.api.vo.JsonResult;
@@ -53,6 +55,23 @@ public class SearchController {
 			request.setAttribute("dataList", arr);
 		}
 		return "search/console";
+	}
+	
+	@ResponseBody
+	@RequestMapping("/recommendTag")
+	public JsonResult recommendTag(HttpServletRequest request,HttpServletResponse response){
+		try{
+			String words= request.getParameter("words");
+			Response<RecommendTagDto> resp =searchService.recommendTags(words, 10);
+			String tag="";
+			if(resp.getData().getTags().size()>0){
+			 tag = resp.getData().getTags().get(0);
+			}
+			return JsonResult.success(tag);
+		}catch (Exception e) {
+			e.printStackTrace();
+			return JsonResult.error(e.getMessage());
+		}
 	}
 	
 	@ResponseBody
