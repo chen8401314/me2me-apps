@@ -33,6 +33,7 @@ import com.me2me.search.dto.RecommendKingdomDto;
 import com.me2me.search.dto.RecommendUser;
 import com.me2me.search.dto.RecommendUserDto;
 import com.me2me.search.dto.RecommendListDto;
+import com.me2me.search.dto.RecommendTagDto;
 import com.me2me.search.dto.ShowAssociatedWordDTO;
 import com.me2me.search.dto.ShowRecWordDTO;
 import com.me2me.search.dto.ShowSearchDTO;
@@ -1270,5 +1271,18 @@ public class SearchServiceImpl implements SearchService {
 			}
 		}
 		return result;
+	}
+
+	@Override
+	public int indexTagSample() throws Exception {
+		return searchService.indexTagSample();
+	}
+
+	@Override
+	public Response recommendTags(String content, int count) {
+		List<String> ret = searchService.recommendTags(content, count);
+		RecommendTagDto dto = new RecommendTagDto();
+		dto.setTags(ret);
+		return Response.success(dto);
 	}
 }

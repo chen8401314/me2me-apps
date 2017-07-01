@@ -25,6 +25,7 @@ import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.PrefixQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.index.query.QueryStringQueryBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,6 +56,7 @@ import com.me2me.search.enums.ELikeGender;
 import com.me2me.search.enums.EOccupation;
 import com.me2me.search.enums.RecommendReason;
 import com.me2me.search.esmapping.SearchHistoryEsMapping;
+import com.me2me.search.esmapping.TagTrainSampleEsMapping;
 import com.me2me.search.esmapping.TopicEsMapping;
 import com.me2me.search.esmapping.UgcEsMapping;
 import com.me2me.search.esmapping.UserEsMapping;
@@ -933,6 +935,57 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	public List<RecommendKingdom> getRecommendArticleList(long uid, int page, int pageSize) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public int indexTagSample() {
+		ThreadPool.execute(new Runnable() {
+			@Override
+			public void run() {
+				log.info("indexTag started");
+				String indexName = IndexConstants.TAG_SAMPLE_INDEX_NAME;
+				String beginDate=preIndex(true,indexName);
+				List<TagTrainSampleEsMapping> pageList = searchMapper.getAllTagSamples();
+				if (null == pageList || pageList.isEmpty()) {
+					return ;
+				}
+				List<IndexQuery> indexList = new ArrayList<>();
+				for (TagTrainSampleEsMapping data : pageList) {
+					IndexQuery query = new IndexQuery();
+					String key =data.getId()+"";
+					query.setId(key);
+					query.setObject(data);
+					query.setIndexName(indexName);
+					query.setType(indexName);
+					indexList.add(query);
+				}
+				esTemplate.bulkIndex(indexList);
+				log.info("indexTag finished.");
+			}
+		});
+		return 0;
+	}
+
+	@Override
+	public List<String> recommendTags(String content, int count) {
+		String indexName = IndexConstants.TAG_SAMPLE_INDEX_NAME;
+		BoolQueryBuilder bq = new BoolQueryBuilder()
+				.should(QueryBuilders.queryStringQuery(content).field("keywords"));
+		NativeSearchQuery sq =new  NativeSearchQuery(bq);
+		sq.setPageable(new PageRequest(0, count));
+		FacetedPage<TagTrainSampleEsMapping>  dataList = esTemplate.queryForPage(sq, TagTrainSampleEsMapping.class);
+		
+		List<String> ret = new ArrayList<String>();
+		for (TagTrainSampleEsMapping ks : dataList) {
+			String alias = ks.getAlias_tag();
+			if(StringUtils.isEmpty(alias)){
+				alias = ks.getTag();
+			}
+			if (!ret.contains(alias)) {
+				ret.add(alias);
+			}
+		}
+		return ret;
 	}
 
 }

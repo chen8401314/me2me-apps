@@ -78,6 +78,10 @@
 											<i  class=" fa fa-plus "></i>
 											搜索历史全量索引
 										</a>
+										<a class="btn btn-danger" href="./startTask?task=tagSamples">
+											<i  class=" fa fa-plus "></i>
+											标签关键词训练样本
+										</a>
 									</form>
 								</p>
 								<div>

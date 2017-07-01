@@ -149,4 +149,20 @@ public interface ContentSearchService {
 	 * @return
 	 */
 	public List<RecommendKingdom>  getRecommendArticleList(long uid,int page,int pageSize);
+	/**
+	 * 索引TAG
+	 * @author zhangjiwei
+	 * @date Jun 30, 2017
+	 * @return
+	 */
+	int indexTagSample();
+	/**
+	 * 根据内容推荐标签。
+	 * @author zhangjiwei
+	 * @date Jun 30, 2017
+	 * @param content
+	 * @param count
+	 * @return
+	 */
+	public List<String> recommendTags(String content,int count);
 }

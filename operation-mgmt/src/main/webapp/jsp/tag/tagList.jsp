@@ -224,8 +224,18 @@ var parserDatetimeStr = function(time){
 											<option value="-1" ${dataObj.isRec==-1?'selected':''}>所有</option>
 											<option value="0" ${dataObj.isRec==0?'selected':''}>否</option>
 											<option value="1" ${dataObj.isRec==1?'selected':''}>是</option>
+										</select>&emsp;
+										父标签
+										<select name="pid" id="pid" class="form-control">
+											<option value="">全部</option>
+											<c:forEach  var="tag" items="${sysTagList }">
+												<option value="${tag.id}" ${dataObj.pid==tag.id?'selected':''}>${tag.tag}</option>
+											</c:forEach>
 										</select>&nbsp;&nbsp;&nbsp;&nbsp;
 										<input type="submit" id="btnSearch" name="btnSearch" value="搜索" class="btn btn-info" />
+										
+										<a class="btn btn-danger" href="./tagNew">新建标签</a>
+										
 									</div>
 								</div>
 							</section>
@@ -239,7 +249,7 @@ var parserDatetimeStr = function(time){
 							<header class="panel-heading">
 								| 标签列表
 								<span class="tools pull-right">
-									<a href="${ctx}/jsp/tag/tagNew.jsp" class="fa fa-plus add_link" title="新增标签" ></a>
+									<a href="${ctx}/tag/tagNew" class="fa fa-plus add_link" title="新增标签" ></a>
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>
 							</header>
@@ -252,6 +262,7 @@ var parserDatetimeStr = function(time){
 												<th>创建时间</th>
 												<th>是否体系</th>
 												<th>是否推荐</th>
+												<th>排序值</th>
 												<th>状态</th>
 												<th>王国数</th>
 												<th>操作</th>
@@ -260,9 +271,9 @@ var parserDatetimeStr = function(time){
 										<tbody id="tbody">
 											<c:forEach items="${dataObj.result}" var="item">
 												<tr class="gradeX">
-													<th>${item.tagName }</th>
-													<th><fmt:formatDate value="${item.createTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
-													<th>
+													<td>${item.tagName }</td>
+													<td><fmt:formatDate value="${item.createTime }" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+													<td>
 													<c:choose>
                                                 		<c:when test="${item.isSys == '0'}">
                                                 			否
@@ -271,8 +282,8 @@ var parserDatetimeStr = function(time){
                                                 			是
                                                 		</c:otherwise>
                                                 	</c:choose>
-													</th>
-													<th>
+													</td>
+													<td>
 													<c:choose>
                                                 		<c:when test="${item.isRec == '0'}">
                                                 			否
@@ -281,8 +292,9 @@ var parserDatetimeStr = function(time){
                                                 			是
                                                 		</c:otherwise>
                                                 	</c:choose>
-													</th>
-													<th>
+													</td>
+													<td>${item.orderNum}</td>
+													<td>
 													<c:choose>
                                                 		<c:when test="${item.status == '0'}">
                                                 			正常
@@ -291,13 +303,13 @@ var parserDatetimeStr = function(time){
                                                 			<font color='red'>禁用</font>
                                                 		</c:otherwise>
                                                 	</c:choose>
-													</th>
+													</td>
 													
-													<th>${item.topicCount }</th>
-													<th>
+													<td>${item.topicCount }</th>
+													<td>
 													<a href="${ctx}/tag/f/${item.id }">编辑</a>
 													|<a href="${ctx}/tag/topicList/query?tagId=${item.id }">查看王国列表</a>
-													</th>
+													</td>
 												</tr>
 											</c:forEach>
 										</tbody>
@@ -344,10 +356,8 @@ var parserDatetimeStr = function(time){
 	<script src="${ctx}/js/slidebars.min.js"></script>
 	<script src="${ctx}/js/bootstrap-switch.js"></script>
 	<script src="${ctx}/js/jquery.tagsinput.js"></script>
-	<script src="${ctx}/js/form-component.js"></script>
 	<script src="${ctx}/js/common-scripts.js"></script>
-	<script src="${ctx}/js/advanced-form-components.js"></script>
-		<script type="text/javascript" src="${ctx}/assets/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+	<script type="text/javascript" src="${ctx}/assets/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
 	<script type="text/javascript">
 	$.fn.datetimepicker.dates['zh'] = {  
             days:       ["星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六","星期日"],  

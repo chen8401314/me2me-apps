@@ -418,4 +418,16 @@ public interface ContentService{
 	public int getTopicShareCount(long topicId);
 	
 	public void updateContentUid(long newUid,long topicId);
+	/**
+	 * 取标签下面的王国列表。
+	 * @author zhangjiwei
+	 * @date Jun 29, 2017
+	 * @param tagName
+	 * @param order
+	 * @param page
+	 * @param pageSize
+	 * @param uid
+	 * @return
+	 */
+	Response<TagKingdomDto> getTagKingdomList(String tagName, String order, int page, int pageSize, long uid);
 }

@@ -56,6 +56,20 @@
                                             <input type="text" id="tag" name="tag" class="form-control" value="${dataObj.tag }" style="width: 100%" maxlength="8" required>
                                         </div>
                                         <div class="form-group">
+                                            <label for="exampleInputEmail1">排序号</label>
+                                            <p>小数排前面，升序排序</p>
+                                            <input type="text" id="orderNum" name="orderNum" class="form-control" value="0" >
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="exampleInputEmail1">父标签</label>
+                                            <select name="pid" id="pid" class="form-control">
+                                            	<option value="">无</option>
+												<c:forEach  var="tag" items="${sysTagList }">
+													<option value="${tag.id}" >${tag.tag}</option>
+												</c:forEach>
+											</select>
+                                        </div>
+                                        <div class="form-group">
                                             <label for="exampleInputFile">是否体系</label>
                                             <select name="isSys" id="isSys" class="form-control">
 												<option value="0" ${dataObj.isSys==0?'selected':''}>否</option>
@@ -67,6 +81,16 @@
                                             <select name="isRec" id="isRec" class="form-control">
 												<option value="0" ${dataObj.isRec==0?'selected':''}>否</option>
 												<option value="1" ${dataObj.isRec==1?'selected':''}>是</option>
+											</select>
+                                        </div>
+                                         <div class="form-group">
+                                            <label for="exampleInputFile">对应用户喜好</label>
+                                             <p>ctrl+鼠标左键多选，误点击可按F5刷新还原，不选时请选中“不选”</p>
+                                            <select name="userHobbyIds"  class="form-control" multiple="multiple" size="${userHobbyList.size()+1}"> 
+												<option value="">不选</option>
+												<c:forEach  var="hobby" items="${userHobbyList }">
+													<option value="${hobby.id}" >${hobby.value}</option>
+												</c:forEach>
 											</select>
                                         </div>
                                         <div class="form-group">

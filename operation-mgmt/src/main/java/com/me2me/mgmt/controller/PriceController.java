@@ -54,30 +54,6 @@ public class PriceController {
 	//////新实现
 	
 
-	@RequestMapping(value = "/allConfig")
-	public String allConfig(HttpServletRequest request,HttpServletResponse response){
-		//List<AppConfig> confList = userService.getAppConfigsByType(typeName);
-		List<AppConfig> confList= userService.getAllAppConfig();
-		request.setAttribute("configList", confList);
-		return "price/config";
-	}
-	
-	@ResponseBody
-	@RequestMapping(value = "/saveConfig")
-	public String saveConfig(HttpServletRequest request,HttpServletResponse response,
-			@RequestParam("k")String key, 
-			@RequestParam("v")String value){
-		
-		if(StringUtils.isBlank(key)){
-			logger.warn("key不能为空");
-			return "key不能为空";
-		}
-		
-		userService.saveAppConfig(key, value);
-		
-		return "0";
-	}
-	
 	
 	@RequestMapping(value = "/kingdomQuery")
 	public ModelAndView kingdomQuery(KingdomQueryDTO dto){
@@ -527,18 +503,7 @@ public class PriceController {
 		return "初始化完成";
 	}
 	
-	@RequestMapping(value = "/refreshCache")
-	@ResponseBody
-	public String refreshCache(){
-		try{
-			userService.refreshConfigCache();
-		}catch(Exception e){
-			logger.error("刷新缓存失败", e);
-			return "刷新缓存失败";
-		}
-		return "刷新缓存成功";
-	}
-	
+
 	@RequestMapping(value = "/taskConsole")
 	public ModelAndView taskConsole(){
 		ModelAndView view = new ModelAndView("price/taskConsole");

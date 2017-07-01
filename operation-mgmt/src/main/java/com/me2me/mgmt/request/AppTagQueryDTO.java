@@ -50,6 +50,9 @@ public class AppTagQueryDTO {
     @Setter
 	private List<Item> result = Lists.newArrayList();
 	
+	@Getter
+    @Setter
+    private Integer pid;
 	@Data
 	public static class Item{
 		private long id;
@@ -59,5 +62,6 @@ public class AppTagQueryDTO {
 		private int isRec;
 		private int status;
 		private long topicCount;
+		private Integer orderNum;
 	}
 }

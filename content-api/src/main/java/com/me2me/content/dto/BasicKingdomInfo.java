@@ -65,4 +65,8 @@ public class BasicKingdomInfo implements BaseEntity{
 	private Integer price;
 	
 	private double priceRMB;
+	
+	private Integer showRMBBrand;
+	
+	private Integer showPriceBrand;
 }

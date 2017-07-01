@@ -609,4 +609,5 @@ public class LiveForContentJdbcDao {
     	sb.append(" and forward_cid = ").append(topicId);
     	jdbcTemplate.execute(sb.toString());
     }
+  
 }

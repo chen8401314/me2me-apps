@@ -1,11 +1,17 @@
 package com.me2me.content.service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -30,6 +36,7 @@ import com.me2me.activity.service.ActivityService;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.page.PageBean;
+import com.me2me.common.utils.CollectionUtils;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -69,6 +76,7 @@ import com.me2me.content.dto.ShowContentDto;
 import com.me2me.content.dto.ShowContentListDto;
 import com.me2me.content.dto.ShowHotCeKingdomListDTO;
 import com.me2me.content.dto.ShowHotListDTO;
+import com.me2me.content.dto.ShowHotListDTO.HotTagElement;
 import com.me2me.content.dto.ShowHottestDto;
 import com.me2me.content.dto.ShowKingTopicDto;
 import com.me2me.content.dto.ShowMyPublishDto;
@@ -76,10 +84,12 @@ import com.me2me.content.dto.ShowNewestDto;
 import com.me2me.content.dto.ShowUGCDetailsDto;
 import com.me2me.content.dto.ShowUserContentsDTO;
 import com.me2me.content.dto.SquareDataDto;
+import com.me2me.content.dto.TagKingdomDto;
 import com.me2me.content.dto.UserContentSearchDTO;
 import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.mapper.EmotionPackDetailMapper;
 import com.me2me.content.mapper.EmotionPackMapper;
+import com.me2me.content.mapper.TopicTagSearchMapper;
 import com.me2me.content.model.ArticleLikesDetails;
 import com.me2me.content.model.ArticleReview;
 import com.me2me.content.model.ArticleTagsDetails;
@@ -118,6 +128,7 @@ import com.me2me.user.model.UserNoticeUnread;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
+import com.plusnet.common.util.CollectionUtil;
 import com.plusnet.forecast.domain.ForecastContent;
 import com.plusnet.search.content.RecommendRequest;
 import com.plusnet.search.content.RecommendResponse;
@@ -192,7 +203,8 @@ public class ContentServiceImpl implements ContentService {
 	@Autowired
 	private KingdomBuilder kingdomBuider;
 
-
+	@Autowired
+	private TopicTagSearchMapper topicTagMapper;
     @Override
     public Response recommend(long uid,String emotion) {
         RecommendRequest recommendRequest = new RecommendRequest();
@@ -3521,8 +3533,50 @@ private void localJpush(long toUid){
 				}
 			}
 		}
-		
+		result.setHotTagKingdomList(buildHotTagKingdoms(uid));
 		return Response.success(result);
+	}
+	 /**
+     * 米汤币兑换人名币
+     * @param price
+     * @return
+     */
+    public double exchangeKingdomPrice(int price) {
+        String  result =  userService.getAppConfigByKey("EXCHANGE_RATE");
+        if(StringUtils.isEmpty(result)){
+            return 0;
+        }
+        BigDecimal exchangeRate = new BigDecimal(result);
+        return new BigDecimal(price).divide(exchangeRate, 2, RoundingMode.HALF_UP).doubleValue();
+    }
+	private List<HotTagElement> buildHotTagKingdoms(long uid){
+		// 标签推荐
+		
+		//	取n个标签
+		List<com.me2me.content.dto.ShowHotListDTO.HotTagElement> dataList = new java.util.ArrayList<ShowHotListDTO.HotTagElement>();
+		String hotLables = (String) userService.getAppConfigByKey("HOME_HOT_LABELS");
+		
+		if(hotLables!=null){
+			String[] lables = hotLables.split("\\n");
+			for(String label:lables){
+				HotTagElement element = new HotTagElement();
+				List<Map<String,Object>> topicList = this.topicTagMapper.getKingdomsByTag(label,"new",1,4);
+				
+				Map<String,Object> totalPrice = topicTagMapper.getTagPriceAndKingdomCount(label);
+				List<BasicKingdomInfo> kingdoms =this.kingdomBuider.buildKingdoms(topicList, uid);
+				int tagPersons=(Integer)totalPrice.get("tagPersons");
+				int tagPrice=(Integer)totalPrice.get("tagPrice");
+				int kingdomCount = (Integer)totalPrice.get("kingdomCount");
+				element.setKingdomList(kingdoms);
+				element.setKingdomCount(kingdomCount);
+				element.setPersonCount(tagPersons);
+				element.setTagName(label);
+				double rmbPrice = exchangeKingdomPrice(tagPrice);
+				element.setTagPrice(rmbPrice);
+				dataList.add(element);
+			}
+		}
+		return dataList;
 	}
 	
 	private void buildHotListDTO(long uid, ShowHotListDTO result, List<ActivityWithBLOBs> activityList,
@@ -5962,5 +6016,99 @@ private void localJpush(long toUid){
 	@Override
 	public void updateContentUid(long newUid,long topicId){
 		 liveForContentJdbcDao.updateContentUid(newUid,topicId);
+	}
+
+	@Override
+	public Response<TagKingdomDto> getTagKingdomList(String tagName, String order, int page, int pageSize, long uid) {
+		List<Map<String,Object>> topics =topicTagMapper.getKingdomsByTag(tagName, order, page, pageSize);
+		List<BasicKingdomInfo> kingdoms = this.kingdomBuider.buildKingdoms(topics, uid);
+		TagKingdomDto dto = new TagKingdomDto();
+		dto.setKingdomList(kingdoms);
+		
+		if(page==1){
+			Map<String,Object> totalPrice = topicTagMapper.getTagPriceAndKingdomCount(tagName);
+			int tagPersons=(Integer)totalPrice.get("tagPersons");
+			//int tagPrice=(Integer)totalPrice.get("tagPrice");
+			int kingdomCount = (Integer)totalPrice.get("kingdomCount");
+			// 取topic tags 取所有的体系标签， 排序规则：1 运营指定顺序 2 用户喜好 3 标签价值
+			List<Map<String,Object>> sysTagList =topicTagMapper.getSysTagCountInfo();
+			String[] recommendTags = new String[sysTagList.size()];
+			
+			// 运营指定顺序
+			Iterator<Map<String,Object>> it = sysTagList.iterator();
+			while(it.hasNext()){
+				Map<String,Object> tagInfo= it.next();
+				if(tagInfo.get("order_num")!=null){
+					int pos = (Integer)tagInfo.get("order_num")-1;		// 手动序号
+					recommendTags[pos]=(String)tagInfo.get("tag");
+					it.remove();
+				}
+			}
+			
+			List<Integer> userHobbyList= topicTagMapper.getUserHobbyIdsByUid(uid);
+			
+			// 用户兴趣爱好,查标签对应的子标签，从集合里面判断是否包含用户喜好
+			for(int i=0;i<recommendTags.length;i++){
+				if(recommendTags[i]==null){
+					it = sysTagList.iterator();
+					while(it.hasNext()){
+						Map<String,Object> tagInfo= it.next();
+						int tagId = (Integer)tagInfo.get("id");
+						String strTagName = (String)tagInfo.get("tag");
+						// 主标签匹配
+						String tagHobby = (String)tagInfo.get("user_hobby_ids");
+						if(tagHobby!=null){
+							if(CollectionUtils.contains(userHobbyList, tagHobby.split(","),true)){
+								recommendTags[i]=strTagName;
+								it.remove();
+								continue;
+							};
+						}
+						// 子标签匹配
+						List<Map<String,Object>> subTags = topicTagMapper.getSubTagsByParentTagId(tagId);
+						for(Map<String,Object> subTag:subTags){
+							String subTaghobby = (String)subTag.get("user_hobby_ids"); 
+							if(subTaghobby!=null){
+								if(CollectionUtils.contains(userHobbyList, subTaghobby.split(","),true)){
+									recommendTags[i]=strTagName;
+									it.remove();
+									break;
+								};
+							}
+						}
+					}
+					
+				}
+			}
+			// 价值排序
+			sysTagList.sort(new Comparator<Map<String,Object>>() {
+				@Override
+				public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+					return (Integer)o1.get("price")>(Integer)o2.get("price")?1:-1;
+				}
+			});
+			for(int i=0;i<recommendTags.length;i++){
+				if(recommendTags[i]==null){
+					it=sysTagList.iterator();
+					while(it.hasNext()){
+						recommendTags[i]=(String) it.next().get("tag");
+					}
+				}
+			}
+			dto.setKingdomCount(kingdomCount);
+			dto.setPersonCount(tagPersons);
+			dto.setTagName(tagName);
+			
+			// 去掉当前标签
+			List<String> tagList = new ArrayList<>();
+			for(String x:recommendTags){
+				if(!tagName.equals(x)){
+					tagList.add(x);
+				}
+			}
+			dto.setHotTagList(tagList);
+		}
+		
+		return Response.success(dto);
 	}
 }

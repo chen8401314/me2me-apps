@@ -44,8 +44,13 @@ public class AppTagController {
 		
 		this.getTagInfo(dto);
 		
+		
+		
 		ModelAndView view = new ModelAndView("tag/tagList");
 		view.addObject("dataObj", dto);
+		//查体系标签
+		String sql = "select * from topic_tag where is_sys=1";
+		view.addObject("sysTagList",contentService.queryEvery(sql));
 		return view;
 	}
 	
@@ -73,6 +78,9 @@ public class AppTagController {
 		countSql.append(" from topic_tag t left join topic_tag_detail d");
 		countSql.append(" on t.id=d.tag_id and d.status=0");
 		countSql.append(" where 1=1");
+		if(dto.getPid()!=null){
+			countSql.append(" and t.pid=").append(dto.getPid());
+		}
 		if(StringUtils.isNotBlank(dto.getStartTime())){
 			countSql.append(" and t.create_time>='").append(dto.getStartTime());
 			countSql.append(" 00:00:00'");
@@ -106,10 +114,14 @@ public class AppTagController {
 		querySql.append("select t.id,count(d.topic_id) as kcount,");
 		querySql.append("max(t.create_time) as createtime,");
 		querySql.append("max(t.tag) as tag,max(t.is_rec) as isrec,");
+		querySql.append("max(t.order_num) as ordernum,");
 		querySql.append("max(t.is_sys) as issys,max(t.status) as status");
 		querySql.append(" from topic_tag t left join topic_tag_detail d");
 		querySql.append(" on t.id=d.tag_id and d.status=0");
 		querySql.append(" where 1=1");
+		if(dto.getPid()!=null){
+			querySql.append(" and t.pid=").append(dto.getPid());
+		}
 		if(StringUtils.isNotBlank(dto.getStartTime())){
 			querySql.append(" and t.create_time>='").append(dto.getStartTime());
 			querySql.append(" 00:00:00'");
@@ -168,6 +180,7 @@ public class AppTagController {
 				item.setIsSys((Integer)m.get("issys"));
 				item.setStatus((Integer)m.get("status"));
 				item.setTagName((String)m.get("tag"));
+				item.setOrderNum((Integer)m.get("ordernum"));
 				item.setTopicCount((Long)m.get("kcount"));
 				dto.getResult().add(item);
 			}
@@ -178,8 +191,14 @@ public class AppTagController {
 	public ModelAndView getTag(@PathVariable long id){
 		TopicTag topicTag = liveService.getTopicTagById(id);
 		
+		
 		ModelAndView view = new ModelAndView("tag/tagEdit");
 		view.addObject("dataObj",topicTag);
+		//查体系标签
+		String sql = "select * from topic_tag where is_sys=1";
+		view.addObject("sysTagList",contentService.queryEvery(sql));
+		
+		view.addObject("userHobbyList",contentService.queryEvery("select * from dictionary where tid=3"));
 		
 		return view;
 	}
@@ -198,6 +217,17 @@ public class AppTagController {
 		liveService.updateTopicTag(topicTag);
 		
 		view = new ModelAndView("redirect:/tag/query");
+		return view;
+	}
+	@RequestMapping(value="/tagNew")
+	@SystemControllerLog(description = "更新标签")
+	public ModelAndView tagNew(TopicTag topicTag){
+		//查体系标签
+		String sql = "select * from topic_tag where is_sys=1";
+		
+		ModelAndView view = new ModelAndView("/tag/tagNew");
+		view.addObject("sysTagList",contentService.queryEvery(sql));
+		view.addObject("userHobbyList",contentService.queryEvery("select * from dictionary where tid=3"));
 		return view;
 	}
 	
