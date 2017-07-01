@@ -1095,7 +1095,7 @@ public class LiveLocalJdbcDao {
     	StringBuilder sb = new StringBuilder();
     	sb.append("SELECT tl.id,t.title,t.price,tl.price_RMB AS frozenPrice,u.nick_name,tl.create_time,tl.status,un.me_number,tl.buy_uid");
     	sb.append(" FROM topic_listed tl LEFT JOIN topic t ON tl.topic_id = t.id LEFT JOIN user_profile u ON u.uid = t.uid ");
-    	sb.append(" left join user_no un on un.uid = u.uid ");
+    	sb.append(" left join user_no un on un.uid = tl.buy_uid ");
     	sb.append("where 1=1  ");
     	if(status==0){
           sb.append(" and (tl.status=0 or tl.status=1)  ");
@@ -1107,4 +1107,60 @@ public class LiveLocalJdbcDao {
     	String sql = sb.toString();
 		return jdbcTemplate.queryForList(sql);
     }
+    
+	/**
+	 * 获取王国评论数
+	 * @param topidId
+	 * @return
+	 */
+	public int getTopicReviewCount(long topidId){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select ");
+		sb.append(" count(if(t.uid<>f.uid,TRUE,NULL)) as reviewCount");
+		sb.append(" from topic t,topic_fragment f");
+		sb.append(" where t.id=f.topic_id and t.id =");
+		sb.append(topidId);
+		sb.append(" group by f.topic_id");
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
+		if(list.size()==0){
+			return 0;
+		}else{
+			Map<String,Object> map  = list.get(0);
+			return Integer.parseInt(map.get("reviewCount").toString());
+		}
+	}
+	/**
+	 * 获取王国成员数
+	 * @param topidId
+	 * @return
+	 */
+	public int getTopicMembersCount(long topidId){
+		Map<String, Long> result = new HashMap<String, Long>();
+    	//查询非核心圈成员
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select f.topic_id,count(1) cc from live_favorite f,topic t");
+    	sb.append(" where f.topic_id=t.id ");
+    	sb.append(" and not FIND_IN_SET(f.uid, SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))");
+    	sb.append(" and f.topic_id = ");
+    	sb.append(topidId);
+    	sb.append(" group by f.topic_id");
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	int fNum =0 ;
+    	if(null != list && list.size() > 0){
+    		Map<String, Object> m  = list.get(0);
+    		fNum = Integer.parseInt(m.get("cc").toString());
+    	}
+    	//查询核心圈成员
+    	StringBuilder sb2 = new StringBuilder();
+    	sb2.append("select t.id, LENGTH(t.core_circle)-LENGTH(replace(t.core_circle,',','')) as coreCount");
+    	sb2.append(" from topic t where t.id =");
+    	sb2.append(topidId);
+    	List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sb2.toString());
+    	int num = 0;
+    	if(null != list2 && list2.size() > 0){
+    		Map<String, Object> m  = list2.get(0);
+    		num = Integer.parseInt(m.get("coreCount").toString());
+           }
+    	return fNum+num;
+}
 }

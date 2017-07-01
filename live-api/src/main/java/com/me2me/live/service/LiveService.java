@@ -579,7 +579,9 @@ public interface LiveService {
 	
     public Response searchTopicListedPage(int status,int page, int pageSize);
     
-    public void updateTopicListed(TopicListed topicListed);
+    public void updateTopicListedStatus(TopicListed topicListed);
     
 	public String handleTransaction(long id,long meNumber);
+	
+	public String changeTopicKing(TopicListed topicListed, long newUid);
 }

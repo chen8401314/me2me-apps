@@ -16,6 +16,7 @@ import com.me2me.live.service.LiveService;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.mgmt.vo.DatatablePage;
 import com.me2me.user.model.EmotionInfo;
+import com.plusnet.sso.api.vo.JsonResult;
 
 
 @Controller
@@ -46,12 +47,12 @@ public class TopicListedController {
 	@RequestMapping(value = "/handleTopicListed")
 	@ResponseBody
 	public String handleTopicListed(TopicListed topicListed,HttpServletRequest mrequest) throws Exception {
-			try {
-				liveService.updateTopicListed(topicListed);
-				return "1";
-			} catch (Exception e) {
-				return "0";
-			}
+		try {
+			liveService.updateTopicListedStatus(topicListed);
+			return "1";
+		} catch (Exception e) {
+			return "0";
+		}
 	}
 	@RequestMapping(value = "/topicListedPending")
 	public String topicListedPending(HttpServletRequest request) throws Exception {
@@ -71,11 +72,16 @@ public class TopicListedController {
 	}
 	@RequestMapping(value = "/handleTransaction")
 	@ResponseBody
-	public String handleTransaction(Long id,Long meNumber,HttpServletRequest mrequest) throws Exception {
+	public JsonResult handleTransaction(Long id,Long meNumber,HttpServletRequest mrequest) throws Exception {
 			try {
-				return liveService.handleTransaction(id, meNumber);
+				String result= liveService.handleTransaction(id, meNumber);
+				if("0".equals(result)){
+					return JsonResult.success();
+				}else{
+					return JsonResult.error(result);
+				}
 			} catch (Exception e) {
-				return e.getMessage();
+				return JsonResult.error(e.getMessage());
 			}
 	}
 	

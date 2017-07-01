@@ -264,13 +264,12 @@
 		                alert('服务器出错'); 
 		            },
 		            success: function(data) {
-		            	  if(data=='0'){
-		            		  //sourceTable.ajax.reload();
+		            	if(data.code==1){
 		            		  alert('操作成功');
 		            		  sourceTable.draw(false);
-		            	  }else{
-		                    	alert(data);
-		                        }
+		    			}else{
+		    				alert(data.desc);
+		    			}
 		            }
 		        });
 		  return true; 
