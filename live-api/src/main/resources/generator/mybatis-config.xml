@@ -46,7 +46,7 @@
         <!--<table tableName="topic_droparound" domainObjectName="TopicDroparound"/>-->
         <!--<table tableName="topic_droparound_trail" domainObjectName="TopicDroparoundTrail"/>-->
         <!--<table tableName="topic_fragment_template" domainObjectName="TopicFragmentTemplate"/>-->
-        <!--<table tableName="topic_tag" domainObjectName="TopicTag"/>-->
+        <table tableName="topic_tag" domainObjectName="TopicTag"/>
         <!--<table tableName="topic_tag_detail" domainObjectName="TopicTagDetail"/>-->
         <!-- <table tableName="topic_news" domainObjectName="TopicNews"/> -->
         <!-- <table tableName="topic_transfer_record" domainObjectName="TopicTransferRecord"/> -->

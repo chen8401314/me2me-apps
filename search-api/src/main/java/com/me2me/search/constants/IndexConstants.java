@@ -14,4 +14,8 @@ public class IndexConstants {
 	 * 用户画像索引。
 	 */
 	public final static String USER_FEATURE_INDEX_NAME="user_feature_index";
+	/**
+	 * 标签样本索引
+	 */
+	public final static String TAG_SAMPLE_INDEX_NAME="tag_sample_index";
 }

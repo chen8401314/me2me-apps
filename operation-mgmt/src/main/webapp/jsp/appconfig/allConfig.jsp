@@ -105,7 +105,7 @@ var modifyCommit = function(){
 var refreshCache = function(){
 	$("#btnSearch2").attr("disabled",true);
 	$.ajax({
-		url : "${ctx}/price/refreshCache",
+		url : "./refreshCache",
 		async : false,
 		type : "GET",
 		contentType : "application/json;charset=UTF-8",
@@ -126,8 +126,8 @@ var refreshCache = function(){
 
 		<!--sidebar start-->
 		<jsp:include page="../common/leftmenu.jsp" flush="false">
-			<jsp:param name="t" value="13" />
-			<jsp:param name="s" value="13_2" />
+			<jsp:param name="t" value="7" />
+			<jsp:param name="s" value="7_8" />
 		</jsp:include>
 		<!--sidebar end-->
 
@@ -150,16 +150,16 @@ var refreshCache = function(){
 
 								  <!-- Nav tabs -->
 								  <ul class="nav nav-tabs" role="tablist">
-								    <li role="presentation" class="active"><a href="#t0" aria-controls="home" role="tab" data-toggle="tab">基础配置</a></li>
-								    <li role="presentation"><a href="#t1" aria-controls="profile" role="tab" data-toggle="tab">用户等级权限配置</a></li>
-								    <li role="presentation"><a href="#t2" aria-controls="messages" role="tab" data-toggle="tab">操作分值配置</a></li>
-								    <li role="presentation"><a href="#t3" aria-controls="settings" role="tab" data-toggle="tab">王国价值任务参数</a></li>
-								    <li role="presentation"><a href="#t4" aria-controls="settings" role="tab" data-toggle="tab">个人级别累计分值配置</a></li>
+								    <c:forEach var="group" items="${configMap}" varStatus="stu">
+								    	<li role="presentation" class="${stu.index==0?'active':''}"><a href="#tab_${stu.index}" role="tab" data-toggle="tab">${group.key}</a></li>
+								    </c:forEach>
 								  </ul>
 								
 								  <!-- Tab panes -->
 								  <div class="tab-content">
-								    <div role="tabpanel" class="tab-pane active" id=t0>
+								  	<c:forEach var="group" items="${configMap}" varStatus="stu">
+								  	
+								    <div role="tabpanel" class="tab-pane active" id="tab_${stu.index}">
 										<div class="adv-table">
 											<table class="display table table-bordered table-striped" id="dynamic-table">
 												<thead>
@@ -171,125 +171,21 @@ var refreshCache = function(){
 													</tr>
 												</thead>
 												<tbody>
-													<c:forEach items="${configList}" var="configItem">
-														<c:if test="${configItem.typeName=='基础配置'}">
+													<c:forEach items="${group.value}" var="configItem">
 														<tr class="gradeX" key="${configItem.configKey }">
 															<td>${configItem.name }</td>
 															<td>${configItem.configKey }</td>
 															<td>${configItem.configValue }</td>
 															<td><a href="#" class="edit">编辑</a></td>
 														</tr>
-														</c:if>
 													</c:forEach>
 												</tbody>
 											</table>
 										</div>
 									</div>
-								    <div role="tabpanel" class="tab-pane" id="t1">
-										<div class="adv-table">
-											<table class="display table table-bordered table-striped" id="dynamic-table">
-												<thead>
-													<tr>
-														<th>描述</th>
-														<th>KEY</th>
-														<th width="40%">VALUE</th>
-														<th>操作</th>
-													</tr>
-												</thead>
-												<tbody>
-													<c:forEach items="${configList}" var="configItem">
-														<c:if test="${configItem.typeName=='用户等级权限配置'}">
-														<tr class="gradeX" key="${configItem.configKey }">
-														<td>${configItem.name }</td>
-															<td>${configItem.configKey }</td>
-															<td>${configItem.configValue }</td>
-															<td><a href="#" class="edit">编辑</a></td>
-														</tr>
-														</c:if>
-													</c:forEach>
-												</tbody>
-											</table>
-										</div>
-									</div>
-								    <div role="tabpanel" class="tab-pane" id="t2">
-										<div class="adv-table">
-											<table class="display table table-bordered table-striped" id="dynamic-table">
-												<thead>
-													<tr>
-														<th>描述</th>
-														<th>KEY</th>
-														<th width="40%">VALUE</th>
-														<th>操作</th>
-													</tr>
-												</thead>
-												<tbody>
-													<c:forEach items="${configList}" var="configItem">
-														<c:if test="${configItem.typeName=='操作分值配置'}">
-														<tr class="gradeX" key="${configItem.configKey }">
-															<td>${configItem.name }</td>
-															<td>${configItem.configKey }</td>
-															<td>${configItem.configValue }</td>
-															<td><a href="#" class="edit">编辑</a></td>
-														</tr>
-														</c:if>
-													</c:forEach>
-												</tbody>
-											</table>
-										</div>
-									</div>
-								    <div role="tabpanel" class="tab-pane" id="t3">
-								    	<div class="adv-table">
-											<table class="display table table-bordered table-striped" id="dynamic-table">
-												<thead>
-													<tr>
-														<th>描述</th>
-														<th>KEY</th>
-														<th width="40%">VALUE</th>
-														<th>操作</th>
-													</tr>
-												</thead>
-												<tbody>
-													<c:forEach items="${configList}" var="configItem">
-														<c:if test="${configItem.typeName=='王国价值任务参数'}">
-														<tr class="gradeX" key="${configItem.configKey }">
-															<td>${configItem.name }</td>
-															<td>${configItem.configKey }</td>
-															<td>${configItem.configValue }</td>
-															<td><a href="#" class="edit">编辑</a></td>
-														</tr>
-														</c:if>
-													</c:forEach>
-												</tbody>
-											</table>
-										</div>
-									</div>
-									<div role="tabpanel" class="tab-pane" id="t4">
-								    	<div class="adv-table">
-											<table class="display table table-bordered table-striped" id="dynamic-table">
-												<thead>
-													<tr>
-														<th>描述</th>
-														<th>KEY</th>
-														<th width="40%">VALUE</th>
-														<th>操作</th>
-													</tr>
-												</thead>
-												<tbody>
-													<c:forEach items="${configList}" var="configItem">
-														<c:if test="${configItem.typeName=='个人级别累计分值配置'}">
-														<tr class="gradeX" key="${configItem.configKey }">
-															<td>${configItem.name }</td>
-															<td>${configItem.configKey }</td>
-															<td>${configItem.configValue }</td>
-															<td><a href="#" class="edit">编辑</a></td>
-														</tr>
-														</c:if>
-													</c:forEach>
-												</tbody>
-											</table>
-										</div>
-									</div>
-								  </div>
+								   
+								    </c:forEach>
+								   </div>
 								
 								</div>
 								

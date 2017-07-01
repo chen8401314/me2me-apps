@@ -2,6 +2,7 @@ package com.me2me.web;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,6 +34,7 @@ import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.dto.TestApiDto;
 import com.me2me.live.dto.UserAtListDTO;
 import com.me2me.live.service.LiveService;
+import com.me2me.search.service.SearchService;
 import com.me2me.web.request.AggregationOptRequest;
 import com.me2me.web.request.AggregationPublishRequest;
 import com.me2me.web.request.BarrageRequest;
@@ -61,6 +63,7 @@ import com.me2me.web.request.LiveTimeline2Request;
 import com.me2me.web.request.LiveTimelineRequest;
 import com.me2me.web.request.LiveUpdateRequest;
 import com.me2me.web.request.RecQueryRequest;
+import com.me2me.web.request.RecommendTagRequest;
 import com.me2me.web.request.RemoveLiveRequest;
 import com.me2me.web.request.RemoveTopicRequest;
 import com.me2me.web.request.ResendVoteRequest;
@@ -97,6 +100,10 @@ public class Live extends BaseController {
 
     @Autowired
     private KafkaService kafkaService;
+    
+    @Autowired
+    
+    private SearchService searchService;
     
     /**
      * 创建直接
@@ -909,4 +916,5 @@ public class Live extends BaseController {
     public Response getKingdomPrice(GetKingdomPriceRequest request){
     	return liveService.getKingdomPrice(request.getTopicId());
     }
+
 }

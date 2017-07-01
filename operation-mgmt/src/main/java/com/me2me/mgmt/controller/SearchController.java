@@ -68,6 +68,8 @@ public class SearchController {
 				searchService.indexUserData(true);
 			}else if("history".equals(task)){
 				searchService.indexSearchHistory(true);
+			}else if("tagSamples".equals(task)){
+				searchService.indexTagSample();
 			}
 		}catch (Exception e) {
 			e.printStackTrace();

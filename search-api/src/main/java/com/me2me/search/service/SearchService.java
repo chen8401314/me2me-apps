@@ -108,4 +108,15 @@ public interface SearchService {
 	Response recContentDislike(long uid, long cid, int type);
 	
 	List<Map<String, Object>> topicAtUserList(String keyword, long searchUid);
+	/**
+	 * 索引标签样本 。
+	 * @author zhangjiwei
+	 * @date Jun 30, 2017
+	 * @param fully
+	 * @return
+	 * @throws Exception
+	 */
+	int indexTagSample() throws Exception;
+	
+	Response recommendTags(String content,int count);
 }
