@@ -1279,7 +1279,7 @@ public class SearchServiceImpl implements SearchService {
 	}
 
 	@Override
-	public Response recommendTags(String content, int count) {
+	public Response<RecommendTagDto> recommendTags(String content, int count) {
 		List<String> ret = searchService.recommendTags(content, count);
 		RecommendTagDto dto = new RecommendTagDto();
 		dto.setTags(ret);
