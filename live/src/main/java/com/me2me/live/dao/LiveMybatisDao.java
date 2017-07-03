@@ -1071,11 +1071,14 @@ public class LiveMybatisDao {
         return topicDroparound;
     }
 
-    public Topic getRandomDropaRoundAlgorithm(Map<String ,String> map){
+    public Topic getRandomDropaRoundAlgorithm(Map<String ,Object> map){
         Topic topic = topicMapper.getRandomDropaRoundAlgorithm(map);
         return topic;
     }
-
+    public Topic getRandomTopicByTag(Map<String ,Object> map){
+        Topic topic = topicMapper.getRandomTopicByTag(map);
+        return topic;
+    }
     public void createTopicDroparoundTrail(TopicDroparoundTrail trail){
         topicDroparoundTrailMapper.insertSelective(trail);
     }
