@@ -7,7 +7,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
-import org.mortbay.log.Log;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +16,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.me2me.mgmt.syslog.SystemControllerLog;
+import com.me2me.mgmt.task.app.UserRecInitTask;
 import com.me2me.search.model.SearchHotKeyword;
 import com.me2me.search.service.SearchService;
 import com.plusnet.sso.api.vo.JsonResult;
@@ -27,6 +27,8 @@ public class SearchController {
 		
 	@Autowired
 	private  SearchService searchService;
+	@Autowired
+	private UserRecInitTask userRecInitTask;
 	
 	@RequestMapping("/console")
 	public String console(HttpServletRequest request,HttpServletResponse response) throws Exception{
@@ -79,7 +81,6 @@ public class SearchController {
 	
 	
 	@RequestMapping(value = "/hotkeywordList")
-	@SystemControllerLog(description = "热词列表")
 	public String hotkeywordList(HttpServletRequest request) throws Exception {
 		String queryStr = request.getParameter("query");
 		if(!StringUtils.isEmpty(queryStr)){
@@ -143,5 +144,12 @@ public class SearchController {
 		String id = request.getParameter("id");
 		searchService.delHotKeyword(Integer.parseInt(id));
 		return JsonResult.success();
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/runUserRecInitTask")
+	public String runUserRecInitTask(){
+		userRecInitTask.doTask();
+		return "执行完成";
 	}
 }

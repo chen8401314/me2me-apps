@@ -734,6 +734,7 @@ public class LiveLocalJdbcDao {
 	public void updateTopicContentTitle(long topicId, String title){
 		StringBuilder sb = new StringBuilder();
 		sb.append("update content set title='").append(title);
+		sb.append("',content='").append(title);
 		sb.append("' where forward_cid=").append(topicId);
 		sb.append(" and type=3");
 		jdbcTemplate.execute(sb.toString());

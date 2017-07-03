@@ -20,6 +20,7 @@ import com.me2me.user.dto.PermissionDescriptionDto;
 import com.me2me.user.dto.PermissionDescriptionDto.PermissionNodeDto;
 import com.me2me.user.rule.CoinRule;
 import com.me2me.user.rule.Rules;
+
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -325,6 +326,22 @@ public class LiveServiceImpl implements LiveService {
         if(topic==null){
             return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
         }
+        
+        //特殊王国处理，对于给定的王国，如果非国王或核心圈则无法进入
+        String specialTopicIds = userService.getAppConfigByKey("SPECIAL_KINGDOM_IDS");
+        if(!StringUtils.isEmpty(specialTopicIds)){
+        	String[] tmp = specialTopicIds.split(",");
+        	String currentTopicId = String.valueOf(topicId);
+        	for(String t : tmp){
+        		if(currentTopicId.equals(t)){//符合条件，则进行判断
+        			if(!this.isKing(uid, topic.getUid()) && !this.isInCore(uid, topic.getCoreCircle())){
+        				return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,"此王国需要经过国王邀请才允许进入");
+        			}
+        			break;
+        		}
+        	}
+        }
+        
         liveCoverDto.setTitle(topic.getTitle());
         liveCoverDto.setCreateTime(topic.getCreateTime());
         liveCoverDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
@@ -573,6 +590,22 @@ public class LiveServiceImpl implements LiveService {
         if(topic==null){
             return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
         }
+        
+        //特殊王国处理，对于给定的王国，如果非国王或核心圈则无法进入
+        String specialTopicIds = userService.getAppConfigByKey("SPECIAL_KINGDOM_IDS");
+        if(!StringUtils.isEmpty(specialTopicIds)){
+        	String[] tmp = specialTopicIds.split(",");
+        	String currentTopicId = String.valueOf(cid);
+        	for(String t : tmp){
+        		if(currentTopicId.equals(t)){//符合条件，则进行判断
+        			if(!this.isKing(uid, topic.getUid()) && !this.isInCore(uid, topic.getCoreCircle())){
+        				return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,"此王国需要经过国王邀请才允许进入");
+        			}
+        			break;
+        		}
+        	}
+        }
+        
         Content content = contentService.getContentByTopicId(cid);
         showLiveDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
         showLiveDto.setUid(topic.getUid());
@@ -7081,5 +7114,4 @@ public class LiveServiceImpl implements LiveService {
 	public void delTopicPriceSubsidyConfig(long id){
 		liveMybatisDao.delTopicPriceSubsidyConfig(id);
 	}
-  
 }

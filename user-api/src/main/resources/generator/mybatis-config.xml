@@ -66,5 +66,6 @@
         <!-- <table tableName="user_mobile_list" domainObjectName="UserMobileList"/> -->
 		<!-- <table tableName="mbti_mapping" domainObjectName="MbtiMapping"/> -->
 		<!-- <table tableName="app_config" domainObjectName="AppConfig"/> -->
+		<!-- <table tableName="user_rec_init" domainObjectName="UserRecInit"/> -->
     </context>
 </generatorConfiguration>

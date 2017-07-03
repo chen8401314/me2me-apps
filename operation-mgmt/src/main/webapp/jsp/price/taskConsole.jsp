@@ -58,6 +58,20 @@ var initPrice = function(){
 		}
 	});
 }
+
+var runTask2 = function(){
+	$("#btnSearch3").attr("disabled",true);
+	$.ajax({
+		url : "${ctx}/search/runUserRecInitTask",
+		async : false,
+		type : "GET",
+		contentType : "application/json;charset=UTF-8",
+		success : function(resp) {
+			alert(resp);
+			$("#btnSearch3").attr("disabled",false);
+		}
+	});
+}
 </script>
 </head>
 <body>
@@ -79,7 +93,7 @@ var initPrice = function(){
 					<div class="row">
 						<div class="col-lg-12">
 							<section class="panel">
-								<header class="panel-heading">执行操作</header>
+								<header class="panel-heading">王国价值任务-执行操作</header>
 								<div class="panel-body">
 									<div class="form-inline" role="form">
 										增量/全量
@@ -95,6 +109,18 @@ var initPrice = function(){
 									<div class="form-inline" role="form">
 										<input type="button" id="btnSearch" name="btnSearch" value="开始执行" onclick="runTask()" class="btn btn-info" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 										<input type="button" id="btnSearch2" name="btnSearch2" value="初始化价值数据" onclick="initPrice()" class="btn btn-info" />
+									</div>
+								</div>
+							</section>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-12">
+							<section class="panel">
+								<header class="panel-heading">用户智能推荐初始化任务-执行操作</header>
+								<div class="panel-body">
+									<div class="form-inline" role="form">
+										<input type="button" id="btnSearch3" name="btnSearch3" value="开始执行" onclick="runTask2()" class="btn btn-info" />
 									</div>
 								</div>
 							</section>
