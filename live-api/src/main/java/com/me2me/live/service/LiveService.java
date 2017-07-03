@@ -584,4 +584,6 @@ public interface LiveService {
 	public String handleTransaction(long id,long meNumber);
 	
 	public String changeTopicKing(TopicListed topicListed, long newUid);
+	
+	public Response listTopic(long topicId);
 }
