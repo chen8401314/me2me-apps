@@ -3503,8 +3503,8 @@ private void localJpush(long toUid){
 			activityList = activityService.getHotActivity();
 			//获取名人堂列表
 			userFamousList = userService.getUserFamousPage(1, 30);
-			//获取热点聚合王国列表
-			ceKingdomList = contentMybatisDao.getHotContentByType(sinceId, 1, 3);//只要3个热点聚合王国
+			//获取热点聚合王国列表  ,已经不用了。
+			//ceKingdomList = contentMybatisDao.getHotContentByType(sinceId, 1, 3);//只要3个热点聚合王国
 		}
 		List<Content2Dto> contentList = contentMybatisDao.getHotContentByType(sinceId, 0, 20);//只要UGC+PGC+个人王国
 		
@@ -3563,15 +3563,21 @@ private void localJpush(long toUid){
 				List<Map<String,Object>> topicList = this.topicTagMapper.getKingdomsByTag(label,"new",1,4);
 				
 				Map<String,Object> totalPrice = topicTagMapper.getTagPriceAndKingdomCount(label);
-				List<BasicKingdomInfo> kingdoms =this.kingdomBuider.buildKingdoms(topicList, uid);
-				int tagPersons=(Integer)totalPrice.get("tagPersons");
-				int tagPrice=(Integer)totalPrice.get("tagPrice");
-				int kingdomCount = (Integer)totalPrice.get("kingdomCount");
-				element.setKingdomList(kingdoms);
-				element.setKingdomCount(kingdomCount);
-				element.setPersonCount(tagPersons);
+				if(topicList!=null && topicList.size()>0){
+					List<BasicKingdomInfo> kingdoms =this.kingdomBuider.buildKingdoms(topicList, uid);
+					element.setKingdomList(kingdoms);
+				}
+				long tagPersons=(Long)totalPrice.get("tagPersons");
+				long tagPrice = 0;
+				if(totalPrice.containsKey("tagPrice")){
+					tagPrice=(Long)totalPrice.get("tagPrice");
+				}
+				long kingdomCount = (Long)totalPrice.get("kingdomCount");
+				
+				element.setKingdomCount((int)kingdomCount);
+				element.setPersonCount((int)tagPersons);
 				element.setTagName(label);
-				double rmbPrice = exchangeKingdomPrice(tagPrice);
+				double rmbPrice = exchangeKingdomPrice((int)tagPrice);
 				element.setTagPrice(rmbPrice);
 				dataList.add(element);
 			}
@@ -3580,7 +3586,7 @@ private void localJpush(long toUid){
 	}
 	
 	private void buildHotListDTO(long uid, ShowHotListDTO result, List<ActivityWithBLOBs> activityList,
-			List<UserFamous> userFamousList, List<Content2Dto> ceKingdomList, List<Content2Dto> contentList){
+			List<UserFamous> userFamousList, List<Content2Dto> ceKingdomList_no_use, List<Content2Dto> contentList){
 		List<Long> topicIdList = new ArrayList<Long>();
 		List<Long> ceTopicIdList = new ArrayList<Long>();
 		List<Long> uidList = new ArrayList<Long>();
@@ -3601,6 +3607,7 @@ private void localJpush(long toUid){
 				}
 			}
 		}
+		/*
 		if(null != ceKingdomList && ceKingdomList.size() > 0){
 			for(Content2Dto c : ceKingdomList){
 				if(!uidList.contains(c.getUid())){
@@ -3614,6 +3621,7 @@ private void localJpush(long toUid){
 				}
 			}
 		}
+		*/
 		if(null != contentList && contentList.size() > 0){
 			for(Content2Dto c : contentList){
 				if(!uidList.contains(c.getUid())){
@@ -3692,7 +3700,7 @@ private void localJpush(long toUid){
         		liveFavouriteMap.put(((Long)lf.get("topic_id")).toString(), "1");
         	}
         }
-        //一次性查询聚合王国的子王国数
+        /*/一次性查询聚合王国的子王国数
         Map<String, Long> acCountMap = new HashMap<String, Long>();
         if(ceTopicIdList.size() > 0){
         	List<Map<String,Object>> acCountList = liveForContentJdbcDao.getTopicAggregationAcCountByTopicIds(ceTopicIdList);
@@ -3702,6 +3710,7 @@ private void localJpush(long toUid){
         		}
         	}
         }
+        */
         //一次性查询王国的最后一条更新记录
         Map<String, Map<String,Object>> lastFragmentMap = new HashMap<String, Map<String,Object>>();
         List<Map<String,Object>> lastFragmentList = liveForContentJdbcDao.getLastFragmentByTopicIds(topicIdList);
@@ -3816,7 +3825,8 @@ private void localJpush(long toUid){
 				result.getFamousUserData().add(famousUserElement);
 			}
 		}
-		
+		/*
+		 * 聚合王国不处理 
 		List<Map<String, Object>> acTopList = null;
 		List<Map<String, Object>> membersList = null;
 		if(null != ceKingdomList && ceKingdomList.size() > 0){
@@ -3910,7 +3920,7 @@ private void localJpush(long toUid){
 				result.getHottestCeKingdomData().add(ceKingdomElement);
 			}
 		}
-		
+		*/
 		if(null != contentList && contentList.size() > 0){
 			ShowHotListDTO.HotContentElement contentElement = null;
 			String lastFragmentImage = null;
@@ -6027,9 +6037,9 @@ private void localJpush(long toUid){
 		
 		if(page==1){
 			Map<String,Object> totalPrice = topicTagMapper.getTagPriceAndKingdomCount(tagName);
-			int tagPersons=(Integer)totalPrice.get("tagPersons");
+			long tagPersons=(Long)totalPrice.get("tagPersons");
 			//int tagPrice=(Integer)totalPrice.get("tagPrice");
-			int kingdomCount = (Integer)totalPrice.get("kingdomCount");
+			long kingdomCount = (Long)totalPrice.get("kingdomCount");
 			// 取topic tags 取所有的体系标签， 排序规则：1 运营指定顺序 2 用户喜好 3 标签价值
 			List<Map<String,Object>> sysTagList =topicTagMapper.getSysTagCountInfo();
 			String[] recommendTags = new String[sysTagList.size()];
@@ -6048,12 +6058,12 @@ private void localJpush(long toUid){
 			List<Integer> userHobbyList= topicTagMapper.getUserHobbyIdsByUid(uid);
 			
 			// 用户兴趣爱好,查标签对应的子标签，从集合里面判断是否包含用户喜好
-			for(int i=0;i<recommendTags.length;i++){
+			for(int i=0;i<recommendTags.length && userHobbyList.size()>0;i++){
 				if(recommendTags[i]==null){
 					it = sysTagList.iterator();
 					while(it.hasNext()){
 						Map<String,Object> tagInfo= it.next();
-						int tagId = (Integer)tagInfo.get("id");
+						long tagId = (Long)tagInfo.get("id");
 						String strTagName = (String)tagInfo.get("tag");
 						// 主标签匹配
 						String tagHobby = (String)tagInfo.get("user_hobby_ids");
@@ -6084,19 +6094,17 @@ private void localJpush(long toUid){
 			sysTagList.sort(new Comparator<Map<String,Object>>() {
 				@Override
 				public int compare(Map<String, Object> o1, Map<String, Object> o2) {
-					return (Integer)o1.get("price")>(Integer)o2.get("price")?1:-1;
+					return ((BigDecimal)o1.get("price")).intValue()<((BigDecimal)o2.get("price")).intValue()?1:-1;
 				}
 			});
+			it=sysTagList.iterator();
 			for(int i=0;i<recommendTags.length;i++){
-				if(recommendTags[i]==null){
-					it=sysTagList.iterator();
-					while(it.hasNext()){
-						recommendTags[i]=(String) it.next().get("tag");
-					}
+				if(recommendTags[i]==null && it.hasNext()){
+					recommendTags[i]=(String) it.next().get("tag");
 				}
 			}
-			dto.setKingdomCount(kingdomCount);
-			dto.setPersonCount(tagPersons);
+			dto.setKingdomCount((int)kingdomCount);
+			dto.setPersonCount((int)tagPersons);
 			dto.setTagName(tagName);
 			
 			// 去掉当前标签

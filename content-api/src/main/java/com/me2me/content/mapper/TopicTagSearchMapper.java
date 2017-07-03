@@ -49,7 +49,7 @@ public interface TopicTagSearchMapper {
 	 * @return
 	 */
 	@Select("select * from topic_tag where status=0 and pid=#{pid}")
-	public List<Map<String, Object>> getSubTagsByParentTagId(@Param("pid")int pid);
+	public List<Map<String, Object>> getSubTagsByParentTagId(@Param("pid")long pid);
 	/**
 	 * 获取用户爱好
 	 * @author zhangjiwei

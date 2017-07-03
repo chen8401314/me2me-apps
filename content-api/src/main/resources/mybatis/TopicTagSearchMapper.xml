@@ -21,7 +21,7 @@
                 order by td.last_price_incr DESC
               </otherwise>
            </choose>
-		   limit #{(page-1)*pageSize},#{pageSize}
+		   limit ${(page-1)*pageSize},#{pageSize}
      </select>
 
 	 <select id="getTagPriceAndKingdomCount" resultType="map">
