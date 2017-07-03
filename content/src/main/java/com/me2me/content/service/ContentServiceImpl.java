@@ -6027,9 +6027,9 @@ private void localJpush(long toUid){
 		
 		if(page==1){
 			Map<String,Object> totalPrice = topicTagMapper.getTagPriceAndKingdomCount(tagName);
-			int tagPersons=(Integer)totalPrice.get("tagPersons");
+			long tagPersons=(Long)totalPrice.get("tagPersons");
 			//int tagPrice=(Integer)totalPrice.get("tagPrice");
-			int kingdomCount = (Integer)totalPrice.get("kingdomCount");
+			long kingdomCount = (Long)totalPrice.get("kingdomCount");
 			// 取topic tags 取所有的体系标签， 排序规则：1 运营指定顺序 2 用户喜好 3 标签价值
 			List<Map<String,Object>> sysTagList =topicTagMapper.getSysTagCountInfo();
 			String[] recommendTags = new String[sysTagList.size()];
@@ -6048,12 +6048,12 @@ private void localJpush(long toUid){
 			List<Integer> userHobbyList= topicTagMapper.getUserHobbyIdsByUid(uid);
 			
 			// 用户兴趣爱好,查标签对应的子标签，从集合里面判断是否包含用户喜好
-			for(int i=0;i<recommendTags.length;i++){
+			for(int i=0;i<recommendTags.length && userHobbyList.size()>0;i++){
 				if(recommendTags[i]==null){
 					it = sysTagList.iterator();
 					while(it.hasNext()){
 						Map<String,Object> tagInfo= it.next();
-						int tagId = (Integer)tagInfo.get("id");
+						long tagId = (Long)tagInfo.get("id");
 						String strTagName = (String)tagInfo.get("tag");
 						// 主标签匹配
 						String tagHobby = (String)tagInfo.get("user_hobby_ids");
@@ -6084,19 +6084,17 @@ private void localJpush(long toUid){
 			sysTagList.sort(new Comparator<Map<String,Object>>() {
 				@Override
 				public int compare(Map<String, Object> o1, Map<String, Object> o2) {
-					return (Integer)o1.get("price")>(Integer)o2.get("price")?1:-1;
+					return ((BigDecimal)o1.get("price")).intValue()<((BigDecimal)o2.get("price")).intValue()?1:-1;
 				}
 			});
+			it=sysTagList.iterator();
 			for(int i=0;i<recommendTags.length;i++){
-				if(recommendTags[i]==null){
-					it=sysTagList.iterator();
-					while(it.hasNext()){
-						recommendTags[i]=(String) it.next().get("tag");
-					}
+				if(recommendTags[i]==null && it.hasNext()){
+					recommendTags[i]=(String) it.next().get("tag");
 				}
 			}
-			dto.setKingdomCount(kingdomCount);
-			dto.setPersonCount(tagPersons);
+			dto.setKingdomCount((int)kingdomCount);
+			dto.setPersonCount((int)tagPersons);
 			dto.setTagName(tagName);
 			
 			// 去掉当前标签
