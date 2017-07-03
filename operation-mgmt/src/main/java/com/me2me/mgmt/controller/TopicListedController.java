@@ -6,9 +6,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.me2me.cache.service.CacheService;
 import com.me2me.common.web.Response;
 import com.me2me.live.dto.SearchTopicListedListDto;
 import com.me2me.live.model.TopicListed;
@@ -28,8 +30,23 @@ public class TopicListedController {
 	@Autowired
     private LiveService liveService;
 	
+	@Autowired
+    private CacheService cacheService;
+	
 	@RequestMapping(value = "/topicListed")
 	public String topicListed(HttpServletRequest request) throws Exception {
+		String startTime="";
+		String endTime ="";
+	    String restStrDateBegin =cacheService.get("REST_LISTED_START_DATE");
+	    String restStrDateEnd =cacheService.get("REST_LISTED_END_DATE");
+	    if(!StringUtils.isEmpty(restStrDateBegin)){
+	    	startTime = restStrDateBegin;
+	    }
+	    if(!StringUtils.isEmpty(restStrDateEnd)){
+	    	endTime = restStrDateEnd;
+	    }
+		request.setAttribute("startTime",startTime);
+		request.setAttribute("endTime",endTime);
 		return "topicListed/list_topicListed";
 	}
 	@ResponseBody
@@ -84,5 +101,15 @@ public class TopicListedController {
 				return JsonResult.error(e.getMessage());
 			}
 	}
-	
+	@RequestMapping(value = "/setRestTime")
+	@ResponseBody
+	public String setRestTime(String startTime,String endTime,HttpServletRequest mrequest) throws Exception {
+		try {
+		   cacheService.set("REST_LISTED_START_DATE",startTime);
+		   cacheService.set("REST_LISTED_END_DATE",endTime);
+			return "1";
+		} catch (Exception e) {
+			return "0";
+		}
+	}
 }

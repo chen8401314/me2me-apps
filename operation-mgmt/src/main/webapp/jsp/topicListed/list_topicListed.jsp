@@ -40,6 +40,25 @@
 		<!--main content start-->
 		<section id="main-content">
 			<section class="wrapper">
+							<form id="form1" action="${ctx}/tag/query" method="post">
+					<div class="row">
+						<div class="col-lg-12">
+							<section class="panel">
+								<header class="panel-heading">执行操作</header>
+								<div class="panel-body">
+									<div class="form-inline" role="form">
+										休市时间设置：
+										<input type="text" id="startTime" name="startTime" value="${startTime }" class="form-control">
+										-
+										<input type="text" id="endTime" name="endTime" value="${endTime }" class="form-control">&nbsp;&nbsp;&nbsp;&nbsp;
+										<a class="btn btn-danger" href="javascript:setRestTime();">设置</a>
+									</div>
+								</div>
+							</section>
+						</div>
+					</div>
+				</form>
+			
 				<!-- page start-->
 				<div class="row">
 					<div class="col-sm-12">
@@ -99,17 +118,24 @@
             //suffix:      ["st", "nd", "rd", "th"],  
             today:       "今天"  
     };
-	$('.date').datetimepicker({
+	$('#startTime').datetimepicker({
 		format: 'yyyy-mm-dd',
 		language: 'zh',
 		startView: 2,
-		maxView:3,
-		language:"zh",
-		minView:2,
 		autoclose:true,
 		weekStart:1,
-		todayBtn:  1
-	});
+		todayBtn:  1,
+		minView:2
+		});
+	$('#endTime').datetimepicker({
+		format: 'yyyy-mm-dd',
+		language: 'zh',
+		startView: 2,
+		autoclose:true,
+		weekStart:1,
+		todayBtn:  1,
+		minView:2
+		});
 	Date.prototype.Format = function(fmt)   
 	{ //author: meizz   
 	  var o = {   
@@ -284,6 +310,37 @@
 		  return false; 
 		 }
     }
+	   function setRestTime(){
+			 var msg = "您真的确定要设置吗？"; 
+			 if (confirm(msg)==true){ 
+				 var startTime = $("#startTime").val();
+				 var endTime = $("#endTime").val();
+				 var param = {startTime:startTime,endTime:endTime};
+				  	$.ajax({
+			            cache: true,
+			            type: "POST",
+			            dataType :"json",
+			            url:"./setRestTime",
+			            data:param,
+			            async: true,
+			            error: function(request) {
+			                alert('服务器出错'); 
+			            },
+			            success: function(data) {
+			            	  if(data=='1'){
+			            		  //sourceTable.ajax.reload();
+			            		  alert('操作成功');
+			            	  }else{
+			                    	alert("提交失败");
+			                        }
+			            }
+			        });
+			  return true; 
+			 }else{ 
+			  return false; 
+			 }
+	    }
+	
 	</script>
 </body>
 </html>

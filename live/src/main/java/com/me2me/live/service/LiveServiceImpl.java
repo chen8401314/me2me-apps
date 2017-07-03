@@ -77,6 +77,7 @@ import com.me2me.live.dto.GetLiveTimeLineDto2;
 import com.me2me.live.dto.GetLiveUpdateDto;
 import com.me2me.live.dto.KingdomImgDB;
 import com.me2me.live.dto.KingdomSearchDTO;
+import com.me2me.live.dto.ListedTopicListDto;
 import com.me2me.live.dto.Live4H5Dto;
 import com.me2me.live.dto.LiveBarrageDto;
 import com.me2me.live.dto.LiveCoverDto;
@@ -7329,6 +7330,126 @@ public class LiveServiceImpl implements LiveService {
     	sb.append("》挂牌上市了，快来围观抢购吧");
     	topicNews.setContent(sb.toString());
     	liveMybatisDao.addTopicNews(topicNews);
+    	return Response.success();
+	}
+    @Override
+    public Response listedTopicList(long sinceId){
+        List<TopicListed> datas = liveMybatisDao.getTopicListedList(sinceId);
+        ListedTopicListDto dto = new ListedTopicListDto();
+        for (int i = 0; i < datas.size(); i++) {
+        	ListedTopicListDto.TopicListedElement ee =new ListedTopicListDto.TopicListedElement();
+        	TopicListed topicListed  =datas.get(i);
+            ee.setSinceId(topicListed.getId());
+            ee.setTopicId(topicListed.getTopicId());
+            Topic topic = liveMybatisDao.getTopicById(topicListed.getTopicId());
+            if(topic!=null){
+            	ee.setUid(topic.getUid());
+            	ee.setCoverImage(Constant.QINIU_DOMAIN + "/" +topic.getLiveImage());
+            	ee.setTitle(topic.getTitle());
+            	UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
+            	if(userProfile!=null){
+            		ee.setNickName(userProfile.getNickName());
+            	}
+            	ee.setContentType(topic.getType());
+            	if(topicListed.getStatus()==1){
+            		ee.setPersonCount(topicListed.getPersonCount());
+                	ee.setReadCount(topicListed.getReadCount());
+                	ee.setReviewCount(topicListed.getReviewCount());
+                	ee.setPrice(topicListed.getPrice());
+                	ee.setPriceRMB(topicListed.getPriceRmb());
+                	ee.setBuyUid(topicListed.getBuyUid());
+            	}else{
+            	ee.setPersonCount(liveLocalJdbcDao.getTopicMembersCount(topic.getId()));
+            	ee.setReadCount(liveLocalJdbcDao.getReadCount(topic.getId()));
+            	ee.setReviewCount(liveLocalJdbcDao.getTopicReviewCount(topic.getId()));
+            	ee.setPrice(topic.getPrice());
+            	ee.setPriceRMB(exchangeKingdomPrice(topic.getPrice()));
+            	}
+            }
+            ee.setStatus(topicListed.getStatus());
+         	dto.getTopicList().add(ee);
+        }
+        if(isRestTopicListed()){
+        	dto.setIsClosed(1);
+        }else{
+        	dto.setIsClosed(0);
+        }
+        return Response.success(dto);
+    }
+    //判断是否休市
+    public boolean isRestTopicListed(){
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	    try {
+	    	Date date = new Date();
+	    	SimpleDateFormat sdfStart = new SimpleDateFormat("yyyy-MM-dd 09:00:00");
+	    	SimpleDateFormat sdfEnd= new SimpleDateFormat("yyyy-MM-dd 17:00:00");
+	    	String  strDateBegin = sdfStart.format(date);
+		    String  strDateEnd = sdfEnd.format(date);
+		     
+		    if((date.compareTo(sdf.parse(strDateBegin))==1 || date.compareTo(sdf.parse(strDateBegin))==0)
+		    		& (date.compareTo(sdf.parse(strDateEnd))==-1 || date.compareTo(sdf.parse(strDateEnd))==0)
+		    		){
+		    	 Calendar cal = Calendar.getInstance();
+			        cal.setTime(date);
+			        int w = cal.get(Calendar.DAY_OF_WEEK) - 1;
+			        if(w==6||w==7){
+			        	 return true;
+			        }else{
+			       String restStrDateBegin =cacheService.get("REST_LISTED_START_DATE");
+			       String restStrDateEnd =cacheService.get("REST_LISTED_END_DATE");
+			       if(StringUtils.isEmpty(restStrDateBegin) || StringUtils.isEmpty(restStrDateEnd)){
+			    	   return false;
+			       }else{
+			    	    restStrDateBegin +=" 00:00:00";
+			        	 restStrDateEnd +=" 23:59:59";
+					    if((date.compareTo(sdf.parse(restStrDateBegin))==1 || date.compareTo(sdf.parse(restStrDateBegin))==0)
+					    		& (date.compareTo(sdf.parse(restStrDateEnd))==-1 || date.compareTo(sdf.parse(restStrDateEnd))==0)
+					    		){
+					    	return true;
+					    }  else{
+					    	return false;
+					    }
+			       }
+			        }
+		    }else{
+		    	return true;
+		    }
+		} catch (ParseException e) {
+			log.error(e.getMessage());
+			return true;
+		}
+    }
+    @Override
+	public Response takeoverTopic(long topicId,long uid){
+    	Topic topic = liveMybatisDao.getTopicById(topicId);
+    	if(topic==null){
+    		return Response.failure(500, "找不到该王国！") ;
+    	}
+    	TopicListed topicListed = liveMybatisDao.getTopicListedByTopicId(topicId);
+    	if(topicListed==null){
+    		return Response.failure(500, "找不到该王国上市记录！") ;
+    	}
+       if(liveMybatisDao.isBuyTopic(uid)){
+    	   return Response.failure(500, "不能重复收购！") ;
+       }
+       if(uid == topic.getUid()){
+    	   return Response.failure(500, "不能收购自己的王国！") ;
+       }
+       if(topicListed.getStatus()!=0){
+    	   return Response.failure(500, "该王国正在被其他人收购！") ;
+       }
+       if(isRestTopicListed()){
+    	   return Response.failure(500, "休市期间不能收购！") ;
+       }
+       
+       topicListed.setPersonCount(liveLocalJdbcDao.getTopicMembersCount(topic.getId()));
+       topicListed.setReadCount(liveLocalJdbcDao.getReadCount(topic.getId()));
+       topicListed.setReviewCount(liveLocalJdbcDao.getTopicReviewCount(topic.getId()));
+       topicListed.setPrice(topic.getPrice());
+       topicListed.setPriceRmb(exchangeKingdomPrice(topic.getPrice()));
+       topicListed.setStatus(1);
+       topicListed.setBuyUid(uid);
+       liveMybatisDao.updateTopicListed(topicListed);
     	return Response.success();
 	}
 }

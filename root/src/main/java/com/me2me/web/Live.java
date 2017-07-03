@@ -56,6 +56,7 @@ import com.me2me.web.request.GetMyLivesRequest;
 import com.me2me.web.request.ImgDBRequest;
 import com.me2me.web.request.InactiveLiveRequest;
 import com.me2me.web.request.KingdomSearchRequest;
+import com.me2me.web.request.ListTopicListedRequest;
 import com.me2me.web.request.ListTopicRequest;
 import com.me2me.web.request.LiveCoverRequest;
 import com.me2me.web.request.LiveDetailRequest;
@@ -74,6 +75,7 @@ import com.me2me.web.request.SignOutLiveRequest;
 import com.me2me.web.request.SpeakRequest;
 import com.me2me.web.request.StealKingdomCoinRequest;
 import com.me2me.web.request.TagKingdomsRequest;
+import com.me2me.web.request.TakeoverTopicRequest;
 import com.me2me.web.request.TestLiveRequest;
 import com.me2me.web.request.TopicOptRequest;
 import com.me2me.web.request.TopicRecommRequest;
@@ -926,5 +928,25 @@ public class Live extends BaseController {
     @RequestMapping(value = "/listTopic",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response listTopic(ListTopicRequest request){
     	return liveService.listTopic(request.getTopicId());
+    }
+    /**
+     * 上市王国列表查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/listedTopicList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response listedTopicList(ListTopicListedRequest request){
+    	return liveService.listedTopicList(request.getSinceId());
+    }
+    /**
+     * 王国收购接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/takeoverTopic",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response takeoverTopic(TakeoverTopicRequest request){
+    	return liveService.takeoverTopic(request.getTopicId(),request.getUid());
     }
 }

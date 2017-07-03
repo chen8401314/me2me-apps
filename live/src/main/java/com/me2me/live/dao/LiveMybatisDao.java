@@ -1697,4 +1697,36 @@ public class LiveMybatisDao {
 	public int addTopicListed(TopicListed topicListed){
 		return topicListedMapper.insertSelective(topicListed);
 	}
+	/**
+	 * 上市王国记录分页查询
+	 * @author chenxiang
+	 * @date 2017-7-8
+	 * @param sinceId 
+	 */
+    public List<TopicListed> getTopicListedList(long sinceId) {
+    	TopicListedExample example = new TopicListedExample();
+    	TopicListedExample.Criteria criteria = example.createCriteria();
+    	if(sinceId>0){
+        criteria.andIdLessThan(sinceId);
+    	}
+    	List<Integer> list = new ArrayList<Integer>();
+    	list.add(0);
+    	list.add(1);
+    	criteria.andStatusIn(list);
+        example.setOrderByClause("id desc limit 10");
+        return topicListedMapper.selectByExample(example);
+    }
+	/**
+	 * 用户是否收购过王国
+	 * @author chenxiang
+	 * @date 2017-7-8
+	 * @param sinceId 
+	 */
+    public boolean isBuyTopic(long uid) {
+    	TopicListedExample example = new TopicListedExample();
+    	TopicListedExample.Criteria criteria = example.createCriteria();
+    	criteria.andBuyUidEqualTo(uid);
+    	List<TopicListed> list = topicListedMapper.selectByExample(example);
+        return list.size()>0;
+    }
 }

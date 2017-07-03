@@ -25,8 +25,8 @@
 <script src="${ctx}/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 var pageSize = 10;
-
 var currentPage = 1;
+
 
 var getCurrentPage = function(){
 	return currentPage;
