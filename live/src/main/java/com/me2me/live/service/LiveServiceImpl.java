@@ -4868,13 +4868,13 @@ public class LiveServiceImpl implements LiveService {
 
         if(sourceTopicId == 0){
             //注册页进来
-            setDropaRoundDto(dto ,uid ,set);
+            setDropaRoundDto(dto ,uid ,set,sourceTopicId);
         }else {
             if(dr <= 5){
-                setDropaRoundDto(dto ,uid ,set);
+                setDropaRoundDto(dto ,uid ,set,sourceTopicId);
             }else {
                 //算法取王国
-                setDropaRoundDtoAlgorithm(dto ,uid ,set);
+                setDropaRoundDtoAlgorithm(dto ,uid ,set,sourceTopicId);
             };
         }
         //设置轨迹
@@ -4906,7 +4906,7 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(200 ,"操作成功");
     }
 
-    public void setDropaRoundDto(DropAroundDto dto ,long uid ,String set){
+    public void setDropaRoundDto(DropAroundDto dto ,long uid ,String set,long sourceTopicId){
         Map<String ,String> map = Maps.newHashMap();
         map.put("uid",String.valueOf(uid));
         map.put("set",set);
@@ -4914,7 +4914,7 @@ public class LiveServiceImpl implements LiveService {
         TopicDroparound droparound = liveMybatisDao.getRandomDropaRound(map);
         if(droparound == null){
             //没有数据了 算法取
-            setDropaRoundDtoAlgorithm(dto ,uid ,set);
+            setDropaRoundDtoAlgorithm(dto ,uid ,set,sourceTopicId);
         }else {
             Topic topic = liveMybatisDao.getTopicById(droparound.getTopicid());
             Content content = contentService.getContentByTopicId(droparound.getTopicid());
@@ -4944,24 +4944,30 @@ public class LiveServiceImpl implements LiveService {
     }
 
     //算法取
-    public void setDropaRoundDtoAlgorithm(DropAroundDto dto ,long uid ,String set){
-        Map<String ,String> map = Maps.newHashMap();
+    public void setDropaRoundDtoAlgorithm(DropAroundDto dto ,long uid ,String set,long sourceTopicId){
+        Map<String ,Object> map = Maps.newHashMap();
         map.put("uid",String.valueOf(uid));
         map.put("set",set);
-        //随机获取一条王国
-        Topic topicInfo;
-        topicInfo = liveMybatisDao.getRandomDropaRoundAlgorithm(map);
+        map.put("sourceTopicId", sourceTopicId);
+        Topic topicInfo = liveMybatisDao.getRandomTopicByTag(map);
         if(topicInfo == null){
             //topic王国取完了
             cacheService.del("list:user@" + uid);
             topicInfo = liveMybatisDao.getRandomDropaRoundAlgorithm(map);
         }
-        Topic topic = liveMybatisDao.getTopicById(topicInfo.getId());
+        //随机获取一条王国,兼容老式不明逻辑。
+        if(topicInfo == null){
+            //topic王国取完了
+            cacheService.del("list:user@" + uid);
+            topicInfo = liveMybatisDao.getRandomDropaRoundAlgorithm(map);
+        }
+       
+        //Topic topic = liveMybatisDao.getTopicById(topicInfo.getId());		// 不明逻辑。
         Content content = contentService.getContentByTopicId(topicInfo.getId());
-        if(topic != null){
-            int status = this.getInternalStatus(topic ,uid);
+        if(topicInfo != null){
+            int status = this.getInternalStatus(topicInfo ,uid);
             dto.setInternalStatus(status);
-            dto.setTopicType(topic.getType());
+            dto.setTopicType(topicInfo.getType());
         }if(content != null){
             dto.setCid(content.getId());
         }

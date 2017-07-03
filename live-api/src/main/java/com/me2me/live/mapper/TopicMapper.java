@@ -103,7 +103,7 @@ public interface TopicMapper {
     
     void statKingdomCountDay();
     
-    Topic getRandomDropaRoundAlgorithm(Map<String ,String> map);
+    Topic getRandomDropaRoundAlgorithm(Map<String ,Object> map);
 
     List<Topic2> getMyLivesByUpdateTimeNew(Map map);
     /**
@@ -124,4 +124,12 @@ public interface TopicMapper {
      */
     @Deprecated
     long countTopicForPage(Map map);
+    /**
+     * 随机查询一个某标签下的王国
+     * @author zhangjiwei
+     * @date Jul 3, 2017
+     * @param map
+     * @return
+     */
+    Topic getRandomTopicByTag(Map<String ,Object> map);
 }
