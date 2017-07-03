@@ -94,6 +94,7 @@ import com.me2me.live.model.TopicFragmentExample.Criteria;
 import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicFragmentTemplateExample;
 import com.me2me.live.model.TopicListed;
+import com.me2me.live.model.TopicListedExample;
 import com.me2me.live.model.TopicNews;
 import com.me2me.live.model.TopicNewsExample;
 import com.me2me.live.model.TopicPriceHis;
@@ -1677,5 +1678,26 @@ public class LiveMybatisDao {
 	 */
 	public TopicListed getTopicListedById(long id){
 		return topicListedMapper.selectByPrimaryKey(id);
+	}
+	/**
+	 * 获取上市王国信息
+	 * @author chenxiang
+	 * @date 2017-07-3
+	 * @param 
+	 */
+	public TopicListed getTopicListedByTopicId(long topicId){
+		TopicListedExample example = new TopicListedExample();
+    	example.createCriteria().andTopicIdEqualTo(topicId);
+    	List<TopicListed> list = topicListedMapper.selectByExample(example);
+		return list.size()>0?list.get(0):null;
+	}
+	/**
+	 * 添加上市王国信息
+	 * @author chenxiang
+	 * @date 2017-07-3
+	 * @param 
+	 */
+	public int addTopicListed(TopicListed topicListed){
+		return topicListedMapper.insertSelective(topicListed);
 	}
 }

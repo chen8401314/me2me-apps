@@ -6984,7 +6984,7 @@ public class LiveServiceImpl implements LiveService {
     public Response getKingdomPrice(long topicId) {
         Topic topic = getTopicById(topicId);
         if (topic == null) {
-            return Response.failure("找不到王国");
+            return Response.failure(500,"找不到王国");
         }
         GetKingdomPriceDto dto = new GetKingdomPriceDto();
         dto.setTitle(topic.getTitle());
@@ -6993,7 +6993,7 @@ public class LiveServiceImpl implements LiveService {
         // 米汤上市界限
         String listedPriceStr = userService.getAppConfigByKey(Constant.LISTING_PRICE_KEY);
         if (StringUtils.isEmpty(listedPriceStr)) {
-            return Response.failure("米汤上市界限配置错误！");
+            return Response.failure(500,"米汤上市界限配置错误！");
         }
         int listedPrice = Integer.parseInt(listedPriceStr);
         if (topic.getPrice() >= listedPrice) {
@@ -7006,7 +7006,7 @@ public class LiveServiceImpl implements LiveService {
         // 王国转让客服联系ID
         String sellUidStr = userService.getAppConfigByKey("SELL_UID");
         if (StringUtils.isEmpty(sellUidStr)) {
-            return Response.failure("王国转让客服联系ID配置错误！");
+            return Response.failure(500,"王国转让客服联系ID配置错误！");
         }
         dto.setSellUid(Long.parseLong(sellUidStr));
         List<TopicPriceHis> topicPriceChangedList = liveMybatisDao.getLastTenDaysTopicPrice(topicId);
@@ -7286,4 +7286,55 @@ public class LiveServiceImpl implements LiveService {
     	liveMybatisDao.updateTopicListed(topicListed);
         return "0";
     }
+    @Override
+	public Response listTopic(long topicId){
+    	Topic topic = liveMybatisDao.getTopicById(topicId);
+    	if(topic==null){
+    		return Response.failure(500, "找不到该王国！") ;
+    	}
+    	UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
+    	if(userProfile==null){
+    		return Response.failure(500, "找不到国王！") ;
+    	}
+    	  // 米汤上市界限
+        String listedPriceStr = userService.getAppConfigByKey(Constant.LISTING_PRICE_KEY);
+        if (StringUtils.isEmpty(listedPriceStr)) {
+            return Response.failure(500,"米汤上市界限配置错误！");
+        }
+        int listedPrice = Integer.parseInt(listedPriceStr);
+        if (topic.getPrice() <listedPrice) {
+        	 return Response.failure(500,"未达到米汤上市最低值！");
+        }
+    	TopicListed topicListed = liveMybatisDao.getTopicListedByTopicId(topicId);
+    	if(topicListed==null){
+    		topicListed = new TopicListed();
+    		topicListed.setTopicId(topicId);
+    		liveMybatisDao.addTopicListed(topicListed);
+    	}else {
+    		if(topicListed.getStatus()==0 ||topicListed.getStatus()==1 ||topicListed.getStatus()==2  ){
+    			 return Response.failure(500,"该王国已上市！");
+    		}else{
+            topicListed.setPersonCount(0);
+            topicListed.setReviewCount(0);
+        	topicListed.setReadCount(0);
+        	topicListed.setPrice(0);
+        	topicListed.setPriceRmb(0.0);
+        	topicListed.setBuyUid(0l);
+        	topicListed.setStatus(0);
+        	liveMybatisDao.updateTopicListed(topicListed);
+    		}
+    	}
+    	//添加跑马灯
+    	TopicNews topicNews = new TopicNews();
+    	topicNews.setTopicId(topicId);
+    	topicNews.setType(1);
+    	StringBuffer sb = new StringBuffer();
+    	sb.append(userProfile.getNickName());
+    	sb.append("的《");
+    	sb.append(topic.getTitle());
+    	sb.append("》挂牌上市了，快来围观抢购吧");
+    	topicNews.setContent(sb.toString());
+    	liveMybatisDao.addTopicNews(topicNews);
+    	return Response.success();
+	}
 }

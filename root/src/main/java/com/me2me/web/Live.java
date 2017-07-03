@@ -56,6 +56,7 @@ import com.me2me.web.request.GetMyLivesRequest;
 import com.me2me.web.request.ImgDBRequest;
 import com.me2me.web.request.InactiveLiveRequest;
 import com.me2me.web.request.KingdomSearchRequest;
+import com.me2me.web.request.ListTopicRequest;
 import com.me2me.web.request.LiveCoverRequest;
 import com.me2me.web.request.LiveDetailRequest;
 import com.me2me.web.request.LiveQrcodeRequest;
@@ -916,5 +917,14 @@ public class Live extends BaseController {
     public Response getKingdomPrice(GetKingdomPriceRequest request){
     	return liveService.getKingdomPrice(request.getTopicId());
     }
-
+    /**
+     * 王国挂牌上市
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/listTopic",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response listTopic(ListTopicRequest request){
+    	return liveService.listTopic(request.getTopicId());
+    }
 }
