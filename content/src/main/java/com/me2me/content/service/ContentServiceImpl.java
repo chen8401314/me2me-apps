@@ -3567,17 +3567,17 @@ private void localJpush(long toUid){
 					List<BasicKingdomInfo> kingdoms =this.kingdomBuider.buildKingdoms(topicList, uid);
 					element.setKingdomList(kingdoms);
 				}
-				long tagPersons=(Long)totalPrice.get("tagPersons");
-				long tagPrice = 0;
+				int tagPersons=((Number)totalPrice.get("tagPersons")).intValue();
+				int tagPrice = 0;
 				if(totalPrice.containsKey("tagPrice")){
-					tagPrice=(Long)totalPrice.get("tagPrice");
+					tagPrice=((Number)totalPrice.get("tagPrice")).intValue();
 				}
-				long kingdomCount = (Long)totalPrice.get("kingdomCount");
+				int kingdomCount = ((Number)totalPrice.get("kingdomCount")).intValue();
 				
-				element.setKingdomCount((int)kingdomCount);
-				element.setPersonCount((int)tagPersons);
+				element.setKingdomCount(kingdomCount);
+				element.setPersonCount(tagPersons);
 				element.setTagName(label);
-				double rmbPrice = exchangeKingdomPrice((int)tagPrice);
+				double rmbPrice = exchangeKingdomPrice(tagPrice);
 				element.setTagPrice(rmbPrice);
 				dataList.add(element);
 			}
@@ -3590,7 +3590,8 @@ private void localJpush(long toUid){
 		List<Long> topicIdList = new ArrayList<Long>();
 		List<Long> ceTopicIdList = new ArrayList<Long>();
 		List<Long> uidList = new ArrayList<Long>();
-		
+		double minPrice =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_PRICE_BRAND_MIN"));
+		double minRmb =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_RMB_BRAND_MIN"));
 		if(null != activityList && activityList.size() > 0){
 			for(ActivityWithBLOBs activity : activityList){
 				if(activity.getTyp() == 2 && activity.getCid() > 0){
@@ -3967,6 +3968,9 @@ private void localJpush(long toUid){
 						contentElement.setContentType((Integer)topic.get("type"));
 						contentElement.setInternalStatus(this.getInternalStatus(topic, uid));
 						contentElement.setPrice((Integer)topic.get("price"));
+						contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice()));
+						contentElement.setShowPriceBrand(contentElement.getPrice()>minPrice?1:0);
+						contentElement.setShowRMBBrand(contentElement.getPriceRMB()>minRmb?1:0);// 显示吊牌
 					}
 					lastFragment = lastFragmentMap.get(c.getForwardCid().toString());
 					if(null != lastFragment){
