@@ -1038,6 +1038,9 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			if (!ret.contains(alias)) {
 				ret.add(alias);
 			}
+			if(ret.size()>0){
+				break;		// 只返回1个。
+			}
 		}
 		return ret;
 	}
