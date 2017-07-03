@@ -525,6 +525,132 @@ public class LiveForContentJdbcDao {
     	return result;
     }
     
+    /**
+     * 王国价值最高排行榜
+     * @param start
+     * @param pageSize
+     * @return
+     */
+    public List<BillBoardListDTO> kingdomPriceList(long start, int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select t.id from topic t");
+    	sb.append(" order by t.price desc,t.id desc");
+    	sb.append(" limit ").append(start).append(",").append(pageSize);
+
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	
+    	List<BillBoardListDTO> result = new ArrayList<BillBoardListDTO>();
+    	if(null != list && list.size() > 0){
+    		BillBoardListDTO bbl = null;
+    		Map<String, Object> m = null;
+    		for(int i=0;i<list.size();i++){
+    			m = list.get(i);
+    			bbl = new BillBoardListDTO();
+    			bbl.setTargetId((Long)m.get("id"));
+    			bbl.setType(1);
+    			bbl.setSinceId(start+i+1);
+    			result.add(bbl);
+    		}
+    	}
+    	return result;
+    }
+    
+    /**
+     * 王国价值上升最快排行榜
+     * @param start
+     * @param pageSize
+     * @return
+     */
+    public List<BillBoardListDTO> kingdomIncrPriceList(long start, int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select t.id from topic_data d,topic t");
+    	sb.append(" where d.topic_id=t.id order by d.last_price_incr desc,t.id");
+    	sb.append(" limit ").append(start).append(",").append(pageSize);
+    	
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	
+    	List<BillBoardListDTO> result = new ArrayList<BillBoardListDTO>();
+    	if(null != list && list.size() > 0){
+    		BillBoardListDTO bbl = null;
+    		Map<String, Object> m = null;
+    		for(int i=0;i<list.size();i++){
+    			m = list.get(i);
+    			bbl = new BillBoardListDTO();
+    			bbl.setTargetId((Long)m.get("id"));
+    			bbl.setType(1);
+    			bbl.setSinceId(start+i+1);
+    			result.add(bbl);
+    		}
+    	}
+    	return result;
+    }
+    
+    /**
+     * 标签王国价值最高排行榜
+     * @param tag		标签名
+     * @param start
+     * @param pageSize
+     * @return
+     */
+    public List<BillBoardListDTO> tagKingdomPriceList(String tag, long start, int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select t.id from topic_tag_detail d,topic t");
+    	sb.append(" where d.topic_id=t.id and d.status=0");
+    	sb.append(" and d.tag='").append(tag);
+    	sb.append("' order by t.price desc,t.id DESC");
+    	sb.append(" limit ").append(start).append(",").append(pageSize);
+    	
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	
+    	List<BillBoardListDTO> result = new ArrayList<BillBoardListDTO>();
+    	if(null != list && list.size() > 0){
+    		BillBoardListDTO bbl = null;
+    		Map<String, Object> m = null;
+    		for(int i=0;i<list.size();i++){
+    			m = list.get(i);
+    			bbl = new BillBoardListDTO();
+    			bbl.setTargetId((Long)m.get("id"));
+    			bbl.setType(1);
+    			bbl.setSinceId(start+i+1);
+    			result.add(bbl);
+    		}
+    	}
+    	return result;
+    }
+    
+    /**
+     * 标签王国价值增长最快排行榜
+     * @param tag		标签名
+     * @param start
+     * @param pageSize
+     * @return
+     */
+    public List<BillBoardListDTO> tagKingdomIncrPriceList(String tag, long start, int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select t.id from topic_tag_detail d,topic t,topic_data td");
+    	sb.append(" where d.topic_id=t.id and t.id=td.topic_id");
+    	sb.append(" and d.status=0 and d.tag='").append(tag);
+    	sb.append("' order by td.last_price_incr desc,t.id desc");
+    	sb.append(" limit ").append(start).append(",").append(pageSize);
+    	
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	
+    	List<BillBoardListDTO> result = new ArrayList<BillBoardListDTO>();
+    	if(null != list && list.size() > 0){
+    		BillBoardListDTO bbl = null;
+    		Map<String, Object> m = null;
+    		for(int i=0;i<list.size();i++){
+    			m = list.get(i);
+    			bbl = new BillBoardListDTO();
+    			bbl.setTargetId((Long)m.get("id"));
+    			bbl.setType(1);
+    			bbl.setSinceId(start+i+1);
+    			result.add(bbl);
+    		}
+    	}
+    	return result;
+    }
+    
     public List<BillBoardListDTO> getNewRegisterUsers(long sinceId, int pageSize){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select p.uid,p.id from user_profile p");

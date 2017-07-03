@@ -9,6 +9,7 @@
 
     <dubbo:reference interface="com.me2me.user.service.UserService" id="userService"/>
     <dubbo:reference interface="com.me2me.io.service.FileTransferService" id="fileTransferService"/>
+    <dubbo:reference interface="com.me2me.cache.service.CacheService" id="cacheService"/>
     
     <dubbo:consumer check="false" />
 </beans>

@@ -371,4 +371,17 @@ public class ContentForSearchJdbcDao {
 		}
 		return null;
 	}
+	
+	public List<Long> getInitUserByType(String type){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select t.uid from user_rec_init t where t.type='").append(type).append("'");
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+		List<Long> result = new ArrayList<Long>();
+		if(null != list && list.size() > 0){
+			for(Map<String, Object> m : list){
+				result.add((Long)m.get("uid"));
+			}
+		}
+		return result;
+	}
 }

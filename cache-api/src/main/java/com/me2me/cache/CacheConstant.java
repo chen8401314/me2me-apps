@@ -49,4 +49,5 @@ public class CacheConstant {
 	public static final String APP_CONFIG_KEY_PRE = "APP_CONFIG:";
 	
 	public static final String USER_REC_INIT_LIST_KEY_PRE = "USER_REC_INIT_LIST:";
+	public static final String USER_REC_DAY_LIST_KEY_PRE = "USER_REC_DAY_LIST:";
 }

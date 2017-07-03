@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import com.alibaba.dubbo.common.json.JSONObject;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.me2me.cache.CacheConstant;
+import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.web.Response;
@@ -80,6 +82,8 @@ public class SearchServiceImpl implements SearchService {
     private SearchMybatisDao searchMybatisDao;
     @Autowired
 	private SearchMapper searchMapper;
+    @Autowired
+    private CacheService cacheService;
     
     @Override
     public Response search(String keyword,int page,int pageSize,long uid,int isSearchFans) {
@@ -1018,6 +1022,31 @@ public class SearchServiceImpl implements SearchService {
 		}
 		
 		return Response.success(indexData);
+	}
+	
+	private List<RecommendUser> userRecList(UserProfile userProfile, String hobby, EmotionInfo firstUserEmotionInfo){
+		//先从缓存列表中查看是否有记录
+//		List<Long>
+		
+		
+		//先获取相应数据列表
+		
+		return null;
+	}
+	
+	private List<Long> getInitUserByType(String type){
+		List<Long> uidList = null;
+		String cache = cacheService.get(CacheConstant.USER_REC_INIT_LIST_KEY_PRE + type);
+		if(StringUtils.isEmpty(cache)){
+			uidList = contentForSearchJdbcDao.getInitUserByType(type);
+		}else{//非空
+			uidList = new ArrayList<Long>();
+			String[] tmp = cache.split(",");
+			for(String t : tmp){
+				uidList.add(Long.valueOf(t));
+			}
+		}
+		return uidList;
 	}
 	
 	private void builderRecKingdomInfo(RecommendListDto indexData, List<TopicEsMapping> kingdoms, long uid){

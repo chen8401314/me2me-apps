@@ -82,6 +82,26 @@
 														<option value="9">新注册的美女</option>
 														<option value="10">新注册的用户</option>
 														<option value="11">炙手可热的米汤红人</option>
+														<option value="12">王国价值最高</option>
+														<option value="13">王国价值增长最快</option>
+														<option value="14">标签[运动的时候最性感]王国价值最高</option>
+														<option value="15">标签[运动的时候最性感]王国价值增长最快</option>
+														<option value="16">标签[非典型性话唠]王国价值最高</option>
+														<option value="17">标签[非典型性话唠]王国价值增长最快</option>
+														<option value="18">标签[声音与光影]王国价值最高</option>
+														<option value="19">标签[声音与光影]王国价值增长最快</option>
+														<option value="20">标签[建筑不止是房子]王国价值最高</option>
+														<option value="21">标签[建筑不止是房子]王国价值增长最快</option>
+														<option value="22">标签[寰球动漫游戏世界]王国价值最高</option>
+														<option value="23">标签[寰球动漫游戏世界]王国价值增长最快</option>
+														<option value="24">标签[玩物不丧志]王国价值最高</option>
+														<option value="25">标签[玩物不丧志]王国价值增长最快</option>
+														<option value="26">标签[铲屎官的日常]王国价值最高</option>
+														<option value="27">标签[铲屎官的日常]王国价值增长最快</option>
+														<option value="28">标签[旅行是我的态度]王国价值最高</option>
+														<option value="29">标签[旅行是我的态度]王国价值增长最快</option>
+														<option value="30">标签[深夜食堂]王国价值最高</option>
+														<option value="31">标签[深夜食堂]王国价值增长最快</option>
 													</select>
 													<label class="text-danger">保存之后不可修改。</label>
 		                                        </div>

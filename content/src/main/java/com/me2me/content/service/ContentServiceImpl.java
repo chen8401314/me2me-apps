@@ -5020,6 +5020,126 @@ private void localJpush(long toUid){
     		}
     		result = liveForContentJdbcDao.fansBillboard(sinceId, pageSize);
     		break;
+    	case 12://王国价值最高
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.kingdomPriceList(sinceId, pageSize);
+    		break;
+    	case 13://王国价值增长最快
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.kingdomIncrPriceList(sinceId, pageSize);
+    		break;
+    	case 14://标签[运动的时候最性感]王国价值最高
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.tagKingdomPriceList("运动的时候最性感", sinceId, pageSize);
+    		break;
+    	case 15://标签[运动的时候最性感]王国价值增长最快
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.tagKingdomIncrPriceList("运动的时候最性感", sinceId, pageSize);
+    		break;
+    	case 16://标签[非典型性话唠]王国价值最高
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.tagKingdomPriceList("非典型性话唠", sinceId, pageSize);
+    		break;
+    	case 17://标签[非典型性话唠]王国价值增长最快
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.tagKingdomIncrPriceList("非典型性话唠", sinceId, pageSize);
+    		break;
+    	case 18://标签[声音与光影]王国价值最高
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.tagKingdomPriceList("声音与光影", sinceId, pageSize);
+    		break;
+    	case 19://标签[声音与光影]王国价值增长最快
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.tagKingdomIncrPriceList("声音与光影", sinceId, pageSize);
+    		break;
+    	case 20://标签[建筑不止是房子]王国价值最高
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.tagKingdomPriceList("建筑不止是房子", sinceId, pageSize);
+    		break;
+    	case 21://标签[建筑不止是房子]王国价值增长最快
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.tagKingdomIncrPriceList("建筑不止是房子", sinceId, pageSize);
+    		break;
+    	case 22://标签[寰球动漫游戏世界]王国价值最高
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.tagKingdomPriceList("寰球动漫游戏世界", sinceId, pageSize);
+    		break;
+    	case 23://标签[寰球动漫游戏世界]王国价值增长最快
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.tagKingdomIncrPriceList("寰球动漫游戏世界", sinceId, pageSize);
+    		break;
+    	case 24://标签[玩物不丧志]王国价值最高
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.tagKingdomPriceList("玩物不丧志", sinceId, pageSize);
+    		break;
+    	case 25://标签[玩物不丧志]王国价值增长最快
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.tagKingdomIncrPriceList("玩物不丧志", sinceId, pageSize);
+    		break;
+    	case 26://标签[铲屎官的日常]王国价值最高
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.tagKingdomPriceList("铲屎官的日常", sinceId, pageSize);
+    		break;
+    	case 27://标签[铲屎官的日常]王国价值增长最快
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.tagKingdomIncrPriceList("铲屎官的日常", sinceId, pageSize);
+    		break;
+    	case 28://标签[旅行是我的态度]王国价值最高
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.tagKingdomPriceList("旅行是我的态度", sinceId, pageSize);
+    		break;
+    	case 29://标签[旅行是我的态度]王国价值增长最快
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.tagKingdomIncrPriceList("旅行是我的态度", sinceId, pageSize);
+    		break;
+    	case 30://标签[深夜食堂]王国价值最高
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.tagKingdomPriceList("深夜食堂", sinceId, pageSize);
+    		break;
+    	case 31://标签[深夜食堂]王国价值增长最快
+    		if(sinceId < 0){
+    			sinceId = 0l;
+    		}
+    		result = liveForContentJdbcDao.tagKingdomIncrPriceList("深夜食堂", sinceId, pageSize);
+    		break;
     	default:
     		break;
     	}
