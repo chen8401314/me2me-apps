@@ -29,6 +29,7 @@ import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicDroparound;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicFragmentTemplate;
+import com.me2me.live.model.TopicListed;
 import com.me2me.live.model.TopicPriceSubsidyConfig;
 import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicUserConfig;
@@ -575,4 +576,18 @@ public interface LiveService {
 	public void editTopicPriceSubsidyConfig(TopicPriceSubsidyConfig tpsc);
 	
 	public void delTopicPriceSubsidyConfig(long id);
+	
+    public Response searchTopicListedPage(int status,int page, int pageSize);
+    
+    public void updateTopicListedStatus(TopicListed topicListed);
+    
+	public String handleTransaction(long id,long meNumber);
+	
+	public String changeTopicKing(TopicListed topicListed, long newUid);
+	
+	public Response listTopic(long topicId);
+	
+    public Response listedTopicList(long sinceId);
+    
+	public Response takeoverTopic(long topicId,long uid);
 }

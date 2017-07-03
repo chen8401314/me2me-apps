@@ -63,6 +63,8 @@ public class KingdomBuilder {
 		Map<String, Long> reviewCountMap = new HashMap<>();
 		Map<String, Long> topicMemberCountMap = new HashMap<>();
 		Map<String, String> topicTagMap = new HashMap<>();
+		double minPrice =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_PRICE_BRAND_MIN"));
+		double minRmb =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_RMB_BRAND_MIN"));
 
 		if (null != topicList && topicList.size() > 0) {
 			Long uid = null;
@@ -206,6 +208,8 @@ public class KingdomBuilder {
 			} else {
 				data.setTags("");
 			}
+			data.setShowPriceBrand(data.getPrice()!=null && data.getPrice()>minPrice?1:0);
+			data.setShowRMBBrand(data.getPriceRMB()>minRmb?1:0);// 显示吊牌
 			result.add(data);
 		}
 		return result;

@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.me2me.common.web.Response;
+import com.me2me.search.dto.RecommendTagDto;
 import com.me2me.search.model.SearchHotKeyword;
 
 /**
@@ -108,4 +109,15 @@ public interface SearchService {
 	Response recContentDislike(long uid, long cid, int type);
 	
 	List<Map<String, Object>> topicAtUserList(String keyword, long searchUid);
+	/**
+	 * 索引标签样本 。
+	 * @author zhangjiwei
+	 * @date Jun 30, 2017
+	 * @param fully
+	 * @return
+	 * @throws Exception
+	 */
+	int indexTagSample() throws Exception;
+	
+	Response<RecommendTagDto> recommendTags(String content,int count);
 }

@@ -102,7 +102,7 @@ if(null != user){
                     <li>
                         <a href="#">
                             <span class="photo">
-                                <img alt="avatar" src="img/avatar-mini.jpg"></span>
+                                <img alt="avatar" src="/img/avatar-mini.jpg"></span>
                             <span class="subject">
                                 <span class="from">老邓</span>
                                 <span class="time">1 Hours</span>
@@ -164,7 +164,7 @@ if(null != user){
             <!-- user login dropdown start-->
             <li class="dropdown">
                 <a data-toggle="dropdown" class="dropdown-toggle" href="#">
-                    <img alt="" src="img/self_small.jpg">
+                    <img alt="" src="/img/self_small.jpg">
                     <span class="username"><%=userName %></span>
                     <b class="caret"></b>
                 </a>

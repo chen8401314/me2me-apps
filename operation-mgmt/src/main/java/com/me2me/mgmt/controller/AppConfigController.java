@@ -1,12 +1,16 @@
 package com.me2me.mgmt.controller;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.PostConstruct;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.collections.map.LinkedMap;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -644,4 +648,50 @@ public class AppConfigController {
 		ModelAndView view = new ModelAndView("redirect:/appconfig/version/channel/query");
 		return view;
 	}
+
+	@RequestMapping(value = "/allConfig")
+	public String allConfig(HttpServletRequest request,HttpServletResponse response){
+		//List<AppConfig> confList = userService.getAppConfigsByType(typeName);
+		List<AppConfig> confList= userService.getAllAppConfig();
+		LinkedHashMap<String, List> configMap = new LinkedHashMap<>();
+		for(AppConfig cfg:confList){
+			String group = cfg.getTypeName();
+			List<AppConfig> cfgList= configMap.get(group);
+			if(cfgList==null){
+				cfgList=new ArrayList<>();
+				configMap.put(group, cfgList);
+			}
+			cfgList.add(cfg);
+		}
+		request.setAttribute("configMap", configMap);
+		return "appconfig/allConfig";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/saveConfig")
+	public String saveConfig(HttpServletRequest request,HttpServletResponse response,
+			@RequestParam("k")String key, 
+			@RequestParam("v")String value){
+		
+		if(StringUtils.isBlank(key)){
+			logger.warn("key不能为空");
+			return "key不能为空";
+		}
+		
+		userService.saveAppConfig(key, value);
+		
+		return "0";
+	}
+	@RequestMapping(value = "/refreshCache")
+	@ResponseBody
+	public String refreshCache(){
+		try{
+			userService.refreshConfigCache();
+		}catch(Exception e){
+			logger.error("刷新缓存失败", e);
+			return "刷新缓存失败";
+		}
+		return "刷新缓存成功";
+	}
+	
 }

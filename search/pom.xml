@@ -29,6 +29,24 @@
   <artifactId>spring-aop</artifactId>
   <version>4.2.6.RELEASE</version>
 </dependency>
+<!-- https://mvnrepository.com/artifact/com.janeluo/ikanalyzer -->
+<dependency>
+    <groupId>com.janeluo</groupId>
+    <artifactId>ikanalyzer</artifactId>
+    <version>2012_u6</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/commons-io/commons-io -->
+<dependency>
+    <groupId>commons-io</groupId>
+    <artifactId>commons-io</artifactId>
+    <version>2.5</version>
+</dependency>
+<!-- https://mvnrepository.com/artifact/org.apache.commons/commons-lang3 -->
+<dependency>
+    <groupId>org.apache.commons</groupId>
+    <artifactId>commons-lang3</artifactId>
+    <version>3.6</version>
+</dependency>
 
 
         <dependency>
@@ -57,6 +75,21 @@
 			<groupId>redis.clients</groupId>
 			<artifactId>jedis</artifactId>
 			<version>2.6.2</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-queryparser</artifactId>
+			<version>4.10.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>4.10.4</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>4.10.4</version>
 		</dependency>
     </dependencies>
 

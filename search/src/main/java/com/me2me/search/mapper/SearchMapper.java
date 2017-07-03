@@ -6,8 +6,10 @@ import java.util.Map;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.ResultType;
 import org.apache.ibatis.annotations.Select;
+import org.apache.shiro.authz.annotation.RequiresUser;
 
 import com.me2me.search.esmapping.SearchHistoryEsMapping;
+import com.me2me.search.esmapping.TagTrainSampleEsMapping;
 import com.me2me.search.esmapping.TopicEsMapping;
 import com.me2me.search.esmapping.UgcEsMapping;
 import com.me2me.search.esmapping.UserEsMapping;
@@ -167,4 +169,8 @@ public interface SearchMapper  {
     @ResultType(String.class)
     @Select("select i.emotionName from emotion_record t, emotion_info i where t.emotionId=i.id and t.uid=#{0} order by t.id desc limit 3")
     List<String> getLast3UserEmotionByUid(long uid);
+    
+    @ResultType(TagTrainSampleEsMapping.class)
+    @Select("select * from tag_train_sample")
+	public List<TagTrainSampleEsMapping> getAllTagSamples();
 }

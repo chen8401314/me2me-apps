@@ -189,4 +189,12 @@ public class Home extends BaseController {
         
         return contentService.getPricedKingdomList(request.getPage(), request.getPageSize(),request.getUid());
     }
+    
+    @RequestMapping(value = "/tagDetailList")
+    @ResponseBody
+    public Response tagDetailList(TagKingdomRequest request){
+        
+        return contentService.getTagKingdomList(request.getTagName(),request.getOrder(),request.getPage(), request.getPageSize(),request.getUid());
+    }
+    
 }

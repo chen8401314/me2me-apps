@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.me2me.content.mapper.TopicTagSearchMapper">
+  
+     <select id="getKingdomsByTag" resultType="map">
+		select t.* from topic_tag_detail d,topic t,topic_data td
+		where 
+			d.status=0 
+			and td.topic_id=t.id 
+			and d.topic_id=t.id 
+			and d.tag_id in(
+					select id from topic_tag p where tag=#{tag}
+					UNION 
+					select id from topic_tag c where c.pid=(select id from topic_tag p where tag=#{tag})
+			)
+		  <choose>
+             <when test="order=='price'">
+                order by t.price DESC
+             </when>
+             <otherwise>
+                order by td.last_price_incr DESC
+              </otherwise>
+           </choose>
+		   limit ${(page-1)*pageSize},#{pageSize}
+     </select>
+
+	 <select id="getTagPriceAndKingdomCount" resultType="map">
+		select 
+			count(1) kingdomCount,
+			sum(ts.price) tagPrice,
+			(select count(DISTINCT uid) c from topic_fragment where topic_id in(
+				select DISTINCT topic_id from topic_tag_detail dt where dt.status=0 and dt.tag_id in(
+						select id from topic_tag p where tag=#{tag} and status=0
+						UNION
+						select id from topic_tag c where c.pid=(select id from topic_tag p where tag=#{tag} and status=0) 
+				)
+			)) tagPersons
+			from
+			(select * from topic where id in(
+				select DISTINCT topic_id from topic_tag_detail dt where dt.status=0 and dt.tag_id in(
+						select id from topic_tag p where tag=#{tag} and status=0
+						UNION
+						select id from topic_tag c where c.pid=(select id from topic_tag p where tag=#{tag} and status=0) 
+				)
+			)) ts
+	 </select>
+	
+	<select id="getSysTagCountInfo" resultType="map">
+		SELECT t.*,
+		( 
+			select  sum(price) from topic where id in(
+				select DISTINCT dt.topic_id from topic_tag_detail dt where dt.status=0 and dt.tag_id in(
+					select id from topic_tag p where tag=t.tag
+					UNION
+					select id from topic_tag c where c.pid=(select id from topic_tag p where tag=t.tag) 
+				)
+			)
+		) price
+		FROM topic_tag t where t.is_sys=1
+	</select>
+
+</mapper>

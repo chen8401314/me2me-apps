@@ -549,7 +549,27 @@
     order by orderCount DESC
     limit 1;
   </select>
-
+<select id="getRandomTopicByTag" parameterType="java.util.Map" resultMap="BaseResultMap">
+    select t.*  from topic t,content c
+    where 
+    t.id in(
+		select DISTINCT topic_id from topic_tag_detail dt where dt.status=0 and dt.tag_id in(
+			select tag_id from topic_tag_detail where topic_id=#{sourceTopicId} and status=0
+			UNION
+			select id from topic_tag c where c.pid in(select tag_id from topic_tag_detail where topic_id=#{sourceTopicId} and status=0) 
+		)
+	) 
+    and t.id=c.forward_cid
+    and c.status=0 and c.type=3
+    and t.status=0
+    AND t.uid != #{uid}
+    <if test="set != ''">
+      and t.id NOT IN (${set})
+    </if>
+    AND NOT FIND_IN_SET(#{uid},SUBSTR(t.core_circle ,2, LENGTH(t.core_circle)-2))
+    order by update_time DESC
+    limit 1;
+  </select>
   <select id="getMyLivesByUpdateTimeNew" parameterType="java.util.Map" resultMap="BaseResultMap2">
     SELECT * FROM (
     SELECT m.*,CASE WHEN c.is_top=1 THEN 1 ELSE 0 END AS istop,

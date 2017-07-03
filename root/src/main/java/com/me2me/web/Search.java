@@ -108,4 +108,14 @@ public class Search extends BaseController {
     public Response recList(RecListRequest request){
     	return searchService.recommendIndex(request.getUid(), request.getPage(), request.getToken(), request.getVersion());
     }
+    /**
+     * 王国价值详情获取接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/recommendTags",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response recommendTags(RecommendTagRequest request){
+    	return searchService.recommendTags(request.getContent(),request.getCount());
+    }
 }

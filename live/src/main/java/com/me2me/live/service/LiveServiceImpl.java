@@ -77,6 +77,7 @@ import com.me2me.live.dto.GetLiveTimeLineDto2;
 import com.me2me.live.dto.GetLiveUpdateDto;
 import com.me2me.live.dto.KingdomImgDB;
 import com.me2me.live.dto.KingdomSearchDTO;
+import com.me2me.live.dto.ListedTopicListDto;
 import com.me2me.live.dto.Live4H5Dto;
 import com.me2me.live.dto.LiveBarrageDto;
 import com.me2me.live.dto.LiveCoverDto;
@@ -90,6 +91,7 @@ import com.me2me.live.dto.LiveUpdateDto;
 import com.me2me.live.dto.ResendVoteDto;
 import com.me2me.live.dto.SearchDropAroundTopicDto;
 import com.me2me.live.dto.SearchTopicDto;
+import com.me2me.live.dto.SearchTopicListedListDto;
 import com.me2me.live.dto.SettingModifyDto;
 import com.me2me.live.dto.SettingsDto;
 import com.me2me.live.dto.ShowBarrageDto;
@@ -131,6 +133,7 @@ import com.me2me.live.model.TopicDroparoundTrail;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicFragmentExample;
 import com.me2me.live.model.TopicFragmentTemplate;
+import com.me2me.live.model.TopicListed;
 import com.me2me.live.model.TopicNews;
 import com.me2me.live.model.TopicPriceHis;
 import com.me2me.live.model.TopicPriceSubsidyConfig;
@@ -152,6 +155,7 @@ import com.me2me.user.model.EmotionInfo;
 import com.me2me.user.model.EmotionRecord;
 import com.me2me.user.model.SystemConfig;
 import com.me2me.user.model.UserFollow;
+import com.me2me.user.model.UserNo;
 import com.me2me.user.model.UserNotice;
 import com.me2me.user.model.UserNoticeUnread;
 import com.me2me.user.model.UserProfile;
@@ -4895,13 +4899,13 @@ public class LiveServiceImpl implements LiveService {
 
         if(sourceTopicId == 0){
             //注册页进来
-            setDropaRoundDto(dto ,uid ,set);
+            setDropaRoundDto(dto ,uid ,set,sourceTopicId);
         }else {
             if(dr <= 5){
-                setDropaRoundDto(dto ,uid ,set);
+                setDropaRoundDto(dto ,uid ,set,sourceTopicId);
             }else {
                 //算法取王国
-                setDropaRoundDtoAlgorithm(dto ,uid ,set);
+                setDropaRoundDtoAlgorithm(dto ,uid ,set,sourceTopicId);
             };
         }
         //设置轨迹
@@ -4933,7 +4937,7 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(200 ,"操作成功");
     }
 
-    public void setDropaRoundDto(DropAroundDto dto ,long uid ,String set){
+    public void setDropaRoundDto(DropAroundDto dto ,long uid ,String set,long sourceTopicId){
         Map<String ,String> map = Maps.newHashMap();
         map.put("uid",String.valueOf(uid));
         map.put("set",set);
@@ -4941,7 +4945,7 @@ public class LiveServiceImpl implements LiveService {
         TopicDroparound droparound = liveMybatisDao.getRandomDropaRound(map);
         if(droparound == null){
             //没有数据了 算法取
-            setDropaRoundDtoAlgorithm(dto ,uid ,set);
+            setDropaRoundDtoAlgorithm(dto ,uid ,set,sourceTopicId);
         }else {
             Topic topic = liveMybatisDao.getTopicById(droparound.getTopicid());
             Content content = contentService.getContentByTopicId(droparound.getTopicid());
@@ -4971,24 +4975,30 @@ public class LiveServiceImpl implements LiveService {
     }
 
     //算法取
-    public void setDropaRoundDtoAlgorithm(DropAroundDto dto ,long uid ,String set){
-        Map<String ,String> map = Maps.newHashMap();
+    public void setDropaRoundDtoAlgorithm(DropAroundDto dto ,long uid ,String set,long sourceTopicId){
+        Map<String ,Object> map = Maps.newHashMap();
         map.put("uid",String.valueOf(uid));
         map.put("set",set);
-        //随机获取一条王国
-        Topic topicInfo;
-        topicInfo = liveMybatisDao.getRandomDropaRoundAlgorithm(map);
+        map.put("sourceTopicId", sourceTopicId);
+        Topic topicInfo = liveMybatisDao.getRandomTopicByTag(map);
         if(topicInfo == null){
             //topic王国取完了
             cacheService.del("list:user@" + uid);
             topicInfo = liveMybatisDao.getRandomDropaRoundAlgorithm(map);
         }
-        Topic topic = liveMybatisDao.getTopicById(topicInfo.getId());
+        //随机获取一条王国,兼容老式不明逻辑。
+        if(topicInfo == null){
+            //topic王国取完了
+            cacheService.del("list:user@" + uid);
+            topicInfo = liveMybatisDao.getRandomDropaRoundAlgorithm(map);
+        }
+       
+        //Topic topic = liveMybatisDao.getTopicById(topicInfo.getId());		// 不明逻辑。
         Content content = contentService.getContentByTopicId(topicInfo.getId());
-        if(topic != null){
-            int status = this.getInternalStatus(topic ,uid);
+        if(topicInfo != null){
+            int status = this.getInternalStatus(topicInfo ,uid);
             dto.setInternalStatus(status);
-            dto.setTopicType(topic.getType());
+            dto.setTopicType(topicInfo.getType());
         }if(content != null){
             dto.setCid(content.getId());
         }
@@ -7006,7 +7016,7 @@ public class LiveServiceImpl implements LiveService {
     public Response getKingdomPrice(long topicId) {
         Topic topic = getTopicById(topicId);
         if (topic == null) {
-            return Response.failure("找不到王国");
+            return Response.failure(500,"找不到王国");
         }
         GetKingdomPriceDto dto = new GetKingdomPriceDto();
         dto.setTitle(topic.getTitle());
@@ -7015,7 +7025,7 @@ public class LiveServiceImpl implements LiveService {
         // 米汤上市界限
         String listedPriceStr = userService.getAppConfigByKey(Constant.LISTING_PRICE_KEY);
         if (StringUtils.isEmpty(listedPriceStr)) {
-            return Response.failure("米汤上市界限配置错误！");
+            return Response.failure(500,"米汤上市界限配置错误！");
         }
         int listedPrice = Integer.parseInt(listedPriceStr);
         if (topic.getPrice() >= listedPrice) {
@@ -7028,7 +7038,7 @@ public class LiveServiceImpl implements LiveService {
         // 王国转让客服联系ID
         String sellUidStr = userService.getAppConfigByKey("SELL_UID");
         if (StringUtils.isEmpty(sellUidStr)) {
-            return Response.failure("王国转让客服联系ID配置错误！");
+            return Response.failure(500,"王国转让客服联系ID配置错误！");
         }
         dto.setSellUid(Long.parseLong(sellUidStr));
         List<TopicPriceHis> topicPriceChangedList = liveMybatisDao.getLastTenDaysTopicPrice(topicId);
@@ -7113,5 +7123,371 @@ public class LiveServiceImpl implements LiveService {
     @Override
 	public void delTopicPriceSubsidyConfig(long id){
 		liveMybatisDao.delTopicPriceSubsidyConfig(id);
+	}
+
+    @Override
+    public Response searchTopicListedPage(int status,int page, int pageSize){
+    	int totalRecord = liveLocalJdbcDao.countTopicListedByStatus(status);
+    	int totalPage = (totalRecord + pageSize - 1) / pageSize;
+    	if(page<1){
+    		page=1;
+    	}
+    	if(page>totalPage){
+    		page=totalPage;
+    	}
+    	int start = (page-1)*pageSize;
+    	List<Map<String, Object>> list = liveLocalJdbcDao.getTopicListedListByStatus(status,start, pageSize);
+    	SearchTopicListedListDto dto = new SearchTopicListedListDto();
+        dto.setTotalRecord(totalRecord);
+        dto.setTotalPage(totalPage);
+        for(Map<String, Object> map : list){
+        	SearchTopicListedListDto.TopicListedElement e = dto.createTopicListedElement();
+        	 e.setId((Long)map.get("id"));
+        	 e.setTitle((String)map.get("title"));
+        	 int statusD = (Integer)map.get("status");
+        	 e.setStatus(statusD);
+        	 if(statusD==1){
+        		 e.setPrice((Double)map.get("frozenPrice"));
+        	 }else if(statusD==0){
+        		 e.setPrice(exchangeKingdomPrice((Integer)map.get("price")));
+        	 }else if(statusD==2){
+        		 e.setPrice((Double)map.get("frozenPrice")); 
+        		 long buyUid = Long.parseLong(map.get("buy_uid").toString());
+        		 if(buyUid!=0l){
+        			 e.setMeNumber(map.get("me_number").toString());
+        		 }
+        	 }
+             e.setNickName((String)map.get("nick_name"));
+             e.setCreateTime((Date)map.get("create_time"));
+            dto.getResult().add(e);
+        }
+        return Response.success(dto);
+    }
+    @Override
+    public void updateTopicListedStatus(TopicListed topicListed){
+    	TopicListed oldTopicListed = liveMybatisDao.getTopicListedById(topicListed.getId());
+    	if(oldTopicListed.getStatus()==0){
+    		Topic topic  = liveMybatisDao.getTopicById(oldTopicListed.getTopicId());
+    		if(topic!=null){
+    			topicListed.setPersonCount(liveLocalJdbcDao.getTopicMembersCount(topic.getId()));
+        		topicListed.setReadCount(liveLocalJdbcDao.getReadCount(topic.getId()));
+        		topicListed.setReviewCount(liveLocalJdbcDao.getTopicReviewCount(topic.getId()));
+        		topicListed.setPrice(topic.getPrice());
+        		topicListed.setPriceRmb(exchangeKingdomPrice(topic.getPrice()));
+    		}
+    	}else if(oldTopicListed.getStatus()==1){
+    		if(topicListed.getStatus()==0){
+    			topicListed.setPersonCount(0);
+        		topicListed.setReadCount(0);
+        		topicListed.setReviewCount(0);
+        		topicListed.setPrice(0);
+        		topicListed.setPriceRmb(0.0);
+        		topicListed.setBuyUid(0l);
+    		}
+    	}
+		liveMybatisDao.updateTopicListed(topicListed);
+	}
+    @Override
+	public String handleTransaction(long id,long meNumber){
+    	UserNo userNo  =userService.getUserNoByMeNumber(meNumber);
+    	if(userNo==null){
+    		return "找不到该用户";
+    	}
+    	TopicListed topicListed = liveMybatisDao.getTopicListedById(id);
+    	if(topicListed==null){
+    		return "topicListed为空";
+    	}
+		return changeTopicKing(topicListed, userNo.getUid());
+	}
+    @Override
+    public String changeTopicKing(TopicListed topicListed, long newUid){
+        if(newUid <= 0){
+            return "未传递新UID";
+        }
+        long topicId = topicListed.getTopicId();
+        Topic topic = liveMybatisDao.getTopicById(topicId);
+        if(null == topic){
+            return "王国不存在";
+        }
+        UserProfile oldUser = userService.getUserProfileByUid(topic.getUid());
+        if(null == oldUser){
+            return "老国王不存在";
+        }
+        UserProfile newUser = userService.getUserProfileByUid(newUid);
+        if(null == newUser){
+            return "新国王不存在";
+        }
+        if(topic.getUid() == newUid){
+            return "王国不能自己给自己";
+        }
+
+        log.info("王国["+topic.getTitle()+"]国王变更，老国王："+oldUser.getNickName()+"，新国王：" + newUser.getUid());
+
+        Date now = new Date();
+        //1 变更国王
+        Topic updateTopic = new Topic();
+        updateTopic.setId(topic.getId());
+        //1.1 将王国UID变更
+        updateTopic.setUid(newUid);
+        //1.2 由于原国王本身就在核心圈里，所以不需要处理了，但是需要将新国王放入核心圈里（如果已经在了就不需要了）
+        JSONArray array = JSON.parseArray(topic.getCoreCircle());
+        boolean needAdd = true;
+        for (int i = 0; i < array.size(); i++) {
+            if (array.getLong(i) == newUid) {
+                needAdd = false;
+                break;
+            }
+        }
+        if(needAdd){
+            array.add(newUid);
+            updateTopic.setCoreCircle(array.toString());
+        }
+        liveMybatisDao.updateTopic(updateTopic);
+        //1.3 如果新国王原先加入过这个王国的，则去除加入关系
+        LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(newUid, topicId);
+        if(null != liveFavorite){
+            liveMybatisDao.deleteLiveFavorite(liveFavorite);
+        }
+        //1.4 将老国王加入到这个王国（因为已经是核心圈了）
+        LiveFavorite oldLiveFavorite = liveMybatisDao.getLiveFavorite(oldUser.getUid(), topicId);
+        if(null == oldLiveFavorite){
+            oldLiveFavorite = new LiveFavorite();
+            oldLiveFavorite.setUid(oldUser.getUid());
+            oldLiveFavorite.setTopicId(topicId);
+            oldLiveFavorite.setCreateTime(now);
+            liveMybatisDao.createLiveFavorite(oldLiveFavorite);
+        }
+        //变更UGC
+        contentService.updateContentUid(newUid, topicId);
+        //2 记录转让历史
+        TopicTransferRecord ttr = new TopicTransferRecord();
+        ttr.setCreateTime(now);
+        ttr.setNewUid(newUid);
+        ttr.setOldUid(oldUser.getUid());
+        ttr.setPrice(topicListed.getPrice());
+        ttr.setPriceRmb(topicListed.getPriceRmb());
+        ttr.setTopicId(topicId);
+        liveMybatisDao.addTopicTransferRecord(ttr);
+
+        //3 在该王国的详情中插入转让卡片
+        TopicFragment fragment = new TopicFragment();
+        fragment.setTopicId(topicId);
+        fragment.setUid(newUid);
+        fragment.setType(52);
+        fragment.setContentType(21);//王国内链
+        fragment.setCreateTime(now);
+        //组装extra
+        JSONObject extra = new JSONObject();
+        extra.put("type", "kingdomOTD");
+        extra.put("only", UUID.randomUUID().toString()+"-"+new Random().nextInt());
+        extra.put("price", topic.getPrice());
+        extra.put("uid", newUid);
+        extra.put("avatar", Constant.QINIU_DOMAIN + "/" +newUser.getAvatar());
+        extra.put("name", newUser.getNickName());
+        extra.put("oldUid", oldUser.getUid());
+        extra.put("oldAvatar", Constant.QINIU_DOMAIN + "/" +oldUser.getAvatar());
+        extra.put("oldName", oldUser.getNickName());
+        fragment.setExtra(extra.toJSONString());
+        fragment.setScore(0);//这个是没有分值的
+        liveMybatisDao.createTopicFragment(fragment);
+
+        //4 记录跑马灯记录
+        //XXX的《王国名》以XXX元成功转让，欢迎新国王XXX闪亮登场。
+        String exchangeRateConfig = userService.getAppConfigByKey("EXCHANGE_RATE");
+        int exchangeRate = 100;
+        if(!StringUtils.isEmpty(exchangeRateConfig)){
+        	exchangeRate = Integer.valueOf(exchangeRateConfig).intValue();
+        }
+        double rmb = (double)topic.getPrice()/(double)exchangeRate;
+        
+        rmb = new BigDecimal(rmb).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        
+        TopicNews topicNews = new TopicNews();
+        topicNews.setTopicId(topicId);
+        topicNews.setType(Specification.TopicNewsType.BUSINESS.index);
+        topicNews.setContent(oldUser.getNickName()+"的《"+topic.getTitle()+"》以"+rmb+"元成功转让，欢迎新国王"+newUser.getNickName()+"闪亮登场");
+        topicNews.setCreateTime(now);
+        liveMybatisDao.addTopicNews(topicNews);
+        //5 上市王国信息恢复
+        topicListed.setPersonCount(0);
+        topicListed.setReviewCount(0);
+    	topicListed.setReadCount(0);
+    	topicListed.setPrice(0);
+    	topicListed.setPriceRmb(0.0);
+    	topicListed.setBuyUid(0l);
+    	topicListed.setStatus(0);
+    	liveMybatisDao.updateTopicListed(topicListed);
+        return "0";
+    }
+    @Override
+	public Response listTopic(long topicId){
+    	Topic topic = liveMybatisDao.getTopicById(topicId);
+    	if(topic==null){
+    		return Response.failure(500, "找不到该王国！") ;
+    	}
+    	UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
+    	if(userProfile==null){
+    		return Response.failure(500, "找不到国王！") ;
+    	}
+    	  // 米汤上市界限
+        String listedPriceStr = userService.getAppConfigByKey(Constant.LISTING_PRICE_KEY);
+        if (StringUtils.isEmpty(listedPriceStr)) {
+            return Response.failure(500,"米汤上市界限配置错误！");
+        }
+        int listedPrice = Integer.parseInt(listedPriceStr);
+        if (topic.getPrice() <listedPrice) {
+        	 return Response.failure(500,"未达到米汤上市最低值！");
+        }
+    	TopicListed topicListed = liveMybatisDao.getTopicListedByTopicId(topicId);
+    	if(topicListed==null){
+    		topicListed = new TopicListed();
+    		topicListed.setTopicId(topicId);
+    		liveMybatisDao.addTopicListed(topicListed);
+    	}else {
+    		if(topicListed.getStatus()==0 ||topicListed.getStatus()==1 ||topicListed.getStatus()==2  ){
+    			 return Response.failure(500,"该王国已上市！");
+    		}else{
+            topicListed.setPersonCount(0);
+            topicListed.setReviewCount(0);
+        	topicListed.setReadCount(0);
+        	topicListed.setPrice(0);
+        	topicListed.setPriceRmb(0.0);
+        	topicListed.setBuyUid(0l);
+        	topicListed.setStatus(0);
+        	liveMybatisDao.updateTopicListed(topicListed);
+    		}
+    	}
+    	//添加跑马灯
+    	TopicNews topicNews = new TopicNews();
+    	topicNews.setTopicId(topicId);
+    	topicNews.setType(1);
+    	StringBuffer sb = new StringBuffer();
+    	sb.append(userProfile.getNickName());
+    	sb.append("的《");
+    	sb.append(topic.getTitle());
+    	sb.append("》挂牌上市了，快来围观抢购吧");
+    	topicNews.setContent(sb.toString());
+    	liveMybatisDao.addTopicNews(topicNews);
+    	return Response.success();
+	}
+    @Override
+    public Response listedTopicList(long sinceId){
+        List<TopicListed> datas = liveMybatisDao.getTopicListedList(sinceId);
+        ListedTopicListDto dto = new ListedTopicListDto();
+        for (int i = 0; i < datas.size(); i++) {
+        	ListedTopicListDto.TopicListedElement ee =new ListedTopicListDto.TopicListedElement();
+        	TopicListed topicListed  =datas.get(i);
+            ee.setSinceId(topicListed.getId());
+            ee.setTopicId(topicListed.getTopicId());
+            Topic topic = liveMybatisDao.getTopicById(topicListed.getTopicId());
+            if(topic!=null){
+            	ee.setUid(topic.getUid());
+            	ee.setCoverImage(Constant.QINIU_DOMAIN + "/" +topic.getLiveImage());
+            	ee.setTitle(topic.getTitle());
+            	UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
+            	if(userProfile!=null){
+            		ee.setNickName(userProfile.getNickName());
+            	}
+            	ee.setContentType(topic.getType());
+            	if(topicListed.getStatus()==1){
+            		ee.setPersonCount(topicListed.getPersonCount());
+                	ee.setReadCount(topicListed.getReadCount());
+                	ee.setReviewCount(topicListed.getReviewCount());
+                	ee.setPrice(topicListed.getPrice());
+                	ee.setPriceRMB(topicListed.getPriceRmb());
+                	ee.setBuyUid(topicListed.getBuyUid());
+            	}else{
+            	ee.setPersonCount(liveLocalJdbcDao.getTopicMembersCount(topic.getId()));
+            	ee.setReadCount(liveLocalJdbcDao.getReadCount(topic.getId()));
+            	ee.setReviewCount(liveLocalJdbcDao.getTopicReviewCount(topic.getId()));
+            	ee.setPrice(topic.getPrice());
+            	ee.setPriceRMB(exchangeKingdomPrice(topic.getPrice()));
+            	}
+            }
+            ee.setStatus(topicListed.getStatus());
+         	dto.getTopicList().add(ee);
+        }
+        if(isRestTopicListed()){
+        	dto.setIsClosed(1);
+        }else{
+        	dto.setIsClosed(0);
+        }
+        return Response.success(dto);
+    }
+    //判断是否休市
+    public boolean isRestTopicListed(){
+    	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+	    try {
+	    	Date date = new Date();
+	    	SimpleDateFormat sdfStart = new SimpleDateFormat("yyyy-MM-dd 09:00:00");
+	    	SimpleDateFormat sdfEnd= new SimpleDateFormat("yyyy-MM-dd 17:00:00");
+	    	String  strDateBegin = sdfStart.format(date);
+		    String  strDateEnd = sdfEnd.format(date);
+		     
+		    if((date.compareTo(sdf.parse(strDateBegin))==1 || date.compareTo(sdf.parse(strDateBegin))==0)
+		    		& (date.compareTo(sdf.parse(strDateEnd))==-1 || date.compareTo(sdf.parse(strDateEnd))==0)
+		    		){
+		    	 Calendar cal = Calendar.getInstance();
+			        cal.setTime(date);
+			        int w = cal.get(Calendar.DAY_OF_WEEK) - 1;
+			        if(w==6||w==7){
+			        	 return true;
+			        }else{
+			       String restStrDateBegin =cacheService.get("REST_LISTED_START_DATE");
+			       String restStrDateEnd =cacheService.get("REST_LISTED_END_DATE");
+			       if(StringUtils.isEmpty(restStrDateBegin) || StringUtils.isEmpty(restStrDateEnd)){
+			    	   return false;
+			       }else{
+			    	    restStrDateBegin +=" 00:00:00";
+			        	 restStrDateEnd +=" 23:59:59";
+					    if((date.compareTo(sdf.parse(restStrDateBegin))==1 || date.compareTo(sdf.parse(restStrDateBegin))==0)
+					    		& (date.compareTo(sdf.parse(restStrDateEnd))==-1 || date.compareTo(sdf.parse(restStrDateEnd))==0)
+					    		){
+					    	return true;
+					    }  else{
+					    	return false;
+					    }
+			       }
+			        }
+		    }else{
+		    	return true;
+		    }
+		} catch (ParseException e) {
+			log.error(e.getMessage());
+			return true;
+		}
+    }
+    @Override
+	public Response takeoverTopic(long topicId,long uid){
+    	Topic topic = liveMybatisDao.getTopicById(topicId);
+    	if(topic==null){
+    		return Response.failure(500, "找不到该王国！") ;
+    	}
+    	TopicListed topicListed = liveMybatisDao.getTopicListedByTopicId(topicId);
+    	if(topicListed==null){
+    		return Response.failure(500, "找不到该王国上市记录！") ;
+    	}
+       if(liveMybatisDao.isBuyTopic(uid)){
+    	   return Response.failure(500, "不能重复收购！") ;
+       }
+       if(uid == topic.getUid()){
+    	   return Response.failure(500, "不能收购自己的王国！") ;
+       }
+       if(topicListed.getStatus()!=0){
+    	   return Response.failure(500, "该王国正在被其他人收购！") ;
+       }
+       if(isRestTopicListed()){
+    	   return Response.failure(500, "休市期间不能收购！") ;
+       }
+       
+       topicListed.setPersonCount(liveLocalJdbcDao.getTopicMembersCount(topic.getId()));
+       topicListed.setReadCount(liveLocalJdbcDao.getReadCount(topic.getId()));
+       topicListed.setReviewCount(liveLocalJdbcDao.getTopicReviewCount(topic.getId()));
+       topicListed.setPrice(topic.getPrice());
+       topicListed.setPriceRmb(exchangeKingdomPrice(topic.getPrice()));
+       topicListed.setStatus(1);
+       topicListed.setBuyUid(uid);
+       liveMybatisDao.updateTopicListed(topicListed);
+    	return Response.success();
 	}
 }

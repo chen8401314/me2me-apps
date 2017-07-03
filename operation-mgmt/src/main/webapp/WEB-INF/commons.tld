@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<taglib xmlns="http://java.sun.com/xml/ns/j2ee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"  
+xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd"  
+version="2.0">  
+<!--该文件主要是受这个的影响:http://java.sun.com/xml/ns/j2ee/web-jsptaglibrary_2_0.xsd  -->  
+<!--  -->  
+    <tlib-version>1.0</tlib-version><!-- 定义的版本 -->  
+    <short-name>commons</short-name><!--这个名字可以随便取，尽量与文件名相同，这样我们知道文件在哪儿  -->  
+    <uri>http://www.itcast.cn/Myfunction</uri><!-- 这个地址是随便取得。到时候jsp页面引入这个地址 -->  
+                  
+    <function><!-- 定义函数 -->  
+        <name>containsInSet</name><!-- 自定义函数名称(随意) -->  
+        <function-class>com.me2me.mgmt.utils.CommonsTldUtils</function-class><!-- 定义函数的类全名称 -->  
+        <function-signature>boolean containsInSet(java.lang.String, java.lang.String )</function-signature>  
+    </function>  
+</taglib>  

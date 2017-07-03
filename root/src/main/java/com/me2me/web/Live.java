@@ -2,6 +2,7 @@ package com.me2me.web;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -33,6 +34,7 @@ import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.dto.TestApiDto;
 import com.me2me.live.dto.UserAtListDTO;
 import com.me2me.live.service.LiveService;
+import com.me2me.search.service.SearchService;
 import com.me2me.web.request.AggregationOptRequest;
 import com.me2me.web.request.AggregationPublishRequest;
 import com.me2me.web.request.BarrageRequest;
@@ -54,6 +56,8 @@ import com.me2me.web.request.GetMyLivesRequest;
 import com.me2me.web.request.ImgDBRequest;
 import com.me2me.web.request.InactiveLiveRequest;
 import com.me2me.web.request.KingdomSearchRequest;
+import com.me2me.web.request.ListTopicListedRequest;
+import com.me2me.web.request.ListTopicRequest;
 import com.me2me.web.request.LiveCoverRequest;
 import com.me2me.web.request.LiveDetailRequest;
 import com.me2me.web.request.LiveQrcodeRequest;
@@ -61,6 +65,7 @@ import com.me2me.web.request.LiveTimeline2Request;
 import com.me2me.web.request.LiveTimelineRequest;
 import com.me2me.web.request.LiveUpdateRequest;
 import com.me2me.web.request.RecQueryRequest;
+import com.me2me.web.request.RecommendTagRequest;
 import com.me2me.web.request.RemoveLiveRequest;
 import com.me2me.web.request.RemoveTopicRequest;
 import com.me2me.web.request.ResendVoteRequest;
@@ -70,6 +75,7 @@ import com.me2me.web.request.SignOutLiveRequest;
 import com.me2me.web.request.SpeakRequest;
 import com.me2me.web.request.StealKingdomCoinRequest;
 import com.me2me.web.request.TagKingdomsRequest;
+import com.me2me.web.request.TakeoverTopicRequest;
 import com.me2me.web.request.TestLiveRequest;
 import com.me2me.web.request.TopicOptRequest;
 import com.me2me.web.request.TopicRecommRequest;
@@ -97,6 +103,10 @@ public class Live extends BaseController {
 
     @Autowired
     private KafkaService kafkaService;
+    
+    @Autowired
+    
+    private SearchService searchService;
     
     /**
      * 创建直接
@@ -908,5 +918,35 @@ public class Live extends BaseController {
     @RequestMapping(value = "/getKingdomPrice",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getKingdomPrice(GetKingdomPriceRequest request){
     	return liveService.getKingdomPrice(request.getTopicId());
+    }
+    /**
+     * 王国挂牌上市
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/listTopic",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response listTopic(ListTopicRequest request){
+    	return liveService.listTopic(request.getTopicId());
+    }
+    /**
+     * 上市王国列表查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/listedTopicList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response listedTopicList(ListTopicListedRequest request){
+    	return liveService.listedTopicList(request.getSinceId());
+    }
+    /**
+     * 王国收购接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/takeoverTopic",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response takeoverTopic(TakeoverTopicRequest request){
+    	return liveService.takeoverTopic(request.getTopicId(),request.getUid());
     }
 }
