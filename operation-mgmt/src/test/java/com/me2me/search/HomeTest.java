@@ -26,12 +26,12 @@ public class HomeTest {
 		Response<TagKingdomDto> tagsKingdoms = liveService.getTagKingdomList("AAA0","new", 1, 20, 318);
 		System.out.println(JSON.toJSONString(tagsKingdoms, true));
 	}
-	//@Test
+	@Test
 	public void hotList() {
 		Response tagsKingdoms = liveService.hotList(-1,318, 0);
 		System.out.println(JSON.toJSONString(tagsKingdoms, true));
 	}
-	@Test
+	//@Test
 	public void dropAroundTest() {
 		Response tagsKingdoms = ls.dropAround(318, 2765);
 		System.out.println(JSON.toJSONString(tagsKingdoms, true));

@@ -158,5 +158,11 @@ public class ShowHotListDTO implements BaseEntity {
 		private String content;
 		private String tags;
 		private int price;
+		private double priceRMB;
+		
+		private Integer showRMBBrand;
+		
+		private Integer showPriceBrand;
+		
 	}
 }
