@@ -24,6 +24,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.PrefixQueryBuilder;
@@ -1034,6 +1035,11 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			String alias = ks.getAlias_tag();
 			if (StringUtils.isEmpty(alias)) {
 				alias = ks.getTag();
+			}
+			String[] tagArr = alias.split("\\s+");
+			if(tagArr.length>1){
+				int rnd = RandomUtils.nextInt(0, tagArr.length);		// 多个标签的，随机一个。
+				alias=tagArr[rnd];
 			}
 			if (!ret.contains(alias)) {
 				ret.add(alias);

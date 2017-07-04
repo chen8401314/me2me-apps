@@ -56,6 +56,9 @@ public class KingdomBuilder {
 	 * @return
 	 */
 	public List<BasicKingdomInfo> buildKingdoms(List<Map<String, Object>> topicList, long currentUid) {
+		if(topicList==null || topicList.isEmpty()){
+			return new ArrayList<>();
+		}
 		List<Long> uidList = new ArrayList<>();
 		List<Long> topicIdList = new ArrayList<>();
 		Map<String, Object> liveFavouriteMap = new HashMap<>();
