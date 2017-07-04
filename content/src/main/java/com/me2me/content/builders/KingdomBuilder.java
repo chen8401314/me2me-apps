@@ -185,6 +185,7 @@ public class KingdomBuilder {
 			if (null == topicContent) {
 				continue;
 			}
+			data.setType(topicContent.getType());
 			data.setPrice((Integer) topic.get("price"));
 			data.setPriceRMB(exchangeKingdomPrice(data.getPrice()));
 			data.setId(topicContent.getId());
