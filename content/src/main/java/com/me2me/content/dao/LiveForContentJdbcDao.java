@@ -719,9 +719,9 @@ public class LiveForContentJdbcDao {
 	 * @param pageSize
 	 * @return
 	 */
-	public List<Map<String, Object>> getListingKingdoms(int minPrice,int page, int pageSize) {
-		String sql = "select * from topic where price>=? and listing_time is not null and status!=2 order by listing_time desc limit ?,?";
-		return jdbcTemplate.queryForList(sql,minPrice,(page-1)*pageSize,pageSize);
+	public List<Map<String, Object>> getListingKingdoms(int page, int pageSize) {
+		String sql = "SELECT t.* FROM topic t,topic_listed tl WHERE tl.topic_id  =t.id ORDER BY tl.create_time desc limit ?,?";
+		return jdbcTemplate.queryForList(sql,(page-1)*pageSize,pageSize);
 	}
 	
     /**
