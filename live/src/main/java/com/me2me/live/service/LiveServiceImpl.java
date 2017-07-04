@@ -7027,6 +7027,11 @@ public class LiveServiceImpl implements LiveService {
         dto.setTitle(topic.getTitle());
         dto.setTopicPrice(topic.getPrice());
         dto.setTopicRMB(exchangeKingdomPrice(topic.getPrice()));
+        TopicListed topicListed = liveMybatisDao.getTopicListedByTopicId(topicId);
+        if(topicListed!=null){
+        	 dto.setIsSell(2);
+        	 dto.setDistanceListed(0);
+        }else{
         // 米汤上市界限
         String listedPriceStr = userService.getAppConfigByKey(Constant.LISTING_PRICE_KEY);
         if (StringUtils.isEmpty(listedPriceStr)) {
@@ -7039,6 +7044,7 @@ public class LiveServiceImpl implements LiveService {
         } else {
             dto.setIsSell(0);
             dto.setDistanceListed(listedPrice - topic.getPrice());
+        }
         }
         // 王国转让客服联系ID
         String sellUidStr = userService.getAppConfigByKey("SELL_UID");
