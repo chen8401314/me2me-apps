@@ -35,6 +35,7 @@ import com.me2me.live.dto.TestApiDto;
 import com.me2me.live.dto.UserAtListDTO;
 import com.me2me.live.service.LiveService;
 import com.me2me.search.service.SearchService;
+import com.me2me.sms.service.SmsService;
 import com.me2me.web.request.AggregationOptRequest;
 import com.me2me.web.request.AggregationPublishRequest;
 import com.me2me.web.request.BarrageRequest;
@@ -107,6 +108,9 @@ public class Live extends BaseController {
     @Autowired
     
     private SearchService searchService;
+    
+    @Autowired
+    private SmsService smsService;
     
     /**
      * 创建直接
@@ -948,5 +952,21 @@ public class Live extends BaseController {
     @RequestMapping(value = "/takeoverTopic",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response takeoverTopic(TakeoverTopicRequest request){
     	return liveService.takeoverTopic(request.getTopicId(),request.getUid());
+    }
+    /**
+     * 王国收购接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/sendMessage",method = RequestMethod.POST)
+    public String sendMessage(long userId,String content){
+    	try {
+			smsService.sendSysMessage(userId+"", content);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	return "yes";
     }
 }

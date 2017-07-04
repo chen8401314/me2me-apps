@@ -148,7 +148,9 @@ import com.me2me.live.model.VoteOption;
 import com.me2me.live.model.VoteRecord;
 import com.me2me.live.service.exceptions.KingdomStealException;
 import com.me2me.search.service.SearchService;
+import com.me2me.sms.dto.ImSendMessageDto;
 import com.me2me.sms.service.JPushService;
+import com.me2me.sms.service.SmsService;
 import com.me2me.user.dto.EmotionInfoListDto;
 import com.me2me.user.dto.RechargeToKingdomDto;
 import com.me2me.user.model.EmotionInfo;
@@ -202,6 +204,9 @@ public class LiveServiceImpl implements LiveService {
 
     @Autowired
     private SearchService searchService;
+    
+    @Autowired
+    private SmsService smsService;
 
 
 
@@ -7166,8 +7171,8 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public void updateTopicListedStatus(TopicListed topicListed){
     	TopicListed oldTopicListed = liveMybatisDao.getTopicListedById(topicListed.getId());
+    	Topic topic  = liveMybatisDao.getTopicById(oldTopicListed.getTopicId());
     	if(oldTopicListed.getStatus()==0){
-    		Topic topic  = liveMybatisDao.getTopicById(oldTopicListed.getTopicId());
     		if(topic!=null){
     			topicListed.setPersonCount(liveLocalJdbcDao.getTopicMembersCount(topic.getId()));
         		topicListed.setReadCount(liveLocalJdbcDao.getReadCount(topic.getId()));
@@ -7183,6 +7188,16 @@ public class LiveServiceImpl implements LiveService {
         		topicListed.setPrice(0);
         		topicListed.setPriceRmb(0.0);
         		topicListed.setBuyUid(0l);
+    		}else if(topicListed.getStatus()==2){
+    			if(topic!=null){
+    				StringBuffer message=new StringBuffer();
+    				message.append("您上市的王国《").append(topic.getTitle()).append("》对方已付款，请您在一个工作日之内提供支付宝帐号，我们会尽快替您完成交易。");
+                	try {
+						ImSendMessageDto dto=	smsService.sendSysMessage(topic.getUid().toString(), message.toString());
+					} catch (Exception e) {
+						log.error(e.getMessage());
+					}
+    			}
     		}
     	}
 		liveMybatisDao.updateTopicListed(topicListed);
@@ -7317,6 +7332,16 @@ public class LiveServiceImpl implements LiveService {
     	topicListed.setBuyUid(0l);
     	topicListed.setStatus(0);
     	liveMybatisDao.updateTopicListed(topicListed);
+    	try {
+        	StringBuffer oldUserMessage=new StringBuffer();
+        	oldUserMessage.append("您上市的王国《").append(topic.getTitle()).append("》已成交，快去确认收款吧。");
+        	ImSendMessageDto dto1=	smsService.sendSysMessage(topic.getUid().toString(), oldUserMessage.toString());
+        	StringBuffer newUserMessage=new StringBuffer();
+        	newUserMessage.append("您收购的王国《").append(topic.getTitle()).append("》已经成交，您已经成为新国王了，快去您的王国看看吧！");
+        	ImSendMessageDto dto2=	smsService.sendSysMessage(newUid+"", newUserMessage.toString());
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
         return "0";
     }
     @Override
@@ -7411,6 +7436,10 @@ public class LiveServiceImpl implements LiveService {
         	dto.setIsClosed(1);
         }else{
         	dto.setIsClosed(0);
+        }
+        String customerServiceUid = userService.getAppConfigByKey("SELL_UID");
+        if(!StringUtils.isEmpty(customerServiceUid)){
+        	 dto.setCustomerServiceUid(Long.parseLong(customerServiceUid));
         }
         return Response.success(dto);
     }

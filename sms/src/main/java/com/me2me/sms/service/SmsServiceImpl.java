@@ -1,7 +1,9 @@
 package com.me2me.sms.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.google.common.base.Splitter;
+import com.me2me.cache.CacheConstant;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.sms.YunXinSms;
 import com.me2me.common.utils.im.HostType;
@@ -10,6 +12,7 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.sms.channel.MessageClient;
+import com.me2me.sms.dto.ImSendMessageDto;
 import com.me2me.sms.dto.ImUserInfoDto;
 import com.me2me.sms.dto.VerifyDto;
 import com.me2me.sms.event.VerifyEvent;
@@ -26,6 +29,7 @@ import java.net.HttpURLConnection;
 import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -224,5 +228,33 @@ public class SmsServiceImpl implements SmsService {
 
         return result;
     }
-
+    @Override
+    public ImSendMessageDto sendSysMessage(String userId, String content) throws Exception {
+        if (userId == null) {
+            throw new IllegalArgumentException("Paramer 'userId' is required");
+        }
+        if (content == null) {
+            throw new IllegalArgumentException("Paramer 'content' is required");
+        }
+        StringBuilder sb = new StringBuilder();
+        String fromUserId = cacheService.get(CacheConstant.APP_CONFIG_KEY_PRE+"SELL_UID");
+        sb.append("&fromUserId=").append(URLEncoder.encode(fromUserId.toString(), "UTF-8"));
+        sb.append("&toUserId=").append(URLEncoder.encode(userId.toString(), "UTF-8"));
+        JSONObject json = new JSONObject();
+        json.put("content", content);
+        sb.append("&content=").append(URLEncoder.encode(json.toJSONString(), "UTF-8"));
+        sb.append("&objectName=").append(URLEncoder.encode("RC:TxtMsg", "UTF-8"));
+        sb.append("&pushContent=").append(URLEncoder.encode(content, "UTF-8"));
+        JSONObject json1 = new JSONObject();
+        json1.put("pushData", content);
+        sb.append("&pushData=").append(URLEncoder.encode(json1.toJSONString(), "UTF-8"));
+        String body = sb.toString();
+        if (body.indexOf("&") == 0) {
+            body = body.substring(1, body.length());
+        }
+        HttpURLConnection conn = IMHttpUtil.CreatePostHttpConnection(HostType.API, IM_APP_KEY, IM_APP_SECRET, "/message/private/publish.json", "application/x-www-form-urlencoded");
+        IMHttpUtil.setBodyParameter(body, conn);
+        ImSendMessageDto result = JSON.parseObject(IMHttpUtil.returnResult(conn) ,ImSendMessageDto.class);
+        return result;
+    }
 }
