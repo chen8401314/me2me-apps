@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -318,6 +319,9 @@ public class ContentMybatisDao {
     }
     
     public List<Content> getContentByTopicIds(List<Long> topicIds){
+    	if(topicIds==null || topicIds.isEmpty()){
+    		return new ArrayList();
+    	}
     	ContentExample example = new ContentExample();
         ContentExample.Criteria criteria =example.createCriteria();
         criteria.andForwardCidIn(topicIds);
