@@ -7491,11 +7491,18 @@ public class LiveServiceImpl implements LiveService {
     	SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	    try {
 	    	Date date = new Date();
-	    	SimpleDateFormat sdfStart = new SimpleDateFormat("yyyy-MM-dd 09:00:00");
-	    	SimpleDateFormat sdfEnd= new SimpleDateFormat("yyyy-MM-dd 17:00:00");
+	    	String listedStartTime = userService.getAppConfigByKey("LISTED_START_TIME");
+	    	if(StringUtils.isEmpty(listedStartTime)){
+	    		listedStartTime="09:00:00";
+	    	}
+	    	String listedEndTime = userService.getAppConfigByKey("LISTED_END_TIME");
+	    	if(StringUtils.isEmpty(listedEndTime)){
+	    		listedEndTime="17:00:00";
+	    	}
+	    	SimpleDateFormat sdfStart = new SimpleDateFormat("yyyy-MM-dd "+listedStartTime);
+	    	SimpleDateFormat sdfEnd= new SimpleDateFormat("yyyy-MM-dd "+listedEndTime);
 	    	String  strDateBegin = sdfStart.format(date);
 		    String  strDateEnd = sdfEnd.format(date);
-		     
 		    if((date.compareTo(sdf.parse(strDateBegin))==1 || date.compareTo(sdf.parse(strDateBegin))==0)
 		    		& (date.compareTo(sdf.parse(strDateEnd))==-1 || date.compareTo(sdf.parse(strDateEnd))==0)
 		    		){
