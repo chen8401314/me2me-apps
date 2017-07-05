@@ -3510,13 +3510,16 @@ private void localJpush(long toUid){
 		
 		this.buildHotListDTO(uid, result, activityList, userFamousList, ceKingdomList, contentList);
 		// 查上市价格, 获取30个上市王国
-			List<Map<String,Object>> listingKingdoms= liveForContentJdbcDao.getListingKingdoms(1, 30);
-			if(listingKingdoms.size()>0){
-				List<BasicKingdomInfo> listingKingdomList =kingdomBuider.buildKingdoms(listingKingdoms, uid);
-				result.setListingKingdoms(listingKingdomList);
-			}else{
-				result.setListingKingdoms(new ArrayList<>());
+		List<Map<String,Object>> listingKingdoms= liveForContentJdbcDao.getListingKingdoms(1, 30);
+		if(listingKingdoms.size()>0){
+			List<BasicKingdomInfo> listingKingdomList =kingdomBuider.buildKingdoms(listingKingdoms, uid);
+			for(BasicKingdomInfo info:listingKingdomList){
+				info.setShowPriceBrand(0);// 首页不显示米币吊牌。
 			}
+			result.setListingKingdoms(listingKingdomList);
+		}else{
+			result.setListingKingdoms(new ArrayList<>());
+		}
 		if(vflag == 0){
 			if(result.getHottestCeKingdomData().size() > 0){
 				for(ShowHotListDTO.HotCeKingdomElement e : result.getHottestCeKingdomData()){
@@ -3588,7 +3591,7 @@ private void localJpush(long toUid){
 		List<Long> topicIdList = new ArrayList<Long>();
 		List<Long> ceTopicIdList = new ArrayList<Long>();
 		List<Long> uidList = new ArrayList<Long>();
-		double minPrice =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_PRICE_BRAND_MIN"));
+		//double minPrice =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_PRICE_BRAND_MIN"));
 		double minRmb =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_RMB_BRAND_MIN"));
 		if(null != activityList && activityList.size() > 0){
 			for(ActivityWithBLOBs activity : activityList){
@@ -3967,8 +3970,9 @@ private void localJpush(long toUid){
 						contentElement.setInternalStatus(this.getInternalStatus(topic, uid));
 						contentElement.setPrice((Integer)topic.get("price"));
 						contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice()));
-						contentElement.setShowPriceBrand(contentElement.getPrice()>minPrice?1:0);
+						contentElement.setShowPriceBrand(0);		//首页只显示RMB吊牌
 						contentElement.setShowRMBBrand(contentElement.getPriceRMB()>minRmb?1:0);// 显示吊牌
+						
 					}
 					lastFragment = lastFragmentMap.get(c.getForwardCid().toString());
 					if(null != lastFragment){
