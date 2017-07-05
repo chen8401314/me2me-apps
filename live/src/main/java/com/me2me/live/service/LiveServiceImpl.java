@@ -7383,7 +7383,7 @@ public class LiveServiceImpl implements LiveService {
         	newUserMessage.append("您收购的王国《").append(topic.getTitle()).append("》已经成交，您已经成为新国王了，快去您的王国看看吧！");
         	ImSendMessageDto dto2=	smsService.sendSysMessage(newUid+"", newUserMessage.toString());
 		} catch (Exception e) {
-			// TODO: handle exception
+			log.error(e.getMessage());
 		}
         return "0";
     }
