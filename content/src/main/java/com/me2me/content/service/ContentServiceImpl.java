@@ -6220,7 +6220,14 @@ private void localJpush(long toUid){
 			sysTagList.sort(new Comparator<Map<String,Object>>() {
 				@Override
 				public int compare(Map<String, Object> o1, Map<String, Object> o2) {
-					return ((BigDecimal)o1.get("price")).intValue()<((BigDecimal)o2.get("price")).intValue()?1:-1;
+					int p1=0,p2=0;
+					if(o1.get("price")!=null){
+						p1=((BigDecimal)o1.get("price")).intValue();
+					}
+					if(o2.get("price")!=null){
+						p2=((BigDecimal)o2.get("price")).intValue();
+					}
+					return p1<p2?1:-1;
 				}
 			});
 			it=sysTagList.iterator();
