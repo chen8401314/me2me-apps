@@ -1240,17 +1240,17 @@ public class SearchServiceImpl implements SearchService {
 			
 			List<Long> uidList = new ArrayList<Long>();
 			//性取向
-			if(userProfile.getLikeGender().intValue() == 1){//爱男
+			if(null != userProfile.getLikeGender() && userProfile.getLikeGender().intValue() == 1){//爱男
 				this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.SEX_MALE.type), noUidList);
-			}else if(userProfile.getLikeGender().intValue() == 2){//爱女
+			}else if(null != userProfile.getLikeGender() && userProfile.getLikeGender().intValue() == 2){//爱女
 				this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.SEX_FEMALE.type), noUidList);
-			}else if(userProfile.getLikeGender().intValue() == 3){//男女通吃
+			}else if(null != userProfile.getLikeGender() && userProfile.getLikeGender().intValue() == 3){//男女通吃
 				this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.COMMON.type), noUidList);
 			}else{//默认喜欢女
 				this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.SEX_FEMALE.type), noUidList);
 			}
 			//年龄范围
-			if(userProfile.getAgeGroup().intValue() > 0){
+			if(null != userProfile.getAgeGroup() && userProfile.getAgeGroup().intValue() > 0){
 				if(userProfile.getAgeGroup().intValue() == 1){//00后
 					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.AGE_00.type), noUidList);
 					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.AGE_95.type), noUidList);
@@ -1294,9 +1294,11 @@ public class SearchServiceImpl implements SearchService {
 			}
 			
 			//情绪记录
-			this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.getUserRecInitTypeByValue("情绪_"+firstUserEmotionInfo.getEmotionname()).type), noUidList);
+			if(null != firstUserEmotionInfo){
+				this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.getUserRecInitTypeByValue("情绪_"+firstUserEmotionInfo.getEmotionname()).type), noUidList);
+			}
 			//职业
-			if(userProfile.getOccupation().intValue() > 0){
+			if(null != userProfile.getOccupation() && userProfile.getOccupation().intValue() > 0){
 				this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.getUserRecInitTypeByValue("职业_"+userProfile.getOccupation().intValue()).type), noUidList);
 			}
 			
@@ -1343,14 +1345,16 @@ public class SearchServiceImpl implements SearchService {
 					//匹配得分
 					int score = 0;
 					//性取向
-					if((userProfile.getLikeGender().intValue() == 1 && ((Integer)u.get("gender")).intValue() == 1)
-							|| ((userProfile.getLikeGender().intValue() == 2 || userProfile.getLikeGender().intValue() == 0) && ((Integer)u.get("gender")).intValue() != 1)
-							|| userProfile.getLikeGender().intValue() == 3){
-						score = score + sexScore;
+					if(null != userProfile.getLikeGender()){
+						if((userProfile.getLikeGender().intValue() == 1 && ((Integer)u.get("gender")).intValue() == 1)
+								|| ((userProfile.getLikeGender().intValue() == 2 || userProfile.getLikeGender().intValue() == 0) && ((Integer)u.get("gender")).intValue() != 1)
+								|| userProfile.getLikeGender().intValue() == 3){
+							score = score + sexScore;
+						}
 					}
 					//年龄范围
 					int ageGroup = ((Integer)u.get("age_group")).intValue();
-					if(userProfile.getAgeGroup().intValue() > 0 && ageGroup > 0){
+					if(null != userProfile.getAgeGroup() && userProfile.getAgeGroup().intValue() > 0 && ageGroup > 0){
 						int abs = Math.abs(userProfile.getAgeGroup().intValue()-ageGroup);
 						if(abs == 0){//一样的
 							score = score + ageSameScore;
@@ -1386,7 +1390,8 @@ public class SearchServiceImpl implements SearchService {
 						score = score + emotionScore;
 					}
 					//职业
-					if(userProfile.getOccupation().intValue() > 0 && ((Integer)u.get("occupation")).intValue() > 0
+					if(null != userProfile.getOccupation() && userProfile.getOccupation().intValue() > 0 
+							&& ((Integer)u.get("occupation")).intValue() > 0
 							&& userProfile.getOccupation().intValue() == ((Integer)u.get("occupation")).intValue()){
 						score = score + careerScore;
 					}
