@@ -110,6 +110,9 @@ public class UserRecInitTask {
 			logger.info("7开始处理职业...");
 			this.careerInit(limitDate);//职业
 			
+			//全部完成了，则刷新时间缓存
+			String value = DateUtil.date2string(now, "yyyyMMdd");
+			cacheService.set(CacheConstant.USER_REC_DATE_KEY, value);
 		}catch(Exception e){
 			logger.error("用户推荐基础数据初始化任务出错", e);
 		}

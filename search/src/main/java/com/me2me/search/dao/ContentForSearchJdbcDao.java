@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.me2me.user.model.UserProfile;
+
 @Repository
 public class ContentForSearchJdbcDao {
 
@@ -380,6 +382,168 @@ public class ContentForSearchJdbcDao {
 		if(null != list && list.size() > 0){
 			for(Map<String, Object> m : list){
 				result.add((Long)m.get("uid"));
+			}
+		}
+		return result;
+	}
+	
+	public List<Map<String, Object>> getUserProfileInfoByUids(List<Long> uids){
+		if(null == uids || uids.size() == 0){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select * from user_profile u where u.uid in (");
+		for(int i=0;i<uids.size();i++){
+			if(i>0){
+				sb.append(",");
+			}
+			sb.append(uids.get(i).toString());
+		}
+		sb.append(")");
+		return jdbcTemplate.queryForList(sb.toString());
+	}
+	
+	public Map<String, List<Long>> getUserHobbyIdsByUids(List<Long> uids){
+		Map<String, List<Long>> result = new HashMap<String, List<Long>>();
+		if(null == uids || uids.size() == 0){
+			return result;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select * from user_hobby h where h.uid in (");
+		for(int i=0;i<uids.size();i++){
+			if(i>0){
+				sb.append(",");
+			}
+			sb.append(uids.get(i));
+		}
+		sb.append(") order by h.uid");
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+		if(null != list && list.size() > 0){
+			String uid = null;
+			List<Long> hobbyIds = null;
+			for(Map<String, Object> m : list){
+				uid = String.valueOf(m.get("uid"));
+				hobbyIds = result.get(uid);
+				if(null == hobbyIds){
+					hobbyIds = new ArrayList<Long>();
+					result.put(uid, hobbyIds);
+				}
+				hobbyIds.add((Long)m.get("hobby"));
+			}
+		}
+		
+		return result;
+	}
+	
+	/**
+	 * 获取{sourceUid}所建立王国拥有相同标签的其他国王
+	 * @param sourceUid
+	 * @param uidList
+	 * @return
+	 */
+	public List<Long> getSameTagTopicKing(long sourceUid, List<Long> uidList){
+		if(null == uidList || uidList.size() == 0){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select DISTINCT t.uid from topic_tag_detail d,topic t");
+		sb.append(" where d.topic_id=t.id and d.status=0 and d.tag_id in (");
+		sb.append("select DISTINCT d2.tag_id from topic_tag_detail d2,topic t2");
+		sb.append(" where d2.topic_id=t2.id and d2.status=0 and t2.uid=").append(sourceUid);
+		sb.append(") and t.uid in (");
+		for(int i=0;i<uidList.size();i++){
+			if(i>0){
+				sb.append(",");
+			}
+			sb.append(uidList.get(i).toString());
+		}
+		sb.append(")");
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+		List<Long> result = new ArrayList<Long>();
+		if(null != list && list.size() > 0){
+			for(Map<String, Object> m : list){
+				result.add((Long)m.get("uid"));
+			}
+		}
+		return result;
+	}
+	
+	public Map<String, Long> getUserLastEmotionId(List<Long> uidList){
+		if(null == uidList || uidList.size() == 0){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select * from emotion_record r2 where r2.id in (");
+		sb.append("select max(r.id) from emotion_record r where r.uid in (");
+		for(int i=0;i<uidList.size();i++){
+			if(i>0){
+				sb.append(",");
+			}
+			sb.append(uidList.get(i).toString());
+		}
+		sb.append(") group by r.uid)");
+
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+		Map<String, Long> result = new HashMap<String, Long>();
+		if(null != list && list.size() > 0){
+			for(Map<String, Object> m : list){
+				result.put(String.valueOf(m.get("uid")), (Long)m.get("emotionId"));
+			}
+		}
+		return result;
+	}
+	
+	public Map<String, Long> getSameFollowCountByUids(long sourceUid, List<Long> uidList){
+		if(null == uidList || uidList.size() == 0){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select f2.source_uid,count(1) as cc from user_follow f2");
+		sb.append(" where f2.source_uid in (");
+		for(int i=0;i<uidList.size();i++){
+			if(i>0){
+				sb.append(",");
+			}
+			sb.append(uidList.get(i).toString());
+		}
+		sb.append(") and f2.target_uid in (select f.target_uid from user_follow f");
+		sb.append(" where f.source_uid=").append(sourceUid);
+		sb.append(") group by f2.source_uid");
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+		Map<String, Long> result = new HashMap<String, Long>();
+		if(null != list && list.size() > 0){
+			for(Map<String, Object> m : list){
+				result.put(String.valueOf(m.get("source_uid")), (Long)m.get("cc"));
+			}
+		}
+		return result;
+	}
+	
+	public Map<String, Long> getSameJoinTopicCountByUids(long sourceUid, List<Long> uidList){
+		if(null == uidList || uidList.size() == 0){
+			return null;
+		}
+		StringBuilder sb = new StringBuilder();
+		sb.append("select f2.uid,count(1) as cc from live_favorite f2");
+		sb.append(" where f2.uid in (");
+		for(int i=0;i<uidList.size();i++){
+			if(i>0){
+				sb.append(",");
+			}
+			sb.append(uidList.get(i).toString());
+		}
+		sb.append(") and f2.topic_id in (select f.topic_id from live_favorite f");
+		sb.append(" where f.uid=").append(sourceUid);
+		sb.append(") group by f2.uid");
+		
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+		Map<String, Long> result = new HashMap<String, Long>();
+		if(null != list && list.size() > 0){
+			for(Map<String, Object> m : list){
+				result.put(String.valueOf(m.get("uid")), (Long)m.get("cc"));
 			}
 		}
 		return result;

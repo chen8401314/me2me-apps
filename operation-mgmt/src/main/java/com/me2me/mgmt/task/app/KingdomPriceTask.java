@@ -1074,10 +1074,10 @@ public class KingdomPriceTask {
 				kc.setApprove(new BigDecimal((double)yy/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 				kc.setDiligently(new BigDecimal((double)xx/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 				
-				if(kc.getNoUpdateDayCount()<=20){
+//				if(kc.getNoUpdateDayCount()<=20){老毛说这里不需要限制了，老的也有价值计算
 					double kv = Math.pow(Math.pow(x, 2)+Math.pow(y, 2),0.5);
 					kc.setPrice((int)kv);
-				}
+//				}
 				
 				topicData = topicDataMap.get(String.valueOf(kc.getTopicId()));
 				if(null == topicData){//当天新增的王国
@@ -1162,6 +1162,7 @@ public class KingdomPriceTask {
 		updatePriceSql.append("update topic set price=").append(kc.getPrice()).append(",update_time=update_time where id=").append(kc.getTopicId());
 		localJdbcDao.executeSql(updatePriceSql.toString());
 		
+		/* 2.2.8版本进行用户手动上市了，所以这里无需再自动上市以及跑马灯处理了
 		String updatelistedTimeSql = null;
 		if(oldPrice >= listedPrice){
 			if(kc.getPrice() >= listedPrice){
@@ -1188,6 +1189,6 @@ public class KingdomPriceTask {
 				//上一次没上市，这次还没上市，不用处理啥
 			}
 		}
-		
+		*/
 	}
 }
