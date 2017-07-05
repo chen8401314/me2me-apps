@@ -3556,7 +3556,7 @@ private void localJpush(long toUid){
 		String hotLables = (String) userService.getAppConfigByKey("HOME_HOT_LABELS");
 		double TAG_SHOW_PRICE_BRAND_MIN = Double.parseDouble( userService.getAppConfigByKey("TAG_SHOW_PRICE_BRAND_MIN"));
 		
-		if(hotLables!=null){
+		if(!StringUtils.isEmpty(hotLables)){
 			String[] lables = hotLables.split("\\n");
 			for(String label:lables){
 				HotTagElement element = new HotTagElement();

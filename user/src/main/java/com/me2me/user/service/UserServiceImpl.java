@@ -3925,7 +3925,7 @@ public class UserServiceImpl implements UserService {
 	}
 	@Override
 	public void saveAppConfig(String key, String value){
-		if(StringUtils.isEmpty(key) || StringUtils.isEmpty(value)){
+		if(StringUtils.isEmpty(key) || value==null){
 			return;
 		}
 		AppConfig config = userMybatisDao.getAppConfigByKey(key);
