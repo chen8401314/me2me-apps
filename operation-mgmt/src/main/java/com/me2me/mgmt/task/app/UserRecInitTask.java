@@ -87,7 +87,7 @@ public class UserRecInitTask {
 		emotionMap.put(Specification.UserRecInitType.EMOTION_JUEWANG.type, "绝望");
 	}
 	
-//	@Scheduled(cron="0 10 0 * * ?")
+	@Scheduled(cron="0 10 0 * * ?")
 	public void doTask(){
 		logger.info("用户推荐基础数据初始化任务开始");
 		long s = System.currentTimeMillis();
