@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -1166,7 +1167,31 @@ public class LiveServiceImpl implements LiveService {
             speakDto.setUpgrade(muDto.getUpgrade());
             speakDto.setCurrentLevel(muDto.getCurrentLevel());
         }
-
+        // 核心圈发文本,自动打Tag
+        if(speakDto.getType()==0 && speakDto.getContentType()==0){
+        	//cacheService.set(key, value);
+        	//判断本王国是否有未过试用期的TAG，如果有，就不打了；
+        	try{
+	        	String tag = searchService.recommendTags(speakDto.getFragment(), 1).getData().getTags().get(0);
+	        	boolean exists =liveLocalJdbcDao.existsTrialTagInKingdom(speakDto.getTopicId(),tag);
+	        	if(!exists){
+	        		TopicTag ttag = liveMybatisDao.getTopicTagByTag(tag);
+	        		TopicTagDetail detail = new TopicTagDetail();
+	        		detail.setTopicId(speakDto.getTopicId());
+	        		detail.setUid(-1L);
+	        		if(ttag!=null){
+	        			detail.setTagId(ttag.getId());
+	        		}
+	        		detail.setTag(tag);
+	        		detail.setCreateTime(new Date());
+	        		detail.setStatus(0);
+	        		detail.setAutoTag(1);
+	        		liveMybatisDao.insertTopicTagDetail(detail);
+	        	}
+        	}catch(Exception e){
+        		e.printStackTrace();
+        	}
+        }
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status, ResponseStatus.USER_SPEAK_SUCCESS.message, speakDto);
     }
 
@@ -3474,7 +3499,14 @@ public class LiveServiceImpl implements LiveService {
 		String value = lastFragmentId + "," + total;
         cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
         //--add update kingdom cache -- modify by zcl -- end --
-
+        // 找到机器TAG
+        
+        Set<String> autoTagSet = new HashSet<>();
+        if(org.apache.commons.lang3.StringUtils.isNotEmpty(createKingdomDto.getAutoTags())){
+        	for(String t:createKingdomDto.getAutoTags().split(";")){
+        		autoTagSet.add(t.trim());
+        	}
+        }
         //add kingdom tags -- begin --
         if(!StringUtils.isEmpty(createKingdomDto.getTags())){
         	String[] tags = createKingdomDto.getTags().split(";");
@@ -3496,6 +3528,11 @@ public class LiveServiceImpl implements LiveService {
         			tagDetail.setTagId(topicTag.getId());
         			tagDetail.setTopicId(topic.getId());
         			tagDetail.setUid(createKingdomDto.getUid());
+        			if(autoTagSet.contains(tag)){
+        				tagDetail.setAutoTag(1);
+        			}else{
+        				tagDetail.setAutoTag(0);
+        			}
         			liveMybatisDao.insertTopicTagDetail(tagDetail);
         		}
         	}
@@ -7524,5 +7561,11 @@ public class LiveServiceImpl implements LiveService {
        topicListed.setBuyUid(uid);
        liveMybatisDao.updateTopicListed(topicListed);
     	return Response.success();
+	}
+
+	@Override
+	public void updateExpiredTrialTag() {
+		int expireDely = Integer.parseInt(userService.getAppConfigByKey("MACHINE_LABLE_TRIAL_TIME_DAY"));
+		liveLocalJdbcDao.updateExpiredTrialTag(expireDely);
 	}
 }

@@ -20,4 +20,5 @@ public class CreateKingdomDto implements BaseEntity {
 	private String cExtra;
 	private String kConfig;
 	private String tags;
+	private String autoTags;
 }
