@@ -7137,17 +7137,17 @@ public class LiveServiceImpl implements LiveService {
 	}
 
     @Override
-    public Response searchTopicListedPage(int status,int page, int pageSize){
-    	int totalRecord = liveLocalJdbcDao.countTopicListedByStatus(status);
+    public Response searchTopicListedPage(int status,String title,int page, int pageSize){
+     	int totalRecord = liveLocalJdbcDao.countTopicListedByStatus(status,title);
     	int totalPage = (totalRecord + pageSize - 1) / pageSize;
-    	if(page<1){
-    		page=1;
-    	}
     	if(page>totalPage){
     		page=totalPage;
     	}
+    	if(page<1){
+    		page=1;
+    	}
     	int start = (page-1)*pageSize;
-    	List<Map<String, Object>> list = liveLocalJdbcDao.getTopicListedListByStatus(status,start, pageSize);
+    	List<Map<String, Object>> list = liveLocalJdbcDao.getTopicListedListByStatus(status,title,start, pageSize);
     	SearchTopicListedListDto dto = new SearchTopicListedListDto();
         dto.setTotalRecord(totalRecord);
         dto.setTotalPage(totalPage);

@@ -11,10 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.me2me.cache.service.CacheService;
+import com.me2me.common.page.PageBean;
 import com.me2me.common.web.Response;
 import com.me2me.live.dto.SearchTopicListedListDto;
 import com.me2me.live.model.TopicListed;
 import com.me2me.live.service.LiveService;
+import com.me2me.mgmt.dal.utils.HttpUtils;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.mgmt.vo.DatatablePage;
 import com.me2me.user.model.EmotionInfo;
@@ -52,8 +54,15 @@ public class TopicListedController {
 	@ResponseBody
 	@RequestMapping(value = "/ajaxLoadTopicListed")
 	public DatatablePage ajaxLoadUsers(HttpServletRequest request,DatatablePage page) throws Exception {
+		String title = request.getParameter("title");
+		String statusStr = request.getParameter("status");
+		int status = -1;
+		if(!StringUtils.isEmpty(statusStr)){
+			status = Integer.parseInt(statusStr);
+		}
 		SearchTopicListedListDto dto = new SearchTopicListedListDto();
-		Response resp = liveService.searchTopicListedPage(0, page.getStart(), page.getLength());
+		PageBean pb = page.toPageBean();
+		Response resp = liveService.searchTopicListedPage(status,title, pb.getCurrentPage(),pb.getPageSize());
 		if(null != resp && resp.getCode() == 200 && null != resp.getData()){
 			dto = (SearchTopicListedListDto)resp.getData();
 		}
@@ -78,8 +87,10 @@ public class TopicListedController {
 	@ResponseBody
 	@RequestMapping(value = "/ajaxLoadTopicListedPending")
 	public DatatablePage ajaxLoadTopicListedPending(HttpServletRequest request,DatatablePage page) throws Exception {
+		String title = request.getParameter("title");
 		SearchTopicListedListDto dto = new SearchTopicListedListDto();
-		Response resp = liveService.searchTopicListedPage(2, page.getStart(), page.getLength());
+		PageBean pb = page.toPageBean();
+		Response resp = liveService.searchTopicListedPage(2,title, pb.getCurrentPage(),pb.getPageSize());
 		if(null != resp && resp.getCode() == 200 && null != resp.getData()){
 			dto = (SearchTopicListedListDto)resp.getData();
 		}

@@ -40,7 +40,7 @@
 		<!--main content start-->
 		<section id="main-content">
 			<section class="wrapper">
-							<form id="form1" action="${ctx}/tag/query" method="post">
+				<form id="form1" action="${ctx}/tag/query" method="post">
 					<div class="row">
 						<div class="col-lg-12">
 							<section class="panel">
@@ -59,6 +59,28 @@
 					</div>
 				</form>
 			
+			<form id="form2" action="${ctx}/tag/query" method="post">
+					<div class="row">
+						<div class="col-lg-12">
+							<section class="panel">
+								<header class="panel-heading">搜索</header>
+								<div class="panel-body">
+									<div class="form-inline" role="form">
+										王国名称：
+										<input type="text" id="title" name="title" value="" class="form-control">&nbsp;
+										状态：
+								<select name="status" id="status" class="form-control">
+								<option value="">全部</option>
+								<option value="0">正常交易</option>
+								<option value="1">已锁定</option>
+							</select>
+										<a class="btn btn-primary" href="javascript:search();">搜索</a>
+									</div>
+								</div>
+							</section>
+						</div>
+					</div>
+				</form>
 				<!-- page start-->
 				<div class="row">
 					<div class="col-sm-12">
@@ -188,7 +210,14 @@
 	
 	
 	var sourceTable=$('#mytable').DataTable( {
-	    "ajax": ctx+"/topicListed/ajaxLoadTopicListed",
+	    "ajax": {
+            "url": ctx+"/topicListed/ajaxLoadTopicListed",
+            "type": "POST",
+            "data": function (d) {
+                d.title = $("#title").val();
+                d.status = $("#status").val();
+            }
+        },
 	    processing:true,
 	    "columns": [
 			{"data": null,title: "序号",orderable:false,width:50},
@@ -238,14 +267,18 @@
 	    	         api.column(0).nodes().each(function(cell, i) {
 	    	cell.innerHTML = startIndex + i + 1;
 	    	}); 
-	    	         }
+	    	         }  
 	});
 	$("#search_form").on("submit",function(){
 		var data= $(this).serialize();
 		var url = ctx+"/ranking/ajaxLoadKingdoms?"+data;
-		sourceTable.ajax.url(url).load();
+		 sourceTable.ajax.url(url).load();
 		return false;
 	})
+	function search(){
+		 sourceTable.draw(true);
+	}
+	
 	$("#mytable").on("click","th:eq(0)",function(){
 		$("input[type='checkbox']").each(function(){
 			if($(this).attr("checked")!=null){

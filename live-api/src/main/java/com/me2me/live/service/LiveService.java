@@ -577,7 +577,7 @@ public interface LiveService {
 	
 	public void delTopicPriceSubsidyConfig(long id);
 	
-    public Response searchTopicListedPage(int status,int page, int pageSize);
+    public Response searchTopicListedPage(int status,String title,int page, int pageSize);
     
     public void updateTopicListedStatus(TopicListed topicListed);
     
