@@ -720,7 +720,7 @@ public class LiveForContentJdbcDao {
 	 * @return
 	 */
 	public List<Map<String, Object>> getListingKingdoms(int page, int pageSize) {
-		String sql = "SELECT t.* FROM topic t,topic_listed tl WHERE tl.topic_id  =t.id ORDER BY tl.create_time desc limit ?,?";
+		String sql = "SELECT t.* FROM topic t,topic_listed tl WHERE tl.topic_id  =t.id and tl.status in(0,1) ORDER BY tl.create_time desc limit ?,?";
 		return jdbcTemplate.queryForList(sql,(page-1)*pageSize,pageSize);
 	}
 	
