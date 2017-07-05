@@ -1072,16 +1072,19 @@ public class LiveLocalJdbcDao {
 		String sql = "select u.* from topic_fragment f,user_profile u where f.uid=u.uid and f.topic_id=? order by f.id desc limit 1";
 		return jdbcTemplate.queryForMap(sql,topicId);
 	}
-    public int countTopicListedByStatus(int status){
+    public int countTopicListedByStatus(int status,String title){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select count(1) as count ");
-    	sb.append("from topic_listed  ");
+    	sb.append("from topic_listed tl LEFT JOIN topic t ON tl.topic_id = t.id  ");
     	sb.append("where 1=1  ");
-    	if(status==0){
-          sb.append(" and (status=0 or status=1)  ");
+    	if(status==-1){
+          sb.append(" and (tl.status=0 or tl.status=1)  ");
     	}else{
-    		sb.append(" and status= ");	
+    		sb.append(" and tl.status= ");	
     		sb.append(status);
+    	}
+    	if(!StringUtils.isEmpty(title)){
+    		sb.append(" and t.title like '%").append(title).append("%'");	
     	}
     	String sql = sb.toString();
     	Integer count=0;
@@ -1092,17 +1095,20 @@ public class LiveLocalJdbcDao {
 		}
     	return count;
     }
-    public List<Map<String,Object>> getTopicListedListByStatus(int status,int start,int pageSize){
+    public List<Map<String,Object>> getTopicListedListByStatus(int status,String title,int start,int pageSize){
     	StringBuilder sb = new StringBuilder();
     	sb.append("SELECT tl.id,t.title,t.price,tl.price_RMB AS frozenPrice,u.nick_name,tl.create_time,tl.status,un.me_number,tl.buy_uid");
     	sb.append(" FROM topic_listed tl LEFT JOIN topic t ON tl.topic_id = t.id LEFT JOIN user_profile u ON u.uid = t.uid ");
     	sb.append(" left join user_no un on un.uid = tl.buy_uid ");
     	sb.append("where 1=1  ");
-    	if(status==0){
+    	if(status==-1){
           sb.append(" and (tl.status=0 or tl.status=1)  ");
     	}else{
     		sb.append(" and tl.status= ");	
     		sb.append(status);
+    	}
+    	if(!StringUtils.isEmpty(title)){
+    		sb.append(" and t.title like '%").append(title).append("%'");	
     	}
     	sb.append(" order by tl.buy_time desc limit ").append(start).append(",").append(pageSize);
     	String sql = sb.toString();
@@ -1164,4 +1170,14 @@ public class LiveLocalJdbcDao {
            }
     	return fNum+num;
 }
+
+	public boolean existsTrialTagInKingdom(Long topicId, String tag) {
+		String sql ="select count(1) from topic_tag_detail where topic_id=? and status=0 and (tag=? or auto_tag=1)";
+		return jdbcTemplate.queryForObject(sql, Integer.class)>0;
+	}
+
+	public void updateExpiredTrialTag(int delayDay) {
+		String sql ="update topic_tag_detail set auto_tag=0 where datediff(now(),create_time)>=? and auto_tag=1 and status=0";
+		jdbcTemplate.update(sql,delayDay);
+	}
 }

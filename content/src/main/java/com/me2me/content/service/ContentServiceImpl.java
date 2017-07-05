@@ -3510,17 +3510,13 @@ private void localJpush(long toUid){
 		
 		this.buildHotListDTO(uid, result, activityList, userFamousList, ceKingdomList, contentList);
 		// 查上市价格, 获取30个上市王国
-		String listingPrice = userService.getAppConfigByKey(Constant.LISTING_PRICE_KEY);
-		if(!StringUtils.isEmpty(listingPrice)){
-			int minPrice = Integer.parseInt(listingPrice);
-			List<Map<String,Object>> listingKingdoms= liveForContentJdbcDao.getListingKingdoms(minPrice, 1, 30);
+			List<Map<String,Object>> listingKingdoms= liveForContentJdbcDao.getListingKingdoms(1, 30);
 			if(listingKingdoms.size()>0){
 				List<BasicKingdomInfo> listingKingdomList =kingdomBuider.buildKingdoms(listingKingdoms, uid);
 				result.setListingKingdoms(listingKingdomList);
 			}else{
 				result.setListingKingdoms(new ArrayList<>());
 			}
-		}
 		if(vflag == 0){
 			if(result.getHottestCeKingdomData().size() > 0){
 				for(ShowHotListDTO.HotCeKingdomElement e : result.getHottestCeKingdomData()){

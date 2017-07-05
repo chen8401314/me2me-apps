@@ -7,7 +7,7 @@ import com.me2me.common.web.BaseEntity;
 
 import lombok.Data;
 /**
- * 王国转让历史
+ * 王国上市列表
  * @author chenxiang
  * @date 2017-07-03
  */
@@ -15,6 +15,7 @@ import lombok.Data;
 public class ListedTopicListDto implements BaseEntity{
 	private static final long serialVersionUID = 1L;
 	private int isClosed;
+	private long customerServiceUid;
 	private List<TopicListedElement> topicList=Lists.newArrayList();
 	
 	@Data

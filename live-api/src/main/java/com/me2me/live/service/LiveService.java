@@ -577,7 +577,7 @@ public interface LiveService {
 	
 	public void delTopicPriceSubsidyConfig(long id);
 	
-    public Response searchTopicListedPage(int status,int page, int pageSize);
+    public Response searchTopicListedPage(int status,String title,int page, int pageSize);
     
     public void updateTopicListedStatus(TopicListed topicListed);
     
@@ -590,4 +590,11 @@ public interface LiveService {
     public Response listedTopicList(long sinceId);
     
 	public Response takeoverTopic(long topicId,long uid);
+
+	/**
+	 * 检查试用期标签，如果过了试用期，更新auto_tag字段为0；
+	 * @author zhangjiwei
+	 * @date Jul 5, 2017
+	 */
+	void updateExpiredTrialTag();
 }

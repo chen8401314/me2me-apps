@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -148,7 +149,9 @@ import com.me2me.live.model.VoteOption;
 import com.me2me.live.model.VoteRecord;
 import com.me2me.live.service.exceptions.KingdomStealException;
 import com.me2me.search.service.SearchService;
+import com.me2me.sms.dto.ImSendMessageDto;
 import com.me2me.sms.service.JPushService;
+import com.me2me.sms.service.SmsService;
 import com.me2me.user.dto.EmotionInfoListDto;
 import com.me2me.user.dto.RechargeToKingdomDto;
 import com.me2me.user.model.EmotionInfo;
@@ -202,6 +205,9 @@ public class LiveServiceImpl implements LiveService {
 
     @Autowired
     private SearchService searchService;
+    
+    @Autowired
+    private SmsService smsService;
 
 
 
@@ -1161,7 +1167,31 @@ public class LiveServiceImpl implements LiveService {
             speakDto.setUpgrade(muDto.getUpgrade());
             speakDto.setCurrentLevel(muDto.getCurrentLevel());
         }
-
+        // 核心圈发文本,自动打Tag
+        if(speakDto.getType()==0 && speakDto.getContentType()==0){
+        	//cacheService.set(key, value);
+        	//判断本王国是否有未过试用期的TAG，如果有，就不打了；
+        	try{
+	        	String tag = searchService.recommendTags(speakDto.getFragment(), 1).getData().getTags().get(0);
+	        	boolean exists =liveLocalJdbcDao.existsTrialTagInKingdom(speakDto.getTopicId(),tag);
+	        	if(!exists){
+	        		TopicTag ttag = liveMybatisDao.getTopicTagByTag(tag);
+	        		TopicTagDetail detail = new TopicTagDetail();
+	        		detail.setTopicId(speakDto.getTopicId());
+	        		detail.setUid(-1L);
+	        		if(ttag!=null){
+	        			detail.setTagId(ttag.getId());
+	        		}
+	        		detail.setTag(tag);
+	        		detail.setCreateTime(new Date());
+	        		detail.setStatus(0);
+	        		detail.setAutoTag(1);
+	        		liveMybatisDao.insertTopicTagDetail(detail);
+	        	}
+        	}catch(Exception e){
+        		e.printStackTrace();
+        	}
+        }
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status, ResponseStatus.USER_SPEAK_SUCCESS.message, speakDto);
     }
 
@@ -3469,7 +3499,14 @@ public class LiveServiceImpl implements LiveService {
 		String value = lastFragmentId + "," + total;
         cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
         //--add update kingdom cache -- modify by zcl -- end --
-
+        // 找到机器TAG
+        
+        Set<String> autoTagSet = new HashSet<>();
+        if(org.apache.commons.lang3.StringUtils.isNotEmpty(createKingdomDto.getAutoTags())){
+        	for(String t:createKingdomDto.getAutoTags().split(";")){
+        		autoTagSet.add(t.trim());
+        	}
+        }
         //add kingdom tags -- begin --
         if(!StringUtils.isEmpty(createKingdomDto.getTags())){
         	String[] tags = createKingdomDto.getTags().split(";");
@@ -3491,6 +3528,11 @@ public class LiveServiceImpl implements LiveService {
         			tagDetail.setTagId(topicTag.getId());
         			tagDetail.setTopicId(topic.getId());
         			tagDetail.setUid(createKingdomDto.getUid());
+        			if(autoTagSet.contains(tag)){
+        				tagDetail.setAutoTag(1);
+        			}else{
+        				tagDetail.setAutoTag(0);
+        			}
         			liveMybatisDao.insertTopicTagDetail(tagDetail);
         		}
         	}
@@ -7022,6 +7064,11 @@ public class LiveServiceImpl implements LiveService {
         dto.setTitle(topic.getTitle());
         dto.setTopicPrice(topic.getPrice());
         dto.setTopicRMB(exchangeKingdomPrice(topic.getPrice()));
+        TopicListed topicListed = liveMybatisDao.getTopicListedByTopicId(topicId);
+        if(topicListed!=null){
+        	 dto.setIsSell(2);
+        	 dto.setDistanceListed(0);
+        }else{
         // 米汤上市界限
         String listedPriceStr = userService.getAppConfigByKey(Constant.LISTING_PRICE_KEY);
         if (StringUtils.isEmpty(listedPriceStr)) {
@@ -7034,6 +7081,7 @@ public class LiveServiceImpl implements LiveService {
         } else {
             dto.setIsSell(0);
             dto.setDistanceListed(listedPrice - topic.getPrice());
+        }
         }
         // 王国转让客服联系ID
         String sellUidStr = userService.getAppConfigByKey("SELL_UID");
@@ -7126,17 +7174,17 @@ public class LiveServiceImpl implements LiveService {
 	}
 
     @Override
-    public Response searchTopicListedPage(int status,int page, int pageSize){
-    	int totalRecord = liveLocalJdbcDao.countTopicListedByStatus(status);
+    public Response searchTopicListedPage(int status,String title,int page, int pageSize){
+     	int totalRecord = liveLocalJdbcDao.countTopicListedByStatus(status,title);
     	int totalPage = (totalRecord + pageSize - 1) / pageSize;
-    	if(page<1){
-    		page=1;
-    	}
     	if(page>totalPage){
     		page=totalPage;
     	}
+    	if(page<1){
+    		page=1;
+    	}
     	int start = (page-1)*pageSize;
-    	List<Map<String, Object>> list = liveLocalJdbcDao.getTopicListedListByStatus(status,start, pageSize);
+    	List<Map<String, Object>> list = liveLocalJdbcDao.getTopicListedListByStatus(status,title,start, pageSize);
     	SearchTopicListedListDto dto = new SearchTopicListedListDto();
         dto.setTotalRecord(totalRecord);
         dto.setTotalPage(totalPage);
@@ -7166,8 +7214,8 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public void updateTopicListedStatus(TopicListed topicListed){
     	TopicListed oldTopicListed = liveMybatisDao.getTopicListedById(topicListed.getId());
+    	Topic topic  = liveMybatisDao.getTopicById(oldTopicListed.getTopicId());
     	if(oldTopicListed.getStatus()==0){
-    		Topic topic  = liveMybatisDao.getTopicById(oldTopicListed.getTopicId());
     		if(topic!=null){
     			topicListed.setPersonCount(liveLocalJdbcDao.getTopicMembersCount(topic.getId()));
         		topicListed.setReadCount(liveLocalJdbcDao.getReadCount(topic.getId()));
@@ -7183,6 +7231,16 @@ public class LiveServiceImpl implements LiveService {
         		topicListed.setPrice(0);
         		topicListed.setPriceRmb(0.0);
         		topicListed.setBuyUid(0l);
+    		}else if(topicListed.getStatus()==2){
+    			if(topic!=null){
+    				StringBuffer message=new StringBuffer();
+    				message.append("您上市的王国《").append(topic.getTitle()).append("》对方已付款，请您在一个工作日之内提供支付宝帐号，我们会尽快替您完成交易。");
+                	try {
+						ImSendMessageDto dto=	smsService.sendSysMessage(topic.getUid().toString(), message.toString());
+					} catch (Exception e) {
+						log.error(e.getMessage());
+					}
+    			}
     		}
     	}
 		liveMybatisDao.updateTopicListed(topicListed);
@@ -7317,6 +7375,16 @@ public class LiveServiceImpl implements LiveService {
     	topicListed.setBuyUid(0l);
     	topicListed.setStatus(0);
     	liveMybatisDao.updateTopicListed(topicListed);
+    	try {
+        	StringBuffer oldUserMessage=new StringBuffer();
+        	oldUserMessage.append("您上市的王国《").append(topic.getTitle()).append("》已成交，快去确认收款吧。");
+        	ImSendMessageDto dto1=	smsService.sendSysMessage(topic.getUid().toString(), oldUserMessage.toString());
+        	StringBuffer newUserMessage=new StringBuffer();
+        	newUserMessage.append("您收购的王国《").append(topic.getTitle()).append("》已经成交，您已经成为新国王了，快去您的王国看看吧！");
+        	ImSendMessageDto dto2=	smsService.sendSysMessage(newUid+"", newUserMessage.toString());
+		} catch (Exception e) {
+			// TODO: handle exception
+		}
         return "0";
     }
     @Override
@@ -7412,6 +7480,10 @@ public class LiveServiceImpl implements LiveService {
         }else{
         	dto.setIsClosed(0);
         }
+        String customerServiceUid = userService.getAppConfigByKey("SELL_UID");
+        if(!StringUtils.isEmpty(customerServiceUid)){
+        	 dto.setCustomerServiceUid(Long.parseLong(customerServiceUid));
+        }
         return Response.success(dto);
     }
     //判断是否休市
@@ -7489,5 +7561,11 @@ public class LiveServiceImpl implements LiveService {
        topicListed.setBuyUid(uid);
        liveMybatisDao.updateTopicListed(topicListed);
     	return Response.success();
+	}
+
+	@Override
+	public void updateExpiredTrialTag() {
+		int expireDely = Integer.parseInt(userService.getAppConfigByKey("MACHINE_LABLE_TRIAL_TIME_DAY"));
+		liveLocalJdbcDao.updateExpiredTrialTag(expireDely);
 	}
 }

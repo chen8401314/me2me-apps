@@ -40,6 +40,22 @@
 		<!--main content start-->
 		<section id="main-content">
 			<section class="wrapper">
+						<form id="form2" action="${ctx}/tag/query" method="post">
+					<div class="row">
+						<div class="col-lg-12">
+							<section class="panel">
+								<header class="panel-heading">搜索</header>
+								<div class="panel-body">
+									<div class="form-inline" role="form">
+										王国名称：
+										<input type="text" id="title" name="title" value="" class="form-control">&nbsp;
+										<a class="btn btn-primary" href="javascript:search();">搜索</a>
+									</div>
+								</div>
+							</section>
+						</div>
+					</div>
+				</form>
 				<!-- page start-->
 				<div class="row">
 					<div class="col-sm-12">
@@ -162,7 +178,13 @@
 	
 	
 	var sourceTable=$('#mytable').DataTable( {
-	    "ajax": ctx+"/topicListed/ajaxLoadTopicListedPending",
+	    "ajax": {
+            "url": ctx+"/topicListed/ajaxLoadTopicListedPending",
+            "type": "POST",
+            "data": function (d) {
+                d.title = $("#title").val();
+            }
+        },
 	    processing:true,
 	    "columns": [
 			{"data": null,title: "序号",orderable:false,width:50},
@@ -246,7 +268,9 @@
 			 })
 		}
 	})
-	
+		function search(){
+		 sourceTable.draw(true);
+	}
 	
 	   function handleTopicListed(id){
 		 var msg = "您真的确定要提交吗？"; 

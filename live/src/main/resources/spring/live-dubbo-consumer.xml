@@ -21,5 +21,7 @@
     
     <dubbo:reference interface="com.me2me.search.service.SearchService" id="searchService"/>
     
+    <dubbo:reference interface="com.me2me.sms.service.SmsService" id="smsService"/>
+    
     <dubbo:consumer check="false" />
 </beans>
