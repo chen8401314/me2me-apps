@@ -30,6 +30,8 @@ public class ShowHotListDTO implements BaseEntity {
 		private int personCount;
 		private int kingdomCount;
 		private double tagPrice;
+		private Integer showRMBBrand;
+		
 		private List<BasicKingdomInfo> kingdomList=Lists.newArrayList();
 	}
 	

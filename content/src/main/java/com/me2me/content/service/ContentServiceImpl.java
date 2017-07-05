@@ -3551,6 +3551,7 @@ private void localJpush(long toUid){
 		//	取n个标签
 		List<com.me2me.content.dto.ShowHotListDTO.HotTagElement> dataList = new java.util.ArrayList<ShowHotListDTO.HotTagElement>();
 		String hotLables = (String) userService.getAppConfigByKey("HOME_HOT_LABELS");
+		double TAG_SHOW_PRICE_BRAND_MIN = Double.parseDouble( userService.getAppConfigByKey("TAG_SHOW_PRICE_BRAND_MIN"));
 		
 		if(hotLables!=null){
 			String[] lables = hotLables.split("\\n");
@@ -3574,6 +3575,7 @@ private void localJpush(long toUid){
 				element.setPersonCount(tagPersons);
 				element.setTagName(label);
 				double rmbPrice = exchangeKingdomPrice(tagPrice);
+				element.setShowRMBBrand(rmbPrice>=TAG_SHOW_PRICE_BRAND_MIN?1:0);
 				element.setTagPrice(rmbPrice);
 				dataList.add(element);
 			}
