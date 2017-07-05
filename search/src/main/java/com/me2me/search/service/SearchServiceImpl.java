@@ -16,13 +16,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.elasticsearch.core.FacetedPage;
 import org.springframework.stereotype.Service;
 
-import com.alibaba.dubbo.common.json.JSONObject;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.me2me.cache.CacheConstant;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.utils.CommonUtils;
+import com.me2me.common.utils.DateUtil;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -43,6 +43,7 @@ import com.me2me.search.enums.RecommendReason;
 import com.me2me.search.esmapping.TopicEsMapping;
 import com.me2me.search.esmapping.UgcEsMapping;
 import com.me2me.search.esmapping.UserEsMapping;
+import com.me2me.user.model.AppConfig;
 import com.me2me.user.model.EmotionInfo;
 import com.me2me.user.model.EmotionRecord;
 import com.me2me.user.model.UserFollow;
@@ -728,7 +729,8 @@ public class SearchServiceImpl implements SearchService {
 	public Response recommendIndex(long uid,int page, String token, String version){
 		RecommendListDto indexData = new RecommendListDto();
 		UserProfile profile = userService.getUserProfileByUid(uid);
-		String hobby = StringUtils.join(searchMapper.getUserHobbyIds(uid),",");
+		List<Long> hobbyIds = searchMapper.getUserHobbyIds(uid);
+		String hobby = StringUtils.join(hobbyIds,",");
 		//画像完成度
 		int completion = this.getPersonaCompleted(profile, hobby);
 		UserProfile meAdmin = null;
@@ -867,10 +869,13 @@ public class SearchServiceImpl implements SearchService {
 				//1.最大值为99%
 				//2.基本资料匹配44%，心理测试对应22%，最近3次情绪状态匹配33%
 				List<Long> myFollowUidList = userService.getFollowList(uid);
-				resultpage = this.searchService.getRecommendUserList(uid, 1, 30, myFollowUidList);
+//				resultpage = this.searchService.getRecommendUserList(uid, 1, 30, myFollowUidList);
+				//第二套算法
+				resultpage = this.userRecList(profile, hobbyIds, firstUserEmotionInfo, myFollowUidList, 30);
 				if(null == resultpage){
 					resultpage = new ArrayList<RecommendUser>();
 				}
+				
 				if(resultpage.size() > 1){
 					Collections.sort(resultpage, new Comparator<RecommendUser>() {
 			            public int compare(RecommendUser a, RecommendUser b) {
@@ -884,7 +889,6 @@ public class SearchServiceImpl implements SearchService {
 			            }
 			        });
 				}
-				
 			}else{
 				resultpage = new ArrayList<RecommendUser>();
 				meAdmin = userService.getUserByNickName("米汤管家");
@@ -1024,14 +1028,444 @@ public class SearchServiceImpl implements SearchService {
 		return Response.success(indexData);
 	}
 	
-	private List<RecommendUser> userRecList(UserProfile userProfile, String hobby, EmotionInfo firstUserEmotionInfo){
+	private List<RecommendUser> userRecList(UserProfile userProfile, List<Long> hobbyIds, EmotionInfo firstUserEmotionInfo, List<Long> noUidList, int pageSize){
+		if(null == noUidList){
+			noUidList = new ArrayList<Long>();
+		}
+		noUidList.add(userProfile.getUid());//将自己也放进去
 		//先从缓存列表中查看是否有记录
-//		List<Long>
+		List<RecommendUser> result = new ArrayList<RecommendUser>();
 		
+		String recDate = cacheService.get(CacheConstant.USER_REC_DATE_KEY);
+		if(StringUtils.isEmpty(recDate)){
+			recDate = DateUtil.date2string(new Date(), "yyyyMMdd");
+		}
+		String cacheKey = CacheConstant.USER_REC_DAY_LIST_KEY_PRE + userProfile.getUid().toString()+":"+recDate;
+		String recUsers = cacheService.get(cacheKey);
+		if(!StringUtils.isEmpty(recUsers)){//缓存中有
+			String[] tmp = recUsers.split(";");
+			String[] tmp2 = null;
+			RecommendUser rUser = null;
+			for(String t : tmp){
+				tmp2 = t.split(",");
+				if(tmp2.length == 2){
+					if(noUidList.contains(Long.valueOf(tmp2[0]))){
+						continue;
+					}
+					rUser = new RecommendUser();
+					rUser.setUid(Long.valueOf(tmp2[0]));
+					rUser.setMatching(Integer.valueOf(tmp2[1]));
+					result.add(rUser);
+				}
+			}
+			
+			if(result.size() > pageSize){
+				Collections.shuffle(result);
+				result = result.subList(0, pageSize);
+			}
+			
+			//补充其他用户信息
+			if(result.size() > 0){
+				List<Long> uidList = new ArrayList<Long>();
+				for(RecommendUser ru : result){
+					uidList.add(Long.valueOf(ru.getUid()));
+				}
+				List<Map<String, Object>> userProfileList = contentForSearchJdbcDao.getUserProfileInfoByUids(uidList);
+				Map<String, Map<String, Object>> userMap = new HashMap<String, Map<String, Object>>();
+				if(null != userProfileList && userProfileList.size() > 0){
+					for(Map<String, Object> u : userProfileList){
+						userMap.put(((Long)u.get("uid")).toString(), u);
+					}
+				}
+				Map<String, Object> user = null;
+				RecommendUser ru = null;
+				for(int i=0;i<result.size();i++){
+					ru = result.get(i);
+					user = userMap.get(String.valueOf(ru.getUid()));
+					if(null == user){
+						result.remove(i);
+						i--;
+					}else{
+						ru.setAvatar(Constant.QINIU_DOMAIN + "/" + user.get("avatar"));
+						ru.setLevel(((Integer)user.get("level")).intValue());
+						ru.setNickName((String)user.get("nick_name"));
+						ru.setV_lv(((Integer)user.get("v_lv")).intValue());
+					}
+				}
+			}
+		}else{//缓存中没有，则需要从数据库中获取，并将结果存入缓存
+			List<AppConfig> configList = userService.getAppConfigsByType("用户智能推荐配置");
+			Map<String, String> configMap = new HashMap<String, String>();
+			if(null != configList && configList.size() > 0){
+				for(AppConfig a : configList){
+					configMap.put(a.getConfigKey(), a.getConfigValue());
+				}
+			}
+			int sexScore = StringUtils.isEmpty(configMap.get("REC_USER_SCORE_SEX"))?0:Integer.valueOf(configMap.get("REC_USER_SCORE_SEX"));
+			int ageSameScore = StringUtils.isEmpty(configMap.get("REC_USER_SCORE_AGESAME"))?0:Integer.valueOf(configMap.get("REC_USER_SCORE_AGESAME"));
+			int ageAdjoinScore = StringUtils.isEmpty(configMap.get("REC_USER_SCORE_AGEADJOIN"))?0:Integer.valueOf(configMap.get("REC_USER_SCORE_AGEADJOIN"));
+			int hobbyScore = StringUtils.isEmpty(configMap.get("REC_USER_SCORE_HOBBY"))?0:Integer.valueOf(configMap.get("REC_USER_SCORE_HOBBY"));
+			int tagScore = StringUtils.isEmpty(configMap.get("REC_USER_SCORE_TAG"))?0:Integer.valueOf(configMap.get("REC_USER_SCORE_TAG"));
+			int emotionScore = StringUtils.isEmpty(configMap.get("REC_USER_SCORE_EMOTION"))?0:Integer.valueOf(configMap.get("REC_USER_SCORE_EMOTION"));
+			int careerScore = StringUtils.isEmpty(configMap.get("REC_USER_SCORE_CAREER"))?0:Integer.valueOf(configMap.get("REC_USER_SCORE_CAREER"));
+			int followScore = StringUtils.isEmpty(configMap.get("REC_USER_SCORE_FOLLOW"))?0:Integer.valueOf(configMap.get("REC_USER_SCORE_FOLLOW"));
+			int joinKingdomScore = StringUtils.isEmpty(configMap.get("REC_USER_SCORE_JOINKINGDOM"))?0:Integer.valueOf(configMap.get("REC_USER_SCORE_JOINKINGDOM"));
+			int mbitPeibanScore = StringUtils.isEmpty(configMap.get("REC_USER_SCORE_MBTI_PEIBAN"))?0:Integer.valueOf(configMap.get("REC_USER_SCORE_MBTI_PEIBAN"));
+			int mbitHuobanScore = StringUtils.isEmpty(configMap.get("REC_USER_SCORE_MBTI_HUOBAN"))?0:Integer.valueOf(configMap.get("REC_USER_SCORE_MBTI_HUOBAN"));
+			int mbitTongzuScore = StringUtils.isEmpty(configMap.get("REC_USER_SCORE_MBTI_TONGZU"))?0:Integer.valueOf(configMap.get("REC_USER_SCORE_MBTI_TONGZU"));
+			int mbitZhichiScore = StringUtils.isEmpty(configMap.get("REC_USER_SCORE_MBTI_ZHICHI"))?0:Integer.valueOf(configMap.get("REC_USER_SCORE_MBTI_ZHICHI"));
+			String userLevelScores = configMap.get("REC_USER_SCORE_USER_LEVEL");
+			Map<String, Integer> userLevelScoreMap = new HashMap<String, Integer>();
+			if(!StringUtils.isEmpty(userLevelScores)){
+				String[] scores = userLevelScores.split(",");
+				for(int i=1;i<scores.length+1;i++){
+					userLevelScoreMap.put(String.valueOf(i), Integer.valueOf(scores[i-1]));
+				}
+			}
+			
+			Map<String, Map<String, Integer>> mbtiScoreMap = new HashMap<String, Map<String, Integer>>();
+			//初始化，由于分值配置不一样，故每次独立初始化
+			//INFP
+			Map<String, Integer> scoreMap = new HashMap<String, Integer>();
+			scoreMap.put("INTP", Integer.valueOf(mbitPeibanScore));
+			scoreMap.put("ENTP", Integer.valueOf(mbitHuobanScore));
+			scoreMap.put("ENFP", Integer.valueOf(mbitTongzuScore));
+			scoreMap.put("ESFJ", Integer.valueOf(mbitZhichiScore));
+			mbtiScoreMap.put("INFP", scoreMap);
+			//INFJ
+			scoreMap = new HashMap<String, Integer>();
+			scoreMap.put("ENFJ", Integer.valueOf(mbitHuobanScore));
+			scoreMap.put("NETP", Integer.valueOf(mbitZhichiScore));
+			scoreMap.put("ISFJ", Integer.valueOf(mbitPeibanScore));
+			scoreMap.put("ESFJ", Integer.valueOf(mbitTongzuScore));
+			mbtiScoreMap.put("INFJ", scoreMap);
+			//INTP
+			scoreMap = new HashMap<String, Integer>();
+			scoreMap.put("INFP", Integer.valueOf(mbitPeibanScore));
+			scoreMap.put("ENFP", Integer.valueOf(mbitTongzuScore));
+			scoreMap.put("ENTP", Integer.valueOf(mbitHuobanScore));
+			scoreMap.put("ESTJ", Integer.valueOf(mbitZhichiScore));
+			mbtiScoreMap.put("INTP", scoreMap);
+			//INTJ
+			scoreMap = new HashMap<String, Integer>();
+			scoreMap.put("ENFP", Integer.valueOf(mbitZhichiScore));
+			scoreMap.put("ENTJ", Integer.valueOf(mbitHuobanScore));
+			scoreMap.put("ISTJ", Integer.valueOf(mbitPeibanScore));
+			scoreMap.put("ESTJ", Integer.valueOf(mbitTongzuScore));
+			mbtiScoreMap.put("INTJ", scoreMap);
+			//ENFP
+			scoreMap = new HashMap<String, Integer>();
+			scoreMap.put("INFP", Integer.valueOf(mbitHuobanScore));
+			scoreMap.put("INTP", Integer.valueOf(mbitTongzuScore));
+			scoreMap.put("ENTP", Integer.valueOf(mbitPeibanScore));
+			scoreMap.put("ISFJ", Integer.valueOf(mbitZhichiScore));
+			mbtiScoreMap.put("ENFP", scoreMap);
+			//ENFJ
+			scoreMap = new HashMap<String, Integer>();
+			scoreMap.put("INFJ", Integer.valueOf(mbitHuobanScore));
+			scoreMap.put("INTP", Integer.valueOf(mbitZhichiScore));
+			scoreMap.put("ISFJ", Integer.valueOf(mbitTongzuScore));
+			scoreMap.put("ESFJ", Integer.valueOf(mbitPeibanScore));
+			mbtiScoreMap.put("ENFJ", scoreMap);
+			//ENTP
+			scoreMap = new HashMap<String, Integer>();
+			scoreMap.put("INFP", Integer.valueOf(mbitTongzuScore));
+			scoreMap.put("INTP", Integer.valueOf(mbitHuobanScore));
+			scoreMap.put("ENFP", Integer.valueOf(mbitPeibanScore));
+			scoreMap.put("ISTJ", Integer.valueOf(mbitZhichiScore));
+			mbtiScoreMap.put("ENTP", scoreMap);
+			//ENTJ
+			scoreMap = new HashMap<String, Integer>();
+			scoreMap.put("INFP", Integer.valueOf(mbitZhichiScore));
+			scoreMap.put("INTJ", Integer.valueOf(mbitHuobanScore));
+			scoreMap.put("ISTJ", Integer.valueOf(mbitTongzuScore));
+			scoreMap.put("ESTJ", Integer.valueOf(mbitPeibanScore));
+			mbtiScoreMap.put("ENTJ", scoreMap);
+			//ISFP
+			scoreMap = new HashMap<String, Integer>();
+			scoreMap.put("ENFJ", Integer.valueOf(mbitZhichiScore));
+			scoreMap.put("ISTP", Integer.valueOf(mbitPeibanScore));
+			scoreMap.put("ESFP", Integer.valueOf(mbitHuobanScore));
+			scoreMap.put("ESTP", Integer.valueOf(mbitTongzuScore));
+			mbtiScoreMap.put("ISFP", scoreMap);
+			//ISFJ
+			scoreMap = new HashMap<String, Integer>();
+			scoreMap.put("INFJ", Integer.valueOf(mbitPeibanScore));
+			scoreMap.put("ENFJ", Integer.valueOf(mbitTongzuScore));
+			scoreMap.put("ESFJ", Integer.valueOf(mbitHuobanScore));
+			scoreMap.put("ESTP", Integer.valueOf(mbitZhichiScore));
+			mbtiScoreMap.put("ISFJ", scoreMap);
+			//ISTP
+			scoreMap = new HashMap<String, Integer>();
+			scoreMap.put("ENTJ", Integer.valueOf(mbitZhichiScore));
+			scoreMap.put("ISFP", Integer.valueOf(mbitPeibanScore));
+			scoreMap.put("ESFP", Integer.valueOf(mbitTongzuScore));
+			scoreMap.put("ESTP", Integer.valueOf(mbitHuobanScore));
+			mbtiScoreMap.put("ISTP", scoreMap);
+			//ISTJ
+			scoreMap = new HashMap<String, Integer>();
+			scoreMap.put("INTJ", Integer.valueOf(mbitPeibanScore));
+			scoreMap.put("ENTJ", Integer.valueOf(mbitTongzuScore));
+			scoreMap.put("ESFP", Integer.valueOf(mbitZhichiScore));
+			scoreMap.put("ESTJ", Integer.valueOf(mbitHuobanScore));
+			mbtiScoreMap.put("ISTJ", scoreMap);
+			//ESFP
+			scoreMap = new HashMap<String, Integer>();
+			scoreMap.put("INFJ", Integer.valueOf(mbitZhichiScore));
+			scoreMap.put("ISFP", Integer.valueOf(mbitHuobanScore));
+			scoreMap.put("ISTP", Integer.valueOf(mbitTongzuScore));
+			scoreMap.put("ESTP", Integer.valueOf(mbitPeibanScore));
+			mbtiScoreMap.put("ESFP", scoreMap);
+			//ESFJ
+			scoreMap = new HashMap<String, Integer>();
+			scoreMap.put("INFJ", Integer.valueOf(mbitTongzuScore));
+			scoreMap.put("ENFJ", Integer.valueOf(mbitPeibanScore));
+			scoreMap.put("ISFJ", Integer.valueOf(mbitHuobanScore));
+			scoreMap.put("ISTP", Integer.valueOf(mbitZhichiScore));
+			mbtiScoreMap.put("ESFJ", scoreMap);
+			//ESTP
+			scoreMap = new HashMap<String, Integer>();
+			scoreMap.put("INTJ", Integer.valueOf(mbitZhichiScore));
+			scoreMap.put("ISFP", Integer.valueOf(mbitTongzuScore));
+			scoreMap.put("ISTP", Integer.valueOf(mbitHuobanScore));
+			scoreMap.put("ESFP", Integer.valueOf(mbitPeibanScore));
+			mbtiScoreMap.put("ESTP", scoreMap);
+			//ESTJ
+			scoreMap = new HashMap<String, Integer>();
+			scoreMap.put("INTJ", Integer.valueOf(mbitTongzuScore));
+			scoreMap.put("ENTJ", Integer.valueOf(mbitPeibanScore));
+			scoreMap.put("ISFP", Integer.valueOf(mbitZhichiScore));
+			scoreMap.put("ISTJ", Integer.valueOf(mbitHuobanScore));
+			mbtiScoreMap.put("ESTJ", scoreMap);
+			
+			List<Long> uidList = new ArrayList<Long>();
+			//性取向
+			if(userProfile.getLikeGender().intValue() == 1){//爱男
+				this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.SEX_MALE.type), noUidList);
+			}else if(userProfile.getLikeGender().intValue() == 2){//爱女
+				this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.SEX_FEMALE.type), noUidList);
+			}else if(userProfile.getLikeGender().intValue() == 3){//男女通吃
+				this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.COMMON.type), noUidList);
+			}else{//默认喜欢女
+				this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.SEX_FEMALE.type), noUidList);
+			}
+			//年龄范围
+			if(userProfile.getAgeGroup().intValue() > 0){
+				if(userProfile.getAgeGroup().intValue() == 1){//00后
+					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.AGE_00.type), noUidList);
+					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.AGE_95.type), noUidList);
+				}else if(userProfile.getAgeGroup().intValue() == 2){//95后
+					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.AGE_00.type), noUidList);
+					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.AGE_95.type), noUidList);
+					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.AGE_90.type), noUidList);
+				}else if(userProfile.getAgeGroup().intValue() == 3){//90后
+					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.AGE_95.type), noUidList);
+					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.AGE_90.type), noUidList);
+					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.AGE_85.type), noUidList);
+				}else if(userProfile.getAgeGroup().intValue() == 4){//85后
+					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.AGE_90.type), noUidList);
+					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.AGE_85.type), noUidList);
+					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.AGE_80.type), noUidList);
+				}else if(userProfile.getAgeGroup().intValue() == 5){//80后
+					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.AGE_85.type), noUidList);
+					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.AGE_80.type), noUidList);
+					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.AGE_OLD.type), noUidList);
+				}else if(userProfile.getAgeGroup().intValue() == 6){//活化石
+					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.AGE_80.type), noUidList);
+					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.AGE_OLD.type), noUidList);
+				}
+			}
+			//爱好
+			if(null != hobbyIds && hobbyIds.size() > 0){
+				for(Long hobbyId : hobbyIds){
+					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.getUserRecInitTypeByValue("HOBBY_"+hobbyId.toString()).type), noUidList);
+				}
+			}
+
+			//MBTI测试
+			Map<String, Integer> rMap = null;
+			if(!StringUtils.isEmpty(userProfile.getMbti())){
+				rMap = mbtiScoreMap.get(userProfile.getMbti());
+				if(null != rMap && rMap.size() > 0){
+					for(Map.Entry<String, Integer> entry : rMap.entrySet()){
+						this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.getUserRecInitTypeByValue("MBTI_"+entry.getKey()).type), noUidList);
+					}
+				}
+			}
+			
+			//情绪记录
+			this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.getUserRecInitTypeByValue("情绪_"+firstUserEmotionInfo.getEmotionname()).type), noUidList);
+			//职业
+			if(userProfile.getOccupation().intValue() > 0){
+				this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.getUserRecInitTypeByValue("职业_"+userProfile.getOccupation().intValue()).type), noUidList);
+			}
+			
+			//好了，人已经拉的差不多了，下面进行匹配度计算
+			if(uidList.size() > 300){
+				//打乱顺序，然后取300个
+				Collections.shuffle(uidList);
+				uidList = uidList.subList(0, 300);
+			}
+			
+			List<Map<String, Object>> userProfileList = contentForSearchJdbcDao.getUserProfileInfoByUids(uidList);
+			if(null != userProfileList && userProfileList.size() > 0){
+				Map<String, List<Long>> userHobbyIdsMap = contentForSearchJdbcDao.getUserHobbyIdsByUids(uidList);
+				if(null == userHobbyIdsMap){
+					userHobbyIdsMap = new HashMap<String, List<Long>>();
+				}
+				List<Long> hasSameTagTopicKingList = contentForSearchJdbcDao.getSameTagTopicKing(userProfile.getUid().longValue(), uidList);
+				if(null == hasSameTagTopicKingList){
+					hasSameTagTopicKingList = new ArrayList<Long>();
+				}
+				Map<String, Long> userLastEmotionIdMap = contentForSearchJdbcDao.getUserLastEmotionId(uidList);
+				if(null == userLastEmotionIdMap){
+					userLastEmotionIdMap = new HashMap<String, Long>();
+				}
+				Map<String, Long> sameFollowCountMap = contentForSearchJdbcDao.getSameFollowCountByUids(userProfile.getUid().longValue(), uidList);
+				if(null == sameFollowCountMap){
+					sameFollowCountMap = new HashMap<String, Long>();
+				}
+				Map<String, Long> sameJoinTopicCountMap = contentForSearchJdbcDao.getSameJoinTopicCountByUids(userProfile.getUid().longValue(), uidList);
+				if(null == sameJoinTopicCountMap){
+					sameJoinTopicCountMap = new HashMap<String, Long>();
+				}
+				
+				RecommendUser rUser = null;
+				List<Long> rUserHobbyIds = null;
+				String mbti = null;
+				for(Map<String, Object> u : userProfileList){
+					rUser = new RecommendUser();
+					rUser.setUid((Long)u.get("uid"));
+					rUser.setAvatar(Constant.QINIU_DOMAIN + "/" + (String)u.get("avatar"));
+					rUser.setLevel((Integer)u.get("level"));
+					rUser.setNickName((String)u.get("nick_name"));
+					rUser.setV_lv((Integer)u.get("v_lv"));
+					//匹配得分
+					int score = 0;
+					//性取向
+					if((userProfile.getLikeGender().intValue() == 1 && ((Integer)u.get("gender")).intValue() == 1)
+							|| ((userProfile.getLikeGender().intValue() == 2 || userProfile.getLikeGender().intValue() == 0) && ((Integer)u.get("gender")).intValue() != 1)
+							|| userProfile.getLikeGender().intValue() == 3){
+						score = score + sexScore;
+					}
+					//年龄范围
+					int ageGroup = ((Integer)u.get("age_group")).intValue();
+					if(userProfile.getAgeGroup().intValue() > 0 && ageGroup > 0){
+						int abs = Math.abs(userProfile.getAgeGroup().intValue()-ageGroup);
+						if(abs == 0){//一样的
+							score = score + ageSameScore;
+						}else if(abs == 1){//前后格
+							score = score + ageAdjoinScore;
+						}
+					}
+					//爱好
+					rUserHobbyIds = userHobbyIdsMap.get(String.valueOf(u.get("uid")));
+					if(null != rUserHobbyIds && rUserHobbyIds.size() > 0
+							&& null != hobbyIds && hobbyIds.size() > 0){
+						for(Long id : rUserHobbyIds){
+							if(hobbyIds.contains(id)){
+								score = score + hobbyScore;
+							}
+						}
+					}
+					//是否有相同tag的王国
+					if(hasSameTagTopicKingList.contains((Long)u.get("uid"))){
+						score = score + tagScore;
+					}
+					//MBTI
+					mbti = (String)u.get("mbti");
+					if(null != rMap && rMap.size() > 0 && !StringUtils.isEmpty(mbti)
+							&& null != rMap.get(mbti)){
+						int mbitScore = rMap.get(mbti).intValue();
+						score = score + mbitScore;
+					}
+					
+					//情绪
+					if(null != firstUserEmotionInfo && null != userLastEmotionIdMap.get(String.valueOf(u.get("uid")))
+							&& firstUserEmotionInfo.getId().longValue() == userLastEmotionIdMap.get(String.valueOf(u.get("uid"))).longValue()){
+						score = score + emotionScore;
+					}
+					//职业
+					if(userProfile.getOccupation().intValue() > 0 && ((Integer)u.get("occupation")).intValue() > 0
+							&& userProfile.getOccupation().intValue() == ((Integer)u.get("occupation")).intValue()){
+						score = score + careerScore;
+					}
+					//关注同一个人
+					if(null != sameFollowCountMap.get(String.valueOf(u.get("uid")))){
+						score = score + sameFollowCountMap.get(String.valueOf(u.get("uid"))).intValue()*followScore;
+					}
+					//加入同一个王国
+					if(null != sameJoinTopicCountMap.get(String.valueOf(u.get("uid")))){
+						score = score + sameJoinTopicCountMap.get(String.valueOf(u.get("uid"))).intValue()*joinKingdomScore;
+					}
+					//等级加成
+					if(null != userLevelScoreMap.get(userProfile.getLevel().toString())){
+						score = score + userLevelScoreMap.get(userProfile.getLevel().toString()).intValue();
+					}
+					rUser.setTagMatchedLength(score);//暂时放这个字段，等正式算好匹配度后再清除
+					
+					result.add(rUser);
+				}
+				
+				//计算匹配度
+				if(result.size() > 0){
+					Collections.sort(result, new Comparator<RecommendUser>() {
+			            public int compare(RecommendUser a, RecommendUser b) {
+			                if(a.getTagMatchedLength() > b.getTagMatchedLength()){
+			                	return -1;
+			                }else if(a.getTagMatchedLength() == b.getTagMatchedLength()){
+			                	return 0;
+			                }else{
+			                	return 1;
+			                }
+			            }
+			        });
+					int batch = result.size()%pageSize==0?result.size()/pageSize:(result.size()/pageSize)+1;
+					int n = 0;
+					int score = 99;
+					for(RecommendUser ru : result){
+						ru.setMatching(score);
+						ru.setTagMatchedLength(0);//清除临时存储的分值
+						n++;
+						if(n>=batch){
+							n = 0;
+							score--;
+						}
+					}
+					//将300个记录存入缓存
+					StringBuilder sb = new StringBuilder();
+					RecommendUser ru = null;
+					for(int i=0;i<result.size();i++){
+						ru = result.get(i);
+						if(i>0){
+							sb.append(";");
+						}
+						sb.append(ru.getUid()).append(",").append(ru.getMatching());
+					}
+					cacheService.set(cacheKey, sb.toString());
+				}
+			}
+			
+			if(result.size() > pageSize){
+				Collections.shuffle(result);
+				result = result.subList(0, pageSize);
+			}
+		}
 		
-		//先获取相应数据列表
-		
-		return null;
+		return result;
+	}
+	
+	private void builderUsreList(List<Long> result, List<Long> srcList, List<Long> noUidList){
+		if(null != srcList && srcList.size() > 0){
+			for(Long uid : srcList){
+				if(noUidList.contains(uid)){
+					continue;
+				}
+				if(!result.contains(uid)){
+					result.add(uid);
+				}
+			}
+		}
 	}
 	
 	private List<Long> getInitUserByType(String type){

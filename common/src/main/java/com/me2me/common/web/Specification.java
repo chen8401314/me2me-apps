@@ -1,5 +1,7 @@
 package com.me2me.common.web;
 
+import org.apache.commons.lang3.StringUtils;
+
 /**
  * Created by pc308 on 2016/1/11.
  */
@@ -1479,6 +1481,18 @@ public interface Specification {
             this.type = type;
             this.desc = desc;
             this.value = value;
+        }
+        
+        public static UserRecInitType getUserRecInitTypeByValue(String value){
+        	if(StringUtils.isEmpty(value)){
+        		return null;
+        	}
+        	for(UserRecInitType t : UserRecInitType.values()){
+        		if(value.equals(t.value)){
+        			return t;
+        		}
+        	}
+        	return null;
         }
     }
 }
