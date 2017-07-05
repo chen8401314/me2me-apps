@@ -512,13 +512,26 @@ public class SnsServiceImpl implements SnsService {
                 String coreCircle = StringUtils.isEmpty(topic.getCoreCircle()) ? "[" + topic.getUid() + "]" : topic.getCoreCircle();
                 JSONArray array = JSON.parseArray(coreCircle);
 
+                boolean needlimit = true;
+                String specialTopicIds = userService.getAppConfigByKey("SPECIAL_KINGDOM_IDS");
+                if(!StringUtils.isEmpty(specialTopicIds)){
+                	String[] tmp = specialTopicIds.split(",");
+                	String currentTopicId = String.valueOf(topicId);
+                	for(String t : tmp){
+                		if(currentTopicId.equals(t)){//符合条件，则进行判断
+                			needlimit = false;
+                			break;
+                		}
+                	}
+                }
+                
                 String limit = cacheService.get(CORE_CIRCLE_KEY);
                 int limitNum = 12;
                 if(null != limit && !"".equals(limit)){
                 	limitNum = Integer.valueOf(limit);
                 }
                 
-                if (array.size() >= limitNum)
+                if (needlimit && array.size() >= limitNum)
                     return Response.failure(ResponseStatus.SNS_CORE_CIRCLE_IS_FULL.status, ResponseStatus.SNS_CORE_CIRCLE_IS_FULL.message);
                 else {
                     boolean contain = false;
