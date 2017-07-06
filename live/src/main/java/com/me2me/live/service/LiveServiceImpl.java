@@ -7053,7 +7053,7 @@ public class LiveServiceImpl implements LiveService {
             liveLocalJdbcDao.zeroMyCoins(rechargeToKingdomDto.getUid());
             // 更新完成后判断王国的数值是否达到上市标准.如果达标调用跑马灯接口
             //取出达到上市条件的米汤币数量
-            String listedPrice = userService.getAppConfigByKey(LISTED_PRICE);
+           /* String listedPrice = userService.getAppConfigByKey(LISTED_PRICE);
             int i = Integer.parseInt( listedPrice, 10);
             if((topic.getPrice()+rechargeToKingdomDto.getAmount())>= i ){
 
@@ -7061,7 +7061,7 @@ public class LiveServiceImpl implements LiveService {
                 String content = userProfile.getNickName()+"的《"+topic.getTitle()+"》挂牌上市了，快来围观抢购吧。";
                 liveLocalJdbcDao.writeTopicNews(topic.getId(),content);
                 liveLocalJdbcDao.writeTopicTime(topic.getId());
-            }
+            }*/
 
             return Response.success();
         }else {
