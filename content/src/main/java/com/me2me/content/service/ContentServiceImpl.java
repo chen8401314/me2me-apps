@@ -4251,6 +4251,8 @@ private void localJpush(long toUid){
 		if(type == 1){
 			searchType = 1;//找谁
 		}
+		double minPrice =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_PRICE_BRAND_MIN"));
+		double minRmb =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_RMB_BRAND_MIN"));
 		List<BillBoardDetails> showList = contentMybatisDao.getShowListPageByType((int)sinceId, searchType);
 		if(null != showList && showList.size() > 0){
 			//为减少在for循环里查询sql，这里统一将一些数据一次性查出使用
@@ -4481,6 +4483,11 @@ private void localJpush(long toUid){
 		                        	continue;
 		                        }
 		                        bangDanInnerData.setPrice((Integer)topic.get("price"));
+		                        
+		                        bangDanInnerData.setPriceRMB(exchangeKingdomPrice(bangDanInnerData.getPrice()));
+		                        bangDanInnerData.setShowPriceBrand(bangDanInnerData.getPrice()!=null && bangDanInnerData.getPrice()>minPrice?1:0);
+		                        bangDanInnerData.setShowRMBBrand(0);// 显示吊牌不显示RMB吊牌。
+		            			
 		                        bangDanInnerData.setId(topicContent.getId());
 		                        bangDanInnerData.setCid(topicContent.getId());
 		                        bangDanInnerData.setTopicId(targetId);

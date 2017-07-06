@@ -95,6 +95,11 @@ public class BangDanDto implements BaseEntity {
 
             private String tags;
             private Integer price;
+            private double priceRMB;
+        	
+        	private Integer showRMBBrand;
+        	
+        	private Integer showPriceBrand;
         }
     }
 
