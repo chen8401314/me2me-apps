@@ -11,7 +11,7 @@ import lombok.Data;
 public class TagKingdomDto implements BaseEntity{
 	private static final long serialVersionUID = -1636362714045596434L;
 	private String tagName;
-	private List<String> hotTagList;
+	private List<String> hotTagList=Lists.newArrayList();
 	private int personCount;
 	private int kingdomCount;
 	private List<BasicKingdomInfo> kingdomList=Lists.newArrayList();

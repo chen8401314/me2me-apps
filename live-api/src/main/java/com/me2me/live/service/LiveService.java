@@ -597,4 +597,6 @@ public interface LiveService {
 	 * @date Jul 5, 2017
 	 */
 	void updateExpiredTrialTag();
+	
+	public TopicListed getTopicListedByTopicId(long topicId);
 }

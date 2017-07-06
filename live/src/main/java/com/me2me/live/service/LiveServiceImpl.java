@@ -7591,4 +7591,8 @@ public class LiveServiceImpl implements LiveService {
 		int expireDely = Integer.parseInt(userService.getAppConfigByKey("MACHINE_LABLE_TRIAL_TIME_DAY"));
 		liveLocalJdbcDao.updateExpiredTrialTag(expireDely);
 	}
+	@Override
+	public TopicListed getTopicListedByTopicId(long topicId){
+		return liveMybatisDao.getTopicListedByTopicId(topicId);
+	}
 }
