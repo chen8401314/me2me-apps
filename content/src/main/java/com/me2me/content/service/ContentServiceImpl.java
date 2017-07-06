@@ -3971,7 +3971,7 @@ private void localJpush(long toUid){
 						contentElement.setPrice((Integer)topic.get("price"));
 						contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice()));
 						contentElement.setShowPriceBrand(0);		//首页只显示RMB吊牌
-						contentElement.setShowRMBBrand(contentElement.getPriceRMB()>minRmb?1:0);// 显示吊牌
+						contentElement.setShowRMBBrand(contentElement.getPriceRMB()>=minRmb?1:0);// 显示吊牌
 						
 					}
 					lastFragment = lastFragmentMap.get(c.getForwardCid().toString());
@@ -4485,7 +4485,7 @@ private void localJpush(long toUid){
 		                        bangDanInnerData.setPrice((Integer)topic.get("price"));
 		                        
 		                        bangDanInnerData.setPriceRMB(exchangeKingdomPrice(bangDanInnerData.getPrice()));
-		                        bangDanInnerData.setShowPriceBrand(bangDanInnerData.getPrice()!=null && bangDanInnerData.getPrice()>minPrice?1:0);
+		                        bangDanInnerData.setShowPriceBrand(bangDanInnerData.getPrice()!=null && bangDanInnerData.getPrice()>=minPrice?1:0);
 		                        bangDanInnerData.setShowRMBBrand(0);// 显示吊牌不显示RMB吊牌。
 		            			
 		                        bangDanInnerData.setId(topicContent.getId());
@@ -6256,7 +6256,7 @@ private void localJpush(long toUid){
 				// 去掉当前标签
 				List<String> tagList = new ArrayList<>();
 				for(String x:recommendTags){
-					if(!tagName.equals(x)){
+					if(x!=null && !tagName.equals(x)){
 						tagList.add(x);
 					}
 				}

@@ -212,8 +212,8 @@ public class KingdomBuilder {
 			} else {
 				data.setTags("");
 			}
-			data.setShowPriceBrand(data.getPrice()!=null && data.getPrice()>minPrice?1:0);
-			data.setShowRMBBrand(data.getPriceRMB()>minRmb?1:0);// 显示吊牌
+			data.setShowPriceBrand(data.getPrice()!=null && data.getPrice()>=minPrice?1:0);
+			data.setShowRMBBrand(data.getPriceRMB()>=minRmb?1:0);// 显示吊牌
 			result.add(data);
 		}
 		return result;
