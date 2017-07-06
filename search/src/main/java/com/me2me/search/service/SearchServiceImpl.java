@@ -1277,8 +1277,12 @@ public class SearchServiceImpl implements SearchService {
 			}
 			//爱好
 			if(null != hobbyIds && hobbyIds.size() > 0){
+				Specification.UserRecInitType type = null;
 				for(Long hobbyId : hobbyIds){
-					this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.getUserRecInitTypeByValue("HOBBY_"+hobbyId.toString()).type), noUidList);
+					type = Specification.UserRecInitType.getUserRecInitTypeByValue("HOBBY_"+hobbyId.toString());
+					if(null != type){
+						this.builderUsreList(uidList, this.getInitUserByType(type.type), noUidList);
+					}
 				}
 			}
 
@@ -1287,19 +1291,29 @@ public class SearchServiceImpl implements SearchService {
 			if(!StringUtils.isEmpty(userProfile.getMbti())){
 				rMap = mbtiScoreMap.get(userProfile.getMbti());
 				if(null != rMap && rMap.size() > 0){
+					Specification.UserRecInitType type = null;
 					for(Map.Entry<String, Integer> entry : rMap.entrySet()){
-						this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.getUserRecInitTypeByValue("MBTI_"+entry.getKey()).type), noUidList);
+						type = Specification.UserRecInitType.getUserRecInitTypeByValue("MBTI_"+entry.getKey());
+						if(null != type){
+							this.builderUsreList(uidList, this.getInitUserByType(type.type), noUidList);
+						}
 					}
 				}
 			}
 			
 			//情绪记录
 			if(null != firstUserEmotionInfo){
-				this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.getUserRecInitTypeByValue("情绪_"+firstUserEmotionInfo.getEmotionname()).type), noUidList);
+				Specification.UserRecInitType type = Specification.UserRecInitType.getUserRecInitTypeByValue("情绪_"+firstUserEmotionInfo.getEmotionname());
+				if(null != type){
+					this.builderUsreList(uidList, this.getInitUserByType(type.type), noUidList);
+				}
 			}
 			//职业
 			if(null != userProfile.getOccupation() && userProfile.getOccupation().intValue() > 0){
-				this.builderUsreList(uidList, this.getInitUserByType(Specification.UserRecInitType.getUserRecInitTypeByValue("职业_"+userProfile.getOccupation().intValue()).type), noUidList);
+				Specification.UserRecInitType type = Specification.UserRecInitType.getUserRecInitTypeByValue("职业_"+userProfile.getOccupation().intValue());
+				if(null != type){
+					this.builderUsreList(uidList, this.getInitUserByType(type.type), noUidList);
+				}
 			}
 			
 			//好了，人已经拉的差不多了，下面进行匹配度计算

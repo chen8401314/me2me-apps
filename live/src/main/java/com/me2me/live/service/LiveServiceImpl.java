@@ -995,6 +995,16 @@ public class LiveServiceImpl implements LiveService {
                 topic.setUpdateTime(calendar.getTime());
                 topic.setLongTime(calendar.getTimeInMillis());
                 liveMybatisDao.updateTopic(topic);
+                
+                //国王/核心圈发言，需要更新content表的updateTime
+                if(topic.getUid().longValue() == speakDto.getUid() 
+                		|| speakDto.getType() == 0 || speakDto.getType() == 3
+                		|| speakDto.getType() == 11 || speakDto.getType() == 12
+                		|| speakDto.getType() == 13 || speakDto.getType() == 15
+                		|| speakDto.getType() == 52 || speakDto.getType() == 55){
+                	liveLocalJdbcDao.updateContentUpdateTime4Kingdom(speakDto.getTopicId(), calendar.getTime());
+                }
+                
                 log.info("updateTopic updateTime");
             }
 
@@ -1017,7 +1027,7 @@ public class LiveServiceImpl implements LiveService {
             cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + speakDto.getTopicId(), value);
             //--add update kingdom cache -- modify by zcl -- end --
 
-            this.activitySpecialTopicHandler(speakDto.getUid(), speakDto.getTopicId(), fid, speakDto.getType(), speakDto.getContentType(), 1);
+//            this.activitySpecialTopicHandler(speakDto.getUid(), speakDto.getTopicId(), fid, speakDto.getType(), speakDto.getContentType(), 1);
         }
         //获取最后一次发言FragmentId
         TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(speakDto.getTopicId(), speakDto.getUid());
@@ -3757,6 +3767,8 @@ public class LiveServiceImpl implements LiveService {
 					topic.setUpdateTime(calendar.getTime());
 					topic.setLongTime(calendar.getTimeInMillis());
 					liveMybatisDao.updateTopic(topic);
+					
+					liveLocalJdbcDao.updateContentUpdateTime4Kingdom(topic.getId(), calendar.getTime());
 
 					// 更新缓存
 					int total = liveMybatisDao.countFragmentByTopicId(topic.getId());
@@ -4860,6 +4872,10 @@ public class LiveServiceImpl implements LiveService {
         targetTopic.setLongTime(calendar.getTimeInMillis());
         liveMybatisDao.updateTopic(targetTopic);
 
+        if(isCoreUser){//如果是核心圈，则更新content表的updateTime
+        	liveLocalJdbcDao.updateContentUpdateTime4Kingdom(targetTopicId, calendar.getTime());
+        }
+        
         //更新缓存
         long lastFragmentId = newtf.getId();
         int total = liveMybatisDao.countFragmentByTopicId(targetTopicId);

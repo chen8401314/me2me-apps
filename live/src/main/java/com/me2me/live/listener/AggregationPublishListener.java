@@ -28,6 +28,7 @@ import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.live.cache.LiveLastUpdate;
 import com.me2me.live.cache.MyLivesStatusModel;
 import com.me2me.live.cache.MySubscribeCacheModel;
+import com.me2me.live.dao.LiveLocalJdbcDao;
 import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.event.AggregationPublishEvent;
 import com.me2me.live.event.SpeakNewEvent;
@@ -51,17 +52,19 @@ public class AggregationPublishListener {
 	private final ContentService contentService;
 	private final CacheService cacheService;
 	private final JPushService jPushService;
+	private final LiveLocalJdbcDao liveLocalJdbcDao;
 	
 	@Autowired
 	public AggregationPublishListener(ApplicationEventBus applicationEventBus, LiveMybatisDao liveMybatisDao,
 			UserService userService, ContentService contentService, CacheService cacheService,
-			JPushService jPushService){
+			JPushService jPushService, LiveLocalJdbcDao liveLocalJdbcDao){
 		this.applicationEventBus = applicationEventBus;
 		this.liveMybatisDao = liveMybatisDao;
 		this.userService = userService;
 		this.contentService = contentService;
 		this.cacheService = cacheService;
 		this.jPushService = jPushService;
+		this.liveLocalJdbcDao = liveLocalJdbcDao;
 	}
 	
 	@PostConstruct
@@ -125,6 +128,9 @@ public class AggregationPublishListener {
 							subTopic.setLongTime(calendar.getTimeInMillis());
 				            liveMybatisDao.updateTopic(subTopic);
 //						}
+				        if(this.isInCore(event.getUid(), subTopic.getCoreCircle())){
+				            liveLocalJdbcDao.updateContentUpdateTime4Kingdom(subTopic.getId(), calendar.getTime());
+				        }
 						
 						//更新缓存
 						long lastFragmentId = newtf.getId();

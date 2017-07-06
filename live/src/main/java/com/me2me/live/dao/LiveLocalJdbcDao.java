@@ -1,6 +1,7 @@
 package com.me2me.live.dao;
 
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1179,5 +1180,10 @@ public class LiveLocalJdbcDao {
 	public void updateExpiredTrialTag(int delayDay) {
 		String sql ="update topic_tag_detail set auto_tag=0 where datediff(now(),create_time)>=? and auto_tag=1 and status=0";
 		jdbcTemplate.update(sql,delayDay);
+	}
+	
+	public void updateContentUpdateTime4Kingdom(long topicId, Date time){
+		String sql = "update content set update_time=? where forward_cid=? and type=3";
+		jdbcTemplate.update(sql,time,topicId);
 	}
 }
