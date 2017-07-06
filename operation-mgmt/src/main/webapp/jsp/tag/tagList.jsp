@@ -118,7 +118,7 @@ var buildTableBody = function(dataList){
 				bodyHtml = bodyHtml + "是";
 			}
 			bodyHtml = bodyHtml + "</td>";
-			bodyHtml = bodyHtml + "<td>"+(dataList[i].ordernum ||0)+"</td>";
+			bodyHtml = bodyHtml + "<td>"+(dataList[i].orderNum==null?'':dataList[i].orderNum)+"</td>";
 			bodyHtml = bodyHtml + "<td>";
 			if(dataList[i].status == 0){
 				bodyHtml = bodyHtml + "正常";
