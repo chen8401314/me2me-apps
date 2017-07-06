@@ -1089,7 +1089,7 @@ public class SearchServiceImpl implements SearchService {
 						ru.setAvatar(Constant.QINIU_DOMAIN + "/" + user.get("avatar"));
 						ru.setLevel(((Integer)user.get("level")).intValue());
 						ru.setNickName((String)user.get("nick_name"));
-						ru.setV_lv(((Integer)user.get("v_lv")).intValue());
+						ru.setV_lv((Integer)user.get("v_lv"));
 					}
 				}
 			}
@@ -1345,7 +1345,7 @@ public class SearchServiceImpl implements SearchService {
 					//匹配得分
 					int score = 0;
 					//性取向
-					if(null != userProfile.getLikeGender()){
+					if(null != userProfile.getLikeGender() && null != u.get("gender")){
 						if((userProfile.getLikeGender().intValue() == 1 && ((Integer)u.get("gender")).intValue() == 1)
 								|| ((userProfile.getLikeGender().intValue() == 2 || userProfile.getLikeGender().intValue() == 0) && ((Integer)u.get("gender")).intValue() != 1)
 								|| userProfile.getLikeGender().intValue() == 3){
@@ -1353,7 +1353,7 @@ public class SearchServiceImpl implements SearchService {
 						}
 					}
 					//年龄范围
-					int ageGroup = ((Integer)u.get("age_group")).intValue();
+					int ageGroup = null==u.get("age_group")?0:((Integer)u.get("age_group")).intValue();
 					if(null != userProfile.getAgeGroup() && userProfile.getAgeGroup().intValue() > 0 && ageGroup > 0){
 						int abs = Math.abs(userProfile.getAgeGroup().intValue()-ageGroup);
 						if(abs == 0){//一样的
@@ -1391,7 +1391,7 @@ public class SearchServiceImpl implements SearchService {
 					}
 					//职业
 					if(null != userProfile.getOccupation() && userProfile.getOccupation().intValue() > 0 
-							&& ((Integer)u.get("occupation")).intValue() > 0
+							&& null != u.get("occupation") && ((Integer)u.get("occupation")).intValue() > 0
 							&& userProfile.getOccupation().intValue() == ((Integer)u.get("occupation")).intValue()){
 						score = score + careerScore;
 					}
