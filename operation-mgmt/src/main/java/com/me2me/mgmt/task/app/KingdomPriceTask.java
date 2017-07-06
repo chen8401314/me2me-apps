@@ -1203,6 +1203,8 @@ public class KingdomPriceTask {
 			TopicListed topicListed = liveService.getTopicListedByTopicId(kc.getTopicId());
 			//已经上市
 			if(topicListed!=null){
+				//已锁定和正在交易的不会下架
+				if(topicListed.getStatus()==0){
 				String delTopicListed = "delete from topic_listed where topic_id="+kc.getTopicId();
 				localJdbcDao.executeSql(delTopicListed);
 				Topic topic = liveService.getTopicById(kc.getTopicId());
@@ -1214,7 +1216,8 @@ public class KingdomPriceTask {
 	                jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//核心圈
 	                userService.pushWithExtra(topic.getUid().toString(), "由于你的王国『"+topic.getTitle()+"』已经低于上市估值，现已被米汤王国下架。", JPushUtils.packageExtra(jsonObject));
 	                
-				}	
+				}
+				}
 			}
 		}else{
 			//不用处理
