@@ -102,34 +102,35 @@ var buildTableBody = function(dataList){
 	if(dataList && dataList.length > 0){
 		for(var i=0;i<dataList.length;i++){
 			bodyHtml = bodyHtml + "<tr class=\"gradeX\">";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].tagName+"</th>";
-			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].createTime))+"</th>";
-			bodyHtml = bodyHtml + "<th>";
+			bodyHtml = bodyHtml + "<td>"+dataList[i].tagName+"</td>";
+			bodyHtml = bodyHtml + "<td>"+parserDatetimeStr(new Date(dataList[i].createTime))+"</td>";
+			bodyHtml = bodyHtml + "<td>";
 			if(dataList[i].isSys == 0){
 				bodyHtml = bodyHtml + "否";
 			}else{
 				bodyHtml = bodyHtml + "是";
 			}
-			bodyHtml = bodyHtml + "</th>";
-			bodyHtml = bodyHtml + "<th>";
+			bodyHtml = bodyHtml + "</td>";
+			bodyHtml = bodyHtml + "<td>";
 			if(dataList[i].isRec == 0){
 				bodyHtml = bodyHtml + "否";
 			}else{
 				bodyHtml = bodyHtml + "是";
 			}
-			bodyHtml = bodyHtml + "</th>";
-			bodyHtml = bodyHtml + "<th>";
+			bodyHtml = bodyHtml + "</td>";
+			bodyHtml = bodyHtml + "<td>"+(dataList[i].ordernum ||0)+"</td>";
+			bodyHtml = bodyHtml + "<td>";
 			if(dataList[i].status == 0){
 				bodyHtml = bodyHtml + "正常";
 			}else{
 				bodyHtml = bodyHtml + "<font color='red'>禁用</font>";
 			}
-			bodyHtml = bodyHtml + "</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].topicCount+"</th>";
-			bodyHtml = bodyHtml + "<th>";
+			bodyHtml = bodyHtml + "</td>";
+			bodyHtml = bodyHtml + "<td>"+dataList[i].topicCount+"</td>";
+			bodyHtml = bodyHtml + "<td>";
 			bodyHtml = bodyHtml + "<a href=\"${ctx}/tag/f/"+dataList[i].id+"\">编辑</a>";
 			bodyHtml = bodyHtml + "|<a href=\"${ctx}/tag/topicList/query?tagId="+dataList[i].id+"\">查看王国列表</a>";
-			bodyHtml = bodyHtml + "</th>";
+			bodyHtml = bodyHtml + "</td>";
 			bodyHtml = bodyHtml + "</tr>";
 		}
 	}

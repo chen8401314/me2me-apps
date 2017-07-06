@@ -67,7 +67,7 @@
                                            <select name="pid" id="pid" class="form-control">
                                             	<option value="">无</option>
 												<c:forEach  var="tag" items="${sysTagList }">
-													<option value="${tag.id}" ${tag.pid==dataObj.pid?'selected':''}>${tag.tag}</option>
+													<option value="${tag.id}" ${tag.id==dataObj.pid?'selected':''}>${tag.tag}</option>
 												</c:forEach>
 											</select>
                                         </div>
