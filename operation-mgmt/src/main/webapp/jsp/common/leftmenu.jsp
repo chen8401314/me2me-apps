@@ -165,7 +165,7 @@ String sub = request.getParameter("s");
                     <span>王国价值管理</span>
                 </a>
                 <ul class="sub">
-                	<li <%if("13_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/price/kingdomQuery">王国交易管理</a></li>
+               <%--  	<li <%if("13_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/price/kingdomQuery">王国交易管理</a></li> --%>
                 	<li <%if("13_3".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/price/taskConsole">任务控制台</a></li>
                 	<li <%if("13_4".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/price/listTopicPriceSubsidyConfig">补贴配置</a></li>
                 </ul>
