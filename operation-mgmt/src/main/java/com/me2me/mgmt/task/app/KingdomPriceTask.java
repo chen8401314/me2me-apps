@@ -20,7 +20,13 @@ import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.google.gson.JsonObject;
 import com.me2me.common.utils.DateUtil;
+import com.me2me.common.utils.JPushUtils;
+import com.me2me.common.web.Specification;
+import com.me2me.live.model.Topic;
+import com.me2me.live.model.TopicListed;
+import com.me2me.live.service.LiveService;
 import com.me2me.mgmt.dao.LocalJdbcDao;
 import com.me2me.user.service.UserService;
 
@@ -36,6 +42,8 @@ public class KingdomPriceTask {
 	
 	private static List<String> weightKeyList = new ArrayList<String>();
 	
+	@Autowired
+	private LiveService liveService;
 	@PostConstruct
 	public void init(){
 		weightKeyList.add("ALGORITHM_DILIGENTLY_WEIGHT");
@@ -1190,5 +1198,26 @@ public class KingdomPriceTask {
 			}
 		}
 		*/
+		//王国价值低于上市估值自动下架
+		if(kc.getPrice() < listedPrice){
+			TopicListed topicListed = liveService.getTopicListedByTopicId(kc.getTopicId());
+			//已经上市
+			if(topicListed!=null){
+				String delTopicListed = "delete from topic_listed where topic_id="+kc.getTopicId();
+				localJdbcDao.executeSql(delTopicListed);
+				Topic topic = liveService.getTopicById(kc.getTopicId());
+				if(topic!=null){
+					JsonObject jsonObject = new JsonObject();
+	                jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
+	                jsonObject.addProperty("topicId",topic.getId());
+	                jsonObject.addProperty("contentType",topic.getType());
+	                jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//核心圈
+	                userService.pushWithExtra(topic.getUid().toString(), "由于你的王国『"+topic.getTitle()+"』已经低于上市估值，现已被米汤王国下架。", JPushUtils.packageExtra(jsonObject));
+	                
+				}	
+			}
+		}else{
+			//不用处理
+		}
 	}
 }
