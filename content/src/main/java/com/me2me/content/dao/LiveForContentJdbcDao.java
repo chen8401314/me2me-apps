@@ -593,11 +593,40 @@ public class LiveForContentJdbcDao {
      * @return
      */
     public List<BillBoardListDTO> tagKingdomPriceList(String tag, long start, int pageSize){
+    	StringBuilder tagSql = new StringBuilder();
+    	tagSql.append("select t1.id as pid,t2.id as sid from topic_tag t1 LEFT JOIN topic_tag t2");
+    	tagSql.append(" on t1.id=t2.pid where t1.tag='").append(tag).append("'");
+    	
+    	List<Map<String, Object>> tagList = jdbcTemplate.queryForList(tagSql.toString());
+    	List<Long> tagIds = new ArrayList<Long>();
+    	if(null != tagList && tagList.size() > 0){
+    		Map<String, Object> m = null;
+    		for(int i=0;i<tagList.size();i++){
+    			m = tagList.get(i);
+    			if(i == 0){
+    				tagIds.add((Long)m.get("pid"));
+    			}
+    			if(null != m.get("sid")){
+    				tagIds.add((Long)m.get("sid"));
+    			}
+    		}
+    	}
+    	
+    	if(tagIds.size() == 0){
+    		return null;
+    	}
+    	
     	StringBuilder sb = new StringBuilder();
     	sb.append("select t.id from topic_tag_detail d,topic t");
     	sb.append(" where d.topic_id=t.id and d.status=0");
-    	sb.append(" and d.tag='").append(tag);
-    	sb.append("' order by t.price desc,t.id DESC");
+    	sb.append(" and d.tag in (");
+    	for(int i=0;i<tagIds.size();i++){
+    		if(i>0){
+    			sb.append(",");
+    		}
+    		sb.append(tagIds.get(i).toString());
+    	}
+    	sb.append(") order by t.price desc,t.id DESC");
     	sb.append(" limit ").append(start).append(",").append(pageSize);
     	
     	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
@@ -626,11 +655,41 @@ public class LiveForContentJdbcDao {
      * @return
      */
     public List<BillBoardListDTO> tagKingdomIncrPriceList(String tag, long start, int pageSize){
+    	StringBuilder tagSql = new StringBuilder();
+    	tagSql.append("select t1.id as pid,t2.id as sid from topic_tag t1 LEFT JOIN topic_tag t2");
+    	tagSql.append(" on t1.id=t2.pid where t1.tag='").append(tag).append("'");
+    	
+    	List<Map<String, Object>> tagList = jdbcTemplate.queryForList(tagSql.toString());
+    	List<Long> tagIds = new ArrayList<Long>();
+    	if(null != tagList && tagList.size() > 0){
+    		Map<String, Object> m = null;
+    		for(int i=0;i<tagList.size();i++){
+    			m = tagList.get(i);
+    			if(i == 0){
+    				tagIds.add((Long)m.get("pid"));
+    			}
+    			if(null != m.get("sid")){
+    				tagIds.add((Long)m.get("sid"));
+    			}
+    		}
+    	}
+    	
+    	if(tagIds.size() == 0){
+    		return null;
+    	}
+    	
     	StringBuilder sb = new StringBuilder();
     	sb.append("select t.id from topic_tag_detail d,topic t,topic_data td");
     	sb.append(" where d.topic_id=t.id and t.id=td.topic_id");
-    	sb.append(" and d.status=0 and d.tag='").append(tag);
-    	sb.append("' order by td.last_price_incr desc,t.id desc");
+    	sb.append(" and d.status=0");
+    	sb.append(" and d.tag in (");
+    	for(int i=0;i<tagIds.size();i++){
+    		if(i>0){
+    			sb.append(",");
+    		}
+    		sb.append(tagIds.get(i).toString());
+    	}
+    	sb.append(") order by td.last_price_incr desc,t.id desc");
     	sb.append(" limit ").append(start).append(",").append(pageSize);
     	
     	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
