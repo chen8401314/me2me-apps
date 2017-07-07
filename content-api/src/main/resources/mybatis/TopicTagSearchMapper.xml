@@ -3,10 +3,10 @@
 <mapper namespace="com.me2me.content.mapper.TopicTagSearchMapper">
   
      <select id="getKingdomsByTag" resultType="map">
-		select t.* from topic_tag_detail d,topic t,topic_data td
+		select t.*,td.last_price_incr from topic_tag_detail d,topic t
+		left join topic_data td on  td.topic_id=t.id 
 		where 
 			d.status=0 
-			and td.topic_id=t.id 
 			and d.topic_id=t.id 
 			and d.tag_id in(
 					select id from topic_tag p where tag=#{tag}
