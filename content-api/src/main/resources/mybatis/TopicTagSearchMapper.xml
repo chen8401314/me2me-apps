@@ -34,7 +34,7 @@
 						UNION
 						select id from topic_tag c where c.pid=(select id from topic_tag p where tag=#{tag} and status=0) 
 				)
-			)) tagPersons
+			))+FLOOR(sum(ct.read_count)/20) tagPersons
 			from
 			(select * from topic where id in(
 				select DISTINCT topic_id from topic_tag_detail dt where dt.status=0 and dt.tag_id in(
@@ -42,7 +42,8 @@
 						UNION
 						select id from topic_tag c where c.pid=(select id from topic_tag p where tag=#{tag} and status=0) 
 				)
-			)) ts
+			)) ts,content ct
+			where ts.id=ct.forward_cid and ct.type=3
 	 </select>
 	
 	<select id="getSysTagCountInfo" resultType="map">
@@ -58,5 +59,11 @@
 		) price
 		FROM topic_tag t where t.is_sys=1
 	</select>
-
+	<select id="getTopicIdsByTag" resultType="int">
+		select DISTINCT topic_id from topic_tag_detail dt where dt.status=0 and dt.tag_id in(
+			select id from topic_tag p where tag=#{tag} and status=0
+			UNION
+			select id from topic_tag c where c.pid=(select id from topic_tag p where tag=#{tag} and status=0) 
+		)
+	</select>
 </mapper>
