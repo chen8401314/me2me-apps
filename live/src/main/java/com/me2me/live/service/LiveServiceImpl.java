@@ -7552,38 +7552,46 @@ public class LiveServiceImpl implements LiveService {
 			return true;
 		}
     }
-    @Override
-	public Response takeoverTopic(long topicId,long uid){
-    	Topic topic = liveMybatisDao.getTopicById(topicId);
-    	if(topic==null){
-    		return Response.failure(500, "找不到该王国！") ;
-    	}
-    	TopicListed topicListed = liveMybatisDao.getTopicListedByTopicId(topicId);
-    	if(topicListed==null){
-    		return Response.failure(500, "找不到该王国上市记录！") ;
-    	}
-       if(liveMybatisDao.isBuyTopic(uid)){
-    	   return Response.failure(500, "不能重复收购！") ;
-       }
-       if(uid == topic.getUid()){
-    	   return Response.failure(500, "不能收购自己的王国！") ;
-       }
-       if(topicListed.getStatus()!=0){
-    	   return Response.failure(500, "该王国正在被其他人收购！") ;
-       }
-       if(isRestTopicListed()){
-    	   return Response.failure(500, "休市期间不能收购！") ;
-       }
-       
-       topicListed.setPersonCount(liveLocalJdbcDao.getTopicMembersCount(topic.getId()));
-       topicListed.setReadCount(liveLocalJdbcDao.getReadCount(topic.getId()));
-       topicListed.setReviewCount(liveLocalJdbcDao.getTopicReviewCount(topic.getId()));
-       topicListed.setPrice(topic.getPrice());
-       topicListed.setPriceRmb(exchangeKingdomPrice(topic.getPrice()));
-       topicListed.setStatus(1);
-       topicListed.setBuyUid(uid);
-       liveMybatisDao.updateTopicListed(topicListed);
-    	return Response.success();
+
+	@Override
+	public Response takeoverTopic(long topicId, long uid) {
+		Topic topic = liveMybatisDao.getTopicById(topicId);
+		if (topic == null) {
+			return Response.failure(500, "找不到该王国！");
+		}
+		TopicListed topicListed = liveMybatisDao.getTopicListedByTopicId(topicId);
+		if (topicListed == null) {
+			return Response.failure(500, "找不到该王国上市记录！");
+		}
+		if (liveMybatisDao.isBuyTopic(uid)) {
+			return Response.failure(500, "不能重复收购！");
+		}
+		if (uid == topic.getUid()) {
+			return Response.failure(500, "不能收购自己的王国！");
+		}
+		if (topicListed.getStatus() != 0) {
+			return Response.failure(500, "该王国正在被其他人收购！");
+		}
+		if (isRestTopicListed()) {
+			return Response.failure(500, "休市期间不能收购！");
+		}
+
+		topicListed.setPersonCount(liveLocalJdbcDao.getTopicMembersCount(topic.getId()));
+		topicListed.setReadCount(liveLocalJdbcDao.getReadCount(topic.getId()));
+		topicListed.setReviewCount(liveLocalJdbcDao.getTopicReviewCount(topic.getId()));
+		topicListed.setPrice(topic.getPrice());
+		topicListed.setPriceRmb(exchangeKingdomPrice(topic.getPrice()));
+		topicListed.setStatus(1);
+		topicListed.setBuyUid(uid);
+		liveMybatisDao.updateTopicListed(topicListed);
+		StringBuffer message = new StringBuffer();
+		message.append("您上市的王国《").append(topic.getTitle()).append("》正在被人收购中。");
+		try {
+			ImSendMessageDto dto = smsService.sendSysMessage(topic.getUid().toString(), message.toString());
+		} catch (Exception e) {
+			log.error(e.getMessage());
+		}
+		return Response.success();
 	}
 
 	@Override
