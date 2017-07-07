@@ -60,4 +60,12 @@ public interface TopicTagSearchMapper {
 	@ResultType(Integer.class)
 	@Select("select hobby from user_hobby where uid=#{uid}")
 	public List<Integer> getUserHobbyIdsByUid(@Param("uid")long uid);
+	/**
+	 * 获取TAG和子TAG的所有王国ID
+	 * @author zhangjiwei
+	 * @date Jul 7, 2017
+	 * @param tag
+	 * @return
+	 */
+	public List<Integer> getTopicIdsByTag(@Param("tag")String tag);
 }

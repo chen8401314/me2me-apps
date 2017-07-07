@@ -3560,9 +3560,14 @@ private void localJpush(long toUid){
 			String[] lables = hotLables.split("\\n");
 			for(String label:lables){
 				HotTagElement element = new HotTagElement();
+				
+				
 				List<Map<String,Object>> topicList = this.topicTagMapper.getKingdomsByTag(label,"new",1,4);
 				
+				
+				//List<Integer> topicIds = this.topicTagMapper.getTopicIdsByTag(label);
 				Map<String,Object> totalPrice = topicTagMapper.getTagPriceAndKingdomCount(label);
+				
 				if(topicList!=null && topicList.size()>0){
 					List<BasicKingdomInfo> kingdoms =this.kingdomBuider.buildKingdoms(topicList, uid);
 					element.setKingdomList(kingdoms);
