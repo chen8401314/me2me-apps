@@ -1169,7 +1169,7 @@ public class LiveLocalJdbcDao {
     		Map<String, Object> m  = list2.get(0);
     		num = Integer.parseInt(m.get("coreCount").toString());
            }
-    	return fNum+num;
+    	return fNum+num+1;
 }
 
 	public boolean existsTrialTagInKingdom(Long topicId, String tag) {
