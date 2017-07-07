@@ -583,8 +583,12 @@ public class ContentMybatisDao {
      * @param pageSize
      * @return
      */
-    public List<Content2Dto> getHotContentByType(long sinceId, int type, int pageSize){
-    	return contentMapper.getHotContentByType(sinceId, type, pageSize);
+    public List<Content2Dto> getHotContentByType(long sinceId, int type, int pageSize,String ids){
+    	return contentMapper.getHotContentByType(sinceId, type, pageSize,ids);
+    }
+
+    public List<Content2Dto> getHotContentByRedis(String ids){
+        return contentMapper.getHotContentByRedis(ids);
     }
 
     public int getUgcCount(long uid){
