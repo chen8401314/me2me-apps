@@ -33,7 +33,7 @@ public interface TopicTagSearchMapper {
 	 * @date Jun 29, 2017
 	 * @return
 	 */
-	public Map<String,Object> getTagPriceAndKingdomCount(@Param("tag")String tag);
+	public Map<String,Integer> getTagPriceAndKingdomCount(@Param("tag")String tag);
 	/**
 	 * 获取系统标签统计信息（总价值，对应的用户喜好）
 	 * @author zhangjiwei

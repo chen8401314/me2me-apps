@@ -3566,7 +3566,7 @@ private void localJpush(long toUid){
 				
 				
 				//List<Integer> topicIds = this.topicTagMapper.getTopicIdsByTag(label);
-				Map<String,Object> totalPrice = topicTagMapper.getTagPriceAndKingdomCount(label);
+				Map<String,Integer> totalPrice = topicTagMapper.getTagPriceAndKingdomCount(label);
 				
 				if(topicList!=null && topicList.size()>0){
 					List<BasicKingdomInfo> kingdoms =this.kingdomBuider.buildKingdoms(topicList, uid);
@@ -3576,13 +3576,13 @@ private void localJpush(long toUid){
 				int tagPrice = 0;
 				int kingdomCount = 0;
 				if(totalPrice.containsKey("tagPersons")){
-					tagPersons=((Number)totalPrice.get("tagPersons")).intValue();
+					tagPersons=totalPrice.get("tagPersons");
 				}
 				if(totalPrice.containsKey("tagPrice")){
-					tagPrice=((Number)totalPrice.get("tagPrice")).intValue();
+					tagPrice=totalPrice.get("tagPrice");
 				}
 				if(totalPrice.containsKey("kingdomCount")){
-					kingdomCount=((Number)totalPrice.get("kingdomCount")).intValue();
+					kingdomCount=totalPrice.get("kingdomCount");
 				}
 				
 				element.setKingdomCount(kingdomCount);
@@ -6195,12 +6195,20 @@ private void localJpush(long toUid){
 		dto.setKingdomList(kingdoms);
 		
 		if(page==1){
-			Map<String,Object> totalPrice = topicTagMapper.getTagPriceAndKingdomCount(tagName);
-			long tagPersons=(Long)totalPrice.get("tagPersons");
+			Map<String,Integer> totalPrice = topicTagMapper.getTagPriceAndKingdomCount(tagName);
+			
+			int tagPersons=0;
 			//int tagPrice=(Integer)totalPrice.get("tagPrice");
-			long kingdomCount = (Long)totalPrice.get("kingdomCount");
-			dto.setKingdomCount((int)kingdomCount);
-			dto.setPersonCount((int)tagPersons);
+			int kingdomCount =0;
+			if(totalPrice.containsKey("tagPersons")){
+				tagPersons=totalPrice.get("tagPersons");
+			}
+			if(totalPrice.containsKey("kingdomCount")){
+				kingdomCount = totalPrice.get("kingdomCount");
+			}
+			
+			dto.setKingdomCount(kingdomCount);
+			dto.setPersonCount(tagPersons);
 			dto.setTagName(tagName);
 			
 			// 取topic tags 取所有的体系标签， 排序规则：1 运营指定顺序 2 用户喜好 3 标签价值
@@ -6263,10 +6271,10 @@ private void localJpush(long toUid){
 					public int compare(Map<String, Object> o1, Map<String, Object> o2) {
 						int p1=0,p2=0;
 						if(o1.get("price")!=null){
-							p1=((BigDecimal)o1.get("price")).intValue();
+							p1=((Number)o1.get("price")).intValue();
 						}
 						if(o2.get("price")!=null){
-							p2=((BigDecimal)o2.get("price")).intValue();
+							p2=((Number)o2.get("price")).intValue();
 						}
 						return p1<p2?1:-1;
 					}
