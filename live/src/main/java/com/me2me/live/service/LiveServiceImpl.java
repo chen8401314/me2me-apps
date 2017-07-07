@@ -5834,8 +5834,10 @@ public class LiveServiceImpl implements LiveService {
     }
 
     @Override
-    public void createTopicTag(TopicTag tag){
+    public Long createTopicTag(TopicTag tag){
         liveMybatisDao.insertTopicTag(tag);
+        
+        return tag.getId();
     }
 
     @Override

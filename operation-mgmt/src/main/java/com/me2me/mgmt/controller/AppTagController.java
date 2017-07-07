@@ -214,7 +214,17 @@ public class AppTagController {
 			view.addObject("errMsg","标签名已经存在");
 			return view;
 		}
-		liveService.updateTopicTag(topicTag);
+		TopicTag oldTag = liveService.getTopicTagById(topicTag.getId());
+		if(oldTag.getIsSys()==1 && !oldTag.getTag().equals(topicTag.getTag())){		// 如果修改了系统标签的名字，老名字自动变为新名字下的子标签。
+			topicTag.setId(null);
+			Long newId = liveService.createTopicTag(topicTag);		//创建新标签。
+			oldTag.setPid(newId.intValue());
+			oldTag.setOrderNum(0);
+			oldTag.setIsSys(0);
+			liveService.updateTopicTag(oldTag);		// 修改老标签为普通标签
+		}else{
+			liveService.updateTopicTag(topicTag);
+		}
 		
 		view = new ModelAndView("redirect:/tag/query");
 		return view;

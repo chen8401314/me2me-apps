@@ -245,7 +245,7 @@ public interface LiveService {
     
     TopicTag getTopicTagByTag(String tag);
     
-    void createTopicTag(TopicTag tag);
+    Long createTopicTag(TopicTag tag);
     
     void updateTopicTag(TopicTag tag);
     
