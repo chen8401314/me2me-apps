@@ -25,6 +25,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
@@ -3515,9 +3516,8 @@ private void localJpush(long toUid){
 		List<String> redisIds = cacheService.lrange("HOT_TOP_KEY",0,-1);
         String ids = null;
         List<Content2Dto> topList = Lists.newArrayList();
-        if(redisIds!=null) {
-            ids = Joiner.on(",").join(redisIds);
-            topList = contentMybatisDao.getHotContentByRedis(ids);
+        if(!ObjectUtils.isEmpty(redisIds)) {
+            topList = contentMybatisDao.getHotContentByRedis(redisIds);
         }
 		List<Content2Dto> contentList = contentMybatisDao.getHotContentByType(sinceId, 0, 20,ids);//只要UGC+PGC+个人王国
 		this.buildHotListDTO(uid, result, activityList, userFamousList, ceKingdomList, contentList,topList);

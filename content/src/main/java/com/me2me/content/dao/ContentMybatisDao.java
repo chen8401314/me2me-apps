@@ -587,7 +587,7 @@ public class ContentMybatisDao {
     	return contentMapper.getHotContentByType(sinceId, type, pageSize,ids);
     }
 
-    public List<Content2Dto> getHotContentByRedis(String ids){
+    public List<Content2Dto> getHotContentByRedis(List<String> ids){
         return contentMapper.getHotContentByRedis(ids);
     }
 

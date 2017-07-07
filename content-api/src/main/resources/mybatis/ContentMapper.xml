@@ -1017,7 +1017,7 @@
 	 order by m.update_time desc limit #{pageSize}
   	</select>
 
-  <select id="getHotContentByRedis" resultMap="ResultMapWithBLOBs2" parameterType="java.lang.String">
+  <select id="getHotContentByRedis" resultMap="ResultMapWithBLOBs2" parameterType="java.util.List">
       select m.*,h.id as hid FROM
       (select c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image,
       c.forward_title, c.forward_url, c.content_type, c.thumbnail, c.hot_value,
@@ -1026,7 +1026,12 @@
       from content c LEFT JOIN topic t on c.forward_cid=t.id
       where c.status != 1 and c.rights=1
       ) m,high_quality_content h
-      where m.id = h.cid and h.id in (#{ids})
+      where m.id = h.cid and h.id in
+
+      <foreach item="id" collection="ids"  open="(" separator="," close=")">
+        #{id}
+      </foreach>
+
   </select>
 
   <select id="getAttention" parameterType="java.util.Map" resultMap="ResultMapWithBLOBs">

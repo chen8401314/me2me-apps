@@ -180,7 +180,7 @@ public interface ContentMapper {
     List<Content2Dto> getHotContentByType(@Param("sinceId") long sinceId, @Param("type") int type, @Param("pageSize") int pageSize,@Param("ids") String ids);
 
 
-    List<Content2Dto> getHotContentByRedis(@Param("ids") String ids);
+    List<Content2Dto> getHotContentByRedis(@Param("ids") List<String> ids);
 
 
     List<Content> loadMyPublishUgcData(Map map);
