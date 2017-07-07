@@ -5041,7 +5041,7 @@ public class LiveServiceImpl implements LiveService {
         Topic topicInfo = liveMybatisDao.getRandomTopicByTag(map);
         if(topicInfo == null){
             //topic王国取完了
-            cacheService.del("list:user@" + uid);
+            //cacheService.del("list:user@" + uid);
             topicInfo = liveMybatisDao.getRandomDropaRoundAlgorithm(map);
         }
         //随机获取一条王国,兼容老式不明逻辑。
