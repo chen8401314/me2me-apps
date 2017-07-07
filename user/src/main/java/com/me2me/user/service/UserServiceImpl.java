@@ -773,12 +773,14 @@ public class UserServiceImpl implements UserService {
             userNoticeElement.setToUid(userNotice.getToUid());
             userNoticeElement.setReview(userNotice.getReview());
             userNoticeElement.setV_lv(fromUser.getvLv());
+            userNoticeElement.setLevel(fromUser.getLevel());
             if (fromUser.getLevel() != null){
                 userNoticeElement.setLevel(fromUser.getLevel());
             }
 
             toUser = userProfileMap.get(String.valueOf(userNotice.getToUid()));
             userNoticeElement.setTo_v_lv(toUser.getvLv());
+            userNoticeElement.setLevel(toUser.getLevel());
             userNoticeElement.setToNickName(toUser.getNickName());
             userNoticeElement.setCid(userNotice.getCid());
             if(userNotice.getNoticeType() == Specification.UserNoticeType.LIVE_TAG.index

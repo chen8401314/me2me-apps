@@ -2,6 +2,7 @@ package com.me2me.content.dto;
 
 import com.google.common.collect.Lists;
 import com.me2me.common.web.BaseEntity;
+
 import lombok.Data;
 
 import java.util.List;
@@ -87,7 +88,12 @@ public class BillBoardDetailsDto implements BaseEntity {
         private String introduced;
         
         private String tags;
-        private int price;
+        private Integer price;
+        private double priceRMB;
+    	
+    	private Integer showRMBBrand;
+    	
+    	private Integer showPriceBrand;
     }
 
 

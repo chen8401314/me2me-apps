@@ -4716,6 +4716,8 @@ private void localJpush(long toUid){
 	    	return Response.failure(ResponseStatus.DATA_DOES_NOT_EXIST.status, ResponseStatus.DATA_DOES_NOT_EXIST.message);
 	    }
 	    
+	    double minPrice =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_PRICE_BRAND_MIN"));
+	    
 	    // 加载榜单基本信息
         billBoardDetailsDto.setSummary(billBoard.getSummary());
         billBoardDetailsDto.setTitle(billBoard.getName());
@@ -4906,6 +4908,9 @@ private void localJpush(long toUid){
                         	bangDanInnerData.setTags("");
                         }
                         bangDanInnerData.setPrice((Integer)topic.get("price"));
+                        bangDanInnerData.setPriceRMB(exchangeKingdomPrice(bangDanInnerData.getPrice()));
+                        bangDanInnerData.setShowPriceBrand(bangDanInnerData.getPrice()!=null && bangDanInnerData.getPrice()>=minPrice?1:0);
+                        bangDanInnerData.setShowRMBBrand(0);// 显示吊牌不显示RMB吊牌。
                     }else if(type==2){//人
                         bangDanInnerData.setUid(targetId);
                         userProfile = userMap.get(String.valueOf(targetId));
@@ -5179,6 +5184,8 @@ private void localJpush(long toUid){
     private void buildAutoBillBoardSimple(BangDanDto.BangDanData bangDanData, long bid, int mode, long currentUid, int type, int pageSize){
     	List<BillBoardListDTO> result = this.getAutoBillBoardList(mode, -1, pageSize);
     	
+    	double minPrice =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_PRICE_BRAND_MIN"));
+    	
     	if(null != result && result.size() > 0){
     		List<Long> topicIdList = new ArrayList<Long>();
     		List<Long> uidList = new ArrayList<Long>();
@@ -5351,6 +5358,9 @@ private void localJpush(long toUid){
                     	bangDanInnerData.setTags("");
                     }
                     bangDanInnerData.setPrice((Integer)topic.get("price"));
+                    bangDanInnerData.setPriceRMB(exchangeKingdomPrice(bangDanInnerData.getPrice()));
+                    bangDanInnerData.setShowPriceBrand(bangDanInnerData.getPrice()!=null && bangDanInnerData.getPrice()>=minPrice?1:0);
+                    bangDanInnerData.setShowRMBBrand(0);// 显示吊牌不显示RMB吊牌。
                 }else if(type==2){// 人
                 	bangDanInnerData.setSubListId(bid);
                     bangDanInnerData.setUid(bbl.getTargetId());
@@ -5388,6 +5398,8 @@ private void localJpush(long toUid){
      */
     private void buildAutoBillBoardDetails(BillBoardDetailsDto billBoardDetailsDto, int mode, long sinceId, long currentUid, int type){
     	List<BillBoardListDTO> result = this.getAutoBillBoardList(mode, sinceId, 20);
+    	
+    	double minPrice =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_PRICE_BRAND_MIN"));
     	
     	if(null != result && result.size() > 0){
     		List<Long> topicIdList = new ArrayList<Long>();
@@ -5537,6 +5549,9 @@ private void localJpush(long toUid){
                     	continue;
                     }
                     bangDanInnerData.setPrice((Integer)topic.get("price"));
+                    bangDanInnerData.setPriceRMB(exchangeKingdomPrice(bangDanInnerData.getPrice()));
+                    bangDanInnerData.setShowPriceBrand(bangDanInnerData.getPrice()!=null && bangDanInnerData.getPrice()>=minPrice?1:0);
+                    bangDanInnerData.setShowRMBBrand(0);// 显示吊牌不显示RMB吊牌。
                     bangDanInnerData.setId(topicContent.getId());
                     bangDanInnerData.setCid(topicContent.getId());
                     bangDanInnerData.setTopicId(bbl.getTargetId());
