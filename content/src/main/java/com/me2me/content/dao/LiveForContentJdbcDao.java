@@ -619,7 +619,7 @@ public class LiveForContentJdbcDao {
     	StringBuilder sb = new StringBuilder();
     	sb.append("select t.id from topic_tag_detail d,topic t");
     	sb.append(" where d.topic_id=t.id and d.status=0");
-    	sb.append(" and d.tag in (");
+    	sb.append(" and d.tag_id in (");
     	for(int i=0;i<tagIds.size();i++){
     		if(i>0){
     			sb.append(",");
@@ -682,7 +682,7 @@ public class LiveForContentJdbcDao {
     	sb.append("select t.id from topic_tag_detail d,topic t,topic_data td");
     	sb.append(" where d.topic_id=t.id and t.id=td.topic_id");
     	sb.append(" and d.status=0");
-    	sb.append(" and d.tag in (");
+    	sb.append(" and d.tag_id in (");
     	for(int i=0;i<tagIds.size();i++){
     		if(i>0){
     			sb.append(",");

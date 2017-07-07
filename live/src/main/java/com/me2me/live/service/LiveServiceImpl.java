@@ -5041,7 +5041,7 @@ public class LiveServiceImpl implements LiveService {
         Topic topicInfo = liveMybatisDao.getRandomTopicByTag(map);
         if(topicInfo == null){
             //topic王国取完了
-            cacheService.del("list:user@" + uid);
+            //cacheService.del("list:user@" + uid);
             topicInfo = liveMybatisDao.getRandomDropaRoundAlgorithm(map);
         }
         //随机获取一条王国,兼容老式不明逻辑。
@@ -7384,15 +7384,8 @@ public class LiveServiceImpl implements LiveService {
         topicNews.setContent(oldUser.getNickName()+"的《"+topic.getTitle()+"》以"+rmb+"元成功转让，欢迎新国王"+newUser.getNickName()+"闪亮登场");
         topicNews.setCreateTime(now);
         liveMybatisDao.addTopicNews(topicNews);
-        //5 上市王国信息恢复
-        topicListed.setPersonCount(0);
-        topicListed.setReviewCount(0);
-    	topicListed.setReadCount(0);
-    	topicListed.setPrice(0);
-    	topicListed.setPriceRmb(0.0);
-    	topicListed.setBuyUid(0l);
-    	topicListed.setStatus(0);
-    	liveMybatisDao.updateTopicListed(topicListed);
+        //5 上市王国信息删除
+    	liveMybatisDao.delTopicListed(topicListed.getTopicId());
     	try {
         	StringBuffer oldUserMessage=new StringBuffer();
         	oldUserMessage.append("您上市的王国《").append(topic.getTitle()).append("》已成交，快去确认收款吧。");
