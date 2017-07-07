@@ -1732,4 +1732,16 @@ public class LiveMybatisDao {
     	List<TopicListed> list = topicListedMapper.selectByExample(example);
         return list.size()>0;
     }
+	/**
+	 * 删除上市王国信息
+	 * @author chenxiang
+	 * @date 2017-07-3
+	 * @param 
+	 */
+	public int delTopicListed(Long topicId){
+		TopicListedExample example = new TopicListedExample();
+    	TopicListedExample.Criteria criteria = example.createCriteria();
+    	criteria.andTopicIdEqualTo(topicId);
+		return topicListedMapper.deleteByExample(example);
+	}
 }
