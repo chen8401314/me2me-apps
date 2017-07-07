@@ -1003,7 +1003,7 @@
 	 from content c LEFT JOIN topic t on c.forward_cid=t.id
 	 where c.status != 1 and c.rights=1
 	 <if test="type == 0">
-     and c.type in (0,3) and (t.type is null)
+     and c.type in (0,3)
      </if>
      <if test="type == 1">
      and c.type=3 and t.type=1000
