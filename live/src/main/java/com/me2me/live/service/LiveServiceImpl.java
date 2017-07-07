@@ -7594,7 +7594,7 @@ public class LiveServiceImpl implements LiveService {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
-		return Response.success();
+		return Response.success(200,"您已发送收购申请");
 	}
 
 	@Override
