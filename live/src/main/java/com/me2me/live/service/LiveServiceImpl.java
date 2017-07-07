@@ -7585,6 +7585,7 @@ public class LiveServiceImpl implements LiveService {
 		topicListed.setPriceRmb(exchangeKingdomPrice(topic.getPrice()));
 		topicListed.setStatus(1);
 		topicListed.setBuyUid(uid);
+		topicListed.setBuyTime(new Date());
 		liveMybatisDao.updateTopicListed(topicListed);
 		StringBuffer message = new StringBuffer();
 		message.append("您上市的王国《").append(topic.getTitle()).append("》正在被人收购中。");
