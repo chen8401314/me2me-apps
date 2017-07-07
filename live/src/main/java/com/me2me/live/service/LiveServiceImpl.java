@@ -5834,8 +5834,10 @@ public class LiveServiceImpl implements LiveService {
     }
 
     @Override
-    public void createTopicTag(TopicTag tag){
+    public Long createTopicTag(TopicTag tag){
         liveMybatisDao.insertTopicTag(tag);
+        
+        return tag.getId();
     }
 
     @Override
@@ -7583,6 +7585,7 @@ public class LiveServiceImpl implements LiveService {
 		topicListed.setPriceRmb(exchangeKingdomPrice(topic.getPrice()));
 		topicListed.setStatus(1);
 		topicListed.setBuyUid(uid);
+		topicListed.setBuyTime(new Date());
 		liveMybatisDao.updateTopicListed(topicListed);
 		StringBuffer message = new StringBuffer();
 		message.append("您上市的王国《").append(topic.getTitle()).append("》正在被人收购中。");
@@ -7591,7 +7594,7 @@ public class LiveServiceImpl implements LiveService {
 		} catch (Exception e) {
 			log.error(e.getMessage());
 		}
-		return Response.success();
+		return Response.success(200,"您已发送收购申请");
 	}
 
 	@Override
