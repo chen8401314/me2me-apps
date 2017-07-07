@@ -3566,7 +3566,7 @@ private void localJpush(long toUid){
 				
 				
 				//List<Integer> topicIds = this.topicTagMapper.getTopicIdsByTag(label);
-				Map<String,Integer> totalPrice = topicTagMapper.getTagPriceAndKingdomCount(label);
+				Map<String,Object> totalPrice = topicTagMapper.getTagPriceAndKingdomCount(label);
 				
 				if(topicList!=null && topicList.size()>0){
 					List<BasicKingdomInfo> kingdoms =this.kingdomBuider.buildKingdoms(topicList, uid);
@@ -3576,13 +3576,13 @@ private void localJpush(long toUid){
 				int tagPrice = 0;
 				int kingdomCount = 0;
 				if(totalPrice.containsKey("tagPersons")){
-					tagPersons=totalPrice.get("tagPersons");
+					tagPersons=((Number)totalPrice.get("tagPersons")).intValue();
 				}
 				if(totalPrice.containsKey("tagPrice")){
-					tagPrice=totalPrice.get("tagPrice");
+					tagPrice=((Number)totalPrice.get("tagPrice")).intValue();
 				}
 				if(totalPrice.containsKey("kingdomCount")){
-					kingdomCount=totalPrice.get("kingdomCount");
+					kingdomCount=((Number)totalPrice.get("kingdomCount")).intValue();
 				}
 				
 				element.setKingdomCount(kingdomCount);
@@ -6195,16 +6195,16 @@ private void localJpush(long toUid){
 		dto.setKingdomList(kingdoms);
 		
 		if(page==1){
-			Map<String,Integer> totalPrice = topicTagMapper.getTagPriceAndKingdomCount(tagName);
+			Map<String,Object> totalPrice = topicTagMapper.getTagPriceAndKingdomCount(tagName);
 			
 			int tagPersons=0;
 			//int tagPrice=(Integer)totalPrice.get("tagPrice");
 			int kingdomCount =0;
 			if(totalPrice.containsKey("tagPersons")){
-				tagPersons=totalPrice.get("tagPersons");
+				tagPersons=((Number)totalPrice.get("tagPersons")).intValue();
 			}
 			if(totalPrice.containsKey("kingdomCount")){
-				kingdomCount = totalPrice.get("kingdomCount");
+				kingdomCount =((Number)totalPrice.get("kingdomCount")).intValue();
 			}
 			
 			dto.setKingdomCount(kingdomCount);
