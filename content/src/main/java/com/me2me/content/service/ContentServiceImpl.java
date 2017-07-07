@@ -3572,12 +3572,18 @@ private void localJpush(long toUid){
 					List<BasicKingdomInfo> kingdoms =this.kingdomBuider.buildKingdoms(topicList, uid);
 					element.setKingdomList(kingdoms);
 				}
-				int tagPersons=((Number)totalPrice.get("tagPersons")).intValue();
+				int tagPersons=0;
 				int tagPrice = 0;
+				int kingdomCount = 0;
+				if(totalPrice.containsKey("tagPersons")){
+					tagPersons=((Number)totalPrice.get("tagPersons")).intValue();
+				}
 				if(totalPrice.containsKey("tagPrice")){
 					tagPrice=((Number)totalPrice.get("tagPrice")).intValue();
 				}
-				int kingdomCount = ((Number)totalPrice.get("kingdomCount")).intValue();
+				if(totalPrice.containsKey("kingdomCount")){
+					kingdomCount=((Number)totalPrice.get("kingdomCount")).intValue();
+				}
 				
 				element.setKingdomCount(kingdomCount);
 				element.setPersonCount(tagPersons);

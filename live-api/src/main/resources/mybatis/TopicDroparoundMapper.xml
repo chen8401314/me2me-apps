@@ -257,7 +257,7 @@
 
   <select id="getRandomDropaRound" resultMap="BaseResultMap" parameterType="java.util.Map">
     SELECT m.* FROM topic t,
-    (SELECT* FROM topic_droparound
+    (SELECT * FROM topic_droparound
     <if test="set != ''">
     where topicId not in (${set})
     </if>
