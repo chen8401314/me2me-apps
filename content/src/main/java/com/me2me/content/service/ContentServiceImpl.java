@@ -3112,6 +3112,9 @@ private void localJpush(long toUid){
             }
 
             contentMybatisDao.createHighQualityContent(highQualityContent);
+            // todo 放入 cache
+            cacheService.rPush("HOT_TOP_KEY",highQualityContent.getId().toString());
+            cacheService.expire("HOT_TOP_KEY",5*60);
             return Response.success(ResponseStatus.HIGH_QUALITY_CONTENT_SUCCESS.status,ResponseStatus.HIGH_QUALITY_CONTENT_SUCCESS.message);
         }else{
             // 取消置热

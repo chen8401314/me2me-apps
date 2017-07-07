@@ -999,18 +999,18 @@
 	 (select c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, 
 	 c.forward_title, c.forward_url, c.content_type, c.thumbnail, c.hot_value, 
 	 c.like_count, c.review_count,c.person_count,c.favorite_count, c.read_count, 
-	 c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights
+	 c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights,c.update_time
 	 from content c LEFT JOIN topic t on c.forward_cid=t.id
 	 where c.status != 1 and c.rights=1
 	 <if test="type == 0">
-     and c.type in (0,3) and (t.type is null or t.type!=1000)
+     and c.type in (0,3) and (t.type is null)
      </if>
      <if test="type == 1">
      and c.type=3 and t.type=1000
      </if>
 	 ) m,high_quality_content h 
 	 where m.id = h.cid and h.id &lt; #{sinceId}
-	 order by h.id desc limit #{pageSize}
+	 order by m.update_time desc limit #{pageSize}
   	</select>
 
   <select id="getAttention" parameterType="java.util.Map" resultMap="ResultMapWithBLOBs">
