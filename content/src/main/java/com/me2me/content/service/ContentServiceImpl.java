@@ -3511,8 +3511,10 @@ private void localJpush(long toUid){
 		}
 
 		List<String> redisIds = cacheService.lrange("HOT_TOP_KEY",0,-1);
+		Collections.reverse(redisIds);
         String ids = null;
         List<Content2Dto> topList = Lists.newArrayList();
+
         if(!ObjectUtils.isEmpty(redisIds)) {
             topList = contentMybatisDao.getHotContentByRedis(redisIds);
         }
