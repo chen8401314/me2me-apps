@@ -2,6 +2,9 @@ package com.me2me.mgmt.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.me2me.cache.service.CacheService;
+import com.me2me.mgmt.dao.LocalJdbcDao;
+import com.me2me.user.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,12 +18,24 @@ import com.me2me.content.service.ContentService;
 import com.me2me.mgmt.request.KeywordPageRequest;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 
+import java.util.List;
+import java.util.Map;
+
 @Controller
 @RequestMapping("/ugc")
 public class UgcController {
 	
 	@Autowired
     private ContentService contentService;
+
+	@Autowired
+	private CacheService cacheService;
+
+	@Autowired
+	private UserService userService;
+
+	@Autowired
+	private LocalJdbcDao localJdbcDao;
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value="/query")
@@ -61,7 +76,13 @@ public class UgcController {
 	public ModelAndView optionTop(HttpServletRequest req){
 		int action = Integer.valueOf(req.getParameter("a"));
     	long ugcId = Long.valueOf(req.getParameter("i"));
-    	
+		// todo 放入 cache
+		String sql = "select id from high_quality_content where cid = " + ugcId;
+		List<Map<String,Object>> list = localJdbcDao.queryEvery(sql);
+		cacheService.lPush("HOT_TOP_KEY",list.get(0).get("id").toString());
+		String topExpired = userService.getAppConfigByKey("TOP_EXPIRED");
+		int topExpiredTime = Integer.parseInt(topExpired);
+		cacheService.expire("HOT_TOP_KEY",topExpiredTime);
     	ContentDto contentDto = new ContentDto();
     	contentDto.setAction(1);//设置/取消置顶
     	contentDto.setId(ugcId);
