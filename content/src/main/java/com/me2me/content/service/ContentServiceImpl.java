@@ -3115,7 +3115,7 @@ private void localJpush(long toUid){
 
             contentMybatisDao.createHighQualityContent(highQualityContent);
             // todo 放入 cache
-            cacheService.rPush("HOT_TOP_KEY",highQualityContent.getId().toString());
+            cacheService.lPush("HOT_TOP_KEY",highQualityContent.getId().toString());
             String topExpired = userService.getAppConfigByKey("TOP_EXPIRED");
             int topExpiredTime = Integer.parseInt(topExpired,10);
             cacheService.expire("HOT_TOP_KEY",topExpiredTime);
