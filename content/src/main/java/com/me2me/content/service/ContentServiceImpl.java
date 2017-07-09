@@ -3623,21 +3623,21 @@ private void localJpush(long toUid){
 				}
 			}
 		}
-		/*
-		if(null != ceKingdomList && ceKingdomList.size() > 0){
-			for(Content2Dto c : ceKingdomList){
-				if(!uidList.contains(c.getUid())){
-					uidList.add(c.getUid());
-				}
-				if(!topicIdList.contains(c.getForwardCid())){
-					topicIdList.add(c.getForwardCid());
-				}
-				if(!ceTopicIdList.contains(c.getForwardCid())){
-					ceTopicIdList.add(c.getForwardCid());
-				}
-			}
-		}
-		*/
+		
+//		if(null != ceKingdomList && ceKingdomList.size() > 0){
+//			for(Content2Dto c : ceKingdomList){
+//				if(!uidList.contains(c.getUid())){
+//					uidList.add(c.getUid());
+//				}
+//				if(!topicIdList.contains(c.getForwardCid())){
+//					topicIdList.add(c.getForwardCid());
+//				}
+//				if(!ceTopicIdList.contains(c.getForwardCid())){
+//					ceTopicIdList.add(c.getForwardCid());
+//				}
+//			}
+//		}
+		
 		if(null != contentList && contentList.size() > 0){
 			for(Content2Dto c : contentList){
 				if(!uidList.contains(c.getUid())){
@@ -3716,7 +3716,7 @@ private void localJpush(long toUid){
         		liveFavouriteMap.put(((Long)lf.get("topic_id")).toString(), "1");
         	}
         }
-        /*/一次性查询聚合王国的子王国数
+        //一次性查询聚合王国的子王国数
         Map<String, Long> acCountMap = new HashMap<String, Long>();
         if(ceTopicIdList.size() > 0){
         	List<Map<String,Object>> acCountList = liveForContentJdbcDao.getTopicAggregationAcCountByTopicIds(ceTopicIdList);
@@ -3726,7 +3726,7 @@ private void localJpush(long toUid){
         		}
         	}
         }
-        */
+        
         //一次性查询王国的最后一条更新记录
         Map<String, Map<String,Object>> lastFragmentMap = new HashMap<String, Map<String,Object>>();
         List<Map<String,Object>> lastFragmentList = liveForContentJdbcDao.getLastFragmentByTopicIds(topicIdList);
