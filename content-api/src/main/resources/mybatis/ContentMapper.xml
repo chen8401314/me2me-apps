@@ -994,7 +994,7 @@
     order by h.id desc limit 10
   </select>
   
-   <select id="getHotContentByType" resultMap="ResultMapWithBLOBs2" parameterType="java.lang.String">
+   <select id="getHotContentByType" resultMap="ResultMapWithBLOBs2" parameterType="com.me2me.content.dto.HotQueryDto">
 	 select m.*,h.id as hid FROM
 	 (select c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, 
 	 c.forward_title, c.forward_url, c.content_type, c.thumbnail, c.hot_value, 
@@ -1002,19 +1002,22 @@
 	 c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights,c.update_time
 	 from content c LEFT JOIN topic t on c.forward_cid=t.id
 	 where c.status != 1 and c.rights=1
-	 <if test="type == 0">
+	 <if test="hq.type == 0">
      and c.type in (0,3)
      </if>
-     <if test="type == 1">
+     <if test="hq.type == 1">
      and c.type=3 and t.type=1000
      </if>
 	 ) m,high_quality_content h 
 	 where m.id = h.cid
-     <if test="ids!=null and ids != ''">
-       and h.id not in (#{ids})
+     <if test="hq.ids!=null and hq.ids.size() > 0">
+       and h.id not in
+       <foreach item="id" collection="hq.ids"  open="(" separator="," close=")">
+         #{id}
+       </foreach>
      </if>
-     and h.id &lt; #{sinceId}
-	 order by m.update_time desc limit #{pageSize}
+     and h.id &lt; #{hq.sinceId}
+	 order by m.update_time desc limit #{hq.pageSize}
   	</select>
 
   <select id="getHotContentByRedis" resultMap="ResultMapWithBLOBs2" parameterType="java.util.List">

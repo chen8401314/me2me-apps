@@ -3512,15 +3512,27 @@ private void localJpush(long toUid){
 
 		List<String> redisIds = cacheService.lrange("HOT_TOP_KEY",0,-1);
 
-        String ids = null;
+        //String ids = null;
         List<Content2Dto> topList = Lists.newArrayList();
 
         if(!ObjectUtils.isEmpty(redisIds)) {
             topList = contentMybatisDao.getHotContentByRedis(redisIds);
         }
         Collections.reverse(topList);
-		List<Content2Dto> contentList = contentMybatisDao.getHotContentByType(sinceId, 0, 20,ids);//只要UGC+PGC+个人王国
-		this.buildHotListDTO(uid, result, activityList, userFamousList, ceKingdomList, contentList,topList);
+        redisIds.add("1208");
+        redisIds.add("1288");
+        List<Content2Dto> contentList = contentMybatisDao.getHotContentByType(sinceId, 0, 20,redisIds);//只要UGC+PGC+个人王国
+	/*	for (int i = 0 ; i < contentList.size() ; i ++ ){
+		    for (Content2Dto tList : topList){
+                if(contentList.get(i).getHid() == tList.getHid() ){
+                    contentList.remove(i);
+                }
+            }
+
+
+        }*/
+
+        this.buildHotListDTO(uid, result, activityList, userFamousList, ceKingdomList, contentList,topList);
 		// 查上市价格, 获取30个上市王国
 		List<Map<String,Object>> listingKingdoms= liveForContentJdbcDao.getListingKingdoms(1, 30);
 		if(listingKingdoms.size()>0){
@@ -4145,7 +4157,7 @@ private void localJpush(long toUid){
 			sinceId = Long.MAX_VALUE;
 		}
 		ShowHotCeKingdomListDTO result = new ShowHotCeKingdomListDTO();
-		List<Content2Dto> ceKingdomList = contentMybatisDao.getHotContentByType(sinceId, 1, 10,"");
+		List<Content2Dto> ceKingdomList = contentMybatisDao.getHotContentByType(sinceId, 1, 10,null);
 		//开始组装返回对象
 		if(null != ceKingdomList && ceKingdomList.size() > 0){
 			List<Long> uidList = new ArrayList<Long>();
