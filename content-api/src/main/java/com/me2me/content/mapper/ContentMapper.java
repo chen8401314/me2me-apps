@@ -177,8 +177,12 @@ public interface ContentMapper {
      * @param type   0 ugc+个人王国   1 聚合王国
      * @return
      */
-    List<Content2Dto> getHotContentByType(@Param("sinceId") long sinceId, @Param("type") int type, @Param("pageSize") int pageSize);
-    
+    List<Content2Dto> getHotContentByType(@Param("sinceId") long sinceId, @Param("type") int type, @Param("pageSize") int pageSize,@Param("ids") String ids);
+
+
+    List<Content2Dto> getHotContentByRedis(@Param("ids") List<String> ids);
+
+
     List<Content> loadMyPublishUgcData(Map map);
 
     List<Content> loadMyPublishLiveData(Map map);

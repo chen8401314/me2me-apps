@@ -12,6 +12,7 @@ import redis.clients.jedis.*;
 
 import javax.annotation.PostConstruct;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -225,6 +226,16 @@ public class CacheServiceImpl implements CacheService {
             @Override
             public void action(Jedis jedis) {
                 jedis.hmset(key,stringMap);
+            }
+        });
+    }
+
+    @Override
+    public List<String> lrange(final String key, final int start, int end) {
+        return jedisTemplate.execute(new JedisTemplate.JedisActionResult() {
+            @Override
+            public <T> T actionResult(Jedis jedis) {
+                return (T) jedis.lrange(key,start,end);
             }
         });
     }

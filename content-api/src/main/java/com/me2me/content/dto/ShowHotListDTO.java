@@ -18,6 +18,8 @@ public class ShowHotListDTO implements BaseEntity {
 	private List<HotCeKingdomElement> hottestCeKingdomData = Lists.newArrayList();
 	
 	private List<HotContentElement> hottestContentData = Lists.newArrayList();
+
+	private List<HotContentElement> tops = Lists.newArrayList();
 	
 	private List<BasicKingdomInfo> listingKingdoms=Lists.newArrayList(); 
 	
@@ -161,10 +163,10 @@ public class ShowHotListDTO implements BaseEntity {
 		private String tags;
 		private int price;
 		private double priceRMB;
-		
 		private Integer showRMBBrand;
-		
 		private Integer showPriceBrand;
 		
 	}
+
+
 }

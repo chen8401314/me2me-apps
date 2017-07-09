@@ -1,5 +1,6 @@
 package com.me2me.cache.service;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -105,5 +106,14 @@ public interface CacheService {
     Map<String,String> hGetAll(String key);
 
     void hSetAll(String key,Map<String,String> stringMap);
+
+    /**
+     * lrange操作
+     * @param key
+     * @param start
+     * @param end
+     * @return
+     */
+    List<String> lrange(final String key, final int start, int end);
 
 }
