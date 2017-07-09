@@ -579,7 +579,7 @@ public class ContentMybatisDao {
     /**
      * 
      * @param sinceId
-     * @param type  0 ugc+个人王国    1 聚合王国
+     * @param type  0 所有内容    1 聚合王国
      * @param pageSize
      * @return
      */
