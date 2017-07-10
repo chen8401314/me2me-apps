@@ -1111,7 +1111,7 @@ public class LiveLocalJdbcDao {
     	if(!StringUtils.isEmpty(title)){
     		sb.append(" and t.title like '%").append(title).append("%'");	
     	}
-    	sb.append(" order by tl.buy_time desc limit ").append(start).append(",").append(pageSize);
+    	sb.append(" order by tl.create_time desc limit ").append(start).append(",").append(pageSize);
     	String sql = sb.toString();
 		return jdbcTemplate.queryForList(sql);
     }
