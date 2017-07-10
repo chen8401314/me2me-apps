@@ -9,7 +9,6 @@ public class CacheConstant {
 	public static final String ACTIVITY_CORECIRCLE_SPECIAL_TOPIC_LIST_KEY = "ACTIVITY_CORECIRCLE_SPECIAL_TOPIC_LIST";
 	/** 活动王国开关 */
 	public static final String ACTIVITY_SPECIAL_TOPIC_HANDLE_KEY = "ACTIVITY_SPECIAL_TOPIC_HANDLE";
-	
 	/** 特殊王国相关配置前缀 */
 	public static final String SPECIAL_TOPIC_KEY_PRE = "SPECIAL_TOPIC_";
 	
