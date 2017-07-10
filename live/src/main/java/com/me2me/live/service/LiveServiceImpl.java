@@ -7082,6 +7082,12 @@ public class LiveServiceImpl implements LiveService {
         dto.setTitle(topic.getTitle());
         dto.setTopicPrice(topic.getPrice());
         dto.setTopicRMB(exchangeKingdomPrice(topic.getPrice()));
+        // 王国转让客服联系ID
+        String sellUidStr = userService.getAppConfigByKey("SELL_UID");
+        if (StringUtils.isEmpty(sellUidStr)) {
+            return Response.failure(500,"王国转让客服联系ID配置错误！");
+        }
+        dto.setSellUid(Long.parseLong(sellUidStr));
         TopicListed topicListed = liveMybatisDao.getTopicListedByTopicId(topicId);
         if(topicListed!=null){
         	 dto.setIsSell(2);
@@ -7101,12 +7107,6 @@ public class LiveServiceImpl implements LiveService {
             dto.setDistanceListed(listedPrice - topic.getPrice());
         }
         }
-        // 王国转让客服联系ID
-        String sellUidStr = userService.getAppConfigByKey("SELL_UID");
-        if (StringUtils.isEmpty(sellUidStr)) {
-            return Response.failure(500,"王国转让客服联系ID配置错误！");
-        }
-        dto.setSellUid(Long.parseLong(sellUidStr));
         List<TopicPriceHis> topicPriceChangedList = liveMybatisDao.getLastTenDaysTopicPrice(topicId);
         for (int i = topicPriceChangedList.size(); i > 0; i--) {
             TopicPriceHis topicPriceHis = topicPriceChangedList.get(i - 1);
