@@ -7399,7 +7399,7 @@ public class LiveServiceImpl implements LiveService {
         return "0";
     }
     @Override
-	public Response listTopic(long topicId){
+	public Response listTopic(long topicId,long uid){
     	Topic topic = liveMybatisDao.getTopicById(topicId);
     	if(topic==null){
     		return Response.failure(500, "找不到该王国！") ;
@@ -7407,6 +7407,9 @@ public class LiveServiceImpl implements LiveService {
     	UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
     	if(userProfile==null){
     		return Response.failure(500, "找不到国王！") ;
+    	}
+    	if(uid!=topic.getUid()){
+    		return Response.failure(500, "您不是国王！") ;
     	}
     	  // 米汤上市界限
         String listedPriceStr = userService.getAppConfigByKey(Constant.LISTING_PRICE_KEY);
