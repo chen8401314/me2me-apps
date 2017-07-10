@@ -7556,7 +7556,7 @@ public class LiveServiceImpl implements LiveService {
 		}
 		TopicListed topicListed = liveMybatisDao.getTopicListedByTopicId(topicId);
 		if (topicListed == null) {
-			return Response.failure(500, "找不到该王国上市记录！");
+			return Response.failure(500, "该王国还未挂牌上市，不可收购！");
 		}
 		if (liveMybatisDao.isBuyTopic(uid)) {
 			return Response.failure(500, "不能重复收购！");
