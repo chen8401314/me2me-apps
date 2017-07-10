@@ -1011,7 +1011,7 @@
 	 ) m,high_quality_content h 
 	 where m.id = h.cid
      <if test="hq.ids!=null and hq.ids.size() > 0">
-       and h.id not in asd
+       and h.id not in 
        <foreach item="id" collection="hq.ids"  open="(" separator="," close=")">
          #{id}
        </foreach>
