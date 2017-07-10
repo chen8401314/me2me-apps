@@ -3511,15 +3511,26 @@ private void localJpush(long toUid){
 		}
 
 		List<String> redisIds = cacheService.lrange("HOT_TOP_KEY",0,-1);
-		Collections.reverse(redisIds);
-        String ids = null;
-        List<Content2Dto> topList = Lists.newArrayList();
 
+        //String ids = null;
+        List<Content2Dto> topList = Lists.newArrayList();
         if(!ObjectUtils.isEmpty(redisIds)) {
             topList = contentMybatisDao.getHotContentByRedis(redisIds);
         }
-		List<Content2Dto> contentList = contentMybatisDao.getHotContentByType(sinceId, 0, 20,ids);//只要UGC+PGC+个人王国
-		this.buildHotListDTO(uid, result, activityList, userFamousList, ceKingdomList, contentList,topList);
+        Collections.reverse(topList);
+
+        List<Content2Dto> contentList = contentMybatisDao.getHotContentByType(sinceId, 0, 20,redisIds);//只要UGC+PGC+个人王国
+	/*	for (int i = 0 ; i < contentList.size() ; i ++ ){
+		    for (Content2Dto tList : topList){
+                if(contentList.get(i).getHid() == tList.getHid() ){
+                    contentList.remove(i);
+                }
+            }
+
+
+        }*/
+
+        this.buildHotListDTO(uid, result, activityList, userFamousList, ceKingdomList, contentList,topList);
 		// 查上市价格, 获取30个上市王国
 		List<Map<String,Object>> listingKingdoms= liveForContentJdbcDao.getListingKingdoms(1, 30);
 		if(listingKingdoms.size()>0){
@@ -3642,21 +3653,21 @@ private void localJpush(long toUid){
 				}
 			}
 		}
-		/*
-		if(null != ceKingdomList && ceKingdomList.size() > 0){
-			for(Content2Dto c : ceKingdomList){
-				if(!uidList.contains(c.getUid())){
-					uidList.add(c.getUid());
-				}
-				if(!topicIdList.contains(c.getForwardCid())){
-					topicIdList.add(c.getForwardCid());
-				}
-				if(!ceTopicIdList.contains(c.getForwardCid())){
-					ceTopicIdList.add(c.getForwardCid());
-				}
-			}
-		}
-		*/
+		
+//		if(null != ceKingdomList && ceKingdomList.size() > 0){
+//			for(Content2Dto c : ceKingdomList){
+//				if(!uidList.contains(c.getUid())){
+//					uidList.add(c.getUid());
+//				}
+//				if(!topicIdList.contains(c.getForwardCid())){
+//					topicIdList.add(c.getForwardCid());
+//				}
+//				if(!ceTopicIdList.contains(c.getForwardCid())){
+//					ceTopicIdList.add(c.getForwardCid());
+//				}
+//			}
+//		}
+		
 		if(null != contentList && contentList.size() > 0){
 			for(Content2Dto c : contentList){
 				if(!uidList.contains(c.getUid())){
@@ -3735,7 +3746,7 @@ private void localJpush(long toUid){
         		liveFavouriteMap.put(((Long)lf.get("topic_id")).toString(), "1");
         	}
         }
-        /*/一次性查询聚合王国的子王国数
+        //一次性查询聚合王国的子王国数
         Map<String, Long> acCountMap = new HashMap<String, Long>();
         if(ceTopicIdList.size() > 0){
         	List<Map<String,Object>> acCountList = liveForContentJdbcDao.getTopicAggregationAcCountByTopicIds(ceTopicIdList);
@@ -3745,7 +3756,7 @@ private void localJpush(long toUid){
         		}
         	}
         }
-        */
+        
         //一次性查询王国的最后一条更新记录
         Map<String, Map<String,Object>> lastFragmentMap = new HashMap<String, Map<String,Object>>();
         List<Map<String,Object>> lastFragmentList = liveForContentJdbcDao.getLastFragmentByTopicIds(topicIdList);
@@ -4144,7 +4155,7 @@ private void localJpush(long toUid){
 			sinceId = Long.MAX_VALUE;
 		}
 		ShowHotCeKingdomListDTO result = new ShowHotCeKingdomListDTO();
-		List<Content2Dto> ceKingdomList = contentMybatisDao.getHotContentByType(sinceId, 1, 10,"");
+		List<Content2Dto> ceKingdomList = contentMybatisDao.getHotContentByType(sinceId, 1, 10,null);
 		//开始组装返回对象
 		if(null != ceKingdomList && ceKingdomList.size() > 0){
 			List<Long> uidList = new ArrayList<Long>();
