@@ -3511,7 +3511,6 @@ private void localJpush(long toUid){
 		}
 
 		List<String> redisIds = cacheService.lrange("HOT_TOP_KEY",0,-1);
-
         //String ids = null;
         List<Content2Dto> topList = Lists.newArrayList();
         if(!ObjectUtils.isEmpty(redisIds)) {
@@ -3850,6 +3849,7 @@ private void localJpush(long toUid){
 				famousUserElement = new ShowHotListDTO.HotFamousUserElement();
 				famousUserElement.setUid(uf.getUid());
 				userProfile = userProfileMap.get(uf.getUid().toString());
+
 				if(null != userProfile){
 					famousUserElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
 					famousUserElement.setNickName(userProfile.getNickName());
@@ -3997,7 +3997,9 @@ private void localJpush(long toUid){
 				contentElement.setCid(c.getId());
 				contentElement.setId(c.getId());
 				contentElement.setTitle(c.getTitle());
-				contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + c.getConverImage());
+				if(c.getConverImage()!=null && c.getConverImage().length()>0) {
+                    contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + c.getConverImage());
+                }
 				contentElement.setContent(c.getContent());
 				contentElement.setReadCount(c.getReadCountDummy());
 				contentElement.setLikeCount(c.getLikeCount());
@@ -4066,6 +4068,9 @@ private void localJpush(long toUid){
                 contentElement.setSinceId(c.getHid());
                 contentElement.setUid(c.getUid());
                 userProfile = userProfileMap.get(c.getUid().toString());
+                if (userProfile == null){
+                    userProfile = userService.getUserProfileByUid(c.getUid());
+                }
                 if(null != userProfile){
                     contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                     contentElement.setNickName(userProfile.getNickName());
@@ -4088,7 +4093,9 @@ private void localJpush(long toUid){
                 contentElement.setCid(c.getId());
                 contentElement.setId(c.getId());
                 contentElement.setTitle(c.getTitle());
-                contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + c.getConverImage());
+                if(!StringUtils.isEmpty(c.getConverImage())){
+                    contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + c.getConverImage());
+                }
                 contentElement.setContent(c.getContent());
                 contentElement.setReadCount(c.getReadCountDummy());
                 contentElement.setLikeCount(c.getLikeCount());
