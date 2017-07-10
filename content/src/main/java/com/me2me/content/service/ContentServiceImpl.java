@@ -4071,6 +4071,7 @@ private void localJpush(long toUid){
                 if (userProfile == null){
                     userProfile = userService.getUserProfileByUid(c.getUid());
                 }
+
                 if(null != userProfile){
                     contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                     contentElement.setNickName(userProfile.getNickName());
