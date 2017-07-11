@@ -1016,7 +1016,7 @@
          #{id}
        </foreach>
      </if>
-     and m.update_time &lt; #{hq.sinceId}
+     and UNIX_TIMESTAMP(m.update_time)*1000 &lt; #{hq.sinceId}
 	 order by m.update_time desc limit #{hq.pageSize}
   	</select>
 
