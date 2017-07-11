@@ -779,6 +779,7 @@ public class KingdomPriceTask {
 		private int readCountDummyInApp = 0;//APP内虚拟阅读数
 		private int readCountDummyOutApp = 0;//APP外虚拟阅读数
 		private long uid;//国王UID
+		private long updateCount = 0;
 	}
 	
 	public void executeFull(String dateStr) throws Exception{
@@ -905,6 +906,7 @@ public class KingdomPriceTask {
 			topicDayCountSql = new StringBuilder();
 			topicDayCountSql.append("select f.topic_id,");
 			topicDayCountSql.append("count(DISTINCT if(f.type in (0,3,11,12,13,15,52,55), DATE_FORMAT(f.create_time,'%Y%m%d'), NULL)) as updateDayCount,");
+			topicDayCountSql.append("count(if(f.type in (0,3,11,12,13,15,52,55), TRUE, NULL)) as updateCount,");
 			topicDayCountSql.append("count(DISTINCT if(f.type not in (0,3,11,12,13,15,52,55), DATE_FORMAT(f.create_time,'%Y%m%d'), NULL)) as reviewDayCount,");
 			topicDayCountSql.append("MAX(if(f.type in (0,3,11,12,13,15,52,55),f.create_time, NULL)) as lastUpdateTime");
 			topicDayCountSql.append(" from topic_fragment f where f.status=1");
@@ -937,6 +939,9 @@ public class KingdomPriceTask {
 					kc.setUpdateFrequency((double)kc.getUpdateDayCount()/(double)dayCount);
 					long noUpdateDayCount = DateUtil.getDaysBetween2Date(kc.getLastUpdateTime(), yesterday);
 					kc.setNoUpdateDayCount((int)noUpdateDayCount);
+					if(null != c.get("updateCount")){
+						kc.setUpdateCount((Long)c.get("updateCount"));
+					}
 				}
 			}
 			
@@ -981,7 +986,8 @@ public class KingdomPriceTask {
 					int readCountDummy = (Integer)r.get("read_count_dummy");
 					int dayNum = (int)DateUtil.getDaysBetween2Date(kc.getCreateTime(), yesterday)+1;
 					int totalDayNum = (int)DateUtil.getDaysBetween2Date(kc.getCreateTime(), now);
-					kc.setReadCountInApp(readCount*dayNum/totalDayNum);
+					int readCountInApp = readCount*dayNum/totalDayNum - (int)kc.getUpdateCount()*4/5;
+					kc.setReadCountInApp(readCountInApp);
 					kc.setReadCountDummyInApp(readCountDummy*dayNum/totalDayNum);
 				}
 			}
