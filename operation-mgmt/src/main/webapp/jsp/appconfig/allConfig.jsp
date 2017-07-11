@@ -159,7 +159,7 @@ var refreshCache = function(){
 								  <div class="tab-content">
 								  	<c:forEach var="group" items="${configMap}" varStatus="stu">
 								  	
-								    <div role="tabpanel" class="tab-pane active" id="tab_${stu.index}">
+								    <div role="tabpanel" class="tab-pane ${stu.index==0?'active':''}" id="tab_${stu.index}">
 										<div class="adv-table">
 											<table class="display table table-bordered table-striped" id="dynamic-table">
 												<thead>
