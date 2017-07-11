@@ -76,17 +76,22 @@ public class UgcController {
 	public ModelAndView optionTop(HttpServletRequest req){
 		int action = Integer.valueOf(req.getParameter("a"));
     	long ugcId = Long.valueOf(req.getParameter("i"));
-		// todo 放入 cache
-		String sql = "select id from high_quality_content where cid = " + ugcId;
-		List<Map<String,Object>> list = localJdbcDao.queryEvery(sql);
-		cacheService.lPush("HOT_TOP_KEY",list.get(0).get("id").toString());
-		String topExpired = userService.getAppConfigByKey("TOP_EXPIRED");
-		int topExpiredTime = Integer.parseInt(topExpired);
-		cacheService.expire("HOT_TOP_KEY",topExpiredTime);
+
     	ContentDto contentDto = new ContentDto();
     	contentDto.setAction(1);//设置/取消置顶
     	contentDto.setId(ugcId);
     	contentDto.setIsTop(action);
+
+    	if(action==1){
+			// 置顶操作
+			String sql = "select id from high_quality_content where cid = " + ugcId;
+			List<Map<String,Object>> list = localJdbcDao.queryEvery(sql);
+			cacheService.lPush("HOT_TOP_KEY",list.get(0).get("id").toString());
+			String topExpired = userService.getAppConfigByKey("TOP_EXPIRED");
+			int topExpiredTime = Integer.parseInt(topExpired);
+			cacheService.expire("HOT_TOP_KEY",topExpiredTime);
+		}
+
     	contentService.modifyPGC(contentDto);
 		
 		ModelAndView view = new ModelAndView("redirect:/ugc/query");
