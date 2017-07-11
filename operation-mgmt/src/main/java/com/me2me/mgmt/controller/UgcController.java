@@ -86,7 +86,7 @@ public class UgcController {
 			// 置顶操作
 			String sql = "select id from high_quality_content where cid = " + ugcId;
 			List<Map<String,Object>> list = localJdbcDao.queryEvery(sql);
-			cacheService.lPush("HOT_TOP_KEY",list.get(0).get("id").toString());
+			cacheService.lPush("HOT_TOP_KEY",list.get(0).get("id").toString()+"@"+System.currentTimeMillis());
 			String topExpired = userService.getAppConfigByKey("TOP_EXPIRED");
 			int topExpiredTime = Integer.parseInt(topExpired);
 			cacheService.expire("HOT_TOP_KEY",topExpiredTime);

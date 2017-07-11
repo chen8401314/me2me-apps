@@ -14,4 +14,8 @@ public class Content2Dto extends Content {
 
     private long hid;
 
+
+    // 操作时间排序使用
+    private Long operationTime;
+
 }
