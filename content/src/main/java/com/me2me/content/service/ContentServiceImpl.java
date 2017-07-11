@@ -3530,25 +3530,12 @@ public class ContentServiceImpl implements ContentService {
         }
         List<Content2Dto> contentList = contentMybatisDao.getHotContentByType(sinceId, 0, 20,ids);//只要UGC+PGC+个人王国
 
-
+        for(Content2Dto content2Dto : topList){
+            content2Dto.setOperationTime(map.get(content2Dto.getHid()+""));
+        }
         this.buildHotListDTO(uid, result, activityList, userFamousList, ceKingdomList, contentList,topList);
 
         // 排序topList
-        for(Content2Dto content2Dto : topList){
-            content2Dto.setOperationTime(map.get(content2Dto.getHid()));
-        }
-        Collections.sort(topList, new Comparator<Content2Dto>() {
-            @Override
-            public int compare(Content2Dto o1, Content2Dto o2) {
-                if(o1.getOperationTime()>o2.getOperationTime())
-                    return 1;
-                else if(o1.getOperationTime() == o2.getOperationTime())
-                    return 0;
-                else
-                    return -1;
-
-            }
-        });
 
 
         // 查上市价格, 获取30个上市王国
@@ -3575,6 +3562,11 @@ public class ContentServiceImpl implements ContentService {
             }
         }
         result.setHotTagKingdomList(buildHotTagKingdoms(uid));
+
+        for(ShowHotListDTO.HotContentElement element : result.getTops()){
+            element.setOperationTime(map.get(element.getHid()+""));
+        }
+        Collections.sort(result.getTops());
         return Response.success(result);
     }
 
@@ -4087,6 +4079,8 @@ public class ContentServiceImpl implements ContentService {
             for(Content2Dto c : topList){
                 contentElement = new ShowHotListDTO.HotContentElement();
                 contentElement.setSinceId(c.getHid());
+                contentElement.setHid(c.getHid());
+                contentElement.setOperationTime(c.getOperationTime());
                 contentElement.setUid(c.getUid());
                 userProfile = userProfileMap.get(c.getUid().toString());
                 if (userProfile == null){

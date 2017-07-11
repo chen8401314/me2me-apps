@@ -1,5 +1,6 @@
 package com.me2me.content.dto;
 
+import java.util.Comparator;
 import java.util.List;
 
 import lombok.Data;
@@ -125,7 +126,9 @@ public class ShowHotListDTO implements BaseEntity {
 	}
 	
 	@Data
-	public static class HotContentElement implements BaseEntity{
+	public static class HotContentElement implements BaseEntity,Comparable<HotContentElement>{
+
+
 		private static final long serialVersionUID = 7753880748064545469L;
 		
 		private long sinceId;
@@ -165,6 +168,23 @@ public class ShowHotListDTO implements BaseEntity {
 		private double priceRMB;
 		private Integer showRMBBrand;
 		private Integer showPriceBrand;
+
+
+		// 和前端无关的两个字段
+		private Long hid;
+		private Long operationTime;
+
+
+
+		@Override
+		public int compareTo(HotContentElement o) {
+			if(o.getOperationTime()>HotContentElement.this.getOperationTime())
+				return 1;
+			else if(o.getOperationTime() == HotContentElement.this.getOperationTime())
+				return 0;
+			else
+				return -1;
+		}
 		
 	}
 
