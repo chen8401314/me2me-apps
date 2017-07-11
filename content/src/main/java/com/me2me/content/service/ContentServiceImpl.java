@@ -3516,7 +3516,7 @@ private void localJpush(long toUid){
         if(!ObjectUtils.isEmpty(redisIds)) {
             topList = contentMybatisDao.getHotContentByRedis(redisIds);
         }
-        Collections.reverse(topList);
+       // Collections.reverse(topList);
 
         List<Content2Dto> contentList = contentMybatisDao.getHotContentByType(sinceId, 0, 20,redisIds);//只要UGC+PGC+个人王国
 	/*	for (int i = 0 ; i < contentList.size() ; i ++ ){
