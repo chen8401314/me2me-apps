@@ -122,14 +122,19 @@ public class UserRecInitTask {
 	
 	private void commonInit(String limitDate){
 		StringBuilder searchSql = new StringBuilder();
-		searchSql.append("select u.uid,(select sum(r.coin) as coin from rule_log r");
-		searchSql.append(" where r.uid=u.uid and r.create_time>='").append(limitDate);
-		searchSql.append(" 00:00:00') as coin1,(select sum(s.stealed_coins) as coin");
-		searchSql.append(" from user_steal_log s where s.uid=u.uid");
-		searchSql.append(" and s.create_time>='").append(limitDate);
-		searchSql.append(" 00:00:00') as coin2 from user_profile u");
-		searchSql.append(" where u.uid in (select DISTINCT h.uid from topic_read_his h where h.create_time>'");
-		searchSql.append(limitDate).append(" 00:00:00') order by (coin1+coin2) desc");
+		searchSql.append("select m.uid,sum(m.coin) as totalCoin FROM (");
+		searchSql.append("select u1.uid,sum(r.coin) as coin from user_profile u1,rule_log r");
+		searchSql.append(" where u1.uid=r.uid and r.create_time>='").append(limitDate);
+		searchSql.append(" 00:00:00' and u1.uid in (select DISTINCT h1.uid from topic_read_his h1 where h1.create_time>'");
+		searchSql.append(limitDate).append(" 00:00:00')");
+		searchSql.append(" group by u1.uid");
+		searchSql.append(" UNION ALL ");
+		searchSql.append("select u2.uid,sum(s.stealed_coins) as coin from user_profile u2,user_steal_log s");
+		searchSql.append(" where u2.uid=s.uid and s.create_time>='").append(limitDate);
+		searchSql.append(" 00:00:00' and u2.uid in (select DISTINCT h2.uid from topic_read_his h2 where h2.create_time>'");
+		searchSql.append(limitDate).append(" 00:00:00')");
+		searchSql.append(" group by u2.uid");
+		searchSql.append(") m group by m.uid order by totalCoin desc");
 		searchSql.append(" limit ").append(LIMIT_NUM);
 		
 		this.genAndSave(searchSql.toString(), Specification.UserRecInitType.COMMON.type);
@@ -138,40 +143,55 @@ public class UserRecInitTask {
 	private void sexInit(String limitDate){
 		logger.info("2-1 性别-男");
 		StringBuilder searchSql = new StringBuilder();
-		searchSql.append("select u.uid,(select sum(r.coin) as coin from rule_log r");
-		searchSql.append(" where r.uid=u.uid and r.create_time>='").append(limitDate);
-		searchSql.append(" 00:00:00') as coin1,(select sum(s.stealed_coins) as coin");
-		searchSql.append(" from user_steal_log s where s.uid=u.uid");
-		searchSql.append(" and s.create_time>='").append(limitDate);
-		searchSql.append(" 00:00:00') as coin2 from user_profile u");
-		searchSql.append(" where u.gender=1 and u.uid in (select DISTINCT h.uid from topic_read_his h where h.create_time>'");
-		searchSql.append(limitDate).append(" 00:00:00') order by (coin1+coin2) desc");
+		searchSql.append("select m.uid,sum(m.coin) as totalCoin FROM (");
+		searchSql.append("select u1.uid,sum(r.coin) as coin from user_profile u1,rule_log r");
+		searchSql.append(" where u1.uid=r.uid and r.create_time>='").append(limitDate);
+		searchSql.append(" 00:00:00' and u1.uid in (select DISTINCT h1.uid from topic_read_his h1 where h1.create_time>'");
+		searchSql.append(limitDate).append(" 00:00:00') and u1.gender=1");
+		searchSql.append(" group by u1.uid");
+		searchSql.append(" UNION ALL ");
+		searchSql.append("select u2.uid,sum(s.stealed_coins) as coin from user_profile u2,user_steal_log s");
+		searchSql.append(" where u2.uid=s.uid and s.create_time>='").append(limitDate);
+		searchSql.append(" 00:00:00' and u2.uid in (select DISTINCT h2.uid from topic_read_his h2 where h2.create_time>'");
+		searchSql.append(limitDate).append(" 00:00:00') and u2.gender=1");
+		searchSql.append(" group by u2.uid");
+		searchSql.append(") m group by m.uid order by totalCoin desc");
 		searchSql.append(" limit ").append(LIMIT_NUM);
 		this.genAndSave(searchSql.toString(), Specification.UserRecInitType.SEX_MALE.type);
 		logger.info("2-2 性别-女");
 		searchSql = new StringBuilder();
-		searchSql.append("select u.uid,(select sum(r.coin) as coin from rule_log r");
-		searchSql.append(" where r.uid=u.uid and r.create_time>='").append(limitDate);
-		searchSql.append(" 00:00:00') as coin1,(select sum(s.stealed_coins) as coin");
-		searchSql.append(" from user_steal_log s where s.uid=u.uid");
-		searchSql.append(" and s.create_time>='").append(limitDate);
-		searchSql.append(" 00:00:00') as coin2 from user_profile u");
-		searchSql.append(" where u.gender!=1 and u.uid in (select DISTINCT h.uid from topic_read_his h where h.create_time>'");
-		searchSql.append(limitDate).append(" 00:00:00') order by (coin1+coin2) desc");
+		searchSql.append("select m.uid,sum(m.coin) as totalCoin FROM (");
+		searchSql.append("select u1.uid,sum(r.coin) as coin from user_profile u1,rule_log r");
+		searchSql.append(" where u1.uid=r.uid and r.create_time>='").append(limitDate);
+		searchSql.append(" 00:00:00' and u1.uid in (select DISTINCT h1.uid from topic_read_his h1 where h1.create_time>'");
+		searchSql.append(limitDate).append(" 00:00:00') and u1.gender=0");
+		searchSql.append(" group by u1.uid");
+		searchSql.append(" UNION ALL ");
+		searchSql.append("select u2.uid,sum(s.stealed_coins) as coin from user_profile u2,user_steal_log s");
+		searchSql.append(" where u2.uid=s.uid and s.create_time>='").append(limitDate);
+		searchSql.append(" 00:00:00' and u2.uid in (select DISTINCT h2.uid from topic_read_his h2 where h2.create_time>'");
+		searchSql.append(limitDate).append(" 00:00:00') and u2.gender=0");
+		searchSql.append(" group by u2.uid");
+		searchSql.append(") m group by m.uid order by totalCoin desc");
 		searchSql.append(" limit ").append(LIMIT_NUM);
 		this.genAndSave(searchSql.toString(), Specification.UserRecInitType.SEX_FEMALE.type);
 	}
 	
 	private void ageInit(String limitDate){
 		StringBuilder searchSql = new StringBuilder();
-		searchSql.append("select u.uid,(select sum(r.coin) as coin from rule_log r");
-		searchSql.append(" where r.uid=u.uid and r.create_time>='").append(limitDate);
-		searchSql.append(" 00:00:00') as coin1,(select sum(s.stealed_coins) as coin");
-		searchSql.append(" from user_steal_log s where s.uid=u.uid");
-		searchSql.append(" and s.create_time>='").append(limitDate);
-		searchSql.append(" 00:00:00') as coin2 from user_profile u");
-		searchSql.append(" where u.age_group=#{ageGroup}# and u.uid in (select DISTINCT h.uid from topic_read_his h where h.create_time>'");
-		searchSql.append(limitDate).append(" 00:00:00') order by (coin1+coin2) desc");
+		searchSql.append("select m.uid,sum(m.coin) as totalCoin FROM (");
+		searchSql.append("select u1.uid,sum(r.coin) as coin from user_profile u1,rule_log r");
+		searchSql.append(" where u1.uid=r.uid and r.create_time>='").append(limitDate);
+		searchSql.append(" 00:00:00' and u1.uid in (select DISTINCT h1.uid from topic_read_his h1 where h1.create_time>'");
+		searchSql.append(limitDate).append(" 00:00:00') and u1.age_group=#{ageGroup}#");
+		searchSql.append(" group by u1.uid");
+		searchSql.append(" UNION ALL ");
+		searchSql.append("select u2.uid,sum(s.stealed_coins) as coin from user_profile u2,user_steal_log s");
+		searchSql.append(" where u2.uid=s.uid and s.create_time>='").append(limitDate);
+		searchSql.append(" 00:00:00' and u2.uid in (select DISTINCT h2.uid from topic_read_his h2 where h2.create_time>'");
+		searchSql.append(limitDate).append(" 00:00:00') and u2.age_group=#{ageGroup}#");
+		searchSql.append(" group by u2.uid");
+		searchSql.append(") m group by m.uid order by totalCoin desc");
 		searchSql.append(" limit ").append(LIMIT_NUM);
 
 		logger.info("3-1 年龄段-00后");
@@ -196,14 +216,19 @@ public class UserRecInitTask {
 	
 	private void hobbyInit(String limitDate){
 		StringBuilder searchSql = new StringBuilder();
-		searchSql.append("select u.uid,(select sum(r.coin) as coin from rule_log r");
-		searchSql.append(" where r.uid=u.uid and r.create_time>='").append(limitDate);
-		searchSql.append(" 00:00:00') as coin1,(select sum(s.stealed_coins) as coin");
-		searchSql.append(" from user_steal_log s where s.uid=u.uid");
-		searchSql.append(" and s.create_time>='").append(limitDate);
-		searchSql.append(" 00:00:00') as coin2 from user_profile u,user_hobby h");
-		searchSql.append(" where u.uid=h.uid and h.hobby=#{hobbtId}# and u.uid in (select DISTINCT h.uid from topic_read_his h where h.create_time>'");
-		searchSql.append(limitDate).append(" 00:00:00') order by (coin1+coin2) desc");
+		searchSql.append("select m.uid,sum(m.coin) as totalCoin FROM (");
+		searchSql.append("select u1.uid,sum(r.coin) as coin from user_profile u1,rule_log r");
+		searchSql.append(" where u1.uid=r.uid and r.create_time>='").append(limitDate);
+		searchSql.append(" 00:00:00' and u1.uid in (select DISTINCT h1.uid from topic_read_his h1 where h1.create_time>'");
+		searchSql.append(limitDate).append(" 00:00:00') and EXISTS (select 1 from user_hobby h1 where h1.uid=u1.uid and h1.hobby=#{hobbtId}#)");
+		searchSql.append(" group by u1.uid");
+		searchSql.append(" UNION ALL ");
+		searchSql.append("select u2.uid,sum(s.stealed_coins) as coin from user_profile u2,user_steal_log s");
+		searchSql.append(" where u2.uid=s.uid and s.create_time>='").append(limitDate);
+		searchSql.append(" 00:00:00' and u2.uid in (select DISTINCT h2.uid from topic_read_his h2 where h2.create_time>'");
+		searchSql.append(limitDate).append(" 00:00:00') and EXISTS (select 1 from user_hobby h2 where h2.uid=u2.uid and h2.hobby=#{hobbtId}#)");
+		searchSql.append(" group by u2.uid");
+		searchSql.append(") m group by m.uid order by totalCoin desc");
 		searchSql.append(" limit ").append(LIMIT_NUM);
 		
 		logger.info("4-1 爱好-旅行");
@@ -285,14 +310,19 @@ public class UserRecInitTask {
 	
 	private void mbtiInit(String limitDate){
 		StringBuilder searchSql = new StringBuilder();
-		searchSql.append("select u.uid,(select sum(r.coin) as coin from rule_log r");
-		searchSql.append(" where r.uid=u.uid and r.create_time>='").append(limitDate);
-		searchSql.append(" 00:00:00') as coin1,(select sum(s.stealed_coins) as coin");
-		searchSql.append(" from user_steal_log s where s.uid=u.uid");
-		searchSql.append(" and s.create_time>='").append(limitDate);
-		searchSql.append(" 00:00:00') as coin2 from user_profile u");
-		searchSql.append(" where u.mbti='#{mbtiCode}#' and u.uid in (select DISTINCT h.uid from topic_read_his h where h.create_time>'");
-		searchSql.append(limitDate).append(" 00:00:00') order by (coin1+coin2) desc");
+		searchSql.append("select m.uid,sum(m.coin) as totalCoin FROM (");
+		searchSql.append("select u1.uid,sum(r.coin) as coin from user_profile u1,rule_log r");
+		searchSql.append(" where u1.uid=r.uid and r.create_time>='").append(limitDate);
+		searchSql.append(" 00:00:00' and u1.uid in (select DISTINCT h1.uid from topic_read_his h1 where h1.create_time>'");
+		searchSql.append(limitDate).append(" 00:00:00') and u1.mbti='#{mbtiCode}#'");
+		searchSql.append(" group by u1.uid");
+		searchSql.append(" UNION ALL ");
+		searchSql.append("select u2.uid,sum(s.stealed_coins) as coin from user_profile u2,user_steal_log s");
+		searchSql.append(" where u2.uid=s.uid and s.create_time>='").append(limitDate);
+		searchSql.append(" 00:00:00' and u2.uid in (select DISTINCT h2.uid from topic_read_his h2 where h2.create_time>'");
+		searchSql.append(limitDate).append(" 00:00:00') and u2.mbti='#{mbtiCode}#'");
+		searchSql.append(" group by u2.uid");
+		searchSql.append(") m group by m.uid order by totalCoin desc");
 		searchSql.append(" limit ").append(LIMIT_NUM);
 
 		logger.info("5-1 MBTI_INTJ");
@@ -301,9 +331,9 @@ public class UserRecInitTask {
 		logger.info("5-2 MBTI_ENTJ");
 		sql = searchSql.toString().replace("#{mbtiCode}#", "ENTJ");
 		this.genAndSave(sql, Specification.UserRecInitType.MBTI_ENTJ.type);
-		logger.info("5-3 MBTI_ENTJ");
-		sql = searchSql.toString().replace("#{mbtiCode}#", "ENTJ");
-		this.genAndSave(sql, Specification.UserRecInitType.MBTI_ENTJ.type);
+		logger.info("5-3 MBTI_ENFJ");
+		sql = searchSql.toString().replace("#{mbtiCode}#", "ENFJ");
+		this.genAndSave(sql, Specification.UserRecInitType.MBTI_ENFJ.type);
 		logger.info("5-4 MBTI_ENTP");
 		sql = searchSql.toString().replace("#{mbtiCode}#", "ENTP");
 		this.genAndSave(sql, Specification.UserRecInitType.MBTI_ENTP.type);
@@ -347,17 +377,25 @@ public class UserRecInitTask {
 	
 	private void emotionInit(String limitDate){
 		StringBuilder searchSql = new StringBuilder();
-		searchSql.append("select u.uid,(select sum(r.coin) as coin from rule_log r");
-		searchSql.append(" where r.uid=u.uid and r.create_time>='").append(limitDate);
-		searchSql.append(" 00:00:00') as coin1,(select sum(s.stealed_coins) as coin");
-		searchSql.append(" from user_steal_log s where s.uid=u.uid");
-		searchSql.append(" and s.create_time>='").append(limitDate);
-		searchSql.append(" 00:00:00') as coin2 from user_profile u,");
-		searchSql.append("(select r.uid,max(r.id) as rid from emotion_record r group by r.uid) m,");
-		searchSql.append("emotion_record r2,emotion_info i where u.uid=m.uid and m.rid=r2.id");
-		searchSql.append(" and r2.emotionId=i.id and i.emotionName='#{eName}#'");
-		searchSql.append(" and u.uid in (select DISTINCT h.uid from topic_read_his h where h.create_time>'");
-		searchSql.append(limitDate).append(" 00:00:00') order by (coin1+coin2) desc");
+		searchSql.append("select m.uid,sum(m.coin) as totalCoin FROM (");
+		searchSql.append("select u1.uid,sum(r.coin) as coin from user_profile u1,rule_log r");
+		searchSql.append(" where u1.uid=r.uid and r.create_time>='").append(limitDate);
+		searchSql.append(" 00:00:00' and u1.uid in (select DISTINCT h1.uid from topic_read_his h1 where h1.create_time>'");
+		searchSql.append(limitDate).append(" 00:00:00')");
+		searchSql.append(" and u1.uid in (select x1.uid from");
+		searchSql.append(" (select r1.uid,max(r1.id) as rid from emotion_record r1 group by r1.uid) x1,emotion_record r2,emotion_info i");
+		searchSql.append(" where x1.rid=r2.id and r2.emotionId=i.id and i.emotionName='#{eName}#')");
+		searchSql.append(" group by u1.uid");
+		searchSql.append(" UNION ALL ");
+		searchSql.append("select u2.uid,sum(s.stealed_coins) as coin from user_profile u2,user_steal_log s");
+		searchSql.append(" where u2.uid=s.uid and s.create_time>='").append(limitDate);
+		searchSql.append(" 00:00:00' and u2.uid in (select DISTINCT h2.uid from topic_read_his h2 where h2.create_time>'");
+		searchSql.append(limitDate).append(" 00:00:00')");
+		searchSql.append(" and u2.uid in (select x2.uid from");
+		searchSql.append(" (select r1.uid,max(r1.id) as rid from emotion_record r1 group by r1.uid) x2,emotion_record r2,emotion_info i");
+		searchSql.append(" where x2.rid=r2.id and r2.emotionId=i.id and i.emotionName='#{eName}#')");
+		searchSql.append(" group by u2.uid");
+		searchSql.append(") m group by m.uid order by totalCoin desc");
 		searchSql.append(" limit ").append(LIMIT_NUM);
 		
 		int i=1;
@@ -376,14 +414,19 @@ public class UserRecInitTask {
 	
 	private void careerInit(String limitDate){
 		StringBuilder searchSql = new StringBuilder();
-		searchSql.append("select u.uid,(select sum(r.coin) as coin from rule_log r");
-		searchSql.append(" where r.uid=u.uid and r.create_time>='").append(limitDate);
-		searchSql.append(" 00:00:00') as coin1,(select sum(s.stealed_coins) as coin");
-		searchSql.append(" from user_steal_log s where s.uid=u.uid");
-		searchSql.append(" and s.create_time>='").append(limitDate);
-		searchSql.append(" 00:00:00') as coin2 from user_profile u");
-		searchSql.append(" where u.occupation='#{career}#' and u.uid in (select DISTINCT h.uid from topic_read_his h where h.create_time>'");
-		searchSql.append(limitDate).append(" 00:00:00') order by (coin1+coin2) desc");
+		searchSql.append("select m.uid,sum(m.coin) as totalCoin FROM (");
+		searchSql.append("select u1.uid,sum(r.coin) as coin from user_profile u1,rule_log r");
+		searchSql.append(" where u1.uid=r.uid and r.create_time>='").append(limitDate);
+		searchSql.append(" 00:00:00' and u1.uid in (select DISTINCT h1.uid from topic_read_his h1 where h1.create_time>'");
+		searchSql.append(limitDate).append(" 00:00:00') and u1.occupation='#{career}#'");
+		searchSql.append(" group by u1.uid");
+		searchSql.append(" UNION ALL ");
+		searchSql.append("select u2.uid,sum(s.stealed_coins) as coin from user_profile u2,user_steal_log s");
+		searchSql.append(" where u2.uid=s.uid and s.create_time>='").append(limitDate);
+		searchSql.append(" 00:00:00' and u2.uid in (select DISTINCT h2.uid from topic_read_his h2 where h2.create_time>'");
+		searchSql.append(limitDate).append(" 00:00:00') and u2.occupation='#{career}#'");
+		searchSql.append(" group by u2.uid");
+		searchSql.append(") m group by m.uid order by totalCoin desc");
 		searchSql.append(" limit ").append(LIMIT_NUM);
 		
 		logger.info("7-1 职业_作业党");
