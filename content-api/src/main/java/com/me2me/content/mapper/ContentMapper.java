@@ -1,11 +1,6 @@
 package com.me2me.content.mapper;
 
-import com.me2me.content.dto.Content2Dto;
-import com.me2me.content.dto.CountFragmentDto;
-import com.me2me.content.dto.IsFavoriteDto;
-import com.me2me.content.dto.KingTopicDto;
-import com.me2me.content.dto.MyPublishDto;
-import com.me2me.content.dto.ResultKingTopicDto;
+import com.me2me.content.dto.*;
 import com.me2me.content.model.Content;
 import com.me2me.content.model.ContentExample;
 
@@ -171,13 +166,8 @@ public interface ContentMapper {
      */
     List<Content2Dto> loadHottestContentByUpdateTime(@Param("sinceId") long sinceId, @Param("flag") int flag);
 
-    /**
-     * 
-     * @param sinceId
-     * @param type   0 ugc+个人王国   1 聚合王国
-     * @return
-     */
-    List<Content2Dto> getHotContentByType(@Param("sinceId") long sinceId, @Param("type") int type, @Param("pageSize") int pageSize,@Param("ids") String ids);
+
+    List<Content2Dto> getHotContentByType(@Param("hq") HotQueryDto hotQueryDto);
 
 
     List<Content2Dto> getHotContentByRedis(@Param("ids") List<String> ids);

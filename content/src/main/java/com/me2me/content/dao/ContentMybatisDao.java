@@ -580,12 +580,17 @@ public class ContentMybatisDao {
     /**
      * 
      * @param sinceId
-     * @param type  0 ugc+个人王国    1 聚合王国
+     * @param type  0 所有内容    1 聚合王国
      * @param pageSize
      * @return
      */
-    public List<Content2Dto> getHotContentByType(long sinceId, int type, int pageSize,String ids){
-    	return contentMapper.getHotContentByType(sinceId, type, pageSize,ids);
+    public List<Content2Dto> getHotContentByType(long sinceId, int type, int pageSize,List<String> ids){
+        HotQueryDto hotQueryDto = new HotQueryDto();
+        hotQueryDto.setType(type);
+        hotQueryDto.setSinceId(sinceId);
+        hotQueryDto.setPageSize(pageSize);
+        hotQueryDto.setIds(ids);
+    	return contentMapper.getHotContentByType(hotQueryDto);
     }
 
     public List<Content2Dto> getHotContentByRedis(List<String> ids){

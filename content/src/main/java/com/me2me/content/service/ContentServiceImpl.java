@@ -3511,15 +3511,25 @@ private void localJpush(long toUid){
 		}
 
 		List<String> redisIds = cacheService.lrange("HOT_TOP_KEY",0,-1);
-		Collections.reverse(redisIds);
-        String ids = null;
+        //String ids = null;
         List<Content2Dto> topList = Lists.newArrayList();
-
         if(!ObjectUtils.isEmpty(redisIds)) {
             topList = contentMybatisDao.getHotContentByRedis(redisIds);
         }
-		List<Content2Dto> contentList = contentMybatisDao.getHotContentByType(sinceId, 0, 20,ids);//只要UGC+PGC+个人王国
-		this.buildHotListDTO(uid, result, activityList, userFamousList, ceKingdomList, contentList,topList);
+        Collections.reverse(topList);
+
+        List<Content2Dto> contentList = contentMybatisDao.getHotContentByType(sinceId, 0, 20,redisIds);//只要UGC+PGC+个人王国
+	/*	for (int i = 0 ; i < contentList.size() ; i ++ ){
+		    for (Content2Dto tList : topList){
+                if(contentList.get(i).getHid() == tList.getHid() ){
+                    contentList.remove(i);
+                }
+            }
+
+
+        }*/
+
+        this.buildHotListDTO(uid, result, activityList, userFamousList, ceKingdomList, contentList,topList);
 		// 查上市价格, 获取30个上市王国
 		List<Map<String,Object>> listingKingdoms= liveForContentJdbcDao.getListingKingdoms(1, 30);
 		if(listingKingdoms.size()>0){
@@ -3642,21 +3652,21 @@ private void localJpush(long toUid){
 				}
 			}
 		}
-		/*
-		if(null != ceKingdomList && ceKingdomList.size() > 0){
-			for(Content2Dto c : ceKingdomList){
-				if(!uidList.contains(c.getUid())){
-					uidList.add(c.getUid());
-				}
-				if(!topicIdList.contains(c.getForwardCid())){
-					topicIdList.add(c.getForwardCid());
-				}
-				if(!ceTopicIdList.contains(c.getForwardCid())){
-					ceTopicIdList.add(c.getForwardCid());
-				}
-			}
-		}
-		*/
+		
+//		if(null != ceKingdomList && ceKingdomList.size() > 0){
+//			for(Content2Dto c : ceKingdomList){
+//				if(!uidList.contains(c.getUid())){
+//					uidList.add(c.getUid());
+//				}
+//				if(!topicIdList.contains(c.getForwardCid())){
+//					topicIdList.add(c.getForwardCid());
+//				}
+//				if(!ceTopicIdList.contains(c.getForwardCid())){
+//					ceTopicIdList.add(c.getForwardCid());
+//				}
+//			}
+//		}
+		
 		if(null != contentList && contentList.size() > 0){
 			for(Content2Dto c : contentList){
 				if(!uidList.contains(c.getUid())){
@@ -3735,7 +3745,7 @@ private void localJpush(long toUid){
         		liveFavouriteMap.put(((Long)lf.get("topic_id")).toString(), "1");
         	}
         }
-        /*/一次性查询聚合王国的子王国数
+        //一次性查询聚合王国的子王国数
         Map<String, Long> acCountMap = new HashMap<String, Long>();
         if(ceTopicIdList.size() > 0){
         	List<Map<String,Object>> acCountList = liveForContentJdbcDao.getTopicAggregationAcCountByTopicIds(ceTopicIdList);
@@ -3745,7 +3755,7 @@ private void localJpush(long toUid){
         		}
         	}
         }
-        */
+        
         //一次性查询王国的最后一条更新记录
         Map<String, Map<String,Object>> lastFragmentMap = new HashMap<String, Map<String,Object>>();
         List<Map<String,Object>> lastFragmentList = liveForContentJdbcDao.getLastFragmentByTopicIds(topicIdList);
@@ -3839,6 +3849,7 @@ private void localJpush(long toUid){
 				famousUserElement = new ShowHotListDTO.HotFamousUserElement();
 				famousUserElement.setUid(uf.getUid());
 				userProfile = userProfileMap.get(uf.getUid().toString());
+
 				if(null != userProfile){
 					famousUserElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
 					famousUserElement.setNickName(userProfile.getNickName());
@@ -3961,7 +3972,7 @@ private void localJpush(long toUid){
 			String lastFragmentImage = null;
 			for(Content2Dto c : contentList){
 				contentElement = new ShowHotListDTO.HotContentElement();
-				contentElement.setSinceId(c.getHid());
+				contentElement.setSinceId(c.getUpdateTime().getTime());
 				contentElement.setUid(c.getUid());
 				userProfile = userProfileMap.get(c.getUid().toString());
 				if(null != userProfile){
@@ -3986,7 +3997,9 @@ private void localJpush(long toUid){
 				contentElement.setCid(c.getId());
 				contentElement.setId(c.getId());
 				contentElement.setTitle(c.getTitle());
-				contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + c.getConverImage());
+				if(c.getConverImage()!=null && c.getConverImage().length()>0) {
+                    contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + c.getConverImage());
+                }
 				contentElement.setContent(c.getContent());
 				contentElement.setReadCount(c.getReadCountDummy());
 				contentElement.setLikeCount(c.getLikeCount());
@@ -4055,6 +4068,10 @@ private void localJpush(long toUid){
                 contentElement.setSinceId(c.getHid());
                 contentElement.setUid(c.getUid());
                 userProfile = userProfileMap.get(c.getUid().toString());
+                if (userProfile == null){
+                    userProfile = userService.getUserProfileByUid(c.getUid());
+                }
+
                 if(null != userProfile){
                     contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                     contentElement.setNickName(userProfile.getNickName());
@@ -4077,7 +4094,9 @@ private void localJpush(long toUid){
                 contentElement.setCid(c.getId());
                 contentElement.setId(c.getId());
                 contentElement.setTitle(c.getTitle());
-                contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + c.getConverImage());
+                if(!StringUtils.isEmpty(c.getConverImage())){
+                    contentElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + c.getConverImage());
+                }
                 contentElement.setContent(c.getContent());
                 contentElement.setReadCount(c.getReadCountDummy());
                 contentElement.setLikeCount(c.getLikeCount());
@@ -4144,7 +4163,7 @@ private void localJpush(long toUid){
 			sinceId = Long.MAX_VALUE;
 		}
 		ShowHotCeKingdomListDTO result = new ShowHotCeKingdomListDTO();
-		List<Content2Dto> ceKingdomList = contentMybatisDao.getHotContentByType(sinceId, 1, 10,"");
+		List<Content2Dto> ceKingdomList = contentMybatisDao.getHotContentByType(sinceId, 1, 10,null);
 		//开始组装返回对象
 		if(null != ceKingdomList && ceKingdomList.size() > 0){
 			List<Long> uidList = new ArrayList<Long>();

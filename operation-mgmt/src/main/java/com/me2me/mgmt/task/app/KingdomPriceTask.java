@@ -321,7 +321,9 @@ public class KingdomPriceTask {
 			readCountSql.append("SUM(if(t.in_app=1,t.read_count_dummy,NULL)) as readDummyInApp,");
 			readCountSql.append("SUM(if(t.in_app=0,t.read_count,NULL)) as readOutApp,");
 			readCountSql.append("SUM(if(t.in_app=0,t.read_count_dummy,NULL)) as readDummyOutApp");
-			readCountSql.append(" from topic_read_his t where t.create_time>='").append(startTime);
+			readCountSql.append(" from topic_read_his t,topic p where t.topic_id=p.id and p.uid!=t.uid");
+			readCountSql.append(" and not FIND_IN_SET(t.uid,SUBSTR(p.core_circle FROM 2 FOR LENGTH(p.core_circle)-2))");
+			readCountSql.append(" and t.create_time>='").append(startTime);
 			readCountSql.append("' and t.create_time<='").append(endTime);
 			readCountSql.append("' and t.topic_id in (");
 			for(int i=0;i<topicList.size();i++){

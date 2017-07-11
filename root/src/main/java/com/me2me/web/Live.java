@@ -932,7 +932,7 @@ public class Live extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/listTopic",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response listTopic(ListTopicRequest request){
-    	return liveService.listTopic(request.getTopicId());
+    	return liveService.listTopic(request.getTopicId(),request.getUid());
     }
     /**
      * 上市王国列表查询接口

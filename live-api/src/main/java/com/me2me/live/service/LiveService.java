@@ -585,7 +585,7 @@ public interface LiveService {
 	
 	public String changeTopicKing(TopicListed topicListed, long newUid);
 	
-	public Response listTopic(long topicId);
+	public Response listTopic(long topicId,long uid);
 	
     public Response listedTopicList(long sinceId);
     
