@@ -3972,7 +3972,7 @@ private void localJpush(long toUid){
 			String lastFragmentImage = null;
 			for(Content2Dto c : contentList){
 				contentElement = new ShowHotListDTO.HotContentElement();
-				contentElement.setSinceId(c.getHid());
+				contentElement.setSinceId(c.getUpdateTime().getTime());
 				contentElement.setUid(c.getUid());
 				userProfile = userProfileMap.get(c.getUid().toString());
 				if(null != userProfile){

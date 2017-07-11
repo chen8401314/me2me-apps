@@ -1016,7 +1016,7 @@
          #{id}
        </foreach>
      </if>
-     and h.id &lt; #{hq.sinceId}
+     and m.update_time &lt; #{hq.sinceId}
 	 order by m.update_time desc limit #{hq.pageSize}
   	</select>
 
