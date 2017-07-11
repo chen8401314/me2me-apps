@@ -242,13 +242,14 @@ public class ContentMybatisDao {
         }else{
             // UGC
             criteria.andTypeEqualTo(Specification.ArticleType.ORIGIN.index);
-//            ContentExample.Criteria criteria2 = example.createCriteria();
+
+            ContentExample.Criteria criteria2 = example.createCriteria();
             if(StringUtils.isNotBlank(editorContentDto.getKeyword())){
             	criteria.andTitleLike("%"+editorContentDto.getKeyword()+"%");
             }
-//            criteria2.andTypeEqualTo(Specification.ArticleType.LIVE.index);
+            criteria2.andTypeEqualTo(Specification.ArticleType.LIVE.index);
             criteria.andStatusNotEqualTo(1);
-//            example.or(criteria2);
+            example.or(criteria2);
         }
     }
 
@@ -790,7 +791,7 @@ public class ContentMybatisDao {
 	 * 按榜单ID删除detail.
 	 * @author zhangjiwei
 	 * @date Mar 21, 2017
-	 * @param id
+	 * @param bid
 	 */
 	public void deleteBillBoardDetailByBId(long bid) {
 		BillBoardDetailsExample example = new BillBoardDetailsExample();
