@@ -102,10 +102,7 @@ public class Home extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Long.MAX_VALUE);
         }
-        int vflag = 0;
-        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
-        	vflag = 1;
-        }
+        int vflag = 1;
         return contentService.Newest(request.getSinceId(),request.getUid(), vflag);
     }
 
