@@ -4010,7 +4010,7 @@ public class ContentServiceImpl implements ContentService {
                 }
                 contentElement.setType(c.getType());
                 contentElement.setCreateTime(c.getCreateTime().getTime());
-                contentElement.setUpdateTime(c.getCreateTime().getTime());
+                contentElement.setUpdateTime(c.getUpdateTime().getTime());
                 contentElement.setCid(c.getId());
                 contentElement.setId(c.getId());
                 contentElement.setTitle(c.getTitle());

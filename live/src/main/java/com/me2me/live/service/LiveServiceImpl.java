@@ -7602,4 +7602,5 @@ public class LiveServiceImpl implements LiveService {
 	public TopicListed getTopicListedByTopicId(long topicId){
 		return liveMybatisDao.getTopicListedByTopicId(topicId);
 	}
+
 }
