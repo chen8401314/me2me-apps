@@ -3631,7 +3631,8 @@ public class ContentServiceImpl implements ContentService {
                 element.setPersonCount(tagPersons);
                 element.setTagName(label);
                 double rmbPrice = exchangeKingdomPrice(tagPrice);
-                element.setShowRMBBrand(rmbPrice>=TAG_SHOW_PRICE_BRAND_MIN?1:0);
+                //element.setShowRMBBrand(rmbPrice>=TAG_SHOW_PRICE_BRAND_MIN?1:0); 首页不显示标签吊牌。
+                element.setShowRMBBrand(0);
                 element.setTagPrice(rmbPrice);
                 dataList.add(element);
             }
