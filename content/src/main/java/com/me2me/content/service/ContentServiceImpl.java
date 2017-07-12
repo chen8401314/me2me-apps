@@ -3522,7 +3522,7 @@ public class ContentServiceImpl implements ContentService {
             if(System.currentTimeMillis()-startTime<=expireTime) {
                 ids.add(splitId);
             }else {
-
+                cacheService.lrem("HOT_TOP_KEY",0,id);
 
             }
         }
