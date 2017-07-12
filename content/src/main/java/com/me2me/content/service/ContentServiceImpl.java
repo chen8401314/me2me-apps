@@ -3521,6 +3521,9 @@ public class ContentServiceImpl implements ContentService {
             map.put(splitId,startTime);
             if(System.currentTimeMillis()-startTime<=expireTime) {
                 ids.add(splitId);
+            }else {
+
+
             }
         }
         //String ids = null;
