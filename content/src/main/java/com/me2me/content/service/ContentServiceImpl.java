@@ -535,6 +535,7 @@ public class ContentServiceImpl implements ContentService {
         }
         content.setContentType(contentDto.getContentType());
         content.setRights(contentDto.getRights());
+        content.setUpdateId(cacheService.incr("UPDATE_ID"));
         //保存内容
         contentMybatisDao.createContent(content);
         //创建标签
