@@ -1999,6 +1999,7 @@ public class ContentServiceImpl implements ContentService {
         content.setType(contentDto.getType());
         content.setContentType(contentDto.getContentType());
         content.setStatus(Specification.ContentStatus.RECOVER.index);
+        content.setUpdateId(cacheService.incr("UPDATE_ID"));
         contentMybatisDao.createContent(content);
         log.info("content create success");
         //保存标签
