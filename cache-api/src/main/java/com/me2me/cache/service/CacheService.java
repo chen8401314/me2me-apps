@@ -116,4 +116,12 @@ public interface CacheService {
      */
     List<String> lrange(final String key, final int start, int end);
 
+    /**
+     * list移除操作
+     * @param key
+     * @param count
+     * @param value
+     */
+    void lrem(String key, long count, String value);
+
 }
