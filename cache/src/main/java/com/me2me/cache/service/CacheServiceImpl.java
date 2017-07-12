@@ -239,4 +239,14 @@ public class CacheServiceImpl implements CacheService {
             }
         });
     }
+
+    @Override
+    public void lrem(String key, long count, String value) {
+        jedisTemplate.execute(new JedisTemplate.JedisAction() {
+            @Override
+            public void action(Jedis jedis) {
+                jedis.lrem(key, count,value);
+            }
+        });
+    }
 }
