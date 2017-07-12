@@ -291,7 +291,7 @@ public class ContentMybatisDao {
         return contentImageMapper.countByExample(example);
     }
 
-    public List<Content> getNewest(int sinceId, int vFlag){
+    public List<Content> getNewest(long sinceId, int vFlag){
         return contentMapper.loadNewestContent(sinceId, vFlag);
     }
 

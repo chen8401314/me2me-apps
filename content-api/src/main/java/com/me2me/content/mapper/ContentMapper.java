@@ -142,7 +142,7 @@ public interface ContentMapper {
 
     List<Content> loadHottestTopsContent(@Param("flag") int flag);
 
-    List<Content> loadNewestContent(@Param("sinceId") int sinceId, @Param("flag") int flag);
+    List<Content> loadNewestContent(@Param("sinceId") long sinceId, @Param("flag") int flag);
 
     int countFragment(CountFragmentDto countFragmentDto);
 

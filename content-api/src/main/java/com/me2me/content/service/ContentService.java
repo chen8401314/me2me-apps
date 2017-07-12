@@ -131,7 +131,7 @@ public interface ContentService{
 
     Response getHottest(int sinceId,long uid);
 
-    Response Newest(int sinceId,long uid, int vFlag);
+    Response Newest(long sinceId,long uid, int vFlag);
 
     Response Attention(int sinceId,long uid, int vFlag);
 

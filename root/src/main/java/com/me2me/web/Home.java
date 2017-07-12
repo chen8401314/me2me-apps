@@ -100,7 +100,7 @@ public class Home extends BaseController {
     @ResponseBody
     public Response newest(NewestRequest request){
         if(request.getSinceId() == -1){
-            request.setSinceId(Integer.MAX_VALUE);
+            request.setSinceId(Long.MAX_VALUE);
         }
         int vflag = 0;
         if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){

@@ -2579,7 +2579,7 @@ public class ContentServiceImpl implements ContentService {
      * @return
      */
     @Override
-    public Response Newest(int sinceId, long uid, int vFlag) {
+    public Response Newest(long sinceId, long uid, int vFlag) {
         log.info("getNewest start ...");
         ShowNewestDto showNewestDto = new ShowNewestDto();
         List<Content> newestList = contentMybatisDao.getNewest(sinceId, vFlag);
@@ -2727,6 +2727,9 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setPersonCount(content.getPersonCount());
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
+            if(contentElement.getLastUpdateTime()==0){
+                contentElement.setLastUpdateTime(contentElement.getCreateTime().getTime());
+            }
             showNewestDto.getNewestData().add(contentElement);
         }
         return Response.success(showNewestDto);

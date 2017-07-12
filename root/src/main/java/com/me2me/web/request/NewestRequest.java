@@ -14,7 +14,7 @@ public class NewestRequest extends Request{
 
     @Getter
     @Setter
-    private int sinceId;
+    private long sinceId;
 
 
 }
