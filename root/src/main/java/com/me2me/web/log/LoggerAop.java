@@ -40,6 +40,7 @@ public class LoggerAop {
         HttpServletRequest request = servletRequestAttributes.getRequest();
         // 过滤一下接口
         if(request.getRequestURI().startsWith("/api/console")
+                ||request.getRequestURI().startsWith("/api/home/initSquareUpdateId")
                 || request.getRequestURI().startsWith("/api/mobile")
                 || request.getRequestURI().startsWith("/api/spread")){
             return;

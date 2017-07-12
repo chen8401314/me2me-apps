@@ -1003,6 +1003,7 @@ public class LiveServiceImpl implements LiveService {
                 		|| speakDto.getType() == 13 || speakDto.getType() == 15
                 		|| speakDto.getType() == 52 || speakDto.getType() == 55){
                 	liveLocalJdbcDao.updateContentUpdateTime4Kingdom(speakDto.getTopicId(), calendar.getTime());
+                	liveLocalJdbcDao.updateContentUpdateId4Kingdom(speakDto.getTopicId(),cacheService.incr("UPDATE_ID"));
                 }
                 
                 log.info("updateTopic updateTime");

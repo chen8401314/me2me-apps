@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
+import com.me2me.core.dao.BaseJdbcDao;
 import com.me2me.user.dto.*;
 import com.me2me.user.rule.Rules;
 import org.springframework.beans.BeanUtils;
@@ -2727,9 +2728,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setPersonCount(content.getPersonCount());
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
-            if(contentElement.getLastUpdateTime()==0){
-                contentElement.setLastUpdateTime(contentElement.getCreateTime().getTime());
-            }
+            contentElement.setLastUpdateTime(content.getUpdateId());
             showNewestDto.getNewestData().add(contentElement);
         }
         return Response.success(showNewestDto);
@@ -6453,5 +6452,16 @@ public class ContentServiceImpl implements ContentService {
         }
 
         return Response.success(dto);
+    }
+
+    @Override
+    public Response initSquareUpdateId() {
+        List<Map<String,Object>> list = billBoardJdbcDao.getAllContent();
+        for(Map map : list){
+            long id = Long.valueOf(map.get("id").toString());
+            long updateId = cacheService.incr("UPDATE_ID");
+            billBoardJdbcDao.setUpdateId(updateId,id);
+        }
+        return Response.success();
     }
 }

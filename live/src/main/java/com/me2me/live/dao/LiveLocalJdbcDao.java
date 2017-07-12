@@ -1186,4 +1186,9 @@ public class LiveLocalJdbcDao {
 		String sql = "update content set update_time=? where forward_cid=? and type=3";
 		jdbcTemplate.update(sql,time,topicId);
 	}
+
+	public void updateContentUpdateId4Kingdom(long topicId, long updateId){
+		String sql = "update content set update_id=? where forward_cid=? and type=3";
+		jdbcTemplate.update(sql,updateId,topicId);
+	}
 }

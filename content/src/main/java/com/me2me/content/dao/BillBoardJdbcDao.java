@@ -45,6 +45,14 @@ public class BillBoardJdbcDao extends BaseJdbcDao {
     }
 
 
+    public List<Map<String,Object>> getAllContent(){
+        String sql = "select * from content order by update_time";
+        List<Map<String,Object>> list = super.query(sql);
+        return list;
+    }
 
-
+    public void setUpdateId(long updateId,long id){
+        String updateSQL = "update content set update_id = ? where id = ?";
+        super.update(updateSQL,updateId,id);
+    }
 }

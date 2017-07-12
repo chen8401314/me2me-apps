@@ -124,4 +124,12 @@ public interface CacheService {
      */
     void lrem(String key, long count, String value);
 
+
+    /**
+     * 自增
+     * @param key
+     * @return
+     */
+    long incr(String key);
+
 }

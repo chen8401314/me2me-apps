@@ -193,4 +193,11 @@ public class Home extends BaseController {
         
         return contentService.getTagKingdomList(request.getTagName(),request.getOrder(),request.getPage(), request.getPageSize(),request.getUid());
     }
+
+
+    @RequestMapping(value = "/initSquareUpdateId")
+    @ResponseBody
+    public Response initSquareUpdateId(TagKingdomRequest request){
+        return contentService.initSquareUpdateId();
+    }
 }

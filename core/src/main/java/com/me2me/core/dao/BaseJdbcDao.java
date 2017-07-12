@@ -25,9 +25,14 @@ public class BaseJdbcDao {
         this.jdbcTemplate.execute(sql);
     }
 
+    public void update(String sql,Object ... params){
+        this.jdbcTemplate.update(sql,params);
+    }
+
     public int count(String sql, Object ... params){
         return Integer.valueOf(this.jdbcTemplate.queryForList(sql,params).get(0).get("count").toString());
     }
+
 
 
 }

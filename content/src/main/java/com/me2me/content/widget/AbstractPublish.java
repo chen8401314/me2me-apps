@@ -1,5 +1,6 @@
 package com.me2me.content.widget;
 
+import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -31,6 +32,9 @@ public class AbstractPublish {
     @Autowired
     protected UserService userService;
 
+    @Autowired
+    protected CacheService cacheService;
+
     public Response publish(ContentDto contentDto) {
         log.info("abstract publish start .....");
         CreateContentSuccessDto createContentSuccessDto = new CreateContentSuccessDto();
@@ -51,6 +55,9 @@ public class AbstractPublish {
         content.setContentType(contentDto.getContentType());
         content.setRights(contentDto.getRights());
         content.setForwardCid(contentDto.getForwardCid());
+        // 自增标识
+        long updateId = cacheService.incr("UPDATE_ID");
+        content.setUpdateId(updateId);
         //保存内容
         contentService.createContent(content);
         log.info("create content success");
