@@ -87,6 +87,8 @@ public class BaseContentDto implements BaseEntity{
 
     private long lastUpdateTime;
 
+    private Date finalUpdateTime;
+
     private int topicCount;
 
     private int contentType;

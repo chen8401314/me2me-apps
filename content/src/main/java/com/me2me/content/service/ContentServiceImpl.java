@@ -2650,6 +2650,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setUid(content.getUid());
             // 获取用户信息
             userProfile = profileMap.get(String.valueOf(content.getUid()));
+            contentElement.setFinalUpdateTime(content.getUpdateTime());
             contentElement.setV_lv(userProfile.getvLv());
             contentElement.setLevel(userProfile.getLevel());
             contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
