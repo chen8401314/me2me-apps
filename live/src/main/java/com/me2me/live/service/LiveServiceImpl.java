@@ -400,7 +400,7 @@ public class LiveServiceImpl implements LiveService {
                 liveCoverDto.setTags(builder.toString());
             }
 
-            boolean isAdmin = userService.isAdmin(uid);
+           /* boolean isAdmin = userService.isAdmin(uid);
             if(liveCoverDto.getInternalStatus() == Specification.SnsCircle.CORE.index
                     || isAdmin){//核心圈的或管理员，需要返回推荐标签
                 //第一步，先返回运营指定的推荐标签（1个）
@@ -408,7 +408,7 @@ public class LiveServiceImpl implements LiveService {
                 if(null != recTag){
                     liveCoverDto.setRecTags(recTag.getTag());
                 }
-            }
+            }*/
         }
 
         //记录阅读历史
@@ -684,7 +684,7 @@ public class LiveServiceImpl implements LiveService {
                 showLiveDto.setTags(builder.toString());
             }
 
-            boolean isAdmin = userService.isAdmin(uid);
+            /*boolean isAdmin = userService.isAdmin(uid);
             if(showLiveDto.getInternalStatus() == Specification.SnsCircle.CORE.index
                     || isAdmin){//核心圈的或者管理员，需要返回推荐标签
                 //第一步，先返回运营指定的推荐标签（1个）
@@ -692,7 +692,7 @@ public class LiveServiceImpl implements LiveService {
                 if(null != recTag){
                     showLiveDto.setRecTags(recTag.getTag());
                 }
-            }
+            }*/
         }
 
         if(topic.getType() == Specification.KingdomType.NORMAL.index){//个人王国
