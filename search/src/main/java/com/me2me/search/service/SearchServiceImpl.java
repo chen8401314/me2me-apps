@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -1466,11 +1467,24 @@ public class SearchServiceImpl implements SearchService {
 						count3 = 0;
 					}
 					
-					
+					Random r = new Random();
+					RecommendUser ru = null;
+					for(int i=0;i<result.size();i++){
+						ru = result.get(i);
+						ru.setTagMatchedLength(0);//清除临时存储的分值
+						if(i<count1){//80-99
+							ru.setMatching(r.nextInt(20)+80);
+						}else if(i<(count1+count2)){//66-79
+							ru.setMatching(r.nextInt(14)+66);
+						}else if(i<(count1+count2+count3)){//36-65
+							ru.setMatching(r.nextInt(30)+36);
+						}else{//10-35
+							ru.setMatching(r.nextInt(26)+10);
+						}
+					}
 					
 					//将300个记录存入缓存
 					StringBuilder sb = new StringBuilder();
-					RecommendUser ru = null;
 					for(int i=0;i<result.size();i++){
 						ru = result.get(i);
 						if(i>0){

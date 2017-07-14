@@ -3771,6 +3771,7 @@ public class LiveServiceImpl implements LiveService {
 					liveMybatisDao.updateTopic(topic);
 					
 					liveLocalJdbcDao.updateContentUpdateTime4Kingdom(topic.getId(), calendar.getTime());
+					liveLocalJdbcDao.updateContentUpdateId4Kingdom(topic.getId(),cacheService.incr("UPDATE_ID"));
 
 					// 更新缓存
 					int total = liveMybatisDao.countFragmentByTopicId(topic.getId());
@@ -4876,6 +4877,7 @@ public class LiveServiceImpl implements LiveService {
 
         if(isCoreUser){//如果是核心圈，则更新content表的updateTime
         	liveLocalJdbcDao.updateContentUpdateTime4Kingdom(targetTopicId, calendar.getTime());
+        	liveLocalJdbcDao.updateContentUpdateId4Kingdom(targetTopicId,cacheService.incr("UPDATE_ID"));
         }
         
         //更新缓存

@@ -130,6 +130,7 @@ public class AggregationPublishListener {
 //						}
 				        if(this.isInCore(event.getUid(), subTopic.getCoreCircle())){
 				            liveLocalJdbcDao.updateContentUpdateTime4Kingdom(subTopic.getId(), calendar.getTime());
+				            liveLocalJdbcDao.updateContentUpdateId4Kingdom(subTopic.getId(),cacheService.incr("UPDATE_ID"));
 				        }
 						
 						//更新缓存
