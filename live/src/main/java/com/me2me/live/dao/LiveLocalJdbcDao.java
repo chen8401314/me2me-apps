@@ -1174,7 +1174,7 @@ public class LiveLocalJdbcDao {
 
 	public boolean existsTrialTagInKingdom(Long topicId, String tag) {
 		String sql ="select count(1) from topic_tag_detail where topic_id=? and status=0 and (tag=? or auto_tag=1)";
-		return jdbcTemplate.queryForObject(sql, Integer.class)>0;
+		return jdbcTemplate.queryForObject(sql, new Object[]{topicId, tag}, Integer.class)>0;
 	}
 
 	public void updateExpiredTrialTag(int delayDay) {

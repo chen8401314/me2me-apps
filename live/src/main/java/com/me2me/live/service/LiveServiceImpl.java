@@ -24,6 +24,7 @@ import com.me2me.user.rule.Rules;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.eclipse.paho.client.mqttv3.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -1200,7 +1201,7 @@ public class LiveServiceImpl implements LiveService {
 	        		liveMybatisDao.insertTopicTagDetail(detail);
 	        	}
         	}catch(Exception e){
-        		e.printStackTrace();
+        		log.error("自动打标签失败", e);
         	}
         }
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status, ResponseStatus.USER_SPEAK_SUCCESS.message, speakDto);

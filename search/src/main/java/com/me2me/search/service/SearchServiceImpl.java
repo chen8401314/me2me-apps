@@ -1439,18 +1439,35 @@ public class SearchServiceImpl implements SearchService {
 			                }
 			            }
 			        });
-					int batch = result.size()%pageSize==0?result.size()/pageSize:(result.size()/pageSize)+1;
-					int n = 0;
-					int score = 99;
-					for(RecommendUser ru : result){
-						ru.setMatching(score);
-						ru.setTagMatchedLength(0);//清除临时存储的分值
-						n++;
-						if(n>=batch){
-							n = 0;
-							score--;
-						}
+					//按比例算法，废弃
+//					int batch = result.size()%pageSize==0?result.size()/pageSize:(result.size()/pageSize)+1;
+//					int n = 0;
+//					int score = 99;
+//					for(RecommendUser ru : result){
+//						ru.setMatching(score);
+//						ru.setTagMatchedLength(0);//清除临时存储的分值
+//						n++;
+//						if(n>=batch){
+//							n = 0;
+//							score--;
+//						}
+//					}
+					//分段处理算法
+					int total = result.size();
+					//第一段，2%
+					int count1 = total/50;
+					//第二段，13%
+					int count2 = total*13/100;
+					//第四段，20%
+					int count4 = total/5;
+					//第三段，原则上65%，但是由于是int，所以第三段，按总数去除第一、二、四段来计算
+					int count3 = total-count1-count2-count4;
+					if(count3 < 0){
+						count3 = 0;
 					}
+					
+					
+					
 					//将300个记录存入缓存
 					StringBuilder sb = new StringBuilder();
 					RecommendUser ru = null;
