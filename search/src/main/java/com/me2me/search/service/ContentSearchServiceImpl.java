@@ -26,6 +26,7 @@ import org.apache.commons.beanutils.PropertyUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.lucene.queryparser.classic.QueryParser;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.PrefixQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -1005,6 +1006,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 
 	@Override
 	public List<String> recommendTags(String content, int count) {
+		content = QueryParser.escape(content);//将一些不可预见的特殊字符都转义一下
 		String indexName = IndexConstants.TAG_SAMPLE_INDEX_NAME;
 		IKSegmenter seg = new IKSegmenter(new StringReader(content), false);
 		List<String> weightTermList = new ArrayList<>();
