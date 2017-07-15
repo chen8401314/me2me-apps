@@ -119,7 +119,8 @@ var buildTableBody = function(dataList){
 			bodyHtml = bodyHtml + "<th>"+dataList[i].stealPrice+"</th>";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].diligently+"</th>";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].approve+"</th>";
-			bodyHtml = bodyHtml + "<th><a href=\"${ctx}/price/kingdom/"+dataList[i].id+"\">交易</a></th>";
+			bodyHtml = bodyHtml + "<th></th>";
+			//bodyHtml = bodyHtml + "<th><a href=\"${ctx}/price/kingdom/"+dataList[i].id+"\">交易</a></th>";
 			bodyHtml = bodyHtml + "</tr>";
 		}
 	}
@@ -263,7 +264,7 @@ var parserDatetimeStr = function(time){
 													<th>${item.diligently }</th>
 													<th>${item.approve }</th>
 													<th>
-													<a href="${ctx}/price/kingdom/${item.id }">交易</a>
+													<!-- <a href="${ctx}/price/kingdom/${item.id }">交易</a> -->
 													</th>
 												</tr>
 											</c:forEach>
