@@ -729,6 +729,8 @@ public class SearchServiceImpl implements SearchService {
 	
 	public Response recommendIndex(long uid,int page, String token, String version){
 		RecommendListDto indexData = new RecommendListDto();
+		List<Long> blacklistUids = contentForSearchJdbcDao.getBlacklist(uid);
+		
 		UserProfile profile = userService.getUserProfileByUid(uid);
 		List<Long> hobbyIds = searchMapper.getUserHobbyIds(uid);
 		String hobby = StringUtils.join(hobbyIds,",");
@@ -869,10 +871,21 @@ public class SearchServiceImpl implements SearchService {
 				//变更逻辑，按匹配度进行计算
 				//1.最大值为99%
 				//2.基本资料匹配44%，心理测试对应22%，最近3次情绪状态匹配33%
+				List<Long> noUidList = new ArrayList<Long>();
 				List<Long> myFollowUidList = userService.getFollowList(uid);
+				if(null != myFollowUidList && myFollowUidList.size() > 0){
+					noUidList.addAll(myFollowUidList);
+				}
+				if(null != blacklistUids && blacklistUids.size() > 0){
+					for(Long bid : blacklistUids){
+						if(!noUidList.contains(bid)){
+							noUidList.add(bid);
+						}
+					}
+				}
 //				resultpage = this.searchService.getRecommendUserList(uid, 1, 30, myFollowUidList);
 				//第二套算法
-				resultpage = this.userRecList(profile, hobbyIds, firstUserEmotionInfo, myFollowUidList, 30);
+				resultpage = this.userRecList(profile, hobbyIds, firstUserEmotionInfo, noUidList, 30);
 				if(null == resultpage){
 					resultpage = new ArrayList<RecommendUser>();
 				}
@@ -920,7 +933,7 @@ public class SearchServiceImpl implements SearchService {
 					dislistTopicIds.add(sud.getCid());
 				}
 			}
-			List<TopicEsMapping> kingdoms = this.searchService.getTopicEsMappingList(uid, dislistTopicIds, page, 10);
+			List<TopicEsMapping> kingdoms = this.searchService.getTopicEsMappingList(uid, dislistTopicIds, page, 10, blacklistUids);
 			this.builderRecKingdomInfo(indexData, kingdoms, uid);
 			//再取10条文章
 			ShowRecContentDTO recContent = fileTransferService.getRecContents(String.valueOf(uid), token, version, "");

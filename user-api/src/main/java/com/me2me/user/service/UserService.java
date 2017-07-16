@@ -320,7 +320,7 @@ public interface UserService {
 
 	void pushWithExtra(String uid, String message, Map<String, String> extraMaps);
 
-	List<UserFamous> getUserFamousPage(int page, int pageSize);
+	List<UserFamous> getUserFamousPage(int page, int pageSize, List<Long> blacklistUids);
 
 	Response userRecomm(long uid, long targetUid, int action);
 
@@ -511,5 +511,22 @@ public interface UserService {
 
 	void refreshConfigCache();
 
-	 UserNo getUserNoByMeNumber(long meNumber);
+	UserNo getUserNoByMeNumber(long meNumber);
+	
+	/**
+	 * uid是否将targetUid设为黑名单
+	 * @param uid
+	 * @param targetUid
+	 * @return
+	 */
+	boolean isBlacklist(long uid, long targetUid);
+	
+	/**
+	 * 黑名单操作接口
+	 * @param uid
+	 * @param target
+	 * @param action
+	 * @return
+	 */
+	Response blacklist(long uid, long targetUid, int action);
 }

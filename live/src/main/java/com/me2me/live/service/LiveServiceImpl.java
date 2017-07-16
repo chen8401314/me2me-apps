@@ -5451,7 +5451,9 @@ public class LiveServiceImpl implements LiveService {
             }
         }
 
-        List<Map<String, Object>> topicList = liveLocalJdbcDao.getTagKingdomListByTag(tag.trim(), sinceId, 10);
+        List<Long> blacklistUids = liveLocalJdbcDao.getBlacklist(currentUid);
+        
+        List<Map<String, Object>> topicList = liveLocalJdbcDao.getTagKingdomListByTag(tag.trim(), sinceId, 10, blacklistUids);
         if(null == topicList || topicList.size() == 0){
             return Response.success(resultDTO);
         }

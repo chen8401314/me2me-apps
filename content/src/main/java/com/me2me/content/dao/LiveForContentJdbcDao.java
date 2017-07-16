@@ -368,7 +368,7 @@ public class LiveForContentJdbcDao {
      * @param pageSize
      * @return
      */
-    public List<BillBoardListDTO> getActiveUserBillboard(long sinceId, int pageSize){
+    public List<BillBoardListDTO> getActiveUserBillboard(long sinceId, int pageSize, List<Long> blacklistUids){
     	List<BillBoardListDTO> result = new ArrayList<BillBoardListDTO>();
     	
     	StringBuilder sb = new StringBuilder();
@@ -376,6 +376,16 @@ public class LiveForContentJdbcDao {
     	sb.append(" from topic t where t.status=0 group by t.uid) m");
     	sb.append(" where m.tid<").append(sinceId);
     	sb.append(" and m.uid not in (select u.uid from user_profile u where u.nick_name like '%米汤客服%')");
+    	if(null != blacklistUids && blacklistUids.size() > 0){
+    		sb.append(" and m.uid not in (");
+    		for(int i=0;i<blacklistUids.size();i++){
+    			if(i>0){
+    				sb.append(",");
+    			}
+    			sb.append(blacklistUids.get(i).toString());
+    		}
+    		sb.append(")");
+    	}
     	sb.append(" order by m.tid desc limit ").append(pageSize);
     	
     	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
@@ -399,7 +409,7 @@ public class LiveForContentJdbcDao {
      * @param pageSize
      * @return
      */
-    public List<BillBoardListDTO> getInteractionHottestKingdomBillboard(long sinceId, int pageSize){
+    public List<BillBoardListDTO> getInteractionHottestKingdomBillboard(long sinceId, int pageSize, List<Long> blacklistUids){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select t.id,m.cc as sinceId from topic t,content c,(");
     	sb.append("select f.topic_id,count(1) as cc");
@@ -407,6 +417,16 @@ public class LiveForContentJdbcDao {
     	sb.append(" and f.create_time>date_add(now(), interval -1 day)");
     	sb.append(" group by f.topic_id) m where t.id=c.forward_cid and c.type=3 and t.sub_type <> 1");
     	sb.append(" and t.id=m.topic_id and m.cc<").append(sinceId);
+    	if(null != blacklistUids && blacklistUids.size() > 0){
+    		sb.append(" and t.uid not in (");
+    		for(int i=0;i<blacklistUids.size();i++){
+    			if(i>0){
+    				sb.append(",");
+    			}
+    			sb.append(blacklistUids.get(i).toString());
+    		}
+    		sb.append(")");
+    	}
     	sb.append(" order by cc DESC limit ").append(pageSize);
     	
     	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
@@ -432,10 +452,20 @@ public class LiveForContentJdbcDao {
      * @param pageSize
      * @return
      */
-    public List<BillBoardListDTO> getLivesByUpdateTime(long sinceId, int pageSize){
+    public List<BillBoardListDTO> getLivesByUpdateTime(long sinceId, int pageSize, List<Long> blacklistUids){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select t.id,t.long_time from topic t where t.status=0 and t.sub_type <> 1 ");
     	sb.append(" and t.long_time<").append(sinceId);
+    	if(null != blacklistUids && blacklistUids.size() > 0){
+    		sb.append(" and t.uid not in (");
+    		for(int i=0;i<blacklistUids.size();i++){
+    			if(i>0){
+    				sb.append(",");
+    			}
+    			sb.append(blacklistUids.get(i).toString());
+    		}
+    		sb.append(")");
+    	}
     	sb.append(" order by t.long_time desc limit ").append(pageSize);
     	
     	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
@@ -461,7 +491,7 @@ public class LiveForContentJdbcDao {
      * @param pageSize
      * @return
      */
-    public List<BillBoardListDTO> getNewPeople(int sex, long sinceId, int pageSize){
+    public List<BillBoardListDTO> getNewPeople(int sex, long sinceId, int pageSize, List<Long> blacklistUids){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select u.uid,u.id from user_profile u,(");
     	sb.append("select t.uid,count(1) as cc from topic t");
@@ -472,6 +502,16 @@ public class LiveForContentJdbcDao {
     		sb.append(" and u.gender<>1");
     	}else if(sex == 1){
     		sb.append(" and u.gender=1");
+    	}
+    	if(null != blacklistUids && blacklistUids.size() > 0){
+    		sb.append(" and u.uid not in (");
+    		for(int i=0;i<blacklistUids.size();i++){
+    			if(i>0){
+    				sb.append(",");
+    			}
+    			sb.append(blacklistUids.get(i).toString());
+    		}
+    		sb.append(")");
     	}
     	sb.append(" order by u.id DESC limit ").append(pageSize);
     	
@@ -498,12 +538,22 @@ public class LiveForContentJdbcDao {
      * @param pageSize
      * @return
      */
-    public List<BillBoardListDTO> fansBillboard(long start, int pageSize){
+    public List<BillBoardListDTO> fansBillboard(long start, int pageSize, List<Long> blacklistUids){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select u.uid,m.fanscount from user_profile u, (");
     	sb.append("select f.target_uid, count(DISTINCT f.source_uid) as fanscount");
     	sb.append(" from user_follow f group by f.target_uid) m");
     	sb.append(" where u.uid=m.target_uid and u.nick_name not like '%米汤客服%'");
+    	if(null != blacklistUids && blacklistUids.size() > 0){
+    		sb.append(" and u.uid not in (");
+    		for(int i=0;i<blacklistUids.size();i++){
+    			if(i>0){
+    				sb.append(",");
+    			}
+    			sb.append(blacklistUids.get(i).toString());
+    		}
+    		sb.append(")");
+    	}
     	sb.append(" order by m.fanscount desc,uid desc limit ");
     	sb.append(start).append(",").append(pageSize);
     	
@@ -531,9 +581,19 @@ public class LiveForContentJdbcDao {
      * @param pageSize
      * @return
      */
-    public List<BillBoardListDTO> kingdomPriceList(long start, int pageSize){
+    public List<BillBoardListDTO> kingdomPriceList(long start, int pageSize, List<Long> blacklistUids){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select t.id from topic t");
+    	if(null != blacklistUids && blacklistUids.size() > 0){
+    		sb.append(" and t.uid not in (");
+    		for(int i=0;i<blacklistUids.size();i++){
+    			if(i>0){
+    				sb.append(",");
+    			}
+    			sb.append(blacklistUids.get(i).toString());
+    		}
+    		sb.append(")");
+    	}
     	sb.append(" order by t.price desc,t.id desc");
     	sb.append(" limit ").append(start).append(",").append(pageSize);
 
@@ -561,10 +621,20 @@ public class LiveForContentJdbcDao {
      * @param pageSize
      * @return
      */
-    public List<BillBoardListDTO> kingdomIncrPriceList(long start, int pageSize){
+    public List<BillBoardListDTO> kingdomIncrPriceList(long start, int pageSize, List<Long> blacklistUids){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select t.id from topic_data d,topic t");
-    	sb.append(" where d.topic_id=t.id order by d.last_price_incr desc,t.id");
+    	sb.append("select t.id from topic_data d,topic t where d.topic_id=t.id");
+    	if(null != blacklistUids && blacklistUids.size() > 0){
+    		sb.append(" and t.uid not in (");
+    		for(int i=0;i<blacklistUids.size();i++){
+    			if(i>0){
+    				sb.append(",");
+    			}
+    			sb.append(blacklistUids.get(i).toString());
+    		}
+    		sb.append(")");
+    	}
+    	sb.append(" order by d.last_price_incr desc,t.id");
     	sb.append(" limit ").append(start).append(",").append(pageSize);
     	
     	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
@@ -592,7 +662,7 @@ public class LiveForContentJdbcDao {
      * @param pageSize
      * @return
      */
-    public List<BillBoardListDTO> tagKingdomPriceList(String tag, long start, int pageSize){
+    public List<BillBoardListDTO> tagKingdomPriceList(String tag, long start, int pageSize, List<Long> blacklistUids){
     	StringBuilder tagSql = new StringBuilder();
     	tagSql.append("select t1.id as pid,t2.id as sid from topic_tag t1 LEFT JOIN topic_tag t2");
     	tagSql.append(" on t1.id=t2.pid where t1.tag='").append(tag).append("'");
@@ -619,6 +689,16 @@ public class LiveForContentJdbcDao {
     	StringBuilder sb = new StringBuilder();
     	sb.append("select t.id from topic_tag_detail d,topic t");
     	sb.append(" where d.topic_id=t.id and d.status=0");
+    	if(null != blacklistUids && blacklistUids.size() > 0){
+    		sb.append(" and t.uid not in (");
+    		for(int i=0;i<blacklistUids.size();i++){
+    			if(i>0){
+    				sb.append(",");
+    			}
+    			sb.append(blacklistUids.get(i).toString());
+    		}
+    		sb.append(")");
+    	}
     	sb.append(" and d.tag_id in (");
     	for(int i=0;i<tagIds.size();i++){
     		if(i>0){
@@ -654,7 +734,7 @@ public class LiveForContentJdbcDao {
      * @param pageSize
      * @return
      */
-    public List<BillBoardListDTO> tagKingdomIncrPriceList(String tag, long start, int pageSize){
+    public List<BillBoardListDTO> tagKingdomIncrPriceList(String tag, long start, int pageSize, List<Long> blacklistUids){
     	StringBuilder tagSql = new StringBuilder();
     	tagSql.append("select t1.id as pid,t2.id as sid from topic_tag t1 LEFT JOIN topic_tag t2");
     	tagSql.append(" on t1.id=t2.pid where t1.tag='").append(tag).append("'");
@@ -682,6 +762,16 @@ public class LiveForContentJdbcDao {
     	sb.append("select t.id from topic_tag_detail d,topic t,topic_data td");
     	sb.append(" where d.topic_id=t.id and t.id=td.topic_id");
     	sb.append(" and d.status=0");
+    	if(null != blacklistUids && blacklistUids.size() > 0){
+    		sb.append(" and t.uid not in (");
+    		for(int i=0;i<blacklistUids.size();i++){
+    			if(i>0){
+    				sb.append(",");
+    			}
+    			sb.append(blacklistUids.get(i).toString());
+    		}
+    		sb.append(")");
+    	}
     	sb.append(" and d.tag_id in (");
     	for(int i=0;i<tagIds.size();i++){
     		if(i>0){
@@ -710,11 +800,21 @@ public class LiveForContentJdbcDao {
     	return result;
     }
     
-    public List<BillBoardListDTO> getNewRegisterUsers(long sinceId, int pageSize){
+    public List<BillBoardListDTO> getNewRegisterUsers(long sinceId, int pageSize, List<Long> blacklistUids){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select p.uid,p.id from user_profile p");
     	sb.append(" where p.nick_name not like '%米汤客服%'");
     	sb.append(" and p.id<").append(sinceId);
+    	if(null != blacklistUids && blacklistUids.size() > 0){
+    		sb.append(" and p.uid not in (");
+    		for(int i=0;i<blacklistUids.size();i++){
+    			if(i>0){
+    				sb.append(",");
+    			}
+    			sb.append(blacklistUids.get(i).toString());
+    		}
+    		sb.append(")");
+    	}
     	sb.append(" order by p.id desc limit ").append(pageSize);
     	
     	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
@@ -766,9 +866,21 @@ public class LiveForContentJdbcDao {
     	return jdbcTemplate.queryForList(sb.toString());
     }
     
-	public List<Map<String, Object>> getTopPricedKingdomList(int page, int pageSize) {
-		String sql = "select * from topic where status!=2 order by price desc limit ?,?";
-		return jdbcTemplate.queryForList(sql,(page-1)*pageSize,pageSize);
+	public List<Map<String, Object>> getTopPricedKingdomList(int page, int pageSize, List<Long> blacklistUids) {
+		StringBuilder sb = new StringBuilder();
+		sb.append("select * from topic where status!=2");
+		if(null != blacklistUids && blacklistUids.size() > 0){
+			sb.append(" and uid not in (");
+			for(int i=0;i<blacklistUids.size();i++){
+				if(i>0){
+					sb.append(",");
+				}
+				sb.append(blacklistUids.get(i).toString());
+			}
+			sb.append(")");
+		}
+		sb.append(" order by price desc limit ?,?");
+		return jdbcTemplate.queryForList(sb.toString(),(page-1)*pageSize,pageSize);
 	}
 	/**
 	 * 取上市王国
@@ -795,4 +907,52 @@ public class LiveForContentJdbcDao {
     	jdbcTemplate.execute(sb.toString());
     }
   
+    /**
+     * 获取黑名单UID列表
+     * @param uid
+     * @return
+     */
+    public List<Long> getBlacklist(long uid){
+    	String sql = "select * from user_black_list t where t.uid=" + uid;
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
+    	List<Long> result = new ArrayList<Long>();
+    	if(null != list && list.size() > 0){
+    		Long targetUid = null;
+    		for(Map<String, Object> b : list){
+    			targetUid = (Long)b.get("target_uid");
+    			if(!result.contains(targetUid)){
+    				result.add(targetUid);
+    			}
+    		}
+    	}
+    	return result;
+    }
+    
+    /**
+     * 获取国王所有王国ids
+     * @param uids
+     * @return
+     */
+    public List<Long> getTopicIdsByUids(List<Long> uids){
+    	if(null == uids || uids.size() == 0){
+    		return null;
+    	}
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select t.id from topic t where t.uid in (");
+    	for(int i=0;i<uids.size();i++){
+    		if(i>0){
+    			sb.append(",");
+    		}
+    		sb.append(uids.get(i).toString());
+    	}
+    	sb.append(")");
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	List<Long> result = new ArrayList<Long>();
+    	if(null != list && list.size() > 0){
+    		for(Map<String, Object> t : list){
+    			result.add((Long)t.get("id"));
+    		}
+    	}
+    	return result;
+    }
 }

@@ -102,7 +102,10 @@ public class Home extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Long.MAX_VALUE);
         }
-        int vflag = 1;
+        int vflag = 0;
+        if(VersionUtil.isNewVersion(request.getVersion(), "3.0.0")){
+        	vflag = 1;
+        }
         return contentService.Newest(request.getSinceId(),request.getUid(), vflag);
     }
 
@@ -111,7 +114,7 @@ public class Home extends BaseController {
      * @param request
      * @return
      */
-    @RequestMapping(value = "/attention ",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/attention",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response attention (AttentionRequest request){
         if(request.getSinceId() == -1){
@@ -130,7 +133,7 @@ public class Home extends BaseController {
      * @param request
      * @return
      */
-    @RequestMapping(value = "/hotList ",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/hotList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response hotList(HotListRequest request){
     	int vflag = 0;
@@ -145,7 +148,7 @@ public class Home extends BaseController {
      * @param request
      * @return
      */
-    @RequestMapping(value = "/ceKingdomHotList ",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/ceKingdomHotList",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public Response ceKingdomHotList(CeKingdomHotListRequest request){
     	int vflag = 0;
@@ -182,7 +185,7 @@ public class Home extends BaseController {
     }
     @RequestMapping(value = "/getPricedKingdomList")
     @ResponseBody
-    public Response showList(PricedKingdomRequest request){
+    public Response getPricedKingdomList(PricedKingdomRequest request){
         
         return contentService.getPricedKingdomList(request.getPage(), request.getPageSize(),request.getUid());
     }

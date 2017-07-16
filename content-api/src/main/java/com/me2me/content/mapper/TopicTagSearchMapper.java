@@ -26,7 +26,8 @@ public interface TopicTagSearchMapper {
 			@Param("tag") String tag,
 			@Param("order")String order,
 			@Param("page")int page, 
-			@Param("pageSize")int pageSize);
+			@Param("pageSize")int pageSize,
+			@Param("blacklistUids")List<Long> blacklistUids);
 	/**
 	 * 获取单个标签的价值，米汤币，人数信息
 	 * @author zhangjiwei
