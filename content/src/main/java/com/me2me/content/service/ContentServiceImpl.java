@@ -2731,7 +2731,14 @@ public class ContentServiceImpl implements ContentService {
                 contentElement.setLiveStatus(contentMybatisDao.getTopicStatus(content.getForwardCid()));
                 int reviewCount = contentMybatisDao.countFragment(content.getForwardCid(),content.getUid());
                 contentElement.setReviewCount(reviewCount);
-                contentElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
+//                contentElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
+                if(null != content.getUpdateTime()){
+                	contentElement.setLastUpdateTime(content.getUpdateTime().getTime());
+                }else{
+                	contentElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
+                }
+                
+                
                 contentElement.setTopicCount(contentMybatisDao.getTopicCount(content.getForwardCid()) - reviewCount);
             }
             int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
@@ -2746,7 +2753,9 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setPersonCount(content.getPersonCount());
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
-            contentElement.setLastUpdateTime(content.getUpdateId());
+            if(vFlag>0){//3.0.0版本以上
+            	contentElement.setLastUpdateTime(content.getUpdateId());
+            }
             showNewestDto.getNewestData().add(contentElement);
         }
         return Response.success(showNewestDto);
