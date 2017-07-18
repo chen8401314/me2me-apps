@@ -1,6 +1,7 @@
 package com.me2me.live.dao;
 
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -14,7 +15,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.me2me.common.Constant;
-import com.me2me.common.utils.DateUtil;
 import com.me2me.live.dto.KingdomSearchDTO;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.LiveFavoriteDelete;
@@ -707,10 +707,20 @@ public class LiveLocalJdbcDao {
 		return jdbcTemplate.queryForList(sb.toString());
 	}
 	
-	public List<Map<String, Object>> getTagKingdomListByTag(String tag, long sinceId, int pageSize){
+	public List<Map<String, Object>> getTagKingdomListByTag(String tag, long sinceId, int pageSize, List<Long> blacklistUids){
 		StringBuilder sb = new StringBuilder();
 		sb.append("select t.* from topic_tag_detail d,topic t");
 		sb.append(" where d.tag='").append(tag).append("' and d.status=0");
+		if(null != blacklistUids && blacklistUids.size() > 0){
+			sb.append(" and t.uid not in (");
+			for(int i=0;i<blacklistUids.size();i++){
+				if(i>0){
+					sb.append(",");
+				}
+				sb.append(blacklistUids.get(i).toString());
+			}
+			sb.append(")");
+		}
 		sb.append(" and d.topic_id=t.id and t.long_time<").append(sinceId);
 		sb.append(" order by t.long_time DESC limit ").append(pageSize);
 		
@@ -1191,4 +1201,25 @@ public class LiveLocalJdbcDao {
 		String sql = "update content set update_id=? where forward_cid=? and type=3";
 		jdbcTemplate.update(sql,updateId,topicId);
 	}
+	
+	/**
+     * 获取黑名单UID列表
+     * @param uid
+     * @return
+     */
+    public List<Long> getBlacklist(long uid){
+    	String sql = "select * from user_black_list t where t.uid=" + uid;
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
+    	List<Long> result = new ArrayList<Long>();
+    	if(null != list && list.size() > 0){
+    		Long targetUid = null;
+    		for(Map<String, Object> b : list){
+    			targetUid = (Long)b.get("target_uid");
+    			if(!result.contains(targetUid)){
+    				result.add(targetUid);
+    			}
+    		}
+    	}
+    	return result;
+    }
 }

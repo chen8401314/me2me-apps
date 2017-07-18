@@ -7,7 +7,6 @@ import java.net.UnknownHostException;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.me2me.common.web.Request;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.user.dto.*;
 import com.me2me.user.rule.Rules;
@@ -1061,8 +1060,11 @@ public class Users extends BaseController {
         return response;
     }
 
-
-
+    @ResponseBody
+    @RequestMapping(value = "/blacklist",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response blacklist(BlacklistRequest request){
+    	return userService.blacklist(request.getUid(), request.getTargetUid(), request.getAction());
+    }
     
     
 }

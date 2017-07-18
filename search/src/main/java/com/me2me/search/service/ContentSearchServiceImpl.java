@@ -946,16 +946,21 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	}
 
 	@Override
-	public List<TopicEsMapping> getTopicEsMappingList(long uid, List<Long> noIds, int page, int pageSize) {
+	public List<TopicEsMapping> getTopicEsMappingList(long uid, List<Long> noIds, int page, int pageSize,List<Long> blacklistUids) {
 		UserProfile user = userService.getUserProfileByUid(uid);
 		BoolQueryBuilder bq = new BoolQueryBuilder();
-		List<String> userHobbyList = searchMapper.getUserHobby(user.getUid());
+		if(null == blacklistUids){
+			blacklistUids = new ArrayList<Long>();
+		}
+		blacklistUids.add(uid);
+		bq.mustNot(QueryBuilders.termsQuery("uid", blacklistUids));
+		if (null != noIds && noIds.size() > 0) {// 过滤掉不需要的王国id
+			bq.mustNot(QueryBuilders.termsQuery("id", noIds));
+		}
+		
 		if (user != null) {
+			List<String> userHobbyList = searchMapper.getUserHobby(user.getUid());
 			String tags = StringUtils.join(userHobbyList, " ").trim();
-			bq.mustNot(QueryBuilders.termQuery("uid", user.getUid()));
-			if (null != noIds && noIds.size() > 0) {// 过滤掉不需要的王国id
-				bq.mustNot(QueryBuilders.termsQuery("id", noIds));
-			}
 			if (tags != null) {
 				bq.should(QueryBuilders.queryStringQuery(tags).field("title"));
 				bq.should(QueryBuilders.queryStringQuery(tags).field("tags").boost(3f));

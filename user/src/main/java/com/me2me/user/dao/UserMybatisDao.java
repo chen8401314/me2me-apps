@@ -6,6 +6,7 @@ import java.util.*;
 
 import com.me2me.common.utils.Lists;
 import com.me2me.user.model.Dictionary;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
@@ -146,6 +147,9 @@ public class UserMybatisDao {
 
     @Autowired
     private PermissionDetailsMapper permissionDetailsMapper;
+    
+    @Autowired
+    private UserBlackListMapper userBlackListMapper;
     
     /**
      * 保存用户注册信息
@@ -1025,8 +1029,11 @@ public class UserMybatisDao {
     	systemConfigMapper.updateByPrimaryKeySelective(config);
     }
 
-    public List<UserFamous> getUserFamousList(int start, int pageSize){
+    public List<UserFamous> getUserFamousList(int start, int pageSize, List<Long> blacklistUids){
     	UserFamousExample example = new UserFamousExample();
+    	if(null != blacklistUids && blacklistUids.size() > 0){
+    		example.createCriteria().andUidNotIn(blacklistUids);
+    	}
     	example.setOrderByClause(" update_time desc limit "+start+","+pageSize);
     	return userFamousMapper.selectByExample(example);
     }
@@ -1450,5 +1457,25 @@ public class UserMybatisDao {
     	example.createCriteria().andMeNumberEqualTo(meNumber);
     	List<UserNo> list = userNoMapper.selectByExample(example);
         return list.size()>0?list.get(0):null;
+    }
+    
+    public UserBlackList getUserBlackListByUidAndTargetUid(long uid, long targetUid){
+    	UserBlackListExample example = new UserBlackListExample();
+    	UserBlackListExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	criteria.andTargetUidEqualTo(targetUid);
+    	List<UserBlackList> list = userBlackListMapper.selectByExample(example);
+    	if(null != list && list.size() > 0){
+    		return list.get(0);
+    	}
+    	return null;
+    }
+    
+    public void saveUserBlackList(UserBlackList ubl){
+    	userBlackListMapper.insertSelective(ubl);
+    }
+    
+    public void deleteUserBlackListById(long id){
+    	userBlackListMapper.deleteByPrimaryKey(id);
     }
 }

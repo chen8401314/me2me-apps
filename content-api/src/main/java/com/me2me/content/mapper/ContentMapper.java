@@ -142,7 +142,9 @@ public interface ContentMapper {
 
     List<Content> loadHottestTopsContent(@Param("flag") int flag);
 
-    List<Content> loadNewestContent(@Param("sinceId") long sinceId, @Param("flag") int flag);
+    List<Content> loadNewestContent4Old(@Param("sinceId") long sinceId, @Param("blacklistUids") List<Long> blacklistUids);
+    
+    List<Content> loadNewestContent(@Param("sinceId") long sinceId, @Param("blacklistUids") List<Long> blacklistUids);
 
     int countFragment(CountFragmentDto countFragmentDto);
 
@@ -170,7 +172,7 @@ public interface ContentMapper {
     List<Content2Dto> getHotContentByType(@Param("hq") HotQueryDto hotQueryDto);
 
 
-    List<Content2Dto> getHotContentByRedis(@Param("ids") List<String> ids);
+    List<Content2Dto> getHotContentByRedis(@Param("ids") List<String> ids, @Param("blacklistUids") List<Long> blacklistUids);
 
 
     List<Content> loadMyPublishUgcData(Map map);

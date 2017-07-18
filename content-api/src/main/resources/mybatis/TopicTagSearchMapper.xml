@@ -13,6 +13,12 @@
 					UNION 
 					select id from topic_tag c where c.pid=(select id from topic_tag p where tag=#{tag})
 			)
+			<if test="blacklistUids!=null and blacklistUids.size() &gt; 0">
+      		and t.uid not in
+      		<foreach close=")" collection="blacklistUids" item="bid" open="(" separator=",">
+        		#{bid}
+      		</foreach>
+    		</if>
 		  <choose>
              <when test="order=='price'">
                 order by t.price DESC
