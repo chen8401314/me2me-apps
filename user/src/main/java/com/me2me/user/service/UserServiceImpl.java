@@ -2263,7 +2263,7 @@ public class UserServiceImpl implements UserService {
                             for(int i=0;i<1;i++){//你想生成几个字符的，就把3改成几，如果改成１,那就生成一个随机字母．
                                 str= str+(char) (Math.random ()*26+'A');
                             }
-                            thirdPartSignUpDto.setNickName(thirdPartSignUpDto.getNewNickName()+str);
+                            thirdPartSignUpDto.setNickName(thirdPartSignUpDto.getNickName()+str);
                    }else{
                             flag = false ;
                         }
@@ -2451,6 +2451,20 @@ public class UserServiceImpl implements UserService {
         UserProfile userProfile = new UserProfile();
         userProfile.setUid(user1.getUid());
         userProfile.setAvatar(thirdPartSignUpDto.getAvatar());
+        //将用户名后面加随机大写英文字母 , 直至 不重复;
+        boolean flag = true ;
+        while(flag){
+            if(!this.existsNickName(thirdPartSignUpDto.getNickName())){
+                String str="";
+                for(int i=0;i<1;i++){//你想生成几个字符的，就把3改成几，如果改成１,那就生成一个随机字母．
+                    str= str+(char) (Math.random ()*26+'A');
+                }
+                thirdPartSignUpDto.setNickName(thirdPartSignUpDto.getNickName()+str);
+
+            }else{
+                flag = false ;
+            }
+        }
         userProfile.setNickName(thirdPartSignUpDto.getNickName());
         userProfile.setAvatar(thirdPartSignUpDto.getAvatar());
         userProfile.setGender(thirdPartSignUpDto.getGender());
