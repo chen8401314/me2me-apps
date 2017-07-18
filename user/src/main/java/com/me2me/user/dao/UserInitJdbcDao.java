@@ -316,7 +316,7 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 	}
 
 	public List<Map<String, Object>> getCanSpeakTopicId(long uid) {
-		String sql = "SELECT id FROM topic WHERE uid != ?  ORDER BY update_time DESC LIMIT 1000";
+		String sql = "SELECT id FROM topic WHERE uid != ?  ORDER BY update_time DESC LIMIT 5000";
 		return super.query(sql,uid);
 	}
 
