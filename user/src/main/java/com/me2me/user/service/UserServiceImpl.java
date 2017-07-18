@@ -4590,4 +4590,25 @@ public class UserServiceImpl implements UserService {
 		
 		return Response.success(200, "操作成功，请重新刷新列表");
 	}
+	
+	/**
+	 * 获取导游信息
+	 * @return
+	 */
+	@Override
+	public Response getGuideInfo(){
+		String uidStr =   getAppConfigByKey("GUIDE_UID");
+		if(StringUtils.isEmpty(uidStr)){
+			return Response.failure(500, "没有配置导游用户");
+		}else{
+			long uid  = Long.parseLong(uidStr);
+			GuideInfoDto dto = new GuideInfoDto();
+			UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+			dto.setUid(uid);
+			dto.setNickName(userProfile.getNickName());
+			dto.setAvatar(userProfile.getAvatar());
+			return Response.success(dto);
+		}
+		
+	}
 }

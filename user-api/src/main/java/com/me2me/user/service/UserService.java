@@ -554,4 +554,6 @@ public interface UserService {
 	 * @return
 	 */
 	Response blacklist(long uid, long targetUid, int action);
+	
+	 Response getGuideInfo();
 }
