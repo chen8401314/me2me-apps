@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.me2me.common.utils.CommonUtils;
+import com.me2me.common.web.Request;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseWapx;
 import com.me2me.content.service.ContentService;
@@ -1030,5 +1031,9 @@ public class Users extends BaseController {
     	return userService.blacklist(request.getUid(), request.getTargetUid(), request.getAction());
     }
     
-    
+    @ResponseBody
+    @RequestMapping(value = "/getGuideInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getGuideInfo(GuideInfoRequest request){
+    	return userService.getGuideInfo();
+    }
 }
