@@ -516,24 +516,25 @@ public class KingdomPriceTask {
 					}
 					
 					if(kv > 0){
-						int stealPrice = (int)(kv*stealWeightR0);//d不存在了
-						if(stealPrice<10){
-							int need = 10-stealPrice;
+						int totalDecay = (int)(kv*stealWeightR0);
+						int delPrice = 0;
+						if(totalDecay > 0){
+							delPrice = (int)(totalDecay * stealWeightR1);
+						}
+						int stealPrice = totalDecay-delPrice;
+						if(stealPrice < 10){
 							stealPrice = 10;
-							if(kv>=need){
-								kv = kv-need;
-							}else{
-								kv = 0;
-							}
 						}
 						kc.setStealPrice(stealPrice);
+						kv = kv - delPrice;
 					}else{
 						kc.setStealPrice(0);
 					}
-					
 					kc.setPrice((int)kv);
+					
 					this.saveKingdomCount(kc, true, listedPrice, yesterday);
 				}else{//历史有的，则需要做增量计算
+					int oldStealPrice = (Integer)topicData.get("steal_price");
 					int kv0 = ((Integer)topicData.get("price")).intValue();
 					double x0 = ((Double)topicData.get("diligently")).doubleValue();
 					double y0 = ((Double)topicData.get("approve")).doubleValue();
@@ -552,12 +553,8 @@ public class KingdomPriceTask {
 						}
 					}
 					
-					int kv = kv0 + _kv - d - (int)(_kv*stealWeightR0);
-					if(kv < 0){
-						kv = 0;
-					}
-					//特别补助
-					if(kv > kv0){
+					int kv = kv0 + _kv;
+					if(_kv > 0){
 						subsidyConfig = this.getSubsidyConfig(kv, subsidyConfigList);
 						if(null != subsidyConfig && subsidyConfig.size() == 3){
 							double k1 = (Double)subsidyConfig.get("k1");
@@ -573,17 +570,17 @@ public class KingdomPriceTask {
 					}
 					
 					if(kv > 0){
-						int stealPrice = (int)(_kv*stealWeightR0 + d*stealWeightR1);
-						if(stealPrice<10){
-							int need = 10-stealPrice;
-							stealPrice = 10;
-							if(kv>=need){
-								kv = kv-need;
-							}else{
-								kv = 0;
-							}
+						int totalDecay = (int)(_kv*stealWeightR0 + d);
+						int delPrice = 0;
+						if(totalDecay > 0){
+							delPrice = (int)(totalDecay * stealWeightR1);
 						}
-						kc.setStealPrice(stealPrice);
+						int stealPrice = totalDecay-delPrice;
+						if(stealPrice < 10){
+							stealPrice = 10;
+						}
+						kc.setStealPrice(stealPrice+oldStealPrice);
+						kv = kv - delPrice;
 					}else{
 						kc.setStealPrice(0);
 					}
@@ -1131,8 +1128,6 @@ public class KingdomPriceTask {
 				}
 			}
 			
-			
-			
 			totalCount = totalCount + topicList.size();
 			logger.info("本次处理了["+topicList.size()+"]个王国，共处理了["+totalCount+"]个王国");
 		}
@@ -1158,6 +1153,10 @@ public class KingdomPriceTask {
 		}
 		if(kc.getStealPrice() < 0){
 			kc.setStealPrice(0);
+		}
+		
+		if(kc.getStealPrice() > kc.getPrice()){
+			kc.setStealPrice(kc.getPrice());
 		}
 		
 		StringBuilder saveSql = new StringBuilder();
