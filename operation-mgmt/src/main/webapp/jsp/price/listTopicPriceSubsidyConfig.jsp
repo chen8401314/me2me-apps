@@ -65,6 +65,7 @@
 												<th>M2</th>
 												<th>K1</th>
 												<th>K2</th>
+												<th>K3</th>
 												<th>操作</th>
 											</tr>
 										</thead>
@@ -86,6 +87,9 @@
 													</td>
 													<td >
 														${item.k2 }
+													</td>
+													<td >
+														${item.k3 }
 													</td>
 													<td>
 														 <a class="btn btn-warning btn-xs " href="./modifyTopicPriceSubsidyConfig?id=${item.id}">编辑</a>

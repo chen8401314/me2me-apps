@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -33,7 +32,6 @@ import com.me2me.mgmt.request.SearchUserDTO;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.mgmt.task.app.KingdomPriceTask;
 import com.me2me.mgmt.vo.DatatablePage;
-import com.me2me.user.model.AppConfig;
 import com.me2me.user.service.UserService;
 
 @Controller
