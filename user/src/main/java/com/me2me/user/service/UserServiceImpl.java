@@ -258,7 +258,8 @@ public class UserServiceImpl implements UserService {
         event.setUid(user.getUid());
         event.setMobile(userSignUpDto.getMobile());
         this.applicationEventBus.post(event);
-        
+        //不管你爽不爽，就是要卖你3个王国
+        give3Kingdoms(userProfile);
         //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
@@ -1758,6 +1759,8 @@ public class UserServiceImpl implements UserService {
         userMybatisDao.createUserToken(userToken);
         log.info("userToken is create");
         log.info("refereeSignUp end ...");
+        //不管你爽不爽，就是要卖你3个王国
+        give3Kingdoms(userProfile);
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message);
     }
 
@@ -2235,6 +2238,8 @@ public class UserServiceImpl implements UserService {
                 userMybatisDao.createJpushToken(jpushToken);
             }
         }
+        //不管你爽不爽，就是要卖你3个王国
+        give3Kingdoms(userProfile);
 
     }
 
@@ -4240,7 +4245,19 @@ public class UserServiceImpl implements UserService {
 		}
 		return false;
 	}
-	
+	/**
+	 * 赠送3个王国
+	 * @author zhangjiwei
+	 * @date Jul 19, 2017
+	 */
+	public void give3Kingdoms(UserProfile profile){
+		String nickName = profile.getNickName();
+		List<String> picList = this.liveForUserJdbcDao.getRandomKingdomCover(3);
+		this.liveForUserJdbcDao.createGiveTopic(profile.getUid(),picList.get(0),nickName+"的生活记录","吃喝玩乐，记录我的日常。","非典型性话痨",1);
+		this.liveForUserJdbcDao.createGiveTopic(profile.getUid(),picList.get(1),nickName+"的兴趣爱好","把我的兴趣爱好和你们分享。","玩物不丧志",0);
+		this.liveForUserJdbcDao.createGiveTopic(profile.getUid(),picList.get(2),nickName+"的每日一拍","所有美好的事物我统统都要拍下来！","声音和光影",0);
+		
+	}
 	@Override
 	public Response blacklist(long uid, long targetUid, int action){
 		if(uid == targetUid){

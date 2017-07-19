@@ -38,6 +38,16 @@ public class Constant {
      * 上市王国价值配置项KEY
      */
     public static final String LISTING_PRICE_KEY = "LISTED_PRICE";
+    /**
+     * 大红包概率
+     */
+	public static final String BIG_RED_PACK_RATIO_KEY = "BIG_RED_PACK_RATIO";
+
+	public static final String BIG_RED_PACK_MIN_KEY = "BIG_RED_PACK_MIN";
+
+	public static final String BIG_RED_PACK_MAX_KEY = "BIG_RED_PACK_MAX";
+
+	public static final String DROPAROUND_PRICE_MIN_KEY = "DROPAROUND_PRICE_MIN";
  
     
 }

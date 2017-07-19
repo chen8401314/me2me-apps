@@ -43,6 +43,7 @@ import com.me2me.live.mapper.TopicDroparoundMapper;
 import com.me2me.live.mapper.TopicDroparoundTrailMapper;
 import com.me2me.live.mapper.TopicFragmentMapper;
 import com.me2me.live.mapper.TopicFragmentTemplateMapper;
+import com.me2me.live.mapper.TopicGivenMapper;
 import com.me2me.live.mapper.TopicListedMapper;
 import com.me2me.live.mapper.TopicMapper;
 import com.me2me.live.mapper.TopicNewsMapper;
@@ -93,6 +94,7 @@ import com.me2me.live.model.TopicFragmentExample;
 import com.me2me.live.model.TopicFragmentExample.Criteria;
 import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicFragmentTemplateExample;
+import com.me2me.live.model.TopicGiven;
 import com.me2me.live.model.TopicListed;
 import com.me2me.live.model.TopicListedExample;
 import com.me2me.live.model.TopicNews;
@@ -228,6 +230,8 @@ public class LiveMybatisDao {
     @Autowired
     private TopicListedMapper topicListedMapper;
     
+    @Autowired
+    private TopicGivenMapper givenMapper;
 
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -1067,7 +1071,7 @@ public class LiveMybatisDao {
         return topicAggregationApplyMapper.selectByExample(example);
     }
 
-    public TopicDroparound getRandomDropaRound(Map<String ,String> map){
+    public TopicDroparound getRandomDropaRound(Map<String ,Object> map){
         TopicDroparound topicDroparound = topicDroparoundMapper.getRandomDropaRound(map);
         return topicDroparound;
     }
@@ -1317,6 +1321,22 @@ public class LiveMybatisDao {
         criteria.andStatusEqualTo(0);
         example.setOrderByClause(" create_time asc ");
         return topicTagDetailMapper.selectByExample(example);
+    }
+	/**
+	 * 判断王国是否包含某一标签。
+	 * @author zhangjiwei
+	 * @date Jul 19, 2017
+	 * @param topicId
+	 * @param tag
+	 * @return
+	 */
+	public boolean existsTopicTag(long topicId,String tag){
+        TopicTagDetailExample example = new TopicTagDetailExample();
+        TopicTagDetailExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andTagEqualTo(tag);
+        criteria.andStatusEqualTo(0);
+        return topicTagDetailMapper.countByExample(example)>0;
     }
 	
 	public List<TopicTagDetail> getTopicTagDetailsByTagId(long tagId){
@@ -1743,5 +1763,12 @@ public class LiveMybatisDao {
     	TopicListedExample.Criteria criteria = example.createCriteria();
     	criteria.andTopicIdEqualTo(topicId);
 		return topicListedMapper.deleteByExample(example);
+	}
+
+	public TopicGiven getGivenKingomdById(long givenKingdomId) {
+		return givenMapper.selectByPrimaryKey((int)givenKingdomId);
+	}
+	public void deleteGivenKingdomById(long givenKingdomId){
+		givenMapper.deleteByPrimaryKey((int)givenKingdomId);
 	}
 }
