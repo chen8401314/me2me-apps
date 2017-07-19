@@ -4606,7 +4606,7 @@ public class UserServiceImpl implements UserService {
 			UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
 			dto.setUid(uid);
 			dto.setNickName(userProfile.getNickName());
-			dto.setAvatar(userProfile.getAvatar());
+			dto.setAvatar(Constant.QINIU_DOMAIN + "/"+ userProfile.getAvatar());
 			return Response.success(dto);
 		}
 		

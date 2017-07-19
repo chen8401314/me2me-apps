@@ -11,7 +11,8 @@
    	http://www.springframework.org/schema/task 
    	http://www.springframework.org/schema/task/spring-task.xsd
     ">
-	<task:annotation-driven />
+	<task:annotation-driven scheduler="myScheduler"/>
+	<task:scheduler id="myScheduler" pool-size="5" />
     
     <!-- task 1 start-->
     <bean id="topicHotTaskJobDetailA" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">

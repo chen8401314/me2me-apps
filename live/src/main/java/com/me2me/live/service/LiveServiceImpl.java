@@ -24,7 +24,6 @@ import com.me2me.user.rule.Rules;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.eclipse.paho.client.mqttv3.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -3416,7 +3415,15 @@ public class LiveServiceImpl implements LiveService {
         }else{
         	price = price + incr;
         }
-        topic.setPrice(price);
+        
+        //查询新建王国可以被偷的配置值
+        int newStealPrice = 0;
+        String newKingdomStealPrice = userService.getAppConfigByKey("NEW_KINGDOM_STEAL_PRICE");
+        if(!StringUtils.isEmpty(newKingdomStealPrice)){
+        	newStealPrice = Integer.valueOf(newKingdomStealPrice).intValue();
+        }
+        
+        topic.setPrice(price + newStealPrice);
         liveMybatisDao.createTopic(topic);
 
         //创建直播之后添加到我的UGC
@@ -3433,6 +3440,30 @@ public class LiveServiceImpl implements LiveService {
 
         applicationEventBus.post(new CacheLiveEvent(createKingdomDto.getUid(), topic.getId()));
 
+        //创建王国之后创建相应的价值数据表（主要是可以创建后即可有一定的被偷值）
+        TopicData td = new TopicData();
+        td.setApprove(0d);
+        td.setDiligently(0d);
+        td.setLastPrice(0);
+        td.setLastPriceIncr(0);
+        td.setReviewTextCount(0);
+        td.setReviewTextLength(0);
+        td.setStealPrice(newStealPrice);
+        td.setTopicId(topic.getId());
+        td.setUpdateAudioCount(0);
+        td.setUpdateAudioLength(0);
+        td.setUpdateDayCount(0);
+        td.setUpdateImageCount(0);
+        td.setUpdateTeaseCount(0);
+        td.setUpdateTextCount(0);
+        td.setUpdateTextLength(0);
+        td.setUpdateTime(now);
+        td.setUpdateVedioCount(0);
+        td.setUpdateVedioLength(0);
+        td.setUpdateVoteCount(0);
+        liveMybatisDao.saveTopicData(td);
+        
+        
         SpeakDto speakDto2 = new SpeakDto();
         speakDto2.setTopicId(topic.getId());
         UserProfile profile = userService.getUserProfileByUid(createKingdomDto.getUid());
