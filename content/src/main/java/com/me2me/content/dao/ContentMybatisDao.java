@@ -291,8 +291,12 @@ public class ContentMybatisDao {
         return contentImageMapper.countByExample(example);
     }
 
-    public List<Content> getNewest(long sinceId, int vFlag){
-        return contentMapper.loadNewestContent(sinceId, vFlag);
+    public List<Content> getNewest4Old(long sinceId,List<Long> blacklistUids){
+    	return contentMapper.loadNewestContent4Old(sinceId,blacklistUids);
+    }
+    
+    public List<Content> getNewest(long sinceId,List<Long> blacklistUids){
+        return contentMapper.loadNewestContent(sinceId, blacklistUids);
     }
 
     public List<Content> getAttention(long sinceId , long meUid, int vFlag){
@@ -584,17 +588,18 @@ public class ContentMybatisDao {
      * @param pageSize
      * @return
      */
-    public List<Content2Dto> getHotContentByType(long sinceId, int type, int pageSize,List<String> ids){
+    public List<Content2Dto> getHotContentByType(long sinceId, int type, int pageSize,List<String> ids,List<Long> blacklistUids){
         HotQueryDto hotQueryDto = new HotQueryDto();
         hotQueryDto.setType(type);
         hotQueryDto.setSinceId(sinceId);
         hotQueryDto.setPageSize(pageSize);
         hotQueryDto.setIds(ids);
+        hotQueryDto.setBlacklistUids(blacklistUids);
     	return contentMapper.getHotContentByType(hotQueryDto);
     }
 
-    public List<Content2Dto> getHotContentByRedis(List<String> ids){
-        return contentMapper.getHotContentByRedis(ids);
+    public List<Content2Dto> getHotContentByRedis(List<String> ids, List<Long> blacklistUids){
+        return contentMapper.getHotContentByRedis(ids, blacklistUids);
     }
 
     public int getUgcCount(long uid){
@@ -672,11 +677,14 @@ public class ContentMybatisDao {
         return billBoardRelationMapper.selectByExample(example);
     }
     
-    public List<BillBoardRelation> getRelationListPage(long bid, int sinceId, int pageSize){
+    public List<BillBoardRelation> getRelationListPage(long bid, int sinceId, int pageSize, List<Long> noTargetIds){
     	BillBoardRelationExample example = new BillBoardRelationExample();
         BillBoardRelationExample.Criteria criteria = example.createCriteria();
         criteria.andSourceIdEqualTo(bid);
         criteria.andSortGreaterThan(sinceId);
+        if(null != noTargetIds && noTargetIds.size() > 0){
+        	criteria.andTargetIdNotIn(noTargetIds);
+        }
         if(pageSize > 0){
         	example.setOrderByClause(" sort asc limit " + pageSize);
         }else{
@@ -700,10 +708,13 @@ public class ContentMybatisDao {
     	billBoardListMapper.insertSelective(bbl);
     }
         
-    public List<BillBoardList> getBillBoardListPage(String key, int sinceId, int pageSize){
+    public List<BillBoardList> getBillBoardListPage(String key, int sinceId, int pageSize, List<Long> noTargetIds){
     	BillBoardListExample example = new BillBoardListExample();
     	BillBoardListExample.Criteria criteria = example.createCriteria();
     	criteria.andListKeyEqualTo(key);
+    	if(null != noTargetIds && noTargetIds.size() > 0){
+    		criteria.andTargetIdNotIn(noTargetIds);
+    	}
     	criteria.andSinceIdGreaterThan(sinceId);
     	if(pageSize > 0){
     		example.setOrderByClause(" since_id asc limit " + pageSize);
@@ -717,8 +728,8 @@ public class ContentMybatisDao {
         return billBoardMapper.loadBillBoard(type);
     }
 
-    public List<BillBoardRelation> loadBillBoardRelationsBySinceId(long sinceId,long sourceId){
-        return billBoardMapper.loadBillBoardBySinceId(sourceId,sinceId);
+    public List<BillBoardRelation> loadBillBoardRelationsBySinceId(long sinceId,long sourceId, List<Long> noTargetIds){
+        return billBoardMapper.loadBillBoardBySinceId(sourceId,sinceId,noTargetIds);
     }
 
     public List<Long> loadBillBoardCover(int type){

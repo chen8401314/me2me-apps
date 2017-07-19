@@ -959,12 +959,34 @@
     order by c.id desc limit 5
   </select>
 
+  <select id="loadNewestContent4Old" resultMap="ResultMapWithBLOBs">
+    select
+    c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,c.update_id,c.update_time,
+    c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights
+    from content c left join topic t on c.forward_cid = t.id and c.type=3 where c.id &lt; #{sinceId} and c.status != 1 and c.rights = 1 and (t.sub_type &lt;&gt; 1 or t.sub_type is null)
+    and  c.type in (0,3,6,8,9)
+    <if test="blacklistUids!=null and blacklistUids.size() &gt; 0">
+      and c.uid not in
+      <foreach close=")" collection="blacklistUids" item="bid" open="(" separator=",">
+        #{bid}
+      </foreach>
+    </if>
+    
+    order by c.id desc limit 10
+  </select>
+
   <select id="loadNewestContent" resultMap="ResultMapWithBLOBs">
     select
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,c.update_id,c.update_time,
     c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights
     from content c left join topic t on c.forward_cid = t.id and c.type=3 where c.update_id &lt; #{sinceId} and c.status != 1 and c.rights = 1 and (t.sub_type &lt;&gt; 1 or t.sub_type is null)
     and  c.type in (0,3,6,8,9)
+    <if test="blacklistUids!=null and blacklistUids.size() &gt; 0">
+      and c.uid not in
+      <foreach close=")" collection="blacklistUids" item="bid" open="(" separator=",">
+        #{bid}
+      </foreach>
+    </if>
     order by c.update_id desc,c.id desc limit 10
   </select>
 
@@ -1037,6 +1059,12 @@
          #{id}
        </foreach>
      </if>
+     <if test="hq.blacklistUids!=null and hq.blacklistUids.size() &gt; 0">
+       and m.uid not in
+       <foreach close=")" collection="hq.blacklistUids" item="bid" open="(" separator=",">
+         #{bid}
+       </foreach>
+     </if>
      and UNIX_TIMESTAMP(m.update_time)*1000 &lt; #{hq.sinceId}
 	 order by m.update_time desc limit #{hq.pageSize}
   	</select>
@@ -1051,10 +1079,16 @@
       where c.status != 1 and c.rights=1
       ) m,high_quality_content h
       where m.id = h.cid and h.id in
-
       <foreach close=")" collection="ids" item="id" open="(" separator=",">
         #{id}
       </foreach>
+      
+      <if test="blacklistUids!=null and blacklistUids.size() &gt; 0">
+      and m.uid not in
+      <foreach close=")" collection="blacklistUids" item="bid" open="(" separator=",">
+        #{bid}
+      </foreach>
+      </if>
 
   </select>
 

@@ -23,6 +23,7 @@ import com.google.common.collect.Maps;
 import com.me2me.core.dao.BaseJdbcDao;
 import com.me2me.user.dto.*;
 import com.me2me.user.rule.Rules;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -1843,6 +1844,11 @@ public class ContentServiceImpl implements ContentService {
         }else{
             userInfoDto.getUser().setIsRec(0);
         }
+        if(userService.isBlacklist(sourceUid, targetUid)){
+        	userInfoDto.getUser().setIsBlacklist(1);
+        }else{
+        	userInfoDto.getUser().setIsBlacklist(0);
+        }
         buildUserData(sourceUid, contents,Specification.ArticleType.ORIGIN.index,userInfoDto);
         //直播
         dto.setType(Specification.ArticleType.LIVE.index);
@@ -2585,7 +2591,16 @@ public class ContentServiceImpl implements ContentService {
     public Response Newest(long sinceId, long uid, int vFlag) {
         log.info("getNewest start ...");
         ShowNewestDto showNewestDto = new ShowNewestDto();
-        List<Content> newestList = contentMybatisDao.getNewest(sinceId, vFlag);
+        
+        List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
+        
+        List<Content> newestList = null;
+        if(vFlag>0){//3.0.0版本以上
+        	newestList = contentMybatisDao.getNewest(sinceId,blacklistUids);
+        }else{
+        	newestList = contentMybatisDao.getNewest4Old(sinceId,blacklistUids);
+        }
+        
         log.info("getNewest data success ");
 
         List<Long> uidList = new ArrayList<Long>();
@@ -2655,7 +2670,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setLevel(userProfile.getLevel());
             contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
             contentElement.setNickName(userProfile.getNickName());
-            contentElement.setCreateTime(content.getCreateTime());
+            contentElement.setCreateTime(content.getUpdateTime());
             String contentStr = content.getContent();
             if(contentStr.length() > 100){
                 contentElement.setContent(contentStr.substring(0,100));
@@ -2716,7 +2731,14 @@ public class ContentServiceImpl implements ContentService {
                 contentElement.setLiveStatus(contentMybatisDao.getTopicStatus(content.getForwardCid()));
                 int reviewCount = contentMybatisDao.countFragment(content.getForwardCid(),content.getUid());
                 contentElement.setReviewCount(reviewCount);
-                contentElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
+//                contentElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
+                if(null != content.getUpdateTime()){
+                	contentElement.setLastUpdateTime(content.getUpdateTime().getTime());
+                }else{
+                	contentElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
+                }
+                
+                
                 contentElement.setTopicCount(contentMybatisDao.getTopicCount(content.getForwardCid()) - reviewCount);
             }
             int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), uid);
@@ -2731,7 +2753,9 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setPersonCount(content.getPersonCount());
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
-            contentElement.setLastUpdateTime(content.getUpdateId());
+            if(vFlag>0){//3.0.0版本以上
+            	contentElement.setLastUpdateTime(content.getUpdateId());
+            }
             showNewestDto.getNewestData().add(contentElement);
         }
         return Response.success(showNewestDto);
@@ -3504,6 +3528,8 @@ public class ContentServiceImpl implements ContentService {
 
         ShowHotListDTO result = new ShowHotListDTO();
 
+        List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
+        
         List<ActivityWithBLOBs> activityList = null;
         List<UserFamous> userFamousList = null;
         List<Content2Dto> ceKingdomList = null;
@@ -3511,7 +3537,7 @@ public class ContentServiceImpl implements ContentService {
             //获取banner列表
             activityList = activityService.getHotActivity();
             //获取名人堂列表
-            userFamousList = userService.getUserFamousPage(1, 30);
+            userFamousList = userService.getUserFamousPage(1, 30, blacklistUids);
             //获取热点聚合王国列表  ,已经不用了。
             //ceKingdomList = contentMybatisDao.getHotContentByType(sinceId, 1, 3);//只要3个热点聚合王国
         }
@@ -3534,9 +3560,9 @@ public class ContentServiceImpl implements ContentService {
         //String ids = null;
         List<Content2Dto> topList = Lists.newArrayList();
         if(!ObjectUtils.isEmpty(ids)) {
-            topList = contentMybatisDao.getHotContentByRedis(ids);
+            topList = contentMybatisDao.getHotContentByRedis(ids, blacklistUids);
         }
-        List<Content2Dto> contentList = contentMybatisDao.getHotContentByType(sinceId, 0, 20,ids);//只要UGC+PGC+个人王国
+        List<Content2Dto> contentList = contentMybatisDao.getHotContentByType(sinceId, 0, 20,ids, blacklistUids);//只要UGC+PGC+个人王国
 
         for(Content2Dto content2Dto : topList){
             content2Dto.setOperationTime(map.get(content2Dto.getHid()+""));
@@ -3569,7 +3595,7 @@ public class ContentServiceImpl implements ContentService {
                 }
             }
         }
-        result.setHotTagKingdomList(buildHotTagKingdoms(uid));
+        result.setHotTagKingdomList(buildHotTagKingdoms(uid, blacklistUids));
 
         for(ShowHotListDTO.HotContentElement element : result.getTops()){
             element.setOperationTime(map.get(element.getHid()+""));
@@ -3595,7 +3621,7 @@ public class ContentServiceImpl implements ContentService {
         BigDecimal exchangeRate = new BigDecimal(result);
         return new BigDecimal(price).divide(exchangeRate, 2, RoundingMode.HALF_UP).doubleValue();
     }
-    private List<HotTagElement> buildHotTagKingdoms(long uid){
+    private List<HotTagElement> buildHotTagKingdoms(long uid, List<Long> blacklistUids){
         // 标签推荐
 
         //	取n个标签
@@ -3609,7 +3635,7 @@ public class ContentServiceImpl implements ContentService {
                 HotTagElement element = new HotTagElement();
 
 
-                List<Map<String,Object>> topicList = this.topicTagMapper.getKingdomsByTag(label,"new",1,4);
+                List<Map<String,Object>> topicList = this.topicTagMapper.getKingdomsByTag(label,"new",1,4, blacklistUids);
 
 
                 //List<Integer> topicIds = this.topicTagMapper.getTopicIdsByTag(label);
@@ -4187,7 +4213,9 @@ public class ContentServiceImpl implements ContentService {
             sinceId = Long.MAX_VALUE;
         }
         ShowHotCeKingdomListDTO result = new ShowHotCeKingdomListDTO();
-        List<Content2Dto> ceKingdomList = contentMybatisDao.getHotContentByType(sinceId, 1, 10,null);
+        List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
+        
+        List<Content2Dto> ceKingdomList = contentMybatisDao.getHotContentByType(sinceId, 1, 10,null,blacklistUids);
         //开始组装返回对象
         if(null != ceKingdomList && ceKingdomList.size() > 0){
             List<Long> uidList = new ArrayList<Long>();
@@ -4413,6 +4441,11 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response showBangDanList(long sinceId, int type,long currentUid, int vflag) {
+    	List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(currentUid);
+        if(null == blacklistUids){
+        	blacklistUids = new ArrayList<Long>();
+        }
+    	
         BangDanDto bangDanDto = new BangDanDto();
         int searchType = 2;//找组织
         if(type == 1){
@@ -4442,12 +4475,16 @@ public class ContentServiceImpl implements ContentService {
 
                     if(bb.getMode() == 0){
                         int pageSize = 0;//榜单集是所有
+                        List<Long> noTargetIds = null;
                         if(bb.getType() == 1){
                             pageSize = 3;//王国
+                            noTargetIds = liveForContentJdbcDao.getTopicIdsByUids(blacklistUids);
                         }else if(bb.getType() == 2){
                             pageSize = 5;//人
+                            noTargetIds = blacklistUids;
                         }
-                        relationList = contentMybatisDao.getRelationListPage(bb.getId(), -1, pageSize);
+                        
+                        relationList = contentMybatisDao.getRelationListPage(bb.getId(), -1, pageSize, noTargetIds);
                         if(null != relationList && relationList.size() > 0){
                             relationMap.put(bb.getId().toString(), relationList);
                             for(BillBoardRelation bbr : relationList){
@@ -4603,7 +4640,7 @@ public class ContentServiceImpl implements ContentService {
                     pageSize = 5;//人
                 }
                 if(billBoard.getMode() > 0){//自动榜单
-                    this.buildAutoBillBoardSimple(bangDanData, billBoard.getId(), billBoard.getMode(), currentUid, billBoard.getType(), pageSize);
+                    this.buildAutoBillBoardSimple(bangDanData, billBoard.getId(), billBoard.getMode(), currentUid, billBoard.getType(), pageSize,blacklistUids);
                 }else{//人工榜单
                     relationList = relationMap.get(billBoard.getId().toString());
                     if(null != relationList && relationList.size() > 0){
@@ -4719,7 +4756,7 @@ public class ContentServiceImpl implements ContentService {
                 }
 
                 //榜单集合
-                List<Map<String,Object>> topicList = this.liveForContentJdbcDao.getTopPricedKingdomList( 1, 3);
+                List<Map<String,Object>> topicList = this.liveForContentJdbcDao.getTopPricedKingdomList( 1, 3, blacklistUids);
                 List<BasicKingdomInfo> buildResult = this.kingdomBuider.buildKingdoms(topicList, currentUid);
                 bangDanDto.setListPricedTopic(buildResult);
 
@@ -4873,6 +4910,11 @@ public class ContentServiceImpl implements ContentService {
     public Response showListDetail(long currentUid, long bid,long sinceId, int vflag) {
         BillBoardDetailsDto billBoardDetailsDto = new BillBoardDetailsDto();
 
+        List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(currentUid);
+        if(null == blacklistUids){
+        	blacklistUids = new ArrayList<Long>();
+        }
+        
         BillBoard billBoard = contentMybatisDao.loadBillBoardById(bid);
         if(null == billBoard){
             return Response.failure(ResponseStatus.DATA_DOES_NOT_EXIST.status, ResponseStatus.DATA_DOES_NOT_EXIST.message);
@@ -4894,10 +4936,16 @@ public class ContentServiceImpl implements ContentService {
         billBoardDetailsDto.setSubType(billBoard.getType());
 
         if(billBoard.getMode() > 0){//自动榜单
-            this.buildAutoBillBoardDetails(billBoardDetailsDto, billBoard.getMode(), sinceId, currentUid, billBoard.getType());
+            this.buildAutoBillBoardDetails(billBoardDetailsDto, billBoard.getMode(), sinceId, currentUid, billBoard.getType(), blacklistUids);
         }else{//人工榜单
             // 记载榜单旗下的列表数据
-            List<BillBoardRelation> data =  contentMybatisDao.loadBillBoardRelationsBySinceId(sinceId,bid);
+        	List<Long> noTargetIds = null;
+        	if(billBoard.getType() == 1){//王国
+        		noTargetIds = liveForContentJdbcDao.getTopicIdsByUids(blacklistUids);
+        	}else if(billBoard.getType() == 2){//人
+        		noTargetIds = blacklistUids;
+        	}
+            List<BillBoardRelation> data =  contentMybatisDao.loadBillBoardRelationsBySinceId(sinceId,bid,noTargetIds);
             if(null != data && data.size() > 0){
                 //尽量不再循环里查sql，故将所需sql在循环外统一查询出来 -- modify by zcl
                 List<Long> uidList = new ArrayList<Long>();//人
@@ -5076,6 +5124,10 @@ public class ContentServiceImpl implements ContentService {
                     }else if(type==2){//人
                         bangDanInnerData.setUid(targetId);
                         userProfile = userMap.get(String.valueOf(targetId));
+                        if(null == userProfile){
+                        	log.info("用户[uid="+targetId+"]不存在");
+                            continue;
+                        }
                         bangDanInnerData.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
                         bangDanInnerData.setNickName(userProfile.getNickName());
                         bangDanInnerData.setV_lv(userProfile.getvLv());
@@ -5115,24 +5167,25 @@ public class ContentServiceImpl implements ContentService {
         return Response.success(billBoardDetailsDto);
     }
 
-    private List<BillBoardListDTO> getAutoBillBoardList(int mode, long sinceId, int pageSize){
+    private List<BillBoardListDTO> getAutoBillBoardList(int mode, long sinceId, int pageSize, List<Long> blacklistUids){
         List<BillBoardListDTO> result = null;
         String currentCacheKey = null;
         List<BillBoardList> bbList = null;
+        List<Long> topicIds = null;
         switch(mode){
             case 1://最活跃的米汤新鲜人
                 //实时统计
                 if(sinceId < 0){
                     sinceId = Long.MAX_VALUE;
                 }
-                result = liveForContentJdbcDao.getActiveUserBillboard(sinceId, pageSize);
+                result = liveForContentJdbcDao.getActiveUserBillboard(sinceId, pageSize, blacklistUids);
                 break;
             case 2://最受追捧的米汤大咖
                 currentCacheKey = cacheService.get(Constant.BILLBOARD_KEY_POPULAR_PEOPLE);
                 if(StringUtils.isEmpty(currentCacheKey)){
                     currentCacheKey = Constant.BILLBOARD_KEY_TARGET1;
                 }
-                bbList = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_POPULAR_PEOPLE+currentCacheKey, (int)sinceId, pageSize);
+                bbList = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_POPULAR_PEOPLE+currentCacheKey, (int)sinceId, pageSize, blacklistUids);
                 result = this.genBBLDto(bbList);
                 break;
             case 3://最爱叨逼叨的话痨王国
@@ -5140,7 +5193,7 @@ public class ContentServiceImpl implements ContentService {
                 if(StringUtils.isEmpty(currentCacheKey)){
                     currentCacheKey = Constant.BILLBOARD_KEY_TARGET1;
                 }
-                bbList = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_JAY_PEOPLE+currentCacheKey, (int)sinceId, pageSize);
+                bbList = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_JAY_PEOPLE+currentCacheKey, (int)sinceId, pageSize, blacklistUids);
                 result = this.genBBLDto(bbList);
                 break;
             case 4://这里的互动最热闹
@@ -5148,14 +5201,15 @@ public class ContentServiceImpl implements ContentService {
                 if(sinceId < 0){
                     sinceId = Long.MAX_VALUE;
                 }
-                result = liveForContentJdbcDao.getInteractionHottestKingdomBillboard(sinceId, pageSize);
+                result = liveForContentJdbcDao.getInteractionHottestKingdomBillboard(sinceId, pageSize, blacklistUids);
                 break;
             case 5://最丰富多彩的王国
                 currentCacheKey = cacheService.get(Constant.BILLBOARD_KEY_COLOURFUL_KINGDOM);
                 if(StringUtils.isEmpty(currentCacheKey)){
                     currentCacheKey = Constant.BILLBOARD_KEY_TARGET1;
                 }
-                bbList = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_COLOURFUL_KINGDOM+currentCacheKey, (int)sinceId, pageSize);
+                topicIds = liveForContentJdbcDao.getTopicIdsByUids(blacklistUids);
+                bbList = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_COLOURFUL_KINGDOM+currentCacheKey, (int)sinceId, pageSize, topicIds);
                 result = this.genBBLDto(bbList);
                 break;
             case 6://求安慰的孤独王国
@@ -5163,7 +5217,8 @@ public class ContentServiceImpl implements ContentService {
                 if(StringUtils.isEmpty(currentCacheKey)){
                     currentCacheKey = Constant.BILLBOARD_KEY_TARGET1;
                 }
-                bbList = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_LONELY_KINGDOM+currentCacheKey, (int)sinceId, pageSize);
+                topicIds = liveForContentJdbcDao.getTopicIdsByUids(blacklistUids);
+                bbList = contentMybatisDao.getBillBoardListPage(Constant.BILLBOARD_KEY_LONELY_KINGDOM+currentCacheKey, (int)sinceId, pageSize, topicIds);
                 result = this.genBBLDto(bbList);
                 break;
             case 7://最新更新的王国
@@ -5171,155 +5226,155 @@ public class ContentServiceImpl implements ContentService {
                 if(sinceId < 0){
                     sinceId = Long.MAX_VALUE;
                 }
-                result = liveForContentJdbcDao.getLivesByUpdateTime(sinceId, pageSize);
+                result = liveForContentJdbcDao.getLivesByUpdateTime(sinceId, pageSize, blacklistUids);
                 break;
             case 8://新注册的帅哥
                 //实时统计
                 if(sinceId < 0){
                     sinceId = Long.MAX_VALUE;
                 }
-                result = liveForContentJdbcDao.getNewPeople(1, sinceId, pageSize);
+                result = liveForContentJdbcDao.getNewPeople(1, sinceId, pageSize, blacklistUids);
                 break;
             case 9://新注册的美女
                 //实时统计
                 if(sinceId < 0){
                     sinceId = Long.MAX_VALUE;
                 }
-                result = liveForContentJdbcDao.getNewPeople(0, sinceId, pageSize);
+                result = liveForContentJdbcDao.getNewPeople(0, sinceId, pageSize, blacklistUids);
                 break;
             case 10://新注册的用户（无所谓有没有王国）
                 //实时统计
                 if(sinceId < 0){
                     sinceId = Long.MAX_VALUE;
                 }
-                result = liveForContentJdbcDao.getNewRegisterUsers(sinceId, pageSize);
+                result = liveForContentJdbcDao.getNewRegisterUsers(sinceId, pageSize, blacklistUids);
                 break;
             case 11://炙手可热的米汤红人
                 //实时统计
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.fansBillboard(sinceId, pageSize);
+                result = liveForContentJdbcDao.fansBillboard(sinceId, pageSize, blacklistUids);
                 break;
             case 12://王国价值最高
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.kingdomPriceList(sinceId, pageSize);
+                result = liveForContentJdbcDao.kingdomPriceList(sinceId, pageSize, blacklistUids);
                 break;
             case 13://王国价值增长最快
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.kingdomIncrPriceList(sinceId, pageSize);
+                result = liveForContentJdbcDao.kingdomIncrPriceList(sinceId, pageSize, blacklistUids);
                 break;
             case 14://标签[运动的时候最性感]王国价值最高
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.tagKingdomPriceList("运动的时候最性感", sinceId, pageSize);
+                result = liveForContentJdbcDao.tagKingdomPriceList("运动的时候最性感", sinceId, pageSize, blacklistUids);
                 break;
             case 15://标签[运动的时候最性感]王国价值增长最快
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.tagKingdomIncrPriceList("运动的时候最性感", sinceId, pageSize);
+                result = liveForContentJdbcDao.tagKingdomIncrPriceList("运动的时候最性感", sinceId, pageSize, blacklistUids);
                 break;
             case 16://标签[非典型性话唠]王国价值最高
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.tagKingdomPriceList("非典型性话唠", sinceId, pageSize);
+                result = liveForContentJdbcDao.tagKingdomPriceList("非典型性话唠", sinceId, pageSize, blacklistUids);
                 break;
             case 17://标签[非典型性话唠]王国价值增长最快
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.tagKingdomIncrPriceList("非典型性话唠", sinceId, pageSize);
+                result = liveForContentJdbcDao.tagKingdomIncrPriceList("非典型性话唠", sinceId, pageSize, blacklistUids);
                 break;
             case 18://标签[声音与光影]王国价值最高
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.tagKingdomPriceList("声音与光影", sinceId, pageSize);
+                result = liveForContentJdbcDao.tagKingdomPriceList("声音与光影", sinceId, pageSize, blacklistUids);
                 break;
             case 19://标签[声音与光影]王国价值增长最快
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.tagKingdomIncrPriceList("声音与光影", sinceId, pageSize);
+                result = liveForContentJdbcDao.tagKingdomIncrPriceList("声音与光影", sinceId, pageSize, blacklistUids);
                 break;
             case 20://标签[建筑不止是房子]王国价值最高
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.tagKingdomPriceList("建筑不止是房子", sinceId, pageSize);
+                result = liveForContentJdbcDao.tagKingdomPriceList("建筑不止是房子", sinceId, pageSize, blacklistUids);
                 break;
             case 21://标签[建筑不止是房子]王国价值增长最快
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.tagKingdomIncrPriceList("建筑不止是房子", sinceId, pageSize);
+                result = liveForContentJdbcDao.tagKingdomIncrPriceList("建筑不止是房子", sinceId, pageSize, blacklistUids);
                 break;
             case 22://标签[寰球动漫游戏世界]王国价值最高
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.tagKingdomPriceList("寰球动漫游戏世界", sinceId, pageSize);
+                result = liveForContentJdbcDao.tagKingdomPriceList("寰球动漫游戏世界", sinceId, pageSize, blacklistUids);
                 break;
             case 23://标签[寰球动漫游戏世界]王国价值增长最快
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.tagKingdomIncrPriceList("寰球动漫游戏世界", sinceId, pageSize);
+                result = liveForContentJdbcDao.tagKingdomIncrPriceList("寰球动漫游戏世界", sinceId, pageSize, blacklistUids);
                 break;
             case 24://标签[玩物不丧志]王国价值最高
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.tagKingdomPriceList("玩物不丧志", sinceId, pageSize);
+                result = liveForContentJdbcDao.tagKingdomPriceList("玩物不丧志", sinceId, pageSize, blacklistUids);
                 break;
             case 25://标签[玩物不丧志]王国价值增长最快
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.tagKingdomIncrPriceList("玩物不丧志", sinceId, pageSize);
+                result = liveForContentJdbcDao.tagKingdomIncrPriceList("玩物不丧志", sinceId, pageSize, blacklistUids);
                 break;
             case 26://标签[铲屎官的日常]王国价值最高
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.tagKingdomPriceList("铲屎官的日常", sinceId, pageSize);
+                result = liveForContentJdbcDao.tagKingdomPriceList("铲屎官的日常", sinceId, pageSize, blacklistUids);
                 break;
             case 27://标签[铲屎官的日常]王国价值增长最快
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.tagKingdomIncrPriceList("铲屎官的日常", sinceId, pageSize);
+                result = liveForContentJdbcDao.tagKingdomIncrPriceList("铲屎官的日常", sinceId, pageSize, blacklistUids);
                 break;
             case 28://标签[旅行是我的态度]王国价值最高
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.tagKingdomPriceList("旅行是我的态度", sinceId, pageSize);
+                result = liveForContentJdbcDao.tagKingdomPriceList("旅行是我的态度", sinceId, pageSize, blacklistUids);
                 break;
             case 29://标签[旅行是我的态度]王国价值增长最快
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.tagKingdomIncrPriceList("旅行是我的态度", sinceId, pageSize);
+                result = liveForContentJdbcDao.tagKingdomIncrPriceList("旅行是我的态度", sinceId, pageSize, blacklistUids);
                 break;
             case 30://标签[深夜食堂]王国价值最高
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.tagKingdomPriceList("深夜食堂", sinceId, pageSize);
+                result = liveForContentJdbcDao.tagKingdomPriceList("深夜食堂", sinceId, pageSize, blacklistUids);
                 break;
             case 31://标签[深夜食堂]王国价值增长最快
                 if(sinceId < 0){
                     sinceId = 0l;
                 }
-                result = liveForContentJdbcDao.tagKingdomIncrPriceList("深夜食堂", sinceId, pageSize);
+                result = liveForContentJdbcDao.tagKingdomIncrPriceList("深夜食堂", sinceId, pageSize, blacklistUids);
                 break;
             default:
                 break;
@@ -5343,8 +5398,8 @@ public class ContentServiceImpl implements ContentService {
         return result;
     }
 
-    private void buildAutoBillBoardSimple(BangDanDto.BangDanData bangDanData, long bid, int mode, long currentUid, int type, int pageSize){
-        List<BillBoardListDTO> result = this.getAutoBillBoardList(mode, -1, pageSize);
+    private void buildAutoBillBoardSimple(BangDanDto.BangDanData bangDanData, long bid, int mode, long currentUid, int type, int pageSize, List<Long> blacklistUids){
+        List<BillBoardListDTO> result = this.getAutoBillBoardList(mode, -1, pageSize,blacklistUids);
 
         double minPrice =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_PRICE_BRAND_MIN"));
 
@@ -5558,8 +5613,8 @@ public class ContentServiceImpl implements ContentService {
      * @param mode
      * @return
      */
-    private void buildAutoBillBoardDetails(BillBoardDetailsDto billBoardDetailsDto, int mode, long sinceId, long currentUid, int type){
-        List<BillBoardListDTO> result = this.getAutoBillBoardList(mode, sinceId, 20);
+    private void buildAutoBillBoardDetails(BillBoardDetailsDto billBoardDetailsDto, int mode, long sinceId, long currentUid, int type, List<Long> blacklistUids){
+        List<BillBoardListDTO> result = this.getAutoBillBoardList(mode, sinceId, 20, blacklistUids);
 
         double minPrice =Double.parseDouble((String) userService.getAppConfigByKey("KINGDOM_SHOW_PRICE_BRAND_MIN"));
 
@@ -5859,7 +5914,7 @@ public class ContentServiceImpl implements ContentService {
             type = 2;
         }
 
-        List<BillBoardListDTO> list = this.getAutoBillBoardList(mode, -1, 100);
+        List<BillBoardListDTO> list = this.getAutoBillBoardList(mode, -1, 100, null);
         if(null != list && list.size() > 0){
             List<Long> idList = Lists.newArrayList();
             for(BillBoardListDTO bbl : list){
@@ -6312,7 +6367,8 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response<PricedKingdomDto> getPricedKingdomList(int page, int pageSize,long currentUid) {
-        List<Map<String,Object>> topicList = this.liveForContentJdbcDao.getTopPricedKingdomList( page, pageSize);
+    	List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(currentUid);
+        List<Map<String,Object>> topicList = this.liveForContentJdbcDao.getTopPricedKingdomList( page, pageSize, blacklistUids);
         List<BasicKingdomInfo> buildResult = this.kingdomBuider.buildKingdoms(topicList, currentUid);
         PricedKingdomDto result = new PricedKingdomDto();
         for(BasicKingdomInfo info:buildResult){
@@ -6345,7 +6401,9 @@ public class ContentServiceImpl implements ContentService {
 
     @Override
     public Response<TagKingdomDto> getTagKingdomList(String tagName, String order, int page, int pageSize, long uid) {
-        List<Map<String,Object>> topics =topicTagMapper.getKingdomsByTag(tagName, order, page, pageSize);
+    	List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
+    	
+        List<Map<String,Object>> topics =topicTagMapper.getKingdomsByTag(tagName, order, page, pageSize, blacklistUids);
         List<BasicKingdomInfo> kingdoms = this.kingdomBuider.buildKingdoms(topics, uid);
         TagKingdomDto dto = new TagKingdomDto();
         dto.setKingdomList(kingdoms);
@@ -6460,10 +6518,23 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public Response initSquareUpdateId() {
         List<Map<String,Object>> list = billBoardJdbcDao.getAllContent();
+        log.info("共["+list.size()+"]个内容");
+        int i=0;
+        int l = list.size();
         for(Map map : list){
+        	i++;
             long id = Long.valueOf(map.get("id").toString());
             long updateId = cacheService.incr("UPDATE_ID");
             billBoardJdbcDao.setUpdateId(updateId,id);
+            if(i%2000 == 0){
+            	l = l - i;
+            	log.info("本批次处理了["+i+"]个，还剩["+l+"]个");
+            	i = 0;
+            }
+        }
+        if(i>0){
+        	l = l - i;
+        	log.info("本批次处理了["+i+"]个，还剩["+l+"]个");
         }
         return Response.success();
     }

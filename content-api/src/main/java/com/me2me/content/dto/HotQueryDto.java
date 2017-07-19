@@ -1,7 +1,9 @@
 package com.me2me.content.dto;
 
 import com.me2me.common.web.BaseEntity;
+
 import lombok.Data;
+
 import java.util.List;
 
 /**
@@ -19,7 +21,7 @@ public class HotQueryDto implements BaseEntity {
     private int pageSize;
 
     private List<String> ids;
-//    @Param("sinceId") long sinceId, @Param("type") int type, @Param("pageSize") int pageSize,@Param("ids")
-//    List<String> ids
+
+    private List<Long> blacklistUids;
 
 }

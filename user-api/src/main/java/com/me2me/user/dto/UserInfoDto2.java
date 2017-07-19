@@ -59,6 +59,8 @@ public class UserInfoDto2 implements BaseEntity{
         private int level;
 
         private int isRec;
+        
+        private int isBlacklist;
     }
 
     @Data

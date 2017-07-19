@@ -137,7 +137,7 @@ public interface ContentSearchService {
 	 * @param pageSize
 	 * @return
 	 */
-	public List<TopicEsMapping> getTopicEsMappingList(long uid,List<Long> noIds,int page,int pageSize);
+	public List<TopicEsMapping> getTopicEsMappingList(long uid,List<Long> noIds,int page,int pageSize,List<Long> blacklistUids);
 	
 	/**
 	 * 推文章。

@@ -10,8 +10,10 @@ import com.me2me.user.model.*;
 import com.me2me.user.model.Dictionary;
 import com.me2me.user.rule.CoinRule;
 import com.me2me.user.rule.Rules;
+
 import lombok.Getter;
 import lombok.Setter;
+
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -2799,7 +2801,7 @@ public class UserServiceImpl implements UserService {
     }
     
     @Override
-    public List<UserFamous> getUserFamousPage(int page, int pageSize){
+    public List<UserFamous> getUserFamousPage(int page, int pageSize, List<Long> blacklistUids){
     	if(page <= 0){
     		page = 1;
     	}
@@ -2808,7 +2810,7 @@ public class UserServiceImpl implements UserService {
     	}
     	int start = (page-1)*pageSize;
     	
-    	return userMybatisDao.getUserFamousList(start, pageSize);
+    	return userMybatisDao.getUserFamousList(start, pageSize, blacklistUids);
     }
     
     @Override
@@ -4230,4 +4232,59 @@ public class UserServiceImpl implements UserService {
 		return userMybatisDao.getUserNoByMeNumber(meNumber);
 	}
     
+	@Override
+	public boolean isBlacklist(long uid, long targetUid){
+		UserBlackList ubl = userMybatisDao.getUserBlackListByUidAndTargetUid(uid, targetUid);
+		if(null != ubl){
+			return true;
+		}
+		return false;
+	}
+	
+	@Override
+	public Response blacklist(long uid, long targetUid, int action){
+		if(uid == targetUid){
+			return Response.failure(500, "不能自己操作自己");
+		}
+		
+		UserBlackList ubl = userMybatisDao.getUserBlackListByUidAndTargetUid(uid, targetUid);
+		if(action == 0){//设置黑名单
+			if(null == ubl){
+				ubl = new UserBlackList();
+				ubl.setUid(uid);
+				ubl.setTargetUid(targetUid);
+				ubl.setCreateTime(new Date());
+				userMybatisDao.saveUserBlackList(ubl);
+			}//如果已经存在，则无所谓设置了
+		}else if(action == 1){//取消黑名单
+			if(null != ubl){
+				userMybatisDao.deleteUserBlackListById(ubl.getId());
+			}//如果已经不存在了，则无所谓取消了
+		}else{
+			return Response.failure(500, "不支持的操作类型");
+		}
+		
+		return Response.success(200, "操作成功，请重新刷新列表");
+	}
+	
+	/**
+	 * 获取导游信息
+	 * @return
+	 */
+	@Override
+	public Response getGuideInfo(){
+		String uidStr =   getAppConfigByKey("GUIDE_UID");
+		if(StringUtils.isEmpty(uidStr)){
+			return Response.failure(500, "没有配置导游用户");
+		}else{
+			long uid  = Long.parseLong(uidStr);
+			GuideInfoDto dto = new GuideInfoDto();
+			UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+			dto.setUid(uid);
+			dto.setNickName(userProfile.getNickName());
+			dto.setAvatar(Constant.QINIU_DOMAIN + "/"+ userProfile.getAvatar());
+			return Response.success(dto);
+		}
+		
+	}
 }

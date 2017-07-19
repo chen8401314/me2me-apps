@@ -2,9 +2,11 @@ package com.me2me.content.mapper;
 
 import com.me2me.content.model.BillBoard;
 import com.me2me.content.model.BillBoardExample;
+
 import java.util.List;
 
 import com.me2me.content.model.BillBoardRelation;
+
 import org.apache.ibatis.annotations.Param;
 
 public interface BillBoardMapper {
@@ -116,5 +118,5 @@ public interface BillBoardMapper {
      * @param sinceId
      * @return
      */
-    List<BillBoardRelation> loadBillBoardBySinceId(@Param("sourceId") long sourceId, @Param("sinceId") long sinceId);
+    List<BillBoardRelation> loadBillBoardBySinceId(@Param("sourceId") long sourceId, @Param("sinceId") long sinceId, @Param("noTargetIds") List<Long> noTargetIds);
 }

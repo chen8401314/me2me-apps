@@ -548,4 +548,25 @@ public class ContentForSearchJdbcDao {
 		}
 		return result;
 	}
+	
+	/**
+     * 获取黑名单UID列表
+     * @param uid
+     * @return
+     */
+    public List<Long> getBlacklist(long uid){
+    	String sql = "select * from user_black_list t where t.uid=" + uid;
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
+    	List<Long> result = new ArrayList<Long>();
+    	if(null != list && list.size() > 0){
+    		Long targetUid = null;
+    		for(Map<String, Object> b : list){
+    			targetUid = (Long)b.get("target_uid");
+    			if(!result.contains(targetUid)){
+    				result.add(targetUid);
+    			}
+    		}
+    	}
+    	return result;
+    }
 }
