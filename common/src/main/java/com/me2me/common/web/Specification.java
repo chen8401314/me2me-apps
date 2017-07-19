@@ -73,6 +73,8 @@ public interface Specification {
 
         CHECK("验证验证码",1),
 
+        LOGIN("登录获取验证码",4),
+
         FIND_MY_ENCRYPT("找回验证码",2),
         
         SEND_MESSAGE("纯发短信", 3);

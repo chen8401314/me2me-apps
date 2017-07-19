@@ -20,6 +20,8 @@ public enum  ResponseStatus {
 
     USER_MODIFY_ENCRYPT_SUCCESS("用户密码修改成功","user modifyEncrypt success",2002),
 
+    USER_SET_ENCRYPT_SUCCESS("用户密码设置成功","user setEncrypt success",2002),
+
     USER_MODIFY_HOBBY_SUCCESS("用户爱好修改成功","user modifyHobby success",2003),
 
     USER_VERIFY_GET_SUCCESS("验证码发送成功","user verify get success",2004),

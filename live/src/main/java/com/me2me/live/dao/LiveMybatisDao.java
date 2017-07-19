@@ -1619,6 +1619,12 @@ public class LiveMybatisDao {
     	TopicDataExample.Criteria criteria = example.createCriteria();
         return topicDataMapper.countByExample(example);
     }
+    
+    public void saveTopicData(TopicData td){
+    	topicDataMapper.insertSelective(td);
+    }
+    
+    
 	/**
 	 * 获取增长比自己低的王国数
 	 * @author chenxiang

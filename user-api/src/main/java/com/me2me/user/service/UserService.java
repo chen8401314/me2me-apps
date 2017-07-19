@@ -28,12 +28,28 @@ public interface UserService {
 	Response signUp(UserSignUpDto userDto);
 
 	/**
+	 * 使用验证码注册
+	 * @param userDto
+	 * @return
+	 */
+	Response signUpByVerify(UserSignUpDto userDto);
+
+	/**
 	 * 用户登录接口
 	 * 
 	 * @param userLoginDto
 	 * @return
 	 */
 	Response login(UserLoginDto userLoginDto);
+
+
+	/**
+	 * 用户验证码登录接口
+	 *
+	 * @param userLoginDto
+	 * @return
+	 */
+	Response loginByVerify(UserLoginDto userLoginDto);
 
 	/**
 	 * 验证码和校验验证码接口
@@ -57,6 +73,15 @@ public interface UserService {
 	 * @return
 	 */
 	Response modifyEncrypt(ModifyEncryptDto modifyEncryptDto);
+
+
+	/**
+	 * 用户设置密码
+	 *
+	 * @param setEncryptDto
+	 * @return
+	 */
+	Response setEncrypt(SetEncryptDto setEncryptDto);
 
 	/**
 	 * 修改爱好
@@ -529,4 +554,6 @@ public interface UserService {
 	 * @return
 	 */
 	Response blacklist(long uid, long targetUid, int action);
+	
+	 Response getGuideInfo();
 }
