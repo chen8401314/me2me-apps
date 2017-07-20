@@ -10,6 +10,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -126,6 +127,8 @@ import com.me2me.live.model.LiveFavoriteDelete;
 import com.me2me.live.model.LiveReadHistory;
 import com.me2me.live.model.QuotationInfo;
 import com.me2me.live.model.RobotInfo;
+import com.me2me.live.model.RobotQuotationRecord;
+import com.me2me.live.model.SignRecord;
 import com.me2me.live.model.TeaseInfo;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.Topic2;
@@ -7900,6 +7903,14 @@ public class LiveServiceImpl implements LiveService {
 		return Response.success(dto);
 	}
 
+	/**
+	 * 
+	 * 获取最大图片
+	 * @param yesterDay
+	 * @param uid
+	 * @param topicId
+	 * @return
+	 */
 	public Map<String, Object> getMaxFragmentImage(String yesterDay, long uid, long topicId) {
 		List<Map<String, Object>> topicList = liveLocalJdbcDao.getFragmentImage(yesterDay, uid, 0);
 		int maxNumber = -1;

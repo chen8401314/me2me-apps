@@ -36,6 +36,8 @@ import com.me2me.live.mapper.LiveFavoriteMapper;
 import com.me2me.live.mapper.LiveReadHistoryMapper;
 import com.me2me.live.mapper.QuotationInfoMapper;
 import com.me2me.live.mapper.RobotInfoMapper;
+import com.me2me.live.mapper.RobotQuotationRecordMapper;
+import com.me2me.live.mapper.SignRecordMapper;
 import com.me2me.live.mapper.TeaseInfoMapper;
 import com.me2me.live.mapper.TopicAggregationApplyMapper;
 import com.me2me.live.mapper.TopicAggregationMapper;
@@ -79,6 +81,8 @@ import com.me2me.live.model.QuotationInfo;
 import com.me2me.live.model.QuotationInfoExample;
 import com.me2me.live.model.RobotInfo;
 import com.me2me.live.model.RobotInfoExample;
+import com.me2me.live.model.RobotQuotationRecord;
+import com.me2me.live.model.SignRecord;
 import com.me2me.live.model.TeaseInfo;
 import com.me2me.live.model.TeaseInfoExample;
 import com.me2me.live.model.Topic;
@@ -238,11 +242,21 @@ public class LiveMybatisDao {
     
     @Autowired
     private TopicGivenMapper givenMapper;
+    
     @Autowired
     private RobotInfoMapper robotInfoMapper;
     
     @Autowired
     private QuotationInfoMapper quotationInfoMapper;
+    
+    @Autowired
+    private SignRecordMapper signRecordMapper;
+    
+    @Autowired
+    private RobotQuotationRecordMapper robotQuotationRecordMapper;
+    
+    
+    
     
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -1818,5 +1832,23 @@ public class LiveMybatisDao {
 	}
 	public void deleteGivenKingdomById(long givenKingdomId){
 		givenMapper.deleteByPrimaryKey((int)givenKingdomId);
+	}
+	/**
+	 * 添加日签记录
+	 * @author chenxiang
+	 * @date 2017-07-20
+	 * @param 
+	 */
+	public int addSignRecord(SignRecord signRecord){
+		return signRecordMapper.insertSelective(signRecord);
+	}
+	/**
+	 * 添加日签语录记录
+	 * @author chenxiang
+	 * @date 2017-07-20
+	 * @param 
+	 */
+	public int addRobotQuotationRecord(RobotQuotationRecord robotQuotationRecord){
+		return robotQuotationRecordMapper.insertSelective(robotQuotationRecord);
 	}
 }
