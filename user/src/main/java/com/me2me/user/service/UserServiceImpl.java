@@ -1,7 +1,6 @@
 package com.me2me.user.service;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -14,7 +13,6 @@ import com.me2me.user.rule.CoinRule;
 import com.me2me.user.rule.Rules;
 
 import lombok.Getter;
-import lombok.Setter;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -4608,7 +4606,18 @@ public class UserServiceImpl implements UserService {
 		List<String> picList = this.liveForUserJdbcDao.getRandomKingdomCover(count);
 		return picList;
 	}
-	/**
+
+    @Override
+    public Response getRedBag(GetRedBagDto getRedBagDto) {
+	    String redBag = this.getAppConfigByKey("RED_BAG");
+	    ModifyUserCoinDto modifyUserCoinDto = this.modifyUserCoin(getRedBagDto.getUid(),Integer.parseInt(redBag));
+	    getRedBagDto.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
+	    getRedBagDto.setUpgrade(modifyUserCoinDto.getUpgrade());
+	    getRedBagDto.setCue("恭喜你获得"+Integer.parseInt(redBag)+"个米汤币");
+        return Response.success(getRedBagDto);
+    }
+
+    /**
 	 * 赠送3个王国
 	 * @author zhangjiwei
 	 * @date Jul 19, 2017

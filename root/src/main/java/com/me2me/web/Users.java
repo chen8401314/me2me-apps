@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.me2me.common.utils.CommonUtils;
-import com.me2me.common.web.Request;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseWapx;
 import com.me2me.content.service.ContentService;
@@ -1071,5 +1070,19 @@ public class Users extends BaseController {
     @RequestMapping(value = "/getGuideInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getGuideInfo(GuideInfoRequest request){
     	return userService.getGuideInfo();
+    }
+
+
+    /**
+     * 信息补全完整领取红包接口
+     * @param getRedRequest
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getRedBag",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getRedBag(GetRedRequest getRedRequest){
+        GetRedBagDto getRedBagDto = new GetRedBagDto();
+        getRedBagDto.setUid(getRedRequest.getUid());
+        return userService.getRedBag(getRedBagDto);
     }
 }

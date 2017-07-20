@@ -560,4 +560,12 @@ public interface UserService {
     User getUserByUid(long uid) ;
 
 	List<String> getRandomKingdomCover(int count);
+
+
+	/**
+	 * 领取红包接口
+	 * @param getRedBagDto
+	 * @return
+	 */
+	Response getRedBag(GetRedBagDto getRedBagDto);
 }
