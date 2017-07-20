@@ -1322,7 +1322,13 @@ public class KingdomPriceTask {
 			localJdbcDao.executeSql(insertPricePushSql.toString());
 			
 			//需要再王国里插入一段系统消息
-			String msg = "本王国昨天"+(a>0?"升值":"贬值")+"了"+String.valueOf(Math.abs(a))+"米汤币";
+			String msg = null;
+			if(a>0){//升值
+				msg = "昨日升值了"+String.valueOf(Math.abs(a))+"米汤币，棒棒哒！再接再厉吧。";
+			}else{
+				msg = "昨日贬值了"+String.valueOf(Math.abs(a))+"米汤币，略可惜，继续加油吧。";
+			}
+			
 			JSONObject extra = new JSONObject();
 			extra.put("type", "system");
 			extra.put("only", UUID.randomUUID().toString()+"-"+new Random().nextInt());
