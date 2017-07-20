@@ -17,6 +17,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
+import com.me2me.live.event.*;
 import com.me2me.user.dto.ModifyUserCoinDto;
 import com.me2me.user.dto.PermissionDescriptionDto;
 import com.me2me.user.dto.PermissionDescriptionDto.PermissionNodeDto;
@@ -114,11 +115,6 @@ import com.me2me.live.dto.TopicTransferRecordDto;
 import com.me2me.live.dto.TopicVoteInfoDto;
 import com.me2me.live.dto.UserAtListDTO;
 import com.me2me.live.dto.VoteInfoDto;
-import com.me2me.live.event.AggregationPublishEvent;
-import com.me2me.live.event.CacheLiveEvent;
-import com.me2me.live.event.CoreAggregationRemindEvent;
-import com.me2me.live.event.RemindAndJpushAtMessageEvent;
-import com.me2me.live.event.SpeakNewEvent;
 import com.me2me.live.model.DeleteLog;
 import com.me2me.live.model.LiveDisplayFragment;
 import com.me2me.live.model.LiveDisplayProtocol;
@@ -3594,6 +3590,9 @@ public class LiveServiceImpl implements LiveService {
         }
         //add kingdom tags -- end --
 
+        // 发送一个异步事件机器人专用
+
+        applicationEventBus.post(new AutoReplyEvent(topic.getUid(),topic.getId(),topic.getCreateTime()));
         log.info("createKingdom end");
         CoinRule coinRule = userService.getCoinRules().get(Rules.CREATE_KING_KEY);
         coinRule.setExt(createKingdomDto.getUid());

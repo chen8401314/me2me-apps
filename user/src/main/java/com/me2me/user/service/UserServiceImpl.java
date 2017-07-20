@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.me2me.core.KeysManager;
 import com.me2me.user.dto.*;
 import com.me2me.user.model.*;
 import com.me2me.user.model.Dictionary;
@@ -262,6 +263,10 @@ public class UserServiceImpl implements UserService {
         //不管你爽不爽，就是要卖你3个王国
         give3Kingdoms(userProfile);
         //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
+
+        //新用户注册放入cach,机器人自动回复用
+        String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+signUpSuccessDto.getUid();
+        cacheService.setex(key,signUpSuccessDto.getUid()+"",7*24*60*60);
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
 
@@ -657,6 +662,10 @@ public class UserServiceImpl implements UserService {
             this.applicationEventBus.post(event);
 
             //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
+
+            //新用户注册放入cach,机器人自动回复用
+            String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+signUpSuccessDto.getUid();
+            cacheService.setex(key,signUpSuccessDto.getUid()+"",7*24*60*60);
             return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
         }
     }
@@ -2403,6 +2412,9 @@ public class UserServiceImpl implements UserService {
                 if(checkUserDisable(loginSuccessDto.getUid())){
                 	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                 }
+                //新用户注册放入cach,机器人自动回复用
+                String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+loginSuccessDto.getUid();
+                cacheService.setex(key,loginSuccessDto.getUid()+"",7*24*60*60);
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status, ResponseStatus.USER_LOGIN_SUCCESS.message, loginSuccessDto);
             }
 
@@ -4585,13 +4597,25 @@ public class UserServiceImpl implements UserService {
 		return false;
 	}
 	/**
+	 * 随机获取n个王国封面。
+	 * @author zhangjiwei
+	 * @date Jul 20, 2017
+	 * @param cover
+	 * @return
+	 */
+	@Override
+	public List<String> getRandomKingdomCover(int count){
+		List<String> picList = this.liveForUserJdbcDao.getRandomKingdomCover(count);
+		return picList;
+	}
+	/**
 	 * 赠送3个王国
 	 * @author zhangjiwei
 	 * @date Jul 19, 2017
 	 */
 	public void give3Kingdoms(UserProfile profile){
 		String nickName = profile.getNickName();
-		List<String> picList = this.liveForUserJdbcDao.getRandomKingdomCover(3);
+		List<String> picList= getRandomKingdomCover(3);
 		this.liveForUserJdbcDao.createGiveTopic(profile.getUid(),picList.get(0),nickName+"的生活记录","吃喝玩乐，记录我的日常。","非典型性话痨",1);
 		this.liveForUserJdbcDao.createGiveTopic(profile.getUid(),picList.get(1),nickName+"的兴趣爱好","把我的兴趣爱好和你们分享。","玩物不丧志",0);
 		this.liveForUserJdbcDao.createGiveTopic(profile.getUid(),picList.get(2),nickName+"的每日一拍","所有美好的事物我统统都要拍下来！","声音和光影",0);
