@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 import javax.annotation.PostConstruct;
 
@@ -39,11 +41,11 @@ public class KingdomPriceTask {
 	private UserService userService;
 	@Autowired
 	private LocalJdbcDao localJdbcDao;
+	@Autowired
+	private LiveService liveService;
 	
 	private static List<String> weightKeyList = new ArrayList<String>();
 	
-	@Autowired
-	private LiveService liveService;
 	@PostConstruct
 	public void init(){
 		weightKeyList.add("ALGORITHM_DILIGENTLY_WEIGHT");
@@ -77,6 +79,9 @@ public class KingdomPriceTask {
 		weightKeyList.add("ALGORITHM_STEAL_WEIGHT_R0");
 		weightKeyList.add("ALGORITHM_STEAL_WEIGHT_R1");
 		weightKeyList.add("LISTED_PRICE");
+		weightKeyList.add("ALGORITHM_PUSH_PRICE_LIMIT");
+		weightKeyList.add("ALGORITHM_PUSH_PRICE_INCR_LIMIT");
+		weightKeyList.add("ALGORITHM_PUSH_PRICE_REDUCE_LIMIT");
 	}
 	
 	@Scheduled(cron="0 2 0 * * ?")
@@ -137,17 +142,25 @@ public class KingdomPriceTask {
 		
 		int listedPrice = this.getIntegerConfig("LISTED_PRICE", weightConfigMap, 20000);
 		
+		int pushPriceLimit = this.getIntegerConfig("ALGORITHM_PUSH_PRICE_LIMIT", weightConfigMap, 200);//推送王国价值阈值
+		int pushPriceIncrLimit = this.getIntegerConfig("ALGORITHM_PUSH_PRICE_INCR_LIMIT", weightConfigMap, 50);//推送王国价值增长阈值
+		int pushPriceReduceLimit = this.getIntegerConfig("ALGORITHM_PUSH_PRICE_INCR_LIMIT", weightConfigMap, 50);//推送王国价值减少阈值
+		
 		//获取补助配置
 		StringBuilder subsidyConfigSql = new StringBuilder();
 		subsidyConfigSql.append("select * from topic_price_subsidy_config t order by t.m1 asc");
 		List<Map<String, Object>> subsidyConfigList = localJdbcDao.queryEvery(subsidyConfigSql.toString());
 		
+		String nowDateStr = null;
 		Date now = new Date();
 		Date yesterday = null;
 		if(StringUtils.isNotBlank(dateStr)){
-			yesterday = DateUtil.addDay(DateUtil.string2date(dateStr, "yyyy-MM-dd"), -1);
+			Date c = DateUtil.string2date(dateStr, "yyyy-MM-dd");
+			yesterday = DateUtil.addDay(c, -1);
+			nowDateStr = DateUtil.date2string(c, "yyyyMMdd");
 		}else{
 			yesterday = DateUtil.addDay(now, -1);
+			nowDateStr = DateUtil.date2string(now, "yyyyMMdd");
 		}
 		
 		String startTime = DateUtil.date2string(yesterday, "yyyy-MM-dd") + " 00:00:00";
@@ -532,7 +545,11 @@ public class KingdomPriceTask {
 					}
 					kc.setPrice((int)kv);
 					
-					this.saveKingdomCount(kc, true, listedPrice, yesterday);
+					if(null == topicData){
+						this.saveKingdomCount(kc, true, listedPrice, yesterday, pushPriceLimit, pushPriceIncrLimit, pushPriceReduceLimit, nowDateStr);
+					}else{
+						this.saveKingdomCount(kc, false, listedPrice, yesterday, pushPriceLimit, pushPriceIncrLimit, pushPriceReduceLimit, nowDateStr);
+					}
 				}else{//历史有的，则需要做增量计算
 					int oldStealPrice = (Integer)topicData.get("steal_price");
 					int kv0 = ((Integer)topicData.get("price")).intValue();
@@ -605,7 +622,7 @@ public class KingdomPriceTask {
 					kc.setReviewTextCountInApp(((Integer)topicData.get("review_text_count")).intValue() + kc.getReviewTextCountInApp());//这里因为保存的两个相加值，故这里只在一个参数上加上原有值
 					kc.setReviewTextWordCountInApp(((Integer)topicData.get("review_text_length")).intValue() + kc.getReviewTextWordCountInApp());//这里因为保存的两个相加值，故这里只在一个参数上加上原有值
 					
-					this.saveKingdomCount(kc, false, listedPrice, yesterday);
+					this.saveKingdomCount(kc, false, listedPrice, yesterday, pushPriceLimit, pushPriceIncrLimit, pushPriceReduceLimit, nowDateStr);
 				}
 			}
 			
@@ -842,12 +859,20 @@ public class KingdomPriceTask {
 		
 		int listedPrice = this.getIntegerConfig("LISTED_PRICE", weightConfigMap, 20000);
 		
+		int pushPriceLimit = this.getIntegerConfig("ALGORITHM_PUSH_PRICE_LIMIT", weightConfigMap, 200);//推送王国价值阈值
+		int pushPriceIncrLimit = this.getIntegerConfig("ALGORITHM_PUSH_PRICE_INCR_LIMIT", weightConfigMap, 50);//推送王国价值增长阈值
+		int pushPriceReduceLimit = this.getIntegerConfig("ALGORITHM_PUSH_PRICE_INCR_LIMIT", weightConfigMap, 50);//推送王国价值减少阈值
+		
+		String nowDateStr = null;
 		Date now = new Date();
 		Date yesterday = null;
 		if(StringUtils.isNotBlank(dateStr)){
-			yesterday = DateUtil.addDay(DateUtil.string2date(dateStr, "yyyy-MM-dd"), -1);
+			Date c = DateUtil.string2date(dateStr, "yyyy-MM-dd");
+			yesterday = DateUtil.addDay(c, -1);
+			nowDateStr = DateUtil.date2string(c, "yyyyMMdd");
 		}else{
 			yesterday = DateUtil.addDay(now, -1);
+			nowDateStr = DateUtil.date2string(now, "yyyyMMdd");
 		}
 		
 		String endTime = DateUtil.date2string(yesterday, "yyyy-MM-dd") + " 23:59:59";
@@ -1122,9 +1147,9 @@ public class KingdomPriceTask {
 				
 				topicData = topicDataMap.get(String.valueOf(kc.getTopicId()));
 				if(null == topicData){//当天新增的王国
-					this.saveKingdomCount(kc, true, listedPrice, yesterday);
+					this.saveKingdomCount(kc, true, listedPrice, yesterday, pushPriceLimit, pushPriceIncrLimit, pushPriceReduceLimit, nowDateStr);
 				}else{
-					this.saveKingdomCount(kc, false, listedPrice, yesterday);
+					this.saveKingdomCount(kc, false, listedPrice, yesterday, pushPriceLimit, pushPriceIncrLimit, pushPriceReduceLimit, nowDateStr);
 				}
 			}
 			
@@ -1134,18 +1159,20 @@ public class KingdomPriceTask {
 		logger.info("王国价值处理完成");
 	}
 	
-	private void saveKingdomCount(KingdomCount kc, boolean isNew, int listedPrice, Date recordTime){
+	private void saveKingdomCount(KingdomCount kc, boolean isNew, int listedPrice, Date recordTime, int pushPriceLimit, int pushPriceIncrLimit, int pushPriceReduceLimit, String nowDateStr){
 		StringBuilder topicPriceQuerySql = new StringBuilder();
-		topicPriceQuerySql.append("select t.title,t.price,p.nick_name from topic t,user_profile p where t.uid=p.uid and t.id=").append(kc.getTopicId());
+		topicPriceQuerySql.append("select t.title,t.price,p.nick_name,t.uid from topic t,user_profile p where t.uid=p.uid and t.id=").append(kc.getTopicId());
 		List<Map<String, Object>> topicPriceList = localJdbcDao.queryEvery(topicPriceQuerySql.toString());
 		int oldPrice = 0;
 		String title = "";
 		String kingName = "";
+		long uid = 0;
 		if(null != topicPriceList && topicPriceList.size() > 0){
 			Map<String, Object> topicPrice = topicPriceList.get(0);
 			oldPrice = (Integer)topicPrice.get("price");
 			title = (String)topicPrice.get("title");
 			kingName = (String)topicPrice.get("nick_name");
+			uid = (Long)topicPrice.get("uid");
 		}
 		
 		if(kc.getPrice()<0){
@@ -1240,22 +1267,75 @@ public class KingdomPriceTask {
 			if(topicListed!=null){
 				//已锁定和正在交易的不会下架
 				if(topicListed.getStatus()==0){
-				String delTopicListed = "delete from topic_listed where topic_id="+kc.getTopicId();
-				localJdbcDao.executeSql(delTopicListed);
-				Topic topic = liveService.getTopicById(kc.getTopicId());
-				if(topic!=null){
-					JsonObject jsonObject = new JsonObject();
-	                jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
-	                jsonObject.addProperty("topicId",topic.getId());
-	                jsonObject.addProperty("contentType",topic.getType());
-	                jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//核心圈
-	                userService.pushWithExtra(topic.getUid().toString(), "由于你的王国『"+topic.getTitle()+"』已经低于上市估值，现已被米汤王国下架。", JPushUtils.packageExtra(jsonObject));
-	                
-				}
+					String delTopicListed = "delete from topic_listed where topic_id="+kc.getTopicId();
+					localJdbcDao.executeSql(delTopicListed);
+					Topic topic = liveService.getTopicById(kc.getTopicId());
+					if(topic!=null){
+						JsonObject jsonObject = new JsonObject();
+		                jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
+		                jsonObject.addProperty("topicId",topic.getId());
+		                jsonObject.addProperty("contentType",topic.getType());
+		                jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//核心圈
+		                userService.pushWithExtra(topic.getUid().toString(), "由于你的王国『"+topic.getTitle()+"』已经低于上市估值，现已被米汤王国下架。", JPushUtils.packageExtra(jsonObject));
+					}
 				}
 			}
 		}else{
 			//不用处理
+		}
+		
+		//推送逻辑
+		int a = kc.getPrice()-oldPrice;
+		//先判断当前王国是否用户的第一个王国，并且是当前创建的
+		boolean needPush = false;
+		if(kc.getPrice() > 0 && DateUtil.isSameDay(kc.getCreateTime(), recordTime)){//是否昨天创建的
+			StringBuilder firstKingdomSql = new StringBuilder();
+			firstKingdomSql.append("select * from topic t where t.uid=").append(uid);
+			firstKingdomSql.append(" order by t.id limit 1");
+			List<Map<String, Object>> firstKingdomList = localJdbcDao.queryEvery(firstKingdomSql.toString());
+			Map<String, Object> firstKingdom = null;
+			if(null != firstKingdomList && firstKingdomList.size() > 0){
+				firstKingdom = firstKingdomList.get(0);
+			}
+			if(null != firstKingdom && ((Long)firstKingdom.get("id")).longValue() == kc.getTopicId()){
+				//这个是必须得推送的
+				needPush = true;
+			}
+		}
+		//再判断是否需要根据阈值进行推送
+		if(!needPush){
+			if(kc.getPrice() > 0 && kc.getPrice() >= pushPriceLimit){//王国值阈值
+				if(a>0 && a>=pushPriceIncrLimit){//增
+					needPush = true;
+				}else if(a<0 && Math.abs(a) >= pushPriceReduceLimit){
+					needPush = true;
+				}
+			}
+		}
+		
+		if(needPush){//需要推送，则记录待推送记录表
+			StringBuilder insertPricePushSql = new StringBuilder();
+			insertPricePushSql.append("insert into topic_price_push(date_code,uid,topic_id,type,change_price,kingdom_price,status)");
+			insertPricePushSql.append(" values('").append(nowDateStr).append("',").append(uid).append(",").append(kc.getTopicId());
+			insertPricePushSql.append(",").append(a>=0?1:2).append(",").append(Math.abs(a)).append(",").append(kc.getPrice());
+			insertPricePushSql.append(",0)");
+			localJdbcDao.executeSql(insertPricePushSql.toString());
+			
+			//需要再王国里插入一段系统消息
+			String msg = "本王国昨天"+(a>0?"升值":"贬值")+"了"+String.valueOf(Math.abs(a))+"米汤币";
+			JSONObject extra = new JSONObject();
+			extra.put("type", "system");
+			extra.put("only", UUID.randomUUID().toString()+"-"+new Random().nextInt());
+			extra.put("content", msg);
+			extra.put("linkType", 0);//纯文本
+			
+			StringBuilder insertSystemMsgSql = new StringBuilder();
+			insertSystemMsgSql.append("insert into topic_fragment(topic_id,uid,fragment_image,fragment,type,content_type,top_id,");
+			insertSystemMsgSql.append("bottom_id,create_time,at_uid,source,extra,score,status) values(");
+			insertSystemMsgSql.append(kc.getTopicId()).append(",").append(uid).append(",'','").append(msg).append(",");
+			insertSystemMsgSql.append(Specification.LiveSpeakType.SYSTEM.index).append(",0,0,0,now(),0,0,'");
+			insertSystemMsgSql.append(extra.toJSONString()).append("',0,1)");
+			localJdbcDao.executeSql(insertSystemMsgSql.toString());
 		}
 	}
 }
