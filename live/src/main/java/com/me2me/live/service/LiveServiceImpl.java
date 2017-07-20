@@ -7938,5 +7938,277 @@ public class LiveServiceImpl implements LiveService {
 			return null;
 		}
 	}
-	
+	@Override
+	public Response saveDaySignInfo(long uid, String image,String extra,String uids,int source,String quotationIds) {
+		 String[] uidArr = uids.split(",");
+		 String[] quotationIdArr = quotationIds.split(",");
+		 if(uidArr.length!=quotationIdArr.length){
+			 return Response.failure(500, "机器人和语录数量不匹配！");
+		 }
+		 if(uidArr.length>0){
+			 for (int i = 0; i < uidArr.length; i++) {
+				String robotUid = uidArr[i];
+				String quotationId = quotationIdArr[i];
+				RobotQuotationRecord robotQuotationRecord = new RobotQuotationRecord();
+				robotQuotationRecord.setUid(uid);
+				robotQuotationRecord.setRobotUid(Long.parseLong(robotUid));
+				robotQuotationRecord.setQuotationId(Long.parseLong(quotationId));
+				liveMybatisDao.addRobotQuotationRecord(robotQuotationRecord);
+			}
+		 }
+	 SignRecord signRecord = new SignRecord();
+	 signRecord.setUid(uid);
+	 signRecord.setImage(image);
+	 liveMybatisDao.addSignRecord(signRecord);
+	 
+	 Topic topic = liveMybatisDao.getEmotionTopic(uid);
+	 if(topic==null){
+	 UserProfile userProfile = userService.getUserProfileByUid(uid);
+	 CreateKingdomDto createKingdomDto  = new CreateKingdomDto();
+	 createKingdomDto.setUid(uid);
+	 createKingdomDto.setTitle(userProfile.getNickName()+"的生活记录");
+	 List<String> randomCover = userService. getRandomKingdomCover(1);
+	 if(randomCover.size()>0){
+		 createKingdomDto.setLiveImage(randomCover.get(0));
+	 }
+	 createKingdomDto.setContentType(0);
+	 createKingdomDto.setFragment("吃喝玩乐，记录我的日常。");
+	 createKingdomDto.setSource(0);
+	 createKingdomDto.setExtra("");
+	 createKingdomDto.setKType(0);
+	 createKingdomDto.setCExtra("");
+	 createKingdomDto.setKConfig("");
+	 createKingdomDto.setTags("非典型性话痨");
+	 createKingdomDto.setSubType(1);
+	  topic = createSpecialTopic(createKingdomDto);
+	 }
+	 if(topic!=null && topic.getId()!=null){
+     SpeakDto speakDto = new SpeakDto();
+     speakDto.setType(0);
+     speakDto.setContentType(1);
+     speakDto.setUid(uid);
+     speakDto.setTopicId(topic.getId());
+     speakDto.setSource(source);
+     speakDto.setExtra(extra);
+     speak(speakDto);
+	 }
+		return Response.success();
+	}
+	/**
+	 * 创建特殊王国
+	 * @param createKingdomDto
+	 * @return
+	 */
+	public Topic createSpecialTopic(CreateKingdomDto createKingdomDto){
+		if(StringUtils.isEmpty(createKingdomDto.getLiveImage()) || StringUtils.isEmpty(createKingdomDto.getTitle())){
+        	return null;
+        }
+
+		boolean isDouble = false;
+		int type = 0;
+		long uid2 = 0;
+		String cExtraJson = createKingdomDto.getCExtra();
+		JSONObject cExtraObj = null;
+
+		Date now = new Date();
+		Topic topic = new Topic();
+		topic.setTitle(createKingdomDto.getTitle());
+        topic.setLiveImage(createKingdomDto.getLiveImage());
+        topic.setUid(createKingdomDto.getUid());
+        topic.setStatus(Specification.LiveStatus.LIVING.index);
+        topic.setLongTime(now.getTime());
+        topic.setCreateTime(now);
+        topic.setUpdateTime(now);
+        JSONArray array = new JSONArray();
+        array.add(createKingdomDto.getUid());
+        if(isDouble){
+        	array.add(uid2);
+        }
+        topic.setCoreCircle(array.toString());
+        //聚合版本新加属性
+        int kingdomType = Specification.KingdomType.NORMAL.index;
+        topic.setType(kingdomType);
+        topic.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);//目前默认公开的，等以后有需求的再说
+        topic.setSummary(createKingdomDto.getFragment());//目前，第一次发言即王国简介
+        topic.setCeAuditType(0);//聚合王国属性，是否需要国王审核才能加入此聚合王国，默认0是
+        topic.setAcAuditType(1);//个人王国属性，是否需要国王审核才能收录此王国，默认1否
+        topic.setAcPublishType(0);//个人王国属性，是否接受聚合王国下发的消息，默认0是
+        topic.setSubType(createKingdomDto.getSubType());
+        //初始化王国价值，默认估值:米汤币为15,随机增减0-8
+        int price = 15;
+        Random random = new Random();
+        int incr = random.nextInt(9);
+        int flag = random.nextInt(2);
+        if(flag == 0){
+        	price = price - incr;
+        }else{
+        	price = price + incr;
+        }
+        
+        //查询新建王国可以被偷的配置值
+        int newStealPrice = 0;
+        String newKingdomStealPrice = userService.getAppConfigByKey("NEW_KINGDOM_STEAL_PRICE");
+        if(!StringUtils.isEmpty(newKingdomStealPrice)){
+        	newStealPrice = Integer.valueOf(newKingdomStealPrice).intValue();
+        }
+        
+        topic.setPrice(price + newStealPrice);
+        liveMybatisDao.createTopic(topic);
+
+        //创建直播之后添加到我的UGC
+        ContentDto contentDto = new ContentDto();
+        contentDto.setContent(createKingdomDto.getTitle());
+        contentDto.setFeeling(createKingdomDto.getTitle());
+        contentDto.setTitle(createKingdomDto.getTitle());
+        contentDto.setImageUrls(createKingdomDto.getLiveImage());
+        contentDto.setUid(createKingdomDto.getUid());
+        contentDto.setType(Specification.ArticleType.LIVE.index);
+        contentDto.setForwardCid(topic.getId());
+        contentDto.setRights(Specification.ContentRights.EVERY.index);
+        contentService.publish(contentDto);
+        
+        applicationEventBus.post(new CacheLiveEvent(createKingdomDto.getUid(), topic.getId()));
+
+        //创建王国之后创建相应的价值数据表（主要是可以创建后即可有一定的被偷值）
+        TopicData td = new TopicData();
+        td.setApprove(0d);
+        td.setDiligently(0d);
+        td.setLastPrice(0);
+        td.setLastPriceIncr(0);
+        td.setReviewTextCount(0);
+        td.setReviewTextLength(0);
+        td.setStealPrice(newStealPrice);
+        td.setTopicId(topic.getId());
+        td.setUpdateAudioCount(0);
+        td.setUpdateAudioLength(0);
+        td.setUpdateDayCount(0);
+        td.setUpdateImageCount(0);
+        td.setUpdateTeaseCount(0);
+        td.setUpdateTextCount(0);
+        td.setUpdateTextLength(0);
+        td.setUpdateTime(now);
+        td.setUpdateVedioCount(0);
+        td.setUpdateVedioLength(0);
+        td.setUpdateVoteCount(0);
+        liveMybatisDao.saveTopicData(td);
+        
+        
+        SpeakDto speakDto2 = new SpeakDto();
+        speakDto2.setTopicId(topic.getId());
+        UserProfile profile = userService.getUserProfileByUid(createKingdomDto.getUid());
+        speakDto2.setV_lv(profile.getvLv());
+        //检查有没有出错的数据，如果有则删除出错数据
+        contentService.clearData();
+
+        log.info("first speak...");
+        long lastFragmentId = 0;
+        long total = 0;
+        if(createKingdomDto.getContentType() == 0){
+        	TopicFragment topicFragment = new TopicFragment();
+        	topicFragment.setFragment(createKingdomDto.getFragment());
+        	topicFragment.setUid(createKingdomDto.getUid());
+        	topicFragment.setType(0);//第一次发言肯定是主播发言
+        	topicFragment.setContentType(0);
+        	topicFragment.setTopicId(topic.getId());
+            topicFragment.setBottomId(0l);
+            topicFragment.setTopId(0l);
+            topicFragment.setSource(createKingdomDto.getSource());
+            topicFragment.setExtra(createKingdomDto.getExtra());
+            topicFragment.setCreateTime(now);
+            liveMybatisDao.createTopicFragment(topicFragment);
+            lastFragmentId = topicFragment.getId();
+            total++;
+        }else{//图片
+        	String[] imgs = createKingdomDto.getFragment().split(";");
+        	Map<String, String> map = new HashMap<String, String>();
+        	String extra = createKingdomDto.getExtra();
+        	if(!StringUtils.isEmpty(extra)){
+        		JSONArray obj = JSON.parseArray(extra);
+        		if(!obj.isEmpty()){
+        			for(int i=0;i<obj.size();i++){
+        				map.put(String.valueOf(i), obj.getJSONObject(i).toJSONString());
+        			}
+        		}
+        	}
+
+        	if(null != imgs && imgs.length > 0){
+        		TopicFragment topicFragment = null;
+        		String e = null;
+        		for(int i=0;i<imgs.length;i++){
+        			topicFragment = new TopicFragment();
+                	topicFragment.setFragmentImage(imgs[i]);
+                	topicFragment.setUid(createKingdomDto.getUid());
+                	topicFragment.setType(0);//第一次发言肯定是主播发言
+                	topicFragment.setContentType(1);
+                	topicFragment.setTopicId(topic.getId());
+                    topicFragment.setBottomId(0l);
+                    topicFragment.setTopId(0l);
+                    topicFragment.setSource(createKingdomDto.getSource());
+                    topicFragment.setCreateTime(now);
+                    e = map.get(String.valueOf(i));
+                    if(null == e){
+                    	e = "";
+                    }
+                    topicFragment.setExtra(e);
+                    liveMybatisDao.createTopicFragment(topicFragment);
+                    lastFragmentId = topicFragment.getId();
+                    total++;
+        		}
+        	}
+        }
+
+        //特殊王国需要做一点特殊处理
+        if(createKingdomDto.getKType() != Specification.KingdomType.NORMAL.index
+        		&& createKingdomDto.getKType() != Specification.KingdomType.AGGREGATION.index){
+        	if(type == Specification.ActivityKingdomType.SPRINGKING.index){
+        		activityService.createActivityKingdom4Spring(topic.getId(), createKingdomDto.getUid());
+        	}else{
+        		activityService.createActivityKingdom(topic.getId(), createKingdomDto.getUid(), type, uid2);
+        	}
+        }
+
+        //--add update kingdom cache -- modify by zcl -- begin --
+		String value = lastFragmentId + "," + total;
+        cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
+        //--add update kingdom cache -- modify by zcl -- end --
+        // 找到机器TAG
+        
+        Set<String> autoTagSet = new HashSet<>();
+        if(org.apache.commons.lang3.StringUtils.isNotEmpty(createKingdomDto.getAutoTags())){
+        	for(String t:createKingdomDto.getAutoTags().split(";")){
+        		autoTagSet.add(t.trim());
+        	}
+        }
+        //add kingdom tags -- begin --
+        if(!StringUtils.isEmpty(createKingdomDto.getTags())){
+        	String[] tags = createKingdomDto.getTags().split(";");
+        	if(null != tags && tags.length > 0){
+        		TopicTag topicTag = null;
+        		TopicTagDetail tagDetail = null;
+        		for(String tag : tags){
+        			tag = tag.trim();
+        			if(!StringUtils.isEmpty(tag)){
+        				topicTag = liveMybatisDao.getTopicTagByTag(tag);
+        				if(null == topicTag){
+        					topicTag = new TopicTag();
+        					topicTag.setTag(tag);
+        					liveMybatisDao.insertTopicTag(topicTag);
+        				}
+        			}
+        			tagDetail = new TopicTagDetail();
+        			tagDetail.setTag(tag);
+        			tagDetail.setTagId(topicTag.getId());
+        			tagDetail.setTopicId(topic.getId());
+        			tagDetail.setUid(createKingdomDto.getUid());
+        			if(autoTagSet.contains(tag)){
+        				tagDetail.setAutoTag(1);
+        			}else{
+        				tagDetail.setAutoTag(0);
+        			}
+        			liveMybatisDao.insertTopicTagDetail(tagDetail);
+        		}
+        	}
+        }
+        return topic;
+	}
 }
