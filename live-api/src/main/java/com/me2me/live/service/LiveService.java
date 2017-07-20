@@ -610,4 +610,8 @@ public interface LiveService {
 	 * @param givenKingdomId
 	 */
 	Response givenKingdomOpration(long uid, long givenKingdomId,String action);
+	
+	 Response saveDaySignInfo(long uid, String image,String extra,String uids,int source,String quotationIds);
+
+     Response saveSignSaveRecord(long uid,int type);
 }
