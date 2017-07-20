@@ -7709,24 +7709,7 @@ public class LiveServiceImpl implements LiveService {
 	 
 	 Topic topic = liveMybatisDao.getEmotionTopic(uid);
 	 if(topic==null){
-	 UserProfile userProfile = userService.getUserProfileByUid(uid);
-	 CreateKingdomDto createKingdomDto  = new CreateKingdomDto();
-	 createKingdomDto.setUid(uid);
-	 createKingdomDto.setTitle(userProfile.getNickName()+"的生活记录");
-	 List<String> randomCover = userService. getRandomKingdomCover(1);
-	 if(randomCover.size()>0){
-		 createKingdomDto.setLiveImage(randomCover.get(0));
-	 }
-	 createKingdomDto.setContentType(0);
-	 createKingdomDto.setFragment("吃喝玩乐，记录我的日常。");
-	 createKingdomDto.setSource(0);
-	 createKingdomDto.setExtra("");
-	 createKingdomDto.setKType(0);
-	 createKingdomDto.setCExtra("");
-	 createKingdomDto.setKConfig("");
-	 createKingdomDto.setTags("非典型性话痨");
-	 createKingdomDto.setSubType(1);
-	  topic = createSpecialTopic(createKingdomDto);
+	  topic = createEmotionTopic(uid);
 	 }
 	 if(topic!=null && topic.getId()!=null){
      SpeakDto speakDto = new SpeakDto();
