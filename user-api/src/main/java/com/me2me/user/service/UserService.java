@@ -558,4 +558,6 @@ public interface UserService {
 	 Response getGuideInfo();
 	 
     User getUserByUid(long uid) ;
+
+	List<String> getRandomKingdomCover(int count);
 }
