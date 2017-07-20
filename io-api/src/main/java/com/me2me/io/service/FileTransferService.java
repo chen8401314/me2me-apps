@@ -28,8 +28,14 @@ public interface FileTransferService {
 
 
     String upload(byte[] data, String key);
-
-
+    /**
+     * 删除qiniu资源。
+     * @author zhangjiwei
+     * @date Jul 20, 2017
+     * @param key
+     */
+    void deleteQiniuResource(String key);
+    
     byte[] download(String domain,String key) throws IOException;
 
     String getUserInfo(String code) throws Exception;
