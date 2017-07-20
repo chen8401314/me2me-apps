@@ -89,6 +89,10 @@
 	                                            <label for="exampleInputFile">K2</label>
 	                                            <input name="k2"   type="number"  class="form-control" value="${item.k2}" required/>
 	                                        </div>
+	                                        <div class="form-group">
+	                                            <label for="exampleInputFile">K3</label>
+	                                            <input name="k3"   type="number"  class="form-control" value="${item.k3}" required/>
+	                                        </div>
                                         </div>
                                     </div>
                                 </div>

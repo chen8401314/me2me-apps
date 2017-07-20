@@ -3,15 +3,15 @@
 <mapper namespace="com.me2me.content.mapper.TopicTagSearchMapper">
   
      <select id="getKingdomsByTag" resultType="map">
-		select t.*,td.last_price_incr from topic_tag_detail d,topic t
-		left join topic_data td on  td.topic_id=t.id 
+		select t.*,td.last_price_incr from topic t
+		left join topic_data td on  td.topic_id=t.id
 		where 
-			d.status=0 
-			and d.topic_id=t.id 
-			and d.tag_id in(
-					select id from topic_tag p where tag=#{tag}
-					UNION 
-					select id from topic_tag c where c.pid=(select id from topic_tag p where tag=#{tag})
+			t.id in(
+				select DISTINCT topic_id from topic_tag_detail dt where dt.status=0 and dt.tag_id in(
+						select id from topic_tag p where tag=#{tag} and status=0
+						UNION ALL
+						select id from topic_tag c where c.pid=(select id from topic_tag p where tag=#{tag} and status=0) 
+				)
 			)
 			<if test="blacklistUids!=null and blacklistUids.size() &gt; 0">
       		and t.uid not in
@@ -21,10 +21,10 @@
     		</if>
 		  <choose>
              <when test="order=='price'">
-                order by t.price DESC
+                order by t.price DESC,t.id desc
              </when>
              <otherwise>
-                order by td.last_price_incr DESC
+                order by td.last_price_incr DESC,t.id desc
               </otherwise>
            </choose>
 		   limit ${(page-1)*pageSize},#{pageSize}
@@ -37,7 +37,7 @@
 			(select count(DISTINCT uid) c from topic_fragment where topic_id in(
 				select DISTINCT topic_id from topic_tag_detail dt where dt.status=0 and dt.tag_id in(
 						select id from topic_tag p where tag=#{tag} and status=0
-						UNION
+						UNION ALL
 						select id from topic_tag c where c.pid=(select id from topic_tag p where tag=#{tag} and status=0) 
 				)
 			))+FLOOR(sum(ct.read_count)/20) tagPersons
@@ -45,7 +45,7 @@
 			(select * from topic where id in(
 				select DISTINCT topic_id from topic_tag_detail dt where dt.status=0 and dt.tag_id in(
 						select id from topic_tag p where tag=#{tag} and status=0
-						UNION
+						UNION ALL
 						select id from topic_tag c where c.pid=(select id from topic_tag p where tag=#{tag} and status=0) 
 				)
 			)) ts,content ct
@@ -58,7 +58,7 @@
 			select  sum(price) from topic where id in(
 				select DISTINCT dt.topic_id from topic_tag_detail dt where dt.status=0 and dt.tag_id in(
 					select id from topic_tag p where tag=t.tag
-					UNION
+					UNION ALL
 					select id from topic_tag c where c.pid=(select id from topic_tag p where tag=t.tag) 
 				)
 			)
@@ -68,7 +68,7 @@
 	<select id="getTopicIdsByTag" resultType="int">
 		select DISTINCT topic_id from topic_tag_detail dt where dt.status=0 and dt.tag_id in(
 			select id from topic_tag p where tag=#{tag} and status=0
-			UNION
+			UNION ALL
 			select id from topic_tag c where c.pid=(select id from topic_tag p where tag=#{tag} and status=0) 
 		)
 	</select>

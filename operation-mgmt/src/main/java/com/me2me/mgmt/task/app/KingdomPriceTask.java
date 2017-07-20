@@ -133,6 +133,7 @@ public class KingdomPriceTask {
 		double decayBaseDayCountWeight = this.getDoubleConfig("ALGORITHM_DECAY_BASEDAYCOUNT_WEIGHT", weightConfigMap, 1);//衰减标准天数权重
 		double stealWeightR0 = this.getDoubleConfig("ALGORITHM_STEAL_WEIGHT_R0", weightConfigMap, 0.05);//被偷配置R0
 		double stealWeightR1 = this.getDoubleConfig("ALGORITHM_STEAL_WEIGHT_R1", weightConfigMap, 0.3);//被偷配置R1
+		double coreReadCountWeight = this.getDoubleConfig("ALGORITHM_CORE_READ_COUNT_WEIGHT", weightConfigMap, 0);//核心圈阅读量所需占比
 		
 		int listedPrice = this.getIntegerConfig("LISTED_PRICE", weightConfigMap, 20000);
 		
@@ -318,11 +319,14 @@ public class KingdomPriceTask {
 			//阅读数(增量)
 			readCountSql = new StringBuilder();
 			readCountSql.append("select t.topic_id,SUM(if(t.in_app=1,t.read_count,NULL)) as readInApp,");
+			readCountSql.append("SUM(if(t.in_app=1 and not FIND_IN_SET(t.uid,SUBSTR(p.core_circle FROM 2 FOR LENGTH(p.core_circle)-2)),t.read_count,NULL)) as readInAppNotCore,");
 			readCountSql.append("SUM(if(t.in_app=1,t.read_count_dummy,NULL)) as readDummyInApp,");
+			readCountSql.append("SUM(if(t.in_app=1 and not FIND_IN_SET(t.uid,SUBSTR(p.core_circle FROM 2 FOR LENGTH(p.core_circle)-2)),t.read_count_dummy,NULL)) as readDummyInAppNotCore,");
 			readCountSql.append("SUM(if(t.in_app=0,t.read_count,NULL)) as readOutApp,");
-			readCountSql.append("SUM(if(t.in_app=0,t.read_count_dummy,NULL)) as readDummyOutApp");
+			readCountSql.append("SUM(if(t.in_app=0 and not FIND_IN_SET(t.uid,SUBSTR(p.core_circle FROM 2 FOR LENGTH(p.core_circle)-2)),t.read_count,NULL)) as readOutAppNotCore,");
+			readCountSql.append("SUM(if(t.in_app=0,t.read_count_dummy,NULL)) as readDummyOutApp,");
+			readCountSql.append("SUM(if(t.in_app=0 and not FIND_IN_SET(t.uid,SUBSTR(p.core_circle FROM 2 FOR LENGTH(p.core_circle)-2)),t.read_count_dummy,NULL)) as readDummyOutAppNotCore");
 			readCountSql.append(" from topic_read_his t,topic p where t.topic_id=p.id and p.uid!=t.uid");
-			readCountSql.append(" and not FIND_IN_SET(t.uid,SUBSTR(p.core_circle FROM 2 FOR LENGTH(p.core_circle)-2))");
 			readCountSql.append(" and t.create_time>='").append(startTime);
 			readCountSql.append("' and t.create_time<='").append(endTime);
 			readCountSql.append("' and t.topic_id in (");
@@ -339,16 +343,36 @@ public class KingdomPriceTask {
 					long topicId = ((Long)r.get("topic_id")).longValue();
 					kc = kingCountMap.get(String.valueOf(topicId));
 					if(null != r.get("readInApp")){
-						kc.setReadCountInApp(((BigDecimal)r.get("readInApp")).intValue());
+						int total = ((BigDecimal)r.get("readInApp")).intValue();
+						int notCore = 0;
+						if(null != r.get("readInAppNotCore")){
+							notCore = ((BigDecimal)r.get("readInAppNotCore")).intValue();
+						}
+						kc.setReadCountInApp(notCore + (int)(total*coreReadCountWeight));
 					}
 					if(null != r.get("readDummyInApp")){
-						kc.setReadCountDummyInApp(((BigDecimal)r.get("readDummyInApp")).intValue());
+						int total = ((BigDecimal)r.get("readDummyInApp")).intValue();
+						int notCore = 0;
+						if(null != r.get("readDummyInAppNotCore")){
+							notCore = ((BigDecimal)r.get("readDummyInAppNotCore")).intValue();
+						}
+						kc.setReadCountDummyInApp(notCore + (int)(total*coreReadCountWeight));
 					}
 					if(null != r.get("readOutApp")){
-						kc.setReadCountOutApp(((BigDecimal)r.get("readOutApp")).intValue());
+						int total = ((BigDecimal)r.get("readOutApp")).intValue();
+						int notCore = 0;
+						if(null != r.get("readOutAppNotCore")){
+							notCore = ((BigDecimal)r.get("readOutAppNotCore")).intValue();
+						}
+						kc.setReadCountOutApp(notCore + (int)(total*coreReadCountWeight));
 					}
 					if(null != r.get("readDummyOutApp")){
-						kc.setReadCountDummyOutApp(((BigDecimal)r.get("readDummyOutApp")).intValue());
+						int total = ((BigDecimal)r.get("readDummyOutApp")).intValue();
+						int notCore = 0;
+						if(null != r.get("readDummyOutAppNotCore")){
+							notCore = ((BigDecimal)r.get("readDummyOutAppNotCore")).intValue();
+						}
+						kc.setReadCountDummyOutApp(notCore + (int)(total*coreReadCountWeight));
 					}
 				}
 			}
@@ -470,7 +494,8 @@ public class KingdomPriceTask {
 				topicData = topicDataMap.get(String.valueOf(kc.getTopicId()));
 				int xx = (int)(_x*1000);
 				int yy = (int)(_y*1000);
-				if(null == topicData){//当天新增的王国
+				boolean isCreateTime = DateUtil.isSameDay(kc.getCreateTime(), yesterday);
+				if(null == topicData || isCreateTime){//当天新增的王国
 					kc.setApprove(new BigDecimal((double)yy/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 					kc.setDiligently(new BigDecimal((double)xx/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 					
@@ -481,8 +506,9 @@ public class KingdomPriceTask {
 					if(null != subsidyConfig && subsidyConfig.size() == 3){
 						double k1 = (Double)subsidyConfig.get("k1");
 						double k2 = (Double)subsidyConfig.get("k2");
+						double k3 = (Double)subsidyConfig.get("k3");
 						int m2 = (Integer)subsidyConfig.get("m2");
-						int subsidy = (int)(_x*(k1+Math.pow(_y/_x, k2)));
+						int subsidy = (int)(_x*(k1+Math.pow(_y/_x, k2)) + k3);
 						kv = kv + subsidy;
 						if(kv > m2){
 							kv = m2;
@@ -490,24 +516,25 @@ public class KingdomPriceTask {
 					}
 					
 					if(kv > 0){
-						int stealPrice = (int)(kv*stealWeightR0);//d不存在了
-						if(stealPrice<10){
-							int need = 10-stealPrice;
+						int totalDecay = (int)(kv*stealWeightR0);
+						int delPrice = 0;
+						if(totalDecay > 0){
+							delPrice = (int)(totalDecay * stealWeightR1);
+						}
+						int stealPrice = totalDecay-delPrice;
+						if(stealPrice < 10){
 							stealPrice = 10;
-							if(kv>=need){
-								kv = kv-need;
-							}else{
-								kv = 0;
-							}
 						}
 						kc.setStealPrice(stealPrice);
+						kv = kv - delPrice;
 					}else{
 						kc.setStealPrice(0);
 					}
-					
 					kc.setPrice((int)kv);
+					
 					this.saveKingdomCount(kc, true, listedPrice, yesterday);
 				}else{//历史有的，则需要做增量计算
+					int oldStealPrice = (Integer)topicData.get("steal_price");
 					int kv0 = ((Integer)topicData.get("price")).intValue();
 					double x0 = ((Double)topicData.get("diligently")).doubleValue();
 					double y0 = ((Double)topicData.get("approve")).doubleValue();
@@ -526,18 +553,15 @@ public class KingdomPriceTask {
 						}
 					}
 					
-					int kv = kv0 + _kv - d - (int)(_kv*stealWeightR0);
-					if(kv < 0){
-						kv = 0;
-					}
-					//特别补助
-					if(kv > kv0){
+					int kv = kv0 + _kv;
+					if(_kv > 0){
 						subsidyConfig = this.getSubsidyConfig(kv, subsidyConfigList);
 						if(null != subsidyConfig && subsidyConfig.size() == 3){
 							double k1 = (Double)subsidyConfig.get("k1");
 							double k2 = (Double)subsidyConfig.get("k2");
+							double k3 = (Double)subsidyConfig.get("k3");
 							int m2 = (Integer)subsidyConfig.get("m2");
-							int subsidy = (int)(_x*(k1+Math.pow(_y/_x, k2)));
+							int subsidy = (int)(_x*(k1+Math.pow(_y/_x, k2)) + k3);
 							kv = kv + subsidy;
 							if(kv > m2){
 								kv = m2;
@@ -546,17 +570,17 @@ public class KingdomPriceTask {
 					}
 					
 					if(kv > 0){
-						int stealPrice = (int)(_kv*stealWeightR0 + d*stealWeightR1);
-						if(stealPrice<10){
-							int need = 10-stealPrice;
-							stealPrice = 10;
-							if(kv>=need){
-								kv = kv-need;
-							}else{
-								kv = 0;
-							}
+						int totalDecay = (int)(_kv*stealWeightR0 + d);
+						int delPrice = 0;
+						if(totalDecay > 0){
+							delPrice = (int)(totalDecay * stealWeightR1);
 						}
-						kc.setStealPrice(stealPrice);
+						int stealPrice = totalDecay-delPrice;
+						if(stealPrice < 10){
+							stealPrice = 10;
+						}
+						kc.setStealPrice(stealPrice+oldStealPrice);
+						kv = kv - delPrice;
 					}else{
 						kc.setStealPrice(0);
 					}
@@ -605,6 +629,7 @@ public class KingdomPriceTask {
 				result = new HashMap<String, Object>();
 				result.put("k1", (Double)s.get("k1"));
 				result.put("k2", (Double)s.get("k2"));
+				result.put("k3", (Double)s.get("k3"));
 				result.put("m2", (Integer)s.get("m2"));
 				break;
 			}
@@ -1103,8 +1128,6 @@ public class KingdomPriceTask {
 				}
 			}
 			
-			
-			
 			totalCount = totalCount + topicList.size();
 			logger.info("本次处理了["+topicList.size()+"]个王国，共处理了["+totalCount+"]个王国");
 		}
@@ -1130,6 +1153,10 @@ public class KingdomPriceTask {
 		}
 		if(kc.getStealPrice() < 0){
 			kc.setStealPrice(0);
+		}
+		
+		if(kc.getStealPrice() > kc.getPrice()){
+			kc.setStealPrice(kc.getPrice());
 		}
 		
 		StringBuilder saveSql = new StringBuilder();

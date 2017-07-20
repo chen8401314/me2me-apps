@@ -24,7 +24,6 @@ import com.me2me.user.rule.Rules;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.eclipse.paho.client.mqttv3.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -77,6 +76,7 @@ import com.me2me.live.dto.GetLiveDetailDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
 import com.me2me.live.dto.GetLiveTimeLineDto2;
 import com.me2me.live.dto.GetLiveUpdateDto;
+import com.me2me.live.dto.GivenKingdomDto;
 import com.me2me.live.dto.KingdomImgDB;
 import com.me2me.live.dto.KingdomSearchDTO;
 import com.me2me.live.dto.ListedTopicListDto;
@@ -135,6 +135,7 @@ import com.me2me.live.model.TopicDroparoundTrail;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicFragmentExample;
 import com.me2me.live.model.TopicFragmentTemplate;
+import com.me2me.live.model.TopicGiven;
 import com.me2me.live.model.TopicListed;
 import com.me2me.live.model.TopicNews;
 import com.me2me.live.model.TopicPriceHis;
@@ -236,7 +237,7 @@ public class LiveServiceImpl implements LiveService {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public Response createLive(CreateLiveDto createLiveDto) {
+    public Response<SpeakDto> createLive(CreateLiveDto createLiveDto) {
         log.info("createLive start ...");
         if(StringUtils.isEmpty(createLiveDto.getLiveImage()) || StringUtils.isEmpty(createLiveDto.getTitle())){
             log.info("liveImage or title is empty");
@@ -3312,7 +3313,7 @@ public class LiveServiceImpl implements LiveService {
     }
 
 	@Override
-	public Response createKingdom(CreateKingdomDto createKingdomDto) {
+	public Response<SpeakDto> createKingdom(CreateKingdomDto createKingdomDto) {
 		log.info("createKingdom start...");
 		if(StringUtils.isEmpty(createKingdomDto.getLiveImage()) || StringUtils.isEmpty(createKingdomDto.getTitle())){
         	log.info("liveImage or title is empty");
@@ -3406,6 +3407,7 @@ public class LiveServiceImpl implements LiveService {
         topic.setCeAuditType(0);//聚合王国属性，是否需要国王审核才能加入此聚合王国，默认0是
         topic.setAcAuditType(1);//个人王国属性，是否需要国王审核才能收录此王国，默认1否
         topic.setAcPublishType(0);//个人王国属性，是否接受聚合王国下发的消息，默认0是
+        topic.setSubType(createKingdomDto.getSubType());
         //初始化王国价值，默认估值:米汤币为15,随机增减0-8
         int price = 15;
         Random random = new Random();
@@ -3416,7 +3418,15 @@ public class LiveServiceImpl implements LiveService {
         }else{
         	price = price + incr;
         }
-        topic.setPrice(price);
+        
+        //查询新建王国可以被偷的配置值
+        int newStealPrice = 0;
+        String newKingdomStealPrice = userService.getAppConfigByKey("NEW_KINGDOM_STEAL_PRICE");
+        if(!StringUtils.isEmpty(newKingdomStealPrice)){
+        	newStealPrice = Integer.valueOf(newKingdomStealPrice).intValue();
+        }
+        
+        topic.setPrice(price + newStealPrice);
         liveMybatisDao.createTopic(topic);
 
         //创建直播之后添加到我的UGC
@@ -3430,9 +3440,33 @@ public class LiveServiceImpl implements LiveService {
         contentDto.setForwardCid(topic.getId());
         contentDto.setRights(Specification.ContentRights.EVERY.index);
         contentService.publish(contentDto);
-
+        
         applicationEventBus.post(new CacheLiveEvent(createKingdomDto.getUid(), topic.getId()));
 
+        //创建王国之后创建相应的价值数据表（主要是可以创建后即可有一定的被偷值）
+        TopicData td = new TopicData();
+        td.setApprove(0d);
+        td.setDiligently(0d);
+        td.setLastPrice(0);
+        td.setLastPriceIncr(0);
+        td.setReviewTextCount(0);
+        td.setReviewTextLength(0);
+        td.setStealPrice(newStealPrice);
+        td.setTopicId(topic.getId());
+        td.setUpdateAudioCount(0);
+        td.setUpdateAudioLength(0);
+        td.setUpdateDayCount(0);
+        td.setUpdateImageCount(0);
+        td.setUpdateTeaseCount(0);
+        td.setUpdateTextCount(0);
+        td.setUpdateTextLength(0);
+        td.setUpdateTime(now);
+        td.setUpdateVedioCount(0);
+        td.setUpdateVedioLength(0);
+        td.setUpdateVoteCount(0);
+        liveMybatisDao.saveTopicData(td);
+        
+        
         SpeakDto speakDto2 = new SpeakDto();
         speakDto2.setTopicId(topic.getId());
         UserProfile profile = userService.getUserProfileByUid(createKingdomDto.getUid());
@@ -5000,9 +5034,10 @@ public class LiveServiceImpl implements LiveService {
     }
 
     public void setDropaRoundDto(DropAroundDto dto ,long uid ,String set,long sourceTopicId){
-        Map<String ,String> map = Maps.newHashMap();
+        Map<String ,Object> map = Maps.newHashMap();
         map.put("uid",String.valueOf(uid));
         map.put("set",set);
+        map.put("minPrice", Integer.parseInt(userService.getAppConfigByKey(Constant.DROPAROUND_PRICE_MIN_KEY)));
         //随机获取一条王国
         TopicDroparound droparound = liveMybatisDao.getRandomDropaRound(map);
         if(droparound == null){
@@ -5042,13 +5077,14 @@ public class LiveServiceImpl implements LiveService {
         map.put("uid",String.valueOf(uid));
         map.put("set",set);
         map.put("sourceTopicId", sourceTopicId);
+        map.put("minPrice", Integer.parseInt(userService.getAppConfigByKey(Constant.DROPAROUND_PRICE_MIN_KEY)));
         Topic topicInfo = liveMybatisDao.getRandomTopicByTag(map);
         if(topicInfo == null){
             //topic王国取完了
             //cacheService.del("list:user@" + uid);
             topicInfo = liveMybatisDao.getRandomDropaRoundAlgorithm(map);
         }
-        //随机获取一条王国,兼容老式不明逻辑。
+        //随机获取一条王国,
         if(topicInfo == null){
             //topic王国取完了
             cacheService.del("list:user@" + uid);
@@ -6977,16 +7013,17 @@ public class LiveServiceImpl implements LiveService {
         
         	
         if(userStealLog.size()>=userTopicLimit){
-            throw new KingdomStealException("您已达到今日王国偷取次数上限了");
+            throw new KingdomStealException("你当前的等级每天只能偷取"+userTopicLimit+"个王国哦");
         }
         stealedCoins=liveLocalJdbcDao.getUserConinsByDay(uid, day);		// 此处重新计算用户当日获取到的总金币数，包括操作所得和偷取所得。
-        int userTodayRemain=userDayLimit-stealedCoins;
+        //int userTodayRemain=userDayLimit-stealedCoins;
 
-        if(userTodayRemain<=0){
-            throw new KingdomStealException("您已达到今日金币偷取上限了");
-        }
+        //if(userTodayRemain<=0){
+        //    throw new KingdomStealException("当天可获取的米汤币已达上限");
+        //}
 
-        int canStealCount = Math.min(userTodayRemain, topicRemainCoins);
+       // int canStealCount = Math.min(userTodayRemain, topicRemainCoins);
+        int canStealCount =topicRemainCoins;
         canStealCount=Math.min(canStealCount, userOnceLimit);
         // 判断王国剩余价值。
         //随机数
@@ -6999,24 +7036,65 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response stealKingdomCoin(long uid,long topicId) {
 		String addr= zkAddr.replace("zookeeper://", "");
-
+		final int NEW_USER_ZHONGJIANG_COUNT=3;		// 新用户3次必中。
 		DistributedLock lock = null;
 		try {
 
 			lock = new DistributedLock(addr, "steal-topic-"+topicId);
 			lock.lock();
 			int coins=0;
+			int isBigRedPack =0;
 			try{
 				coins = getAliveCoinsForSteal(uid, topicId);
+				if(coins>0){ // 大红包逻辑
+					List<Map<String,Object>> list = liveLocalJdbcDao.getUserStealLogByCountAsc(uid, NEW_USER_ZHONGJIANG_COUNT);
+					if(list.size()<NEW_USER_ZHONGJIANG_COUNT){	// 新手3次必中
+						boolean has = false;
+						for(Map<String,Object> data:list){
+							if(data.get("is_big_red_pack")!=null && data.get("is_big_red_pack").equals(1)){
+								has=true;
+								break;
+							}
+						}
+						if(!has){	// 3次以内没中，随机开奖。
+							int r = RandomUtils.nextInt(list.size(), NEW_USER_ZHONGJIANG_COUNT);
+							if(r==list.size()){
+								isBigRedPack=1;
+							}
+						}
+					}else{
+						int ratio = (int)(Integer.parseInt(userService.getAppConfigByKey(Constant.BIG_RED_PACK_RATIO_KEY)));
+						
+						Set<Integer> jpSet = new HashSet<>();
+						while(jpSet.size()<ratio){		// // 设定ratio个随机奖牌
+							int r = RandomUtils.nextInt(1, 101);
+							if(!jpSet.contains(r)){
+								jpSet.add(r);
+							}
+						}
+						
+						int r = RandomUtils.nextInt(1, 101);// 翻牌子
+						if(jpSet.contains(r)){		// 恭喜你，中奖了。
+							isBigRedPack=1;
+						}
+					}
+					if(isBigRedPack==1){ //中奖了
+						
+						coins= RandomUtils.nextInt(Integer.parseInt(userService.getAppConfigByKey(Constant.BIG_RED_PACK_MIN_KEY)),
+								Integer.parseInt(userService.getAppConfigByKey(Constant.BIG_RED_PACK_MAX_KEY))+1);
+					}
+				}
 			}catch(Exception e){
 				return Response.failure(500,e.getMessage());
 			}
-
-			// 修改王国可被偷数
-			this.liveLocalJdbcDao.stealTopicPrice(coins, topicId);
+			if(isBigRedPack==0){
+				// 	修改王国可被偷数
+				this.liveLocalJdbcDao.stealTopicPrice(coins, topicId);
+			}
 			// 记录偷取日志
 			UserStealLog log = new UserStealLog();
 			log.setCreateTime(new Date());
+			log.setIsBigRedPack(isBigRedPack);
 			log.setStealedCoins(coins);
 			log.setTopicId(topicId);
 			log.setUid(uid);
@@ -7025,6 +7103,7 @@ public class LiveServiceImpl implements LiveService {
 			ModifyUserCoinDto modifyDetail=userService.modifyUserCoin(uid,coins);
 
 			StealResultDto dto= new StealResultDto();
+			dto.setIsBigRedPack(isBigRedPack);
 			dto.setStealedCoins(coins);
 			dto.setUpgrade(modifyDetail.getUpgrade());
 			dto.setCurrentLevel(modifyDetail.getCurrentLevel());
@@ -7607,6 +7686,59 @@ public class LiveServiceImpl implements LiveService {
 	@Override
 	public TopicListed getTopicListedByTopicId(long topicId){
 		return liveMybatisDao.getTopicListedByTopicId(topicId);
+	}
+	/**
+	 * 向王国中添加一个标签，如果标签已经存在，则跳过。
+	 * @author zhangjiwei
+	 * @date Jul 19, 2017
+	 */
+	private void addTopicTag(long topicId,long uid,String tag){
+		TopicTag topicTag = liveMybatisDao.getTopicTagByTag(tag);
+		if(null == topicTag){
+			topicTag = new TopicTag();
+			topicTag.setTag(tag);
+			liveMybatisDao.insertTopicTag(topicTag);
+		}
+		if(!this.liveMybatisDao.existsTopicTag(topicId, tag)){
+			TopicTagDetail tagDetail = new TopicTagDetail();
+			tagDetail.setTag(tag);
+			tagDetail.setTagId(topicTag.getId());
+			tagDetail.setTopicId(topicId);
+			tagDetail.setUid(uid);
+			liveMybatisDao.insertTopicTagDetail(tagDetail);
+		}
+	}
+	@Override
+	public Response givenKingdomOpration(long uid, long givenKingdomId,String action) {
+		GivenKingdomDto resp = new GivenKingdomDto();
+		
+		if("ACTIVE".equals(action)){
+			TopicGiven given= liveMybatisDao.getGivenKingomdById(givenKingdomId);
+			if(given.getSubType()!=null && given.getSubType()==2){	//情绪王国,如果存在就更新为激活指定的信息。
+				Topic topic = this.liveMybatisDao.getEmotionTopic(uid);
+				if(topic!=null){
+					topic.setTitle(given.getTitle());
+					topic.setLiveImage(given.getCover());
+					topic.setSummary(given.getSummary());
+					this.liveMybatisDao.updateTopic(topic);
+	        		this.addTopicTag(topic.getId(),topic.getUid(),given.getTags());
+					resp.setTopicId(topic.getId());
+				}else{
+					// create .
+				}
+			}else{		// 普通王国
+				CreateKingdomDto dto = new CreateKingdomDto();
+				// todo :
+				
+				//this.addTopicTag(topic.getId(),topic.getUid(),given.getTags());
+				//resp.setTopicId(topicId);
+			}
+			liveMybatisDao.deleteGivenKingdomById(givenKingdomId);
+			
+		}else if("DEL".equals(action)){
+			liveMybatisDao.deleteGivenKingdomById(givenKingdomId);
+		}
+		return Response.success(resp);
 	}
 
 }
