@@ -71,6 +71,7 @@ import com.me2me.web.request.RemoveLiveRequest;
 import com.me2me.web.request.RemoveTopicRequest;
 import com.me2me.web.request.ResendVoteRequest;
 import com.me2me.web.request.SaveDaySignInfoRequest;
+import com.me2me.web.request.SaveDaySignRecordRequest;
 import com.me2me.web.request.SetLiveRequest;
 import com.me2me.web.request.SettingModifyRequest;
 import com.me2me.web.request.SignOutLiveRequest;
@@ -979,5 +980,15 @@ public class Live extends BaseController {
     @RequestMapping(value = "/saveDaySignInfo",method = RequestMethod.POST)
     public Response saveDaySignInfo(SaveDaySignInfoRequest request){
 		return liveService.saveDaySignInfo(request.getUid(), request.getImage(), request.getExtra(), request.getUids(), request.getSource() , request.getQuotationIds());
+    }
+    /**
+     * 保存或分享日签图片记录接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/saveDaySignRecord",method = RequestMethod.POST)
+    public Response saveDaySignRecord(SaveDaySignRecordRequest request){
+		return liveService.saveSignSaveRecord(request.getUid(), request.getType());
     }
 }

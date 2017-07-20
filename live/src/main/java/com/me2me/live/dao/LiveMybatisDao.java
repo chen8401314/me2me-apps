@@ -39,6 +39,7 @@ import com.me2me.live.mapper.QuotationInfoMapper;
 import com.me2me.live.mapper.RobotInfoMapper;
 import com.me2me.live.mapper.RobotQuotationRecordMapper;
 import com.me2me.live.mapper.SignRecordMapper;
+import com.me2me.live.mapper.SignSaveRecordMapper;
 import com.me2me.live.mapper.TeaseInfoMapper;
 import com.me2me.live.mapper.TopicAggregationApplyMapper;
 import com.me2me.live.mapper.TopicAggregationMapper;
@@ -84,6 +85,7 @@ import com.me2me.live.model.RobotInfo;
 import com.me2me.live.model.RobotInfoExample;
 import com.me2me.live.model.RobotQuotationRecord;
 import com.me2me.live.model.SignRecord;
+import com.me2me.live.model.SignSaveRecord;
 import com.me2me.live.model.TeaseInfo;
 import com.me2me.live.model.TeaseInfoExample;
 import com.me2me.live.model.Topic;
@@ -257,6 +259,8 @@ public class LiveMybatisDao {
     @Autowired
     private RobotQuotationRecordMapper robotQuotationRecordMapper;
     
+    @Autowired
+    private SignSaveRecordMapper signSaveRecordMapper;
     
     
     
@@ -1865,4 +1869,14 @@ public class LiveMybatisDao {
 	public int addRobotQuotationRecord(RobotQuotationRecord robotQuotationRecord){
 		return robotQuotationRecordMapper.insertSelective(robotQuotationRecord);
 	}
+	/**
+	 * 添加日签保存分享记录
+	 * @author chenxiang
+	 * @date 2017-07-20
+	 * @param 
+	 */
+	public int saveSignSaveRecord(SignSaveRecord SignSaveRecord){
+		return signSaveRecordMapper.insertSelective(SignSaveRecord);
+	}
+	
 }

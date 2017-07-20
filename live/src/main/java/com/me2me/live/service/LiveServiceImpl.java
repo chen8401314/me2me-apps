@@ -129,6 +129,7 @@ import com.me2me.live.model.QuotationInfo;
 import com.me2me.live.model.RobotInfo;
 import com.me2me.live.model.RobotQuotationRecord;
 import com.me2me.live.model.SignRecord;
+import com.me2me.live.model.SignSaveRecord;
 import com.me2me.live.model.TeaseInfo;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.Topic2;
@@ -7970,4 +7971,13 @@ public class LiveServiceImpl implements LiveService {
 		 Topic topic = createSpecialTopic(createKingdomDto);
 		 return topic;
 	}
+	@Override
+	public Response saveSignSaveRecord(long uid,int type){
+		SignSaveRecord signSaveRecord = new SignSaveRecord();
+		signSaveRecord.setUid(uid);
+		signSaveRecord.setType(type);
+		liveMybatisDao.saveSignSaveRecord(signSaveRecord);
+		return Response.success();
+	}
+	
 }
