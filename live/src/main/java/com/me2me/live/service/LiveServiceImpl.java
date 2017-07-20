@@ -5,17 +5,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
+import com.google.common.collect.Sets;
+import com.me2me.core.KeysManager;
 import com.me2me.live.event.*;
 import com.me2me.user.dto.ModifyUserCoinDto;
 import com.me2me.user.dto.PermissionDescriptionDto;
@@ -3587,9 +3580,19 @@ public class LiveServiceImpl implements LiveService {
         }
         //add kingdom tags -- end --
 
-        // 发送一个异步事件机器人专用
+        // 机器人自动回复开始 -- start --
+        Set<String> set = cacheService.keys(KeysManager.SEVEN_DAY_REGISTER_PREFIX+"*");
+        Iterator<String> it = set.iterator();
+        Set<String> newRegisterFor7Days = Sets.newConcurrentHashSet();
+        while (it.hasNext()){
+            String key = it.next();
+            newRegisterFor7Days.add(key.split(":")[1]);
+        }
 
-        applicationEventBus.post(new AutoReplyEvent(topic.getUid(),topic.getId(),topic.getCreateTime()));
+        if(newRegisterFor7Days.contains(topic.getUid()+"")) {
+            applicationEventBus.post(new AutoReplyEvent(topic.getUid(), topic.getId(), topic.getCreateTime()));
+        }
+        // 机器人自动回复结束 -- end --
         log.info("createKingdom end");
         CoinRule coinRule = userService.getCoinRules().get(Rules.CREATE_KING_KEY);
         coinRule.setExt(createKingdomDto.getUid());
