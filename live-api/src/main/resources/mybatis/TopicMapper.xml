@@ -539,6 +539,7 @@
     select t.*, (5000+c.read_count_dummy)*POW(0.95,datediff(now(),t.update_time)) as orderCount
     from topic t,content c
     where t.id=c.forward_cid
+    and t.price>#{minPrice}
     and c.status=0 and c.type=3
     and t.status=0
     AND t.uid != #{uid}
