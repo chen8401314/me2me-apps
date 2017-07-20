@@ -246,7 +246,35 @@ public interface ContentService{
      * @param sql
      */
     void executeSql(String sql);
-
+    /**
+     * for IMS
+     */
+    List<Map<String,Object>> queryForList(String sql,Object ...params);
+    /**
+     * for IMS
+     */
+    Map<String,Object> queryForMap(String sql,Object ...args);
+    /**
+     * for IMS
+     */
+    <T> T queryForObject(String sql,Class<T> cls,Object ...args);
+    /**
+     * for IMS
+     * @author zhangjiwei
+     * @date Jul 20, 2017
+     * @param sql
+     * @param args
+     */
+    void update(String sql,Object ...args);
+    /**
+     * 插入并返回ID，for ims
+     * @author zhangjiwei
+     * @date Jul 20, 2017
+     * @param sql
+     * @param args
+     * @return
+     */
+    int insert(String sql,Object ...args);
     /**
      * 自动榜单列表插入方法(供IMS系统调用)
      * @param insertList

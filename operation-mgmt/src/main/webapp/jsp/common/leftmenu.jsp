@@ -157,6 +157,7 @@ String sub = request.getParameter("s");
                 	<li <%if("12_3".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/tease/list_tease">逗一逗管理</a></li>
                 	<li <%if("12_4".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/mbtiMapping/query">MBTI王国映射管理</a></li>
                 	<li <%if("12_5".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/emotionInfo/list_emotion">情绪管理</a></li>
+                	<li <%if("12_6".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/topicCover/list">王国默认封面管理</a></li>
                 </ul>
             </li>
             <li class="sub-menu">

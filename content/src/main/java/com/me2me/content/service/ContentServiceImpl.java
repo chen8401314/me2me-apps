@@ -27,6 +27,7 @@ import com.me2me.user.rule.Rules;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -152,7 +153,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @Slf4j
 public class ContentServiceImpl implements ContentService {
-
+	@Autowired
+	private JdbcTemplate jdbc;
     @Autowired
     private ContentMybatisDao contentMybatisDao;
 
@@ -6538,4 +6540,31 @@ public class ContentServiceImpl implements ContentService {
         }
         return Response.success();
     }
+
+	@Override
+	public List<Map<String, Object>> queryForList(String sql, Object... params) {
+		return jdbc.queryForList(sql, params);
+	}
+
+	@Override
+	public Map<String, Object> queryForMap(String sql, Object... args) {
+		return jdbc.queryForMap(sql,args);
+	}
+
+	@Override
+	public <T> T queryForObject(String sql, Class<T> cls, Object... args) {
+		return jdbc.queryForObject(sql, cls,args);
+	}
+
+	@Override
+	public void update(String sql, Object... args) {
+		jdbc.update(sql,args);
+		
+	}
+	/**以事务方式运行，可以返回ID**/
+	@Override
+	public int insert(String sql, Object... args) {
+		jdbc.update(sql,args);
+		return jdbc.queryForObject("select @@IDENTITY",Integer.class);
+	}
 }

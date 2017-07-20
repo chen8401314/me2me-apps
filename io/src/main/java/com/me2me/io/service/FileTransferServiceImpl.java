@@ -6,6 +6,7 @@ import com.me2me.common.web.ResponseStatus;
 import com.me2me.io.dto.QiniuAccessTokenDto;
 import com.me2me.io.dto.ShowRecContentDTO;
 import com.qiniu.common.QiniuException;
+import com.qiniu.storage.BucketManager;
 import com.qiniu.storage.UploadManager;
 import com.qiniu.util.Auth;
 
@@ -29,6 +30,8 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.UUID;
+
+import javax.annotation.PostConstruct;
 
 
 /**
@@ -54,18 +57,29 @@ public class FileTransferServiceImpl implements FileTransferService{
 
     @Value("#{app.meappRecUrl}")
     private String meappRecUrl;
+    
+    private Auth auth;
+    private UploadManager uploadManager;
+    private BucketManager bucketManager;
+    
+    
+    @PostConstruct
+    public void init(){
+    	auth = Auth.create(ACCESS_KEY,SECRET_KEY);
+    	uploadManager= new UploadManager();
+    	bucketManager = new BucketManager(auth);
+    }
 
     /**
      * 文件上传
      * @param multipartFile
      */
     public void upload(MultipartFile multipartFile) {
-
+    	 
     }
 
     @Override
     public Response getQiniuAccessToken() {
-        Auth auth = Auth.create(ACCESS_KEY,SECRET_KEY);
         String token = auth.uploadToken(BUCKET);
         QiniuAccessTokenDto qiniuAccessTokenDto = new QiniuAccessTokenDto();
         qiniuAccessTokenDto.setToken(token);
@@ -75,11 +89,9 @@ public class FileTransferServiceImpl implements FileTransferService{
 
     public String upload(byte[] data, String key){
         //上传到七牛后保存的文件名
-        Auth auth = Auth.create(ACCESS_KEY,SECRET_KEY);
         String token = auth.uploadToken(BUCKET);
-        UploadManager up = new UploadManager();
         try {
-            up.put(data,key,token);
+        	uploadManager.put(data,key,token);
         } catch (QiniuException e) {
             e.printStackTrace();
         }
@@ -226,4 +238,13 @@ public class FileTransferServiceImpl implements FileTransferService{
     	}
     	return dto;
     }
+
+	@Override
+	public void deleteQiniuResource(String key) {
+		try {
+			bucketManager.delete(BUCKET, key);
+		} catch (QiniuException e) {
+			e.printStackTrace();
+		}
+	}
 }
