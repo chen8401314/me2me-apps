@@ -70,6 +70,7 @@ import com.me2me.web.request.RecQueryRequest;
 import com.me2me.web.request.RemoveLiveRequest;
 import com.me2me.web.request.RemoveTopicRequest;
 import com.me2me.web.request.ResendVoteRequest;
+import com.me2me.web.request.SaveDaySignInfoRequest;
 import com.me2me.web.request.SetLiveRequest;
 import com.me2me.web.request.SettingModifyRequest;
 import com.me2me.web.request.SignOutLiveRequest;
@@ -968,5 +969,15 @@ public class Live extends BaseController {
     @RequestMapping(value = "/givenKingdomOpration",method = RequestMethod.POST)
     public Response givenKingdom(GivenKingdomRequest request){
 		return liveService.givenKingdomOpration(request.getUid(),request.getGivenKingdomId(),request.getAction());
+    }
+    /**
+     * 保存日签信息接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/saveDaySignInfo",method = RequestMethod.POST)
+    public Response saveDaySignInfo(SaveDaySignInfoRequest request){
+		return liveService.saveDaySignInfo(request.getUid(), request.getImage(), request.getExtra(), request.getUids(), request.getSource() , request.getQuotationIds());
     }
 }

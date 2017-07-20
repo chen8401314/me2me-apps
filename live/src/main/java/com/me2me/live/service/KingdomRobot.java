@@ -39,7 +39,7 @@ public class KingdomRobot {
     private LiveService liveService;
 
     @Data
-    static class ReplyTimes implements BaseEntity{
+    public static class ReplyTimes implements BaseEntity{
 
         private final int min;
 
@@ -53,7 +53,7 @@ public class KingdomRobot {
 
 
     @Data
-    static class ExecutePolicy implements BaseEntity{
+    public static class ExecutePolicy implements BaseEntity{
 
         private Date createTime;
 
@@ -66,7 +66,7 @@ public class KingdomRobot {
         private int max;
     }
 
-    public void splitTask(ExecutePolicy policy, ReplyTimes replyCount, SpeakDto speakDto) {
+    private void splitTask(ExecutePolicy policy, ReplyTimes replyCount, SpeakDto speakDto) {
         try {
             Calendar finalTime = Calendar.getInstance();
             finalTime.setTime(policy.getCreateTime());
@@ -103,43 +103,39 @@ public class KingdomRobot {
 
     }
 
-    public void startWork(List<Long> ids,ExecutePolicy step1,ExecutePolicy step2) {
+    public void startWork(long id,ExecutePolicy step1,ExecutePolicy step2) {
 
-        for(Long id : ids){
-            int sleep = RANDOM.nextInt(75)+45;
-            // 获取王国创建时间
-            Topic topic = liveService.getTopicById(id);
-            step1.setCreateTime(topic.getCreateTime());
-            step1.setTopicId(id);
+        int sleep = RANDOM.nextInt(75)+45;
+        // 获取王国创建时间
+        Topic topic = liveService.getTopicById(id);
+        step1.setCreateTime(topic.getCreateTime());
+        step1.setTopicId(id);
 
-            // 后24小时候的操作
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTime(topic.getCreateTime());
-            calendar.add(Calendar.HOUR_OF_DAY,24);
-            step2.setCreateTime(calendar.getTime());
-            step2.setTopicId(id);
-            // 构建留言对象
-            SpeakDto speakDto = builderSpeakDto();
+        // 后24小时候的操作
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(topic.getCreateTime());
+        calendar.add(Calendar.HOUR_OF_DAY,step2.getLastHour());
+        step2.setCreateTime(calendar.getTime());
+        step2.setTopicId(id);
+        // 构建留言对象
+        SpeakDto speakDto = builderSpeakDto();
 
-            ES.schedule(new Runnable() {
-                @Override
-                public void run() {
-                    liveService.speak(speakDto);
-                    // 指派24小时前任务
-                    splitTask(step1,new ReplyTimes(2,3),speakDto);
-                    // 指派24小时候的任务
-                    splitTask(step2,new ReplyTimes(1,2),speakDto);
-                }
-            },sleep , TimeUnit.SECONDS);
-        }
+        ES.schedule(new Runnable() {
+            @Override
+            public void run() {
+                liveService.speak(speakDto);
+                // 指派24小时前任务
+                splitTask(step1,new ReplyTimes(2,3),speakDto);
+                // 指派24小时候的任务
+                splitTask(step2,new ReplyTimes(1,2),speakDto);
+            }
+        },sleep , TimeUnit.SECONDS);
 
     }
 
     private SpeakDto builderSpeakDto() {
         SpeakDto speakDto = new SpeakDto();
-
-
-
+        // todo 填充参数
         return speakDto;
     }
 }
