@@ -4287,4 +4287,9 @@ public class UserServiceImpl implements UserService {
 		}
 		
 	}
+	
+	@Override
+	public User getUserByUid(long uid) {
+		return userMybatisDao.getUserByUid(uid);
+	}
 }

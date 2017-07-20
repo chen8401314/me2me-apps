@@ -71,6 +71,7 @@ import com.me2me.live.dto.CreateKingdomDto;
 import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.CreateVoteDto;
 import com.me2me.live.dto.CreateVoteResponeDto;
+import com.me2me.live.dto.DaySignInfoDto;
 import com.me2me.live.dto.DropAroundDto;
 import com.me2me.live.dto.GetKingdomPriceDto;
 import com.me2me.live.dto.GetLiveDetailDto;
@@ -123,6 +124,8 @@ import com.me2me.live.model.LiveDisplayProtocol;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.LiveFavoriteDelete;
 import com.me2me.live.model.LiveReadHistory;
+import com.me2me.live.model.QuotationInfo;
+import com.me2me.live.model.RobotInfo;
 import com.me2me.live.model.TeaseInfo;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.Topic2;
@@ -149,6 +152,8 @@ import com.me2me.live.model.VoteInfo;
 import com.me2me.live.model.VoteOption;
 import com.me2me.live.model.VoteRecord;
 import com.me2me.live.service.exceptions.KingdomStealException;
+import com.me2me.search.dto.RecommendUser;
+import com.me2me.search.dto.RecommendUserDto;
 import com.me2me.search.service.SearchService;
 import com.me2me.sms.dto.ImSendMessageDto;
 import com.me2me.sms.service.JPushService;
@@ -158,6 +163,7 @@ import com.me2me.user.dto.RechargeToKingdomDto;
 import com.me2me.user.model.EmotionInfo;
 import com.me2me.user.model.EmotionRecord;
 import com.me2me.user.model.SystemConfig;
+import com.me2me.user.model.User;
 import com.me2me.user.model.UserFollow;
 import com.me2me.user.model.UserNo;
 import com.me2me.user.model.UserNotice;
@@ -7609,4 +7615,186 @@ public class LiveServiceImpl implements LiveService {
 		return liveMybatisDao.getTopicListedByTopicId(topicId);
 	}
 
+	@Override
+	public Response getDaySignInfo(long uid) {
+		DaySignInfoDto dto = new DaySignInfoDto();
+		User user = userService.getUserByUid(uid);
+		if (user == null) {
+			return Response.failure(500, "找不到该用户！");
+		}
+		UserProfile userProfile = userService.getUserProfileByUid(uid);
+		if (userProfile == null) {
+			return Response.failure(500, "找不到该用户！");
+		}
+
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String todayStr = sdf.format(new Date());
+		String yesterDay = CommonUtils.getCalculationDayStr(-1, "yyyy-MM-dd");
+		Map<String, Object> signRecord = liveLocalJdbcDao.getSignRecord(todayStr, uid);
+		if (signRecord == null) {
+			dto.setIsSave(0);
+		} else {
+			dto.setIsSave(1);
+		}
+		int signPostion = 3;
+		String signPostionStr = userService.getAppConfigByKey("SIGN_POSITION");
+		if (!StringUtils.isEmpty(signPostionStr)) {
+			signPostion = Integer.parseInt(signPostionStr);
+		}
+		dto.setPosition(signPostion);
+		int signRecordCount = liveLocalJdbcDao.getSignRecordCount(uid);
+		dto.setSerialNumber(signRecordCount + 1);
+		dto.setSignDate(todayStr);
+		// 判断是否是新注册第一天用户
+		if (todayStr.equals(sdf.format(user.getCreateTime()))) {
+			dto.setStatus(1);
+			dto.setNickName(userProfile.getNickName());
+			dto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+			dto.setTopicId(0);
+			dto.setUid(0);
+			dto.setFragment("这是我在米汤的第一天");
+			dto.setImage("");
+			dto.setTopicTitle("");
+		} else {
+			dto.setIsFirstDay(0);
+			Map<String, Object> maxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, uid, 60, 90);
+			if (maxFragment == null) {
+				maxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, uid, 0, 0);
+			}
+			// 判断是否有文字发言
+			if (maxFragment == null) {
+				Map<String, Object> imageData = getMaxFragmentImage(yesterDay, uid, 0);
+				if (imageData != null) {
+					Topic topic = liveMybatisDao.getTopicById(Long.parseLong(imageData.get("topic_id").toString()));
+					dto.setStatus(2);
+					dto.setNickName(userProfile.getNickName());
+					dto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+					dto.setUid(uid);
+					dto.setTopicId(topic.getId());
+					dto.setFragment("今天懒癌发作，什么都没说~");
+					dto.setImage(Constant.QINIU_DOMAIN + "/" + imageData.get("fragment_image").toString());
+					dto.setTopicTitle(topic.getTitle());
+				} else {
+					// 其他人标签逻辑
+
+					Response response = searchService.recommendUser(uid, 1, 10);
+					RecommendUserDto ruDto = (RecommendUserDto) response.getData();
+					List<RecommendUser> recUserData = ruDto.getRecUserData();
+					if (recUserData.size() > 0) {
+						int[] s = CommonUtils.randomArray(0, recUserData.size() - 1, recUserData.size());
+						for (int i = 0; i < s.length; i++) {
+							RecommendUser recommendUser = recUserData.get(s[i]);
+							if (recommendUser != null) {
+								long ruid = recommendUser.getUid();
+								UserProfile ruserProfile = userService.getUserProfileByUid(ruid);
+								Map<String, Object> rmaxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, ruid, 60,
+										90);
+								if (rmaxFragment == null) {
+									rmaxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, ruid, 0, 0);
+								}
+								if (rmaxFragment == null) {
+									continue;
+								} else {
+									Map<String, Object> rtopicData = getMaxFragmentImage(yesterDay, ruid,
+											Long.parseLong(rmaxFragment.get("topic_id").toString()));
+									Topic topic = liveMybatisDao.getTopicById(Long.parseLong(rmaxFragment.get("topic_id").toString()));
+									dto.setNickName(ruserProfile.getNickName());
+									dto.setAvatar(Constant.QINIU_DOMAIN + "/" + ruserProfile.getAvatar());
+									dto.setUid(ruid);
+									dto.setTopicId(Long.parseLong(rmaxFragment.get("topic_id").toString()));
+									dto.setFragment(rmaxFragment.get("fragment").toString());
+									dto.setTopicTitle(topic.getTitle());
+									if (rtopicData == null) {
+										dto.setImage("");
+									} else {
+										dto.setImage(
+												Constant.QINIU_DOMAIN + "/" + rtopicData.get("fragment_image").toString());
+									}
+									dto.setStatus(3);
+									break;
+								}
+
+							}
+						}
+						if (dto.getStatus() != 3) {
+							return Response.failure(500, "没有日签数据！");
+						}
+					}
+				}
+			} else {
+				Map<String, Object> imageData = getMaxFragmentImage(yesterDay, uid,
+						Long.parseLong(maxFragment.get("topic_id").toString()));
+				Topic topic = liveMybatisDao.getTopicById(Long.parseLong(maxFragment.get("topic_id").toString()));
+				dto.setNickName(userProfile.getNickName());
+				dto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+				dto.setUid(uid);
+				dto.setTopicId(Long.parseLong(maxFragment.get("topic_id").toString()));
+				dto.setFragment(maxFragment.get("fragment").toString());
+				dto.setTopicTitle(topic.getTitle());
+				if (imageData == null) {
+					dto.setStatus(1);
+					dto.setImage("");
+				} else {
+					dto.setStatus(0);
+					dto.setImage(Constant.QINIU_DOMAIN + "/" + imageData.get("fragment_image").toString());
+				}
+			}
+		}
+		String preWeekDay = CommonUtils.getCalculationDayStr(-7, "yyyy-MM-dd");
+		List<Map<String, Object>> hisList = liveLocalJdbcDao.getHisRobotQuotationRecord(preWeekDay, uid);
+		List<Long> hisRobot = new ArrayList<Long>();
+		List<Long> hisQuotation = new ArrayList<Long>();
+		for (int i = 0; i < hisList.size(); i++) {
+			Map<String, Object> map = hisList.get(i);
+			hisRobot.add(Long.parseLong(map.get("robot_uid").toString()));
+			hisQuotation.add(Long.parseLong(map.get("quotation_id").toString()));
+		}
+		List<RobotInfo> listRobot = liveMybatisDao.getRobotInfoRandom(hisRobot);
+		List<QuotationInfo> listQuotation = liveMybatisDao.getQuotationInfoRandom(hisQuotation);
+		for (int i = 0; i < listRobot.size(); i++) {
+			if (listQuotation.size() > i) {
+				RobotInfo robotInfo = listRobot.get(i);
+				DaySignInfoDto.Quotation quotation = new DaySignInfoDto.Quotation();
+				quotation.setUid(robotInfo.getUid());
+				UserProfile robotProfile = userService.getUserProfileByUid(robotInfo.getUid());
+				quotation.setNickName(robotProfile.getNickName());
+				quotation.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+				QuotationInfo quotationInfo = listQuotation.get(i);
+				quotation.setQuotationId(quotationInfo.getId());
+				quotation.setQuotation(quotationInfo.getQuotation());
+				dto.getQuotations().add(quotation);
+			}
+		}
+		return Response.success(dto);
+	}
+
+	public Map<String, Object> getMaxFragmentImage(String yesterDay, long uid, long topicId) {
+		List<Map<String, Object>> topicList = liveLocalJdbcDao.getFragmentImage(yesterDay, uid, 0);
+		int maxNumber = -1;
+		int maxLength = -1;
+		for (int i = 0; i < topicList.size(); i++) {
+			Map<String, Object> imageData = topicList.get(i);
+			String extra = imageData.get("extra").toString();
+			try {
+				JSONObject extraJson = JSONObject.parseObject(extra);
+				int w = extraJson.getInteger("w");
+				if (w < 400) {
+					continue;
+				}
+				int length = extraJson.getInteger("length");
+				if (length > maxLength) {
+					maxLength = length;
+					maxNumber = i;
+				}
+			} catch (Exception e) {
+				continue;
+			}
+		}
+		if (maxNumber != -1) {
+			return topicList.get(maxNumber);
+		} else {
+			return null;
+		}
+	}
+	
 }

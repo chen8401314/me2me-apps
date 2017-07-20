@@ -41,6 +41,7 @@ import com.me2me.web.request.BarrageRequest;
 import com.me2me.web.request.CreateKingdomRequest;
 import com.me2me.web.request.CreateLiveRequest;
 import com.me2me.web.request.CreateVoteRequest;
+import com.me2me.web.request.DaySignInfoRequest;
 import com.me2me.web.request.DeleteLiveFragmentRequest;
 import com.me2me.web.request.DisplayProtocolRequest;
 import com.me2me.web.request.DropAroundRequest;
@@ -953,19 +954,13 @@ public class Live extends BaseController {
     	return liveService.takeoverTopic(request.getTopicId(),request.getUid());
     }
     /**
-     * 王国收购接口
+     * 获取用户日签信息接口
      * @param request
      * @return
      */
     @ResponseBody
-    @RequestMapping(value = "/sendMessage",method = RequestMethod.POST)
-    public String sendMessage(long userId,String content){
-    	try {
-			smsService.sendSysMessage(userId+"", content);
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	return "yes";
+    @RequestMapping(value = "/getDaySignInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response getDaySignInfo(DaySignInfoRequest request){
+    	return liveService.getDaySignInfo(request.getUid());
     }
 }

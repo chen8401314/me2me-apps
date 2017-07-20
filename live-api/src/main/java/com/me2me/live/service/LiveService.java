@@ -599,4 +599,6 @@ public interface LiveService {
 	void updateExpiredTrialTag();
 	
 	public TopicListed getTopicListedByTopicId(long topicId);
+	
+	public Response getDaySignInfo(long uid) ;
 }
