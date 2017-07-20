@@ -259,4 +259,14 @@ public class CacheServiceImpl implements CacheService {
             }
         });
     }
+
+    @Override
+    public Set<String> keys(String pattern) {
+        return jedisTemplate.execute(new JedisTemplate.JedisActionResult() {
+            @Override
+            public <T> T actionResult(Jedis jedis) {
+                return (T) jedis.keys(pattern);
+            }
+        });
+    }
 }

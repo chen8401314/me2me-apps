@@ -56,5 +56,9 @@
         <!-- <table tableName="topic_price_his" domainObjectName="TopicPriceHis" /> -->
         <!-- <table tableName="topic_price_subsidy_config" domainObjectName="TopicPriceSubsidyConfig" /> -->
         <table tableName="topic_given" domainObjectName="TopicGiven" />
+     <!--  <table tableName="sign_record" domainObjectName="SignRecord" />  -->
+      <!--    <table tableName="robot_quotation_record" domainObjectName="RobotQuotationRecord" />  -->
+       <!--   <table tableName="robot_info" domainObjectName="RobotInfo" />  -->
+        <!--  <table tableName="quotation_info" domainObjectName="QuotationInfo" />  -->
     </context>
 </generatorConfiguration>
