@@ -104,6 +104,7 @@ import com.me2me.live.dto.ShowLiveDto;
 import com.me2me.live.dto.ShowRecQueryDTO;
 import com.me2me.live.dto.ShowTagKingdomsDTO;
 import com.me2me.live.dto.ShowTopicListDto;
+import com.me2me.live.dto.ShowTopicListDto.GivenKingdom;
 import com.me2me.live.dto.ShowTopicSearchDTO;
 import com.me2me.live.dto.ShowTopicTagsDTO;
 import com.me2me.live.dto.ShowUserAtListDTO;
@@ -1388,7 +1389,26 @@ public class LiveServiceImpl implements LiveService {
         List<Topic> topicList = liveMybatisDao.getMyLives(uid, sinceId, topics);
         log.info("getMyLives data success");
         builder(uid, showTopicListDto, topicList);
-        log.info("getMyLives end ...");
+        // 赠送王国
+        List<TopicGiven> givenKingdomList = liveMybatisDao.getMyGivenKingdoms(uid);
+        UserProfile myProfile= this.userService.getUserProfileByUid(uid);
+        for(TopicGiven given:givenKingdomList){
+        	GivenKingdom gk = new GivenKingdom();
+        	gk.setGivenKingdomId(given.getId());
+        	gk.setTitle(given.getTitle());
+        	gk.setSummary(given.getSummary());
+        	gk.setCoverImage(given.getCover());
+        	gk.setCreateTime(given.getCreateTime());
+        	gk.setUid(given.getUid());
+        	gk.setTags(given.getTags());
+        	gk.setAvatar(myProfile.getAvatar());
+        	gk.setNickName(myProfile.getNickName());
+        	gk.setV_lv(myProfile.getvLv());
+        	gk.setLevel(myProfile.getLevel());
+        	
+        	showTopicListDto.getGivenKingdoms().add(gk);
+        }
+        
         return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status, ResponseStatus.GET_MY_LIVE_SUCCESS.message, showTopicListDto);
     }
 

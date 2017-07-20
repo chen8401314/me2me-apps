@@ -965,7 +965,7 @@ public class Live extends BaseController {
     	return liveService.getDaySignInfo(request.getUid());
     }
     @ResponseBody
-    @RequestMapping(value = "/givenKingdom",method = RequestMethod.POST)
+    @RequestMapping(value = "/givenKingdomOpration",method = RequestMethod.POST)
     public Response givenKingdom(GivenKingdomRequest request){
 		return liveService.givenKingdomOpration(request.getUid(),request.getGivenKingdomId(),request.getAction());
     }

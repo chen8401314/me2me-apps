@@ -24,6 +24,7 @@ import com.me2me.live.dto.GetLiveDetailDto;
 import com.me2me.live.dto.GetLiveUpdateDto;
 import com.me2me.live.dto.SearchDropAroundTopicDto;
 import com.me2me.live.dto.SearchTopicDto;
+import com.me2me.live.dto.ShowTopicListDto.GivenKingdom;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.mapper.BlockTopicMapper;
 import com.me2me.live.mapper.DeleteLogMapper;
@@ -101,6 +102,7 @@ import com.me2me.live.model.TopicFragmentExample.Criteria;
 import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicFragmentTemplateExample;
 import com.me2me.live.model.TopicGiven;
+import com.me2me.live.model.TopicGivenExample;
 import com.me2me.live.model.TopicListed;
 import com.me2me.live.model.TopicListedExample;
 import com.me2me.live.model.TopicNews;
@@ -1818,5 +1820,17 @@ public class LiveMybatisDao {
 	}
 	public void deleteGivenKingdomById(long givenKingdomId){
 		givenMapper.deleteByPrimaryKey((int)givenKingdomId);
+	}
+	/**
+	 * 取用户的赠送王国。
+	 * @author zhangjiwei
+	 * @date Jul 20, 2017
+	 * @param uid
+	 * @return
+	 */
+	public List<TopicGiven> getMyGivenKingdoms(long uid) {
+		TopicGivenExample example = new TopicGivenExample();
+		example.createCriteria().andUidEqualTo((int)uid);
+		return givenMapper.selectByExample(example);
 	}
 }

@@ -23,7 +23,8 @@ public class ShowTopicListDto implements BaseEntity{
     private int liveCount;
 
     private int isUpdate;
-
+    
+    private List<GivenKingdom> givenKingdoms = Lists.newArrayList();
     private List<ShowTopicElement> showTopicElements = Lists.newArrayList();
 
     public static ShowTopicElement createShowTopicElement(){
@@ -41,11 +42,22 @@ public class ShowTopicListDto implements BaseEntity{
     public static AttentionElement createAttentionElement(){
         return  new AttentionElement();
     }
-
+    @Data
+    public static class GivenKingdom extends ShowTopicElement implements BaseEntity{
+		private static final long serialVersionUID = 1L;
+		private long givenKingdomId;
+    	private String summary;
+    	private String tags;
+    }
     @Data
     public static  class ShowTopicElement implements BaseEntity{
 
-        private long cid;
+        /**
+		 *
+		 */
+		private static final long serialVersionUID = 1L;
+
+		private long cid;
 
         private long topicId;
 
