@@ -61,6 +61,8 @@ public class ShowUserProfileDto implements BaseEntity{
     private int level;
     // 可用米汤币
     private int availableCoin;
+    //米汤币转换人民币
+    private double  priceRMB;
     // 用户级别图标
     private String levelIcon;
 

@@ -599,7 +599,9 @@ public interface LiveService {
 	void updateExpiredTrialTag();
 	
 	public TopicListed getTopicListedByTopicId(long topicId);
-
+	
+	public Response getDaySignInfo(long uid) ;
+	
 	/**
 	 * 赠送王国操作，可删除和激活。
 	 * @author zhangjiwei

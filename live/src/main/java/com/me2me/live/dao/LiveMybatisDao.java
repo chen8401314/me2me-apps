@@ -34,6 +34,8 @@ import com.me2me.live.mapper.LiveDisplayReviewMapper;
 import com.me2me.live.mapper.LiveFavoriteDeleteMapper;
 import com.me2me.live.mapper.LiveFavoriteMapper;
 import com.me2me.live.mapper.LiveReadHistoryMapper;
+import com.me2me.live.mapper.QuotationInfoMapper;
+import com.me2me.live.mapper.RobotInfoMapper;
 import com.me2me.live.mapper.TeaseInfoMapper;
 import com.me2me.live.mapper.TopicAggregationApplyMapper;
 import com.me2me.live.mapper.TopicAggregationMapper;
@@ -73,6 +75,10 @@ import com.me2me.live.model.LiveFavoriteDeleteExample;
 import com.me2me.live.model.LiveFavoriteExample;
 import com.me2me.live.model.LiveReadHistory;
 import com.me2me.live.model.LiveReadHistoryExample;
+import com.me2me.live.model.QuotationInfo;
+import com.me2me.live.model.QuotationInfoExample;
+import com.me2me.live.model.RobotInfo;
+import com.me2me.live.model.RobotInfoExample;
 import com.me2me.live.model.TeaseInfo;
 import com.me2me.live.model.TeaseInfoExample;
 import com.me2me.live.model.Topic;
@@ -232,7 +238,12 @@ public class LiveMybatisDao {
     
     @Autowired
     private TopicGivenMapper givenMapper;
-
+    @Autowired
+    private RobotInfoMapper robotInfoMapper;
+    
+    @Autowired
+    private QuotationInfoMapper quotationInfoMapper;
+    
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
     }
@@ -1770,7 +1781,38 @@ public class LiveMybatisDao {
     	criteria.andTopicIdEqualTo(topicId);
 		return topicListedMapper.deleteByExample(example);
 	}
-
+	
+	/**
+	 * 获取随机两条不重复的机器人
+	 * @author chenxiang
+	 * @date 2017-07-20
+	 * @param 
+	 */
+	public List<RobotInfo> getRobotInfoRandom(List<Long> ids){
+		RobotInfoExample example = new RobotInfoExample();
+		RobotInfoExample.Criteria criteria = example.createCriteria();
+		if(ids.size()>0){
+		criteria.andUidNotIn(ids);
+		}
+		example.setOrderByClause("  RAND() LIMIT 2 ");
+		return robotInfoMapper.selectByExample(example);
+	}
+	/**
+	 * 获取随机两条不重复的语录
+	 * @author chenxiang
+	 * @date 2017-07-20
+	 * @param 
+	 */
+	public List<QuotationInfo> getQuotationInfoRandom(List<Long> ids){
+		QuotationInfoExample example = new QuotationInfoExample();
+		QuotationInfoExample.Criteria criteria = example.createCriteria();
+		if(ids.size()>0){
+		criteria.andIdNotIn(ids);
+		}
+		example.setOrderByClause("  RAND() LIMIT 2 ");
+		return quotationInfoMapper.selectByExample(example);
+	}
+	
 	public TopicGiven getGivenKingomdById(long givenKingdomId) {
 		return givenMapper.selectByPrimaryKey((int)givenKingdomId);
 	}

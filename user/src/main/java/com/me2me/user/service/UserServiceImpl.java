@@ -1,6 +1,7 @@
 package com.me2me.user.service;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -1578,6 +1579,14 @@ public class UserServiceImpl implements UserService {
             showUserProfileDto.getHobbyList().add(hobby);
         }
         log.info("getUserProfile end ...");
+        //米币转换人民币
+        String exchangeRate = this.getAppConfigByKey("EXCHANGE_RATE");
+        if (StringUtils.isEmpty(exchangeRate)){
+            exchangeRate = "100";
+        }
+        Integer  i = showUserProfileDto.getAvailableCoin();
+        Double d = i.doubleValue();
+        showUserProfileDto.setPriceRMB(d/Integer.parseInt(exchangeRate));
         return  Response.success(showUserProfileDto);
     }
 
@@ -4427,8 +4436,14 @@ public class UserServiceImpl implements UserService {
                 list.add(nodeDto);
             }
         }*/
-
-
+        //转换米汤币为人民币
+        String exchangeRate = this.getAppConfigByKey("EXCHANGE_RATE");
+        if (StringUtils.isEmpty(exchangeRate)){
+            exchangeRate = "100";
+        }
+        Integer  i = myLevelDto.getAvailableCoin();
+        Double d = i.doubleValue();
+        myLevelDto.setPriceRMB(d/Integer.parseInt(exchangeRate));
         return Response.success(myLevelDto);
     }
 
@@ -4627,5 +4642,10 @@ public class UserServiceImpl implements UserService {
 			return Response.success(dto);
 		}
 		
+	}
+	
+	@Override
+	public User getUserByUid(long uid) {
+		return userMybatisDao.getUserByUid(uid);
 	}
 }
