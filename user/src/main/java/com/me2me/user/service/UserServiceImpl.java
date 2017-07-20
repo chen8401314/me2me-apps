@@ -6,6 +6,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import com.me2me.core.KeysManager;
 import com.me2me.user.dto.*;
 import com.me2me.user.model.*;
 import com.me2me.user.model.Dictionary;
@@ -264,7 +265,8 @@ public class UserServiceImpl implements UserService {
         //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
 
         //新用户注册放入cach,机器人自动回复用
-        cacheService.setex("SD_REG:"+signUpSuccessDto.getUid(),signUpSuccessDto.getUid()+"",7*24*60*60);
+        String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+signUpSuccessDto.getUid();
+        cacheService.setex(key,signUpSuccessDto.getUid()+"",7*24*60*60);
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
 
@@ -662,7 +664,8 @@ public class UserServiceImpl implements UserService {
             //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
 
             //新用户注册放入cach,机器人自动回复用
-            cacheService.setex("SD_REG:"+signUpSuccessDto.getUid(),signUpSuccessDto.getUid()+"",7*24*60*60);
+            String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+signUpSuccessDto.getUid();
+            cacheService.setex(key,signUpSuccessDto.getUid()+"",7*24*60*60);
             return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
         }
     }
@@ -2409,6 +2412,9 @@ public class UserServiceImpl implements UserService {
                 if(checkUserDisable(loginSuccessDto.getUid())){
                 	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                 }
+                //新用户注册放入cach,机器人自动回复用
+                String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+loginSuccessDto.getUid();
+                cacheService.setex(key,loginSuccessDto.getUid()+"",7*24*60*60);
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status, ResponseStatus.USER_LOGIN_SUCCESS.message, loginSuccessDto);
             }
 
