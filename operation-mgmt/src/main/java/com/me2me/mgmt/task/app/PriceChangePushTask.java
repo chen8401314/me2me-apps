@@ -81,18 +81,28 @@ public class PriceChangePushTask {
 			
 			Map<String, Object> topic = null;
 			JsonObject jsonObject = null;
+			String msg = null;
 			for(Map<String, Object> m : dataList){
 				topic = topicMap.get(String.valueOf(m.get("topic_id")));
 				if(null == topic){
 					continue;
 				}
+				int type = (Integer)m.get("type");
+				int changePrice = (Integer)m.get("change_price");
+						
+				if(type == 1){//升值
+					msg = "恭喜！你的王国《"+(String)topic.get("title")+"》昨日升值了"+changePrice+"米汤币，今天也要保持啊！";
+				}else{//贬值
+					msg = "矮油可惜了！你的王国《"+(String)topic.get("title")+"》昨日贬值了"+changePrice+"米汤币，要加油啊。";
+				}
+				
 				jsonObject = new JsonObject();
 	            jsonObject.addProperty("messageType", Specification.PushMessageType.UPDATE.index);
 	            jsonObject.addProperty("type", Specification.PushObjectType.LIVE.index);
 	            jsonObject.addProperty("topicId", (Long)m.get("topic_id"));
 	            jsonObject.addProperty("contentType", (Integer)topic.get("type"));
 	            jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//这里是给国王的通知，所以直接显示核心圈即可
-	            userService.pushWithExtra(String.valueOf(topic.get("uid")), "ABCDEFG", JPushUtils.packageExtra(jsonObject));
+	            userService.pushWithExtra(String.valueOf(topic.get("uid")), msg, JPushUtils.packageExtra(jsonObject));
 			}
 		}
 	}
