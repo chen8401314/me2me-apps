@@ -625,13 +625,40 @@ public class SearchServiceImpl implements SearchService {
 	public Response recommendUser(long uid,int page,int pageSize){
 		UserProfile profile = userService.getUserProfileByUid(uid);
 		String hobby = StringUtils.join(searchMapper.getUserHobbyIds(uid),",");
+		List<Long> hobbyIds = searchMapper.getUserHobbyIds(uid);
 		int completion = this.getPersonaCompleted(profile, hobby);
+		List<Long> blacklistUids = contentForSearchJdbcDao.getBlacklist(uid);
 		
 		List<RecommendUser> resultpage = null;
 		if(completion >= 10){
 			//查出我已关注过的，这些是不能反回的
+			List<Long> noUidList = new ArrayList<Long>();
 			List<Long> myFollowUidList = userService.getFollowList(uid);
-			resultpage = this.searchService.getRecommendUserList(uid, page, pageSize, myFollowUidList);
+			if(null != myFollowUidList && myFollowUidList.size() > 0){
+				noUidList.addAll(myFollowUidList);
+			}
+			if(null != blacklistUids && blacklistUids.size() > 0){
+				for(Long bid : blacklistUids){
+					if(!noUidList.contains(bid)){
+						noUidList.add(bid);
+					}
+				}
+			}
+//			resultpage = this.searchService.getRecommendUserList(uid, page, pageSize, myFollowUidList);
+			resultpage = this.userRecList(profile, hobbyIds, null, noUidList, 30);
+			if(resultpage.size() > 1){
+				Collections.sort(resultpage, new Comparator<RecommendUser>() {
+		            public int compare(RecommendUser a, RecommendUser b) {
+		                if(a.getMatching() > b.getMatching()){
+		                	return -1;
+		                }else if(a.getMatching() == b.getMatching()){
+		                	return 0;
+		                }else{
+		                	return 1;
+		                }
+		            }
+		        });
+			}
 		}
 		
 		if(null == resultpage){

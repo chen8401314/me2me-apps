@@ -132,4 +132,14 @@ public interface CacheService {
      */
     long incr(String key);
 
+
+    /**
+     * 通配符获取Key的集合
+     * @param pattern
+     * @return
+     */
+    Set<String> keys(String pattern);
+
+
+
 }

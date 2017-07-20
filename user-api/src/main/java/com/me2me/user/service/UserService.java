@@ -556,4 +556,6 @@ public interface UserService {
 	Response blacklist(long uid, long targetUid, int action);
 	
 	 Response getGuideInfo();
+	 
+    User getUserByUid(long uid) ;
 }
