@@ -126,6 +126,8 @@ import com.me2me.live.model.LiveFavoriteDelete;
 import com.me2me.live.model.LiveReadHistory;
 import com.me2me.live.model.QuotationInfo;
 import com.me2me.live.model.RobotInfo;
+import com.me2me.live.model.RobotQuotationRecord;
+import com.me2me.live.model.SignRecord;
 import com.me2me.live.model.TeaseInfo;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.Topic2;
