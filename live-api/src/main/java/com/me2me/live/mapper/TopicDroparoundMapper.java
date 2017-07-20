@@ -98,7 +98,7 @@ public interface TopicDroparoundMapper {
      */
     int updateByPrimaryKey(TopicDroparound record);
 
-    TopicDroparound getRandomDropaRound(Map<String ,String> map);
+    TopicDroparound getRandomDropaRound(Map<String ,Object> map);
     /**
      * 获取串门王国分页。
      * @author zhangjiwei

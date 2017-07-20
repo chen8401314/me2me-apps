@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -81,4 +82,19 @@ public class LiveForUserJdbcDao {
     	sb.append(")");
     	return jdbcTemplate.queryForList(sb.toString());
     }
+
+	public void createGiveTopic(Long uid, String cover, String title, String summary, String tags, int subType) {
+		String sql = "insert into topic_given(uid,cover,title,summary,tags,sub_type,create_time) values(?,?,?,?,?,?,now())";
+		jdbcTemplate.update(sql, uid,cover,title,summary,tags,subType);
+	}
+
+	public List<String> getRandomKingdomCover(int count) {
+		String sql = "select pic, RAND() rd from topic_preset_pic order by rd desc limit ?";
+		List<Map<String,Object>> dataList = jdbcTemplate.queryForList(sql,count);
+		List<String> retList = new ArrayList<>();
+		for(Map<String,Object> data:dataList){
+			retList.add(data.get("pic").toString());
+		}
+		return retList;
+	}
 }

@@ -49,7 +49,7 @@ public class LiveTest extends AbstractJUnit4SpringContextTests {
 		Response resp =liveService.stealKingdomCoin(318, 2852);
 		System.out.println(JSON.toJSONString(resp));
 	}
-	@Test
+	//@Test
 	public void testSpeak(){
 		SpeakDto dto = new SpeakDto();
 		dto.setType(0);

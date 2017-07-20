@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -33,7 +32,6 @@ import com.me2me.mgmt.request.SearchUserDTO;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.mgmt.task.app.KingdomPriceTask;
 import com.me2me.mgmt.vo.DatatablePage;
-import com.me2me.user.model.AppConfig;
 import com.me2me.user.service.UserService;
 
 @Controller
@@ -492,10 +490,12 @@ public class PriceController {
 			String sql1 = "update topic set price=0,listing_time=null,update_time=update_time";
 			String sql2 = "delete from topic_data";
 			String sql3 = "delete from topic_price_his";
+			String sql4 = "delete from topic_price_push";
 			
 			contentService.executeSql(sql1);
 			contentService.executeSql(sql2);
 			contentService.executeSql(sql3);
+			contentService.executeSql(sql4);
 		}catch(Exception e){
 			logger.error("初始化失败", e);
 			return "初始化失败";

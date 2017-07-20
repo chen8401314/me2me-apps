@@ -20,6 +20,8 @@ public class MyLevelDto implements BaseEntity {
     private  int availableCoin ;
     //下一等级所需米汤币
     private  int nextLevelCoin ;
+    //人民币
+    private double priceRMB;
 
     private  InnerLevel preLevel;
 

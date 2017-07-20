@@ -990,6 +990,18 @@ public class LiveLocalJdbcDao {
 		return jdbcTemplate.queryForList(sql,new Object[]{uid,day});
 	}
 	/**
+	 * 判断用户是否有拿大红包的资格
+	 * @author zhangjiwei
+	 * @date Jun 12, 2017
+	 * @param day
+	 * @return
+	 */
+	public List<Map<String,Object>> getUserStealLogByCountAsc(long uid,int count) {
+		String sql = "select * from user_steal_log where uid=? order by id asc limit ?";
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql,new Object[]{uid,count});
+		return list;
+	}
+	/**
 	 * 获取用户当天获得金币总数量，包含操作得币和偷取得币。
 	 * @author zhangjiwei
 	 * @date Jun 21, 2017
@@ -1061,6 +1073,7 @@ public class LiveLocalJdbcDao {
 	 */
 	public void stealTopicPrice(int stealedCoins,long topicId) {
 		jdbcTemplate.update("update topic_data set steal_price=steal_price-? where topic_id=?",new Object[]{stealedCoins, topicId});
+		jdbcTemplate.update("update topic set price=price-? where topic_id=?",new Object[]{stealedCoins, topicId});
 	}
 
 

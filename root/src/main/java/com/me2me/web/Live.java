@@ -54,6 +54,7 @@ import com.me2me.web.request.GetKingdomTransferRecordRequest;
 import com.me2me.web.request.GetLiveByCidRequest;
 import com.me2me.web.request.GetLivesRequest;
 import com.me2me.web.request.GetMyLivesRequest;
+import com.me2me.web.request.GivenKingdomRequest;
 import com.me2me.web.request.ImgDBRequest;
 import com.me2me.web.request.InactiveLiveRequest;
 import com.me2me.web.request.KingdomSearchRequest;
@@ -962,5 +963,10 @@ public class Live extends BaseController {
     @RequestMapping(value = "/getDaySignInfo",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getDaySignInfo(DaySignInfoRequest request){
     	return liveService.getDaySignInfo(request.getUid());
+    }
+    @ResponseBody
+    @RequestMapping(value = "/givenKingdom",method = RequestMethod.POST)
+    public Response givenKingdom(GivenKingdomRequest request){
+		return liveService.givenKingdomOpration(request.getUid(),request.getGivenKingdomId(),request.getAction());
     }
 }

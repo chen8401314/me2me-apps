@@ -601,4 +601,13 @@ public interface LiveService {
 	public TopicListed getTopicListedByTopicId(long topicId);
 	
 	public Response getDaySignInfo(long uid) ;
+	
+	/**
+	 * 赠送王国操作，可删除和激活。
+	 * @author zhangjiwei
+	 * @date Jul 19, 2017
+	 * @param uid
+	 * @param givenKingdomId
+	 */
+	Response givenKingdomOpration(long uid, long givenKingdomId,String action);
 }

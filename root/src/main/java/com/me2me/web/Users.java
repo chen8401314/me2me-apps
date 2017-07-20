@@ -92,6 +92,7 @@ public class Users extends BaseController {
         return userService.signUp(userSignUpDto);
     }
 
+
     /**
      * 用户登录
      * @return
@@ -109,6 +110,27 @@ public class Users extends BaseController {
         return userService.login(userLoginDto);
     }
 
+
+    /**
+     * 用户使用手机验证码登录 如果没注册给其注册
+     * @return
+     */
+    @RequestMapping(value = "/loginByVerify",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response loginByVerify(LoginRequest request){
+        UserLoginDto userLoginDto = new UserLoginDto();
+        userLoginDto.setUserName(request.getUserName());
+        userLoginDto.setOs(request.getOs());
+        userLoginDto.setPlatform(request.getPlatform());
+        userLoginDto.setDeviceNo(request.getDeviceNo());
+        userLoginDto.setJPushToken(request.getJPushToken());
+        return userService.loginByVerify(userLoginDto);
+    }
+
+
+
+
+
     /**
      * 修改密码接口
      * @param request
@@ -123,6 +145,20 @@ public class Users extends BaseController {
         modifyEncryptDto.setFirstEncrypt(request.getFirstEncrypt());
         modifyEncryptDto.setSecondEncrypt(request.getSecondEncrypt());
         return userService.modifyEncrypt(modifyEncryptDto);
+    }
+
+    /**
+     * 设置密码接口
+     * @param setEncryptRequest
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/setEncrypt",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response setEncrypt(SetEncryptRequest setEncryptRequest){
+        SetEncryptDto setEncryptDto = new SetEncryptDto();
+        setEncryptDto.setUserName(setEncryptRequest.getUserName());
+        setEncryptDto.setEncrypt(setEncryptRequest.getEncrypt());
+        return userService.setEncrypt(setEncryptDto);
     }
 
     /**
