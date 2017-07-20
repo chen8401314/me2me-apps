@@ -53,19 +53,19 @@ public class AutoReplyEventListener {
 		KingdomRobot.ExecutePolicy step1 = new KingdomRobot.ExecutePolicy();
 		step1.setCreateTime(autoReplyEvent.getCreateTime());
 		step1.setTopicId(autoReplyEvent.getTopicId());
-		step1.setLastHour(24);
-		step1.setMin(60);
-		step1.setMax(60);
+		step1.setLastHour(1);
+		step1.setMin(5);
+		step1.setMax(3);
 
 
 		KingdomRobot.ExecutePolicy step2 = new KingdomRobot.ExecutePolicy();
 		step2.setCreateTime(autoReplyEvent.getCreateTime());
 		step2.setTopicId(autoReplyEvent.getTopicId());
-		step2.setLastHour(24);
-		step2.setMin(120);
-		step2.setMax(60);
+		step2.setLastHour(1);
+		step2.setMin(8);
+		step2.setMax(2);
 
-		// kingdomRobot.startWork(autoReplyEvent.getTopicId(),step1,step2);
+		kingdomRobot.startWork(autoReplyEvent.getTopicId(),step1,step2);
 
 	}
 }

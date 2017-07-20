@@ -118,7 +118,7 @@ public class KingdomRobot {
         step2.setCreateTime(calendar.getTime());
         step2.setTopicId(id);
         // 构建留言对象
-        SpeakDto speakDto = builderSpeakDto();
+        SpeakDto speakDto = builderSpeakDto(id);
 
         ES.schedule(new Runnable() {
             @Override
@@ -133,9 +133,15 @@ public class KingdomRobot {
 
     }
 
-    private SpeakDto builderSpeakDto() {
+    private SpeakDto builderSpeakDto(long topicId) {
         SpeakDto speakDto = new SpeakDto();
         // todo 填充参数
+        speakDto.setFragment("你是我的玫瑰，你是我的花，你是我的爱人，是我的牵挂。");
+        speakDto.setContentType(0);
+        speakDto.setTopicId(topicId);
+        speakDto.setUid(325);
+        speakDto.setType(1);
+        speakDto.setSource(1);
         return speakDto;
     }
 }

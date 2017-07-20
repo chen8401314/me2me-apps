@@ -3614,9 +3614,19 @@ public class LiveServiceImpl implements LiveService {
         }
         //add kingdom tags -- end --
 
-        // 发送一个异步事件机器人专用
+        // 机器人自动回复开始 -- start --
+        Set<String> set = cacheService.keys(KeysManager.SEVEN_DAY_REGISTER_PREFIX+"*");
+        Iterator<String> it = set.iterator();
+        Set<String> newRegisterFor7Days = Sets.newConcurrentHashSet();
+        while (it.hasNext()){
+            String key = it.next();
+            newRegisterFor7Days.add(key.split(":")[1]);
+        }
 
-        applicationEventBus.post(new AutoReplyEvent(topic.getUid(),topic.getId(),topic.getCreateTime()));
+        if(newRegisterFor7Days.contains(topic.getUid()+"")) {
+            applicationEventBus.post(new AutoReplyEvent(topic.getUid(), topic.getId(), topic.getCreateTime()));
+        }
+        // 机器人自动回复结束 -- end --
         log.info("createKingdom end");
         CoinRule coinRule = userService.getCoinRules().get(Rules.CREATE_KING_KEY);
         coinRule.setExt(createKingdomDto.getUid());
