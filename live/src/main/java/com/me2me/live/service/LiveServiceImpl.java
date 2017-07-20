@@ -7755,14 +7755,38 @@ public class LiveServiceImpl implements LiveService {
 	        		this.addTopicTag(topic.getId(),topic.getUid(),given.getTags());
 					resp.setTopicId(topic.getId());
 				}else{
-					// create .
+					 CreateKingdomDto createKingdomDto  = new CreateKingdomDto();
+					 createKingdomDto.setUid(uid);
+					 createKingdomDto.setTitle(given.getTitle());
+					 createKingdomDto.setLiveImage(given.getCover());
+					 createKingdomDto.setContentType(0);
+					 createKingdomDto.setFragment(given.getSummary());
+					 createKingdomDto.setSource(0);
+					 createKingdomDto.setExtra("");
+					 createKingdomDto.setKType(0);
+					 createKingdomDto.setCExtra("");
+					 createKingdomDto.setKConfig("");
+					 createKingdomDto.setTags(given.getTags());
+					 createKingdomDto.setSubType(1);
+					 topic = createSpecialTopic(createKingdomDto);
+					 resp.setTopicId(topic.getId());
 				}
 			}else{		// 普通王国
-				CreateKingdomDto dto = new CreateKingdomDto();
-				// todo :
-				
-				//this.addTopicTag(topic.getId(),topic.getUid(),given.getTags());
-				//resp.setTopicId(topicId);
+				CreateKingdomDto createKingdomDto  = new CreateKingdomDto();
+				 createKingdomDto.setUid(uid);
+				 createKingdomDto.setTitle(given.getTitle());
+				 createKingdomDto.setLiveImage(given.getCover());
+				 createKingdomDto.setContentType(0);
+				 createKingdomDto.setFragment(given.getSummary());
+				 createKingdomDto.setSource(0);
+				 createKingdomDto.setExtra("");
+				 createKingdomDto.setKType(0);
+				 createKingdomDto.setCExtra("");
+				 createKingdomDto.setKConfig("");
+				 createKingdomDto.setTags(given.getTags());
+				 createKingdomDto.setSubType(1);
+				 Topic topic = createSpecialTopic(createKingdomDto);
+				 resp.setTopicId(topic.getId());
 			}
 			liveMybatisDao.deleteGivenKingdomById(givenKingdomId);
 			
