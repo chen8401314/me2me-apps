@@ -965,6 +965,11 @@ public class Live extends BaseController {
     public Response getDaySignInfo(DaySignInfoRequest request){
     	return liveService.getDaySignInfo(request.getUid());
     }
+    @ResponseBody
+    @RequestMapping(value = "/givenKingdomOpration",method = RequestMethod.POST)
+    public Response givenKingdom(GivenKingdomRequest request){
+		return liveService.givenKingdomOpration(request.getUid(),request.getGivenKingdomId(),request.getAction());
+    }
     /**
      * 保存日签信息接口
      * @param request

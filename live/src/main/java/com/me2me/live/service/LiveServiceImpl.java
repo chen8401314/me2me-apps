@@ -108,6 +108,7 @@ import com.me2me.live.dto.ShowLiveDto;
 import com.me2me.live.dto.ShowRecQueryDTO;
 import com.me2me.live.dto.ShowTagKingdomsDTO;
 import com.me2me.live.dto.ShowTopicListDto;
+import com.me2me.live.dto.ShowTopicListDto.GivenKingdom;
 import com.me2me.live.dto.ShowTopicSearchDTO;
 import com.me2me.live.dto.ShowTopicTagsDTO;
 import com.me2me.live.dto.ShowUserAtListDTO;
@@ -1394,7 +1395,26 @@ public class LiveServiceImpl implements LiveService {
         List<Topic> topicList = liveMybatisDao.getMyLives(uid, sinceId, topics);
         log.info("getMyLives data success");
         builder(uid, showTopicListDto, topicList);
-        log.info("getMyLives end ...");
+        // 赠送王国
+        List<TopicGiven> givenKingdomList = liveMybatisDao.getMyGivenKingdoms(uid);
+        UserProfile myProfile= this.userService.getUserProfileByUid(uid);
+        for(TopicGiven given:givenKingdomList){
+        	GivenKingdom gk = new GivenKingdom();
+        	gk.setGivenKingdomId(given.getId());
+        	gk.setTitle(given.getTitle());
+        	gk.setSummary(given.getSummary());
+        	gk.setCoverImage(given.getCover());
+        	gk.setCreateTime(given.getCreateTime());
+        	gk.setUid(given.getUid());
+        	gk.setTags(given.getTags());
+        	gk.setAvatar(myProfile.getAvatar());
+        	gk.setNickName(myProfile.getNickName());
+        	gk.setV_lv(myProfile.getvLv());
+        	gk.setLevel(myProfile.getLevel());
+        	
+        	showTopicListDto.getGivenKingdoms().add(gk);
+        }
+        
         return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status, ResponseStatus.GET_MY_LIVE_SUCCESS.message, showTopicListDto);
     }
 
@@ -7442,14 +7462,38 @@ public class LiveServiceImpl implements LiveService {
 	        		this.addTopicTag(topic.getId(),topic.getUid(),given.getTags());
 					resp.setTopicId(topic.getId());
 				}else{
-					// create .
+					 CreateKingdomDto createKingdomDto  = new CreateKingdomDto();
+					 createKingdomDto.setUid(uid);
+					 createKingdomDto.setTitle(given.getTitle());
+					 createKingdomDto.setLiveImage(given.getCover());
+					 createKingdomDto.setContentType(0);
+					 createKingdomDto.setFragment(given.getSummary());
+					 createKingdomDto.setSource(0);
+					 createKingdomDto.setExtra("");
+					 createKingdomDto.setKType(0);
+					 createKingdomDto.setCExtra("");
+					 createKingdomDto.setKConfig("");
+					 createKingdomDto.setTags(given.getTags());
+					 createKingdomDto.setSubType(1);
+					 topic = createSpecialTopic(createKingdomDto);
+					 resp.setTopicId(topic.getId());
 				}
 			}else{		// 普通王国
-				CreateKingdomDto dto = new CreateKingdomDto();
-				// todo :
-				
-				//this.addTopicTag(topic.getId(),topic.getUid(),given.getTags());
-				//resp.setTopicId(topicId);
+				CreateKingdomDto createKingdomDto  = new CreateKingdomDto();
+				 createKingdomDto.setUid(uid);
+				 createKingdomDto.setTitle(given.getTitle());
+				 createKingdomDto.setLiveImage(given.getCover());
+				 createKingdomDto.setContentType(0);
+				 createKingdomDto.setFragment(given.getSummary());
+				 createKingdomDto.setSource(0);
+				 createKingdomDto.setExtra("");
+				 createKingdomDto.setKType(0);
+				 createKingdomDto.setCExtra("");
+				 createKingdomDto.setKConfig("");
+				 createKingdomDto.setTags(given.getTags());
+				 createKingdomDto.setSubType(1);
+				 Topic topic = createSpecialTopic(createKingdomDto);
+				 resp.setTopicId(topic.getId());
 			}
 			liveMybatisDao.deleteGivenKingdomById(givenKingdomId);
 			
