@@ -423,6 +423,23 @@ public class LiveServiceImpl implements LiveService {
             }*/
         }
 
+        //这里需要判断是否需要返回足迹信息
+        //条件：不是国王，不是核心圈，没有加入过王国，并且是第一次进入这个王国
+        if(!this.isKing(uid, topic.getUid()) && !this.isInCore(uid, topic.getCoreCircle())
+        		&& null == hasFavorite && liveMybatisDao.isNewInTopic(uid, topicId)){
+        	TopicFragmentTemplate topicFragmentTemplate = liveMybatisDao.getTopicFragmentTemplate();
+            if(topicFragmentTemplate != null && !StringUtils.isEmpty(topicFragmentTemplate.getContent())){
+                String text = topicFragmentTemplate.getContent();
+                String[] temp = text.split("##");
+                if(null != temp && temp.length > 0){
+                	liveCoverDto.setTrackContent(temp[0]);
+                    if(temp.length > 1 && !StringUtils.isEmpty(temp[1])){
+                    	liveCoverDto.setTrackImage(Constant.QINIU_DOMAIN + "/" + temp[1]);
+                    }
+                }
+            }
+        }
+        
         //记录阅读历史
         TopicReadHis trh = new TopicReadHis();
         trh.setUid(uid);
