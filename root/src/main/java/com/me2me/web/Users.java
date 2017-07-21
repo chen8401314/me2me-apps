@@ -1075,14 +1075,14 @@ public class Users extends BaseController {
 
     /**
      * 信息补全完整领取红包接口
-     * @param getRedRequest
+     * @param getRedBagRequest
      * @return
      */
     @ResponseBody
     @RequestMapping(value = "/getRedBag",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response getRedBag(GetRedRequest getRedRequest){
+    public Response getRedBag(GetRedBagRequest getRedBagRequest){
         GetRedBagDto getRedBagDto = new GetRedBagDto();
-        getRedBagDto.setUid(getRedRequest.getUid());
+        getRedBagDto.setUid(getRedBagRequest.getUid());
         return userService.getRedBag(getRedBagDto);
     }
 }
