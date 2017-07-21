@@ -7562,7 +7562,7 @@ public class LiveServiceImpl implements LiveService {
 			}
 			// 判断是否有文字发言
 			if (maxFragment == null) {
-				Map<String, Object> imageData = getMaxFragmentImage(yesterDay, uid, 0);
+				Map<String, Object> imageData =liveLocalJdbcDao.getFragmentImage(yesterDay, uid, 0);
 				if (imageData != null) {
 					Topic topic = liveMybatisDao.getTopicById(Long.parseLong(imageData.get("topic_id").toString()));
 					dto.setStatus(2);
@@ -7594,7 +7594,7 @@ public class LiveServiceImpl implements LiveService {
 								if (rmaxFragment == null) {
 									continue;
 								} else {
-									Map<String, Object> rtopicData = getMaxFragmentImage(yesterDay, ruid,
+									Map<String, Object> rtopicData = liveLocalJdbcDao.getFragmentImage(yesterDay, ruid,
 											Long.parseLong(rmaxFragment.get("topic_id").toString()));
 									Topic topic = liveMybatisDao.getTopicById(Long.parseLong(rmaxFragment.get("topic_id").toString()));
 									dto.setNickName(ruserProfile.getNickName());
@@ -7621,8 +7621,8 @@ public class LiveServiceImpl implements LiveService {
 					}
 				}
 			} else {
-				Map<String, Object> imageData = getMaxFragmentImage(yesterDay, uid,
-						Long.parseLong(maxFragment.get("topic_id").toString()));
+				Map<String, Object> imageData =liveLocalJdbcDao.getFragmentImage(yesterDay, uid,
+						Long.parseLong(maxFragment.get("topic_id").toString())); 
 				Topic topic = liveMybatisDao.getTopicById(Long.parseLong(maxFragment.get("topic_id").toString()));
 				dto.setNickName(userProfile.getNickName());
 				dto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
@@ -7667,34 +7667,6 @@ public class LiveServiceImpl implements LiveService {
 		return Response.success(dto);
 	}
 
-	public Map<String, Object> getMaxFragmentImage(String yesterDay, long uid, long topicId) {
-		List<Map<String, Object>> topicList = liveLocalJdbcDao.getFragmentImage(yesterDay, uid, 0);
-		int maxNumber = -1;
-		int maxLength = -1;
-		for (int i = 0; i < topicList.size(); i++) {
-			Map<String, Object> imageData = topicList.get(i);
-			String extra = imageData.get("extra").toString();
-			try {
-				JSONObject extraJson = JSONObject.parseObject(extra);
-				int w = extraJson.getInteger("w");
-				if (w < 400) {
-					continue;
-				}
-				int length = extraJson.getInteger("length");
-				if (length > maxLength) {
-					maxLength = length;
-					maxNumber = i;
-				}
-			} catch (Exception e) {
-				continue;
-			}
-		}
-		if (maxNumber != -1) {
-			return topicList.get(maxNumber);
-		} else {
-			return null;
-		}
-	}
 	@Override
 	public Response saveDaySignInfo(long uid, String image,String extra,String uids,int source,String quotationIds) {
 		 String[] uidArr = uids.split(",");
@@ -7730,6 +7702,7 @@ public class LiveServiceImpl implements LiveService {
      speakDto.setTopicId(topic.getId());
      speakDto.setSource(source);
      speakDto.setExtra(extra);
+     speakDto.setFragmentImage(image);
      speak(speakDto);
 	 }
 		return Response.success();
