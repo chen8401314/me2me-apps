@@ -83,6 +83,9 @@ public class LiveCoverDto implements BaseEntity{
     
     private int isSteal;//偷取状态 0 不可偷取 1可偷取 2已偷过
     
+    //足迹相关属性
+    private String trackContent;
+    private String trackImage;
     
     //跑马灯信息列表
     private List<TopicNewsElement> newsTopList = Lists.newArrayList();

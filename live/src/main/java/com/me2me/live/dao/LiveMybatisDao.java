@@ -104,6 +104,7 @@ import com.me2me.live.model.TopicDroparoundTrail;
 import com.me2me.live.model.TopicExample;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicFragmentExample;
+import com.me2me.live.model.TopicReadHisExample;
 import com.me2me.live.model.TopicFragmentExample.Criteria;
 import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicFragmentTemplateExample;
@@ -1577,6 +1578,18 @@ public class LiveMybatisDao {
 	
 	public void saveTopicReadHis(TopicReadHis trh){
 		topicReadHisMapper.insertSelective(trh);
+	}
+	
+	public boolean isNewInTopic(long uid, long topicId){
+		TopicReadHisExample example = new TopicReadHisExample();
+		TopicReadHisExample.Criteria criteria = example.createCriteria();
+		criteria.andUidEqualTo(uid);
+		criteria.andTopicIdEqualTo(topicId);
+		int count = topicReadHisMapper.countByExample(example);
+		if(count == 0){
+			return true;
+		}
+		return false;
 	}
 
 	public void addStealLog(UserStealLog log) {
