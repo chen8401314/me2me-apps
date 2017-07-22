@@ -1891,5 +1891,13 @@ public class LiveMybatisDao {
 	public int saveSignSaveRecord(SignSaveRecord SignSaveRecord){
 		return signSaveRecordMapper.insertSelective(SignSaveRecord);
 	}
-	
+
+	public RobotInfo getRobotInfo(){
+	    return robotInfoMapper.getRandomRobotInfo();
+    }
+
+
+    public QuotationInfo getQuotationInfo(){
+	    return  quotationInfoMapper.getQuotationInfo();
+    }
 }

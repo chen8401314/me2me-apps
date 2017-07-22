@@ -101,9 +101,5 @@ public interface RobotInfoMapper {
      */
     RobotInfo getRandomRobotInfo();
 
-    /**
-     *随机获取一条语录
-     * @return
-     */
-    QuotationInfo getQuotationInfo();
+
 }

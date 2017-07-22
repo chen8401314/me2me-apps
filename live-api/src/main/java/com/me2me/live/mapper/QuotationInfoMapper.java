@@ -93,4 +93,11 @@ public interface QuotationInfoMapper {
      * @mbggenerated Thu Jul 20 13:53:53 CST 2017
      */
     int updateByPrimaryKey(QuotationInfo record);
+
+
+    /**
+     *随机获取一条语录
+     * @return
+     */
+    QuotationInfo getQuotationInfo();
 }
