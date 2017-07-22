@@ -1239,7 +1239,7 @@ public class LiveLocalJdbcDao {
     public Map<String,Object> getMaxFragment(String strDate,long uid,int startNum,int endNum){
     	StringBuilder sb = new StringBuilder();
     	sb.append("SELECT t.*,tp.title FROM topic_fragment t,topic tp WHERE t.topic_id = tp.id AND  ((t.type=0 AND t.content_type = 0) OR (t.TYPE=1 AND t.content_type = 0)) ");
-    	sb.append(" AND t.fragment <> tp.title ");
+    	sb.append(" AND t.fragment <> tp.summary ");
     	sb.append(" AND t.create_time >='").append(strDate).append(" 00:00:00' AND t.create_time <='").append(strDate).append(" 23:59:59'");
     	sb.append(" AND t.uid = ").append(uid);
     	if(startNum!=0){
@@ -1248,29 +1248,32 @@ public class LiveLocalJdbcDao {
     	if(endNum!=0){
             sb.append("  AND LENGTH(t.fragment)<=").append(endNum);
       	}
-    	sb.append("  ORDER BY LENGTH(t.fragment) DESC LIMIT 0,1 ");
+    	sb.append("  ORDER BY LENGTH(t.fragment) DESC LIMIT 1 ");
     	String sql = sb.toString();
     	List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
 		return list.size()>0?list.get(0):null;
     }
-    public List<Map<String,Object>> getFragmentImage(String strDate,long uid,long topicId){
+    public Map<String,Object> getFragmentImage(String strDate,long uid,long topicId){
     	StringBuilder sb = new StringBuilder();
     	sb.append("SELECT t.* FROM topic_fragment t WHERE   ((t.type=0 AND t.content_type = 1) OR (t.type=1 AND t.content_type = 1)  OR (t.type=51 AND t.content_type = 51)) ");
     	sb.append(" AND t.create_time >='").append(strDate).append(" 00:00:00' AND t.create_time <='").append(strDate).append(" 23:59:59'");
     	sb.append(" AND t.uid = ").append(uid);
     	if(topicId!=0){
-            sb.append("  AND t.topic_id").append(topicId);
+            sb.append("  AND t.topic_id=").append(topicId);
       	}
+    	sb.append(" and json_extract(t.extra,'$.w[0]')>400 ");
+    	sb.append(" AND (json_extract(t.extra,'$.imgType[0]') IS  NULL  OR json_extract(t.extra,'$.imgType[0]') <> 1) ");
+    	sb.append("  ORDER BY json_extract(t.extra,'$.length[0]') DESC LIMIT 1 ");
     	String sql = sb.toString();
     	List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
-		return list;
+		return list.size()>0?list.get(0):null;
     }
     public Map<String,Object> getSignRecord(String strDate,long uid){
     	StringBuilder sb = new StringBuilder();
     	sb.append("SELECT * FROM sign_record where ");
     	sb.append("  create_time >='").append(strDate).append(" 00:00:00' AND create_time <='").append(strDate).append(" 23:59:59'");
     	sb.append(" AND uid = ").append(uid);
-    	sb.append("  LIMIT 0,1 ");
+    	sb.append("  LIMIT 1 ");
     	String sql = sb.toString();
     	List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
 		return list.size()>0?list.get(0):null;

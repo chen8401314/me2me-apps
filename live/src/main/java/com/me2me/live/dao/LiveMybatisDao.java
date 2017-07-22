@@ -104,6 +104,7 @@ import com.me2me.live.model.TopicDroparoundTrail;
 import com.me2me.live.model.TopicExample;
 import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicFragmentExample;
+import com.me2me.live.model.TopicReadHisExample;
 import com.me2me.live.model.TopicFragmentExample.Criteria;
 import com.me2me.live.model.TopicFragmentTemplate;
 import com.me2me.live.model.TopicFragmentTemplateExample;
@@ -261,8 +262,8 @@ public class LiveMybatisDao {
     
     @Autowired
     private SignSaveRecordMapper signSaveRecordMapper;
-
-
+    
+    
     
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -1579,6 +1580,18 @@ public class LiveMybatisDao {
 		topicReadHisMapper.insertSelective(trh);
 	}
 
+	public boolean isNewInTopic(long uid, long topicId){
+		TopicReadHisExample example = new TopicReadHisExample();
+		TopicReadHisExample.Criteria criteria = example.createCriteria();
+		criteria.andUidEqualTo(uid);
+		criteria.andTopicIdEqualTo(topicId);
+		int count = topicReadHisMapper.countByExample(example);
+		if(count == 0){
+			return true;
+		}
+		return false;
+	}
+
 	public void addStealLog(UserStealLog log) {
 		stealLogMapper.insert(log);
 	}
@@ -1612,7 +1625,7 @@ public class LiveMybatisDao {
 	 * 查询王国最近10天价值
 	 * @author chenxiang
 	 * @date 2017-6-15
-	 * @param topicId
+	 * @param day
 	 * @return
 	 */
 	public List<TopicPriceHis> getLastTenDaysTopicPrice(long topicId) {
@@ -1878,15 +1891,5 @@ public class LiveMybatisDao {
 	public int saveSignSaveRecord(SignSaveRecord SignSaveRecord){
 		return signSaveRecordMapper.insertSelective(SignSaveRecord);
 	}
-
-
-	public RobotInfo getRobotInfo(){
-	    return robotInfoMapper.getRandomRobotInfo();
-    }
-
-
-    public QuotationInfo getQuotationInfo(){
-        return robotInfoMapper.getQuotationInfo();
-    }
 	
 }
