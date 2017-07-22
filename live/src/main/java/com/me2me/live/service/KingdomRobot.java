@@ -1,20 +1,18 @@
 package com.me2me.live.service;
 
-import com.google.common.collect.Lists;
+
 import com.me2me.common.web.BaseEntity;
 import com.me2me.live.dto.SpeakDto;
+import com.me2me.live.model.QuotationInfo;
+import com.me2me.live.model.RobotInfo;
+import com.me2me.live.model.RobotInfoExample;
 import com.me2me.live.model.Topic;
-import com.me2me.search.ThreadPool;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
-
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.Random;
 import java.util.concurrent.*;
 import lombok.Data;
@@ -37,6 +35,8 @@ public class KingdomRobot {
 
     @Autowired
     private LiveService liveService;
+
+
 
     @Data
     public static class ReplyTimes implements BaseEntity{
@@ -136,10 +136,12 @@ public class KingdomRobot {
     private SpeakDto builderSpeakDto(long topicId) {
         SpeakDto speakDto = new SpeakDto();
         // todo 填充参数
-        speakDto.setFragment("你是我的玫瑰，你是我的花，你是我的爱人，是我的牵挂。");
+        RobotInfo robot = liveService.selectRobotInfo();
+        QuotationInfo quotationInfo  = liveService.selectQuotation();
+        speakDto.setFragment(quotationInfo.getQuotation());
         speakDto.setContentType(0);
         speakDto.setTopicId(topicId);
-        speakDto.setUid(325);
+        speakDto.setUid(robot.getUid());
         speakDto.setType(1);
         speakDto.setSource(1);
         return speakDto;

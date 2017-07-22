@@ -549,7 +549,7 @@ public interface UserService {
 	/**
 	 * 黑名单操作接口
 	 * @param uid
-	 * @param target
+	 * @param targetUid
 	 * @param action
 	 * @return
 	 */

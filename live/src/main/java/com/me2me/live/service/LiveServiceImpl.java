@@ -21,6 +21,7 @@ import java.util.UUID;
 import com.google.common.collect.Sets;
 import com.me2me.core.KeysManager;
 import com.me2me.live.event.*;
+import com.me2me.live.model.*;
 import com.me2me.user.dto.ModifyUserCoinDto;
 import com.me2me.user.dto.PermissionDescriptionDto;
 import com.me2me.user.dto.PermissionDescriptionDto.PermissionNodeDto;
@@ -119,43 +120,6 @@ import com.me2me.live.dto.TopicTransferRecordDto;
 import com.me2me.live.dto.TopicVoteInfoDto;
 import com.me2me.live.dto.UserAtListDTO;
 import com.me2me.live.dto.VoteInfoDto;
-import com.me2me.live.model.DeleteLog;
-import com.me2me.live.model.LiveDisplayFragment;
-import com.me2me.live.model.LiveDisplayProtocol;
-import com.me2me.live.model.LiveFavorite;
-import com.me2me.live.model.LiveFavoriteDelete;
-import com.me2me.live.model.LiveReadHistory;
-import com.me2me.live.model.QuotationInfo;
-import com.me2me.live.model.RobotInfo;
-import com.me2me.live.model.RobotQuotationRecord;
-import com.me2me.live.model.SignRecord;
-import com.me2me.live.model.SignSaveRecord;
-import com.me2me.live.model.TeaseInfo;
-import com.me2me.live.model.Topic;
-import com.me2me.live.model.Topic2;
-import com.me2me.live.model.TopicAggregation;
-import com.me2me.live.model.TopicAggregationApply;
-import com.me2me.live.model.TopicBarrage;
-import com.me2me.live.model.TopicData;
-import com.me2me.live.model.TopicDroparound;
-import com.me2me.live.model.TopicDroparoundTrail;
-import com.me2me.live.model.TopicFragment;
-import com.me2me.live.model.TopicFragmentExample;
-import com.me2me.live.model.TopicFragmentTemplate;
-import com.me2me.live.model.TopicGiven;
-import com.me2me.live.model.TopicListed;
-import com.me2me.live.model.TopicNews;
-import com.me2me.live.model.TopicPriceHis;
-import com.me2me.live.model.TopicPriceSubsidyConfig;
-import com.me2me.live.model.TopicReadHis;
-import com.me2me.live.model.TopicTag;
-import com.me2me.live.model.TopicTagDetail;
-import com.me2me.live.model.TopicTransferRecord;
-import com.me2me.live.model.TopicUserConfig;
-import com.me2me.live.model.UserStealLog;
-import com.me2me.live.model.VoteInfo;
-import com.me2me.live.model.VoteOption;
-import com.me2me.live.model.VoteRecord;
 import com.me2me.live.service.exceptions.KingdomStealException;
 import com.me2me.search.dto.RecommendUser;
 import com.me2me.search.dto.RecommendUserDto;
@@ -220,6 +184,8 @@ public class LiveServiceImpl implements LiveService {
     
     @Autowired
     private SmsService smsService;
+
+
 
 
 
@@ -7989,5 +7955,16 @@ public class LiveServiceImpl implements LiveService {
 		liveMybatisDao.saveSignSaveRecord(signSaveRecord);
 		return Response.success();
 	}
-	
+
+    @Override
+    public RobotInfo selectRobotInfo() {
+        return liveMybatisDao.getRobotInfo();
+    }
+
+    @Override
+    public QuotationInfo selectQuotation() {
+        return liveMybatisDao.getQuotationInfo();
+    }
+
+
 }

@@ -1,5 +1,6 @@
 package com.me2me.live.mapper;
 
+import com.me2me.live.model.QuotationInfo;
 import com.me2me.live.model.RobotInfo;
 import com.me2me.live.model.RobotInfoExample;
 import java.util.List;
@@ -93,4 +94,16 @@ public interface RobotInfoMapper {
      * @mbggenerated Thu Jul 20 13:53:53 CST 2017
      */
     int updateByPrimaryKey(RobotInfo record);
+
+    /**
+     * 随机获取一个机器人
+     * @return
+     */
+    RobotInfo getRandomRobotInfo();
+
+    /**
+     *随机获取一条语录
+     * @return
+     */
+    QuotationInfo getQuotationInfo();
 }

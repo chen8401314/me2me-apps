@@ -23,16 +23,7 @@ import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.dto.StealResultDto;
 import com.me2me.live.dto.TestApiDto;
 import com.me2me.live.dto.UserAtListDTO;
-import com.me2me.live.model.LiveFavorite;
-import com.me2me.live.model.TeaseInfo;
-import com.me2me.live.model.Topic;
-import com.me2me.live.model.TopicDroparound;
-import com.me2me.live.model.TopicFragment;
-import com.me2me.live.model.TopicFragmentTemplate;
-import com.me2me.live.model.TopicListed;
-import com.me2me.live.model.TopicPriceSubsidyConfig;
-import com.me2me.live.model.TopicTag;
-import com.me2me.live.model.TopicUserConfig;
+import com.me2me.live.model.*;
 import com.me2me.user.dto.RechargeToKingdomDto;
 
 /**
@@ -614,4 +605,8 @@ public interface LiveService {
 	 Response saveDaySignInfo(long uid, String image,String extra,String uids,int source,String quotationIds);
 
      Response saveSignSaveRecord(long uid,int type);
+
+     RobotInfo selectRobotInfo();
+
+     QuotationInfo selectQuotation();
 }

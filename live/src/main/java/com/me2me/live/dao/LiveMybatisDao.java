@@ -261,8 +261,8 @@ public class LiveMybatisDao {
     
     @Autowired
     private SignSaveRecordMapper signSaveRecordMapper;
-    
-    
+
+
     
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -1612,7 +1612,7 @@ public class LiveMybatisDao {
 	 * 查询王国最近10天价值
 	 * @author chenxiang
 	 * @date 2017-6-15
-	 * @param day
+	 * @param topicId
 	 * @return
 	 */
 	public List<TopicPriceHis> getLastTenDaysTopicPrice(long topicId) {
@@ -1878,5 +1878,15 @@ public class LiveMybatisDao {
 	public int saveSignSaveRecord(SignSaveRecord SignSaveRecord){
 		return signSaveRecordMapper.insertSelective(SignSaveRecord);
 	}
+
+
+	public RobotInfo getRobotInfo(){
+	    return robotInfoMapper.getRandomRobotInfo();
+    }
+
+
+    public QuotationInfo getQuotationInfo(){
+        return robotInfoMapper.getQuotationInfo();
+    }
 	
 }
