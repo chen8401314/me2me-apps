@@ -29,7 +29,7 @@ public class PriceChangePushTask {
 	@Autowired
 	private LocalJdbcDao localJdbcDao;
 	
-	@Scheduled(cron="0 2 11 * * ?")
+	@Scheduled(cron="0 0 11 * * ?")
 	public void doTask(){
 		logger.info("王国价值升值/贬值推送任务开始");
 		long s = System.currentTimeMillis();
@@ -52,6 +52,7 @@ public class PriceChangePushTask {
 		needPushSearchSql.append(" when @preVal:=t.uid then @curVal:=1 end as rowno");
 		needPushSearchSql.append(" from topic_price_push t,(select @preVal:=null,@curVal:=null) r");
 		needPushSearchSql.append(" where t.date_code='").append(dateStr).append("'");
+		needPushSearchSql.append(" and t.status=0");
 		needPushSearchSql.append(" order by t.uid,t.kingdom_price desc,t.id) m");
 		needPushSearchSql.append(" where m.rowno=1");
 		
@@ -104,6 +105,10 @@ public class PriceChangePushTask {
 	            jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//这里是给国王的通知，所以直接显示核心圈即可
 	            userService.pushWithExtra(String.valueOf(topic.get("uid")), msg, JPushUtils.packageExtra(jsonObject));
 			}
+			
+			StringBuilder updateSql = new StringBuilder();
+			updateSql.append("update topic_price_push set status=1 where date_code='").append(dateStr).append("'");
+			localJdbcDao.executeSql(updateSql.toString());
 		}
 	}
 }

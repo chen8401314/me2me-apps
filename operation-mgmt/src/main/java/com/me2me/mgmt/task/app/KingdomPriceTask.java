@@ -1338,7 +1338,7 @@ public class KingdomPriceTask {
 			StringBuilder insertSystemMsgSql = new StringBuilder();
 			insertSystemMsgSql.append("insert into topic_fragment(topic_id,uid,fragment_image,fragment,type,content_type,top_id,");
 			insertSystemMsgSql.append("bottom_id,create_time,at_uid,source,extra,score,status) values(");
-			insertSystemMsgSql.append(kc.getTopicId()).append(",").append(uid).append(",'','").append(msg).append(",");
+			insertSystemMsgSql.append(kc.getTopicId()).append(",").append(uid).append(",'','").append(msg).append("',");
 			insertSystemMsgSql.append(Specification.LiveSpeakType.SYSTEM.index).append(",0,0,0,now(),0,0,'");
 			insertSystemMsgSql.append(extra.toJSONString()).append("',0,1)");
 			localJdbcDao.executeSql(insertSystemMsgSql.toString());
