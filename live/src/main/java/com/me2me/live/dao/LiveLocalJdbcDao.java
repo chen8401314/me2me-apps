@@ -1073,7 +1073,7 @@ public class LiveLocalJdbcDao {
 	 */
 	public void stealTopicPrice(int stealedCoins,long topicId) {
 		jdbcTemplate.update("update topic_data set steal_price=steal_price-? where topic_id=?",new Object[]{stealedCoins, topicId});
-		jdbcTemplate.update("update topic set price=price-? where topic_id=?",new Object[]{stealedCoins, topicId});
+		jdbcTemplate.update("update topic set price=price-? where id=?",new Object[]{stealedCoins, topicId});
 	}
 
 
