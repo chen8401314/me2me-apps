@@ -118,6 +118,7 @@ import com.me2me.live.dto.TestApiDto;
 import com.me2me.live.dto.TopicTransferRecordDto;
 import com.me2me.live.dto.TopicVoteInfoDto;
 import com.me2me.live.dto.UserAtListDTO;
+import com.me2me.live.dto.UserKingdomInfoDTO;
 import com.me2me.live.dto.VoteInfoDto;
 import com.me2me.live.service.exceptions.KingdomStealException;
 import com.me2me.search.dto.RecommendUser;
@@ -7955,5 +7956,12 @@ public class LiveServiceImpl implements LiveService {
         return liveMybatisDao.getQuotationInfo();
     }
 
-
+    @Override
+    public Response userKingdomInfo(long uid){
+    	UserKingdomInfoDTO result = new UserKingdomInfoDTO();
+    	result.setValidKingdomCount(liveMybatisDao.getUserTopicCount(uid));
+    	result.setTotalKingdomCount(liveLocalJdbcDao.getUserTotalKingdomCount(uid));
+    	
+    	return Response.success(result);
+    }
 }

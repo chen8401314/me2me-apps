@@ -609,4 +609,11 @@ public interface LiveService {
      RobotInfo selectRobotInfo();
 
      QuotationInfo selectQuotation();
+     
+     /**
+      * 获取用户王国信息
+      * @param uid
+      * @return
+      */
+     Response userKingdomInfo(long uid);
 }

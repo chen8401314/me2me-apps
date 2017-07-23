@@ -1294,4 +1294,17 @@ public class LiveLocalJdbcDao {
     	String sql = sb.toString();
 		return jdbcTemplate.queryForList(sql);
     }
+    
+    public int getUserTotalKingdomCount(long uid){
+    	String sql = "select count(1) as cc from content c where c.uid=? and c.type=3";
+    	List<Map<String,Object>> list = jdbcTemplate.queryForList(sql, uid);
+    	int result = 0;
+    	if(null != list && list.size() > 0){
+    		Map<String,Object> count = list.get(0);
+    		if(null != count.get("cc")){
+    			result = ((Long)count.get("cc")).intValue();
+    		}
+    	}
+    	return result;
+    }
 }

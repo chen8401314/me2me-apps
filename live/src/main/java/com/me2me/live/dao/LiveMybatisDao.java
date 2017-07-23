@@ -24,7 +24,6 @@ import com.me2me.live.dto.GetLiveDetailDto;
 import com.me2me.live.dto.GetLiveUpdateDto;
 import com.me2me.live.dto.SearchDropAroundTopicDto;
 import com.me2me.live.dto.SearchTopicDto;
-import com.me2me.live.dto.ShowTopicListDto.GivenKingdom;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.mapper.BlockTopicMapper;
 import com.me2me.live.mapper.DeleteLogMapper;
@@ -280,6 +279,13 @@ public class LiveMybatisDao {
         return topicMapper.selectByExample(example);
     }
 
+    public int getUserTopicCount(long uid){
+    	TopicExample example = new TopicExample();
+        TopicExample.Criteria criteria = example.createCriteria();
+        criteria.andUidEqualTo(uid);
+        return topicMapper.countByExample(example);
+    }
+    
     public List<TopicFragment> getTopicFragment(long topicId, long sinceId, int pageSize) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();

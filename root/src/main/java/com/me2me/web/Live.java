@@ -87,6 +87,7 @@ import com.me2me.web.request.TopicTagsModifyRequest;
 import com.me2me.web.request.TopicTagsRequest;
 import com.me2me.web.request.TopicVoteInfoRequest;
 import com.me2me.web.request.UserAtListRequest;
+import com.me2me.web.request.UserKingdomInfoRequest;
 import com.me2me.web.request.VoteInfoRequest;
 import com.me2me.web.request.VoteRequest;
 import com.me2me.web.utils.VersionUtil;
@@ -990,5 +991,16 @@ public class Live extends BaseController {
     @RequestMapping(value = "/saveDaySignRecord",method = RequestMethod.POST)
     public Response saveDaySignRecord(SaveDaySignRecordRequest request){
 		return liveService.saveSignSaveRecord(request.getUid(), request.getType());
+    }
+    
+    /**
+     * 用户王国信息查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/userKingdomInfo",method = RequestMethod.POST)
+    public Response userKingdomInfo(UserKingdomInfoRequest request){
+    	return liveService.userKingdomInfo(request.getUid());
     }
 }
