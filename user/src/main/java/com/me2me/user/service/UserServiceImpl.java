@@ -270,7 +270,13 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response signUpByVerify(UserSignUpDto userSignUpDto) {
-
+        VerifyDto verifyDto = new VerifyDto();
+        verifyDto.setAction(1);
+        verifyDto.setChannel(1);
+        verifyDto.setVerifyCode(userSignUpDto.getVerifyCode());
+        verifyDto.setMobile(userSignUpDto.getMobile());
+        boolean result = smsService.verify(verifyDto);
+        if(result){
         log.info("signUp start ...");
         // 校验手机号码是否注册
         String mobile = userSignUpDto.getMobile();
@@ -381,6 +387,10 @@ public class UserServiceImpl implements UserService {
         String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+signUpSuccessDto.getUid();
         cacheService.setex(key,signUpSuccessDto.getUid()+"",7*24*60*60);
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
+        }else{
+            log.info("user verify check error");
+            return Response.failure(ResponseStatus.USER_VERIFY_CHECK_ERROR.status,ResponseStatus.USER_VERIFY_CHECK_ERROR.message);
+        }
     }
 
     private void spreadChannelCount(String params,int spreadChannel, User user) {
@@ -515,8 +525,16 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response loginByVerify(UserLoginDto userLoginDto) {
-        User user = userMybatisDao.getUserByUserName(userLoginDto.getUserName());
-        if(user != null){
+        // 验证校验码
+        VerifyDto verifyDto = new VerifyDto();
+        verifyDto.setAction(1);
+        verifyDto.setChannel(1);
+        verifyDto.setVerifyCode(userLoginDto.getVerifyCode());
+        verifyDto.setMobile(userLoginDto.getUserName());
+        boolean result = smsService.verify(verifyDto);
+        if(result) {
+            User user = userMybatisDao.getUserByUserName(userLoginDto.getUserName());
+            if(user != null){
                 //如果status为1则已被禁用
                 if(user.getDisableUser() == 1){
                     return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status,ResponseStatus.USER_ACCOUNT_DISABLED.message);
@@ -575,7 +593,7 @@ public class UserServiceImpl implements UserService {
                 log.info("login end ...");
                 //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LOGIN.index,0,user.getUid()));
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status,ResponseStatus.USER_LOGIN_SUCCESS.message,loginSuccessDto);
-        }else{
+            }else {
           /*  log.info("user not exists");
             //用户不存在
             SignUpSuccessDto signUpSuccessDto = new SignUpSuccessDto();
@@ -677,7 +695,11 @@ public class UserServiceImpl implements UserService {
             String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+signUpSuccessDto.getUid();
             cacheService.setex(key,signUpSuccessDto.getUid()+"",7*24*60*60);
             return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);*/
-          return  Response.failure("该用户还没有注册,请完成注册");
+                return Response.failure("该用户还没有注册,请完成注册");
+            }
+        }else{
+            log.info("user verify check error");
+            return Response.failure(ResponseStatus.USER_VERIFY_CHECK_ERROR.status,ResponseStatus.USER_VERIFY_CHECK_ERROR.message);
         }
     }
 
@@ -690,7 +712,22 @@ public class UserServiceImpl implements UserService {
         log.info("verify start ...");
         //验证码登录获取验证码
         if(verifyDto.getAction() == Specification.VerifyAction.LOGIN.index){
-            return smsService.send(verifyDto);
+            User user = userMybatisDao.getUserByUserName(verifyDto.getMobile());
+            if(user == null){
+                log.info("user mobile duplicate");
+                return Response.failure(ResponseStatus.USER_MOBILE_NO_SIGN_UP.status,ResponseStatus.USER_MOBILE_NO_SIGN_UP.message);
+            }else {
+                return smsService.send(verifyDto);}
+        }
+
+
+        if(verifyDto.getAction() == Specification.VerifyAction.SIGNUP.index){
+            User user = userMybatisDao.getUserByUserName(verifyDto.getMobile());
+            if(user != null){
+                log.info("user mobile duplicate");
+                return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
+            }else {
+                return smsService.send(verifyDto);}
         }
 
         if(verifyDto.getAction() == Specification.VerifyAction.GET.index){

@@ -36,4 +36,8 @@ public class LoginRequest extends Request {
     @Setter
     private String jPushToken;
 
+    @Getter
+    @Setter
+    private String verifyCode;
+
 }
