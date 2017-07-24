@@ -90,7 +90,7 @@ public class SmsServiceImpl implements SmsService {
     @Override
     public boolean verify(VerifyDto verifyDto) {
         // 网易云信通道验证
-        if(verifyDto.getChannel()== ChannelType.NET_CLOUD_SMS.index) {
+        if(verifyDto.getChannel() == ChannelType.NET_CLOUD_SMS.index) {
             return YunXinSms.verify(verifyDto.getMobile(), verifyDto.getVerifyCode());
         }
         // 获取redis中的数据

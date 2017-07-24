@@ -98,6 +98,8 @@ import com.me2me.live.dto.LiveTimeLineDto2;
 import com.me2me.live.dto.LiveUpdateDto;
 import com.me2me.live.dto.ResendVoteDto;
 import com.me2me.live.dto.SearchDropAroundTopicDto;
+import com.me2me.live.dto.SearchQuotationListDto;
+import com.me2me.live.dto.SearchRobotListDto;
 import com.me2me.live.dto.SearchTopicDto;
 import com.me2me.live.dto.SearchTopicListedListDto;
 import com.me2me.live.dto.SettingModifyDto;
@@ -7970,4 +7972,74 @@ public class LiveServiceImpl implements LiveService {
     	
     	return Response.success(result);
     }
+    
+    @Override
+    public Response searchRobotListPage(String nickName,int page, int pageSize){
+     	int totalRecord = liveLocalJdbcDao.countRobotListByNickName(nickName);
+    	int totalPage = (totalRecord + pageSize - 1) / pageSize;
+    	if(page>totalPage){
+    		page=totalPage;
+    	}
+    	if(page<1){
+    		page=1;
+    	}
+    	int start = (page-1)*pageSize;
+    	List<Map<String, Object>> list = liveLocalJdbcDao.getRobotListByNickName(nickName,start, pageSize);
+    	SearchRobotListDto dto = new SearchRobotListDto();
+        dto.setTotalRecord(totalRecord);
+        dto.setTotalPage(totalPage);
+        for(Map<String, Object> map : list){
+        	SearchRobotListDto.RobotElement e = dto.createTopicListedElement();
+        	 e.setId((Long)map.get("id"));
+        	 e.setUid((Long)map.get("uid"));
+        	 e.setNickName( map.get("nick_name").toString());
+        	 e.setAvatar(Constant.QINIU_DOMAIN + "/" +  map.get("avatar").toString());
+            dto.getResult().add(e);
+        }
+        return Response.success(dto);
+    }
+    @Override
+    public Response searchQuotationListPage(String quotation,int page, int pageSize){
+     	int totalRecord = liveLocalJdbcDao.countQuotationListByQuotation(quotation);
+    	int totalPage = (totalRecord + pageSize - 1) / pageSize;
+    	if(page>totalPage){
+    		page=totalPage;
+    	}
+    	if(page<1){
+    		page=1;
+    	}
+    	int start = (page-1)*pageSize;
+    	List<Map<String, Object>> list = liveLocalJdbcDao.getQuotationListByQuotation(quotation,start, pageSize);
+    	SearchQuotationListDto dto = new SearchQuotationListDto();
+        dto.setTotalRecord(totalRecord);
+        dto.setTotalPage(totalPage);
+        for(Map<String, Object> map : list){
+        	SearchQuotationListDto.QuotationElement e = dto.createQuotationElement();
+        	 e.setId((Long)map.get("id"));
+        	 e.setType((Integer)map.get("type"));
+        	 e.setQuotation( map.get("quotation").toString());
+        	 e.setCreateTime((Date)map.get("create_time"));
+            dto.getResult().add(e);
+        }
+        return Response.success(dto);
+    }
+    
+    @Override
+	public int saveQuotationInfo(QuotationInfo quotationInfo){
+		return liveMybatisDao.saveQuotationInfo(quotationInfo);
+	}
+    @Override
+	public int updateQuotationInfo(QuotationInfo quotationInfo){
+		return liveMybatisDao.updateQuotationInfo(quotationInfo);
+	}
+    
+    @Override
+	public int delQuotationInfo(long id){
+    	return liveMybatisDao.delQuotationInfo(id);
+	}
+    @Override
+	public QuotationInfo getQuotationInfoById(long id){
+    	return liveMybatisDao.getQuotationInfoById(id);
+	}
+    
 }
