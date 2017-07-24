@@ -393,7 +393,7 @@
 	}
     $('#modal').on('hidden.bs.modal', function () {
 		  $("#id").val(0);
-		  $("#quotation").text('');
+		  $("#quotation").val('');
 		  $("#type").val(0);
    });
 	</script>
