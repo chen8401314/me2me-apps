@@ -690,7 +690,22 @@ public class UserServiceImpl implements UserService {
         log.info("verify start ...");
         //验证码登录获取验证码
         if(verifyDto.getAction() == Specification.VerifyAction.LOGIN.index){
-            return smsService.send(verifyDto);
+            User user = userMybatisDao.getUserByUserName(verifyDto.getMobile());
+            if(user == null){
+                log.info("user mobile duplicate");
+                return Response.failure(ResponseStatus.USER_MOBILE_NO_SIGN_UP.status,ResponseStatus.USER_MOBILE_NO_SIGN_UP.message);
+            }else {
+                return smsService.send(verifyDto);}
+        }
+
+
+        if(verifyDto.getAction() == Specification.VerifyAction.SIGNUP.index){
+            User user = userMybatisDao.getUserByUserName(verifyDto.getMobile());
+            if(user != null){
+                log.info("user mobile duplicate");
+                return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
+            }else {
+                return smsService.send(verifyDto);}
         }
 
         if(verifyDto.getAction() == Specification.VerifyAction.GET.index){

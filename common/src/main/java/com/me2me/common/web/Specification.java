@@ -75,6 +75,8 @@ public interface Specification {
 
         LOGIN("登录获取验证码",4),
 
+        SIGNUP("注册获取验证码",5),
+
         FIND_MY_ENCRYPT("找回验证码",2),
         
         SEND_MESSAGE("纯发短信", 3);
