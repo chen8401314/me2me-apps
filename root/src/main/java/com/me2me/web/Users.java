@@ -91,6 +91,28 @@ public class Users extends BaseController {
         return userService.signUp(userSignUpDto);
     }
 
+    /**
+     * 用户注册接口
+     * @return
+     */
+    @RequestMapping(value = "/signUpByVerify",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response signUpByVerify(SignUpRequest request){
+        UserSignUpDto userSignUpDto = new UserSignUpDto();
+        userSignUpDto.setMobile(request.getMobile());
+        userSignUpDto.setGender(-1);
+        userSignUpDto.setStar(request.getStart());
+        userSignUpDto.setEncrypt("0");
+        userSignUpDto.setDeviceNo(request.getDeviceNo());
+        userSignUpDto.setPlatform(request.getPlatform());
+        userSignUpDto.setOs(request.getOs());
+        userSignUpDto.setIntroduced(request.getIntroduced());
+        userSignUpDto.setChannel(request.getChannel());
+        userSignUpDto.setRegisterVersion(request.getVersion());
+        userSignUpDto.setParams(request.getParams());
+        return userService.signUpByVerify(userSignUpDto);
+    }
+
 
     /**
      * 用户登录
@@ -111,7 +133,7 @@ public class Users extends BaseController {
 
 
     /**
-     * 用户使用手机验证码登录 如果没注册给其注册
+     * 用户使用手机验证码登录
      * @return
      */
     @RequestMapping(value = "/loginByVerify",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)

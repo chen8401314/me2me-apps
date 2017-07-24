@@ -270,6 +270,18 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response signUpByVerify(UserSignUpDto userSignUpDto) {
+
+        log.info("signUp start ...");
+        // 校验手机号码是否注册
+        String mobile = userSignUpDto.getMobile();
+        log.info("mobile:" + mobile );
+        if(userMybatisDao.getUserByUserName(mobile) != null){
+            // 该用户已经注册过
+            log.info("mobile:" + mobile + " is already register");
+            return Response.failure(ResponseStatus.USER_MOBILE_DUPLICATE.status,ResponseStatus.USER_MOBILE_DUPLICATE.message);
+        }
+        log.info("user not exists");
+        //用户不存在
         SignUpSuccessDto signUpSuccessDto = new SignUpSuccessDto();
         User newUser = new User();
         String salt = SecurityUtils.getMask();
@@ -283,7 +295,7 @@ public class UserServiceImpl implements UserService {
         userMybatisDao.createUser(newUser);
 
         // 第三方推广数据
-        spreadChannelCount(userSignUpDto.getParams(),userSignUpDto.getSpreadChannel(), newUser);
+        // spreadChannelCount(userLoginDto.getParams(),userLoginDto.getSpreadChannel(), newUser);
 
         //IM新用户获得token
         try {
@@ -301,25 +313,21 @@ public class UserServiceImpl implements UserService {
 
         // 设置userNo
         signUpSuccessDto.setMeNumber(userMybatisDao.getUserNoByUid(newUser.getUid()).getMeNumber().toString());
-
-
         log.info("user is create");
         UserProfile userProfile = new UserProfile();
         userProfile.setUid(newUser.getUid());
         userProfile.setAvatar(Constant.DEFAULT_AVATAR);
         userProfile.setMobile(userSignUpDto.getMobile());
-        userProfile.setNickName(userSignUpDto.getNickName()+signUpSuccessDto.getMeNumber());
-        userProfile.setIntroduced(userSignUpDto.getIntroduced());
+        userProfile.setNickName(userSignUpDto.getMobile()+signUpSuccessDto.getMeNumber());
+        //介绍默认没有
+        userProfile.setIntroduced("");
         //性别默认给-1
-        userProfile.setGender(userSignUpDto.getGender());
+        userProfile.setGender(-1);
         //生日默认给一个不可能的值
         userProfile.setBirthday("1800-1-1");
         userProfile.setCreateTime(new Date());
         userProfile.setUpdateTime(new Date());
-        userProfile.setChannel(userSignUpDto.getChannel());
         userProfile.setPlatform(userSignUpDto.getPlatform());
-        userProfile.setRegisterVersion(userSignUpDto.getRegisterVersion());
-
         List<UserAccountBindStatusDto> array = Lists.newArrayList();
         // 添加手机绑定
         array.add(new UserAccountBindStatusDto(Specification.ThirdPartType.MOBILE.index,Specification.ThirdPartType.MOBILE.name,1));
@@ -368,6 +376,10 @@ public class UserServiceImpl implements UserService {
         this.applicationEventBus.post(event);
 
         //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.REGISTER.index,0,user.getUid()));
+
+        //新用户注册放入cach,机器人自动回复用
+        String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+signUpSuccessDto.getUid();
+        cacheService.setex(key,signUpSuccessDto.getUid()+"",7*24*60*60);
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
     }
 
@@ -564,7 +576,7 @@ public class UserServiceImpl implements UserService {
                 //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.LOGIN.index,0,user.getUid()));
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status,ResponseStatus.USER_LOGIN_SUCCESS.message,loginSuccessDto);
         }else{
-            log.info("user not exists");
+          /*  log.info("user not exists");
             //用户不存在
             SignUpSuccessDto signUpSuccessDto = new SignUpSuccessDto();
             User newUser = new User();
@@ -664,7 +676,8 @@ public class UserServiceImpl implements UserService {
             //新用户注册放入cach,机器人自动回复用
             String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+signUpSuccessDto.getUid();
             cacheService.setex(key,signUpSuccessDto.getUid()+"",7*24*60*60);
-            return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
+            return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);*/
+          return  Response.failure("该用户还没有注册,请完成注册");
         }
     }
 
@@ -4596,7 +4609,7 @@ public class UserServiceImpl implements UserService {
 	 * 随机获取n个王国封面。
 	 * @author zhangjiwei
 	 * @date Jul 20, 2017
-	 * @param cover
+	 * @param count
 	 * @return
 	 */
 	@Override
