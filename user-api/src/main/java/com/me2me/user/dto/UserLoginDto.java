@@ -23,4 +23,6 @@ public class UserLoginDto implements BaseEntity {
 
     private String jPushToken;
 
+    private String verifyCode;
+
 }

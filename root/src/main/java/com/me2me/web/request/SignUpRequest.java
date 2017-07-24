@@ -59,5 +59,9 @@ public class SignUpRequest extends Request{
     @Setter
     private String params;
 
+    @Getter
+    @Setter
+    private String verifyCode;
+
 
 }

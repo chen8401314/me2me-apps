@@ -145,6 +145,7 @@ public class Users extends BaseController {
         userLoginDto.setPlatform(request.getPlatform());
         userLoginDto.setDeviceNo(request.getDeviceNo());
         userLoginDto.setJPushToken(request.getJPushToken());
+        userLoginDto.setVerifyCode(request.getVerifyCode());
         return userService.loginByVerify(userLoginDto);
     }
 

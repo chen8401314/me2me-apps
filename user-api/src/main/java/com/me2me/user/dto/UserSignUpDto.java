@@ -36,6 +36,8 @@ public class UserSignUpDto implements BaseEntity {
     private String params;
 
     private int spreadChannel;
+
+    private String verifyCode;
     
 
 }
