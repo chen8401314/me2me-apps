@@ -379,7 +379,7 @@
 			            success: function(data) {
 			            	  if(data!=null & data!=''){
 			            		  $("#id").val(data.id);
-			            		  $("#quotation").text(data.quotation);
+			            		  $("#quotation").val(data.quotation);
 			            		  $("#type").val(data.type);
 			            		  $('#modal').modal('show');
 			            	  }else{
