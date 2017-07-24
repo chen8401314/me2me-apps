@@ -1307,4 +1307,54 @@ public class LiveLocalJdbcDao {
     	}
     	return result;
     }
+    public int countRobotListByNickName(String nickName){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select count(*) FROM robot_info r,user_profile u WHERE r.uid = u.uid");
+    	if(!StringUtils.isEmpty(nickName)){
+    		sb.append(" and u.nick_name like '%").append(nickName).append("%'");
+    	}
+    	String sql = sb.toString();
+    	Integer count=0;
+		try{
+			count=jdbcTemplate.queryForObject(sql, Integer.class);
+		}catch(Exception e){
+			count=0;
+		}
+    	return count;
+    }
+    public List<Map<String,Object>> getRobotListByNickName(String nickName,int start,int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select r.id,r.uid,u.nick_name,u.avatar FROM robot_info r,user_profile u WHERE r.uid = u.uid ");
+    	if(!StringUtils.isEmpty(nickName)){
+    		sb.append(" and u.nick_name like '%").append(nickName).append("%'");
+    	}
+    	sb.append(" order by r.create_time desc limit ").append(start).append(",").append(pageSize);
+    	String sql = sb.toString();
+		return jdbcTemplate.queryForList(sql);
+    }
+    public int countQuotationListByQuotation(String quotation){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select count(*) FROM quotation_info WHERE 1=1");
+    	if(!StringUtils.isEmpty(quotation)){
+    		sb.append(" and quotation like '%").append(quotation).append("%'");
+    	}
+    	String sql = sb.toString();
+    	Integer count=0;
+		try{
+			count=jdbcTemplate.queryForObject(sql, Integer.class);
+		}catch(Exception e){
+			count=0;
+		}
+    	return count;
+    }
+    public List<Map<String,Object>> getQuotationListByQuotation(String quotation,int start,int pageSize){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select * FROM quotation_info WHERE 1=1");
+    	if(!StringUtils.isEmpty(quotation)){
+    		sb.append(" and quotation like '%").append(quotation).append("%'");
+    	}
+    	sb.append(" order by id desc limit ").append(start).append(",").append(pageSize);
+    	String sql = sb.toString();
+		return jdbcTemplate.queryForList(sql);
+    }
 }

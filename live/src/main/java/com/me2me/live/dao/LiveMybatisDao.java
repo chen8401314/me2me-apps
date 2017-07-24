@@ -1906,4 +1906,17 @@ public class LiveMybatisDao {
     public QuotationInfo getQuotationInfo(){
 	    return  quotationInfoMapper.getQuotationInfo();
     }
+    
+	public int saveQuotationInfo(QuotationInfo quotationInfo){
+		return quotationInfoMapper.insertSelective(quotationInfo);
+	}
+	public int updateQuotationInfo(QuotationInfo quotationInfo){
+		return quotationInfoMapper.updateByPrimaryKeySelective(quotationInfo);
+	}
+	public int delQuotationInfo(long id){
+		return quotationInfoMapper.deleteByPrimaryKey(id);
+	}
+	public QuotationInfo getQuotationInfoById(long id){
+		return quotationInfoMapper.selectByPrimaryKey(id);
+	}
 }

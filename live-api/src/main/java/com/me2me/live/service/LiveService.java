@@ -616,4 +616,16 @@ public interface LiveService {
       * @return
       */
      Response userKingdomInfo(long uid);
+     
+     Response searchRobotListPage(String nickName,int page, int pageSize);
+     
+     Response searchQuotationListPage(String quotation,int page, int pageSize);
+     
+ 	 int saveQuotationInfo(QuotationInfo quotationInfo);
+ 	 
+	 int updateQuotationInfo(QuotationInfo quotationInfo);
+	 
+	 int delQuotationInfo(long id);
+	 
+	 QuotationInfo getQuotationInfoById(long id);
 }
