@@ -386,6 +386,9 @@ public class UserServiceImpl implements UserService {
         //新用户注册放入cach,机器人自动回复用
         String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+signUpSuccessDto.getUid();
         cacheService.setex(key,signUpSuccessDto.getUid()+"",7*24*60*60);
+        //不管你爽不爽，就是要卖你3个王国
+        give3Kingdoms(userProfile);
+        
         return Response.success(ResponseStatus.USER_SING_UP_SUCCESS.status,ResponseStatus.USER_SING_UP_SUCCESS.message,signUpSuccessDto);
         }else{
             log.info("user verify check error");
