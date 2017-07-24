@@ -127,12 +127,11 @@ public class KingdomRobot {
         step2.setTopicId(id);
         Set<Long> quotationInfoIds = Sets.newConcurrentHashSet();
         // 构建留言对象
-        SpeakDto speakDto = builderSpeakDto(id);
-
         ES.schedule(new Runnable() {
             @Override
             public void run() {
                 lock.lock();
+                SpeakDto speakDto = builderSpeakDto(id);
                 if(quotationInfoIds.contains(speakDto.getQuotationInfoId())){
                     QuotationInfo quotationInfo  = liveService.selectQuotation();
                     speakDto.setQuotationInfoId(quotationInfo.getId());
