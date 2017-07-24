@@ -1386,25 +1386,6 @@ public class LiveServiceImpl implements LiveService {
         List<Topic> topicList = liveMybatisDao.getMyLives(uid, sinceId, topics);
         log.info("getMyLives data success");
         builder(uid, showTopicListDto, topicList);
-        // 赠送王国
-        List<TopicGiven> givenKingdomList = liveMybatisDao.getMyGivenKingdoms(uid);
-        UserProfile myProfile= this.userService.getUserProfileByUid(uid);
-        for(TopicGiven given:givenKingdomList){
-        	GivenKingdom gk = new GivenKingdom();
-        	gk.setGivenKingdomId(given.getId());
-        	gk.setTitle(given.getTitle());
-        	gk.setSummary(given.getSummary());
-        	gk.setCoverImage(given.getCover());
-        	gk.setCreateTime(given.getCreateTime());
-        	gk.setUid(given.getUid());
-        	gk.setTags(given.getTags());
-        	gk.setAvatar(myProfile.getAvatar());
-        	gk.setNickName(myProfile.getNickName());
-        	gk.setV_lv(myProfile.getvLv());
-        	gk.setLevel(myProfile.getLevel());
-        	
-        	showTopicListDto.getGivenKingdoms().add(gk);
-        }
         
         return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status, ResponseStatus.GET_MY_LIVE_SUCCESS.message, showTopicListDto);
     }
@@ -2799,6 +2780,26 @@ public class LiveServiceImpl implements LiveService {
         } else {
             showTopicListDto.setIsUpdate(0);
         }
+     // 赠送王国
+        List<TopicGiven> givenKingdomList = liveMybatisDao.getMyGivenKingdoms(uid);
+        UserProfile myProfile= this.userService.getUserProfileByUid(uid);
+        for(TopicGiven given:givenKingdomList){
+        	GivenKingdom gk = new GivenKingdom();
+        	gk.setGivenKingdomId(given.getId());
+        	gk.setTitle(given.getTitle());
+        	gk.setSummary(given.getSummary());
+        	gk.setCoverImage(given.getCover());
+        	gk.setCreateTime(given.getCreateTime());
+        	gk.setUid(given.getUid());
+        	gk.setTags(given.getTags());
+        	gk.setAvatar(myProfile.getAvatar());
+        	gk.setNickName(myProfile.getNickName());
+        	gk.setV_lv(myProfile.getvLv());
+        	gk.setLevel(myProfile.getLevel());
+        	
+        	showTopicListDto.getGivenKingdoms().add(gk);
+        }
+        
         return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status, ResponseStatus.GET_MY_LIVE_SUCCESS.message, showTopicListDto);
     }
 
@@ -7449,8 +7450,9 @@ public class LiveServiceImpl implements LiveService {
 	}
 	@Override
 	public Response givenKingdomOpration(long uid, long givenKingdomId,String action) {
+		String activeKey = "GIVEN_ACTIVE_"+uid;
 		GivenKingdomDto resp = new GivenKingdomDto();
-		
+		String cacheState = cacheService.get(activeKey);
 		if("ACTIVE".equals(action)){
 			TopicGiven given= liveMybatisDao.getGivenKingomdById(givenKingdomId);
 			if(given.getSubType()!=null && given.getSubType()==2){	//情绪王国,如果存在就更新为激活指定的信息。
@@ -7498,7 +7500,8 @@ public class LiveServiceImpl implements LiveService {
 			}
 			liveMybatisDao.deleteGivenKingdomById(givenKingdomId);
 			int count =liveMybatisDao.getUnActivedKingdomCount(uid);
-			resp.setUnActivedCount(count);
+			resp.setActived(cacheState==null?0:1);
+			cacheService.set(activeKey, "1");
 		}else if("DEL".equals(action)){
 			liveMybatisDao.deleteGivenKingdomById(givenKingdomId);
 		}

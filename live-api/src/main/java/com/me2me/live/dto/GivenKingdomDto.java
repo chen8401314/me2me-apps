@@ -13,5 +13,5 @@ public class GivenKingdomDto implements BaseEntity{
 	private static final long serialVersionUID = 1L;
 	
 	private long topicId;
-	private int unActivedCount;
+	private int actived=0;
 }

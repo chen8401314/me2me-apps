@@ -42,8 +42,11 @@ public class LiveTest extends AbstractJUnit4SpringContextTests {
 			e.printStackTrace();
 		}
 	}
-	
-	
+	@Test
+	public void testMyTopic(){
+		Response response = liveService.getMyTopic(204481, System.currentTimeMillis());
+		System.out.println(response);
+	}
 	//@Test
 	public void testStealCoins() {
 		Response resp =liveService.stealKingdomCoin(318, 2852);
