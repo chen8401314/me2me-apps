@@ -1906,4 +1906,10 @@ public class LiveMybatisDao {
     public QuotationInfo getQuotationInfo(){
 	    return  quotationInfoMapper.getQuotationInfo();
     }
+
+	public int getUnActivedKingdomCount(long uid) {
+		TopicGivenExample example = new TopicGivenExample();
+		example.createCriteria().andUidEqualTo((int)uid);
+		return givenMapper.countByExample(example);
+	}
 }

@@ -310,6 +310,11 @@ public class LiveServiceImpl implements LiveService {
     public Response liveCover(long topicId, long uid, int vflag, int source) {
         log.info("liveCover start ...");
         LiveCoverDto liveCoverDto = new LiveCoverDto();
+        String viewKey = "USER_VIEW_KINGDOM_"+uid+"_"+topicId;
+        if(cacheService.get(viewKey)==null){
+        	cacheService.set(viewKey, "1");
+        	liveCoverDto.setIsFirstView(1);
+        }
         Topic topic = liveMybatisDao.getTopicById(topicId);
         if(topic==null){
             return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
@@ -7490,7 +7495,8 @@ public class LiveServiceImpl implements LiveService {
 				 resp.setTopicId(topic.getId());
 			}
 			liveMybatisDao.deleteGivenKingdomById(givenKingdomId);
-			
+			int count =liveMybatisDao.getUnActivedKingdomCount(uid);
+			resp.setUnActivedCount(count);
 		}else if("DEL".equals(action)){
 			liveMybatisDao.deleteGivenKingdomById(givenKingdomId);
 		}
