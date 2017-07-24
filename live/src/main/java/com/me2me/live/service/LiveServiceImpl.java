@@ -7654,7 +7654,10 @@ public class LiveServiceImpl implements LiveService {
 
 	@Override
 	public Response saveDaySignInfo(long uid, String image,String extra,String uids,int source,String quotationIds) {
-		 String[] uidArr = uids.split(",");
+	if(StringUtils.isEmpty(uids) || StringUtils.isEmpty(quotationIds) ){
+		//不做处理；
+	}else{
+		String[] uidArr = uids.split(",");
 		 String[] quotationIdArr = quotationIds.split(",");
 		 if(uidArr.length!=quotationIdArr.length){
 			 return Response.failure(500, "机器人和语录数量不匹配！");
@@ -7670,6 +7673,7 @@ public class LiveServiceImpl implements LiveService {
 				liveMybatisDao.addRobotQuotationRecord(robotQuotationRecord);
 			}
 		 }
+	}
 	 SignRecord signRecord = new SignRecord();
 	 signRecord.setUid(uid);
 	 signRecord.setImage(image);
