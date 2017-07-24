@@ -18,6 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import com.alibaba.fastjson.JSON;
@@ -309,7 +310,11 @@ public class UserServiceImpl implements UserService {
             if(imUserInfoDto != null){
                 ImConfig imConfig = new ImConfig();
                 imConfig.setUid(newUser.getUid());
-                imConfig.setToken(imUserInfoDto.getToken());
+                if (ObjectUtils.isEmpty(imConfig.getToken())){
+                    imConfig.setToken("测试环境的token满了.");
+                }else {
+                    imConfig.setToken(imUserInfoDto.getToken());
+                }
                 userMybatisDao.createImConfig(imConfig);
                 log.info("create IM Config success");
             }
