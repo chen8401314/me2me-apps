@@ -9,7 +9,7 @@ import lombok.Data;
  * Date: 2017/7/20 0020.
  */
 @Data
-public class GetRedBagDto implements BaseEntity {
+public class ObtainRedBagDto implements BaseEntity {
 
     private int currentLevel;
 

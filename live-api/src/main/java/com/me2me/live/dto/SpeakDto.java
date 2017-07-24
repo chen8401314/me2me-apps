@@ -48,4 +48,6 @@ public class SpeakDto implements BaseEntity{
 
     private int currentLevel;
 
+    private long quotationInfoId;
+
 }

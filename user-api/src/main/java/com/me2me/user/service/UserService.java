@@ -564,8 +564,8 @@ public interface UserService {
 
 	/**
 	 * 领取红包接口
-	 * @param getRedBagDto
+	 * @param obtainRedBagDto
 	 * @return
 	 */
-	Response getRedBag(GetRedBagDto getRedBagDto);
+	Response ObtainRedBag(ObtainRedBagDto obtainRedBagDto);
 }

@@ -6,5 +6,5 @@ import com.me2me.common.web.Request;
  * Author: 郭世同
  * Date: 2017/7/20 0017.
  */
-public class GetRedBagRequest extends Request {
+public class ObtainRedBagRequest extends Request {
 }

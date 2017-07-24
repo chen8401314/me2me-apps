@@ -4656,13 +4656,13 @@ public class UserServiceImpl implements UserService {
 	}
 
     @Override
-    public Response getRedBag(GetRedBagDto getRedBagDto) {
+    public Response ObtainRedBag(ObtainRedBagDto obtainRedBagDto) {
 	    String redBag = this.getAppConfigByKey("RED_BAG");
-	    ModifyUserCoinDto modifyUserCoinDto = this.modifyUserCoin(getRedBagDto.getUid(),Integer.parseInt(redBag));
-	    getRedBagDto.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
-	    getRedBagDto.setUpgrade(modifyUserCoinDto.getUpgrade());
-	    getRedBagDto.setCue("恭喜你获得"+Integer.parseInt(redBag)+"个米汤币");
-        return Response.success(getRedBagDto);
+	    ModifyUserCoinDto modifyUserCoinDto = this.modifyUserCoin(obtainRedBagDto.getUid(),Integer.parseInt(redBag));
+	    obtainRedBagDto.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
+	    obtainRedBagDto.setUpgrade(modifyUserCoinDto.getUpgrade());
+	    obtainRedBagDto.setCue("恭喜你获得"+Integer.parseInt(redBag)+"个米汤币");
+        return Response.success(obtainRedBagDto);
     }
 
     /**
