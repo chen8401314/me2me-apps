@@ -324,7 +324,7 @@ public class UserServiceImpl implements UserService {
         userProfile.setUid(newUser.getUid());
         userProfile.setAvatar(Constant.DEFAULT_AVATAR);
         userProfile.setMobile(userSignUpDto.getMobile());
-        userProfile.setNickName(userSignUpDto.getMobile()+signUpSuccessDto.getMeNumber());
+        userProfile.setNickName("用户"+signUpSuccessDto.getMeNumber());
         //介绍默认没有
         userProfile.setIntroduced("");
         //性别默认给-1
