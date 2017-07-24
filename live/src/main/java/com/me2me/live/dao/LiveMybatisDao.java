@@ -1845,6 +1845,7 @@ public class LiveMybatisDao {
 	public List<QuotationInfo> getQuotationInfoRandom(List<Long> ids){
 		QuotationInfoExample example = new QuotationInfoExample();
 		QuotationInfoExample.Criteria criteria = example.createCriteria();
+		criteria.andTypeEqualTo(0);
 		if(ids.size()>0){
 		criteria.andIdNotIn(ids);
 		}
