@@ -35,7 +35,7 @@ public class QuotationDaySignTask {
 		logger.info("语录日签推送任务开始");
 		long s = System.currentTimeMillis();
 		try{
-			String msg="查看您的语录日签";
+			String msg="";
 			JsonObject jsonObject = null;
 			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 			StringBuilder userSql = new StringBuilder();
@@ -90,6 +90,11 @@ public class QuotationDaySignTask {
 				}
 				int day = DateUtil.daysBetween(finalTime, sdf.format(new Date()));
 				if(day==1 || day ==2 || day ==7 || day==15 ||day==30){
+					if(day==1){
+						msg = "你的今日语录已经生成，赶紧瞅一眼你的妙语连珠吧。";
+					}else{
+						msg="给低调的你推荐一位伶牙俐齿的小伙伴，看TA侃侃而谈的语录打动你了吗？";
+					}
 				jsonObject = new JsonObject();
 	            jsonObject.addProperty("messageType", 0);
 	            jsonObject.addProperty("type", -1);

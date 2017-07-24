@@ -98,6 +98,8 @@ import com.me2me.live.dto.LiveTimeLineDto2;
 import com.me2me.live.dto.LiveUpdateDto;
 import com.me2me.live.dto.ResendVoteDto;
 import com.me2me.live.dto.SearchDropAroundTopicDto;
+import com.me2me.live.dto.SearchQuotationListDto;
+import com.me2me.live.dto.SearchRobotListDto;
 import com.me2me.live.dto.SearchTopicDto;
 import com.me2me.live.dto.SearchTopicListedListDto;
 import com.me2me.live.dto.SettingModifyDto;
@@ -310,6 +312,11 @@ public class LiveServiceImpl implements LiveService {
     public Response liveCover(long topicId, long uid, int vflag, int source) {
         log.info("liveCover start ...");
         LiveCoverDto liveCoverDto = new LiveCoverDto();
+        String viewKey = "USER_VIEW_KINGDOM_"+uid+"_"+topicId;
+        if(cacheService.get(viewKey)==null){
+        	cacheService.set(viewKey, "1");
+        	liveCoverDto.setIsFirstView(1);
+        }
         Topic topic = liveMybatisDao.getTopicById(topicId);
         if(topic==null){
             return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
@@ -7490,7 +7497,8 @@ public class LiveServiceImpl implements LiveService {
 				 resp.setTopicId(topic.getId());
 			}
 			liveMybatisDao.deleteGivenKingdomById(givenKingdomId);
-			
+			int count =liveMybatisDao.getUnActivedKingdomCount(uid);
+			resp.setUnActivedCount(count);
 		}else if("DEL".equals(action)){
 			liveMybatisDao.deleteGivenKingdomById(givenKingdomId);
 		}
@@ -7652,7 +7660,10 @@ public class LiveServiceImpl implements LiveService {
 
 	@Override
 	public Response saveDaySignInfo(long uid, String image,String extra,String uids,int source,String quotationIds) {
-		 String[] uidArr = uids.split(",");
+	if(StringUtils.isEmpty(uids) || StringUtils.isEmpty(quotationIds) ){
+		//不做处理；
+	}else{
+		String[] uidArr = uids.split(",");
 		 String[] quotationIdArr = quotationIds.split(",");
 		 if(uidArr.length!=quotationIdArr.length){
 			 return Response.failure(500, "机器人和语录数量不匹配！");
@@ -7668,6 +7679,7 @@ public class LiveServiceImpl implements LiveService {
 				liveMybatisDao.addRobotQuotationRecord(robotQuotationRecord);
 			}
 		 }
+	}
 	 SignRecord signRecord = new SignRecord();
 	 signRecord.setUid(uid);
 	 signRecord.setImage(image);
@@ -7964,4 +7976,74 @@ public class LiveServiceImpl implements LiveService {
     	
     	return Response.success(result);
     }
+    
+    @Override
+    public Response searchRobotListPage(String nickName,int page, int pageSize){
+     	int totalRecord = liveLocalJdbcDao.countRobotListByNickName(nickName);
+    	int totalPage = (totalRecord + pageSize - 1) / pageSize;
+    	if(page>totalPage){
+    		page=totalPage;
+    	}
+    	if(page<1){
+    		page=1;
+    	}
+    	int start = (page-1)*pageSize;
+    	List<Map<String, Object>> list = liveLocalJdbcDao.getRobotListByNickName(nickName,start, pageSize);
+    	SearchRobotListDto dto = new SearchRobotListDto();
+        dto.setTotalRecord(totalRecord);
+        dto.setTotalPage(totalPage);
+        for(Map<String, Object> map : list){
+        	SearchRobotListDto.RobotElement e = dto.createTopicListedElement();
+        	 e.setId((Long)map.get("id"));
+        	 e.setUid((Long)map.get("uid"));
+        	 e.setNickName( map.get("nick_name").toString());
+        	 e.setAvatar(Constant.QINIU_DOMAIN + "/" +  map.get("avatar").toString());
+            dto.getResult().add(e);
+        }
+        return Response.success(dto);
+    }
+    @Override
+    public Response searchQuotationListPage(String quotation,int page, int pageSize){
+     	int totalRecord = liveLocalJdbcDao.countQuotationListByQuotation(quotation);
+    	int totalPage = (totalRecord + pageSize - 1) / pageSize;
+    	if(page>totalPage){
+    		page=totalPage;
+    	}
+    	if(page<1){
+    		page=1;
+    	}
+    	int start = (page-1)*pageSize;
+    	List<Map<String, Object>> list = liveLocalJdbcDao.getQuotationListByQuotation(quotation,start, pageSize);
+    	SearchQuotationListDto dto = new SearchQuotationListDto();
+        dto.setTotalRecord(totalRecord);
+        dto.setTotalPage(totalPage);
+        for(Map<String, Object> map : list){
+        	SearchQuotationListDto.QuotationElement e = dto.createQuotationElement();
+        	 e.setId((Long)map.get("id"));
+        	 e.setType((Integer)map.get("type"));
+        	 e.setQuotation( map.get("quotation").toString());
+        	 e.setCreateTime((Date)map.get("create_time"));
+            dto.getResult().add(e);
+        }
+        return Response.success(dto);
+    }
+    
+    @Override
+	public int saveQuotationInfo(QuotationInfo quotationInfo){
+		return liveMybatisDao.saveQuotationInfo(quotationInfo);
+	}
+    @Override
+	public int updateQuotationInfo(QuotationInfo quotationInfo){
+		return liveMybatisDao.updateQuotationInfo(quotationInfo);
+	}
+    
+    @Override
+	public int delQuotationInfo(long id){
+    	return liveMybatisDao.delQuotationInfo(id);
+	}
+    @Override
+	public QuotationInfo getQuotationInfoById(long id){
+    	return liveMybatisDao.getQuotationInfoById(id);
+	}
+    
 }
