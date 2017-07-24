@@ -1,6 +1,7 @@
 package com.me2me.live.service;
 
 
+import com.google.common.collect.Sets;
 import com.me2me.common.web.BaseEntity;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.model.QuotationInfo;
@@ -14,7 +15,11 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import lombok.Data;
 
 /**
@@ -35,6 +40,9 @@ public class KingdomRobot {
 
     @Autowired
     private LiveService liveService;
+
+
+    private Lock lock = new ReentrantLock();
 
 
 
@@ -117,17 +125,42 @@ public class KingdomRobot {
         calendar.add(Calendar.HOUR_OF_DAY,step2.getLastHour());
         step2.setCreateTime(calendar.getTime());
         step2.setTopicId(id);
+        Set<Long> quotationInfoIds = Sets.newConcurrentHashSet();
         // 构建留言对象
         SpeakDto speakDto = builderSpeakDto(id);
 
         ES.schedule(new Runnable() {
             @Override
             public void run() {
-                liveService.speak(speakDto);
+                lock.lock();
+                if(quotationInfoIds.contains(speakDto.getQuotationInfoId())){
+                    QuotationInfo quotationInfo  = liveService.selectQuotation();
+                    speakDto.setQuotationInfoId(quotationInfo.getId());
+                    speakDto.setFragment(quotationInfo.getQuotation());
+                }else{
+                    liveService.speak(speakDto);
+                    quotationInfoIds.add(speakDto.getQuotationInfoId());
+                }
                 // 指派24小时前任务
-                splitTask(step1,new ReplyTimes(2,3),speakDto);
+                if(quotationInfoIds.contains(speakDto.getQuotationInfoId())){
+                    QuotationInfo quotationInfo  = liveService.selectQuotation();
+                    speakDto.setQuotationInfoId(quotationInfo.getId());
+                    speakDto.setFragment(quotationInfo.getQuotation());
+                }else{
+                    splitTask(step1,new ReplyTimes(2,3),speakDto);
+                    quotationInfoIds.add(speakDto.getQuotationInfoId());
+                }
+
                 // 指派24小时候的任务
-                splitTask(step2,new ReplyTimes(1,2),speakDto);
+                if(quotationInfoIds.contains(speakDto.getQuotationInfoId())){
+                    QuotationInfo quotationInfo  = liveService.selectQuotation();
+                    speakDto.setQuotationInfoId(quotationInfo.getId());
+                    speakDto.setFragment(quotationInfo.getQuotation());
+                }else{
+                    splitTask(step2,new ReplyTimes(1,2),speakDto);
+                    quotationInfoIds.add(speakDto.getQuotationInfoId());
+                }
+                lock.unlock();
             }
         },sleep , TimeUnit.SECONDS);
 
@@ -138,6 +171,7 @@ public class KingdomRobot {
         // todo 填充参数
         RobotInfo robot = liveService.selectRobotInfo();
         QuotationInfo quotationInfo  = liveService.selectQuotation();
+        speakDto.setQuotationInfoId(quotationInfo.getId());
         speakDto.setFragment(quotationInfo.getQuotation());
         speakDto.setContentType(0);
         speakDto.setTopicId(topicId);
