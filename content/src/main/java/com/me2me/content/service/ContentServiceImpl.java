@@ -3529,9 +3529,10 @@ public class ContentServiceImpl implements ContentService {
         }
 
         ShowHotListDTO result = new ShowHotListDTO();
-
-        List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
+        String bubblePositions=userService.getAppConfigByKey(Constant.HOTLIST_BUBBLE_POSITION_KEY);
+        result.setBubblePositions(bubblePositions);	// 提示消息
         
+        List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
         List<ActivityWithBLOBs> activityList = null;
         List<UserFamous> userFamousList = null;
         List<Content2Dto> ceKingdomList = null;

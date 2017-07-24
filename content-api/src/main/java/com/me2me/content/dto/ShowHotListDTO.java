@@ -26,6 +26,8 @@ public class ShowHotListDTO implements BaseEntity {
 	
 	private List<HotTagElement> hotTagKingdomList = Lists.newArrayList();
 	
+	private String bubblePositions;
+	
 	@Data
 	public static class HotTagElement implements BaseEntity{
 		private static final long serialVersionUID = -1636362714045596434L;
