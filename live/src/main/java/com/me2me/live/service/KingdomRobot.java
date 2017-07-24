@@ -74,7 +74,7 @@ public class KingdomRobot {
         private int max;
     }
 
-    private void splitTask(ExecutePolicy policy, ReplyTimes replyCount, SpeakDto speakDto) {
+    private void splitTask(ExecutePolicy policy, ReplyTimes replyCount) {
         try {
             Calendar finalTime = Calendar.getInstance();
             finalTime.setTime(policy.getCreateTime());
@@ -83,6 +83,8 @@ public class KingdomRobot {
             log.info("final time : " + sdf.format(finalTime.getTime()));
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(policy.getCreateTime());
+
+            Set<Long> ids = Sets.newConcurrentHashSet();
 
             while(calendar.before(finalTime)){
 
@@ -98,7 +100,12 @@ public class KingdomRobot {
                         public void run() {
                             log.info("当前时间:"+sdf.format(new Date())+"，任务发出去了，机器人开始回复了。。。"+policy.getTopicId());
                             // 调用发言
+                            SpeakDto speakDto = builderSpeakDto(policy.getTopicId());
+                            while(ids.contains(speakDto.getQuotationInfoId())){
+                                speakDto = builderSpeakDto(policy.getTopicId());
+                            }
                             liveService.speak(speakDto);
+                            ids.add(speakDto.getQuotationInfoId());
                         }
                     },delay,TimeUnit.MILLISECONDS);
                 }
@@ -125,40 +132,17 @@ public class KingdomRobot {
         calendar.add(Calendar.HOUR_OF_DAY,step2.getLastHour());
         step2.setCreateTime(calendar.getTime());
         step2.setTopicId(id);
-        Set<Long> quotationInfoIds = Sets.newConcurrentHashSet();
+        SpeakDto speakDto = builderSpeakDto(id);
         // 构建留言对象
         ES.schedule(new Runnable() {
             @Override
             public void run() {
                 lock.lock();
-                SpeakDto speakDto = builderSpeakDto(id);
-                if(quotationInfoIds.contains(speakDto.getQuotationInfoId())){
-                    QuotationInfo quotationInfo  = liveService.selectQuotation();
-                    speakDto.setQuotationInfoId(quotationInfo.getId());
-                    speakDto.setFragment(quotationInfo.getQuotation());
-                }else{
-                    liveService.speak(speakDto);
-                    quotationInfoIds.add(speakDto.getQuotationInfoId());
-                }
+                liveService.speak(speakDto);
                 // 指派24小时前任务
-                if(quotationInfoIds.contains(speakDto.getQuotationInfoId())){
-                    QuotationInfo quotationInfo  = liveService.selectQuotation();
-                    speakDto.setQuotationInfoId(quotationInfo.getId());
-                    speakDto.setFragment(quotationInfo.getQuotation());
-                }else{
-                    splitTask(step1,new ReplyTimes(2,3),speakDto);
-                    quotationInfoIds.add(speakDto.getQuotationInfoId());
-                }
-
+                splitTask(step1,new ReplyTimes(2,3));
                 // 指派24小时候的任务
-                if(quotationInfoIds.contains(speakDto.getQuotationInfoId())){
-                    QuotationInfo quotationInfo  = liveService.selectQuotation();
-                    speakDto.setQuotationInfoId(quotationInfo.getId());
-                    speakDto.setFragment(quotationInfo.getQuotation());
-                }else{
-                    splitTask(step2,new ReplyTimes(1,2),speakDto);
-                    quotationInfoIds.add(speakDto.getQuotationInfoId());
-                }
+                splitTask(step2,new ReplyTimes(1,2));
                 lock.unlock();
             }
         },sleep , TimeUnit.SECONDS);
