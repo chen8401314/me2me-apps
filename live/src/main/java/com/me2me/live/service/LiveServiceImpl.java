@@ -6838,9 +6838,16 @@ public class LiveServiceImpl implements LiveService {
 						}
 					}
 					if(isBigRedPack==1){ //中奖了
-						
+						Topic topic = liveMybatisDao.getTopicById(topicId);
+						UserProfile profile= userService.getUserProfileByUid(uid);
 						coins= RandomUtils.nextInt(Integer.parseInt(userService.getAppConfigByKey(Constant.BIG_RED_PACK_MIN_KEY)),
 								Integer.parseInt(userService.getAppConfigByKey(Constant.BIG_RED_PACK_MAX_KEY))+1);
+						TopicNews news = new TopicNews();
+						news.setTopicId(topicId);
+						news.setContent(profile.getNickName()+"在《"+topic.getTitle()+"》获得一个大红包,价值"+coins+"米汤币");
+						news.setType(2);
+						news.setCreateTime(new Date());
+						liveMybatisDao.addTopicNews(news);
 					}
 				}
 			}catch(Exception e){
