@@ -91,14 +91,17 @@ public class PriceController {
 		
 		int start = (page-1)*pageSize;
 		StringBuilder sb = new StringBuilder();
-		sb.append("select * from topic t");
+		sb.append("select * from topic t LEFT JOIN topic_data d on t.id=d.topic_id");
 		if(StringUtils.isNotBlank(dto.getTitle())){
 			sb.append(" where t.title like '%").append(dto.getTitle()).append("%'");
 		}
-		sb.append(" order by ").append(dto.getOrderbyParam()).append(" ").append(dto.getOrderby());
+		sb.append(" order by ");
+		if("update_time".equals(dto.getOrderbyParam())){
+			sb.append("t.");
+		}
+		sb.append(dto.getOrderbyParam()).append(" ").append(dto.getOrderby());;
 		sb.append(" limit ").append(start).append(",").append(pageSize);
-		String querySql = sb.toString();
-		
+
 		StringBuilder c = new StringBuilder();
 		c.append("select count(1) as cc from topic t");
 		if(StringUtils.isNotBlank(dto.getTitle())){
@@ -115,7 +118,7 @@ public class PriceController {
 		int totalPage = (total%pageSize==0)?(total/pageSize):(total/pageSize+1);
 		dto.setTotalPage(totalPage);
 		
-		List<Map<String, Object>> queryList = contentService.queryEvery(querySql);
+		List<Map<String, Object>> queryList = contentService.queryEvery(sb.toString());
 		if(null != queryList && queryList.size() > 0){
 			List<Long> topicIdList = new ArrayList<Long>();
 			List<Long> uidList = new ArrayList<Long>();
@@ -145,24 +148,6 @@ public class PriceController {
 				}
 			}
 			
-			StringBuilder topicDataSql = new StringBuilder();
-			topicDataSql.append("select * from topic_data t where t.topic_id in (");
-			for(int i=0;i<topicIdList.size();i++){
-				if(i>0){
-					topicDataSql.append(",");
-				}
-				topicDataSql.append(topicIdList.get(i));
-			}
-			topicDataSql.append(")");
-			List<Map<String, Object>> topicDataList = contentService.queryEvery(topicDataSql.toString());
-			Map<String, Map<String, Object>> topicDataMap = new HashMap<String, Map<String, Object>>();
-			if(null != topicDataList && topicDataList.size() > 0){
-				for(Map<String, Object> m : topicDataList){
-					topicDataMap.put(String.valueOf(m.get("topic_id")), m);
-				}
-			}
-			
-			Map<String, Object> topicData = null;
 			KingdomQueryDTO.Item item = null;
 			for(Map<String, Object> m : queryList){
 				item = new KingdomQueryDTO.Item();
@@ -174,13 +159,18 @@ public class PriceController {
 				item.setTitle((String)m.get("title"));
 				item.setType((Integer)m.get("type"));
 				item.setUpdateTime((Date)m.get("update_time"));
-				topicData = topicDataMap.get(String.valueOf(item.getId()));
-				if(null != topicData){
-					item.setStealPrice((Integer)topicData.get("steal_price"));
-					item.setDiligently((Double)topicData.get("diligently"));
-					item.setApprove((Double)topicData.get("approve"));
+				if(null != m.get("last_price_incr")){
+					item.setLastPriceIncr((Integer)m.get("last_price_incr"));
 				}
-				
+				if(null != m.get("steal_price")){
+					item.setStealPrice((Integer)m.get("steal_price"));
+				}
+				if(null != m.get("diligently")){
+					item.setDiligently((Double)m.get("diligently"));
+				}
+				if(null != m.get("approve")){
+					item.setApprove((Double)m.get("approve"));
+				}
 				dto.getResult().add(item);
 			}
 		}

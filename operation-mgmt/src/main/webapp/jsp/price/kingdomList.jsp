@@ -116,6 +116,7 @@ var buildTableBody = function(dataList){
 			}
 			bodyHtml = bodyHtml + "</th>";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].price+"</th>";
+			bodyHtml = bodyHtml + "<th>"+dataList[i].lastPriceIncr+"</th>";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].stealPrice+"</th>";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].diligently+"</th>";
 			bodyHtml = bodyHtml + "<th>"+dataList[i].approve+"</th>";
@@ -198,6 +199,7 @@ var parserDatetimeStr = function(time){
 											<option value="create_time" ${dataObj.orderbyParam=='create_time'?'selected':''}>创建时间</option>
 											<option value="update_time" ${dataObj.orderbyParam=='update_time'?'selected':''}>更新时间</option>
 											<option value="price" ${dataObj.orderbyParam=='price'?'selected':''}>价值</option>
+											<option value="last_price_incr" ${dataObj.orderbyParam=='last_price_incr'?'selected':''}>昨日增长</option>
 										</select>&nbsp;&nbsp;&nbsp;&nbsp;
 										排序
 										<select name="orderby" id="orderby" class="form-control">
@@ -234,6 +236,7 @@ var parserDatetimeStr = function(time){
 												<th>更新时间</th>
 												<th>王国类型</th>
 												<th>价值</th>
+												<th>昨日增长值</th>
 												<th>可被偷</th>
 												<th>用心度x</th>
 												<th>认可度y</th>
@@ -260,6 +263,7 @@ var parserDatetimeStr = function(time){
                                                 	</c:choose>
 													</th>
 													<th>${item.price }</th>
+													<th>${item.lastPriceIncr }</th>
 													<th>${item.stealPrice }</th>
 													<th>${item.diligently }</th>
 													<th>${item.approve }</th>

@@ -39,5 +39,7 @@ public class SearchUserProfileDto implements BaseEntity {
 		
 		private Date createTime;
 		private int status;
+		
+		private long meCode;
 	}
 }

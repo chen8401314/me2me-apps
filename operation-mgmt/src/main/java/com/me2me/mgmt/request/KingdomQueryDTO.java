@@ -32,6 +32,7 @@ public class KingdomQueryDTO {
 		private int type;
 		private int price;
 		
+		private int lastPriceIncr=0;
 		private double diligently=0;
 		private double approve = 0;
 		private int stealPrice = 0;

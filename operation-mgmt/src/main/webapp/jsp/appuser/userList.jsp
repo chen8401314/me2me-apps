@@ -56,7 +56,9 @@
 											<option value="0" ${dataObj.isV==0?'selected':''}>全部</option>
 											<option value="1" ${dataObj.isV==1?'selected':''}>是</option>
 											<option value="2" ${dataObj.isV==2?'selected':''}>否</option>
-										</select>
+										</select>&nbsp;&nbsp;&nbsp;&nbsp;
+										ME号
+										<input type="text" id="meCode" name="meCode" value="${dataObj.meCode }" class="form-control">
 									</div>
 									<br/>
 									<div class="form-inline" role="form">
@@ -94,6 +96,7 @@
 										<thead>
 											<tr>
 												<th>UID</th>
+												<th>ME号</th>
 												<th>手机</th>
 												<th>昵称</th>
 												<th>性别</th>
@@ -108,6 +111,7 @@
 											<c:forEach items="${dataObj.data.result}" var="userItem">
 												<tr class="gradeX">
 													<th>${userItem.uid }</th>
+													<th>${userItem.meCode }</th>
 													<th>${userItem.mobile }</th>
 													<th>${userItem.nickName }</th>
 													<th>
@@ -168,6 +172,7 @@
 										<tfoot>
 											<tr>
 												<th>UID</th>
+												<th>ME号</th>
 												<th>手机</th>
 												<th>昵称</th>
 												<th>性别</th>
