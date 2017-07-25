@@ -2877,9 +2877,9 @@ public class UserServiceImpl implements UserService {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public Response searchUserPage(String nickName, String mobile, int vLv, int status, String startTime, String endTime, int page, int pageSize){
+    public Response searchUserPage(String nickName, String mobile, int vLv, int status, String startTime, String endTime, long meCode, int page, int pageSize){
     	int start = (page-1)*pageSize;
-    	List<Map<String, Object>> list = userInitJdbcDao.searchUserProfilesByPage(nickName, mobile, vLv, status, startTime, endTime, start, pageSize);
+    	List<Map<String, Object>> list = userInitJdbcDao.searchUserProfilesByPage(nickName, mobile, vLv, status, startTime, endTime, meCode, start, pageSize);
         SearchUserProfileDto dto = new SearchUserProfileDto();
         dto.setTotalRecord(userInitJdbcDao.countUserProfilesByPage(nickName, mobile, vLv, status, startTime, endTime));
         int totalPage = (dto.getTotalRecord() + pageSize - 1) / pageSize;
@@ -2896,6 +2896,7 @@ public class UserServiceImpl implements UserService {
             e.setVlv((Integer)map.get("v_lv"));
             e.setBirthday((String)map.get("birthday"));
             e.setStatus((Integer)map.get("disable_user"));
+            e.setMeCode((Long)map.get("me_number"));
             dto.getResult().add(e);
         }
         return Response.success(dto);

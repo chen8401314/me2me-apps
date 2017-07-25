@@ -45,7 +45,6 @@ public class AppUserController {
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/query")
-	@SystemControllerLog(description = "APP用户查询")
 	public ModelAndView query(AppUserQueryDTO dto) {
 		ModelAndView view = new ModelAndView("appuser/userList");
 		int vLv = -1;
@@ -62,7 +61,12 @@ public class AppUserController {
 			status = 1;
 		}
 		
-		Response resp = userService.searchUserPage(dto.getNickName(), dto.getMobile(), vLv, status, dto.getStartTime(), dto.getEndTime(), 1, 200);
+		long meCode = 0;
+		if(null != dto.getMeCode() && !"".equals(dto.getMeCode())){
+			meCode = Long.valueOf(dto.getMeCode());
+		}
+		
+		Response resp = userService.searchUserPage(dto.getNickName(), dto.getMobile(), vLv, status, dto.getStartTime(), dto.getEndTime(), meCode, 1, 200);
 		if(null != resp && resp.getCode() == 200 && null != resp.getData()){
 			SearchUserProfileDto data = (SearchUserProfileDto)resp.getData();
 			dto.setData(data);
