@@ -50,22 +50,15 @@ public class AutoReplyEventListener {
 	@Subscribe
 	public void autoReply(AutoReplyEvent autoReplyEvent){
     	log.info("auto replay execute start .... ");
-		KingdomRobot.ExecutePolicy step1 = new KingdomRobot.ExecutePolicy();
-		step1.setCreateTime(autoReplyEvent.getCreateTime());
-		step1.setTopicId(autoReplyEvent.getTopicId());
-		step1.setLastHour(24);
-		step1.setMin(60);
-		step1.setMax(60);
+		KingdomRobot.ExecutePolicy policy = new KingdomRobot.ExecutePolicy();
+		policy.setCreateTime(autoReplyEvent.getCreateTime());
+		policy.setTopicId(autoReplyEvent.getTopicId());
+		policy.setLastHour(24);
+		policy.setMin(60);
+		policy.setMax(60);
 
+		kingdomRobot.start(policy);
 
-		KingdomRobot.ExecutePolicy step2 = new KingdomRobot.ExecutePolicy();
-		step2.setCreateTime(autoReplyEvent.getCreateTime());
-		step2.setTopicId(autoReplyEvent.getTopicId());
-		step2.setLastHour(24);
-		step2.setMin(120);
-		step2.setMax(60);
-
-		kingdomRobot.startWork(autoReplyEvent.getTopicId(),step1,step2);
 
 	}
 }

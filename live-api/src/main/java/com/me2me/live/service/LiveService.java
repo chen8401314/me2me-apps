@@ -609,6 +609,8 @@ public interface LiveService {
      RobotInfo selectRobotInfo();
 
      QuotationInfo selectQuotation();
+
+	List<QuotationInfo> selectQuotationByList(int limit);
      
      /**
       * 获取用户王国信息

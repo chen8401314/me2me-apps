@@ -100,4 +100,6 @@ public interface QuotationInfoMapper {
      * @return
      */
     QuotationInfo getQuotationInfo();
+
+    List<QuotationInfo> selectListQuotationInfo(@Param("limit") int limit);
 }
