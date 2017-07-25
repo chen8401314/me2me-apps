@@ -1527,7 +1527,7 @@ public class LiveMybatisDao {
 		TopicExample.Criteria criteria = example.createCriteria();
 		criteria.andUidEqualTo(uid);
 		criteria.andSubTypeEqualTo(1);
-		int count = topicMapper.countByExample(example);
+	
 		List<Topic> list = topicMapper.selectByExample(example);
 		return list.size()>0?list.get(0):null;
 	}
