@@ -324,4 +324,16 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 	}
 
 
+	public void redBagInsert(long uid , int coin){
+			String sql = "insert into rule_log (uid,rule_code,rule_name,coin,ext) values(?,?,?,?,?)";
+			jdbc.update(sql,uid,-1,"红包",coin,uid);
+	}
+
+	public List<Map<String, Object>> getRedBag(long uid) {
+		String sql = "SELECT * from rule_log where uid = ?";
+		return super.query(sql,uid);
+	}
+
+
+
 }

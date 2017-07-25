@@ -7520,7 +7520,7 @@ public class LiveServiceImpl implements LiveService {
 				 createKingdomDto.setCExtra("");
 				 createKingdomDto.setKConfig("");
 				 createKingdomDto.setTags(given.getTags());
-				 createKingdomDto.setSubType(1);
+				 createKingdomDto.setSubType(0);
 				 Topic topic = createSpecialTopic(createKingdomDto);
 				 resp.setTopicId(topic.getId());
 			}
