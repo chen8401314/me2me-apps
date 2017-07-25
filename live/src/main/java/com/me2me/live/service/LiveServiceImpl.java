@@ -7549,9 +7549,9 @@ public class LiveServiceImpl implements LiveService {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String todayStr = sdf.format(new Date());
 		String yesterDay = CommonUtils.getCalculationDayStr(-1, "yyyy-MM-dd");
-		Map<String, Object> signRecord = liveLocalJdbcDao.getSignRecord(todayStr, uid);
+		List<Map<String, Object>> signRecordList = liveLocalJdbcDao.getSignRecordList(todayStr, uid);
 		int signRecordCountTemp = 0;
-		if (signRecord == null) {
+		if (signRecordList.size() >0) {
 			dto.setIsSave(0);
 			signRecordCountTemp=1;
 		} else {
@@ -7661,31 +7661,50 @@ public class LiveServiceImpl implements LiveService {
 				}
 			}
 		}
-		String preWeekDay = CommonUtils.getCalculationDayStr(-7, "yyyy-MM-dd");
-		List<Map<String, Object>> hisList = liveLocalJdbcDao.getHisRobotQuotationRecord(preWeekDay, uid);
-		List<Long> hisRobot = new ArrayList<Long>();
-		List<Long> hisQuotation = new ArrayList<Long>();
-		for (int i = 0; i < hisList.size(); i++) {
-			Map<String, Object> map = hisList.get(i);
-			hisRobot.add(Long.parseLong(map.get("robot_uid").toString()));
-			hisQuotation.add(Long.parseLong(map.get("quotation_id").toString()));
-		}
-		List<RobotInfo> listRobot = liveMybatisDao.getRobotInfoRandom(hisRobot);
-		List<QuotationInfo> listQuotation = liveMybatisDao.getQuotationInfoRandom(hisQuotation);
-		for (int i = 0; i < listRobot.size(); i++) {
-			if (listQuotation.size() > i) {
-				RobotInfo robotInfo = listRobot.get(i);
+		List<Map<String, Object>> robotQuotationRecordList = liveLocalJdbcDao.getRobotQuotationRecordList(todayStr, uid);
+		if (robotQuotationRecordList.size() >0) {
+			for (int i = 0; i < robotQuotationRecordList.size(); i++) {
+				Map<String, Object> robotQuotationRecord = robotQuotationRecordList.get(i);
 				DaySignInfoDto.Quotation quotation = new DaySignInfoDto.Quotation();
-				quotation.setUid(robotInfo.getUid());
-				UserProfile robotProfile = userService.getUserProfileByUid(robotInfo.getUid());
+				quotation.setUid(Long.parseLong(robotQuotationRecord.get("robot_uid").toString()));
+				UserProfile robotProfile = userService.getUserProfileByUid(Long.parseLong(robotQuotationRecord.get("robot_uid").toString()));
 				quotation.setNickName(robotProfile.getNickName());
-				quotation.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-				QuotationInfo quotationInfo = listQuotation.get(i);
-				quotation.setQuotationId(quotationInfo.getId());
+				quotation.setAvatar(Constant.QINIU_DOMAIN + "/" + robotProfile.getAvatar());
+				Long quotationId = Long.parseLong(robotQuotationRecord.get("quotation_id").toString());
+				QuotationInfo quotationInfo  = liveMybatisDao.getQuotationInfoById(quotationId);
+				quotation.setQuotationId(quotationId);
 				quotation.setQuotation(quotationInfo.getQuotation());
 				dto.getQuotations().add(quotation);
 			}
+		} else {
+			String preWeekDay = CommonUtils.getCalculationDayStr(-7, "yyyy-MM-dd");
+			List<Map<String, Object>> hisList = liveLocalJdbcDao.getHisRobotQuotationRecord(preWeekDay, uid);
+			List<Long> hisRobot = new ArrayList<Long>();
+			List<Long> hisQuotation = new ArrayList<Long>();
+			for (int i = 0; i < hisList.size(); i++) {
+				Map<String, Object> map = hisList.get(i);
+				hisRobot.add(Long.parseLong(map.get("robot_uid").toString()));
+				hisQuotation.add(Long.parseLong(map.get("quotation_id").toString()));
+			}
+			List<RobotInfo> listRobot = liveMybatisDao.getRobotInfoRandom(hisRobot);
+			List<QuotationInfo> listQuotation = liveMybatisDao.getQuotationInfoRandom(hisQuotation);
+			for (int i = 0; i < listRobot.size(); i++) {
+				if (listQuotation.size() > i) {
+					RobotInfo robotInfo = listRobot.get(i);
+					DaySignInfoDto.Quotation quotation = new DaySignInfoDto.Quotation();
+					quotation.setUid(robotInfo.getUid());
+					UserProfile robotProfile = userService.getUserProfileByUid(robotInfo.getUid());
+					quotation.setNickName(robotProfile.getNickName());
+					quotation.setAvatar(Constant.QINIU_DOMAIN + "/" + robotProfile.getAvatar());
+					QuotationInfo quotationInfo = listQuotation.get(i);
+					quotation.setQuotationId(quotationInfo.getId());
+					quotation.setQuotation(quotationInfo.getQuotation());
+					dto.getQuotations().add(quotation);
+				}
+			}
 		}
+		
+		
 		return Response.success(dto);
 	}
 

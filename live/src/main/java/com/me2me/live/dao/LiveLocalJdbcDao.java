@@ -1268,15 +1268,23 @@ public class LiveLocalJdbcDao {
     	List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
 		return list.size()>0?list.get(0):null;
     }
-    public Map<String,Object> getSignRecord(String strDate,long uid){
+    public List<Map<String,Object>> getRobotQuotationRecordList(String strDate,long uid){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("SELECT * FROM robot_quotation_record where ");
+    	sb.append("  create_time >='").append(strDate).append(" 00:00:00' AND create_time <='").append(strDate).append(" 23:59:59'");
+    	sb.append(" AND uid = ").append(uid);
+    	String sql = sb.toString();
+    	List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
+		return list;
+    }
+    public List<Map<String,Object>> getSignRecordList(String strDate,long uid){
     	StringBuilder sb = new StringBuilder();
     	sb.append("SELECT * FROM sign_record where ");
     	sb.append("  create_time >='").append(strDate).append(" 00:00:00' AND create_time <='").append(strDate).append(" 23:59:59'");
     	sb.append(" AND uid = ").append(uid);
-    	sb.append("  LIMIT 1 ");
     	String sql = sb.toString();
     	List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
-		return list.size()>0?list.get(0):null;
+		return list;
     }
     public int getSignRecordCount(long uid){
     	StringBuilder sb = new StringBuilder();
