@@ -7550,8 +7550,10 @@ public class LiveServiceImpl implements LiveService {
 		String todayStr = sdf.format(new Date());
 		String yesterDay = CommonUtils.getCalculationDayStr(-1, "yyyy-MM-dd");
 		Map<String, Object> signRecord = liveLocalJdbcDao.getSignRecord(todayStr, uid);
+		int signRecordCountTemp = 0;
 		if (signRecord == null) {
 			dto.setIsSave(0);
+			signRecordCountTemp=1;
 		} else {
 			dto.setIsSave(1);
 		}
@@ -7562,7 +7564,7 @@ public class LiveServiceImpl implements LiveService {
 		}
 		dto.setPosition(signPostion);
 		int signRecordCount = liveLocalJdbcDao.getSignRecordCount(uid);
-		dto.setSerialNumber(signRecordCount + 1);
+		dto.setSerialNumber(signRecordCount + signRecordCountTemp);
 		dto.setSignDate(todayStr);
 		// 判断是否是新注册第一天用户
 		if (todayStr.equals(sdf.format(user.getCreateTime()))) {
