@@ -568,4 +568,18 @@ public interface UserService {
 	 * @return
 	 */
 	Response ObtainRedBag(ObtainRedBagDto obtainRedBagDto);
+	
+	/**
+	 * 是否第一次
+	 * @param uid
+	 * @param actionType 1王国更新，2加入王国
+	 * @return
+	 */
+	boolean isUserFirst(long uid, int actionType);
+	
+	/**
+	 * 保存第一次记录
+	 * @param ufl
+	 */
+	void saveUserFistLog(long uid, int actionType);
 }

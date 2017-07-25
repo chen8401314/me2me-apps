@@ -50,4 +50,5 @@ public class SpeakDto implements BaseEntity{
 
     private long quotationInfoId;
 
+    private int isFirstUpdate;
 }

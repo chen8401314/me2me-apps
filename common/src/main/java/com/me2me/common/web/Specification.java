@@ -1499,6 +1499,19 @@ public interface Specification {
         	return null;
         }
     }
+    
+    enum UserFirstActionType{
+    	SPEAK_UPDATE("王国更新", 1),
+    	SUBSCRIBED_KINGDOM("加入王国", 2);
+    	
+    	public final String name;
+        public final int index;
+
+        UserFirstActionType(String name,int index){
+            this.name = name;
+            this.index = index;
+        }
+    }
 }
 
     

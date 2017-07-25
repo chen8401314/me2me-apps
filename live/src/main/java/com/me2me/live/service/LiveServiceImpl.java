@@ -116,6 +116,7 @@ import com.me2me.live.dto.ShowTopicTagsDTO;
 import com.me2me.live.dto.ShowUserAtListDTO;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.dto.StealResultDto;
+import com.me2me.live.dto.SubscribedTopicDTO;
 import com.me2me.live.dto.TestApiDto;
 import com.me2me.live.dto.TopicTransferRecordDto;
 import com.me2me.live.dto.TopicVoteInfoDto;
@@ -1006,6 +1007,14 @@ public class LiveServiceImpl implements LiveService {
                 		|| speakDto.getType() == 52 || speakDto.getType() == 55){
                 	liveLocalJdbcDao.updateContentUpdateTime4Kingdom(speakDto.getTopicId(), calendar.getTime());
                 	liveLocalJdbcDao.updateContentUpdateId4Kingdom(speakDto.getTopicId(),cacheService.incr("UPDATE_ID"));
+                	
+                	//判断是否第一次更新
+                	if(userService.isUserFirst(speakDto.getUid(), Specification.UserFirstActionType.SPEAK_UPDATE.index)){
+                		speakDto.setIsFirstUpdate(1);
+                		userService.saveUserFistLog(speakDto.getUid(), Specification.UserFirstActionType.SPEAK_UPDATE.index);
+                	}else{
+                		speakDto.setIsFirstUpdate(0);
+                	}
                 }
                 
                 log.info("updateTopic updateTime");
@@ -1205,6 +1214,7 @@ public class LiveServiceImpl implements LiveService {
         		log.error("自动打标签失败", e);
         	}
         }
+        
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status, ResponseStatus.USER_SPEAK_SUCCESS.message, speakDto);
     }
 
@@ -2275,9 +2285,18 @@ public class LiveServiceImpl implements LiveService {
             CoinRule coinRule =userService.getCoinRules().get(Rules.JOIN_KING_KEY);
             coinRule.setExt(topicId);
             ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(uid,coinRule);
-            resp  = Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
-            resp.setData(modifyUserCoinDto);
-
+            SubscribedTopicDTO result = new SubscribedTopicDTO();
+            result.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
+            result.setUpgrade(modifyUserCoinDto.getUpgrade());
+            
+            if(userService.isUserFirst(uid, Specification.UserFirstActionType.SUBSCRIBED_KINGDOM.index)){
+            	result.setIsFirst(1);
+            	userService.saveUserFistLog(uid, Specification.UserFirstActionType.SUBSCRIBED_KINGDOM.index);
+            }else{
+            	result.setIsFirst(0);
+            }
+            
+            resp  = Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message, result);
         } else if (action == 1) {//取消订阅
             if(null != liveFavorite){
                 liveMybatisDao.deleteLiveFavorite(liveFavorite);

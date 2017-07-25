@@ -68,5 +68,6 @@
 		<!-- <table tableName="app_config" domainObjectName="AppConfig"/> -->
 		<!-- <table tableName="user_rec_init" domainObjectName="UserRecInit"/> -->
 		<!-- <table tableName="user_black_list" domainObjectName="UserBlackList"/> -->
+		<!-- <table tableName="user_first_log" domainObjectName="UserFirstLog"/> -->
     </context>
 </generatorConfiguration>

@@ -151,6 +151,9 @@ public class UserMybatisDao {
     @Autowired
     private UserBlackListMapper userBlackListMapper;
     
+    @Autowired
+    private UserFirstLogMapper userFirstLogMapper;
+    
     /**
      * 保存用户注册信息
      * @param user
@@ -1477,5 +1480,17 @@ public class UserMybatisDao {
     
     public void deleteUserBlackListById(long id){
     	userBlackListMapper.deleteByPrimaryKey(id);
+    }
+    
+    public List<UserFirstLog> getUserFirstLogByUidAndActionType(long uid, int actionType){
+    	UserFirstLogExample example = new UserFirstLogExample();
+    	UserFirstLogExample.Criteria criteria = example.createCriteria();
+    	criteria.andUidEqualTo(uid);
+    	criteria.andActionTypeEqualTo(actionType);
+    	return userFirstLogMapper.selectByExample(example);
+    }
+    
+    public void saveUserFirstLog(UserFirstLog ufl){
+    	userFirstLogMapper.insertSelective(ufl);
     }
 }
