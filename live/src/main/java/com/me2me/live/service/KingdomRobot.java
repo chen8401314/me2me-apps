@@ -42,10 +42,6 @@ public class KingdomRobot {
     private LiveService liveService;
 
 
-    private Lock lock = new ReentrantLock();
-
-
-
     @Data
     public static class ReplyTimes implements BaseEntity{
 
@@ -137,13 +133,11 @@ public class KingdomRobot {
         ES.schedule(new Runnable() {
             @Override
             public void run() {
-                lock.lock();
                 liveService.speak(speakDto);
                 // 指派24小时前任务
                 splitTask(step1,new ReplyTimes(2,3));
                 // 指派24小时候的任务
                 splitTask(step2,new ReplyTimes(1,2));
-                lock.unlock();
             }
         },sleep , TimeUnit.SECONDS);
 

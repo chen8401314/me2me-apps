@@ -6838,9 +6838,16 @@ public class LiveServiceImpl implements LiveService {
 						}
 					}
 					if(isBigRedPack==1){ //中奖了
-						
+						Topic topic = liveMybatisDao.getTopicById(topicId);
+						UserProfile profile= userService.getUserProfileByUid(uid);
 						coins= RandomUtils.nextInt(Integer.parseInt(userService.getAppConfigByKey(Constant.BIG_RED_PACK_MIN_KEY)),
 								Integer.parseInt(userService.getAppConfigByKey(Constant.BIG_RED_PACK_MAX_KEY))+1);
+						TopicNews news = new TopicNews();
+						news.setTopicId(topicId);
+						news.setContent(profile.getNickName()+"在《"+topic.getTitle()+"》获得一个大红包,价值"+coins+"米汤币");
+						news.setType(2);
+						news.setCreateTime(new Date());
+						liveMybatisDao.addTopicNews(news);
 					}
 				}
 			}catch(Exception e){
@@ -7513,7 +7520,7 @@ public class LiveServiceImpl implements LiveService {
 				 createKingdomDto.setCExtra("");
 				 createKingdomDto.setKConfig("");
 				 createKingdomDto.setTags(given.getTags());
-				 createKingdomDto.setSubType(1);
+				 createKingdomDto.setSubType(0);
 				 Topic topic = createSpecialTopic(createKingdomDto);
 				 resp.setTopicId(topic.getId());
 			}
@@ -7543,8 +7550,10 @@ public class LiveServiceImpl implements LiveService {
 		String todayStr = sdf.format(new Date());
 		String yesterDay = CommonUtils.getCalculationDayStr(-1, "yyyy-MM-dd");
 		Map<String, Object> signRecord = liveLocalJdbcDao.getSignRecord(todayStr, uid);
+		int signRecordCountTemp = 0;
 		if (signRecord == null) {
 			dto.setIsSave(0);
+			signRecordCountTemp=1;
 		} else {
 			dto.setIsSave(1);
 		}
@@ -7555,7 +7564,7 @@ public class LiveServiceImpl implements LiveService {
 		}
 		dto.setPosition(signPostion);
 		int signRecordCount = liveLocalJdbcDao.getSignRecordCount(uid);
-		dto.setSerialNumber(signRecordCount + 1);
+		dto.setSerialNumber(signRecordCount + signRecordCountTemp);
 		dto.setSignDate(todayStr);
 		// 判断是否是新注册第一天用户
 		if (todayStr.equals(sdf.format(user.getCreateTime()))) {
