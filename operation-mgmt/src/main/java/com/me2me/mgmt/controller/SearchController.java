@@ -17,6 +17,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.me2me.common.web.Response;
 import com.me2me.mgmt.syslog.SystemControllerLog;
+import com.me2me.mgmt.task.app.PriceChangePushTask;
 import com.me2me.mgmt.task.app.UserRecInitTask;
 import com.me2me.search.dto.RecommendTagDto;
 import com.me2me.search.model.SearchHotKeyword;
@@ -31,6 +32,8 @@ public class SearchController {
 	private  SearchService searchService;
 	@Autowired
 	private UserRecInitTask userRecInitTask;
+	@Autowired
+	private PriceChangePushTask priceChangePushTask;
 	
 	@RequestMapping("/console")
 	public String console(HttpServletRequest request,HttpServletResponse response) throws Exception{
@@ -171,6 +174,13 @@ public class SearchController {
 	@RequestMapping(value = "/runUserRecInitTask")
 	public String runUserRecInitTask(){
 		userRecInitTask.doTask();
+		return "执行完成";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/runPriceChangePushTask")
+	public String runPriceChangePushTask(){
+		priceChangePushTask.doTask();
 		return "执行完成";
 	}
 }

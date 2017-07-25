@@ -72,6 +72,20 @@ var runTask2 = function(){
 		}
 	});
 }
+
+var runTask3 = function(){
+	$("#btnSearch4").attr("disabled",true);
+	$.ajax({
+		url : "${ctx}/search/runPriceChangePushTask",
+		async : false,
+		type : "GET",
+		contentType : "application/json;charset=UTF-8",
+		success : function(resp) {
+			alert(resp);
+			$("#btnSearch4").attr("disabled",false);
+		}
+	});
+}
 </script>
 </head>
 <body>
@@ -121,6 +135,18 @@ var runTask2 = function(){
 								<div class="panel-body">
 									<div class="form-inline" role="form">
 										<input type="button" id="btnSearch3" name="btnSearch3" value="开始执行" onclick="runTask2()" class="btn btn-info" />
+									</div>
+								</div>
+							</section>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-12">
+							<section class="panel">
+								<header class="panel-heading">王国价值升值/贬值推送任务-执行操作</header>
+								<div class="panel-body">
+									<div class="form-inline" role="form">
+										<input type="button" id="btnSearch4" name="btnSearch4" value="开始执行" onclick="runTask3()" class="btn btn-info" />
 									</div>
 								</div>
 							</section>
