@@ -2877,9 +2877,9 @@ public class UserServiceImpl implements UserService {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public Response searchUserPage(String nickName, String mobile, int vLv, int status, String startTime, String endTime, int page, int pageSize){
+    public Response searchUserPage(String nickName, String mobile, int vLv, int status, String startTime, String endTime, long meCode, int page, int pageSize){
     	int start = (page-1)*pageSize;
-    	List<Map<String, Object>> list = userInitJdbcDao.searchUserProfilesByPage(nickName, mobile, vLv, status, startTime, endTime, start, pageSize);
+    	List<Map<String, Object>> list = userInitJdbcDao.searchUserProfilesByPage(nickName, mobile, vLv, status, startTime, endTime, meCode, start, pageSize);
         SearchUserProfileDto dto = new SearchUserProfileDto();
         dto.setTotalRecord(userInitJdbcDao.countUserProfilesByPage(nickName, mobile, vLv, status, startTime, endTime));
         int totalPage = (dto.getTotalRecord() + pageSize - 1) / pageSize;
@@ -2896,6 +2896,7 @@ public class UserServiceImpl implements UserService {
             e.setVlv((Integer)map.get("v_lv"));
             e.setBirthday((String)map.get("birthday"));
             e.setStatus((Integer)map.get("disable_user"));
+            e.setMeCode((Long)map.get("me_number"));
             dto.getResult().add(e);
         }
         return Response.success(dto);
@@ -4665,12 +4666,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Response ObtainRedBag(ObtainRedBagDto obtainRedBagDto) {
-	    String redBag = this.getAppConfigByKey("RED_BAG");
-	    ModifyUserCoinDto modifyUserCoinDto = this.modifyUserCoin(obtainRedBagDto.getUid(),Integer.parseInt(redBag));
-	    obtainRedBagDto.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
-	    obtainRedBagDto.setUpgrade(modifyUserCoinDto.getUpgrade());
-	    obtainRedBagDto.setCue("恭喜你获得"+Integer.parseInt(redBag)+"个米汤币");
-        return Response.success(obtainRedBagDto);
+        List<Map<String,Object>> list = userInitJdbcDao.getRedBag(obtainRedBagDto.getUid()+999999999);
+	    if (list == null || list.size() == 0){
+            String redBag = this.getAppConfigByKey("RED_BAG");
+            ModifyUserCoinDto modifyUserCoinDto = this.modifyUserCoin(obtainRedBagDto.getUid(),Integer.parseInt(redBag));
+            obtainRedBagDto.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
+            obtainRedBagDto.setUpgrade(modifyUserCoinDto.getUpgrade());
+            obtainRedBagDto.setCue("恭喜你获得"+Integer.parseInt(redBag)+"个米汤币");
+            //利用现有逻辑.完成领取红包只能一次
+            userInitJdbcDao.redBagInsert(obtainRedBagDto.getUid()+999999999,Integer.parseInt(redBag));
+            return Response.success(obtainRedBagDto);
+        }else {
+            return Response.failure("已经领过了");
+        }
     }
 
     /**

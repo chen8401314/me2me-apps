@@ -25,6 +25,9 @@ public class AppUserQueryDTO {
 	@Getter
     @Setter
 	private String endTime;
+	@Getter
+    @Setter
+	private String meCode;
 	
 	@Getter
     @Setter

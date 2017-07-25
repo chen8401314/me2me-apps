@@ -2,8 +2,8 @@ package com.me2me.user.dao;
 
 import com.me2me.common.utils.Lists;
 import com.me2me.core.dao.BaseJdbcDao;
-
 import com.me2me.user.rule.CoinRule;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -95,11 +95,11 @@ public class UserInitJdbcDao extends BaseJdbcDao {
         return super.query(sql);
     }
 
-    public List<Map<String, Object>> searchUserProfilesByPage(String nickName, String mobile, int vLv, int status, String startTime, String endTime, int start, int pageSize){
+    public List<Map<String, Object>> searchUserProfilesByPage(String nickName, String mobile, int vLv, int status, String startTime, String endTime, long meCode, int start, int pageSize){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select p.avatar,u.create_time,p.gender,p.mobile,p.nick_name,p.third_part_bind,p.uid,p.v_lv,p.birthday,u.disable_user ");
-    	sb.append("from user u,user_profile p ");
-    	sb.append("where u.uid=p.uid ");
+    	sb.append("select p.avatar,u.create_time,p.gender,p.mobile,p.nick_name,p.third_part_bind,p.uid,p.v_lv,p.birthday,u.disable_user,n.me_number ");
+    	sb.append("from user u,user_profile p,user_no n ");
+    	sb.append("where u.uid=p.uid and u.uid=n.uid ");
     	if(null != nickName && !"".equals(nickName)){
     		sb.append("and p.nick_name like '%").append(nickName).append("%' ");
     	}
@@ -117,6 +117,9 @@ public class UserInitJdbcDao extends BaseJdbcDao {
     	}
     	if(null != endTime && !"".equals(endTime)){
     		sb.append("and u.create_time<='").append(endTime).append("' ");
+    	}
+    	if(meCode > 0){
+    		sb.append("and n.me_number=").append(meCode).append(" ");
     	}
     	sb.append("order by u.create_time desc limit ").append(start).append(",").append(pageSize);
     	String sql = sb.toString();
@@ -319,6 +322,18 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 		String sql = "SELECT id FROM topic WHERE uid != ?  ORDER BY update_time DESC LIMIT 5000";
 		return super.query(sql,uid);
 	}
+
+
+	public void redBagInsert(long uid , int coin){
+			String sql = "insert into rule_log (uid,rule_code,rule_name,coin,ext) values(?,?,?,?,?)";
+			jdbc.update(sql,uid,-1,"红包",coin,uid);
+	}
+
+	public List<Map<String, Object>> getRedBag(long uid) {
+		String sql = "SELECT * from rule_log where uid = ?";
+		return super.query(sql,uid);
+	}
+
 
 
 }
