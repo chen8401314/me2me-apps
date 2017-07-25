@@ -687,7 +687,7 @@ public class LiveForContentJdbcDao {
     	}
     	
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select t.id from topic_tag_detail d,topic t");
+    	sb.append("select t.id,max(t.price) as pri from topic_tag_detail d,topic t");
     	sb.append(" where d.topic_id=t.id and d.status=0");
     	if(null != blacklistUids && blacklistUids.size() > 0){
     		sb.append(" and t.uid not in (");
@@ -706,7 +706,7 @@ public class LiveForContentJdbcDao {
     		}
     		sb.append(tagIds.get(i).toString());
     	}
-    	sb.append(") order by t.price desc,t.id DESC");
+    	sb.append(") group by t.id order by pri desc,t.id DESC");
     	sb.append(" limit ").append(start).append(",").append(pageSize);
     	
     	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
@@ -759,7 +759,7 @@ public class LiveForContentJdbcDao {
     	}
     	
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select t.id from topic_tag_detail d,topic t,topic_data td");
+    	sb.append("select t.id,max(td.last_price_incr) as pri from topic_tag_detail d,topic t,topic_data td");
     	sb.append(" where d.topic_id=t.id and t.id=td.topic_id");
     	sb.append(" and d.status=0");
     	if(null != blacklistUids && blacklistUids.size() > 0){
@@ -779,7 +779,7 @@ public class LiveForContentJdbcDao {
     		}
     		sb.append(tagIds.get(i).toString());
     	}
-    	sb.append(") order by td.last_price_incr desc,t.id desc");
+    	sb.append(") group by t.id order by pri desc,t.id desc");
     	sb.append(" limit ").append(start).append(",").append(pageSize);
     	
     	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());

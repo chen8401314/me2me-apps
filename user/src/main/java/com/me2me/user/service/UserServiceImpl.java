@@ -4737,4 +4737,23 @@ public class UserServiceImpl implements UserService {
 	public User getUserByUid(long uid) {
 		return userMybatisDao.getUserByUid(uid);
 	}
+	
+	@Override
+	public boolean isUserFirst(long uid, int actionType){
+		boolean result = true;
+		List<UserFirstLog> list = userMybatisDao.getUserFirstLogByUidAndActionType(uid, actionType);
+		if(null != list && list.size() > 0){
+			result = false;
+		}
+		return result;
+	}
+	
+	@Override
+	public void saveUserFistLog(long uid, int actionType){
+		UserFirstLog ufl = new UserFirstLog();
+		ufl.setUid(uid);
+		ufl.setActionType(actionType);
+		ufl.setCreateTime(new Date());
+		userMybatisDao.saveUserFirstLog(ufl);
+	}
 }
