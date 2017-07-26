@@ -7552,10 +7552,10 @@ public class LiveServiceImpl implements LiveService {
 		List<Map<String, Object>> signRecordList = liveLocalJdbcDao.getSignRecordList(todayStr, uid);
 		int signRecordCountTemp = 0;
 		if (signRecordList.size() >0) {
+			dto.setIsSave(1);
+		} else {
 			dto.setIsSave(0);
 			signRecordCountTemp=1;
-		} else {
-			dto.setIsSave(1);
 		}
 		int signPostion = 3;
 		String signPostionStr = userService.getAppConfigByKey("SIGN_POSITION");
