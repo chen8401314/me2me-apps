@@ -576,10 +576,11 @@ public interface UserService {
 	 * @return
 	 */
 	boolean isUserFirst(long uid, int actionType);
-	
+
 	/**
 	 * 保存第一次记录
-	 * @param ufl
+	 * @param uid
+	 * @param actionType
 	 */
 	void saveUserFistLog(long uid, int actionType);
 }
