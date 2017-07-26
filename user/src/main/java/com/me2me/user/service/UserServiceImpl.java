@@ -339,6 +339,8 @@ public class UserServiceImpl implements UserService {
         userProfile.setCreateTime(new Date());
         userProfile.setUpdateTime(new Date());
         userProfile.setPlatform(userSignUpDto.getPlatform());
+        userProfile.setChannel(userSignUpDto.getChannel());
+        userProfile.setRegisterVersion(userSignUpDto.getRegisterVersion());
         List<UserAccountBindStatusDto> array = Lists.newArrayList();
         // 添加手机绑定
         array.add(new UserAccountBindStatusDto(Specification.ThirdPartType.MOBILE.index,Specification.ThirdPartType.MOBILE.name,1));
