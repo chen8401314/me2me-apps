@@ -1908,6 +1908,10 @@ public class LiveMybatisDao {
 	    return  quotationInfoMapper.getQuotationInfo();
     }
 
+    public List<QuotationInfo> getQuotationInfoByList(int limit){
+        return  quotationInfoMapper.selectListQuotationInfo(limit);
+    }
+
 	public int getUnActivedKingdomCount(long uid) {
 		TopicGivenExample example = new TopicGivenExample();
 		example.createCriteria().andUidEqualTo((int)uid);

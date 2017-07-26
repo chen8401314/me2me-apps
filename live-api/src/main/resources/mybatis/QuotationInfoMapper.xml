@@ -274,4 +274,9 @@
   <select id="getQuotationInfo" resultMap="BaseResultMap">
     select * from quotation_info ORDER BY RAND() limit 1
   </select>
+
+  <select id="selectListQuotationInfo" resultMap="BaseResultMap" parameterType="int">
+    select * from quotation_info ORDER BY RAND() limit #{limit}
+  </select>
+
 </mapper>

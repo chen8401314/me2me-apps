@@ -8019,6 +8019,11 @@ public class LiveServiceImpl implements LiveService {
     }
 
     @Override
+    public List<QuotationInfo> selectQuotationByList(int limit) {
+        return liveMybatisDao.getQuotationInfoByList(limit);
+    }
+
+    @Override
     public Response userKingdomInfo(long uid){
     	UserKingdomInfoDTO result = new UserKingdomInfoDTO();
     	result.setValidKingdomCount(liveMybatisDao.getUserTopicCount(uid));
