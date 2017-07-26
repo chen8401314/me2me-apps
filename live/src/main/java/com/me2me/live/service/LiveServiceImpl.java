@@ -7481,11 +7481,11 @@ public class LiveServiceImpl implements LiveService {
 		String cacheState = cacheService.get(activeKey);
 		if("ACTIVE".equals(action)){
 			TopicGiven given= liveMybatisDao.getGivenKingomdById(givenKingdomId);
-			if(given.getSubType()!=null && given.getSubType()==2){	//情绪王国,如果存在就更新为激活指定的信息。
+			if(given.getSubType()!=null && given.getSubType()==1){	//情绪王国,如果存在就更新为激活指定的信息。
 				Topic topic = this.liveMybatisDao.getEmotionTopic(uid);
 				if(topic!=null){
 					topic.setTitle(given.getTitle());
-					topic.setLiveImage(given.getCover());
+					topic.setLiveImage(Constant.QINIU_DOMAIN + "/" + given.getCover());
 					topic.setSummary(given.getSummary());
 					this.liveMybatisDao.updateTopic(topic);
 	        		this.addTopicTag(topic.getId(),topic.getUid(),given.getTags());
@@ -7511,7 +7511,7 @@ public class LiveServiceImpl implements LiveService {
 				CreateKingdomDto createKingdomDto  = new CreateKingdomDto();
 				 createKingdomDto.setUid(uid);
 				 createKingdomDto.setTitle(given.getTitle());
-				 createKingdomDto.setLiveImage(given.getCover());
+				 createKingdomDto.setLiveImage(Constant.QINIU_DOMAIN + "/" +given.getCover());
 				 createKingdomDto.setContentType(0);
 				 createKingdomDto.setFragment(given.getSummary());
 				 createKingdomDto.setSource(0);
