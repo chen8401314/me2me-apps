@@ -28,6 +28,8 @@ public class ShowHotListDTO implements BaseEntity {
 	
 	private String bubblePositions;
 	
+	private int openPushPositions;
+	
 	@Data
 	public static class HotTagElement implements BaseEntity{
 		private static final long serialVersionUID = -1636362714045596434L;

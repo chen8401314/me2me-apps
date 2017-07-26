@@ -50,6 +50,8 @@ public class Constant {
 	public static final String DROPAROUND_PRICE_MIN_KEY = "DROPAROUND_PRICE_MIN";
 
 	public static final String HOTLIST_BUBBLE_POSITION_KEY = "HOTLIST_BUBBLE_POSITION";
+	
+	public static final String OPEN_PUSH_POSITION = "OPEN_PUSH_POSITION";
  
     
 }

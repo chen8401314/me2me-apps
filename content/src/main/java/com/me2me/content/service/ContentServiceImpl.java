@@ -3532,6 +3532,13 @@ public class ContentServiceImpl implements ContentService {
         String bubblePositions=userService.getAppConfigByKey(Constant.HOTLIST_BUBBLE_POSITION_KEY);
         result.setBubblePositions(bubblePositions);	// 提示消息
         
+        int openPushPositions=0;
+        String openPushPositionsStr = userService.getAppConfigByKey(Constant.OPEN_PUSH_POSITION);
+        if(!StringUtils.isEmpty(openPushPositionsStr)){
+        	openPushPositions = Integer.parseInt(openPushPositionsStr);
+        }
+        result.setOpenPushPositions(openPushPositions);	// 提示消息
+        
         List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
         List<ActivityWithBLOBs> activityList = null;
         List<UserFamous> userFamousList = null;
