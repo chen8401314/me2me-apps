@@ -4677,7 +4677,7 @@ public class UserServiceImpl implements UserService {
             userInitJdbcDao.redBagInsert(obtainRedBagDto.getUid()+999999999,Integer.parseInt(redBag));
             return Response.success(obtainRedBagDto);
         }else {
-            return Response.failure("已经领过了");
+            return Response.failure(ResponseStatus.ERR_RED_BAG.status,ResponseStatus.ERR_RED_BAG.message);
         }
     }
 

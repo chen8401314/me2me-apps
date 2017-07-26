@@ -468,7 +468,8 @@ public enum  ResponseStatus {
     
 	ERR_STEAL_MAX_LIMIT("该王国已经达到偷取上限","cannot steal this kingdom.",50069),
     
-    
+    //完善个人资料领取红包
+    ERR_RED_BAG("不能重复领取","Cannot receive again.",50070),
     
     ILLEGAL_REQUEST("非法的请求参数","illegal request",50099);
 
