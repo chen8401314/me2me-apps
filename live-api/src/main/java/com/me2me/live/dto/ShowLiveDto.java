@@ -81,6 +81,7 @@ public class ShowLiveDto implements BaseEntity {
     private int isSteal;//偷取状态 0 不可偷取 1可偷取 2已偷过
     
     
+    private int isFirstView =0;	//1 第一次访问，0 正常状态。
     @Data
     public static class TopicElement implements BaseEntity{
 		private static final long serialVersionUID = 986248317266706695L;

@@ -89,8 +89,7 @@ public class LiveCoverDto implements BaseEntity{
     
     //跑马灯信息列表
     private List<TopicNewsElement> newsTopList = Lists.newArrayList();
-    
-    private int isFirstView =0;	//1 第一次访问，0 正常状态。
+
     @Data
     public static class TopicElement implements BaseEntity{
 		private static final long serialVersionUID = 1465887396904072679L;
