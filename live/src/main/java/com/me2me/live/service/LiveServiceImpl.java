@@ -2807,7 +2807,7 @@ public class LiveServiceImpl implements LiveService {
         	gk.setGivenKingdomId(given.getId());
         	gk.setTitle(given.getTitle());
         	gk.setSummary(given.getSummary());
-        	gk.setCoverImage(given.getCover());
+        	gk.setCoverImage(Constant.QINIU_DOMAIN + "/" +given.getCover());
         	gk.setCreateTime(given.getCreateTime());
         	gk.setUid(given.getUid());
         	gk.setTags(given.getTags());
@@ -7485,7 +7485,7 @@ public class LiveServiceImpl implements LiveService {
 				Topic topic = this.liveMybatisDao.getEmotionTopic(uid);
 				if(topic!=null){
 					topic.setTitle(given.getTitle());
-					topic.setLiveImage(Constant.QINIU_DOMAIN + "/" + given.getCover());
+					topic.setLiveImage(given.getCover());
 					topic.setSummary(given.getSummary());
 					this.liveMybatisDao.updateTopic(topic);
 	        		this.addTopicTag(topic.getId(),topic.getUid(),given.getTags());
@@ -7511,7 +7511,7 @@ public class LiveServiceImpl implements LiveService {
 				CreateKingdomDto createKingdomDto  = new CreateKingdomDto();
 				 createKingdomDto.setUid(uid);
 				 createKingdomDto.setTitle(given.getTitle());
-				 createKingdomDto.setLiveImage(Constant.QINIU_DOMAIN + "/" +given.getCover());
+				 createKingdomDto.setLiveImage(given.getCover());
 				 createKingdomDto.setContentType(0);
 				 createKingdomDto.setFragment(given.getSummary());
 				 createKingdomDto.setSource(0);
