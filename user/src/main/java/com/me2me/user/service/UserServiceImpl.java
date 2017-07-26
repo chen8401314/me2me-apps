@@ -339,6 +339,8 @@ public class UserServiceImpl implements UserService {
         userProfile.setCreateTime(new Date());
         userProfile.setUpdateTime(new Date());
         userProfile.setPlatform(userSignUpDto.getPlatform());
+        userProfile.setChannel(userSignUpDto.getChannel());
+        userProfile.setRegisterVersion(userSignUpDto.getRegisterVersion());
         List<UserAccountBindStatusDto> array = Lists.newArrayList();
         // 添加手机绑定
         array.add(new UserAccountBindStatusDto(Specification.ThirdPartType.MOBILE.index,Specification.ThirdPartType.MOBILE.name,1));
@@ -4677,7 +4679,7 @@ public class UserServiceImpl implements UserService {
             userInitJdbcDao.redBagInsert(obtainRedBagDto.getUid()+999999999,Integer.parseInt(redBag));
             return Response.success(obtainRedBagDto);
         }else {
-            return Response.failure("已经领过了");
+            return Response.failure(ResponseStatus.ERR_RED_BAG.status,ResponseStatus.ERR_RED_BAG.message);
         }
     }
 

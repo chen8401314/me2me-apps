@@ -313,11 +313,8 @@ public class LiveServiceImpl implements LiveService {
     public Response liveCover(long topicId, long uid, int vflag, int source) {
         log.info("liveCover start ...");
         LiveCoverDto liveCoverDto = new LiveCoverDto();
-        String viewKey = "USER_VIEW_KINGDOM_"+uid+"_"+topicId;
-        if(cacheService.get(viewKey)==null){
-        	cacheService.set(viewKey, "1");
-        	liveCoverDto.setIsFirstView(1);
-        }
+        String KINGDOM_VIEW_KEY = "USER_VIEW_KINGDOM_"+uid+"_"+topicId;
+        cacheService.set(KINGDOM_VIEW_KEY, "1");
         Topic topic = liveMybatisDao.getTopicById(topicId);
         if(topic==null){
             return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
@@ -603,6 +600,9 @@ public class LiveServiceImpl implements LiveService {
         if(topic==null){
             return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
         }
+        String KINGDOM_VIEW_KEY = "USER_VIEW_KINGDOM_"+uid+"_"+topic.getId();
+        String visited =  cacheService.get(KINGDOM_VIEW_KEY);
+        showLiveDto.setIsFirstView(visited==null?1:0);
         
         //特殊王国处理，对于给定的王国，如果非国王或核心圈则无法进入
         String specialTopicIds = userService.getAppConfigByKey("SPECIAL_KINGDOM_IDS");
@@ -2807,7 +2807,7 @@ public class LiveServiceImpl implements LiveService {
         	gk.setGivenKingdomId(given.getId());
         	gk.setTitle(given.getTitle());
         	gk.setSummary(given.getSummary());
-        	gk.setCoverImage(given.getCover());
+        	gk.setCoverImage(Constant.QINIU_DOMAIN + "/" +given.getCover());
         	gk.setCreateTime(given.getCreateTime());
         	gk.setUid(given.getUid());
         	gk.setTags(given.getTags());
@@ -7481,7 +7481,7 @@ public class LiveServiceImpl implements LiveService {
 		String cacheState = cacheService.get(activeKey);
 		if("ACTIVE".equals(action)){
 			TopicGiven given= liveMybatisDao.getGivenKingomdById(givenKingdomId);
-			if(given.getSubType()!=null && given.getSubType()==2){	//情绪王国,如果存在就更新为激活指定的信息。
+			if(given.getSubType()!=null && given.getSubType()==1){	//情绪王国,如果存在就更新为激活指定的信息。
 				Topic topic = this.liveMybatisDao.getEmotionTopic(uid);
 				if(topic!=null){
 					topic.setTitle(given.getTitle());
