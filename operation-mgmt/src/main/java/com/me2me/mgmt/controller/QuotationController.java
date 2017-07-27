@@ -28,6 +28,7 @@ import com.me2me.live.dto.SearchQuotationListDto;
 import com.me2me.live.dto.SearchRobotListDto;
 import com.me2me.live.model.QuotationInfo;
 import com.me2me.live.service.LiveService;
+import com.me2me.mgmt.task.app.QuotationDaySignTask;
 import com.me2me.mgmt.vo.DatatablePage;
 
 
@@ -43,6 +44,8 @@ public class QuotationController {
 	@Autowired
     private CacheService cacheService;
 	
+	@Autowired
+	private QuotationDaySignTask quotationDaySignTask;
 	@Autowired
     private ContentService contentService;
 	@RequestMapping(value = "/robotList")
@@ -226,4 +229,10 @@ public class QuotationController {
         out.flush();  
         out.close();  
     } 
+	@ResponseBody
+	@RequestMapping(value = "/runSignQuotationPushTask")
+	public String runSignQuotationPushTask(){
+		quotationDaySignTask.doTask();
+		return "执行完成";
+	}
 }
