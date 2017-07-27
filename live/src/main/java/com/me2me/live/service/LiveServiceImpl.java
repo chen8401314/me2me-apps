@@ -2811,7 +2811,7 @@ public class LiveServiceImpl implements LiveService {
         	gk.setCreateTime(given.getCreateTime());
         	gk.setUid(given.getUid());
         	gk.setTags(given.getTags());
-        	gk.setAvatar(myProfile.getAvatar());
+        	gk.setAvatar(Constant.QINIU_DOMAIN+"/"+myProfile.getAvatar());
         	gk.setNickName(myProfile.getNickName());
         	gk.setV_lv(myProfile.getvLv());
         	gk.setLevel(myProfile.getLevel());
