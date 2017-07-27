@@ -4512,7 +4512,9 @@ public class UserServiceImpl implements UserService {
         }
         Integer  i = myLevelDto.getAvailableCoin();
         Double d = i.doubleValue();
-        myLevelDto.setPriceRMB(d/Integer.parseInt(exchangeRate));
+        BigDecimal bg = new BigDecimal(d/Integer.parseInt(exchangeRate));
+        double RMB = bg.setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue();
+        myLevelDto.setPriceRMB(RMB);
         return Response.success(myLevelDto);
     }
 
