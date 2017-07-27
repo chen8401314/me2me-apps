@@ -1,9 +1,12 @@
 package com.me2me.mgmt.controller;
 
+import java.io.InputStream;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,10 +15,13 @@ import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.page.PageBean;
+import com.me2me.common.utils.ImportExcelUtil;
 import com.me2me.common.web.Response;
 import com.me2me.content.service.ContentService;
 import com.me2me.live.dto.SearchQuotationListDto;
@@ -179,4 +185,45 @@ public class QuotationController {
 			return null;
 		}
 	}
+    /** 
+     * 描述：通过 jquery.form.js 插件提供的ajax方式上传文件 
+     * @param request 
+     * @param response 
+     * @throws Exception 
+     */  
+    @RequestMapping(value="/importExcel")  
+    @ResponseBody  
+    public  void  importExcel(MultipartHttpServletRequest request,HttpServletResponse response) throws Exception {  
+        InputStream in =null;  
+        List<List<Object>> listob = null;  
+        MultipartFile file = request.getFile("upfile");  
+        if(file.isEmpty()){  
+            throw new Exception("文件不存在！");  
+        }  
+          
+        in = file.getInputStream();  
+        listob = new ImportExcelUtil().getBankListByExcel(in,file.getOriginalFilename());  
+          
+        //该处可调用service相应方法进行数据保存到数据库中，现只对数据输出  
+        for (int i = 1; i < listob.size(); i++) {  
+            List<Object> lo = listob.get(i);  
+              if(StringUtils.isEmpty(String.valueOf(lo.get(0)))){
+            	  break;
+              }
+              try{
+              QuotationInfo quotationInfo = new QuotationInfo();
+              quotationInfo.setQuotation(String.valueOf(lo.get(0)));
+              quotationInfo.setType(Integer.parseInt(String.valueOf(lo.get(1))));
+              liveService.saveQuotationInfo(quotationInfo);
+              }catch(Exception e){
+            	  continue;
+              }
+        }  
+        PrintWriter out = null;  
+        response.setCharacterEncoding("utf-8");  //防止ajax接受到的中文信息乱码  
+        out = response.getWriter();  
+        out.print("文件导入成功！");  
+        out.flush();  
+        out.close();  
+    } 
 }

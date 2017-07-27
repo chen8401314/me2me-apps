@@ -556,7 +556,7 @@
     t.id in(
 		select DISTINCT topic_id from topic_tag_detail dt where dt.status=0 and dt.tag_id in(
 			select tag_id from topic_tag_detail where topic_id=#{sourceTopicId} and status=0
-			UNION
+			UNION all
 			select id from topic_tag c where c.pid in(select tag_id from topic_tag_detail where topic_id=#{sourceTopicId} and status=0) 
 		)
 	) 
@@ -569,7 +569,7 @@
       and t.id NOT IN (${set})
     </if>
     AND NOT FIND_IN_SET(#{uid},SUBSTR(t.core_circle ,2, LENGTH(t.core_circle)-2))
-    order by update_time DESC
+    order by t.update_time DESC
     limit 1;
   </select>
   <select id="getMyLivesByUpdateTimeNew" parameterType="java.util.Map" resultMap="BaseResultMap2">

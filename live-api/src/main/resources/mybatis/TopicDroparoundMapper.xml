@@ -261,11 +261,11 @@
     <if test="set != ''">
     where topicId not in (${set})
     </if>
-    ORDER BY RAND() LIMIT 1) m
+    ) m
     WHERE t.id=m.topicId
     AND t.uid != #{uid}
-    and t.price>#{minPrice}
-    AND NOT FIND_IN_SET(#{uid},SUBSTR(t.core_circle ,2, LENGTH(t.core_circle)-2));
+    AND NOT FIND_IN_SET(#{uid},SUBSTR(t.core_circle ,2, LENGTH(t.core_circle)-2))
+    ORDER BY RAND() LIMIT 1
   </select>
   <select id="getDropAroundKingdomPage" resultType="com.me2me.live.dto.SearchDropAroundTopicDto">
   	select da.id,tp.uid,tp.title,da.topicId,up.nick_name as nickName,up.v_lv as vLv

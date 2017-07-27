@@ -69,10 +69,21 @@
 							</header>
 							<div class="panel-body">
 								<div>
+									<form id="form1"  method="POST"  enctype="multipart/form-data" action="./importExcel">
 									<a class="btn btn-primary" href="javascript:addQuotation()">
 										<i  class=" fa fa-plus "></i>
 										添加语录
 									</a>
+								
+									<input id="upfile" type="file" name="upfile" style="display:none">
+								
+									<a class="btn btn-danger" href="javascript:importExcel()">
+										<i  class=" fa fa-plus "></i>
+										批量导入
+									</a>
+									&nbsp;<a href="${ctx}/assets/excel/quotationModel.xlsx">导入模版下载</a>
+									
+										</form>
 								</div>
 								<br>
 								<div class="adv-table">
@@ -143,6 +154,7 @@
 	<script src="${ctx}/js/form-component.js"></script>
 	<script src="${ctx}/js/common-scripts.js"></script>
 	<script src="${ctx}/js/advanced-form-components.js"></script>	
+	<script src="${ctx}/js/jquery-form.js"></script>
 	<script type="text/javascript" src="${ctx}/js/DataTables-1.10.11/media/js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" src="${ctx}/assets/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
 		<script type="text/javascript">
@@ -396,6 +408,41 @@
 		  $("#quotation").val('');
 		  $("#type").val(0);
    });
+    function importExcel(){
+    	$("#upfile").click();
+    }
+       
+     //JS校验form表单信息  
+     function checkData(){  
+        var fileDir = $("#upfile").val();  
+        var suffix = fileDir.substr(fileDir.lastIndexOf("."));  
+        if("" == fileDir){  
+            alert("选择需要导入的Excel文件！");  
+            return false;  
+        }  
+        if(".xls" != suffix && ".xlsx" != suffix ){  
+            alert("选择Excel格式的文件导入！");  
+            return false;  
+        }  
+        return true;  
+     }
+     $("#upfile").change(function(){  
+    	 if(checkData()){ 
+             $('#form1').ajaxSubmit({    
+                 url:ctx+"/quotation/importExcel",  
+                 dataType: 'text',  
+                 success: resutlMsg,  
+                 error: errorMsg  
+             });   
+             function resutlMsg(msg){
+            	 sourceTable.ajax.reload();
+                 alert(msg);     
+             }  
+             function errorMsg(){   
+                 alert("导入excel出错！");      
+             }  
+         } 
+     }); 
 	</script>
 </body>
 </html>
