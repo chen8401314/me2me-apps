@@ -1108,7 +1108,13 @@ public class LiveMybatisDao {
         }
         return topicAggregationApplyMapper.selectByExample(example);
     }
-
+    /**
+     * 随机获取一条运营指定的可串门王国。
+     * @author zhangjiwei
+     * @date Jul 27, 2017
+     * @param map
+     * @return
+     */
     public TopicDroparound getRandomDropaRound(Map<String ,Object> map){
         TopicDroparound topicDroparound = topicDroparoundMapper.getRandomDropaRound(map);
         return topicDroparound;
