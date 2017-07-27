@@ -110,7 +110,6 @@ public class Users extends BaseController {
         userSignUpDto.setChannel(request.getChannel());
         userSignUpDto.setRegisterVersion(request.getVersion());
         userSignUpDto.setParams(request.getParams());
-        userSignUpDto.setRegisterVersion(request.getVersion());
         userSignUpDto.setVerifyCode(request.getVerifyCode());
         return userService.signUpByVerify(userSignUpDto);
     }
