@@ -567,7 +567,14 @@ public interface UserService {
 	 * @param obtainRedBagDto
 	 * @return
 	 */
-	Response ObtainRedBag(ObtainRedBagDto obtainRedBagDto);
+	Response obtainRedBag(ObtainRedBagDto obtainRedBagDto);
+
+	/**
+	 * 是否领取红包接口
+	 * @param isObtainRedBag
+	 * @return
+	 */
+	Response isObtainRedBag(IsObtainRedBag isObtainRedBag);
 	
 	/**
 	 * 是否第一次

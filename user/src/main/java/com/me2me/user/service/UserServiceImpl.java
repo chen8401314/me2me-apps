@@ -4667,7 +4667,7 @@ public class UserServiceImpl implements UserService {
 	}
 
     @Override
-    public Response ObtainRedBag(ObtainRedBagDto obtainRedBagDto) {
+    public Response obtainRedBag(ObtainRedBagDto obtainRedBagDto) {
         List<Map<String,Object>> list = userInitJdbcDao.getRedBag(obtainRedBagDto.getUid()+999999999);
 	    if (list == null || list.size() == 0){
             String redBag = this.getAppConfigByKey("RED_BAG");
@@ -4680,6 +4680,19 @@ public class UserServiceImpl implements UserService {
             return Response.success(obtainRedBagDto);
         }else {
             return Response.failure(ResponseStatus.ERR_RED_BAG.status,ResponseStatus.ERR_RED_BAG.message);
+        }
+    }
+
+
+    @Override
+    public Response isObtainRedBag(IsObtainRedBag isObtainRedBag) {
+        List<Map<String,Object>> list = userInitJdbcDao.getRedBag(isObtainRedBag.getUid()+999999999);
+        if (list == null || list.size() == 0){
+            isObtainRedBag.setIsObtainRedBag(0);
+            return  Response.success(isObtainRedBag);
+        }else {
+            isObtainRedBag.setIsObtainRedBag(1);
+            return Response.success(isObtainRedBag);
         }
     }
 
