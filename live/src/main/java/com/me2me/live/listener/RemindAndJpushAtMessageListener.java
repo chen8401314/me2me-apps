@@ -99,6 +99,8 @@ public class RemindAndJpushAtMessageListener {
             jsonObject.addProperty("type",Specification.PushObjectType.LIVE.index);
             jsonObject.addProperty("internalStatus", this.getInternalStatus(topic, atUid));
             jsonObject.addProperty("fromInternalStatus", fromStatus);
+            jsonObject.addProperty("AtUid",speakDto.getUid());//@发起方的uid
+            jsonObject.addProperty("NickName",userProfile.getNickName());//@发起方的昵称
             userService.pushWithExtra(atUid.toString(), message, JPushUtils.packageExtra(jsonObject));
         }
         log.info("remindAndPush end");
