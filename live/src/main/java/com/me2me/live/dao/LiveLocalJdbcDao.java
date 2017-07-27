@@ -1002,16 +1002,16 @@ public class LiveLocalJdbcDao {
 		return list;
 	}
 	/**
-	 * 获取用户当天获得金币总数量，包含操作得币和偷取得币。
+	 * 获取用户当天获得金币总数量，包含操作得币和偷取得币，大红包不计入。
 	 * @author zhangjiwei
 	 * @date Jun 21, 2017
 	 * @param uid
 	 * @param day
 	 * @return
 	 */
-	public int getUserConinsByDay(long uid,String day) {
+	public int getUserCoinsByDay(long uid,String day) {
 		String sql="select sum(coins) from("+
-			" select sum(stealed_coins) coins from user_steal_log  where uid=? and DATE_FORMAT(create_time,'%Y-%m-%d')=?"+
+			" select sum(stealed_coins) coins from user_steal_log  where uid=? and ( is_big_red_pack=0 or is_big_red_pack is null) and DATE_FORMAT(create_time,'%Y-%m-%d')=?"+
 			" UNION"+
 			" select sum(coin) coins from rule_log  where uid=? and DATE_FORMAT(create_time,'%Y-%m-%d')=?"+
 			") c";
