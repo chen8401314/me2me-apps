@@ -1104,9 +1104,24 @@ public class Users extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "/obtainRedBag",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response ObtainRedBag(ObtainRedBagRequest obtainRedBagRequest){
+    public Response obtainRedBag(ObtainRedBagRequest obtainRedBagRequest){
         ObtainRedBagDto obtainRedBagDto = new ObtainRedBagDto();
         obtainRedBagDto.setUid(obtainRedBagRequest.getUid());
-        return userService.ObtainRedBag(obtainRedBagDto);
+        return userService.obtainRedBag(obtainRedBagDto);
     }
+
+    /**
+     * 是否领取过补全信息红包
+     * @param obtainRedBagRequest
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/isObtainRedBag",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    public Response isObtainRedBag(ObtainRedBagRequest obtainRedBagRequest){
+        IsObtainRedBag isObtainRedBag =  new IsObtainRedBag();
+        isObtainRedBag.setUid(obtainRedBagRequest.getUid());
+        return userService.isObtainRedBag(isObtainRedBag);
+    }
+
+
 }
