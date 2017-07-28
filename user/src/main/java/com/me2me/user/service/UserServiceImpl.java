@@ -2638,6 +2638,9 @@ public class UserServiceImpl implements UserService {
         //不管你爽不爽，就是要卖你3个王国
         give3Kingdoms(userProfile);
 
+        //新用户注册放入cach,机器人自动回复用
+        String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+user.getUid().toString();
+        cacheService.setex(key,user.getUid().toString(),7*24*60*60);
     }
 
     //第三方绑定方法
