@@ -86,7 +86,6 @@ public class UserServiceImpl implements UserService {
     private Map<Integer,CoinRule> coinRules = Maps.newConcurrentMap();
 
     @PostConstruct
-    @Autowired
     public void init(){
         coinRules.put(Rules.SPEAK_KEY,new CoinRule(Rules.SPEAK_KEY,"发言",Integer.valueOf(getAppConfigByKey("SPEAK_KEY")),true));
         coinRules.put(Rules.PUBLISH_UGC_KEY,new CoinRule(Rules.PUBLISH_UGC_KEY,"发布UGC",Integer.valueOf(getAppConfigByKey("PUBLISH_UGC_KEY")),true));
@@ -1612,7 +1611,7 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setAvailableCoin(userProfile.getAvailableCoin());
         showUserProfileDto.setLevel(userProfile.getLevel());
         String value = getAppConfigByKey(USER_PERMISSIONS);
-        log.info("infos: " + value);
+//        log.info("infos: " + value);
         UserPermissionDto userPermissionDto = JSON.parseObject(value, UserPermissionDto.class);
         for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
             if(userProfile.getLevel()==userLevelDto.getLevel()){
