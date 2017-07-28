@@ -1908,7 +1908,7 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
             showTopicElement.setTitle(topic.getTitle());
             userProfile = profileMap.get(String.valueOf(topic.getUid()));
-            showTopicElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            showTopicElement.setAvatar(this.genAvatar(userProfile.getAvatar()));
             showTopicElement.setNickName(userProfile.getNickName());
             /*int lastLevel =(Integer) liveLocalJdbcDao.getlastUser(topic.getId()).get("level");
             showTopicElement.setLevel(lastLevel);*/
@@ -1964,7 +1964,7 @@ public class LiveServiceImpl implements LiveService {
                 lastUserProfile = profileMap.get(String.valueOf(lastFragment.get("uid")));
                 if(null != lastUserProfile){
                     showTopicElement.setLastNickName(lastUserProfile.getNickName());
-                    showTopicElement.setLastAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
+                    showTopicElement.setLastAvatar(this.genAvatar(lastUserProfile.getAvatar()));
                     showTopicElement.setLastV_lv(lastUserProfile.getvLv());
                     showTopicElement.setLevel(lastUserProfile.getLevel());
                 }
@@ -2828,7 +2828,7 @@ public class LiveServiceImpl implements LiveService {
         	gk.setCreateTime(given.getCreateTime());
         	gk.setUid(given.getUid());
         	gk.setTags(given.getTags());
-        	gk.setAvatar(Constant.QINIU_DOMAIN+"/"+myProfile.getAvatar());
+        	gk.setAvatar(genAvatar(myProfile.getAvatar()));
         	gk.setNickName(myProfile.getNickName());
         	gk.setV_lv(myProfile.getvLv());
         	gk.setLevel(myProfile.getLevel());
@@ -2837,6 +2837,13 @@ public class LiveServiceImpl implements LiveService {
         }
         
         return Response.success(ResponseStatus.GET_MY_LIVE_SUCCESS.status, ResponseStatus.GET_MY_LIVE_SUCCESS.message, showTopicListDto);
+    }
+    
+    private String genAvatar(String avatar){
+    	if(StringUtils.isEmpty(avatar)){
+    		avatar = Constant.DEFAULT_AVATAR;
+    	}
+    	return Constant.QINIU_DOMAIN+"/"+avatar;
     }
 
     @Override
