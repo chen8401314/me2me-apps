@@ -4639,13 +4639,6 @@ public class UserServiceImpl implements UserService {
 	}
 
 
-   /* public static void main(String[] args) {
-        String str="";
-        for(int i=0;i<5;i++){//你想生成几个字符的，就把3改成几，如果改成１,那就生成一个随机字母．
-            str= str+(char) (Math.random ()*26+'A');
-        }
-        System.out.println("str" +str);
-    }*/
     
 	@Override
 	public boolean isBlacklist(long uid, long targetUid){
