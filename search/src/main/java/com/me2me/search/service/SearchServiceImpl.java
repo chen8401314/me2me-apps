@@ -1542,7 +1542,14 @@ public class SearchServiceImpl implements SearchService {
 			}
 		}
 		
-		return result;
+		List<RecommendUser> returnList = new ArrayList<RecommendUser>();
+		if(null != result && result.size() > 0){
+			for(RecommendUser ru : result){
+				returnList.add(ru);
+			}
+		}
+		
+		return returnList;
 	}
 	
 	private void builderUsreList(List<Long> result, List<Long> srcList, List<Long> noUidList){
