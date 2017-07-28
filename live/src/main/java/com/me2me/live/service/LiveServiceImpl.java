@@ -7658,6 +7658,8 @@ public class LiveServiceImpl implements LiveService {
 						if (dto.getStatus() != 3) {
 							return Response.failure(500, "没有日签数据！");
 						}
+					}else{
+						return Response.failure(500, "没有日签数据！");
 					}
 				}
 			} else {
