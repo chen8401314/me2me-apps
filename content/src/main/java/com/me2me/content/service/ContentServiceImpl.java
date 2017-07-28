@@ -20,6 +20,7 @@ import java.util.concurrent.Executors;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
+import com.me2me.core.KeysManager;
 import com.me2me.core.dao.BaseJdbcDao;
 import com.me2me.user.dto.*;
 import com.me2me.user.rule.Rules;
@@ -3529,8 +3530,12 @@ public class ContentServiceImpl implements ContentService {
         }
 
         ShowHotListDTO result = new ShowHotListDTO();
-        String bubblePositions=userService.getAppConfigByKey(Constant.HOTLIST_BUBBLE_POSITION_KEY);
-        result.setBubblePositions(bubblePositions);	// 提示消息
+        
+        String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+uid;
+        if(!StringUtils.isEmpty(cacheService.get(key))){
+        	String bubblePositions=userService.getAppConfigByKey(Constant.HOTLIST_BUBBLE_POSITION_KEY);
+            result.setBubblePositions(bubblePositions);	// 提示消息
+        }
         
         int openPushPositions=0;
         String openPushPositionsStr = userService.getAppConfigByKey(Constant.OPEN_PUSH_POSITION);
