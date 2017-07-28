@@ -987,7 +987,11 @@ public class UserServiceImpl implements UserService {
         userProfile.setNickName(modifyUserProfileDto.getNickName());
         userProfile.setGender(modifyUserProfileDto.getGender());
         userProfile.setBirthday(modifyUserProfileDto.getBirthday());
-        userProfile.setAvatar(modifyUserProfileDto.getAvatar());
+        if(null == modifyUserProfileDto.getAvatar() || "".equals(modifyUserProfileDto.getAvatar())){
+        	userProfile.setAvatar(null);
+        }else{
+        	userProfile.setAvatar(modifyUserProfileDto.getAvatar());
+        }
         userProfile.setIntroduced(modifyUserProfileDto.getIntroduced());
         
         //设置为0不需要第三方登录检查昵称了 昵称唯一
