@@ -59,6 +59,7 @@ public class PriceChangePushTask {
 		List<Map<String, Object>> dataList = localJdbcDao.queryEvery(needPushSearchSql.toString());
 		
 		if(null != dataList && dataList.size() > 0){
+			logger.info("共有["+dataList.size()+"]个需要推送的");
 			List<Long> topicIds = new ArrayList<Long>();
 			for(Map<String, Object> m : dataList){
 				topicIds.add((Long)m.get("topic_id"));
@@ -83,6 +84,7 @@ public class PriceChangePushTask {
 			Map<String, Object> topic = null;
 			JsonObject jsonObject = null;
 			String msg = null;
+			int total = 0;
 			for(Map<String, Object> m : dataList){
 				topic = topicMap.get(String.valueOf(m.get("topic_id")));
 				if(null == topic){
@@ -104,7 +106,9 @@ public class PriceChangePushTask {
 	            jsonObject.addProperty("contentType", (Integer)topic.get("type"));
 	            jsonObject.addProperty("internalStatus", Specification.SnsCircle.CORE.index);//这里是给国王的通知，所以直接显示核心圈即可
 	            userService.pushWithExtra(String.valueOf(topic.get("uid")), msg, JPushUtils.packageExtra(jsonObject));
+	            total++;
 			}
+			logger.info("实际推送了["+total+"]个");
 			
 			StringBuilder updateSql = new StringBuilder();
 			updateSql.append("update topic_price_push set status=1 where date_code='").append(dateStr).append("'");

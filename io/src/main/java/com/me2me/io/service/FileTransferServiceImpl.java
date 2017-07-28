@@ -1,5 +1,6 @@
 package com.me2me.io.service;
 
+import com.me2me.common.Constant;
 import com.me2me.common.utils.HttpUtil;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -145,7 +146,7 @@ public class FileTransferServiceImpl implements FileTransferService{
             String QnKey = getQNImageKey(headimgurl);
             userProfile.put("headimgurl",QnKey);
         }else{
-            userProfile.put("headimgurl","default.jpg");
+            userProfile.put("headimgurl",Constant.DEFAULT_AVATAR);
         }
         log.info("get user profile"+userProfile.toString());
         return userProfile.toString();
