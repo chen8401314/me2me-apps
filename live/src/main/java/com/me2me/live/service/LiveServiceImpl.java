@@ -1001,6 +1001,9 @@ public class LiveServiceImpl implements LiveService {
             if(speakDto.getType() != Specification.LiveSpeakType.SYSTEM.index
                     && (speakDto.getType() != 51 || speakDto.getContentType() != 16)){
                 Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
+                if(topic.getSubType()!=null && topic.getSubType()==2){		// 如果是赠送的待激活的王国，发言一次之后激活为正常的王国。
+                	topic.setSubType(0);
+                }
                 Calendar calendar = Calendar.getInstance();
                 topic.setUpdateTime(calendar.getTime());
                 topic.setLongTime(calendar.getTimeInMillis());
@@ -7535,7 +7538,7 @@ public class LiveServiceImpl implements LiveService {
 				 createKingdomDto.setCExtra("");
 				 createKingdomDto.setKConfig("");
 				 createKingdomDto.setTags(given.getTags());
-				 createKingdomDto.setSubType(0);
+				 createKingdomDto.setSubType(2);		// 创建待激活的王国，speak一次后自动激活。
 				 Topic topic = createSpecialTopic(createKingdomDto);
 				 resp.setTopicId(topic.getId());
 			}
