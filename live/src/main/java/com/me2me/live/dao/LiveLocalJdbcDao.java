@@ -1261,7 +1261,7 @@ public class LiveLocalJdbcDao {
     	if(topicId!=0){
             sb.append("  AND t.topic_id=").append(topicId);
       	}
-    	sb.append(" and json_extract(t.extra,'$.w[0]')>400 ");
+    	sb.append(" and json_extract(t.extra,'$.w[0]')>300 ");
     	sb.append(" AND (json_extract(t.extra,'$.type[0]') IS  NULL  OR json_extract(t.extra,'$.type[0]') <> 'image_daycard') ");
     	sb.append("  ORDER BY json_extract(t.extra,'$.length[0]') DESC LIMIT 1 ");
     	String sql = sb.toString();

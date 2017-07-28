@@ -7744,9 +7744,14 @@ public class LiveServiceImpl implements LiveService {
 
 	@Override
 	public Response saveDaySignInfo(long uid, String image,String extra,String uids,int source,String quotationIds) {
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+		String todayStr = sdf.format(new Date());
 	if(StringUtils.isEmpty(uids) || StringUtils.isEmpty(quotationIds) ){
 		//不做处理；
 	}else{
+	
+		List<Map<String, Object>> robotQuotationRecordList = liveLocalJdbcDao.getRobotQuotationRecordList(todayStr, uid);
+		if(robotQuotationRecordList.size()==0){
 		String[] uidArr = uids.split(",");
 		 String[] quotationIdArr = quotationIds.split(",");
 		 if(uidArr.length!=quotationIdArr.length){
@@ -7764,11 +7769,14 @@ public class LiveServiceImpl implements LiveService {
 			}
 		 }
 	}
-	 SignRecord signRecord = new SignRecord();
-	 signRecord.setUid(uid);
-	 signRecord.setImage(image);
-	 liveMybatisDao.addSignRecord(signRecord);
-	 
+	}
+	List<Map<String, Object>> signRecordList = liveLocalJdbcDao.getSignRecordList(todayStr, uid);
+	if (signRecordList.size() ==0) {
+		 SignRecord signRecord = new SignRecord();
+		 signRecord.setUid(uid);
+		 signRecord.setImage(image);
+		 liveMybatisDao.addSignRecord(signRecord);
+	} 
 	 Topic topic = liveMybatisDao.getEmotionTopic(uid);
 	 if(topic==null){
 	  topic = createEmotionTopic(uid);
