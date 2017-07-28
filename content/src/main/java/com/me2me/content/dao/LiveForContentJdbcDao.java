@@ -415,7 +415,7 @@ public class LiveForContentJdbcDao {
     	sb.append("select f.topic_id,count(1) as cc");
     	sb.append(" from topic_fragment f where f.type not in (0,12,13)");
     	sb.append(" and f.create_time>date_add(now(), interval -1 day)");
-    	sb.append(" group by f.topic_id) m where t.id=c.forward_cid and c.type=3 and t.sub_type <> 1");
+    	sb.append(" group by f.topic_id) m where t.id=c.forward_cid and c.type=3 and t.sub_type =0");
     	sb.append(" and t.id=m.topic_id and m.cc<").append(sinceId);
     	if(null != blacklistUids && blacklistUids.size() > 0){
     		sb.append(" and t.uid not in (");
@@ -454,7 +454,7 @@ public class LiveForContentJdbcDao {
      */
     public List<BillBoardListDTO> getLivesByUpdateTime(long sinceId, int pageSize, List<Long> blacklistUids){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select t.id,t.long_time from topic t where t.status=0 and t.sub_type <> 1 ");
+    	sb.append("select t.id,t.long_time from topic t where t.status=0 and t.sub_type =0 ");
     	sb.append(" and t.long_time<").append(sinceId);
     	if(null != blacklistUids && blacklistUids.size() > 0){
     		sb.append(" and t.uid not in (");
