@@ -1018,13 +1018,20 @@ public class LiveServiceImpl implements LiveService {
                 	liveLocalJdbcDao.updateContentUpdateTime4Kingdom(speakDto.getTopicId(), calendar.getTime());
                 	liveLocalJdbcDao.updateContentUpdateId4Kingdom(speakDto.getTopicId(),cacheService.incr("UPDATE_ID"));
                 	
-                	//判断是否第一次更新
-                	if(userService.isUserFirst(speakDto.getUid(), Specification.UserFirstActionType.SPEAK_UPDATE.index)){
-                		speakDto.setIsFirstUpdate(1);
-                		userService.saveUserFistLog(speakDto.getUid(), Specification.UserFirstActionType.SPEAK_UPDATE.index);
-                	}else{
-                		speakDto.setIsFirstUpdate(0);
-                	}
+                	boolean needCheck = true;
+					if(topic.getSubType().intValue() == 1){
+						needCheck = false;
+					}
+                	
+					if(needCheck){
+	                	//判断是否第一次更新
+	                	if(userService.isUserFirst(speakDto.getUid(), Specification.UserFirstActionType.SPEAK_UPDATE.index)){
+	                		speakDto.setIsFirstUpdate(1);
+	                		userService.saveUserFistLog(speakDto.getUid(), Specification.UserFirstActionType.SPEAK_UPDATE.index);
+	                	}else{
+	                		speakDto.setIsFirstUpdate(0);
+	                	}
+					}
                 }
                 
                 log.info("updateTopic updateTime");
