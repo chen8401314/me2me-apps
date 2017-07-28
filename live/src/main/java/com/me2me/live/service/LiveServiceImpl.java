@@ -840,6 +840,13 @@ public class LiveServiceImpl implements LiveService {
                     }
                 }
             }
+            if(!CommonUtils.isNewVersion(getLiveTimeLineDto.getVersion(), "3.0.1")){
+            	if(topicFragment.getType() == 1000 && topicFragment.getContentType() == 0){
+            		liveElement.setStatus(0);
+                    continue;
+            	}
+            }
+            
             //逗一逗自动播放状态
             int teaseStatus = 0;
             if((topicFragment.getType() == 51 || topicFragment.getType() == 52) && topicFragment.getContentType() == 20){
@@ -3239,6 +3246,14 @@ public class LiveServiceImpl implements LiveService {
             		}
             	}
             }
+            //系统灰条（纯文本）
+            if(getLiveDetailDto.getVersionFlag() < 4){//低于V3.0.1版本
+            	if(topicFragment.getType() == 1000 && topicFragment.getContentType() == 0){
+            		liveElement.setStatus(0);
+                    continue;
+            	}
+            }
+            
             //逗一逗自动播放状态
             int teaseStatus = 0;
             if((topicFragment.getType() == 51 || topicFragment.getType() == 52) && topicFragment.getContentType() == 20){

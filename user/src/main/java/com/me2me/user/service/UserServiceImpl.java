@@ -987,7 +987,11 @@ public class UserServiceImpl implements UserService {
         userProfile.setNickName(modifyUserProfileDto.getNickName());
         userProfile.setGender(modifyUserProfileDto.getGender());
         userProfile.setBirthday(modifyUserProfileDto.getBirthday());
-        userProfile.setAvatar(modifyUserProfileDto.getAvatar());
+        if(null == modifyUserProfileDto.getAvatar() || "".equals(modifyUserProfileDto.getAvatar())){
+        	userProfile.setAvatar(null);
+        }else{
+        	userProfile.setAvatar(modifyUserProfileDto.getAvatar());
+        }
         userProfile.setIntroduced(modifyUserProfileDto.getIntroduced());
         
         //设置为0不需要第三方登录检查昵称了 昵称唯一
@@ -4698,10 +4702,10 @@ public class UserServiceImpl implements UserService {
 	 */
 	public void give3Kingdoms(UserProfile profile){
 		String nickName = profile.getNickName();
-		List<String> picList= getRandomKingdomCover(3);
-		this.liveForUserJdbcDao.createGiveTopic(profile.getUid(),picList.get(0),nickName+"的生活记录","吃喝玩乐，记录我的日常。","非典型性话痨",1);
-		this.liveForUserJdbcDao.createGiveTopic(profile.getUid(),picList.get(1),nickName+"的兴趣爱好","把我的兴趣爱好和你们分享。","玩物不丧志",0);
-		this.liveForUserJdbcDao.createGiveTopic(profile.getUid(),picList.get(2),nickName+"的每日一拍","所有美好的事物我统统都要拍下来！","声音和光影",0);
+		List<String> picList= getRandomKingdomCover(2);
+		//this.liveForUserJdbcDao.createGiveTopic(profile.getUid(),picList.get(0),nickName+"的生活记录","吃喝玩乐，记录我的日常。","非典型性话痨",1);
+		this.liveForUserJdbcDao.createGiveTopic(profile.getUid(),picList.get(0),nickName+"的兴趣爱好","把我的兴趣爱好和你们分享。","玩物不丧志",0);
+		this.liveForUserJdbcDao.createGiveTopic(profile.getUid(),picList.get(1),nickName+"的每日一拍","所有美好的事物我统统都要拍下来！","声音和光影",0);
 		
 	}
 	@Override
