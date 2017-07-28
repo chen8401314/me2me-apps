@@ -2473,9 +2473,6 @@ public class UserServiceImpl implements UserService {
                 if(checkUserDisable(loginSuccessDto.getUid())){
                 	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                 }
-                //新用户注册放入cach,机器人自动回复用
-                String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+loginSuccessDto.getUid();
-                cacheService.setex(key,loginSuccessDto.getUid()+"",7*24*60*60);
                 return Response.success(ResponseStatus.USER_LOGIN_SUCCESS.status, ResponseStatus.USER_LOGIN_SUCCESS.message, loginSuccessDto);
             }
 
