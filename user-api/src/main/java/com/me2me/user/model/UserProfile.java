@@ -438,9 +438,6 @@ public class UserProfile implements Serializable{
      * @mbggenerated Mon Jun 12 15:44:23 CST 2017
      */
     public String getAvatar() {
-    	if(StringUtils.isEmpty(this.avatar)){
-    		return Constant.DEFAULT_AVATAR;
-    	}
         return avatar;
     }
 
