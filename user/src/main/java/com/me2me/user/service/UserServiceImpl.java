@@ -4705,10 +4705,13 @@ public class UserServiceImpl implements UserService {
 		if(nickName!=null && nickName.matches("用户\\d+.*")){
 			nickName="我";
 		}
-		//this.liveForUserJdbcDao.createGiveTopic(profile.getUid(),picList.get(0),nickName+"的生活记录","吃喝玩乐，记录我的日常。","非典型性话痨",1);
-		this.liveForUserJdbcDao.createGiveTopic(profile.getUid(),picList.get(0),nickName+"的兴趣爱好","把我的兴趣爱好和你们分享。","玩物不丧志",0);
-		this.liveForUserJdbcDao.createGiveTopic(profile.getUid(),picList.get(1),nickName+"的每日一拍","所有美好的事物我统统都要拍下来！","声音和光影",0);
-		
+		if(null != picList && picList.size() >= 2){
+			//this.liveForUserJdbcDao.createGiveTopic(profile.getUid(),picList.get(0),nickName+"的生活记录","吃喝玩乐，记录我的日常。","非典型性话痨",1);
+			this.liveForUserJdbcDao.createGiveTopic(profile.getUid(),picList.get(0),nickName+"的兴趣爱好","把我的兴趣爱好和你们分享。","玩物不丧志",0);
+			this.liveForUserJdbcDao.createGiveTopic(profile.getUid(),picList.get(1),nickName+"的每日一拍","所有美好的事物我统统都要拍下来！","声音和光影",0);
+		}else{
+			log.info("当前系统赠送王国封面量不足，无法创建赠送王国");
+		}
 	}
 	@Override
 	public Response blacklist(long uid, long targetUid, int action){

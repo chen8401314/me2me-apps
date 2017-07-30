@@ -3657,16 +3657,12 @@ public class LiveServiceImpl implements LiveService {
         //add kingdom tags -- end --
 
         // 机器人自动回复开始 -- start --
-        Set<String> set = cacheService.keys(KeysManager.SEVEN_DAY_REGISTER_PREFIX+"*");
-        Iterator<String> it = set.iterator();
-        Set<String> newRegisterFor7Days = Sets.newConcurrentHashSet();
-        while (it.hasNext()){
-            String key = it.next();
-            newRegisterFor7Days.add(key.split(":")[1]);
-        }
-
-        if(newRegisterFor7Days.contains(topic.getUid()+"")) {
-            applicationEventBus.post(new AutoReplyEvent(topic.getUid(), topic.getId(), topic.getCreateTime()));
+        String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+topic.getUid().toString();
+        if(!StringUtils.isEmpty(cacheService.get(key))){//7天内新注册的用户
+        	String robotSwitch = userService.getAppConfigByKey("KINGDOMROBOT_AUTO_REPLY");
+        	if(!StringUtils.isEmpty(robotSwitch) && "on".equals(robotSwitch)){//自动回复开关开
+        		applicationEventBus.post(new AutoReplyEvent(topic.getUid(), topic.getId(), topic.getCreateTime()));
+        	}
         }
         // 机器人自动回复结束 -- end --
         log.info("createKingdom end");
@@ -6455,19 +6451,17 @@ public class LiveServiceImpl implements LiveService {
         if (emotionInfo == null) {
             return Response.failure(500, "没有该情绪信息！");
         }
-        EmotionPackDetail emotionPackDetail = contentService
-                .getEmotionPackDetailByKey(Integer.valueOf(emotionInfo.getEmotionpackid() + ""));
+        EmotionPackDetail emotionPackDetail = contentService.getEmotionPackDetailByKey(Integer.valueOf(emotionInfo.getEmotionpackid() + ""));
         if (emotionPackDetail == null) {
             return Response.failure(500, "没有该情绪大表情信息！");
         }
-        EmotionPack emotionPack = contentService
-                .getEmotionPackByKey(Integer.valueOf(emotionPackDetail.getPackId() + ""));
+        EmotionPack emotionPack = contentService.getEmotionPackByKey(Integer.valueOf(emotionPackDetail.getPackId() + ""));
         if (emotionPack == null) {
             return Response.failure(500, "没有该情绪大表情包信息！");
         }
         Topic topic = liveMybatisDao.getEmotionTopic(uid);
         if (topic == null) {
-        	topic =createEmotionTopic(uid);
+        	topic =createEmotionTopic(uid, emotionInfo.getTopiccoverphoto());
         }
          if(topic!=null){
              SpeakDto speakDto = new SpeakDto();
@@ -6515,51 +6509,61 @@ public class LiveServiceImpl implements LiveService {
         return Response.success();
     }
 
-    @Override
-    public Response startNewEmotionInfo(long uid, int source, String image, int w, int h) {
-        UserProfile userProfile = userService.getUserProfileByUid(uid);
-        if (userProfile == null) {
-            return Response.failure(500, "没有该用户信息！");
-        }
-        Topic topic = liveMybatisDao.getEmotionTopic(uid);
-            if (topic == null) {
-            	topic =createEmotionTopic(uid);
+	@Override
+	public Response startNewEmotionInfo(long uid, int source, String image, int w, int h) {
+		UserProfile userProfile = userService.getUserProfileByUid(uid);
+		if (userProfile == null) {
+			return Response.failure(500, "没有该用户信息！");
+		}
+		Topic topic = liveMybatisDao.getEmotionTopic(uid);
+		if (topic == null) {
+			EmotionRecord emotionRecord = userService.getLastEmotionRecord(uid);
+            if (emotionRecord == null) {
+                return Response.failure(500, "没有该用户情绪记录信息！");
             }
-            if (topic != null) {
-            SpeakDto speakDto = new SpeakDto();
-            speakDto.setType(0);
-            speakDto.setContentType(1);
-            speakDto.setUid(userProfile.getUid());
-            speakDto.setTopicId(topic.getId());
-            speakDto.setSource(source);
-            speakDto.setFragmentImage(image);
+            EmotionInfo emotionInfo = userService.getEmotionInfoByKey(emotionRecord.getEmotionid());
+            if (emotionInfo == null) {
+                return Response.failure(500, "没有情绪信息！");
+            }
+			
+			topic = createEmotionTopic(uid, emotionInfo.getTopiccoverphoto());
+		}
+		if (topic != null) {
+			SpeakDto speakDto = new SpeakDto();
+			speakDto.setType(0);
+			speakDto.setContentType(1);
+			speakDto.setUid(userProfile.getUid());
+			speakDto.setTopicId(topic.getId());
+			speakDto.setSource(source);
+			speakDto.setFragmentImage(image);
 
-            JSONObject extra = new JSONObject();
-            extra.put("type", "image");
-            extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
-            JSONObject fromObj = new JSONObject();
-            fromObj.put("uid", uid);
-            fromObj.put("avatar", Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
-            fromObj.put("id", topic.getId());
-            Content topicContet = contentService.getContentByTopicId(topic.getId());
-            fromObj.put("cid", topicContet == null ? "" : topicContet.getId());
-            fromObj.put("title", topic.getTitle());
-            fromObj.put("cover", Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
-            fromObj.put("url", live_web + topicContet.getId());
-            extra.put("from", fromObj);
-            extra.put("w", w);
-            extra.put("h", h);
-            extra.put("length", 0);
-            extra.put("orientation", 1);
-            extra.put("format", "");
-            extra.put("rLen", 0);
-            extra.put("rFmt", "");
-            speakDto.setExtra(extra.toJSONString());
-            speak(speakDto);
+			JSONObject extra = new JSONObject();
+			extra.put("type", "image");
+			extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
+			JSONObject fromObj = new JSONObject();
+			fromObj.put("uid", uid);
+			fromObj.put("avatar", Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+			fromObj.put("id", topic.getId());
+			Content topicContet = contentService.getContentByTopicId(topic.getId());
+			fromObj.put("cid", topicContet == null ? "" : topicContet.getId());
+			fromObj.put("title", topic.getTitle());
+			fromObj.put("cover", Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
+			fromObj.put("url", live_web + topicContet.getId());
+			extra.put("from", fromObj);
+			extra.put("w", w);
+			extra.put("h", h);
+			extra.put("length", 0);
+			extra.put("orientation", 1);
+			extra.put("format", "");
+			extra.put("rLen", 0);
+			extra.put("rFmt", "");
+			speakDto.setExtra(extra.toJSONString());
+			speak(speakDto);
 
-        }
-        return Response.success();
-    }
+		}
+		return Response.success();
+	}
+    
     @Override
     public Response emotionInfoList(){
         List<EmotionInfo> datas = userService.getEmotionInfoList();
@@ -7743,55 +7747,54 @@ public class LiveServiceImpl implements LiveService {
 	}
 
 	@Override
-	public Response saveDaySignInfo(long uid, String image,String extra,String uids,int source,String quotationIds) {
+	public Response saveDaySignInfo(long uid, String image, String extra, String uids, int source, String quotationIds) {
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
 		String todayStr = sdf.format(new Date());
-	if(StringUtils.isEmpty(uids) || StringUtils.isEmpty(quotationIds) ){
-		//不做处理；
-	}else{
-	
-		List<Map<String, Object>> robotQuotationRecordList = liveLocalJdbcDao.getRobotQuotationRecordList(todayStr, uid);
-		if(robotQuotationRecordList.size()==0){
-		String[] uidArr = uids.split(",");
-		 String[] quotationIdArr = quotationIds.split(",");
-		 if(uidArr.length!=quotationIdArr.length){
-			 return Response.failure(500, "机器人和语录数量不匹配！");
-		 }
-		 if(uidArr.length>0){
-			 for (int i = 0; i < uidArr.length; i++) {
-				String robotUid = uidArr[i];
-				String quotationId = quotationIdArr[i];
-				RobotQuotationRecord robotQuotationRecord = new RobotQuotationRecord();
-				robotQuotationRecord.setUid(uid);
-				robotQuotationRecord.setRobotUid(Long.parseLong(robotUid));
-				robotQuotationRecord.setQuotationId(Long.parseLong(quotationId));
-				liveMybatisDao.addRobotQuotationRecord(robotQuotationRecord);
+		if (StringUtils.isEmpty(uids) || StringUtils.isEmpty(quotationIds)) {
+			// 不做处理；
+		} else {
+			List<Map<String, Object>> robotQuotationRecordList = liveLocalJdbcDao.getRobotQuotationRecordList(todayStr, uid);
+			if (robotQuotationRecordList.size() == 0) {
+				String[] uidArr = uids.split(",");
+				String[] quotationIdArr = quotationIds.split(",");
+				if (uidArr.length != quotationIdArr.length) {
+					return Response.failure(500, "机器人和语录数量不匹配！");
+				}
+				if (uidArr.length > 0) {
+					for (int i = 0; i < uidArr.length; i++) {
+						String robotUid = uidArr[i];
+						String quotationId = quotationIdArr[i];
+						RobotQuotationRecord robotQuotationRecord = new RobotQuotationRecord();
+						robotQuotationRecord.setUid(uid);
+						robotQuotationRecord.setRobotUid(Long.parseLong(robotUid));
+						robotQuotationRecord.setQuotationId(Long.parseLong(quotationId));
+						liveMybatisDao.addRobotQuotationRecord(robotQuotationRecord);
+					}
+				}
 			}
-		 }
-	}
-	}
-	List<Map<String, Object>> signRecordList = liveLocalJdbcDao.getSignRecordList(todayStr, uid);
-	if (signRecordList.size() ==0) {
-		 SignRecord signRecord = new SignRecord();
-		 signRecord.setUid(uid);
-		 signRecord.setImage(image);
-		 liveMybatisDao.addSignRecord(signRecord);
-	} 
-	 Topic topic = liveMybatisDao.getEmotionTopic(uid);
-	 if(topic==null){
-	  topic = createEmotionTopic(uid);
-	 }
-	 if(topic!=null && topic.getId()!=null){
-     SpeakDto speakDto = new SpeakDto();
-     speakDto.setType(0);
-     speakDto.setContentType(1);
-     speakDto.setUid(uid);
-     speakDto.setTopicId(topic.getId());
-     speakDto.setSource(source);
-     speakDto.setExtra(extra);
-     speakDto.setFragmentImage(image);
-     speak(speakDto);
-	 }
+		}
+		List<Map<String, Object>> signRecordList = liveLocalJdbcDao.getSignRecordList(todayStr, uid);
+		if (signRecordList.size() == 0) {
+			SignRecord signRecord = new SignRecord();
+			signRecord.setUid(uid);
+			signRecord.setImage(image);
+			liveMybatisDao.addSignRecord(signRecord);
+		}
+		Topic topic = liveMybatisDao.getEmotionTopic(uid);
+		if (topic == null) {
+			topic = createEmotionTopic(uid, null);
+		}
+		if (topic != null && topic.getId() != null) {
+			SpeakDto speakDto = new SpeakDto();
+			speakDto.setType(0);
+			speakDto.setContentType(1);
+			speakDto.setUid(uid);
+			speakDto.setTopicId(topic.getId());
+			speakDto.setSource(source);
+			speakDto.setExtra(extra);
+			speakDto.setFragmentImage(image);
+			speak(speakDto);
+		}
 		return Response.success();
 	}
 	/**
@@ -8016,15 +8019,18 @@ public class LiveServiceImpl implements LiveService {
 	 * @param uid
 	 * @return
 	 */
-	public Topic createEmotionTopic(long uid){
+	public Topic createEmotionTopic(long uid, String coverImage){
 		 UserProfile userProfile = userService.getUserProfileByUid(uid);
 		 CreateKingdomDto createKingdomDto  = new CreateKingdomDto();
 		 createKingdomDto.setUid(uid);
 		 createKingdomDto.setTitle(userProfile.getNickName()+"的生活记录");
-		 List<String> randomCover = userService. getRandomKingdomCover(1);
+		 List<String> randomCover = userService.getRandomKingdomCover(1);
 		 if(randomCover.size()>0){
 			 createKingdomDto.setLiveImage(randomCover.get(0));
+		 }else{
+			 createKingdomDto.setLiveImage(coverImage);
 		 }
+		 
 		 createKingdomDto.setContentType(0);
 		 createKingdomDto.setFragment("吃喝玩乐，记录我的日常。");
 		 createKingdomDto.setSource(0);
