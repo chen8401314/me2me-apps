@@ -5168,6 +5168,7 @@ public class LiveServiceImpl implements LiveService {
         if(topicInfo == null){
             //topic王国取完了
             cacheService.del("list:user@" + uid);
+            map.put("set","");
             topicInfo = liveMybatisDao.getRandomDropaRoundAlgorithm(map);
         }
        
