@@ -1121,7 +1121,7 @@ public class LiveLocalJdbcDao {
     }
     public List<Map<String,Object>> getTopicListedListByStatus(int status,String title,int start,int pageSize){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("SELECT tl.id,t.title,t.price,tl.price_RMB AS frozenPrice,u.nick_name,tl.create_time,tl.status,un.me_number,tl.buy_uid");
+    	sb.append("SELECT tl.id,t.title,t.price,tl.price_RMB AS frozenPrice,u.nick_name,tl.create_time,tl.status,un.me_number,tl.buy_uid,tl.buy_time");
     	sb.append(" FROM topic_listed tl LEFT JOIN topic t ON tl.topic_id = t.id LEFT JOIN user_profile u ON u.uid = t.uid ");
     	sb.append(" left join user_no un on un.uid = tl.buy_uid ");
     	sb.append("where 1=1  ");

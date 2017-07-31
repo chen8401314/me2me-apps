@@ -7099,16 +7099,21 @@ public class LiveServiceImpl implements LiveService {
         	 e.setTitle((String)map.get("title"));
         	 int statusD = (Integer)map.get("status");
         	 e.setStatus(statusD);
-        	 if(statusD==1){
-        		 e.setPrice((Double)map.get("frozenPrice"));
-        	 }else if(statusD==0){
+             if(statusD==0){
         		 e.setPrice(exchangeKingdomPrice((Integer)map.get("price")));
-        	 }else if(statusD==2){
+        	 }else if(statusD==2 || statusD==1 ){
         		 e.setPrice((Double)map.get("frozenPrice")); 
         		 long buyUid = Long.parseLong(map.get("buy_uid").toString());
         		 if(buyUid!=0l){
         			 e.setMeNumber(map.get("me_number").toString());
+        			 UserProfile userProfile = userService.getUserProfileByUid(buyUid);
+        			 if(userProfile!=null){
+        				 e.setBuyNickName(userProfile.getNickName());
+        				 e.setBuyMobile(userProfile.getMobile());
+        			 }
         		 }
+        		 Date buyTime = (Date)map.get("buy_time");
+        		 e.setBuyTime(buyTime);
         	 }
              e.setNickName((String)map.get("nick_name"));
              e.setCreateTime((Date)map.get("create_time"));
@@ -7127,6 +7132,7 @@ public class LiveServiceImpl implements LiveService {
         		topicListed.setReviewCount(liveLocalJdbcDao.getTopicReviewCount(topic.getId()));
         		topicListed.setPrice(topic.getPrice());
         		topicListed.setPriceRmb(exchangeKingdomPrice(topic.getPrice()));
+        		topicListed.setBuyTime(new Date());
     		}
     	}else if(oldTopicListed.getStatus()==1){
     		if(topicListed.getStatus()==0){
@@ -7409,8 +7415,8 @@ public class LiveServiceImpl implements LiveService {
 		    		){
 		    	 Calendar cal = Calendar.getInstance();
 			        cal.setTime(date);
-			        int w = cal.get(Calendar.DAY_OF_WEEK) - 1;
-			        if(w==6||w==7){
+			        int w = cal.get(Calendar.DAY_OF_WEEK);
+			        if(w==1||w==7){
 			        	 return true;
 			        }else{
 			       String restStrDateBegin =cacheService.get("REST_LISTED_START_DATE");

@@ -241,6 +241,16 @@
 	        		return new Date(data).Format("yyyy-MM-dd hh:mm:ss");
 	        	}
 	        }},
+	        {data: "buyNickName",width:200,orderable:false,title: "购买人",render:function(data,type,row,meta){
+	        	if(data!=null){
+	        		return data;
+	        	}
+	        }},
+	        {data: "buyTime",width:150,orderable:false,title: "购买时间",render:function(data,type,row,meta){
+	        	if(data!=null){
+	        		return new Date(data).Format("yyyy-MM-dd hh:mm:ss");
+	        	}
+	        }},
 	        {data: "status",width:100,orderable:false,title: "状态",render:function(data,type,row,meta){
 	        	if(data!=null){
                       if(data=='0'){
@@ -316,7 +326,7 @@
 	
 	   function handleTopicListed(id,status){
 		 var msg = "您真的确定要提交吗？"; 
-		 if (confirm(msg)==true){ 
+		 if (confirm(msg)){ 
 			 var param = {id:id,status:status};
 			  	$.ajax({
 		            cache: true,
@@ -338,14 +348,11 @@
 		                        }
 		            }
 		        });
-		  return true; 
-		 }else{ 
-		  return false; 
 		 }
     }
 	   function setRestTime(){
 			 var msg = "您真的确定要设置吗？"; 
-			 if (confirm(msg)==true){ 
+			 if (confirm(msg)){ 
 				 var startTime = $("#startTime").val();
 				 var endTime = $("#endTime").val();
 				 var param = {startTime:startTime,endTime:endTime};
@@ -368,9 +375,6 @@
 			                        }
 			            }
 			        });
-			  return true; 
-			 }else{ 
-			  return false; 
 			 }
 	    }
 	

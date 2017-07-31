@@ -33,6 +33,9 @@ public class SearchTopicListedListDto implements BaseEntity {
 		private String nickName;
 		private double price;
 		private Date createTime;
+		private String buyNickName;
+		private String buyMobile;
+		private Date buyTime;
 		private String meNumber;
 		private int status;
 	}

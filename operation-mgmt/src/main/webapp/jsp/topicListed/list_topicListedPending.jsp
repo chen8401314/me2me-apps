@@ -208,6 +208,16 @@
 	        		return new Date(data).Format("yyyy-MM-dd hh:mm:ss");
 	        	}
 	        }},
+	        {data: "buyNickName",width:200,orderable:false,title: "购买人",render:function(data,type,row,meta){
+	        	if(data!=null){
+	        		return data;
+	        	}
+	        }},
+	        {data: "buyTime",width:150,orderable:false,title: "购买时间",render:function(data,type,row,meta){
+	        	if(data!=null){
+	        		return new Date(data).Format("yyyy-MM-dd hh:mm:ss");
+	        	}
+	        }},
 	        {data: "meNumber",width:100,orderable:false,title: "新国王米汤号",render:function(data,type,row,meta){
                       if(row.meNumber!='' && data!=null){
                     	  return '<input type="text" value="'+row.meNumber+'" readOnly id="meNumber_'+row.id+'">';
@@ -274,7 +284,7 @@
 	
 	   function handleTopicListed(id){
 		 var msg = "您真的确定要提交吗？"; 
-		 if (confirm(msg)==true){ 
+		 if (confirm(msg)){ 
 			 var meNumber = $("#meNumber_"+id).val();
 			 var param = {id:id,meNumber:meNumber};
 			  	$.ajax({
@@ -296,9 +306,6 @@
 		    			}
 		            }
 		        });
-		  return true; 
-		 }else{ 
-		  return false; 
 		 }
     }
 	</script>

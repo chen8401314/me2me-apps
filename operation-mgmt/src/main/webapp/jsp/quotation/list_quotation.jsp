@@ -320,7 +320,7 @@
 	
 	   function del(id){
 		 var msg = "您真的确定要删除吗？"; 
-		 if (confirm(msg)==true){ 
+		 if (confirm(msg)){ 
 			 var param = {id:id};
 			  	$.ajax({
 		            cache: true,
@@ -342,9 +342,6 @@
 		                        }
 		            }
 		        });
-		  return true; 
-		 }else{ 
-		  return false; 
 		 }
     }
 	function addQuotation(){
