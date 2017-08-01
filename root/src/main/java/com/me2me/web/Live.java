@@ -43,6 +43,7 @@ import com.me2me.web.request.CreateLiveRequest;
 import com.me2me.web.request.CreateVoteRequest;
 import com.me2me.web.request.DaySignInfoRequest;
 import com.me2me.web.request.DeleteLiveFragmentRequest;
+import com.me2me.web.request.DetailPageStatusRequest;
 import com.me2me.web.request.DisplayProtocolRequest;
 import com.me2me.web.request.DropAroundRequest;
 import com.me2me.web.request.EditSpeakRequest;
@@ -205,6 +206,13 @@ public class Live extends BaseController {
         return liveService.getLiveDetail(liveDetailDto);
     }
 
+    @CrossOrigin(origins = "*")
+    @RequestMapping(value = "/detailPageStatus",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response detailPageStatus(DetailPageStatusRequest request){
+    	return liveService.detailPageStatus(request.getTopicId(), request.getPageNo(), request.getOffset());
+    }
+    
     /**
      * 王国内容更新数量接口（配合王国详情接口）
      * @param request

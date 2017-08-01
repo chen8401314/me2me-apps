@@ -200,6 +200,16 @@ public interface LiveService {
      */
     Response getLiveDetail(GetLiveDetailDto liveDetailDto);
 
+    /**
+     * 查询王国详情页分页的相关状态信息
+     * @param topicId
+     * @param pageNo
+     * @param offset
+     * @param uid
+     * @return
+     */
+    Response detailPageStatus(long topicId, int pageNo, int offset);
+    
     Response getLiveUpdate(GetLiveUpdateDto getLiveUpdateDto);
 
     Response testApi(TestApiDto request);

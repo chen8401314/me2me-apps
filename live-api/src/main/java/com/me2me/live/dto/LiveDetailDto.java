@@ -89,5 +89,7 @@ public class LiveDetailDto implements BaseEntity {
     	private int page;
     	private int records;
     	private int isFull;
+    	
+    	private long updateTime;
     }
 }

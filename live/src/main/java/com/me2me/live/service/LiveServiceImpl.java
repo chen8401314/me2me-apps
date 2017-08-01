@@ -76,6 +76,7 @@ import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.CreateVoteDto;
 import com.me2me.live.dto.CreateVoteResponeDto;
 import com.me2me.live.dto.DaySignInfoDto;
+import com.me2me.live.dto.DetailPageStatusDTO;
 import com.me2me.live.dto.DropAroundDto;
 import com.me2me.live.dto.GetKingdomPriceDto;
 import com.me2me.live.dto.GetLiveDetailDto;
@@ -3119,6 +3120,41 @@ public class LiveServiceImpl implements LiveService {
         log.info("get live detail end ...");
         return  Response.success(ResponseStatus.GET_LIVE_DETAIL_SUCCESS.status, ResponseStatus.GET_LIVE_DETAIL_SUCCESS.message, liveDetailDto);
     }
+    
+    @Override
+    public Response detailPageStatus(long topicId, int pageNo, int offset){
+    	DetailPageStatusDTO result = new DetailPageStatusDTO();
+    	result.setPage(pageNo);
+    	
+    	GetLiveDetailDto getLiveDetailDto = new GetLiveDetailDto();
+    	getLiveDetailDto.setSinceId(0);
+    	getLiveDetailDto.setTopicId(topicId);
+    	getLiveDetailDto.setPageNo(pageNo);
+    	getLiveDetailDto.setOffset(offset);
+    	List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragmentForPage(getLiveDetailDto);
+    	if(null != fragmentList && fragmentList.size() > 0){
+			long pageUpdateTime = 0;
+			int count = 0;
+			for (TopicFragment topicFragment : fragmentList) {
+				if(topicFragment.getStatus().intValue() == 0){
+					if(null != topicFragment.getUpdateTime() && topicFragment.getUpdateTime().getTime() > pageUpdateTime){
+						pageUpdateTime = topicFragment.getUpdateTime().getTime();
+					}
+					continue;
+				}
+				count++;
+			}
+			result.setRecords(count);
+			result.setIsFull(fragmentList.size() >= offset?1:2);
+			result.setUpdateTime(pageUpdateTime);
+    	}else{
+    		result.setRecords(0);
+    		result.setIsFull(2);
+    		result.setUpdateTime(0);
+    	}
+    	
+    	return Response.success(result);
+    }
 
     @Override
     public Response getLiveUpdate(GetLiveUpdateDto getLiveUpdateDto) {
@@ -3215,6 +3251,7 @@ public class LiveServiceImpl implements LiveService {
         int count = 0;
         UserProfile userProfile = null;
         UserProfile atUser = null;
+        long pageUpdateTime = 0;
         for (TopicFragment topicFragment : fragmentList) {
             long uid = topicFragment.getUid();
 
@@ -3223,6 +3260,9 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setStatus(status);
             liveElement.setId(topicFragment.getId());
             if(status==0){
+            	if(null != topicFragment.getUpdateTime() && topicFragment.getUpdateTime().getTime() > pageUpdateTime){
+            		pageUpdateTime = topicFragment.getUpdateTime().getTime();
+            	}
             	//删除的不要了
                 //liveDetailDto.getLiveElements().add(liveElement);
                 continue;
@@ -3337,6 +3377,7 @@ public class LiveServiceImpl implements LiveService {
         pd.setPage(getLiveDetailDto.getPageNo());
         pd.setRecords(count);
         pd.setIsFull(fragmentList.size() >= getLiveDetailDto.getOffset()?1:2);
+        pd.setUpdateTime(pageUpdateTime);
         liveDetailDto.getPageInfo().getDetail().add(pd);
         log.info("build live detail end ...");
 
