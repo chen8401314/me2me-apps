@@ -576,6 +576,48 @@ public class LiveForContentJdbcDao {
     }
     
     /**
+     * 个人米汤币排行榜
+     * @param start
+     * @param pageSize
+     * @param blacklistUids
+     * @return
+     */
+    public List<BillBoardListDTO> userCoinList(long start, int pageSize, List<Long> blacklistUids){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select u.uid from user_profile u");
+    	sb.append(" where u.nick_name not like '%米汤客服%'");
+    	if(null != blacklistUids && blacklistUids.size() > 0){
+    		sb.append(" and u.uid not in (");
+    		for(int i=0;i<blacklistUids.size();i++){
+    			if(i>0){
+    				sb.append(",");
+    			}
+    			sb.append(blacklistUids.get(i).toString());
+    		}
+    		sb.append(")");
+    	}
+    	sb.append(" order by u.available_coin desc,u.id desc limit ");
+    	sb.append(start).append(",").append(pageSize);
+    	
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	
+    	List<BillBoardListDTO> result = new ArrayList<BillBoardListDTO>();
+    	if(null != list && list.size() > 0){
+    		BillBoardListDTO bbl = null;
+    		Map<String, Object> m = null;
+    		for(int i=0;i<list.size();i++){
+    			m = list.get(i);
+    			bbl = new BillBoardListDTO();
+    			bbl.setTargetId((Long)m.get("uid"));
+    			bbl.setType(2);
+    			bbl.setSinceId(start+i+1);
+    			result.add(bbl);
+    		}
+    	}
+    	return result;
+    }
+    
+    /**
      * 王国价值最高排行榜
      * @param start
      * @param pageSize

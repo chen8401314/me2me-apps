@@ -5391,6 +5391,13 @@ public class ContentServiceImpl implements ContentService {
                 }
                 result = liveForContentJdbcDao.tagKingdomIncrPriceList("深夜食堂", sinceId, pageSize, blacklistUids);
                 break;
+            case 32://个人米汤币排行榜
+            	//实时统计
+                if(sinceId < 0){
+                    sinceId = 0l;
+                }
+                result = liveForContentJdbcDao.userCoinList(sinceId, pageSize, blacklistUids);
+                break;
             default:
                 break;
         }
@@ -5925,7 +5932,7 @@ public class ContentServiceImpl implements ContentService {
         List<BillBoardRelationDto> result = Lists.newArrayList();
 
         int type = 1;//默认王国
-        if(mode == 1 || mode == 2 || mode == 3 || mode == 8 || mode == 9 || mode == 10 || mode == 11){
+        if(mode == 1 || mode == 2 || mode == 3 || mode == 8 || mode == 9 || mode == 10 || mode == 11 || mode == 32){
             type = 2;
         }
 
