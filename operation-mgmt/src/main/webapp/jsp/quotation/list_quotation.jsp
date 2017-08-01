@@ -110,6 +110,7 @@
 						<select id="type" name="type" class="form-control" >
 						 <option value="0">语料</option>
 						 <option value="1">纯水</option>
+						 <option value="2">日签</option>
 						</select>
 					</div>
 					<div class="form-group">
@@ -257,8 +258,10 @@
 	        	if(data!=null){
 	        		if(data==0){
 	        			return '语料';
-	        		}else{
+	        		}else if(data==1){
 	        			return '纯水';
+	        		}else{
+	        			return '日签';
 	        		}
 	        	
 	        	}

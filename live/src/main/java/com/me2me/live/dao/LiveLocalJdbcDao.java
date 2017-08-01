@@ -1315,11 +1315,14 @@ public class LiveLocalJdbcDao {
     	}
     	return result;
     }
-    public int countRobotListByNickName(String nickName){
+    public int countRobotListByNickName(String nickName,int type){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select count(*) FROM robot_info r,user_profile u WHERE r.uid = u.uid");
     	if(!StringUtils.isEmpty(nickName)){
     		sb.append(" and u.nick_name like '%").append(nickName).append("%'");
+    	}
+    	if(type!=-1){
+    		sb.append(" and r.type=").append(type);
     	}
     	String sql = sb.toString();
     	Integer count=0;
@@ -1330,11 +1333,14 @@ public class LiveLocalJdbcDao {
 		}
     	return count;
     }
-    public List<Map<String,Object>> getRobotListByNickName(String nickName,int start,int pageSize){
+    public List<Map<String,Object>> getRobotListByNickName(String nickName,int type,int start,int pageSize){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select r.id,r.uid,u.nick_name,u.avatar FROM robot_info r,user_profile u WHERE r.uid = u.uid ");
     	if(!StringUtils.isEmpty(nickName)){
     		sb.append(" and u.nick_name like '%").append(nickName).append("%'");
+    	}
+    	if(type!=-1){
+    		sb.append(" and r.type=").append(type);
     	}
     	sb.append(" order by r.create_time desc limit ").append(start).append(",").append(pageSize);
     	String sql = sb.toString();

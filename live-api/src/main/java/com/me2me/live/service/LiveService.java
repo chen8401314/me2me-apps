@@ -619,7 +619,7 @@ public interface LiveService {
       */
      Response userKingdomInfo(long uid);
      
-     Response searchRobotListPage(String nickName,int page, int pageSize);
+     Response searchRobotListPage(String nickName,int type,int page, int pageSize);
      
      Response searchQuotationListPage(String quotation,int page, int pageSize);
      

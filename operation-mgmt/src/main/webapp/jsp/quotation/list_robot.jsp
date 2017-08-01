@@ -50,6 +50,12 @@
 									<div class="form-inline" role="form">
 										用户昵称：
 										<input type="text" id="nickName" name="nickName" value="" class="form-control">&nbsp;
+						<label for="exampleInputEmail1">类型</label>
+						<select id="stype" name="stype" class="form-control" >
+						<option value="-1" selected>全部</option>
+						 <option value="0">机器人</option>
+						 <option value="1">日签</option>
+						</select>
 										<a class="btn btn-primary" href="javascript:search();">搜索</a>
 									</div>
 								</div>
@@ -98,6 +104,7 @@
 					
 					<div class="modal-body">
 								<form id="form2" action="${ctx}/tag/query" method="post">
+
 					<div class="row">
 						<div class="col-lg-12">
 							<section class="panel">
@@ -113,6 +120,13 @@
 						</div>
 					</div>
 				</form>
+									<div class="form-group">
+						<label for="exampleInputEmail1">类型</label>
+						<select id="type" name="type" class="form-control" >
+						 <option value="0">机器人</option>
+						 <option value="1">日签</option>
+						</select>
+					</div>
 						<div class="ibox-content">
 						  <div class="adv-table">
 								<table class="display table table-bordered table-striped" id="mytable1" width="100%">
@@ -240,6 +254,7 @@
             "type": "POST",
             "data": function (d) {
                 d.nickName = $("#nickName").val();
+                d.type =  $("#stype").val();
             }
         },
 	    processing:true,
@@ -288,6 +303,15 @@
 		        {data: "avatar",width:150,orderable:false,title: "用户头像",render:function(data,type,row,meta){
 		        	if(data!=null){
 		        		return '<img src="'+data+'" height="50"/>';
+		        	}
+		        }},
+		        {data: "type",width:150,orderable:false,title: "类型",render:function(data,type,row,meta){
+		        	if(data!=null){
+		        		if(data==0){
+		        			return  '机器人';
+		        		}else if(data==1){
+		        			return '日签'
+		        		}
 		        	}
 		        }},
 		        {title:"操作",orderable:false,width:200,render:function(data, type, row, meta){
@@ -377,8 +401,8 @@
 	}
 	   function addRobotInfo(id){
 			 var msg = "您真的确定要添加吗？"; 
-			 if (confirm(msg)==true){ 
-				 var param = {uid:id};
+			 if (confirm(msg)){ 
+				 var param = {uid:id,type:$("#type").val()};
 				  	$.ajax({
 			            cache: true,
 			            type: "POST",
@@ -402,9 +426,6 @@
 			                        }
 			            }
 			        });
-			  return true; 
-			 }else{ 
-			  return false; 
 			 }
 	    }
 	function searchUser(){

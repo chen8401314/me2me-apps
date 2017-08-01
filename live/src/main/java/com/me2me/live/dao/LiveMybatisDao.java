@@ -1836,6 +1836,7 @@ public class LiveMybatisDao {
 	public List<RobotInfo> getRobotInfoRandom(List<Long> ids){
 		RobotInfoExample example = new RobotInfoExample();
 		RobotInfoExample.Criteria criteria = example.createCriteria();
+		criteria.andTypeEqualTo(1);
 		if(ids.size()>0){
 		criteria.andUidNotIn(ids);
 		}
@@ -1851,7 +1852,7 @@ public class LiveMybatisDao {
 	public List<QuotationInfo> getQuotationInfoRandom(List<Long> ids){
 		QuotationInfoExample example = new QuotationInfoExample();
 		QuotationInfoExample.Criteria criteria = example.createCriteria();
-		criteria.andTypeEqualTo(0);
+		criteria.andTypeEqualTo(2);
 		if(ids.size()>0){
 		criteria.andIdNotIn(ids);
 		}

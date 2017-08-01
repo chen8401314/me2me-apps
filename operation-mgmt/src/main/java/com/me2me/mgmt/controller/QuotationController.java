@@ -56,9 +56,10 @@ public class QuotationController {
 	@RequestMapping(value = "/ajaxLoadRobotList")
 	public DatatablePage ajaxLoadRobotList(HttpServletRequest request,DatatablePage page) throws Exception {
 		String nickName = request.getParameter("nickName");
+		String type = request.getParameter("type");
 		SearchRobotListDto dto = new SearchRobotListDto();
 		PageBean pb = page.toPageBean();
-		Response resp = liveService.searchRobotListPage(nickName, pb.getCurrentPage(),pb.getPageSize());
+		Response resp = liveService.searchRobotListPage(nickName,Integer.parseInt(type), pb.getCurrentPage(),pb.getPageSize());
 		if(null != resp && resp.getCode() == 200 && null != resp.getData()){
 			dto = (SearchRobotListDto)resp.getData();
 		}
@@ -122,14 +123,14 @@ public class QuotationController {
 	}
 	@RequestMapping(value = "/addRobot")
 	@ResponseBody
-	public String addRobot(long uid,HttpServletRequest mrequest) throws Exception {
+	public String addRobot(long uid,int type,HttpServletRequest mrequest) throws Exception {
 		try {
 			Map<String,Object> totalRecordMap= contentService.queryForMap("select count(1) as count from robot_info where uid="+uid, null);
 			int totalRecord = Integer.parseInt(totalRecordMap.get("count").toString());
 			if(totalRecord>0){
 				return "2";
 			}else{
-				contentService.executeSql("insert into robot_info(uid) values("+uid+")");
+				contentService.executeSql("insert into robot_info(uid,type) values("+uid+","+type+")");
 			}
 			return "1";
 		} catch (Exception e) {

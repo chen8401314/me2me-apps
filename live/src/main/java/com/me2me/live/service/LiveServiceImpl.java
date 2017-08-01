@@ -8088,8 +8088,8 @@ public class LiveServiceImpl implements LiveService {
     }
     
     @Override
-    public Response searchRobotListPage(String nickName,int page, int pageSize){
-     	int totalRecord = liveLocalJdbcDao.countRobotListByNickName(nickName);
+    public Response searchRobotListPage(String nickName,int type,int page, int pageSize){
+     	int totalRecord = liveLocalJdbcDao.countRobotListByNickName(nickName,type);
     	int totalPage = (totalRecord + pageSize - 1) / pageSize;
     	if(page>totalPage){
     		page=totalPage;
@@ -8098,7 +8098,7 @@ public class LiveServiceImpl implements LiveService {
     		page=1;
     	}
     	int start = (page-1)*pageSize;
-    	List<Map<String, Object>> list = liveLocalJdbcDao.getRobotListByNickName(nickName,start, pageSize);
+    	List<Map<String, Object>> list = liveLocalJdbcDao.getRobotListByNickName(nickName,type,start, pageSize);
     	SearchRobotListDto dto = new SearchRobotListDto();
         dto.setTotalRecord(totalRecord);
         dto.setTotalPage(totalPage);
