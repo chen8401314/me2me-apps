@@ -210,6 +210,15 @@ public interface LiveService {
      */
     Response detailPageStatus(long topicId, int pageNo, int offset);
     
+    /**
+     * 根据fragmentId，获取该fid所在的分页页数
+     * @param topicId
+     * @param fid
+     * @param offset
+     * @return
+     */
+    Response detailFidPage(long topicId, long fid, int offset);
+    
     Response getLiveUpdate(GetLiveUpdateDto getLiveUpdateDto);
 
     Response testApi(TestApiDto request);

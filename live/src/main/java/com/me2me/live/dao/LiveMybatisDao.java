@@ -979,6 +979,14 @@ public class LiveMybatisDao {
         criteria.andTopicIdEqualTo(topicId);
        return  topicFragmentMapper.countByExample(example);
     }
+    
+    public int countFragmentBeforeFid(long topicId, long fid){
+    	TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andIdLessThanOrEqualTo(fid);
+        return topicFragmentMapper.countByExample(example);
+    }
 
     public List<TopicFragment> getTopicFragmentForPage(GetLiveDetailDto getLiveDetailDto) {
        /* TopicFragmentExample example = new TopicFragmentExample();

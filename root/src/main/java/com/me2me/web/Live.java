@@ -43,6 +43,7 @@ import com.me2me.web.request.CreateLiveRequest;
 import com.me2me.web.request.CreateVoteRequest;
 import com.me2me.web.request.DaySignInfoRequest;
 import com.me2me.web.request.DeleteLiveFragmentRequest;
+import com.me2me.web.request.DetailFidPageRequest;
 import com.me2me.web.request.DetailPageStatusRequest;
 import com.me2me.web.request.DisplayProtocolRequest;
 import com.me2me.web.request.DropAroundRequest;
@@ -211,6 +212,13 @@ public class Live extends BaseController {
     @ResponseBody
     public Response detailPageStatus(DetailPageStatusRequest request){
     	return liveService.detailPageStatus(request.getTopicId(), request.getPageNo(), request.getOffset());
+    }
+    
+    @CrossOrigin(origins = "*")
+    @RequestMapping(value = "/detailFidPage",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response detailFidPage(DetailFidPageRequest request){
+    	return liveService.detailFidPage(request.getTopicId(), request.getFid(), request.getOffset());
     }
     
     /**

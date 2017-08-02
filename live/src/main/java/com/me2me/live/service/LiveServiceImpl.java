@@ -76,6 +76,7 @@ import com.me2me.live.dto.CreateLiveDto;
 import com.me2me.live.dto.CreateVoteDto;
 import com.me2me.live.dto.CreateVoteResponeDto;
 import com.me2me.live.dto.DaySignInfoDto;
+import com.me2me.live.dto.DetailFidPageDTO;
 import com.me2me.live.dto.DetailPageStatusDTO;
 import com.me2me.live.dto.DropAroundDto;
 import com.me2me.live.dto.GetKingdomPriceDto;
@@ -3123,6 +3124,9 @@ public class LiveServiceImpl implements LiveService {
     
     @Override
     public Response detailPageStatus(long topicId, int pageNo, int offset){
+    	if(offset<1){
+    		offset = 50;
+    	}
     	DetailPageStatusDTO result = new DetailPageStatusDTO();
     	result.setPage(pageNo);
     	
@@ -3152,6 +3156,19 @@ public class LiveServiceImpl implements LiveService {
     		result.setIsFull(2);
     		result.setUpdateTime(0);
     	}
+    	
+    	return Response.success(result);
+    }
+    
+    @Override
+    public Response detailFidPage(long topicId, long fid, int offset){
+    	if(offset<1){
+    		offset = 50;
+    	}
+    	DetailFidPageDTO result = new DetailFidPageDTO();
+    	
+    	int count = liveMybatisDao.countFragmentBeforeFid(topicId, fid);
+    	result.setPage(count%offset==0?count/offset:count/offset+1);
     	
     	return Response.success(result);
     }
