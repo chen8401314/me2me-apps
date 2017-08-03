@@ -6616,6 +6616,7 @@ public class LiveServiceImpl implements LiveService {
 			extra.put("format", "");
 			extra.put("rLen", 0);
 			extra.put("rFmt", "");
+			extra.put("type", "image_daycard");
 			speakDto.setExtra(extra.toJSONString());
 			speak(speakDto);
 
