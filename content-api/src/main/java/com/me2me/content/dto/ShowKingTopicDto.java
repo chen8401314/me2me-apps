@@ -44,5 +44,4 @@ public class ShowKingTopicDto implements BaseEntity {
         private Date createTime;
     }
 
-
 }

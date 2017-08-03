@@ -52,6 +52,8 @@ public class Constant {
 	public static final String HOTLIST_BUBBLE_POSITION_KEY = "HOTLIST_BUBBLE_POSITION";
 	
 	public static final String OPEN_PUSH_POSITION = "OPEN_PUSH_POSITION";
- 
-    
+
+
+    public static final String REPEAT_SPEAK_DELAY_KEY = "REPEAT_SPEAK_DELAY";
+    public static final String MAX_REPEAT_SPEAK_COUNT_KEY ="MAX_REPEAT_SPEAK_COUNT" ;
 }

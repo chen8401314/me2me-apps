@@ -931,6 +931,28 @@ public class LiveServiceImpl implements LiveService {
     public Response speak(SpeakDto speakDto) {
         log.info("speak start ...");
         if (speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {
+            //START 防刷
+            int speakDelayCfg = Integer.parseInt(userService.getAppConfigByKey(Constant.REPEAT_SPEAK_DELAY_KEY));
+            int maxRepeakCountCfg = Integer.parseInt(userService.getAppConfigByKey(Constant.MAX_REPEAT_SPEAK_COUNT_KEY));
+
+            String speakContentCacheKey = "USER_SPEAK_CONTENT@"+speakDto.getUid();
+            String speakRepeatCountCacheKey = "USER_SPEAK_REPEAT_COUNT@"+speakDto.getUid();
+
+            String cacheContent = cacheService.get(speakContentCacheKey);
+            String strCacheRepeatCount =cacheService.get(speakRepeatCountCacheKey);
+            int cacheRepeatCount=strCacheRepeatCount==null?0:Integer.parseInt(strCacheRepeatCount);
+            if(cacheContent!=null && cacheContent.equals(speakDto.getFragment())){
+                if(cacheRepeatCount==maxRepeakCountCfg){   // 重复发言
+                    return Response.failure(-2,"重复发言");
+                }else{
+                    cacheRepeatCount++;
+                }
+            }
+            cacheService.setex(speakContentCacheKey,speakDto.getFragment(),speakDelayCfg);
+            cacheService.setex(speakRepeatCountCacheKey,cacheRepeatCount+"",speakDelayCfg);
+            // END 防刷
+
+
             //由于低版本前端在at的时候有bug，故关于at这里要做一个保护措施
             if(speakDto.getType() == Specification.LiveSpeakType.AT.index
                     || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
@@ -6614,6 +6636,7 @@ public class LiveServiceImpl implements LiveService {
 			extra.put("format", "");
 			extra.put("rLen", 0);
 			extra.put("rFmt", "");
+			extra.put("type", "image_daycard");
 			speakDto.setExtra(extra.toJSONString());
 			speak(speakDto);
 
@@ -7696,7 +7719,6 @@ public class LiveServiceImpl implements LiveService {
 					dto.setTopicTitle(topic.getTitle());
 				} else {
 					// 其他人标签逻辑
-
 					Response response = searchService.recommendUser(uid, 1, 10);
 					RecommendUserDto ruDto = (RecommendUserDto) response.getData();
 					List<RecommendUser> recUserData = ruDto.getRecUserData();
@@ -7707,10 +7729,17 @@ public class LiveServiceImpl implements LiveService {
 							if (recommendUser != null) {
 								long ruid = recommendUser.getUid();
 								UserProfile ruserProfile = userService.getUserProfileByUid(ruid);
-								Map<String, Object> rmaxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, ruid, 60,
-										90);
+								Map<String, Object> rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 60,
+										90,0);
 								if (rmaxFragment == null) {
-									rmaxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, ruid, 0, 0);
+									rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 0, 0,0);
+								}
+								if(rmaxFragment == null){
+									 rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 60,
+											90,1);
+									 if(rmaxFragment == null){
+										 rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 0, 0,1);
+									 }
 								}
 								if (rmaxFragment == null) {
 									continue;
