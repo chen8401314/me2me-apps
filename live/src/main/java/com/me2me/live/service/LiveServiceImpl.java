@@ -6638,6 +6638,7 @@ public class LiveServiceImpl implements LiveService {
 			extra.put("format", "");
 			extra.put("rLen", 0);
 			extra.put("rFmt", "");
+			extra.put("type", "image_daycard");
 			speakDto.setExtra(extra.toJSONString());
 			speak(speakDto);
 
@@ -7720,7 +7721,6 @@ public class LiveServiceImpl implements LiveService {
 					dto.setTopicTitle(topic.getTitle());
 				} else {
 					// 其他人标签逻辑
-
 					Response response = searchService.recommendUser(uid, 1, 10);
 					RecommendUserDto ruDto = (RecommendUserDto) response.getData();
 					List<RecommendUser> recUserData = ruDto.getRecUserData();
@@ -7731,10 +7731,17 @@ public class LiveServiceImpl implements LiveService {
 							if (recommendUser != null) {
 								long ruid = recommendUser.getUid();
 								UserProfile ruserProfile = userService.getUserProfileByUid(ruid);
-								Map<String, Object> rmaxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, ruid, 60,
-										90);
+								Map<String, Object> rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 60,
+										90,0);
 								if (rmaxFragment == null) {
-									rmaxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, ruid, 0, 0);
+									rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 0, 0,0);
+								}
+								if(rmaxFragment == null){
+									 rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 60,
+											90,1);
+									 if(rmaxFragment == null){
+										 rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 0, 0,1);
+									 }
 								}
 								if (rmaxFragment == null) {
 									continue;
