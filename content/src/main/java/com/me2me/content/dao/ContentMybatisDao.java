@@ -545,8 +545,12 @@ public class ContentMybatisDao {
         return result == null ? 0 : result;
     }
 
-    public List<Content>myPublishByType(MyPublishDto myPublishDto) {
+    public List<Content> myPublishByType(MyPublishDto myPublishDto) {
         return contentMapper.loadMyPublishDataByType(myPublishDto);
+    }
+    
+    public List<Content> loadMyJoinKingdom(MyPublishDto dto){
+    	return contentMapper.loadMyJoinKingdom(dto);
     }
 
     public int countMyPublishByType(MyPublishDto myPublishDto) {

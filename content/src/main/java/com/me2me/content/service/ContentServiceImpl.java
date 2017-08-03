@@ -1222,7 +1222,15 @@ public class ContentServiceImpl implements ContentService {
         dto.setUpdateTime(updateTime);
         dto.setFlag(vFlag);
         ShowMyPublishDto showMyPublishDto = new ShowMyPublishDto();
-        List<Content> contents = contentMybatisDao.myPublishByType(dto);
+        List<Content> contents = null;
+        if(type == 3){//我的王国（包括核心圈）
+        	contents = contentMybatisDao.myPublishByType(dto);
+        } else if(type == 4){
+        	contents = contentMybatisDao.loadMyJoinKingdom(dto);
+        } else{
+        	contents = new ArrayList<Content>();
+        }
+        
         List<Long> topicIdList = new ArrayList<Long>();
         List<Long> forwardTopicIdList = new ArrayList<Long>();
         for(Content idx : contents){
