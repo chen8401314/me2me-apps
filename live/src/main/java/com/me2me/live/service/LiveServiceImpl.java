@@ -933,6 +933,28 @@ public class LiveServiceImpl implements LiveService {
     public Response speak(SpeakDto speakDto) {
         log.info("speak start ...");
         if (speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {
+            //START 防刷
+            int speakDelayCfg = Integer.parseInt(userService.getAppConfigByKey(Constant.REPEAT_SPEAK_DELAY_KEY));
+            int maxRepeakCountCfg = Integer.parseInt(userService.getAppConfigByKey(Constant.MAX_REPEAT_SPEAK_COUNT_KEY));
+
+            String speakContentCacheKey = "USER_SPEAK_CONTENT@"+speakDto.getUid();
+            String speakRepeatCountCacheKey = "USER_SPEAK_REPEAT_COUNT@"+speakDto.getUid();
+
+            String cacheContent = cacheService.get(speakContentCacheKey);
+            String strCacheRepeatCount =cacheService.get(speakRepeatCountCacheKey);
+            int cacheRepeatCount=strCacheRepeatCount==null?0:Integer.parseInt(strCacheRepeatCount);
+            if(cacheContent!=null && cacheContent.equals(speakDto.getFragment())){
+                if(cacheRepeatCount==maxRepeakCountCfg){   // 重复发言
+                    return Response.failure(-2,"重复发言");
+                }else{
+                    cacheRepeatCount++;
+                }
+            }
+            cacheService.setex(speakContentCacheKey,speakDto.getFragment(),speakDelayCfg);
+            cacheService.setex(speakRepeatCountCacheKey,cacheRepeatCount+"",speakDelayCfg);
+            // END 防刷
+
+
             //由于低版本前端在at的时候有bug，故关于at这里要做一个保护措施
             if(speakDto.getType() == Specification.LiveSpeakType.AT.index
                     || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index

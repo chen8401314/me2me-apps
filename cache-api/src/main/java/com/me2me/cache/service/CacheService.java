@@ -29,7 +29,7 @@ public interface CacheService {
      * 设置一个key并设置他的ttl
      * @param key
      * @param value
-     * @param timeout
+     * @param timeout 单位秒
      */
     void setex(String key,String value,int timeout);
 

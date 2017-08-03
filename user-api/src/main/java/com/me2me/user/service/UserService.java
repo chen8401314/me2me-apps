@@ -497,6 +497,13 @@ public interface UserService {
 	boolean existsEmotionInfoByName(EmotionInfo emotionInfo);
 
 	String getAppConfigByKey(String key);
+
+	/**
+	 * 取整数类型的系统配置。
+	 * @param key
+	 * @return
+	 */
+	Integer getIntegerAppConfigByKey(String key);
 	
 	Map<String, String> getAppConfigsByKeys(List<String> keys);
 	

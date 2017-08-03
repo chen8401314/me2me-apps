@@ -1,7 +1,6 @@
 package com.me2me.content.dto;
 
 import com.me2me.common.web.BaseEntity;
-import com.me2me.user.dto.ModifyUserCoinDto;
 import lombok.Data;
 
 import java.util.Date;

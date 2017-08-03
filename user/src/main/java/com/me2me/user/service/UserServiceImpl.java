@@ -4291,8 +4291,22 @@ public class UserServiceImpl implements UserService {
 		}
 		return null;
 	}
-	
-	@Override
+
+    @Override
+    public Integer getIntegerAppConfigByKey(String key) {
+        String result = cacheService.get(CacheConstant.APP_CONFIG_KEY_PRE + key);
+        if(!StringUtils.isEmpty(result)){
+            return Integer.parseInt(result);
+        }
+        AppConfig config = userMybatisDao.getAppConfigByKey(key);
+        if(null != config && !StringUtils.isEmpty(config.getConfigValue())){
+            cacheService.set(CacheConstant.APP_CONFIG_KEY_PRE + key, config.getConfigValue());
+            return Integer.parseInt(config.getConfigValue());
+        }
+        return null;
+    }
+
+    @Override
 	public Map<String, String> getAppConfigsByKeys(List<String> keys){
 		if(null == keys || keys.size() == 0){
 			return null;
