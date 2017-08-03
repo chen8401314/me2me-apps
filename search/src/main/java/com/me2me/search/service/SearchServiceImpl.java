@@ -134,7 +134,7 @@ public class SearchServiceImpl implements SearchService {
     	try{
 	    	if(searchType == 0){//搜索全部，则返回UGC3个，王国3个，人3个
 	    		if(page <= 1){
-		    		ugcPage = searchService.queryUGC(keyword, 1, 20);
+//		    		ugcPage = searchService.queryUGC(keyword, 1, 20);
 		    		kingdomPage = searchService.queryKingdom(keyword, -1, 1, 20);
 		    		userPage = searchService.queryUsers(keyword, 1, 20);
 	    		}
@@ -157,19 +157,19 @@ public class SearchServiceImpl implements SearchService {
 		    		resultDTO.setTotalRecord(kingdomPage.getTotalElements());
 	    		}
 	    	}else if(searchType == 3){//UGC
-	    		ugcPage = searchService.queryUGC(keyword, page, pageSize);
-	    		if(null != ugcPage){
-	    			resultDTO.setTotalPage(ugcPage.getTotalPages());
-		    		resultDTO.setTotalRecord(ugcPage.getTotalElements());
-	    		}
+//	    		ugcPage = searchService.queryUGC(keyword, page, pageSize);
+//	    		if(null != ugcPage){
+//	    			resultDTO.setTotalPage(ugcPage.getTotalPages());
+//		    		resultDTO.setTotalRecord(ugcPage.getTotalElements());
+//	    		}
 	    	}
     	}catch(Exception e){
     		log.error("检索异常", e);
     	}
     	
-    	if(null != ugcPage){
-    		this.buildUgcSearchResult(uid, resultDTO, ugcPage, searchType);
-    	}
+//    	if(null != ugcPage){
+//    		this.buildUgcSearchResult(uid, resultDTO, ugcPage, searchType);
+//    	}
     	
     	if(null != kingdomPage){
     		this.buildKingdomSearchResult(uid, resultDTO, kingdomPage, searchType);
