@@ -28,6 +28,11 @@ public class ShowNewestDto implements BaseEntity{
 
         private List<ReviewElement> reviews = Lists.newArrayList();
 
+        private List<OutDataElement> textData = Lists.newArrayList();
+        private List<OutDataElement> audioData = Lists.newArrayList();
+        private List<OutDataElement> imageData = Lists.newArrayList();
+        private List<OutDataElement> ugcData = Lists.newArrayList();
+        
         public static ReviewElement createElement(){
             return new ReviewElement();
         }
@@ -50,5 +55,19 @@ public class ShowNewestDto implements BaseEntity{
             private int level;
 
         }
+    }
+    
+    @Data
+    public static class OutDataElement implements BaseEntity {
+		private static final long serialVersionUID = -1680174794247251182L;
+    	
+		private long id;
+		private int contentType;
+		private int type;
+		private String fragment;
+		private String fragmentImage;
+		private long atUid;
+		private String atNickName;
+		private String extra;
     }
 }

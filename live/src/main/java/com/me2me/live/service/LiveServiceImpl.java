@@ -10,14 +10,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-import com.google.common.collect.Sets;
 import com.me2me.core.KeysManager;
 import com.me2me.live.event.*;
 import com.me2me.live.model.*;

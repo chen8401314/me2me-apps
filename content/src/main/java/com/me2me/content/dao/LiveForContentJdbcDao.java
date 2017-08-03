@@ -997,4 +997,50 @@ public class LiveForContentJdbcDao {
     	}
     	return result;
     }
+    
+    /**
+     * 获取王国中最后一次更新往前{limitMinute}分钟的王国外露数据
+     * @param topicIds
+     * @param limitMinute
+     * @param privateTopicIds	私密王国ID
+     * @return
+     */
+    public List<Map<String, Object>> getOutFragments(List<Long> topicIds, int limitMinute, List<Long> privateTopicIds){
+    	if(null == topicIds || topicIds.size() == 0 || limitMinute<=0){
+    		return null;
+    	}else{
+    		if(null != privateTopicIds && privateTopicIds.size() > 0){
+    			for(int i=0;i<topicIds.size();i++){
+    				if(privateTopicIds.contains(topicIds.get(i))){
+    					topicIds.remove(i);
+    					i--;
+    				}
+    			}
+    			if(topicIds.size() == 0){
+    				return null;
+    			}
+    		}
+    	}
+    	
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select f2.* from topic_fragment f2,(select f.topic_id,max(f.create_time) as maxtime");
+    	sb.append(" from topic_fragment f where f.status=1 and f.topic_id in (");
+    	for(int i=0;i<topicIds.size();i++){
+    		if(i>0){
+    			sb.append(",");
+    		}
+    		sb.append(topicIds.get(i).toString());
+    	}
+    	sb.append(") and (f.type in (12,13) or (f.type=0 and f.content_type in (0,1,22,23))");
+    	sb.append(" or (f.type=55 and f.content_type in (0,63,51,62,72,74))");
+    	sb.append(" or (f.type=52 and f.content_type in (22,19,72,74,23))");
+    	sb.append(") group by f.topic_id) m where f2.topic_id=m.topic_id and f2.status=1");
+    	sb.append(" and (f2.type in (12,13) or (f2.type=0 and f2.content_type in (0,1,22,23))");
+    	sb.append(" or (f2.type=55 and f2.content_type in (0,63,51,62,72,74))");
+    	sb.append(" or (f2.type=52 and f2.content_type in (22,19,72,74,23))");
+    	sb.append(") and f2.create_time<=date_add(m.maxtime, interval -3 minute)");
+    	sb.append(" order by f2.topic_id,id DESC");
+
+    	return jdbcTemplate.queryForList(sb.toString());
+    }
 }

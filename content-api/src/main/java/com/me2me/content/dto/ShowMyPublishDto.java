@@ -2,6 +2,7 @@ package com.me2me.content.dto;
 
 import com.google.common.collect.Lists;
 import com.me2me.common.web.BaseEntity;
+
 import lombok.Data;
 
 import java.util.Date;
@@ -22,6 +23,11 @@ public class ShowMyPublishDto  implements BaseEntity {
     	
         private List<ReviewElement> reviews = Lists.newArrayList();
 
+        private List<OutDataElement> textData = Lists.newArrayList();
+        private List<OutDataElement> audioData = Lists.newArrayList();
+        private List<OutDataElement> imageData = Lists.newArrayList();
+        private List<OutDataElement> ugcData = Lists.newArrayList();
+        
         public static ReviewElement createReviewElement(){
             return new ReviewElement();
         }
@@ -50,5 +56,17 @@ public class ShowMyPublishDto  implements BaseEntity {
         return new MyPublishElement();
     }
 
-
+    @Data
+    public static class OutDataElement implements BaseEntity {
+		private static final long serialVersionUID = -1680174794247251182L;
+    	
+		private long id;
+		private int contentType;
+		private int type;
+		private String fragment;
+		private String fragmentImage;
+		private long atUid;
+		private String atNickName;
+		private String extra;
+    }
 }
