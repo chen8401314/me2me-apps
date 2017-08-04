@@ -46,20 +46,24 @@
         <!--<table tableName="topic_droparound" domainObjectName="TopicDroparound"/>-->
         <!--<table tableName="topic_droparound_trail" domainObjectName="TopicDroparoundTrail"/>-->
         <!--<table tableName="topic_fragment_template" domainObjectName="TopicFragmentTemplate"/>-->
-        <!-- <table tableName="topic_tag_detail" domainObjectName="TopicTag"/> -->
-        <!-- <table tableName="topic_tag_detail" domainObjectName="TopicTagDetail"/> -->
-        <!-- <table tableName="topic_news" domainObjectName="TopicNews"/> -->
-        <!-- <table tableName="topic_transfer_record" domainObjectName="TopicTransferRecord"/> -->
-        <!-- <table tableName="topic_read_his" domainObjectName="TopicReadHis"/> -->
-        <!--  <table tableName="user_steal_log" domainObjectName="UserStealLog" />  -->
-        <!-- <table tableName="topic_data" domainObjectName="TopicData" /> -->
-        <!-- <table tableName="topic_price_his" domainObjectName="TopicPriceHis" /> -->
-        <!-- <table tableName="topic_price_subsidy_config" domainObjectName="TopicPriceSubsidyConfig" /> -->
-      <!--   <table tableName="topic_given" domainObjectName="TopicGiven" /> -->
-     <!--  <table tableName="sign_record" domainObjectName="SignRecord" />  -->
-      <!--    <table tableName="robot_quotation_record" domainObjectName="RobotQuotationRecord" />  -->
-       <!--   <table tableName="robot_info" domainObjectName="RobotInfo" />  -->
-        <!--  <table tableName="quotation_info" domainObjectName="QuotationInfo" />  -->
-     <!-- <table tableName="sign_save_record" domainObjectName="SignSaveRecord" /> -->
+        <!--<table tableName="topic_tag_detail" domainObjectName="TopicTag"/> -->
+        <!--<table tableName="topic_tag_detail" domainObjectName="TopicTagDetail"/> -->
+        <!--<table tableName="topic_news" domainObjectName="TopicNews"/> -->
+        <!--<table tableName="topic_transfer_record" domainObjectName="TopicTransferRecord"/> -->
+        <!--<table tableName="topic_read_his" domainObjectName="TopicReadHis"/> -->
+        <!--<table tableName="user_steal_log" domainObjectName="UserStealLog" />  -->
+        <!--<table tableName="topic_data" domainObjectName="TopicData" /> -->
+        <!--<table tableName="topic_price_his" domainObjectName="TopicPriceHis" /> -->
+        <!--<table tableName="topic_price_subsidy_config" domainObjectName="TopicPriceSubsidyConfig" /> -->
+        <!--<table tableName="topic_given" domainObjectName="TopicGiven" /> -->
+        <!--<table tableName="sign_record" domainObjectName="SignRecord" />  -->
+        <!--<table tableName="robot_quotation_record" domainObjectName="RobotQuotationRecord" />  -->
+        <!--<table tableName="robot_info" domainObjectName="RobotInfo" />  -->
+        <!--<table tableName="quotation_info" domainObjectName="QuotationInfo" />  -->
+        <!--<table tableName="sign_save_record" domainObjectName="SignSaveRecord" /> -->
+        <!--<table tableName="lottery_info" domainObjectName="LotteryInfo" />-->
+        <!--<table tableName="lottery_content" domainObjectName="LotteryContent" />-->
+        <!--<table tableName="lottery_win" domainObjectName="LotteryWin" />-->
+        <!--<table tableName="lottery_prohibit" domainObjectName="LotteryProhibit" />-->
     </context>
 </generatorConfiguration>

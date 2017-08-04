@@ -46,7 +46,7 @@ public class QuotationDaySignTask {
 				try{
 				String uid = user.get("uid").toString();
 				StringBuilder textSql = new StringBuilder();
-				textSql.append("select t.id,t.create_time FROM topic_fragment t,topic tp WHERE t.topic_id = tp.id AND  ((t.type=0 AND t.content_type = 0) OR (t.TYPE=1 AND t.content_type = 0)) ");
+				textSql.append("select t.id,t.create_time FROM topic_fragment t,topic tp WHERE t.status = 1  AND   t.topic_id = tp.id AND  ((t.type=0 AND t.content_type = 0) OR (t.TYPE=1 AND t.content_type = 0)) ");
 				textSql.append(" AND t.fragment <> tp.summary ");
 				textSql.append(" AND t.create_time <='").append(yesterDayStr).append(" 23:59:59'");
 				textSql.append(" AND t.uid = ").append(uid);
@@ -58,7 +58,7 @@ public class QuotationDaySignTask {
 				}
 				
 				StringBuilder imgSql = new StringBuilder();
-				imgSql.append("select t.* FROM topic_fragment t WHERE  ");
+				imgSql.append("select t.* FROM topic_fragment t WHERE  t.status = 1  AND  ");
 				imgSql.append(" ((t.type=0 AND t.content_type = 1) OR (t.type=1 AND t.content_type = 1) OR (t.type=51 AND t.content_type = 51))  ");
 				imgSql.append(" AND t.create_time <='").append(yesterDayStr).append(" 23:59:59'");
 				imgSql.append(" AND json_extract(t.extra,'$.w[0]')>300  AND (json_extract(t.extra,'$.imgType[0]') IS  NULL  OR json_extract(t.extra,'$.imgType[0]') <> 1)");

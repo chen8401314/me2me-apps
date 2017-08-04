@@ -1238,7 +1238,7 @@ public class LiveLocalJdbcDao {
     
     public Map<String,Object> getMaxFragment(String strDate,long uid,int startNum,int endNum){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("SELECT t.*,tp.title FROM topic_fragment t,topic tp WHERE t.topic_id = tp.id AND  ((t.type=0 AND t.content_type = 0) OR (t.TYPE=1 AND t.content_type = 0)) ");
+    	sb.append("SELECT t.*,tp.title FROM topic_fragment t,topic tp WHERE t.status = 1  AND  t.topic_id = tp.id AND  ((t.type=0 AND t.content_type = 0) OR (t.TYPE=1 AND t.content_type = 0)) ");
     	sb.append(" AND t.fragment <> tp.summary ");
     	sb.append(" AND t.create_time >='").append(strDate).append(" 00:00:00' AND t.create_time <='").append(strDate).append(" 23:59:59'");
     	sb.append(" AND t.uid = ").append(uid);
@@ -1255,7 +1255,7 @@ public class LiveLocalJdbcDao {
     }
     public Map<String,Object> getMaxFragmentByType(String strDate,long uid,int startNum,int endNum,int type){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("SELECT t.*,tp.title FROM topic_fragment t,topic tp WHERE t.topic_id = tp.id AND t.content_type = 0  ");
+    	sb.append("SELECT t.*,tp.title FROM topic_fragment t,topic tp WHERE t.status = 1  AND  t.topic_id = tp.id AND t.content_type = 0  ");
     	sb.append( " and t.type =").append(type);
     	sb.append(" AND t.fragment <> tp.summary ");
     	sb.append(" AND t.create_time >='").append(strDate).append(" 00:00:00' AND t.create_time <='").append(strDate).append(" 23:59:59'");
@@ -1274,7 +1274,7 @@ public class LiveLocalJdbcDao {
     }
     public Map<String,Object> getFragmentImage(String strDate,long uid,long topicId){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("SELECT t.* FROM topic_fragment t WHERE   ((t.type=0 AND t.content_type = 1) OR (t.type=1 AND t.content_type = 1)  OR (t.type=51 AND t.content_type = 51)) ");
+    	sb.append("SELECT t.* FROM topic_fragment t WHERE t.status = 1  and  ((t.type=0 AND t.content_type = 1) OR (t.type=1 AND t.content_type = 1)  OR (t.type=51 AND t.content_type = 51)) ");
     	sb.append(" AND t.create_time >='").append(strDate).append(" 00:00:00' AND t.create_time <='").append(strDate).append(" 23:59:59'");
     	sb.append(" AND t.uid = ").append(uid);
     	if(topicId!=0){
