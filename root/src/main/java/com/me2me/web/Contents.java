@@ -82,25 +82,18 @@ public class Contents extends BaseController {
         contentDto.setForwardCid(request.getForwardCid());
         contentDto.setForWardUrl(request.getForwardUrl());
         contentDto.setForwardTitle(request.getForwardTitle());
-    /*    if(request.getType() == 1){
-            Response response = contentService.publish2(contentDto);
-            CoinRule coinRuleShare = userService.getCoinRules().get(Rules.SHARE_KING_KEY);
-            ModifyUserCoinDto muDto= userService.coinRule(request.getUid(), coinRuleShare);
-            CreateContentSuccessDto createContentSuccessDto = (CreateContentSuccessDto)response.getData();
-            createContentSuccessDto.setModifyUserCoinDto(muDto);
-            return response;
-        }*/
-        if(contentDto.getType() != 2) {
-            // 用户UGC入口
-            Response response = contentService.publish2(contentDto);
-  /*          ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(contentDto.getUid(), userService.getCoinRules().get(Rules.PUBLISH_UGC_KEY));
-            CreateContentSuccessDto createContentSuccessDto = (CreateContentSuccessDto)response.getData();
-            createContentSuccessDto.setModifyUserCoinDto(modifyUserCoinDto);*/
-            return response;
-        }else{
-            // 小编发布入口
-            return contentService.editorPublish(contentDto);
-        }
+        contentDto.setTargetTopicId(request.getTargetTopicId());
+        
+        return contentService.publishUGC(contentDto);
+        
+//        if(contentDto.getType() != 2) {
+//            // 用户UGC入口
+//            Response response = contentService.publish2(contentDto);
+//            return response;
+//        }else{
+//            // 小编发布入口
+//            return contentService.editorPublish(contentDto);
+//        }
     }
 
     /**

@@ -1919,8 +1919,8 @@ public class LiveMybatisDao {
     }
 
 
-    public QuotationInfo getQuotationInfo(){
-	    return  quotationInfoMapper.getQuotationInfo();
+	public QuotationInfo getQuotationInfoByType(int type){
+	    return  quotationInfoMapper.getQuotationInfo(type);
     }
 
     public List<QuotationInfo> getQuotationInfoByList(int limit){
@@ -1945,4 +1945,12 @@ public class LiveMybatisDao {
 	public QuotationInfo getQuotationInfoById(long id){
 		return quotationInfoMapper.selectByPrimaryKey(id);
 	}
+	
+	public int countUserFragment(long topicId, long uid){
+    	TopicFragmentExample example = new TopicFragmentExample();
+        TopicFragmentExample.Criteria criteria = example.createCriteria();
+        criteria.andTopicIdEqualTo(topicId);
+        criteria.andUidEqualTo(uid);
+        return topicFragmentMapper.countByExample(example);
+    }
 }

@@ -1056,6 +1056,26 @@ public class LiveServiceImpl implements LiveService {
 					}
                 }
                 
+                //王国创建3天内，国王的前两条发言触发机器人回复
+                String robotSwitch = userService.getAppConfigByKey("KINGDOMROBOT_AUTO_REPLY");
+            	if(!StringUtils.isEmpty(robotSwitch) && "on".equals(robotSwitch) && speakDto.getQuotationInfoId() == 0){//自动回复开关开 并且 不是机器人的回复
+            		Calendar cal = Calendar.getInstance();
+                    cal.setTime(topic.getCreateTime());
+                    cal.add(Calendar.DAY_OF_MONTH, 3);
+                    Date now = new Date();
+                    Date limitTime = cal.getTime();
+                    if(limitTime.getTime() > now.getTime()){
+                    	//再判断是否国王，只有国王才有机器人
+                    	if(topic.getUid().longValue() == speakDto.getUid()){
+                    		//再判断是否国王发言多少条了
+                    		int c = liveMybatisDao.countUserFragment(topic.getId(), speakDto.getUid());
+                    		if(c < 3){
+                    			applicationEventBus.post(new AutoReplyEvent(topic.getUid(), topic.getId(), topic.getCreateTime()));
+                    		}
+                    	}
+                    }
+            	}
+                
                 log.info("updateTopic updateTime");
             }
 
@@ -3735,13 +3755,12 @@ public class LiveServiceImpl implements LiveService {
         //add kingdom tags -- end --
 
         // 机器人自动回复开始 -- start --
-        String key = KeysManager.SEVEN_DAY_REGISTER_PREFIX+topic.getUid().toString();
-        if(!StringUtils.isEmpty(cacheService.get(key))){//7天内新注册的用户
-        	String robotSwitch = userService.getAppConfigByKey("KINGDOMROBOT_AUTO_REPLY");
-        	if(!StringUtils.isEmpty(robotSwitch) && "on".equals(robotSwitch)){//自动回复开关开
-        		applicationEventBus.post(new AutoReplyEvent(topic.getUid(), topic.getId(), topic.getCreateTime()));
-        	}
-        }
+        //目前机器人逻辑如下，所有新建王国新建时，触发机器人，并且3天内的国王前两条更新，有机器人触发
+        String robotSwitch = userService.getAppConfigByKey("KINGDOMROBOT_AUTO_REPLY");
+    	if(!StringUtils.isEmpty(robotSwitch) && "on".equals(robotSwitch)){//自动回复开关开
+    		//这里是创建的时候，则直接有
+    		applicationEventBus.post(new AutoReplyEvent(topic.getUid(), topic.getId(), topic.getCreateTime()));
+    	}
         // 机器人自动回复结束 -- end --
         log.info("createKingdom end");
         CoinRule coinRule = userService.getCoinRules().get(Rules.CREATE_KING_KEY);
@@ -8154,8 +8173,8 @@ public class LiveServiceImpl implements LiveService {
     }
 
     @Override
-    public QuotationInfo selectQuotation() {
-        return liveMybatisDao.getQuotationInfo();
+    public QuotationInfo selectQuotationByType(int type) {
+        return liveMybatisDao.getQuotationInfoByType(type);
     }
 
     @Override

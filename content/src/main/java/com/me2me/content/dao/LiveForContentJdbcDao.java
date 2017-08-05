@@ -618,6 +618,95 @@ public class LiveForContentJdbcDao {
     }
     
     /**
+     * 对外分享次数用户榜单(2017-08-07 00:00:00开始)
+     * @param start
+     * @param pageSize
+     * @param blacklistUids
+     * @return
+     */
+    public List<BillBoardListDTO> shareUserList(long start, int pageSize, List<Long> blacklistUids){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select p.uid,m.hcount from user_profile p,(");
+    	sb.append("select h.uid,count(1) as hcount from content_share_history h");
+    	sb.append(" where h.create_time>='2017-08-07 00:00:00' group by h.uid) m");
+    	sb.append(" where p.uid=m.uid and p.nick_name not like '%米汤客服%'");
+    	if(null != blacklistUids && blacklistUids.size() > 0){
+    		sb.append(" and p.uid not in (");
+    		for(int i=0;i<blacklistUids.size();i++){
+    			if(i>0){
+    				sb.append(",");
+    			}
+    			sb.append(blacklistUids.get(i).toString());
+    		}
+    		sb.append(")");
+    	}
+    	sb.append(" order by m.hcount desc,p.uid limit ");
+    	sb.append(start).append(",").append(pageSize);
+    	
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	
+    	List<BillBoardListDTO> result = new ArrayList<BillBoardListDTO>();
+    	if(null != list && list.size() > 0){
+    		BillBoardListDTO bbl = null;
+    		Map<String, Object> m = null;
+    		for(int i=0;i<list.size();i++){
+    			m = list.get(i);
+    			bbl = new BillBoardListDTO();
+    			bbl.setTargetId((Long)m.get("uid"));
+    			bbl.setType(2);
+    			bbl.setSinceId(start+i+1);
+    			result.add(bbl);
+    		}
+    	}
+    	return result;
+    }
+    
+    /**
+     * 外部阅读次数王国榜单(2017-08-07 00:00:00开始)
+     * @param start
+     * @param pageSize
+     * @param blacklistUids
+     * @return
+     */
+    public List<BillBoardListDTO> outReadKingdomList(long start, int pageSize, List<Long> blacklistUids){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select t.id,m.tcount from topic t,(");
+    	sb.append("select h.topic_id,count(1) as tcount from topic_read_his h");
+    	sb.append(" where h.create_time>='2017-08-07 00:00:00'");
+    	sb.append(" and h.in_app=0 group by h.topic_id) m");
+    	sb.append(" where t.id=m.topic_id");
+    	if(null != blacklistUids && blacklistUids.size() > 0){
+    		sb.append(" and t.uid not in (");
+    		for(int i=0;i<blacklistUids.size();i++){
+    			if(i>0){
+    				sb.append(",");
+    			}
+    			sb.append(blacklistUids.get(i).toString());
+    		}
+    		sb.append(")");
+    	}
+    	sb.append(" order by m.tcount desc,t.id limit ");
+    	sb.append(start).append(",").append(pageSize);
+    	
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	
+    	List<BillBoardListDTO> result = new ArrayList<BillBoardListDTO>();
+    	if(null != list && list.size() > 0){
+    		BillBoardListDTO bbl = null;
+    		Map<String, Object> m = null;
+    		for(int i=0;i<list.size();i++){
+    			m = list.get(i);
+    			bbl = new BillBoardListDTO();
+    			bbl.setTargetId((Long)m.get("id"));
+    			bbl.setType(1);
+    			bbl.setSinceId(start+i+1);
+    			result.add(bbl);
+    		}
+    	}
+    	return result;
+    }
+    
+    /**
      * 王国价值最高排行榜
      * @param start
      * @param pageSize

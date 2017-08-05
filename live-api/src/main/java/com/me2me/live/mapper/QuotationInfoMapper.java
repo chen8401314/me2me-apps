@@ -99,7 +99,7 @@ public interface QuotationInfoMapper {
      *随机获取一条语录
      * @return
      */
-    QuotationInfo getQuotationInfo();
+    QuotationInfo getQuotationInfo(@Param("type") int type);
 
     List<QuotationInfo> selectListQuotationInfo(@Param("limit") int limit);
 }

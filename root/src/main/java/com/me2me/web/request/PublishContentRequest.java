@@ -55,6 +55,8 @@ public class PublishContentRequest extends Request {
     @Setter
     private String coverImage;
 
-
+    @Getter
+    @Setter
+    private long targetTopicId;
 
 }

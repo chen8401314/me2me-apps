@@ -627,7 +627,7 @@ public interface LiveService {
 
      RobotInfo selectRobotInfo();
 
-     QuotationInfo selectQuotation();
+     QuotationInfo selectQuotationByType(int type);
 
 	List<QuotationInfo> selectQuotationByList(int limit);
      

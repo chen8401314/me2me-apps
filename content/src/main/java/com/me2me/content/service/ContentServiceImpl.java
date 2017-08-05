@@ -5,7 +5,6 @@ import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,7 +20,6 @@ import java.util.concurrent.Executors;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Maps;
 import com.me2me.core.KeysManager;
-import com.me2me.core.dao.BaseJdbcDao;
 import com.me2me.user.dto.*;
 import com.me2me.user.rule.Rules;
 
@@ -135,7 +133,6 @@ import com.me2me.user.model.UserNoticeUnread;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
-import com.plusnet.common.util.CollectionUtil;
 import com.plusnet.forecast.domain.ForecastContent;
 import com.plusnet.search.content.RecommendRequest;
 import com.plusnet.search.content.RecommendResponse;
@@ -502,6 +499,24 @@ public class ContentServiceImpl implements ContentService {
     public Response publish2(ContentDto contentDto) {
         log.info("publish start ...");
         return publishContentAdapter.execute(contentDto);
+    }
+    
+    public Response publishUGC(ContentDto contentDto){
+    	if(contentDto.getType() != Specification.ArticleType.TOPIC_UGC.index){
+    		log.info("当前[type="+contentDto.getType()+"]无法在3.0.2及以上版本中发布");
+    		return Response.failure(500, "当前版本无法发布UGC，请更新新版本");
+    	}
+    	log.info("publish ugc to topic["+contentDto.getTargetTopicId()+"]");
+    	//当前版本只插入自己的情绪王国，如果有则直接插入，如果没有则创建了再插入
+    	CreateContentSuccessDto createContentSuccessDto = new CreateContentSuccessDto();
+    	
+    	
+    	
+    	ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(contentDto.getUid(), userService.getCoinRules().get(Rules.PUBLISH_UGC_KEY));
+        createContentSuccessDto.setUpgrade(modifyUserCoinDto.getUpgrade());
+        createContentSuccessDto.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
+    	log.info("publish ugc end");
+    	return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
     }
 
     @Override
@@ -5805,6 +5820,18 @@ public class ContentServiceImpl implements ContentService {
                 }
                 result = liveForContentJdbcDao.userCoinList(sinceId, pageSize, blacklistUids);
                 break;
+            case 33://对外分享次数用户榜单
+            	if(sinceId < 0){
+                    sinceId = 0l;
+                }
+            	result = liveForContentJdbcDao.shareUserList(sinceId, pageSize, blacklistUids);
+            	break;
+            case 34://外部阅读次数王国榜单
+            	if(sinceId < 0){
+                    sinceId = 0l;
+                }
+            	result = liveForContentJdbcDao.outReadKingdomList(sinceId, pageSize, blacklistUids);
+            	break;
             default:
                 break;
         }
@@ -6339,7 +6366,7 @@ public class ContentServiceImpl implements ContentService {
         List<BillBoardRelationDto> result = Lists.newArrayList();
 
         int type = 1;//默认王国
-        if(mode == 1 || mode == 2 || mode == 3 || mode == 8 || mode == 9 || mode == 10 || mode == 11 || mode == 32){
+        if(mode == 1 || mode == 2 || mode == 3 || mode == 8 || mode == 9 || mode == 10 || mode == 11 || mode == 32 || mode == 33){
             type = 2;
         }
 

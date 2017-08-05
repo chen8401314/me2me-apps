@@ -135,8 +135,9 @@ public interface Specification {
 
         FORWARD_SYSTEM("转发小编文章",8),
 
-        FORWARD_ARTICLE("转发系统文章",9);
+        FORWARD_ARTICLE("转发系统文章",9),
 
+        TOPIC_UGC("王国详情UGC",10);
 
         public final String name;
 

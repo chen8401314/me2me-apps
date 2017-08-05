@@ -103,6 +103,8 @@
 														<option value="30">标签[深夜食堂]王国价值最高</option>
 														<option value="31">标签[深夜食堂]王国价值增长最快</option>
 														<option value="32">个人米汤币排行榜</option>
+														<option value="33">对外分享次数用户榜单(8月7日0点后)</option>
+														<option value="34">外部阅读次数王国榜单(8月7日0点后)</option>
 													</select>
 													<label class="text-danger">保存之后不可修改。</label>
 		                                        </div>
@@ -124,7 +126,7 @@
 		                                        			target.removeAttr("readonly");
 		                                        		}else{
 		                                        			target.attr("readonly","readonly")
-		                                        			if(val=="1" || val=="2" || val=="3" || val=="8" || val=="9" || val=="10" || val=="11" || val=="32"){
+		                                        			if(val=="1" || val=="2" || val=="3" || val=="8" || val=="9" || val=="10" || val=="11" || val=="32" || val=="33"){
 		                                        				target.find("option[value='2']").attr("selected","selected");
 		                                        			}else{
 		                                        				target.find("option[value='1']").attr("selected","selected");

@@ -45,7 +45,7 @@ public class ContentDto implements BaseEntity {
 
     private int isTop;
 
+    private long targetTopicId;
 
-
-
+    private String version;
 }
