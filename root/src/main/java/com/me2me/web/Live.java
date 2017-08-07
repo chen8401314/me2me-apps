@@ -78,6 +78,7 @@ import com.me2me.web.request.SetLiveRequest;
 import com.me2me.web.request.SettingModifyRequest;
 import com.me2me.web.request.SignOutLiveRequest;
 import com.me2me.web.request.SpeakRequest;
+import com.me2me.web.request.SpecialKingdomInfoRequest;
 import com.me2me.web.request.StealKingdomCoinRequest;
 import com.me2me.web.request.TagKingdomsRequest;
 import com.me2me.web.request.TakeoverTopicRequest;
@@ -1020,5 +1021,16 @@ public class Live extends BaseController {
     @RequestMapping(value = "/userKingdomInfo",method = RequestMethod.POST)
     public Response userKingdomInfo(UserKingdomInfoRequest request){
     	return liveService.userKingdomInfo(request.getUid());
+    }
+    
+    /**
+     * 用户特殊王国信息获取接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/specialKingdomInfo",method = RequestMethod.POST)
+    public Response specialKingdomInfo(SpecialKingdomInfoRequest request){
+    	return liveService.specialKingdomInfo(request.getUid(), request.getSearchType());
     }
 }

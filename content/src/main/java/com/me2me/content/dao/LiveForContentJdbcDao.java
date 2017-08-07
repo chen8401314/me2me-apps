@@ -1132,4 +1132,24 @@ public class LiveForContentJdbcDao {
 
     	return jdbcTemplate.queryForList(sb.toString());
     }
+    
+    public Map<String,Object> getTopicById(long id){
+		String sql = "select * from topic where id = "+id;
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
+		if(list.size() > 0 && list != null){
+			return list.get(0);
+		}
+		return null;
+	}
+    
+    public Map<String,Object> getUserSpecialTopicBySubType(long uid, int subType){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select * from topic t where t.uid=").append(uid);
+    	sb.append(" and t.sub_type=").append(subType);
+    	List<Map<String,Object>> list = jdbcTemplate.queryForList(sb.toString());
+		if(list.size() > 0 && list != null){
+			return list.get(0);
+		}
+		return null;
+    }
 }

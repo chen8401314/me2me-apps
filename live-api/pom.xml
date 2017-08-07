@@ -77,6 +77,11 @@
 			<artifactId>user-api</artifactId>
 			<version>${project.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>com.me2me</groupId>
+			<artifactId>content-api</artifactId>
+			<version>${project.version}</version>
+		</dependency>
     </dependencies>
 
     <profiles>

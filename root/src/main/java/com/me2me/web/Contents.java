@@ -4,6 +4,7 @@ import com.me2me.common.web.Response;
 import com.me2me.content.dto.*;
 import com.me2me.content.service.ContentService;
 import com.me2me.kafka.service.KafkaService;
+import com.me2me.live.service.LiveService;
 import com.me2me.user.service.UserService;
 import com.me2me.web.request.*;
 import com.me2me.web.utils.VersionUtil;
@@ -35,6 +36,9 @@ public class Contents extends BaseController {
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private LiveService liveService;
 
     /**
      * 精选接口(已废)
@@ -84,7 +88,7 @@ public class Contents extends BaseController {
         contentDto.setForwardTitle(request.getForwardTitle());
         contentDto.setTargetTopicId(request.getTargetTopicId());
         
-        return contentService.publishUGC(contentDto);
+        return liveService.publishUGC(contentDto);
         
 //        if(contentDto.getType() != 2) {
 //            // 用户UGC入口

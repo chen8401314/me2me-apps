@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.me2me.common.page.PageBean;
 import com.me2me.common.web.Response;
+import com.me2me.content.dto.ContentDto;
 import com.me2me.live.dto.AggregationOptDto;
 import com.me2me.live.dto.CreateKingdomDto;
 import com.me2me.live.dto.CreateLiveDto;
@@ -649,4 +650,19 @@ public interface LiveService {
 	 int delQuotationInfo(long id);
 	 
 	 QuotationInfo getQuotationInfoById(long id);
+	 
+	 /**
+	  * 查询用户特殊王国信息
+	  * @param uid
+	  * @param searchType
+	  * @return
+	  */
+	 Response specialKingdomInfo(long uid, int searchType);
+	 
+	/**
+	 * 3.0.2版本的新UGC发布接口 将UGC发布到指定王国里去
+	 * @param contentDto
+	 * @return
+	 */
+	Response publishUGC(ContentDto contentDto);
 }

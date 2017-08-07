@@ -158,14 +158,6 @@ public interface ContentService{
     int countFragment(long topicId,long uid);
 
     Response publish2(ContentDto contentDto);
-    
-    /**
-     * 3.0.2版本的新UGC发布接口
-     * 将UGC发布到指定王国里去
-     * @param contentDto
-     * @return
-     */
-    Response publishUGC(ContentDto contentDto);
 
     void createTag(ContentDto contentDto, Content content);
 

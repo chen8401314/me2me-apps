@@ -52,6 +52,7 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
 import com.me2me.content.dto.ContentDto;
+import com.me2me.content.dto.CreateContentSuccessDto;
 import com.me2me.content.dto.LikeDto;
 import com.me2me.content.dto.TeaseInfoDto;
 import com.me2me.content.dto.WriteTagDto;
@@ -115,6 +116,7 @@ import com.me2me.live.dto.ShowTopicSearchDTO;
 import com.me2me.live.dto.ShowTopicTagsDTO;
 import com.me2me.live.dto.ShowUserAtListDTO;
 import com.me2me.live.dto.SpeakDto;
+import com.me2me.live.dto.SpecialKingdomInfoDTO;
 import com.me2me.live.dto.StealResultDto;
 import com.me2me.live.dto.SubscribedTopicDTO;
 import com.me2me.live.dto.TestApiDto;
@@ -7980,8 +7982,6 @@ public class LiveServiceImpl implements LiveService {
         contentDto.setForwardCid(topic.getId());
         contentDto.setRights(Specification.ContentRights.EVERY.index);
         contentService.publish(contentDto);
-        
-        applicationEventBus.post(new CacheLiveEvent(createKingdomDto.getUid(), topic.getId()));
 
         //创建王国之后创建相应的价值数据表（主要是可以创建后即可有一定的被偷值）
         TopicData td = new TopicData();
@@ -8071,16 +8071,6 @@ public class LiveServiceImpl implements LiveService {
         	}
         }
 
-        //特殊王国需要做一点特殊处理
-        if(createKingdomDto.getKType() != Specification.KingdomType.NORMAL.index
-        		&& createKingdomDto.getKType() != Specification.KingdomType.AGGREGATION.index){
-        	if(type == Specification.ActivityKingdomType.SPRINGKING.index){
-        		activityService.createActivityKingdom4Spring(topic.getId(), createKingdomDto.getUid());
-        	}else{
-        		activityService.createActivityKingdom(topic.getId(), createKingdomDto.getUid(), type, uid2);
-        	}
-        }
-
         //--add update kingdom cache -- modify by zcl -- begin --
 		String value = lastFragmentId + "," + total;
         cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
@@ -8130,34 +8120,39 @@ public class LiveServiceImpl implements LiveService {
 	 * @param uid
 	 * @return
 	 */
-	public Topic createEmotionTopic(long uid, String coverImage){
-		 UserProfile userProfile = userService.getUserProfileByUid(uid);
-		 CreateKingdomDto createKingdomDto  = new CreateKingdomDto();
-		 createKingdomDto.setUid(uid);
-		 createKingdomDto.setTitle(userProfile.getNickName()+"的生活记录");
-		 List<String> randomCover = userService.getRandomKingdomCover(1);
-		 if(randomCover.size()>0){
-			 createKingdomDto.setLiveImage(randomCover.get(0));
-		 }else{
-			 createKingdomDto.setLiveImage(coverImage);
-		 }
-		 
-		 createKingdomDto.setContentType(0);
-		 createKingdomDto.setFragment("吃喝玩乐，记录我的日常。");
-		 createKingdomDto.setSource(0);
-		 JSONObject extra = new JSONObject();
-         extra.put("type", "textNormal");
-         extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
-         extra.put("hAlign", "center");
-		 createKingdomDto.setExtra(extra.toJSONString());
-		 createKingdomDto.setKType(0);
-		 createKingdomDto.setCExtra("");
-		 createKingdomDto.setKConfig("");
-		 createKingdomDto.setTags("非典型性话痨");
-		 createKingdomDto.setSubType(1);
-		 Topic topic = createSpecialTopic(createKingdomDto);
-		 return topic;
+	public Topic createEmotionTopic(long uid, String coverImage) {
+		UserProfile userProfile = userService.getUserProfileByUid(uid);
+		CreateKingdomDto createKingdomDto = new CreateKingdomDto();
+		createKingdomDto.setUid(uid);
+		String nickName = userProfile.getNickName();
+		if (nickName != null && nickName.matches("用户\\d+.*")) {
+			nickName = "我";
+		}
+		createKingdomDto.setTitle(nickName + "的生活记录");
+		List<String> randomCover = userService.getRandomKingdomCover(1);
+		if (randomCover.size() > 0) {
+			createKingdomDto.setLiveImage(randomCover.get(0));
+		} else {
+			createKingdomDto.setLiveImage(coverImage);
+		}
+
+		createKingdomDto.setContentType(0);
+		createKingdomDto.setFragment("吃喝玩乐，记录我的日常。");
+		createKingdomDto.setSource(0);
+		JSONObject extra = new JSONObject();
+		extra.put("type", "textNormal");
+		extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
+		extra.put("hAlign", "center");
+		createKingdomDto.setExtra(extra.toJSONString());
+		createKingdomDto.setKType(0);
+		createKingdomDto.setCExtra("");
+		createKingdomDto.setKConfig("");
+		createKingdomDto.setTags("非典型性话痨");
+		createKingdomDto.setSubType(1);
+		Topic topic = createSpecialTopic(createKingdomDto);
+		return topic;
 	}
+	
 	@Override
 	public Response saveSignSaveRecord(long uid,int type){
 		SignSaveRecord signSaveRecord = new SignSaveRecord();
@@ -8260,4 +8255,112 @@ public class LiveServiceImpl implements LiveService {
     	return liveMybatisDao.getQuotationInfoById(id);
 	}
     
+    @Override
+    public Response specialKingdomInfo(long uid, int searchType){
+    	int subType = 0;
+    	if(searchType == 1){
+    		subType = 1;
+    	}else{
+    		return Response.failure(500, "查询失败（不支持的查询类型）");
+    	}
+    	SpecialKingdomInfoDTO result = new SpecialKingdomInfoDTO();
+    	
+    	Topic special = liveMybatisDao.getUserSpecialTopicBySubType(uid, subType);
+    	if(null != special){
+    		result.setTopicId(special.getId());
+    		result.setTitle(special.getTitle());
+    		result.setCoverImage(Constant.QINIU_DOMAIN + "/" + special.getLiveImage());
+    		result.setType(special.getType());
+    		result.setSummary(special.getSummary());
+    	}else{
+    		if(subType == 1){
+    			UserProfile profile = userService.getUserProfileByUid(uid);
+    			if(null != profile){
+    				String nickName = profile.getNickName();
+    				if(nickName!=null && nickName.matches("用户\\d+.*")){
+        				nickName="我";
+        			}
+    				result.setTitle(nickName + "的生活记录");
+    			}
+    		}
+    	}
+    	
+    	return Response.success(result);
+    }
+    
+    @Override
+    public Response publishUGC(ContentDto contentDto){
+    	if(contentDto.getType() != Specification.ArticleType.TOPIC_UGC.index){
+    		log.info("当前[type="+contentDto.getType()+"]无法在3.0.2及以上版本中发布");
+    		return Response.failure(500, "当前版本无法发布UGC，请更新新版本");
+    	}
+    	log.info("publish ugc to topic["+contentDto.getTargetTopicId()+"]");
+    	//当前版本只插入自己的情绪王国，如果有则直接插入，如果没有则创建了再插入
+    	CreateContentSuccessDto createContentSuccessDto = new CreateContentSuccessDto();
+    	
+    	//查询是否有传递进来topicId，如果有则插入到相应王国里，
+    	//如果没有，则查询是否有相应的情绪王国，有则插入到情绪王国，没有则创建新的情绪王国再插入进去
+    	Topic targetTopic = null;
+    	if(contentDto.getTargetTopicId() > 0){
+    		targetTopic = liveMybatisDao.getTopicById(contentDto.getTargetTopicId());
+    		if(null == targetTopic){
+    			return Response.failure(500, "王国不存在");
+    		}
+    	}else{
+    		targetTopic = liveMybatisDao.getUserSpecialTopicBySubType(contentDto.getUid(), 1);//查询用户的情绪王国
+    		if(null == targetTopic){// 没有则新建
+    			targetTopic = this.createEmotionTopic(contentDto.getUid(), null);
+    		}
+    	}
+    	if(null == targetTopic){
+    		return Response.failure(500, "系统异常");
+    	}
+    	
+    	//好了，目前王国都准备好了，那么下面就应该是插入UGC了
+    	TopicFragment fragment = new TopicFragment();
+    	fragment.setTopicId(targetTopic.getId());
+    	fragment.setUid(contentDto.getUid());
+    	fragment.setFragment(contentDto.getTitle());
+    	fragment.setFragmentImage("");
+    	fragment.setType(52);
+    	fragment.setContentType(23);//王国内链
+        //组装extra
+        JSONObject obj = new JSONObject();
+        obj.put("type", "ugc");
+        obj.put("only", UUID.randomUUID().toString()+"-"+new Random().nextInt());
+        obj.put("content", contentDto.getContent());
+        JSONArray images = new JSONArray();
+        if(!StringUtils.isEmpty(contentDto.getImageUrls())){
+            String[] imgs = contentDto.getImageUrls().split(";");
+            for(String img : imgs){
+            	if(!StringUtils.isEmpty(img)){
+            		images.add(Constant.QINIU_DOMAIN + "/" + img);
+            	}
+            }
+        }
+        obj.put("images", images);//图片
+        fragment.setExtra(obj.toJSONString());
+        liveMybatisDao.createTopicFragment(fragment);
+
+    	Calendar calendar = Calendar.getInstance();
+    	targetTopic.setUpdateTime(calendar.getTime());
+    	targetTopic.setLongTime(calendar.getTimeInMillis());
+        liveMybatisDao.updateTopic(targetTopic);
+
+        //更新缓存
+        long lastFragmentId = fragment.getId();
+        int total = liveMybatisDao.countFragmentByTopicId(targetTopic.getId());
+        String ceValue = lastFragmentId + "," + total;
+        cacheService.hSet(LiveServiceImpl.TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + targetTopic.getId(), ceValue);
+    	
+        createContentSuccessDto.setTopicId(targetTopic.getId());//王国ID
+        createContentSuccessDto.setContentType(targetTopic.getType());//王国类型
+        createContentSuccessDto.setInternalStatus(this.getInternalStatus(targetTopic, contentDto.getUid()));
+        
+    	ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(contentDto.getUid(), userService.getCoinRules().get(Rules.PUBLISH_UGC_KEY));
+        createContentSuccessDto.setUpgrade(modifyUserCoinDto.getUpgrade());
+        createContentSuccessDto.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
+    	log.info("publish ugc end");
+    	return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
+    }
 }

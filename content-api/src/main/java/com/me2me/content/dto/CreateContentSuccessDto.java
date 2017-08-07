@@ -43,4 +43,7 @@ public class CreateContentSuccessDto  implements BaseEntity{
     private int upgrade;
 
     private int currentLevel;
+    
+    private long topicId;
+    private int internalStatus;
 }

@@ -1,5 +1,6 @@
 package com.me2me.user.dao;
 
+import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.Lists;
 import com.me2me.core.dao.BaseJdbcDao;
 import com.me2me.user.rule.CoinRule;
@@ -314,8 +315,14 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 	}
 
 	public List<Map<String, Object>> getCanStealTopicId(long uid) {
-		String sql = "SELECT topic_id FROM topic_data WHERE topic_id not IN (SELECT id FROM topic WHERE uid = ? ) AND topic_id not in (SELECT topic_id FROM user_steal_log WHERE uid = ?) AND steal_price > 0";
-		return super.query(sql,uid,uid);
+		String dateStr = DateUtil.date2string(new Date(), "yyyy-MM-dd") + " 00:00:00";
+		StringBuilder sb = new StringBuilder();
+		sb.append("select t.id as topic_id from topic t,topic_data d where t.id=d.topic_id");
+		sb.append(" and t.uid!=").append(uid).append(" and d.steal_price>0");
+		sb.append(" and t.id not in (SELECT topic_id FROM user_steal_log s WHERE s.uid=").append(uid);
+		sb.append(" and s.create_time>='").append(dateStr).append("')");
+		
+		return super.query(sb.toString());
 	}
 
 	public List<Map<String, Object>> getCanSpeakTopicId(long uid) {

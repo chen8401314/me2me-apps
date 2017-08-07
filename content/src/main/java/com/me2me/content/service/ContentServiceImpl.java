@@ -500,24 +500,6 @@ public class ContentServiceImpl implements ContentService {
         log.info("publish start ...");
         return publishContentAdapter.execute(contentDto);
     }
-    
-    public Response publishUGC(ContentDto contentDto){
-    	if(contentDto.getType() != Specification.ArticleType.TOPIC_UGC.index){
-    		log.info("当前[type="+contentDto.getType()+"]无法在3.0.2及以上版本中发布");
-    		return Response.failure(500, "当前版本无法发布UGC，请更新新版本");
-    	}
-    	log.info("publish ugc to topic["+contentDto.getTargetTopicId()+"]");
-    	//当前版本只插入自己的情绪王国，如果有则直接插入，如果没有则创建了再插入
-    	CreateContentSuccessDto createContentSuccessDto = new CreateContentSuccessDto();
-    	
-    	
-    	
-    	ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(contentDto.getUid(), userService.getCoinRules().get(Rules.PUBLISH_UGC_KEY));
-        createContentSuccessDto.setUpgrade(modifyUserCoinDto.getUpgrade());
-        createContentSuccessDto.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
-    	log.info("publish ugc end");
-    	return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
-    }
 
     @Override
     public Response publish(ContentDto contentDto) {
@@ -1456,7 +1438,10 @@ public class ContentServiceImpl implements ContentService {
             			outElement.setType((Integer)topicOutData.get("type"));
             			outElement.setContentType((Integer)topicOutData.get("content_type"));
             			outElement.setFragment((String)topicOutData.get("fragment"));
-            			outElement.setFragmentImage((String)topicOutData.get("fragment_image"));
+            			String fragmentImage = (String)topicOutData.get("fragment_image");
+                        if (!StringUtils.isEmpty(fragmentImage)) {
+                        	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+                        }
             			outElement.setAtUid((Long)topicOutData.get("at_uid"));
             			if(outElement.getAtUid() > 0){
             				atUserProfile = userService.getUserProfileByUid(outElement.getAtUid());
@@ -1480,7 +1465,10 @@ public class ContentServiceImpl implements ContentService {
                         			outElement.setType((Integer)topicOutData.get("type"));
                         			outElement.setContentType((Integer)topicOutData.get("content_type"));
                         			outElement.setFragment((String)topicOutData.get("fragment"));
-                        			outElement.setFragmentImage((String)topicOutData.get("fragment_image"));
+                        			String fragmentImage = (String)topicOutData.get("fragment_image");
+                                    if (!StringUtils.isEmpty(fragmentImage)) {
+                                    	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+                                    }
                         			outElement.setAtUid((Long)topicOutData.get("at_uid"));
                         			if(outElement.getAtUid() > 0){
                         				atUserProfile = userService.getUserProfileByUid(outElement.getAtUid());
@@ -1498,7 +1486,10 @@ public class ContentServiceImpl implements ContentService {
                         			outElement.setType((Integer)topicOutData.get("type"));
                         			outElement.setContentType((Integer)topicOutData.get("content_type"));
                         			outElement.setFragment((String)topicOutData.get("fragment"));
-                        			outElement.setFragmentImage((String)topicOutData.get("fragment_image"));
+                        			String fragmentImage = (String)topicOutData.get("fragment_image");
+                                    if (!StringUtils.isEmpty(fragmentImage)) {
+                                    	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+                                    }
                         			outElement.setAtUid((Long)topicOutData.get("at_uid"));
                         			if(outElement.getAtUid() > 0){
                         				atUserProfile = userService.getUserProfileByUid(outElement.getAtUid());
@@ -1516,7 +1507,10 @@ public class ContentServiceImpl implements ContentService {
                         			outElement.setType((Integer)topicOutData.get("type"));
                         			outElement.setContentType((Integer)topicOutData.get("content_type"));
                         			outElement.setFragment((String)topicOutData.get("fragment"));
-                        			outElement.setFragmentImage((String)topicOutData.get("fragment_image"));
+                        			String fragmentImage = (String)topicOutData.get("fragment_image");
+                                    if (!StringUtils.isEmpty(fragmentImage)) {
+                                    	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+                                    }
                         			outElement.setAtUid((Long)topicOutData.get("at_uid"));
                         			if(outElement.getAtUid() > 0){
                         				atUserProfile = userService.getUserProfileByUid(outElement.getAtUid());
@@ -2969,7 +2963,10 @@ public class ContentServiceImpl implements ContentService {
             			outElement.setType((Integer)topicOutData.get("type"));
             			outElement.setContentType((Integer)topicOutData.get("content_type"));
             			outElement.setFragment((String)topicOutData.get("fragment"));
-            			outElement.setFragmentImage((String)topicOutData.get("fragment_image"));
+            			String fragmentImage = (String)topicOutData.get("fragment_image");
+                        if (!StringUtils.isEmpty(fragmentImage)) {
+                        	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+                        }
             			outElement.setAtUid((Long)topicOutData.get("at_uid"));
             			if(outElement.getAtUid() > 0){
             				atUserProfile = profileMap.get(String.valueOf(outElement.getAtUid()));
@@ -2993,7 +2990,10 @@ public class ContentServiceImpl implements ContentService {
                         			outElement.setType((Integer)topicOutData.get("type"));
                         			outElement.setContentType((Integer)topicOutData.get("content_type"));
                         			outElement.setFragment((String)topicOutData.get("fragment"));
-                        			outElement.setFragmentImage((String)topicOutData.get("fragment_image"));
+                        			String fragmentImage = (String)topicOutData.get("fragment_image");
+                                    if (!StringUtils.isEmpty(fragmentImage)) {
+                                    	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+                                    }
                         			outElement.setAtUid((Long)topicOutData.get("at_uid"));
                         			if(outElement.getAtUid() > 0){
                         				atUserProfile = profileMap.get(String.valueOf(outElement.getAtUid()));
@@ -3011,7 +3011,10 @@ public class ContentServiceImpl implements ContentService {
                         			outElement.setType((Integer)topicOutData.get("type"));
                         			outElement.setContentType((Integer)topicOutData.get("content_type"));
                         			outElement.setFragment((String)topicOutData.get("fragment"));
-                        			outElement.setFragmentImage((String)topicOutData.get("fragment_image"));
+                        			String fragmentImage = (String)topicOutData.get("fragment_image");
+                                    if (!StringUtils.isEmpty(fragmentImage)) {
+                                    	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+                                    }
                         			outElement.setAtUid((Long)topicOutData.get("at_uid"));
                         			if(outElement.getAtUid() > 0){
                         				atUserProfile = profileMap.get(String.valueOf(outElement.getAtUid()));
@@ -3029,7 +3032,10 @@ public class ContentServiceImpl implements ContentService {
                         			outElement.setType((Integer)topicOutData.get("type"));
                         			outElement.setContentType((Integer)topicOutData.get("content_type"));
                         			outElement.setFragment((String)topicOutData.get("fragment"));
-                        			outElement.setFragmentImage((String)topicOutData.get("fragment_image"));
+                        			String fragmentImage = (String)topicOutData.get("fragment_image");
+                                    if (!StringUtils.isEmpty(fragmentImage)) {
+                                    	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+                                    }
                         			outElement.setAtUid((Long)topicOutData.get("at_uid"));
                         			if(outElement.getAtUid() > 0){
                         				atUserProfile = profileMap.get(String.valueOf(outElement.getAtUid()));
@@ -3259,7 +3265,10 @@ public class ContentServiceImpl implements ContentService {
             			outElement.setType((Integer)topicOutData.get("type"));
             			outElement.setContentType((Integer)topicOutData.get("content_type"));
             			outElement.setFragment((String)topicOutData.get("fragment"));
-            			outElement.setFragmentImage((String)topicOutData.get("fragment_image"));
+            			String fragmentImage = (String)topicOutData.get("fragment_image");
+                        if (!StringUtils.isEmpty(fragmentImage)) {
+                        	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+                        }
             			outElement.setAtUid((Long)topicOutData.get("at_uid"));
             			if(outElement.getAtUid() > 0){
             				atUserProfile = profileMap.get(String.valueOf(outElement.getAtUid()));
@@ -3283,7 +3292,10 @@ public class ContentServiceImpl implements ContentService {
                         			outElement.setType((Integer)topicOutData.get("type"));
                         			outElement.setContentType((Integer)topicOutData.get("content_type"));
                         			outElement.setFragment((String)topicOutData.get("fragment"));
-                        			outElement.setFragmentImage((String)topicOutData.get("fragment_image"));
+                        			String fragmentImage = (String)topicOutData.get("fragment_image");
+                                    if (!StringUtils.isEmpty(fragmentImage)) {
+                                    	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+                                    }
                         			outElement.setAtUid((Long)topicOutData.get("at_uid"));
                         			if(outElement.getAtUid() > 0){
                         				atUserProfile = profileMap.get(String.valueOf(outElement.getAtUid()));
@@ -3301,7 +3313,10 @@ public class ContentServiceImpl implements ContentService {
                         			outElement.setType((Integer)topicOutData.get("type"));
                         			outElement.setContentType((Integer)topicOutData.get("content_type"));
                         			outElement.setFragment((String)topicOutData.get("fragment"));
-                        			outElement.setFragmentImage((String)topicOutData.get("fragment_image"));
+                        			String fragmentImage = (String)topicOutData.get("fragment_image");
+                                    if (!StringUtils.isEmpty(fragmentImage)) {
+                                    	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+                                    }
                         			outElement.setAtUid((Long)topicOutData.get("at_uid"));
                         			if(outElement.getAtUid() > 0){
                         				atUserProfile = profileMap.get(String.valueOf(outElement.getAtUid()));
@@ -3319,7 +3334,10 @@ public class ContentServiceImpl implements ContentService {
                         			outElement.setType((Integer)topicOutData.get("type"));
                         			outElement.setContentType((Integer)topicOutData.get("content_type"));
                         			outElement.setFragment((String)topicOutData.get("fragment"));
-                        			outElement.setFragmentImage((String)topicOutData.get("fragment_image"));
+                        			String fragmentImage = (String)topicOutData.get("fragment_image");
+                                    if (!StringUtils.isEmpty(fragmentImage)) {
+                                    	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+                                    }
                         			outElement.setAtUid((Long)topicOutData.get("at_uid"));
                         			if(outElement.getAtUid() > 0){
                         				atUserProfile = profileMap.get(String.valueOf(outElement.getAtUid()));

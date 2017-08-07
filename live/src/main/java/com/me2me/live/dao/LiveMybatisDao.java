@@ -1953,4 +1953,16 @@ public class LiveMybatisDao {
         criteria.andUidEqualTo(uid);
         return topicFragmentMapper.countByExample(example);
     }
+	
+	public Topic getUserSpecialTopicBySubType(long uid, int subType){
+		TopicExample example = new TopicExample();
+		TopicExample.Criteria criteria = example.createCriteria();
+		criteria.andUidEqualTo(uid);
+		criteria.andSubTypeEqualTo(subType);
+		List<Topic> list = topicMapper.selectByExample(example);
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
 }
