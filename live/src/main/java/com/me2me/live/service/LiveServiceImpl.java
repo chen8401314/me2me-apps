@@ -852,6 +852,13 @@ public class LiveServiceImpl implements LiveService {
                     continue;
             	}
             }
+            if(!CommonUtils.isNewVersion(getLiveTimeLineDto.getVersion(), "3.0.2")){
+            	if((topicFragment.getType() == 0 || topicFragment.getType() == 52) 
+            			&& (topicFragment.getContentType() == 22 || topicFragment.getContentType() == 23)){
+            		liveElement.setStatus(0);
+                    continue;
+            	}
+            }
             
             //逗一逗自动播放状态
             int teaseStatus = 0;
@@ -3369,6 +3376,14 @@ public class LiveServiceImpl implements LiveService {
             //系统灰条（纯文本）
             if(getLiveDetailDto.getVersionFlag() < 4){//低于V3.0.1版本
             	if(topicFragment.getType() == 1000 && topicFragment.getContentType() == 0){
+            		liveElement.setStatus(0);
+                    continue;
+            	}
+            }
+            //抽奖和UGC
+            if(getLiveDetailDto.getVersionFlag() < 5){//低于V3.0.2版本
+            	if((topicFragment.getType() == 0 || topicFragment.getType() == 52) 
+            			&& (topicFragment.getContentType() == 22 || topicFragment.getContentType() == 23)){
             		liveElement.setStatus(0);
                     continue;
             	}
