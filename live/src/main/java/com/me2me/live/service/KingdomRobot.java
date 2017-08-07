@@ -141,8 +141,8 @@ public class KingdomRobot {
                 SpeakDto speakDto = new SpeakDto();
                 speakDto.setTopicId(policy.getTopicId());
                 speakDto.setUid(robot.getUid());
-                speakDto.setType(11);
-                speakDto.setContentType(11);
+                speakDto.setType(10);
+                speakDto.setContentType(10);
                 speakDto.setQuotationInfoId(quotationInfo.getId());
                 speakDto.setSource(-1);
                 speakDto.setAtUid(policy.getKingUid());
