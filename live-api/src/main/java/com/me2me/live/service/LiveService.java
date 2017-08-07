@@ -666,5 +666,5 @@ public interface LiveService {
 	 
 	 Response getLotteryList(long topicId,long sinceId,long uid);
 	 
-	 Response runLottery(long lotteryId,long uid);
+	 Response runLottery(long lotteryId,long uid,int source);
 }

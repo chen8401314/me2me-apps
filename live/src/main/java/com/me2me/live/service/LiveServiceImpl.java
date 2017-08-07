@@ -8277,11 +8277,7 @@ public class LiveServiceImpl implements LiveService {
     	}
     	liveMybatisDao.saveLotteryInfo(lotteryInfo);
 		SpeakDto speakDto = new SpeakDto();
-		if(topic.getUid().longValue() == lotteryInfo.getUid().longValue()){
-			speakDto.setType(0);
-		}else{
-			speakDto.setType(52);
-		}
+		speakDto.setType(52);
 		speakDto.setContentType(22);
 		speakDto.setUid(lotteryInfo.getUid());
 		speakDto.setTopicId(topic.getId());
@@ -8510,7 +8506,7 @@ public class LiveServiceImpl implements LiveService {
     }
     
     @Override
-    public Response runLottery(long lotteryId,long uid){
+    public Response runLottery(long lotteryId,long uid,int source){
     	LotteryInfo lotteryInfo = liveMybatisDao.getLotteryInfoById(lotteryId);
     	if(lotteryInfo==null){
     		return Response.failure(500, "找不到该抽奖信息！");
@@ -8531,6 +8527,19 @@ public class LiveServiceImpl implements LiveService {
 			lotteryWin.setUid((Long)map.get("uid"));
 			liveMybatisDao.saveLotteryWin(lotteryWin);
 		}
+  		SpeakDto speakDto = new SpeakDto();
+		speakDto.setType(52);
+		speakDto.setContentType(22);
+		speakDto.setUid(lotteryInfo.getUid());
+		speakDto.setTopicId(lotteryInfo.getTopicId());
+		speakDto.setFragment(lotteryInfo.getTitle());
+		speakDto.setSource(source);
+		 JSONObject extra = new JSONObject();
+         extra.put("type", "raffle");
+         extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
+         extra.put("id", lotteryInfo.getId());
+		speakDto.setExtra(extra.toJSONString());
+		speak(speakDto);
   		 return Response.success();
   	}else{
   		return Response.failure(500, "还没到开奖时间！");
