@@ -1073,7 +1073,7 @@ public class LiveServiceImpl implements LiveService {
                     	if(topic.getUid().longValue() == speakDto.getUid()){
                     		//再判断是否国王发言多少条了
                     		int c = liveMybatisDao.countUserFragment(topic.getId(), speakDto.getUid());
-                    		if(c < 3){
+                    		if(c < 4){
                     			applicationEventBus.post(new AutoReplyEvent(topic.getUid(), topic.getId(), topic.getCreateTime()));
                     		}
                     	}
