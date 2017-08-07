@@ -34,6 +34,10 @@ import com.me2me.live.mapper.LiveDisplayReviewMapper;
 import com.me2me.live.mapper.LiveFavoriteDeleteMapper;
 import com.me2me.live.mapper.LiveFavoriteMapper;
 import com.me2me.live.mapper.LiveReadHistoryMapper;
+import com.me2me.live.mapper.LotteryContentMapper;
+import com.me2me.live.mapper.LotteryInfoMapper;
+import com.me2me.live.mapper.LotteryProhibitMapper;
+import com.me2me.live.mapper.LotteryWinMapper;
 import com.me2me.live.mapper.QuotationInfoMapper;
 import com.me2me.live.mapper.RobotInfoMapper;
 import com.me2me.live.mapper.RobotQuotationRecordMapper;
@@ -78,6 +82,14 @@ import com.me2me.live.model.LiveFavoriteDeleteExample;
 import com.me2me.live.model.LiveFavoriteExample;
 import com.me2me.live.model.LiveReadHistory;
 import com.me2me.live.model.LiveReadHistoryExample;
+import com.me2me.live.model.LotteryContent;
+import com.me2me.live.model.LotteryContentExample;
+import com.me2me.live.model.LotteryInfo;
+import com.me2me.live.model.LotteryInfoExample;
+import com.me2me.live.model.LotteryProhibit;
+import com.me2me.live.model.LotteryProhibitExample;
+import com.me2me.live.model.LotteryWin;
+import com.me2me.live.model.LotteryWinExample;
 import com.me2me.live.model.QuotationInfo;
 import com.me2me.live.model.QuotationInfoExample;
 import com.me2me.live.model.RobotInfo;
@@ -262,7 +274,17 @@ public class LiveMybatisDao {
     @Autowired
     private SignSaveRecordMapper signSaveRecordMapper;
     
+    @Autowired
+    private LotteryInfoMapper lotteryInfoMapper;
     
+    @Autowired
+    private LotteryContentMapper lotteryContentMapper;
+    
+    @Autowired
+    private LotteryProhibitMapper lotteryProhibitMapper;
+    
+    @Autowired
+    private LotteryWinMapper lotteryWinMapper;
     
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -1952,5 +1974,68 @@ public class LiveMybatisDao {
         criteria.andTopicIdEqualTo(topicId);
         criteria.andUidEqualTo(uid);
         return topicFragmentMapper.countByExample(example);
+    }
+    public int saveLotteryInfo(LotteryInfo lotteryInfo){
+    	return lotteryInfoMapper.insertSelective(lotteryInfo);
+    }
+	public LotteryInfo getLotteryInfoById(long id){
+		return lotteryInfoMapper.selectByPrimaryKey(id);
+	}
+	public int updateLotteryInfoById(LotteryInfo lotteryInfo){
+		return lotteryInfoMapper.updateByPrimaryKeySelective(lotteryInfo);
+	}
+    public int countLotteryContent(long lotteryId, long uid){
+    	LotteryContentExample example = new LotteryContentExample();
+    	LotteryContentExample.Criteria criteria = example.createCriteria();
+    	criteria.andLotteryIdEqualTo(lotteryId);
+    	criteria.andUidEqualTo(uid);
+        return lotteryContentMapper.countByExample(example);
+    }
+    public int countLotteryJoinUser(long lotteryId, List<Long> prohibitList){
+    	LotteryContentExample example = new LotteryContentExample();
+    	LotteryContentExample.Criteria criteria = example.createCriteria();
+    	criteria.andLotteryIdEqualTo(lotteryId);
+    	criteria.andUidNotIn(prohibitList);
+        return lotteryContentMapper.countByExample(example);
+    }
+    public int lotteryIsWin(long lotteryId, long uid){
+    	LotteryWinExample example = new LotteryWinExample();
+    	LotteryWinExample.Criteria criteria = example.createCriteria();
+    	criteria.andLotteryIdEqualTo(lotteryId);
+    	criteria.andUidEqualTo(uid);
+        return lotteryWinMapper.countByExample(example);
+    }
+    public int saveLotteryContent(LotteryContent lotteryContent){
+    	return lotteryContentMapper.insertSelective(lotteryContent);
+    }
+    public int delLotteryContent(long id){
+    	return lotteryContentMapper.deleteByPrimaryKey(id);
+    }
+    public LotteryContent getLotteryContentById(long id){
+    	return lotteryContentMapper.selectByPrimaryKey(id);
+    }
+    public int saveLotteryProhibit(LotteryProhibit lotteryProhibit){
+    	return lotteryProhibitMapper.insertSelective(lotteryProhibit);
+    }
+    public int countLotteryProhibit(long lotteryId, long uid){
+    	LotteryProhibitExample example = new LotteryProhibitExample();
+    	LotteryProhibitExample.Criteria criteria = example.createCriteria();
+    	criteria.andLotteryIdEqualTo(lotteryId);
+    	criteria.andUidEqualTo(uid);
+        return lotteryProhibitMapper.countByExample(example);
+    }
+
+    public List<LotteryInfo> getLotteryListByTopicId(long topicId, long sinceId) {
+    	LotteryInfoExample example = new LotteryInfoExample();
+    	LotteryInfoExample.Criteria criteria = example.createCriteria();
+    	if(sinceId>0){
+        criteria.andIdLessThan(sinceId);
+    	}
+        criteria.andTopicIdEqualTo(topicId);
+        example.setOrderByClause("id desc limit 20");
+        return lotteryInfoMapper.selectByExample(example);
+    }
+    public int saveLotteryWin(LotteryWin lotteryWin){
+    	return lotteryWinMapper.insertSelective(lotteryWin);
     }
 }

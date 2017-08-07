@@ -649,4 +649,22 @@ public interface LiveService {
 	 int delQuotationInfo(long id);
 	 
 	 QuotationInfo getQuotationInfoById(long id);
+	 
+	 Response createLottery(LotteryInfo lotteryInfo,int source);
+	 
+	 Response editLottery(LotteryInfo lotteryInfo);
+	 
+	 Response getLottery(long lotteryId,long uid);
+	 
+	 Response getJoinLotteryUsers(long lotteryId,long sinceId);
+	 
+	 Response joinLottery(long lotteryId,String content,long uid);
+	 
+	 Response delLotteryContent(long contentId,long uid);
+	 
+	 Response prohibitLottery(long lotteryId,long uid,long joinUid);
+	 
+	 Response getLotteryList(long topicId,long sinceId,long uid);
+	 
+	 Response runLottery(long lotteryId,long uid);
 }

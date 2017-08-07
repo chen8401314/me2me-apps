@@ -1390,4 +1390,52 @@ public class LiveLocalJdbcDao {
     	String sql = sb.toString();
 		return jdbcTemplate.queryForList(sql);
     }
+    public int countLotteryJoinUser(long lotteryId){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select COUNT(DISTINCT uid) AS COUNT FROM lottery_content WHERE lottery_id  = ");
+    	sb.append(lotteryId);
+    	sb.append(" AND uid NOT IN (SELECT uid FROM lottery_prohibit WHERE lottery_id = ");
+    	sb.append(lotteryId);
+    	sb.append(")");
+    	String sql = sb.toString();
+    	Integer count=0;
+		try{
+			count=jdbcTemplate.queryForObject(sql, Integer.class);
+		}catch(Exception e){
+			count=0;
+		}
+    	return count;
+    }
+    public List<Map<String,Object>> getLotteryWinUserList(long lotteryId){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select u.uid,u.avatar,u.nick_name,u.v_lv,u.level FROM user_profile u ,lottery_win l WHERE l.uid = u.uid AND l.lottery_id = ");
+    	sb.append(lotteryId);
+    	String sql = sb.toString();
+		return jdbcTemplate.queryForList(sql);
+    }
+    
+    public List<Map<String,Object>> getJoinLotteryUsers(long lotteryId,long sinceId){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select l.id AS sinceId,u.uid,u.avatar,u.nick_name,u.v_lv,u.level,l.content,p.id AS prohibit ");
+    	sb.append(" FROM (lottery_content l,user_profile u) LEFT JOIN lottery_prohibit p ON p.lottery_id=l.lottery_id AND u.uid = p.uid  ");
+    	sb.append("  WHERE l.uid = u.uid AND l.lottery_id =  ");
+    	sb.append(lotteryId);
+    	if(sinceId!=-1){
+    		sb.append(" and l.id<").append(sinceId);
+    	}
+    	sb.append(" ORDER BY l.id DESC limit 20");
+    	String sql = sb.toString();
+		return jdbcTemplate.queryForList(sql);
+    }
+    public List<Map<String,Object>> getRandomLotteryUser(long lotteryId,int winNumber){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append(" select DISTINCT c.uid FROM lottery_content c WHERE c.lottery_id = ");
+    	sb.append(lotteryId);
+    	sb.append(" AND c.uid NOT IN  (SELECT uid FROM lottery_prohibit WHERE lottery_id = ");
+    	sb.append(lotteryId);
+    	sb.append(") ORDER BY RAND() LIMIT ");
+    	sb.append(winNumber);
+    	String sql = sb.toString();
+		return jdbcTemplate.queryForList(sql);
+    }
 }
