@@ -1653,11 +1653,13 @@ public class ContentServiceImpl implements ContentService {
             contentTagElement.setTag(contentTags.getTag());
             contentDetailDto.getTags().add(contentTagElement);
         }
-        List<ContentReview> reviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+//        List<ContentReview> reviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+        List<ContentReview> reviewList = new ArrayList<ContentReview>();
         log.info("get content review success");
 
         //点赞top30
-        List<ContentLikesDetails> contentLikesDetailsList = contentMybatisDao.getContentLikesDetails(id);
+//        List<ContentLikesDetails> contentLikesDetailsList = contentMybatisDao.getContentLikesDetails(id);
+        List<ContentLikesDetails> contentLikesDetailsList = new ArrayList<ContentLikesDetails>();
 
         List<Long> uidList = new ArrayList<Long>();
         for(ContentReview cr : reviewList){
@@ -3498,7 +3500,8 @@ public class ContentServiceImpl implements ContentService {
 //            list = contentMybatisDao.getArticleReviewByCid(cid,sinceId);
             list = new ArrayList<ContentReview>();
         }else{
-            list = contentMybatisDao.getContentReviewByCid(cid,sinceId);
+//            list = contentMybatisDao.getContentReviewByCid(cid,sinceId);
+            list = new ArrayList<ContentReview>();
         }
         log.info("reviewList get contentReview success");
         for(ContentReview contentReview : list){
