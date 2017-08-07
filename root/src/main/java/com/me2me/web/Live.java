@@ -2,6 +2,7 @@ package com.me2me.web;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Calendar;
+import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -32,6 +33,7 @@ import com.me2me.live.dto.SettingModifyDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.dto.TestApiDto;
 import com.me2me.live.dto.UserAtListDTO;
+import com.me2me.live.model.LotteryInfo;
 import com.me2me.live.service.LiveService;
 import com.me2me.search.service.SearchService;
 import com.me2me.sms.service.SmsService;
@@ -40,25 +42,32 @@ import com.me2me.web.request.AggregationPublishRequest;
 import com.me2me.web.request.BarrageRequest;
 import com.me2me.web.request.CreateKingdomRequest;
 import com.me2me.web.request.CreateLiveRequest;
+import com.me2me.web.request.CreateLotteryRequest;
 import com.me2me.web.request.CreateVoteRequest;
 import com.me2me.web.request.DaySignInfoRequest;
+import com.me2me.web.request.DelLotteryContentRequest;
 import com.me2me.web.request.DeleteLiveFragmentRequest;
 import com.me2me.web.request.DetailFidPageRequest;
 import com.me2me.web.request.DetailPageStatusRequest;
 import com.me2me.web.request.DisplayProtocolRequest;
 import com.me2me.web.request.DropAroundRequest;
+import com.me2me.web.request.EditLotteryRequest;
 import com.me2me.web.request.EditSpeakRequest;
 import com.me2me.web.request.FavoriteListRequest;
 import com.me2me.web.request.FinishMyLiveRequest;
 import com.me2me.web.request.FragmentForwardRequest;
+import com.me2me.web.request.GetJoinLotteryUsersRequest;
 import com.me2me.web.request.GetKingdomPriceRequest;
 import com.me2me.web.request.GetKingdomTransferRecordRequest;
 import com.me2me.web.request.GetLiveByCidRequest;
 import com.me2me.web.request.GetLivesRequest;
+import com.me2me.web.request.GetLotteryListRequest;
+import com.me2me.web.request.GetLotteryRequest;
 import com.me2me.web.request.GetMyLivesRequest;
 import com.me2me.web.request.GivenKingdomRequest;
 import com.me2me.web.request.ImgDBRequest;
 import com.me2me.web.request.InactiveLiveRequest;
+import com.me2me.web.request.JoinLotteryRequest;
 import com.me2me.web.request.KingdomSearchRequest;
 import com.me2me.web.request.ListTopicListedRequest;
 import com.me2me.web.request.ListTopicRequest;
@@ -68,10 +77,12 @@ import com.me2me.web.request.LiveQrcodeRequest;
 import com.me2me.web.request.LiveTimeline2Request;
 import com.me2me.web.request.LiveTimelineRequest;
 import com.me2me.web.request.LiveUpdateRequest;
+import com.me2me.web.request.ProhibitLotteryRequest;
 import com.me2me.web.request.RecQueryRequest;
 import com.me2me.web.request.RemoveLiveRequest;
 import com.me2me.web.request.RemoveTopicRequest;
 import com.me2me.web.request.ResendVoteRequest;
+import com.me2me.web.request.RunLotteryRequest;
 import com.me2me.web.request.SaveDaySignInfoRequest;
 import com.me2me.web.request.SaveDaySignRecordRequest;
 import com.me2me.web.request.SetLiveRequest;
@@ -1032,5 +1043,115 @@ public class Live extends BaseController {
     @RequestMapping(value = "/specialKingdomInfo",method = RequestMethod.POST)
     public Response specialKingdomInfo(SpecialKingdomInfoRequest request){
     	return liveService.specialKingdomInfo(request.getUid(), request.getSearchType());
+    }
+    
+    /**
+     * 发起抽奖接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/createLottery",method = RequestMethod.POST)
+    public Response createLottery(CreateLotteryRequest request){
+    	LotteryInfo lotteryInfo  =new LotteryInfo();
+    	lotteryInfo.setTopicId(request.getTopicId());
+    	lotteryInfo.setTitle(request.getTitle());
+    	lotteryInfo.setSummary(request.getSummary());
+    	lotteryInfo.setWinNumber(request.getWinNumber());
+    	lotteryInfo.setEndTime(new Date(request.getEndTime()));
+    	lotteryInfo.setUid(request.getUid());
+    	return liveService.createLottery(lotteryInfo, request.getSource());
+    }
+    /**
+     * 编辑抽奖接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/editLottery",method = RequestMethod.POST)
+    public Response editLottery(EditLotteryRequest request){
+    	LotteryInfo lotteryInfo  =new LotteryInfo();
+    	lotteryInfo.setId(request.getLotteryId());
+    	lotteryInfo.setTitle(request.getTitle());
+    	lotteryInfo.setSummary(request.getSummary());
+    	lotteryInfo.setWinNumber(request.getWinNumber());
+    	lotteryInfo.setEndTime(new Date(request.getEndTime()));
+    	lotteryInfo.setUid(request.getUid());
+    	return liveService.editLottery(lotteryInfo);
+    }
+    /**
+     * 获取抽奖详情接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getLottery",method = RequestMethod.POST)
+    public Response getLottery(GetLotteryRequest request){
+    	return liveService.getLottery(request.getLotteryId(),request.getUid());
+    }
+    /**
+     * 抽奖参与用户查询接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getJoinLotteryUsers",method = RequestMethod.POST)
+    public Response getJoinLotteryUsers(GetJoinLotteryUsersRequest request){
+    	return liveService.getJoinLotteryUsers(request.getLotteryId(), request.getSinceId());
+    }
+    
+    /**
+     * 参与抽奖接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/joinLottery",method = RequestMethod.POST)
+    public Response joinLottery(JoinLotteryRequest request){
+    	return liveService.joinLottery(request.getLotteryId(), request.getContent(),request.getUid());
+    }
+    
+    /**
+     * 删除抽奖留言接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/delLotteryContent",method = RequestMethod.POST)
+    public Response delLotteryContent(DelLotteryContentRequest request){
+    	return liveService.delLotteryContent(request.getContentId(),request.getUid());
+    }
+    
+    /**
+     * 屏蔽抽奖资格接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/prohibitLottery",method = RequestMethod.POST)
+    public Response prohibitLottery(ProhibitLotteryRequest request){
+    	return liveService.prohibitLottery(request.getLotteryId(),request.getUid(),request.getJoinUid());
+    }
+    
+    /**
+     * 获取抽奖列表接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getLotteryList",method = RequestMethod.POST)
+    public Response getLotteryList(GetLotteryListRequest request){
+    	return liveService.getLotteryList(request.getTopicId(), request.getSinceId(), request.getUid());
+    }
+    
+    /**
+     * 抽奖开奖接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/runLottery",method = RequestMethod.POST)
+    public Response runLottery(RunLotteryRequest request){
+    	return liveService.runLottery(request.getLotteryId(), request.getUid(),request.getSource());
     }
 }

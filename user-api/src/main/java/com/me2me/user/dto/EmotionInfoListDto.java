@@ -26,7 +26,8 @@ public class EmotionInfoListDto implements BaseEntity {
 
     @Data
     public static class EmotionInfoElement implements BaseEntity {
-
+    	private static final long serialVersionUID = 9104269954351141021L;
+    	
         private long id;
 
         private String emotionName;
@@ -58,7 +59,8 @@ public class EmotionInfoListDto implements BaseEntity {
 
     @Data
     public static class EmotionPack implements BaseEntity {
-
+    	private static final long serialVersionUID = 9134369954351141021L;
+    	
         private long id;
 
         private String title;

@@ -72,17 +72,21 @@ import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.AggregationOptDto;
 import com.me2me.live.dto.CreateKingdomDto;
 import com.me2me.live.dto.CreateLiveDto;
+import com.me2me.live.dto.CreateLotteryDto;
 import com.me2me.live.dto.CreateVoteDto;
 import com.me2me.live.dto.CreateVoteResponeDto;
 import com.me2me.live.dto.DaySignInfoDto;
 import com.me2me.live.dto.DetailFidPageDTO;
 import com.me2me.live.dto.DetailPageStatusDTO;
 import com.me2me.live.dto.DropAroundDto;
+import com.me2me.live.dto.GetJoinLotteryUsersDto;
 import com.me2me.live.dto.GetKingdomPriceDto;
 import com.me2me.live.dto.GetLiveDetailDto;
 import com.me2me.live.dto.GetLiveTimeLineDto;
 import com.me2me.live.dto.GetLiveTimeLineDto2;
 import com.me2me.live.dto.GetLiveUpdateDto;
+import com.me2me.live.dto.GetLotteryDto;
+import com.me2me.live.dto.GetLotteryListDto;
 import com.me2me.live.dto.GivenKingdomDto;
 import com.me2me.live.dto.KingdomImgDB;
 import com.me2me.live.dto.KingdomSearchDTO;
@@ -8254,6 +8258,142 @@ public class LiveServiceImpl implements LiveService {
 	public QuotationInfo getQuotationInfoById(long id){
     	return liveMybatisDao.getQuotationInfoById(id);
 	}
+    @Override
+    public Response createLottery(LotteryInfo lotteryInfo,int source){
+    	Topic topic = liveMybatisDao.getTopicById(lotteryInfo.getTopicId());
+    	if(topic==null){
+    		return Response.failure(500, "找不到该王国！");
+    	}
+    	if(lotteryInfo.getWinNumber()<1 || lotteryInfo.getWinNumber()>30){
+    		return Response.failure(500, "中奖人数只能在1-30人之间");
+    	}
+    	if(new Date().compareTo(lotteryInfo.getEndTime())>=0){
+    		return Response.failure(500, "结束时间必须大于当前时间");
+    	}
+    	liveMybatisDao.saveLotteryInfo(lotteryInfo);
+		SpeakDto speakDto = new SpeakDto();
+		speakDto.setType(52);
+		speakDto.setContentType(22);
+		speakDto.setUid(lotteryInfo.getUid());
+		speakDto.setTopicId(topic.getId());
+		speakDto.setFragment(lotteryInfo.getTitle());
+		speakDto.setSource(source);
+		 JSONObject extra = new JSONObject();
+         extra.put("type", "raffle");
+         extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
+         extra.put("id", lotteryInfo.getId());
+		speakDto.setExtra(extra.toJSONString());
+		speak(speakDto);
+    	CreateLotteryDto dto = new CreateLotteryDto();
+        dto.setLotteryId(lotteryInfo.getId());
+        return Response.success(dto);
+    }
+    @Override
+    public Response editLottery(LotteryInfo lotteryInfo){
+    	LotteryInfo oldLotteryInfo = liveMybatisDao.getLotteryInfoById(lotteryInfo.getId());
+    	if(oldLotteryInfo==null){
+    		return Response.failure(500, "找不到该抽奖信息！");
+    	}
+    	if(lotteryInfo.getWinNumber()<1 || lotteryInfo.getWinNumber()>30){
+    		return Response.failure(500, "中奖人数只能在1-30人之间");
+    	}
+    	if(new Date().compareTo(lotteryInfo.getEndTime())>=0){
+    		return Response.failure(500, "结束时间必须大于当前时间");
+    	}
+    	if(oldLotteryInfo.getUid().longValue() != lotteryInfo.getUid().longValue()){
+    		return Response.failure(500, "您不是抽奖发起人");
+		}
+    	if(oldLotteryInfo.getStatus()==2){
+    		lotteryInfo.setWinNumber(null);
+    		lotteryInfo.setEndTime(null);
+    	}
+    	liveMybatisDao.updateLotteryInfoById(lotteryInfo);
+        return Response.success();
+    }
+    @Override
+    public Response getLottery(long lotteryId,long uid){
+    	LotteryInfo lotteryInfo = liveMybatisDao.getLotteryInfoById(lotteryId);
+    	if(lotteryInfo==null){
+    		return Response.failure(500, "找不到该抽奖信息！");
+    	}
+    	GetLotteryDto dto = new GetLotteryDto();
+    	dto.setUid(lotteryInfo.getUid());
+    	UserProfile userProfile  =userService.getUserProfileByUid(lotteryInfo.getUid());
+    	if(userProfile==null){
+    		return Response.failure(500, "找不到该抽奖发起人信息！");
+    	}
+    	dto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+    	dto.setNickName(userProfile.getNickName());
+    	dto.setV_lv(userProfile.getvLv());
+    	dto.setLevel(userProfile.getLevel());
+    	dto.setCreateTime(lotteryInfo.getCreateTime().getTime());
+    	dto.setTitle(lotteryInfo.getTitle());
+    	dto.setSummary(lotteryInfo.getSummary());
+    	if(new Date().compareTo(lotteryInfo.getEndTime())>=0 && lotteryInfo.getStatus()==0){
+    		dto.setStatus(1);
+    	}else{
+    		dto.setStatus(lotteryInfo.getStatus());
+    	}
+    	int countLotteryContent = liveMybatisDao.countLotteryContent( lotteryId,uid);
+        if(countLotteryContent>0){
+        	dto.setSignUp(1);
+        }else{
+        	dto.setSignUp(0);
+        }
+        if(dto.getStatus()==0){
+        	 long timeInterval = (lotteryInfo.getEndTime().getTime()-new Date().getTime())/1000;
+        	 dto.setTimeInterval(timeInterval);
+        }else{
+        	dto.setTimeInterval(0);
+        }
+       dto.setEndTime(lotteryInfo.getEndTime().getTime());
+       dto.setWinNumber(lotteryInfo.getWinNumber());
+       int joinNumber = liveLocalJdbcDao.countLotteryJoinUser(lotteryId);
+       dto.setJoinNumber(joinNumber);
+       int isWin = liveMybatisDao.lotteryIsWin(lotteryId, uid);
+       if(isWin>0){
+    	   dto.setIsWin(1);
+       }else{
+    	   dto.setIsWin(0);
+       }
+      List<Map<String,Object>> winUsers =  liveLocalJdbcDao.getLotteryWinUserList(lotteryId);
+      for (Map<String, Object> map : winUsers) {
+    	  GetLotteryDto.UserElement u = new GetLotteryDto.UserElement();
+    	  u.setUid((Long)map.get("uid"));
+    	  u.setAvatar(Constant.QINIU_DOMAIN + "/" + String.valueOf(map.get("avatar")));
+    	  u.setNickName(String.valueOf(map.get("nick_name")));
+    	  u.setV_lv((Integer)map.get("v_lv"));
+    	  u.setLevel((Integer)map.get("level"));
+    	  dto.getWinUsers().add(u);
+	  }
+        return Response.success(dto);
+    }
+    @Override
+    public Response getJoinLotteryUsers(long lotteryId,long sinceId){
+    	LotteryInfo lotteryInfo = liveMybatisDao.getLotteryInfoById(lotteryId);
+    	if(lotteryInfo==null){
+    		return Response.failure(500, "找不到该抽奖信息！");
+    	}
+    	GetJoinLotteryUsersDto dto = new GetJoinLotteryUsersDto();
+      List<Map<String,Object>> joinUsers =  liveLocalJdbcDao.getJoinLotteryUsers(lotteryId, sinceId);
+      for (Map<String, Object> map : joinUsers) {
+    	  GetJoinLotteryUsersDto.UserElement u = new GetJoinLotteryUsersDto.UserElement();
+    	  u.setSinceId((Long)map.get("sinceId"));
+    	  u.setUid((Long)map.get("uid"));
+    	  u.setAvatar(Constant.QINIU_DOMAIN + "/" + String.valueOf(map.get("avatar")));
+    	  u.setNickName(String.valueOf(map.get("nick_name")));
+    	  u.setV_lv((Integer)map.get("v_lv"));
+    	  u.setLevel((Integer)map.get("level"));
+    	  u.setContent(String.valueOf(map.get("content")));
+    	  if(map.get("prohibit")==null){
+    		  u.setProhibit(0);
+    	  }else{
+    		  u.setProhibit(1);
+    	  }
+    	  dto.getJoinUsers().add(u);
+	  }
+        return Response.success(dto);
+    }
     
     @Override
     public Response specialKingdomInfo(long uid, int searchType){
@@ -8363,4 +8503,151 @@ public class LiveServiceImpl implements LiveService {
     	log.info("publish ugc end");
     	return Response.success(ResponseStatus.PUBLISH_ARTICLE_SUCCESS.status,ResponseStatus.PUBLISH_ARTICLE_SUCCESS.message,createContentSuccessDto);
     }
+
+    @Override
+    public Response joinLottery(long lotteryId,String content,long uid){
+    	LotteryInfo lotteryInfo = liveMybatisDao.getLotteryInfoById(lotteryId);
+    	if(lotteryInfo==null){
+    		return Response.failure(500, "找不到该抽奖信息！");
+    	}
+    	if(lotteryInfo.getUid().longValue()==uid){
+    		return Response.failure(500, "抽奖发起人不能参与抽奖！");
+    	}
+        LotteryContent lotteryContent = new LotteryContent();
+        lotteryContent.setLotteryId(lotteryId);
+        lotteryContent.setUid(uid);
+        lotteryContent.setContent(content);
+    	liveMybatisDao.saveLotteryContent(lotteryContent);
+        return Response.success();
+    }
+    
+    @Override
+    public Response delLotteryContent(long contentId,long uid){
+    	LotteryContent lotteryContent = liveMybatisDao.getLotteryContentById(contentId);
+    	if(lotteryContent==null){
+    		return Response.failure(500, "找不到抽奖留言信息！");
+    	}
+    	LotteryInfo lotteryInfo = liveMybatisDao.getLotteryInfoById(lotteryContent.getLotteryId());
+    	if(lotteryInfo==null){
+    		return Response.failure(500, "找不到该抽奖信息！");
+    	}
+    	if(lotteryInfo.getUid().longValue()!=uid){
+    		return Response.failure(500, "您不是抽奖发起人不能删除留言信息！");
+    	}
+    	liveMybatisDao.delLotteryContent(contentId);
+        return Response.success();
+    }
+    @Override
+    public Response prohibitLottery(long lotteryId,long uid,long joinUid){
+    	LotteryInfo lotteryInfo = liveMybatisDao.getLotteryInfoById(lotteryId);
+    	if(lotteryInfo==null){
+    		return Response.failure(500, "找不到该抽奖信息！");
+    	}
+    	if(lotteryInfo.getUid().longValue()!=uid){
+    		return Response.failure(500, "您不是抽奖发起人不能屏蔽用户！");
+    	}
+    	int countLotteryProhibit = liveMybatisDao.countLotteryProhibit(lotteryId, joinUid);
+    	if(countLotteryProhibit>0){
+    		return Response.failure(500, "该用户已屏蔽！");
+    	}
+    	LotteryProhibit lotteryProhibit = new LotteryProhibit();
+    	lotteryProhibit.setLotteryId(lotteryId);
+    	lotteryProhibit.setUid(joinUid);
+    	liveMybatisDao.saveLotteryProhibit(lotteryProhibit);
+        return Response.success();
+    }
+    @Override
+    public Response getLotteryList(long topicId,long sinceId,long uid){
+    	GetLotteryListDto dto = new GetLotteryListDto();
+      List<LotteryInfo> list =  liveMybatisDao.getLotteryListByTopicId(topicId, sinceId);
+      for (LotteryInfo lotteryInfo : list) {
+    	  GetLotteryListDto.LotteryInfoElement u = GetLotteryListDto.createLotteryInfoElement();
+    	  u.setSinceId(lotteryInfo.getId());
+    	  u.setCreateTime(lotteryInfo.getCreateTime().getTime());
+    	  u.setTitle(lotteryInfo.getTitle());
+    	  u.setSummary(lotteryInfo.getSummary());
+    	  if(new Date().compareTo(lotteryInfo.getEndTime())>=0 && lotteryInfo.getStatus()==0){
+        		u.setStatus(1);
+        	}else{
+        		u.setStatus(lotteryInfo.getStatus());
+        	}
+      	int countLotteryContent = liveMybatisDao.countLotteryContent(lotteryInfo.getId(),uid);
+          if(countLotteryContent>0){
+          	u.setSignUp(1);
+          }else{
+          	u.setSignUp(0);
+          }
+          if(u.getStatus()==0){
+          	 long timeInterval = (lotteryInfo.getEndTime().getTime()-new Date().getTime())/1000;
+          	 u.setTimeInterval(timeInterval);
+          }else{
+          	u.setTimeInterval(0);
+          }
+          int isWin = liveMybatisDao.lotteryIsWin(lotteryInfo.getId(), uid);
+          if(isWin>0){
+       	   u.setIsWin(1);
+          }else{
+       	   u.setIsWin(0);
+          }
+          u.setEndTime(lotteryInfo.getEndTime().getTime());
+          u.setWinNumber(lotteryInfo.getWinNumber());
+          
+          int joinNumber = liveLocalJdbcDao.countLotteryJoinUser(lotteryInfo.getId());
+          u.setJoinNumber(joinNumber);
+         List<Map<String,Object>> winUsers =  liveLocalJdbcDao.getLotteryWinUserList(lotteryInfo.getId());
+         for (Map<String, Object> map : winUsers) {
+        	 GetLotteryListDto.WinUser u1 = GetLotteryListDto.createWinUser();
+       	  u1.setUid((Long)map.get("uid"));
+       	  u1.setAvatar(Constant.QINIU_DOMAIN + "/" + String.valueOf(map.get("avatar")));
+       	  u1.setNickName(String.valueOf(map.get("nick_name")));
+       	  u1.setV_lv((Integer)map.get("v_lv"));
+       	  u1.setLevel((Integer)map.get("level"));
+       	  u.getWinUsers().add(u1);
+   	  }
+    	  dto.getLotteryList().add(u);
+	  }
+        return Response.success(dto);
+    }
+    
+    @Override
+	public Response runLottery(long lotteryId, long uid, int source) {
+		LotteryInfo lotteryInfo = liveMybatisDao.getLotteryInfoById(lotteryId);
+		if (lotteryInfo == null) {
+			return Response.failure(500, "找不到该抽奖信息！");
+		}
+		if (lotteryInfo.getUid().longValue() != uid) {
+			return Response.failure(500, "您不是抽奖发起人不能开奖！");
+		}
+		if (lotteryInfo.getStatus() != 0) {
+			return Response.failure(500, "您已经开过奖了！");
+		}
+		if (new Date().compareTo(lotteryInfo.getEndTime()) >= 0) {
+			lotteryInfo.setStatus(2);
+			liveMybatisDao.updateLotteryInfoById(lotteryInfo);
+			List<Map<String, Object>> list = liveLocalJdbcDao
+					.getRandomLotteryUser(lotteryId, lotteryInfo.getWinNumber());
+			for (Map<String, Object> map : list) {
+				LotteryWin lotteryWin = new LotteryWin();
+				lotteryWin.setLotteryId(lotteryId);
+				lotteryWin.setUid((Long) map.get("uid"));
+				liveMybatisDao.saveLotteryWin(lotteryWin);
+			}
+			SpeakDto speakDto = new SpeakDto();
+			speakDto.setType(52);
+			speakDto.setContentType(22);
+			speakDto.setUid(lotteryInfo.getUid());
+			speakDto.setTopicId(lotteryInfo.getTopicId());
+			speakDto.setFragment(lotteryInfo.getTitle());
+			speakDto.setSource(source);
+			JSONObject extra = new JSONObject();
+			extra.put("type", "raffle");
+			extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
+			extra.put("id", lotteryInfo.getId());
+			speakDto.setExtra(extra.toJSONString());
+			speak(speakDto);
+			return Response.success();
+		} else {
+			return Response.failure(500, "还没到开奖时间！");
+		}
+	}
 }

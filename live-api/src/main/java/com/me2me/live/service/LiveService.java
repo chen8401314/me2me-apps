@@ -32,22 +32,6 @@ import com.me2me.user.dto.RechargeToKingdomDto;
  * Author: 赵朋扬
  * Date: 2016/4/11.
  */
-/**
- * @author pc308
- *
- */
-/**
- * @author pc308
- *
- */
-/**
- * @author pc308
- *
- */
-/**
- * @author pc308
- *
- */
 public interface LiveService {
 
     /**
@@ -665,4 +649,22 @@ public interface LiveService {
 	 * @return
 	 */
 	Response publishUGC(ContentDto contentDto);
+
+	 Response createLottery(LotteryInfo lotteryInfo,int source);
+	 
+	 Response editLottery(LotteryInfo lotteryInfo);
+	 
+	 Response getLottery(long lotteryId,long uid);
+	 
+	 Response getJoinLotteryUsers(long lotteryId,long sinceId);
+	 
+	 Response joinLottery(long lotteryId,String content,long uid);
+	 
+	 Response delLotteryContent(long contentId,long uid);
+	 
+	 Response prohibitLottery(long lotteryId,long uid,long joinUid);
+	 
+	 Response getLotteryList(long topicId,long sinceId,long uid);
+	 
+	 Response runLottery(long lotteryId,long uid,int source);
 }
