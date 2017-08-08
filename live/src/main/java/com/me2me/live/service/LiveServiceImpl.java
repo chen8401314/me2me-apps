@@ -8292,6 +8292,10 @@ public class LiveServiceImpl implements LiveService {
 		speakDto.setUid(lotteryInfo.getUid());
 		speakDto.setTopicId(topic.getId());
 		speakDto.setFragment(lotteryInfo.getTitle());
+        String image = userService.getAppConfigByKey("LOTTERY_START_IMAGE");
+        if(!StringUtils.isEmpty(image)){
+        	speakDto.setFragmentImage(image);
+        }
 		speakDto.setSource(source);
 		 JSONObject extra = new JSONObject();
          extra.put("type", "raffle");
@@ -8653,6 +8657,10 @@ public class LiveServiceImpl implements LiveService {
 			speakDto.setUid(lotteryInfo.getUid());
 			speakDto.setTopicId(lotteryInfo.getTopicId());
 			speakDto.setFragment(lotteryInfo.getTitle());
+	        String image = userService.getAppConfigByKey("LOTTERY_END_IMAGE");
+	        if(!StringUtils.isEmpty(image)){
+	        	speakDto.setFragmentImage(image);
+	        }
 			speakDto.setSource(source);
 			JSONObject extra = new JSONObject();
 			extra.put("type", "raffle");
