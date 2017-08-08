@@ -95,6 +95,7 @@ import com.me2me.live.dto.Live4H5Dto;
 import com.me2me.live.dto.LiveBarrageDto;
 import com.me2me.live.dto.LiveCoverDto;
 import com.me2me.live.dto.LiveDetailDto;
+import com.me2me.live.dto.LiveDetailPageDto;
 import com.me2me.live.dto.LiveDisplayProtocolDto;
 import com.me2me.live.dto.LiveParamsDto;
 import com.me2me.live.dto.LiveQRCodeDto;
@@ -3176,6 +3177,75 @@ public class LiveServiceImpl implements LiveService {
     }
     
     @Override
+    public Response getLiveDetailPage(GetLiveDetailDto getLiveDetailDto){
+    	log.info("get live detail start ... request:"+JSON.toJSONString(getLiveDetailDto));
+        log.info("get total records...");
+        Topic topic = liveMybatisDao.getTopicById(getLiveDetailDto.getTopicId());
+        if(null == topic){
+        	return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, ResponseStatus.LIVE_HAS_DELETED.message);
+        }
+
+        //消除红点
+        MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(getLiveDetailDto.getUid(), getLiveDetailDto.getTopicId() + "", "0");
+        cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
+
+        int totalRecords = liveMybatisDao.countFragmentByTopicId(getLiveDetailDto.getTopicId());
+
+        LiveDetailPageDto liveDetailDto = new LiveDetailPageDto();
+        liveDetailDto.setTotalRecords(totalRecords);
+        int offset = getLiveDetailDto.getOffset();
+        int totalPages =totalRecords%offset==0?totalRecords/offset:totalRecords/offset+1;
+        liveDetailDto.setTotalPages(totalPages);
+        log.info("get page records...");
+
+        liveDetailDto.getPageInfo().setStart(getLiveDetailDto.getPageNo());
+
+        int ss = 0;//预防机制。。防止程序出错死循环
+        while(true){
+        	ss++;
+        	if(ss > 100){//预计不会查询超过100页数据的，预防死循环
+        		break;
+        	}
+        	List<TopicFragment> list = liveMybatisDao.getTopicFragmentForPage(getLiveDetailDto);
+        	if(null == list || list.size() == 0){//理论上就是到底了
+        		if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){
+	        		if(ss == 1){//第一次循环就没拉到数据，那么说明就没有数据了。。这里要补全上下页
+	        			liveDetailDto.getPageInfo().setEnd(getLiveDetailDto.getPageNo());
+	        			LiveDetailPageDto.PageDetail pd = new LiveDetailPageDto.PageDetail();
+	        	        pd.setPage(getLiveDetailDto.getPageNo());
+	        	        pd.setRecords(0);
+	        	        pd.setIsFull(2);
+	        	        liveDetailDto.getPageInfo().getDetail().add(pd);
+	        		}
+	        		break;
+        		}
+        	}
+        	int flag = buildLiveDetailPage(getLiveDetailDto,liveDetailDto,list, topic);
+        	if(getLiveDetailDto.getCurrentCount() >= offset){
+        		break;
+        	}
+        	if(flag == 1){
+        		break;
+        	}
+        	//还没满，则继续查询上一页或下一页
+        	if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){
+        		getLiveDetailDto.setPageNo(getLiveDetailDto.getPageNo() + 1);
+        	}else{
+        		getLiveDetailDto.setPageNo(getLiveDetailDto.getPageNo() - 1);
+        		if(getLiveDetailDto.getPageNo() < 1){
+            		break;//向上拉到顶了
+            	}
+        	}
+        }
+
+        //将当前用户针对于本王国的相关消息置为已读
+        userService.clearUserNoticeUnreadByCid(getLiveDetailDto.getUid(), Specification.UserNoticeUnreadContentType.KINGDOM.index, getLiveDetailDto.getTopicId());
+
+        log.info("get live detail end ...");
+        return  Response.success(ResponseStatus.GET_LIVE_DETAIL_SUCCESS.status, ResponseStatus.GET_LIVE_DETAIL_SUCCESS.message, liveDetailDto);
+    }
+    
+    @Override
     public Response detailPageStatus(long topicId, int pageNo, int offset){
     	if(offset<1){
     		offset = 50;
@@ -3459,6 +3529,203 @@ public class LiveServiceImpl implements LiveService {
         liveDetailDto.getPageInfo().getDetail().add(pd);
         log.info("build live detail end ...");
 
+        //判断是否到底或到顶
+        int result = 2;
+        if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){//向下拉，那么返回的数据不满50条说明到底了
+        	if(fragmentList.size() < getLiveDetailDto.getOffset()){
+        		result = 1;
+        	}
+        }else{//向上拉，那么page到第一页时说明就到顶了
+        	if(getLiveDetailDto.getPageNo() <= 1){
+        		result = 1;
+        	}
+        }
+
+        return result;
+    }
+    
+    //返回 1：到最后了  2：没到最后
+    private int buildLiveDetailPage(GetLiveDetailDto getLiveDetailDto, LiveDetailPageDto liveDetailDto, List<TopicFragment> fragmentList, Topic topic) {
+        log.info("build live detail start ...");
+        liveDetailDto.setPageNo(getLiveDetailDto.getPageNo());
+        liveDetailDto.getPageInfo().setEnd(getLiveDetailDto.getPageNo());
+
+        List<Long> uidList = new ArrayList<Long>();
+        for (TopicFragment topicFragment : fragmentList) {
+    		if(!uidList.contains(topicFragment.getUid())){
+    			uidList.add(topicFragment.getUid());
+    		}
+    		if (null != topicFragment.getAtUid() && topicFragment.getAtUid() != 0) {
+            	if(topicFragment.getType() == Specification.LiveSpeakType.AT.index
+            			|| topicFragment.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
+            			|| topicFragment.getType() == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
+            		if(!uidList.contains(topicFragment.getAtUid())){
+            			uidList.add(topicFragment.getAtUid());
+            		}
+            	}
+    		}
+    	}
+
+    	Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+    	List<UserProfile> userList = userService.getUserProfilesByUids(uidList);
+    	if(null != userList && userList.size() > 0){
+    		for(UserProfile u : userList){
+    			userMap.put(u.getUid().toString(), u);
+    		}
+    	}
+
+    	//一次性查询关注信息
+        Map<String, String> followMap = new HashMap<String, String>();
+        List<UserFollow> userFollowList = userService.getAllFollows(getLiveDetailDto.getUid(), uidList);
+        if(null != userFollowList && userFollowList.size() > 0){
+        	for(UserFollow uf : userFollowList){
+        		followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+        	}
+        }
+
+        LiveDetailPageDto.PageDetail pd = new LiveDetailPageDto.PageDetail();
+
+        int count = 0;
+        UserProfile userProfile = null;
+        UserProfile atUser = null;
+        long pageUpdateTime = 0;
+        for (TopicFragment topicFragment : fragmentList) {
+            long uid = topicFragment.getUid();
+
+            LiveDetailPageDto.LiveElement liveElement = new LiveDetailPageDto.LiveElement();
+            int status = topicFragment.getStatus();
+            liveElement.setStatus(status);
+            liveElement.setId(topicFragment.getId());
+            if(status==0){
+            	if(null != topicFragment.getUpdateTime() && topicFragment.getUpdateTime().getTime() > pageUpdateTime){
+            		pageUpdateTime = topicFragment.getUpdateTime().getTime();
+            	}
+            	//删除的不要了
+                //liveDetailDto.getLiveElements().add(liveElement);
+                continue;
+            }
+
+            //系统灰条过滤处理（预防低版本）
+            if(getLiveDetailDto.getVersionFlag() < 1){//低于V2.2.2版本
+            	//系统灰条和足迹不展示
+            	if(topicFragment.getType() == 51&&topicFragment.getContentType()==16){//足迹
+            		liveElement.setStatus(0);
+            		continue;
+            	}else if(topicFragment.getType() == 1000){//系统灰条
+            		liveElement.setStatus(0);
+            		continue;
+            	}
+            }
+            //表情包过滤处理（预防低版本）
+            if(getLiveDetailDto.getVersionFlag() < 2){//低于V2.2.4版本
+            	if(topicFragment.getType() == 51 || topicFragment.getType() == 52){
+            		if(topicFragment.getContentType() == 17 || topicFragment.getContentType() == 18){//表情包
+            			liveElement.setStatus(0);
+                		continue;
+            		}
+            	}
+            }
+            //逗一逗和投票（预防低版本）
+            if(getLiveDetailDto.getVersionFlag() < 3){//低于V2.2.5版本
+            	if(topicFragment.getType() == 51 || topicFragment.getType() == 52){
+            		if(topicFragment.getContentType() == 20){//逗一逗
+            			liveElement.setStatus(0);
+                		continue;
+            		}
+            	}
+            	if(topicFragment.getType() == 52){
+            		if(topicFragment.getContentType() == 19){//投票
+            			liveElement.setStatus(0);
+                		continue;
+            		}
+            	}
+            }
+            //系统灰条（纯文本）
+            if(getLiveDetailDto.getVersionFlag() < 4){//低于V3.0.1版本
+            	if(topicFragment.getType() == 1000 && topicFragment.getContentType() == 0){
+            		liveElement.setStatus(0);
+                    continue;
+            	}
+            }
+            //抽奖和UGC
+            if(getLiveDetailDto.getVersionFlag() < 5){//低于V3.0.2版本
+            	if((topicFragment.getType() == 0 || topicFragment.getType() == 52) 
+            			&& (topicFragment.getContentType() == 22 || topicFragment.getContentType() == 23)){
+            		liveElement.setStatus(0);
+                    continue;
+            	}
+            }
+            
+            //逗一逗自动播放状态
+            int teaseStatus = 0;
+            if((topicFragment.getType() == 51 || topicFragment.getType() == 52) && topicFragment.getContentType() == 20){
+               JSONObject extraJson  = 	 JSONObject.parseObject(topicFragment.getExtra());
+               if((getLiveDetailDto.getUid()+"").equals(extraJson.getString("uid"))){
+            	TeaseAutoPlayStatusModel teaseAutoPlayStatusModel =  new TeaseAutoPlayStatusModel(topicFragment.getId(), "0");
+            	String isTeaseStatus = cacheService.hGet(teaseAutoPlayStatusModel.getKey(), teaseAutoPlayStatusModel.getField());
+            	  if (!StringUtils.isEmpty(isTeaseStatus)) {
+            		  teaseStatus=0;
+                  } else {
+                	  teaseStatus=1;
+                	  cacheService.hSet(teaseAutoPlayStatusModel.getKey(), teaseAutoPlayStatusModel.getField(), teaseAutoPlayStatusModel.getValue());
+                  }
+               }
+            }
+            liveElement.setTeaseStatus(teaseStatus);
+
+            userProfile = userMap.get(String.valueOf(uid));
+            liveElement.setUid(uid);
+            if(null != userProfile){
+            	liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                liveElement.setNickName(userProfile.getNickName());
+                liveElement.setV_lv(userProfile.getvLv());
+                liveElement.setLevel(userProfile.getLevel());
+            }
+            liveElement.setFragment(topicFragment.getFragment());
+            String fragmentImage = topicFragment.getFragmentImage();
+            if (!StringUtils.isEmpty(fragmentImage)) {
+                liveElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
+            }
+            liveElement.setCreateTime(topicFragment.getCreateTime());
+            liveElement.setType(topicFragment.getType());
+            if(null != followMap.get(getLiveDetailDto.getUid()+"_"+topicFragment.getUid())){
+            	liveElement.setIsFollowed(1);
+            }else{
+            	liveElement.setIsFollowed(0);
+            }
+            liveElement.setContentType(topicFragment.getContentType());
+            liveElement.setFragmentId(topicFragment.getId());
+            liveElement.setSource(topicFragment.getSource());
+            liveElement.setExtra(topicFragment.getExtra());
+
+            liveElement.setInternalStatus(getInternalStatus(topic, uid));
+            if (null != topicFragment.getAtUid() && topicFragment.getAtUid() > 0){
+            	if(topicFragment.getType() == Specification.LiveSpeakType.AT.index
+            			|| topicFragment.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
+            			|| topicFragment.getType() == Specification.LiveSpeakType.AT_CORE_CIRCLE.index){
+	                atUser = userMap.get(topicFragment.getAtUid().toString());
+	                if(null != atUser){
+	                	liveElement.setAtUid(atUser.getUid());
+		                liveElement.setAtNickName(atUser.getNickName());
+	                }
+            	}
+            }
+            liveElement.setScore(topicFragment.getScore());
+            
+            pd.getLiveElements().add(liveElement);
+            
+            count++;
+        }
+        
+        pd.setPage(getLiveDetailDto.getPageNo());
+        pd.setRecords(count);
+        pd.setIsFull(fragmentList.size() >= getLiveDetailDto.getOffset()?1:2);
+        pd.setUpdateTime(pageUpdateTime);
+        liveDetailDto.getPageInfo().getDetail().add(pd);
+        log.info("build live detail end ...");
+
+        getLiveDetailDto.setCurrentCount(getLiveDetailDto.getCurrentCount() + count);
+        
         //判断是否到底或到顶
         int result = 2;
         if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){//向下拉，那么返回的数据不满50条说明到底了

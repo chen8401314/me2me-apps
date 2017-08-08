@@ -184,6 +184,14 @@ public interface LiveService {
      * @return
      */
     Response getLiveDetail(GetLiveDetailDto liveDetailDto);
+    
+    /**
+     * 获取王国详情，可分页
+     * 返回也是按分页返回
+     * @param liveDetailDto
+     * @return
+     */
+    Response getLiveDetailPage(GetLiveDetailDto liveDetailDto);
 
     /**
      * 查询王国详情页分页的相关状态信息

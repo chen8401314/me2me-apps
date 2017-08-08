@@ -123,7 +123,6 @@ public class Live extends BaseController {
     private KafkaService kafkaService;
     
     @Autowired
-    
     private SearchService searchService;
     
     @Autowired
@@ -219,6 +218,43 @@ public class Live extends BaseController {
         }
         
         return liveService.getLiveDetail(liveDetailDto);
+    }
+    
+    /**
+     * 获取王国消息列表，按分页
+     * 返回也是按分页返回
+     * @param request
+     * @return
+     */
+    @CrossOrigin(origins = "*")
+    @RequestMapping(value = "/detailPage",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public Response detailPage(LiveDetailRequest request){
+        GetLiveDetailDto liveDetailDto = new GetLiveDetailDto();
+        liveDetailDto.setTopicId(request.getTopicId());
+        int offset = request.getOffset()==0?50:request.getOffset();
+        int pageNo = request.getPageNo()==0?1:request.getPageNo();
+        liveDetailDto.setOffset(offset);
+        liveDetailDto.setPageNo(pageNo);
+        liveDetailDto.setUid(request.getUid());
+        liveDetailDto.setSinceId(request.getSinceId());
+        liveDetailDto.setDirection(request.getDirection());
+        liveDetailDto.setVersionFlag(0);
+        
+        String version = request.getVersion();
+        if(VersionUtil.isNewVersion(version, "3.0.2")){
+        	liveDetailDto.setVersionFlag(5);
+        }else if(VersionUtil.isNewVersion(version, "3.0.1")){
+        	liveDetailDto.setVersionFlag(4);
+        }else if(VersionUtil.isNewVersion(version, "2.2.5")){
+        	liveDetailDto.setVersionFlag(3);
+        }else if(VersionUtil.isNewVersion(version, "2.2.4")){
+        	liveDetailDto.setVersionFlag(2);
+        }else if(VersionUtil.isNewVersion(version, "2.2.2")){//222版本的限制
+        	liveDetailDto.setVersionFlag(1);
+        }
+        
+        return liveService.getLiveDetailPage(liveDetailDto);
     }
 
     @CrossOrigin(origins = "*")
