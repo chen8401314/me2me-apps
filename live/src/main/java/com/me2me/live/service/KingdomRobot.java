@@ -4,9 +4,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.me2me.common.utils.DateUtil;
 import com.me2me.common.web.BaseEntity;
+import com.me2me.live.dao.LiveMybatisDao;
 import com.me2me.live.dto.SpeakDto;
+import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.QuotationInfo;
 import com.me2me.live.model.RobotInfo;
+import com.me2me.live.model.Topic;
+import com.me2me.user.dto.FollowDto;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.service.UserService;
 
@@ -37,6 +41,8 @@ public class KingdomRobot {
 
     private static final ScheduledExecutorService ES = Executors.newSingleThreadScheduledExecutor();
 
+    @Autowired
+    private LiveMybatisDao liveMybatisDao;
     @Autowired
     private LiveService liveService;
     @Autowired
@@ -138,6 +144,31 @@ public class KingdomRobot {
                 	log.info("当前库中没有机器人或语录，故不再自动回复");
                 	return;
                 }
+                
+                Topic topic = liveMybatisDao.getTopicById(policy.getTopicId());
+                if(null == topic){
+                	log.info("王国["+policy.getTopicId()+"]不存在，无所谓了");
+                	return;
+                }
+                
+                //有40%概率加入这个王国
+                int joinRandom = random.nextInt(100);
+                if(joinRandom < 40){
+                	LiveFavorite lf = liveMybatisDao.getLiveFavorite(robot.getUid(), policy.getTopicId());
+                	if(null == lf){
+                		liveService.subscribedTopicNew(policy.getTopicId(), robot.getUid(), 0);
+                	}
+                }
+                //有40%概率关注这个用户
+                int subscribedRandom = random.nextInt(100);
+                if(subscribedRandom < 40){
+                	FollowDto followDto = new FollowDto();
+                    followDto.setSourceUid(robot.getUid());
+                    followDto.setTargetUid(topic.getUid());
+                    followDto.setAction(0);
+                    userService.follow(followDto);
+                }
+                
                 SpeakDto speakDto = new SpeakDto();
                 speakDto.setTopicId(policy.getTopicId());
                 speakDto.setUid(robot.getUid());
@@ -209,17 +240,43 @@ public class KingdomRobot {
                 @Override
                 public void run() {
                     log.info("execute task to speak ..... ");
+                    Random random = new Random();
                     QuotationInfo info = null;
                     if(finalI<qcount){
                     	info = quotationInfos.get(finalI);
                     }else{
-                    	info = quotationInfos.get(new Random().nextInt(qcount));
+                    	info = quotationInfos.get(random.nextInt(qcount));
                     }
                     RobotInfo robot = liveService.selectRobotInfo();
                     if(null == robot){
                     	log.info("无机器人支持");
                     	return;
                     }
+                    
+                    Topic topic = liveMybatisDao.getTopicById(policy.getTopicId());
+                    if(null == topic){
+                    	log.info("王国["+policy.getTopicId()+"]不存在，无所谓了");
+                    	return;
+                    }
+                    
+                    //有40%概率加入这个王国
+                    int joinRandom = random.nextInt(100);
+                    if(joinRandom < 40){
+                    	LiveFavorite lf = liveMybatisDao.getLiveFavorite(robot.getUid(), policy.getTopicId());
+                    	if(null == lf){
+                    		liveService.subscribedTopicNew(policy.getTopicId(), robot.getUid(), 0);
+                    	}
+                    }
+                    //有40%概率关注这个用户
+                    int subscribedRandom = random.nextInt(100);
+                    if(subscribedRandom < 40){
+                    	FollowDto followDto = new FollowDto();
+                        followDto.setSourceUid(robot.getUid());
+                        followDto.setTargetUid(topic.getUid());
+                        followDto.setAction(0);
+                        userService.follow(followDto);
+                    }
+                    
                     SpeakDto speakDto = new SpeakDto();
                     speakDto.setTopicId(policy.getTopicId());
                     speakDto.setUid(robot.getUid());

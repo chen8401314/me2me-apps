@@ -16,7 +16,6 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 
-import com.me2me.core.KeysManager;
 import com.me2me.live.event.*;
 import com.me2me.live.model.*;
 import com.me2me.user.dto.ModifyUserCoinDto;
@@ -1083,7 +1082,7 @@ public class LiveServiceImpl implements LiveService {
                     	if(topic.getUid().longValue() == speakDto.getUid()){
                     		//再判断是否国王发言多少条了
                     		int c = liveMybatisDao.countUserFragment(topic.getId(), speakDto.getUid());
-                    		if(c < 4){
+                    		if(c == 4 || c == 8){//第三条和第七条触发机器人(因为创建王国时其实已经发了一条了，所以这里是4和8)
                     			applicationEventBus.post(new AutoReplyEvent(topic.getUid(), topic.getId(), topic.getCreateTime()));
                     		}
                     	}
