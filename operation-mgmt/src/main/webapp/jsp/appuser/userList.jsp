@@ -23,6 +23,44 @@
 <script src="${ctx}/js/jquery-ui-1.9.2.custom.min.js"></script>
 <script src="${ctx}/js/jquery-migrate-1.2.1.min.js"></script>
 <script src="${ctx}/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+var modifyLevel = function(uid, nickName, level){
+	$("#cUid").val(uid);
+	$("#cName").val(nickName);
+	$("#cLevel").val(level);
+	$("#cNewLevel").val('');
+	$("#changeLevelModal").modal();
+}
+
+var modifyCommit = function(){
+	var uid = $("#cUid").val();
+	var newLevel = $("#cNewLevel").val();
+	if(newLevel == ''){
+		alert('请填写新等级');
+		return;
+	}
+	if(newLevel<=0 || newLevel>9){
+		alert('请填写合适的等级（1-9）');
+		return;
+	}
+
+	var $tr=$("tr[key='"+uid+"']");
+	$.ajax({
+		url : "${ctx}/appuser/userLevel/modify?u="+uid+"&l="+newLevel,
+		async : false,
+		type : "GET",
+		contentType : "application/json;charset=UTF-8",
+		success : function(resp) {
+			if(resp == '0'){
+				alert('保存成功');
+				$tr.find("th:eq(7)").text(newLevel);
+			}else{
+				alert(resp);
+			}
+		}
+	});
+}
+</script>
 </head>
 <body>
 	<section id="container" class="">
@@ -102,6 +140,7 @@
 												<th>性别</th>
 												<th>生日</th>
 												<th>是否大V</th>
+												<th>等级</th>
 												<th>状态</th>
 												<th>创建时间</th>
 												<th>操作</th>
@@ -109,7 +148,7 @@
 										</thead>
 										<tbody>
 											<c:forEach items="${dataObj.data.result}" var="userItem">
-												<tr class="gradeX">
+												<tr class="gradeX" key="${userItem.uid }">
 													<th>${userItem.uid }</th>
 													<th>${userItem.meCode }</th>
 													<th>${userItem.mobile }</th>
@@ -135,6 +174,7 @@
                                                 		</c:otherwise>
                                                 	</c:choose>
 													</th>
+													<th>${userItem.level }</th>
 													<th>
 													<c:choose>
                                                 		<c:when test="${userItem.status == '0'}">
@@ -165,6 +205,7 @@
                                                 		</c:otherwise>
                                                 	</c:choose>
                                                 	|<a href="${ctx}/appcontent/init/${userItem.uid }">查看内容</a>
+                                                	|<a href="#" onclick="modifyLevel(${userItem.uid }, '${userItem.nickName }', ${userItem.level })">修改等级</a>
 													</th>
 												</tr>
 											</c:forEach>
@@ -178,6 +219,7 @@
 												<th>性别</th>
 												<th>生日</th>
 												<th>是否大V</th>
+												<th>等级</th>
 												<th>状态</th>
 												<th>创建时间</th>
 												<th>操作</th>
@@ -202,6 +244,37 @@
 		<%@include file="../common/footer.jsp"%>
 		<!--footer end-->
 	</section>
+	
+	<!-- modal VIEW -->
+	<div class="modal fade" id="changeLevelModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">修改用户等级</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="exampleInputEmail1">用户</label>
+                        <input type="text" id="cName" name="cName" class="form-control" style="width: 100%" readonly>
+                        <input type="hidden" id="cUid" name="cUid">
+					</div>
+					<div class="form-group">
+						<label for="exampleInputEmail1">当前等级</label>
+                        <input type="text" id="cLevel" name="cLevel" class="form-control" style="width: 100%" readonly>
+					</div>
+					<div class="form-group">
+						<label for="exampleInputEmail1">新等级</label>
+                        <input type="number" id="cNewLevel" name="cNewLevel" class="form-control" style="width: 100%">
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="modifyCommit()">更改</button>
+					<button data-dismiss="modal" class="btn btn-default" type="button">关闭</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	<!-- js placed at the end of the document so the pages load faster -->
 	<script class="include" type="text/javascript" src="${ctx}/js/jquery.dcjqaccordion.2.7.js"></script>
 	<script src="${ctx}/js/jquery.scrollTo.min.js"></script>

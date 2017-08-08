@@ -98,7 +98,7 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 
     public List<Map<String, Object>> searchUserProfilesByPage(String nickName, String mobile, int vLv, int status, String startTime, String endTime, long meCode, int start, int pageSize){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select p.avatar,u.create_time,p.gender,p.mobile,p.nick_name,p.third_part_bind,p.uid,p.v_lv,p.birthday,u.disable_user,n.me_number ");
+    	sb.append("select p.avatar,u.create_time,p.gender,p.mobile,p.nick_name,p.third_part_bind,p.uid,p.v_lv,p.birthday,u.disable_user,n.me_number,p.level ");
     	sb.append("from user u,user_profile p,user_no n ");
     	sb.append("where u.uid=p.uid and u.uid=n.uid ");
     	if(null != nickName && !"".equals(nickName)){

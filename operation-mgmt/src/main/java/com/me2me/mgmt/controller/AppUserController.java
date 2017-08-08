@@ -75,6 +75,13 @@ public class AppUserController {
 		return view;
 	}
 	
+	@RequestMapping(value = "/userLevel/modify")
+	@ResponseBody
+	public String sendMsg(@RequestParam("u")long uid, @RequestParam("l")int level){
+		userService.modifyUserLevel(uid, level);
+		return "0";
+	}
+	
 	@RequestMapping(value="/option/vlv")
 	@SystemControllerLog(description = "上大V或取消大V操作")
     public ModelAndView optionVlv(HttpServletRequest req){

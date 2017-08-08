@@ -304,6 +304,8 @@ public interface UserService {
 	 * @return
 	 */
 	Response optionV(int action, long uid);
+	
+	void modifyUserLevel(long uid, int level);
 
 	Response gag(GagDto dto);
 

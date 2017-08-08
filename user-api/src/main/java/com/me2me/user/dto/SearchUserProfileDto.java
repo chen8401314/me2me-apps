@@ -41,5 +41,6 @@ public class SearchUserProfileDto implements BaseEntity {
 		private int status;
 		
 		private long meCode;
+		private int level;
 	}
 }

@@ -2902,6 +2902,7 @@ public class UserServiceImpl implements UserService {
             e.setBirthday((String)map.get("birthday"));
             e.setStatus((Integer)map.get("disable_user"));
             e.setMeCode((Long)map.get("me_number"));
+            e.setLevel((Integer)map.get("level"));
             dto.getResult().add(e);
         }
         return Response.success(dto);
@@ -2922,6 +2923,15 @@ public class UserServiceImpl implements UserService {
         } else {
             return Response.failure("user is not exists");
         }
+    }
+    
+    @Override
+    public void modifyUserLevel(long uid, int level){
+    	UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+    	if(null != userProfile){
+    		userProfile.setLevel(level);
+    		userMybatisDao.modifyUserProfile(userProfile);
+    	}
     }
 
     @SuppressWarnings("rawtypes")
