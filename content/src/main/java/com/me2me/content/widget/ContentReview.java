@@ -40,9 +40,12 @@ public class ContentReview implements Review{
     @Autowired
     private UserService userService;
 
-
     @Override
     public Response createReview(ReviewDto reviewDto) {
+    	return Response.failure(500, "新版本不支持回复");
+    }
+
+    public Response createReview2(ReviewDto reviewDto) {
         log.info("ContentReview createReview start ...");
         String isOnline = cacheService.get("version:2.1.0:online");
         contentService.createReview2(reviewDto);
