@@ -325,7 +325,7 @@ public class ContentMybatisDao {
     
     public List<Content> getContentByTopicIds(List<Long> topicIds){
     	if(topicIds==null || topicIds.isEmpty()){
-    		return new ArrayList();
+    		return new ArrayList<Content>();
     	}
     	ContentExample example = new ContentExample();
         ContentExample.Criteria criteria =example.createCriteria();
@@ -660,7 +660,6 @@ public class ContentMybatisDao {
 
     public List<BillBoard> loadBillBoard(){
         BillBoardExample example = new BillBoardExample();
-        BillBoardExample.Criteria criteria = example.createCriteria();
         example.setOrderByClause("id desc");
         return billBoardMapper.selectByExample(example);
     }
