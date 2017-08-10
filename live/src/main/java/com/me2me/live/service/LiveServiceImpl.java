@@ -26,7 +26,6 @@ import com.me2me.user.rule.Rules;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.RandomUtils;
-import org.apache.lucene.queryparser.xml.builders.LikeThisQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -342,6 +341,7 @@ public class LiveServiceImpl implements LiveService {
         		}
         	}
         }
+        
         liveCoverDto.setTitle(topic.getTitle());
         liveCoverDto.setCreateTime(topic.getCreateTime());
         liveCoverDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
@@ -763,8 +763,9 @@ public class LiveServiceImpl implements LiveService {
         } catch(Exception e){
         	
         }
-     // 记录操作日志
+        // 记录操作日志
         contentService.addUserOprationLog(topic.getUid(), USER_OPRATE_TYPE.READ_KINGDOM, topic.getId());
+        
         return Response.success(showLiveDto);
     }
 
@@ -1288,8 +1289,9 @@ public class LiveServiceImpl implements LiveService {
         		log.error("自动打标签失败", e);
         	}
         }
-        // 记录操作日志
+     // 记录操作日志
         contentService.addUserOprationLog(speakDto.getUid(), USER_OPRATE_TYPE.SPEAK_KINGDOM, speakDto.getTopicId());
+        
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status, ResponseStatus.USER_SPEAK_SUCCESS.message, speakDto);
     }
 
@@ -1850,7 +1852,7 @@ public class LiveServiceImpl implements LiveService {
             } else {
                 showTopicElement.setFavorite(Specification.LiveFavorite.NORMAL.index);
             }
-  
+
 
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }
@@ -2400,7 +2402,7 @@ public class LiveServiceImpl implements LiveService {
             resp = Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
         }
         log.info("subscribedTopicNew end ...");
-        // 记录操作日志
+     // 记录操作日志
         contentService.addUserOprationLog(uid, USER_OPRATE_TYPE.JOIN_KINGDOM,topicId);
         return resp;
     }
@@ -3594,6 +3596,9 @@ public class LiveServiceImpl implements LiveService {
         UserProfile atUser = null;
         long pageUpdateTime = 0;
         for (TopicFragment topicFragment : fragmentList) {
+        	if(null != topicFragment.getUpdateTime() && topicFragment.getUpdateTime().getTime() > pageUpdateTime){
+        		pageUpdateTime = topicFragment.getUpdateTime().getTime();
+        	}
             long uid = topicFragment.getUid();
 
             LiveDetailPageDto.LiveElement liveElement = new LiveDetailPageDto.LiveElement();
@@ -3601,9 +3606,6 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setStatus(status);
             liveElement.setId(topicFragment.getId());
             if(status==0){
-            	if(null != topicFragment.getUpdateTime() && topicFragment.getUpdateTime().getTime() > pageUpdateTime){
-            		pageUpdateTime = topicFragment.getUpdateTime().getTime();
-            	}
             	//删除的不要了
                 //liveDetailDto.getLiveElements().add(liveElement);
                 continue;
@@ -4061,10 +4063,11 @@ public class LiveServiceImpl implements LiveService {
         speakDto2.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
         speakDto2.setUpgrade(modifyUserCoinDto.getUpgrade());
         Response response = Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status, ResponseStatus.USER_CREATE_LIVE_SUCCESS.message, speakDto2);
-        // 记录操作日志
+     // 记录操作日志
         contentService.addUserOprationLog(topic.getUid(), USER_OPRATE_TYPE.CREATE_KINGDOM, topic.getId());
-        return response;
         
+        return response;
+
 	}
 
 	@Override
@@ -8946,7 +8949,7 @@ public class LiveServiceImpl implements LiveService {
 			return Response.failure(500, "还没到开奖时间！");
 		}
 	}
-
+    
 	@Override
 	public Response hitPushMessage(long uid, long topicId) {
 		contentService.addUserOprationLog(uid, USER_OPRATE_TYPE.HIT_PUSH_KINGDOM, topicId);
