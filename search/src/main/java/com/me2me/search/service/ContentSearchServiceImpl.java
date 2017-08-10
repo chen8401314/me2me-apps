@@ -134,7 +134,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 			}
 		}, 1, 1, TimeUnit.SECONDS); // 1 秒一次。避免队列过大，造成系统崩溃。
 
-		// 加载关键词映射
+		// 加载关键词映射 
 		this.indexTagSample();
 		Configuration cfg=DefaultConfig.getInstance();
 		Dictionary.initial(cfg);
