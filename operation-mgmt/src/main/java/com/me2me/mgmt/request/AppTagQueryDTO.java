@@ -4,12 +4,13 @@ import java.util.Date;
 import java.util.List;
 
 import com.google.common.collect.Lists;
+import com.me2me.mgmt.vo.DatatablePage;
 
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
-public class AppTagQueryDTO {
+public class AppTagQueryDTO extends DatatablePage{
 
 	@Getter
     @Setter
@@ -39,6 +40,9 @@ public class AppTagQueryDTO {
 	@Setter
 	private int pageSize = 10;
 	
+	@Getter
+	@Setter
+	private int noParent=0;
 	
 	@Getter
     @Setter
@@ -46,22 +50,8 @@ public class AppTagQueryDTO {
 	@Getter
     @Setter
 	private int totalPage = 0;
-	@Getter
-    @Setter
-	private List<Item> result = Lists.newArrayList();
 	
 	@Getter
     @Setter
     private Integer pid;
-	@Data
-	public static class Item{
-		private long id;
-		private String tagName;
-		private Date createTime;
-		private int isSys;
-		private int isRec;
-		private int status;
-		private long topicCount;
-		private Integer orderNum;
-	}
 }

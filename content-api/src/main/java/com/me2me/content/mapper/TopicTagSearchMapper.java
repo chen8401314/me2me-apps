@@ -69,4 +69,13 @@ public interface TopicTagSearchMapper {
 	 * @return
 	 */
 	public List<Integer> getTopicIdsByTag(@Param("tag")String tag);
+	/**
+	 * 取用户感兴趣的标签，根据用户行为习惯，后台统计标签分数。
+	 * @author zhangjiwei
+	 * @date Aug 10, 2017
+	 * @param favoScore 用户爱好对应的预设分数
+	 * @param uid
+	 * @return
+	 */
+	public List<String> getUserFavoTags(@Param("favoScore")int favoScore,@Param("uid")long uid);
 }

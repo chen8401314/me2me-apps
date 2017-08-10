@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.me2me.common.page.PageBean;
 import com.me2me.content.service.ContentService;
 import com.me2me.live.model.TopicTag;
 import com.me2me.live.service.LiveService;
@@ -42,12 +43,7 @@ public class AppTagController {
 	@RequestMapping(value = "/query")
 	public ModelAndView tagQuery(AppTagQueryDTO dto){
 		
-		this.getTagInfo(dto);
-		
-		
-		
 		ModelAndView view = new ModelAndView("tag/tagList");
-		view.addObject("dataObj", dto);
 		//查体系标签
 		String sql = "select * from topic_tag where is_sys=1";
 		view.addObject("sysTagList",contentService.queryEvery(sql));
@@ -56,11 +52,22 @@ public class AppTagController {
 	
 	@RequestMapping(value="/page")
 	@ResponseBody
-	public String tagPage(AppTagQueryDTO dto){
+	public AppTagQueryDTO tagPage(AppTagQueryDTO dto){
+		PageBean page = dto.toPageBean();
+		dto.setPage(page.getCurrentPage());
+		dto.setPageSize(page.getPageSize());
 		this.getTagInfo(dto);
-		
-		JSONObject obj = (JSONObject)JSON.toJSON(dto);
-		return obj.toJSONString();
+		if(dto.getData()!=null){
+		for(Object obj:dto.getData()){
+			Map<String,Object> item = (Map<String,Object>) obj;
+			String parentTag ="";
+			if(item.get("pid")!=null){
+				parentTag = contentService.queryForObject("select tag from topic_tag where id=?",String.class, item.get("pid"));
+			}
+			item.put("parentTagName", parentTag);
+		}
+		}
+		return dto;
 	}
 	
 	private void getTagInfo(AppTagQueryDTO dto){
@@ -69,15 +76,18 @@ public class AppTagController {
 		
 		StringBuilder countSql = new StringBuilder();
 		countSql.append("select count(1) as cc from (");
-		countSql.append("select t.id,count(d.topic_id) as kcount,");
-		countSql.append("max(t.create_time) as createtime,");
-		countSql.append("max(t.tag) as tag,");
-		countSql.append("max(t.is_rec) as isrec,");
-		countSql.append("max(t.is_sys) as issys,");
+		countSql.append("select t.id,count(d.topic_id) as readCountDummy,");
+		countSql.append("max(t.create_time) as createTime,");
+		countSql.append("max(t.tag) as tagName,");
+		countSql.append("max(t.is_rec) as isRec,");
+		countSql.append("max(t.is_sys) as isSys,");
 		countSql.append("max(t.status) as status");
 		countSql.append(" from topic_tag t left join topic_tag_detail d");
 		countSql.append(" on t.id=d.tag_id and d.status=0");
 		countSql.append(" where 1=1");
+		if(dto.getNoParent()==1){
+			countSql.append(" and t.pid is null ");
+		}
 		if(dto.getPid()!=null){
 			countSql.append(" and t.pid=").append(dto.getPid());
 		}
@@ -111,14 +121,17 @@ public class AppTagController {
 		countSql.append(") m");
 		
 		StringBuilder querySql = new StringBuilder();
-		querySql.append("select t.id,count(d.topic_id) as kcount,");
-		querySql.append("max(t.create_time) as createtime,");
-		querySql.append("max(t.tag) as tag,max(t.is_rec) as isrec,");
-		querySql.append("max(t.order_num) as ordernum,");
+		querySql.append("select t.id,count(d.topic_id) as readCountDummy,");
+		querySql.append("max(t.create_time) as createTime,");
+		querySql.append("max(t.tag) as tagName,max(t.is_rec) as isRec,max(t.pid) as pid,");
+		querySql.append("max(t.order_num) as orderNum,");
 		querySql.append("max(t.is_sys) as issys,max(t.status) as status");
 		querySql.append(" from topic_tag t left join topic_tag_detail d");
 		querySql.append(" on t.id=d.tag_id and d.status=0");
 		querySql.append(" where 1=1");
+		if(dto.getNoParent()==1){
+			querySql.append(" and t.pid is null ");
+		}
 		if(dto.getPid()!=null){
 			querySql.append(" and t.pid=").append(dto.getPid());
 		}
@@ -152,7 +165,6 @@ public class AppTagController {
 		querySql.append(" order by createtime desc");
 		querySql.append(" limit ").append(start).append(",").append(pageSize);
 		
-		dto.getResult().clear();
 		List<Map<String, Object>> list = null;
 		List<Map<String, Object>> countList = null;
 		try{
@@ -165,26 +177,10 @@ public class AppTagController {
 		if(null != countList && countList.size() > 0){
 			Map<String, Object> count = countList.get(0);
 			long totalCount = (Long)count.get("cc");
-			int totalPage = totalCount%pageSize==0?(int)totalCount/pageSize:((int)totalCount/pageSize)+1;
-			dto.setTotalCount((int)totalCount);
-			dto.setTotalPage(totalPage);
+			dto.setLength(dto.getPageSize());
+			dto.setRecordsTotal((int)totalCount);
 		}
-		
-		if(null != list && list.size() > 0){
-			AppTagQueryDTO.Item item = null;
-			for(Map<String, Object> m : list){
-				item = new AppTagQueryDTO.Item();
-				item.setId((Long)m.get("id"));
-				item.setCreateTime((Date)m.get("createtime"));
-				item.setIsRec((Integer)m.get("isrec"));
-				item.setIsSys((Integer)m.get("issys"));
-				item.setStatus((Integer)m.get("status"));
-				item.setTagName((String)m.get("tag"));
-				item.setOrderNum((Integer)m.get("ordernum"));
-				item.setTopicCount((Long)m.get("kcount"));
-				dto.getResult().add(item);
-			}
-		}
+		dto.setData(list);
 	}
 	
 	@RequestMapping(value="/f/{id}")

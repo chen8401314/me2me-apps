@@ -72,4 +72,17 @@
 			select id from topic_tag c where c.pid=(select id from topic_tag p where tag=#{tag} and status=0) 
 		)
 	</select>
+	<select id="getUserFavoTags" resultType="string">
+		select m.tag
+		from (
+			select l.tag,l.score from user_tag_like l where l.uid=#{uid}
+			union all
+			select t.tag,#{favoScore} as score from user_hobby h,topic_tag t where h.uid=#{uid}
+			and FIND_IN_SET(h.hobby,t.user_hobby_ids)
+			and t.is_sys=1
+		) m
+		group by m.tag
+		order by SUM(m.score) DESC
+		limit 10
+	</select>
 </mapper>

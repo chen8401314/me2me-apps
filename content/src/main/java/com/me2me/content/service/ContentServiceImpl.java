@@ -5,6 +5,7 @@ import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Comparator;
@@ -4091,47 +4092,49 @@ public class ContentServiceImpl implements ContentService {
 
         //	取n个标签
         List<com.me2me.content.dto.ShowHotListDTO.HotTagElement> dataList = new java.util.ArrayList<ShowHotListDTO.HotTagElement>();
-        String hotLables = (String) userService.getAppConfigByKey("HOME_HOT_LABELS");
-        double TAG_SHOW_PRICE_BRAND_MIN = Double.parseDouble( userService.getAppConfigByKey("TAG_SHOW_PRICE_BRAND_MIN"));
+//        double TAG_SHOW_PRICE_BRAND_MIN = Double.parseDouble( userService.getAppConfigByKey("TAG_SHOW_PRICE_BRAND_MIN"));
+        // 用户个性化推荐，获取用户感兴趣的标签。
+        int favoScore = userService.getIntegerAppConfigByKey("USER_FAVO_SCORE");
+        String strAdminTags = (String) userService.getAppConfigByKey("HOME_HOT_LABELS");
+        List<String> favoTags = this.topicTagMapper.getUserFavoTags(favoScore,uid);
+        List<String> adminTags = Arrays.asList(strAdminTags.split("\\n"));
+        favoTags.addAll(adminTags);		//合并用户喜好标签和管理员指定标签，避免不足数量
+        favoTags = favoTags.subList(0, adminTags.size());    // 标签数量以管理员指定的数量为准。
+        for(String label:favoTags){
+            HotTagElement element = new HotTagElement();
 
-        if(!StringUtils.isEmpty(hotLables)){
-            String[] lables = hotLables.split("\\n");
-            for(String label:lables){
-                HotTagElement element = new HotTagElement();
+
+            List<Map<String,Object>> topicList = this.topicTagMapper.getKingdomsByTag(label,"new",1,4, blacklistUids);
 
 
-                List<Map<String,Object>> topicList = this.topicTagMapper.getKingdomsByTag(label,"new",1,4, blacklistUids);
+            //List<Integer> topicIds = this.topicTagMapper.getTopicIdsByTag(label);
+            Map<String,Object> totalPrice = topicTagMapper.getTagPriceAndKingdomCount(label);
 
-
-                //List<Integer> topicIds = this.topicTagMapper.getTopicIdsByTag(label);
-                Map<String,Object> totalPrice = topicTagMapper.getTagPriceAndKingdomCount(label);
-
-                if(topicList!=null && topicList.size()>0){
-                    List<BasicKingdomInfo> kingdoms =this.kingdomBuider.buildKingdoms(topicList, uid);
-                    element.setKingdomList(kingdoms);
-                }
-                int tagPersons=0;
-                int tagPrice = 0;
-                int kingdomCount = 0;
-                if(totalPrice.containsKey("tagPersons")){
-                    tagPersons=((Number)totalPrice.get("tagPersons")).intValue();
-                }
-                if(totalPrice.containsKey("tagPrice")){
-                    tagPrice=((Number)totalPrice.get("tagPrice")).intValue();
-                }
-                if(totalPrice.containsKey("kingdomCount")){
-                    kingdomCount=((Number)totalPrice.get("kingdomCount")).intValue();
-                }
-
-                element.setKingdomCount(kingdomCount);
-                element.setPersonCount(tagPersons);
-                element.setTagName(label);
-                double rmbPrice = exchangeKingdomPrice(tagPrice);
-                //element.setShowRMBBrand(rmbPrice>=TAG_SHOW_PRICE_BRAND_MIN?1:0); 首页不显示标签吊牌。
-                element.setShowRMBBrand(0);
-                element.setTagPrice(rmbPrice);
-                dataList.add(element);
+            if(topicList!=null && topicList.size()>0){
+                List<BasicKingdomInfo> kingdoms =this.kingdomBuider.buildKingdoms(topicList, uid);
+                element.setKingdomList(kingdoms);
             }
+            int tagPersons=0;
+            int tagPrice = 0;
+            int kingdomCount = 0;
+            if(totalPrice.containsKey("tagPersons")){
+                tagPersons=((Number)totalPrice.get("tagPersons")).intValue();
+            }
+            if(totalPrice.containsKey("tagPrice")){
+                tagPrice=((Number)totalPrice.get("tagPrice")).intValue();
+            }
+            if(totalPrice.containsKey("kingdomCount")){
+                kingdomCount=((Number)totalPrice.get("kingdomCount")).intValue();
+            }
+
+            element.setKingdomCount(kingdomCount);
+            element.setPersonCount(tagPersons);
+            element.setTagName(label);
+            double rmbPrice = exchangeKingdomPrice(tagPrice);
+            //element.setShowRMBBrand(rmbPrice>=TAG_SHOW_PRICE_BRAND_MIN?1:0); 首页不显示标签吊牌。
+            element.setShowRMBBrand(0);
+            element.setTagPrice(rmbPrice);
+            dataList.add(element);
         }
         return dataList;
     }
