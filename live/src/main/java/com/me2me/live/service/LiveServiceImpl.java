@@ -3589,6 +3589,9 @@ public class LiveServiceImpl implements LiveService {
         UserProfile atUser = null;
         long pageUpdateTime = 0;
         for (TopicFragment topicFragment : fragmentList) {
+        	if(null != topicFragment.getUpdateTime() && topicFragment.getUpdateTime().getTime() > pageUpdateTime){
+        		pageUpdateTime = topicFragment.getUpdateTime().getTime();
+        	}
             long uid = topicFragment.getUid();
 
             LiveDetailPageDto.LiveElement liveElement = new LiveDetailPageDto.LiveElement();
@@ -3596,9 +3599,6 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setStatus(status);
             liveElement.setId(topicFragment.getId());
             if(status==0){
-            	if(null != topicFragment.getUpdateTime() && topicFragment.getUpdateTime().getTime() > pageUpdateTime){
-            		pageUpdateTime = topicFragment.getUpdateTime().getTime();
-            	}
             	//删除的不要了
                 //liveDetailDto.getLiveElements().add(liveElement);
                 continue;

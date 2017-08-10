@@ -197,7 +197,7 @@ public class KingdomRobot {
         },sleep,TimeUnit.SECONDS);
 
         // 前24小时发言的逻辑
-        task(policy,new ReplyTimes(2,3));
+        task(policy,new ReplyTimes(1,1));//前24小时，2个小时内，1条
 
         // 后24小时发言
         // 调整策略
@@ -209,9 +209,9 @@ public class KingdomRobot {
         policy2.setCreateTime(calendar.getTime());
         policy2.setTopicId(policy.getTopicId());
         policy2.setLastHour(policy.getLastHour());
-        policy2.setMin(60);
+        policy2.setMin(120);
         policy2.setMax(120);
-        task(policy2,new ReplyTimes(1,2));
+        task(policy2,new ReplyTimes(1,1));//后24小时，4个小时内，1条
     }
 
     private void task(ExecutePolicy policy, ReplyTimes replyTimes) {
@@ -293,23 +293,26 @@ public class KingdomRobot {
 
     public static void main(String[] args) throws ParseException {
 
-        Date createTime = DateUtil.string2date("2017-07-25 21:46:00", "yyyy-MM-dd HH:mm:ss");
+        Date createTime = DateUtil.string2date("2017-08-10 14:46:00", "yyyy-MM-dd HH:mm:ss");
 
         KingdomRobot.ExecutePolicy step1 = new KingdomRobot.ExecutePolicy();
         step1.setCreateTime(createTime);
         step1.setTopicId(1000);
         step1.setLastHour(24);
-        step1.setMin(60);
-        step1.setMax(60);
+        step1.setMin(120);
+        step1.setMax(120);
 
 
-        KingdomRobot.ExecutePolicy step2 = new KingdomRobot.ExecutePolicy();
-        step2.setCreateTime(createTime);
-        step2.setTopicId(1000);
-        step2.setLastHour(24);
-        step2.setMin(120);
-        step2.setMax(60);
+//        KingdomRobot.ExecutePolicy step2 = new KingdomRobot.ExecutePolicy();
+//        step2.setCreateTime(createTime);
+//        step2.setTopicId(1000);
+//        step2.setLastHour(24);
+//        step2.setMin(120);
+//        step2.setMax(60);
 
-        new KingdomRobot().start(step1);
+        List<Date> list = new KingdomRobot().splitTask(step1, new ReplyTimes(1,1));
+        for(Date d : list){
+        	System.out.println(DateUtil.date2string(d, "yyyy-MM-dd HH:mm:ss"));
+        }
     }
 }

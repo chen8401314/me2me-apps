@@ -42,10 +42,6 @@ public class ContentReview implements Review{
 
     @Override
     public Response createReview(ReviewDto reviewDto) {
-    	return Response.failure(500, "新版本不支持回复");
-    }
-
-    public Response createReview2(ReviewDto reviewDto) {
         log.info("ContentReview createReview start ...");
         String isOnline = cacheService.get("version:2.1.0:online");
         contentService.createReview2(reviewDto);
@@ -56,11 +52,11 @@ public class ContentReview implements Review{
         contentService.updateContentById(content);
         log.info("remind success");
         //自己的日记被评论提醒
-        ReviewEvent event = new ReviewEvent();
-        event.setContent(content);
-        event.setReviewDto(reviewDto);
-        event.setIsOnline(isOnline);
-        applicationEventBus.post(event);
+//        ReviewEvent event = new ReviewEvent();
+//        event.setContent(content);
+//        event.setReviewDto(reviewDto);
+//        event.setIsOnline(isOnline);
+//        applicationEventBus.post(event);
         log.info("push success");
         ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(reviewDto.getUid(), userService.getCoinRules().get(Rules.REVIEW_UGC_KEY));
         Response response = Response.success(ResponseStatus.CONTENT_REVIEW_SUCCESS.status,ResponseStatus.CONTENT_REVIEW_SUCCESS.message);
