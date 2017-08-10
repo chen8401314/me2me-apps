@@ -26,6 +26,7 @@ import com.me2me.user.rule.Rules;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.commons.lang3.RandomUtils;
+import org.apache.lucene.queryparser.xml.builders.LikeThisQueryBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -341,7 +342,6 @@ public class LiveServiceImpl implements LiveService {
         		}
         	}
         }
-        
         liveCoverDto.setTitle(topic.getTitle());
         liveCoverDto.setCreateTime(topic.getCreateTime());
         liveCoverDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
@@ -1850,7 +1850,7 @@ public class LiveServiceImpl implements LiveService {
             } else {
                 showTopicElement.setFavorite(Specification.LiveFavorite.NORMAL.index);
             }
-
+  
 
             showTopicListDto.getShowTopicElements().add(showTopicElement);
         }

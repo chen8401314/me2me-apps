@@ -33,6 +33,8 @@ import org.springframework.data.elasticsearch.core.query.IndexQuery;
 import org.springframework.data.elasticsearch.core.query.NativeSearchQuery;
 import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
+import org.wltea.analyzer.cfg.Configuration;
+import org.wltea.analyzer.cfg.DefaultConfig;
 import org.wltea.analyzer.core.IKSegmenter;
 import org.wltea.analyzer.core.Lexeme;
 import org.wltea.analyzer.dic.Dictionary;
@@ -134,7 +136,8 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 
 		// 加载关键词映射
 		this.indexTagSample();
-
+		Configuration cfg=DefaultConfig.getInstance();
+		Dictionary.initial(cfg);
 		// 加载自定义词典。
 		Dictionary.getSingleton().addWords(this.KEY_TAG_MAPPING.keySet());
 
