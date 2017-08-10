@@ -970,32 +970,35 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	public int indexTagSample() {
 
 		log.info("indexTag started");
-		String indexName = IndexConstants.TAG_SAMPLE_INDEX_NAME;
-		String beginDate = preIndex(true, indexName);
+		//String indexName = IndexConstants.TAG_SAMPLE_INDEX_NAME;
+		//String beginDate = preIndex(true, indexName);
 		List<TagTrainSampleEsMapping> pageList = searchMapper.getAllTagSamples();
 		if (null == pageList || pageList.isEmpty()) {
 			return 0;
 		}
 		KEY_TAG_MAPPING.clear();
-		List<IndexQuery> indexList = new ArrayList<>();
+		//List<IndexQuery> indexList = new ArrayList<>();
 		for (TagTrainSampleEsMapping data : pageList) {
 			// 精确匹配，建立关键词映射
 			String tag = data.getTag().trim();
 			String keys = data.getKeywords();
 			if(!StringUtils.isEmpty(keys)){
 				for(String k:keys.split(",")){
-					KEY_TAG_MAPPING.put(k.trim(),tag);
+					k=k.trim();
+					if(!StringUtils.isEmpty(k)){
+						KEY_TAG_MAPPING.put(k,tag);
+					}
 				}
 			}
-			IndexQuery query = new IndexQuery();
+			/*IndexQuery query = new IndexQuery();
 			String key = data.getId() + "";
 			query.setId(key);
 			query.setObject(data);
 			query.setIndexName(indexName);
 			query.setType(indexName);
-			indexList.add(query);
+			indexList.add(query);*/
 		}
-		esTemplate.bulkIndex(indexList);
+		//esTemplate.bulkIndex(indexList);
 		log.info("indexTag finished.");
 
 		return 0;
