@@ -3,6 +3,7 @@ package com.me2me.content.service;
 import java.util.List;
 import java.util.Map;
 
+import com.me2me.common.enums.USER_OPRATE_TYPE;
 import com.me2me.common.page.PageBean;
 import com.me2me.common.web.Response;
 import com.me2me.content.dto.*;
@@ -460,4 +461,22 @@ public interface ContentService{
 	Response<TagKingdomDto> getTagKingdomList(String tagName, String order, int page, int pageSize, long uid);
 
     Response initSquareUpdateId();
+    /**
+     * 添加用户访问日志
+     * @author zhangjiwei
+     * @date Aug 8, 2017
+     * @param uid
+     * @param action
+     * @param topicId
+     */
+    void addUserOprationLog(long uid,USER_OPRATE_TYPE action,long topicId);
+    /**
+     * 添加用户访问日志,任意类型日志。
+     * @author zhangjiwei
+     * @date Aug 8, 2017
+     * @param uid
+     * @param action
+     * @param topicId
+     */
+    void addUserOprationLog(long uid,USER_OPRATE_TYPE action,String extra);
 }

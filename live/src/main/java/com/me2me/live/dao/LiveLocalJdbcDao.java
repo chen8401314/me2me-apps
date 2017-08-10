@@ -1438,4 +1438,5 @@ public class LiveLocalJdbcDao {
     	String sql = sb.toString();
 		return jdbcTemplate.queryForList(sql);
     }
+
 }

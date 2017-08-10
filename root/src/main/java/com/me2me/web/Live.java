@@ -105,6 +105,7 @@ import com.me2me.web.request.UserKingdomInfoRequest;
 import com.me2me.web.request.VoteInfoRequest;
 import com.me2me.web.request.VoteRequest;
 import com.me2me.web.utils.VersionUtil;
+import com.plusnet.search.request.BaseRequest;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -1192,4 +1193,15 @@ public class Live extends BaseController {
     public Response runLottery(RunLotteryRequest request){
     	return liveService.runLottery(request.getLotteryId(), request.getUid(),request.getSource());
     }
+    /**
+     * 用户点击推送消息。
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/hitPushMessage",method = RequestMethod.POST)
+    public Response hitPushMessage(TopicTagsRequest request){
+    	return liveService.hitPushMessage(request.getUid(),request.getTopicId());
+    }
+    
 }

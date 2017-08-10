@@ -40,8 +40,10 @@ import com.me2me.activity.model.ActivityWithBLOBs;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
+import com.me2me.common.enums.USER_OPRATE_TYPE;
 import com.me2me.common.page.PageBean;
 import com.me2me.common.utils.CollectionUtils;
+import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -95,6 +97,7 @@ import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.mapper.EmotionPackDetailMapper;
 import com.me2me.content.mapper.EmotionPackMapper;
 import com.me2me.content.mapper.TopicTagSearchMapper;
+import com.me2me.content.mapper.UserVisitLogMapper;
 import com.me2me.content.model.ArticleLikesDetails;
 import com.me2me.content.model.ArticleReview;
 import com.me2me.content.model.ArticleTagsDetails;
@@ -114,6 +117,7 @@ import com.me2me.content.model.EmotionPackDetail;
 import com.me2me.content.model.EmotionPackDetailExample;
 import com.me2me.content.model.EmotionPackExample;
 import com.me2me.content.model.HighQualityContent;
+import com.me2me.content.model.UserVisitLog;
 import com.me2me.content.widget.ContentRecommendServiceProxyBean;
 import com.me2me.content.widget.ContentStatusServiceProxyBean;
 import com.me2me.content.widget.LikeAdapter;
@@ -210,6 +214,9 @@ public class ContentServiceImpl implements ContentService {
 
     @Autowired
     private TopicTagSearchMapper topicTagMapper;
+    @Autowired
+    private UserVisitLogMapper userVisitLogMapper;
+    
     @Override
     public Response recommend(long uid,String emotion) {
         RecommendRequest recommendRequest = new RecommendRequest();
@@ -6838,6 +6845,10 @@ public class ContentServiceImpl implements ContentService {
         ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(uid, userService.getCoinRules().get(Rules.SHARE_KING_KEY));
         Response response = Response.success(Response.success(ResponseStatus.OPERATION_SUCCESS.status, ResponseStatus.OPERATION_SUCCESS.message));
         response.setData(modifyUserCoinDto);
+        if(csh.getType()==1){
+	        // 记录操作日志
+	        this.addUserOprationLog(uid, USER_OPRATE_TYPE.SHARE_KINGDOM,cid);
+        }
         return response;
     }
 
@@ -6988,7 +6999,8 @@ public class ContentServiceImpl implements ContentService {
                 dto.setHotTagList(tagList);
             }
         }
-
+        // 记录操作日志
+        this.addUserOprationLog(uid, USER_OPRATE_TYPE.HIT_TAG,tagName);
         return Response.success(dto);
     }
 
@@ -7042,4 +7054,29 @@ public class ContentServiceImpl implements ContentService {
 		jdbc.update(sql,args);
 		return jdbc.queryForObject("select @@IDENTITY",Integer.class);
 	}
+
+	@Override
+	public void addUserOprationLog(long uid, USER_OPRATE_TYPE action, long topicId) {
+		UserVisitLog record = new UserVisitLog();
+		record.setAction(action.toString());
+		record.setCreateTime(new Date());
+		record.setExtra(null);
+		record.setTopicId(topicId);
+		record.setUid(uid);
+		userVisitLogMapper.insertSelective(record);
+		
+	}
+
+	@Override
+	public void addUserOprationLog(long uid, USER_OPRATE_TYPE action, String extra) {
+		UserVisitLog record = new UserVisitLog();
+		record.setAction(action.toString());
+		record.setCreateTime(new Date());
+		record.setExtra(extra);
+		record.setTopicId(-1L);
+		record.setUid(uid);
+		userVisitLogMapper.insertSelective(record);
+	}
+
+	
 }

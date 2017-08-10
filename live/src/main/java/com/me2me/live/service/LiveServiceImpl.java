@@ -44,6 +44,7 @@ import com.me2me.activity.service.ActivityService;
 import com.me2me.cache.CacheConstant;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
+import com.me2me.common.enums.USER_OPRATE_TYPE;
 import com.me2me.common.page.PageBean;
 import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.utils.DateUtil;
@@ -762,7 +763,8 @@ public class LiveServiceImpl implements LiveService {
         } catch(Exception e){
         	
         }
-
+     // 记录操作日志
+        contentService.addUserOprationLog(topic.getUid(), USER_OPRATE_TYPE.READ_KINGDOM, topic.getId());
         return Response.success(showLiveDto);
     }
 
@@ -1286,7 +1288,8 @@ public class LiveServiceImpl implements LiveService {
         		log.error("自动打标签失败", e);
         	}
         }
-        
+        // 记录操作日志
+        contentService.addUserOprationLog(speakDto.getUid(), USER_OPRATE_TYPE.SPEAK_KINGDOM, speakDto.getTopicId());
         return Response.success(ResponseStatus.USER_SPEAK_SUCCESS.status, ResponseStatus.USER_SPEAK_SUCCESS.message, speakDto);
     }
 
@@ -2397,6 +2400,8 @@ public class LiveServiceImpl implements LiveService {
             resp = Response.failure(ResponseStatus.ILLEGAL_REQUEST.status, ResponseStatus.ILLEGAL_REQUEST.message);
         }
         log.info("subscribedTopicNew end ...");
+        // 记录操作日志
+        contentService.addUserOprationLog(uid, USER_OPRATE_TYPE.JOIN_KINGDOM,topicId);
         return resp;
     }
 
@@ -4056,8 +4061,10 @@ public class LiveServiceImpl implements LiveService {
         speakDto2.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
         speakDto2.setUpgrade(modifyUserCoinDto.getUpgrade());
         Response response = Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status, ResponseStatus.USER_CREATE_LIVE_SUCCESS.message, speakDto2);
+        // 记录操作日志
+        contentService.addUserOprationLog(topic.getUid(), USER_OPRATE_TYPE.CREATE_KINGDOM, topic.getId());
         return response;
-
+        
 	}
 
 	@Override
@@ -8939,4 +8946,16 @@ public class LiveServiceImpl implements LiveService {
 			return Response.failure(500, "还没到开奖时间！");
 		}
 	}
+
+	@Override
+	public Response hitPushMessage(long uid, long topicId) {
+		contentService.addUserOprationLog(uid, USER_OPRATE_TYPE.HIT_PUSH_KINGDOM, topicId);
+		return Response.success();
+	}
+
+	@Override
+	public List<TopicTagDetail> getTopicTagDetailsByTopicId(long topicId) {
+		return liveMybatisDao.getTopicTagDetailsByTopicId(topicId);
+	}
+	
 }

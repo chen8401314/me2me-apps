@@ -675,4 +675,22 @@ public interface LiveService {
 	 Response getLotteryList(long topicId,long sinceId,long uid);
 	 
 	 Response runLottery(long lotteryId,long uid,int source);
+	 /**
+	  * 用户点击推送消息。
+	  * @author zhangjiwei
+	  * @date Aug 9, 2017
+	  * @param uid
+	  * @param topicId
+	  * @return
+	  */
+	Response hitPushMessage(long uid,long topicId);
+
+	/**
+	 * 获取王国标签。
+	 * @author zhangjiwei
+	 * @date Aug 10, 2017
+	 * @param topicId
+	 * @return
+	 */
+	List<TopicTagDetail> getTopicTagDetailsByTopicId(long topicId);
 }
