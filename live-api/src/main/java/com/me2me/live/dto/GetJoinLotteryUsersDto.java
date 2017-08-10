@@ -28,5 +28,6 @@ public class GetJoinLotteryUsersDto implements BaseEntity {
 		private int level;
 		private String content;
 		private int prohibit;
+		private long createTime;
     }
 }
