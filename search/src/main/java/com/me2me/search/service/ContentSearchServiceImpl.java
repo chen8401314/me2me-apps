@@ -3,18 +3,7 @@ package com.me2me.search.service;
 import java.io.IOException;
 import java.io.StringReader;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Queue;
-import java.util.Random;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ScheduledExecutorService;
@@ -46,6 +35,7 @@ import org.springframework.data.elasticsearch.core.query.SearchQuery;
 import org.springframework.stereotype.Service;
 import org.wltea.analyzer.core.IKSegmenter;
 import org.wltea.analyzer.core.Lexeme;
+import org.wltea.analyzer.dic.Dictionary;
 import org.wltea.analyzer.lucene.IKAnalyzer;
 
 import com.alibaba.fastjson.JSON;
@@ -91,6 +81,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	static final String HOT_KEYWORD_CACHE_KEY = "SEARCH_HOT_KEYWORD";
 	static final String DEFAULT_START_TIME = "1900-01-01 00:00:00";
 	static final String DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
+	private  Map<String, String> KEY_TAG_MAPPING = new HashMap<>();
 
 	@Autowired
 	private SearchVarMapper varMapper;
@@ -118,7 +109,6 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 	@Autowired
 	private SimpleCache cache;
 
-	private Set<String> weightWords = new HashSet<>();
 
 	/**
 	 * 系统启动时启动搜索消息同步线程。
@@ -141,19 +131,12 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 				}
 			}
 		}, 1, 1, TimeUnit.SECONDS); // 1 秒一次。避免队列过大，造成系统崩溃。
-		// 加载词库
-		try {
-			String keywords = IOUtils.toString(ContentSearchServiceImpl.class.getResourceAsStream("/keywords.txt"),
-					"GBK");
-			for (String x : keywords.split(",|\\s+")) {
-				x = x.trim();
-				if (!StringUtils.isEmpty(x)) {
-					weightWords.add(x);
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+
+		// 加载关键词映射
+		this.indexTagSample();
+
+		// 加载自定义词典。
+		Dictionary.getSingleton().addWords(this.KEY_TAG_MAPPING.keySet());
 
 	}
 
@@ -982,35 +965,84 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 
 	@Override
 	public int indexTagSample() {
-		ThreadPool.execute(new Runnable() {
-			@Override
-			public void run() {
-				log.info("indexTag started");
-				String indexName = IndexConstants.TAG_SAMPLE_INDEX_NAME;
-				String beginDate = preIndex(true, indexName);
-				List<TagTrainSampleEsMapping> pageList = searchMapper.getAllTagSamples();
-				if (null == pageList || pageList.isEmpty()) {
-					return;
+
+		log.info("indexTag started");
+		String indexName = IndexConstants.TAG_SAMPLE_INDEX_NAME;
+		String beginDate = preIndex(true, indexName);
+		List<TagTrainSampleEsMapping> pageList = searchMapper.getAllTagSamples();
+		if (null == pageList || pageList.isEmpty()) {
+			return 0;
+		}
+		KEY_TAG_MAPPING.clear();
+		List<IndexQuery> indexList = new ArrayList<>();
+		for (TagTrainSampleEsMapping data : pageList) {
+			// 精确匹配，建立关键词映射
+			String tag = data.getTag().trim();
+			String keys = data.getKeywords();
+			if(!StringUtils.isEmpty(keys)){
+				for(String k:keys.split(",")){
+					KEY_TAG_MAPPING.put(k.trim(),tag);
 				}
-				List<IndexQuery> indexList = new ArrayList<>();
-				for (TagTrainSampleEsMapping data : pageList) {
-					IndexQuery query = new IndexQuery();
-					String key = data.getId() + "";
-					query.setId(key);
-					query.setObject(data);
-					query.setIndexName(indexName);
-					query.setType(indexName);
-					indexList.add(query);
-				}
-				esTemplate.bulkIndex(indexList);
-				log.info("indexTag finished.");
 			}
-		});
+			IndexQuery query = new IndexQuery();
+			String key = data.getId() + "";
+			query.setId(key);
+			query.setObject(data);
+			query.setIndexName(indexName);
+			query.setType(indexName);
+			indexList.add(query);
+		}
+		esTemplate.bulkIndex(indexList);
+		log.info("indexTag finished.");
+
 		return 0;
 	}
-
 	@Override
 	public List<String> recommendTags(String content, int count) {
+		IKSegmenter seg = new IKSegmenter(new StringReader(content), true);
+
+		Lexeme lex = null;
+		Map<String,Integer> tagScore= new TreeMap<>();
+
+		try {
+			while ((lex = seg.next()) != null) {
+				String key = lex.getLexemeText();
+				String tag = this.KEY_TAG_MAPPING.get(key);
+				if (tag!=null) {	// 如果在词典里出现就打分。
+					Integer score= tagScore.get(key);
+					if(score==null){
+						score=0;
+					}
+					score++;
+					tagScore.put(tag,score);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		List<Map.Entry<String,Integer>> list = new ArrayList<Map.Entry<String,Integer>>(tagScore.entrySet());
+		//然后通过比较器来实现排序
+		Collections.sort(list,new Comparator<Map.Entry<String,Integer>>() {
+			//升序排序
+			public int compare(Map.Entry<String, Integer> o1,
+							   Map.Entry<String, Integer> o2) {
+				return o2.getValue().compareTo(o1.getValue());
+			}
+		});
+
+		List<String> ret = new ArrayList<String>();
+		int pos=0;
+		for(Map.Entry<String,Integer> mapping:list){
+			if(pos<count) {
+				ret.add(mapping.getKey());
+			}else{
+				break;
+			}
+			pos++;
+		}
+		return ret;
+	}
+	public List<String> recommendTagsByEs(String content, int count) {
 		content = QueryParser.escape(content);//将一些不可预见的特殊字符都转义一下
 		String indexName = IndexConstants.TAG_SAMPLE_INDEX_NAME;
 		IKSegmenter seg = new IKSegmenter(new StringReader(content), false);
@@ -1019,7 +1051,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		try {
 			while ((lex = seg.next()) != null) {
 				String key = lex.getLexemeText();
-				if (weightWords.contains(key)) {
+				if (this.KEY_TAG_MAPPING.keySet().contains(key)) {
 					weightTermList.add(key);
 				}
 			}
@@ -1058,21 +1090,4 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		return ret;
 	}
 
-	public static void main(String[] args) {
-		// 加载词库
-		try {
-			String keywords = IOUtils.toString(ContentSearchServiceImpl.class.getResourceAsStream("/keywords.txt"),
-					"GBK");
-			for (String x : keywords.split(",|\\s+")) {
-				x = x.trim();
-				System.out.println(x);
-				if (!StringUtils.isEmpty(x)) {
-					// weightWords.add(x);
-				}
-			}
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-	}
 }

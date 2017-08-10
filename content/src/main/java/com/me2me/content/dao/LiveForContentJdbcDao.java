@@ -754,7 +754,11 @@ public class LiveForContentJdbcDao {
      */
     public List<BillBoardListDTO> kingdomIncrPriceList(long start, int pageSize, List<Long> blacklistUids){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select t.id from topic_data d,topic t where d.topic_id=t.id");
+    	sb.append("select t.id from topic_data d,topic t");
+    	sb.append(",(select f.topic_id,COUNT(DISTINCT IF(f.type IN (0,3,11,12,13,15,52,55), DATE_FORMAT(f.create_time,'%Y%m%d'), NULL)) AS updateDayCount ");
+    	sb.append(" FROM topic_fragment f WHERE f.status=1 AND f.create_time>DATE_FORMAT(DATE_ADD(NOW(), INTERVAL -5 DAY),'%Y-%m-%d 00:00:00')  GROUP BY f.topic_id) m ");
+    	sb.append(" where d.topic_id=t.id and d.topic_id=m.topic_id ");
+    	
     	if(null != blacklistUids && blacklistUids.size() > 0){
     		sb.append(" and t.uid not in (");
     		for(int i=0;i<blacklistUids.size();i++){
@@ -765,7 +769,7 @@ public class LiveForContentJdbcDao {
     		}
     		sb.append(")");
     	}
-    	sb.append(" order by d.last_price_incr desc,t.id");
+    	sb.append(" ORDER BY d.last_price_incr*m.updateDayCount DESC,d.topic_id ");
     	sb.append(" limit ").append(start).append(",").append(pageSize);
     	
     	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
@@ -1152,4 +1156,5 @@ public class LiveForContentJdbcDao {
 		}
 		return null;
     }
+ 
 }

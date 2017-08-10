@@ -59,5 +59,7 @@
         <!-- <table tableName="vote_option" domainObjectName="VoteOption"/> -->
         <!-- <table tableName="vote_record" domainObjectName="VoteRecord"/> -->
         <!-- <table tableName="content_share_history" domainObjectName="ContentShareHistory"/> -->
+        <!-- <table tableName="user_visit_log" domainObjectName="UserVisitLog"/> -->
+        <!-- <table tableName="user_tag_like" domainObjectName="UserTagLike"/> -->
     </context>
 </generatorConfiguration>
