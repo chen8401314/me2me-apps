@@ -8680,6 +8680,7 @@ public class LiveServiceImpl implements LiveService {
     	  u.setV_lv((Integer)map.get("v_lv"));
     	  u.setLevel((Integer)map.get("level"));
     	  u.setContent(String.valueOf(map.get("content")));
+    	  u.setCreateTime(((Date)map.get("create_time")).getTime());
     	  if(map.get("prohibit")==null){
     		  u.setProhibit(0);
     	  }else{
