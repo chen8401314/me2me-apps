@@ -123,7 +123,7 @@ public interface LiveService {
 
     Response liveTimeline(GetLiveTimeLineDto getLiveTimeLineDto);
 
-    Response liveCover(long topicId,long uid,int vflag, int source);
+    Response liveCover(long topicId,long uid,int vflag, int source,Long fromUid);
 
     Response barrage(LiveBarrageDto barrageDto);
 
@@ -693,4 +693,13 @@ public interface LiveService {
 	 * @return
 	 */
 	List<TopicTagDetail> getTopicTagDetailsByTopicId(long topicId);
+	/**
+	 * 添加用户下载记录
+	 * @author zhangjiwei
+	 * @date Aug 11, 2017
+	 * @param uid 
+	 * @param fromUid 推销员
+	 * @return
+	 */
+	Response addAppDownloadLog(long uid,long fromUid);
 }

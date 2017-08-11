@@ -18,4 +18,7 @@ public class LiveCoverRequest extends Request{
     @Getter
     @Setter
     private int source;//0APP内，1APP外
+    @Getter
+    @Setter
+    private Long fromUid;	// 谁带进来的
 }

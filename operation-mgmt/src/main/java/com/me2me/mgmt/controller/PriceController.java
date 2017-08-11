@@ -21,6 +21,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.me2me.common.page.PageBean;
 import com.me2me.content.service.ContentService;
 import com.me2me.live.model.TopicPriceSubsidyConfig;
 import com.me2me.live.service.LiveService;
@@ -28,6 +29,7 @@ import com.me2me.mgmt.request.ConfigItem;
 import com.me2me.mgmt.request.KingdomBusinessDTO;
 import com.me2me.mgmt.request.KingdomDTO;
 import com.me2me.mgmt.request.KingdomQueryDTO;
+import com.me2me.mgmt.request.KingdomUserRequest;
 import com.me2me.mgmt.request.SearchUserDTO;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.mgmt.task.app.KingdomPriceTask;
@@ -70,6 +72,31 @@ public class PriceController {
 		return view;
 	}
 	
+	@RequestMapping(value = "/kingdomUser")
+	public ModelAndView kingdomUser(KingdomQueryDTO dto){
+		ModelAndView view = new ModelAndView("price/kingdomUser");
+		view.addObject("dataObj",dto);
+		return view;
+	}
+	@ResponseBody
+	@RequestMapping(value = "/kingdomUserPage")
+	public KingdomUserRequest kingdomUserPage(KingdomUserRequest dto){
+		PageBean page= dto.toPageBean();
+		String sql ="select r1.*,up.nick_name,un.me_number,up.create_time from ("+
+					"SELECT uid,count(1) messages from topic_fragment where topic_id=? group by uid "+
+					") r1,user_profile up,user_no un "+
+					"where r1.uid=up.uid and r1.uid=un.uid "+
+					"order by up.create_time desc";
+		
+		String countSql = "select count(1) from ("+sql+") c";
+		String pageSql = sql+" limit ?,?";
+		
+		int count = contentService.queryForObject(countSql, Integer.class,dto.getTopicId());
+		List dataList = contentService.queryForList(pageSql, dto.getTopicId(),(page.getCurrentPage()-1)*page.getPageSize(),page.getPageSize());
+		dto.setRecordsTotal(count);
+		dto.setData(dataList);
+		return dto;
+	}
 	@RequestMapping(value="/kingdomPage")
 	@ResponseBody
 	public String kingdomPage(KingdomQueryDTO dto){
@@ -91,7 +118,7 @@ public class PriceController {
 		
 		int start = (page-1)*pageSize;
 		StringBuilder sb = new StringBuilder();
-		sb.append("select * from topic t LEFT JOIN topic_data d on t.id=d.topic_id");
+		sb.append("select t.*,d.last_price_incr,d.steal_price,d.diligently,d.approve from topic t LEFT JOIN topic_data d on t.id=d.topic_id");
 		if(StringUtils.isNotBlank(dto.getTitle())){
 			sb.append(" where t.title like '%").append(dto.getTitle()).append("%'");
 		}

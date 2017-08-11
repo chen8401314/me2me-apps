@@ -24,5 +24,7 @@ public class MobileLiveDetailRequest extends Request {
     @Getter
     @Setter
     private int pageNo;
-
+    @Getter
+    @Setter
+    private Long fromUid;
 }
