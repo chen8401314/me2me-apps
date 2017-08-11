@@ -1,8 +1,11 @@
 package com.me2me.mgmt.controller;
 
-import java.util.Date;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +15,10 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.me2me.common.utils.DateUtil;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.me2me.cache.service.CacheService;
+import com.me2me.common.Constant;
 import com.me2me.mgmt.dao.LocalJdbcDao;
 
 @Controller
@@ -23,6 +29,8 @@ public class TaskConsoleController {
 	
 	@Autowired
 	private LocalJdbcDao localJdbcDao;
+	@Autowired
+	private CacheService cacheService;
 	
 	@RequestMapping(value = "/ugcCollect")
 	@ResponseBody
@@ -86,16 +94,84 @@ public class TaskConsoleController {
 				Map<String, Object> userEmotionTopic = topicList.get(0);
 				userEmotionTopicId = (Long)userEmotionTopic.get("id");
 			}else{//没有，则创建
-				
-				
+				userEmotionTopicId = this.createUserEmotionTopic(uid);
+			}
+			if(userEmotionTopicId <= 0){
+				logger.info("用户["+uid+"]情绪王国获取失败");
+				return;
 			}
 			
+			//获取该用户所有UGC的图片资源
+			Map<String, List<String>> imageMap = new HashMap<String, List<String>>();
+			StringBuilder ugcImageListSql = new StringBuilder();
+			ugcImageListSql.append("select * from content_image i where i.cid in (");
+			for(int i=0;i<contentList.size();i++){
+				if(i>0){
+					ugcImageListSql.append(",");
+				}
+				ugcImageListSql.append(contentList.get(0).get("id").toString());
+			}
+			ugcImageListSql.append(")");
+			List<Map<String, Object>> ugcImageList = localJdbcDao.queryEvery(ugcImageListSql.toString());
+			if(null != ugcImageList && ugcImageList.size() > 0){
+				List<String> imageList = null;
+				String cidStr = null;
+				for(Map<String, Object> m : ugcImageList){
+					cidStr = m.get("cid").toString();
+					imageList = imageMap.get(cidStr);
+					if(null == imageList){
+						imageList = new ArrayList<String>();
+						imageMap.put(cidStr, imageList);
+					}
+					imageList.add((String)m.get("image"));
+				}
+			}
 			
+			StringBuilder insertUgcSqlBuilder = new StringBuilder();
+			insertUgcSqlBuilder.append("insert into topic_fragment(topic_id,uid,fragment_image,fragment,type,content_type,top_id,bottom_id,create_time,at_uid,source,extra,score,status,update_time)");
+			insertUgcSqlBuilder.append(" values(").append(userEmotionTopicId).append(",").append(uid).append(",'','#{ugcTitle}#',52,23,0,0,now(),0,0,'#{ugcExtra}#',0,1,now())");
+			
+			String insertUgcSql = null;
+			JSONObject extra = null;
+			JSONArray images = null;
+			List<String> imgList = null;
+			for(Map<String, Object> content : contentList){
+				insertUgcSql = insertUgcSqlBuilder.toString().replace("#{ugcTitle}#", (String)content.get("title"));
+				//组装extra
+				extra = new JSONObject();
+				extra.put("type", "ugc");
+				extra.put("only", UUID.randomUUID().toString()+"-"+new Random().nextInt());
+				extra.put("content", (String)content.get("content"));
+		        images = new JSONArray();
+		        imgList = imageMap.get(content.get("id").toString());
+		        if(null != imgList && imgList.size() > 0){
+		        	for(String img : imgList){
+		        		images.add(Constant.QINIU_DOMAIN + "/" + img);
+		        	}
+		        }
+		        extra.put("images", images);//图片
+		        insertUgcSql = insertUgcSql.replace("#{ugcExtra}#", extra.toJSONString());
+		        localJdbcDao.executeSql(insertUgcSql);
+			}
+			//刷详情缓存
+			String totalFragmentSql = "select count(1) as cc from topic_fragment f where f.topic_id="+userEmotionTopicId;
+			List<Map<String, Object>> countSearch = localJdbcDao.queryEvery(totalFragmentSql);
+			int total = 0;
+			if(null != countSearch && countSearch.size() > 0){
+				total = ((Long)countSearch.get(0).get("cc")).intValue();
+			}
+			String lastFragmentIdSql = "select f.id from topic_fragment f where f.status=1 and f.topic_id="+userEmotionTopicId+" order by id desc limit 1";
+			List<Map<String, Object>> lastFragmentIdSearch = localJdbcDao.queryEvery(lastFragmentIdSql);
+			long fid = 0;
+			if(null != lastFragmentIdSearch && lastFragmentIdSearch.size() > 0){
+				fid = (Long)lastFragmentIdSearch.get(0).get("id");
+			}
+            String value = fid + "," + total;
+            cacheService.hSet("TOPIC_FRAGMENT_NEWEST", "T_" + userEmotionTopicId, value);
 		}
-		
-		
 	}
 	
+	//返回TopicId
 	private long createUserEmotionTopic(long uid){
 		String userProfileSql = "select u.uid,u.nick_name from user_profile u where u.uid="+uid;
 		List<Map<String, Object>> userList = localJdbcDao.queryEvery(userProfileSql);
@@ -127,13 +203,13 @@ public class TaskConsoleController {
 		
 		String summary = "吃喝玩乐，记录我的日常。";
 		long nowTime = System.currentTimeMillis();
-		//创建topic表
+		//保存topic表
 		StringBuilder insertTopicSql = new StringBuilder();
 		insertTopicSql.append("insert into topic(uid,live_image,title,status,create_time,update_time,long_time,qrcode,core_circle,type,ce_audit_type,ac_audit_type,ac_publish_type,rights,summary,sub_type,price,listing_time)");
 		insertTopicSql.append(" values(").append(uid).append(",'").append(topicCoverImage).append("','").append(title).append("',0,now(),now(),").append(nowTime);
 		insertTopicSql.append(",'','[").append(uid).append("]',0,0,1,0,1,'").append(summary).append("',1,0,null)");
 		localJdbcDao.executeSql(insertTopicSql.toString());
-		//创建content表
+		//保存content表
 		long topicId = 0;
 		String topicIdSql = "select t.id from topic t where t.sub_type=1 and t.uid="+uid;
 		List<Map<String, Object>> topicIdSearchList = localJdbcDao.queryEvery(topicIdSql);
@@ -146,9 +222,62 @@ public class TaskConsoleController {
 			return 0;
 		}
 		StringBuilder insertContentSql = new StringBuilder();
+		insertContentSql.append("insert into content(uid,forward_cid,title,feeling,type,conver_image,forward_title,forward_url,content_type,content,thumbnail,hot_value,person_count,review_count,like_count,favorite_count,read_count,read_count_dummy,is_top,authorization,rights,author,status,create_time,update_time,update_id,ugc_status)");
+		insertContentSql.append(" values(").append(uid).append(",").append(topicId).append(",'").append(title).append("','").append(title);
+		insertContentSql.append("',3,'").append(topicCoverImage).append("','','',0,'").append(title).append("','',1,0,0,0,0,0,0,0,0,1,0,0,now(),now(),");
+		insertContentSql.append(cacheService.incr("UPDATE_ID")).append(",0)");
+		localJdbcDao.executeSql(insertContentSql.toString());
+		//保存TopicData表
+		StringBuilder insertTopicDataSql = new StringBuilder();
+		insertTopicDataSql.append("insert into topic_data(topic_id,last_price,last_price_incr,steal_price,update_time,diligently,approve,update_text_length,update_text_count,update_image_count,");
+		insertTopicDataSql.append("update_vedio_count,update_vedio_length,update_audio_count,update_audio_length,update_vote_count,update_tease_count,update_day_count,review_text_count,review_text_length)");
+		insertTopicDataSql.append(" values(").append(topicId).append(",0,0,0,now(),0,0,0,0,0,0,0,0,0,0,0,0,0,0)");
+		localJdbcDao.executeSql(insertTopicDataSql.toString());
+		//保存第一次发言（王国简介）
+		JSONObject extra = new JSONObject();
+		extra.put("type", "textNormal");
+		extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
+		extra.put("hAlign", "center");
+		StringBuilder insertTopicFragmentSql = new StringBuilder();
+		insertTopicFragmentSql.append("insert into topic_fragment(topic_id,uid,fragment_image,fragment,type,content_type,top_id,bottom_id,create_time,at_uid,source,extra,score,status,update_time)");
+		insertTopicFragmentSql.append(" values(").append(topicId).append(",").append(uid).append(",'','").append(summary);
+		insertTopicFragmentSql.append("',0,0,0,0,now(),0,0,'").append(extra.toJSONString()).append("',0,0,now())");
+		localJdbcDao.executeSql(insertTopicFragmentSql.toString());
+		//保存王国详情缓存
+		String fidSearchSql = "select * from topic_fragment f where f.topic_id="+topicId+" order by id asc limit 1";
+		List<Map<String, Object>> fList = localJdbcDao.queryEvery(fidSearchSql);
+		if(null != fList && fList.size() > 0){
+			Map<String, Object> fidSearch = fList.get(0);
+			long lastFragmentId = (Long)fidSearch.get("id");
+			String value = lastFragmentId + ",1";
+	        cacheService.hSet("TOPIC_FRAGMENT_NEWEST", "T_" + topicId, value);
+		}
+		//保存标签
+		long tagId = 0;
+		String tagSearchSql = "select * from topic_tag where tag='非典型性话痨'";
+		List<Map<String, Object>> tagList = localJdbcDao.queryEvery(tagSearchSql);
+		if(null != tagList && tagList.size() > 0){
+			Map<String, Object> tagSearch = tagList.get(0);
+			tagId = (Long)tagSearch.get("id");
+		}else{//没有则新建
+			StringBuilder insertTopicTagSql = new StringBuilder();
+			insertTopicTagSql.append("insert into topic_tag(tag,is_rec,is_sys,status,create_time,user_hobby_ids,pid,order_num)");
+			insertTopicTagSql.append(" values('非典型性话痨',0,0,0,now(),null,null,null)");
+			localJdbcDao.executeSql(insertTopicTagSql.toString());
+			tagList = localJdbcDao.queryEvery(tagSearchSql);
+			if(null != tagList && tagList.size() > 0){
+				Map<String, Object> tagSearch = tagList.get(0);
+				tagId = (Long)tagSearch.get("id");
+			}
+		}
+		if(tagId>0){
+			StringBuilder insertTopicTagDetailSql = new StringBuilder();
+			insertTopicTagDetailSql.append("insert into topic_tag_detail(topic_id,uid,tag_id,tag,create_time,status,auto_tag)");
+			insertTopicTagDetailSql.append(" values(").append(topicId).append(",").append(uid).append(",").append(tagId);
+			insertTopicTagDetailSql.append(",'非典型性话痨',now(),0,0)");
+			localJdbcDao.executeSql(insertTopicTagDetailSql.toString());
+		}
 		
-		
-		
-		return 0;
+		return topicId;
 	}
 }
