@@ -498,7 +498,9 @@ public interface Specification {
         
         QUIT_CORE_CIRCLE("退出核心圈",13),
     	
-    	EMOTION_SUMMARY("情绪周总结提醒",14);
+    	EMOTION_SUMMARY("情绪周总结提醒",14),
+    	
+    	LOTTERY("抽奖开奖提醒",15);
 
         public final String name;
 
@@ -974,7 +976,9 @@ public interface Specification {
         
         BILLBOARD("榜单详情", 7),
         
-        EMOTION("情绪", 8)
+        EMOTION("情绪", 8),
+        
+        LOTTERY("抽奖", 9)
         ;
 
         public final String name;

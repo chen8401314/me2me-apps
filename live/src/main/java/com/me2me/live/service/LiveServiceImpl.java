@@ -36,6 +36,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gson.JsonObject;
 import com.me2me.activity.dto.CreateActivityDto;
 import com.me2me.activity.dto.TopicCountDTO;
 import com.me2me.activity.model.AcommonList;
@@ -48,6 +49,7 @@ import com.me2me.common.enums.USER_OPRATE_TYPE;
 import com.me2me.common.page.PageBean;
 import com.me2me.common.utils.CommonUtils;
 import com.me2me.common.utils.DateUtil;
+import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
@@ -8927,6 +8929,25 @@ public class LiveServiceImpl implements LiveService {
 				lotteryWin.setLotteryId(lotteryId);
 				lotteryWin.setUid((Long) map.get("uid"));
 				liveMybatisDao.saveLotteryWin(lotteryWin);
+			}
+			
+			List<Map<String, Object>> list1 = liveLocalJdbcDao
+					.getDistinctLotteryUser(lotteryId);
+			String winMessage = "您参加的《"+lotteryInfo.getTitle()+"》"+"开奖了,恭喜您中奖了！";
+			String loseMessage = "您参加的《"+lotteryInfo.getTitle()+"》"+"开奖了,很遗憾，您没有中奖！";
+			for (Map<String, Object> map1 : list1) {
+				long joinUid = (Long) map1.get("uid");
+				int win = 0;
+				for (Map<String, Object> map : list) {
+					joinUid = Long.parseLong( map.get("uid").toString());
+					win = 1;
+					break;
+				}
+				JsonObject jsonObject = new JsonObject();
+				jsonObject.addProperty("type", Specification.PushObjectType.LOTTERY.index);
+				jsonObject.addProperty("messageType", Specification.PushMessageType.LOTTERY.index);
+				jsonObject.addProperty("lotteryId", lotteryId);
+				userService.pushWithExtra(uid + "", win==0?loseMessage:winMessage, JPushUtils.packageExtra(jsonObject));
 			}
 			SpeakDto speakDto = new SpeakDto();
 			speakDto.setType(52);
