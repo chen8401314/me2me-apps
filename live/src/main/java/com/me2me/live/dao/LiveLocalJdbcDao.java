@@ -1438,6 +1438,16 @@ public class LiveLocalJdbcDao {
     	String sql = sb.toString();
 		return jdbcTemplate.queryForList(sql);
     }
+    public List<Map<String,Object>> getDistinctLotteryUser(long lotteryId){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append(" select DISTINCT c.uid FROM lottery_content c WHERE c.lottery_id = ");
+    	sb.append(lotteryId);
+    	sb.append(" AND c.uid NOT IN  (SELECT uid FROM lottery_prohibit WHERE lottery_id = ");
+    	sb.append(lotteryId);
+    	sb.append(") ");
+    	String sql = sb.toString();
+		return jdbcTemplate.queryForList(sql);
+    }
 
 	public void addAppDownloadLog(long uid, long fromUid) {
 		String sql ="insert into app_download_log(uid,fromUid,create_time) values(?,?,now())";
