@@ -8782,7 +8782,7 @@ public class LiveServiceImpl implements LiveService {
             String[] imgs = contentDto.getImageUrls().split(";");
             for(String img : imgs){
             	if(!StringUtils.isEmpty(img)){
-            		images.add(Constant.QINIU_DOMAIN + "/" + img);
+            		images.add(Constant.QINIU_DOMAIN + "/" + img.trim());
             	}
             }
         }
@@ -8799,8 +8799,8 @@ public class LiveServiceImpl implements LiveService {
         	for(int i=0;i<size;i++){
         		JSONObject imgInfo = new JSONObject();
         		imgInfo.put("type", "image");
-        		imgInfo.put("w", Integer.valueOf(imgWs[i]));
-        		imgInfo.put("h", Integer.valueOf(imgHs[i]));
+        		imgInfo.put("w", Integer.valueOf(imgWs[i].trim()));
+        		imgInfo.put("h", Integer.valueOf(imgHs[i].trim()));
         		imageInfo.add(imgInfo);
         	}
         }
@@ -8814,6 +8814,9 @@ public class LiveServiceImpl implements LiveService {
     	targetTopic.setLongTime(calendar.getTimeInMillis());
         liveMybatisDao.updateTopic(targetTopic);
 
+        liveLocalJdbcDao.updateContentUpdateTime4Kingdom(targetTopic.getId(), calendar.getTime());
+    	liveLocalJdbcDao.updateContentUpdateId4Kingdom(targetTopic.getId(),cacheService.incr("UPDATE_ID"));
+        
         //更新缓存
         long lastFragmentId = fragment.getId();
         int total = liveMybatisDao.countFragmentByTopicId(targetTopic.getId());
