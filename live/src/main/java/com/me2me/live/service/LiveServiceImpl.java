@@ -3311,6 +3311,7 @@ public class LiveServiceImpl implements LiveService {
         int totalRecords;
         int updateRecords;
         long lastFragmentId = 0;
+        long firstDelCount = 0;
 
         if(getLiveUpdateDto.getSinceId()>0){
         	//newestId,totalCount
@@ -3339,6 +3340,7 @@ public class LiveServiceImpl implements LiveService {
             totalRecords = result.get("total_records").intValue();
             updateRecords = result.get("update_records").intValue();
             lastFragmentId = result.get("lastFragmentId").longValue();
+            firstDelCount = result.get("firstDelCount").longValue();
         }
         LiveUpdateDto liveUpdateDto = new LiveUpdateDto();
         liveUpdateDto.setLastFragmentId(lastFragmentId);
@@ -3352,6 +3354,13 @@ public class LiveServiceImpl implements LiveService {
         int startPageNo = nums/offset+1;
         liveUpdateDto.setStartPageNo(startPageNo);
 
+        
+        if(getLiveUpdateDto.getSinceId() == 0){//只有sinceId==0才有效
+        	int firstCount = (int)firstDelCount+1;
+        	int firstPage = firstCount%offset==0?firstCount/offset:firstCount/offset+1;
+        	liveUpdateDto.setFirstPage(firstPage);
+        }
+        
         log.info("get live update start ...");
         return Response.success(ResponseStatus.GET_LIVE_UPDATE_SUCCESS.status, ResponseStatus.GET_LIVE_UPDATE_SUCCESS.message, liveUpdateDto);
     }

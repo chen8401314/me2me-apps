@@ -8,8 +8,9 @@ import lombok.Data;
  */
 @Data
 public class LiveUpdateDto implements BaseEntity{
+	private static final long serialVersionUID = 5208813120140471997L;
 
-    private int totalRecords;
+	private int totalRecords;
 
     private int updateRecords;
 
@@ -18,4 +19,6 @@ public class LiveUpdateDto implements BaseEntity{
     private int startPageNo;
     
     private long lastFragmentId;
+    
+    private int firstPage;
 }

@@ -105,7 +105,6 @@ import com.me2me.web.request.UserKingdomInfoRequest;
 import com.me2me.web.request.VoteInfoRequest;
 import com.me2me.web.request.VoteRequest;
 import com.me2me.web.utils.VersionUtil;
-import com.plusnet.search.request.BaseRequest;
 
 /**
  * 上海拙心网络科技有限公司出品

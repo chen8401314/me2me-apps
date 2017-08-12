@@ -100,6 +100,20 @@ var runTask4 = function(){
 		}
 	});
 }
+
+var runTask6 = function(){
+	$("#btnSearch6").attr("disabled",true);
+	$.ajax({
+		url : "${ctx}/task/ugcCollect",
+		async : false,
+		type : "GET",
+		contentType : "application/json;charset=UTF-8",
+		success : function(resp) {
+			alert(resp);
+			$("#btnSearch6").attr("disabled",false);
+		}
+	});
+}
 </script>
 </head>
 <body>
@@ -173,6 +187,18 @@ var runTask4 = function(){
 								<div class="panel-body">
 									<div class="form-inline" role="form">
 										<input type="button" id="btnSearch5" name="btnSearch5" value="开始执行" onclick="runTask4()" class="btn btn-info" />
+									</div>
+								</div>
+							</section>
+						</div>
+					</div>
+					<div class="row">
+						<div class="col-lg-12">
+							<section class="panel">
+								<header class="panel-heading">UGC收编入王国-执行操作</header>
+								<div class="panel-body">
+									<div class="form-inline" role="form">
+										<input type="button" id="btnSearch6" name="btnSearch6" value="开始执行" onclick="runTask6()" class="btn btn-info" />
 									</div>
 								</div>
 							</section>

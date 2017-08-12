@@ -546,10 +546,16 @@
   </update>
 
   <select id="countFragmentByTopicIdWithSince" parameterType="com.me2me.live.dto.GetLiveUpdateDto" resultType="java.util.Map">
-    select
-    count(1) total_records,count(if(f.id&gt;#{sinceId,jdbcType=BIGINT},TRUE,NULL)) as update_records,max(f.id) as lastFragmentId
-    from topic_fragment f
-    where  f.topic_id=#{topicId,jdbcType=BIGINT}
+    select count(1) total_records,
+    count(if(f.id&gt;#{sinceId,jdbcType=BIGINT},TRUE,NULL)) as update_records,
+    max(f.id) as lastFragmentId,
+    count(if(f.id&lt;m.firstNormalFragmentId,TRUE,NULL)) as firstDelCount
+    from topic_fragment f,(
+        select f2.topic_id,min(if(f2.status=1,f2.id,NULL)) as firstNormalFragmentId
+        from topic_fragment f2
+        where f2.topic_id=#{topicId,jdbcType=BIGINT}
+    ) m
+    where f.topic_id=m.topic_id and f.topic_id=#{topicId,jdbcType=BIGINT}
   </select>
   <select id="getTopicFragmentForPage" parameterType="com.me2me.live.dto.GetLiveDetailDto" resultMap="BaseResultMap">
     <if test="sinceId&gt;0">
