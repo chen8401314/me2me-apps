@@ -22,7 +22,15 @@ public class PublishContentRequest extends Request {
     @Getter
     @Setter
     private String imageUrls;
+    
+    @Getter
+    @Setter
+    private String imageWidths;
 
+    @Getter
+    @Setter
+    private String imageHeights;
+    
     @Getter
     @Setter
     private int contentType;

@@ -18,6 +18,10 @@ public class ContentDto implements BaseEntity {
     private String content;
 
     private String imageUrls;
+    
+    private String imageWidths;
+    
+    private String imageHeights;
 
     private int contentType;
 

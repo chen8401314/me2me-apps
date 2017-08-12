@@ -8787,6 +8787,25 @@ public class LiveServiceImpl implements LiveService {
             }
         }
         obj.put("images", images);//图片
+        JSONArray imageInfo = new JSONArray();
+        if(!StringUtils.isEmpty(contentDto.getImageWidths())
+        		&& !StringUtils.isEmpty(contentDto.getImageHeights())){
+        	String[] imgWs = contentDto.getImageWidths().split(";");
+        	String[] imgHs = contentDto.getImageHeights().split(";");
+        	int size = imgWs.length;
+        	if(size > imgHs.length){
+        		size = imgHs.length;
+        	}
+        	for(int i=0;i<size;i++){
+        		JSONObject imgInfo = new JSONObject();
+        		imgInfo.put("type", "image");
+        		imgInfo.put("w", Integer.valueOf(imgWs[i]));
+        		imgInfo.put("h", Integer.valueOf(imgHs[i]));
+        		imageInfo.add(imgInfo);
+        	}
+        }
+        obj.put("imageInfo", imageInfo);//图片的宽高
+        
         fragment.setExtra(obj.toJSONString());
         liveMybatisDao.createTopicFragment(fragment);
 

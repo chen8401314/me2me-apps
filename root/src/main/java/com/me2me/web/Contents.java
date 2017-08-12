@@ -79,6 +79,8 @@ public class Contents extends BaseController {
         contentDto.setFeeling(request.getFeeling());
         contentDto.setContentType(request.getContentType());
         contentDto.setImageUrls(request.getImageUrls());
+        contentDto.setImageHeights(request.getImageHeights());
+        contentDto.setImageWidths(request.getImageWidths());
         contentDto.setType(request.getType());
         contentDto.setTitle(request.getTitle());
         contentDto.setRights(request.getRights());
