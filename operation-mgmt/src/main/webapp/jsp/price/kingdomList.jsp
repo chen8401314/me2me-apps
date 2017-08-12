@@ -102,25 +102,25 @@ var buildTableBody = function(dataList){
 	if(dataList && dataList.length > 0){
 		for(var i=0;i<dataList.length;i++){
 			bodyHtml = bodyHtml + "<tr class=\"gradeX\">";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].id+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].title+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].uid+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].nickName+"</th>";
-			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].createTime))+"</th>";
-			bodyHtml = bodyHtml + "<th>"+parserDatetimeStr(new Date(dataList[i].updateTime))+"</th>";
-			bodyHtml = bodyHtml + "<th>";
+			bodyHtml = bodyHtml + "<td>"+dataList[i].id+"</td>";
+			bodyHtml = bodyHtml + "<td>"+dataList[i].title+"</td>";
+			bodyHtml = bodyHtml + "<td>"+dataList[i].uid+"</td>";
+			bodyHtml = bodyHtml + "<td>"+dataList[i].nickName+"</td>";
+			bodyHtml = bodyHtml + "<td>"+parserDatetimeStr(new Date(dataList[i].createTime))+"</td>";
+			bodyHtml = bodyHtml + "<td>"+parserDatetimeStr(new Date(dataList[i].updateTime))+"</td>";
+			bodyHtml = bodyHtml + "<td>";
 			if(dataList[i].type == 1000){
 				bodyHtml = bodyHtml + "聚合王国";
 			}else{
 				bodyHtml = bodyHtml + "个人王国";
 			}
-			bodyHtml = bodyHtml + "</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].price+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].lastPriceIncr+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].stealPrice+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].diligently+"</th>";
-			bodyHtml = bodyHtml + "<th>"+dataList[i].approve+"</th>";
-			bodyHtml = bodyHtml + "<th></th>";
+			bodyHtml = bodyHtml + "</td>";
+			bodyHtml = bodyHtml + "<td>"+dataList[i].price+"</td>";
+			bodyHtml = bodyHtml + "<td>"+dataList[i].lastPriceIncr+"</td>";
+			bodyHtml = bodyHtml + "<td>"+dataList[i].stealPrice+"</td>";
+			bodyHtml = bodyHtml + "<td>"+dataList[i].diligently+"</td>";
+			bodyHtml = bodyHtml + "<td>"+dataList[i].approve+"</td>";
+			bodyHtml = bodyHtml + "<td><a target='_blank'  href='./kingdomUser?topicId="+dataList[i].id+"'>成员列表</a></td>";
 			//bodyHtml = bodyHtml + "<th><a href=\"${ctx}/price/kingdom/"+dataList[i].id+"\">交易</a></th>";
 			bodyHtml = bodyHtml + "</tr>";
 		}
@@ -246,13 +246,13 @@ var parserDatetimeStr = function(time){
 										<tbody id="tbody">
 											<c:forEach items="${dataObj.result}" var="item">
 												<tr class="gradeX">
-													<th>${item.id }</th>
-													<th>${item.title }</th>
-													<th>${item.uid }</th>
-													<th>${item.nickName }</th>
-													<th><fmt:formatDate value="${item.createTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
-													<th><fmt:formatDate value="${item.updateTime }" pattern="yyyy-MM-dd HH:mm:ss"/></th>
-													<th>
+													<td>${item.id }</td>
+													<td>${item.title }</td>
+													<td>${item.uid }</td>
+													<td>${item.nickName }</td>
+													<td><fmt:formatDate value="${item.createTime }" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+													<td><fmt:formatDate value="${item.updateTime }" pattern="yyyy-MM-dd HH:mm:ss"/></td>
+													<td>
 													<c:choose>
                                                 		<c:when test="${item.type == '1000'}">
                                                 			聚合王国
@@ -261,15 +261,16 @@ var parserDatetimeStr = function(time){
                                                 			个人王国
                                                 		</c:otherwise>
                                                 	</c:choose>
-													</th>
-													<th>${item.price }</th>
-													<th>${item.lastPriceIncr }</th>
-													<th>${item.stealPrice }</th>
-													<th>${item.diligently }</th>
-													<th>${item.approve }</th>
-													<th>
+													</td>
+													<td>${item.price }</td>
+													<td>${item.lastPriceIncr }</td>
+													<td>${item.stealPrice }</td>
+													<td>${item.diligently }</td>
+													<td>${item.approve }</td>
+													<td>
+													<a target="_blank" href='./kingdomUser?topicId=${item.id}'>成员列表</a>
 													<!-- <a href="${ctx}/price/kingdom/${item.id }">交易</a> -->
-													</th>
+													</td>
 												</tr>
 											</c:forEach>
 										</tbody>

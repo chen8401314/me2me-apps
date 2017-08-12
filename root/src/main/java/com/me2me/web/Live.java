@@ -39,6 +39,7 @@ import com.me2me.search.service.SearchService;
 import com.me2me.sms.service.SmsService;
 import com.me2me.web.request.AggregationOptRequest;
 import com.me2me.web.request.AggregationPublishRequest;
+import com.me2me.web.request.AppDownloadRequest;
 import com.me2me.web.request.BarrageRequest;
 import com.me2me.web.request.CreateKingdomRequest;
 import com.me2me.web.request.CreateLiveRequest;
@@ -537,7 +538,7 @@ public class Live extends BaseController {
         if(VersionUtil.isNewVersion(request.getVersion(), "2.2.3")){
         	vflag = 1;
         }
-        return liveService.liveCover(request.getTopicId(),request.getUid(),vflag, request.getSource());
+        return liveService.liveCover(request.getTopicId(),request.getUid(),vflag, request.getSource(),request.getFromUid());
     }
 
 
@@ -1203,4 +1204,9 @@ public class Live extends BaseController {
     	return liveService.hitPushMessage(request.getUid(),request.getTopicId());
     }
     
+    @ResponseBody
+    @RequestMapping("/addAppDownloadLog")
+    public Response addAppDownloadLog(AppDownloadRequest request){
+    	return liveService.addAppDownloadLog(request.getRequestUid(), request.getFromUid());
+    }
 }

@@ -63,7 +63,7 @@ public class Mobile extends BaseController {
         if (VersionUtil.isNewVersion(request.getVersion(), "2.2.3")) {
             vflag = 1;
         }
-        return liveService.liveCover(request.getTopicId(), DEFAULT_UID, vflag, 1);//这里肯定是APP外的
+        return liveService.liveCover(request.getTopicId(), DEFAULT_UID, vflag, 1,request.getFromUid());//这里肯定是APP外的
     }
 
     @RequestMapping(value = "/showLiveDetails")

@@ -319,7 +319,7 @@ public class LiveServiceImpl implements LiveService {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public Response liveCover(long topicId, long uid, int vflag, int source) {
+    public Response liveCover(long topicId, long uid, int vflag, int source,Long fromUid) {
         log.info("liveCover start ...");
         LiveCoverDto liveCoverDto = new LiveCoverDto();
         String KINGDOM_VIEW_KEY = "USER_VIEW_KINGDOM_"+uid+"_"+topicId;
@@ -425,6 +425,7 @@ public class LiveServiceImpl implements LiveService {
         trh.setUid(uid);
         trh.setTopicId(topicId);
         trh.setReadCount(1);
+        trh.setFromUid(fromUid);
         if(source == 0){//APP内
             trh.setInApp(1);
         }else{//APP外
@@ -3067,7 +3068,7 @@ public class LiveServiceImpl implements LiveService {
             Topic topic = getTopicById(TopicId);
             liveQRCodeDto.setSummary(topic.getSummary());
             if (StringUtils.isEmpty(topic.getQrcode())) {
-                byte[] image = QRCodeUtil.encode(live_web + TopicId);
+                byte[] image = QRCodeUtil.encode(live_web + TopicId+"?uid="+topic.getUid());
                 String key = UUID.randomUUID().toString();
                 fileTransferService.upload(image, key);
                 liveQRCodeDto.setLiveQrCodeUrl(Constant.QINIU_DOMAIN + "/" + key);
@@ -5226,7 +5227,7 @@ public class LiveServiceImpl implements LiveService {
         linkObj.put("subType", acTopic.getType());
         linkObj.put("avatar", Constant.QINIU_DOMAIN + "/" + acUser.getAvatar());
         linkObj.put("createTime", acTopic.getCreateTime().getTime());
-        linkObj.put("url", this.live_web + acTopic.getId());
+        linkObj.put("url", this.live_web + acTopic.getId()+"?uid="+acTopic.getUid());
         linkObj.put("v_lv", acUser.getvLv());
         linkObj.put("name", acUser.getNickName());
         linkObj.put("cover", Constant.QINIU_DOMAIN + "/" + acTopic.getLiveImage());
@@ -5284,7 +5285,7 @@ public class LiveServiceImpl implements LiveService {
         linkObj2.put("subType", ceTopic.getType());
         linkObj2.put("avatar", Constant.QINIU_DOMAIN + "/" + ceUser.getAvatar());
         linkObj2.put("createTime", ceTopic.getCreateTime().getTime());
-        linkObj2.put("url", this.live_web + ceTopic.getId());
+        linkObj2.put("url", this.live_web + ceTopic.getId()+"?uid="+acTopic.getUid());
         linkObj2.put("v_lv", ceUser.getvLv());
         linkObj2.put("name", ceUser.getNickName());
         linkObj2.put("cover", Constant.QINIU_DOMAIN + "/" + ceTopic.getLiveImage());
@@ -5384,7 +5385,7 @@ public class LiveServiceImpl implements LiveService {
         fromObj.put("cid", topicContent.getId());
         fromObj.put("title", sourceTopic.getTitle());
         fromObj.put("cover", Constant.QINIU_DOMAIN+"/"+sourceTopic.getLiveImage());
-        fromObj.put("url", live_web+sourceTopicId);
+        fromObj.put("url", live_web+sourceTopicId+"?uid="+uid);
         obj.put("from", fromObj);
         newtf.setExtra(obj.toJSONString());
         liveMybatisDao.createTopicFragment(newtf);
@@ -6888,7 +6889,7 @@ public class LiveServiceImpl implements LiveService {
              fromObj.put("cid", topicContet == null ? "" : topicContet.getId());
              fromObj.put("title", topic.getTitle());
              fromObj.put("cover", Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
-             fromObj.put("url", live_web + topicContet.getId());
+             fromObj.put("url", live_web + topicContet.getId()+"?uid="+uid);
              extra.put("from", fromObj);
              extra.put("title", emotionPackDetail.getTitle());
              extra.put("content", emotionPackDetail.getExtra());
@@ -6954,7 +6955,7 @@ public class LiveServiceImpl implements LiveService {
 			fromObj.put("cid", topicContet == null ? "" : topicContet.getId());
 			fromObj.put("title", topic.getTitle());
 			fromObj.put("cover", Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
-			fromObj.put("url", live_web + topicContet.getId());
+			fromObj.put("url", live_web + topicContet.getId()+"?uid="+uid);
 			extra.put("from", fromObj);
 			extra.put("w", w);
 			extra.put("h", h);
@@ -8990,6 +8991,12 @@ public class LiveServiceImpl implements LiveService {
 	@Override
 	public List<TopicTagDetail> getTopicTagDetailsByTopicId(long topicId) {
 		return liveMybatisDao.getTopicTagDetailsByTopicId(topicId);
+	}
+
+	@Override
+	public Response addAppDownloadLog(long uid, long fromUid) {
+		liveLocalJdbcDao.addAppDownloadLog(uid,fromUid);
+		return Response.success();
 	}
 	
 }

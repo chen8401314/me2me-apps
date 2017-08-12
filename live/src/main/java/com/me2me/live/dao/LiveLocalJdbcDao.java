@@ -1449,4 +1449,10 @@ public class LiveLocalJdbcDao {
 		return jdbcTemplate.queryForList(sql);
     }
 
+	public void addAppDownloadLog(long uid, long fromUid) {
+		String sql ="insert into app_download_log(uid,fromUid,create_time) values(?,?,now())";
+		jdbcTemplate.update(sql,uid,fromUid);
+		
+	}
+
 }
