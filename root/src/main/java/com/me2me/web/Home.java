@@ -194,7 +194,7 @@ public class Home extends BaseController {
     @ResponseBody
     public Response tagDetailList(TagKingdomRequest request){
         
-        return contentService.getTagKingdomList(request.getTagName(),request.getOrder(),request.getPage(), request.getPageSize(),request.getUid());
+        return contentService.tagKingdomList(request.getTagName(),request.getOrder(),request.getPage(), request.getPageSize(),request.getUid());
     }
 
 

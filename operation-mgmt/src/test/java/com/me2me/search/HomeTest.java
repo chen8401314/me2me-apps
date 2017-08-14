@@ -23,7 +23,7 @@ public class HomeTest {
 	private LiveService ls;
 	//@Test
 	public void getTagKingdomList() {
-		Response<TagKingdomDto> tagsKingdoms = liveService.getTagKingdomList("AAA0","new", 1, 20, 318);
+		Response<TagKingdomDto> tagsKingdoms = liveService.tagKingdomList("AAA0","new", 1, 20, 318);
 		System.out.println(JSON.toJSONString(tagsKingdoms, true));
 	}
 	@Test

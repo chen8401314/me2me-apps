@@ -6891,7 +6891,7 @@ public class ContentServiceImpl implements ContentService {
     }
 
     @Override
-    public Response<TagKingdomDto> getTagKingdomList(String tagName, String order, int page, int pageSize, long uid) {
+    public Response<TagKingdomDto> tagKingdomList(String tagName, String order, int page, int pageSize, long uid) {
     	List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
     	
         List<Map<String,Object>> topics =topicTagMapper.getKingdomsByTag(tagName, order, page, pageSize, blacklistUids);

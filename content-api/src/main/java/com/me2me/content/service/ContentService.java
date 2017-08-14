@@ -458,7 +458,7 @@ public interface ContentService{
 	 * @param uid
 	 * @return
 	 */
-	Response<TagKingdomDto> getTagKingdomList(String tagName, String order, int page, int pageSize, long uid);
+	Response<TagKingdomDto> tagKingdomList(String tagName, String order, int page, int pageSize, long uid);
 
     Response initSquareUpdateId();
     /**
