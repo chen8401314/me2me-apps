@@ -17,7 +17,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.me2me.live.event.*;
-import com.me2me.live.model.*;
 import com.me2me.user.dto.ModifyUserCoinDto;
 import com.me2me.user.dto.PermissionDescriptionDto;
 import com.me2me.user.dto.PermissionDescriptionDto.PermissionNodeDto;
@@ -132,6 +131,46 @@ import com.me2me.live.dto.TopicVoteInfoDto;
 import com.me2me.live.dto.UserAtListDTO;
 import com.me2me.live.dto.UserKingdomInfoDTO;
 import com.me2me.live.dto.VoteInfoDto;
+import com.me2me.live.model.DeleteLog;
+import com.me2me.live.model.LiveDisplayFragment;
+import com.me2me.live.model.LiveDisplayProtocol;
+import com.me2me.live.model.LiveFavorite;
+import com.me2me.live.model.LiveFavoriteDelete;
+import com.me2me.live.model.LiveReadHistory;
+import com.me2me.live.model.LotteryContent;
+import com.me2me.live.model.LotteryInfo;
+import com.me2me.live.model.LotteryProhibit;
+import com.me2me.live.model.LotteryWin;
+import com.me2me.live.model.QuotationInfo;
+import com.me2me.live.model.RobotInfo;
+import com.me2me.live.model.RobotQuotationRecord;
+import com.me2me.live.model.SignRecord;
+import com.me2me.live.model.SignSaveRecord;
+import com.me2me.live.model.TeaseInfo;
+import com.me2me.live.model.Topic;
+import com.me2me.live.model.Topic2;
+import com.me2me.live.model.TopicAggregation;
+import com.me2me.live.model.TopicAggregationApply;
+import com.me2me.live.model.TopicBarrage;
+import com.me2me.live.model.TopicData;
+import com.me2me.live.model.TopicDroparound;
+import com.me2me.live.model.TopicDroparoundTrail;
+import com.me2me.live.model.TopicFragmentTemplate;
+import com.me2me.live.model.TopicFragmentWithBLOBs;
+import com.me2me.live.model.TopicGiven;
+import com.me2me.live.model.TopicListed;
+import com.me2me.live.model.TopicNews;
+import com.me2me.live.model.TopicPriceHis;
+import com.me2me.live.model.TopicPriceSubsidyConfig;
+import com.me2me.live.model.TopicReadHis;
+import com.me2me.live.model.TopicTag;
+import com.me2me.live.model.TopicTagDetail;
+import com.me2me.live.model.TopicTransferRecord;
+import com.me2me.live.model.TopicUserConfig;
+import com.me2me.live.model.UserStealLog;
+import com.me2me.live.model.VoteInfo;
+import com.me2me.live.model.VoteOption;
+import com.me2me.live.model.VoteRecord;
 import com.me2me.live.service.exceptions.KingdomStealException;
 import com.me2me.search.dto.RecommendUser;
 import com.me2me.search.dto.RecommendUserDto;
@@ -282,7 +321,7 @@ public class LiveServiceImpl implements LiveService {
         LiveTimeLineDto liveTimeLineDto = new LiveTimeLineDto();
         MySubscribeCacheModel cacheModel = new MySubscribeCacheModel(getLiveTimeLineDto.getUid(), getLiveTimeLineDto.getTopicId() + "", "0");
         cacheService.hSet(cacheModel.getKey(), cacheModel.getField(), cacheModel.getValue());
-        List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), getLiveTimeLineDto.getPageSize());
+        List<TopicFragmentWithBLOBs> fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), getLiveTimeLineDto.getPageSize());
         log.info("get timeLine data");
         buildLiveTimeLine(getLiveTimeLineDto, liveTimeLineDto, fragmentList);
         log.info("buildLiveTimeLine success");
@@ -300,7 +339,7 @@ public class LiveServiceImpl implements LiveService {
         LiveTimeLineDto liveTimeLineDto = new LiveTimeLineDto();
         //判断进入直播是否是第一次
         LiveReadHistory liveReadHistory = liveMybatisDao.getLiveReadHistory(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getUid());
-        List<TopicFragment> fragmentList = Lists.newArrayList();
+        List<TopicFragmentWithBLOBs> fragmentList = Lists.newArrayList();
         if (getLiveTimeLineDto.getDirection() == Specification.LiveTimeLineDirection.FIRST.index) {
             if (liveReadHistory == null) {
                 fragmentList = liveMybatisDao.getTopicFragment(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), 50);
@@ -774,9 +813,9 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(showLiveDto);
     }
 
-    private void buildLiveTimeLine(GetLiveTimeLineDto getLiveTimeLineDto, LiveTimeLineDto liveTimeLineDto, List<TopicFragment> fragmentList) {
+    private void buildLiveTimeLine(GetLiveTimeLineDto getLiveTimeLineDto, LiveTimeLineDto liveTimeLineDto, List<TopicFragmentWithBLOBs> fragmentList) {
         List<Long> uidList = new ArrayList<Long>();
-        for (TopicFragment topicFragment : fragmentList) {
+        for (TopicFragmentWithBLOBs topicFragment : fragmentList) {
             if(!uidList.contains(topicFragment.getUid())){
                 uidList.add(topicFragment.getUid());
             }
@@ -812,7 +851,7 @@ public class LiveServiceImpl implements LiveService {
         LiveTimeLineDto.LiveElement liveElement = null;
         UserProfile atUser = null;
         UserProfile userProfile = null;
-        for (TopicFragment topicFragment : fragmentList) {
+        for (TopicFragmentWithBLOBs topicFragment : fragmentList) {
             long uid = topicFragment.getUid();
 
             liveElement = LiveTimeLineDto.createElement();
@@ -1012,7 +1051,7 @@ public class LiveServiceImpl implements LiveService {
                 }
             }
 
-            TopicFragment topicFragment = new TopicFragment();
+            TopicFragmentWithBLOBs topicFragment = new TopicFragmentWithBLOBs();
             topicFragment.setFragmentImage(speakDto.getFragmentImage());
             topicFragment.setFragment(speakDto.getFragment());
             topicFragment.setUid(speakDto.getUid());
@@ -1122,7 +1161,7 @@ public class LiveServiceImpl implements LiveService {
 //            this.activitySpecialTopicHandler(speakDto.getUid(), speakDto.getTopicId(), fid, speakDto.getType(), speakDto.getContentType(), 1);
         }
         //获取最后一次发言FragmentId
-        TopicFragment topicFragment = liveMybatisDao.getLastTopicFragment(speakDto.getTopicId(), speakDto.getUid());
+        TopicFragmentWithBLOBs topicFragment = liveMybatisDao.getLastTopicFragment(speakDto.getTopicId(), speakDto.getUid());
         if (topicFragment != null) {
             speakDto.setFragmentId(topicFragment.getId());
         }
@@ -1335,7 +1374,7 @@ public class LiveServiceImpl implements LiveService {
             }else if(null != specialTopicList && specialTopicList.size() > 0){
                 //王国外的操作，这里只有一个对外分享
                 if((type==51||type==52) && contentType == 72){//首先这个得是分享
-                    TopicFragment tf = liveMybatisDao.getTopicFragmentById(fragmentId);
+                	TopicFragmentWithBLOBs tf = liveMybatisDao.getTopicFragmentById(fragmentId);
                     if(null != tf && !StringUtils.isEmpty(tf.getExtra())){
                         JSONObject obj = JSON.parseObject(tf.getExtra());
                         if(null != obj.get("id")){
@@ -2072,7 +2111,7 @@ public class LiveServiceImpl implements LiveService {
         }
     }
 
-    private void afterProcess(long uid, Topic topic, ShowTopicListDto.ShowTopicElement showTopicElement, TopicFragment topicFragment) {
+    private void afterProcess(long uid, Topic topic, ShowTopicListDto.ShowTopicElement showTopicElement, TopicFragmentWithBLOBs topicFragment) {
         if (topicFragment != null) {
             showTopicElement.setLastContentType(topicFragment.getContentType());
             showTopicElement.setLastFragment(topicFragment.getFragment());
@@ -2116,7 +2155,7 @@ public class LiveServiceImpl implements LiveService {
             map.put("fid" ,isUpdate);
             map.put("uid" ,uid);
             map.put("topicId", topic.getId());
-            TopicFragment topicFragment = liveMybatisDao.getFragmentByAT(map);
+            TopicFragmentWithBLOBs topicFragment = liveMybatisDao.getFragmentByAT(map);
             if(topicFragment != null){
                 showTopicElement.setLastContentType(topicFragment.getContentType());
                 showTopicElement.setLastFragment(topicFragment.getFragment());
@@ -2542,7 +2581,7 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response deleteLiveFragment(long topicId, long fid, long uid) {
         log.info("delete topic fragment start ...");
-        TopicFragment tf = liveMybatisDao.getTopicFragmentById(fid);
+        TopicFragmentWithBLOBs tf = liveMybatisDao.getTopicFragmentById(fid);
         if(null == tf || tf.getStatus().intValue() == Specification.TopicFragmentStatus.DISABLED.index){
             return Response.success(ResponseStatus.TOPIC_FRAGMENT_DELETE_SUCCESS.status, ResponseStatus.TOPIC_FRAGMENT_DELETE_SUCCESS.message);
         }
@@ -2949,19 +2988,13 @@ public class LiveServiceImpl implements LiveService {
     }
 
     @Override
-    public TopicFragment getLastTopicFragmentByUid(long topicId, long uid) {
-        TopicFragmentExample example = new TopicFragmentExample();
-        TopicFragmentExample.Criteria criteria = example.createCriteria();
-        criteria.andUidEqualTo(uid);
-        criteria.andTopicIdEqualTo(topicId);
-        criteria.andTypeEqualTo(Specification.LiveSpeakType.ANCHOR.index);
-        example.setOrderByClause(" order by id desc limit 1");
+    public TopicFragmentWithBLOBs getLastTopicFragmentByUid(long topicId, long uid) {
         return liveMybatisDao.getLastTopicFragmentByUid(topicId, uid);
     }
 
     @Override
     public Live4H5Dto getLive4H5(long id) {
-        List<TopicFragment> list = liveMybatisDao.getTopicFragment(id);
+        List<TopicFragmentWithBLOBs> list = liveMybatisDao.getTopicFragment(id);
         Topic topic = liveMybatisDao.getTopicById(id);
         Live4H5Dto live4H5Dto = new Live4H5Dto();
         live4H5Dto.getLive().setTitle(topic.getTitle());
@@ -2970,7 +3003,7 @@ public class LiveServiceImpl implements LiveService {
         UserProfile user = userService.getUserProfileByUid(topic.getUid());
         live4H5Dto.getLive().setNickName(user.getNickName());
         live4H5Dto.getLive().setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
-        for (TopicFragment topicFragment : list) {
+        for (TopicFragmentWithBLOBs topicFragment : list) {
             Live4H5Dto.Fragment fragment = Live4H5Dto.createFragment();
             fragment.setType(topicFragment.getType());
             fragment.setCreateTime(topicFragment.getCreateTime());
@@ -3002,8 +3035,8 @@ public class LiveServiceImpl implements LiveService {
         log.info("get getLiveTimeline2 data");
        // buildTimeLine2(getLiveTimeLineDto, liveTimeLineDto, topic, fragmentList);
         log.info("buildLiveTimeLine2 success");
-        List<TopicFragment> reviewList = liveMybatisDao.getTopicReviewByMode(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), topic.getUid());
-        for (TopicFragment topicFragment : reviewList) {
+        List<TopicFragmentWithBLOBs> reviewList = liveMybatisDao.getTopicReviewByMode(getLiveTimeLineDto.getTopicId(), getLiveTimeLineDto.getSinceId(), topic.getUid());
+        for (TopicFragmentWithBLOBs topicFragment : reviewList) {
             LiveTimeLineDto2.LastElement lastElement = LiveTimeLineDto2.createLastElement();
             UserProfile userProfile = userService.getUserProfileByUid(topicFragment.getUid());
             lastElement.setUid(userProfile.getUid());
@@ -3027,10 +3060,10 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.status, ResponseStatus.GET_LIVE_TIME_LINE_SUCCESS.message, liveTimeLineDto);
     }
 
-    private void buildTimeLine2(GetLiveTimeLineDto2 getLiveTimeLineDto, LiveTimeLineDto2 liveTimeLineDto, Topic topic, List<TopicFragment> fragmentList) {
+    private void buildTimeLine2(GetLiveTimeLineDto2 getLiveTimeLineDto, LiveTimeLineDto2 liveTimeLineDto, Topic topic, List<TopicFragmentWithBLOBs> fragmentList) {
         long uid = topic.getUid();
         UserProfile userProfile = userService.getUserProfileByUid(uid);
-        for (TopicFragment topicFragment : fragmentList) {
+        for (TopicFragmentWithBLOBs topicFragment : fragmentList) {
             LiveTimeLineDto2.LiveElement liveElement = LiveTimeLineDto2.createElement();
             liveElement.setUid(uid);
             liveElement.setNickName(userProfile.getNickName());
@@ -3148,7 +3181,7 @@ public class LiveServiceImpl implements LiveService {
         	if(ss > 100){//预计不会查询超过100页数据的，预防死循环
         		break;
         	}
-        	List<TopicFragment> list = liveMybatisDao.getTopicFragmentForPage(getLiveDetailDto);
+        	List<TopicFragmentWithBLOBs> list = liveMybatisDao.getTopicFragmentForPage(getLiveDetailDto);
         	if(null == list || list.size() == 0){//理论上就是到底了
         		if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){
 	        		if(ss == 1){//第一次循环就没拉到数据，那么说明就没有数据了。。这里要补全上下页
@@ -3217,7 +3250,7 @@ public class LiveServiceImpl implements LiveService {
         	if(ss > 100){//预计不会查询超过100页数据的，预防死循环
         		break;
         	}
-        	List<TopicFragment> list = liveMybatisDao.getTopicFragmentForPage(getLiveDetailDto);
+        	List<TopicFragmentWithBLOBs> list = liveMybatisDao.getTopicFragmentForPage(getLiveDetailDto);
         	if(null == list || list.size() == 0){//理论上就是到底了
         		if(getLiveDetailDto.getDirection() == Specification.LiveDetailDirection.DOWN.index){
 	        		if(ss == 1){//第一次循环就没拉到数据，那么说明就没有数据了。。这里要补全上下页
@@ -3269,11 +3302,11 @@ public class LiveServiceImpl implements LiveService {
     	getLiveDetailDto.setTopicId(topicId);
     	getLiveDetailDto.setPageNo(pageNo);
     	getLiveDetailDto.setOffset(offset);
-    	List<TopicFragment> fragmentList = liveMybatisDao.getTopicFragmentForPage(getLiveDetailDto);
+    	List<TopicFragmentWithBLOBs> fragmentList = liveMybatisDao.getTopicFragmentForPage(getLiveDetailDto);
     	if(null != fragmentList && fragmentList.size() > 0){
 			long pageUpdateTime = 0;
 			int count = 0;
-			for (TopicFragment topicFragment : fragmentList) {
+			for (TopicFragmentWithBLOBs topicFragment : fragmentList) {
 				if(topicFragment.getStatus().intValue() == 0){
 					if(null != topicFragment.getUpdateTime() && topicFragment.getUpdateTime().getTime() > pageUpdateTime){
 						pageUpdateTime = topicFragment.getUpdateTime().getTime();
@@ -3369,13 +3402,13 @@ public class LiveServiceImpl implements LiveService {
     }
 
     //返回 1：到最后了  2：没到最后
-    private int buildLiveDetail(GetLiveDetailDto getLiveDetailDto, LiveDetailDto liveDetailDto, List<TopicFragment> fragmentList, Topic topic) {
+    private int buildLiveDetail(GetLiveDetailDto getLiveDetailDto, LiveDetailDto liveDetailDto, List<TopicFragmentWithBLOBs> fragmentList, Topic topic) {
         log.info("build live detail start ...");
         liveDetailDto.setPageNo(getLiveDetailDto.getPageNo());
         liveDetailDto.getPageInfo().setEnd(getLiveDetailDto.getPageNo());
 
         List<Long> uidList = new ArrayList<Long>();
-        for (TopicFragment topicFragment : fragmentList) {
+        for (TopicFragmentWithBLOBs topicFragment : fragmentList) {
     		if(!uidList.contains(topicFragment.getUid())){
     			uidList.add(topicFragment.getUid());
     		}
@@ -3412,7 +3445,7 @@ public class LiveServiceImpl implements LiveService {
         UserProfile userProfile = null;
         UserProfile atUser = null;
         long pageUpdateTime = 0;
-        for (TopicFragment topicFragment : fragmentList) {
+        for (TopicFragmentWithBLOBs topicFragment : fragmentList) {
             long uid = topicFragment.getUid();
 
             LiveDetailDto.LiveElement liveElement = LiveDetailDto.createElement();
@@ -3565,13 +3598,13 @@ public class LiveServiceImpl implements LiveService {
     }
     
     //返回 1：到最后了  2：没到最后
-    private int buildLiveDetailPage(GetLiveDetailDto getLiveDetailDto, LiveDetailPageDto liveDetailDto, List<TopicFragment> fragmentList, Topic topic) {
+    private int buildLiveDetailPage(GetLiveDetailDto getLiveDetailDto, LiveDetailPageDto liveDetailDto, List<TopicFragmentWithBLOBs> fragmentList, Topic topic) {
         log.info("build live detail start ...");
         liveDetailDto.setPageNo(getLiveDetailDto.getPageNo());
         liveDetailDto.getPageInfo().setEnd(getLiveDetailDto.getPageNo());
 
         List<Long> uidList = new ArrayList<Long>();
-        for (TopicFragment topicFragment : fragmentList) {
+        for (TopicFragmentWithBLOBs topicFragment : fragmentList) {
     		if(!uidList.contains(topicFragment.getUid())){
     			uidList.add(topicFragment.getUid());
     		}
@@ -3609,7 +3642,7 @@ public class LiveServiceImpl implements LiveService {
         UserProfile userProfile = null;
         UserProfile atUser = null;
         long pageUpdateTime = 0;
-        for (TopicFragment topicFragment : fragmentList) {
+        for (TopicFragmentWithBLOBs topicFragment : fragmentList) {
         	if(null != topicFragment.getUpdateTime() && topicFragment.getUpdateTime().getTime() > pageUpdateTime){
         		pageUpdateTime = topicFragment.getUpdateTime().getTime();
         	}
@@ -3763,7 +3796,7 @@ public class LiveServiceImpl implements LiveService {
 
     @Override
     public Response testApi(TestApiDto request) {
-        TopicFragment fragment = new TopicFragment();
+    	TopicFragmentWithBLOBs fragment = new TopicFragmentWithBLOBs();
         try {
             BeanUtils.copyProperties(fragment,request);
         } catch (IllegalAccessException e) {
@@ -3955,7 +3988,7 @@ public class LiveServiceImpl implements LiveService {
         long lastFragmentId = 0;
         long total = 0;
         if(createKingdomDto.getContentType() == 0){
-        	TopicFragment topicFragment = new TopicFragment();
+        	TopicFragmentWithBLOBs topicFragment = new TopicFragmentWithBLOBs();
         	topicFragment.setFragment(createKingdomDto.getFragment());
         	topicFragment.setUid(createKingdomDto.getUid());
         	topicFragment.setType(0);//第一次发言肯定是主播发言
@@ -3983,10 +4016,10 @@ public class LiveServiceImpl implements LiveService {
         	}
 
         	if(null != imgs && imgs.length > 0){
-        		TopicFragment topicFragment = null;
+        		TopicFragmentWithBLOBs topicFragment = null;
         		String e = null;
         		for(int i=0;i<imgs.length;i++){
-        			topicFragment = new TopicFragment();
+        			topicFragment = new TopicFragmentWithBLOBs();
                 	topicFragment.setFragmentImage(imgs[i]);
                 	topicFragment.setUid(createKingdomDto.getUid());
                 	topicFragment.setType(0);//第一次发言肯定是主播发言
@@ -4272,7 +4305,7 @@ public class LiveServiceImpl implements LiveService {
 
 				// 更新成功需要在当前王国中插入一条国王发言
 				if (!StringUtils.isEmpty(dto.getParams())) {
-					TopicFragment topicFragment = new TopicFragment();
+					TopicFragmentWithBLOBs topicFragment = new TopicFragmentWithBLOBs();
 					topicFragment.setFragment("王国简介修改:" + dto.getParams());
 					topicFragment.setUid(dto.getUid());
 					topicFragment.setType(0);// 第一次发言肯定是主播发言
@@ -4642,7 +4675,7 @@ public class LiveServiceImpl implements LiveService {
             return Response.failure(ResponseStatus.AGGREGATION_PUBLISH_OVER_LIMIT.status, ResponseStatus.AGGREGATION_PUBLISH_OVER_LIMIT.message.replace("#{count}#", String.valueOf(max)));
         }
 
-        TopicFragment tf = liveMybatisDao.getTopicFragmentById(fid);
+        TopicFragmentWithBLOBs tf = liveMybatisDao.getTopicFragmentById(fid);
         if(null == tf || tf.getTopicId().longValue() != topic.getId().longValue()
                 || tf.getStatus() != Specification.TopicFragmentStatus.ENABLED.index){
             return Response.failure(ResponseStatus.FRAGMENT_IS_NOT_EXIST.status, ResponseStatus.FRAGMENT_IS_NOT_EXIST.message);
@@ -5204,7 +5237,7 @@ public class LiveServiceImpl implements LiveService {
         UserProfile acUser = userService.getUserProfileByUid(acTopic.getUid());
         //1在母王国里插入
         String ceFragmentContent = "王国"+acTopic.getTitle()+"已加入了本聚合王国";
-        TopicFragment ceFragment = new TopicFragment();
+        TopicFragmentWithBLOBs ceFragment = new TopicFragmentWithBLOBs();
         ceFragment.setTopicId(ceTopic.getId());
         ceFragment.setUid(ceTopic.getUid());
         ceFragment.setFragment(ceFragmentContent);
@@ -5262,7 +5295,7 @@ public class LiveServiceImpl implements LiveService {
 
         //2在子王国里插入
         String acFragmentContent = "本王国已加入聚合王国"+ceTopic.getTitle();
-        TopicFragment acFragment = new TopicFragment();
+        TopicFragmentWithBLOBs acFragment = new TopicFragmentWithBLOBs();
         acFragment.setTopicId(acTopic.getId());
         acFragment.setUid(acTopic.getUid());
         acFragment.setFragment(acFragmentContent);
@@ -5345,7 +5378,7 @@ public class LiveServiceImpl implements LiveService {
         if(null == targetTopic){
             return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status, "发生未知错误转发失败，再试一次吧。");
         }
-        TopicFragment tf = liveMybatisDao.getTopicFragmentById(fid);
+        TopicFragmentWithBLOBs tf = liveMybatisDao.getTopicFragmentById(fid);
         if(null == tf || tf.getTopicId().longValue() != sourceTopicId
                 || tf.getStatus() != Specification.TopicFragmentStatus.ENABLED.index){
             return Response.failure(ResponseStatus.FRAGMENT_IS_NOT_EXIST.status, "发生未知错误转发失败，再试一次吧。");
@@ -5356,7 +5389,7 @@ public class LiveServiceImpl implements LiveService {
             isCoreUser = true;
         }
 
-        TopicFragment newtf = new TopicFragment();
+        TopicFragmentWithBLOBs newtf = new TopicFragmentWithBLOBs();
         newtf.setUid(uid);//记录操作人的UID
         newtf.setFragmentImage(tf.getFragmentImage());
         newtf.setFragment(tf.getFragment());
@@ -6551,7 +6584,7 @@ public class LiveServiceImpl implements LiveService {
 
     @Override
     public Response resendVote(long fragmentId,long uid) {
-        TopicFragment tf  =liveMybatisDao.getTopicFragmentById(fragmentId);
+    	TopicFragmentWithBLOBs tf  =liveMybatisDao.getTopicFragmentById(fragmentId);
         Topic tp  =liveMybatisDao.getTopicById(tf.getTopicId());
         int internalStatus = getInternalStatus(tp,uid);
         if(tp.getUid().longValue() != uid && internalStatus!=Specification.SnsCircle.CORE.index){
@@ -6662,7 +6695,7 @@ public class LiveServiceImpl implements LiveService {
         if(sinceId==-1 && direction ==2){		// 点击封面进来，加载本王国第一张图片所在月份。liveMybatisDao.getNextMonthByImgFragment(topicId,sinceId,true);
             month= coverMonth;
         }else{
-            TopicFragment curTF = liveMybatisDao.getTopicFragmentById(sinceId);//topicFragmentMapper.selectByPrimaryKey(sinceId);
+        	TopicFragmentWithBLOBs curTF = liveMybatisDao.getTopicFragmentById(sinceId);//topicFragmentMapper.selectByPrimaryKey(sinceId);
 
             if(direction==2){
                 month = sdf.format(curTF.getCreateTime());
@@ -6686,8 +6719,8 @@ public class LiveServiceImpl implements LiveService {
                 imgDataList.add(imgData);
             }
 
-            List<TopicFragment> fragmentList = liveMybatisDao.getImgFragmentByMonth(topicId, month);
-            for (TopicFragment fg : fragmentList) {
+            List<TopicFragmentWithBLOBs> fragmentList = liveMybatisDao.getImgFragmentByMonth(topicId, month);
+            for (TopicFragmentWithBLOBs fg : fragmentList) {
                 KingdomImgDB.ImgData imgData = new KingdomImgDB.ImgData();
                 String fragmentImage = Constant.QINIU_DOMAIN + "/" +  fg.getFragmentImage();
                 imgData.setFragmentImage(fragmentImage);
@@ -6727,7 +6760,7 @@ public class LiveServiceImpl implements LiveService {
 
         final int pageSize= 200;
         KingdomImgDB imgDb = new KingdomImgDB();
-        List<TopicFragment> fragmentList=new ArrayList<>();
+        List<TopicFragmentWithBLOBs> fragmentList=new ArrayList<>();
         if(direction==0){		//向下
             fragmentList = liveMybatisDao.getTopicImgFragment(topicId, fragmentId, true, pageSize);
         }else if(direction ==1){		// 向上
@@ -6740,8 +6773,8 @@ public class LiveServiceImpl implements LiveService {
                 imgDb.setTopMonthDataSize(monthDataSize);
             }
         }else{		// 中间
-            List<TopicFragment> fgUp = liveMybatisDao.getTopicImgFragment(topicId, fragmentId, false, pageSize/2);		// 上100
-            List<TopicFragment> fgDown = liveMybatisDao.getTopicImgFragment(topicId, fragmentId, true, pageSize/2);		// 上100
+            List<TopicFragmentWithBLOBs> fgUp = liveMybatisDao.getTopicImgFragment(topicId, fragmentId, false, pageSize/2);		// 上100
+            List<TopicFragmentWithBLOBs> fgDown = liveMybatisDao.getTopicImgFragment(topicId, fragmentId, true, pageSize/2);		// 上100
             if(fgUp.size()>0){
                 String month =DateUtil.date2string(fgUp.get(0).getCreateTime(),"yyyy-MM");
                 imgDb.setTopMonth(month);
@@ -6754,7 +6787,7 @@ public class LiveServiceImpl implements LiveService {
         }
 
         List<KingdomImgDB.ImgData> imgDataList = new ArrayList<>();
-        for(TopicFragment fg:fragmentList){
+        for(TopicFragmentWithBLOBs fg:fragmentList){
             KingdomImgDB.ImgData imgData= new KingdomImgDB.ImgData();
             String fragmentImage = Constant.QINIU_DOMAIN + "/" +fg.getFragmentImage();
             imgData.setFragmentImage(fragmentImage);
@@ -7100,7 +7133,7 @@ public class LiveServiceImpl implements LiveService {
         liveMybatisDao.addTopicTransferRecord(ttr);
 
         //3 在该王国的详情中插入转让卡片
-        TopicFragment fragment = new TopicFragment();
+        TopicFragmentWithBLOBs fragment = new TopicFragmentWithBLOBs();
         fragment.setTopicId(topicId);
         fragment.setUid(newUid);
         fragment.setType(52);
@@ -7649,7 +7682,7 @@ public class LiveServiceImpl implements LiveService {
         liveMybatisDao.addTopicTransferRecord(ttr);
 
         //3 在该王国的详情中插入转让卡片
-        TopicFragment fragment = new TopicFragment();
+        TopicFragmentWithBLOBs fragment = new TopicFragmentWithBLOBs();
         fragment.setTopicId(topicId);
         fragment.setUid(newUid);
         fragment.setType(52);
@@ -8327,7 +8360,7 @@ public class LiveServiceImpl implements LiveService {
         long lastFragmentId = 0;
         long total = 0;
         if(createKingdomDto.getContentType() == 0){
-        	TopicFragment topicFragment = new TopicFragment();
+        	TopicFragmentWithBLOBs topicFragment = new TopicFragmentWithBLOBs();
         	topicFragment.setFragment(createKingdomDto.getFragment());
         	topicFragment.setUid(createKingdomDto.getUid());
         	topicFragment.setType(0);//第一次发言肯定是主播发言
@@ -8355,10 +8388,10 @@ public class LiveServiceImpl implements LiveService {
         	}
 
         	if(null != imgs && imgs.length > 0){
-        		TopicFragment topicFragment = null;
+        		TopicFragmentWithBLOBs topicFragment = null;
         		String e = null;
         		for(int i=0;i<imgs.length;i++){
-        			topicFragment = new TopicFragment();
+        			topicFragment = new TopicFragmentWithBLOBs();
                 	topicFragment.setFragmentImage(imgs[i]);
                 	topicFragment.setUid(createKingdomDto.getUid());
                 	topicFragment.setType(0);//第一次发言肯定是主播发言
@@ -8767,7 +8800,7 @@ public class LiveServiceImpl implements LiveService {
     	}
     	
     	//好了，目前王国都准备好了，那么下面就应该是插入UGC了
-    	TopicFragment fragment = new TopicFragment();
+    	TopicFragmentWithBLOBs fragment = new TopicFragmentWithBLOBs();
     	fragment.setTopicId(targetTopic.getId());
     	fragment.setUid(contentDto.getUid());
     	fragment.setFragment(contentDto.getTitle());

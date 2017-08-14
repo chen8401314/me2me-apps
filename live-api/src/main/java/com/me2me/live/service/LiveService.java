@@ -24,7 +24,20 @@ import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.dto.StealResultDto;
 import com.me2me.live.dto.TestApiDto;
 import com.me2me.live.dto.UserAtListDTO;
-import com.me2me.live.model.*;
+import com.me2me.live.model.LiveFavorite;
+import com.me2me.live.model.LotteryInfo;
+import com.me2me.live.model.QuotationInfo;
+import com.me2me.live.model.RobotInfo;
+import com.me2me.live.model.TeaseInfo;
+import com.me2me.live.model.Topic;
+import com.me2me.live.model.TopicDroparound;
+import com.me2me.live.model.TopicFragmentTemplate;
+import com.me2me.live.model.TopicFragmentWithBLOBs;
+import com.me2me.live.model.TopicListed;
+import com.me2me.live.model.TopicPriceSubsidyConfig;
+import com.me2me.live.model.TopicTag;
+import com.me2me.live.model.TopicTagDetail;
+import com.me2me.live.model.TopicUserConfig;
 import com.me2me.user.dto.RechargeToKingdomDto;
 
 /**
@@ -151,7 +164,7 @@ public interface LiveService {
 
     void deleteFavoriteDelete(long uid,long topicId);
 
-    TopicFragment getLastTopicFragmentByUid(long topicId, long uid);
+    TopicFragmentWithBLOBs getLastTopicFragmentByUid(long topicId, long uid);
 
     Live4H5Dto getLive4H5(long id);
 

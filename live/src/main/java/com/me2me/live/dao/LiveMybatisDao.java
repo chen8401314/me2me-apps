@@ -113,8 +113,8 @@ import com.me2me.live.model.TopicDroparound;
 import com.me2me.live.model.TopicDroparoundExample;
 import com.me2me.live.model.TopicDroparoundTrail;
 import com.me2me.live.model.TopicExample;
-import com.me2me.live.model.TopicFragment;
 import com.me2me.live.model.TopicFragmentExample;
+import com.me2me.live.model.TopicFragmentWithBLOBs;
 import com.me2me.live.model.TopicReadHisExample;
 import com.me2me.live.model.TopicFragmentExample.Criteria;
 import com.me2me.live.model.TopicFragmentTemplate;
@@ -308,7 +308,7 @@ public class LiveMybatisDao {
         return topicMapper.countByExample(example);
     }
     
-    public List<TopicFragment> getTopicFragment(long topicId, long sinceId, int pageSize) {
+    public List<TopicFragmentWithBLOBs> getTopicFragment(long topicId, long sinceId, int pageSize) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
@@ -327,7 +327,7 @@ public class LiveMybatisDao {
    * @param size 数量
    * @return
    */
-    public List<TopicFragment> getTopicImgFragment(long topicId, long sinceId,boolean goDown,int size) {
+    public List<TopicFragmentWithBLOBs> getTopicImgFragment(long topicId, long sinceId,boolean goDown,int size) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
@@ -340,7 +340,7 @@ public class LiveMybatisDao {
         criteria.andContentTypeEqualTo(1);
         criteria.andStatusEqualTo(1);
         example.setOrderByClause("id asc limit "+size);
-        return topicFragmentMapper.selectByExample(example);
+        return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
     /**
      * 获取指定ID的上一个或者下一个id的所在月份
@@ -364,7 +364,7 @@ public class LiveMybatisDao {
 			ct.andIdLessThan(sinceId);
 	    	example.setOrderByClause(" id desc limit 1");
 		}
-		List<TopicFragment> fgs = topicFragmentMapper.selectByExample(example);
+		List<TopicFragmentWithBLOBs> fgs = topicFragmentMapper.selectByExampleWithBLOBs(example);
 		if (fgs.size() > 0) {
 			Date date = fgs.get(0).getCreateTime();
 			month = sdf.format(date);
@@ -380,11 +380,11 @@ public class LiveMybatisDao {
 	 * @param month
 	 * @return
 	 */
-	public List<TopicFragment> getImgFragmentByMonth(long topicId,String month){
+	public List<TopicFragmentWithBLOBs> getImgFragmentByMonth(long topicId,String month){
 		return topicFragmentMapper.getImgFragmentByMonth(topicId, month);
 	}
 
-    public List<TopicFragment> getTopicFragmentByMode(long topicId, long sinceId, long uid) {
+    public List<TopicFragmentWithBLOBs> getTopicFragmentByMode(long topicId, long sinceId, long uid) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
@@ -396,7 +396,7 @@ public class LiveMybatisDao {
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
 
-    public List<TopicFragment> getTopicReviewByMode(long topicId, long sinceId, long uid) {
+    public List<TopicFragmentWithBLOBs> getTopicReviewByMode(long topicId, long sinceId, long uid) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
@@ -410,7 +410,7 @@ public class LiveMybatisDao {
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
 
-    public List<TopicFragment> getPrevTopicFragment(long topicId, long sinceId) {
+    public List<TopicFragmentWithBLOBs> getPrevTopicFragment(long topicId, long sinceId) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
@@ -420,18 +420,18 @@ public class LiveMybatisDao {
         return topicFragmentMapper.selectByExampleWithBLOBs(example);
     }
 
-    public TopicFragment getLastTopicFragment(long topicId, long uid) {
+    public TopicFragmentWithBLOBs getLastTopicFragment(long topicId, long uid) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
         criteria.andUidEqualTo(uid);
         criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
         example.setOrderByClause("id desc limit 1 ");
-        List<TopicFragment> topicFragmentList = topicFragmentMapper.selectByExampleWithBLOBs(example);
+        List<TopicFragmentWithBLOBs> topicFragmentList = topicFragmentMapper.selectByExampleWithBLOBs(example);
         return (topicFragmentList != null && topicFragmentList.size() > 0) ? topicFragmentList.get(0) : null;
     }
 
-    public TopicFragment getLastTopicFragmentByCoreCircle(long topicId, String coreCircle) {
+    public TopicFragmentWithBLOBs getLastTopicFragmentByCoreCircle(long topicId, String coreCircle) {
         JSONArray array = JSON.parseArray(coreCircle);
         List<Long> list = new ArrayList<>();
         for (int i = 0; i < array.size(); i++) {
@@ -445,11 +445,11 @@ public class LiveMybatisDao {
         criteria.andTypeNotEqualTo(Specification.LiveSpeakType.ANCHOR_AT.index);*/
         criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
         example.setOrderByClause("id desc limit 1");
-        List<TopicFragment> topicFragmentList = topicFragmentMapper.selectByExampleWithBLOBs(example);
+        List<TopicFragmentWithBLOBs> topicFragmentList = topicFragmentMapper.selectByExampleWithBLOBs(example);
         return (topicFragmentList != null && topicFragmentList.size() > 0) ? topicFragmentList.get(0) : null;
     }
 
-    public TopicFragment getLastTopicFragmentByUid(long topicId, long uid) {
+    public TopicFragmentWithBLOBs getLastTopicFragmentByUid(long topicId, long uid) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
@@ -457,11 +457,11 @@ public class LiveMybatisDao {
         criteria.andTypeEqualTo(Specification.LiveSpeakType.ANCHOR.index);
         criteria.andStatusEqualTo(Specification.TopicFragmentStatus.ENABLED.index);
         example.setOrderByClause("id desc limit 1 ");
-        List<TopicFragment> topicFragmentList = topicFragmentMapper.selectByExampleWithBLOBs(example);
+        List<TopicFragmentWithBLOBs> topicFragmentList = topicFragmentMapper.selectByExampleWithBLOBs(example);
         return (topicFragmentList != null && topicFragmentList.size() > 0) ? topicFragmentList.get(0) : null;
     }
 
-    public void createTopicFragment(TopicFragment topicFragment) {
+    public void createTopicFragment(TopicFragmentWithBLOBs topicFragment) {
         topicFragment.setStatus(Specification.TopicFragmentStatus.ENABLED.index);
         topicFragmentMapper.insertSelective(topicFragment);
         // 王国更新的时候去掉用户屏蔽的王国。
@@ -870,7 +870,7 @@ public class LiveMybatisDao {
         return topicMapper.selectByExample(example);
     }
 
-    public List<TopicFragment> getTopicFragment(long topicId) {
+    public List<TopicFragmentWithBLOBs> getTopicFragment(long topicId) {
         TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(topicId);
@@ -949,7 +949,7 @@ public class LiveMybatisDao {
 
 
     public int deleteLiveFragmentById(long fid) {
-        TopicFragment fragment = new TopicFragment();
+    	TopicFragmentWithBLOBs fragment = new TopicFragmentWithBLOBs();
         fragment.setId(fid);
         fragment.setStatus(Specification.TopicFragmentStatus.DISABLED.index);
         return topicFragmentMapper.updateByPrimaryKeySelective(fragment);
@@ -988,7 +988,7 @@ public class LiveMybatisDao {
     }
 
     public int updateTopFragmentById(SpeakDto speakDto) {
-        TopicFragment fragment = new TopicFragment();
+    	TopicFragmentWithBLOBs fragment = new TopicFragmentWithBLOBs();
         fragment.setId(speakDto.getFragmentId());
         fragment.setExtra(speakDto.getExtra());
 
@@ -1010,7 +1010,7 @@ public class LiveMybatisDao {
         return topicFragmentMapper.countByExample(example);
     }
 
-    public List<TopicFragment> getTopicFragmentForPage(GetLiveDetailDto getLiveDetailDto) {
+    public List<TopicFragmentWithBLOBs> getTopicFragmentForPage(GetLiveDetailDto getLiveDetailDto) {
        /* TopicFragmentExample example = new TopicFragmentExample();
         TopicFragmentExample.Criteria criteria = example.createCriteria();
         criteria.andTopicIdEqualTo(getLiveDetailDto.getTopicId());
@@ -1028,7 +1028,7 @@ public class LiveMybatisDao {
         return topicFragmentMapper.countFragmentByTopicIdWithSince(getLiveUpdateDto);
     }
 
-    public TopicFragment getTopicFragmentById(long id){
+    public TopicFragmentWithBLOBs getTopicFragmentById(long id){
     	return topicFragmentMapper.selectByPrimaryKey(id);
     }
 
@@ -1319,7 +1319,7 @@ public class LiveMybatisDao {
         return list != null && list.size() > 0 ? list.get(0):null;
     }
 
-    public TopicFragment getFragmentByAT(Map map){
+    public TopicFragmentWithBLOBs getFragmentByAT(Map map){
         return topicFragmentMapper.getFragmentByAT(map);
     }
 

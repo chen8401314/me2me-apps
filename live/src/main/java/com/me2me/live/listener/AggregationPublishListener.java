@@ -35,7 +35,7 @@ import com.me2me.live.event.SpeakNewEvent;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.Topic;
 import com.me2me.live.model.TopicAggregation;
-import com.me2me.live.model.TopicFragment;
+import com.me2me.live.model.TopicFragmentWithBLOBs;
 import com.me2me.live.model.TopicUserConfig;
 import com.me2me.live.service.LiveServiceImpl;
 import com.me2me.sms.service.JPushService;
@@ -78,8 +78,8 @@ public class AggregationPublishListener {
 		//获取所有子王国
 		List<TopicAggregation> taList = liveMybatisDao.getTopicAggregationsByTopicId(event.getTopicId());
 		if(null != taList && taList.size() > 0){
-			TopicFragment tf = liveMybatisDao.getTopicFragmentById(event.getFid());
-			TopicFragment newtf = new TopicFragment();
+			TopicFragmentWithBLOBs tf = liveMybatisDao.getTopicFragmentById(event.getFid());
+			TopicFragmentWithBLOBs newtf = new TopicFragmentWithBLOBs();
 			newtf.setUid(event.getUid());//记录操作人的UID
 			newtf.setFragmentImage(tf.getFragmentImage());
 			newtf.setFragment(tf.getFragment());
