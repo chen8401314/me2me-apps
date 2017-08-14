@@ -205,6 +205,10 @@ public class UserServiceImpl implements UserService {
         userProfile.setMobile(userSignUpDto.getMobile());
         userProfile.setNickName(userSignUpDto.getNickName());
         userProfile.setIntroduced(userSignUpDto.getIntroduced());
+        //性别默认给-1
+        userProfile.setGender(-1);
+        //生日默认给一个不可能的值
+        userProfile.setBirthday("1800-1-1");
         userProfile.setCreateTime(new Date());
         userProfile.setUpdateTime(new Date());
         userProfile.setChannel(userSignUpDto.getChannel());
@@ -2114,6 +2118,10 @@ public class UserServiceImpl implements UserService {
         userProfile.setAvatar(Constant.DEFAULT_AVATAR);
         userProfile.setMobile(userDto.getMobile());
         userProfile.setNickName(userDto.getNickName());
+        //性别默认给-1
+        userProfile.setGender(-1);
+        //生日默认给一个不可能的值
+        userProfile.setBirthday("1800-1-1");
         userProfile.setIntroduced(userDto.getIntroduced());
         userProfile.setIsActivate(Specification.UserActivate.UN_ACTIVATED.index);
         userProfile.setRefereeUid(userDto.getRefereeUid());
@@ -2550,6 +2558,8 @@ public class UserServiceImpl implements UserService {
         userProfile.setNickName(thirdPartSignUpDto.getNickName());
         userProfile.setAvatar(thirdPartSignUpDto.getAvatar());
         userProfile.setGender(thirdPartSignUpDto.getGender());
+        //生日默认给一个不可能的值
+        userProfile.setBirthday("1800-1-1");
         userProfile.setCreateTime(new Date());
         userProfile.setChannel(thirdPartSignUpDto.getChannel());
         userProfile.setPlatform(thirdPartSignUpDto.getPlatform());

@@ -77,7 +77,8 @@ public class OldUserJdbcDao {
                 } else {
                     userProfile.setGender(0);
                 }
-
+                //生日默认给一个不可能的值
+                userProfile.setBirthday("1800-1-1");
                 // 添加手机绑定
                 List<UserAccountBindStatusDto> array = Lists.newArrayList();
                 array.add(new UserAccountBindStatusDto(Specification.ThirdPartType.MOBILE.index,Specification.ThirdPartType.MOBILE.name,1));
