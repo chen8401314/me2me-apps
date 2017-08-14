@@ -41,6 +41,8 @@ public class ShowLiveDto implements BaseEntity {
 
     private int reviewCount;
 
+    private int readCount;
+    
     private int isLike;
 
     private int likeCount;

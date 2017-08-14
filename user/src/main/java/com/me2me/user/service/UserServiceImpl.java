@@ -1688,15 +1688,15 @@ public class UserServiceImpl implements UserService {
         List<Integer> container = Lists.newArrayList();
         int start = 0;
         int end = 0;
-        if(limit == 0){
-            start = 10000000;
-            end =30000000;
-        }else if(limit == 1){
-            start = 30000000;
-            end =60000000;
-        } else if(limit == 2){
-            start = 60000000;
-            end =90000000;
+        if(limit == 1){
+            start = 10100000;
+            end =11000000;
+        }else if(limit == 2){
+            start = 11000000;
+            end =12000000;
+        } else if(limit == 3){
+            start = 12000000;
+            end =13000000;
         }
         for(int i = start;i<end;i++){
             list.add(i);

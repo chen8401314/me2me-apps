@@ -567,6 +567,9 @@ public class LiveServiceImpl implements LiveService {
         	
         }
 
+        // 记录操作日志
+        contentService.addUserOprationLog(topic.getUid(), USER_OPRATE_TYPE.READ_KINGDOM, topic.getId());
+        
         return Response.success(ResponseStatus.GET_LIVE_COVER_SUCCESS.status, ResponseStatus.GET_LIVE_COVER_SUCCESS.message, liveCoverDto);
     }
 
@@ -655,6 +658,7 @@ public class LiveServiceImpl implements LiveService {
         }
         showLiveDto.setLikeCount(content.getLikeCount());
         showLiveDto.setPersonCount(content.getPersonCount());
+        showLiveDto.setReadCount(content.getReadCountDummy());
         showLiveDto.setTopicId(topic.getId());
         LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid, topic.getId());
         if (liveFavorite != null) {
@@ -766,8 +770,6 @@ public class LiveServiceImpl implements LiveService {
         } catch(Exception e){
         	
         }
-        // 记录操作日志
-        contentService.addUserOprationLog(topic.getUid(), USER_OPRATE_TYPE.READ_KINGDOM, topic.getId());
         
         return Response.success(showLiveDto);
     }

@@ -135,13 +135,27 @@ public class TaskConsoleController {
 			JSONObject extra = null;
 			JSONArray images = null;
 			List<String> imgList = null;
+			String ugcTitle = null;
+			String ugcContent = null;
 			for(Map<String, Object> content : contentList){
-				insertUgcSql = insertUgcSqlBuilder.toString().replace("#{ugcTitle}#", (String)content.get("title"));
+				ugcTitle = (String)content.get("title");
+				if(null == ugcTitle){
+					ugcTitle = "";
+				}else{
+					ugcTitle = ugcTitle.replaceAll("'", "''");//转义
+				}
+				ugcContent = (String)content.get("content");
+				if(null == ugcContent){
+					ugcContent = "";
+				}else{
+					ugcContent = ugcContent.replaceAll("'", "''");
+				}
+				insertUgcSql = insertUgcSqlBuilder.toString().replace("#{ugcTitle}#", ugcTitle);
 				//组装extra
 				extra = new JSONObject();
 				extra.put("type", "ugc");
 				extra.put("only", UUID.randomUUID().toString()+"-"+new Random().nextInt());
-				extra.put("content", (String)content.get("content"));
+				extra.put("content", ugcContent);
 		        images = new JSONArray();
 		        imgList = imageMap.get(content.get("id").toString());
 		        if(null != imgList && imgList.size() > 0){

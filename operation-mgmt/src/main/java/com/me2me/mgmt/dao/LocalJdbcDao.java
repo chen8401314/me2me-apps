@@ -44,4 +44,8 @@ public class LocalJdbcDao {
 //		logger.info(sql);
 		jdbcTemplate.update(sql);
     }
+	
+	public void executeSqlWithParams(String sql, Object... params){
+		jdbcTemplate.update(sql, params);
+	}
 }

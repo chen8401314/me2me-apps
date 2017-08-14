@@ -365,7 +365,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 					List<UserEsMapping> users = searchMapper.getUserPageByUpdateDate(beginDate, endDate, skip,
 							batchSize);
 
-					log.info("get users,begin:{} end:{} skip:{} batchSize:{}", beginDate, endDate, skip, batchSize);
+//					log.info("get users,begin:{} end:{} skip:{} batchSize:{}", beginDate, endDate, skip, batchSize);
 					if (users == null || users.isEmpty()) {
 						break;
 					}
@@ -420,7 +420,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 
 					skip += batchSize;
 					count += users.size();
-					log.info("indexUserData processed:" + count);
+//					log.info("indexUserData processed:" + count);
 				}
 				updateVarVal(indexName, endDate);
 				log.info("indexUserData finished. end date:" + endDate);
