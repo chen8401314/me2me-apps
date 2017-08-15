@@ -1236,9 +1236,13 @@ public class ContentServiceImpl implements ContentService {
         	contents = new ArrayList<Content>();
         }
         
+        List<Long> uidList = new ArrayList<Long>();
         List<Long> topicIdList = new ArrayList<Long>();
         List<Long> forwardTopicIdList = new ArrayList<Long>();
         for(Content idx : contents){
+        	if(!uidList.contains(idx.getUid())){
+                uidList.add(idx.getUid());
+            }
             if(idx.getType() == Specification.ArticleType.LIVE.index
                     || idx.getType() == Specification.ArticleType.FORWARD_LIVE.index){//王国
                 if(!topicIdList.contains(idx.getForwardCid())){
@@ -1273,6 +1277,8 @@ public class ContentServiceImpl implements ContentService {
         if(null != topicOutList && topicOutList.size() > 0){
         	Long topicId = null;
         	List<Map<String, Object>> toList = null;
+        	Long atUid = null;
+        	Long fragmentUid = null;
         	for(Map<String,Object> m : topicOutList){
         		topicId = (Long)m.get("topic_id");
         		toList = topicOutDataMap.get(topicId.toString());
@@ -1281,7 +1287,27 @@ public class ContentServiceImpl implements ContentService {
         			topicOutDataMap.put(topicId.toString(), toList);
         		}
         		toList.add(m);
+        		atUid = (Long)m.get("at_uid");
+        		if(null != atUid && atUid.longValue() > 0){
+        			if(!uidList.contains(atUid)){
+                        uidList.add(atUid);
+                    }
+        		}
+        		fragmentUid = (Long)m.get("uid");
+        		if(null != fragmentUid && fragmentUid.longValue() > 0){
+        			if(!uidList.contains(fragmentUid)){
+                        uidList.add(fragmentUid);
+                    }
+        		}
         	}
+        }
+        
+        Map<String, UserProfile> profileMap = new HashMap<String, UserProfile>();
+        List<UserProfile> profileList = userService.getUserProfilesByUids(uidList);
+        if(null != profileList && profileList.size() > 0){
+            for(UserProfile up : profileList){
+                profileMap.put(String.valueOf(up.getUid()), up);
+            }
         }
         
         Map<String, Map<String, Object>> forwardTopicUserProfileMap = new HashMap<String, Map<String, Object>>();
@@ -1309,13 +1335,21 @@ public class ContentServiceImpl implements ContentService {
             topicMemberCountMap = new HashMap<String, Long>();
         }
 
+        UserProfile userProfile = null;
         Map<String, Object> topicUserProfile = null;
         List<Map<String, Object>> topicOutDataList = null;
         Map<String, Object> topicOutData = null;
         ShowMyPublishDto.OutDataElement outElement = null;
         UserProfile atUserProfile = null;
+        UserProfile lastUserProfile = null;
         for (Content content : contents){
             ShowMyPublishDto.MyPublishElement contentElement = ShowMyPublishDto.createElement();
+            userProfile = profileMap.get(String.valueOf(content.getUid()));
+            contentElement.setV_lv(userProfile.getvLv());
+            contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            contentElement.setNickName(userProfile.getNickName());
+            contentElement.setLevel(userProfile.getLevel());
+            contentElement.setUid(content.getUid());
             contentElement.setTag(content.getFeeling());
             String contentStr = content.getContent();
             if(contentStr.length() > 100){
@@ -1348,11 +1382,6 @@ public class ContentServiceImpl implements ContentService {
 
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
-            contentElement.setUid(content.getUid());
-            UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
-            if(userProfile!=null){
-                contentElement.setLevel(userProfile.getLevel());
-            }
             String cover = content.getConverImage();
 
             if(!StringUtils.isEmpty(cover)){
@@ -1438,6 +1467,14 @@ public class ContentServiceImpl implements ContentService {
             		//先判断是否UGC
             		//第一个如果是UGC则其他的不要了，如果不是，则后面如果有UGC则不要了
             		topicOutData = topicOutDataList.get(0);
+            		lastUserProfile = profileMap.get(String.valueOf(topicOutData.get("uid")));
+            		if(null != lastUserProfile){//这里放上最近发言的那个人的头像
+            			contentElement.setUid(lastUserProfile.getUid());
+            			contentElement.setNickName(lastUserProfile.getNickName());
+            			contentElement.setV_lv(lastUserProfile.getvLv());
+            			contentElement.setLevel(lastUserProfile.getLevel());
+            			contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
+            		}
             		int t = ((Integer)topicOutData.get("type")).intValue();
             		int contentType = ((Integer)topicOutData.get("content_type")).intValue();
             		if((t == 0 || t == 52) && contentType == 23){//第一个是UGC
@@ -1452,7 +1489,7 @@ public class ContentServiceImpl implements ContentService {
                         }
             			outElement.setAtUid((Long)topicOutData.get("at_uid"));
             			if(outElement.getAtUid() > 0){
-            				atUserProfile = userService.getUserProfileByUid(outElement.getAtUid());
+            				atUserProfile = profileMap.get(String.valueOf(outElement.getAtUid()));
             				if(null != atUserProfile){
             					outElement.setAtNickName(atUserProfile.getNickName());
             				}
@@ -2802,6 +2839,7 @@ public class ContentServiceImpl implements ContentService {
         if(null != topicOutList && topicOutList.size() > 0){
         	Long topicId = null;
         	Long atUid = null;
+        	Long fragmentUid = null;
         	List<Map<String, Object>> toList = null;
         	for(Map<String,Object> m : topicOutList){
         		topicId = (Long)m.get("topic_id");
@@ -2815,6 +2853,12 @@ public class ContentServiceImpl implements ContentService {
         		if(null != atUid && atUid.longValue() > 0){
         			if(!uidList.contains(atUid)){
                         uidList.add(atUid);
+                    }
+        		}
+        		fragmentUid = (Long)m.get("uid");
+        		if(null != fragmentUid && fragmentUid.longValue() > 0){
+        			if(!uidList.contains(fragmentUid)){
+                        uidList.add(fragmentUid);
                     }
         		}
         	}
@@ -2859,6 +2903,7 @@ public class ContentServiceImpl implements ContentService {
         Map<String, Object> topicOutData = null;
         ShowNewestDto.OutDataElement outElement = null;
         UserProfile atUserProfile = null;
+        UserProfile lastUserProfile = null;
         for(Content content : newestList){
             ShowNewestDto.ContentElement contentElement = ShowNewestDto.createElement();
 
@@ -2965,6 +3010,16 @@ public class ContentServiceImpl implements ContentService {
             		//先判断是否UGC
             		//第一个如果是UGC则其他的不要了，如果不是，则后面如果有UGC则不要了
             		topicOutData = topicOutDataList.get(0);
+            		//第一个需要是有头像的
+            		lastUserProfile = profileMap.get(String.valueOf(topicOutData.get("uid")));
+            		if(null != lastUserProfile){//这里放上最近发言的那个人的头像
+            			contentElement.setUid(lastUserProfile.getUid());
+            			contentElement.setNickName(lastUserProfile.getNickName());
+            			contentElement.setV_lv(lastUserProfile.getvLv());
+            			contentElement.setLevel(lastUserProfile.getLevel());
+            			contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
+            		}
+            		
             		int type = ((Integer)topicOutData.get("type")).intValue();
             		int contentType = ((Integer)topicOutData.get("content_type")).intValue();
             		if((type == 0 || type == 52) && contentType == 23){//第一个是UGC
@@ -3117,6 +3172,7 @@ public class ContentServiceImpl implements ContentService {
         if(null != topicOutList && topicOutList.size() > 0){
         	Long topicId = null;
         	Long atUid = null;
+        	Long fragmentUid = null;
         	List<Map<String, Object>> toList = null;
         	for(Map<String,Object> m : topicOutList){
         		topicId = (Long)m.get("topic_id");
@@ -3130,6 +3186,12 @@ public class ContentServiceImpl implements ContentService {
         		if(null != atUid && atUid.longValue() > 0){
         			if(!uidList.contains(atUid)){
                         uidList.add(atUid);
+                    }
+        		}
+        		fragmentUid = (Long)m.get("uid");
+        		if(null != fragmentUid && fragmentUid.longValue() > 0){
+        			if(!uidList.contains(fragmentUid)){
+                        uidList.add(fragmentUid);
                     }
         		}
         	}
@@ -3174,6 +3236,7 @@ public class ContentServiceImpl implements ContentService {
         Map<String, Object> topicOutData = null;
         ShowAttentionDto.OutDataElement outElement = null;
         UserProfile atUserProfile = null;
+        UserProfile lastUserProfile = null;
         for(Content content : attentionList){
             ShowAttentionDto.ContentElement contentElement = ShowAttentionDto.createElement();
             contentElement.setId(content.getId());
@@ -3267,6 +3330,15 @@ public class ContentServiceImpl implements ContentService {
             		//先判断是否UGC
             		//第一个如果是UGC则其他的不要了，如果不是，则后面如果有UGC则不要了
             		topicOutData = topicOutDataList.get(0);
+            		lastUserProfile = profileMap.get(String.valueOf(topicOutData.get("uid")));
+            		if(null != lastUserProfile){//这里放上最近发言的那个人的头像
+            			contentElement.setUid(lastUserProfile.getUid());
+            			contentElement.setNickName(lastUserProfile.getNickName());
+            			contentElement.setV_lv(lastUserProfile.getvLv());
+            			contentElement.setLevel(lastUserProfile.getLevel());
+            			contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
+            		}
+            		
             		int type = ((Integer)topicOutData.get("type")).intValue();
             		int contentType = ((Integer)topicOutData.get("content_type")).intValue();
             		if((type == 0 || type == 52) && contentType == 23){//第一个是UGC

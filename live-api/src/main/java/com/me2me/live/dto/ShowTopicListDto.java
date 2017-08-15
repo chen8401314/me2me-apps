@@ -132,6 +132,7 @@ public class ShowTopicListDto implements BaseEntity{
         private int lastV_lv;
         private int price;
         private int level;
+        private int lastLevel;
     }
 
     @Data

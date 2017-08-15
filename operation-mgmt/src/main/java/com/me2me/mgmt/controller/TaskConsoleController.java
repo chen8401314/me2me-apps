@@ -55,12 +55,11 @@ public class TaskConsoleController {
 			ugcUserSqlBuilder.append(" and t.ugc_status=0 group by t.uid order by t.uid");
 			String ugcUserSql = ugcUserSqlBuilder.toString();
 			
-			int start = 0;
 			int batch = 200;
 			int runCount = 0;
 			List<Map<String, Object>> userList = null;
-			while(start < total){
-				userList = localJdbcDao.queryEvery(ugcUserSql + " limit " + start + "," + batch);
+			while(true){
+				userList = localJdbcDao.queryEvery(ugcUserSql + " limit " + batch);
 				if(null == userList || userList.size() == 0){
 					break;
 				}
@@ -70,7 +69,6 @@ public class TaskConsoleController {
 				}
 				runCount = runCount + userList.size();
 				logger.info("本次处理了["+userList.size()+"]个用户，共["+total+"]个用户，还剩["+(total-runCount)+"]个用户");
-				start = start + batch;
 			}
 		}catch(Exception e){
 			logger.error("任务执行失败", e);
@@ -131,6 +129,8 @@ public class TaskConsoleController {
 			insertUgcSqlBuilder.append("insert into topic_fragment(topic_id,uid,fragment_image,fragment,type,content_type,top_id,bottom_id,create_time,at_uid,source,extra,score,status,update_time)");
 			insertUgcSqlBuilder.append(" values(").append(userEmotionTopicId).append(",").append(uid).append(",'','#{ugcTitle}#',52,23,0,0,now(),0,0,'#{ugcExtra}#',0,1,now())");
 			
+			String updateUgcStatus = "update content set ugc_status=1 where id=";
+			
 			String insertUgcSql = null;
 			JSONObject extra = null;
 			JSONArray images = null;
@@ -166,6 +166,9 @@ public class TaskConsoleController {
 		        extra.put("images", images);//图片
 		        insertUgcSql = insertUgcSql.replace("#{ugcExtra}#", extra.toJSONString());
 		        localJdbcDao.executeSql(insertUgcSql);
+		        
+		        long cid = (Long)content.get("id");
+		        localJdbcDao.executeSql(updateUgcStatus + cid);
 			}
 			//刷详情缓存
 			String totalFragmentSql = "select count(1) as cc from topic_fragment f where f.topic_id="+userEmotionTopicId;

@@ -79,7 +79,7 @@ public class LoggerAop {
             }
             accessLoggerDto.setUri(request.getRequestURI());
             accessLoggerDto.setParams(JSON.toJSONString(joinPoint.getArgs()));
-            monitorService.saveAccessLog(accessLoggerDto);
+//            monitorService.saveAccessLog(accessLoggerDto);
         }catch (Exception e){
             log.info("ex ignore :"+e.getMessage());
         }

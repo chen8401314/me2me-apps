@@ -2071,7 +2071,7 @@ public class LiveServiceImpl implements LiveService {
                     showTopicElement.setLastNickName(lastUserProfile.getNickName());
                     showTopicElement.setLastAvatar(this.genAvatar(lastUserProfile.getAvatar()));
                     showTopicElement.setLastV_lv(lastUserProfile.getvLv());
-                    showTopicElement.setLevel(lastUserProfile.getLevel());
+                    showTopicElement.setLastLevel(lastUserProfile.getLevel());
                 }
             } else {
                 showTopicElement.setLastContentType(-1);

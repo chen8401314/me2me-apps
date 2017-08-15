@@ -332,6 +332,9 @@ public class Contents extends BaseController {
         if(request.getSinceId() == -1){
             request.setSinceId(Integer.MAX_VALUE);
         }
+        if(request.getUpdateTime() <= 0){
+        	request.setUpdateTime(Long.MAX_VALUE);
+        }
         int vflag = 0;
         if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
         	vflag = 1;
