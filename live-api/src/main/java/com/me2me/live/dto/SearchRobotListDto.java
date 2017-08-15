@@ -31,5 +31,6 @@ public class SearchRobotListDto implements BaseEntity {
 		private long uid;
 		private String nickName;
 		private String avatar;
+		private int type;
 	}
 }

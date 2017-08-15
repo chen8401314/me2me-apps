@@ -1354,7 +1354,7 @@ public class LiveLocalJdbcDao {
     }
     public List<Map<String,Object>> getRobotListByNickName(String nickName,int type,int start,int pageSize){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select r.id,r.uid,u.nick_name,u.avatar FROM robot_info r,user_profile u WHERE r.uid = u.uid ");
+    	sb.append("select r.id,r.uid,u.nick_name,u.avatar,r.type FROM robot_info r,user_profile u WHERE r.uid = u.uid ");
     	if(!StringUtils.isEmpty(nickName)){
     		sb.append(" and u.nick_name like '%").append(nickName).append("%'");
     	}

@@ -270,6 +270,15 @@
 	        		return '<img src="'+data+'" height="50"/>';
 	        	}
 	        }},
+	        {data: "type",width:150,orderable:false,title: "类型",render:function(data,type,row,meta){
+	        	if(data!=null){
+	        		if(data==0){
+	        			return  '机器人';
+	        		}else if(data==1){
+	        			return '日签'
+	        		}
+	        	}
+	        }},
 	        {title:"操作",orderable:false,width:200,render:function(data, type, row, meta){
 	        	var txt='';
 	        	txt='<a class="btn btn-danger btn-xs " href="javascript:del('+row.id+')">删除</a>';
@@ -303,15 +312,6 @@
 		        {data: "avatar",width:150,orderable:false,title: "用户头像",render:function(data,type,row,meta){
 		        	if(data!=null){
 		        		return '<img src="'+data+'" height="50"/>';
-		        	}
-		        }},
-		        {data: "type",width:150,orderable:false,title: "类型",render:function(data,type,row,meta){
-		        	if(data!=null){
-		        		if(data==0){
-		        			return  '机器人';
-		        		}else if(data==1){
-		        			return '日签'
-		        		}
 		        	}
 		        }},
 		        {title:"操作",orderable:false,width:200,render:function(data, type, row, meta){

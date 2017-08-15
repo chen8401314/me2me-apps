@@ -8548,6 +8548,7 @@ public class LiveServiceImpl implements LiveService {
         	 e.setId((Long)map.get("id"));
         	 e.setUid((Long)map.get("uid"));
         	 e.setNickName( map.get("nick_name").toString());
+        	 e.setType((Integer)map.get("type"));
         	 e.setAvatar(Constant.QINIU_DOMAIN + "/" +  map.get("avatar").toString());
             dto.getResult().add(e);
         }
