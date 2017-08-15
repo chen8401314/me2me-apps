@@ -8073,11 +8073,12 @@ public class LiveServiceImpl implements LiveService {
 			dto.setFragment("这是我在米汤的第一天");
 			dto.setImage("");
 			dto.setTopicTitle("");
+			dto.setIsFirstDay(1);
 		} else {
 			dto.setIsFirstDay(0);
 			Map<String, Object> maxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, uid, 60, 90);
 			if (maxFragment == null) {
-				maxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, uid, 0, 0);
+				maxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, uid, 1, 0);
 			}
 			// 判断是否有文字发言
 			if (maxFragment == null) {
@@ -8107,13 +8108,13 @@ public class LiveServiceImpl implements LiveService {
 								Map<String, Object> rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 60,
 										90,0);
 								if (rmaxFragment == null) {
-									rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 0, 0,0);
+									rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 1, 0,0);
 								}
 								if(rmaxFragment == null){
 									 rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 60,
 											90,1);
 									 if(rmaxFragment == null){
-										 rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 0, 0,1);
+										 rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 1, 0,1);
 									 }
 								}
 								if (rmaxFragment == null) {
