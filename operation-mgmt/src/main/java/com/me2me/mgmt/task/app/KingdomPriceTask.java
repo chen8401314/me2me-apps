@@ -509,6 +509,13 @@ public class KingdomPriceTask {
 				int yy = (int)(_y*1000);
 				boolean isCreateTime = DateUtil.isSameDay(kc.getCreateTime(), yesterday);
 				if(null == topicData || isCreateTime){//当天新增的王国
+					int oldStealPrice = 0;
+					int kv0 = 0;
+					if(null != topicData){
+						oldStealPrice = (Integer)topicData.get("steal_price");
+						kv0 = ((Integer)topicData.get("price")).intValue();
+					}
+					
 					kc.setApprove(new BigDecimal((double)yy/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 					kc.setDiligently(new BigDecimal((double)xx/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 					
@@ -538,12 +545,13 @@ public class KingdomPriceTask {
 						if(stealPrice < 10){
 							stealPrice = 10;
 						}
-						kc.setStealPrice(stealPrice);
+						kc.setStealPrice(stealPrice+oldStealPrice);
 						kv = kv - delPrice;
 					}else{
-						kc.setStealPrice(0);
+						kv = 0;
+						kc.setStealPrice(oldStealPrice);
 					}
-					kc.setPrice((int)kv);
+					kc.setPrice((int)kv + kv0);
 					
 					if(null == topicData){
 						this.saveKingdomCount(kc, true, listedPrice, yesterday, pushPriceLimit, pushPriceIncrLimit, pushPriceReduceLimit, nowDateStr);
