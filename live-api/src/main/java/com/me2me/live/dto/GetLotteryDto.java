@@ -48,6 +48,8 @@ public class GetLotteryDto implements BaseEntity {
     
     private int joinNumber;
     
+    private long topicId;
+    
     
     private List<UserElement> winUsers = Lists.newArrayList();
     @Data
