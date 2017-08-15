@@ -66,5 +66,6 @@
         <!--<table tableName="lottery_win" domainObjectName="LotteryWin" />-->
         <!--<table tableName="lottery_prohibit" domainObjectName="LotteryProhibit" />-->
         <!-- <table tableName="topic_read_his" domainObjectName="TopicReadHis" /> -->
+        <!-- <table tableName="topic_price_change_log" domainObjectName="TopicPriceChangeLog" /> -->
     </context>
 </generatorConfiguration>

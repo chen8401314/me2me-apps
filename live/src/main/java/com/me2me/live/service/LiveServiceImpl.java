@@ -160,6 +160,7 @@ import com.me2me.live.model.TopicFragmentWithBLOBs;
 import com.me2me.live.model.TopicGiven;
 import com.me2me.live.model.TopicListed;
 import com.me2me.live.model.TopicNews;
+import com.me2me.live.model.TopicPriceChangeLog;
 import com.me2me.live.model.TopicPriceHis;
 import com.me2me.live.model.TopicPriceSubsidyConfig;
 import com.me2me.live.model.TopicReadHis;
@@ -7383,6 +7384,17 @@ public class LiveServiceImpl implements LiveService {
         if(rechargeToKingdomDto.getAmount() == userProfile.getAvailableCoin()){
             liveLocalJdbcDao.rechargeToKingDom(rechargeToKingdomDto.getTopicId(),rechargeToKingdomDto.getAmount());
             liveLocalJdbcDao.zeroMyCoins(rechargeToKingdomDto.getUid());
+            
+            //记录王国充值记录
+            TopicPriceChangeLog tpcLog = new TopicPriceChangeLog();
+            tpcLog.setCreateTime(new Date());
+            tpcLog.setPrice(rechargeToKingdomDto.getAmount());
+            tpcLog.setTopicId(rechargeToKingdomDto.getTopicId());
+            tpcLog.setType(Specification.TopicPriceChangeType.RECHARGE.index);
+            tpcLog.setUid(rechargeToKingdomDto.getUid());
+            liveMybatisDao.saveTopicPriceChangeLog(tpcLog);
+            
+            
             // 更新完成后判断王国的数值是否达到上市标准.如果达标调用跑马灯接口
             //取出达到上市条件的米汤币数量
            /* String listedPrice = userService.getAppConfigByKey(LISTED_PRICE);

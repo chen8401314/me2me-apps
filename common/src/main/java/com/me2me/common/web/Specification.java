@@ -1517,6 +1517,19 @@ public interface Specification {
             this.index = index;
         }
     }
+    
+    enum TopicPriceChangeType{
+    	RECHARGE("充值", 0),
+    	WITHDRAWALS("提现", 1);
+    	
+    	public final String name;
+        public final int index;
+    	
+        TopicPriceChangeType(String name,int index){
+        	this.name = name;
+            this.index = index;
+        }
+    }
 }
 
     

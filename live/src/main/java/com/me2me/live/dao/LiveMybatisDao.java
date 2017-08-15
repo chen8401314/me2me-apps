@@ -56,6 +56,7 @@ import com.me2me.live.mapper.TopicGivenMapper;
 import com.me2me.live.mapper.TopicListedMapper;
 import com.me2me.live.mapper.TopicMapper;
 import com.me2me.live.mapper.TopicNewsMapper;
+import com.me2me.live.mapper.TopicPriceChangeLogMapper;
 import com.me2me.live.mapper.TopicPriceHisMapper;
 import com.me2me.live.mapper.TopicPriceSubsidyConfigMapper;
 import com.me2me.live.mapper.TopicReadHisMapper;
@@ -115,6 +116,7 @@ import com.me2me.live.model.TopicDroparoundTrail;
 import com.me2me.live.model.TopicExample;
 import com.me2me.live.model.TopicFragmentExample;
 import com.me2me.live.model.TopicFragmentWithBLOBs;
+import com.me2me.live.model.TopicPriceChangeLog;
 import com.me2me.live.model.TopicReadHisExample;
 import com.me2me.live.model.TopicFragmentExample.Criteria;
 import com.me2me.live.model.TopicFragmentTemplate;
@@ -285,6 +287,9 @@ public class LiveMybatisDao {
     
     @Autowired
     private LotteryWinMapper lotteryWinMapper;
+    
+    @Autowired
+    private TopicPriceChangeLogMapper topicPriceChangeLogMapper;
     
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -2051,5 +2056,9 @@ public class LiveMybatisDao {
     
     public int saveLotteryWin(LotteryWin lotteryWin){
     	return lotteryWinMapper.insertSelective(lotteryWin);
+    }
+    
+    public void saveTopicPriceChangeLog(TopicPriceChangeLog log){
+    	topicPriceChangeLogMapper.insertSelective(log);
     }
 }
