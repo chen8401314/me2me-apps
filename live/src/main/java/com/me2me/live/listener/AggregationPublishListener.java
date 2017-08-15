@@ -104,7 +104,7 @@ public class AggregationPublishListener {
 			fromObj.put("cid", topicContent.getId());
 			fromObj.put("title", topic.getTitle());
 			fromObj.put("cover", Constant.QINIU_DOMAIN+"/"+topic.getLiveImage());
-			fromObj.put("url", event.getLiveWebUrl()+event.getTopicId());
+			fromObj.put("url", event.getLiveWebUrl()+event.getTopicId()+"?uid="+event.getUid());
 			obj.put("from", fromObj);
 			
 			Topic subTopic = null;

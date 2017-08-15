@@ -162,7 +162,7 @@ public class AppTagController {
 		}else if(StringUtils.isNotBlank(dto.getTopicCountEnd())){
 			querySql.append(" having kcount<=").append(dto.getTopicCountEnd());
 		}
-		querySql.append(" order by createtime desc");
+		querySql.append(" order by createtime desc,t.id");
 		querySql.append(" limit ").append(start).append(",").append(pageSize);
 		
 		List<Map<String, Object>> list = null;

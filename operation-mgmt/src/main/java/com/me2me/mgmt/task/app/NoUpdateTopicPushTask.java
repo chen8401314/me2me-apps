@@ -7,6 +7,7 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
@@ -33,10 +34,21 @@ public class NoUpdateTopicPushTask {
 	@Autowired
 	private UserService userService;
 	
-//	@Scheduled(cron="0 30 10 * * ?")
+	@Value("${systemMode}")
+	private int mode;
+	
+	@Scheduled(cron="0 30 10 * * ?")
 	public void noUpdateTopicPush(){
 		logger.info("无更新推送提醒任务开始");
 		long s = System.currentTimeMillis();
+		
+		if(mode != 2){
+			logger.info("防止测试环境存在正式用户，故本推送任务不在非正式环境下执行");
+			long e = System.currentTimeMillis();
+			logger.info("无更新推送提醒任务结束，共耗时["+(e-s)/1000+"]秒");
+			return;
+		}
+		
 		try{
 			Date now = new Date();
 			String searchTime = DateUtil.date2string(DateUtil.addDay(now, (0-NO_UPDATE_DAY)), "yyyy-MM-dd HH:mm:ss");
@@ -59,7 +71,6 @@ public class NoUpdateTopicPushTask {
 			if(null != list && list.size() > 0){
 				String key = "topic:noupdate:map";
 				String key2 = "topic:noupdateAndHasFootmark:map";
-				String message = "你的王国『#topicName#』已经很久没有更新了哦";
 				JsonObject jsonObject = null;
 				String zujiSql = null;
 				for(Map<String, Object> t : list){

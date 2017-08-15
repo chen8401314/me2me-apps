@@ -33,13 +33,13 @@ public class KingdomUpdatePushTask {
 	private int mode;
 	
 	public void doTask(){
-		logger.info("7天活动12小时未更新王国推送任务开始...");
+		logger.info("7天未更新王国推送任务开始...");
 		long s = System.currentTimeMillis();
 		
 		if(mode != 2){
 			logger.info("防止测试环境存在正式用户，故本推送任务不在非正式环境下执行");
 			long e = System.currentTimeMillis();
-			logger.info("7天活动推荐异性任务结束，共耗时["+(e-s)/1000+"]秒");
+			logger.info("7天未更新王国推送任务结束，共耗时["+(e-s)/1000+"]秒");
 			return;
 		}
 		
@@ -64,7 +64,7 @@ public class KingdomUpdatePushTask {
 		}
 		
 		long e = System.currentTimeMillis();
-		logger.info("7天活动12小时未更新王国推送任务结束，共耗时["+(e-s)/1000+"]秒");
+		logger.info("7天未更新王国推送任务结束，共耗时["+(e-s)/1000+"]秒");
 	}
 	
 	private void push(List<Long> uids){
