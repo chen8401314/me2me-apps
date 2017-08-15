@@ -82,6 +82,7 @@ public class KingdomPriceTask {
 		weightKeyList.add("ALGORITHM_PUSH_PRICE_LIMIT");
 		weightKeyList.add("ALGORITHM_PUSH_PRICE_INCR_LIMIT");
 		weightKeyList.add("ALGORITHM_PUSH_PRICE_REDUCE_LIMIT");
+		weightKeyList.add("ALGORITHM_UPDATE_UGCCOUNT_WEIGHT");
 	}
 	
 	@Scheduled(cron="0 2 0 * * ?")
@@ -117,6 +118,8 @@ public class KingdomPriceTask {
 		double updateVoteCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_VOTECOUNT_WEIGHT", weightConfigMap, 1);//投票权重
 		double updateTeaseCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_TEASECOUNT_WEIGHT", weightConfigMap, 10);//更新逗一逗权重
 		double updateFrequencyWeight = this.getDoubleConfig("ALGORITHM_UPDATE_FREQUENCY_WEIGHT", weightConfigMap, 1);//频度权重
+		double updateUgcCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_UGCCOUNT_WEIGHT", weightConfigMap, 0);//更新UGC权重
+		double updateLotteryCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_LOTTERYCOUNT_WEIGHT", weightConfigMap, 0);//更新抽奖权重
 		
 		double approveWeight = this.getDoubleConfig("ALGORITHM_APPROVE_WEIGHT", weightConfigMap, 1);//认可度权重
 		double reviewTextCountInAppWeight = this.getDoubleConfig("ALGORITHM_REVIEW_TEXTCOUNT_INAPP_WEIGHT", weightConfigMap, 0);//app内评论条数权重
@@ -492,7 +495,9 @@ public class KingdomPriceTask {
 						+ kc.getUpdateVedioCount()*updateVedioCountWeight + kc.getUpdateVedioLenght()*updateVedioLenghtWeight
 						+ kc.getUpdateAudioCount()*updateAudioCountWeight + kc.getUpdateAudioLenght()*updateAudioLenghtWeight
 						+ kc.getUpdateImageCount()*updateImageCountWeight + kc.getUpdateVoteCount()*updateVoteCountWeight
-						+ kc.getUpdateTeaseCount()*updateTeaseCountWeight)*kc.getUpdateFrequency()*updateFrequencyWeight;
+						+ kc.getUpdateTeaseCount()*updateTeaseCountWeight + kc.getUpdateUgcCount()*updateUgcCountWeight
+						+ kc.getUpdateLotteryCount()*updateLotteryCountWeight)
+						* kc.getUpdateFrequency()*updateFrequencyWeight;
 				if(kc.isVlv()){
 					_x = _x * (1 + vWeight);
 				}
@@ -751,6 +756,10 @@ public class KingdomPriceTask {
 			kc.setReviewTextWordCountInApp(kc.getReviewTextWordCountInApp() + 10);
 		}else if(type == 51 && contentType == 20){//评论逗一逗
 			kc.setReviewTeaseCount(kc.getReviewTeaseCount() + 1);
+		}else if((type == 0 || type == 52) && contentType == 23){//UGC
+			kc.setUpdateUgcCount(kc.getUpdateUgcCount() + 1);
+		}else if((type == 0 || type == 52) && contentType == 22){//抽奖
+			kc.setUpdateLotteryCount(kc.getUpdateLotteryCount() + 1);
 		}
 	}
 	
@@ -801,6 +810,8 @@ public class KingdomPriceTask {
 		private int updateVoteCount = 0;//投票
 		private int updateTeaseCount = 0;//更新逗一逗
 		private int updateDayCount = 0;//更新天数
+		private int updateUgcCount = 0;//更新UGC
+		private int updateLotteryCount = 0;//更新抽奖
 		private double updateFrequency = 0;//频度
 		
 		private double approve = 0;//认可度权重
@@ -849,6 +860,8 @@ public class KingdomPriceTask {
 		double updateVoteCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_VOTECOUNT_WEIGHT", weightConfigMap, 1);//投票权重
 		double updateTeaseCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_TEASECOUNT_WEIGHT", weightConfigMap, 10);//更新逗一逗权重
 		double updateFrequencyWeight = this.getDoubleConfig("ALGORITHM_UPDATE_FREQUENCY_WEIGHT", weightConfigMap, 1);//频度权重
+		double updateUgcCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_UGCCOUNT_WEIGHT", weightConfigMap, 0);//更新ugc
+		double updateLotteryCountWeight = this.getDoubleConfig("ALGORITHM_UPDATE_LOTTERYCOUNT_WEIGHT", weightConfigMap, 0);//更新抽奖权重
 		
 		double reviewTextCountInAppWeight = this.getDoubleConfig("ALGORITHM_REVIEW_TEXTCOUNT_INAPP_WEIGHT", weightConfigMap, 0);//app内评论条数权重
 		double reviewTextCountOutAppWeight = this.getDoubleConfig("ALGORITHM_REVIEW_TEXTCOUNT_OUTAPP_WEIGHT", weightConfigMap, 0);//app外评论条数权重
@@ -1131,7 +1144,9 @@ public class KingdomPriceTask {
 						+ kc.getUpdateVedioCount()*updateVedioCountWeight + kc.getUpdateVedioLenght()*updateVedioLenghtWeight
 						+ kc.getUpdateAudioCount()*updateAudioCountWeight + kc.getUpdateAudioLenght()*updateAudioLenghtWeight
 						+ kc.getUpdateImageCount()*updateImageCountWeight + kc.getUpdateVoteCount()*updateVoteCountWeight
-						+ kc.getUpdateTeaseCount()*updateTeaseCountWeight)*kc.getUpdateFrequency()*updateFrequencyWeight;
+						+ kc.getUpdateTeaseCount()*updateTeaseCountWeight + kc.getUpdateUgcCount()*updateUgcCountWeight
+						+ kc.getUpdateLotteryCount()*updateLotteryCountWeight)
+						* kc.getUpdateFrequency()*updateFrequencyWeight;
 				if(kc.isVlv()){
 					x = x * (1 + vWeight);
 				}
