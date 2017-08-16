@@ -2053,6 +2053,13 @@ public class LiveMybatisDao {
         example.setOrderByClause("id desc limit 20");
         return lotteryInfoMapper.selectByExample(example);
     }
+    public int delLotteryProhibit(long lotteryId, long uid) {
+    	LotteryProhibitExample example = new LotteryProhibitExample();
+    	LotteryProhibitExample.Criteria criteria = example.createCriteria();
+    	criteria.andLotteryIdEqualTo(lotteryId);
+    	criteria.andUidEqualTo(uid);
+        return lotteryProhibitMapper.deleteByExample(example);
+    }
     
     public int saveLotteryWin(LotteryWin lotteryWin){
     	return lotteryWinMapper.insertSelective(lotteryWin);
