@@ -10,12 +10,10 @@ import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.elasticsearch.action.index.IndexAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -30,7 +28,7 @@ import org.springframework.web.context.support.WebApplicationContextUtils;
 @Controller
 @RequestMapping("/globalTask")
 public class GlobalTaskMgr {
-	private Logger logger = LoggerFactory.getLogger(IndexAction.class);
+	private Logger logger = LoggerFactory.getLogger(GlobalTaskMgr.class);
 	private ExecutorService  threadPool =Executors.newSingleThreadExecutor();
 	
 	@RequestMapping(value = { "/index" })
