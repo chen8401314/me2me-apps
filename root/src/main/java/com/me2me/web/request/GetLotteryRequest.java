@@ -10,4 +10,8 @@ public class GetLotteryRequest extends Request {
 	@Setter
     @Getter
 	private long lotteryId;
+	
+	@Setter
+    @Getter
+	private int outApp;
 }

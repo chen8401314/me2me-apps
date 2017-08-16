@@ -8667,11 +8667,38 @@ public class LiveServiceImpl implements LiveService {
         return Response.success();
     }
     @Override
-    public Response getLottery(long lotteryId,long uid){
+    public Response getLottery(long lotteryId,long uid,int outApp){
+    	
     	LotteryInfo lotteryInfo = liveMybatisDao.getLotteryInfoById(lotteryId);
     	if(lotteryInfo==null){
     		return Response.failure(500, "找不到该抽奖信息！");
     	}
+    	//app外
+    	if(outApp==1){
+		// 记录阅读历史
+		TopicReadHis trh = new TopicReadHis();
+		trh.setUid(uid);
+		trh.setTopicId(lotteryInfo.getTopicId());
+		trh.setReadCount(1);
+		trh.setFromUid(uid);
+		trh.setInApp(0);
+		trh.setCreateTime(new Date());
+		Content content = contentService.getContentByTopicId(lotteryInfo.getTopicId());
+		content.setReadCount(content.getReadCount() + 1);
+		SystemConfig systemConfig = userService.getSystemConfig();
+		int start = systemConfig.getReadCountStart();
+		int end = systemConfig.getReadCountEnd();
+		int readCountDummy = content.getReadCountDummy();
+		Random random = new Random();
+		// 取1-6的随机数每次添加
+		int value = random.nextInt(end) + start;
+		int readDummy = readCountDummy + value;
+		content.setReadCountDummy(readDummy);
+		contentService.updateContentById(content);
+		trh.setReadCountDummy(value);
+		liveMybatisDao.saveTopicReadHis(trh);
+    	}   
+            
     	GetLotteryDto dto = new GetLotteryDto();
     	dto.setUid(lotteryInfo.getUid());
     	UserProfile userProfile  =userService.getUserProfileByUid(lotteryInfo.getUid());
