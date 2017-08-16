@@ -7704,7 +7704,7 @@ public class LiveServiceImpl implements LiveService {
         JSONObject extra = new JSONObject();
         extra.put("type", "kingdomOTD");
         extra.put("only", UUID.randomUUID().toString()+"-"+new Random().nextInt());
-        extra.put("price", topic.getPrice());
+        extra.put("price", topicListed.getPrice());
         extra.put("uid", newUid);
         extra.put("avatar", Constant.QINIU_DOMAIN + "/" +newUser.getAvatar());
         extra.put("name", newUser.getNickName());
