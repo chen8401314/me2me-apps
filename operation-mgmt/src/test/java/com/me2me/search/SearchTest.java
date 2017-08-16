@@ -37,14 +37,14 @@ public class SearchTest extends AbstractJUnit4SpringContextTests {
 			e.printStackTrace();
 		}
 	}
-@Test
-		public void testRecommendTag() {
-			int uid = 298;
-			try {
-				Response resp = searchService.recommendTags("莎士比亚",1);
-				System.out.println(JSON.toJSONString(resp, true));
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
+	@Test
+	public void testRecommendTag() {
+		int uid = 298;
+		try {
+			Response resp = searchService.recommendTags("莎士比亚",1);
+			System.out.println(JSON.toJSONString(resp, true));
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+	}
 }

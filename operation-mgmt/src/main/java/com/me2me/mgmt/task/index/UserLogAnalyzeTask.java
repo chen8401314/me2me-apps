@@ -1,5 +1,6 @@
 package com.me2me.mgmt.task.index;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +46,11 @@ public class UserLogAnalyzeTask{
 		
 		// 拿用户访问日志
 		int pageSize=1000;
-		String day = DateUtil.date2string(new Date(), "yyyy-MM-dd");
+		Calendar cd = Calendar.getInstance();
+		cd.setTime(new Date());
+		cd.add(Calendar.DAY_OF_MONTH,-1);
+		Date yesterday= cd.getTime();
+		String day = DateUtil.date2string(yesterday, "yyyy-MM-dd");
 		int skip=0;
 		// load settings;
 		Map<String,Integer> scoreMap = new HashMap<String, Integer>(){{
@@ -131,7 +136,7 @@ public class UserLogAnalyzeTask{
     
 	public void updateUserTagLike(long uid, String tag, int score) {
 		if(existsUserTagLike(uid,tag)){
-			contentService.update("update user_tag_like set score=score*0.9+? where uid=? and tag=?",score,uid,tag);
+			contentService.update("update user_tag_like set score=score*0.9+? where uid=? and tag=? and last_update_time=now()",score,uid,tag);
 		}else{
 			contentService.update("insert into user_tag_like(uid,tag,score,last_update_time) values(?,?,?,now())",uid,tag,score);
 		}

@@ -73,6 +73,7 @@ String sub = request.getParameter("s");
                 <ul class="sub">
                     <li <%if("6_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/system/log/query">系统日志查询</a></li>
                     <li <%if("6_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/system/user/query">系统用户查询</a></li>
+                    <li <%if("6_3".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/globalTask/index">全局任务</a></li>
                 </ul>
             </li>
             <li class="sub-menu">

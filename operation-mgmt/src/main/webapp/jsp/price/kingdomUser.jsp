@@ -31,8 +31,8 @@
 
 		<!--sidebar start-->
 		<jsp:include page="../common/leftmenu.jsp" flush="false">
-			<jsp:param name="t" value="12" />
-			<jsp:param name="s" value="12_1" />
+			<jsp:param name="t" value="13" />
+			<jsp:param name="s" value="13_1" />
 		</jsp:include>
 		<!--sidebar end-->
 
@@ -44,7 +44,7 @@
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								王国用户列表|<button onclick="history.back(-1)" class="btn btn-primary">返回</button>
+								王国用户列表
 							</header>
 							<div class="panel-body">
 								<div class="adv-table">
