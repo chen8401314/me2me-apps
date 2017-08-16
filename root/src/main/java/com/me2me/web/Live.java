@@ -1126,7 +1126,7 @@ public class Live extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/getLottery",method = RequestMethod.POST)
     public Response getLottery(GetLotteryRequest request){
-    	return liveService.getLottery(request.getLotteryId(),request.getUid());
+    	return liveService.getLottery(request.getLotteryId(),request.getUid(),request.getOutApp());
     }
     /**
      * 抽奖参与用户查询接口

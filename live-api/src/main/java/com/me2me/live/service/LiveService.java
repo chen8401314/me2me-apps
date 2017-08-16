@@ -675,7 +675,7 @@ public interface LiveService {
 	 
 	 Response editLottery(LotteryInfo lotteryInfo);
 	 
-	 Response getLottery(long lotteryId,long uid);
+	 Response getLottery(long lotteryId,long uid,int outApp);
 	 
 	 Response getJoinLotteryUsers(long lotteryId,long sinceId);
 	 
