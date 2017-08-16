@@ -8970,16 +8970,17 @@ public class LiveServiceImpl implements LiveService {
     		return Response.failure(500, "找不到该抽奖信息！");
     	}
     	if(lotteryInfo.getUid().longValue()!=uid){
-    		return Response.failure(500, "您不是抽奖发起人不能屏蔽用户！");
+    		return Response.failure(500, "您不是抽奖发起人不能操作！");
     	}
     	int countLotteryProhibit = liveMybatisDao.countLotteryProhibit(lotteryId, joinUid);
-    	if(countLotteryProhibit>0){
-    		return Response.failure(500, "该用户已屏蔽！");
-    	}
-    	LotteryProhibit lotteryProhibit = new LotteryProhibit();
+		LotteryProhibit lotteryProhibit = new LotteryProhibit();
     	lotteryProhibit.setLotteryId(lotteryId);
     	lotteryProhibit.setUid(joinUid);
-    	liveMybatisDao.saveLotteryProhibit(lotteryProhibit);
+    	if(countLotteryProhibit>0){
+    		liveMybatisDao.delLotteryProhibit(lotteryId, joinUid);
+    	}else{
+        	liveMybatisDao.saveLotteryProhibit(lotteryProhibit);
+    	}
         return Response.success();
     }
     @Override
