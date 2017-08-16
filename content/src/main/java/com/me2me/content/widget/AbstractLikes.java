@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.LikeDto;
 import com.me2me.content.model.Content;
 import com.me2me.content.model.ContentLikesDetails;
@@ -35,6 +36,9 @@ public class AbstractLikes {
     
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private ContentMybatisDao contentMybatisDao;
 
 
     public Response likes(LikeDto likeDto) {
@@ -87,7 +91,7 @@ public class AbstractLikes {
                     } else {
                         content.setLikeCount(content.getLikeCount() - 1);
                     }
-                    contentService.updateContentById(content);
+                    contentMybatisDao.updateContentById(content);
 
                     contentService.deleteContentLikesDetails(contentLikesDetails);
 

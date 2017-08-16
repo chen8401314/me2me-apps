@@ -3,16 +3,17 @@ package com.me2me.content.widget;
 import com.me2me.cache.service.CacheService;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
+import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dto.ReviewDelDTO;
 import com.me2me.content.dto.ReviewDto;
 import com.me2me.content.event.ReviewEvent;
 import com.me2me.content.model.Content;
 import com.me2me.content.service.ContentService;
 import com.me2me.core.event.ApplicationEventBus;
-
 import com.me2me.user.dto.ModifyUserCoinDto;
 import com.me2me.user.rule.Rules;
 import com.me2me.user.service.UserService;
+
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,9 @@ public class ContentReview implements Review{
 
     @Autowired
     private UserService userService;
+    
+    @Autowired
+    private ContentMybatisDao contentMybatisDao;
 
     @Override
     public Response createReview(ReviewDto reviewDto) {
@@ -49,7 +53,7 @@ public class ContentReview implements Review{
         //更新评论数量
         log.info("update reviewCount");
         content.setReviewCount(content.getReviewCount() +1);
-        contentService.updateContentById(content);
+        contentMybatisDao.updateContentById(content);
         log.info("remind success");
         //自己的日记被评论提醒
 //        ReviewEvent event = new ReviewEvent();

@@ -1461,4 +1461,8 @@ public class LiveLocalJdbcDao {
 		
 	}
 
+	public void updateContentReadCount(long cid, int addReadCount, int addReadCountDummy){
+		String sql = "update content set read_count=read_count+"+addReadCount+",read_count_dummy=read_count_dummy+"+addReadCountDummy+" where id="+cid;
+		jdbcTemplate.execute(sql);
+	}
 }

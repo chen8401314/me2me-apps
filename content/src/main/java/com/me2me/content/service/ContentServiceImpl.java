@@ -44,7 +44,6 @@ import com.me2me.common.Constant;
 import com.me2me.common.enums.USER_OPRATE_TYPE;
 import com.me2me.common.page.PageBean;
 import com.me2me.common.utils.CollectionUtils;
-import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -1368,17 +1367,17 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
 
-            SystemConfig systemConfig =userService.getSystemConfig();
-            int start = systemConfig.getReadCountStart();
-            int end = systemConfig.getReadCountEnd();
-            int readCountDummy = content.getReadCountDummy();
-            Random random = new Random();
-            //取1-6的随机数每次添加
-            int value = random.nextInt(end)+start;
-            int readDummy = readCountDummy+value;
-            content.setReadCountDummy(readDummy);
-            contentMybatisDao.updateContentById(content);
-            contentElement.setReadCount(readDummy);
+//            SystemConfig systemConfig =userService.getSystemConfig();
+//            int start = systemConfig.getReadCountStart();
+//            int end = systemConfig.getReadCountEnd();
+//            int readCountDummy = content.getReadCountDummy();
+//            Random random = new Random();
+//            //取1-6的随机数每次添加
+//            int value = random.nextInt(end)+start;
+//            int readDummy = readCountDummy+value;
+//            content.setReadCountDummy(readDummy);
+//            contentMybatisDao.updateContentById(content);
+            contentElement.setReadCount(content.getReadCountDummy());
 
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
@@ -1413,7 +1412,8 @@ public class ContentServiceImpl implements ContentService {
                     }
                 }
 
-                contentElement.setLiveStatus(contentMybatisDao.getTopicStatus(content.getForwardCid()));
+//                contentElement.setLiveStatus(contentMybatisDao.getTopicStatus(content.getForwardCid()));
+                contentElement.setLiveStatus(0);
                 int reviewCount = contentMybatisDao.countFragment(content.getForwardCid(),content.getUid());
                 contentElement.setReviewCount(reviewCount);
                 contentElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
@@ -3610,11 +3610,6 @@ public class ContentServiceImpl implements ContentService {
         }
         log.info("reviewList end ...");
         return Response.success(contentReviewDto);
-    }
-
-    @Override
-    public void updateContentById(Content content) {
-        contentMybatisDao.updateContentById(content);
     }
 
     public void addContentLikeByCid(long cid, long addNum){
