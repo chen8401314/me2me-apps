@@ -20,12 +20,16 @@ public class UserInfoDto2 implements BaseEntity{
     private int contentCount;
 
     private int liveCount;
+    
+    private int joinLiveCount;
 
     private User user = new User();
 
     private List<ContentElement> contentElementList = Lists.newArrayList();
 
     private List<ContentElement> liveElementList = Lists.newArrayList();
+    
+    private List<ContentElement> joinLiveElementList = Lists.newArrayList();
 
     public static ContentElement createElement(){
         return new ContentElement();

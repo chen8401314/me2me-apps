@@ -552,6 +552,10 @@ public class ContentMybatisDao {
     public List<Content> loadMyJoinKingdom(MyPublishDto dto){
     	return contentMapper.loadMyJoinKingdom(dto);
     }
+    
+    public int countMyJoinKingdom(MyPublishDto dto){
+    	return contentMapper.countMyJoinKingdom(dto);
+    }
 
     public int countMyPublishByType(MyPublishDto myPublishDto) {
         return contentMapper.countMyPublishByType(myPublishDto);

@@ -1703,8 +1703,7 @@ public class ContentServiceImpl implements ContentService {
         log.info("get content review success");
 
         //点赞top30
-//        List<ContentLikesDetails> contentLikesDetailsList = contentMybatisDao.getContentLikesDetails(id);
-        List<ContentLikesDetails> contentLikesDetailsList = new ArrayList<ContentLikesDetails>();
+        List<ContentLikesDetails> contentLikesDetailsList = contentMybatisDao.getContentLikesDetails(id);
 
         List<Long> uidList = new ArrayList<Long>();
         for(ContentReview cr : reviewList){
@@ -2019,8 +2018,8 @@ public class ContentServiceImpl implements ContentService {
         }
         dto.setFlag(vFlag);
         //非直播文章
-        List<Content> contents = contentMybatisDao.myPublishByType(dto);
-        userInfoDto.setContentCount(contentMybatisDao.countMyPublishByType(dto));
+//        List<Content> contents = contentMybatisDao.myPublishByType(dto);
+//        userInfoDto.setContentCount(contentMybatisDao.countMyPublishByType(dto));
         log.info("get user content success ");
         userInfoDto.getUser().setV_lv(userProfile.getvLv());
         userInfoDto.getUser().setNickName(userProfile.getNickName());
@@ -2044,7 +2043,7 @@ public class ContentServiceImpl implements ContentService {
         }else{
         	userInfoDto.getUser().setIsBlacklist(0);
         }
-        buildUserData(sourceUid, contents,Specification.ArticleType.ORIGIN.index,userInfoDto);
+//        buildUserData(sourceUid, contents,Specification.ArticleType.ORIGIN.index,userInfoDto);
         //直播
         dto.setType(Specification.ArticleType.LIVE.index);
         Calendar calendar = Calendar.getInstance();
@@ -2052,6 +2051,10 @@ public class ContentServiceImpl implements ContentService {
         List<Content> lives = contentMybatisDao.myPublishByType(dto);
         buildUserData(sourceUid, lives,Specification.ArticleType.LIVE.index,userInfoDto);
         userInfoDto.setLiveCount(contentMybatisDao.countMyPublishByType(dto));
+        //我加入的
+        List<Content> joinLives = contentMybatisDao.loadMyJoinKingdom(dto);
+        buildUserData(sourceUid, joinLives,Specification.ArticleType.LIVE.index,userInfoDto);
+        userInfoDto.setJoinLiveCount(contentMybatisDao.countMyJoinKingdom(dto));
         log.info("getUserData end ...");
         return Response.success(userInfoDto);
     }
@@ -2181,9 +2184,11 @@ public class ContentServiceImpl implements ContentService {
                 reviewElement.setReview(contentReview.getReview());
                 contentElement.getReviews().add(reviewElement);
             }
-            if(type == Specification.ArticleType.LIVE.index){
+            if(type == Specification.ArticleType.LIVE.index){//我自己的王国
                 userInfoDto.getLiveElementList().add(contentElement);
-            }else{
+            } else if(type == 4){//我加入的王国
+            	userInfoDto.getJoinLiveElementList().add(contentElement);
+            } else{
                 userInfoDto.getContentElementList().add(contentElement);
             }
         }
