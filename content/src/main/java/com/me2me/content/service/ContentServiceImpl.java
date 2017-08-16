@@ -2052,8 +2052,6 @@ public class ContentServiceImpl implements ContentService {
         buildUserData(sourceUid, lives,Specification.ArticleType.LIVE.index,userInfoDto);
         userInfoDto.setLiveCount(contentMybatisDao.countMyPublishByType(dto));
         //我加入的
-        List<Content> joinLives = contentMybatisDao.loadMyJoinKingdom(dto);
-        buildUserData(sourceUid, joinLives,Specification.ArticleType.LIVE.index,userInfoDto);
         userInfoDto.setJoinLiveCount(contentMybatisDao.countMyJoinKingdom(dto));
         log.info("getUserData end ...");
         return Response.success(userInfoDto);
@@ -2186,8 +2184,6 @@ public class ContentServiceImpl implements ContentService {
             }
             if(type == Specification.ArticleType.LIVE.index){//我自己的王国
                 userInfoDto.getLiveElementList().add(contentElement);
-            } else if(type == 4){//我加入的王国
-            	userInfoDto.getJoinLiveElementList().add(contentElement);
             } else{
                 userInfoDto.getContentElementList().add(contentElement);
             }
