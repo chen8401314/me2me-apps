@@ -646,7 +646,7 @@ public interface LiveService {
      
      Response searchRobotListPage(String nickName,int type,int page, int pageSize);
      
-     Response searchQuotationListPage(String quotation,int page, int pageSize);
+     Response searchQuotationListPage(String quotation,int type,int page, int pageSize);
      
  	 int saveQuotationInfo(QuotationInfo quotationInfo);
  	 

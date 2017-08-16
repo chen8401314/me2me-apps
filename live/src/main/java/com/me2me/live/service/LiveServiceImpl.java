@@ -8568,8 +8568,8 @@ public class LiveServiceImpl implements LiveService {
         return Response.success(dto);
     }
     @Override
-    public Response searchQuotationListPage(String quotation,int page, int pageSize){
-     	int totalRecord = liveLocalJdbcDao.countQuotationListByQuotation(quotation);
+    public Response searchQuotationListPage(String quotation,int type,int page, int pageSize){
+     	int totalRecord = liveLocalJdbcDao.countQuotationListByQuotation(quotation,type);
     	int totalPage = (totalRecord + pageSize - 1) / pageSize;
     	if(page>totalPage){
     		page=totalPage;
@@ -8578,7 +8578,7 @@ public class LiveServiceImpl implements LiveService {
     		page=1;
     	}
     	int start = (page-1)*pageSize;
-    	List<Map<String, Object>> list = liveLocalJdbcDao.getQuotationListByQuotation(quotation,start, pageSize);
+    	List<Map<String, Object>> list = liveLocalJdbcDao.getQuotationListByQuotation(quotation,type,start, pageSize);
     	SearchQuotationListDto dto = new SearchQuotationListDto();
         dto.setTotalRecord(totalRecord);
         dto.setTotalPage(totalPage);

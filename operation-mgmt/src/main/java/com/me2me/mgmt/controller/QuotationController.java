@@ -146,9 +146,10 @@ public class QuotationController {
 	@RequestMapping(value = "/ajaxLoadQuotationList")
 	public DatatablePage ajaxLoadQuotationList(HttpServletRequest request,DatatablePage page) throws Exception {
 		String quotation = request.getParameter("searchQuotation");
+		int type = Integer.parseInt(request.getParameter("searchType"));
 		SearchQuotationListDto dto = new SearchQuotationListDto();
 		PageBean pb = page.toPageBean();
-		Response resp = liveService.searchQuotationListPage(quotation, pb.getCurrentPage(),pb.getPageSize());
+		Response resp = liveService.searchQuotationListPage(quotation,type, pb.getCurrentPage(),pb.getPageSize());
 		if(null != resp && resp.getCode() == 200 && null != resp.getData()){
 			dto = (SearchQuotationListDto)resp.getData();
 		}

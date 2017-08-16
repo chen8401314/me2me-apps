@@ -50,6 +50,13 @@
 									<div class="form-inline" role="form">
 										语录：
 										<input type="text" id="searchQuotation" name="searchQuotation" value="" class="form-control">&nbsp;
+																<label for="exampleInputEmail1">类型</label>
+						<select id="searchType" name="searchType" class="form-control" >
+						<option value="-1" selected>全部</option>
+						 <option value="0">语料</option>
+						 <option value="1">纯水</option>
+						 <option value="2">日签</option>
+						</select>
 										<a class="btn btn-primary" href="javascript:search();">搜索</a>
 									</div>
 								</div>
@@ -244,6 +251,7 @@
             "type": "POST",
             "data": function (d) {
                 d.searchQuotation = $("#searchQuotation").val();
+                d.searchType = $("#searchType").val();
             }
         },
 	    processing:true,

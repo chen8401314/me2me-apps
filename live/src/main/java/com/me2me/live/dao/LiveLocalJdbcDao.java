@@ -1365,11 +1365,14 @@ public class LiveLocalJdbcDao {
     	String sql = sb.toString();
 		return jdbcTemplate.queryForList(sql);
     }
-    public int countQuotationListByQuotation(String quotation){
+    public int countQuotationListByQuotation(String quotation,int type){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select count(*) FROM quotation_info WHERE 1=1");
     	if(!StringUtils.isEmpty(quotation)){
     		sb.append(" and quotation like '%").append(quotation).append("%'");
+    	}
+    	if(type!=-1){
+    		sb.append(" and type=").append(type);
     	}
     	String sql = sb.toString();
     	Integer count=0;
@@ -1380,11 +1383,14 @@ public class LiveLocalJdbcDao {
 		}
     	return count;
     }
-    public List<Map<String,Object>> getQuotationListByQuotation(String quotation,int start,int pageSize){
+    public List<Map<String,Object>> getQuotationListByQuotation(String quotation,int type,int start,int pageSize){
     	StringBuilder sb = new StringBuilder();
     	sb.append("select * FROM quotation_info WHERE 1=1");
     	if(!StringUtils.isEmpty(quotation)){
     		sb.append(" and quotation like '%").append(quotation).append("%'");
+    	}
+    	if(type!=-1){
+    		sb.append(" and type=").append(type);
     	}
     	sb.append(" order by id desc limit ").append(start).append(",").append(pageSize);
     	String sql = sb.toString();
