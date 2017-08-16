@@ -19,4 +19,8 @@ public class JoinLotteryRequest extends Request{
     @Setter
     @Getter
     private String content;
+    
+    @Setter
+    @Getter
+    private int source;
 }

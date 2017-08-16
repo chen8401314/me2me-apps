@@ -8912,7 +8912,7 @@ public class LiveServiceImpl implements LiveService {
     }
 
     @Override
-    public Response joinLottery(long lotteryId,String content,long uid){
+    public Response joinLottery(long lotteryId,String content,long uid,int source){
     	LotteryInfo lotteryInfo = liveMybatisDao.getLotteryInfoById(lotteryId);
     	if(lotteryInfo==null){
     		return Response.failure(500, "找不到该抽奖信息！");
@@ -8920,11 +8920,30 @@ public class LiveServiceImpl implements LiveService {
     	if(lotteryInfo.getUid().longValue()==uid){
     		return Response.failure(500, "抽奖发起人不能参与抽奖！");
     	}
+    	Topic topic  = liveMybatisDao.getTopicById(lotteryInfo.getTopicId());
+    	if(topic==null){
+    		return Response.failure(500, "抽奖王国查找不到");
+    	}
         LotteryContent lotteryContent = new LotteryContent();
         lotteryContent.setLotteryId(lotteryId);
         lotteryContent.setUid(uid);
         lotteryContent.setContent(content);
     	liveMybatisDao.saveLotteryContent(lotteryContent);
+    	
+    	int internalStatus =  getInternalStatus( topic, uid);
+		SpeakDto speakDto = new SpeakDto();
+	    if(internalStatus==0){
+	    	speakDto.setType(1);
+	    }else{
+	    	speakDto.setType(0);
+	    }
+		speakDto.setContentType(0);
+		speakDto.setUid(uid);
+		speakDto.setTopicId(lotteryInfo.getTopicId());
+		speakDto.setFragment(content);
+		speakDto.setSource(source);
+		speak(speakDto);
+    	
         return Response.success();
     }
     

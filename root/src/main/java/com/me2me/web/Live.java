@@ -1147,7 +1147,7 @@ public class Live extends BaseController {
     @ResponseBody
     @RequestMapping(value = "/joinLottery",method = RequestMethod.POST)
     public Response joinLottery(JoinLotteryRequest request){
-    	return liveService.joinLottery(request.getLotteryId(), request.getContent(),request.getUid());
+    	return liveService.joinLottery(request.getLotteryId(), request.getContent(),request.getUid(),request.getSource());
     }
     
     /**

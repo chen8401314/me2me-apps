@@ -679,7 +679,7 @@ public interface LiveService {
 	 
 	 Response getJoinLotteryUsers(long lotteryId,long sinceId);
 	 
-	 Response joinLottery(long lotteryId,String content,long uid);
+	 Response joinLottery(long lotteryId,String content,long uid,int source);
 	 
 	 Response delLotteryContent(long contentId,long uid);
 	 
