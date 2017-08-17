@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -40,10 +41,22 @@ public class UserInitJdbcDao extends BaseJdbcDao {
     }
 
     public List<Map<String, Object>> getRobots(int limit) {
-        String sql = "select * from user where user_name BETWEEN '18900000200' and '18900000384' order by RAND() limit " + limit;
-        return super.query(sql);
+    	String sql = "select uid from user where user_name BETWEEN '18900000200' and '18900000384'";
+    	List<Map<String, Object>> uidList = super.query(sql);
+    	List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();
+    	if(null != uidList && uidList.size() > 0){
+    		Random random = new Random();
+    		for(int i=0;i<limit;i++){
+    			if(uidList.size() < 1){
+    				break;
+    			}
+    			int idx = random.nextInt(uidList.size());
+    			result.add(uidList.get(idx));
+    			uidList.remove(idx);
+    		}
+    	}
+    	return result;
     }
-
 
     public List<Map<String, Object>> getUserNoticeCounter(String value) {
         String sql = "SELECT to_uid as uid,count(to_uid) as counter from user_notice where push_status = 0 and notice_type in (" + value + ") group by to_uid";

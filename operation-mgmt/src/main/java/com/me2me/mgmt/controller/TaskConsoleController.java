@@ -207,10 +207,13 @@ public class TaskConsoleController {
 		String title = nickName + "的生活记录";
 		
 		String topicCoverImage = null;
-		String topicCoverSql = "select pic, RAND() rd from topic_preset_pic order by rd desc limit 1";
+		
+		
+		String topicCoverSql = "select pic rd from topic_preset_pic";
 		List<Map<String, Object>> topicCoverList = localJdbcDao.queryEvery(topicCoverSql);
 		if(null != topicCoverList && topicCoverList.size() > 0){
-			Map<String, Object> topicCover = topicCoverList.get(0);
+			int idx = new Random().nextInt(topicCoverList.size());
+			Map<String, Object> topicCover = topicCoverList.get(idx);
 			topicCoverImage = (String)topicCover.get("pic");
 		}
 		if(StringUtils.isEmpty(topicCoverImage)){

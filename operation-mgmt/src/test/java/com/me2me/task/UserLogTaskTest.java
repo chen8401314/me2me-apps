@@ -18,6 +18,6 @@ public class UserLogTaskTest {
 	
 	@Test
 	public void testAnalyze(){
-		task.countUserTagLikeDay();
+		task.userIndexJob();
 	}
 }

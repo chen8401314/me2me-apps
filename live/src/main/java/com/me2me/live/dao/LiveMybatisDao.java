@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -1871,12 +1872,23 @@ public class LiveMybatisDao {
 	public List<RobotInfo> getRobotInfoRandom(List<Long> ids){
 		RobotInfoExample example = new RobotInfoExample();
 		RobotInfoExample.Criteria criteria = example.createCriteria();
-		criteria.andTypeEqualTo(1);
 		if(ids.size()>0){
-		criteria.andUidNotIn(ids);
+			criteria.andUidNotIn(ids);
 		}
-		example.setOrderByClause("  RAND() LIMIT 2 ");
-		return robotInfoMapper.selectByExample(example);
+		List<RobotInfo> list = robotInfoMapper.selectByExample(example);
+		List<RobotInfo> result = new ArrayList<RobotInfo>();
+		if(null != list && list.size() > 0){
+			Random random = new Random();
+			for(int i=0;i<2;i++){
+				if(list.size() < 1){
+					break;
+				}
+				int idx = random.nextInt(list.size());
+				result.add(list.get(idx));
+				list.remove(idx);
+			}
+		}
+		return result;
 	}
 	/**
 	 * 获取随机两条不重复的语录
@@ -1887,12 +1899,24 @@ public class LiveMybatisDao {
 	public List<QuotationInfo> getQuotationInfoRandom(List<Long> ids){
 		QuotationInfoExample example = new QuotationInfoExample();
 		QuotationInfoExample.Criteria criteria = example.createCriteria();
-		criteria.andTypeEqualTo(2);
+		criteria.andTypeEqualTo(0);
 		if(ids.size()>0){
-		criteria.andIdNotIn(ids);
+			criteria.andIdNotIn(ids);
 		}
-		example.setOrderByClause("  RAND() LIMIT 2 ");
-		return quotationInfoMapper.selectByExample(example);
+		List<QuotationInfo> list = quotationInfoMapper.selectByExample(example);
+		List<QuotationInfo> result = new ArrayList<QuotationInfo>();
+		if(null != list && list.size() > 0){
+			Random random = new Random();
+			for(int i=0;i<2;i++){
+				if(list.size() < 1){
+					break;
+				}
+				int idx = random.nextInt(list.size());
+				result.add(list.get(idx));
+				list.remove(idx);
+			}
+		}
+		return result;
 	}
 	
 	public TopicGiven getGivenKingomdById(long givenKingdomId) {

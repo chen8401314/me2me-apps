@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -89,11 +90,19 @@ public class LiveForUserJdbcDao {
 	}
 
 	public List<String> getRandomKingdomCover(int count) {
-		String sql = "select pic, RAND() rd from topic_preset_pic order by rd desc limit ?";
-		List<Map<String,Object>> dataList = jdbcTemplate.queryForList(sql,count);
+		String sql = "select pic from topic_preset_pic";
+		List<Map<String,Object>> dataList = jdbcTemplate.queryForList(sql);
 		List<String> retList = new ArrayList<>();
-		for(Map<String,Object> data:dataList){
-			retList.add(data.get("pic").toString());
+		if(null != dataList && dataList.size() > 0){
+			Random random = new Random();
+			for(int i=0;i<count;i++){
+				if(dataList.size() < 1){
+					break;
+				}
+				int idx = random.nextInt(dataList.size());
+				retList.add(dataList.get(idx).get("pic").toString());
+				dataList.remove(idx);
+			}
 		}
 		return retList;
 	}
