@@ -8607,7 +8607,7 @@ public class LiveServiceImpl implements LiveService {
     		return Response.failure(500, "只有国王才能发起抽奖！");
     	}
     	if(lotteryInfo.getWinNumber()<1 || lotteryInfo.getWinNumber()>30){
-    		return Response.failure(500, "中奖人数只能在1-30人之间");
+    		return Response.failure(500, "中奖人数请填写1-30之间的数字");
     	}
     	if(new Date().compareTo(lotteryInfo.getEndTime())>=0){
     		return Response.failure(500, "结束时间必须大于当前时间");
@@ -8644,7 +8644,7 @@ public class LiveServiceImpl implements LiveService {
     		return Response.failure(500, "该抽奖已删除！");
     	}
     	if(lotteryInfo.getWinNumber()<1 || lotteryInfo.getWinNumber()>30){
-    		return Response.failure(500, "中奖人数只能在1-30人之间");
+    		return Response.failure(500, "中奖人数请填写1-30之间的数字");
     	}
     	if(new Date().compareTo(lotteryInfo.getEndTime())>=0){
     		return Response.failure(500, "结束时间必须大于当前时间");
