@@ -10,12 +10,12 @@ import org.apache.commons.beanutils.BeanUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import com.me2me.common.enums.USER_OPRATE_TYPE;
 import com.me2me.common.utils.DateUtil;
-import com.me2me.content.service.ContentService;
 import com.me2me.live.model.TopicTagDetail;
 import com.me2me.live.service.LiveService;
 import com.me2me.user.service.UserService;
@@ -28,14 +28,17 @@ import com.me2me.user.service.UserService;
 @Component
 public class UserLogAnalyzeTask{
 	private static final Logger logger = LoggerFactory.getLogger(UserLogAnalyzeTask.class);
-	
 	@Autowired
-	private ContentService contentService;
+    private JdbcTemplate jdbcTemplate;
+	
 	@Autowired
 	private LiveService liveService;
 	@Autowired
 	private UserService userService;
 	private Map<Long,TagInfo> tagCache;
+	
+	private Map<Long,List<TopicTagDetail>> kingdomTagCache;
+	
 	public class TagInfo{
 		public Long id;
 		public Long pid;
@@ -80,7 +83,7 @@ public class UserLogAnalyzeTask{
 	}
 	public void loadTagCache(){
 		tagCache= new HashMap<>();
-		List<Map<String,Object>> tagList = contentService.queryForList("select id,pid,tag,is_sys from topic_tag where status=0");
+		List<Map<String,Object>> tagList = jdbcTemplate.queryForList("select id,pid,tag,is_sys from topic_tag where status=0");
 		for(Map<String, Object> tag:tagList){
 			Long key= Long.parseLong(tag.get("id").toString());
 			TagInfo tagInfo= new TagInfo();
@@ -91,6 +94,9 @@ public class UserLogAnalyzeTask{
 				e.printStackTrace();
 			}
 		}
+		
+		kingdomTagCache=new HashMap<>();
+		
 	}
 	/**
 	 * 递归获取父标签。如果自身没有pid则返回自身。
@@ -112,9 +118,11 @@ public class UserLogAnalyzeTask{
 		return null;
 	}
 	private TagInfo getTagByName(String tag){
-		for(TagInfo info:tagCache.values()){
-			if(info.tag.equals(tag)){
-				return info;
+		if(tag!=null){
+			for(TagInfo info:tagCache.values()){
+				if(info.tag.equals(tag)){
+					return info;
+				}
 			}
 		}
 		return null;
@@ -122,6 +130,7 @@ public class UserLogAnalyzeTask{
 	public void countUserTagLikeDay() {
 		// 缓存系统标签表
 		loadTagCache();
+		
 		// 拿用户访问日志
 		int pageSize=1000;
 		Calendar cd = Calendar.getInstance();
@@ -142,14 +151,15 @@ public class UserLogAnalyzeTask{
 		
 		while(true){
 			List<Map<String,Object>> dataList =this.getUserVisitLogByDay(day,skip, pageSize);
+			logger.info("分析用户访问日志：{} ,data pos:{} size:{}",day,skip);
 			if(dataList.isEmpty()){
 				break;
 			}
 			
 			// 干活了。
 			for(Map<String,Object> data:dataList){
+				//logger.info("日志=>{}",data);
 				long uid =Long.parseLong(data.get("uid").toString());
-
 				String action = data.get("action").toString();
 				Integer score=scoreMap.get(action);				// 计分
 				if(score==null){score=0;}
@@ -162,17 +172,24 @@ public class UserLogAnalyzeTask{
 				
 				
 				if(USER_OPRATE_TYPE.HIT_TAG.toString().equals(action)){	//标签点击情况特殊处理
-					String extra = data.get("extra").toString();
+					String extra = (String)data.get("extra");
 					TagInfo detail = this.getTagByName(extra);
-					String parentTag = getRootParentTag(detail.id);
-					if(parentTag!=null){
-						analyzer.addUserLog(parentTag, score);
+					if(detail!=null){
+						String parentTag = getRootParentTag(detail.id);
+						if(parentTag!=null){
+							analyzer.addUserLog(parentTag, score);
+						}
 					}
 				}else{		//王国情况
 					Object strTopicId= data.get("topic_id");
 					if(strTopicId!=null){
-						long topicId = Long.parseLong(strTopicId.toString());
-						List<TopicTagDetail> tags = this.liveService.getTopicTagDetailsByTopicId(topicId);		// 其实我想缓存，但是把所有王国的标签都查出来，估计会爆内存。
+						Long topicId = Long.parseLong(strTopicId.toString());
+						List<TopicTagDetail> tags = kingdomTagCache.get(topicId);
+						if(tags==null){
+							tags = this.liveService.getTopicTagDetailsByTopicId(topicId);		//   还是缓存吧~~
+							kingdomTagCache.put(topicId, tags);
+						}
+						
 						for(TopicTagDetail detail:tags){
 							String parentTag = getRootParentTag(detail.getTagId());
 							if(parentTag!=null){
@@ -212,19 +229,19 @@ public class UserLogAnalyzeTask{
      * @return
      */
     public List<Map<String,Object>> getUserVisitLogByDay(String day,int skip,int limit){
-    	String sql = "select * from user_visit_log where DATE_FORMAT(create_time,'%Y-%m-%d')=? limit ?,?";
-		return contentService.queryForList(sql,day,skip,limit);
+    	String sql = "select uid,action,topic_id,extra from user_visit_log where DATE_FORMAT(create_time,'%Y-%m-%d')=? limit ?,?";
+		return jdbcTemplate.queryForList(sql,day,skip,limit);
     }
     
     public boolean existsUserTagLike(long uid,String tag){
-    	return contentService.queryForObject("select count(1) from user_tag_like where uid=? and tag=?",Integer.class,uid,tag)>0?true:false;
+    	return jdbcTemplate.queryForObject("select count(1) from user_tag_like where uid=? and tag=?",Integer.class,uid,tag)>0?true:false;
     }
     
 	public void updateUserTagLike(long uid, String tag, int score) {
 		if(existsUserTagLike(uid,tag)){
-			contentService.update("update user_tag_like set score=score*0.9+?,last_update_time=now() where uid=? and tag=?",score,uid,tag);
+			jdbcTemplate.update("update user_tag_like set score=score*0.9+?,last_update_time=now() where uid=? and tag=?",score,uid,tag);
 		}else{
-			contentService.update("insert into user_tag_like(uid,tag,score,last_update_time) values(?,?,?,now())",uid,tag,score);
+			jdbcTemplate.update("insert into user_tag_like(uid,tag,score,last_update_time) values(?,?,?,now())",uid,tag,score);
 		}
 	}
 }

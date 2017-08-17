@@ -140,6 +140,10 @@ public interface CacheService {
      */
     Set<String> keys(String pattern);
 
-
+    public Object getJavaObject(String key);
+    	
+    public void cacheJavaObject(String key,Object obj);
+    		
+    public void cacheJavaObject(String key,Object obj,int expireSeconds);
 
 }

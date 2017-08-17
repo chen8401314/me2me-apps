@@ -12,6 +12,12 @@ import redis.clients.jedis.*;
 
 import javax.annotation.PostConstruct;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -269,4 +275,117 @@ public class CacheServiceImpl implements CacheService {
             }
         });
     }
+    public void cacheJavaObject(String key,Object obj){
+    	List<Exception> exceptions =new ArrayList<>();
+    	jedisTemplate.execute(new JedisTemplate.JedisAction() {		// 这方法太坑，有异常居然不抛出来,使用时自己注意看LOG日志
+			
+			@Override
+			public void action(Jedis jedis) {
+				try {
+					byte[] data = serialize(obj);
+					jedis.set(key.getBytes(), data);
+				} catch (Exception e) {
+					exceptions.add(e);
+				}
+			}
+		});
+    	if(exceptions.size()>0){
+    		throw new RuntimeException("存java对象失败",exceptions.get(0));
+    	}
+    	
+    }
+    public void cacheJavaObject(String key,Object obj,int seconds){
+    	List<Exception> exceptions =new ArrayList<>();
+    	jedisTemplate.execute(new JedisTemplate.JedisAction() {
+			
+			@Override
+			public void action(Jedis jedis) {
+				try {
+					byte[] keybytes= key.getBytes();
+					byte[] data= serialize(obj);
+					jedis.set(key.getBytes(), data);
+					jedis.expire(keybytes, seconds);
+				} catch (Exception e) {
+					exceptions.add(e);
+				}
+			}
+		});
+    	if(exceptions.size()>0){
+    		throw new RuntimeException("存java对象失败",exceptions.get(0));
+    	}
+    }
+    public Object getJavaObject(String key){
+    	return jedisTemplate.execute(new JedisTemplate.JedisActionResult() {
+			@Override
+			public Object actionResult(Jedis jedis) {
+				try{
+					byte[] keybytes= key.getBytes();
+					byte[] data = jedis.get(keybytes);
+					Object obj = unserialize(data);
+					return obj;
+				} catch (Exception e) {
+					throw new RuntimeException("取java对象失败",e);
+				}
+			}
+		});
+    }
+	public static byte[] serialize(Object object) throws Exception {
+		ObjectOutputStream oos = null;
+		ByteArrayOutputStream baos = null;
+		try {
+			// 序列化
+			baos = new ByteArrayOutputStream();
+			oos = new ObjectOutputStream(baos);
+			oos.writeObject(object);
+			byte[] bytes = baos.toByteArray();
+			return bytes;
+		} catch (Exception e) {
+			throw e;
+		}finally {
+			if(oos!=null){
+				try {
+					oos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if(baos!=null){
+				try {
+					baos.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public static Object unserialize(byte[] bytes) throws Exception {
+		ByteArrayInputStream bais = null;
+		ObjectInputStream ois=null;
+		try {
+			// 反序列化
+			bais = new ByteArrayInputStream(bytes);
+			ois = new ObjectInputStream(bais);
+			return ois.readObject();
+			
+		} catch (Exception e) {
+			throw e;
+		}finally {
+			if(bais!=null){
+				try {
+					bais.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if(ois!=null){
+				try {
+					ois.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+		}
+	}
 }

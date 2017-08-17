@@ -53,7 +53,7 @@ public class JedisTemplate {
             log.error("jedis can't connection form server!", exception.getMessage());
             broken = true;
         }catch (Exception e){
-        	log.error("jedis error!!", e.getMessage());
+        	log.error("jedis error!!", e);
         	broken = true;
         }finally {
             Assert.notNull(jedis,"this resource is not null");
@@ -75,7 +75,7 @@ public class JedisTemplate {
             jedis = jedisPool.getResource();
             return action.actionResult(jedis);
         }catch (Exception exception){
-            log.error("jedis can't connection form server");
+            log.error("jedis can't connection form server",exception);
             broken = handleJedisException(exception);
             //throw exception;
             return null;
