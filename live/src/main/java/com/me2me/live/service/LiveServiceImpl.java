@@ -403,10 +403,7 @@ public class LiveServiceImpl implements LiveService {
 
         liveCoverDto.setInternalStatus(getInternalStatus(topic,uid));
         liveCoverDto.setLiveWebUrl(live_web+topicId+"?uid="+uid);//返回直播URL地址
-        //添加直播阅读数log.info("liveCover end ...");
-        Content content = contentService.getContentByTopicId(topicId);
-        content.setReadCount(content.getReadCount() + 1);
-
+        
         if(activityService.isTopicRec(topicId)){
             liveCoverDto.setIsRec(1);
         }else{
@@ -473,23 +470,22 @@ public class LiveServiceImpl implements LiveService {
         }
         trh.setCreateTime(new Date());
 
+        
+        //添加直播阅读数
+        Content content = contentService.getContentByTopicId(topicId);
         if(content.getReadCount() == 1 || content.getReadCount() == 2){
             liveCoverDto.setReadCount(1);
-            content.setReadCountDummy(1);
-            contentService.updateContentById(content);
+            liveLocalJdbcDao.updateContentReadCount(content.getId(), 1, 1);
             trh.setReadCountDummy(1);
         }else {
             SystemConfig systemConfig = userService.getSystemConfig();
             int start = systemConfig.getReadCountStart();
             int end = systemConfig.getReadCountEnd();
-            int readCountDummy = content.getReadCountDummy();
             Random random = new Random();
             //取1-6的随机数每次添加
             int value = random.nextInt(end) + start;
-            int readDummy = readCountDummy + value;
-            content.setReadCountDummy(readDummy);
-            contentService.updateContentById(content);
-            liveCoverDto.setReadCount(readDummy);
+            liveLocalJdbcDao.updateContentReadCount(content.getId(), 1, value);
+            liveCoverDto.setReadCount(content.getReadCountDummy() + value);
             trh.setReadCountDummy(value);
         }
         liveMybatisDao.saveTopicReadHis(trh);
@@ -1314,22 +1310,25 @@ public class LiveServiceImpl implements LiveService {
         	//cacheService.set(key, value);
         	//判断本王国是否有未过试用期的TAG，如果有，就不打了；
         	try{
-	        	String tag = searchService.recommendTags(speakDto.getFragment(), 1).getData().getTags().get(0);
-	        	boolean exists =liveLocalJdbcDao.existsTrialTagInKingdom(speakDto.getTopicId(),tag);
-	        	if(!exists){
-	        		TopicTag ttag = liveMybatisDao.getTopicTagByTag(tag);
-	        		TopicTagDetail detail = new TopicTagDetail();
-	        		detail.setTopicId(speakDto.getTopicId());
-	        		detail.setUid(-1L);
-	        		if(ttag!=null){
-	        			detail.setTagId(ttag.getId());
-	        		}
-	        		detail.setTag(tag);
-	        		detail.setCreateTime(new Date());
-	        		detail.setStatus(0);
-	        		detail.setAutoTag(1);
-	        		liveMybatisDao.insertTopicTagDetail(detail);
-	        	}
+        		List<String> recTags = searchService.recommendTags(speakDto.getFragment(), 1).getData().getTags();
+        		if(null != recTags && recTags.size() > 0){
+        			String tag = recTags.get(0);
+    	        	boolean exists =liveLocalJdbcDao.existsTrialTagInKingdom(speakDto.getTopicId(),tag);
+    	        	if(!exists){
+    	        		TopicTag ttag = liveMybatisDao.getTopicTagByTag(tag);
+    	        		TopicTagDetail detail = new TopicTagDetail();
+    	        		detail.setTopicId(speakDto.getTopicId());
+    	        		detail.setUid(-1L);
+    	        		if(ttag!=null){
+    	        			detail.setTagId(ttag.getId());
+    	        		}
+    	        		detail.setTag(tag);
+    	        		detail.setCreateTime(new Date());
+    	        		detail.setStatus(0);
+    	        		detail.setAutoTag(1);
+    	        		liveMybatisDao.insertTopicTagDetail(detail);
+    	        	}
+        		}
         	}catch(Exception e){
         		log.error("自动打标签失败", e);
         	}
@@ -2189,15 +2188,9 @@ public class LiveServiceImpl implements LiveService {
     public Response setLive(long uid, long topicId, long topId, long bottomId) {
         log.info("setLive start ...");
         LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid, topicId);
-        Content content = contentService.getContentByTopicId(topicId);
         if (liveFavorite != null) {
             liveMybatisDao.deleteLiveFavorite(liveFavorite);
-            if ((content.getFavoriteCount() - 1) < 0) {
-                content.setFavoriteCount(0);
-            } else {
-                content.setFavoriteCount(content.getFavoriteCount() - 1);
-            }
-            contentService.updateContentById(content);
+            liveLocalJdbcDao.contentAddFavoriteCount(topicId, 0);
             log.info("setLive end ...");
             return Response.success(ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.message);
         } else {
@@ -2208,8 +2201,7 @@ public class LiveServiceImpl implements LiveService {
             //保存弹幕
             TopicBarrage barrage = liveMybatisDao.getBarrage(topicId, topId, bottomId, Specification.LiveSpeakType.SUBSCRIBED.index, uid);
             saveBarrage(uid, topicId, topId, bottomId, barrage);
-            content.setFavoriteCount(content.getFavoriteCount() + 1);
-            contentService.updateContentById(content);
+            liveLocalJdbcDao.contentAddFavoriteCount(topicId, 0);
             log.info("setLive end ...");
             return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
         }
@@ -2251,13 +2243,11 @@ public class LiveServiceImpl implements LiveService {
                 //保存弹幕
                 TopicBarrage barrage = liveMybatisDao.getBarrage(topicId, topId, bottomId, Specification.LiveSpeakType.SUBSCRIBED.index, uid);
                 if (barrage != null) {
-                    content.setFavoriteCount(content.getFavoriteCount() + 1);
-                    contentService.updateContentById(content);
+                    liveLocalJdbcDao.contentAddFavoriteCount(topicId, 1);
                     return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
                 } else {
                     saveBarrage(uid, topicId, topId, bottomId, barrage);
-                    content.setFavoriteCount(content.getFavoriteCount() + 1);
-                    contentService.updateContentById(content);
+                    liveLocalJdbcDao.contentAddFavoriteCount(topicId, 1);
                     log.info("setLive2 end ...");
                 }
             }
@@ -2274,7 +2264,7 @@ public class LiveServiceImpl implements LiveService {
                     content.setFavoriteCount(content.getFavoriteCount() - 1);
                 }
             }
-            contentService.updateContentById(content);
+            liveLocalJdbcDao.contentAddFavoriteCount(topicId, 0);
             log.info("setLive end ...");
             return Response.success(ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.CANCEL_LIVE_FAVORITE_SUCCESS.message);
         }
@@ -2511,15 +2501,13 @@ public class LiveServiceImpl implements LiveService {
     public Response setLive3(long uid, long topicId) {
         log.info("setLive3 start ...");
         LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid, topicId);
-        Content content = contentService.getContentByTopicId(topicId);
         if (liveFavorite == null) {
             liveFavorite = new LiveFavorite();
             liveFavorite.setTopicId(topicId);
             liveFavorite.setUid(uid);
             liveMybatisDao.createLiveFavorite(liveFavorite);
             liveMybatisDao.deleteFavoriteDelete(uid, topicId);
-            content.setFavoriteCount(content.getFavoriteCount() + 1);
-            contentService.updateContentById(content);
+            liveLocalJdbcDao.contentAddFavoriteCount(topicId, 1);
             log.info("setLive3 end ...");
         }
         return Response.success(ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.status, ResponseStatus.SET_LIVE_FAVORITE_SUCCESS.message);
@@ -2758,13 +2746,7 @@ public class LiveServiceImpl implements LiveService {
         }
         liveMybatisDao.deleteLiveFavorite(liveFavorite);
         log.info("deleteLiveFavorite success");
-        Content content = contentService.getContentByTopicId(topicId);
-        if ((content.getFavoriteCount() - 1) < 0) {
-            content.setFavoriteCount(0);
-        } else {
-            content.setFavoriteCount(content.getFavoriteCount() - 1);
-        }
-        contentService.updateContentById(content);
+        liveLocalJdbcDao.contentAddFavoriteCount(topicId, 0);
         log.info("signOutLive end ...");
         return Response.success(ResponseStatus.LIVE_SIGN_OUT_SUCCESS.status, ResponseStatus.LIVE_SIGN_OUT_SUCCESS.message);
     }
@@ -8675,28 +8657,25 @@ public class LiveServiceImpl implements LiveService {
     	}
     	//app外
     	if(outApp==1){
-		// 记录阅读历史
-		TopicReadHis trh = new TopicReadHis();
-		trh.setUid(uid);
-		trh.setTopicId(lotteryInfo.getTopicId());
-		trh.setReadCount(1);
-		trh.setFromUid(uid);
-		trh.setInApp(0);
-		trh.setCreateTime(new Date());
-		Content content = contentService.getContentByTopicId(lotteryInfo.getTopicId());
-		content.setReadCount(content.getReadCount() + 1);
-		SystemConfig systemConfig = userService.getSystemConfig();
-		int start = systemConfig.getReadCountStart();
-		int end = systemConfig.getReadCountEnd();
-		int readCountDummy = content.getReadCountDummy();
-		Random random = new Random();
-		// 取1-6的随机数每次添加
-		int value = random.nextInt(end) + start;
-		int readDummy = readCountDummy + value;
-		content.setReadCountDummy(readDummy);
-		contentService.updateContentById(content);
-		trh.setReadCountDummy(value);
-		liveMybatisDao.saveTopicReadHis(trh);
+			// 记录阅读历史
+			TopicReadHis trh = new TopicReadHis();
+			trh.setUid(uid);
+			trh.setTopicId(lotteryInfo.getTopicId());
+			trh.setReadCount(1);
+			trh.setFromUid(uid);
+			trh.setInApp(0);
+			trh.setCreateTime(new Date());
+			Content content = contentService.getContentByTopicId(lotteryInfo.getTopicId());
+			SystemConfig systemConfig = userService.getSystemConfig();
+			int start = systemConfig.getReadCountStart();
+			int end = systemConfig.getReadCountEnd();
+			int readCountDummy = content.getReadCountDummy();
+			Random random = new Random();
+			// 取1-6的随机数每次添加
+			int value = random.nextInt(end) + start;
+			liveLocalJdbcDao.updateContentReadCount(content.getId(), 1, value);
+			trh.setReadCountDummy(value);
+			liveMybatisDao.saveTopicReadHis(trh);
     	}   
             
     	GetLotteryDto dto = new GetLotteryDto();

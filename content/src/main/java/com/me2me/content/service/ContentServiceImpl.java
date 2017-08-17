@@ -44,7 +44,6 @@ import com.me2me.common.Constant;
 import com.me2me.common.enums.USER_OPRATE_TYPE;
 import com.me2me.common.page.PageBean;
 import com.me2me.common.utils.CollectionUtils;
-import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -1334,6 +1333,26 @@ public class ContentServiceImpl implements ContentService {
         if(null == topicMemberCountMap){
             topicMemberCountMap = new HashMap<String, Long>();
         }
+        
+        //一次性查询王国订阅信息
+        Map<String, String> liveFavouriteMap = new HashMap<String, String>();
+        List<Map<String,Object>> liveFavouriteList = liveForContentJdbcDao.getLiveFavoritesByUidAndTopicIds(currentUid, topicIdList);
+        if(null != liveFavouriteList && liveFavouriteList.size() > 0){
+            for(Map<String,Object> lf : liveFavouriteList){
+                liveFavouriteMap.put(((Long)lf.get("topic_id")).toString(), "1");
+            }
+        }
+        
+        //一次性查询所有王国的国王更新数，以及评论数
+        Map<String, Long> topicCountMap = new HashMap<String, Long>();
+        Map<String, Long> reviewCountMap = new HashMap<String, Long>();
+        List<Map<String, Object>> tcList = liveForContentJdbcDao.getTopicUpdateCount(topicIdList);
+        if(null != tcList && tcList.size() > 0){
+            for(Map<String, Object> m : tcList){
+                topicCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("topicCount"));
+                reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
+            }
+        }
 
         UserProfile userProfile = null;
         Map<String, Object> topicUserProfile = null;
@@ -1368,17 +1387,17 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
 
-            SystemConfig systemConfig =userService.getSystemConfig();
-            int start = systemConfig.getReadCountStart();
-            int end = systemConfig.getReadCountEnd();
-            int readCountDummy = content.getReadCountDummy();
-            Random random = new Random();
-            //取1-6的随机数每次添加
-            int value = random.nextInt(end)+start;
-            int readDummy = readCountDummy+value;
-            content.setReadCountDummy(readDummy);
-            contentMybatisDao.updateContentById(content);
-            contentElement.setReadCount(readDummy);
+//            SystemConfig systemConfig =userService.getSystemConfig();
+//            int start = systemConfig.getReadCountStart();
+//            int end = systemConfig.getReadCountEnd();
+//            int readCountDummy = content.getReadCountDummy();
+//            Random random = new Random();
+//            //取1-6的随机数每次添加
+//            int value = random.nextInt(end)+start;
+//            int readDummy = readCountDummy+value;
+//            content.setReadCountDummy(readDummy);
+//            contentMybatisDao.updateContentById(content);
+            contentElement.setReadCount(content.getReadCountDummy());
 
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
@@ -1413,14 +1432,18 @@ public class ContentServiceImpl implements ContentService {
                     }
                 }
 
-                contentElement.setLiveStatus(contentMybatisDao.getTopicStatus(content.getForwardCid()));
-                int reviewCount = contentMybatisDao.countFragment(content.getForwardCid(),content.getUid());
-                contentElement.setReviewCount(reviewCount);
-                contentElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
-                contentElement.setTopicCount(contentMybatisDao.getTopicCount(content.getForwardCid()) - reviewCount);
+//                contentElement.setLiveStatus(contentMybatisDao.getTopicStatus(content.getForwardCid()));
+                contentElement.setLiveStatus(0);
+                if(null != topicCountMap.get(content.getForwardCid().toString())){
+                	contentElement.setTopicCount(topicCountMap.get(content.getForwardCid().toString()).intValue());
+                }
+                if(null != reviewCountMap.get(content.getForwardCid().toString())){
+                	contentElement.setReviewCount(reviewCountMap.get(content.getForwardCid().toString()).intValue());
+                }
                 //王国增加身份信息
                 Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
                 if(null != topic){
+                	contentElement.setLastUpdateTime((Long)topic.get("long_time"));
                     contentElement.setInternalStatus(this.getInternalStatus(topic, currentUid));
                     contentElement.setContentType((Integer)topic.get("type"));
                     if(contentElement.getContentType() == 1000){//聚合王国要有子王国数
@@ -1428,16 +1451,19 @@ public class ContentServiceImpl implements ContentService {
                         contentElement.setAcCount(acCount);
                     }
                     contentElement.setPrice((Integer)topic.get("price"));
-                    List<Map<String,Object>> list = liveForContentJdbcDao.getTopicTagDetailListByTopicId((Long) topic.get("id"));
-                    StringBuffer tagsSB = new StringBuffer();
-                    for (int i = 0; i < list.size(); i++) {
-                        Map<String,Object> map = list.get(i);
-                        if(i!=0){
-                            tagsSB.append(";");
-                        }
-                        tagsSB.append((String)map.get("tag"));
-                    }
-                    contentElement.setTags(tagsSB.toString());
+//                    List<Map<String,Object>> list = liveForContentJdbcDao.getTopicTagDetailListByTopicId((Long) topic.get("id"));
+//                    StringBuffer tagsSB = new StringBuffer();
+//                    for (int i = 0; i < list.size(); i++) {
+//                        Map<String,Object> map = list.get(i);
+//                        if(i!=0){
+//                            tagsSB.append(";");
+//                        }
+//                        tagsSB.append((String)map.get("tag"));
+//                    }
+//                    contentElement.setTags(tagsSB.toString());
+                }
+                if(null != liveFavouriteMap.get(content.getForwardCid().toString())){
+                	contentElement.setFavorite(1);
                 }
             }else{
                 ContentImage contentImage = contentMybatisDao.getCoverImages(content.getId());
@@ -1452,11 +1478,7 @@ public class ContentServiceImpl implements ContentService {
                 int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
                 contentElement.setImageCount(imageCounts);
             }
-            int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), currentUid);
-            log.info("get content favorite success");
-            //直播是否收藏
-            contentElement.setFavorite(favorite);
-            contentElement.setIsLike(isLike(content.getId(),currentUid));
+//            contentElement.setIsLike(isLike(content.getId(),currentUid));
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setPersonCount(content.getPersonCount());
 
@@ -1515,12 +1537,12 @@ public class ContentServiceImpl implements ContentService {
                                     	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
                                     }
                         			outElement.setAtUid((Long)topicOutData.get("at_uid"));
-                        			if(outElement.getAtUid() > 0){
-                        				atUserProfile = userService.getUserProfileByUid(outElement.getAtUid());
-                        				if(null != atUserProfile){
-                        					outElement.setAtNickName(atUserProfile.getNickName());
-                        				}
-                        			}
+//                        			if(outElement.getAtUid() > 0){
+//                        				atUserProfile = userService.getUserProfileByUid(outElement.getAtUid());
+//                        				if(null != atUserProfile){
+//                        					outElement.setAtNickName(atUserProfile.getNickName());
+//                        				}
+//                        			}
                         			outElement.setExtra((String)topicOutData.get("extra"));
                         			contentElement.getTextData().add(outElement);
             					}
@@ -1536,12 +1558,12 @@ public class ContentServiceImpl implements ContentService {
                                     	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
                                     }
                         			outElement.setAtUid((Long)topicOutData.get("at_uid"));
-                        			if(outElement.getAtUid() > 0){
-                        				atUserProfile = userService.getUserProfileByUid(outElement.getAtUid());
-                        				if(null != atUserProfile){
-                        					outElement.setAtNickName(atUserProfile.getNickName());
-                        				}
-                        			}
+//                        			if(outElement.getAtUid() > 0){
+//                        				atUserProfile = userService.getUserProfileByUid(outElement.getAtUid());
+//                        				if(null != atUserProfile){
+//                        					outElement.setAtNickName(atUserProfile.getNickName());
+//                        				}
+//                        			}
                         			outElement.setExtra((String)topicOutData.get("extra"));
                         			contentElement.getAudioData().add(outElement);
             					}
@@ -1557,12 +1579,12 @@ public class ContentServiceImpl implements ContentService {
                                     	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
                                     }
                         			outElement.setAtUid((Long)topicOutData.get("at_uid"));
-                        			if(outElement.getAtUid() > 0){
-                        				atUserProfile = userService.getUserProfileByUid(outElement.getAtUid());
-                        				if(null != atUserProfile){
-                        					outElement.setAtNickName(atUserProfile.getNickName());
-                        				}
-                        			}
+//                        			if(outElement.getAtUid() > 0){
+//                        				atUserProfile = userService.getUserProfileByUid(outElement.getAtUid());
+//                        				if(null != atUserProfile){
+//                        					outElement.setAtNickName(atUserProfile.getNickName());
+//                        				}
+//                        			}
                         			outElement.setExtra((String)topicOutData.get("extra"));
                         			contentElement.getImageData().add(outElement);
             					}
@@ -2058,9 +2080,13 @@ public class ContentServiceImpl implements ContentService {
     }
 
     private void buildUserData(long sourceUid, List<Content> contents,int type,UserInfoDto2 userInfoDto) {
+    	List<Long> uidList = new ArrayList<Long>();
         List<Long> topicIdList = new ArrayList<Long>();
         List<Long> forwardTopicIdList = new ArrayList<Long>();
         for(Content idx : contents){
+        	if(!uidList.contains(idx.getUid())){
+        		uidList.add(idx.getUid());
+        	}
             if(idx.getType() == Specification.ArticleType.LIVE.index){//王国
                 topicIdList.add(idx.getForwardCid());
             }
@@ -2071,6 +2097,14 @@ public class ContentServiceImpl implements ContentService {
             }
         }
 
+        Map<String, UserProfile> userMap = new HashMap<String, UserProfile>();
+        List<UserProfile> userList = userService.getUserProfilesByUids(uidList);
+        if(null != userList && userList.size() > 0){
+        	for(UserProfile u : userList){
+        		userMap.put(u.getUid().toString(), u);
+        	}
+        }
+        
         Map<String, Map<String, Object>> forwardTopicUserProfileMap = new HashMap<String, Map<String, Object>>();
         if(forwardTopicIdList.size() > 0){
             List<Map<String,Object>> topicUserProfileList = liveForContentJdbcDao.getTopicUserProfileByTopicIds(forwardTopicIdList);
@@ -2090,6 +2124,27 @@ public class ContentServiceImpl implements ContentService {
                 topicMap.put(topicId.toString(), map);
             }
         }
+        //一次性查询王国订阅信息
+        Map<String, String> liveFavouriteMap = new HashMap<String, String>();
+        List<Map<String,Object>> liveFavouriteList = liveForContentJdbcDao.getLiveFavoritesByUidAndTopicIds(sourceUid, topicIdList);
+        if(null != liveFavouriteList && liveFavouriteList.size() > 0){
+            for(Map<String,Object> lf : liveFavouriteList){
+                liveFavouriteMap.put(((Long)lf.get("topic_id")).toString(), "1");
+            }
+        }
+        
+        //一次性查询所有王国的国王更新数，以及评论数
+        Map<String, Long> topicCountMap = new HashMap<String, Long>();
+        Map<String, Long> reviewCountMap = new HashMap<String, Long>();
+        List<Map<String, Object>> tcList = liveForContentJdbcDao.getTopicUpdateCount(topicIdList);
+        if(null != tcList && tcList.size() > 0){
+            for(Map<String, Object> m : tcList){
+                topicCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("topicCount"));
+                reviewCountMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("reviewCount"));
+            }
+        }
+        
+        UserProfile profile = null;
         Map<String, Object> topicUserProfile = null;
         for (Content content : contents){
             UserInfoDto2.ContentElement contentElement = UserInfoDto2.createElement();
@@ -2114,7 +2169,7 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
             contentElement.setUid(content.getUid());
-            UserProfile profile = userService.getUserProfileByUid(content.getUid());
+            profile = userMap.get(content.getUid().toString());
             contentElement.setV_lv(profile.getvLv());
             contentElement.setLevel(profile.getLevel());
             String cover = content.getConverImage();
@@ -2138,26 +2193,28 @@ public class ContentServiceImpl implements ContentService {
                     }
                 }
 
-                contentElement.setLiveStatus(contentMybatisDao.getTopicStatus(content.getForwardCid()));
-                int reviewCount = contentMybatisDao.countFragment(content.getForwardCid(),content.getUid());
-                contentElement.setReviewCount(reviewCount);
-                contentElement.setLastUpdateTime(contentMybatisDao.getTopicLastUpdateTime(content.getForwardCid()));
-                contentElement.setTopicCount(contentMybatisDao.getTopicCount(content.getForwardCid()) - reviewCount);
-
+                contentElement.setLiveStatus(0);
+                if(null != topicCountMap.get(content.getForwardCid().toString())){
+                	contentElement.setTopicCount(topicCountMap.get(content.getForwardCid().toString()).intValue());
+                }
+                if(null != reviewCountMap.get(content.getForwardCid().toString())){
+                	contentElement.setReviewCount(reviewCountMap.get(content.getForwardCid().toString()).intValue());
+                }
                 //王国增加身份信息
                 Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
                 if(null != topic){
+                	contentElement.setLastUpdateTime((Long)topic.get("long_time"));
                     contentElement.setInternalStatus(this.getInternalStatus(topic, sourceUid));
-                }
-                //查询王国类型(聚合或普通)
-                Map<String,Object> topic2 = liveForContentJdbcDao.getTopicListByCid(content.getForwardCid());
-                if(topic2 != null){
-                    contentElement.setContentType((Integer) topic2.get("type"));
-                    if((Integer)topic2.get("type") == 1000){
+                    contentElement.setContentType((Integer) topic.get("type"));
+                    if((Integer)topic.get("type") == 1000){
                         //查询聚合子王国
-                        int acCount = liveForContentJdbcDao.getTopicAggregationCountByTopicId((Long) topic2.get("id"));
+                        int acCount = liveForContentJdbcDao.getTopicAggregationCountByTopicId((Long) topic.get("id"));
                         contentElement.setAcCount(acCount);
                     }
+                }
+                
+                if(null != liveFavouriteMap.get(content.getForwardCid().toString())){
+                	contentElement.setFavorite(1);
                 }
             }
             if(content.getType() == Specification.ArticleType.ORIGIN.index){
@@ -2165,23 +2222,19 @@ public class ContentServiceImpl implements ContentService {
                 int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
                 contentElement.setImageCount(imageCounts);
             }
-            int favorite = contentMybatisDao.isFavorite(content.getForwardCid(), sourceUid);
-            log.info("get content favorite success");
-            //直播是否收藏
-            contentElement.setFavorite(favorite);
-            contentElement.setIsLike(isLike(content.getId(),sourceUid));
-            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
+//            contentElement.setIsLike(isLike(content.getId(),sourceUid));
+//            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
             log.info("get content review success");
-            for(ContentReview contentReview : contentReviewList){
-                UserInfoDto2.ContentElement.ReviewElement reviewElement = UserInfoDto2.ContentElement.createElement();
-                reviewElement.setUid(contentReview.getUid());
-                UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
-                reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
-                reviewElement.setNickName(user.getNickName());
-                reviewElement.setCreateTime(contentReview.getCreateTime());
-                reviewElement.setReview(contentReview.getReview());
-                contentElement.getReviews().add(reviewElement);
-            }
+//            for(ContentReview contentReview : contentReviewList){
+//                UserInfoDto2.ContentElement.ReviewElement reviewElement = UserInfoDto2.ContentElement.createElement();
+//                reviewElement.setUid(contentReview.getUid());
+//                UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
+//                reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+//                reviewElement.setNickName(user.getNickName());
+//                reviewElement.setCreateTime(contentReview.getCreateTime());
+//                reviewElement.setReview(contentReview.getReview());
+//                contentElement.getReviews().add(reviewElement);
+//            }
             if(type == Specification.ArticleType.LIVE.index){//我自己的王国
                 userInfoDto.getLiveElementList().add(contentElement);
             } else{
@@ -3610,11 +3663,6 @@ public class ContentServiceImpl implements ContentService {
         }
         log.info("reviewList end ...");
         return Response.success(contentReviewDto);
-    }
-
-    @Override
-    public void updateContentById(Content content) {
-        contentMybatisDao.updateContentById(content);
     }
 
     public void addContentLikeByCid(long cid, long addNum){

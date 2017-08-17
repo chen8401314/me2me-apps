@@ -11,6 +11,7 @@ import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.common.web.Specification;
+import com.me2me.content.dao.ContentMybatisDao;
 import com.me2me.content.dao.LiveForContentJdbcDao;
 import com.me2me.content.dto.WriteTagDto;
 import com.me2me.content.model.Content;
@@ -48,6 +49,9 @@ public class AbstractWriteTag {
     
     @Autowired
     private LiveForContentJdbcDao liveForContentJdbcDao;
+    
+    @Autowired
+    private ContentMybatisDao contentMybatisDao;
 
     public Response writeTag(WriteTagDto writeTagDto) {
         ContentTags contentTags = new ContentTags();
@@ -92,7 +96,7 @@ public class AbstractWriteTag {
         }
             //打标签的时候文章热度+1
         content.setHotValue(content.getHotValue()+1);
-        contentService.updateContentById(content);
+        contentMybatisDao.updateContentById(content);
         //userService.push(content.getUid(),writeTagDto.getUid(),Specification.PushMessageType.TAG.index,content.getTitle());
         //monitorService.post(new MonitorEvent(Specification.MonitorType.ACTION.index,Specification.MonitorAction.FEELING_TAG.index,0,writeTagDto.getUid()));
         return Response.success(ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.status,ResponseStatus.CONTENT_TAGS_LIKES_SUCCESS.message);
