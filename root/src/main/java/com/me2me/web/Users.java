@@ -129,6 +129,8 @@ public class Users extends BaseController {
         userLoginDto.setPlatform(request.getPlatform());
         userLoginDto.setDeviceNo(request.getDeviceNo());
         userLoginDto.setJPushToken(request.getJPushToken());
+        userLoginDto.setChannel(request.getChannel());
+        userLoginDto.setRegisterVersion(request.getVersion());
         return userService.login(userLoginDto);
     }
 
@@ -147,6 +149,8 @@ public class Users extends BaseController {
         userLoginDto.setDeviceNo(request.getDeviceNo());
         userLoginDto.setJPushToken(request.getJPushToken());
         userLoginDto.setVerifyCode(request.getVerifyCode());
+        userLoginDto.setChannel(request.getChannel());
+        userLoginDto.setRegisterVersion(request.getVersion());
         return userService.loginByVerify(userLoginDto);
     }
 

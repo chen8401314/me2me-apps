@@ -475,6 +475,14 @@ public class UserServiceImpl implements UserService {
                 //判断用户是否是未激活状态
                 if(userProfile.getIsActivate() == Specification.UserActivate.UN_ACTIVATED.index){
                     userProfile.setIsActivate(Specification.UserActivate.ACTIVATED.index);
+                    List<UserAccountBindStatusDto> array = Lists.newArrayList();
+                    // 添加手机绑定
+                    array.add(new UserAccountBindStatusDto(Specification.ThirdPartType.MOBILE.index,Specification.ThirdPartType.MOBILE.name,1));
+                    String mobileBind = JSON.toJSONString(array);
+                    userProfile.setThirdPartBind(mobileBind);
+                    userProfile.setChannel(userLoginDto.getChannel());
+                    userProfile.setPlatform(userLoginDto.getPlatform());
+                    userProfile.setRegisterVersion(userLoginDto.getRegisterVersion());
                     userMybatisDao.modifyUserProfile(userProfile);
                 }
                 UserToken userToken = userMybatisDao.getUserTokenByUid(user.getUid());
@@ -558,6 +566,14 @@ public class UserServiceImpl implements UserService {
                 //判断用户是否是未激活状态
                 if(userProfile.getIsActivate() == Specification.UserActivate.UN_ACTIVATED.index){
                     userProfile.setIsActivate(Specification.UserActivate.ACTIVATED.index);
+                    List<UserAccountBindStatusDto> array = Lists.newArrayList();
+                    // 添加手机绑定
+                    array.add(new UserAccountBindStatusDto(Specification.ThirdPartType.MOBILE.index,Specification.ThirdPartType.MOBILE.name,1));
+                    String mobileBind = JSON.toJSONString(array);
+                    userProfile.setThirdPartBind(mobileBind);
+                    userProfile.setChannel(userLoginDto.getChannel());
+                    userProfile.setPlatform(userLoginDto.getPlatform());
+                    userProfile.setRegisterVersion(userLoginDto.getRegisterVersion());
                     userMybatisDao.modifyUserProfile(userProfile);
                 }
                 UserToken userToken = userMybatisDao.getUserTokenByUid(user.getUid());
