@@ -712,14 +712,6 @@ public class UserMybatisDao {
         userDeviceMapper.deleteByExample(example);
     }
 
-    public List<User> getRobots(int limit){
-        UserExample example = new UserExample();
-        UserExample.Criteria criteria = example.createCriteria();
-        criteria.andUserNameLike("18900000%");
-        example.setOrderByClause(" uid desc rand() limit "+limit);
-        return userMapper.selectByExample(example);
-    }
-
     public int getRefereeCount(long uid){
         UserProfileExample example = new UserProfileExample();
         UserProfileExample.Criteria criteria = example.createCriteria();
