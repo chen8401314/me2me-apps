@@ -8598,6 +8598,9 @@ public class LiveServiceImpl implements LiveService {
     	if(topic==null){
     		return Response.failure(500, "找不到该王国！");
     	}
+    	if(topic.getUid()!=lotteryInfo.getUid()){
+    		return Response.failure(500, "只有国王才能发起抽奖！");
+    	}
     	if(lotteryInfo.getWinNumber()<1 || lotteryInfo.getWinNumber()>30){
     		return Response.failure(500, "中奖人数只能在1-30人之间");
     	}
