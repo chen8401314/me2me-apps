@@ -9057,26 +9057,37 @@ public class LiveServiceImpl implements LiveService {
 		if (new Date().compareTo(lotteryInfo.getEndTime()) >= 0) {
 			lotteryInfo.setStatus(2);
 			liveMybatisDao.updateLotteryInfoById(lotteryInfo);
-			List<Map<String, Object>> list = liveLocalJdbcDao
-					.getRandomLotteryUser(lotteryId, lotteryInfo.getWinNumber());
-			for (Map<String, Object> map : list) {
-				LotteryWin lotteryWin = new LotteryWin();
-				lotteryWin.setLotteryId(lotteryId);
-				lotteryWin.setUid((Long) map.get("uid"));
-				liveMybatisDao.saveLotteryWin(lotteryWin);
-			}
 			
-			List<Map<String, Object>> list1 = liveLocalJdbcDao
+			List<Map<String, Object>> list = liveLocalJdbcDao
 					.getDistinctLotteryUser(lotteryId);
 			String winMessage = "您参加的《"+lotteryInfo.getTitle()+"》"+"开奖了,恭喜您中奖了！";
 			String loseMessage = "您参加的《"+lotteryInfo.getTitle()+"》"+"开奖了,很遗憾，您没有中奖！";
-			for (Map<String, Object> map1 : list1) {
-				long joinUid = (Long) map1.get("uid");
+			int allWin = 0;
+			List<Integer> winList = new ArrayList<Integer>();
+			//如果参与人数小于设置中奖人数那么全部中奖
+			if(list.size()<=lotteryInfo.getWinNumber()){
+				allWin = 1;
+			}else{
+				//随机中奖用户
+				Random  r = new Random();
+			    int i;
+			    while(winList.size() < lotteryInfo.getWinNumber()){
+			        i = r.nextInt(list.size());
+			        if(!winList.contains(i)){
+			        	winList.add(i);
+			        }
+			    }
+			}
+			for (int i=0;i<list.size();i++) {
+				Map<String,Object> map  =list.get(i);
+				long joinUid = (Long) map.get("uid");
 				int win = 0;
-				for (Map<String, Object> map : list) {
-					joinUid = Long.parseLong( map.get("uid").toString());
+				if(allWin==1 || winList.contains(i)){
 					win = 1;
-					break;
+					LotteryWin lotteryWin = new LotteryWin();
+					lotteryWin.setLotteryId(lotteryId);
+					lotteryWin.setUid((Long) map.get("uid"));
+					liveMybatisDao.saveLotteryWin(lotteryWin);
 				}
 				JsonObject jsonObject = new JsonObject();
 				jsonObject.addProperty("type", Specification.PushObjectType.LOTTERY.index);
