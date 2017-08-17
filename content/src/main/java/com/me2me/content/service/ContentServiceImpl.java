@@ -24,6 +24,7 @@ import com.me2me.core.KeysManager;
 import com.me2me.user.dto.*;
 import com.me2me.user.rule.Rules;
 
+import org.eclipse.paho.client.mqttv3.logging.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -7021,8 +7022,24 @@ public class ContentServiceImpl implements ContentService {
         dto.setKingdomList(kingdoms);
 
         if(page==1){
-            Map<String,Object> totalPrice = topicTagMapper.getTagPriceAndKingdomCount(tagName);
-
+        	Map<String,Object> totalPrice = null;
+        	String cacheKey = "OBJ:TAGPRICEANDKINGDOMCOUNT:"+tagName;
+        	Object tagRes = cacheService.getJavaObject(cacheKey);
+        	if(null != tagRes){
+        		log.info("从缓存里取到11");
+        		totalPrice = (Map<String,Object>)tagRes;
+        	}else{
+        		log.info("查的数据库呀11");
+        		totalPrice = topicTagMapper.getTagPriceAndKingdomCount(tagName);
+        		Map<String, Object> cacheObj = new HashMap<String, Object>();
+        		if(null != totalPrice && totalPrice.size() > 0){
+        			for(Map.Entry<String, Object> entry : totalPrice.entrySet()){
+        				cacheObj.put(entry.getKey(), entry.getValue());
+        			}
+        		}
+        		cacheService.cacheJavaObject(cacheKey, cacheObj, 2*60*60);//缓存两小时
+        	}
+            
             int tagPersons=0;
             //int tagPrice=(Integer)totalPrice.get("tagPrice");
             int kingdomCount =0;
@@ -7038,7 +7055,17 @@ public class ContentServiceImpl implements ContentService {
             dto.setTagName(tagName);
 
             // 取topic tags 取所有的体系标签， 排序规则：1 运营指定顺序 2 用户喜好 3 标签价值
-            List<Map<String,Object>> sysTagList =topicTagMapper.getSysTagCountInfo();
+            //先从缓存里取
+            List<Map<String,Object>> sysTagList = null;
+            Object res = cacheService.getJavaObject("OBJ:SYSTAGCOUNTINFO");
+            if(null != res){
+            	log.info("从缓存里取到");
+            	sysTagList = (List<Map<String,Object>>)res;
+            }else{
+            	log.info("查的数据库呀");
+            	sysTagList = topicTagMapper.getSysTagCountInfo();
+            }
+
             if(sysTagList!=null && !sysTagList.isEmpty()){
                 int size= sysTagList==null?0:sysTagList.size();
                 String[] recommendTags = new String[size];

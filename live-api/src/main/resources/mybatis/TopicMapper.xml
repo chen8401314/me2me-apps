@@ -590,7 +590,7 @@
     WHERE n.longtimes &lt; #{updateTime}
    	and n.id not in(select topic_id from block_topic where uid=#{uid})
     ORDER BY n.longtimes DESC
-    LIMIT 30;
+    LIMIT 10;
   </select>
    <resultMap id="searchTopicDtoMap" type="com.me2me.live.dto.SearchTopicDto">
   		<result column="nick_name" property="nickName" />
