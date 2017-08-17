@@ -688,6 +688,8 @@ public interface LiveService {
 	 Response getLotteryList(long topicId,long sinceId,long uid);
 	 
 	 Response runLottery(long lotteryId,long uid,int source);
+	 
+	 Response delLottery(long lotteryId,long uid);
 	 /**
 	  * 用户点击推送消息。
 	  * @author zhangjiwei

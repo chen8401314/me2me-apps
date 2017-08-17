@@ -2050,6 +2050,7 @@ public class LiveMybatisDao {
         criteria.andIdLessThan(sinceId);
     	}
         criteria.andTopicIdEqualTo(topicId);
+        criteria.andStatusNotEqualTo(-1);
         example.setOrderByClause("id desc limit 20");
         return lotteryInfoMapper.selectByExample(example);
     }
@@ -2064,7 +2065,14 @@ public class LiveMybatisDao {
     public int saveLotteryWin(LotteryWin lotteryWin){
     	return lotteryWinMapper.insertSelective(lotteryWin);
     }
-    
+    public int countLotteryByTopicId(long topicId){
+    	LotteryInfoExample example = new LotteryInfoExample();
+    	LotteryInfoExample.Criteria criteria = example.createCriteria();
+    	criteria.andTopicIdEqualTo(topicId);
+    	criteria.andStatusNotEqualTo(-1);
+    	int count = lotteryInfoMapper.countByExample(example);
+        return  count;
+    }
     public void saveTopicPriceChangeLog(TopicPriceChangeLog log){
     	topicPriceChangeLogMapper.insertSelective(log);
     }

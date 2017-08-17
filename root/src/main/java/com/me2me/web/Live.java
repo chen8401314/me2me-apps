@@ -47,6 +47,7 @@ import com.me2me.web.request.CreateLotteryRequest;
 import com.me2me.web.request.CreateVoteRequest;
 import com.me2me.web.request.DaySignInfoRequest;
 import com.me2me.web.request.DelLotteryContentRequest;
+import com.me2me.web.request.DelLotteryRequest;
 import com.me2me.web.request.DeleteLiveFragmentRequest;
 import com.me2me.web.request.DetailFidPageRequest;
 import com.me2me.web.request.DetailPageStatusRequest;
@@ -1192,6 +1193,17 @@ public class Live extends BaseController {
     @RequestMapping(value = "/runLottery",method = RequestMethod.POST)
     public Response runLottery(RunLotteryRequest request){
     	return liveService.runLottery(request.getLotteryId(), request.getUid(),request.getSource());
+    }
+    
+    /**
+     * 删除抽奖接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/delLottery",method = RequestMethod.POST)
+    public Response delLottery(DelLotteryRequest request){
+    	return liveService.delLottery(request.getLotteryId(),request.getUid());
     }
     /**
      * 用户点击推送消息。

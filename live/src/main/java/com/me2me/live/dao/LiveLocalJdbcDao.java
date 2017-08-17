@@ -1400,9 +1400,6 @@ public class LiveLocalJdbcDao {
     	StringBuilder sb = new StringBuilder();
     	sb.append("select COUNT(DISTINCT uid) AS COUNT FROM lottery_content WHERE lottery_id  = ");
     	sb.append(lotteryId);
-    	sb.append(" AND uid NOT IN (SELECT uid FROM lottery_prohibit WHERE lottery_id = ");
-    	sb.append(lotteryId);
-    	sb.append(")");
     	String sql = sb.toString();
     	Integer count=0;
 		try{
