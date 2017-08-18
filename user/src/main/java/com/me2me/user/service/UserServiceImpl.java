@@ -214,7 +214,31 @@ public class UserServiceImpl implements UserService {
         userProfile.setChannel(userSignUpDto.getChannel());
         userProfile.setPlatform(userSignUpDto.getPlatform());
         userProfile.setRegisterVersion(userSignUpDto.getRegisterVersion());
-
+        //判断是否有推广员
+		if (!StringUtils.isEmpty(userSignUpDto.getOpeninstallData())) {
+			try {
+				JSONObject openinstallDataJson = JSONObject.parseObject(userSignUpDto.getOpeninstallData());
+				long refereeUid = openinstallDataJson.getLong("refereeUid");
+				if (refereeUid != 0) {
+					// 判断推广员是否存在
+					UserProfile refereeUserProfile = userMybatisDao.getUserProfileByUid(refereeUid);
+					if (refereeUserProfile != null) {
+						userProfile.setRefereeUid(refereeUid);
+						// 判断是否已经关注过了
+						if (userMybatisDao.getUserFollow(user.getUid(), refereeUid) == null) {
+							// 创建关注
+							UserFollow userFollow = new UserFollow();
+							userFollow.setSourceUid(user.getUid());
+							userFollow.setTargetUid(refereeUid);
+							userMybatisDao.createFollow(userFollow);
+							applicationEventBus.post(new FollowEvent(user.getUid(), refereeUid));
+						}
+					}
+				}
+			} catch (Exception e) {
+				log.error("openinstallData json failure", e);
+			}
+		}
         List<UserAccountBindStatusDto> array = Lists.newArrayList();
         // 添加手机绑定
         array.add(new UserAccountBindStatusDto(Specification.ThirdPartType.MOBILE.index,Specification.ThirdPartType.MOBILE.name,1));
@@ -349,7 +373,32 @@ public class UserServiceImpl implements UserService {
         array.add(new UserAccountBindStatusDto(Specification.ThirdPartType.MOBILE.index,Specification.ThirdPartType.MOBILE.name,1));
         String mobileBind = JSON.toJSONString(array);
         userProfile.setThirdPartBind(mobileBind);
-
+        //判断是否有推广员
+		if (!StringUtils.isEmpty(userSignUpDto.getOpeninstallData())) {
+			try {
+				JSONObject openinstallDataJson = JSONObject.parseObject(userSignUpDto.getOpeninstallData());
+				long refereeUid = openinstallDataJson.getLong("refereeUid");
+				if (refereeUid != 0) {
+					// 判断推广员是否存在
+					UserProfile refereeUserProfile = userMybatisDao.getUserProfileByUid(refereeUid);
+					if (refereeUserProfile != null) {
+						userProfile.setRefereeUid(refereeUid);
+						// 判断是否已经关注过了
+						if (userMybatisDao.getUserFollow(newUser.getUid(), refereeUid) == null) {
+							// 创建关注
+							UserFollow userFollow = new UserFollow();
+							userFollow.setSourceUid(newUser.getUid());
+							userFollow.setTargetUid(refereeUid);
+							userMybatisDao.createFollow(userFollow);
+							applicationEventBus.post(new FollowEvent(newUser.getUid(), refereeUid));
+						}
+					}
+				}
+			} catch (Exception e) {
+				log.error("openinstallData json failure", e);
+			}
+		}
+        
         userMybatisDao.createUserProfile(userProfile);
         log.info("userProfile is create");
         //添加默认关注v2.1.4
@@ -2602,6 +2651,32 @@ public class UserServiceImpl implements UserService {
         }
         String thirdPartBind = JSON.toJSONString(array);
         userProfile.setThirdPartBind(thirdPartBind);
+        //判断是否有推广员
+		if (!StringUtils.isEmpty(thirdPartSignUpDto.getOpeninstallData())) {
+			try {
+				JSONObject openinstallDataJson = JSONObject.parseObject(thirdPartSignUpDto.getOpeninstallData());
+				long refereeUid = openinstallDataJson.getLong("refereeUid");
+				if (refereeUid != 0) {
+					// 判断推广员是否存在
+					UserProfile refereeUserProfile = userMybatisDao.getUserProfileByUid(refereeUid);
+					if (refereeUserProfile != null) {
+						userProfile.setRefereeUid(refereeUid);
+						// 判断是否已经关注过了
+						if (userMybatisDao.getUserFollow(user1.getUid(), refereeUid) == null) {
+							// 创建关注
+							UserFollow userFollow = new UserFollow();
+							userFollow.setSourceUid(user1.getUid());
+							userFollow.setTargetUid(refereeUid);
+							userMybatisDao.createFollow(userFollow);
+							applicationEventBus.post(new FollowEvent(user1.getUid(), refereeUid));
+						}
+					}
+				}
+			} catch (Exception e) {
+				log.error("openinstallData json failure", e);
+			}
+		}
+        
         userMybatisDao.createUserProfile(userProfile);
         log.info("UserProfile is create");
 

@@ -66,6 +66,10 @@ public class SignUpRequest extends Request{
     @Getter
     @Setter
     private String version;
+    
+    @Getter
+    @Setter
+    private String openinstallData;
 
 
 }

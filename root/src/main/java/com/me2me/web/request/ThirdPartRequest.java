@@ -77,5 +77,10 @@ public class ThirdPartRequest extends Request {
     @Getter
     @Setter
     private String params;
+    
+    @Getter
+    @Setter
+    private String openinstallData;
+    
 
 }

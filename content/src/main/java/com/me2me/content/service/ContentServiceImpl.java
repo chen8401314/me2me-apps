@@ -4229,12 +4229,42 @@ public class ContentServiceImpl implements ContentService {
         for(String label:favoTags){
             HotTagElement element = new HotTagElement();
 
-
-            List<Map<String,Object>> topicList = this.topicTagMapper.getKingdomsByTag(label,"new",1,4, blacklistUids);
-
+            
+            List<Map<String,Object>> topicList = null;
+            String ktKey = "OBJ:KINGDOMSBYTAG:"+label+"_new_1_4";
+            Object tkRes = cacheService.getJavaObject(ktKey);
+            if(null != tkRes){
+            	topicList = (List<Map<String,Object>>)tkRes;
+            }else{
+            	topicList = this.topicTagMapper.getKingdomsByTag(label,"new",1,4, blacklistUids);
+            	List<Map<String,Object>> tkCacheObj = new ArrayList<Map<String,Object>>();
+            	if(null != topicList && topicList.size() > 0){
+            		Map<String,Object> t = null;
+            		for(Map<String,Object> m : topicList){
+            			t = new HashMap<String, Object>();
+            			t.putAll(m);
+            			tkCacheObj.add(t);
+            		}
+            	}
+            	cacheService.cacheJavaObject(ktKey, tkCacheObj, 2*60*60);//缓存两小时
+            }
 
             //List<Integer> topicIds = this.topicTagMapper.getTopicIdsByTag(label);
-            Map<String,Object> totalPrice = topicTagMapper.getTagPriceAndKingdomCount(label);
+            Map<String,Object> totalPrice = null;
+        	String cacheKey = "OBJ:TAGPRICEANDKINGDOMCOUNT:"+label;
+        	Object tagRes = cacheService.getJavaObject(cacheKey);
+        	if(null != tagRes){
+        		log.info("从缓存里取到22");
+        		totalPrice = (Map<String,Object>)tagRes;
+        	}else{
+        		log.info("查的数据库呀22");
+        		totalPrice = topicTagMapper.getTagPriceAndKingdomCount(label);
+        		Map<String, Object> cacheObj = new HashMap<String, Object>();
+        		if(null != totalPrice && totalPrice.size() > 0){
+        			cacheObj.putAll(totalPrice);
+        		}
+        		cacheService.cacheJavaObject(cacheKey, cacheObj, 2*60*60);//缓存两小时
+        	}
 
             if(topicList!=null && topicList.size()>0){
                 List<BasicKingdomInfo> kingdoms =this.kingdomBuider.buildKingdoms(topicList, uid);
@@ -7020,7 +7050,26 @@ public class ContentServiceImpl implements ContentService {
     public Response<TagKingdomDto> tagKingdomList(String tagName, String order, int page, int pageSize, long uid) {
     	List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
     	
-        List<Map<String,Object>> topics =topicTagMapper.getKingdomsByTag(tagName, order, page, pageSize, blacklistUids);
+        List<Map<String,Object>> topics = null;
+        String ktKey = "OBJ:KINGDOMSBYTAG:"+tagName+"_"+order+"_"+page+"_"+pageSize;
+        Object tkRes = cacheService.getJavaObject(ktKey);
+        if(null != tkRes){
+        	topics = (List<Map<String,Object>>)tkRes;
+        }else{
+        	topics = topicTagMapper.getKingdomsByTag(tagName, order, page, pageSize, blacklistUids);
+        	List<Map<String,Object>> tkCacheObj = new ArrayList<Map<String,Object>>();
+        	if(null != topics && topics.size() > 0){
+        		Map<String,Object> t = null;
+        		for(Map<String,Object> m : topics){
+        			t = new HashMap<String, Object>();
+        			t.putAll(m);
+        			tkCacheObj.add(t);
+        		}
+        	}
+        	cacheService.cacheJavaObject(ktKey, tkCacheObj, 2*60*60);//缓存两小时
+        }
+        
+        
         List<BasicKingdomInfo> kingdoms = this.kingdomBuider.buildKingdoms(topics, uid);
         TagKingdomDto dto = new TagKingdomDto();
         dto.setKingdomList(kingdoms);
@@ -7037,9 +7086,7 @@ public class ContentServiceImpl implements ContentService {
         		totalPrice = topicTagMapper.getTagPriceAndKingdomCount(tagName);
         		Map<String, Object> cacheObj = new HashMap<String, Object>();
         		if(null != totalPrice && totalPrice.size() > 0){
-        			for(Map.Entry<String, Object> entry : totalPrice.entrySet()){
-        				cacheObj.put(entry.getKey(), entry.getValue());
-        			}
+        			cacheObj.putAll(totalPrice);
         		}
         		cacheService.cacheJavaObject(cacheKey, cacheObj, 2*60*60);//缓存两小时
         	}

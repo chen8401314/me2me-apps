@@ -303,7 +303,7 @@ public class CacheServiceImpl implements CacheService {
 				try {
 					byte[] keybytes= key.getBytes();
 					byte[] data= serialize(obj);
-					jedis.set(key.getBytes(), data);
+					jedis.set(keybytes, data);
 					jedis.expire(keybytes, seconds);
 				} catch (Exception e) {
 					exceptions.add(e);
@@ -321,7 +321,10 @@ public class CacheServiceImpl implements CacheService {
 				try{
 					byte[] keybytes= key.getBytes();
 					byte[] data = jedis.get(keybytes);
-					Object obj = unserialize(data);
+					Object obj = null;
+					if(null != data){
+						obj = unserialize(data);
+					}
 					return obj;
 				} catch (Exception e) {
 					throw new RuntimeException("取java对象失败",e);

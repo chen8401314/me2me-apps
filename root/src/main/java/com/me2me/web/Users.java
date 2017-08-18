@@ -79,6 +79,7 @@ public class Users extends BaseController {
         userSignUpDto.setChannel(request.getChannel());
         userSignUpDto.setRegisterVersion(request.getVersion());
         userSignUpDto.setParams(request.getParams());
+        userSignUpDto.setOpeninstallData(request.getOpeninstallData());
 
         if(StringUtils.isEmpty(request.getChannel())){
         	log.info("无渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"]");
@@ -111,6 +112,7 @@ public class Users extends BaseController {
         userSignUpDto.setRegisterVersion(request.getVersion());
         userSignUpDto.setParams(request.getParams());
         userSignUpDto.setVerifyCode(request.getVerifyCode());
+        userSignUpDto.setOpeninstallData(request.getOpeninstallData());
         return userService.signUpByVerify(userSignUpDto);
     }
 
@@ -698,7 +700,7 @@ public class Users extends BaseController {
         dto.setPlatform(request.getPlatform());
         dto.setRegisterVersion(request.getVersion());
         dto.setParams(request.getParams());
-        
+        dto.setOpeninstallData(request.getOpeninstallData());
         if(StringUtils.isEmpty(request.getChannel())){
         	log.info("无渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"]");
         }else{
