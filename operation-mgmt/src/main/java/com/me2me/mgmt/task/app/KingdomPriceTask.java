@@ -205,6 +205,8 @@ public class KingdomPriceTask {
 		Map<String, Map<String, Object>> topicDataMap = null;
 		Map<String, Object> topicData = null;
 		Map<String, Object> subsidyConfig = null;
+		StringBuilder readDayCountSql = null;
+		List<Map<String, Object>> readDayCountList = null;
 		while(true){
 			topicList = localJdbcDao.queryEvery(topicSql+start+","+pageSize);
 			if(null == topicList || topicList.size() == 0){
@@ -280,10 +282,29 @@ public class KingdomPriceTask {
 						kc.setLastUpdateTime(kc.getCreateTime());
 					}
 					long dayCount = DateUtil.getDaysBetween2Date(kc.getCreateTime(), kc.getLastUpdateTime()) + 1;
-					kc.setReadDayCount((int)dayCount);//老数据处理，产生阅读的天数，即为从创建到最后一次更新的天数
 					kc.setUpdateFrequency((double)kc.getUpdateDayCount()/(double)dayCount);
 					long noUpdateDayCount = DateUtil.getDaysBetween2Date(kc.getLastUpdateTime(), yesterday);
 					kc.setNoUpdateDayCount((int)noUpdateDayCount);
+				}
+			}
+			
+			//阅读天数
+			readDayCountSql = new StringBuilder();
+			readDayCountSql.append("select h.topic_id,count(DISTINCT DATE_FORMAT(h.create_time,'%Y%m%d')) as cc");
+			readDayCountSql.append(" from topic_read_his h where h.topic_id in (");
+			for(int i=0;i<topicList.size();i++){
+				if(i>0){
+					readDayCountSql.append(",");
+				}
+				readDayCountSql.append(String.valueOf(topicList.get(i).get("id")));
+			}
+			readDayCountSql.append(") group by h.topic_id");
+			readDayCountList = localJdbcDao.queryEvery(readDayCountSql.toString());
+			if(null != readDayCountList && readDayCountList.size() > 0){
+				for(Map<String, Object> r : readDayCountList){
+					long topicId = ((Long)r.get("topic_id")).longValue();
+					kc = kingCountMap.get(String.valueOf(topicId));
+					kc.setReadDayCount(((Long)r.get("cc")).intValue());
 				}
 			}
 			
@@ -506,8 +527,9 @@ public class KingdomPriceTask {
 						+ kc.getReviewTextWordCountInApp()*reviewTextWordCountInAppWeight + kc.getReviewTextWordCountOutApp()*reviewTextWordCountOutAppWeight
 						+ kc.getReadCountInApp()*readCountInAppWeight + kc.getReadCountOutApp()*readCountOutAppWeight
 						+ kc.getSubscribeCount()*subscribeCountWeight + kc.getReviewTeaseCount()*reviewTeaseCountWeight
-						+ kc.getReviewVoteCount()*reviewVoteCountWeight + kc.getShareCount()*shareCountWeight)*(kc.getReviewDayCount()*reviewDayCountWeight
-						+ kc.getReadDayCount()*readDayCountWeight)/kc.getUpdateDayCount();
+						+ kc.getReviewVoteCount()*reviewVoteCountWeight + kc.getShareCount()*shareCountWeight)
+						* Math.max(1, Math.log((kc.getReviewDayCount()*reviewDayCountWeight + kc.getReadDayCount()*readDayCountWeight)/kc.getUpdateDayCount()))
+						;
 
 				topicData = topicDataMap.get(String.valueOf(kc.getTopicId()));
 				int xx = (int)(_x*1000);
@@ -516,9 +538,11 @@ public class KingdomPriceTask {
 				if(null == topicData || isCreateTime){//当天新增的王国
 					int oldStealPrice = 0;
 					int kv0 = 0;
+					int oldPrice = 0;
 					if(null != topicData){
 						oldStealPrice = (Integer)topicData.get("steal_price");
-						kv0 = ((Integer)topicData.get("price")).intValue();
+						oldPrice = ((Integer)topicData.get("price")).intValue();
+						kv0 = ((Integer)topicData.get("kv0")).intValue();
 					}
 					
 					kc.setApprove(new BigDecimal((double)yy/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
@@ -556,7 +580,8 @@ public class KingdomPriceTask {
 						kv = 0;
 						kc.setStealPrice(oldStealPrice);
 					}
-					kc.setPrice((int)kv + kv0);
+					kc.setPrice((int)kv + oldPrice);
+					kc.setKv0(kv0+(int)kv);
 					
 					if(null == topicData){
 						this.saveKingdomCount(kc, true, listedPrice, yesterday, pushPriceLimit, pushPriceIncrLimit, pushPriceReduceLimit, nowDateStr);
@@ -565,7 +590,8 @@ public class KingdomPriceTask {
 					}
 				}else{//历史有的，则需要做增量计算
 					int oldStealPrice = (Integer)topicData.get("steal_price");
-					int kv0 = ((Integer)topicData.get("price")).intValue();
+					int oldPrice = ((Integer)topicData.get("price")).intValue();
+					int kv0 = ((Integer)topicData.get("kv0")).intValue();
 					double x0 = ((Double)topicData.get("diligently")).doubleValue();
 					double y0 = ((Double)topicData.get("approve")).doubleValue();
 					int _kv = 0;
@@ -583,7 +609,7 @@ public class KingdomPriceTask {
 						}
 					}
 					
-					int kv = kv0 + _kv;
+					int kv = oldPrice + _kv;
 					if(_kv > 0){
 						subsidyConfig = this.getSubsidyConfig(kv, subsidyConfigList);
 						if(null != subsidyConfig && subsidyConfig.size() == 3){
@@ -621,6 +647,7 @@ public class KingdomPriceTask {
 					}
 					
 					kc.setPrice(kv);
+					kc.setKv0(kv0+(int)_kv);
 					kc.setDiligently(x0+new BigDecimal((double)xx/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 					kc.setApprove(y0+new BigDecimal((double)yy/1000).setScale(2, BigDecimal.ROUND_HALF_UP).doubleValue());
 					kc.setUpdateTextWordCount(((Integer)topicData.get("update_text_length")).intValue() + kc.getUpdateTextWordCount());
@@ -841,6 +868,8 @@ public class KingdomPriceTask {
 		private int readCountDummyOutApp = 0;//APP外虚拟阅读数
 		private long uid;//国王UID
 		private long updateCount = 0;
+		
+		private int kv0;
 	}
 	
 	public void executeFull(String dateStr) throws Exception{
@@ -1214,8 +1243,8 @@ public class KingdomPriceTask {
 			saveSql.append("update topic_data set steal_price=").append(kc.getStealPrice());
 			saveSql.append(",last_price=").append(oldPrice);
 			saveSql.append(",last_price_incr=").append(kc.getPrice()-oldPrice);
-			saveSql.append(",diligently=").append(kc.getDiligently());
-			saveSql.append(",approve=").append(kc.getApprove());
+			saveSql.append(",diligently=").append(kc.getDiligently()<0?0:kc.getDiligently());
+			saveSql.append(",approve=").append(kc.getApprove()<0?0:kc.getApprove());
 			saveSql.append(",update_text_length=").append(kc.getUpdateTextWordCount());
 			saveSql.append(",update_text_count=").append(kc.getUpdateTextCount());
 			saveSql.append(",update_image_count=").append(kc.getUpdateImageCount());
@@ -1228,11 +1257,12 @@ public class KingdomPriceTask {
 			saveSql.append(",update_day_count=").append(kc.getUpdateDayCount());
 			saveSql.append(",review_text_count=").append(kc.getReviewTextCountInApp()+kc.getReviewTextCountOutApp());
 			saveSql.append(",review_text_length=").append(kc.getReviewTextWordCountInApp()+kc.getReviewTextWordCountOutApp());
+			saveSql.append(",kv0=").append(kc.getKv0());
 			saveSql.append(" where topic_id=").append(kc.getTopicId());
 		}else{//没有，则新增
 			saveSql.append("insert into topic_data(topic_id,last_price,last_price_incr,steal_price,update_time,diligently,approve,update_text_length,");
 			saveSql.append("update_text_count,update_image_count,update_vedio_count,update_vedio_length,update_audio_count,");
-			saveSql.append("update_audio_length,update_vote_count,update_tease_count,update_day_count,review_text_count,review_text_length)");
+			saveSql.append("update_audio_length,update_vote_count,update_tease_count,update_day_count,review_text_count,review_text_length,kv0)");
 			saveSql.append(" values (").append(kc.getTopicId()).append(",").append(oldPrice).append(",");
 			saveSql.append(kc.getPrice()-oldPrice).append(",").append(kc.getStealPrice()).append(",now(),");
 			saveSql.append(kc.getDiligently()).append(",").append(kc.getApprove()).append(",").append(kc.getUpdateTextWordCount());
@@ -1240,7 +1270,7 @@ public class KingdomPriceTask {
 			saveSql.append(kc.getUpdateVedioCount()).append(",").append(kc.getUpdateVedioLenght()).append(",").append(kc.getUpdateAudioCount());
 			saveSql.append(",").append(kc.getUpdateAudioLenght()).append(",").append(kc.getUpdateVoteCount()).append(",");
 			saveSql.append(kc.getUpdateTeaseCount()).append(",").append(kc.getUpdateDayCount()).append(",").append(kc.getReviewTextCountInApp()+kc.getReviewTextCountOutApp());
-			saveSql.append(",").append(kc.getReviewTextWordCountInApp()+kc.getReviewTextWordCountOutApp()).append(")");
+			saveSql.append(",").append(kc.getReviewTextWordCountInApp()+kc.getReviewTextWordCountOutApp()).append(",").append(kc.getKv0()).append(")");
 		}
 		localJdbcDao.executeSql(saveSql.toString());
 		
