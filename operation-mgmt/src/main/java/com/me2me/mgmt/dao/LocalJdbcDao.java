@@ -21,8 +21,7 @@ public class LocalJdbcDao {
 	
 	public List<Map<String, Object>> queryEvery(String sql){
 		sql = sql.trim();
-		if(null == sql || "".equals(sql)
-				|| !sql.startsWith("select")){
+		if(null == sql || "".equals(sql)){
 			return null;
 		}
 		List<Map<String, Object>> result = new ArrayList<Map<String, Object>>();

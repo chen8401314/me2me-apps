@@ -551,18 +551,8 @@
     limit 1;
   </select>
 <select id="getRandomTopicByTag" parameterType="java.util.Map" resultMap="BaseResultMap">
-    select t.*  from topic t,content c
-    where 
-    t.id in(
-		select DISTINCT topic_id from topic_tag_detail dt where dt.status=0 and dt.tag_id in(
-			select tag_id from topic_tag_detail where topic_id=#{sourceTopicId} and status=0
-			UNION all
-			select id from topic_tag c where c.pid in(select tag_id from topic_tag_detail where topic_id=#{sourceTopicId} and status=0) 
-		)
-	) 
-	and t.price>=#{minPrice}
-    and t.id=c.forward_cid
-    and c.status=0 and c.type=3
+    select t.*  from topic t
+    where t.price>=#{minPrice}
     and t.status=0
     AND t.uid != #{uid}
     <if test="set != ''">

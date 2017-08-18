@@ -303,7 +303,7 @@ public class CacheServiceImpl implements CacheService {
 				try {
 					byte[] keybytes= key.getBytes();
 					byte[] data= serialize(obj);
-					jedis.set(key.getBytes(), data);
+					jedis.set(keybytes, data);
 					jedis.expire(keybytes, seconds);
 				} catch (Exception e) {
 					exceptions.add(e);

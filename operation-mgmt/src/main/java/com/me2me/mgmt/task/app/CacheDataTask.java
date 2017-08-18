@@ -29,7 +29,7 @@ public class CacheDataTask {
 		long s = System.currentTimeMillis();
 		try{
 			StringBuilder sql = new StringBuilder();
-			sql.append("SELECT t.*,(select  sum(price) from topic where id in (");
+			sql.append("select t.*,(select  sum(price) from topic where id in (");
 			sql.append("select DISTINCT dt.topic_id from topic_tag_detail dt where dt.status=0");
 			sql.append(" and dt.tag_id in(select id from topic_tag p where tag=t.tag");
 			sql.append(" UNION ALL select id from topic_tag c where c.pid=(select id from topic_tag p where tag=t.tag) ");
