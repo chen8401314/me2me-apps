@@ -321,7 +321,10 @@ public class CacheServiceImpl implements CacheService {
 				try{
 					byte[] keybytes= key.getBytes();
 					byte[] data = jedis.get(keybytes);
-					Object obj = unserialize(data);
+					Object obj = null;
+					if(null != data){
+						obj = unserialize(data);
+					}
 					return obj;
 				} catch (Exception e) {
 					throw new RuntimeException("取java对象失败",e);

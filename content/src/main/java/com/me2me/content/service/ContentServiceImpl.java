@@ -4220,7 +4220,11 @@ public class ContentServiceImpl implements ContentService {
         String strAdminTags = (String) userService.getAppConfigByKey("HOME_HOT_LABELS");
         List<String> favoTags = this.topicTagMapper.getUserFavoTags(favoScore,uid);
         List<String> adminTags = Arrays.asList(strAdminTags.split("\\n"));
-        favoTags.addAll(adminTags);		//合并用户喜好标签和管理员指定标签，避免不足数量
+        for(String adminTag:adminTags){
+        	if(!favoTags.contains(adminTag)){
+        		favoTags.add(adminTag);		//合并用户喜好标签和管理员指定标签，避免不足数量
+        	}
+        }
         favoTags = favoTags.subList(0, adminTags.size());    // 标签数量以管理员指定的数量为准。
         for(String label:favoTags){
             HotTagElement element = new HotTagElement();

@@ -1827,6 +1827,7 @@ public class SearchServiceImpl implements SearchService {
 				m.put("nick_name", user.getNickName());
 				m.put("avatar", user.getAvatar());
 				m.put("v_lv", user.getvLv());
+				m.put("level", user.getLevel());
 				result.add(m);
 			}
 		}

@@ -54,6 +54,8 @@ public class UserEsMapping {
 
 	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.Integer)
 	private Integer v_lv;		//是否是大V(0 否 1 是)     必填 
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.Integer)
+	private Integer level;		//是否是大V(0 否 1 是)     必填 
 
 	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.String)
 	private String channel;		//渠道  

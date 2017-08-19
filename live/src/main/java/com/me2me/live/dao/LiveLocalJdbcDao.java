@@ -1012,7 +1012,7 @@ public class LiveLocalJdbcDao {
 	public int getUserCoinsByDay(long uid,String day) {
 		String sql="select sum(coins) from("+
 			" select sum(stealed_coins) coins from user_steal_log  where uid=? and ( is_big_red_pack=0 or is_big_red_pack is null) and DATE_FORMAT(create_time,'%Y-%m-%d')=?"+
-			" UNION"+
+			" UNION ALL"+
 			" select sum(coin) coins from rule_log  where uid=? and DATE_FORMAT(create_time,'%Y-%m-%d')=?"+
 			") c";
 		Integer result =jdbcTemplate.queryForObject(sql,new Object[]{uid,day,uid,day},Integer.class);
