@@ -12,6 +12,7 @@ import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
 import com.me2me.core.event.ApplicationEventBus;
 import com.me2me.sms.channel.MessageClient;
+import com.me2me.sms.dto.ImRefreshDto;
 import com.me2me.sms.dto.ImSendMessageDto;
 import com.me2me.sms.dto.ImUserInfoDto;
 import com.me2me.sms.dto.VerifyDto;
@@ -178,8 +179,8 @@ public class SmsServiceImpl implements SmsService {
     }
 
     @Override
-    public ImUserInfoDto getIMUsertoken(long uid) throws Exception {
-        return getToken(String.valueOf(uid),"","");
+    public ImUserInfoDto getIMUsertoken(long uid,String nickName,String avatar) throws Exception {
+        return getToken(String.valueOf(uid),nickName,avatar);
     }
 
     /**
@@ -255,6 +256,43 @@ public class SmsServiceImpl implements SmsService {
         HttpURLConnection conn = IMHttpUtil.CreatePostHttpConnection(HostType.API, IM_APP_KEY, IM_APP_SECRET, "/message/private/publish.json", "application/x-www-form-urlencoded");
         IMHttpUtil.setBodyParameter(body, conn);
         ImSendMessageDto result = JSON.parseObject(IMHttpUtil.returnResult(conn) ,ImSendMessageDto.class);
+        return result;
+    }
+    
+    /**
+     * Im 获取调用远程接口刷新用户信息
+     * @param userId
+     * @param name
+     * @param portraitUri
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public ImRefreshDto refreshUser(String userId, String name, String portraitUri) throws Exception {
+        if (userId == null) {
+            throw new IllegalArgumentException("Paramer 'userId' is required");
+        }
+
+        if (name == null) {
+            throw new IllegalArgumentException("Paramer 'name' is required");
+        }
+
+        if (portraitUri == null) {
+            throw new IllegalArgumentException("Paramer 'portraitUri' is required");
+        }
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("&userId=").append(URLEncoder.encode(userId.toString(), "UTF-8"));
+        sb.append("&name=").append(URLEncoder.encode(name.toString(), "UTF-8"));
+        sb.append("&portraitUri=").append(URLEncoder.encode(portraitUri.toString(), "UTF-8"));
+        String body = sb.toString();
+        if (body.indexOf("&") == 0) {
+            body = body.substring(1, body.length());
+        }
+
+        HttpURLConnection conn = IMHttpUtil.CreatePostHttpConnection(HostType.API, IM_APP_KEY, IM_APP_SECRET, "/user/refresh.json", "application/x-www-form-urlencoded");
+        IMHttpUtil.setBodyParameter(body, conn);
+        ImRefreshDto result = JSON.parseObject(IMHttpUtil.returnResult(conn) ,ImUserInfoDto.class);
         return result;
     }
 }

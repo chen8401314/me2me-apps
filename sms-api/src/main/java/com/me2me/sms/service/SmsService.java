@@ -1,6 +1,7 @@
 package com.me2me.sms.service;
 
 import com.me2me.common.web.Response;
+import com.me2me.sms.dto.ImRefreshDto;
 import com.me2me.sms.dto.ImSendMessageDto;
 import com.me2me.sms.dto.ImUserInfoDto;
 import com.me2me.sms.dto.VerifyDto;
@@ -33,8 +34,9 @@ public interface SmsService {
     //七天活动封装短信接口
     void send7dayCommon(String templateId, List<String> mobileList, List<String> messageList);
 
-    ImUserInfoDto getIMUsertoken(long uid) throws Exception;
+    ImUserInfoDto getIMUsertoken(long uid,String nickName,String avatar) throws Exception;
     
     public ImSendMessageDto sendSysMessage(String userId, String content) throws Exception;
 
+    public ImRefreshDto refreshUser(String userId, String name, String portraitUri) throws Exception;
 }

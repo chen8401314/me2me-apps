@@ -186,7 +186,7 @@ public class UserServiceImpl implements UserService {
 
         //IM新用户获得token
         try {
-            ImUserInfoDto imUserInfoDto = smsService.getIMUsertoken(user.getUid());
+            ImUserInfoDto imUserInfoDto = smsService.getIMUsertoken(user.getUid(),userSignUpDto.getNickName(),"");
             if(imUserInfoDto != null){
                 ImConfig imConfig = new ImConfig();
                 imConfig.setUid(user.getUid());
@@ -333,7 +333,7 @@ public class UserServiceImpl implements UserService {
 
         //IM新用户获得token
         try {
-            ImUserInfoDto imUserInfoDto = smsService.getIMUsertoken(newUser.getUid());
+            ImUserInfoDto imUserInfoDto = smsService.getIMUsertoken(newUser.getUid(),"用户"+signUpSuccessDto.getMeNumber(),"");
             if(imUserInfoDto != null){
                 ImConfig imConfig = new ImConfig();
                 imConfig.setUid(newUser.getUid());
@@ -1074,6 +1074,11 @@ public class UserServiceImpl implements UserService {
         }
         userProfile.setUpdateTime(new Date());
         userMybatisDao.modifyUserProfile(userProfile);
+        try {
+			smsService.refreshUser(userProfile.getUid()+"", userProfile.getNickName(), Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+		} catch (Exception e) {
+			log.error("user modify refresh IM error");
+		}
         log.info("user modify profile success");
         log.info("modifyUserProfile end ...");
         return Response.success(ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.status,ResponseStatus.USER_MODIFY_PROFILE_SUCCESS.message);
@@ -1572,6 +1577,7 @@ public class UserServiceImpl implements UserService {
         user.setUid(userProfile.getUid());
         user.setIsFollowed(isFollow(targetUid,sourceUid));
         user.setIsFollowMe(isFollow(sourceUid,targetUid));
+        user.setCreateTime(userProfile.getCreateTime());
         return Response.success(user);
     }
 
@@ -2426,6 +2432,11 @@ public class UserServiceImpl implements UserService {
                 userProfile.setNickName(thirdPartSignUpDto.getNickName());
                 userProfile.setIsClientLogin(0);
                 userMybatisDao.modifyUserProfile(userProfile);
+                try {
+        			smsService.refreshUser(userProfile.getUid()+"", userProfile.getNickName(), "");
+        		} catch (Exception e) {
+        			log.error("user modify refresh IM error");
+        		}
             }
         }
 
@@ -2589,7 +2600,7 @@ public class UserServiceImpl implements UserService {
 
         //IM新用户获得token
         try {
-            ImUserInfoDto imUserInfoDto = smsService.getIMUsertoken(user.getUid());
+            ImUserInfoDto imUserInfoDto = smsService.getIMUsertoken(user.getUid(),thirdPartSignUpDto.getNickName(),Constant.QINIU_DOMAIN + "/" + thirdPartSignUpDto.getAvatar());
             if(imUserInfoDto != null){
                 ImConfig imConfig = new ImConfig();
                 imConfig.setUid(user.getUid());
@@ -3430,11 +3441,14 @@ public class UserServiceImpl implements UserService {
                 try {
                     ImConfig imConfig = userMybatisDao.getImConfig(user.getUid());
                     if(imConfig == null) {
-                        ImUserInfoDto imUserInfoDto = smsService.getIMUsertoken(user.getUid());
-                        ImConfig im = new ImConfig();
-                        im.setToken(imUserInfoDto.getToken());
-                        im.setUid(Long.valueOf(imUserInfoDto.getUserId()));
-                        userMybatisDao.createImConfig(im);
+                    	UserProfile userProfile = userMybatisDao.getUserProfileByUid(user.getUid());
+                    	if(userProfile!=null){
+                            ImUserInfoDto imUserInfoDto = smsService.getIMUsertoken(user.getUid(),userProfile.getNickName(),Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                            ImConfig im = new ImConfig();
+                            im.setToken(imUserInfoDto.getToken());
+                            im.setUid(Long.valueOf(imUserInfoDto.getUserId()));
+                            userMybatisDao.createImConfig(im);
+                    	}
                     }
                 } catch (Exception e) {
                     return Response.failure("出错了");
