@@ -292,7 +292,7 @@ public class SmsServiceImpl implements SmsService {
 
         HttpURLConnection conn = IMHttpUtil.CreatePostHttpConnection(HostType.API, IM_APP_KEY, IM_APP_SECRET, "/user/refresh.json", "application/x-www-form-urlencoded");
         IMHttpUtil.setBodyParameter(body, conn);
-        ImRefreshDto result = JSON.parseObject(IMHttpUtil.returnResult(conn) ,ImUserInfoDto.class);
+        ImRefreshDto result = JSON.parseObject(IMHttpUtil.returnResult(conn) ,ImRefreshDto.class);
         return result;
     }
 }
