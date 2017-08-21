@@ -49,6 +49,8 @@ public class UserInfoDto implements BaseEntity{
         private int v_lv;
         
         private Date createTime;
+        
+        private int level;
     }
 
     @Data

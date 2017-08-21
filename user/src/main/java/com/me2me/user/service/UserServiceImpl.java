@@ -1578,6 +1578,7 @@ public class UserServiceImpl implements UserService {
         user.setIsFollowed(isFollow(targetUid,sourceUid));
         user.setIsFollowMe(isFollow(sourceUid,targetUid));
         user.setCreateTime(userProfile.getCreateTime());
+        user.setLevel(userProfile.getLevel());
         return Response.success(user);
     }
 
