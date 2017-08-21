@@ -9048,6 +9048,10 @@ public class LiveServiceImpl implements LiveService {
     	if(lotteryInfo.getStatus()==-1){
     		return Response.failure(500, "该抽奖已删除！");
     	}
+    	Topic topic = liveMybatisDao.getTopicById(lotteryInfo.getTopicId());
+    	if(null == topic){
+    		return Response.failure(500, "抽奖王国已删除，无法开奖");
+    	}
 		if (lotteryInfo.getUid().longValue() != uid) {
 			return Response.failure(500, "您不是抽奖发起人不能开奖！");
 		}
@@ -9058,10 +9062,9 @@ public class LiveServiceImpl implements LiveService {
 			lotteryInfo.setStatus(2);
 			liveMybatisDao.updateLotteryInfoById(lotteryInfo);
 			
-			List<Map<String, Object>> list = liveLocalJdbcDao
-					.getDistinctLotteryUser(lotteryId);
-			String winMessage = "您参加的《"+lotteryInfo.getTitle()+"》"+"开奖了,恭喜您中奖了！";
-			String loseMessage = "您参加的《"+lotteryInfo.getTitle()+"》"+"开奖了,很遗憾，您没有中奖！";
+			List<Map<String, Object>> list = liveLocalJdbcDao.getDistinctLotteryUser(lotteryId);
+			String winMessage = topic.getTitle()+":恭喜你参加的["+lotteryInfo.getTitle()+"]中奖了,点击打开领奖吧";
+			String loseMessage = topic.getTitle()+":["+lotteryInfo.getTitle()+"]已开奖,很遗憾你没有中奖,再接再厉吧";
 			int allWin = 0;
 			List<Integer> winList = new ArrayList<Integer>();
 			//如果参与人数小于设置中奖人数那么全部中奖
@@ -9086,14 +9089,14 @@ public class LiveServiceImpl implements LiveService {
 					win = 1;
 					LotteryWin lotteryWin = new LotteryWin();
 					lotteryWin.setLotteryId(lotteryId);
-					lotteryWin.setUid((Long) map.get("uid"));
+					lotteryWin.setUid(joinUid);
 					liveMybatisDao.saveLotteryWin(lotteryWin);
 				}
 				JsonObject jsonObject = new JsonObject();
 				jsonObject.addProperty("type", Specification.PushObjectType.LOTTERY.index);
 				jsonObject.addProperty("messageType", Specification.PushMessageType.LOTTERY.index);
 				jsonObject.addProperty("lotteryId", lotteryId);
-				userService.pushWithExtra(uid + "", win==0?loseMessage:winMessage, JPushUtils.packageExtra(jsonObject));
+				userService.pushWithExtra(String.valueOf(joinUid), win==0?loseMessage:winMessage, JPushUtils.packageExtra(jsonObject));
 			}
 			SpeakDto speakDto = new SpeakDto();
 			speakDto.setType(52);
