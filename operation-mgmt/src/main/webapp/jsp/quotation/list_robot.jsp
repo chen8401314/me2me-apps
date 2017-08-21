@@ -52,7 +52,7 @@
 										<input type="text" id="nickName" name="nickName" value="" class="form-control">&nbsp;
 						<label for="exampleInputEmail1">类型</label>
 						<select id="stype" name="stype" class="form-control" >
-						<option value="-1" selected>全部</option>
+							<option value="-1" selected>全部</option>
 						 <option value="0">机器人</option>
 						 <option value="1">日签</option>
 						</select>
@@ -89,54 +89,42 @@
 						</section>
 					</div>
 				</div>
-					<div class="modal inmodal fade" id="modal" tabindex="-1"
-			role="dialog" aria-hidden="true">
-			<div class="modal-dialog modal-lg">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal">
-							<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
-						</button>
-						<h2 class="modal-title">
-							用户列表
-							</h2>
-					</div>
-					
-					<div class="modal-body">
-								<form id="form2" action="${ctx}/tag/query" method="post">
-
-					<div class="row">
-						<div class="col-lg-12">
-							<section class="panel">
-								<header class="panel-heading">搜索</header>
-								<div class="panel-body">
-									<div class="form-inline" role="form">
-										用户昵称：
-										<input type="text" id="snickName" name="snickName" value="" class="form-control">&nbsp;
-										<a class="btn btn-primary" href="javascript:searchUser();">搜索</a>
+				<div class="modal inmodal fade" id="modal" tabindex="-1"	role="dialog" aria-hidden="true">
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content">
+							<div class="modal-header">
+								<button type="button" class="close" data-dismiss="modal">
+									<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+								</button>
+									用户列表
+							</div>
+							<div class="modal-body">
+								<form id="form2" action="${ctx}/tag/query" method="post" class="form form-inline">
+										<div class="form-group">
+											<label>用户昵称：</label>
+											<input type="text" id="snickName" name="snickName" value="" class="form-control">&nbsp;
+											<a class="btn btn-primary" href="javascript:searchUser();">搜索</a>
+										</div>
+										<div class="form-group">
+											&emsp;&emsp;&emsp;
+											<label for="exampleInputEmail1">类型：</label>
+											<select id="type" name="type" class="form-control" >
+											 <option value="0">机器人</option>
+											 <option value="1">日签</option>
+											</select>
+										</div>
+								</form>
+							
+								<div class="ibox-content">
+								  <div class="adv-table">
+										<table class=" table  table-striped" id="mytable1" width="100%">
+				                           	</table>
+										</div>
 									</div>
-								</div>
-							</section>
-						</div>
-					</div>
-				</form>
-									<div class="form-group">
-						<label for="exampleInputEmail1">类型</label>
-						<select id="type" name="type" class="form-control" >
-						 <option value="0">机器人</option>
-						 <option value="1">日签</option>
-						</select>
-					</div>
-						<div class="ibox-content">
-						  <div class="adv-table">
-								<table class="display table table-bordered table-striped" id="mytable1" width="100%">
-		                           	</table>
 								</div>
 							</div>
 						</div>
 					</div>
-				</div>
-			</div>
 		</div>
 				
 				<!-- page end-->
@@ -163,9 +151,7 @@
 	<script src="${ctx}/js/dynamic_table_init_0_asc.js"></script>
 	<script src="${ctx}/js/bootstrap-switch.js"></script>
 	<script src="${ctx}/js/jquery.tagsinput.js"></script>
-	<script src="${ctx}/js/form-component.js"></script>
 	<script src="${ctx}/js/common-scripts.js"></script>
-	<script src="${ctx}/js/advanced-form-components.js"></script>	
 	<script type="text/javascript" src="${ctx}/js/DataTables-1.10.11/media/js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" src="${ctx}/assets/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
 		<script type="text/javascript">
