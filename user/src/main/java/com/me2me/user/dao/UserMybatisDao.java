@@ -164,6 +164,7 @@ public class UserMybatisDao {
 
     public void createUserProfile(UserProfile userProfile){
     	userProfile.setNameGroup(FirstCharUtils.getFirstChar(userProfile.getNickName()));
+    	userProfile.setCreateTime(new Date());
         userProfileMapper.insertSelective(userProfile);
     }
 
