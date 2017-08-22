@@ -16,6 +16,7 @@ import lombok.Data;
 public class GetLotteryListDto implements BaseEntity {
 
     
+	
     private  List<LotteryInfoElement> lotteryList = Lists.newArrayList();
     
     
@@ -48,6 +49,8 @@ public class GetLotteryListDto implements BaseEntity {
         private int winNumber;
         
         private int joinNumber;
+        
+        private long uid;
         
         private List<WinUser> winUsers = Lists.newArrayList();;
       

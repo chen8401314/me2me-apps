@@ -8999,6 +8999,7 @@ public class LiveServiceImpl implements LiveService {
     	  u.setCreateTime(lotteryInfo.getCreateTime().getTime());
     	  u.setTitle(lotteryInfo.getTitle());
     	  u.setSummary(lotteryInfo.getSummary());
+    	  u.setUid(lotteryInfo.getUid());
     	  if(new Date().compareTo(lotteryInfo.getEndTime())>=0 && lotteryInfo.getStatus()==0){
         		u.setStatus(1);
         	}else{
