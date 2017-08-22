@@ -5601,13 +5601,16 @@ public class LiveServiceImpl implements LiveService {
             topicInfo = liveMybatisDao.getRandomDropaRoundAlgorithm(map);
         }
        
-        //Topic topic = liveMybatisDao.getTopicById(topicInfo.getId());		// 不明逻辑。
+        if(topicInfo == null){
+        	return;
+        }
         Content content = contentService.getContentByTopicId(topicInfo.getId());
         if(topicInfo != null){
             int status = this.getInternalStatus(topicInfo ,uid);
             dto.setInternalStatus(status);
             dto.setTopicType(topicInfo.getType());
-        }if(content != null){
+        }
+        if(content != null){
             dto.setCid(content.getId());
         }
         dto.setTopicId(topicInfo.getId());

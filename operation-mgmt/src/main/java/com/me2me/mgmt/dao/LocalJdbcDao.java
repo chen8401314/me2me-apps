@@ -47,4 +47,12 @@ public class LocalJdbcDao {
 	public void executeSqlWithParams(String sql, Object... params){
 		jdbcTemplate.update(sql, params);
 	}
+	
+	public List<Map<String, Object>> queryForList(String sql, Object... params) {
+		return jdbcTemplate.queryForList(sql, params);
+	}
+	
+	public <T> T queryForObject(String sql, Class<T> cls, Object... args) {
+		return jdbcTemplate.queryForObject(sql, cls,args);
+	}
 }

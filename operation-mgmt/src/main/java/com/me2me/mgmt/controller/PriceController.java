@@ -25,6 +25,7 @@ import com.me2me.common.page.PageBean;
 import com.me2me.content.service.ContentService;
 import com.me2me.live.model.TopicPriceSubsidyConfig;
 import com.me2me.live.service.LiveService;
+import com.me2me.mgmt.dao.LocalJdbcDao;
 import com.me2me.mgmt.request.ConfigItem;
 import com.me2me.mgmt.request.KingdomBusinessDTO;
 import com.me2me.mgmt.request.KingdomDTO;
@@ -50,6 +51,8 @@ public class PriceController {
 	private UserService userService;
 	@Autowired
 	private KingdomPriceTask kingdomPriceTask;
+	@Autowired
+	private LocalJdbcDao localJdbcDao;
 	
 	//////新实现
 	
@@ -82,17 +85,27 @@ public class PriceController {
 	@RequestMapping(value = "/kingdomUserPage")
 	public KingdomUserRequest kingdomUserPage(KingdomUserRequest dto){
 		PageBean page= dto.toPageBean();
-		String sql ="select r1.*,up.nick_name,un.me_number,up.create_time from ("+
-					"SELECT uid,count(1) messages from topic_fragment where topic_id=? group by uid "+
-					") r1,user_profile up,user_no un "+
-					"where r1.uid=up.uid and r1.uid=un.uid "+
-					"order by up.create_time desc";
+		StringBuilder sql = new StringBuilder();
+		sql.append("select r1.*,up.nick_name,un.me_number,up.create_time from (");
+		sql.append("SELECT uid,count(1) messages from topic_fragment where topic_id=?");
+		if(StringUtils.isNotBlank(dto.getFragment())){
+			sql.append(" and fragment like '%").append(dto.getFragment()).append("%'");
+		}
+		sql.append(" group by uid) r1,user_profile up,user_no un");
+		sql.append(" where r1.uid=up.uid and r1.uid=un.uid");
+		if(StringUtils.isNotBlank(dto.getStartTime())){
+			sql.append(" and up.create_time>='").append(dto.getStartTime()).append(" 00:00:00'");
+		}
+		if(StringUtils.isNotBlank(dto.getEndTime())){
+			sql.append(" and up.create_time<='").append(dto.getEndTime()).append(" 23:59:59'");
+		}
+		sql.append(" order by up.create_time desc,up.uid");
+
+		String countSql = "select count(1) from ("+sql.toString()+") c";
+		String pageSql = sql.toString()+" limit ?,?";
 		
-		String countSql = "select count(1) from ("+sql+") c";
-		String pageSql = sql+" limit ?,?";
-		
-		int count = contentService.queryForObject(countSql, Integer.class,dto.getTopicId());
-		List dataList = contentService.queryForList(pageSql, dto.getTopicId(),(page.getCurrentPage()-1)*page.getPageSize(),page.getPageSize());
+		int count = localJdbcDao.queryForObject(countSql, Integer.class,dto.getTopicId());
+		List dataList = localJdbcDao.queryForList(pageSql, dto.getTopicId(),(page.getCurrentPage()-1)*page.getPageSize(),page.getPageSize());
 		dto.setRecordsTotal(count);
 		dto.setData(dataList);
 		return dto;
@@ -509,10 +522,10 @@ public class PriceController {
 			String sql3 = "delete from topic_price_his";
 			String sql4 = "delete from topic_price_push";
 			
-			contentService.executeSql(sql1);
-			contentService.executeSql(sql2);
-			contentService.executeSql(sql3);
-			contentService.executeSql(sql4);
+			localJdbcDao.executeSql(sql1);
+			localJdbcDao.executeSql(sql2);
+			localJdbcDao.executeSql(sql3);
+			localJdbcDao.executeSql(sql4);
 		}catch(Exception e){
 			logger.error("初始化失败", e);
 			return "初始化失败";

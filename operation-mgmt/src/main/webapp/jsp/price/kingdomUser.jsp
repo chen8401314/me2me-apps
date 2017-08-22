@@ -39,6 +39,24 @@
 		<!--main content start-->
 		<section id="main-content">
 			<section class="wrapper">
+					<div class="row">
+						<div class="col-lg-12">
+							<section class="panel">
+								<header class="panel-heading">搜索</header>
+								<div class="panel-body">
+									<div class="form-inline" role="form">
+										评论内容：
+										<input type="text" id="fragment" name="fragment" value="" class="form-control">&nbsp;&nbsp;
+										注册开始时间
+										<input type="text" id="startTime" name="startTime" class="form-control" readonly="readonly">&nbsp;&nbsp;
+										注册结束时间
+										<input type="text" id="endTime" name="startTime" class="form-control" readonly="readonly">&nbsp;&nbsp;
+										<a class="btn btn-primary" href="javascript:search();">搜索</a>
+									</div>
+								</div>
+							</section>
+						</div>
+					</div>
 				<!-- page start-->
 				<div class="row">
 					<div class="col-sm-12">
@@ -154,7 +172,16 @@
 	
 	
 	var sourceTable=$('#table').DataTable( {
-	    "ajax": "./kingdomUserPage?topicId=${param.topicId}",
+		"ajax": {
+            "url": "./kingdomUserPage",
+            "type": "POST",
+            "data": function (d) {
+                d.topicId = "${param.topicId}";
+                d.fragment =  $("#fragment").val();
+                d.startTime =  $("#startTime").val();
+                d.endTime =  $("#endTime").val();
+            }
+        },
 	    processing:true,
 	    "columns": [
 	                //用户Id,用户Me号,用户名,注册时间,留言数量
@@ -169,9 +196,15 @@
 	        {data: "messages",title: "留言数"}
 	     ]
 	});
+	function search(){
+		 sourceTable.draw(true);
+	}
 	$("#search_form").on("submit",function(){
+		var fragment = $("#fragment").val();
+		var startTime = $("#startTime").val();
+		var endTime = $("#endTime").val();
 		var data= $(this).serialize();
-		var url ="./kingdomUserPage?topicId=${param.topicId}&"+data;
+		var url ="./kingdomUserPage?topicId=${param.topicId}&fragment="+fragment+"&startTime="+startTime+"&endTime="+endTime+"&"+data;
 		sourceTable.ajax.url(url).load();
 		return false;
 	})
