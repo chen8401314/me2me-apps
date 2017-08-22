@@ -82,9 +82,9 @@ public class Users extends BaseController {
         userSignUpDto.setOpeninstallData(request.getOpeninstallData());
 
         if(StringUtils.isEmpty(request.getChannel())){
-        	log.info("无渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"]");
+        	log.info("手机注册无渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"],["+request.getOpeninstallData()+"]");
         }else{
-        	log.info("有渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"]");
+        	log.info("手机注册有渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"],["+request.getOpeninstallData()+"]");
         }
         //埋点
 //        kafkaService.saveClientLog(request,req.getHeader("User-Agent"),Specification.ClientLogAction.REG_PAGE2_SAVE);
@@ -113,6 +113,13 @@ public class Users extends BaseController {
         userSignUpDto.setParams(request.getParams());
         userSignUpDto.setVerifyCode(request.getVerifyCode());
         userSignUpDto.setOpeninstallData(request.getOpeninstallData());
+        
+        if(StringUtils.isEmpty(request.getChannel())){
+        	log.info("手机验证码注册无渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"],["+request.getOpeninstallData()+"]");
+        }else{
+        	log.info("手机验证码注册有渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"],["+request.getOpeninstallData()+"]");
+        }
+        
         return userService.signUpByVerify(userSignUpDto);
     }
 
@@ -702,9 +709,9 @@ public class Users extends BaseController {
         dto.setParams(request.getParams());
         dto.setOpeninstallData(request.getOpeninstallData());
         if(StringUtils.isEmpty(request.getChannel())){
-        	log.info("无渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"]");
+        	log.info("三方登录无渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"],["+request.getOpeninstallData()+"]");
         }else{
-        	log.info("有渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"]");
+        	log.info("三方登录有渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"],["+request.getOpeninstallData()+"]");
         }
         
         return userService.thirdPartLogin(dto);
