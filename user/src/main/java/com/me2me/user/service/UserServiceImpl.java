@@ -218,7 +218,10 @@ public class UserServiceImpl implements UserService {
 		if (!StringUtils.isEmpty(userSignUpDto.getOpeninstallData())) {
 			try {
 				JSONObject openinstallDataJson = JSONObject.parseObject(userSignUpDto.getOpeninstallData());
-				long refereeUid = openinstallDataJson.getLong("refereeUid");
+				long refereeUid = 0;
+				if(null != openinstallDataJson.get("uid")){
+					refereeUid = openinstallDataJson.getLong("uid");
+				}
 				if (refereeUid != 0) {
 					// 判断推广员是否存在
 					UserProfile refereeUserProfile = userMybatisDao.getUserProfileByUid(refereeUid);
@@ -377,7 +380,10 @@ public class UserServiceImpl implements UserService {
 		if (!StringUtils.isEmpty(userSignUpDto.getOpeninstallData())) {
 			try {
 				JSONObject openinstallDataJson = JSONObject.parseObject(userSignUpDto.getOpeninstallData());
-				long refereeUid = openinstallDataJson.getLong("refereeUid");
+				long refereeUid = 0;
+				if(null != openinstallDataJson.get("uid")){
+					refereeUid = openinstallDataJson.getLong("uid");
+				}
 				if (refereeUid != 0) {
 					// 判断推广员是否存在
 					UserProfile refereeUserProfile = userMybatisDao.getUserProfileByUid(refereeUid);
@@ -2680,7 +2686,10 @@ public class UserServiceImpl implements UserService {
 		if (!StringUtils.isEmpty(thirdPartSignUpDto.getOpeninstallData())) {
 			try {
 				JSONObject openinstallDataJson = JSONObject.parseObject(thirdPartSignUpDto.getOpeninstallData());
-				long refereeUid = openinstallDataJson.getLong("refereeUid");
+				long refereeUid = 0;
+				if(null != openinstallDataJson.get("uid")){
+					refereeUid = openinstallDataJson.getLong("uid");
+				}
 				if (refereeUid != 0) {
 					// 判断推广员是否存在
 					UserProfile refereeUserProfile = userMybatisDao.getUserProfileByUid(refereeUid);
