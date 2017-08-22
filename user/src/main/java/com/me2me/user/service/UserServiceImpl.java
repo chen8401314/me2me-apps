@@ -1075,7 +1075,18 @@ public class UserServiceImpl implements UserService {
         userProfile.setUpdateTime(new Date());
         userMybatisDao.modifyUserProfile(userProfile);
         try {
-			smsService.refreshUser(userProfile.getUid()+"", userProfile.getNickName(), Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+        	String modifyName = "";
+        	if(!StringUtils.isEmpty(modifyUserProfileDto.getNickName())){
+        		modifyName = modifyUserProfileDto.getNickName();
+        	}
+        	String modifyAvatar = "";
+        	if(StringUtils.isEmpty(modifyUserProfileDto.getAvatar())){
+        		modifyAvatar = Constant.QINIU_DOMAIN + "/" + modifyUserProfileDto.getAvatar();
+        	}
+        	
+        	if(StringUtils.isEmpty(modifyUserProfileDto.getNickName())){
+        		smsService.refreshUser(userProfile.getUid()+"", modifyName, modifyAvatar);
+        	}
 		} catch (Exception e) {
 			log.error("user modify refresh IM error");
 		}
@@ -2434,7 +2445,9 @@ public class UserServiceImpl implements UserService {
                 userProfile.setIsClientLogin(0);
                 userMybatisDao.modifyUserProfile(userProfile);
                 try {
-        			smsService.refreshUser(userProfile.getUid()+"", userProfile.getNickName(), "");
+                	if(!StringUtils.isEmpty(userProfile.getNickName())){
+                		smsService.refreshUser(userProfile.getUid()+"", userProfile.getNickName(), "");
+                	}
         		} catch (Exception e) {
         			log.error("user modify refresh IM error");
         		}

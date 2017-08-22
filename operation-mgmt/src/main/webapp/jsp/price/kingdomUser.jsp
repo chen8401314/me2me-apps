@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta charset="utf-8" />
 
-<title>ZX_IMS 2.0 - 标签管理</title>
+<title>ZX_IMS 2.0 - 王国发言用户列表</title>
 
 <link href="${ctx}/css/bootstrap.min.css" rel="stylesheet" />
 <link href="${ctx}/css/bootstrap-reset.css" rel="stylesheet" />
@@ -44,7 +44,7 @@
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								王国用户列表
+								王国发言用户列表
 							</header>
 							<div class="panel-body">
 								<div class="adv-table">
@@ -57,6 +57,7 @@
 					</div>
 				</div>
 				<!-- page end-->
+				<span class="btn btn-default"><a href="./kingdomQuery">返回</a></span>
 			</section>
 		</section>
 		<!--main content end-->
@@ -160,7 +161,7 @@
 	        {data: "uid",orderable:false,title: "用户Id"},
 	        {data: "me_number",orderable:false,title: "用户Me号"},
 	        {data: "nick_name",orderable:false,title: "用户名"},
-	        {data: "create_time",title: "创建时间",render:function(data){
+	        {data: "create_time",title: "注册时间",render:function(data){
 	        	if(data!=null){
 	        		return new Date(data).Format("yyyy-MM-dd hh:mm:ss");
 	        	}
