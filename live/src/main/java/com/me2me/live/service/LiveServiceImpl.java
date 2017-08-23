@@ -8694,6 +8694,10 @@ public class LiveServiceImpl implements LiveService {
          if(!StringUtils.isEmpty(image)){
         	 extra.put("cover", Constant.QINIU_DOMAIN + "/" +image);
          }
+         String sqimage = userService.getAppConfigByKey("LOTTERY_START_SQUARE_IMAGE");
+         if(!StringUtils.isEmpty(sqimage)){
+        	 extra.put("imageSq", Constant.QINIU_DOMAIN + "/" +sqimage);
+         }
 		speakDto.setExtra(extra.toJSONString());
 		speak(speakDto);
     	CreateLotteryDto dto = new CreateLotteryDto();
@@ -9184,6 +9188,10 @@ public class LiveServiceImpl implements LiveService {
 			if(!StringUtils.isEmpty(image)){
 				extra.put("cover", Constant.QINIU_DOMAIN + "/" + image);
 			}
+	         String sqimage = userService.getAppConfigByKey("LOTTERY_END_SQUARE_IMAGE");
+	         if(!StringUtils.isEmpty(sqimage)){
+	        	 extra.put("imageSq", Constant.QINIU_DOMAIN + "/" +sqimage);
+	         }
 			speakDto.setExtra(extra.toJSONString());
 			speak(speakDto);
 			return Response.success();
