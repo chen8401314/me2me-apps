@@ -1482,7 +1482,7 @@ public class LiveLocalJdbcDao {
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("select f2.* from topic_fragment f2,(select f.topic_id,max(f.id) maxid");
-		sb.append("from topic_fragment f,topic t where f.topic_id=t.id and f.topic_id in (");
+		sb.append(" from topic_fragment f,topic t where f.topic_id=t.id and f.topic_id in (");
 		for(int i=0;i<topicIds.size();i++){
     		if(i>0){
     			sb.append(",");
