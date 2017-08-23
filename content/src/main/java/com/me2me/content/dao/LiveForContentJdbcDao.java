@@ -1131,7 +1131,7 @@ public class LiveForContentJdbcDao {
     	sb.append(" and (f2.type in (12,13) or (f2.type=0 and f2.content_type in (0,1,22,23))");
     	sb.append(" or (f2.type=55 and f2.content_type in (0,63,51,62,72,74))");
     	sb.append(" or (f2.type=52 and f2.content_type in (22,19,72,74,23))");
-    	sb.append(") and f2.create_time>=date_add(m.maxtime, interval -3 minute)");
+    	sb.append(") and f2.create_time>=date_add(m.maxtime, interval -").append(limitMinute).append(" minute)");
     	sb.append(" order by f2.topic_id,id DESC");
 
     	return jdbcTemplate.queryForList(sb.toString());

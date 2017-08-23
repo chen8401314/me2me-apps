@@ -2881,6 +2881,20 @@ public class LiveServiceImpl implements LiveService {
         //查询5个用户关注
         List<Content> attentionList = contentService.getAttention(Integer.MAX_VALUE ,uid, 1);
         if (attentionList.size() > 0 && attentionList != null) {
+        	int count = 4;
+        	List<Long> topicIdList = new ArrayList<Long>();
+        	Content idx = null;
+        	for(int i=0;i<attentionList.size()&&i<count;i++){
+        		idx = attentionList.get(i);
+        		if(idx.getType() == Specification.ArticleType.LIVE.index){//王国
+                    if(!topicIdList.contains(idx.getForwardCid())){
+                        topicIdList.add(idx.getForwardCid());
+                    }
+                }
+        	}
+        	//一次性获取所有王国外露内容最后一个发言人
+        	
+        	
             int size = 0;
             for (Content content : attentionList) {
                 size++;
@@ -8631,6 +8645,9 @@ public class LiveServiceImpl implements LiveService {
          extra.put("type", "raffle");
          extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
          extra.put("id", lotteryInfo.getId());
+         if(!StringUtils.isEmpty(image)){
+        	 extra.put("cover", Constant.QINIU_DOMAIN + "/" +image);
+         }
 		speakDto.setExtra(extra.toJSONString());
 		speak(speakDto);
     	CreateLotteryDto dto = new CreateLotteryDto();
@@ -9117,6 +9134,9 @@ public class LiveServiceImpl implements LiveService {
 			extra.put("type", "raffle");
 			extra.put("only", UUID.randomUUID().toString() + "-" + new Random().nextInt());
 			extra.put("id", lotteryInfo.getId());
+			if(!StringUtils.isEmpty(image)){
+				extra.put("cover", Constant.QINIU_DOMAIN + "/" + image);
+			}
 			speakDto.setExtra(extra.toJSONString());
 			speak(speakDto);
 			return Response.success();
