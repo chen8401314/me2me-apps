@@ -8673,6 +8673,7 @@ public class LiveServiceImpl implements LiveService {
 		GetLotteryDto dto = new GetLotteryDto();
 		if (lotteryInfo.getStatus() == -1) {
 			dto.setStatus(-1);
+			dto.setTitle(lotteryInfo.getTitle());
 		} else {
 			// app外
 			if (outApp == 1) {
