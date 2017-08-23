@@ -1116,23 +1116,17 @@ public class LiveForContentJdbcDao {
     	}
     	
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select f2.* from topic_fragment f2,(select f.topic_id,max(f.create_time) as maxtime");
-    	sb.append(" from topic_fragment f where f.status=1 and f.topic_id in (");
+    	sb.append("select f.* from topic_fragment f,topic t");
+    	sb.append(" where f.topic_id=t.id and f.topic_id in (");
     	for(int i=0;i<topicIds.size();i++){
     		if(i>0){
     			sb.append(",");
     		}
     		sb.append(topicIds.get(i).toString());
     	}
-    	sb.append(") and (f.type in (12,13) or (f.type=0 and f.content_type in (0,1,22,23))");
-    	sb.append(" or (f.type=55 and f.content_type in (0,63,51,62,72,74))");
-    	sb.append(" or (f.type=52 and f.content_type in (22,19,72,74,23))");
-    	sb.append(") group by f.topic_id) m where f2.topic_id=m.topic_id and f2.status=1");
-    	sb.append(" and (f2.type in (12,13) or (f2.type=0 and f2.content_type in (0,1,22,23))");
-    	sb.append(" or (f2.type=55 and f2.content_type in (0,63,51,62,72,74))");
-    	sb.append(" or (f2.type=52 and f2.content_type in (22,19,72,74,23))");
-    	sb.append(") and f2.create_time>=date_add(m.maxtime, interval -").append(limitMinute).append(" minute)");
-    	sb.append(" order by f2.topic_id,id DESC");
+    	sb.append(") and f.status=1 and f.out_type=1");
+    	sb.append(" and f.create_time>=date_add(t.out_time, interval -").append(limitMinute).append(" minute)");
+    	sb.append(" order by f.topic_id,f.id desc");
 
     	return jdbcTemplate.queryForList(sb.toString());
     }

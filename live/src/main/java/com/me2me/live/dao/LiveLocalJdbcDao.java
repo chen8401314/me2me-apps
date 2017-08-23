@@ -1462,4 +1462,37 @@ public class LiveLocalJdbcDao {
 		String sql = "update content set read_count=read_count+"+addReadCount+",read_count_dummy=read_count_dummy+"+addReadCountDummy+" where id="+cid;
 		jdbcTemplate.execute(sql);
 	}
+	
+	public List<Map<String, Object>> getLastOutFragment(List<Long> topicIds, int limitMinute, List<Long> privateTopicIds){
+		if(null == topicIds || topicIds.size() == 0 || limitMinute<=0){
+    		return null;
+    	}else{
+    		if(null != privateTopicIds && privateTopicIds.size() > 0){
+    			for(int i=0;i<topicIds.size();i++){
+    				if(privateTopicIds.contains(topicIds.get(i))){
+    					topicIds.remove(i);
+    					i--;
+    				}
+    			}
+    			if(topicIds.size() == 0){
+    				return null;
+    			}
+    		}
+    	}
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("select f2.* from topic_fragment f2,(select f.topic_id,max(f.id) maxid");
+		sb.append("from topic_fragment f,topic t where f.topic_id=t.id and f.topic_id in (");
+		for(int i=0;i<topicIds.size();i++){
+    		if(i>0){
+    			sb.append(",");
+    		}
+    		sb.append(topicIds.get(i).toString());
+    	}
+		sb.append(") and f.status=1 and f.out_type=1");
+		sb.append(" and f.create_time>=date_add(t.out_time, interval -").append(limitMinute);
+		sb.append(" minute) group by f.topic_id) m where f2.id=m.maxid");
+		
+		return jdbcTemplate.queryForList(sb.toString());
+	}
 }

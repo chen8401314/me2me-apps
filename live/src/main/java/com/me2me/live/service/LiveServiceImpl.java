@@ -993,28 +993,29 @@ public class LiveServiceImpl implements LiveService {
     public Response speak(SpeakDto speakDto) {
         log.info("speak start ...");
         if (speakDto.getType() != Specification.LiveSpeakType.LIKES.index && speakDto.getType() != Specification.LiveSpeakType.SUBSCRIBED.index && speakDto.getType() != Specification.LiveSpeakType.SHARE.index && speakDto.getType() != Specification.LiveSpeakType.FOLLOW.index && speakDto.getType() != Specification.LiveSpeakType.INVITED.index) {
-            //START 防刷
-            int speakDelayCfg = Integer.parseInt(userService.getAppConfigByKey(Constant.REPEAT_SPEAK_DELAY_KEY));
-            int maxRepeakCountCfg = Integer.parseInt(userService.getAppConfigByKey(Constant.MAX_REPEAT_SPEAK_COUNT_KEY));
+            if(!StringUtils.isEmpty(speakDto.getFragment())){
+            	//START 防刷
+                int speakDelayCfg = Integer.parseInt(userService.getAppConfigByKey(Constant.REPEAT_SPEAK_DELAY_KEY));
+                int maxRepeakCountCfg = Integer.parseInt(userService.getAppConfigByKey(Constant.MAX_REPEAT_SPEAK_COUNT_KEY));
 
-            String speakContentCacheKey = "USER_SPEAK_CONTENT@"+speakDto.getUid();
-            String speakRepeatCountCacheKey = "USER_SPEAK_REPEAT_COUNT@"+speakDto.getUid();
+                String speakContentCacheKey = "USER_SPEAK_CONTENT@"+speakDto.getUid();
+                String speakRepeatCountCacheKey = "USER_SPEAK_REPEAT_COUNT@"+speakDto.getUid();
 
-            String cacheContent = cacheService.get(speakContentCacheKey);
-            String strCacheRepeatCount =cacheService.get(speakRepeatCountCacheKey);
-            int cacheRepeatCount=strCacheRepeatCount==null?0:Integer.parseInt(strCacheRepeatCount);
-            if(cacheContent!=null && cacheContent.equals(speakDto.getFragment())){
-                if(cacheRepeatCount==maxRepeakCountCfg){   // 重复发言
-                    return Response.failure(-2,"重复发言");
-                }else{
-                    cacheRepeatCount++;
+                String cacheContent = cacheService.get(speakContentCacheKey);
+                String strCacheRepeatCount =cacheService.get(speakRepeatCountCacheKey);
+                int cacheRepeatCount=strCacheRepeatCount==null?0:Integer.parseInt(strCacheRepeatCount);
+                if(cacheContent!=null && cacheContent.equals(speakDto.getFragment())){
+                    if(cacheRepeatCount==maxRepeakCountCfg){   // 重复发言
+                        return Response.failure(-2,"重复发言");
+                    }else{
+                        cacheRepeatCount++;
+                    }
                 }
+                cacheService.setex(speakContentCacheKey,speakDto.getFragment(),speakDelayCfg);
+                cacheService.setex(speakRepeatCountCacheKey,cacheRepeatCount+"",speakDelayCfg);
+                // END 防刷
             }
-            cacheService.setex(speakContentCacheKey,speakDto.getFragment(),speakDelayCfg);
-            cacheService.setex(speakRepeatCountCacheKey,cacheRepeatCount+"",speakDelayCfg);
-            // END 防刷
-
-
+        	
             //由于低版本前端在at的时候有bug，故关于at这里要做一个保护措施
             if(speakDto.getType() == Specification.LiveSpeakType.AT.index
                     || speakDto.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
@@ -1091,6 +1092,13 @@ public class LiveServiceImpl implements LiveService {
                 Calendar calendar = Calendar.getInstance();
                 topic.setUpdateTime(calendar.getTime());
                 topic.setLongTime(calendar.getTimeInMillis());
+                if(speakDto.getType() == 12 || speakDto.getType() == 13
+                		|| (speakDto.getType() == 0 && (speakDto.getContentType()==0||speakDto.getContentType()==1||speakDto.getContentType()==22||speakDto.getContentType()==23))
+                		|| (speakDto.getType()==55 && (speakDto.getContentType()==0||speakDto.getContentType()==63||speakDto.getContentType()==51||speakDto.getContentType()==62||speakDto.getContentType()==72||speakDto.getContentType()==74))
+                		|| (speakDto.getType()==52 && (speakDto.getContentType()==22||speakDto.getContentType()==19||speakDto.getContentType()==72||speakDto.getContentType()==74||speakDto.getContentType()==23))){
+                	topic.setOutTime(calendar.getTime());
+                }
+                
                 liveMybatisDao.updateTopic(topic);
                 
                 //国王/核心圈发言，需要更新content表的updateTime
@@ -2893,19 +2901,49 @@ public class LiveServiceImpl implements LiveService {
                 }
         	}
         	//一次性获取所有王国外露内容最后一个发言人
-        	
+        	Map<String, Long> lastOutUidMap = new HashMap<String, Long>();
+        	if(topicIdList.size() > 0){
+        		String v = userService.getAppConfigByKey("KINGDOM_OUT_MINUTE");
+                int limitMinute = 3;
+                if(!StringUtils.isEmpty(v)){
+                	limitMinute = Integer.valueOf(v).intValue();
+                }
+                List<Long> privateTopicIds = new ArrayList<Long>();
+                String specialTopicIds = userService.getAppConfigByKey("SPECIAL_KINGDOM_IDS");
+                if(!StringUtils.isEmpty(specialTopicIds)){
+                	String[] tmp = specialTopicIds.split(",");
+                	for(String a : tmp){
+                		if(!StringUtils.isEmpty(a)){
+                			privateTopicIds.add(Long.valueOf(a));
+                		}
+                	}
+                }
+        		List<Map<String, Object>> list = liveLocalJdbcDao.getLastOutFragment(topicIdList, limitMinute, privateTopicIds);
+        		if(null != list && list.size() > 0){
+        			for(Map<String, Object> m : list){
+        				lastOutUidMap.put(String.valueOf(m.get("topic_id")), (Long)m.get("uid"));
+        			}
+        		}
+        	}
         	
             int size = 0;
             for (Content content : attentionList) {
                 size++;
                 ShowTopicListDto.AttentionElement attentionElement = ShowTopicListDto.createAttentionElement();
-                UserProfile userProfile = userService.getUserProfileByUid(content.getUid());
+                long fuid = content.getUid();
+                if(content.getType() == Specification.ArticleType.LIVE.index){
+                	if(null != lastOutUidMap.get(content.getForwardCid().toString())){
+                		fuid = lastOutUidMap.get(content.getForwardCid().toString()).longValue();
+                	}
+                }
+                
+                UserProfile userProfile = userService.getUserProfileByUid(fuid);
                 attentionElement.setAvatar(Constant.QINIU_DOMAIN+"/"+userProfile.getAvatar());
                 attentionElement.setUid(content.getUid());
                 attentionElement.setV_lv(userProfile.getvLv());
                 attentionElement.setLevel(userProfile.getLevel());
                 showTopicListDto.getAttentionData().add(attentionElement);
-                if(size == 5){
+                if(size >= 5){
                     break;
                 }
             }
@@ -6596,9 +6634,17 @@ public class LiveServiceImpl implements LiveService {
             return Response.failure(500,"您没有重新发送投票权限！");
         }
         tf.setId(null);
-        tf.setCreateTime(new Date());
+        Date now = new Date();
+        tf.setCreateTime(now);
         liveMybatisDao.createTopicFragment(tf);
         liveMybatisDao.deleteFragmentByIdForPhysics(fragmentId);
+        
+        Calendar calendar = Calendar.getInstance();
+        tp.setUpdateTime(calendar.getTime());
+        tp.setLongTime(calendar.getTimeInMillis());
+        tp.setOutTime(calendar.getTime());
+        liveMybatisDao.updateTopic(tp);
+        
         ResendVoteDto rv = new ResendVoteDto();
         rv.setFragmentId(tf.getId());
         return Response.success(ResponseStatus.RESEND_VOTE_SUCCESS.status, ResponseStatus.RESEND_VOTE_SUCCESS.message,rv);
