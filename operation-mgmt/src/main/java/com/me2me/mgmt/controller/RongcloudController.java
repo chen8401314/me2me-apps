@@ -76,7 +76,7 @@ public class RongcloudController {
 			logger.info("全量刷新用户私信信息结束，共耗时["+(e-s)/1000+"]秒");
 			return "1";
 		} catch (Exception e) {
-			logger.error("执行出错", e);
+			logger.error("refreshAllUser执行失败", e);
 			return "0";
 		}
 	}
@@ -97,6 +97,7 @@ public class RongcloudController {
 				return "1";
 			}
 		} catch (Exception e) {
+			logger.error("refreshUser执行失败", e);
 			return "0";
 		}
 	}
