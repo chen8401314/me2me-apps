@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -42,18 +41,42 @@ public class RongcloudController {
 	@RequestMapping(value = "/refreshAllUser")
 	@ResponseBody
 	public String refreshAllUser(HttpServletRequest mrequest) throws Exception {
+		logger.info("开始全量刷新用户私信信息");
+		long s = System.currentTimeMillis();
 		try {
-			List<Map<String, Object>> list = localJdbcDao
-					.queryEvery("select p.uid,p.nick_name,p.avatar from user u,user_profile p where u.uid = p.uid ");
-			for (Map<String, Object> map : list) {
-				String uid = map.get("uid").toString();
-				String nickName = map.get("nick_name") == null ? "" : map.get("nick_name").toString();
-				String avatar = map.get("avatar") == null ? ""
-						: Constant.QINIU_DOMAIN + "/" + map.get("avatar").toString();
-				smsService.refreshUser(uid, nickName, avatar);
+			String countSql = "select count(1) as cc from user_profile";
+			List<Map<String, Object>> countList = localJdbcDao.queryEvery(countSql);
+			int total = 0;
+			if(null != countList && countList.size() > 0){
+				Map<String, Object> count = countList.get(0);
+				total = ((Long)count.get("cc")).intValue();
 			}
+			logger.info("共["+total+"]个用户需要刷新");
+			
+			String sql = "select p.uid,p.nick_name,p.avatar from user_profile p";
+			int start = 0;
+			int batch = 500;
+			int left = total;
+			String uid = null;
+			String nickName = null;
+			String avatar = null;
+			while(start < total){
+				List<Map<String, Object>> list = localJdbcDao.queryEvery(sql + " order by p.uid limit " + start + "," + batch);
+				for(Map<String, Object> u : list){
+					uid = u.get("uid").toString();
+					nickName = u.get("nick_name") == null ? "" : u.get("nick_name").toString();
+					avatar = u.get("avatar") == null ? "" : Constant.QINIU_DOMAIN + "/" + u.get("avatar").toString();
+					smsService.refreshUser(uid, nickName, avatar);
+				}
+				left = left - list.size();
+				start = start + batch;
+				logger.info("本次共处理了["+list.size()+"]个用户，还剩["+left+"]个用户");
+			}
+			long e = System.currentTimeMillis();
+			logger.info("全量刷新用户私信信息结束，共耗时["+(e-s)/1000+"]秒");
 			return "1";
 		} catch (Exception e) {
+			logger.error("执行出错", e);
 			return "0";
 		}
 	}
@@ -64,6 +87,7 @@ public class RongcloudController {
 		try {
 			UserProfile userProfile = userService.getUserProfileByUid(uid);
 			if (userProfile == null) {
+				logger.info("用户["+uid+"]不存在");
 				return "-1";
 			} else {
 				String uidStr = uid + "";
