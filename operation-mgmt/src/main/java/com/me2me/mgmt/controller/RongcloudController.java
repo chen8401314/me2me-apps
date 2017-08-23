@@ -54,6 +54,7 @@ public class RongcloudController {
 			}
 			return "1";
 		} catch (Exception e) {
+			logger.error("refreshAllUser执行失败", e);
 			return "0";
 		}
 	}
@@ -73,6 +74,7 @@ public class RongcloudController {
 				return "1";
 			}
 		} catch (Exception e) {
+			logger.error("refreshUser执行失败", e);
 			return "0";
 		}
 	}
