@@ -1080,6 +1080,14 @@ public class LiveServiceImpl implements LiveService {
             }
             topicFragment.setSource(speakDto.getSource());
             topicFragment.setExtra(speakDto.getExtra());
+            boolean isOut = false;
+            if(speakDto.getType() == 12 || speakDto.getType() == 13
+            		|| (speakDto.getType() == 0 && (speakDto.getContentType()==0||speakDto.getContentType()==1||speakDto.getContentType()==22||speakDto.getContentType()==23))
+            		|| (speakDto.getType()==55 && (speakDto.getContentType()==0||speakDto.getContentType()==63||speakDto.getContentType()==51||speakDto.getContentType()==62||speakDto.getContentType()==72||speakDto.getContentType()==74))
+            		|| (speakDto.getType()==52 && (speakDto.getContentType()==22||speakDto.getContentType()==19||speakDto.getContentType()==72||speakDto.getContentType()==74||speakDto.getContentType()==23))){
+            	topicFragment.setOutType(1);
+            	isOut = true;
+            }
             liveMybatisDao.createTopicFragment(topicFragment);
 
             //由于系统消息和足迹不参与王国更新排序计算，故这里不需要更新时间
@@ -1092,10 +1100,7 @@ public class LiveServiceImpl implements LiveService {
                 Calendar calendar = Calendar.getInstance();
                 topic.setUpdateTime(calendar.getTime());
                 topic.setLongTime(calendar.getTimeInMillis());
-                if(speakDto.getType() == 12 || speakDto.getType() == 13
-                		|| (speakDto.getType() == 0 && (speakDto.getContentType()==0||speakDto.getContentType()==1||speakDto.getContentType()==22||speakDto.getContentType()==23))
-                		|| (speakDto.getType()==55 && (speakDto.getContentType()==0||speakDto.getContentType()==63||speakDto.getContentType()==51||speakDto.getContentType()==62||speakDto.getContentType()==72||speakDto.getContentType()==74))
-                		|| (speakDto.getType()==52 && (speakDto.getContentType()==22||speakDto.getContentType()==19||speakDto.getContentType()==72||speakDto.getContentType()==74||speakDto.getContentType()==23))){
+                if(isOut){
                 	topic.setOutTime(calendar.getTime());
                 }
                 
