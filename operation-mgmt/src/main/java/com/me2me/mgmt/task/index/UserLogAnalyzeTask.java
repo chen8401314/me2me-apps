@@ -229,8 +229,13 @@ public class UserLogAnalyzeTask{
      * @return
      */
     public List<Map<String,Object>> getUserVisitLogByDay(String day,int skip,int limit){
-    	String sql = "select uid,action,topic_id,extra from user_visit_log where DATE_FORMAT(create_time,'%Y-%m-%d')=? limit ?,?";
-		return jdbcTemplate.queryForList(sql,day,skip,limit);
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select uid,action,topic_id,extra from user_visit_log");
+    	sb.append(" where create_time>='").append(day).append(" 00:00:00'");
+    	sb.append(" and create_time<='").append(day).append(" 23:59:59'");
+    	sb.append(" order by id limit ?,?");
+    	
+    	return jdbcTemplate.queryForList(sb.toString(), skip, limit);
     }
     
     public boolean existsUserTagLike(long uid,String tag){
