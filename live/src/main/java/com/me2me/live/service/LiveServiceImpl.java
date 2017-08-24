@@ -8716,15 +8716,16 @@ public class LiveServiceImpl implements LiveService {
     	if(lotteryInfo.getWinNumber()<1 || lotteryInfo.getWinNumber()>30){
     		return Response.failure(500, "中奖人数请填写1-30之间的数字");
     	}
-    	if(new Date().compareTo(lotteryInfo.getEndTime())>=0){
-    		return Response.failure(500, "结束时间必须大于当前时间");
-    	}
     	if(oldLotteryInfo.getUid().longValue() != lotteryInfo.getUid().longValue()){
     		return Response.failure(500, "您不是抽奖发起人");
 		}
     	if(oldLotteryInfo.getStatus()==2){
     		lotteryInfo.setWinNumber(null);
     		lotteryInfo.setEndTime(null);
+    	}else{
+        	if(new Date().compareTo(lotteryInfo.getEndTime())>=0){
+        		return Response.failure(500, "结束时间必须大于当前时间");
+        	}
     	}
     	liveMybatisDao.updateLotteryInfoById(lotteryInfo);
         return Response.success();
