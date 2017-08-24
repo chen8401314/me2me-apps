@@ -8919,6 +8919,7 @@ public class LiveServiceImpl implements LiveService {
     	fragment.setFragmentImage("");
     	fragment.setType(52);
     	fragment.setContentType(23);//王国内链
+    	fragment.setOutType(1);//是外露内容
         //组装extra
         JSONObject obj = new JSONObject();
         obj.put("type", "ugc");
@@ -8959,6 +8960,7 @@ public class LiveServiceImpl implements LiveService {
     	Calendar calendar = Calendar.getInstance();
     	targetTopic.setUpdateTime(calendar.getTime());
     	targetTopic.setLongTime(calendar.getTimeInMillis());
+    	targetTopic.setOutTime(calendar.getTime());
         liveMybatisDao.updateTopic(targetTopic);
 
         liveLocalJdbcDao.updateContentUpdateTime4Kingdom(targetTopic.getId(), calendar.getTime());
