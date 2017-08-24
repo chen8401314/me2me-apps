@@ -1310,6 +1310,15 @@ public class ContentServiceImpl implements ContentService {
             }
         }
         
+        //一次性查询关注信息
+        Map<String, String> followMap = new HashMap<String, String>();
+        List<UserFollow> userFollowList = userService.getAllFollows(uid, uidList);
+        if(null != userFollowList && userFollowList.size() > 0){
+            for(UserFollow uf : userFollowList){
+                followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
+            }
+        }
+        
         Map<String, Map<String, Object>> forwardTopicUserProfileMap = new HashMap<String, Map<String, Object>>();
         if(forwardTopicIdList.size() > 0){
             List<Map<String,Object>> topicUserProfileList = liveForContentJdbcDao.getTopicUserProfileByTopicIds(forwardTopicIdList);
@@ -1387,23 +1396,23 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setContentType(content.getContentType());
             contentElement.setForwardCid(content.getForwardCid());
             contentElement.setType(content.getType());
-
-//            SystemConfig systemConfig =userService.getSystemConfig();
-//            int start = systemConfig.getReadCountStart();
-//            int end = systemConfig.getReadCountEnd();
-//            int readCountDummy = content.getReadCountDummy();
-//            Random random = new Random();
-//            //取1-6的随机数每次添加
-//            int value = random.nextInt(end)+start;
-//            int readDummy = readCountDummy+value;
-//            content.setReadCountDummy(readDummy);
-//            contentMybatisDao.updateContentById(content);
             contentElement.setReadCount(content.getReadCountDummy());
 
+            //判断人员是否关注
+            if(null != followMap.get(uid+"_"+content.getUid())){
+                contentElement.setIsFollowed(1);
+            }else{
+                contentElement.setIsFollowed(0);
+            }
+            if(null != followMap.get(content.getUid()+"_"+uid)){
+                contentElement.setIsFollowMe(1);
+            }else{
+                contentElement.setIsFollowMe(0);
+            }
+            
             contentElement.setForwardUrl(content.getForwardUrl());
             contentElement.setForwardTitle(content.getForwardTitle());
             String cover = content.getConverImage();
-
             if(!StringUtils.isEmpty(cover)){
                 if(content.getType() == Specification.ArticleType.FORWARD_ARTICLE.index
                         || content.getType() == Specification.ArticleType.FORWARD_LIVE.index){
@@ -1433,7 +1442,6 @@ public class ContentServiceImpl implements ContentService {
                     }
                 }
 
-//                contentElement.setLiveStatus(contentMybatisDao.getTopicStatus(content.getForwardCid()));
                 contentElement.setLiveStatus(0);
                 if(null != topicCountMap.get(content.getForwardCid().toString())){
                 	contentElement.setTopicCount(topicCountMap.get(content.getForwardCid().toString()).intValue());
@@ -1452,16 +1460,6 @@ public class ContentServiceImpl implements ContentService {
                         contentElement.setAcCount(acCount);
                     }
                     contentElement.setPrice((Integer)topic.get("price"));
-//                    List<Map<String,Object>> list = liveForContentJdbcDao.getTopicTagDetailListByTopicId((Long) topic.get("id"));
-//                    StringBuffer tagsSB = new StringBuffer();
-//                    for (int i = 0; i < list.size(); i++) {
-//                        Map<String,Object> map = list.get(i);
-//                        if(i!=0){
-//                            tagsSB.append(";");
-//                        }
-//                        tagsSB.append((String)map.get("tag"));
-//                    }
-//                    contentElement.setTags(tagsSB.toString());
                 }
                 if(null != liveFavouriteMap.get(content.getForwardCid().toString())){
                 	contentElement.setFavorite(1);
@@ -1479,7 +1477,6 @@ public class ContentServiceImpl implements ContentService {
                 int imageCounts = contentMybatisDao.getContentImageCount(content.getId());
                 contentElement.setImageCount(imageCounts);
             }
-//            contentElement.setIsLike(isLike(content.getId(),currentUid));
             contentElement.setLikeCount(content.getLikeCount());
             contentElement.setPersonCount(content.getPersonCount());
 
@@ -1538,12 +1535,6 @@ public class ContentServiceImpl implements ContentService {
                                     	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
                                     }
                         			outElement.setAtUid((Long)topicOutData.get("at_uid"));
-//                        			if(outElement.getAtUid() > 0){
-//                        				atUserProfile = userService.getUserProfileByUid(outElement.getAtUid());
-//                        				if(null != atUserProfile){
-//                        					outElement.setAtNickName(atUserProfile.getNickName());
-//                        				}
-//                        			}
                         			outElement.setExtra((String)topicOutData.get("extra"));
                         			contentElement.getTextData().add(outElement);
             					}
@@ -1559,12 +1550,6 @@ public class ContentServiceImpl implements ContentService {
                                     	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
                                     }
                         			outElement.setAtUid((Long)topicOutData.get("at_uid"));
-//                        			if(outElement.getAtUid() > 0){
-//                        				atUserProfile = userService.getUserProfileByUid(outElement.getAtUid());
-//                        				if(null != atUserProfile){
-//                        					outElement.setAtNickName(atUserProfile.getNickName());
-//                        				}
-//                        			}
                         			outElement.setExtra((String)topicOutData.get("extra"));
                         			contentElement.getAudioData().add(outElement);
             					}
@@ -1580,12 +1565,6 @@ public class ContentServiceImpl implements ContentService {
                                     	outElement.setFragmentImage(Constant.QINIU_DOMAIN + "/" + fragmentImage);
                                     }
                         			outElement.setAtUid((Long)topicOutData.get("at_uid"));
-//                        			if(outElement.getAtUid() > 0){
-//                        				atUserProfile = userService.getUserProfileByUid(outElement.getAtUid());
-//                        				if(null != atUserProfile){
-//                        					outElement.setAtNickName(atUserProfile.getNickName());
-//                        				}
-//                        			}
                         			outElement.setExtra((String)topicOutData.get("extra"));
                         			contentElement.getImageData().add(outElement);
             					}
@@ -1594,20 +1573,6 @@ public class ContentServiceImpl implements ContentService {
             		}
             	}
             }
-            
-//            List<ContentReview> contentReviewList = contentMybatisDao.getContentReviewTop3ByCid(content.getId());
-//            log.info("get content review success");
-//            for(ContentReview contentReview : contentReviewList){
-//                ShowMyPublishDto.MyPublishElement.ReviewElement reviewElement = ShowMyPublishDto.MyPublishElement.createReviewElement();
-//                reviewElement.setUid(contentReview.getUid());
-//                UserProfile user = userService.getUserProfileByUid(contentReview.getUid());
-//                reviewElement.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
-//                reviewElement.setNickName(user.getNickName());
-//                reviewElement.setLevel(user.getLevel());
-//                reviewElement.setCreateTime(contentReview.getCreateTime());
-//                reviewElement.setReview(contentReview.getReview());
-//                contentElement.getReviews().add(reviewElement);
-//            }
             showMyPublishDto.getMyPublishElements().add(contentElement);
         }
         return Response.success(showMyPublishDto);
