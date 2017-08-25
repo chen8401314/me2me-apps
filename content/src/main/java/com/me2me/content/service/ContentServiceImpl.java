@@ -1494,6 +1494,16 @@ public class ContentServiceImpl implements ContentService {
             			contentElement.setV_lv(lastUserProfile.getvLv());
             			contentElement.setLevel(lastUserProfile.getLevel());
             			contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
+            			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+content.getUid())){
+                            contentElement.setIsFollowed(1);
+                        }else{
+                            contentElement.setIsFollowed(0);
+                        }
+                        if(null != followMap.get(content.getUid()+"_"+String.valueOf(topicOutData.get("uid")))){
+                            contentElement.setIsFollowMe(1);
+                        }else{
+                            contentElement.setIsFollowMe(0);
+                        }
             		}
             		int t = ((Integer)topicOutData.get("type")).intValue();
             		int contentType = ((Integer)topicOutData.get("content_type")).intValue();
@@ -3076,6 +3086,16 @@ public class ContentServiceImpl implements ContentService {
             			contentElement.setV_lv(lastUserProfile.getvLv());
             			contentElement.setLevel(lastUserProfile.getLevel());
             			contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
+            			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+content.getUid())){
+                            contentElement.setIsFollowed(1);
+                        }else{
+                            contentElement.setIsFollowed(0);
+                        }
+                        if(null != followMap.get(content.getUid()+"_"+String.valueOf(topicOutData.get("uid")))){
+                            contentElement.setIsFollowMe(1);
+                        }else{
+                            contentElement.setIsFollowMe(0);
+                        }
             		}
             		
             		int type = ((Integer)topicOutData.get("type")).intValue();
@@ -3437,6 +3457,16 @@ public class ContentServiceImpl implements ContentService {
             			contentElement.setV_lv(lastUserProfile.getvLv());
             			contentElement.setLevel(lastUserProfile.getLevel());
             			contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
+            			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+content.getUid())){
+                            contentElement.setIsFollowed(1);
+                        }else{
+                            contentElement.setIsFollowed(0);
+                        }
+                        if(null != followMap.get(content.getUid()+"_"+String.valueOf(topicOutData.get("uid")))){
+                            contentElement.setIsFollowMe(1);
+                        }else{
+                            contentElement.setIsFollowMe(0);
+                        }
             		}
             		
             		int type = ((Integer)topicOutData.get("type")).intValue();
