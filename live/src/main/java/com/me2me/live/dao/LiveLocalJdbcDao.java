@@ -1495,4 +1495,14 @@ public class LiveLocalJdbcDao {
 		
 		return jdbcTemplate.queryForList(sb.toString());
 	}
+	
+	public void updateTopicUpdateTime(long topicId, Date updateTime, long longTime){
+		String sql = "update topic set update_time=?,long_time=? where id=? and long_time<?";
+		jdbcTemplate.update(sql, updateTime,updateTime,topicId,longTime);
+	}
+	
+	public void updateTopicOutTime(long topicId, Date outTime){
+		String sql = "update topic set out_time=? where id=? and out_time<?";
+		jdbcTemplate.update(sql, outTime,topicId,outTime);
+	}
 }

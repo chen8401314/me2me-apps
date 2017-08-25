@@ -1,7 +1,9 @@
 package com.me2me.common.security;
 
 import com.google.common.base.Charsets;
+
 import org.apache.shiro.crypto.hash.Md5Hash;
+
 import java.security.MessageDigest;
 import java.util.Random;
 import java.util.UUID;
@@ -100,8 +102,12 @@ public class SecurityUtils {
         // {"appId":"100201","currentTime":"1462514238489",
         // "nonce":"c20a626961b849969882fc5aa6417371",
         // "secretKey":"5e516c1db595b1666d4155ab577fabc9","sign":"b207e3058d331c3670fd60aa669a50b3df91dca8"}
-        String value = SecurityUtils.sign("100201","5e516c1db595b1666d4155ab577fabc9","1462514238489","c20a626961b849969882fc5aa6417371");
-        System.out.println(value);
+//        String value = SecurityUtils.sign("100201","5e516c1db595b1666d4155ab577fabc9","1462514238489","c20a626961b849969882fc5aa6417371");
+//        System.out.println(value);
+        
+        String ss = SecurityUtils.md5("123456","335555");
+        
+        System.out.println(ss);
     }
 
 }
