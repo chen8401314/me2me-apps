@@ -1094,15 +1094,19 @@ public class LiveServiceImpl implements LiveService {
             if(speakDto.getType() != Specification.LiveSpeakType.SYSTEM.index
                     && (speakDto.getType() != 51 || speakDto.getContentType() != 16)){
                 Topic topic = liveMybatisDao.getTopicById(speakDto.getTopicId());
+                Topic updateTopic = new Topic();
+                updateTopic.setId(topic.getId());
                 boolean saveCurrent = false;
                 if(topic.getSubType()!=null && topic.getSubType()==2){		// 如果是赠送的待激活的王国，发言一次之后激活为正常的王国。
                 	topic.setSubType(0);
+                	updateTopic.setSubType(0);
                 	saveCurrent = true;
                 }
                 if(topic.getSubType() == 1 && topic.getRights() == 3){
                 	if(speakDto.getType() == 0 && speakDto.getContentType() == 1 && speakDto.getExtra().contains("image_daycard")){
                 	}else{
                 		topic.setRights(1);
+                		updateTopic.setRights(1);
                 		saveCurrent = true;
                 	}
                 }
@@ -1110,17 +1114,21 @@ public class LiveServiceImpl implements LiveService {
                 
                 Calendar calendar = Calendar.getInstance();
                 topic.setUpdateTime(calendar.getTime());
+                updateTopic.setUpdateTime(calendar.getTime());
                 topic.setLongTime(calendar.getTimeInMillis());
+                updateTopic.setLongTime(calendar.getTimeInMillis());
                 long outTime = 0;
                 if(isOut){
                 	topic.setOutTime(calendar.getTime());
+                	updateTopic.setOutTime(calendar.getTime());
                 	outTime = calendar.getTimeInMillis();
                 }
-                if(saveCurrent){
-                	liveMybatisDao.updateTopic(topic);
-                }else{
-                	this.applicationEventBus.post(new UpdateTopicTimeEvent(topic.getId(), calendar.getTimeInMillis(), outTime));
-                }
+                liveMybatisDao.updateTopic(updateTopic);
+//                if(saveCurrent){
+//                	liveMybatisDao.updateTopic(topic);
+//                }else{
+//                	this.applicationEventBus.post(new UpdateTopicTimeEvent(topic.getId(), calendar.getTimeInMillis(), outTime));
+//                }
                 
                 //国王/核心圈发言，需要更新content表的updateTime
                 if(topic.getUid().longValue() == speakDto.getUid() 
@@ -8978,12 +8986,17 @@ public class LiveServiceImpl implements LiveService {
         fragment.setExtra(obj.toJSONString());
         liveMybatisDao.createTopicFragment(fragment);
 
+        Topic updateTopic = new Topic();
+        updateTopic.setId(targetTopic.getId());
     	Calendar calendar = Calendar.getInstance();
     	targetTopic.setUpdateTime(calendar.getTime());
+    	updateTopic.setUpdateTime(calendar.getTime());
     	targetTopic.setLongTime(calendar.getTimeInMillis());
+    	updateTopic.setLongTime(calendar.getTimeInMillis());
     	targetTopic.setOutTime(calendar.getTime());
-//        liveMybatisDao.updateTopic(targetTopic);
-    	this.applicationEventBus.post(new UpdateTopicTimeEvent(targetTopic.getId(), calendar.getTimeInMillis(), calendar.getTimeInMillis()));
+    	updateTopic.setOutTime(calendar.getTime());
+        liveMybatisDao.updateTopic(updateTopic);
+//    	this.applicationEventBus.post(new UpdateTopicTimeEvent(targetTopic.getId(), calendar.getTimeInMillis(), calendar.getTimeInMillis()));
 
         liveLocalJdbcDao.updateContentUpdateTime4Kingdom(targetTopic.getId(), calendar.getTime());
     	liveLocalJdbcDao.updateContentUpdateId4Kingdom(targetTopic.getId(),cacheService.incr("UPDATE_ID"));

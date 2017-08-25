@@ -1498,7 +1498,7 @@ public class LiveLocalJdbcDao {
 	
 	public void updateTopicUpdateTime(long topicId, Date updateTime, long longTime){
 		String sql = "update topic set update_time=?,long_time=? where id=? and long_time<?";
-		jdbcTemplate.update(sql, updateTime,updateTime,topicId,longTime);
+		jdbcTemplate.update(sql, updateTime,longTime,topicId,longTime);
 	}
 	
 	public void updateTopicOutTime(long topicId, Date outTime){
