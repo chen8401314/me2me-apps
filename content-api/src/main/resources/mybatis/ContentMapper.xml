@@ -1013,7 +1013,7 @@
     c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,c.update_id,c.update_time,
     c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights
     from content c left join topic t on c.forward_cid = t.id and c.type=3 where c.update_id &lt; #{sinceId} and c.status != 1 and c.rights = 1 
-    and  c.type=3
+    and  c.type=3 and t.rights!=3
     <if test="blacklistUids!=null and blacklistUids.size() &gt; 0">
       and c.uid not in
       <foreach close=")" collection="blacklistUids" item="bid" open="(" separator=",">

@@ -209,7 +209,7 @@ public class TaskConsoleController {
 		String topicCoverImage = null;
 		
 		
-		String topicCoverSql = "select pic rd from topic_preset_pic";
+		String topicCoverSql = "select pic from topic_preset_pic";
 		List<Map<String, Object>> topicCoverList = localJdbcDao.queryEvery(topicCoverSql);
 		if(null != topicCoverList && topicCoverList.size() > 0){
 			int idx = new Random().nextInt(topicCoverList.size());

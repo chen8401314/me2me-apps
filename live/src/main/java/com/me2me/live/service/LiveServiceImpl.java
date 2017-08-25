@@ -1097,6 +1097,12 @@ public class LiveServiceImpl implements LiveService {
                 if(topic.getSubType()!=null && topic.getSubType()==2){		// 如果是赠送的待激活的王国，发言一次之后激活为正常的王国。
                 	topic.setSubType(0);
                 }
+                if(topic.getSubType() == 1 && topic.getRights() == 3){
+                	if(speakDto.getType() == 0 && speakDto.getContentType() == 1 && speakDto.getExtra().contains("image_daycard")){
+                	}else{
+                		topic.setRights(1);
+                	}
+                }
                 Calendar calendar = Calendar.getInstance();
                 topic.setUpdateTime(calendar.getTime());
                 topic.setLongTime(calendar.getTimeInMillis());
@@ -8354,7 +8360,11 @@ public class LiveServiceImpl implements LiveService {
         //聚合版本新加属性
         int kingdomType = Specification.KingdomType.NORMAL.index;
         topic.setType(kingdomType);
-        topic.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);//目前默认公开的，等以后有需求的再说
+        if(createKingdomDto.getSubType() == 1){
+        	topic.setRights(3);
+        }else{
+        	topic.setRights(Specification.KingdomRights.PUBLIC_KINGDOM.index);//目前默认公开的，等以后有需求的再说
+        }
         topic.setSummary(createKingdomDto.getFragment());//目前，第一次发言即王国简介
         topic.setCeAuditType(0);//聚合王国属性，是否需要国王审核才能加入此聚合王国，默认0是
         topic.setAcAuditType(1);//个人王国属性，是否需要国王审核才能收录此王国，默认1否
