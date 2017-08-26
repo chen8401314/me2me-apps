@@ -1102,6 +1102,11 @@ public class LiveServiceImpl implements LiveService {
                 	updateTopic.setSubType(0);
                 	saveCurrent = true;
                 }
+                boolean needRobot = true;
+                if(topic.getSubType() == 1 && speakDto.getType() == 0 
+                		&& speakDto.getContentType() == 1 && speakDto.getExtra().contains("image_daycard")){
+                	needRobot = false;
+                }
                 if(topic.getSubType() == 1 && topic.getRights() == 3){
                 	if(speakDto.getType() == 0 && speakDto.getContentType() == 1 && speakDto.getExtra().contains("image_daycard")){
                 	}else{
@@ -1157,7 +1162,7 @@ public class LiveServiceImpl implements LiveService {
                 
                 //王国创建3天内，国王的前两条发言触发机器人回复
                 String robotSwitch = userService.getAppConfigByKey("KINGDOMROBOT_AUTO_REPLY");
-            	if(!StringUtils.isEmpty(robotSwitch) && "on".equals(robotSwitch) && speakDto.getQuotationInfoId() == 0){//自动回复开关开 并且 不是机器人的回复
+            	if(!StringUtils.isEmpty(robotSwitch) && "on".equals(robotSwitch) && speakDto.getQuotationInfoId() == 0 && needRobot){//自动回复开关开 并且 不是机器人的回复
             		Calendar cal = Calendar.getInstance();
                     cal.setTime(topic.getCreateTime());
                     cal.add(Calendar.DAY_OF_MONTH, 3);
