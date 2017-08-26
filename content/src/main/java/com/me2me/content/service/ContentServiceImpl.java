@@ -4200,6 +4200,7 @@ public class ContentServiceImpl implements ContentService {
         List<ActivityWithBLOBs> activityList = null;
         List<UserFamous> userFamousList = null;
         List<Content2Dto> ceKingdomList = null;
+        List<Map<String,Object>> listingKingdoms = null;
         if(isFirst){//第一次的话，还需要获取banner列表，名人堂列表，热点聚合王国列表
             //获取banner列表
             activityList = activityService.getHotActivity();
@@ -4207,6 +4208,10 @@ public class ContentServiceImpl implements ContentService {
             userFamousList = userService.getUserFamousPage(1, 30, blacklistUids);
             //获取热点聚合王国列表  ,已经不用了。
             //ceKingdomList = contentMybatisDao.getHotContentByType(sinceId, 1, 3);//只要3个热点聚合王国
+            // 查上市价格, 获取30个上市王国
+            listingKingdoms = liveForContentJdbcDao.getListingKingdoms(1, 30);
+            
+            result.setHotTagKingdomList(buildHotTagKingdoms(uid, blacklistUids));
         }
 
         List<String> redisIds = cacheService.lrange("HOT_TOP_KEY",0,-1);
@@ -4239,9 +4244,9 @@ public class ContentServiceImpl implements ContentService {
         // 排序topList
 
 
-        // 查上市价格, 获取30个上市王国
-        List<Map<String,Object>> listingKingdoms= liveForContentJdbcDao.getListingKingdoms(1, 30);
-        if(listingKingdoms.size()>0){
+        
+        
+        if(null != listingKingdoms && listingKingdoms.size()>0){
             List<BasicKingdomInfo> listingKingdomList =kingdomBuider.buildKingdoms(listingKingdoms, uid);
             for(BasicKingdomInfo info:listingKingdomList){
                 info.setShowPriceBrand(0);// 首页不显示米币吊牌。
@@ -4262,8 +4267,7 @@ public class ContentServiceImpl implements ContentService {
                 }
             }
         }
-        result.setHotTagKingdomList(buildHotTagKingdoms(uid, blacklistUids));
-
+        
         for(ShowHotListDTO.HotContentElement element : result.getTops()){
             element.setOperationTime(map.get(element.getHid()+""));
         }
