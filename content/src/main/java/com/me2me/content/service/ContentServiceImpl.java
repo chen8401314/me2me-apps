@@ -1229,7 +1229,7 @@ public class ContentServiceImpl implements ContentService {
         ShowMyPublishDto showMyPublishDto = new ShowMyPublishDto();
         List<Content> contents = null;
         if(type == 3){//我的王国（包括核心圈）
-        	contents = contentMybatisDao.myPublishByType(dto);
+        	contents = contentMybatisDao.loadMyKingdom(dto);
         } else if(type == 4){
         	contents = contentMybatisDao.loadMyJoinKingdom(dto);
         } else{
@@ -2046,9 +2046,13 @@ public class ContentServiceImpl implements ContentService {
         dto.setType(Specification.ArticleType.LIVE.index);
         Calendar calendar = Calendar.getInstance();
         dto.setUpdateTime(calendar.getTimeInMillis());
-        List<Content> lives = contentMybatisDao.myPublishByType(dto);
-        buildUserData(sourceUid, lives,Specification.ArticleType.LIVE.index,userInfoDto);
-        userInfoDto.setLiveCount(contentMybatisDao.countMyPublishByType(dto));
+        
+        if(vFlag<2){
+	        List<Content> lives = contentMybatisDao.loadMyKingdom(dto);
+	        buildUserData(sourceUid, lives,Specification.ArticleType.LIVE.index,userInfoDto);
+        }
+        
+        userInfoDto.setLiveCount(contentMybatisDao.countMyKingdom(dto));
         //我加入的
         userInfoDto.setJoinLiveCount(contentMybatisDao.countMyJoinKingdom(dto));
         log.info("getUserData end ...");

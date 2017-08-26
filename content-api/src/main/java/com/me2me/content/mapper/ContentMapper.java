@@ -156,12 +156,16 @@ public interface ContentMapper {
 
     List<Content> loadMyPublishDataByType(MyPublishDto dto);
     
+    List<Content> loadMyKingdom(MyPublishDto dto);
+    
     List<Content> loadMyJoinKingdom(MyPublishDto dto);
     
     int countMyJoinKingdom(MyPublishDto dto);
 
     int countMyPublishByType(MyPublishDto dto);
 
+    int countMyKingdom(MyPublishDto dto);
+    
     void clearData();
 
     /**

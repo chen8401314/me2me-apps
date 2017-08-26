@@ -199,7 +199,9 @@ public class Contents extends BaseController {
     @RequestMapping(value = "/getUserData2",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public Response getUserData2(UserInfoRequest request){
     	int vflag = 0;
-        if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
+    	if(VersionUtil.isNewVersion(request.getVersion(), "3.0.2")){
+    		vflag = 2;
+    	}else if(VersionUtil.isNewVersion(request.getVersion(), "2.2.0")){
         	vflag = 1;
         }
         return contentService.UserData2(request.getCustomerId(),request.getUid(),vflag);

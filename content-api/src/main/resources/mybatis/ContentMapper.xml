@@ -898,6 +898,30 @@
       order by c.id desc limit 10
     </if>
   </select>
+  
+  <select id="loadMyKingdom" parameterType="com.me2me.content.dto.MyPublishDto" resultMap="ResultMapWithBLOBs">
+  select 
+    c.id, c.uid,c.title, c.forward_cid, c.feeling, c.type, c.conver_image, c.forward_title, c.forward_url, c.content_type,
+    c.thumbnail, c.hot_value, c.like_count,c.review_count,c.person_count,c.favorite_count, c.read_count, c.read_count_dummy ,c.authorization, c.create_time, c.status,c.content,c.rights
+from content c,(
+select t.id,t.long_time
+from topic t
+where t.uid=#{uid,jdbcType=BIGINT}
+and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))
+and t.long_time &lt; #{updateTime,jdbcType=BIGINT}
+order by t.long_time desc limit 10
+) m
+where c.forward_cid=m.id and c.type=3
+and c.status=0
+order by m.long_time desc
+  </select>
+  
+  <select id="countMyKingdom" parameterType="com.me2me.content.dto.MyPublishDto" resultType="java.lang.Integer">
+  select count(1)
+from topic t
+where t.uid=#{uid,jdbcType=BIGINT}
+and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))
+  </select>
 
   <select id="loadMyJoinKingdom" parameterType="com.me2me.content.dto.MyPublishDto" resultMap="ResultMapWithBLOBs">
     select
