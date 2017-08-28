@@ -906,8 +906,9 @@
 from content c,(
 select t.id,t.long_time
 from topic t
-where t.uid=#{uid,jdbcType=BIGINT}
-and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))
+where (t.uid=#{uid,jdbcType=BIGINT}
+or find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))
+)
 and t.long_time &lt; #{updateTime,jdbcType=BIGINT}
 order by t.long_time desc limit 10
 ) m
@@ -920,7 +921,7 @@ order by m.long_time desc
   select count(1)
 from topic t
 where t.uid=#{uid,jdbcType=BIGINT}
-and find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))
+or find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.core_circle)-2))
   </select>
 
   <select id="loadMyJoinKingdom" parameterType="com.me2me.content.dto.MyPublishDto" resultMap="ResultMapWithBLOBs">

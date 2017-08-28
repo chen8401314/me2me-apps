@@ -594,11 +594,14 @@ public class KingdomPriceTask {
 					int kv0 = ((Integer)topicData.get("kv0")).intValue();
 					double x0 = ((Double)topicData.get("diligently")).doubleValue();
 					double y0 = ((Double)topicData.get("approve")).doubleValue();
+					if(y0 <= 0){
+						y0=1;
+					}
 					int _kv = 0;
 					if(kv0 == 0){
 						_kv = (int)Math.pow(Math.pow(_x, 2)+Math.pow(_y, 2),0.5);
 					}else{
-						_kv = (int)((Math.pow(Math.min(1, _x/x0), diligentlyWeight) + Math.pow(Math.min(1, _y/y0), approveWeight))*kv0/2);
+						_kv = (int)(Math.min(Math.pow(_x/x0, diligentlyWeight), _x/x0)+Math.min(Math.pow(_y/y0, approveWeight), _y/y0));
 					}
 					
 					int d = 0;
