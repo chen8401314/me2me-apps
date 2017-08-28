@@ -1697,9 +1697,9 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setGender(userProfile.getGender());
         showUserProfileDto.setUserName(userProfile.getMobile());
         showUserProfileDto.setIsPromoter(userProfile.getIsPromoter());
-        showUserProfileDto.setUgcCount(userInitJdbcDao.getUGCount(uid, vFlag));
+//        showUserProfileDto.setUgcCount(userInitJdbcDao.getUGCount(uid, vFlag));
         showUserProfileDto.setLiveCount(userInitJdbcDao.getLiveCount(uid));
-        showUserProfileDto.setAcCount(userInitJdbcDao.getLiveAcCount(uid));
+//        showUserProfileDto.setAcCount(userInitJdbcDao.getLiveAcCount(uid));
         // 获取用户级别和可用米汤币
         showUserProfileDto.setAvailableCoin(userProfile.getAvailableCoin());
         showUserProfileDto.setLevel(userProfile.getLevel());

@@ -1797,26 +1797,30 @@ public class ContentServiceImpl implements ContentService {
             if (type == 1) {
                 log.info("myPublish ugc getData ...");
                 //获取非直播内容
-                List<Content> contents = contentMybatisDao.myPublishUgc(uid, sinceId, vFlag);
-                buildDatas(squareDataDto, contents, uid);
+//                List<Content> contents = contentMybatisDao.myPublishUgc(uid, sinceId, vFlag);
+//                buildDatas(squareDataDto, contents, uid);
             } else if (type == 2) {
                 log.info("my publish live getData ...");
                 //获取直播内容
-                List<Content> contents = contentMybatisDao.myPublishLive(uid, updateTime);
+                MyPublishDto dto = new MyPublishDto();
+                dto.setUid(uid);
+                dto.setUpdateTime(updateTime);
+                List<Content> contents = contentMybatisDao.loadMyKingdom(dto);
+//                List<Content> contents = contentMybatisDao.myPublishLive(uid, updateTime);
                 buildDatas(squareDataDto, contents, uid);
             } else if (type == 0) {
                 log.info("my publish ugc and live getData ...");
                 //兼容2.1.0之前版本 获取UGC和直播
-                List<Content> contents = contentMybatisDao.myPublish(uid, sinceId);
-                buildDatas(squareDataDto, contents, uid);
+//                List<Content> contents = contentMybatisDao.myPublish(uid, sinceId);
+//                buildDatas(squareDataDto, contents, uid);
             }
             log.info("myPublish end ...");
         }else if(newType == 0){//老版本
             if (type == 1) {
                 log.info("myPublish ugc getData ...");
                 //获取非直播内容
-                List<Content> contents = contentMybatisDao.myPublishUgc(uid, sinceId, vFlag);
-                buildDatas(squareDataDto, contents, uid);
+//                List<Content> contents = contentMybatisDao.myPublishUgc(uid, sinceId, vFlag);
+//                buildDatas(squareDataDto, contents, uid);
             } else if (type == 2) {
                 log.info("my publish live getData ...");
                 //获取直播内容
@@ -1825,8 +1829,8 @@ public class ContentServiceImpl implements ContentService {
             } else if (type == 0) {
                 log.info("my publish ugc and live getData ...");
                 //兼容2.1.0之前版本 获取UGC和直播
-                List<Content> contents = contentMybatisDao.myPublish(uid, sinceId);
-                buildDatas(squareDataDto, contents, uid);
+//                List<Content> contents = contentMybatisDao.myPublish(uid, sinceId);
+//                buildDatas(squareDataDto, contents, uid);
             }
             log.info("myPublish end ...");
         }
