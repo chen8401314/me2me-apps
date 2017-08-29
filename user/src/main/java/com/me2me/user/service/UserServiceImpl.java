@@ -506,6 +506,28 @@ public class UserServiceImpl implements UserService {
         	}
         }
     }
+    
+    /**
+     * 校验密码
+     * @param pwd
+     * @param salt
+     * @param encrypt
+     * @return
+     */
+    private boolean checkPwd(String pwd, String salt, String encrypt){
+    	if(SecurityUtils.md5(pwd,salt).equals(encrypt)){
+    		return true;
+    	}
+    	if(pwd.length() > 12){
+    		pwd = pwd.substring(0, 12);
+    		if(SecurityUtils.md5(pwd,salt).equals(encrypt)){
+        		return true;
+        	}
+    	}
+    	
+    	return false;
+    }
+    
     /**
      * 用户登录
      * @param userLoginDto
@@ -519,7 +541,8 @@ public class UserServiceImpl implements UserService {
         User user = userMybatisDao.getUserByUserName(userLoginDto.getUserName());
         if(user != null){
             String salt = user.getSalt();
-            if(SecurityUtils.md5(userLoginDto.getEncrypt(),salt).equals(user.getEncrypt())){
+//            if(SecurityUtils.md5(userLoginDto.getEncrypt(),salt).equals(user.getEncrypt())){
+            if(this.checkPwd(userLoginDto.getEncrypt(), salt, user.getEncrypt())){
                 //如果status为1则已被禁用
                 if(user.getDisableUser() == 1){
                     return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status,ResponseStatus.USER_ACCOUNT_DISABLED.message);

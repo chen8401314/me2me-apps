@@ -732,7 +732,7 @@ public class KingdomPriceTask {
 			if(StringUtils.isNotBlank(extra)){
 				JSONObject obj = JSON.parseObject(extra);
 				if(null != obj.get("duration")){
-					int d = obj.getIntValue("duration");
+					int d = obj.getIntValue("duration")/1000;//毫秒数
 					kc.setUpdateVedioLenght(kc.getUpdateVedioLenght() + d);
 				}else{
 					kc.setUpdateVedioLenght(kc.getUpdateVedioLenght() + 10);
@@ -745,7 +745,7 @@ public class KingdomPriceTask {
 			if(StringUtils.isNotBlank(extra)){
 				JSONObject obj = JSON.parseObject(extra);
 				if(null != obj.get("duration")){
-					int d = obj.getIntValue("duration");
+					int d = obj.getIntValue("duration")/1000;//毫秒数
 					kc.setUpdateAudioLenght(kc.getUpdateAudioLenght() + d);
 				}else{
 					kc.setUpdateAudioLenght(kc.getUpdateAudioLenght() + 10);

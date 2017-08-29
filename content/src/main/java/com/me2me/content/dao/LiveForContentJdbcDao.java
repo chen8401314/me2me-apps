@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import com.me2me.content.dto.BillBoardListDTO;
 
@@ -1143,7 +1144,27 @@ public class LiveForContentJdbcDao {
     	sb.append(" and f.create_time>=date_add(t.out_time, interval -").append(limitMinute).append(" minute)");
     	sb.append(" order by f.topic_id,f.id desc");
 
-    	return jdbcTemplate.queryForList(sb.toString());
+    	List<Map<String, Object>> result = jdbcTemplate.queryForList(sb.toString());
+    	if(null != result && result.size() > 0){
+    		Map<String, Object> m = null;
+    		String fragmentImage = null;
+    		for(int i=0;i<result.size();i++){
+    			m = result.get(i);
+    			int type = (Integer)m.get("type");
+    			int contentType = (Integer)m.get("content_type");
+    			if(type == 0 && contentType == 1){
+    				fragmentImage = (String)m.get("fragment_image");
+    				if(StringUtils.isEmpty(fragmentImage)){
+    					result.remove(i);
+    					i--;
+    					continue;
+    				}
+    			}
+    			
+    		}
+    	}
+    	
+    	return result;
     }
     
     public Map<String,Object> getTopicById(long id){
