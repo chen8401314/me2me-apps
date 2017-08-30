@@ -8160,13 +8160,14 @@ public class LiveServiceImpl implements LiveService {
 			dto.setIsFirstDay(1);
 		} else {
 			dto.setIsFirstDay(0);
-			Map<String, Object> maxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, uid, 60, 90);
+	        String specialTopicIds = userService.getAppConfigByKey("SPECIAL_KINGDOM_IDS");
+			Map<String, Object> maxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, uid, 60, 90,specialTopicIds);
 			if (maxFragment == null) {
-				maxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, uid, 1, 0);
+				maxFragment = liveLocalJdbcDao.getMaxFragment(yesterDay, uid, 1, 0,specialTopicIds);
 			}
 			// 判断是否有文字发言
 			if (maxFragment == null) {
-				Map<String, Object> imageData =liveLocalJdbcDao.getFragmentImage(yesterDay, uid, 0);
+				Map<String, Object> imageData =liveLocalJdbcDao.getFragmentImage(yesterDay, uid, 0,specialTopicIds);
 				if (imageData != null) {
 					Topic topic = liveMybatisDao.getTopicById(Long.parseLong(imageData.get("topic_id").toString()));
 					dto.setStatus(2);
@@ -8190,22 +8191,22 @@ public class LiveServiceImpl implements LiveService {
 								long ruid = recommendUser.getUid();
 								UserProfile ruserProfile = userService.getUserProfileByUid(ruid);
 								Map<String, Object> rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 60,
-										90,0);
+										90,0,specialTopicIds);
 								if (rmaxFragment == null) {
-									rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 1, 0,0);
+									rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 1, 0,0,specialTopicIds);
 								}
 								if(rmaxFragment == null){
 									 rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 60,
-											90,1);
+											90,1,specialTopicIds);
 									 if(rmaxFragment == null){
-										 rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 1, 0,1);
+										 rmaxFragment = liveLocalJdbcDao.getMaxFragmentByType(yesterDay, ruid, 1, 0,1,specialTopicIds);
 									 }
 								}
 								if (rmaxFragment == null) {
 									continue;
 								} else {
 									Map<String, Object> rtopicData = liveLocalJdbcDao.getFragmentImage(yesterDay, ruid,
-											Long.parseLong(rmaxFragment.get("topic_id").toString()));
+											Long.parseLong(rmaxFragment.get("topic_id").toString()),specialTopicIds);
 									Topic topic = liveMybatisDao.getTopicById(Long.parseLong(rmaxFragment.get("topic_id").toString()));
 									dto.setNickName(ruserProfile.getNickName());
 									dto.setAvatar(Constant.QINIU_DOMAIN + "/" + ruserProfile.getAvatar());
@@ -8234,7 +8235,7 @@ public class LiveServiceImpl implements LiveService {
 				}
 			} else {
 				Map<String, Object> imageData =liveLocalJdbcDao.getFragmentImage(yesterDay, uid,
-						Long.parseLong(maxFragment.get("topic_id").toString())); 
+						Long.parseLong(maxFragment.get("topic_id").toString()),specialTopicIds); 
 				Topic topic = liveMybatisDao.getTopicById(Long.parseLong(maxFragment.get("topic_id").toString()));
 				dto.setNickName(userProfile.getNickName());
 				dto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());

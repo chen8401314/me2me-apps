@@ -1236,7 +1236,7 @@ public class LiveLocalJdbcDao {
     	return result;
     }
     
-    public Map<String,Object> getMaxFragment(String strDate,long uid,int startNum,int endNum){
+    public Map<String,Object> getMaxFragment(String strDate,long uid,int startNum,int endNum,String specialTopicIds){
     	StringBuilder sb = new StringBuilder();
     	sb.append("SELECT t.*,tp.title FROM topic_fragment t,topic tp WHERE t.status = 1  AND  t.topic_id = tp.id AND  ((t.type=0 AND t.content_type = 0) OR (t.TYPE=1 AND t.content_type = 0)) ");
     	sb.append(" AND t.fragment <> tp.summary ");
@@ -1248,12 +1248,15 @@ public class LiveLocalJdbcDao {
     	if(endNum!=0){
             sb.append("  AND LENGTH(t.fragment)<=").append(endNum);
       	}
+    	if(!StringUtils.isEmpty(specialTopicIds)){
+    		 sb.append("  AND tp.id no in(").append(specialTopicIds).append(") ");
+    	}
     	sb.append("  ORDER BY LENGTH(t.fragment) DESC LIMIT 1 ");
     	String sql = sb.toString();
     	List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
 		return list.size()>0?list.get(0):null;
     }
-    public Map<String,Object> getMaxFragmentByType(String strDate,long uid,int startNum,int endNum,int type){
+    public Map<String,Object> getMaxFragmentByType(String strDate,long uid,int startNum,int endNum,int type,String specialTopicIds){
     	StringBuilder sb = new StringBuilder();
     	sb.append("SELECT t.*,tp.title FROM topic_fragment t,topic tp WHERE t.status = 1  AND  t.topic_id = tp.id AND t.content_type = 0  ");
     	sb.append( " and t.type =").append(type);
@@ -1266,13 +1269,15 @@ public class LiveLocalJdbcDao {
     	if(endNum!=0){
             sb.append("  AND LENGTH(t.fragment)<=").append(endNum);
       	}
-    	
+    	if(!StringUtils.isEmpty(specialTopicIds)){
+   		 sb.append("  AND tp.id no in(").append(specialTopicIds).append(") ");
+      	}
     	sb.append("  ORDER BY LENGTH(t.fragment) DESC LIMIT 1 ");
     	String sql = sb.toString();
     	List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
 		return list.size()>0?list.get(0):null;
     }
-    public Map<String,Object> getFragmentImage(String strDate,long uid,long topicId){
+    public Map<String,Object> getFragmentImage(String strDate,long uid,long topicId,String specialTopicIds){
     	StringBuilder sb = new StringBuilder();
     	sb.append("SELECT t.* FROM topic_fragment t WHERE t.status = 1  and  ((t.type=0 AND t.content_type = 1) OR (t.type=1 AND t.content_type = 1)  OR (t.type=51 AND t.content_type = 51)) ");
     	sb.append(" AND t.create_time >='").append(strDate).append(" 00:00:00' AND t.create_time <='").append(strDate).append(" 23:59:59'");
@@ -1282,6 +1287,9 @@ public class LiveLocalJdbcDao {
       	}
     	sb.append(" and json_extract(t.extra,'$.w[0]')>300 ");
     	sb.append(" AND (json_extract(t.extra,'$.type[0]') IS  NULL  OR json_extract(t.extra,'$.type[0]') <> 'image_daycard') ");
+    	if(!StringUtils.isEmpty(specialTopicIds)){
+   		 sb.append("  AND t.topic_id no in(").append(specialTopicIds).append(") ");
+       	}
     	sb.append("  ORDER BY json_extract(t.extra,'$.length[0]') DESC LIMIT 1 ");
     	String sql = sb.toString();
     	List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
