@@ -601,7 +601,7 @@ public class KingdomPriceTask {
 					if(kv0 == 0){
 						_kv = (int)Math.pow(Math.pow(_x, 2)+Math.pow(_y, 2),0.5);
 					}else{
-						_kv = (int)(Math.min(Math.pow(_x/x0, diligentlyWeight), _x/x0)+Math.min(Math.pow(_y/y0, approveWeight), _y/y0));
+						_kv = (int)((Math.min(Math.pow(_x/x0, diligentlyWeight), _x/x0)+Math.min(Math.pow(_y/y0, approveWeight), _y/y0))*kv0/2);
 					}
 					
 					int d = 0;
