@@ -9000,6 +9000,7 @@ public class LiveServiceImpl implements LiveService {
     	updateTopic.setLongTime(calendar.getTimeInMillis());
     	targetTopic.setOutTime(calendar.getTime());
     	updateTopic.setOutTime(calendar.getTime());
+    	updateTopic.setRights(1);
         liveMybatisDao.updateTopic(updateTopic);
 //    	this.applicationEventBus.post(new UpdateTopicTimeEvent(targetTopic.getId(), calendar.getTimeInMillis(), calendar.getTimeInMillis()));
 
