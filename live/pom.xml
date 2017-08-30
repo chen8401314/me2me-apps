@@ -23,6 +23,11 @@
             <artifactId>sns-api</artifactId>
             <version>2.0.8</version>
         </dependency>
+         <dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+		</dependency>
     </dependencies>
 
     <!--开发环境-->
