@@ -105,7 +105,7 @@ public class SecurityUtils {
 //        String value = SecurityUtils.sign("100201","5e516c1db595b1666d4155ab577fabc9","1462514238489","c20a626961b849969882fc5aa6417371");
 //        System.out.println(value);
         
-        String ss = SecurityUtils.md5("123456","335555");
+        String ss = SecurityUtils.md5("mm15270511944","088734");
         
         System.out.println(ss);
     }
