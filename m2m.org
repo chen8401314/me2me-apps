@@ -1,5 +1,5 @@
-#+OPTIONS: {}:nil num:nil toc:nil timestamp:nil author:nil creator:nil html-postamble:nil 
 #+TITLE:M2M
+#+OPTIONS: ^:nil {}:nil num:nil toc:nil timestamp:nil author:nil creator:nil html-postamble:nil 
 
 #+CAPTION: 
 #+ATTR_HTML: :style color: navy; margin:auto; :border 1 :rules all :frame border :width 100%
@@ -20,7 +20,7 @@
 | mysql                                       |                | 10.47.125.111  | root | Sp#23_k@_07070OA8 |
 |---------------------------------------------+----------------+----------------+------+-------------------|
 | lb-t                                        | 120.27.160.203 | 10.47.51.228   | root | 123!@#QWE         |
-| zookeeper-t                                 |                | 10.24.235.198  |      |                   |
+| zookeeper-t                                 |                | 10.47.54.56    | root | 123!@#QWE         |
 | jetty-t-1                                   |                | 10.46.71.48    | root | 123!@#QWE         |
 | server-t-1                                  |                | 10.28.15.136   | root | 123!@#QWE         |
 | server-t-1                                  |                | 10.27.213.225  | root | 123!@#QWE         |
