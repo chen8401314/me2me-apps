@@ -1148,6 +1148,7 @@ public class LiveForContentJdbcDao {
     	if(null != result && result.size() > 0){
     		Map<String, Object> m = null;
     		String fragmentImage = null;
+    		String extra = null;
     		for(int i=0;i<result.size();i++){
     			m = result.get(i);
     			int type = (Integer)m.get("type");
@@ -1159,8 +1160,15 @@ public class LiveForContentJdbcDao {
     					i--;
     					continue;
     				}
+    				extra = (String)m.get("extra");
+    				if(!StringUtils.isEmpty(extra) && extra.contains("image_daycard")){//外露日签图片特殊处理
+    					if(fragmentImage.contains("-")){//有小横杠的是安卓的。。
+    						m.put("fragment_image", fragmentImage+"?imageView2/0/h/400|imageMogr2/auto-orient/crop/!358x200a20a315/");
+    					}else{
+    						m.put("fragment_image", fragmentImage+"?imageView2/0/h/400|imageMogr2/auto-orient/crop/!330x185a30a300/");
+    					}
+    				}
     			}
-    			
     		}
     	}
     	

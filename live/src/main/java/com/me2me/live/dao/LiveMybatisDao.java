@@ -1584,7 +1584,7 @@ public class LiveMybatisDao {
 		TopicNewsExample example = new TopicNewsExample();
 		TopicNewsExample.Criteria criteria = example.createCriteria();
 		criteria.andCreateTimeGreaterThan(date);
-		example.setOrderByClause(" create_time desc limit 10");
+		example.setOrderByClause(" create_time desc limit 10 ");
 		List<TopicNews> list = topicNewsMapper.selectByExample(example);
 		return list;
 	}
