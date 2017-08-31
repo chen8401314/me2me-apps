@@ -558,28 +558,56 @@ public class LiveServiceImpl implements LiveService {
         cal1.setTime(date);
         cal1.add(Calendar.DATE, -1);
         List<TopicNews> topicNewsList = liveMybatisDao.getTopicNewsList24h(cal1.getTime());
-        for (int i = 0; i < topicNewsList.size(); i++) {
-            TopicNews topicNews = topicNewsList.get(i);
-            TopicNewsModel topicNewsModel = new TopicNewsModel(topicNews.getId(),uid,"0");
-            String isTopicNews= cacheService.hGet(topicNewsModel.getKey(), topicNewsModel.getField());
-            if (!StringUtils.isEmpty(isTopicNews)) {
-                continue;
-            } else {
-                cacheService.hSet(topicNewsModel.getKey(), topicNewsModel.getField(), topicNewsModel.getValue());
-            }
-            LiveCoverDto.TopicNewsElement  topicNewsElement = new LiveCoverDto.TopicNewsElement();
-            topicNewsElement.setId(topicNews.getId());
-            topicNewsElement.setContent(topicNews.getContent());
-            topicNewsElement.setType(topicNews.getType());
-            topicNewsElement.setTopicId(topicNews.getTopicId());
-            Topic newsTopic  = liveMybatisDao.getTopicById(topicNews.getTopicId());
-            if(newsTopic==null){
-                continue;
-            }
-            topicNewsElement.setContentType(newsTopic.getType());
-            topicNewsElement.setInternalStatus(this.getUserInternalStatus(newsTopic.getCoreCircle(), uid));
-            liveCoverDto.getNewsTopList().add(topicNewsElement);
+        List<Long> newsTopicIdList = new ArrayList<Long>();
+        if(null != topicNewsList && topicNewsList.size() > 0){
+        	TopicNews topicNews = null;
+        	TopicNewsModel topicNewsModel = null;
+        	for (int i = 0; i < topicNewsList.size(); i++) {
+        		topicNews = topicNewsList.get(i);
+        		topicNewsModel = new TopicNewsModel(topicNews.getId(), uid, "0");
+                String isTopicNews= cacheService.hGet(topicNewsModel.getKey(), topicNewsModel.getField());
+                if (!StringUtils.isEmpty(isTopicNews)) {
+                	topicNewsList.remove(i);
+                	i--;
+                    continue;
+                } else {
+                    cacheService.hSet(topicNewsModel.getKey(), topicNewsModel.getField(), topicNewsModel.getValue());
+                    if(!newsTopicIdList.contains(topicNews.getTopicId())){
+                    	newsTopicIdList.add(topicNews.getTopicId());
+                    }
+                }
+        	}
         }
+        
+        Map<String, Topic> newsTopicMap = new HashMap<String, Topic>();
+        if(newsTopicIdList.size() > 0){
+        	List<Topic> newsTopicList = liveMybatisDao.getTopicsByIds(newsTopicIdList);
+        	if(null != newsTopicList && newsTopicList.size() > 0){
+        		for(Topic t : newsTopicList){
+        			newsTopicMap.put(t.getId().toString(), t);
+        		}
+        	}
+        }
+        
+        if(null != topicNewsList && topicNewsList.size() > 0){
+        	LiveCoverDto.TopicNewsElement  topicNewsElement = null;
+        	Topic newsTopic = null;
+        	for(TopicNews tnews : topicNewsList){
+        		topicNewsElement = new LiveCoverDto.TopicNewsElement();
+                topicNewsElement.setId(tnews.getId());
+                topicNewsElement.setContent(tnews.getContent());
+                topicNewsElement.setType(tnews.getType());
+                topicNewsElement.setTopicId(tnews.getTopicId());
+                newsTopic  = newsTopicMap.get(tnews.getTopicId().toString());
+                if(newsTopic==null){
+                    continue;
+                }
+                topicNewsElement.setContentType(newsTopic.getType());
+                topicNewsElement.setInternalStatus(this.getUserInternalStatus(newsTopic.getCoreCircle(), uid));
+                liveCoverDto.getNewsTopList().add(topicNewsElement);
+        	}
+        }
+ 
         liveCoverDto.setTopicPrice(topic.getPrice());
         liveCoverDto.setTopicRMB(exchangeKingdomPrice(topic.getPrice()));
         TopicData topicData = liveMybatisDao.getTopicDataByTopicId(topicId);
