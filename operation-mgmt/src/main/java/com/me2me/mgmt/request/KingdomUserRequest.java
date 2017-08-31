@@ -8,6 +8,7 @@ public class KingdomUserRequest extends DatatablePage {
 	private String fragment;
 	private String startTime;
 	private String endTime;
+	private Integer firstSpeakFlag = 0;//本王国第一次发言状态，0全部，1第一次，2不是第一次
 
 	public Integer getTopicId() {
 		return topicId;
@@ -39,6 +40,14 @@ public class KingdomUserRequest extends DatatablePage {
 
 	public void setEndTime(String endTime) {
 		this.endTime = endTime;
+	}
+
+	public Integer getFirstSpeakFlag() {
+		return firstSpeakFlag;
+	}
+
+	public void setFirstSpeakFlag(Integer firstSpeakFlag) {
+		this.firstSpeakFlag = firstSpeakFlag;
 	}
 	
 	
