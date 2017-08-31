@@ -98,7 +98,10 @@
                                                     <name>wrapper.logfile</name>
                                                     <value>../logs/wrapper.log</value>
                                                 </property>
-                                              
+                                                <property>
+                                                    <name>run.as.user.envvar</name>
+                                                    <value>m2m</value>
+                                                </property>
                                             </configuration>
                                         </generatorConfiguration>
                                     </generatorConfigurations>
