@@ -86,13 +86,23 @@ public class PriceController {
 	public KingdomUserRequest kingdomUserPage(KingdomUserRequest dto){
 		PageBean page= dto.toPageBean();
 		StringBuilder sql = new StringBuilder();
-		sql.append("select r1.*,up.nick_name,un.me_number,up.create_time from (");
+		sql.append("select r1.*,up.nick_name,un.me_number,up.create_time,n.topic_id as firstTopicId from (");
 		sql.append("SELECT uid,count(1) messages from topic_fragment where topic_id=?");
 		if(StringUtils.isNotBlank(dto.getFragment())){
 			sql.append(" and fragment like '%").append(dto.getFragment()).append("%'");
 		}
-		sql.append(" group by uid) r1,user_profile up,user_no un");
-		sql.append(" where r1.uid=up.uid and r1.uid=un.uid");
+		sql.append(" group by uid) r1,user_profile up,user_no un,(");
+		sql.append("select m.uid,f2.topic_id from topic_fragment f2,(");
+		sql.append("select f.uid,min(f.id) as minid from topic_fragment f");
+		sql.append(" where f.uid in (select DISTINCT f3.uid from topic_fragment f3 where f3.topic_id=").append(dto.getTopicId());
+		sql.append(") group by f.uid) m where f2.id=m.minid");
+		if(dto.getFirstSpeakFlag()==1){
+			sql.append(" and f2.topic_id=").append(dto.getTopicId());
+		}else if(dto.getFirstSpeakFlag() == 2){
+			sql.append(" and f2.topic_id!=").append(dto.getTopicId());
+		}
+		sql.append(") n");
+		sql.append(" where r1.uid=up.uid and r1.uid=un.uid and r1.uid=n.uid");
 		if(StringUtils.isNotBlank(dto.getStartTime())){
 			sql.append(" and up.create_time>='").append(dto.getStartTime()).append(" 00:00:00'");
 		}
@@ -105,7 +115,15 @@ public class PriceController {
 		String pageSql = sql.toString()+" limit ?,?";
 		
 		int count = localJdbcDao.queryForObject(countSql, Integer.class,dto.getTopicId());
-		List dataList = localJdbcDao.queryForList(pageSql, dto.getTopicId(),(page.getCurrentPage()-1)*page.getPageSize(),page.getPageSize());
+		List<Map<String, Object>> dataList = localJdbcDao.queryForList(pageSql, dto.getTopicId(),(page.getCurrentPage()-1)*page.getPageSize(),page.getPageSize());
+		if(null != dataList && dataList.size() > 0){
+			int i=1;
+			for(Map<String, Object> m : dataList){
+				m.put("index", Integer.valueOf(i));
+				i++;
+			}
+		}
+			
 		dto.setRecordsTotal(count);
 		dto.setData(dataList);
 		return dto;

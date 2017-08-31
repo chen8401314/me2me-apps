@@ -45,12 +45,18 @@
 								<header class="panel-heading">搜索</header>
 								<div class="panel-body">
 									<div class="form-inline" role="form">
-										评论内容：
+										评论内容
 										<input type="text" id="fragment" name="fragment" value="" class="form-control">&nbsp;&nbsp;
 										注册开始时间
 										<input type="text" id="startTime" name="startTime" class="form-control" readonly="readonly">&nbsp;&nbsp;
 										注册结束时间
 										<input type="text" id="endTime" name="startTime" class="form-control" readonly="readonly">&nbsp;&nbsp;
+										是否第一次
+										<select name="firstSpeakFlag" id="firstSpeakFlag" class="form-control">
+											<option value="0">全部</option>
+											<option value="1">是</option>
+											<option value="2">否</option>
+										</select>
 										<a class="btn btn-primary" href="javascript:search();">搜索</a>
 									</div>
 								</div>
@@ -140,7 +146,7 @@
 	}  
 	$.fn.dataTable.ext.errMode="console";
 	$.extend( $.fn.dataTable.defaults, {
-		pageLength: 10,
+		pageLength: 50,
 		searching: false,
         dom: 'tp',
 	    processing: true,
@@ -170,7 +176,6 @@
         }
 	} );
 	
-	
 	var sourceTable=$('#table').DataTable( {
 		"ajax": {
             "url": "./kingdomUserPage",
@@ -180,11 +185,13 @@
                 d.fragment =  $("#fragment").val();
                 d.startTime =  $("#startTime").val();
                 d.endTime =  $("#endTime").val();
+                d.firstSpeakFlag = $("#firstSpeakFlag").val();
             }
         },
 	    processing:true,
 	    "columns": [
-	                //用户Id,用户Me号,用户名,注册时间,留言数量
+	                //index,用户Id,用户Me号,用户名,注册时间,留言数量
+	        {data: "index",orderable:false,title: "序号"},
 	        {data: "uid",orderable:false,title: "用户Id"},
 	        {data: "me_number",orderable:false,title: "用户Me号"},
 	        {data: "nick_name",orderable:false,title: "用户名"},
@@ -193,7 +200,14 @@
 	        		return new Date(data).Format("yyyy-MM-dd hh:mm:ss");
 	        	}
 	        }},
-	        {data: "messages",title: "留言数"}
+	        {data: "messages",title: "留言数"},
+	        {data: "firstTopicId",orderable:false,title: "是否第一次留言",render:function(data){
+	        	if(data == "${param.topicId}"){
+	        		return "是";
+	        	}else{
+	        		return "否";
+	        	}
+	        }}
 	     ]
 	});
 	function search(){
@@ -203,8 +217,9 @@
 		var fragment = $("#fragment").val();
 		var startTime = $("#startTime").val();
 		var endTime = $("#endTime").val();
+		var firstSpeakFlag = $("#firstSpeakFlag").val();
 		var data= $(this).serialize();
-		var url ="./kingdomUserPage?topicId=${param.topicId}&fragment="+fragment+"&startTime="+startTime+"&endTime="+endTime+"&"+data;
+		var url ="./kingdomUserPage?topicId=${param.topicId}&fragment="+fragment+"&startTime="+startTime+"&endTime="+endTime+"&firstSpeakFlag="+firstSpeakFlag+"&"+data;
 		sourceTable.ajax.url(url).load();
 		return false;
 	})

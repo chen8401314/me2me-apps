@@ -115,7 +115,7 @@
                                                 </property>
                                                 <property>
                                                     <name>run.as.user.envvar</name>
-                                                    <value>root</value>
+                                                    <value>m2m</value>
                                                 </property>
                                             </configuration>
                                         </generatorConfiguration>
