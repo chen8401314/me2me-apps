@@ -17,7 +17,7 @@ public class TeaseAutoPlayStatusModel implements BaseEntity {
     /**
      * 逗一逗自动播放状态缓存模型
      * 该结构采用hashmap
-     * redis key 命名规则为 tease:autoPlayStatus::fragmentId
+     * redis key 命名规则为 tease:autoPlayStatus:fragmentId
      * field 采用fragment的id
      * value 默认值为0，若已自动播放过则为1
      */
@@ -28,9 +28,9 @@ public class TeaseAutoPlayStatusModel implements BaseEntity {
 
     private String value;
 
-    public TeaseAutoPlayStatusModel(long uid,String value){
+    public TeaseAutoPlayStatusModel(long fragmentId,String value){
         this.key = KEY_PREFIX ;
-        this.field = uid + "";
+        this.field = fragmentId + "";
         this.value = value;
     }
 }

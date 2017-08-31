@@ -1035,7 +1035,10 @@ public class LiveLocalJdbcDao {
 		String sql = "update user_profile set available_coin = 0 where uid = ?";
 		jdbcTemplate.update(sql,uid);
 	}
-
+	public void addMyCoins(long uid,int price) {
+		String sql = "update user_profile set available_coin = available_coin+"+price+" where uid = ?";
+		jdbcTemplate.update(sql,uid);
+	}
 	public int getReadCount(long topicId) {
 		String sql = "select sum(read_count_dummy) as readCount from topic_read_his where topic_id=? group by topic_id";
 		List<Map<String, Object>> list= jdbcTemplate.queryForList(sql, new Object[]{topicId});
@@ -1249,7 +1252,7 @@ public class LiveLocalJdbcDao {
             sb.append("  AND LENGTH(t.fragment)<=").append(endNum);
       	}
     	if(!StringUtils.isEmpty(specialTopicIds)){
-    		 sb.append("  AND tp.id no in(").append(specialTopicIds).append(") ");
+    		 sb.append("  AND tp.id not in(").append(specialTopicIds).append(") ");
     	}
     	sb.append("  ORDER BY LENGTH(t.fragment) DESC LIMIT 1 ");
     	String sql = sb.toString();
@@ -1270,7 +1273,7 @@ public class LiveLocalJdbcDao {
             sb.append("  AND LENGTH(t.fragment)<=").append(endNum);
       	}
     	if(!StringUtils.isEmpty(specialTopicIds)){
-   		 sb.append("  AND tp.id no in(").append(specialTopicIds).append(") ");
+   		 sb.append("  AND tp.id not in(").append(specialTopicIds).append(") ");
       	}
     	sb.append("  ORDER BY LENGTH(t.fragment) DESC LIMIT 1 ");
     	String sql = sb.toString();
@@ -1288,7 +1291,7 @@ public class LiveLocalJdbcDao {
     	sb.append(" and json_extract(t.extra,'$.w[0]')>300 ");
     	sb.append(" AND (json_extract(t.extra,'$.type[0]') IS  NULL  OR json_extract(t.extra,'$.type[0]') <> 'image_daycard') ");
     	if(!StringUtils.isEmpty(specialTopicIds)){
-   		 sb.append("  AND t.topic_id no in(").append(specialTopicIds).append(") ");
+   		 sb.append("  AND t.topic_id not in(").append(specialTopicIds).append(") ");
        	}
     	sb.append("  ORDER BY json_extract(t.extra,'$.length[0]') DESC LIMIT 1 ");
     	String sql = sb.toString();

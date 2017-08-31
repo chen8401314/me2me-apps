@@ -34,6 +34,7 @@ import com.me2me.common.Constant;
 import com.me2me.common.page.PageBean;
 import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.utils.CommonUtils;
+import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -236,6 +237,12 @@ public class UserServiceImpl implements UserService {
 							userMybatisDao.createFollow(userFollow);
 							applicationEventBus.post(new FollowEvent(user.getUid(), refereeUid));
 						}
+						StringBuffer msg = new StringBuffer();
+						msg.append("你的好友").append(userProfile.getNickName()).append("已经入驻啦！赶快打开米汤一起畅聊吧！");		
+					    JsonObject jsonObject = new JsonObject();
+			            jsonObject.addProperty("messageType", 0);
+			            jsonObject.addProperty("type", -1);
+			            pushWithExtra(refereeUid+"", msg.toString(), JPushUtils.packageExtra(jsonObject));
 					}
 				}
 			} catch (Exception e) {
@@ -398,6 +405,12 @@ public class UserServiceImpl implements UserService {
 							userMybatisDao.createFollow(userFollow);
 							applicationEventBus.post(new FollowEvent(newUser.getUid(), refereeUid));
 						}
+						StringBuffer msg = new StringBuffer();
+						msg.append("你的好友").append(userProfile.getNickName()).append("已经入驻啦！赶快打开米汤一起畅聊吧！");		
+					    JsonObject jsonObject = new JsonObject();
+			            jsonObject.addProperty("messageType", 0);
+			            jsonObject.addProperty("type", -1);
+			            pushWithExtra(refereeUid+"", msg.toString(), JPushUtils.packageExtra(jsonObject));
 					}
 				}
 			} catch (Exception e) {
@@ -2727,6 +2740,12 @@ public class UserServiceImpl implements UserService {
 							userMybatisDao.createFollow(userFollow);
 							applicationEventBus.post(new FollowEvent(user1.getUid(), refereeUid));
 						}
+						StringBuffer msg = new StringBuffer();
+						msg.append("你的好友").append(userProfile.getNickName()).append("已经入驻啦！赶快打开米汤一起畅聊吧！");		
+					    JsonObject jsonObject = new JsonObject();
+			            jsonObject.addProperty("messageType", 0);
+			            jsonObject.addProperty("type", -1);
+			            pushWithExtra(refereeUid+"", msg.toString(), JPushUtils.packageExtra(jsonObject));
 					}
 				}
 			} catch (Exception e) {
