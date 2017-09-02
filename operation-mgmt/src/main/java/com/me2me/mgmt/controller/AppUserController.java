@@ -2,6 +2,7 @@ package com.me2me.mgmt.controller;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -17,10 +18,13 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.me2me.activity.service.ActivityService;
+import com.me2me.common.Constant;
 import com.me2me.common.web.Response;
+import com.me2me.mgmt.dao.LocalJdbcDao;
 import com.me2me.mgmt.request.AppGagUserQueryDTO;
 import com.me2me.mgmt.request.AppUserDTO;
 import com.me2me.mgmt.request.AppUserQueryDTO;
+import com.me2me.mgmt.request.AvatarFrameQueryDTO;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.sms.service.SmsService;
 import com.me2me.user.dto.SearchUserProfileDto;
@@ -42,6 +46,8 @@ public class AppUserController {
 	private ActivityService activityService;
 	@Autowired
 	private SmsService smsService;
+	@Autowired
+	private LocalJdbcDao localJdbcDao;
 	
 	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/query")
@@ -286,4 +292,31 @@ public class AppUserController {
     	}
     	return false;
     }
+	
+	@RequestMapping(value = "/avatarFrame/list")
+	public ModelAndView avatarFrameList(AvatarFrameQueryDTO dto) {
+		ModelAndView view = new ModelAndView("appuser/avatarFrameList");
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("select * from user_avatar_frame");
+		if(StringUtils.isNotBlank(dto.getName())){
+			sb.append(" where name like '%").append(dto.getName()).append("%'");
+		}
+		sb.append(" order by id desc");
+		List<Map<String, Object>> list = this.localJdbcDao.queryEvery(sb.toString());
+		if(null != list && list.size() > 0){
+			AvatarFrameQueryDTO.AvatarFrameItem item = null;
+			for(Map<String, Object> m : list){
+				item = new AvatarFrameQueryDTO.AvatarFrameItem();
+				item.setId((Long)m.get("id"));
+				item.setName((String)m.get("name"));
+				item.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + (String)m.get("avatar_frame"));
+				dto.getResults().add(item);
+			}
+		}
+		
+		view.addObject("dataObj",dto);
+		return view;
+	}
+	
 }

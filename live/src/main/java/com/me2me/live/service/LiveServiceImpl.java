@@ -7509,6 +7509,11 @@ public class LiveServiceImpl implements LiveService {
 
     @Override
     public Response rechargeToKingdom(RechargeToKingdomDto rechargeToKingdomDto) {
+    	return  Response.failure(500, "此功能已改版,请下载新版本,在王国内使用赠送礼物的功能");
+    }
+    
+    //本方法不再提供了，303版本开始不支持米汤币王国充值了
+    private Response rechargeToKingdom2(RechargeToKingdomDto rechargeToKingdomDto) {
 
         UserProfile  userProfile = userService.getUserProfileByUid(rechargeToKingdomDto.getUid());
         if(userProfile.getAvailableCoin() ==0){

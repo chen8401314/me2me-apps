@@ -37,7 +37,7 @@ public class AutoReplyEventListener {
 		policy.setTopicId(autoReplyEvent.getTopicId());
 		policy.setKingUid(autoReplyEvent.getUid());
 		policy.setLastHour(24);
-		policy.setMin(60);
+		policy.setMin(180);
 		policy.setMax(60);
 
 		kingdomRobot.start(policy);
