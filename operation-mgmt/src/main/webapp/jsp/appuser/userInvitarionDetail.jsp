@@ -157,6 +157,7 @@
             "url": "${ctx}/appuser/invitation/detailPage",
             "type": "POST",
             "data": function (d) {
+            	d.searchType = "${param.searchType}";
                 d.refereeUid = "${param.refereeUid}";
                 d.startTime =  "${param.startTime}";
                 d.endTime =  "${param.endTime}";
@@ -168,7 +169,22 @@
 	        {data: "nick_name",orderable:false,title: "昵称"},
 	        {data: "third_part_bind",orderable:false,title: "注册方式",render:function(data){
 	        	var r = "";
-	        	
+	        	if(data.indexOf("mobile") > -1){
+	        		r = r + "手机";
+	        	}
+	        	if(data.indexOf("qq") > -1){
+	        		if(r != ""){
+	        			r = r + ",";
+	        		}
+	        		r = r + "QQ";
+	        	}
+	        	if(data.indexOf("weixin") > -1){
+	        		if(r != ""){
+	        			r = r + ",";
+	        		}
+	        		r = r + "微信";
+	        	}
+	        	return r;
 	        }},
 	        {data: "mobile",orderable:false,title: "手机号"},
 	        {data: "create_time",orderable:false,title: "注册时间",render:function(data){

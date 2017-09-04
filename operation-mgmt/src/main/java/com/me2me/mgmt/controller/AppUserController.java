@@ -20,12 +20,14 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.Constant;
+import com.me2me.common.page.PageBean;
 import com.me2me.common.web.Response;
 import com.me2me.mgmt.dao.LocalJdbcDao;
 import com.me2me.mgmt.request.AppGagUserQueryDTO;
 import com.me2me.mgmt.request.AppUserDTO;
 import com.me2me.mgmt.request.AppUserQueryDTO;
 import com.me2me.mgmt.request.AvatarFrameQueryDTO;
+import com.me2me.mgmt.request.UserInvitationDetailQueryDTO;
 import com.me2me.mgmt.request.UserInvitationQueryDTO;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.sms.service.SmsService;
@@ -361,7 +363,7 @@ public class AppUserController {
 			StringBuilder countSql = new StringBuilder();
 			countSql.append("select u.referee_uid,count(1) as totalCount,");
 			countSql.append("count(if(u.channel='0' or u.platform=2,TRUE,NULL)) as iosCount,");
-			countSql.append("count(if(u.channel='0' or u.platform=2,NULL,TRUE)) as andriodCount");
+			countSql.append("count(if(u.channel!='0' or u.platform=1,TRUE,NULL)) as andriodCount");
 			countSql.append(" from user_profile u where u.referee_uid in (");
 			for(int i=0;i<uidList.size();i++){
 				if(i>0){
@@ -369,7 +371,7 @@ public class AppUserController {
 				}
 				countSql.append(uidList.get(i).toString());
 			}
-			countSql.append(")");
+			countSql.append(") and u.is_activate=1");
 			if(StringUtils.isNotBlank(dto.getStartTime())){
 				countSql.append(" and u.create_time>='").append(dto.getStartTime()).append(" 00:00:00'");
 			}
@@ -407,5 +409,102 @@ public class AppUserController {
 		return view;
 	}
 	
+	@RequestMapping(value = "/invitation/detail")
+	public ModelAndView invitationDetail(UserInvitationDetailQueryDTO dto){
+		ModelAndView view = new ModelAndView("appuser/userInvitarionDetail");
+		view.addObject("dataObj",dto);
+		return view;
+	}
 	
+	@ResponseBody
+	@RequestMapping(value = "/invitation/detailPage")
+	public UserInvitationDetailQueryDTO invitationDetailPage(UserInvitationDetailQueryDTO dto){
+		PageBean page= dto.toPageBean();
+		StringBuilder userSql = new StringBuilder();
+		userSql.append(" from user_profile u where u.is_activate=1");
+		userSql.append(" and u.referee_uid=").append(dto.getRefereeUid());
+		if(dto.getSearchType() == 1){//安卓
+			userSql.append(" and (u.channel!='0' or u.platform=1)");
+		}else if(dto.getSearchType() == 2){//IOS
+			userSql.append(" and (u.channel='0' or u.platform=2)");
+		}
+		if(StringUtils.isNotBlank(dto.getStartTime())){
+			userSql.append(" and u.create_time>='").append(dto.getStartTime()).append(" 00:00:00'");
+		}
+		if(StringUtils.isNotBlank(dto.getEndTime())){
+			userSql.append(" and u.create_time<='").append(dto.getEndTime()).append(" 23:59:59'");
+		}
+		
+		String querySql = "select u.uid,u.nick_name,u.third_part_bind,u.mobile,u.create_time" + userSql.toString() + " order by u.id desc limit ?,?";
+		String countSql = "select count(1)" + userSql.toString();
+		
+		int count = localJdbcDao.queryForObject(countSql, Integer.class);
+		List<Map<String, Object>> dataList = localJdbcDao.queryForList(querySql,(page.getCurrentPage()-1)*page.getPageSize(),page.getPageSize());
+		if(null != dataList && dataList.size() > 0){
+			List<Long> uidList = new ArrayList<Long>();
+			Long uid = null;
+			for(Map<String, Object> u : dataList){
+				uid = (Long)u.get("uid");
+				if(!uidList.contains(uid)){
+					uidList.add(uid);
+				}
+			}
+			//王国数
+			StringBuilder kingSql = new StringBuilder();
+			kingSql.append("select t.uid,count(1) as cc from topic t");
+			kingSql.append(" where t.uid in (");
+			for(int i=0;i<uidList.size();i++){
+				if(i>0){
+					kingSql.append(",");
+				}
+				kingSql.append(uidList.get(i).toString());
+			}
+			kingSql.append(") group by t.uid");
+			Map<String, Long> kingCountMap = new HashMap<String, Long>();
+			List<Map<String, Object>> kingList = localJdbcDao.queryForList(kingSql.toString());
+			if(null != kingList && kingList.size() > 0){
+				for(Map<String, Object> c : kingList){
+					kingCountMap.put(String.valueOf(c.get("uid")), (Long)c.get("cc"));
+				}
+			}
+			//发言数
+			StringBuilder fragmentSql = new StringBuilder();
+			fragmentSql.append("select f.uid,count(1) as cc from topic_fragment f");
+			fragmentSql.append(" where f.status=1 and f.uid in (");
+			for(int i=0;i<uidList.size();i++){
+				if(i>0){
+					fragmentSql.append(",");
+				}
+				fragmentSql.append(uidList.get(i).toString());
+			}
+			fragmentSql.append(") group by f.uid");
+			Map<String, Long> fragmentCountMap = new HashMap<String, Long>();
+			List<Map<String, Object>> fragmentList = localJdbcDao.queryForList(fragmentSql.toString());
+			if(null != fragmentList && fragmentList.size() > 0){
+				for(Map<String, Object> c : fragmentList){
+					fragmentCountMap.put(String.valueOf(c.get("uid")), (Long)c.get("cc"));
+				}
+			}
+			
+			//加上两个数据
+			for(Map<String, Object> d : dataList){
+				uid = (Long)d.get("uid");
+				d.put("ip", "");
+				if(null != kingCountMap.get(uid.toString())){
+					d.put("kingdomCount", kingCountMap.get(uid.toString()));
+				}else{
+					d.put("kingdomCount", 0);
+				}
+				if(null != fragmentCountMap.get(uid.toString())){
+					d.put("speakCount", fragmentCountMap.get(uid.toString()));
+				}else{
+					d.put("speakCount", 0);
+				}
+			}
+		}
+		
+		dto.setRecordsTotal(count);
+		dto.setData(dataList);
+		return dto;
+	}
 }

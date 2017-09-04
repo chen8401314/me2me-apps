@@ -104,10 +104,10 @@ public class PriceController {
 		sql.append(") n");
 		sql.append(" where r1.uid=up.uid and r1.uid=un.uid and r1.uid=n.uid");
 		if(StringUtils.isNotBlank(dto.getStartTime())){
-			sql.append(" and up.create_time>='").append(dto.getStartTime()).append(" 00:00:00'");
+			sql.append(" and up.create_time>='").append(dto.getStartTime()).append(" :00'");
 		}
 		if(StringUtils.isNotBlank(dto.getEndTime())){
-			sql.append(" and up.create_time<='").append(dto.getEndTime()).append(" 23:59:59'");
+			sql.append(" and up.create_time<='").append(dto.getEndTime()).append(" :59'");
 		}
 		sql.append(" order by up.create_time desc,up.uid");
 

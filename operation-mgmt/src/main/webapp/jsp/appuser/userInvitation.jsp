@@ -24,7 +24,14 @@
 <script src="${ctx}/js/jquery-migrate-1.2.1.min.js"></script>
 <script src="${ctx}/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-
+var check = function(){
+	if($("#nickName").val()=='' && $("#uid").val()==''
+		&& $("#meNo").val()=='' && $("#mobile").val()==''){
+		alert('4个用户条件必须选择一个');
+		return false;
+	}
+	return true;
+}
 </script>
 </head>
 <body>
@@ -43,7 +50,7 @@
 		<!--main content start-->
 		<section id="main-content">
 			<section class="wrapper">
-				<form id="form1" action="${ctx}/appuser/invitation/list" method="post">
+				<form id="form1" action="${ctx}/appuser/invitation/list" method="post" onsubmit="return check()">
 					<div class="row">
 						<div class="col-lg-12">
 							<section class="panel">
@@ -103,9 +110,9 @@
 													<th>${userItem.nichName }</th>
 													<th>${userItem.meNo }</th>
 													<th>${userItem.mobile }</th>
-													<th>${userItem.totalCount }</th>
-													<th>${userItem.iosCount }</th>
-													<th>${userItem.androidCount }</th>
+													<th><a href="${ctx}/appuser/invitation/detail?refereeUid=${userItem.uid }&startTime=${dataObj.startTime }&endTime=${dataObj.endTime }&searchType=0">${userItem.totalCount }</a></th>
+													<th><a href="${ctx}/appuser/invitation/detail?refereeUid=${userItem.uid }&startTime=${dataObj.startTime }&endTime=${dataObj.endTime }&searchType=2">${userItem.iosCount }</a></th>
+													<th><a href="${ctx}/appuser/invitation/detail?refereeUid=${userItem.uid }&startTime=${dataObj.startTime }&endTime=${dataObj.endTime }&searchType=1">${userItem.androidCount }</a></th>
 												</tr>
 											</c:forEach>
 										</tbody>

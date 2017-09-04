@@ -118,13 +118,13 @@
             today:       "今天"  
     };
 	$('#startTime,#endTime').datetimepicker({
-		format: 'yyyy-mm-dd',
+		format: 'yyyy-mm-dd hh:ii',
 		language: 'zh',
 		startView: 2,
 		autoclose:true,
 		weekStart:1,
 		todayBtn:  1,
-		minView:2
+		minView:0
 		});
 	Date.prototype.Format = function(fmt)   
 	{ //author: meizz   
