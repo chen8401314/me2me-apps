@@ -197,7 +197,7 @@ public class KingdomRobot {
         },sleep,TimeUnit.SECONDS);
 
         // 前24小时发言的逻辑
-        task(policy,new ReplyTimes(2,3));
+        task(policy,new ReplyTimes(1,1));
 
         // 后24小时发言
         // 调整策略
@@ -209,9 +209,9 @@ public class KingdomRobot {
         policy2.setCreateTime(calendar.getTime());
         policy2.setTopicId(policy.getTopicId());
         policy2.setLastHour(policy.getLastHour());
-        policy2.setMin(60);
-        policy2.setMax(120);
-        task(policy2,new ReplyTimes(1,2));
+        policy2.setMin(300);
+        policy2.setMax(60);
+        task(policy2,new ReplyTimes(1,1));
     }
 
     private void task(ExecutePolicy policy, ReplyTimes replyTimes) {
@@ -299,7 +299,7 @@ public class KingdomRobot {
         step1.setCreateTime(createTime);
         step1.setTopicId(1000);
         step1.setLastHour(24);
-        step1.setMin(60);
+        step1.setMin(180);
         step1.setMax(60);
 
 
@@ -307,9 +307,12 @@ public class KingdomRobot {
         step2.setCreateTime(createTime);
         step2.setTopicId(1000);
         step2.setLastHour(24);
-        step2.setMin(120);
+        step2.setMin(300);
         step2.setMax(60);
 
-        new KingdomRobot().start(step1);
+        List<Date> list = new KingdomRobot().splitTask(step2, new ReplyTimes(1,1));
+        for(Date d : list){
+        	System.out.println(DateUtil.date2string(d, "yyyy-MM-dd HH:mm:ss"));
+        }
     }
 }

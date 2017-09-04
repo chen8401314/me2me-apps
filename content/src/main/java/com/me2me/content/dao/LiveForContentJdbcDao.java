@@ -1163,9 +1163,9 @@ public class LiveForContentJdbcDao {
     				extra = (String)m.get("extra");
     				if(!StringUtils.isEmpty(extra) && extra.contains("image_daycard")){//外露日签图片特殊处理
     					if(fragmentImage.contains("-")){//有小横杠的是安卓的。。
-    						m.put("fragment_image", fragmentImage+"?imageView2/0/h/400|imageMogr2/auto-orient/crop/!356x200a22a315/");
+    						m.put("fragment_image", fragmentImage+"-nrwl_rqcl");
     					}else{
-    						m.put("fragment_image", fragmentImage+"?imageView2/0/h/400|imageMogr2/auto-orient/crop/!330x185a30a300/");
+    						m.put("fragment_image", fragmentImage+"-nrwl_rq_ios");
     					}
     				}
     			}
