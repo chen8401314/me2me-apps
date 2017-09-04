@@ -1,6 +1,7 @@
 package com.me2me.mgmt.controller;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +26,7 @@ import com.me2me.mgmt.request.AppGagUserQueryDTO;
 import com.me2me.mgmt.request.AppUserDTO;
 import com.me2me.mgmt.request.AppUserQueryDTO;
 import com.me2me.mgmt.request.AvatarFrameQueryDTO;
+import com.me2me.mgmt.request.UserInvitationQueryDTO;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.sms.service.SmsService;
 import com.me2me.user.dto.SearchUserProfileDto;
@@ -318,5 +320,92 @@ public class AppUserController {
 		view.addObject("dataObj",dto);
 		return view;
 	}
+	
+	@RequestMapping(value = "/invitation/list")
+	public ModelAndView invitationList(UserInvitationQueryDTO dto) {
+		ModelAndView view = new ModelAndView("appuser/userInvitation");
+		view.addObject("dataObj",dto);
+		
+		if(StringUtils.isBlank(dto.getNickName()) && (null == dto.getUid() || dto.getUid().longValue() == 0)
+				&& (null == dto.getMeNo() || dto.getMeNo().longValue() == 0)
+				&& StringUtils.isBlank(dto.getMobile())){
+			logger.info("用户条件必须填一个");
+			return view;
+		}
+		
+		StringBuilder userSql = new StringBuilder();
+		userSql.append("select u.uid,u.nick_name,u.mobile,n.me_number from user_profile u,user_no n where u.uid=n.uid");
+		if(StringUtils.isNotBlank(dto.getNickName())){
+			userSql.append(" and u.nick_name like '%").append(dto.getNickName()).append("%'");
+		}
+		if(null != dto.getUid() && dto.getUid() > 0){
+			userSql.append(" and u.uid=").append(dto.getUid());
+		}
+		if(null != dto.getMeNo() && dto.getMeNo() > 0){
+			userSql.append(" and n.me_number='").append(dto.getMeNo()).append("'");
+		}
+		if(StringUtils.isNotBlank(dto.getMobile())){
+			userSql.append(" and u.mobile='").append(dto.getMobile()).append("'");
+		}
+		List<Map<String, Object>> userList = localJdbcDao.queryEvery(userSql.toString());
+		if(null != userList && userList.size() > 0){
+			List<Long> uidList = new ArrayList<Long>();
+			Long uid = null;
+			for(Map<String, Object> u : userList){
+				uid = (Long)u.get("uid");
+				if(!uidList.contains(uid)){
+					uidList.add(uid);
+				}
+			}
+			
+			StringBuilder countSql = new StringBuilder();
+			countSql.append("select u.referee_uid,count(1) as totalCount,");
+			countSql.append("count(if(u.channel='0' or u.platform=2,TRUE,NULL)) as iosCount,");
+			countSql.append("count(if(u.channel='0' or u.platform=2,NULL,TRUE)) as andriodCount");
+			countSql.append(" from user_profile u where u.referee_uid in (");
+			for(int i=0;i<uidList.size();i++){
+				if(i>0){
+					countSql.append(",");
+				}
+				countSql.append(uidList.get(i).toString());
+			}
+			countSql.append(")");
+			if(StringUtils.isNotBlank(dto.getStartTime())){
+				countSql.append(" and u.create_time>='").append(dto.getStartTime()).append(" 00:00:00'");
+			}
+			if(StringUtils.isNotBlank(dto.getEndTime())){
+				countSql.append(" and u.create_time<='").append(dto.getEndTime()).append(" 23:59:59'");
+			}
+			countSql.append(" group by u.referee_uid");
+			List<Map<String, Object>> countList = localJdbcDao.queryEvery(countSql.toString());
+			Map<String, Map<String, Object>> countMap = new HashMap<String, Map<String, Object>>();
+			if(null != countList && countList.size() > 0){
+				for(Map<String, Object> m : countList){
+					countMap.put(String.valueOf(m.get("referee_uid")), m);
+				}
+			}
+			
+			Map<String, Object> count = null;
+			UserInvitationQueryDTO.Item item = null;
+			for(Map<String, Object> u : userList){
+				item = new UserInvitationQueryDTO.Item();
+				item.setUid((Long)u.get("uid"));
+				item.setNichName((String)u.get("nick_name"));
+				item.setMeNo((Long)u.get("me_number"));
+				item.setMobile((String)u.get("mobile"));
+				
+				count = countMap.get(String.valueOf(item.getUid()));
+				if(null != count){
+					item.setTotalCount((Long)count.get("totalCount"));
+					item.setIosCount((Long)count.get("iosCount"));
+					item.setAndroidCount((Long)count.get("andriodCount"));
+				}
+				dto.getResults().add(item);
+			}
+		}
+		
+		return view;
+	}
+	
 	
 }
