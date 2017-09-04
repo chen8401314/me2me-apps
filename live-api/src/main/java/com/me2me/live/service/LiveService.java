@@ -717,4 +717,25 @@ public interface LiveService {
 	 * @return
 	 */
 	Response addAppDownloadLog(long uid,long fromUid);
+    /**
+     * 用指定是否喜欢王国或标签。
+     * @author zhangjiwei
+     * @date Sep 1, 2017
+     * @param uid
+     * @param data 王国ID或者标签
+     * @param isLike 1喜欢，0不喜欢
+     * @param type 1王国，2标签
+     * @return
+     */
+    Response userLike(long uid,String data,int isLike,int type);
+    /**
+     * 举报标签。
+     * @author zhangjiwei
+     * @date Sep 1, 2017
+     * @param uid
+     * @param topicId
+     * @param tag
+     * @return
+     */
+    Response badTag(long uid,long topicId,String tag);
 }

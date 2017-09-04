@@ -10,6 +10,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -17,6 +18,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.me2me.live.event.*;
+import com.me2me.live.mapper.TopicBadTagMapper;
+import com.me2me.live.mapper.UserDislikeMapper;
 import com.me2me.user.dto.ModifyUserCoinDto;
 import com.me2me.user.dto.PermissionDescriptionDto;
 import com.me2me.user.dto.PermissionDescriptionDto.PermissionNodeDto;
@@ -151,6 +154,8 @@ import com.me2me.live.model.Topic;
 import com.me2me.live.model.Topic2;
 import com.me2me.live.model.TopicAggregation;
 import com.me2me.live.model.TopicAggregationApply;
+import com.me2me.live.model.TopicBadTag;
+import com.me2me.live.model.TopicBadTagExample;
 import com.me2me.live.model.TopicBarrage;
 import com.me2me.live.model.TopicData;
 import com.me2me.live.model.TopicDroparound;
@@ -168,6 +173,8 @@ import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicTagDetail;
 import com.me2me.live.model.TopicTransferRecord;
 import com.me2me.live.model.TopicUserConfig;
+import com.me2me.live.model.UserDislike;
+import com.me2me.live.model.UserDislikeExample;
 import com.me2me.live.model.UserStealLog;
 import com.me2me.live.model.VoteInfo;
 import com.me2me.live.model.VoteOption;
@@ -237,9 +244,11 @@ public class LiveServiceImpl implements LiveService {
     @Autowired
     private SmsService smsService;
 
+    @Autowired
+    private UserDislikeMapper dislikeMapper;
 
-
-
+	@Autowired
+	private TopicBadTagMapper badTagMapper;
 
     @Value("#{app.live_web}")
     private String live_web;
@@ -1387,9 +1396,11 @@ public class LiveServiceImpl implements LiveService {
         	try{
         		List<String> recTags = searchService.recommendTags(speakDto.getFragment(), 1).getData().getTags();
         		if(null != recTags && recTags.size() > 0){
+        			//检查王国标签黑名单
         			String tag = recTags.get(0);
     	        	boolean exists =liveLocalJdbcDao.existsTrialTagInKingdom(speakDto.getTopicId(),tag);
-    	        	if(!exists){
+    	        	boolean isBadTag = this.liveLocalJdbcDao.isBadTag(speakDto.getTopicId(),tag);
+    	        	if(!exists &&!isBadTag){
     	        		TopicTag ttag = liveMybatisDao.getTopicTagByTag(tag);
     	        		TopicTagDetail detail = new TopicTagDetail();
     	        		detail.setTopicId(speakDto.getTopicId());
@@ -4203,8 +4214,10 @@ public class LiveServiceImpl implements LiveService {
         	if(null != tags && tags.length > 0){
         		TopicTag topicTag = null;
         		TopicTagDetail tagDetail = null;
+        		Set<String> tagSet = new LinkedHashSet<>();
         		for(String tag : tags){
         			tag = tag.trim();
+        			tagSet.add(tag);
         			if(!StringUtils.isEmpty(tag)){
         				topicTag = liveMybatisDao.getTopicTagByTag(tag);
         				if(null == topicTag){
@@ -4224,7 +4237,9 @@ public class LiveServiceImpl implements LiveService {
         				tagDetail.setAutoTag(0);
         			}
         			liveMybatisDao.insertTopicTagDetail(tagDetail);
+        			// 4 用户建立了新的王国,并且王国有标签,及时声称
         		}
+        		liveLocalJdbcDao.batchInsertUserLikeTags(createKingdomDto.getUid(),tagSet);
         	}
         }
         //add kingdom tags -- end --
@@ -5985,6 +6000,14 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response topicTags(long uid, long topicId){
         ShowTopicTagsDTO resultDTO = new ShowTopicTagsDTO();
+        // 标签黑名单
+        TopicBadTagExample example =new TopicBadTagExample();
+        example.createCriteria().andTopicIdEqualTo(topicId);
+        List<TopicBadTag> tagBlackList= badTagMapper.selectByExample(example);
+        Set<String> blackTagSet = new HashSet<>();
+        for(TopicBadTag badTag:tagBlackList){
+        	blackTagSet.add(badTag.getTag());
+        }
         //获取王国本身的王国
         resultDTO.setTopicTags("");
         if(topicId > 0){
@@ -5994,29 +6017,39 @@ public class LiveServiceImpl implements LiveService {
                 TopicTagDetail ttd = null;
                 for(int i=0;i<tagList.size();i++){
                     ttd = tagList.get(i);
-                    if(i>0){
-                        topicTags.append(";");
+                    if(!blackTagSet.contains(ttd.getTag())){
+	                    if(i>0){
+	                        topicTags.append(";");
+	                    }
+	                    topicTags.append(ttd.getTag());
                     }
-                    topicTags.append(ttd.getTag());
                 }
                 resultDTO.setTopicTags(topicTags.toString());
             }
         }
+        // 取用户喜欢的标签
+        UserDislikeExample ex = new UserDislikeExample();
+        ex.createCriteria().andUidEqualTo(uid).andIsLikeEqualTo(1).andTypeEqualTo(2);
+        List<UserDislike> likeList=  dislikeMapper.selectByExample(ex);
+        
         //获取我常用的标签
         resultDTO.setMyUsedTags("");
+        LinkedHashSet<String> tagList = new LinkedHashSet<>();
         List<Map<String, Object>> myTags = liveLocalJdbcDao.getMyTopicTags(uid, 20);
         if(null != myTags && myTags.size() > 0){
-            StringBuilder myTopicTags = new StringBuilder();
-            Map<String, Object> t = null;
-            for(int i=0;i<myTags.size();i++){
-                t = myTags.get(i);
-                if(i>0){
-                    myTopicTags.append(";");
-                }
-                myTopicTags.append((String)t.get("tag"));
+            for (UserDislike disLikeTag:likeList){
+            	tagList.add(disLikeTag.getData());
             }
-            resultDTO.setMyUsedTags(myTopicTags.toString());
+            for(int i=0;i<myTags.size();i++){
+                String tag = (String) myTags.get(i).get("tag");
+                if(!blackTagSet.contains(tag)){
+                	tagList.add(tag);
+                }
+            }
+            resultDTO.setMyUsedTags(org.apache.commons.lang3.StringUtils.join(tagList,","));
         }
+     
+        
         //获取推荐的标签
         //2.2.3版本暂时先只返回运营推荐的标签
         boolean isAdmin = userService.isAdmin(uid);
@@ -6024,13 +6057,15 @@ public class LiveServiceImpl implements LiveService {
         if(null != recTags && recTags.size() > 0){
             ShowTopicTagsDTO.TagElement e = null;
             for(Map<String, Object> m : recTags){
-                e = new ShowTopicTagsDTO.TagElement();
-                e.setTag((String)m.get("tag"));
-                e.setTopicCount((Long)m.get("kcount"));
-                resultDTO.getRecTags().add(e);
+            	 if(!blackTagSet.contains(m.get("tag"))){
+	                e = new ShowTopicTagsDTO.TagElement();
+	                e.setTag((String)m.get("tag"));
+	                e.setTopicCount((Long)m.get("kcount"));
+	                resultDTO.getRecTags().add(e);
+            	 }
             }
         }
-
+       
         return Response.success(resultDTO);
     }
 
@@ -6073,13 +6108,23 @@ public class LiveServiceImpl implements LiveService {
                 }
             }
         }
-
+        // 标签黑名单
+        TopicBadTagExample example =new TopicBadTagExample();
+        example.createCriteria().andTopicIdEqualTo(topicId);
+        List<TopicBadTag> tagBlackList= badTagMapper.selectByExample(example);
+        Set<String> blackTagSet = new HashSet<>();
+        for(TopicBadTag badTag:tagBlackList){
+        	blackTagSet.add(badTag.getTag());
+        }
         //剩下的需要保存到库里面
         if(newTagList.size() > 0){
             TopicTagDetail tagDetail = null;
             TopicTag topicTag = null;
             for(String tag : newTagList){
-                //非管理员不能打带“官方”二字的标签
+	        	 if(blackTagSet.contains(tag)){
+	        		 continue;
+	        	 }
+            	//非管理员不能打带“官方”二字的标签
                 if(!isAdmin){
                     if(tag.contains("官方")){
                         continue;
@@ -9341,5 +9386,56 @@ public class LiveServiceImpl implements LiveService {
 		liveLocalJdbcDao.addAppDownloadLog(uid,fromUid);
 		return Response.success();
 	}
-	
+
+	@Override
+	public Response userLike(long uid, String dataId, int isLike, int type) {
+		UserDislikeExample example = new UserDislikeExample();
+		example.createCriteria().andUidEqualTo(uid).andDataEqualTo(dataId).andTypeEqualTo(type);
+		boolean exists = dislikeMapper.countByExample(example)>0;
+		UserDislike dislike = new UserDislike();
+		dislike.setUid(uid);
+		dislike.setData(dataId);
+		dislike.setIsLike(isLike);
+		dislike.setType(type);
+		dislike.setCreateTime(new Date());
+		if(!exists){
+			dislikeMapper.insert(dislike);
+		}else{
+			dislikeMapper.updateByExample(dislike, example);
+		}
+		// 标签加减分
+		if(dislike.getType()==2){		// 不喜欢标签
+			if(dislike.getIsLike()==0){	// 不喜欢
+				this.liveLocalJdbcDao.updateUserLikeTagScoreTo0(uid,dislike.getData());
+			}
+		}else{		//	王国
+			List<TopicTagDetail> detailList = liveMybatisDao.getTopicTagDetailsByTopicId(Integer.parseInt(dataId));
+			int score=0;
+			if(dislike.getIsLike()==0){	// 不喜欢
+				score=userService.getIntegerAppConfigByKey("TAG_DISLIKE_SCORE");
+			}else{	//	喜欢
+				score=userService.getIntegerAppConfigByKey("TAG_LIKE_SCORE");
+			}
+			for(TopicTagDetail detail:detailList){
+				this.liveLocalJdbcDao.updateUserLikeTagScore(uid,detail.getTag(),score);
+			}
+		}
+		return Response.success();
+	}
+	public Response badTag(long uid,long topicId,String tag){
+		if(userService.isAdmin(uid)){
+			TopicBadTagExample ex = new TopicBadTagExample();
+			ex.createCriteria().andTopicIdEqualTo(topicId).andTagEqualTo(tag);
+			if(badTagMapper.countByExample(ex)==0){
+				TopicBadTag tb = new TopicBadTag();
+				tb.setReporterUid(uid);
+				tb.setTopicId(topicId);
+				tb.setTag(tag);
+				badTagMapper.insert(tb);
+				// 从王国删除标签；
+				this.liveMybatisDao.deleteTopicTag(topicId,tag);
+			}
+		}
+		return Response.success();
+	}
 }

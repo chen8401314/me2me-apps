@@ -3,6 +3,7 @@ package com.me2me.user.dao;
 import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.Lists;
 import com.me2me.core.dao.BaseJdbcDao;
+import com.me2me.user.model.UserHobby;
 import com.me2me.user.rule.CoinRule;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * 上海拙心网络科技有限公司出品
@@ -352,6 +354,25 @@ public class UserInitJdbcDao extends BaseJdbcDao {
 	public List<Map<String, Object>> getRedBag(long uid) {
 		String sql = "SELECT * from rule_log where uid = ?";
 		return super.query(sql,uid);
+	}
+
+	public List<String> getTagFromUserHobby(UserHobby userHobby) {
+		List<Map<String,Object>> dataList =jdbc.queryForList("select tag from topic_tag where find_in_set(?,user_hobby_ids)",userHobby.getHobby());
+		List<String> ret = new ArrayList<>();
+		for(Map<String,Object> data:dataList){
+			ret.add((String) data.get("tag"));
+		}
+		return ret;
+	}
+
+	public void batchInsertUserLikeTags(Long uid, Set<String> userHobbyTags) {
+		jdbc.update("delete from user_dislike where uid=? and is_like=1 and type=2 and data in (?)",uid,userHobbyTags);
+		String sql ="insert into user_dislike (uid,data,is_like,type,create_time) values(?,?,1,2,now())";
+		List<Object[]> batchArgs = new ArrayList<>();
+		for(String tag:userHobbyTags){
+			batchArgs.add(new Object[]{uid,tag});
+		}
+		jdbc.batchUpdate(sql, batchArgs );
 	}
 
 

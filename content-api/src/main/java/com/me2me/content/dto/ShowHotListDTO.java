@@ -38,7 +38,7 @@ public class ShowHotListDTO implements BaseEntity {
 		private int kingdomCount;
 		private double tagPrice;
 		private Integer showRMBBrand;
-		
+		private int isShowLikeButton;
 		private List<BasicKingdomInfo> kingdomList=Lists.newArrayList();
 	}
 	
@@ -172,7 +172,7 @@ public class ShowHotListDTO implements BaseEntity {
 		private double priceRMB;
 		private Integer showRMBBrand;
 		private Integer showPriceBrand;
-
+		private int isShowLikeButton;
 
 		// 和前端无关的两个字段
 		private Long hid;

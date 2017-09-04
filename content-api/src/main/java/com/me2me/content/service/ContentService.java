@@ -446,7 +446,7 @@ public interface ContentService{
 	
 	public void updateContentUid(long newUid,long topicId);
 	/**
-	 * 取标签下面的王国列表。
+	 * 标签主页，取标签下面的王国列表。
 	 * @author zhangjiwei
 	 * @date Jun 29, 2017
 	 * @param tagName

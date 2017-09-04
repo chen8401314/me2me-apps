@@ -95,9 +95,8 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation> 
-            <build>
+           <!--  <build>
                 <plugins>
-               		<!-- 
                     <plugin>
                         <groupId>org.mybatis.generator</groupId>
                         <artifactId>mybatis-generator-maven-plugin</artifactId>
@@ -133,9 +132,8 @@
                             </dependency>
                         </dependencies>
                     </plugin>
-                     -->
                 </plugins>
-            </build>
+            </build> -->
         </profile>
     </profiles>
 </project>
