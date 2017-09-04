@@ -77,7 +77,7 @@
 	</select>
 	<select id="getUserFavoTags" resultType="string">
 		select l.tag from user_tag_like l where l.uid=#{uid}
-		where m.tag not in(
+		and l.tag not in(
 			select data from user_dislike where uid=#{uid} and is_like=0 and type=2 
 			union all
 			select tag as data from topic_tag where pid in (
@@ -87,8 +87,8 @@
 			)
 		)
 		group by l.tag
+		having sum(l.score)>20
 		order by SUM(l.score) DESC
-		having sum(l.score>20)
 		limit 5
 	</select>
 	<select id="getTagAndSubTag" resultType="string">
