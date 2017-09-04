@@ -16,6 +16,7 @@ public interface TopicTagSearchMapper {
 	  /**
      * 按标签查询王国
      * @author zhangjiwei
+	 * @param uid 
      * @date Jun 29, 2017
      * @param order 排序规则
      * @param page 当前页
@@ -23,6 +24,7 @@ public interface TopicTagSearchMapper {
      * @return
      */
 	public List<Map<String, Object>> getKingdomsByTag(
+			@Param("uid") long uid,
 			@Param("tag") String tag,
 			@Param("order")String order,
 			@Param("page")int page, 
@@ -78,4 +80,24 @@ public interface TopicTagSearchMapper {
 	 * @return
 	 */
 	public List<String> getUserFavoTags(@Param("favoScore")int favoScore,@Param("uid")long uid);
+	/**
+	 * 取标签的子系统标签
+	 * @author zhangjiwei
+	 * @date Sep 1, 2017
+	 * @param tagName
+	 * @return
+	 */
+	@ResultType(String.class)
+	@Select("select tag from topic_tag where status=0 and is_sys=1 and pid=(select id from topic_tag where tag=#{0})")
+	public List<String> getSubSysTags(String tagName);
+	
+	public List<String> getTagAndSubTag(@Param("pids")List<String> userNotLike);
+	/**
+	 * 取用户标记为喜欢的标签和子标签
+	 * @author zhangjiwei
+	 * @date Sep 4, 2017
+	 * @param uid
+	 * @return
+	 */
+	public List<String> getUserLikeTagAndSubTag(long uid);
 }

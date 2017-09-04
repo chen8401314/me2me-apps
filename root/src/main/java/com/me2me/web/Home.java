@@ -3,6 +3,7 @@ package com.me2me.web;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.web.Response;
 import com.me2me.content.service.ContentService;
+import com.me2me.live.service.LiveService;
 import com.me2me.web.request.*;
 import com.me2me.web.utils.VersionUtil;
 
@@ -29,6 +30,9 @@ public class Home extends BaseController {
 
     @Autowired
     private ActivityService activityService;
+    
+    @Autowired
+    private LiveService liveService;
 
     /**
      * 最热（小编发布，活动轮播位）
@@ -202,5 +206,15 @@ public class Home extends BaseController {
     @ResponseBody
     public Response initSquareUpdateId(TagKingdomRequest request){
         return contentService.initSquareUpdateId();
+    }
+    @RequestMapping(value = "/userLike")
+    @ResponseBody
+    public Response userLike(UserLikeRequest request){
+        return liveService.userLike(request.getUid(), request.getData(), request.getIsLike(), request.getType());
+    }
+    @RequestMapping(value = "/badTag")
+    @ResponseBody
+    public Response badTag(BadTagRequest request){
+        return liveService.badTag(request.getUid(), request.getTopicId(), request.getTag());
     }
 }

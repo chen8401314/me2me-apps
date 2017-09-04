@@ -1194,4 +1194,30 @@ public class LiveForContentJdbcDao {
 		}
 		return null;
     }
+
+	public Map<String, Object> getTopicTagById(Long dataId) {
+		try{
+			return jdbcTemplate.queryForMap("select * from topic_tag where id=?",dataId);
+		}catch(Exception e){
+			log.error("未找到标签，ID:"+dataId);
+		}
+		return null;
+	}
+	/**
+	 * 
+	 * @author zhangjiwei
+	 * @date Sep 4, 2017
+	 * @param uid
+	 * @param type 1王国，2标签
+	 * @param like 0不喜欢，1喜欢
+	 * @return
+	 */
+	public List<String> getUserNotLike(long uid,int type,int like) {
+		List<Map<String,Object>> dataList = jdbcTemplate.queryForList("select data from user_dislike where uid=? and is_like=? and type=?",uid,like,type);
+		List<String> dataList2=new ArrayList<>();
+		for(Map<String,Object> data:dataList){
+			dataList2.add((String) data.get("data"));
+		}
+		return dataList2;
+	}
 }

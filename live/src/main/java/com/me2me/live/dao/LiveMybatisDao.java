@@ -2101,4 +2101,10 @@ public class LiveMybatisDao {
     public void saveTopicPriceChangeLog(TopicPriceChangeLog log){
     	topicPriceChangeLogMapper.insertSelective(log);
     }
+
+	public void deleteTopicTag(long topicId, String tag) {
+		TopicTagDetailExample example = new TopicTagDetailExample();
+		example.createCriteria().andTopicIdEqualTo(topicId).andTagEqualTo(tag);
+		topicTagDetailMapper.deleteByExample(example);
+	}
 }

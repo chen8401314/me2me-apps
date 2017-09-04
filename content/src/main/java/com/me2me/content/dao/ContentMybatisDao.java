@@ -291,12 +291,12 @@ public class ContentMybatisDao {
         return contentImageMapper.countByExample(example);
     }
 
-    public List<Content> getNewest4Old(long sinceId,List<Long> blacklistUids){
-    	return contentMapper.loadNewestContent4Old(sinceId,blacklistUids);
+    public List<Content> getNewest4Old(long uid,long sinceId,List<Long> blacklistUids){
+    	return contentMapper.loadNewestContent4Old(uid,sinceId,blacklistUids);
     }
     
-    public List<Content> getNewest(long sinceId,List<Long> blacklistUids){
-        return contentMapper.loadNewestContent(sinceId, blacklistUids);
+    public List<Content> getNewest(long uid,long sinceId,List<Long> blacklistUids){
+        return contentMapper.loadNewestContent(uid,sinceId, blacklistUids);
     }
 
     public List<Content> getAttention(long sinceId , long meUid, int vFlag){
@@ -604,18 +604,19 @@ public class ContentMybatisDao {
      * @param pageSize
      * @return
      */
-    public List<Content2Dto> getHotContentByType(long sinceId, int type, int pageSize,List<String> ids,List<Long> blacklistUids){
+    public List<Content2Dto> getHotContentByType(long uid,long sinceId, int type, int pageSize,List<String> ids,List<Long> blacklistUids){
         HotQueryDto hotQueryDto = new HotQueryDto();
         hotQueryDto.setType(type);
         hotQueryDto.setSinceId(sinceId);
         hotQueryDto.setPageSize(pageSize);
         hotQueryDto.setIds(ids);
         hotQueryDto.setBlacklistUids(blacklistUids);
+        hotQueryDto.setUid(uid);
     	return contentMapper.getHotContentByType(hotQueryDto);
     }
 
-    public List<Content2Dto> getHotContentByRedis(List<String> ids, List<Long> blacklistUids){
-        return contentMapper.getHotContentByRedis(ids, blacklistUids);
+    public List<Content2Dto> getHotContentByRedis(long uid, List<String> ids, List<Long> blacklistUids){
+        return contentMapper.getHotContentByRedis(uid,ids, blacklistUids);
     }
 
     public int getUgcCount(long uid){

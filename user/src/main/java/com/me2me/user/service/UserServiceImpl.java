@@ -1036,6 +1036,7 @@ public class UserServiceImpl implements UserService {
 		UserHobby deleteUserHobby = new UserHobby();
 		deleteUserHobby.setUid(user.getUid());
 		userMybatisDao.deleteUserHobby(deleteUserHobby);
+		Set<String> userHobbyTags = new LinkedHashSet<>();
 		if (!StringUtils.isEmpty(hobby)) {
 			String[] hobbies = hobby.split(";");
 			for (String h : hobbies) {
@@ -1043,8 +1044,11 @@ public class UserServiceImpl implements UserService {
 				userHobby.setHobby(Long.parseLong(h));
 				userHobby.setUid(user.getUid());
 				userMybatisDao.createUserHobby(userHobby);
+				List<String> tags= userInitJdbcDao.getTagFromUserHobby(userHobby);
+				userHobbyTags.addAll(tags);
 			}
 		}
+		userInitJdbcDao.batchInsertUserLikeTags(user.getUid(),userHobbyTags);
         return Response.success(ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.status,ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.message);
     }
     
