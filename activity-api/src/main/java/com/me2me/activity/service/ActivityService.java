@@ -300,4 +300,18 @@ public interface ActivityService {
     void deleteAcommonListById(long id);
     
     AcommonList getAcommonList(long targetId, long activityId, int type);
+    
+    /**
+     * 主播列表信息接口
+     * @return
+     */
+    Response anchorList(long uid);
+    
+    /**
+     * 主播活动报名接口
+     * @param uid
+     * @param aid
+     * @return
+     */
+    Response enterAnchor(long uid, long aid);
 }

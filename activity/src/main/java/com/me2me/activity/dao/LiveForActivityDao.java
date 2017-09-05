@@ -485,4 +485,32 @@ public class LiveForActivityDao {
 		sb.append(" and activity_id=").append(activityId);
 		jdbcTemplate.execute(sb.toString());
 	}
+	
+	public List<Map<String, Object>> getAnchorList(){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select * from a_anchor a LEFT JOIN (");
+		sb.append("select e.anchor_id,count(1) as cc from a_anchor_enter e group by e.anchor_id");
+		sb.append(") m on a.id=m.anchor_id order by m.cc desc");
+		
+		return jdbcTemplate.queryForList(sb.toString());
+	}
+	
+	public List<Map<String, Object>> getUserAnchorEnterByUid(long uid){
+		String sql = "select * from a_anchor_enter e where e.uid=?";
+		return jdbcTemplate.queryForList(sql, uid);
+	}
+	
+	public Map<String, Object> getAnchorEnterByUidAndAid(long uid, long aid){
+		String sql = "select * from a_anchor_enter e where e.uid=? and e.anchor_id=?";
+		List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, uid, aid);
+		if(null != list && list.size() > 0){
+			return list.get(0);
+		}
+		return null;
+	}
+	
+	public void insertAnchorEnter(long uid, long aid){
+		String sql = "insert into a_anchor_enter(uid,anchor_id) values(?,?)";
+		jdbcTemplate.update(sql, uid, aid);
+	}
 }

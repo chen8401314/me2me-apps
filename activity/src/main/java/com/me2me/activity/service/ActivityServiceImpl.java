@@ -5380,4 +5380,55 @@ public class ActivityServiceImpl implements ActivityService {
     public AcommonList getAcommonList(long targetId, long activityId, int type){
     	return activityMybatisDao.getAcommonList(type, activityId, targetId);
     }
+    
+    @Override
+    public Response anchorList(long uid){
+    	List<Map<String, Object>> list = liveForActivityDao.getAnchorList();
+    	
+    	//查询报名状态
+    	Map<String, String> statusMap = new HashMap<String, String>();
+    	List<Map<String, Object>> enterList = liveForActivityDao.getUserAnchorEnterByUid(uid);
+    	if(null != enterList && enterList.size() > 0){
+    		for(Map<String, Object> m : enterList){
+    			statusMap.put(String.valueOf(m.get("anchor_id")), "1");
+    		}
+    	}
+    	
+    	ShowAnchorListDTO result = new ShowAnchorListDTO();
+    	if(null != list && list.size() > 0){
+    		ShowAnchorListDTO.AnchorInfoElement e = null;
+    		for(Map<String, Object> m : list){
+    			e = new ShowAnchorListDTO.AnchorInfoElement();
+    			e.setAid((Long)m.get("id"));
+    			e.setAvatar(Constant.QINIU_DOMAIN_COMMON + "/" + (String)m.get("avatar"));
+    			e.setNickName((String)m.get("name"));
+    			e.setQq((String)m.get("qq"));
+    			if(null != m.get("cc")){
+    				e.setSignUpCount(((Long)m.get("cc")).intValue());
+    			}else{
+    				e.setSignUpCount(0);
+    			}
+    			e.setSummary((String)m.get("summary"));
+    			if(null != statusMap.get(String.valueOf(e.getAid()))){
+    				e.setStatus(1);
+    			}else{
+    				e.setStatus(0);
+    			}
+    			result.getResultList().add(e);
+    		}
+    	}
+    	
+    	return Response.success(result);
+    }
+    
+    @Override
+    public Response enterAnchor(long uid, long aid){
+    	Map<String, Object> ea = liveForActivityDao.getAnchorEnterByUidAndAid(uid, aid);
+    	if(null != ea){
+    		return Response.failure(500, "已经报过名了");
+    	}
+    	liveForActivityDao.insertAnchorEnter(uid, aid);
+    	
+    	return Response.success(200, "报名成功");
+    }
 }

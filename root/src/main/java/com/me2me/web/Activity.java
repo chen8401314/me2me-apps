@@ -4,24 +4,23 @@ import com.me2me.activity.dto.Activity7DayMiliDTO;
 import com.me2me.activity.dto.QiUserDto;
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.web.Response;
-import com.me2me.sms.dto.VerifyDto;
 import com.me2me.web.request.AcceptTaskRequest;
 import com.me2me.web.request.ActivityMiliRequest;
+import com.me2me.web.request.AnchorListRequest;
 import com.me2me.web.request.AreaHotRequest;
 import com.me2me.web.request.AreaSupportRequest;
 import com.me2me.web.request.AwardRequest;
 import com.me2me.web.request.ChatQueryRequest;
 import com.me2me.web.request.ChatRequest;
 import com.me2me.web.request.CheckUserActivityKindomRequest;
+import com.me2me.web.request.EnterAnchorRequest;
 import com.me2me.web.request.GetTaskListRequest;
 import com.me2me.web.request.OptForcedPairingRequest;
 import com.me2me.web.request.QiUserRequest;
 import com.me2me.web.request.RecommendHistoryRequest;
 import com.me2me.web.request.SpecailTopicBillboardRequest;
-import com.me2me.web.request.TaskPublishRequest;
 import com.me2me.web.request.Top10SupportChatQueryRequest;
 import com.me2me.web.request.UserTaskStatusRequest;
-import com.me2me.web.request.forcedPairingRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -34,7 +33,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.Date;
 
 /**
  * Created by 马秀成 on 2016/10/18.
@@ -592,5 +590,27 @@ public class Activity extends BaseController {
     @RequestMapping(value = "/chat")
     public Response chat(ChatRequest request){
     	return activityService.chat(request.getChatUid(), request.getMessage());
+    }
+    
+    /**
+     * 主播活动主播列表获取接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/anchorList")
+    public Response anchorList(AnchorListRequest request){
+    	return activityService.anchorList(request.getUid());
+    }
+    
+    /**
+     * 主播活动报名接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/enterAnchor")
+    public Response enterAnchor(EnterAnchorRequest request){
+    	return activityService.enterAnchor(request.getUid(), request.getAid());
     }
 }
