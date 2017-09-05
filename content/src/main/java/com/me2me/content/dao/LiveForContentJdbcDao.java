@@ -1148,6 +1148,7 @@ public class LiveForContentJdbcDao {
     	if(null != result && result.size() > 0){
     		Map<String, Object> m = null;
     		String fragmentImage = null;
+    		String extra = null;
     		for(int i=0;i<result.size();i++){
     			m = result.get(i);
     			int type = (Integer)m.get("type");
@@ -1159,8 +1160,15 @@ public class LiveForContentJdbcDao {
     					i--;
     					continue;
     				}
+    				extra = (String)m.get("extra");
+    				if(!StringUtils.isEmpty(extra) && extra.contains("image_daycard")){//外露日签图片特殊处理
+    					if(fragmentImage.contains("-")){//有小横杠的是安卓的。。
+    						m.put("fragment_image", fragmentImage+"-nrwl_rqcl");
+    					}else{
+    						m.put("fragment_image", fragmentImage+"-nrwl_rq_ios");
+    					}
+    				}
     			}
-    			
     		}
     	}
     	
@@ -1186,4 +1194,30 @@ public class LiveForContentJdbcDao {
 		}
 		return null;
     }
+
+	public Map<String, Object> getTopicTagById(Long dataId) {
+		try{
+			return jdbcTemplate.queryForMap("select * from topic_tag where id=?",dataId);
+		}catch(Exception e){
+			log.error("未找到标签，ID:"+dataId);
+		}
+		return null;
+	}
+	/**
+	 * 
+	 * @author zhangjiwei
+	 * @date Sep 4, 2017
+	 * @param uid
+	 * @param type 1王国，2标签
+	 * @param like 0不喜欢，1喜欢
+	 * @return
+	 */
+	public List<String> getUserNotLike(long uid,int type,int like) {
+		List<Map<String,Object>> dataList = jdbcTemplate.queryForList("select data from user_dislike where uid=? and is_like=? and type=?",uid,like,type);
+		List<String> dataList2=new ArrayList<>();
+		for(Map<String,Object> data:dataList){
+			dataList2.add((String) data.get("data"));
+		}
+		return dataList2;
+	}
 }

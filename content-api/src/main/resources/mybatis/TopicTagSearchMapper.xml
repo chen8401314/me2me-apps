@@ -13,6 +13,9 @@
 						select id from topic_tag c where c.pid=(select id from topic_tag p where tag=#{tag} and status=0) 
 				)
 			)
+			and t.id not in(
+				select CAST(data AS SIGNED) from user_dislike where uid=#{uid} and is_like=0 and type=1
+			)
 			<if test="blacklistUids!=null and blacklistUids.size() &gt; 0">
       		and t.uid not in
       		<foreach close=")" collection="blacklistUids" item="bid" open="(" separator=",">
@@ -73,16 +76,43 @@
 		)
 	</select>
 	<select id="getUserFavoTags" resultType="string">
-		select m.tag
-		from (
-			select l.tag,l.score from user_tag_like l where l.uid=#{uid}
+		select l.tag from user_tag_like l where l.uid=#{uid}
+		and l.tag not in(
+			select data from user_dislike where uid=#{uid} and is_like=0 and type=2 
 			union all
-			select t.tag,#{favoScore} as score from user_hobby h,topic_tag t where h.uid=#{uid}
-			and FIND_IN_SET(h.hobby,t.user_hobby_ids)
-			and t.is_sys=1
-		) m
-		group by m.tag
-		order by SUM(m.score) DESC
-		limit 10
+			select tag as data from topic_tag where pid in (
+				select id from topic_tag where tag in(
+					select data from user_dislike where uid=#{uid} and is_like=0 and type=2
+				)
+			)
+		)
+		group by l.tag
+		having sum(l.score)>20
+		order by SUM(l.score) DESC
+		limit 5
+	</select>
+	<select id="getTagAndSubTag" resultType="string">
+		select tag from topic_tag where tag in(
+			<foreach item="item" index="index" collection="pids" open="("  separator="," close=")">  
+	            #{item}
+	        </foreach> 
+		)
+		union all
+		select tag from topic_tag where pid in(
+			select id from topic_tag where tag in(
+				<foreach item="item" index="index" collection="pids" open="("  separator="," close=")">  
+		            #{item}  
+		        </foreach>  
+			)
+		)
+	</select>
+	<select id="getUserLikeTagAndSubTag" resultType="string">
+		select data from user_dislike where uid=#{uid} and is_like=1 and type=2 
+		union all
+		select tag as data from topic_tag where pid in (
+			select id from topic_tag where tag in(
+				select data from user_dislike where uid=#{uid} and is_like=1 and type=2
+			)
+		)
 	</select>
 </mapper>

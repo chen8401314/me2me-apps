@@ -23,7 +23,7 @@ public class CacheDataTask {
 	@Autowired
 	private LocalJdbcDao localJdbcDao;
 	
-	@Scheduled(cron="0 17 * * * ?")
+	//@Scheduled(cron="0 17 * * * ?")		//  运营不再使用此逻辑、。
 	public void cacheSysTagCountInfo(){
 		logger.info("系统标签总价值缓存任务开始");
 		long s = System.currentTimeMillis();

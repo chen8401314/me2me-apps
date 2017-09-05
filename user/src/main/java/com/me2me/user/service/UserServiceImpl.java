@@ -218,12 +218,22 @@ public class UserServiceImpl implements UserService {
         //判断是否有推广员
 		if (!StringUtils.isEmpty(userSignUpDto.getOpeninstallData())) {
 			try {
-				JSONObject openinstallDataJson = JSONObject.parseObject(userSignUpDto.getOpeninstallData());
 				long refereeUid = 0;
-				if(null != openinstallDataJson.get("uid")){
-					refereeUid = openinstallDataJson.getLong("uid");
+				if(userSignUpDto.getOpeninstallData().contains("=")){//IOS的坑，尽然不是json，这里给其擦屁股
+					String openinstallData = userSignUpDto.getOpeninstallData().trim();
+					openinstallData = openinstallData.substring(1, openinstallData.length()-1).trim();
+					String[] tmp = openinstallData.split("=");
+					if(null != tmp && tmp.length>1 && !StringUtils.isEmpty(tmp[1].trim())){
+						refereeUid = Long.valueOf(tmp[1].trim());
+					}
+				}else{
+					JSONObject openinstallDataJson = JSONObject.parseObject(userSignUpDto.getOpeninstallData());
+					if(null != openinstallDataJson.get("uid")){
+						refereeUid = openinstallDataJson.getLong("uid");
+					}
 				}
-				if (refereeUid != 0) {
+				
+				if (refereeUid > 0) {
 					// 判断推广员是否存在
 					UserProfile refereeUserProfile = userMybatisDao.getUserProfileByUid(refereeUid);
 					if (refereeUserProfile != null) {
@@ -386,12 +396,22 @@ public class UserServiceImpl implements UserService {
         //判断是否有推广员
 		if (!StringUtils.isEmpty(userSignUpDto.getOpeninstallData())) {
 			try {
-				JSONObject openinstallDataJson = JSONObject.parseObject(userSignUpDto.getOpeninstallData());
 				long refereeUid = 0;
-				if(null != openinstallDataJson.get("uid")){
-					refereeUid = openinstallDataJson.getLong("uid");
+				if(userSignUpDto.getOpeninstallData().contains("=")){//IOS的坑，尽然不是json，这里给其擦屁股
+					String openinstallData = userSignUpDto.getOpeninstallData().trim();
+					openinstallData = openinstallData.substring(1, openinstallData.length()-1).trim();
+					String[] tmp = openinstallData.split("=");
+					if(null != tmp && tmp.length>1 && !StringUtils.isEmpty(tmp[1].trim())){
+						refereeUid = Long.valueOf(tmp[1].trim());
+					}
+				}else{
+					JSONObject openinstallDataJson = JSONObject.parseObject(userSignUpDto.getOpeninstallData());
+					if(null != openinstallDataJson.get("uid")){
+						refereeUid = openinstallDataJson.getLong("uid");
+					}
 				}
-				if (refereeUid != 0) {
+
+				if (refereeUid > 0) {
 					// 判断推广员是否存在
 					UserProfile refereeUserProfile = userMybatisDao.getUserProfileByUid(refereeUid);
 					if (refereeUserProfile != null) {
@@ -1016,6 +1036,7 @@ public class UserServiceImpl implements UserService {
 		UserHobby deleteUserHobby = new UserHobby();
 		deleteUserHobby.setUid(user.getUid());
 		userMybatisDao.deleteUserHobby(deleteUserHobby);
+		Set<String> userHobbyTags = new LinkedHashSet<>();
 		if (!StringUtils.isEmpty(hobby)) {
 			String[] hobbies = hobby.split(";");
 			for (String h : hobbies) {
@@ -1023,8 +1044,11 @@ public class UserServiceImpl implements UserService {
 				userHobby.setHobby(Long.parseLong(h));
 				userHobby.setUid(user.getUid());
 				userMybatisDao.createUserHobby(userHobby);
+				List<String> tags= userInitJdbcDao.getTagFromUserHobby(userHobby);
+				userHobbyTags.addAll(tags);
 			}
 		}
+		userInitJdbcDao.batchInsertUserLikeTags(user.getUid(),userHobbyTags);
         return Response.success(ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.status,ResponseStatus.USER_MODIFY_HOBBY_SUCCESS.message);
     }
     
@@ -2721,12 +2745,22 @@ public class UserServiceImpl implements UserService {
         //判断是否有推广员
 		if (!StringUtils.isEmpty(thirdPartSignUpDto.getOpeninstallData())) {
 			try {
-				JSONObject openinstallDataJson = JSONObject.parseObject(thirdPartSignUpDto.getOpeninstallData());
 				long refereeUid = 0;
-				if(null != openinstallDataJson.get("uid")){
-					refereeUid = openinstallDataJson.getLong("uid");
+				if(thirdPartSignUpDto.getOpeninstallData().contains("=")){//IOS的坑，尽然不是json，这里给其擦屁股
+					String openinstallData = thirdPartSignUpDto.getOpeninstallData().trim();
+					openinstallData = openinstallData.substring(1, openinstallData.length()-1).trim();
+					String[] tmp = openinstallData.split("=");
+					if(null != tmp && tmp.length>1 && !StringUtils.isEmpty(tmp[1].trim())){
+						refereeUid = Long.valueOf(tmp[1].trim());
+					}
+				}else{
+					JSONObject openinstallDataJson = JSONObject.parseObject(thirdPartSignUpDto.getOpeninstallData());
+					if(null != openinstallDataJson.get("uid")){
+						refereeUid = openinstallDataJson.getLong("uid");
+					}
 				}
-				if (refereeUid != 0) {
+				
+				if (refereeUid > 0) {
 					// 判断推广员是否存在
 					UserProfile refereeUserProfile = userMybatisDao.getUserProfileByUid(refereeUid);
 					if (refereeUserProfile != null) {

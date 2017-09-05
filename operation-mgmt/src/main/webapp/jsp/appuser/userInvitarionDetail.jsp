@@ -6,7 +6,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <meta charset="utf-8" />
 
-<title>ZX_IMS 2.0 - 王国发言用户列表</title>
+<title>ZX_IMS 2.0 - 用户邀请详细</title>
 
 <link href="${ctx}/css/bootstrap.min.css" rel="stylesheet" />
 <link href="${ctx}/css/bootstrap-reset.css" rel="stylesheet" />
@@ -31,44 +31,20 @@
 
 		<!--sidebar start-->
 		<jsp:include page="../common/leftmenu.jsp" flush="false">
-			<jsp:param name="t" value="13" />
-			<jsp:param name="s" value="13_1" />
+			<jsp:param name="t" value="5" />
+			<jsp:param name="s" value="5_4" />
 		</jsp:include>
 		<!--sidebar end-->
 
 		<!--main content start-->
 		<section id="main-content">
 			<section class="wrapper">
-					<div class="row">
-						<div class="col-lg-12">
-							<section class="panel">
-								<header class="panel-heading">搜索</header>
-								<div class="panel-body">
-									<div class="form-inline" role="form">
-										评论内容
-										<input type="text" id="fragment" name="fragment" value="" class="form-control">&nbsp;&nbsp;
-										注册开始时间
-										<input type="text" id="startTime" name="startTime" class="form-control" readonly="readonly">&nbsp;&nbsp;
-										注册结束时间
-										<input type="text" id="endTime" name="startTime" class="form-control" readonly="readonly">&nbsp;&nbsp;
-										是否第一次
-										<select name="firstSpeakFlag" id="firstSpeakFlag" class="form-control">
-											<option value="0">全部</option>
-											<option value="1">是</option>
-											<option value="2">否</option>
-										</select>
-										<a class="btn btn-primary" href="javascript:search();">搜索</a>
-									</div>
-								</div>
-							</section>
-						</div>
-					</div>
 				<!-- page start-->
 				<div class="row">
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								王国发言用户列表
+								邀请用户列表
 							</header>
 							<div class="panel-body">
 								<div class="adv-table">
@@ -81,7 +57,7 @@
 					</div>
 				</div>
 				<!-- page end-->
-				<span class="btn btn-default"><a href="./kingdomQuery">返回</a></span>
+				<span class="btn btn-default"><a href="${ctx}/appuser/invitation/list">返回</a></span>
 			</section>
 		</section>
 		<!--main content end-->
@@ -118,13 +94,13 @@
             today:       "今天"  
     };
 	$('#startTime,#endTime').datetimepicker({
-		format: 'yyyy-mm-dd hh:ii',
+		format: 'yyyy-mm-dd',
 		language: 'zh',
 		startView: 2,
 		autoclose:true,
 		weekStart:1,
 		todayBtn:  1,
-		minView:0
+		minView:2
 		});
 	Date.prototype.Format = function(fmt)   
 	{ //author: meizz   
@@ -178,51 +154,49 @@
 	
 	var sourceTable=$('#table').DataTable( {
 		"ajax": {
-            "url": "./kingdomUserPage",
+            "url": "${ctx}/appuser/invitation/detailPage",
             "type": "POST",
             "data": function (d) {
-                d.topicId = "${param.topicId}";
-                d.fragment =  $("#fragment").val();
-                d.startTime =  $("#startTime").val();
-                d.endTime =  $("#endTime").val();
-                d.firstSpeakFlag = $("#firstSpeakFlag").val();
+            	d.searchType = "${param.searchType}";
+                d.refereeUid = "${param.refereeUid}";
+                d.startTime =  "${param.startTime}";
+                d.endTime =  "${param.endTime}";
             }
         },
 	    processing:true,
 	    "columns": [
-	                //index,用户Id,用户Me号,用户名,注册时间,留言数量
-	        {data: "index",orderable:false,title: "序号"},
-	        {data: "uid",orderable:false,title: "用户Id"},
-	        {data: "me_number",orderable:false,title: "用户Me号"},
-	        {data: "nick_name",orderable:false,title: "用户名"},
-	        {data: "create_time",title: "注册时间",render:function(data){
+	        {data: "uid",orderable:false,title: "UID"},
+	        {data: "nick_name",orderable:false,title: "昵称"},
+	        {data: "third_part_bind",orderable:false,title: "注册方式",render:function(data){
+	        	var r = "";
+	        	if(data.indexOf("mobile") > -1){
+	        		r = r + "手机";
+	        	}
+	        	if(data.indexOf("qq") > -1){
+	        		if(r != ""){
+	        			r = r + ",";
+	        		}
+	        		r = r + "QQ";
+	        	}
+	        	if(data.indexOf("weixin") > -1){
+	        		if(r != ""){
+	        			r = r + ",";
+	        		}
+	        		r = r + "微信";
+	        	}
+	        	return r;
+	        }},
+	        {data: "mobile",orderable:false,title: "手机号"},
+	        {data: "create_time",orderable:false,title: "注册时间",render:function(data){
 	        	if(data!=null){
 	        		return new Date(data).Format("yyyy-MM-dd hh:mm:ss");
 	        	}
 	        }},
-	        {data: "messages",title: "留言数"},
-	        {data: "firstTopicId",orderable:false,title: "是否第一次留言",render:function(data){
-	        	if(data == "${param.topicId}"){
-	        		return "是";
-	        	}else{
-	        		return "否";
-	        	}
-	        }}
+	        {data: "kingdomCount",orderable:false,title: "王国数"},
+	        {data: "speakCount",orderable:false,title: "王国发言数"},
+	        {data: "ip",orderable:false,title: "注册IP"}
 	     ]
 	});
-	function search(){
-		 sourceTable.draw(true);
-	}
-	$("#search_form").on("submit",function(){
-		var fragment = $("#fragment").val();
-		var startTime = $("#startTime").val();
-		var endTime = $("#endTime").val();
-		var firstSpeakFlag = $("#firstSpeakFlag").val();
-		var data= $(this).serialize();
-		var url ="./kingdomUserPage?topicId=${param.topicId}&fragment="+fragment+"&startTime="+startTime+"&endTime="+endTime+"&firstSpeakFlag="+firstSpeakFlag+"&"+data;
-		sourceTable.ajax.url(url).load();
-		return false;
-	})
 	</script>
 </body>
 </html>

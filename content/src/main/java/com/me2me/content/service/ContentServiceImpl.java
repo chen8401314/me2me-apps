@@ -11,10 +11,13 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -24,6 +27,7 @@ import com.me2me.core.KeysManager;
 import com.me2me.user.dto.*;
 import com.me2me.user.rule.Rules;
 
+import org.apache.commons.lang3.RandomUtils;
 import org.eclipse.paho.client.mqttv3.logging.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +88,7 @@ import com.me2me.content.dto.ShowContentDto;
 import com.me2me.content.dto.ShowContentListDto;
 import com.me2me.content.dto.ShowHotCeKingdomListDTO;
 import com.me2me.content.dto.ShowHotListDTO;
+import com.me2me.content.dto.ShowHotListDTO.HotContentElement;
 import com.me2me.content.dto.ShowHotListDTO.HotTagElement;
 import com.me2me.content.dto.ShowHottestDto;
 import com.me2me.content.dto.ShowKingTopicDto;
@@ -217,6 +222,8 @@ public class ContentServiceImpl implements ContentService {
     private TopicTagSearchMapper topicTagMapper;
     @Autowired
     private UserVisitLogMapper userVisitLogMapper;
+    
+    
     
     @Override
     public Response recommend(long uid,String emotion) {
@@ -2829,9 +2836,9 @@ public class ContentServiceImpl implements ContentService {
         
         List<Content> newestList = null;
         if(vFlag>0){//3.0.0版本以上
-        	newestList = contentMybatisDao.getNewest(sinceId,blacklistUids);
+        	newestList = contentMybatisDao.getNewest(uid,sinceId,blacklistUids);
         }else{
-        	newestList = contentMybatisDao.getNewest4Old(sinceId,blacklistUids);
+        	newestList = contentMybatisDao.getNewest4Old(uid,sinceId,blacklistUids);
         }
         
         log.info("getNewest data success ");
@@ -4236,20 +4243,27 @@ public class ContentServiceImpl implements ContentService {
         //String ids = null;
         List<Content2Dto> topList = Lists.newArrayList();
         if(!ObjectUtils.isEmpty(ids)) {
-            topList = contentMybatisDao.getHotContentByRedis(ids, blacklistUids);
+            topList = contentMybatisDao.getHotContentByRedis(uid,ids, blacklistUids);
         }
-        List<Content2Dto> contentList = contentMybatisDao.getHotContentByType(sinceId, 0, 20,ids, blacklistUids);//只要UGC+PGC+个人王国
+        List<Content2Dto> contentList = contentMybatisDao.getHotContentByType(uid,sinceId, 0, 20,ids, blacklistUids);//只要UGC+PGC+个人王国
 
         for(Content2Dto content2Dto : topList){
             content2Dto.setOperationTime(map.get(content2Dto.getHid()+""));
         }
         this.buildHotListDTO(uid, result, activityList, userFamousList, ceKingdomList, contentList,topList);
-
+        // 随机显示喜欢不喜欢按钮
+        int likeBtnRatio= userService.getIntegerAppConfigByKey("LIKE_BUTTON_APPEAR_RATIO");
+        Set<Integer> rightDigs = new HashSet<>();
+        while(likeBtnRatio>rightDigs.size()){		//随机序列。
+        	rightDigs.add(RandomUtils.nextInt(0, 101));
+        }
+        for(HotContentElement ele:result.getTops()){
+        	ele.setIsShowLikeButton(rightDigs.contains(RandomUtils.nextInt(0, 101))?1:0);
+        }
+        for(HotContentElement ele:result.getHottestContentData()){
+        	ele.setIsShowLikeButton(rightDigs.contains(RandomUtils.nextInt(0, 101))?1:0);
+        }
         // 排序topList
-
-
-        
-        
         if(null != listingKingdoms && listingKingdoms.size()>0){
             List<BasicKingdomInfo> listingKingdomList =kingdomBuider.buildKingdoms(listingKingdoms, uid);
             for(BasicKingdomInfo info:listingKingdomList){
@@ -4300,22 +4314,34 @@ public class ContentServiceImpl implements ContentService {
         // 标签推荐
 
         //	取n个标签
-        List<com.me2me.content.dto.ShowHotListDTO.HotTagElement> dataList = new java.util.ArrayList<ShowHotListDTO.HotTagElement>();
+        List<com.me2me.content.dto.ShowHotListDTO.HotTagElement> dataList = new ArrayList<ShowHotListDTO.HotTagElement>();
 //        double TAG_SHOW_PRICE_BRAND_MIN = Double.parseDouble( userService.getAppConfigByKey("TAG_SHOW_PRICE_BRAND_MIN"));
         // 用户个性化推荐，获取用户感兴趣的标签。
         int favoScore = userService.getIntegerAppConfigByKey("USER_FAVO_SCORE");
         String strAdminTags = (String) userService.getAppConfigByKey("HOME_HOT_LABELS");
+        
+        Set<String> allTags = new LinkedHashSet<>();
+        //用户在首页的标签上点击了喜欢,注意在喜欢了之后,在推荐和查询的时候,连同下方的子标签也会一起加入展示,除非用户手动对子标签选择了不喜欢
+        List<String> userLikeTags= topicTagMapper.getUserLikeTagAndSubTag(uid);// 白名单，推荐标签和子标签
+        allTags.addAll(userLikeTags);
+        
+        //除以上两种标签外,通过用户行为产生的排名最高的前5个"体系标签",且评分必须超过20
         List<String> favoTags = this.topicTagMapper.getUserFavoTags(favoScore,uid);
+        allTags.addAll(favoTags);
+        //除以上三种标签之外,随机从运营后台设定的"体系标签中"选出的标签,数量20个
         List<String> adminTags = Arrays.asList(strAdminTags.split("\\n"));
+        int n=0;
         for(String adminTag:adminTags){
-        	if(!favoTags.contains(adminTag)){
-        		favoTags.add(adminTag);		//合并用户喜好标签和管理员指定标签，避免不足数量
+        	if(n++==20){		//除以上三种标签之外,随机从运营后台设定的"体系标签中"选出的标签,数量20个
+        		break;
         	}
+        	allTags.add(adminTag);	
         }
-        favoTags = favoTags.subList(0, adminTags.size());    // 标签数量以管理员指定的数量为准。
-        for(String label:favoTags){
+       
+        for(String label:allTags){
+        	
             HotTagElement element = new HotTagElement();
-
+           	element.setIsShowLikeButton(userLikeTags.contains(label)?0:1);
             
             List<Map<String,Object>> topicList = null;
             String ktKey = "OBJ:KINGDOMSBYTAG:"+label+"_new_1_4";
@@ -4323,7 +4349,7 @@ public class ContentServiceImpl implements ContentService {
             if(null != tkRes){
             	topicList = (List<Map<String,Object>>)tkRes;
             }else{
-            	topicList = this.topicTagMapper.getKingdomsByTag(label,"new",1,4, blacklistUids);
+            	topicList = this.topicTagMapper.getKingdomsByTag(uid,label,"new",1,4, blacklistUids);
             	List<Map<String,Object>> tkCacheObj = new ArrayList<Map<String,Object>>();
             	if(null != topicList && topicList.size() > 0){
             		Map<String,Object> t = null;
@@ -4926,7 +4952,7 @@ public class ContentServiceImpl implements ContentService {
         ShowHotCeKingdomListDTO result = new ShowHotCeKingdomListDTO();
         List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
         
-        List<Content2Dto> ceKingdomList = contentMybatisDao.getHotContentByType(sinceId, 1, 10,null,blacklistUids);
+        List<Content2Dto> ceKingdomList = contentMybatisDao.getHotContentByType(uid,sinceId, 1, 10,null,blacklistUids);
         //开始组装返回对象
         if(null != ceKingdomList && ceKingdomList.size() > 0){
             List<Long> uidList = new ArrayList<Long>();
@@ -7143,7 +7169,7 @@ public class ContentServiceImpl implements ContentService {
         if(null != tkRes){
         	topics = (List<Map<String,Object>>)tkRes;
         }else{
-        	topics = topicTagMapper.getKingdomsByTag(tagName, order, page, pageSize, blacklistUids);
+        	topics = topicTagMapper.getKingdomsByTag(uid,tagName, order, page, pageSize, blacklistUids);
         	List<Map<String,Object>> tkCacheObj = new ArrayList<Map<String,Object>>();
         	if(null != topics && topics.size() > 0){
         		Map<String,Object> t = null;
@@ -7193,18 +7219,22 @@ public class ContentServiceImpl implements ContentService {
             dto.setTagName(tagName);
 
             // 取topic tags 取所有的体系标签， 排序规则：1 运营指定顺序 2 用户喜好 3 标签价值
-            //先从缓存里取
-            List<Map<String,Object>> sysTagList = null;
-            Object res = cacheService.getJavaObject("OBJ:SYSTAGCOUNTINFO");
-            if(null != res){
-            	log.info("从缓存里取到");
-            	sysTagList = (List<Map<String,Object>>)res;
-            }else{
-            	log.info("查的数据库呀");
-            	sysTagList = topicTagMapper.getSysTagCountInfo();
-            }
-
-            if(sysTagList!=null && !sysTagList.isEmpty()){
+            
+            List<String> subSysTagList = topicTagMapper.getSubSysTags(tagName);		//	只取当前标签的子标签
+            dto.setHotTagList(subSysTagList);
+            /* 与运营协商,推荐的标签也没几个，此段代码很影响性能，暂时去掉。20170901
+	            //先从缓存里取
+	            List<Map<String,Object>> sysTagList = null;
+	            Object res = cacheService.getJavaObject("OBJ:SYSTAGCOUNTINFO");
+	            if(null != res){
+	            	log.info("从缓存里取到");
+	            	sysTagList = (List<Map<String,Object>>)res;
+	            }else{
+	            	log.info("查的数据库呀");
+	            	sysTagList = topicTagMapper.getSysTagCountInfo();		
+	            }
+           
+             if(sysTagList!=null && !sysTagList.isEmpty()){
                 int size= sysTagList==null?0:sysTagList.size();
                 String[] recommendTags = new String[size];
 
@@ -7286,7 +7316,8 @@ public class ContentServiceImpl implements ContentService {
                     }
                 }
                 dto.setHotTagList(tagList);
-            }
+            }*/
+            
         }
         // 记录操作日志
         this.addUserOprationLog(uid, USER_OPRATE_TYPE.HIT_TAG,tagName);
@@ -7367,5 +7398,4 @@ public class ContentServiceImpl implements ContentService {
 		userVisitLogMapper.insertSelective(record);
 	}
 
-	
 }

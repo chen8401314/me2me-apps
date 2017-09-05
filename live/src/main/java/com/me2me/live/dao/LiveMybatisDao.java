@@ -2114,4 +2114,10 @@ public class LiveMybatisDao {
         example.setOrderByClause(" sort_number desc ");
         return giftInfoMapper.selectByExample(example);
     }
+
+	public void deleteTopicTag(long topicId, String tag) {
+		TopicTagDetailExample example = new TopicTagDetailExample();
+		example.createCriteria().andTopicIdEqualTo(topicId).andTagEqualTo(tag);
+		topicTagDetailMapper.deleteByExample(example);
+	}
 }

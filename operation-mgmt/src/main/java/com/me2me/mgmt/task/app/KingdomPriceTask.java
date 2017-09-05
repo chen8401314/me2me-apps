@@ -597,6 +597,9 @@ public class KingdomPriceTask {
 					if(y0 <= 0){
 						y0=1;
 					}
+					if(x0<=0){
+						x0 = 1;
+					}
 					int _kv = 0;
 					if(kv0 == 0){
 						_kv = (int)Math.pow(Math.pow(_x, 2)+Math.pow(_y, 2),0.5);

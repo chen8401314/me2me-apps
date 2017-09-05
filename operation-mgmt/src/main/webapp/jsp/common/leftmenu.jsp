@@ -63,6 +63,7 @@ String sub = request.getParameter("s");
                     <li <%if("5_1".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appuser/query">用户管理</a></li>
                     <li <%if("5_2".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appuser/gaguser/query">禁言用户管理</a></li>
                     <li <%if("5_3".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appuser/msgsender">用户短信发送</a></li>
+                    <li <%if("5_4".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appuser/invitation/list">用户邀请查询</a></li>
                 </ul>
             </li>
 			<li class="sub-menu">
@@ -162,6 +163,7 @@ String sub = request.getParameter("s");
                 	<li <%if("12_6".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/topicCover/list">王国默认封面管理</a></li>
                 	<li <%if("12_7".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/quotation/robotList">机器人管理</a></li>
                 	<li <%if("12_8".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/quotation/quotationList">语录管理</a></li>
+                	<li <%if("12_9".equals(sub)){ %>class="active"<%} %>><a href="${ctx}/appuser/avatarFrame/list">头像框管理</a></li>
                 </ul>
             </li>
             <li class="sub-menu">

@@ -9319,4 +9319,56 @@ public class LiveServiceImpl implements LiveService {
     public List<GiftInfo> getGiftInfoList() {
         return liveMybatisDao.getGiftInfoList();
     }
+
+	@Override
+	public Response userLike(long uid, String dataId, int isLike, int type) {
+		UserDislikeExample example = new UserDislikeExample();
+		example.createCriteria().andUidEqualTo(uid).andDataEqualTo(dataId).andTypeEqualTo(type);
+		boolean exists = dislikeMapper.countByExample(example)>0;
+		UserDislike dislike = new UserDislike();
+		dislike.setUid(uid);
+		dislike.setData(dataId);
+		dislike.setIsLike(isLike);
+		dislike.setType(type);
+		dislike.setCreateTime(new Date());
+		if(!exists){
+			dislikeMapper.insert(dislike);
+		}else{
+			dislikeMapper.updateByExample(dislike, example);
+		}
+		// 标签加减分
+		if(dislike.getType()==2){		// 不喜欢标签
+			if(dislike.getIsLike()==0){	// 不喜欢
+				this.liveLocalJdbcDao.updateUserLikeTagScoreTo0(uid,dislike.getData());
+			}
+		}else{		//	王国
+			List<TopicTagDetail> detailList = liveMybatisDao.getTopicTagDetailsByTopicId(Integer.parseInt(dataId));
+			int score=0;
+			if(dislike.getIsLike()==0){	// 不喜欢
+				score=userService.getIntegerAppConfigByKey("TAG_DISLIKE_SCORE");
+			}else{	//	喜欢
+				score=userService.getIntegerAppConfigByKey("TAG_LIKE_SCORE");
+			}
+			for(TopicTagDetail detail:detailList){
+				this.liveLocalJdbcDao.updateUserLikeTagScore(uid,detail.getTag(),score);
+			}
+		}
+		return Response.success();
+	}
+	public Response badTag(long uid,long topicId,String tag){
+		if(userService.isAdmin(uid)){
+			TopicBadTagExample ex = new TopicBadTagExample();
+			ex.createCriteria().andTopicIdEqualTo(topicId).andTagEqualTo(tag);
+			if(badTagMapper.countByExample(ex)==0){
+				TopicBadTag tb = new TopicBadTag();
+				tb.setReporterUid(uid);
+				tb.setTopicId(topicId);
+				tb.setTag(tag);
+				badTagMapper.insert(tb);
+				// 从王国删除标签；
+				this.liveMybatisDao.deleteTopicTag(topicId,tag);
+			}
+		}
+		return Response.success();
+	}
 }

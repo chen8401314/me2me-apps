@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -1515,5 +1516,28 @@ public class LiveLocalJdbcDao {
 	public void updateTopicOutTime(long topicId, Date outTime){
 		String sql = "update topic set out_time=? where id=? and out_time<?";
 		jdbcTemplate.update(sql, outTime,topicId,outTime);
+	}
+	
+	public void updateUserLikeTagScore(long uid, String tag, int score) {
+		jdbcTemplate.update("update user_tag_like set score+=? where uid=? and tag=?",score,uid,tag);
+		
+	}
+	public void updateUserLikeTagScoreTo0(long uid, String tag) {
+		jdbcTemplate.update("update user_tag_like set score=0 where uid=? and tag=?",uid,tag);		
+	}
+
+	public boolean isBadTag(long topicId, String tag) {
+		int count =jdbcTemplate.queryForObject("select count(1) from topic_bad_tag where topic_id=? and tag=?",new Object[]{topicId,tag},Integer.class);
+		return count>0;
+	}
+	
+	public void batchInsertUserLikeTags(Long uid, Set<String> userHobbyTags) {
+		jdbcTemplate.update("delete from user_dislike where uid=? and is_like=1 and type=2 and data in (?)",uid,userHobbyTags);
+		String sql ="insert into user_dislike (uid,data,is_like,type,create_time) values(?,?,1,2,now())";
+		List<Object[]> batchArgs = new ArrayList<>();
+		for(String tag:userHobbyTags){
+			batchArgs.add(new Object[]{uid,tag});
+		}
+		jdbcTemplate.batchUpdate(sql, batchArgs );
 	}
 }
