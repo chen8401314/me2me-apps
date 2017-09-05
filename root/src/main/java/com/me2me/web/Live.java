@@ -58,6 +58,7 @@ import com.me2me.web.request.EditSpeakRequest;
 import com.me2me.web.request.FavoriteListRequest;
 import com.me2me.web.request.FinishMyLiveRequest;
 import com.me2me.web.request.FragmentForwardRequest;
+import com.me2me.web.request.GetGiftInfoListRequest;
 import com.me2me.web.request.GetJoinLotteryUsersRequest;
 import com.me2me.web.request.GetKingdomPriceRequest;
 import com.me2me.web.request.GetKingdomTransferRecordRequest;
@@ -1220,5 +1221,15 @@ public class Live extends BaseController {
     @RequestMapping("/addAppDownloadLog")
     public Response addAppDownloadLog(AppDownloadRequest request){
     	return liveService.addAppDownloadLog(request.getRequestUid(), request.getFromUid());
+    }
+    /**
+     * 获取礼物列表接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getGiftInfoList",method = RequestMethod.POST)
+    public Response getGiftInfoList(GetGiftInfoListRequest request){
+    	return liveService.getAllGiftInfoList();
     }
 }

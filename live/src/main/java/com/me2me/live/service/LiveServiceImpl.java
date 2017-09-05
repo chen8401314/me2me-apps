@@ -83,6 +83,7 @@ import com.me2me.live.dto.DaySignInfoDto;
 import com.me2me.live.dto.DetailFidPageDTO;
 import com.me2me.live.dto.DetailPageStatusDTO;
 import com.me2me.live.dto.DropAroundDto;
+import com.me2me.live.dto.GetGiftInfoListDto;
 import com.me2me.live.dto.GetJoinLotteryUsersDto;
 import com.me2me.live.dto.GetKingdomPriceDto;
 import com.me2me.live.dto.GetLiveDetailDto;
@@ -91,6 +92,7 @@ import com.me2me.live.dto.GetLiveTimeLineDto2;
 import com.me2me.live.dto.GetLiveUpdateDto;
 import com.me2me.live.dto.GetLotteryDto;
 import com.me2me.live.dto.GetLotteryListDto;
+import com.me2me.live.dto.GiftInfoListDto;
 import com.me2me.live.dto.GivenKingdomDto;
 import com.me2me.live.dto.KingdomImgDB;
 import com.me2me.live.dto.KingdomSearchDTO;
@@ -112,6 +114,7 @@ import com.me2me.live.dto.SearchQuotationListDto;
 import com.me2me.live.dto.SearchRobotListDto;
 import com.me2me.live.dto.SearchTopicDto;
 import com.me2me.live.dto.SearchTopicListedListDto;
+import com.me2me.live.dto.SendGiftDto;
 import com.me2me.live.dto.SettingModifyDto;
 import com.me2me.live.dto.SettingsDto;
 import com.me2me.live.dto.ShowBarrageDto;
@@ -135,6 +138,7 @@ import com.me2me.live.dto.UserAtListDTO;
 import com.me2me.live.dto.UserKingdomInfoDTO;
 import com.me2me.live.dto.VoteInfoDto;
 import com.me2me.live.model.DeleteLog;
+import com.me2me.live.model.GiftHistory;
 import com.me2me.live.model.GiftInfo;
 import com.me2me.live.model.LiveDisplayFragment;
 import com.me2me.live.model.LiveDisplayProtocol;
@@ -9533,4 +9537,104 @@ public class LiveServiceImpl implements LiveService {
     public int updateGiftInfo(GiftInfo giftInfo){
     	return liveMybatisDao.updateGiftInfo(giftInfo);
     }
+	
+	@Override
+	public Response getAllGiftInfoList() {
+		GetGiftInfoListDto dto = new GetGiftInfoListDto();
+		List<GiftInfo> list =  liveMybatisDao.getGiftInfoList();
+		for (GiftInfo giftInfo : list) {
+			GetGiftInfoListDto.GiftInfoElement e = GetGiftInfoListDto.createGiftInfoElement();
+			e.setGiftId(giftInfo.getId());
+			e.setName(giftInfo.getName());
+			e.setImage(giftInfo.getImage());
+			e.setPrice(giftInfo.getPrice());
+			e.setAddPrice(giftInfo.getAddPrice());
+			e.setImageWidth(giftInfo.getImageWidth());
+			e.setImageHeight(giftInfo.getImageHeight());
+			e.setGifImage(giftInfo.getGifImage());
+			e.setPlayTime(giftInfo.getPlayTime());
+			e.setSortNumber(giftInfo.getSortNumber());
+			e.setStatus(giftInfo.getStatus());
+			dto.getResult().add(e);
+		}
+		return Response.success(dto);
+	}
+	
+	@Override
+	public Response sendGift(long uid,long topicId,long giftId,int giftCount,String onlyCode,int source) {
+		SendGiftDto dto  = new SendGiftDto();
+		UserProfile userProfile = userService.getUserProfileByUid(uid);
+		if(userProfile==null){
+			return Response.failure(500, "找不到用户！");
+		}
+		Topic topic  = liveMybatisDao.getTopicById(topicId);
+		if(topic==null){
+			return Response.failure(500, "找不到王国！");
+		}
+	    GiftInfo giftInfo = liveMybatisDao.getGiftInfoById(giftId);
+		if(giftInfo==null || giftInfo.getStatus()==-1){
+			return Response.failure(500, "找不到礼物！");
+		}
+		if(giftCount<1){
+			return Response.failure(500, "礼物数量不能小于1");
+		}
+		//用户实际送礼物成功的数量
+		int count = 0;
+		int allPrice = giftCount * giftInfo.getPrice();
+		if(userProfile.getAvailableCoin()>=allPrice){
+			count = giftCount;
+		}else{
+			count = userProfile.getAvailableCoin()/giftInfo.getPrice();
+			if(count==0){
+				return Response.failure(500, "您的米汤币余额不足！");
+			}
+		}
+		//实际送礼物扣除的钱
+		int realPrice = count * giftInfo.getPrice();
+		//王国实际增加的钱
+		int realAddPrice = count * giftInfo.getAddPrice();
+		
+		liveLocalJdbcDao.addMyCoins(uid, 0-realPrice);
+		liveLocalJdbcDao.rechargeToKingDom(topicId,realAddPrice);
+		
+		//送礼物记录添加
+		GiftHistory giftHistory = new GiftHistory();
+		giftHistory.setUid(uid);
+		giftHistory.setTopicId(topicId);
+		giftHistory.setGiftId(giftId);
+		giftHistory.setGiftCount(count);
+		giftHistory.setGiftPrice(realPrice);
+		giftHistory.setGiftTopicPrice(realAddPrice);
+		
+		liveMybatisDao.saveGiftHistory(giftHistory);
+		
+        JSONObject json = new JSONObject();
+        json.put("type", "fun");
+        json.put("only", UUID.randomUUID().toString()+"-"+new Random().nextInt());
+        json.put("image", Constant.QINIU_DOMAIN + "/" +giftInfo.getImage());
+        json.put("count", count);
+        json.put("name", giftInfo.getName());
+        json.put("w", giftInfo.getImageWidth());
+        json.put("h", giftInfo.getImageHeight());
+        SpeakDto speakDto = new SpeakDto();
+        if(topic.getUid().longValue()==uid){
+        	speakDto.setType(0);
+        }else{
+            if(getInternalStatus(topic,uid)==0){
+            	speakDto.setType(51);
+            }else{
+            	speakDto.setType(1);
+            }
+        }
+        speakDto.setContentType(24);
+        speakDto.setUid(uid);
+        speakDto.setTopicId(topicId);
+        speakDto.setSource(source);
+        speakDto.setExtra(json.toJSONString());
+        speak(speakDto);
+        dto.setFragmentId(speakDto.getFragmentId());
+        dto.setCount(count);
+		return Response.success(dto);
+	}
+
 }

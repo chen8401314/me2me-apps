@@ -28,6 +28,7 @@ import com.me2me.live.dto.SearchTopicDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.mapper.BlockTopicMapper;
 import com.me2me.live.mapper.DeleteLogMapper;
+import com.me2me.live.mapper.GiftHistoryMapper;
 import com.me2me.live.mapper.GiftInfoMapper;
 import com.me2me.live.mapper.LiveDisplayBarrageMapper;
 import com.me2me.live.mapper.LiveDisplayFragmentMapper;
@@ -73,6 +74,7 @@ import com.me2me.live.mapper.VoteRecordMapper;
 import com.me2me.live.model.BlockTopic;
 import com.me2me.live.model.BlockTopicExample;
 import com.me2me.live.model.DeleteLog;
+import com.me2me.live.model.GiftHistory;
 import com.me2me.live.model.GiftInfo;
 import com.me2me.live.model.GiftInfoExample;
 import com.me2me.live.model.LiveDisplayBarrage;
@@ -297,6 +299,9 @@ public class LiveMybatisDao {
     
     @Autowired
     private GiftInfoMapper giftInfoMapper;
+    
+    @Autowired
+    private GiftHistoryMapper giftHistoryMapper;
     
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -2129,4 +2134,8 @@ public class LiveMybatisDao {
     public int updateGiftInfo(GiftInfo giftInfo){
     	return giftInfoMapper.updateByPrimaryKeySelective(giftInfo);
     }
+    public int saveGiftHistory(GiftHistory giftHistory){
+    	return giftHistoryMapper.insertSelective(giftHistory);
+    }
+    
 }
