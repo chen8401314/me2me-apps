@@ -28,6 +28,7 @@ import com.me2me.live.dto.SearchTopicDto;
 import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.mapper.BlockTopicMapper;
 import com.me2me.live.mapper.DeleteLogMapper;
+import com.me2me.live.mapper.GiftInfoMapper;
 import com.me2me.live.mapper.LiveDisplayBarrageMapper;
 import com.me2me.live.mapper.LiveDisplayFragmentMapper;
 import com.me2me.live.mapper.LiveDisplayProtocolMapper;
@@ -72,6 +73,8 @@ import com.me2me.live.mapper.VoteRecordMapper;
 import com.me2me.live.model.BlockTopic;
 import com.me2me.live.model.BlockTopicExample;
 import com.me2me.live.model.DeleteLog;
+import com.me2me.live.model.GiftInfo;
+import com.me2me.live.model.GiftInfoExample;
 import com.me2me.live.model.LiveDisplayBarrage;
 import com.me2me.live.model.LiveDisplayFragment;
 import com.me2me.live.model.LiveDisplayFragmentExample;
@@ -291,6 +294,9 @@ public class LiveMybatisDao {
     
     @Autowired
     private TopicPriceChangeLogMapper topicPriceChangeLogMapper;
+    
+    @Autowired
+    private GiftInfoMapper giftInfoMapper;
     
     public void createTopic(Topic topic) {
         topicMapper.insertSelective(topic);
@@ -2099,5 +2105,13 @@ public class LiveMybatisDao {
     }
     public void saveTopicPriceChangeLog(TopicPriceChangeLog log){
     	topicPriceChangeLogMapper.insertSelective(log);
+    }
+    
+    public List<GiftInfo> getGiftInfoList() {
+    	GiftInfoExample example = new GiftInfoExample();
+    	GiftInfoExample.Criteria criteria = example.createCriteria();
+        criteria.andStatusEqualTo(0);
+        example.setOrderByClause(" sort_number desc ");
+        return giftInfoMapper.selectByExample(example);
     }
 }

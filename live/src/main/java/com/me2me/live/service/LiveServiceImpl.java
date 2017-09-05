@@ -132,6 +132,8 @@ import com.me2me.live.dto.UserAtListDTO;
 import com.me2me.live.dto.UserKingdomInfoDTO;
 import com.me2me.live.dto.VoteInfoDto;
 import com.me2me.live.model.DeleteLog;
+import com.me2me.live.model.GiftInfo;
+import com.me2me.live.model.GiftInfoExample;
 import com.me2me.live.model.LiveDisplayFragment;
 import com.me2me.live.model.LiveDisplayProtocol;
 import com.me2me.live.model.LiveFavorite;
@@ -9313,5 +9315,8 @@ public class LiveServiceImpl implements LiveService {
 		liveLocalJdbcDao.addAppDownloadLog(uid,fromUid);
 		return Response.success();
 	}
-	
+	@Override
+    public List<GiftInfo> getGiftInfoList() {
+        return liveMybatisDao.getGiftInfoList();
+    }
 }

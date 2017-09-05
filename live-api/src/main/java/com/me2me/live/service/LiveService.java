@@ -24,6 +24,7 @@ import com.me2me.live.dto.SpeakDto;
 import com.me2me.live.dto.StealResultDto;
 import com.me2me.live.dto.TestApiDto;
 import com.me2me.live.dto.UserAtListDTO;
+import com.me2me.live.model.GiftInfo;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.LotteryInfo;
 import com.me2me.live.model.QuotationInfo;
@@ -717,4 +718,7 @@ public interface LiveService {
 	 * @return
 	 */
 	Response addAppDownloadLog(long uid,long fromUid);
+	
+	
+    public List<GiftInfo> getGiftInfoList();
 }
