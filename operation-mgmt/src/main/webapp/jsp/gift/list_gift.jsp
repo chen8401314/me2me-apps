@@ -32,7 +32,7 @@
 		<!--sidebar start-->
 		<jsp:include page="../common/leftmenu.jsp" flush="false">
 			<jsp:param name="t" value="12" />
-			<jsp:param name="s" value="12_5" />
+			<jsp:param name="s" value="12_10" />
 		</jsp:include>
 		<!--sidebar end-->
 
@@ -51,7 +51,7 @@
 							</header>
 							<div class="panel-body">
 								<div>
-									<a class="btn btn-primary" href="./add_emotion">
+									<a class="btn btn-primary" href="./add_gift">
 										<i  class=" fa fa-plus "></i>
 										添加礼物
 									</a>
@@ -66,9 +66,8 @@
 												<th>图片</th>
 												<th>价格</th>
 												<th>估值增加</th>
-												<th>对应王国ID</th>
-												<th>王国名</th>
-												<th>动画时长</th>
+												<th>GIF动画</th>
+												<th>播放时长</th>
 												<th>操作</th>
 											</tr>
 										</thead>
@@ -80,29 +79,26 @@
 														${item.name }
 													</td>
 													<td >
-														${item.happyMin }  到  ${item.happyMax } 
+														${item.sortNumber } 
 													</td>
 													<td>
-														${item.freeMin }  到 ${item.freeMax } 
+														<img src="http://cdn.me-to-me.com/${item.image }" height="50"/>
 													</td>
 													<td>
-														<img src="http://cdn.me-to-me.com/${item.emotionPack.thumb }" height="50"/>
+														${item.price } 
 													</td>
 													<td>
-														${item.topicId }
+														${item.addPrice }
 													</td>
 													<td>
-														${item.topicTitle }
+														<img src="http://cdn.me-to-me.com/${item.gifImage }" height="50"/>
 													</td>
 													<td>
-														<a class="btn btn-warning btn-xs " href="./modify_emotion?id=${item.id}">编辑</a>
-														<c:if test="${item.status==1 }">
-                                                        <a class="btn btn-info btn-xs " href="./off_emotion?id=${item.id}" onclick="return confirm('确认下架吗？')">下架</a>
-                                                        </c:if>
-                                                        <c:if test="${item.status==2 }">
-                                                        <a class="btn btn-primary btn-xs " href="./up_emotion?id=${item.id}">上架</a>
-                                                        </c:if>
-														<a class="btn btn-danger btn-xs " href="./delete_emotion?id=${item.id}" onclick="return confirm('确认删除吗？')">删除</a>
+														${item.playTime }
+													</td>
+													<td>
+														<a class="btn btn-warning btn-xs " href="./modify_gift?id=${item.id}">编辑</a>
+														<a class="btn btn-danger btn-xs " href="./delete_gift?id=${item.id}" onclick="return confirm('确认删除吗？')">删除</a>
 													</td>
 												</tr>
 											</c:forEach>

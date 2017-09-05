@@ -9449,4 +9449,16 @@ public class LiveServiceImpl implements LiveService {
 	public List<GiftInfo> getGiftInfoList() {
 		return liveMybatisDao.getGiftInfoList();
 	}
+	@Override
+    public GiftInfo getGiftInfoById(long id){
+    	return liveMybatisDao.getGiftInfoById(id);
+    }
+	@Override
+    public int saveGiftInfo(GiftInfo giftInfo){
+    	return liveMybatisDao.saveGiftInfo(giftInfo);
+    }
+	@Override
+    public int updateGiftInfo(GiftInfo giftInfo){
+    	return liveMybatisDao.updateGiftInfo(giftInfo);
+    }
 }

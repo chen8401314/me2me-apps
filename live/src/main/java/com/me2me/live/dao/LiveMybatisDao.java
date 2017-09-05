@@ -2111,7 +2111,7 @@ public class LiveMybatisDao {
     	GiftInfoExample example = new GiftInfoExample();
     	GiftInfoExample.Criteria criteria = example.createCriteria();
         criteria.andStatusEqualTo(0);
-        example.setOrderByClause(" sort_number desc ");
+        example.setOrderByClause(" sort_number asc ");
         return giftInfoMapper.selectByExample(example);
     }
 
@@ -2120,4 +2120,13 @@ public class LiveMybatisDao {
 		example.createCriteria().andTopicIdEqualTo(topicId).andTagEqualTo(tag);
 		topicTagDetailMapper.deleteByExample(example);
 	}
+    public GiftInfo getGiftInfoById(long id){
+    	return giftInfoMapper.selectByPrimaryKey(id);
+    }
+    public int saveGiftInfo(GiftInfo giftInfo){
+    	return giftInfoMapper.insertSelective(giftInfo);
+    }
+    public int updateGiftInfo(GiftInfo giftInfo){
+    	return giftInfoMapper.updateByPrimaryKeySelective(giftInfo);
+    }
 }

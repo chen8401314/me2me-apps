@@ -741,4 +741,11 @@ public interface LiveService {
      * @return
      */
     Response badTag(long uid,long topicId,String tag);
+    
+    public GiftInfo getGiftInfoById(long id);
+    
+    public int saveGiftInfo(GiftInfo giftInfo);
+    
+    public int updateGiftInfo(GiftInfo giftInfo);
+    	
 }
