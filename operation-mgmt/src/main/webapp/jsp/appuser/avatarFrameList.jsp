@@ -64,7 +64,10 @@
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								| 头像框列表 
+								| 头像框列表 &emsp;
+									<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+									  新 增
+									</button>
 								<span class="tools pull-right">
 									<a href="javascript:;" class="fa fa-chevron-down"></a>
 								</span>
@@ -85,7 +88,7 @@
 													<th>${userItem.name }</th>
 													<th><img src="${userItem.avatarFrame }" height="50"/></th>
 													<th>
-														<a href="${ctx}/appuser/avatarFrame/delete?id=${userItem.id }">删除</a>
+														<a href="${ctx}/appuser/avatarFrame/del/${userItem.id }" onclick="return deleteAvatarFrame();">删除</a>
 													</th>
 												</tr>
 											</c:forEach>
@@ -133,7 +136,54 @@
 	<script src="${ctx}/js/advanced-form-components.js"></script>
 	<script type="text/javascript" src="${ctx}/assets/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
 	<script type="text/javascript">
-
+var deleteAvatarFrame = function(){
+	if(confirm('删除后将清除所有拥有本头像框的用户头像框，是否确定删除？')){
+		return true;
+	}
+	return false;
+}
 	</script>
+	
+	<!-- Modal -->
+	<div class="modal fade " id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<form id="form2" action="${ctx}/appuser/avatarFrame/save" method="POST" enctype="multipart/form-data">
+			<div class="modal-dialog modal-lg" role="document">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<h4 class="modal-title" id="myModalLabel">新增</h4>
+					</div>
+					<div class="modal-body">
+						<div class="form-group">
+							<label for="exampleInputEmail1">名称</label>
+	                        <input type="text" id="name" name="name" class="form-control" style="width: 100%">
+						</div>
+						<div class="form-group">
+							<label for="exampleInputFile">头像框</label>
+							<div class="fileupload fileupload-new" data-provides="fileupload">
+								<div id="" class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
+								</div>
+								<div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
+								<div>
+									<span class="btn btn-white btn-file"> <span class="fileupload-new"><i class="fa fa-paper-clip"></i>选择上传图片</span>
+										<span class="fileupload-exists"><i class="fa fa-undo"></i>修改</span>
+										<input type="file" id="file" name="file" class="default">
+									</span> 
+									<a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="fa fa-trash"></i>删除</a>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="modifyCommit()">更改</button>
+						<button data-dismiss="modal" class="btn btn-default" type="button">关闭</button>
+					</div>
+				</div>
+			</div>
+		</form>
+	</div>
+
 </body>
 </html>

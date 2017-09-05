@@ -323,6 +323,15 @@ public class AppUserController {
 		return view;
 	}
 	
+	@RequestMapping(value = "/avatarFrame/del/{id}")
+	public ModelAndView delAvatarFrame(@PathVariable long id){
+		String delSql = "delete from user_avatar_frame where id="+id;
+		localJdbcDao.executeSql(delSql);
+		
+		ModelAndView view = new ModelAndView("redirect:/appuser/avatarFrame/list");
+		return view;
+	}
+	
 	@RequestMapping(value = "/invitation/list")
 	public ModelAndView invitationList(UserInvitationQueryDTO dto) {
 		ModelAndView view = new ModelAndView("appuser/userInvitation");
