@@ -6132,6 +6132,12 @@ public class ContentServiceImpl implements ContentService {
                 }
             	result = liveForContentJdbcDao.outReadKingdomList(sinceId, pageSize, blacklistUids);
             	break;
+            case 35://正在抽奖的王国
+            	if(sinceId < 0){
+                    sinceId = 0l;
+                }
+            	result = liveForContentJdbcDao.kingdomLotteryList(sinceId, pageSize, blacklistUids);
+            	break;
             default:
                 break;
         }

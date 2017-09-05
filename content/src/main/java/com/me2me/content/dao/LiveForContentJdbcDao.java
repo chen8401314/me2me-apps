@@ -748,6 +748,48 @@ public class LiveForContentJdbcDao {
     }
     
     /**
+     * 正在抽奖的王国
+     * @param start
+     * @param pageSize
+     * @param blacklistUids
+     * @return
+     */
+    public List<BillBoardListDTO> kingdomLotteryList(long start, int pageSize, List<Long> blacklistUids){
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select t.topic_id,max(id) as maxid from lottery_info t");
+    	sb.append(" where t.status=0 and t.end_time>now()");
+    	if(null != blacklistUids && blacklistUids.size() > 0){
+    		sb.append(" and t.uid not in (");
+    		for(int i=0;i<blacklistUids.size();i++){
+    			if(i>0){
+    				sb.append(",");
+    			}
+    			sb.append(blacklistUids.get(i).toString());
+    		}
+    		sb.append(")");
+    	}
+    	sb.append(" group by t.topic_id order by maxid desc");
+    	sb.append(" limit ").append(start).append(",").append(pageSize);
+    	
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	
+    	List<BillBoardListDTO> result = new ArrayList<BillBoardListDTO>();
+    	if(null != list && list.size() > 0){
+    		BillBoardListDTO bbl = null;
+    		Map<String, Object> m = null;
+    		for(int i=0;i<list.size();i++){
+    			m = list.get(i);
+    			bbl = new BillBoardListDTO();
+    			bbl.setTargetId((Long)m.get("topic_id"));
+    			bbl.setType(1);
+    			bbl.setSinceId(start+i+1);
+    			result.add(bbl);
+    		}
+    	}
+    	return result;
+    }
+    
+    /**
      * 王国价值上升最快排行榜
      * @param start
      * @param pageSize

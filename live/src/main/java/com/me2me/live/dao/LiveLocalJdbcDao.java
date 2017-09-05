@@ -16,6 +16,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.me2me.common.Constant;
+import com.me2me.common.utils.DateUtil;
 import com.me2me.live.dto.KingdomSearchDTO;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.LiveFavoriteDelete;
@@ -1462,6 +1463,50 @@ public class LiveLocalJdbcDao {
     	sb.append(") ");
     	String sql = sb.toString();
 		return jdbcTemplate.queryForList(sql);
+    }
+    
+    public List<Map<String, Object>> get24HourNewUserIdByUids(List<Long> uidList){
+    	if(null == uidList || uidList.size() == 0){
+    		return null;
+    	}
+    	String time = DateUtil.date2string(DateUtil.addDay(new Date(), -1), "yyyy-MM-dd HH:mm:ss");
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select t.uid from user_profile t where t.create_time>'");
+    	sb.append(time).append("' and t.uid in (");
+    	for(int i=0;i<uidList.size();i++){
+    		if(i>0){
+    			sb.append(",");
+    		}
+    		sb.append(uidList.get(i).toString());
+    	}
+    	sb.append(")");
+    	return jdbcTemplate.queryForList(sb.toString());
+    }
+    
+    public List<Long> getOver2WinUidByUids(List<Long> uidList){
+    	List<Long> result = new ArrayList<Long>();
+    	if(null == uidList || uidList.size() == 0){
+    		return result;
+    	}
+    	String time = DateUtil.date2string(new Date(), "yyyy-MM-dd");
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("select t.uid from lottery_win t where t.create_time>='").append(time).append(" 00:00:00'");
+    	sb.append(" and t.uid in (");
+    	for(int i=0;i<uidList.size();i++){
+    		if(i>0){
+    			sb.append(",");
+    		}
+    		sb.append(uidList.get(i).toString());
+    	}
+    	sb.append(") group by t.uid having count(1)>1");
+    	
+    	List<Map<String, Object>> list = jdbcTemplate.queryForList(sb.toString());
+    	if(null != list && list.size() > 0){
+    		for(Map<String, Object> u : list){
+    			result.add((Long)u.get("uid"));
+    		}
+    	}
+    	return result;
     }
 
 	public void addAppDownloadLog(long uid, long fromUid) {

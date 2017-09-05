@@ -9294,42 +9294,114 @@ public class LiveServiceImpl implements LiveService {
 			lotteryInfo.setStatus(2);
 			liveMybatisDao.updateLotteryInfoById(lotteryInfo);
 			
-			List<Map<String, Object>> list = liveLocalJdbcDao.getDistinctLotteryUser(lotteryId);
+			List<Map<String, Object>> result = liveLocalJdbcDao.getDistinctLotteryUser(lotteryId);
+			List<Long> mainList = new ArrayList<Long>();
+			if(null != result && result.size() > 0){
+				for(Map<String, Object> m : result){
+					mainList.add((Long)m.get("uid"));
+				}
+			}
+			
+			
 			String winMessage = topic.getTitle()+":恭喜你参加的["+lotteryInfo.getTitle()+"]中奖了,点击打开领奖吧";
 			String loseMessage = topic.getTitle()+":["+lotteryInfo.getTitle()+"]已开奖,很遗憾你没有中奖,再接再厉吧";
-			int allWin = 0;
-			List<Integer> winList = new ArrayList<Integer>();
-			//如果参与人数小于设置中奖人数那么全部中奖
-			if(list.size()<=lotteryInfo.getWinNumber()){
-				allWin = 1;
-			}else{
-				//随机中奖用户
-				Random  r = new Random();
-			    int i;
-			    while(winList.size() < lotteryInfo.getWinNumber()){
-			        i = r.nextInt(list.size());
-			        if(!winList.contains(i)){
-			        	winList.add(i);
-			        }
-			    }
-			}
-			for (int i=0;i<list.size();i++) {
-				Map<String,Object> map  =list.get(i);
-				long joinUid = (Long) map.get("uid");
-				int win = 0;
-				if(allWin==1 || winList.contains(i)){
-					win = 1;
-					LotteryWin lotteryWin = new LotteryWin();
-					lotteryWin.setLotteryId(lotteryId);
-					lotteryWin.setUid(joinUid);
-					liveMybatisDao.saveLotteryWin(lotteryWin);
+			
+			if(mainList.size() > 0){
+				List<Long> over2WinList = liveLocalJdbcDao.getOver2WinUidByUids(mainList);
+				if(over2WinList.size() > 0){
+					for(Long id : over2WinList){
+						mainList.remove(id);
+					}
 				}
+				
+				Random  r = new Random();
+				
+				List<Long> winnerList = new ArrayList<Long>();
+				if(mainList.size()<=lotteryInfo.getWinNumber()){//没什么好说的，全部中奖
+					winnerList.addAll(mainList);
+					mainList.clear();
+				}else{
+					//先判断是否运营邀请的，有特殊处理
+					List<Long> newUserList = new ArrayList<Long>();
+					boolean isSpecail = false;
+					UserProfile userProfile = userService.getUserProfileByUid(uid);
+					if(lotteryInfo.getWinNumber().intValue() > 1 && null != userProfile 
+							&& userProfile.getExcellent().intValue() == 1 
+							&& !StringUtils.isEmpty(lotteryInfo.getSummary())
+							&& lotteryInfo.getSummary().contains("新人")){
+						List<Map<String, Object>> newUsers = liveLocalJdbcDao.get24HourNewUserIdByUids(mainList);
+						if(null != newUsers && newUsers.size() > 0){
+							for(Map<String, Object> m : newUsers){
+								Long newUserId = (Long)m.get("uid");
+								if(!newUserList.contains(newUserId)){
+									newUserList.add(newUserId);
+								}
+							}
+							if(newUserList.size() >= 10){
+								isSpecail = true;
+							}
+						}
+					}
+					
+					if(isSpecail){//特殊逻辑，中奖人数的一半必须是新人
+						
+						//先加新人
+						int newCount = lotteryInfo.getWinNumber().intValue()/2;
+						while(winnerList.size() < newCount){
+							int i=r.nextInt(newUserList.size());
+							winnerList.add(newUserList.get(i));
+							mainList.remove(newUserList.get(i));
+							newUserList.remove(i);
+						}
+						//再加剩下的人
+						while(winnerList.size() < lotteryInfo.getWinNumber().intValue()){
+							int i = r.nextInt(mainList.size());
+							winnerList.add(mainList.get(i));
+							mainList.remove(i);
+						}
+					}else{//还是老的完全随机的规则
+						while(winnerList.size() < lotteryInfo.getWinNumber().intValue()){
+							int i = r.nextInt(mainList.size());
+							winnerList.add(mainList.get(i));
+							mainList.remove(i);
+						}
+					}
+				}
+				
+				if(winnerList.size() < lotteryInfo.getWinNumber().intValue() && over2WinList.size() > 0){
+					//哎~实在没人了，那么那些已经中国2次以上的人再次中奖吧
+					while(winnerList.size() < lotteryInfo.getWinNumber().intValue() && over2WinList.size() > 0){
+						int i=r.nextInt(over2WinList.size());
+						winnerList.add(over2WinList.get(i));
+						over2WinList.remove(i);
+					}
+				}
+				
+				if(over2WinList.size() > 0){
+					//把这些都归为未中奖
+					mainList.addAll(over2WinList);
+				}
+				
+				//这样其实弄下来，winnerList里都是中奖的用户，mainList里都是未中奖的用户
 				JsonObject jsonObject = new JsonObject();
 				jsonObject.addProperty("type", Specification.PushObjectType.LOTTERY.index);
 				jsonObject.addProperty("messageType", Specification.PushMessageType.LOTTERY.index);
 				jsonObject.addProperty("lotteryId", lotteryId);
-				userService.pushWithExtra(String.valueOf(joinUid), win==0?loseMessage:winMessage, JPushUtils.packageExtra(jsonObject));
+				
+				for(Long i : winnerList){
+					LotteryWin lotteryWin = new LotteryWin();
+					lotteryWin.setLotteryId(lotteryId);
+					lotteryWin.setUid(i);
+					liveMybatisDao.saveLotteryWin(lotteryWin);
+					
+					userService.pushWithExtra(i.toString(), winMessage, JPushUtils.packageExtra(jsonObject));
+				}
+				
+				for(Long i : mainList){
+					userService.pushWithExtra(i.toString(), loseMessage, JPushUtils.packageExtra(jsonObject));
+				}
 			}
+			
 			SpeakDto speakDto = new SpeakDto();
 			speakDto.setType(52);
 			speakDto.setContentType(22);

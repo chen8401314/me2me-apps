@@ -109,6 +109,12 @@ var modifyCommit = function(){
 											<option value="0" ${dataObj.status==0?'selected':''}>全部</option>
 											<option value="1" ${dataObj.status==1?'selected':''}>正常</option>
 											<option value="2" ${dataObj.status==2?'selected':''}>封号</option>
+										</select>&nbsp;&nbsp;
+										是否运营邀请
+										<select name="yunying" id="yunying" class="form-control">
+											<option value="0" ${dataObj.yunying==0?'selected':''}>全部</option>
+											<option value="1" ${dataObj.yunying==1?'selected':''}>是</option>
+											<option value="2" ${dataObj.yunying==2?'selected':''}>否</option>
 										</select>
 										<input type="submit" id="btnSearch" name="btnSearch" value="搜索" class="btn btn-info" />
 									</div>
@@ -138,7 +144,7 @@ var modifyCommit = function(){
 												<th>手机</th>
 												<th>昵称</th>
 												<th>性别</th>
-												<th>生日</th>
+												<th>是否运营邀请</th>
 												<th>是否大V</th>
 												<th>等级</th>
 												<th>状态</th>
@@ -147,7 +153,7 @@ var modifyCommit = function(){
 											</tr>
 										</thead>
 										<tbody>
-											<c:forEach items="${dataObj.data.result}" var="userItem">
+											<c:forEach items="${dataObj.result}" var="userItem">
 												<tr class="gradeX" key="${userItem.uid }">
 													<th>${userItem.uid }</th>
 													<th>${userItem.meCode }</th>
@@ -163,7 +169,16 @@ var modifyCommit = function(){
                                                 		</c:otherwise>
                                                 	</c:choose>
 													</th>
-													<th>${userItem.birthday }</th>
+													<th>
+													<c:choose>
+                                                		<c:when test="${userItem.excellent == '1'}">
+                                                			是
+                                                		</c:when>
+                                                		<c:otherwise>
+                                                			否
+                                                		</c:otherwise>
+                                                	</c:choose>
+													</th>
 													<th>
 													<c:choose>
                                                 		<c:when test="${userItem.vlv == '1'}">
@@ -206,6 +221,14 @@ var modifyCommit = function(){
                                                 	</c:choose>
                                                 	|<a href="${ctx}/appcontent/init/${userItem.uid }">查看内容</a>
                                                 	|<a href="#" onclick="modifyLevel(${userItem.uid }, '${userItem.nickName }', ${userItem.level })">修改等级</a>
+                                                	|<c:choose>
+                                                		<c:when test="${userItem.excellent == '1'}">
+                                                			<a href="${ctx}/appuser/option/excellent?m=${userItem.nickName }&a=1&i=${userItem.uid}">取消邀请</a>
+                                                		</c:when>
+                                                		<c:otherwise>
+                                                			<a href="${ctx}/appuser/option/excellent?m=${userItem.nickName }&a=2&i=${userItem.uid}">设置邀请</a>
+                                                		</c:otherwise>
+                                                	</c:choose>
 													</th>
 												</tr>
 											</c:forEach>
@@ -217,7 +240,7 @@ var modifyCommit = function(){
 												<th>手机</th>
 												<th>昵称</th>
 												<th>性别</th>
-												<th>生日</th>
+												<th>是否运营邀请</th>
 												<th>是否大V</th>
 												<th>等级</th>
 												<th>状态</th>

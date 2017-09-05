@@ -105,6 +105,7 @@
 														<option value="32">个人米汤币排行榜</option>
 														<option value="33">对外分享次数用户榜单(8月7日0点后)</option>
 														<option value="34">外部阅读次数王国榜单(8月7日0点后)</option>
+														<option value="35">正在抽奖的王国</option>
 													</select>
 													<label class="text-danger">保存之后不可修改。</label>
 		                                        </div>

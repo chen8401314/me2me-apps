@@ -1,6 +1,7 @@
 package com.me2me.mgmt.controller;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,6 @@ import com.me2me.mgmt.request.UserInvitationDetailQueryDTO;
 import com.me2me.mgmt.request.UserInvitationQueryDTO;
 import com.me2me.mgmt.syslog.SystemControllerLog;
 import com.me2me.sms.service.SmsService;
-import com.me2me.user.dto.SearchUserProfileDto;
 import com.me2me.user.dto.ShowUsergagDto;
 import com.me2me.user.dto.UserSignUpDto;
 import com.me2me.user.model.UserGag;
@@ -53,7 +53,6 @@ public class AppUserController {
 	@Autowired
 	private LocalJdbcDao localJdbcDao;
 	
-	@SuppressWarnings("rawtypes")
 	@RequestMapping(value = "/query")
 	public ModelAndView query(AppUserQueryDTO dto) {
 		ModelAndView view = new ModelAndView("appuser/userList");
@@ -76,11 +75,65 @@ public class AppUserController {
 			meCode = Long.valueOf(dto.getMeCode());
 		}
 		
-		Response resp = userService.searchUserPage(dto.getNickName(), dto.getMobile(), vLv, status, dto.getStartTime(), dto.getEndTime(), meCode, 1, 200);
-		if(null != resp && resp.getCode() == 200 && null != resp.getData()){
-			SearchUserProfileDto data = (SearchUserProfileDto)resp.getData();
-			dto.setData(data);
+		int excellent = -1;
+		if(dto.getYunying() == 1){
+			excellent = 1;
+		}else if(dto.getYunying() == 2){
+			excellent = 0;
 		}
+		
+		StringBuilder sb = new StringBuilder();
+    	sb.append("select p.avatar,u.create_time,p.gender,p.mobile,p.nick_name,p.third_part_bind,p.uid,p.v_lv,p.birthday,u.disable_user,n.me_number,p.level,p.excellent ");
+    	sb.append("from user u,user_profile p,user_no n ");
+    	sb.append("where u.uid=p.uid and u.uid=n.uid ");
+    	if(StringUtils.isNotBlank(dto.getNickName())){
+    		sb.append("and p.nick_name like '%").append(dto.getNickName()).append("%' ");
+    	}
+    	if(StringUtils.isNotBlank(dto.getMobile())){
+    		sb.append("and p.mobile like '%").append(dto.getMobile()).append("%' ");
+    	}
+    	if(vLv >= 0){
+    		sb.append("and p.v_lv=").append(vLv).append(" ");
+    	}
+    	if(status >= 0){
+    		sb.append("and u.disable_user=").append(status).append(" ");
+    	}
+    	if(excellent >= 0){
+    		sb.append("and p.excellent=").append(excellent).append(" ");
+    	}
+    	if(StringUtils.isNotBlank(dto.getStartTime())){
+    		sb.append("and u.create_time>='").append(dto.getStartTime()).append("' ");
+    	}
+    	if(StringUtils.isNotBlank(dto.getEndTime())){
+    		sb.append("and u.create_time<='").append(dto.getEndTime()).append("' ");
+    	}
+    	if(meCode > 0){
+    		sb.append("and n.me_number=").append(meCode).append(" ");
+    	}
+    	sb.append("order by u.create_time desc limit 0,200");
+		
+		List<Map<String, Object>> list = localJdbcDao.queryEvery(sb.toString());
+		if(null != list && list.size() > 0){
+			AppUserQueryDTO.UserProfileElement e = null;
+			for(Map<String, Object> u : list){
+				e = new AppUserQueryDTO.UserProfileElement();
+				e.setAvatar(Constant.QINIU_DOMAIN + "/" + (String)u.get("avatar"));
+				e.setBirthday((String)u.get("birthday"));
+				e.setCreateTime((Date)u.get("create_time"));
+				e.setExcellent((Integer)u.get("excellent"));
+				e.setGender((Integer)u.get("gender"));
+				e.setLevel((Integer)u.get("level"));
+				e.setMeCode((Long)u.get("me_number"));
+				e.setMobile((String)u.get("mobile"));
+				e.setNickName((String)u.get("nick_name"));
+				e.setStatus((Integer)u.get("disable_user"));
+				e.setThirdPartBind((String)u.get("third_part_bind"));
+				e.setUid((Long)u.get("uid"));
+				e.setVlv((Integer)u.get("v_lv"));
+				dto.getResult().add(e);
+			}
+		}
+
 		view.addObject("dataObj",dto);
 		return view;
 	}
@@ -88,7 +141,8 @@ public class AppUserController {
 	@RequestMapping(value = "/userLevel/modify")
 	@ResponseBody
 	public String sendMsg(@RequestParam("u")long uid, @RequestParam("l")int level){
-		userService.modifyUserLevel(uid, level);
+		String updateSql = "update user_profile set level=? where uid=?";
+		localJdbcDao.executeSqlWithParams(updateSql, level, uid);
 		return "0";
 	}
 	
@@ -124,6 +178,25 @@ public class AppUserController {
     		userService.optionDisableUser(1, uid);
     	}else{
     		userService.optionDisableUser(2, uid);
+    	}
+    	ModelAndView view = new ModelAndView("redirect:/appuser/query");
+    	view.addObject("nickName",nickName);
+		return view;
+	}
+	
+	@RequestMapping(value="/option/excellent")
+	public ModelAndView optionExcellent(HttpServletRequest req){
+		int action = Integer.valueOf(req.getParameter("a"));
+    	long uid = Long.valueOf(req.getParameter("i"));
+    	String nickName = req.getParameter("m");
+    	if(null == nickName){
+    		nickName = "";
+    	}
+    	String updateSql = "update user_profile set excellent=? where uid=?";
+    	if(action == 1){//取消
+    		localJdbcDao.executeSqlWithParams(updateSql, 0, uid);
+    	}else{//设置
+    		localJdbcDao.executeSqlWithParams(updateSql, 1, uid);
     	}
     	ModelAndView view = new ModelAndView("redirect:/appuser/query");
     	view.addObject("nickName",nickName);
@@ -425,6 +498,7 @@ public class AppUserController {
 		return view;
 	}
 	
+	@SuppressWarnings("rawtypes")
 	@ResponseBody
 	@RequestMapping(value = "/invitation/detailPage")
 	public UserInvitationDetailQueryDTO invitationDetailPage(UserInvitationDetailQueryDTO dto){
