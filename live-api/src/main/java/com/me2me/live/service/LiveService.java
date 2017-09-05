@@ -748,4 +748,7 @@ public interface LiveService {
     
     public int updateGiftInfo(GiftInfo giftInfo);
     	
+    Response getAllGiftInfoList();
+    
+    Response sendGift(long uid,long topicId,long giftId,int giftCount,String onlyCode,int source);
 }
