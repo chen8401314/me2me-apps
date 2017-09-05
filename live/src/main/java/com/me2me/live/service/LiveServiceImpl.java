@@ -10,6 +10,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -17,6 +18,8 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.me2me.live.event.*;
+import com.me2me.live.mapper.TopicBadTagMapper;
+import com.me2me.live.mapper.UserDislikeMapper;
 import com.me2me.user.dto.ModifyUserCoinDto;
 import com.me2me.user.dto.PermissionDescriptionDto;
 import com.me2me.user.dto.PermissionDescriptionDto.PermissionNodeDto;
@@ -133,7 +136,6 @@ import com.me2me.live.dto.UserKingdomInfoDTO;
 import com.me2me.live.dto.VoteInfoDto;
 import com.me2me.live.model.DeleteLog;
 import com.me2me.live.model.GiftInfo;
-import com.me2me.live.model.GiftInfoExample;
 import com.me2me.live.model.LiveDisplayFragment;
 import com.me2me.live.model.LiveDisplayProtocol;
 import com.me2me.live.model.LiveFavorite;
@@ -153,6 +155,8 @@ import com.me2me.live.model.Topic;
 import com.me2me.live.model.Topic2;
 import com.me2me.live.model.TopicAggregation;
 import com.me2me.live.model.TopicAggregationApply;
+import com.me2me.live.model.TopicBadTag;
+import com.me2me.live.model.TopicBadTagExample;
 import com.me2me.live.model.TopicBarrage;
 import com.me2me.live.model.TopicData;
 import com.me2me.live.model.TopicDroparound;
@@ -170,6 +174,8 @@ import com.me2me.live.model.TopicTag;
 import com.me2me.live.model.TopicTagDetail;
 import com.me2me.live.model.TopicTransferRecord;
 import com.me2me.live.model.TopicUserConfig;
+import com.me2me.live.model.UserDislike;
+import com.me2me.live.model.UserDislikeExample;
 import com.me2me.live.model.UserStealLog;
 import com.me2me.live.model.VoteInfo;
 import com.me2me.live.model.VoteOption;
@@ -239,9 +245,11 @@ public class LiveServiceImpl implements LiveService {
     @Autowired
     private SmsService smsService;
 
+    @Autowired
+    private UserDislikeMapper dislikeMapper;
 
-
-
+	@Autowired
+	private TopicBadTagMapper badTagMapper;
 
     @Value("#{app.live_web}")
     private String live_web;
@@ -560,28 +568,56 @@ public class LiveServiceImpl implements LiveService {
         cal1.setTime(date);
         cal1.add(Calendar.DATE, -1);
         List<TopicNews> topicNewsList = liveMybatisDao.getTopicNewsList24h(cal1.getTime());
-        for (int i = 0; i < topicNewsList.size(); i++) {
-            TopicNews topicNews = topicNewsList.get(i);
-            TopicNewsModel topicNewsModel = new TopicNewsModel(topicNews.getId(),uid,"0");
-            String isTopicNews= cacheService.hGet(topicNewsModel.getKey(), topicNewsModel.getField());
-            if (!StringUtils.isEmpty(isTopicNews)) {
-                continue;
-            } else {
-                cacheService.hSet(topicNewsModel.getKey(), topicNewsModel.getField(), topicNewsModel.getValue());
-            }
-            LiveCoverDto.TopicNewsElement  topicNewsElement = new LiveCoverDto.TopicNewsElement();
-            topicNewsElement.setId(topicNews.getId());
-            topicNewsElement.setContent(topicNews.getContent());
-            topicNewsElement.setType(topicNews.getType());
-            topicNewsElement.setTopicId(topicNews.getTopicId());
-            Topic newsTopic  = liveMybatisDao.getTopicById(topicNews.getTopicId());
-            if(newsTopic==null){
-                continue;
-            }
-            topicNewsElement.setContentType(newsTopic.getType());
-            topicNewsElement.setInternalStatus(this.getUserInternalStatus(newsTopic.getCoreCircle(), uid));
-            liveCoverDto.getNewsTopList().add(topicNewsElement);
+        List<Long> newsTopicIdList = new ArrayList<Long>();
+        if(null != topicNewsList && topicNewsList.size() > 0){
+        	TopicNews topicNews = null;
+        	TopicNewsModel topicNewsModel = null;
+        	for (int i = 0; i < topicNewsList.size(); i++) {
+        		topicNews = topicNewsList.get(i);
+        		topicNewsModel = new TopicNewsModel(topicNews.getId(), uid, "0");
+                String isTopicNews= cacheService.hGet(topicNewsModel.getKey(), topicNewsModel.getField());
+                if (!StringUtils.isEmpty(isTopicNews)) {
+                	topicNewsList.remove(i);
+                	i--;
+                    continue;
+                } else {
+                    cacheService.hSet(topicNewsModel.getKey(), topicNewsModel.getField(), topicNewsModel.getValue());
+                    if(!newsTopicIdList.contains(topicNews.getTopicId())){
+                    	newsTopicIdList.add(topicNews.getTopicId());
+                    }
+                }
+        	}
         }
+        
+        Map<String, Topic> newsTopicMap = new HashMap<String, Topic>();
+        if(newsTopicIdList.size() > 0){
+        	List<Topic> newsTopicList = liveMybatisDao.getTopicsByIds(newsTopicIdList);
+        	if(null != newsTopicList && newsTopicList.size() > 0){
+        		for(Topic t : newsTopicList){
+        			newsTopicMap.put(t.getId().toString(), t);
+        		}
+        	}
+        }
+        
+        if(null != topicNewsList && topicNewsList.size() > 0){
+        	LiveCoverDto.TopicNewsElement  topicNewsElement = null;
+        	Topic newsTopic = null;
+        	for(TopicNews tnews : topicNewsList){
+        		topicNewsElement = new LiveCoverDto.TopicNewsElement();
+                topicNewsElement.setId(tnews.getId());
+                topicNewsElement.setContent(tnews.getContent());
+                topicNewsElement.setType(tnews.getType());
+                topicNewsElement.setTopicId(tnews.getTopicId());
+                newsTopic  = newsTopicMap.get(tnews.getTopicId().toString());
+                if(newsTopic==null){
+                    continue;
+                }
+                topicNewsElement.setContentType(newsTopic.getType());
+                topicNewsElement.setInternalStatus(this.getUserInternalStatus(newsTopic.getCoreCircle(), uid));
+                liveCoverDto.getNewsTopList().add(topicNewsElement);
+        	}
+        }
+ 
         liveCoverDto.setTopicPrice(topic.getPrice());
         liveCoverDto.setTopicRMB(exchangeKingdomPrice(topic.getPrice()));
         TopicData topicData = liveMybatisDao.getTopicDataByTopicId(topicId);
@@ -1361,9 +1397,11 @@ public class LiveServiceImpl implements LiveService {
         	try{
         		List<String> recTags = searchService.recommendTags(speakDto.getFragment(), 1).getData().getTags();
         		if(null != recTags && recTags.size() > 0){
+        			//检查王国标签黑名单
         			String tag = recTags.get(0);
     	        	boolean exists =liveLocalJdbcDao.existsTrialTagInKingdom(speakDto.getTopicId(),tag);
-    	        	if(!exists){
+    	        	boolean isBadTag = this.liveLocalJdbcDao.isBadTag(speakDto.getTopicId(),tag);
+    	        	if(!exists &&!isBadTag){
     	        		TopicTag ttag = liveMybatisDao.getTopicTagByTag(tag);
     	        		TopicTagDetail detail = new TopicTagDetail();
     	        		detail.setTopicId(speakDto.getTopicId());
@@ -4177,8 +4215,10 @@ public class LiveServiceImpl implements LiveService {
         	if(null != tags && tags.length > 0){
         		TopicTag topicTag = null;
         		TopicTagDetail tagDetail = null;
+        		Set<String> tagSet = new LinkedHashSet<>();
         		for(String tag : tags){
         			tag = tag.trim();
+        			tagSet.add(tag);
         			if(!StringUtils.isEmpty(tag)){
         				topicTag = liveMybatisDao.getTopicTagByTag(tag);
         				if(null == topicTag){
@@ -4198,7 +4238,9 @@ public class LiveServiceImpl implements LiveService {
         				tagDetail.setAutoTag(0);
         			}
         			liveMybatisDao.insertTopicTagDetail(tagDetail);
+        			// 4 用户建立了新的王国,并且王国有标签,及时声称
         		}
+        		liveLocalJdbcDao.batchInsertUserLikeTags(createKingdomDto.getUid(),tagSet);
         	}
         }
         //add kingdom tags -- end --
@@ -5959,6 +6001,14 @@ public class LiveServiceImpl implements LiveService {
     @Override
     public Response topicTags(long uid, long topicId){
         ShowTopicTagsDTO resultDTO = new ShowTopicTagsDTO();
+        // 标签黑名单
+        TopicBadTagExample example =new TopicBadTagExample();
+        example.createCriteria().andTopicIdEqualTo(topicId);
+        List<TopicBadTag> tagBlackList= badTagMapper.selectByExample(example);
+        Set<String> blackTagSet = new HashSet<>();
+        for(TopicBadTag badTag:tagBlackList){
+        	blackTagSet.add(badTag.getTag());
+        }
         //获取王国本身的王国
         resultDTO.setTopicTags("");
         if(topicId > 0){
@@ -5968,29 +6018,39 @@ public class LiveServiceImpl implements LiveService {
                 TopicTagDetail ttd = null;
                 for(int i=0;i<tagList.size();i++){
                     ttd = tagList.get(i);
-                    if(i>0){
-                        topicTags.append(";");
+                    if(!blackTagSet.contains(ttd.getTag())){
+	                    if(i>0){
+	                        topicTags.append(";");
+	                    }
+	                    topicTags.append(ttd.getTag());
                     }
-                    topicTags.append(ttd.getTag());
                 }
                 resultDTO.setTopicTags(topicTags.toString());
             }
         }
+        // 取用户喜欢的标签
+        UserDislikeExample ex = new UserDislikeExample();
+        ex.createCriteria().andUidEqualTo(uid).andIsLikeEqualTo(1).andTypeEqualTo(2);
+        List<UserDislike> likeList=  dislikeMapper.selectByExample(ex);
+        
         //获取我常用的标签
         resultDTO.setMyUsedTags("");
+        LinkedHashSet<String> tagList = new LinkedHashSet<>();
         List<Map<String, Object>> myTags = liveLocalJdbcDao.getMyTopicTags(uid, 20);
         if(null != myTags && myTags.size() > 0){
-            StringBuilder myTopicTags = new StringBuilder();
-            Map<String, Object> t = null;
-            for(int i=0;i<myTags.size();i++){
-                t = myTags.get(i);
-                if(i>0){
-                    myTopicTags.append(";");
-                }
-                myTopicTags.append((String)t.get("tag"));
+            for (UserDislike disLikeTag:likeList){
+            	tagList.add(disLikeTag.getData());
             }
-            resultDTO.setMyUsedTags(myTopicTags.toString());
+            for(int i=0;i<myTags.size();i++){
+                String tag = (String) myTags.get(i).get("tag");
+                if(!blackTagSet.contains(tag)){
+                	tagList.add(tag);
+                }
+            }
+            resultDTO.setMyUsedTags(org.apache.commons.lang3.StringUtils.join(tagList,","));
         }
+     
+        
         //获取推荐的标签
         //2.2.3版本暂时先只返回运营推荐的标签
         boolean isAdmin = userService.isAdmin(uid);
@@ -5998,13 +6058,15 @@ public class LiveServiceImpl implements LiveService {
         if(null != recTags && recTags.size() > 0){
             ShowTopicTagsDTO.TagElement e = null;
             for(Map<String, Object> m : recTags){
-                e = new ShowTopicTagsDTO.TagElement();
-                e.setTag((String)m.get("tag"));
-                e.setTopicCount((Long)m.get("kcount"));
-                resultDTO.getRecTags().add(e);
+            	 if(!blackTagSet.contains(m.get("tag"))){
+	                e = new ShowTopicTagsDTO.TagElement();
+	                e.setTag((String)m.get("tag"));
+	                e.setTopicCount((Long)m.get("kcount"));
+	                resultDTO.getRecTags().add(e);
+            	 }
             }
         }
-
+       
         return Response.success(resultDTO);
     }
 
@@ -6047,13 +6109,23 @@ public class LiveServiceImpl implements LiveService {
                 }
             }
         }
-
+        // 标签黑名单
+        TopicBadTagExample example =new TopicBadTagExample();
+        example.createCriteria().andTopicIdEqualTo(topicId);
+        List<TopicBadTag> tagBlackList= badTagMapper.selectByExample(example);
+        Set<String> blackTagSet = new HashSet<>();
+        for(TopicBadTag badTag:tagBlackList){
+        	blackTagSet.add(badTag.getTag());
+        }
         //剩下的需要保存到库里面
         if(newTagList.size() > 0){
             TopicTagDetail tagDetail = null;
             TopicTag topicTag = null;
             for(String tag : newTagList){
-                //非管理员不能打带“官方”二字的标签
+	        	 if(blackTagSet.contains(tag)){
+	        		 continue;
+	        	 }
+            	//非管理员不能打带“官方”二字的标签
                 if(!isAdmin){
                     if(tag.contains("官方")){
                         continue;
@@ -7483,6 +7555,11 @@ public class LiveServiceImpl implements LiveService {
 
     @Override
     public Response rechargeToKingdom(RechargeToKingdomDto rechargeToKingdomDto) {
+    	return  Response.failure(500, "此功能已改版,请下载新版本,在王国内使用赠送礼物的功能");
+    }
+    
+    //本方法不再提供了，303版本开始不支持米汤币王国充值了
+    private Response rechargeToKingdom2(RechargeToKingdomDto rechargeToKingdomDto) {
 
         UserProfile  userProfile = userService.getUserProfileByUid(rechargeToKingdomDto.getUid());
         if(userProfile.getAvailableCoin() ==0){
@@ -9315,10 +9392,6 @@ public class LiveServiceImpl implements LiveService {
 		liveLocalJdbcDao.addAppDownloadLog(uid,fromUid);
 		return Response.success();
 	}
-	@Override
-    public List<GiftInfo> getGiftInfoList() {
-        return liveMybatisDao.getGiftInfoList();
-    }
 
 	@Override
 	public Response userLike(long uid, String dataId, int isLike, int type) {
@@ -9370,5 +9443,10 @@ public class LiveServiceImpl implements LiveService {
 			}
 		}
 		return Response.success();
+	}
+
+	@Override
+	public List<GiftInfo> getGiftInfoList() {
+		return liveMybatisDao.getGiftInfoList();
 	}
 }
