@@ -4311,31 +4311,32 @@ public class ContentServiceImpl implements ContentService {
         return new BigDecimal(price).divide(exchangeRate, 2, RoundingMode.HALF_UP).doubleValue();
     }
     private List<HotTagElement> buildHotTagKingdoms(long uid, List<Long> blacklistUids){
-        // 标签推荐
-
-        //	取n个标签
         List<com.me2me.content.dto.ShowHotListDTO.HotTagElement> dataList = new ArrayList<ShowHotListDTO.HotTagElement>();
-//        double TAG_SHOW_PRICE_BRAND_MIN = Double.parseDouble( userService.getAppConfigByKey("TAG_SHOW_PRICE_BRAND_MIN"));
-        // 用户个性化推荐，获取用户感兴趣的标签。
-        int favoScore = userService.getIntegerAppConfigByKey("USER_FAVO_SCORE");
-        String strAdminTags = (String) userService.getAppConfigByKey("HOME_HOT_LABELS");
-        
+
         Set<String> allTags = new LinkedHashSet<>();
+        List<String> blackTags = topicTagMapper.getUserLikeTagAndSubTag(uid,0);		// 不喜欢的标签和子标签。
+        
         //用户在首页的标签上点击了喜欢,注意在喜欢了之后,在推荐和查询的时候,连同下方的子标签也会一起加入展示,除非用户手动对子标签选择了不喜欢
-        List<String> userLikeTags= topicTagMapper.getUserLikeTagAndSubTag(uid);// 白名单，推荐标签和子标签
+        List<String> userLikeTags= topicTagMapper.getUserLikeTagAndSubTag(uid,1);// 白名单，推荐标签和子标签
         allTags.addAll(userLikeTags);
         
         //除以上两种标签外,通过用户行为产生的排名最高的前5个"体系标签",且评分必须超过20
-        List<String> favoTags = this.topicTagMapper.getUserFavoTags(favoScore,uid);
-        allTags.addAll(favoTags);
+        List<String> favoTags = this.topicTagMapper.getUserFavoTags(uid,5);
+        for(String favoTag:favoTags){
+        	if(!blackTags.contains(favoTag)){
+        		allTags.add(favoTag);
+        	}
+        }
+        
         //除以上三种标签之外,随机从运营后台设定的"体系标签中"选出的标签,数量20个
+        String strAdminTags = (String) userService.getAppConfigByKey("HOME_HOT_LABELS");
         List<String> adminTags = Arrays.asList(strAdminTags.split("\\n"));
         int n=0;
         for(String adminTag:adminTags){
-        	if(n++==20){		//除以上三种标签之外,随机从运营后台设定的"体系标签中"选出的标签,数量20个
-        		break;
+        	if(n<20 && !blackTags.contains(adminTag)){//除以上三种标签之外,随机从运营后台设定的"体系标签中"选出的标签,数量20个
+        		allTags.add(adminTag);	
+        		n++;
         	}
-        	allTags.add(adminTag);	
         }
        
         for(String label:allTags){
