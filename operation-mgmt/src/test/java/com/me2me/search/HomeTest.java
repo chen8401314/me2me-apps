@@ -21,15 +21,15 @@ public class HomeTest {
 
 	@Autowired
 	private LiveService ls;
-	@Test
+	//@Test
 	public void getTagKingdomList() {
 		Response<TagKingdomDto> tagsKingdoms = liveService.tagKingdomList("AAA0","new", 1, 20, 318);
 		System.out.println(JSON.toJSONString(tagsKingdoms, true));
 		
 	}
-	//@Test
+	@Test
 	public void hotList() {
-		Response tagsKingdoms = liveService.hotList(-1,318, 0);
+		Response tagsKingdoms = liveService.hotList(-1,1118, 0);
 		System.out.println(JSON.toJSONString(tagsKingdoms, true));
 	}
 	//@Test

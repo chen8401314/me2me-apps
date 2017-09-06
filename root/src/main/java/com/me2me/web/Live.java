@@ -248,7 +248,9 @@ public class Live extends BaseController {
         liveDetailDto.setVersionFlag(0);
         
         String version = request.getVersion();
-        if(VersionUtil.isNewVersion(version, "3.0.2")){
+        if(VersionUtil.isNewVersion(version, "3.0.3")){
+        	liveDetailDto.setVersionFlag(6);
+        }else if(VersionUtil.isNewVersion(version, "3.0.2")){
         	liveDetailDto.setVersionFlag(5);
         }else if(VersionUtil.isNewVersion(version, "3.0.1")){
         	liveDetailDto.setVersionFlag(4);

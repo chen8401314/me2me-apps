@@ -79,7 +79,7 @@ public interface TopicTagSearchMapper {
 	 * @param uid
 	 * @return
 	 */
-	public List<String> getUserFavoTags(@Param("favoScore")int favoScore,@Param("uid")long uid);
+	public List<String> getUserFavoTags(@Param("uid")long uid,@Param("count")int count);
 	/**
 	 * 取标签的子系统标签
 	 * @author zhangjiwei
@@ -93,11 +93,13 @@ public interface TopicTagSearchMapper {
 	
 	public List<String> getTagAndSubTag(@Param("pids")List<String> userNotLike);
 	/**
-	 * 取用户标记为喜欢的标签和子标签
+	 * 取用户标签喜好，包括子标签。
 	 * @author zhangjiwei
 	 * @date Sep 4, 2017
 	 * @param uid
+	 * @param isLike 1喜欢 0不喜欢。
 	 * @return
 	 */
-	public List<String> getUserLikeTagAndSubTag(long uid);
+	public List<String> getUserLikeTagAndSubTag(@Param("uid")long uid,@Param("isLike")int isLike);
+
 }
