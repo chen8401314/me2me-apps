@@ -9483,7 +9483,7 @@ public class LiveServiceImpl implements LiveService {
 		if(!exists){
 			dislikeMapper.insert(dislike);
 		}else{
-			dislikeMapper.updateByExample(dislike, example);
+			dislikeMapper.updateByExampleSelective(dislike, example);
 		}
 		// 标签加减分
 		if(dislike.getType()==2){		// 不喜欢标签
