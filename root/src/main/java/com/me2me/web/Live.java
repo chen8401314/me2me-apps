@@ -88,6 +88,7 @@ import com.me2me.web.request.ResendVoteRequest;
 import com.me2me.web.request.RunLotteryRequest;
 import com.me2me.web.request.SaveDaySignInfoRequest;
 import com.me2me.web.request.SaveDaySignRecordRequest;
+import com.me2me.web.request.SendGiftRequest;
 import com.me2me.web.request.SetLiveRequest;
 import com.me2me.web.request.SettingModifyRequest;
 import com.me2me.web.request.SignOutLiveRequest;
@@ -1231,5 +1232,15 @@ public class Live extends BaseController {
     @RequestMapping(value = "/getGiftInfoList",method = RequestMethod.POST)
     public Response getGiftInfoList(GetGiftInfoListRequest request){
     	return liveService.getAllGiftInfoList();
+    }
+    /**
+     * 送礼物接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/sendGift",method = RequestMethod.POST)
+    public Response sendGift(SendGiftRequest request){
+    	return liveService.sendGift(request.getUid(), request.getTopicId(), request.getGiftId(), request.getGiftCount(), request.getOnlyCode(),request.getSource());
     }
 }
