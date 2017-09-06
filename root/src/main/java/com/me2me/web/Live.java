@@ -68,6 +68,8 @@ import com.me2me.web.request.GetLotteryListRequest;
 import com.me2me.web.request.GetLotteryRequest;
 import com.me2me.web.request.GetMyLivesRequest;
 import com.me2me.web.request.GivenKingdomRequest;
+import com.me2me.web.request.HarvestKingdomCoinRequest;
+import com.me2me.web.request.HarvestKingdomListRequest;
 import com.me2me.web.request.ImgDBRequest;
 import com.me2me.web.request.InactiveLiveRequest;
 import com.me2me.web.request.JoinLotteryRequest;
@@ -88,6 +90,7 @@ import com.me2me.web.request.ResendVoteRequest;
 import com.me2me.web.request.RunLotteryRequest;
 import com.me2me.web.request.SaveDaySignInfoRequest;
 import com.me2me.web.request.SaveDaySignRecordRequest;
+import com.me2me.web.request.SendGiftRequest;
 import com.me2me.web.request.SetLiveRequest;
 import com.me2me.web.request.SettingModifyRequest;
 import com.me2me.web.request.SignOutLiveRequest;
@@ -1231,5 +1234,42 @@ public class Live extends BaseController {
     @RequestMapping(value = "/getGiftInfoList",method = RequestMethod.POST)
     public Response getGiftInfoList(GetGiftInfoListRequest request){
     	return liveService.getAllGiftInfoList();
+    }
+    
+    /**
+     * 收割米汤币王国列表接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/harvestKingdomList",method = RequestMethod.POST)
+    public Response harvestKingdomList(HarvestKingdomListRequest request){
+    	int page = request.getPage();
+    	if(page < 1){
+    		page = 1;
+    	}
+    	return liveService.harvestKingdomList(request.getUid(), page);
+    }
+    
+    /**
+     * 收割王国米汤币
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/harvestKingdomCoin",method = RequestMethod.POST)
+    public Response harvestKingdomCoin(HarvestKingdomCoinRequest request){
+    	return liveService.harvestKingdomCoin(request.getUid(), request.getTopicId());
+    }
+    
+    /**
+     * 送礼物接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/sendGift",method = RequestMethod.POST)
+    public Response sendGift(SendGiftRequest request){
+    	return liveService.sendGift(request.getUid(), request.getTopicId(), request.getGiftId(), request.getGiftCount(), request.getOnlyCode(),request.getSource());
     }
 }

@@ -94,6 +94,7 @@ import com.me2me.live.dto.GetLotteryDto;
 import com.me2me.live.dto.GetLotteryListDto;
 import com.me2me.live.dto.GiftInfoListDto;
 import com.me2me.live.dto.GivenKingdomDto;
+import com.me2me.live.dto.HarvestKingdomCoinDTO;
 import com.me2me.live.dto.KingdomImgDB;
 import com.me2me.live.dto.KingdomSearchDTO;
 import com.me2me.live.dto.ListedTopicListDto;
@@ -119,6 +120,7 @@ import com.me2me.live.dto.SettingModifyDto;
 import com.me2me.live.dto.SettingsDto;
 import com.me2me.live.dto.ShowBarrageDto;
 import com.me2me.live.dto.ShowFavoriteListDto;
+import com.me2me.live.dto.ShowHarvestKingdomListDTO;
 import com.me2me.live.dto.ShowLiveDto;
 import com.me2me.live.dto.ShowRecQueryDTO;
 import com.me2me.live.dto.ShowTagKingdomsDTO;
@@ -1328,14 +1330,15 @@ public class LiveServiceImpl implements LiveService {
 //                //userService.push(liveFavorite.getUid(),topic.getUid(),Specification.PushMessageType.UPDATE.index,topic.getTitle());
 //                log.info("update push");
 //            }
-            //更新或者是核心圈跟新加分
+            //更新或者是核心圈跟新加分    送礼物不加分
+        	if(speakDto.getContentType()!=24){
             CoinRule coinRule = userService.getCoinRules().get(Rules.SPEAK_KEY);
             isJion = 1;
             /*coinRule.setExt(speakDto.getUid());*/
             ModifyUserCoinDto muDto= userService.coinRule(speakDto.getUid(), userService.getCoinRules().get(Rules.SPEAK_KEY));
             speakDto.setUpgrade(muDto.getUpgrade());
             speakDto.setCurrentLevel(muDto.getCurrentLevel());
-
+        	}
 
         } else if (speakDto.getType() == Specification.LiveSpeakType.FANS_WRITE_TAG.index) {
             //粉丝贴标提醒
@@ -1371,8 +1374,8 @@ public class LiveServiceImpl implements LiveService {
         //saveLiveDisplayData(speakDto);
         //判断是否升级
         int share = 0 ;
-        //判断不是足迹 和不是大表情
-        if( speakDto.getContentType() != 16 && speakDto.getContentType() != 17  ){
+        //判断不是足迹   不是大表情  不是送礼物
+        if( speakDto.getContentType() != 16 && speakDto.getContentType() != 17  && speakDto.getContentType() != 24 ){
             //判断是分享的Type
             if(speakDto.getType() == 52 || speakDto.getType() == 51 || speakDto.getType() == 72 ){
             CoinRule coinRuleShare = userService.getCoinRules().get(Rules.SHARE_KING_KEY);
@@ -1381,8 +1384,8 @@ public class LiveServiceImpl implements LiveService {
             speakDto.setCurrentLevel(muDto.getCurrentLevel());
             share = 1 ;
         }}
-        //如果不是 加入王国  喜欢王国  分享王国 进入 只加2分
-        if(isJion != 1 && like !=1 && share != 1) {
+        //如果不是 加入王国  喜欢王国  分享王国  不是送礼物 进入 只加2分
+        if(isJion != 1 && like !=1 && share != 1 && speakDto.getContentType()!=24) {
        /* log.info("############################################################################");
         log.info("############################################################################");*/
         CoinRule coinRule = userService.getCoinRules().get(Rules.SPEAK_KEY);
@@ -9610,7 +9613,7 @@ public class LiveServiceImpl implements LiveService {
 		
         JSONObject json = new JSONObject();
         json.put("type", "fun");
-        json.put("only", UUID.randomUUID().toString()+"-"+new Random().nextInt());
+        json.put("only", onlyCode);
         json.put("image", Constant.QINIU_DOMAIN + "/" +giftInfo.getImage());
         json.put("count", count);
         json.put("name", giftInfo.getName());
@@ -9637,4 +9640,25 @@ public class LiveServiceImpl implements LiveService {
 		return Response.success(dto);
 	}
 
+	@Override
+	public Response harvestKingdomList(long uid, int page){
+		ShowHarvestKingdomListDTO result = new ShowHarvestKingdomListDTO();
+		
+		
+		
+		
+		return Response.success(result);
+	}
+	
+	@Override
+	public Response harvestKingdomCoin(long uid, long topicId){
+		
+		
+		
+		
+		HarvestKingdomCoinDTO result = new HarvestKingdomCoinDTO();
+		
+		
+		return Response.success(result);
+	}
 }

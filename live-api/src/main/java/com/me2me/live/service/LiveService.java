@@ -751,4 +751,8 @@ public interface LiveService {
     Response getAllGiftInfoList();
     
     Response sendGift(long uid,long topicId,long giftId,int giftCount,String onlyCode,int source);
+    
+    Response harvestKingdomList(long uid, int page);
+    
+    Response harvestKingdomCoin(long uid, long topicId);
 }
