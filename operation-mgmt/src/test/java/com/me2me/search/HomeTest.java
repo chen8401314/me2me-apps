@@ -24,7 +24,8 @@ public class HomeTest {
 	@Test
 	public void getTagKingdomList() {
 		Response<TagKingdomDto> tagsKingdoms = liveService.tagKingdomList("AAA0","new", 1, 20, 318);
-		System.out.println(JSON.toJSONString(tagsKingdoms, true));  
+		System.out.println(JSON.toJSONString(tagsKingdoms, true));
+		
 	}
 	//@Test
 	public void hotList() {
