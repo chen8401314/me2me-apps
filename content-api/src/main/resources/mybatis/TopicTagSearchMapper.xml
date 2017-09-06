@@ -76,20 +76,7 @@
 		)
 	</select>
 	<select id="getUserFavoTags" resultType="string">
-		select l.tag from user_tag_like l where l.uid=#{uid}
-		and l.tag not in(
-			select data from user_dislike where uid=#{uid} and is_like=0 and type=2 
-			union all
-			select tag as data from topic_tag where pid in (
-				select id from topic_tag where tag in(
-					select data from user_dislike where uid=#{uid} and is_like=0 and type=2
-				)
-			)
-		)
-		group by l.tag
-		having sum(l.score)>20
-		order by SUM(l.score) DESC
-		limit 5
+		select tag from user_tag_like  where uid=#{uid} and score > 20 order by score DESC limit #{count}
 	</select>
 	<select id="getTagAndSubTag" resultType="string">
 		select tag from topic_tag where tag in(
@@ -107,11 +94,11 @@
 		)
 	</select>
 	<select id="getUserLikeTagAndSubTag" resultType="string">
-		select data from user_dislike where uid=#{uid} and is_like=1 and type=2 
+		select data from user_dislike where uid=#{uid} and is_like=#{isLike} and type=2 
 		union all
 		select tag as data from topic_tag where pid in (
 			select id from topic_tag where tag in(
-				select data from user_dislike where uid=#{uid} and is_like=1 and type=2
+				select data from user_dislike where uid=#{uid} and is_like=#{isLike} and type=2
 			)
 		)
 	</select>
