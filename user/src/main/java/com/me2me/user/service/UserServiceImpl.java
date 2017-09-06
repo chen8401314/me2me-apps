@@ -4791,6 +4791,33 @@ public class UserServiceImpl implements UserService {
             return modifyUserCoinDto;
         }
     }
+    
+    @Override
+    public ModifyUserCoinDto getCurrentUserLevelStatus(long uid){
+    	ModifyUserCoinDto modifyUserCoinDto = new ModifyUserCoinDto();
+    	UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+    	modifyUserCoinDto.setCurrentLevel(userProfile.getLevel());
+    	modifyUserCoinDto.setUpgrade(0);
+    	int currentCoin = userProfile.getAvailableCoin();
+    	String permissions = getAppConfigByKey(USER_PERMISSIONS);
+        UserPermissionDto userPermissionDto = JSON.parseObject(permissions, UserPermissionDto.class);
+        int lv = 0;
+        for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
+            if(  currentCoin >= userLevelDto.getNeedCoins()){
+                lv++;
+            }
+        }
+        if ( lv > 9){
+            lv = 9;
+        }
+        if(lv > userProfile.getLevel()){
+        	modifyUserCoinDto.setUpgrade(1);
+            userInitJdbcDao.modifyUserLevel(uid, lv);
+            modifyUserCoinDto.setCurrentLevel(lv);
+        }
+        
+        return modifyUserCoinDto;
+    }
 
     @Override
     public ModifyUserCoinDto coinRule(long uid,CoinRule rule) {

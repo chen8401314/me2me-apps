@@ -599,4 +599,11 @@ public interface UserService {
 	 * @param actionType
 	 */
 	void saveUserFistLog(long uid, int actionType);
+	
+	/**
+	 * 获取用户当前等级状态
+	 * @param uid
+	 * @return
+	 */
+	ModifyUserCoinDto getCurrentUserLevelStatus(long uid);
 }

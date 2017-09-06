@@ -132,6 +132,28 @@ public interface CacheService {
      */
     long incr(String key);
 
+    /**
+     * 自减
+     * @param key
+     * @return
+     */
+    long decr(String key);
+    
+    /**
+     * 自增一个数
+     * @param key
+     * @param num
+     * @return
+     */
+    long incrby(String key, long num);
+    
+    /**
+     * 自减一个数
+     * @param key
+     * @param num
+     * @return
+     */
+    long decrby(String key, long num);
 
     /**
      * 通配符获取Key的集合

@@ -265,6 +265,36 @@ public class CacheServiceImpl implements CacheService {
             }
         });
     }
+    
+    @Override
+    public long decr(String key) {
+        return jedisTemplate.execute(new JedisTemplate.JedisActionResult() {
+            @Override
+            public <T> T actionResult(Jedis jedis) {
+                return (T) jedis.decr(key);
+            }
+        });
+    }
+    
+    @Override
+    public long incrby(String key, long num) {
+        return jedisTemplate.execute(new JedisTemplate.JedisActionResult() {
+            @Override
+            public <T> T actionResult(Jedis jedis) {
+                return (T) jedis.incrBy(key, num);
+            }
+        });
+    }
+    
+    @Override
+    public long decrby(String key, long num) {
+        return jedisTemplate.execute(new JedisTemplate.JedisActionResult() {
+            @Override
+            public <T> T actionResult(Jedis jedis) {
+                return (T) jedis.decrBy(key, num);
+            }
+        });
+    }
 
     @Override
     public Set<String> keys(String pattern) {

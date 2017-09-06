@@ -82,6 +82,7 @@ public class ShowLiveDto implements BaseEntity {
     
     private int isSteal;//偷取状态 0 不可偷取 1可偷取 2已偷过
     
+    private String summary;//王国简介
     
     private int isFirstView =0;	//1 第一次访问，0 正常状态。
     

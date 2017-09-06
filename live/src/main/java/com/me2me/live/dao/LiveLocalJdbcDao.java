@@ -1585,4 +1585,38 @@ public class LiveLocalJdbcDao {
 		}
 		jdbcTemplate.batchUpdate(sql, batchArgs );
 	}
+	
+	public List<Map<String, Object>> getHarvestKingdomListByUid(long uid, int start, int pageSize){
+		StringBuilder sb = new StringBuilder();
+		sb.append("select t.*,d.harvest_price from topic t,topic_data d");
+		sb.append(" where t.id=d.topic_id and t.uid=? order by d.harvest_price desc,t.id");
+		sb.append(" limit ?,?");
+		
+		return jdbcTemplate.queryForList(sb.toString(), uid,start,pageSize);
+	}
+	
+	public int countMyKingdom(long uid){
+		String sql = "select count(1) from topic t where t.uid=?";
+		return jdbcTemplate.queryForObject(sql,new Object[]{uid},Integer.class);
+	}
+	
+	public void decrTopicPrice(long topicId, int decrPrice){
+		String sql = "update topic set price=(CASE WHEN price>? then price-? ELSE 0 END) where id=?";
+		jdbcTemplate.update(sql, decrPrice,decrPrice,topicId);
+	}
+	
+	public void balanceTopicPriceAndStealPrice(long topicId){
+		String sql = "update topic_data,topic set steal_price=(CASE WHEN topic_data.steal_price>topic.price then topic.price ELSE topic_data.steal_price END) where topic.id=topic_data.topic_id and topic_data.topic_id=?";
+		jdbcTemplate.update(sql, topicId);
+	}
+	
+	public void decrTopicHarvestPrice(long topicId, int decrPrice){
+		String sql = "update topic_date set harvest_price=(CASE WHEN harvest_price>? then harvest_price-? ELSE 0 END) where topic_id=?";
+		jdbcTemplate.update(sql, decrPrice,decrPrice,topicId);
+	}
+	
+	public void incrUserCoin(long uid, int coin){
+		String sql = "update user_profile set available_coin=available_coin+? where uid=?";
+		jdbcTemplate.update(sql, coin, uid);
+	}
 }

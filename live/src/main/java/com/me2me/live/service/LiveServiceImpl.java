@@ -92,7 +92,6 @@ import com.me2me.live.dto.GetLiveTimeLineDto2;
 import com.me2me.live.dto.GetLiveUpdateDto;
 import com.me2me.live.dto.GetLotteryDto;
 import com.me2me.live.dto.GetLotteryListDto;
-import com.me2me.live.dto.GiftInfoListDto;
 import com.me2me.live.dto.GivenKingdomDto;
 import com.me2me.live.dto.HarvestKingdomCoinDTO;
 import com.me2me.live.dto.KingdomImgDB;
@@ -722,6 +721,7 @@ public class LiveServiceImpl implements LiveService {
         showLiveDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
         showLiveDto.setCreateTime(topic.getCreateTime());
         showLiveDto.setUpdateTime(topic.getLongTime());
+        showLiveDto.setSummary(topic.getSummary());
         Long favoriteCount = Long.valueOf(0);
         List<Long> topicIdList = new ArrayList<Long>();
         topicIdList.add(Long.valueOf(cid));
@@ -9643,21 +9643,80 @@ public class LiveServiceImpl implements LiveService {
 	@Override
 	public Response harvestKingdomList(long uid, int page){
 		ShowHarvestKingdomListDTO result = new ShowHarvestKingdomListDTO();
+		result.setTotalCount(liveLocalJdbcDao.countMyKingdom(uid));
 		
+		int pageSize = 20;
+		int start = (page-1)*pageSize;
 		
+		int onceLimit = 100;
 		
+		List<Map<String, Object>> list = liveLocalJdbcDao.getHarvestKingdomListByUid(uid, start, pageSize);
+		if(null != list && list.size() > 0){
+			ShowHarvestKingdomListDTO.HarvestKingdomElement e = null;
+			for(Map<String, Object> m : list){
+				e = new ShowHarvestKingdomListDTO.HarvestKingdomElement();
+				e.setCanHarvestCoins((Integer)m.get("harvest_price"));
+				e.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)m.get("live_image"));
+				e.setOnceLimit(onceLimit);
+				e.setPrice((Integer)m.get("price"));
+				e.setTitle((String)m.get("title"));
+				e.setTopicId((Long)m.get("id"));
+				result.getKingdomList().add(e);
+			}
+		}
 		
 		return Response.success(result);
 	}
 	
 	@Override
 	public Response harvestKingdomCoin(long uid, long topicId){
+		//先校验是否有资格收取米汤币
+		Topic topic = liveMybatisDao.getTopicById(topicId);
+		if(null == topic){
+			return Response.failure(ResponseStatus.LIVE_HAS_DELETED.status,ResponseStatus.LIVE_HAS_DELETED.message);
+		}
+		if(topic.getUid().longValue() != uid){
+			return Response.failure(500, "只能收割自己王国的米汤币");
+		}
+		TopicData topicData = liveMybatisDao.getTopicDataByTopicId(topicId);
+		if(null != topicData && topicData.getHarvestPrice().intValue() <= 0){
+			return Response.failure(500, "无法再收割更多的米汤币");
+		}
 		
+		//用Redis进行原子控制
+		long atomicity = cacheService.decrby("TOPIC_HARVEST:"+topicId, 100);
+		if(atomicity <= -100){
+			return Response.failure(500, "无法再收割更多的米汤币");
+		}
 		
+		long harvestCoin = 100;
+		if(atomicity < 0){
+			harvestCoin = harvestCoin + atomicity;
+		}
+		//1扣除具体王国价值
+		liveLocalJdbcDao.decrTopicPrice(topicId, (int)harvestCoin);
+		//2调整可能发生变更的可被偷的值
+		liveLocalJdbcDao.balanceTopicPriceAndStealPrice(topicId);
+		//3扣除可被收割数
+		liveLocalJdbcDao.decrTopicHarvestPrice(topicId, (int)harvestCoin);
+		//4增加自身米汤币
+		liveLocalJdbcDao.incrUserCoin(uid, (int)harvestCoin);
+		//5增加收割记录(王国米汤币变更)
+		TopicPriceChangeLog tpcLog = new TopicPriceChangeLog();
+        tpcLog.setCreateTime(new Date());
+        tpcLog.setPrice((int)harvestCoin);
+        tpcLog.setTopicId(topicId);
+        tpcLog.setType(Specification.TopicPriceChangeType.WITHDRAWALS.index);
+        tpcLog.setUid(uid);
+        liveMybatisDao.saveTopicPriceChangeLog(tpcLog);
 		
-		
+		//组织返回
 		HarvestKingdomCoinDTO result = new HarvestKingdomCoinDTO();
+		result.setGainCoin((int)harvestCoin);
 		
+		ModifyUserCoinDto dto = userService.getCurrentUserLevelStatus(uid);
+		result.setUpgrade(dto.getUpgrade());
+		result.setCurrentLevel(dto.getCurrentLevel());
 		
 		return Response.success(result);
 	}
