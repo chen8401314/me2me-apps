@@ -68,6 +68,7 @@
         <!-- <table tableName="topic_read_his" domainObjectName="TopicReadHis" /> -->
         <!-- <table tableName="topic_price_change_log" domainObjectName="TopicPriceChangeLog" /> -->
         <!-- <table tableName="user_dislike" domainObjectName="UserDislike" /> -->
-        <!--  <table tableName="gift_info" domainObjectName="GiftInfo" /> -->
+        <!-- <table tableName="gift_info" domainObjectName="GiftInfo" /> -->
+        <!-- <table tableName="gift_history" domainObjectName="GiftHistory" /> -->
     </context>
 </generatorConfiguration>

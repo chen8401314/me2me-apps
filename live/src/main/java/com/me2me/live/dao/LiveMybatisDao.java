@@ -75,6 +75,7 @@ import com.me2me.live.model.BlockTopic;
 import com.me2me.live.model.BlockTopicExample;
 import com.me2me.live.model.DeleteLog;
 import com.me2me.live.model.GiftHistory;
+import com.me2me.live.model.GiftHistoryExample;
 import com.me2me.live.model.GiftInfo;
 import com.me2me.live.model.GiftInfoExample;
 import com.me2me.live.model.LiveDisplayBarrage;
@@ -2137,5 +2138,19 @@ public class LiveMybatisDao {
     public int saveGiftHistory(GiftHistory giftHistory){
     	return giftHistoryMapper.insertSelective(giftHistory);
     }
-    
+	/**
+	 * 获取过去24小时送礼物列表
+	 * @author chenxiang
+	 * @date 2017-09-06
+	 * @param date 24之前时间
+	 */
+	public List<GiftHistory> getGiftList24h(long topicId,Date date){
+		GiftHistoryExample example = new GiftHistoryExample();
+		GiftHistoryExample.Criteria criteria = example.createCriteria();
+		criteria.andCreateTimeGreaterThan(date);
+		criteria.andTopicIdEqualTo(topicId);
+        example.setOrderByClause(" gift_price / gift_count desc ");
+		List<GiftHistory> list = giftHistoryMapper.selectByExample(example);
+		return list;
+	}
 }

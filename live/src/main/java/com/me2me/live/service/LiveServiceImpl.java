@@ -856,6 +856,19 @@ public class LiveServiceImpl implements LiveService {
         }else{
         	showLiveDto.setIsLottery(0);
         }
+        List<GiftHistory> giftHistoryList = liveMybatisDao.getGiftList24h(cid, DateUtil.addDay(new Date(), -1));
+        for (GiftHistory giftHistory : giftHistoryList) {
+            String giftStatusstr = cacheService.get("GIFT_STATUS_"+uid+"_"+giftHistory.getFragmentId());
+            if (StringUtils.isEmpty(giftStatusstr)) {
+            	if(showLiveDto.getGiftList().size()<3){
+            	ShowLiveDto.GiftElement ge = new ShowLiveDto.GiftElement();
+            	ge.setGiftId(giftHistory.getGiftId());
+            	ge.setCount(giftHistory.getGiftCount());
+            	showLiveDto.getGiftList().add(ge);
+            	}
+                cacheService.setex("GIFT_STATUS_"+uid+"_"+giftHistory.getFragmentId(),"1",60*60*48);
+            }
+		}
         return Response.success(showLiveDto);
     }
 
@@ -952,6 +965,13 @@ public class LiveServiceImpl implements LiveService {
                     continue;
             	}
             }
+            if(!CommonUtils.isNewVersion(getLiveTimeLineDto.getVersion(), "3.0.2")){
+            	 if(topicFragment.getContentType() == 24){//礼物
+                     liveElement.setStatus(0);
+                     continue;
+                 }
+            }
+            
             
             //逗一逗自动播放状态
             int teaseStatus = 0;
@@ -969,6 +989,25 @@ public class LiveServiceImpl implements LiveService {
                 }
             }
             liveElement.setTeaseStatus(teaseStatus);
+            
+            
+            //送礼物自动播放状态
+            int giftStatus = 0;
+            if(topicFragment.getContentType() == 24){
+            	//24小时内
+                if(new Date().getTime()-topicFragment.getCreateTime().getTime()<=24*60*60*1000){
+                    String giftStatusstr = cacheService.get("GIFT_STATUS_"+uid+"_"+topicFragment.getId());
+                    if (!StringUtils.isEmpty(giftStatusstr)) {
+                    	giftStatus=0;
+                    } else {
+                    	giftStatus=1;
+                        cacheService.setex("GIFT_STATUS_"+uid+"_"+topicFragment.getId(),"1",60*60*48);
+                    }
+                }
+            }
+            liveElement.setGiftStatus(giftStatus);
+            
+            
 
             userProfile = userMap.get(String.valueOf(uid));
             liveElement.setUid(uid);
@@ -3632,6 +3671,13 @@ public class LiveServiceImpl implements LiveService {
                     continue;
             	}
             }
+            //送礼物
+            if(getLiveDetailDto.getVersionFlag() < 6){//低于V3.0.3版本
+            	if(topicFragment.getContentType() == 24){
+            		liveElement.setStatus(0);
+                    continue;
+            	}
+            }
             
             //逗一逗自动播放状态
             int teaseStatus = 0;
@@ -3649,6 +3695,24 @@ public class LiveServiceImpl implements LiveService {
                }
             }
             liveElement.setTeaseStatus(teaseStatus);
+            
+            
+           //送礼物自动播放状态
+           int giftStatus = 0;
+           if(topicFragment.getContentType() == 24){
+           	//24小时内
+               if(new Date().getTime()-topicFragment.getCreateTime().getTime()<=24*60*60*1000){
+                   String giftStatusstr = cacheService.get("GIFT_STATUS_"+uid+"_"+topicFragment.getId());
+                   if (!StringUtils.isEmpty(giftStatusstr)) {
+                   	giftStatus=0;
+                   } else {
+                   	giftStatus=1;
+                       cacheService.setex("GIFT_STATUS_"+uid+"_"+topicFragment.getId(),"1",60*60*48);
+                   }
+               }
+           }
+           liveElement.setGiftStatus(giftStatus);
+            
 
             userProfile = userMap.get(String.valueOf(uid));
             liveElement.setUid(uid);
@@ -9600,17 +9664,6 @@ public class LiveServiceImpl implements LiveService {
 		liveLocalJdbcDao.addMyCoins(uid, 0-realPrice);
 		liveLocalJdbcDao.rechargeToKingDom(topicId,realAddPrice);
 		
-		//送礼物记录添加
-		GiftHistory giftHistory = new GiftHistory();
-		giftHistory.setUid(uid);
-		giftHistory.setTopicId(topicId);
-		giftHistory.setGiftId(giftId);
-		giftHistory.setGiftCount(count);
-		giftHistory.setGiftPrice(realPrice);
-		giftHistory.setGiftTopicPrice(realAddPrice);
-		
-		liveMybatisDao.saveGiftHistory(giftHistory);
-		
         JSONObject json = new JSONObject();
         json.put("type", "fun");
         json.put("only", onlyCode);
@@ -9635,6 +9688,18 @@ public class LiveServiceImpl implements LiveService {
         speakDto.setSource(source);
         speakDto.setExtra(json.toJSONString());
         speak(speakDto);
+		// 送礼物记录添加
+		GiftHistory giftHistory = new GiftHistory();
+		giftHistory.setUid(uid);
+		giftHistory.setTopicId(topicId);
+		giftHistory.setGiftId(giftId);
+		giftHistory.setGiftCount(count);
+		giftHistory.setGiftPrice(realPrice);
+		giftHistory.setGiftTopicPrice(realAddPrice);
+		giftHistory.setFragmentId(speakDto.getFragmentId());
+
+		liveMybatisDao.saveGiftHistory(giftHistory);
+        
         dto.setFragmentId(speakDto.getFragmentId());
         dto.setCount(count);
 		return Response.success(dto);

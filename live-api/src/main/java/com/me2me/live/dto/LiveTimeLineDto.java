@@ -65,6 +65,8 @@ public class LiveTimeLineDto implements BaseEntity {
         
         private int teaseStatus;
         
+        private int giftStatus;
+        
         private int score;
 
     }
