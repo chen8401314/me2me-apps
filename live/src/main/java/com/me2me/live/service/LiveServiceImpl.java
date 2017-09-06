@@ -94,6 +94,7 @@ import com.me2me.live.dto.GetLotteryDto;
 import com.me2me.live.dto.GetLotteryListDto;
 import com.me2me.live.dto.GiftInfoListDto;
 import com.me2me.live.dto.GivenKingdomDto;
+import com.me2me.live.dto.HarvestKingdomCoinDTO;
 import com.me2me.live.dto.KingdomImgDB;
 import com.me2me.live.dto.KingdomSearchDTO;
 import com.me2me.live.dto.ListedTopicListDto;
@@ -119,6 +120,7 @@ import com.me2me.live.dto.SettingModifyDto;
 import com.me2me.live.dto.SettingsDto;
 import com.me2me.live.dto.ShowBarrageDto;
 import com.me2me.live.dto.ShowFavoriteListDto;
+import com.me2me.live.dto.ShowHarvestKingdomListDTO;
 import com.me2me.live.dto.ShowLiveDto;
 import com.me2me.live.dto.ShowRecQueryDTO;
 import com.me2me.live.dto.ShowTagKingdomsDTO;
@@ -9637,4 +9639,25 @@ public class LiveServiceImpl implements LiveService {
 		return Response.success(dto);
 	}
 
+	@Override
+	public Response harvestKingdomList(long uid, int page){
+		ShowHarvestKingdomListDTO result = new ShowHarvestKingdomListDTO();
+		
+		
+		
+		
+		return Response.success(result);
+	}
+	
+	@Override
+	public Response harvestKingdomCoin(long uid, long topicId){
+		
+		
+		
+		
+		HarvestKingdomCoinDTO result = new HarvestKingdomCoinDTO();
+		
+		
+		return Response.success(result);
+	}
 }

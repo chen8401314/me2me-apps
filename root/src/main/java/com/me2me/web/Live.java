@@ -68,6 +68,8 @@ import com.me2me.web.request.GetLotteryListRequest;
 import com.me2me.web.request.GetLotteryRequest;
 import com.me2me.web.request.GetMyLivesRequest;
 import com.me2me.web.request.GivenKingdomRequest;
+import com.me2me.web.request.HarvestKingdomCoinRequest;
+import com.me2me.web.request.HarvestKingdomListRequest;
 import com.me2me.web.request.ImgDBRequest;
 import com.me2me.web.request.InactiveLiveRequest;
 import com.me2me.web.request.JoinLotteryRequest;
@@ -1231,5 +1233,31 @@ public class Live extends BaseController {
     @RequestMapping(value = "/getGiftInfoList",method = RequestMethod.POST)
     public Response getGiftInfoList(GetGiftInfoListRequest request){
     	return liveService.getAllGiftInfoList();
+    }
+    
+    /**
+     * 收割米汤币王国列表接口
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/harvestKingdomList",method = RequestMethod.POST)
+    public Response harvestKingdomList(HarvestKingdomListRequest request){
+    	int page = request.getPage();
+    	if(page < 1){
+    		page = 1;
+    	}
+    	return liveService.harvestKingdomList(request.getUid(), page);
+    }
+    
+    /**
+     * 收割王国米汤币
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/harvestKingdomCoin",method = RequestMethod.POST)
+    public Response harvestKingdomCoin(HarvestKingdomCoinRequest request){
+    	return liveService.harvestKingdomCoin(request.getUid(), request.getTopicId());
     }
 }
