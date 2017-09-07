@@ -21,6 +21,8 @@ import com.me2me.live.dto.KingdomSearchDTO;
 import com.me2me.live.model.LiveFavorite;
 import com.me2me.live.model.LiveFavoriteDelete;
 import com.me2me.live.model.TopicBarrage;
+import com.me2me.live.model.UserDislike;
+import com.me2me.live.model.UserDislikeExample;
 
 @Repository
 public class LiveLocalJdbcDao {
@@ -1618,5 +1620,15 @@ public class LiveLocalJdbcDao {
 	public void incrUserCoin(long uid, int coin){
 		String sql = "update user_profile set available_coin=available_coin+? where uid=?";
 		jdbcTemplate.update(sql, coin, uid);
+	}
+
+	public List<String> getUserLikeTags(long uid) {
+        List<String> retList = new ArrayList<>();
+        String sql ="select tag from topic_tag where id in(select data from user_dislike where uid=? and is_like=1 and type=2)";
+        List<Map<String,Object>> ret =jdbcTemplate.queryForList(sql,uid);
+        for(Map<String,Object> item:ret){
+        	retList.add((String)item.get("tag"));
+        }
+		return retList;
 	}
 }

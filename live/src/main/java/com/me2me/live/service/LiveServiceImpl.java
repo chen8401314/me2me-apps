@@ -6099,19 +6099,15 @@ public class LiveServiceImpl implements LiveService {
                 resultDTO.setTopicTags(topicTags.toString());
             }
         }
-        // 取用户喜欢的标签
-        UserDislikeExample ex = new UserDislikeExample();
-        ex.createCriteria().andUidEqualTo(uid).andIsLikeEqualTo(1).andTypeEqualTo(2);
-        List<UserDislike> likeList=  dislikeMapper.selectByExample(ex);
+      
         
         //获取我常用的标签
         resultDTO.setMyUsedTags("");
         LinkedHashSet<String> tagList = new LinkedHashSet<>();
         List<Map<String, Object>> myTags = liveLocalJdbcDao.getMyTopicTags(uid, 20);
         if(null != myTags && myTags.size() > 0){
-            for (UserDislike disLikeTag:likeList){
-            	tagList.add(disLikeTag.getData());
-            }
+        	List<String> likeTags= liveLocalJdbcDao.getUserLikeTags(uid);
+            tagList.addAll(likeTags);
             for(int i=0;i<myTags.size();i++){
                 String tag = (String) myTags.get(i).get("tag");
                 if(!blackTagSet.contains(tag)){
@@ -9537,7 +9533,7 @@ public class LiveServiceImpl implements LiveService {
 	}
 
 	@Override
-	public Response userLike(long uid, String dataId, int isLike, int type) {
+	public Response userLike(long uid, long dataId, int isLike, int type) {
 		UserDislikeExample example = new UserDislikeExample();
 		example.createCriteria().andUidEqualTo(uid).andDataEqualTo(dataId).andTypeEqualTo(type);
 		boolean exists = dislikeMapper.countByExample(example)>0;
@@ -9555,10 +9551,11 @@ public class LiveServiceImpl implements LiveService {
 		// 标签加减分
 		if(dislike.getType()==2){		// 不喜欢标签
 			if(dislike.getIsLike()==0){	// 不喜欢
-				this.liveLocalJdbcDao.updateUserLikeTagScoreTo0(uid,dislike.getData());
+				TopicTag tag = liveMybatisDao.getTopicTagById(dislike.getData());
+				this.liveLocalJdbcDao.updateUserLikeTagScoreTo0(uid,tag.getTag());
 			}
 		}else{		//	王国
-			List<TopicTagDetail> detailList = liveMybatisDao.getTopicTagDetailsByTopicId(Integer.parseInt(dataId));
+			List<TopicTagDetail> detailList = liveMybatisDao.getTopicTagDetailsByTopicId(dataId);
 			int score=0;
 			if(dislike.getIsLike()==0){	// 不喜欢
 				score=userService.getIntegerAppConfigByKey("TAG_DISLIKE_SCORE");

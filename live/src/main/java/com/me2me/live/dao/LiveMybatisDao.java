@@ -1393,7 +1393,11 @@ public class LiveMybatisDao {
 	public TopicTag getTopicTagById(long id){
 		return topicTagMapper.selectByPrimaryKey(id);
 	}
-
+	public List<TopicTag> getTopicTagByIds(List<Long> ids){
+		TopicTagExample example = new TopicTagExample();
+		example.createCriteria().andIdIn(ids);
+		return topicTagMapper.selectByExample(example);
+	}
 	public void insertTopicTagDetail(TopicTagDetail tagDetail){
 		topicTagDetailMapper.insertSelective(tagDetail);
 	}

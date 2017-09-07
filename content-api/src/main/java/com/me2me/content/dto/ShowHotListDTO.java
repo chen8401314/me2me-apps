@@ -34,6 +34,7 @@ public class ShowHotListDTO implements BaseEntity {
 	public static class HotTagElement implements BaseEntity{
 		private static final long serialVersionUID = -1636362714045596434L;
 		private String tagName;
+		private long tagId;
 		private int personCount;
 		private int kingdomCount;
 		private double tagPrice;

@@ -2,25 +2,30 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.me2me.content.mapper.TopicTagSearchMapper">
   
+  
+	   <select id="getTopicIdsByTagAndSubTag" resultType="long">
+		   	select DISTINCT topic_id from topic_tag_detail dt,
+			(select id from topic_tag p where status=0 and (id=#{tagId} or pid=#{tagId})) tagId
+			 where dt.status=0 and dt.tag_id = tagId.id
+	   </select>
+	   
      <select id="getKingdomsByTag" resultType="map">
 		select t.*,td.last_price_incr from topic t
 		left join topic_data td on  td.topic_id=t.id
 		where 
-			t.id in(
-				select DISTINCT topic_id from topic_tag_detail dt where dt.status=0 and dt.tag_id in(
-						select id from topic_tag p where tag=#{tag} and status=0
-						UNION ALL
-						select id from topic_tag c where c.pid=(select id from topic_tag p where tag=#{tag} and status=0) 
-				)
-			)
-			and t.id not in(
-				select CAST(data AS SIGNED) from user_dislike where uid=#{uid} and is_like=0 and type=1
+			t.id in
+				<foreach open="(" separator="," close=")" collection="topicIds" item="bid">
+	        		#{bid}
+	      		</foreach>
+			
+			and t.id not in (
+				select data from user_dislike where uid=#{uid} and is_like=0 and type=1
 			)
 			<if test="blacklistUids!=null and blacklistUids.size() &gt; 0">
-      		and t.uid not in
-      		<foreach close=")" collection="blacklistUids" item="bid" open="(" separator=",">
-        		#{bid}
-      		</foreach>
+	      		and t.uid not in
+	      		<foreach open="(" separator="," close=")" collection="topicIds" item="bid">
+	        		#{bid}
+	      		</foreach>
     		</if>
 		  <choose>
              <when test="order=='price'">
@@ -38,20 +43,16 @@
 			count(1) kingdomCount,
 			sum(ts.price) tagPrice,
 			(select count(DISTINCT uid) c from topic_fragment where topic_id in(
-				select DISTINCT topic_id from topic_tag_detail dt where dt.status=0 and dt.tag_id in(
-						select id from topic_tag p where tag=#{tag} and status=0
-						UNION ALL
-						select id from topic_tag c where c.pid=(select id from topic_tag p where tag=#{tag} and status=0) 
-				)
+				<foreach open="(" separator="," close=")" collection="topicIds" item="bid">
+	        		#{bid}
+	      		</foreach>
 			))+FLOOR(sum(ct.read_count)/20) tagPersons
 			from
-			(select * from topic where id in(
-				select DISTINCT topic_id from topic_tag_detail dt where dt.status=0 and dt.tag_id in(
-						select id from topic_tag p where tag=#{tag} and status=0
-						UNION ALL
-						select id from topic_tag c where c.pid=(select id from topic_tag p where tag=#{tag} and status=0) 
-				)
-			)) ts,content ct
+			(select * from topic where id in
+				<foreach open="(" separator="," close=")" collection="topicIds" item="bid">
+	        		#{bid}
+	      		</foreach>
+			) ts,content ct
 			where ts.id=ct.forward_cid and ct.type=3
 	 </select>
 	
@@ -59,47 +60,27 @@
 		SELECT t.*,
 		( 
 			select  sum(price) from topic where id in(
-				select DISTINCT dt.topic_id from topic_tag_detail dt where dt.status=0 and dt.tag_id in(
-					select id from topic_tag p where tag=t.tag
-					UNION ALL
-					select id from topic_tag c where c.pid=(select id from topic_tag p where tag=t.tag) 
-				)
+				select DISTINCT topic_id from topic_tag_detail dt,
+				(select id from topic_tag p where status=0 and (id=#{tagId} or pid=#{tagId})) tagId
+				 where dt.status=0 and dt.tag_id = tagId.id
 			)
 		) price
 		FROM topic_tag t where t.is_sys=1
 	</select>
 	<select id="getTopicIdsByTag" resultType="int">
-		select DISTINCT topic_id from topic_tag_detail dt where dt.status=0 and dt.tag_id in(
-			select id from topic_tag p where tag=#{tag} and status=0
-			UNION ALL
-			select id from topic_tag c where c.pid=(select id from topic_tag p where tag=#{tag} and status=0) 
-		)
+		select DISTINCT topic_id from topic_tag_detail dt,
+		(select id from topic_tag p where status=0 and (id=#{tagId} or pid=#{tagId})) tagId
+		 where dt.status=0 and dt.tag_id = tagId.id
 	</select>
 	<select id="getUserFavoTags" resultType="string">
 		select tag from user_tag_like  where uid=#{uid} and score > 20 order by score DESC limit #{count}
 	</select>
-	<select id="getTagAndSubTag" resultType="string">
-		select tag from topic_tag where tag in(
-			<foreach item="item" index="index" collection="pids" open="("  separator="," close=")">  
-	            #{item}
-	        </foreach> 
-		)
-		union all
-		select tag from topic_tag where pid in(
-			select id from topic_tag where tag in(
-				<foreach item="item" index="index" collection="pids" open="("  separator="," close=")">  
-		            #{item}  
-		        </foreach>  
-			)
-		)
-	</select>
+	
+	
 	<select id="getUserLikeTagAndSubTag" resultType="string">
-		select data from user_dislike where uid=#{uid} and is_like=#{isLike} and type=2 
-		union all
-		select tag as data from topic_tag where pid in (
-			select id from topic_tag where tag in(
-				select data from user_dislike where uid=#{uid} and is_like=#{isLike} and type=2
-			)
-		)
+		select tag  from 
+		topic_tag t,
+		(select data from user_dislike where uid=#{uid} and is_like=#{isLike} and type=2) userlike 
+		where t.id=userlike.data or t.pid=userlike.data
 	</select>
 </mapper>

@@ -25,7 +25,7 @@ public interface TopicTagSearchMapper {
      */
 	public List<Map<String, Object>> getKingdomsByTag(
 			@Param("uid") long uid,
-			@Param("tag") String tag,
+			@Param("topicIds") List<Long> topicIds,
 			@Param("order")String order,
 			@Param("page")int page, 
 			@Param("pageSize")int pageSize,
@@ -36,7 +36,7 @@ public interface TopicTagSearchMapper {
 	 * @date Jun 29, 2017
 	 * @return
 	 */
-	public Map<String,Object> getTagPriceAndKingdomCount(@Param("tag")String tag);
+	public Map<String,Object> getTagPriceAndKingdomCount(@Param("topicIds") List<Long> topicIds);
 	/**
 	 * 获取系统标签统计信息（总价值，对应的用户喜好）
 	 * @author zhangjiwei
@@ -70,7 +70,7 @@ public interface TopicTagSearchMapper {
 	 * @param tag
 	 * @return
 	 */
-	public List<Integer> getTopicIdsByTag(@Param("tag")String tag);
+	public List<Long> getTopicIdsByTagAndSubTag(@Param("tagId")long tagId);
 	/**
 	 * 取用户感兴趣的标签，根据用户行为习惯，后台统计标签分数。
 	 * @author zhangjiwei
@@ -88,10 +88,9 @@ public interface TopicTagSearchMapper {
 	 * @return
 	 */
 	@ResultType(String.class)
-	@Select("select tag from topic_tag where status=0 and is_sys=1 and pid=(select id from topic_tag where tag=#{0})")
-	public List<String> getSubSysTags(String tagName);
+	@Select("select tag from topic_tag where id=#{0} or pid =#{0} and is_sys=1 and status=0")
+	public List<String> getSubSysTags(long tagId);
 	
-	public List<String> getTagAndSubTag(@Param("pids")List<String> userNotLike);
 	/**
 	 * 取用户标签喜好，包括子标签。
 	 * @author zhangjiwei
@@ -101,5 +100,9 @@ public interface TopicTagSearchMapper {
 	 * @return
 	 */
 	public List<String> getUserLikeTagAndSubTag(@Param("uid")long uid,@Param("isLike")int isLike);
+	
+	@ResultType(Long.class)
+	@Select("select id from topic_tag where tag=#{0}")
+	public long getTagIdByTag(String label);
 
 }

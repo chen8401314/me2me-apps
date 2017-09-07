@@ -14,5 +14,5 @@ public class UserLikeRequest extends Request {
 	private int isLike;
 	@Getter
 	@Setter
-	private String data;
+	private long data;
 }

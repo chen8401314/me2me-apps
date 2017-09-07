@@ -4206,6 +4206,7 @@ public class ContentServiceImpl implements ContentService {
         	openPushPositions = Integer.parseInt(openPushPositionsStr);
         }
         result.setOpenPushPositions(openPushPositions);	// 提示消息
+        List<String> blackTags = topicTagMapper.getUserLikeTagAndSubTag(uid,0);		// 不喜欢的标签和子标签。
         
         List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
         List<ActivityWithBLOBs> activityList = null;
@@ -4222,7 +4223,7 @@ public class ContentServiceImpl implements ContentService {
             // 查上市价格, 获取30个上市王国
             listingKingdoms = liveForContentJdbcDao.getListingKingdoms(1, 30);
             
-            result.setHotTagKingdomList(buildHotTagKingdoms(uid, blacklistUids));
+            result.setHotTagKingdomList(buildHotTagKingdoms(uid, blacklistUids,blackTags));
         }
 
         List<String> redisIds = cacheService.lrange("HOT_TOP_KEY",0,-1);
@@ -4310,14 +4311,13 @@ public class ContentServiceImpl implements ContentService {
         BigDecimal exchangeRate = new BigDecimal(result);
         return new BigDecimal(price).divide(exchangeRate, 2, RoundingMode.HALF_UP).doubleValue();
     }
-    private List<HotTagElement> buildHotTagKingdoms(long uid, List<Long> blacklistUids){
+    private List<HotTagElement> buildHotTagKingdoms(long uid, List<Long> blacklistUids,List<String> blackTags){
         List<com.me2me.content.dto.ShowHotListDTO.HotTagElement> dataList = new ArrayList<ShowHotListDTO.HotTagElement>();
 
         Set<String> allTags = new LinkedHashSet<>();
-        List<String> blackTags = topicTagMapper.getUserLikeTagAndSubTag(uid,0);		// 不喜欢的标签和子标签。
         
         //用户在首页的标签上点击了喜欢,注意在喜欢了之后,在推荐和查询的时候,连同下方的子标签也会一起加入展示,除非用户手动对子标签选择了不喜欢
-        List<String> userLikeTags= topicTagMapper.getUserLikeTagAndSubTag(uid,1);// 白名单，推荐标签和子标签
+        List<String> userLikeTags= topicTagMapper.getUserLikeTagAndSubTag(uid,1);	// 白名单，推荐标签和子标签
         allTags.addAll(userLikeTags);
         
         //除以上两种标签外,通过用户行为产生的排名最高的前5个"体系标签",且评分必须超过20
@@ -4333,24 +4333,25 @@ public class ContentServiceImpl implements ContentService {
         List<String> adminTags = Arrays.asList(strAdminTags.split("\\n"));
         int n=0;
         for(String adminTag:adminTags){
-        	if(n<20 && !blackTags.contains(adminTag)){//除以上三种标签之外,随机从运营后台设定的"体系标签中"选出的标签,数量20个
+        	if(n<20 && !blackTags.contains(adminTag)){	//除以上三种标签之外,随机从运营后台设定的"体系标签中"选出的标签,数量20个
         		allTags.add(adminTag);	
         		n++;
         	}
         }
        
         for(String label:allTags){
-        	
+        	long tagId= topicTagMapper.getTagIdByTag(label);
             HotTagElement element = new HotTagElement();
            	element.setIsShowLikeButton(userLikeTags.contains(label)?0:1);
             
-            List<Map<String,Object>> topicList = null;
+            
+           /* List<Map<String,Object>> topicList = null;
             String ktKey = "OBJ:KINGDOMSBYTAG:"+label+"_new_1_4";
             Object tkRes = cacheService.getJavaObject(ktKey);
             if(null != tkRes){
             	topicList = (List<Map<String,Object>>)tkRes;
             }else{
-            	topicList = this.topicTagMapper.getKingdomsByTag(uid,label,"new",1,4, blacklistUids);
+            	topicList = this.topicTagMapper.getKingdomsByTag(uid,tagId,"new",1,4, blacklistUids);
             	List<Map<String,Object>> tkCacheObj = new ArrayList<Map<String,Object>>();
             	if(null != topicList && topicList.size() > 0){
             		Map<String,Object> t = null;
@@ -4361,8 +4362,10 @@ public class ContentServiceImpl implements ContentService {
             		}
             	}
             	cacheService.cacheJavaObject(ktKey, tkCacheObj, 2*60*60);//缓存两小时
-            }
-
+            }*/
+           	List<Long> topicIds = topicTagMapper.getTopicIdsByTagAndSubTag(tagId);
+           	List<Map<String,Object>> topicList = this.topicTagMapper.getKingdomsByTag(uid,topicIds,"new",1,4, blacklistUids);
+            
             //List<Integer> topicIds = this.topicTagMapper.getTopicIdsByTag(label);
             Map<String,Object> totalPrice = null;
         	String cacheKey = "OBJ:TAGPRICEANDKINGDOMCOUNT:"+label;
@@ -4372,7 +4375,7 @@ public class ContentServiceImpl implements ContentService {
         		totalPrice = (Map<String,Object>)tagRes;
         	}else{
         		log.info("查的数据库呀22");
-        		totalPrice = topicTagMapper.getTagPriceAndKingdomCount(label);
+        		totalPrice = topicTagMapper.getTagPriceAndKingdomCount(topicIds);
         		Map<String, Object> cacheObj = new HashMap<String, Object>();
         		if(null != totalPrice && totalPrice.size() > 0){
         			cacheObj.putAll(totalPrice);
@@ -4400,6 +4403,7 @@ public class ContentServiceImpl implements ContentService {
             element.setKingdomCount(kingdomCount);
             element.setPersonCount(tagPersons);
             element.setTagName(label);
+            element.setTagId(tagId);
             double rmbPrice = exchangeKingdomPrice(tagPrice);
             //element.setShowRMBBrand(rmbPrice>=TAG_SHOW_PRICE_BRAND_MIN?1:0); 首页不显示标签吊牌。
             element.setShowRMBBrand(0);
@@ -7169,14 +7173,14 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public Response<TagKingdomDto> tagKingdomList(String tagName, String order, int page, int pageSize, long uid) {
     	List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
-    	
+    	long tagId = topicTagMapper.getTagIdByTag(tagName);
         List<Map<String,Object>> topics = null;
-        String ktKey = "OBJ:KINGDOMSBYTAG:"+tagName+"_"+order+"_"+page+"_"+pageSize;
+     /*   String ktKey = "OBJ:KINGDOMSBYTAG:"+tagName+"_"+order+"_"+page+"_"+pageSize;
         Object tkRes = cacheService.getJavaObject(ktKey);
         if(null != tkRes){
         	topics = (List<Map<String,Object>>)tkRes;
         }else{
-        	topics = topicTagMapper.getKingdomsByTag(uid,tagName, order, page, pageSize, blacklistUids);
+        	
         	List<Map<String,Object>> tkCacheObj = new ArrayList<Map<String,Object>>();
         	if(null != topics && topics.size() > 0){
         		Map<String,Object> t = null;
@@ -7187,8 +7191,9 @@ public class ContentServiceImpl implements ContentService {
         		}
         	}
         	cacheService.cacheJavaObject(ktKey, tkCacheObj, 2*60*60);//缓存两小时
-        }
-        
+        }*/
+        List<Long> topicIds = topicTagMapper.getTopicIdsByTagAndSubTag(tagId);
+        topics = topicTagMapper.getKingdomsByTag(uid,topicIds, order, page, pageSize, blacklistUids);
         
         List<BasicKingdomInfo> kingdoms = this.kingdomBuider.buildKingdoms(topics, uid);
         TagKingdomDto dto = new TagKingdomDto();
@@ -7203,7 +7208,7 @@ public class ContentServiceImpl implements ContentService {
         		totalPrice = (Map<String,Object>)tagRes;
         	}else{
         		log.info("查的数据库呀11");
-        		totalPrice = topicTagMapper.getTagPriceAndKingdomCount(tagName);
+        		totalPrice = topicTagMapper.getTagPriceAndKingdomCount(topicIds);
         		Map<String, Object> cacheObj = new HashMap<String, Object>();
         		if(null != totalPrice && totalPrice.size() > 0){
         			cacheObj.putAll(totalPrice);
@@ -7227,7 +7232,7 @@ public class ContentServiceImpl implements ContentService {
 
             // 取topic tags 取所有的体系标签， 排序规则：1 运营指定顺序 2 用户喜好 3 标签价值
             
-            List<String> subSysTagList = topicTagMapper.getSubSysTags(tagName);		//	只取当前标签的子标签
+            List<String> subSysTagList = topicTagMapper.getSubSysTags(tagId);		//	只取当前标签的子标签
             dto.setHotTagList(subSysTagList);
             /* 与运营协商,推荐的标签也没几个，此段代码很影响性能，暂时去掉。20170901
 	            //先从缓存里取
