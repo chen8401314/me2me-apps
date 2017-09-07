@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,17 +18,21 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.me2me.activity.service.ActivityService;
 import com.me2me.common.Constant;
 import com.me2me.common.page.PageBean;
+import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.web.Response;
+import com.me2me.io.service.FileTransferService;
 import com.me2me.mgmt.dao.LocalJdbcDao;
 import com.me2me.mgmt.request.AppGagUserQueryDTO;
 import com.me2me.mgmt.request.AppUserDTO;
 import com.me2me.mgmt.request.AppUserQueryDTO;
 import com.me2me.mgmt.request.AvatarFrameQueryDTO;
+import com.me2me.mgmt.request.AvatarFrameUserQueryDTO;
 import com.me2me.mgmt.request.UserInvitationDetailQueryDTO;
 import com.me2me.mgmt.request.UserInvitationQueryDTO;
 import com.me2me.mgmt.syslog.SystemControllerLog;
@@ -36,6 +41,7 @@ import com.me2me.user.dto.ShowUsergagDto;
 import com.me2me.user.dto.UserSignUpDto;
 import com.me2me.user.model.UserGag;
 import com.me2me.user.service.UserService;
+import com.plusnet.sso.api.vo.JsonResult;
 
 
 @Controller
@@ -52,6 +58,8 @@ public class AppUserController {
 	private SmsService smsService;
 	@Autowired
 	private LocalJdbcDao localJdbcDao;
+	@Autowired
+	private FileTransferService fileTransferService;
 	
 	@RequestMapping(value = "/query")
 	public ModelAndView query(AppUserQueryDTO dto) {
@@ -382,18 +390,63 @@ public class AppUserController {
 		sb.append(" order by id desc");
 		List<Map<String, Object>> list = this.localJdbcDao.queryEvery(sb.toString());
 		if(null != list && list.size() > 0){
+			List<String> afList = new ArrayList<String>();
+			for(Map<String, Object> m : list){
+				afList.add((String)m.get("avatar_frame"));
+			}
+			
+			StringBuilder countSql = new StringBuilder();
+			countSql.append("select u.avatar_frame,count(1) as cc ");
+			countSql.append("from user_profile u where u.avatar_frame in (");
+			for(int i=0;i<afList.size();i++){
+				if(i>0){
+					countSql.append(",");
+				}
+				countSql.append("'").append(afList.get(i)).append("'");
+			}
+			countSql.append(") group by u.avatar_frame");
+			List<Map<String, Object>> countList = localJdbcDao.queryEvery(countSql.toString());
+			Map<String, Long> countMap = new HashMap<String, Long>();
+			if(null != countList && countList.size() > 0){
+				for(Map<String, Object> n : countList){
+					countMap.put((String)n.get("avatar_frame"), (Long)n.get("cc"));
+				}
+			}
+			
 			AvatarFrameQueryDTO.AvatarFrameItem item = null;
 			for(Map<String, Object> m : list){
 				item = new AvatarFrameQueryDTO.AvatarFrameItem();
 				item.setId((Long)m.get("id"));
 				item.setName((String)m.get("name"));
-				item.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + (String)m.get("avatar_frame"));
+				item.setAvatarFrame((String)m.get("avatar_frame"));
+				if(null != countMap.get((String)m.get("avatar_frame"))){
+					item.setCount(countMap.get((String)m.get("avatar_frame")).intValue());
+				}else{
+					item.setCount(0);
+				}
 				dto.getResults().add(item);
 			}
 		}
 		
 		view.addObject("dataObj",dto);
 		return view;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/avatarFrame/uploadPic")
+	public JsonResult uploadPic(@RequestParam("file")MultipartFile file,HttpServletRequest mrequest) throws Exception {
+		try{
+			if(file!=null && StringUtils.isNotEmpty(file.getOriginalFilename()) && file.getSize()>0){
+				String imgName = SecurityUtils.md5(mrequest.getSession().getId()+System.currentTimeMillis()+RandomUtils.nextInt(1111111, 9999999), "1");
+	    		fileTransferService.upload(file.getBytes(), imgName);
+	    		String insertSql = "insert into user_avatar_frame(name,avatar_frame) values('',?)";
+	    		localJdbcDao.executeSqlWithParams(insertSql, imgName);
+	    		return JsonResult.success();
+			}
+		}catch(Exception e){
+			return JsonResult.error("上传失败");
+		}
+		return JsonResult.error("上传失败");
 	}
 	
 	@RequestMapping(value = "/avatarFrame/del/{id}")
@@ -403,6 +456,39 @@ public class AppUserController {
 		
 		ModelAndView view = new ModelAndView("redirect:/appuser/avatarFrame/list");
 		return view;
+	}
+	
+	@RequestMapping(value = "/avatarFrame/modifyName")
+	@ResponseBody
+	public String modifyAvatarFrameName(@RequestParam("i")long id, @RequestParam("n")String newName){
+		String updateSql = "update user_avatar_frame set name=? where id=?";
+		localJdbcDao.executeSqlWithParams(updateSql, newName, id);
+		return "0";
+	}
+	
+	@RequestMapping(value = "/avatarFrame/userList")
+	public ModelAndView avatarFrameUserList(AvatarFrameUserQueryDTO dto){
+		ModelAndView view = new ModelAndView("appuser/avatarFrameUserList");
+		view.addObject("dataObj",dto);
+		return view;
+	}
+	
+	@SuppressWarnings("rawtypes")
+	@ResponseBody
+	@RequestMapping(value = "/avatarFrame/userListPage")
+	public AvatarFrameUserQueryDTO avatarFrameUserListPage(AvatarFrameUserQueryDTO dto){
+		PageBean page= dto.toPageBean();
+		String userSql = " from user_profile u where u.avatar_frame=?";
+		
+		String querySql = "select u.uid,u.nick_name,u.third_part_bind,u.mobile,u.create_time" + userSql + " order by u.id desc limit ?,?";
+		String countSql = "select count(1)" + userSql;
+		
+		int count = localJdbcDao.queryForObject(countSql, Integer.class, dto.getAvatarFrame());
+		List<Map<String, Object>> dataList = localJdbcDao.queryForList(querySql,dto.getAvatarFrame(),(page.getCurrentPage()-1)*page.getPageSize(),page.getPageSize());
+		
+		dto.setRecordsTotal(count);
+		dto.setData(dataList);
+		return dto;
 	}
 	
 	@RequestMapping(value = "/invitation/list")
