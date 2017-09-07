@@ -755,4 +755,6 @@ public interface LiveService {
     Response harvestKingdomList(long uid, int page);
     
     Response harvestKingdomCoin(long uid, long topicId);
+    
+	Response getCreateKingdomInfo(long uid);
 }

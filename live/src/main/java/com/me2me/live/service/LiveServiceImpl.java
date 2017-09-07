@@ -83,6 +83,7 @@ import com.me2me.live.dto.DaySignInfoDto;
 import com.me2me.live.dto.DetailFidPageDTO;
 import com.me2me.live.dto.DetailPageStatusDTO;
 import com.me2me.live.dto.DropAroundDto;
+import com.me2me.live.dto.GetCreateKingdomInfoDto;
 import com.me2me.live.dto.GetGiftInfoListDto;
 import com.me2me.live.dto.GetJoinLotteryUsersDto;
 import com.me2me.live.dto.GetKingdomPriceDto;
@@ -4016,6 +4017,8 @@ public class LiveServiceImpl implements LiveService {
         }
 		//特殊用户创建王国无需耗费米汤币
         String freeUser = userService.getAppConfigByKey("FREE_CREATEKINGDOM_USER");
+        int needPrice = StringUtils.isEmpty(userService.getAppConfigByKey("CREATE_KINGDOM_PRICE")) ? 168
+				: Integer.parseInt(userService.getAppConfigByKey("CREATE_KINGDOM_PRICE"));
         int free = 0;
         if(!StringUtils.isEmpty(freeUser)){
         	String freeUserIds[] = freeUser.split(",");
@@ -4029,8 +4032,8 @@ public class LiveServiceImpl implements LiveService {
         if(free==0){
         	UserProfile userProfile = userService.getUserProfileByUid(createKingdomDto.getUid());
         	int price = userProfile.getAvailableCoin();
-        	if(price<168){
-        		return Response.failure(500,"需要消耗168米汤币,当前余额不足！");
+        	if(price<needPrice){
+        		return Response.failure(500,"需要消耗"+needPrice+"米汤币,当前余额不足！");
         	}
         }
 		boolean isDouble = false;
@@ -4253,7 +4256,7 @@ public class LiveServiceImpl implements LiveService {
         }else{
         	int userCreateKingdomCount  = Integer.parseInt(userCreateKingdomCountStr);
         	if(userCreateKingdomCount>=1 && free==0){
-        		liveLocalJdbcDao.addMyCoins(createKingdomDto.getUid(), -168);
+        		liveLocalJdbcDao.addMyCoins(createKingdomDto.getUid(), 0-needPrice);
         	}
         	cacheService.set(userCreateKingdomCountKey, (userCreateKingdomCount+1)+"");
         }
@@ -9784,5 +9787,24 @@ public class LiveServiceImpl implements LiveService {
 		result.setCurrentLevel(dto.getCurrentLevel());
 		
 		return Response.success(result);
+	}
+	@Override
+	public Response getCreateKingdomInfo(long uid){
+		GetCreateKingdomInfoDto dto  = new GetCreateKingdomInfoDto();
+		//创建王国需要168米汤币
+        int needPrice = StringUtils.isEmpty(userService.getAppConfigByKey("CREATE_KINGDOM_PRICE")) ? 168
+				: Integer.parseInt(userService.getAppConfigByKey("CREATE_KINGDOM_PRICE"));
+		dto.setNeedPrice(needPrice);
+		UserProfile userProfile = userService.getUserProfileByUid(uid);
+		dto.setMyPrice(userProfile.getAvailableCoin());
+        String userCreateKingdomCountKey = "USER_CREATEKINGDOM_COUNT@"+uid;
+        String userCreateKingdomCountStr= cacheService.get(userCreateKingdomCountKey);
+        if(StringUtils.isEmpty(userCreateKingdomCountStr)){
+        	dto.setCreateKingdomCount(0);
+        }else{
+        	int userCreateKingdomCount  = Integer.parseInt(userCreateKingdomCountStr);
+        	dto.setCreateKingdomCount(userCreateKingdomCount);
+        }
+		return Response.success(dto);
 	}
 }
