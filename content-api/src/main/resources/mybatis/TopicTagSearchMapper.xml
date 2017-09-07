@@ -42,11 +42,11 @@
 		select 
 			count(1) kingdomCount,
 			sum(ts.price) tagPrice,
-			(select count(DISTINCT uid) c from topic_fragment where topic_id in(
+			(select count(DISTINCT uid) c from topic_fragment where topic_id in
 				<foreach open="(" separator="," close=")" collection="topicIds" item="bid">
 	        		#{bid}
 	      		</foreach>
-			))+FLOOR(sum(ct.read_count)/20) tagPersons
+			)+FLOOR(sum(ct.read_count)/20) tagPersons
 			from
 			(select * from topic where id in
 				<foreach open="(" separator="," close=")" collection="topicIds" item="bid">

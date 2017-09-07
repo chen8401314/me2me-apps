@@ -27,6 +27,7 @@ import com.me2me.common.page.PageBean;
 import com.me2me.common.security.SecurityUtils;
 import com.me2me.common.web.Response;
 import com.me2me.io.service.FileTransferService;
+import com.me2me.live.dto.SearchRobotListDto;
 import com.me2me.mgmt.dao.LocalJdbcDao;
 import com.me2me.mgmt.request.AppGagUserQueryDTO;
 import com.me2me.mgmt.request.AppUserDTO;
@@ -36,6 +37,7 @@ import com.me2me.mgmt.request.AvatarFrameUserQueryDTO;
 import com.me2me.mgmt.request.UserInvitationDetailQueryDTO;
 import com.me2me.mgmt.request.UserInvitationQueryDTO;
 import com.me2me.mgmt.syslog.SystemControllerLog;
+import com.me2me.mgmt.vo.DatatablePage;
 import com.me2me.sms.service.SmsService;
 import com.me2me.user.dto.ShowUsergagDto;
 import com.me2me.user.dto.UserSignUpDto;
@@ -491,6 +493,26 @@ public class AppUserController {
 		return dto;
 	}
 	
+	@ResponseBody
+	@RequestMapping(value = "/avatarFrame/remove")
+	public JsonResult removeAvatarFrame(HttpServletRequest request) throws Exception {
+		String uid = request.getParameter("uid");
+		String updateSql = "update user_profile set avatar_frame='' where uid="+uid;
+		localJdbcDao.executeSql(updateSql);
+		return JsonResult.success();
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/avatarFrame/add")
+	public JsonResult addAvatarFrame(HttpServletRequest request) throws Exception {
+		String uid = request.getParameter("uid");
+		String avatarFrame = request.getParameter("avatarFrame");
+		
+		String updateSql = "update user_profile set avatar_frame=? where uid=?";
+		localJdbcDao.executeSqlWithParams(updateSql, avatarFrame,uid);;
+		return JsonResult.success();
+	}
+	
 	@RequestMapping(value = "/invitation/list")
 	public ModelAndView invitationList(UserInvitationQueryDTO dto) {
 		ModelAndView view = new ModelAndView("appuser/userInvitation");
@@ -675,5 +697,58 @@ public class AppUserController {
 		dto.setRecordsTotal(count);
 		dto.setData(dataList);
 		return dto;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/ajaxLoadUsers")
+	public DatatablePage ajaxLoadUsers(HttpServletRequest request,DatatablePage dpage) throws Exception {
+		String nickName = request.getParameter("nickName");
+		String uid = request.getParameter("uid");
+		StringBuilder totalRecordSql = new StringBuilder();
+		totalRecordSql.append("select count(1) from user_profile u where 1=1");
+		if(StringUtils.isNotBlank(nickName)){
+			totalRecordSql.append(" and u.nick_name like '%").append(nickName).append("%'");
+		}
+		if(StringUtils.isNotBlank(uid)){
+			totalRecordSql.append(" and u.uid=").append(uid);
+		}
+		int totalRecord = this.localJdbcDao.queryForObject(totalRecordSql.toString(), Integer.class);
+		PageBean pb = dpage.toPageBean();
+		int page = pb.getCurrentPage();
+		int pageSize = pb.getPageSize();
+    	int totalPage = (totalRecord + pageSize - 1) / pageSize;
+    	if(page>totalPage){
+    		page=totalPage;
+    	}
+    	if(page<1){
+    		page=1;
+    	}
+    	int start = (page-1)*pageSize;
+    	
+		StringBuffer listSql =new StringBuffer();
+		listSql.append("select u.uid,u.nick_name,u.avatar from user_profile u where 1=1");
+		if(StringUtils.isNotBlank(nickName)){
+			listSql.append(" and u.nick_name like '%").append(nickName).append("%'");
+		}
+		if(StringUtils.isNotBlank(uid)){
+			listSql.append(" and u.uid=").append(uid);
+		}
+		listSql.append(" order by u.uid desc limit ").append(start).append(",").append(pageSize);
+
+    	List<Map<String, Object>> list =localJdbcDao.queryEvery(listSql.toString());
+    	SearchRobotListDto dto = new SearchRobotListDto();
+        dto.setTotalRecord(totalRecord);
+        dto.setTotalPage(totalPage);
+        SearchRobotListDto.RobotElement e = null;
+		for (Map<String, Object> map : list) {
+			e = dto.createTopicListedElement();
+			e.setUid((Long) map.get("uid"));
+			e.setNickName(map.get("nick_name").toString());
+			e.setAvatar(Constant.QINIU_DOMAIN + "/" + map.get("avatar").toString());
+			dto.getResult().add(e);
+		}
+        dpage.setData(dto.getResult());
+		dpage.setRecordsTotal(dto.getTotalRecord());
+        return dpage;
 	}
 }

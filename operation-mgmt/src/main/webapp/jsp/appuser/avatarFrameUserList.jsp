@@ -44,7 +44,11 @@
 					<div class="col-sm-12">
 						<section class="panel">
 							<header class="panel-heading">
-								用户列表
+								用户列表&nbsp;&nbsp;&nbsp;&nbsp;
+								<a class="btn btn-primary" href="javascript:addUserAvatarFrame()">
+										<i  class=" fa fa-plus "></i>
+										添加用户
+									</a>
 							</header>
 							<div class="panel-body">
 								<div class="adv-table">
@@ -103,7 +107,7 @@
 	}  
 	$.fn.dataTable.ext.errMode="console";
 	$.extend( $.fn.dataTable.defaults, {
-		pageLength: 50,
+		pageLength: 10,
 		searching: false,
         dom: 'tp',
 	    processing: true,
@@ -169,9 +173,124 @@
 	        	if(data!=null){
 	        		return new Date(data).Format("yyyy-MM-dd hh:mm:ss");
 	        	}
+	        }},
+	        {title:"操作",render:function(){
+	        	var txt='<a class="btn btn-danger btn-xs del" href="#">删除</a>&nbsp;&nbsp;'
+	        	return txt;
 	        }}
 	     ]
 	});
+	$(document).on("click",".del",function(){
+		var tr=$(this).closest("tr");
+		var data =sourceTable.row(tr).data();
+		if(confirm("确认取消该用户的头像框吗？")){
+			$.post("${ctx}/appuser/avatarFrame/remove",{uid:data.uid,r:Math.random()},function(data){
+				if(data.code==1){
+					sourceTable.ajax.reload();
+				}else{
+					alert(data.desc);
+				}
+			})
+		}
+	});
+	</script>
+	<div class="modal inmodal fade" id="modal" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">
+						<span aria-hidden="true">&times;</span><span class="sr-only">Close</span>
+					</button>
+					用户列表
+				</div>
+				<div class="modal-body">
+				<form id="form2" action="${ctx}/tag/query" method="post" class="form form-inline">
+					<div class="form-group">
+						用户昵称：
+						<input type="text" id="snickName" name="snickName" value="" class="form-control">&nbsp;&nbsp;&nbsp;&nbsp;
+						UID：
+						<input type="text" id="suid" name="suid" value="" class="form-control">&nbsp;&nbsp;
+						<a class="btn btn-primary" href="javascript:searchUser();">搜索</a>
+					</div>
+					</form>
+					<div class="ibox-content">
+						<div class="adv-table">
+							<table class=" table  table-striped" id="mytable1" width="100%">
+							</table>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+	var sourceTable1=$('#mytable1').DataTable( {
+	    "ajax": {
+            "url": "${ctx}/appuser/ajaxLoadUsers",
+            "type": "POST",
+            "data": function (d) {
+                d.nickName = $("#snickName").val();
+                d.uid = $("#suid").val();
+            }
+        },
+	    processing:true,
+	    "columns": [
+			{"data": null,title: "序号",orderable:false,width:50},
+	        {data: "nickName",width:200,orderable:false,title: "用户昵称",render:function(data,type,row,meta){
+	        	if(data!=null){
+	        		return data;
+	        	}
+	        }},
+	        {data: "avatar",width:150,orderable:false,title: "用户头像",render:function(data,type,row,meta){
+	        	if(data!=null){
+	        		return '<img src="'+data+'" height="50"/>';
+	        	}
+	        }},
+	        {title:"操作",orderable:false,render:function(data, type, row, meta){
+	        	var txt='';
+	        	txt='<a class="btn btn-primary btn-xs " href="javascript:addUserAvatarInfo('+row.uid+')">添加</a>';
+	        	return txt;
+	        }}
+	     ],
+	     "fnDrawCallback": function(){
+       var api = this.api();
+	    	var startIndex= api.context[0]._iDisplayStart;//获取到本页开始的条数
+	    	         api.column(0).nodes().each(function(cell, i) {
+	    	cell.innerHTML = startIndex + i + 1;
+	    	}); 
+	    	         }  
+	});
+	
+	function addUserAvatarFrame(){
+		sourceTable1.ajax.reload();
+		$('#modal').modal('show');
+	}
+	function addUserAvatarInfo(uid){
+		var param = {uid:uid,avatarFrame:"${param.avatarFrame}"};
+		$.ajax({
+            cache: true,
+            type: "POST",
+            dataType :"json",
+            url:"${ctx}/appuser/avatarFrame/add",
+            data:param,
+            async: true,
+            error: function(request) {
+                alert('服务器出错'); 
+            },
+            success: function(data) {
+            	  if(data.code==1){
+            		  alert('操作成功');
+            		  sourceTable.draw(false);
+            		  $('#modal').modal('hide');
+            	  }else{
+					  alert("操作失败");
+                  }
+            }
+        });
+   }
+function searchUser(){
+	 sourceTable1.draw(true);
+}
 	</script>
 </body>
 </html>
