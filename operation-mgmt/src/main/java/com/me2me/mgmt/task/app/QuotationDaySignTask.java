@@ -61,7 +61,7 @@ public class QuotationDaySignTask {
 				imgSql.append("select t.* FROM topic_fragment t WHERE  t.status = 1  AND  ");
 				imgSql.append(" ((t.type=0 AND t.content_type = 1) OR (t.type=1 AND t.content_type = 1) OR (t.type=51 AND t.content_type = 51))  ");
 				imgSql.append(" AND t.create_time <='").append(yesterDayStr).append(" 23:59:59'");
-				imgSql.append(" AND json_extract(t.extra,'$.w[0]')>300  AND (json_extract(t.extra,'$.imgType[0]') IS  NULL  OR json_extract(t.extra,'$.imgType[0]') <> 1)");
+				imgSql.append(" AND fn_Json_getKeyValue(t.extra,1,'w')>300  AND (fn_Json_getKeyValue(t.extra,1,'imgType') IS  NULL  OR fn_Json_getKeyValue(t.extra,1,'imgType') <> 1)");
 				imgSql.append(" AND t.uid = ").append(uid);
 				imgSql.append("  ORDER BY t.create_time DESC LIMIT 1 ");
 				List<Map<String,Object>> imgList = localJdbcDao.queryEvery(imgSql.toString());

@@ -1290,12 +1290,12 @@ public class LiveLocalJdbcDao {
     	if(topicId!=0){
             sb.append("  AND t.topic_id=").append(topicId);
       	}
-    	sb.append(" and json_extract(t.extra,'$.w[0]')>300 ");
-    	sb.append(" AND (json_extract(t.extra,'$.type[0]') IS  NULL  OR json_extract(t.extra,'$.type[0]') <> 'image_daycard') ");
+    	sb.append(" and fn_Json_getKeyValue(t.extra,1,'w')>300 ");
+    	sb.append(" AND (fn_Json_getKeyValue(t.extra,1,'type') IS  NULL  OR fn_Json_getKeyValue(t.extra,1,'type')  <> 'image_daycard') ");
     	if(!StringUtils.isEmpty(specialTopicIds)){
    		 sb.append("  AND t.topic_id not in(").append(specialTopicIds).append(") ");
        	}
-    	sb.append("  ORDER BY json_extract(t.extra,'$.length[0]') DESC LIMIT 1 ");
+    	sb.append("  ORDER BY fn_Json_getKeyValue(t.extra,1,'length')  DESC LIMIT 1 ");
     	String sql = sb.toString();
     	List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
 		return list.size()>0?list.get(0):null;
