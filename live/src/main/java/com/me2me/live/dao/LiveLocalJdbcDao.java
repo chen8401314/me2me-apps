@@ -1624,7 +1624,7 @@ public class LiveLocalJdbcDao {
 	}
 	
 	public void decrTopicHarvestPrice(long topicId, int decrPrice){
-		String sql = "update topic_date set harvest_price=(CASE WHEN harvest_price>? then harvest_price-? ELSE 0 END) where topic_id=?";
+		String sql = "update topic_data set harvest_price=(CASE WHEN harvest_price>? then harvest_price-? ELSE 0 END) where topic_id=?";
 		jdbcTemplate.update(sql, decrPrice,decrPrice,topicId);
 	}
 	
