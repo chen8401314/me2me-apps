@@ -1081,6 +1081,19 @@ public class LiveLocalJdbcDao {
 		jdbcTemplate.update("update topic set price=price-? where id=?",new Object[]{stealedCoins, topicId});
 	}
 
+	public int balanceTopicStealPriceHarvest(long topicId){
+		String sql = "select d.harvest_price-t.price as balancePrice from topic t,topic_data d where t.id=d.topic_id and t.id=?";
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql,topicId);
+		if(null != list && list.size() > 0){
+			Map<String,Object> c = list.get(0);
+			int balancePrice = (Integer)c.get("balancePrice");
+			if(balancePrice > 0){
+				jdbcTemplate.update("update topic_data set harvest_price=harvest_price-? where id=?",new Object[]{balancePrice, topicId});
+			}
+			return balancePrice;
+		}
+		return 0;
+	}
 
 	public void writeTopicNews(long topicID , String content){
 		String sql = "insert into topic_news (topic_id , content , `type`) values(?,?,1)";
@@ -1611,7 +1624,7 @@ public class LiveLocalJdbcDao {
 	}
 	
 	public void decrTopicHarvestPrice(long topicId, int decrPrice){
-		String sql = "update topic_date set harvest_price=(CASE WHEN harvest_price>? then harvest_price-? ELSE 0 END) where topic_id=?";
+		String sql = "update topic_data set harvest_price=(CASE WHEN harvest_price>? then harvest_price-? ELSE 0 END) where topic_id=?";
 		jdbcTemplate.update(sql, decrPrice,decrPrice,topicId);
 	}
 	

@@ -23,6 +23,7 @@ import org.springframework.stereotype.Component;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.JsonObject;
+import com.me2me.cache.service.CacheService;
 import com.me2me.common.utils.DateUtil;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Specification;
@@ -43,6 +44,8 @@ public class KingdomPriceTask {
 	private LocalJdbcDao localJdbcDao;
 	@Autowired
 	private LiveService liveService;
+	@Autowired
+	private CacheService cacheService;
 	
 	private static List<String> weightKeyList = new ArrayList<String>();
 	
@@ -83,6 +86,7 @@ public class KingdomPriceTask {
 		weightKeyList.add("ALGORITHM_PUSH_PRICE_INCR_LIMIT");
 		weightKeyList.add("ALGORITHM_PUSH_PRICE_REDUCE_LIMIT");
 		weightKeyList.add("ALGORITHM_UPDATE_UGCCOUNT_WEIGHT");
+		weightKeyList.add("HARVEST_PERCENT");
 	}
 	
 	@Scheduled(cron="0 2 0 * * ?")
@@ -148,6 +152,8 @@ public class KingdomPriceTask {
 		int pushPriceLimit = this.getIntegerConfig("ALGORITHM_PUSH_PRICE_LIMIT", weightConfigMap, 200);//推送王国价值阈值
 		int pushPriceIncrLimit = this.getIntegerConfig("ALGORITHM_PUSH_PRICE_INCR_LIMIT", weightConfigMap, 50);//推送王国价值增长阈值
 		int pushPriceReduceLimit = this.getIntegerConfig("ALGORITHM_PUSH_PRICE_INCR_LIMIT", weightConfigMap, 50);//推送王国价值减少阈值
+		
+		int harvestPercent = this.getIntegerConfig("HARVEST_PERCENT", weightConfigMap, 30);
 		
 		//获取补助配置
 		StringBuilder subsidyConfigSql = new StringBuilder();
@@ -584,9 +590,9 @@ public class KingdomPriceTask {
 					kc.setKv0(kv0+(int)kv);
 					
 					if(null == topicData){
-						this.saveKingdomCount(kc, true, listedPrice, yesterday, pushPriceLimit, pushPriceIncrLimit, pushPriceReduceLimit, nowDateStr);
+						this.saveKingdomCount(kc, true, listedPrice, yesterday, pushPriceLimit, pushPriceIncrLimit, pushPriceReduceLimit, nowDateStr, harvestPercent);
 					}else{
-						this.saveKingdomCount(kc, false, listedPrice, yesterday, pushPriceLimit, pushPriceIncrLimit, pushPriceReduceLimit, nowDateStr);
+						this.saveKingdomCount(kc, false, listedPrice, yesterday, pushPriceLimit, pushPriceIncrLimit, pushPriceReduceLimit, nowDateStr, harvestPercent);
 					}
 				}else{//历史有的，则需要做增量计算
 					int oldStealPrice = (Integer)topicData.get("steal_price");
@@ -668,7 +674,7 @@ public class KingdomPriceTask {
 					kc.setReviewTextCountInApp(((Integer)topicData.get("review_text_count")).intValue() + kc.getReviewTextCountInApp());//这里因为保存的两个相加值，故这里只在一个参数上加上原有值
 					kc.setReviewTextWordCountInApp(((Integer)topicData.get("review_text_length")).intValue() + kc.getReviewTextWordCountInApp());//这里因为保存的两个相加值，故这里只在一个参数上加上原有值
 					
-					this.saveKingdomCount(kc, false, listedPrice, yesterday, pushPriceLimit, pushPriceIncrLimit, pushPriceReduceLimit, nowDateStr);
+					this.saveKingdomCount(kc, false, listedPrice, yesterday, pushPriceLimit, pushPriceIncrLimit, pushPriceReduceLimit, nowDateStr, harvestPercent);
 				}
 			}
 			
@@ -914,6 +920,8 @@ public class KingdomPriceTask {
 		double vWeight = this.getDoubleConfig("ALGORITHM_V_WEIGHT", weightConfigMap, 0.2);//大V系数权重
 		
 		int listedPrice = this.getIntegerConfig("LISTED_PRICE", weightConfigMap, 20000);
+		
+		int harvestPercent = this.getIntegerConfig("HARVEST_PERCENT", weightConfigMap, 30);
 		
 		int pushPriceLimit = this.getIntegerConfig("ALGORITHM_PUSH_PRICE_LIMIT", weightConfigMap, 200);//推送王国价值阈值
 		int pushPriceIncrLimit = this.getIntegerConfig("ALGORITHM_PUSH_PRICE_INCR_LIMIT", weightConfigMap, 50);//推送王国价值增长阈值
@@ -1205,9 +1213,9 @@ public class KingdomPriceTask {
 				
 				topicData = topicDataMap.get(String.valueOf(kc.getTopicId()));
 				if(null == topicData){//当天新增的王国
-					this.saveKingdomCount(kc, true, listedPrice, yesterday, pushPriceLimit, pushPriceIncrLimit, pushPriceReduceLimit, nowDateStr);
+					this.saveKingdomCount(kc, true, listedPrice, yesterday, pushPriceLimit, pushPriceIncrLimit, pushPriceReduceLimit, nowDateStr, harvestPercent);
 				}else{
-					this.saveKingdomCount(kc, false, listedPrice, yesterday, pushPriceLimit, pushPriceIncrLimit, pushPriceReduceLimit, nowDateStr);
+					this.saveKingdomCount(kc, false, listedPrice, yesterday, pushPriceLimit, pushPriceIncrLimit, pushPriceReduceLimit, nowDateStr, harvestPercent);
 				}
 			}
 			
@@ -1217,7 +1225,7 @@ public class KingdomPriceTask {
 		logger.info("王国价值处理完成");
 	}
 	
-	private void saveKingdomCount(KingdomCount kc, boolean isNew, int listedPrice, Date recordTime, int pushPriceLimit, int pushPriceIncrLimit, int pushPriceReduceLimit, String nowDateStr){
+	private void saveKingdomCount(KingdomCount kc, boolean isNew, int listedPrice, Date recordTime, int pushPriceLimit, int pushPriceIncrLimit, int pushPriceReduceLimit, String nowDateStr, int harvestPercent){
 		StringBuilder topicPriceQuerySql = new StringBuilder();
 		topicPriceQuerySql.append("select t.title,t.price,p.nick_name,t.uid from topic t,user_profile p where t.uid=p.uid and t.id=").append(kc.getTopicId());
 		List<Map<String, Object>> topicPriceList = localJdbcDao.queryEvery(topicPriceQuerySql.toString());
@@ -1244,6 +1252,8 @@ public class KingdomPriceTask {
 			kc.setStealPrice(kc.getPrice());
 		}
 		
+		int canHarvestPrice = kc.getPrice()*harvestPercent/100;
+		
 		StringBuilder saveSql = new StringBuilder();
 		if(!isNew){//有的，则更新
 			saveSql.append("update topic_data set steal_price=").append(kc.getStealPrice());
@@ -1264,11 +1274,12 @@ public class KingdomPriceTask {
 			saveSql.append(",review_text_count=").append(kc.getReviewTextCountInApp()+kc.getReviewTextCountOutApp());
 			saveSql.append(",review_text_length=").append(kc.getReviewTextWordCountInApp()+kc.getReviewTextWordCountOutApp());
 			saveSql.append(",kv0=").append(kc.getKv0());
+			saveSql.append(",harvest_price=").append(canHarvestPrice);
 			saveSql.append(" where topic_id=").append(kc.getTopicId());
 		}else{//没有，则新增
 			saveSql.append("insert into topic_data(topic_id,last_price,last_price_incr,steal_price,update_time,diligently,approve,update_text_length,");
 			saveSql.append("update_text_count,update_image_count,update_vedio_count,update_vedio_length,update_audio_count,");
-			saveSql.append("update_audio_length,update_vote_count,update_tease_count,update_day_count,review_text_count,review_text_length,kv0)");
+			saveSql.append("update_audio_length,update_vote_count,update_tease_count,update_day_count,review_text_count,review_text_length,kv0,harvest_price)");
 			saveSql.append(" values (").append(kc.getTopicId()).append(",").append(oldPrice).append(",");
 			saveSql.append(kc.getPrice()-oldPrice).append(",").append(kc.getStealPrice()).append(",now(),");
 			saveSql.append(kc.getDiligently()).append(",").append(kc.getApprove()).append(",").append(kc.getUpdateTextWordCount());
@@ -1276,7 +1287,7 @@ public class KingdomPriceTask {
 			saveSql.append(kc.getUpdateVedioCount()).append(",").append(kc.getUpdateVedioLenght()).append(",").append(kc.getUpdateAudioCount());
 			saveSql.append(",").append(kc.getUpdateAudioLenght()).append(",").append(kc.getUpdateVoteCount()).append(",");
 			saveSql.append(kc.getUpdateTeaseCount()).append(",").append(kc.getUpdateDayCount()).append(",").append(kc.getReviewTextCountInApp()+kc.getReviewTextCountOutApp());
-			saveSql.append(",").append(kc.getReviewTextWordCountInApp()+kc.getReviewTextWordCountOutApp()).append(",").append(kc.getKv0()).append(")");
+			saveSql.append(",").append(kc.getReviewTextWordCountInApp()+kc.getReviewTextWordCountOutApp()).append(",").append(kc.getKv0()).append(",").append(canHarvestPrice).append(")");
 		}
 		localJdbcDao.executeSql(saveSql.toString());
 		
@@ -1290,6 +1301,10 @@ public class KingdomPriceTask {
 		StringBuilder updatePriceSql = new StringBuilder();
 		updatePriceSql.append("update topic set price=").append(kc.getPrice()).append(",update_time=update_time where id=").append(kc.getTopicId());
 		localJdbcDao.executeSql(updatePriceSql.toString());
+		
+		//更新缓存中王国可收割价值的大小
+		cacheService.set("TOPIC_HARVEST:"+kc.getTopicId(), String.valueOf(canHarvestPrice));
+		
 		
 		/* 2.2.8版本进行用户手动上市了，所以这里无需再自动上市以及跑马灯处理了
 		String updatelistedTimeSql = null;
