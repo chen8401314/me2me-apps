@@ -1083,6 +1083,19 @@ public class LiveLocalJdbcDao {
 		jdbcTemplate.update("update topic set price=price-? where id=?",new Object[]{stealedCoins, topicId});
 	}
 
+	public int balanceTopicStealPriceHarvest(long topicId){
+		String sql = "select d.harvest_price-t.price as balancePrice from topic t,topic_data d where t.id=d.topic_id and t.id=?";
+		List<Map<String,Object>> list = jdbcTemplate.queryForList(sql,topicId);
+		if(null != list && list.size() > 0){
+			Map<String,Object> c = list.get(0);
+			int balancePrice = (Integer)c.get("balancePrice");
+			if(balancePrice > 0){
+				jdbcTemplate.update("update topic_data set harvest_price=harvest_price-? where id=?",new Object[]{balancePrice, topicId});
+			}
+			return balancePrice;
+		}
+		return 0;
+	}
 
 	public void writeTopicNews(long topicID , String content){
 		String sql = "insert into topic_news (topic_id , content , `type`) values(?,?,1)";
@@ -1292,12 +1305,12 @@ public class LiveLocalJdbcDao {
     	if(topicId!=0){
             sb.append("  AND t.topic_id=").append(topicId);
       	}
-    	sb.append(" and json_extract(t.extra,'$.w[0]')>300 ");
-    	sb.append(" AND (json_extract(t.extra,'$.type[0]') IS  NULL  OR json_extract(t.extra,'$.type[0]') <> 'image_daycard') ");
+    	sb.append(" and fn_Json_getKeyValue(t.extra,1,'w')>300 ");
+    	sb.append(" AND (fn_Json_getKeyValue(t.extra,1,'type') IS  NULL  OR fn_Json_getKeyValue(t.extra,1,'type')  <> 'image_daycard') ");
     	if(!StringUtils.isEmpty(specialTopicIds)){
    		 sb.append("  AND t.topic_id not in(").append(specialTopicIds).append(") ");
        	}
-    	sb.append("  ORDER BY json_extract(t.extra,'$.length[0]') DESC LIMIT 1 ");
+    	sb.append("  ORDER BY fn_Json_getKeyValue(t.extra,1,'length')  DESC LIMIT 1 ");
     	String sql = sb.toString();
     	List<Map<String,Object>> list = jdbcTemplate.queryForList(sql);
 		return list.size()>0?list.get(0):null;
@@ -1613,7 +1626,7 @@ public class LiveLocalJdbcDao {
 	}
 	
 	public void decrTopicHarvestPrice(long topicId, int decrPrice){
-		String sql = "update topic_date set harvest_price=(CASE WHEN harvest_price>? then harvest_price-? ELSE 0 END) where topic_id=?";
+		String sql = "update topic_data set harvest_price=(CASE WHEN harvest_price>? then harvest_price-? ELSE 0 END) where topic_id=?";
 		jdbcTemplate.update(sql, decrPrice,decrPrice,topicId);
 	}
 	

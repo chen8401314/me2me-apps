@@ -58,6 +58,7 @@ import com.me2me.web.request.EditSpeakRequest;
 import com.me2me.web.request.FavoriteListRequest;
 import com.me2me.web.request.FinishMyLiveRequest;
 import com.me2me.web.request.FragmentForwardRequest;
+import com.me2me.web.request.GetCreateKingdomInfoRequest;
 import com.me2me.web.request.GetGiftInfoListRequest;
 import com.me2me.web.request.GetJoinLotteryUsersRequest;
 import com.me2me.web.request.GetKingdomPriceRequest;
@@ -1273,5 +1274,16 @@ public class Live extends BaseController {
     @RequestMapping(value = "/sendGift",method = RequestMethod.POST)
     public Response sendGift(SendGiftRequest request){
     	return liveService.sendGift(request.getUid(), request.getTopicId(), request.getGiftId(), request.getGiftCount(), request.getOnlyCode(),request.getSource());
+    }
+    
+    /**
+     * 获取创建王国信息内容
+     * @param request
+     * @return
+     */
+    @ResponseBody
+    @RequestMapping(value = "/getCreateKingdomInfo",method = RequestMethod.POST)
+    public Response getCreateKingdomInfo(GetCreateKingdomInfoRequest request){
+    	return liveService.getCreateKingdomInfo(request.getUid());
     }
 }
