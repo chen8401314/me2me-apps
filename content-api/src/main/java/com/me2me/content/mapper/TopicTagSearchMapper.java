@@ -7,6 +7,8 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.ResultType;
 import org.apache.ibatis.annotations.Select;
 
+import com.me2me.content.model.TagInfo;
+
 /**
  * 标签相关
  * @author zhangjiwei
@@ -99,7 +101,7 @@ public interface TopicTagSearchMapper {
 	 * @param isLike 1喜欢 0不喜欢。
 	 * @return
 	 */
-	public List<String> getUserLikeTagAndSubTag(@Param("uid")long uid,@Param("isLike")int isLike);
+	public List<TagInfo> getUserLikeTagAndSubTag(@Param("uid")long uid,@Param("isLike")int isLike);
 	
 	@ResultType(Long.class)
 	@Select("select id from topic_tag where tag=#{0}")

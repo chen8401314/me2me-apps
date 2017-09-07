@@ -180,7 +180,7 @@ public interface ContentMapper {
     List<Content2Dto> getHotContentByType(@Param("hq") HotQueryDto hotQueryDto);
 
 
-    List<Content2Dto> getHotContentByRedis(@Param("uid") long uid,@Param("ids") List<String> ids, @Param("blacklistUids") List<Long> blacklistUids);
+    List<Content2Dto> getHotContentByRedis(@Param("uid") long uid,@Param("ids") List<String> ids, @Param("blacklistUids") List<Long> blacklistUids,@Param("blackTagIds")String blackTagIds);
 
 
     List<Content> loadMyPublishUgcData(Map map);

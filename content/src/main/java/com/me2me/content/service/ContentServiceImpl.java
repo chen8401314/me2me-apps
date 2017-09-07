@@ -123,6 +123,7 @@ import com.me2me.content.model.EmotionPackDetail;
 import com.me2me.content.model.EmotionPackDetailExample;
 import com.me2me.content.model.EmotionPackExample;
 import com.me2me.content.model.HighQualityContent;
+import com.me2me.content.model.TagInfo;
 import com.me2me.content.model.UserVisitLog;
 import com.me2me.content.widget.ContentRecommendServiceProxyBean;
 import com.me2me.content.widget.ContentStatusServiceProxyBean;
@@ -4206,7 +4207,8 @@ public class ContentServiceImpl implements ContentService {
         	openPushPositions = Integer.parseInt(openPushPositionsStr);
         }
         result.setOpenPushPositions(openPushPositions);	// 提示消息
-        List<String> blackTags = topicTagMapper.getUserLikeTagAndSubTag(uid,0);		// 不喜欢的标签和子标签。
+        
+        List<TagInfo> blackTags = topicTagMapper.getUserLikeTagAndSubTag(uid,0);		// 不喜欢的标签和子标签。
         
         List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
         List<ActivityWithBLOBs> activityList = null;
@@ -4222,8 +4224,11 @@ public class ContentServiceImpl implements ContentService {
             //ceKingdomList = contentMybatisDao.getHotContentByType(sinceId, 1, 3);//只要3个热点聚合王国
             // 查上市价格, 获取30个上市王国
             listingKingdoms = liveForContentJdbcDao.getListingKingdoms(1, 30);
-            
-            result.setHotTagKingdomList(buildHotTagKingdoms(uid, blacklistUids,blackTags));
+            List<String> blackTagNameList = new ArrayList<>();
+            for(TagInfo info:blackTags){
+            	blackTagNameList.add(info.getTagName());
+            }
+            result.setHotTagKingdomList(buildHotTagKingdoms(uid, blacklistUids,blackTagNameList));
         }
 
         List<String> redisIds = cacheService.lrange("HOT_TOP_KEY",0,-1);
@@ -4241,12 +4246,17 @@ public class ContentServiceImpl implements ContentService {
 
             }
         }
+        List<Long> blackTagIdList = new ArrayList<>();
+        for(TagInfo info:blackTags){
+        	blackTagIdList.add(info.getTagId());
+        }
+        String blackTagIds = org.apache.commons.lang3.StringUtils.join(blackTagIdList,",");
         //String ids = null;
         List<Content2Dto> topList = Lists.newArrayList();
         if(!ObjectUtils.isEmpty(ids)) {
-            topList = contentMybatisDao.getHotContentByRedis(uid,ids, blacklistUids);
+            topList = contentMybatisDao.getHotContentByRedis(uid,ids, blacklistUids,blackTagIds);
         }
-        List<Content2Dto> contentList = contentMybatisDao.getHotContentByType(uid,sinceId, 0, 20,ids, blacklistUids);//只要UGC+PGC+个人王国
+        List<Content2Dto> contentList = contentMybatisDao.getHotContentByType(uid,sinceId, 0, 20,ids, blacklistUids,blackTagIds);//只要UGC+PGC+个人王国
 
         for(Content2Dto content2Dto : topList){
             content2Dto.setOperationTime(map.get(content2Dto.getHid()+""));
@@ -4317,7 +4327,11 @@ public class ContentServiceImpl implements ContentService {
         Set<String> allTags = new LinkedHashSet<>();
         
         //用户在首页的标签上点击了喜欢,注意在喜欢了之后,在推荐和查询的时候,连同下方的子标签也会一起加入展示,除非用户手动对子标签选择了不喜欢
-        List<String> userLikeTags= topicTagMapper.getUserLikeTagAndSubTag(uid,1);	// 白名单，推荐标签和子标签
+        List<TagInfo> userLikeTagInfo= topicTagMapper.getUserLikeTagAndSubTag(uid,1);	// 白名单，推荐标签和子标签
+        Set<String> userLikeTags = new LinkedHashSet<>();
+        for(TagInfo info:userLikeTagInfo){
+        	userLikeTags.add(info.getTagName());
+        }
         allTags.addAll(userLikeTags);
         
         //除以上两种标签外,通过用户行为产生的排名最高的前5个"体系标签",且评分必须超过20
@@ -4957,7 +4971,7 @@ public class ContentServiceImpl implements ContentService {
         ShowHotCeKingdomListDTO result = new ShowHotCeKingdomListDTO();
         List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
         
-        List<Content2Dto> ceKingdomList = contentMybatisDao.getHotContentByType(uid,sinceId, 1, 10,null,blacklistUids);
+        List<Content2Dto> ceKingdomList = contentMybatisDao.getHotContentByType(uid,sinceId, 1, 10,null,blacklistUids,"");
         //开始组装返回对象
         if(null != ceKingdomList && ceKingdomList.size() > 0){
             List<Long> uidList = new ArrayList<Long>();

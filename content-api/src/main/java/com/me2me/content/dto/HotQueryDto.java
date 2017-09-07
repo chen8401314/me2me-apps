@@ -25,5 +25,7 @@ public class HotQueryDto implements BaseEntity {
     private List<Long> blacklistUids;
     
     private long uid;
+    
+    private String blackTagIds;
 
 }

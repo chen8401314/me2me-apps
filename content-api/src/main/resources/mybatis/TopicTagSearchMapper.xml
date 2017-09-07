@@ -77,8 +77,8 @@
 	</select>
 	
 	
-	<select id="getUserLikeTagAndSubTag" resultType="string">
-		select tag  from 
+	<select id="getUserLikeTagAndSubTag" resultType="com.me2me.content.model.TagInfo">
+		select t.id as tagId,t.tag as tagName from 
 		topic_tag t,
 		(select data from user_dislike where uid=#{uid} and is_like=#{isLike} and type=2) userlike 
 		where t.id=userlike.data or t.pid=userlike.data

@@ -1030,7 +1030,7 @@ or find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.c
       </foreach>
     </if>
    and c.forward_cid not in(
-		select CAST(data AS SIGNED) from user_dislike where uid=#{uid} and is_like=0 and type=1
+		select data from user_dislike where uid=#{uid} and is_like=0 and type=1
 	)
     order by c.id desc limit 10
   </select>
@@ -1048,7 +1048,7 @@ or find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.c
       </foreach>
     </if>
      and c.forward_cid not in(
-		select CAST(data AS SIGNED) from user_dislike where uid=#{uid} and is_like=0 and type=1
+		select data from user_dislike where uid=#{uid} and is_like=0 and type=1
 	)
     order by c.update_id desc,c.id desc limit 10
   </select>
@@ -1117,7 +1117,9 @@ or find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.c
 	 ) m,high_quality_content h
 	 where m.id = h.cid
 	 and m.forward_cid not in (
-      	select CAST(data AS SIGNED) from user_dislike where uid=#{hq.uid} and is_like=0 and type=1
+      	select data from user_dislike where uid=#{hq.uid} and is_like=0 and type=1
+      	union all
+      	select topic_id as data from topic_tag_detail where status=0 and tag_id in (${hq.blackTagIds})
       )
      <if test="hq.ids!=null and hq.ids.size() &gt; 0">
        and h.id not in
@@ -1149,7 +1151,9 @@ or find_in_set(#{uid,jdbcType=BIGINT},SUBSTR(t.core_circle FROM 2 FOR LENGTH(t.c
         #{id}
       </foreach>
       and m.forward_cid not in(
-      	select CAST(data AS SIGNED) from user_dislike where uid=#{uid} and is_like=0 and type=1
+      	select data from user_dislike where uid=#{uid} and is_like=0 and type=1
+      	union all
+      	select topic_id as data from topic_tag_detail where status=0 and tag_id in (${blackTagIds})
       )
       <if test="blacklistUids!=null and blacklistUids.size() &gt; 0">
       and m.uid not in

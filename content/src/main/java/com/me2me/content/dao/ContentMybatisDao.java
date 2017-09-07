@@ -604,7 +604,7 @@ public class ContentMybatisDao {
      * @param pageSize
      * @return
      */
-    public List<Content2Dto> getHotContentByType(long uid,long sinceId, int type, int pageSize,List<String> ids,List<Long> blacklistUids){
+    public List<Content2Dto> getHotContentByType(long uid,long sinceId, int type, int pageSize,List<String> ids,List<Long> blacklistUids,String blackTagIds){
         HotQueryDto hotQueryDto = new HotQueryDto();
         hotQueryDto.setType(type);
         hotQueryDto.setSinceId(sinceId);
@@ -612,11 +612,12 @@ public class ContentMybatisDao {
         hotQueryDto.setIds(ids);
         hotQueryDto.setBlacklistUids(blacklistUids);
         hotQueryDto.setUid(uid);
+        hotQueryDto.setBlackTagIds(blackTagIds);
     	return contentMapper.getHotContentByType(hotQueryDto);
     }
 
-    public List<Content2Dto> getHotContentByRedis(long uid, List<String> ids, List<Long> blacklistUids){
-        return contentMapper.getHotContentByRedis(uid,ids, blacklistUids);
+    public List<Content2Dto> getHotContentByRedis(long uid, List<String> ids, List<Long> blacklistUids,String blackTagIds){
+        return contentMapper.getHotContentByRedis(uid,ids, blacklistUids,blackTagIds);
     }
 
     public int getUgcCount(long uid){
