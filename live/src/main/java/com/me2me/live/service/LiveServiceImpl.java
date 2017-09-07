@@ -4194,7 +4194,8 @@ public class LiveServiceImpl implements LiveService {
         long lastFragmentId = 0;
         long total = 0;
         if(createKingdomDto.getContentType() == 0){
-        	TopicFragmentWithBLOBs topicFragment = new TopicFragmentWithBLOBs();
+        	//创建王国简介不再是第一次发言
+/*        	TopicFragmentWithBLOBs topicFragment = new TopicFragmentWithBLOBs();
         	topicFragment.setFragment(createKingdomDto.getFragment());
         	topicFragment.setUid(createKingdomDto.getUid());
         	topicFragment.setType(0);//第一次发言肯定是主播发言
@@ -4207,7 +4208,7 @@ public class LiveServiceImpl implements LiveService {
             topicFragment.setCreateTime(now);
             liveMybatisDao.createTopicFragment(topicFragment);
             lastFragmentId = topicFragment.getId();
-            total++;
+            total++;*/
         }else{//图片
         	String[] imgs = createKingdomDto.getFragment().split(";");
         	Map<String, String> map = new HashMap<String, String>();
@@ -8647,7 +8648,8 @@ public class LiveServiceImpl implements LiveService {
         long lastFragmentId = 0;
         long total = 0;
         if(createKingdomDto.getContentType() == 0){
-        	TopicFragmentWithBLOBs topicFragment = new TopicFragmentWithBLOBs();
+        	//王国简介不再是第一次发言
+/*        	TopicFragmentWithBLOBs topicFragment = new TopicFragmentWithBLOBs();
         	topicFragment.setFragment(createKingdomDto.getFragment());
         	topicFragment.setUid(createKingdomDto.getUid());
         	topicFragment.setType(0);//第一次发言肯定是主播发言
@@ -8660,7 +8662,7 @@ public class LiveServiceImpl implements LiveService {
             topicFragment.setCreateTime(now);
             liveMybatisDao.createTopicFragment(topicFragment);
             lastFragmentId = topicFragment.getId();
-            total++;
+            total++;*/
         }else{//图片
         	String[] imgs = createKingdomDto.getFragment().split(";");
         	Map<String, String> map = new HashMap<String, String>();
