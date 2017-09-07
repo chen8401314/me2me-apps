@@ -24,7 +24,35 @@
 <script src="${ctx}/js/jquery-migrate-1.2.1.min.js"></script>
 <script src="${ctx}/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-
+var modifyName = function(id){
+	$("#mNameId").val(id);
+	$("#mName").val("");
+	$("#modifyNameModal").modal();
+}
+var modifyNameCommit = function(){
+	var id = $("#mNameId").val();
+	var newName = $("#mName").val();
+	if(newName == ''){
+		alert('请填写新名称');
+		return;
+	}
+	
+	var $tr=$("tr[key='"+id+"']");
+	$.ajax({
+		url : "${ctx}/appuser/avatarFrame/modifyName?i="+id+"&n="+newName,
+		async : false,
+		type : "GET",
+		contentType : "application/json;charset=UTF-8",
+		success : function(resp) {
+			if(resp == '0'){
+				alert('保存成功');
+				$tr.find("th:eq(0)").text(newName);
+			}else{
+				alert(resp);
+			}
+		}
+	});
+}
 </script>
 </head>
 <body>
@@ -79,16 +107,19 @@
 											<tr>
 												<th>名称</th>
 												<th>头像框</th>
+												<th>使用人数</th>
 												<th>操作</th>
 											</tr>
 										</thead>
 										<tbody>
 											<c:forEach items="${dataObj.results}" var="userItem">
-												<tr class="gradeX">
+												<tr class="gradeX" key="${userItem.id }">
 													<th>${userItem.name }</th>
-													<th><img src="${userItem.avatarFrame }" height="50"/></th>
+													<th><img src="https://cdn.me-to-me.com/${userItem.avatarFrame }" height="50"/></th>
+													<th><a href="${ctx}/appuser/avatarFrame/userList?avatarFrame=${userItem.avatarFrame }">${userItem.count }</a></th>
 													<th>
 														<a href="${ctx}/appuser/avatarFrame/del/${userItem.id }" onclick="return deleteAvatarFrame();">删除</a>
+														|<a href="#" onclick="modifyName(${userItem.id })">修改名称</a>
 													</th>
 												</tr>
 											</c:forEach>
@@ -97,6 +128,7 @@
 											<tr>
 												<th>名称</th>
 												<th>头像框</th>
+												<th>使用人数</th>
 												<th>操作</th>
 											</tr>
 										</tfoot>
@@ -135,6 +167,13 @@
 	<script src="${ctx}/js/common-scripts.js"></script>
 	<script src="${ctx}/js/advanced-form-components.js"></script>
 	<script type="text/javascript" src="${ctx}/assets/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+	<script src="${ctx}/js/messager/js/messenger.min.js"></script>
+		<script src="${ctx}/js/messager/js/messenger-theme-flat.js"></script>
+		<link rel="stylesheet" href="${ctx}/js/messager/css/messenger.css" />
+		<link rel="stylesheet" href="${ctx}/js/messager/css/messenger-theme-flat.css" />
+		
+		<link rel="stylesheet" href="${ctx}/js/bootstrap-fileinput-master/css/fileinput.min.css" />
+		<script src="${ctx}/js/bootstrap-fileinput-master/js/fileinput.min.js"></script>
 	<script type="text/javascript">
 var deleteAvatarFrame = function(){
 	if(confirm('删除后将清除所有拥有本头像框的用户头像框，是否确定删除？')){
@@ -144,46 +183,60 @@ var deleteAvatarFrame = function(){
 }
 	</script>
 	
-	<!-- Modal -->
-	<div class="modal fade " id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
-		<form id="form2" action="${ctx}/appuser/avatarFrame/save" method="POST" enctype="multipart/form-data">
-			<div class="modal-dialog modal-lg" role="document">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-						<h4 class="modal-title" id="myModalLabel">新增</h4>
-					</div>
-					<div class="modal-body">
-						<div class="form-group">
-							<label for="exampleInputEmail1">名称</label>
-	                        <input type="text" id="name" name="name" class="form-control" style="width: 100%">
-						</div>
-						<div class="form-group">
-							<label for="exampleInputFile">头像框</label>
-							<div class="fileupload fileupload-new" data-provides="fileupload">
-								<div id="" class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
-								</div>
-								<div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
-								<div>
-									<span class="btn btn-white btn-file"> <span class="fileupload-new"><i class="fa fa-paper-clip"></i>选择上传图片</span>
-										<span class="fileupload-exists"><i class="fa fa-undo"></i>修改</span>
-										<input type="file" id="file" name="file" class="default">
-									</span> 
-									<a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="fa fa-trash"></i>删除</a>
-								</div>
-							</div>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="modifyCommit()">更改</button>
-						<button data-dismiss="modal" class="btn btn-default" type="button">关闭</button>
+<!-- Modal -->
+<div class="modal fade " id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="myModalLabel">批量上传</h4>
+      </div>
+      <div class="modal-body">
+        <label class="control-label">上传图片</label>
+		<input id="input-24" name="file" type="file" multiple class="file-loading" accept="image/*"/>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    <script>
+	$(document).on('ready', function() {
+	    $("#input-24").fileinput({
+	        uploadUrl:"${ctx}/appuser/avatarFrame/uploadPic",
+	        deleteUrl: "/site/file-delete",
+	        overwriteInitial: false,
+	        maxFileSize: 10000,
+	        allowedFileExtensions: ["jpg", "png", "gif"],
+	        uploadClass: "btn btn-danger",
+	        initialCaption: "请选择图片"
+	    }).on("filebatchuploadcomplete",function(){
+	    	location.reload();
+	    })
+	});
+	</script>
+
+
+<!-- modal VIEW -->
+	<div class="modal fade" id="modifyNameModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title">修改名称</h4>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="exampleInputEmail1">用户</label>
+                        <input type="text" id="mName" name="mName" class="form-control" style="width: 100%">
+                        <input type="hidden" id="mNameId" name="mNameId">
 					</div>
 				</div>
+				<div class="modal-footer">
+					<button class="btn" data-dismiss="modal" aria-hidden="true" onclick="modifyNameCommit()">更改</button>
+					<button data-dismiss="modal" class="btn btn-default" type="button">关闭</button>
+				</div>
 			</div>
-		</form>
+		</div>
 	</div>
-
 </body>
 </html>

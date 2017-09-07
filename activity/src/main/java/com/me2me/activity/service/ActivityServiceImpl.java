@@ -5383,6 +5383,8 @@ public class ActivityServiceImpl implements ActivityService {
     
     @Override
     public Response anchorList(long uid){
+    	ShowAnchorListDTO result = new ShowAnchorListDTO();
+    	
     	List<Map<String, Object>> list = liveForActivityDao.getAnchorList();
     	
     	//查询报名状态
@@ -5394,7 +5396,6 @@ public class ActivityServiceImpl implements ActivityService {
     		}
     	}
     	
-    	ShowAnchorListDTO result = new ShowAnchorListDTO();
     	if(null != list && list.size() > 0){
     		ShowAnchorListDTO.AnchorInfoElement e = null;
     		for(Map<String, Object> m : list){
@@ -5409,7 +5410,7 @@ public class ActivityServiceImpl implements ActivityService {
     				e.setSignUpCount(0);
     			}
     			e.setSummary((String)m.get("summary"));
-    			if(null != statusMap.get(String.valueOf(e.getAid()))){
+    			if(uid != 100 && null != statusMap.get(String.valueOf(e.getAid()))){
     				e.setStatus(1);
     			}else{
     				e.setStatus(0);
@@ -5423,6 +5424,10 @@ public class ActivityServiceImpl implements ActivityService {
     
     @Override
     public Response enterAnchor(long uid, long aid){
+    	if(uid==100){
+    		return Response.failure(500, "报名失败");
+    	}
+    	
     	Map<String, Object> ea = liveForActivityDao.getAnchorEnterByUidAndAid(uid, aid);
     	if(null != ea){
     		return Response.failure(500, "已经报过名了");

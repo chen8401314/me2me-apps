@@ -19,5 +19,7 @@ public class AvatarFrameQueryDTO {
 		private long id;
 		private String name;
 		private String avatarFrame;
+		
+		private int count;
 	}
 }
