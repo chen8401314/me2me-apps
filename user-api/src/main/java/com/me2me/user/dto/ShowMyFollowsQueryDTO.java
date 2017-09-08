@@ -21,6 +21,7 @@ public class ShowMyFollowsQueryDTO implements BaseEntity {
 		
 		private long uid;
 		private String avatar;
+		private String avatarFrame;
 		private String nickName;
 		private String introduced;
 		private int v_lv;

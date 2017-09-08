@@ -70,6 +70,8 @@ public class GetLotteryListDto implements BaseEntity {
 
         private String avatar;
         
+        private String avatarFrame;
+        
         private String nickName;
 
         private int v_lv;

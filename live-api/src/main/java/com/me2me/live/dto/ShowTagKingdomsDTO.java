@@ -23,6 +23,7 @@ public class ShowTagKingdomsDTO implements BaseEntity {
 		private String coverImage;
 		private String title;
 		private String avatar;
+		private String avatarFrame;
 		private String nickName;
 		private long createTime;
 		private long topicId;

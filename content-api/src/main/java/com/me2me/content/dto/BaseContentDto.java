@@ -22,6 +22,8 @@ public class BaseContentDto implements BaseEntity{
 
     // 作者头像
     private String avatar;
+    
+    private String avatarFrame;
 
     //作者昵称
     private String nickName;

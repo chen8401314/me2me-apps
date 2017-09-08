@@ -54,6 +54,8 @@ public class BillBoardDetailsDto implements BaseEntity {
         private int v_lv;
 
         private int level;
+        
+        private String avatarFrame;
 
         private int isFollowed;
 

@@ -206,6 +206,7 @@ import com.me2me.user.model.UserNoticeUnread;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
+import com.plusnet.common.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -405,6 +406,9 @@ public class LiveServiceImpl implements LiveService {
         liveCoverDto.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.getLiveImage());
         UserProfile userProfile = userService.getUserProfileByUid(topic.getUid());
         liveCoverDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+        if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+        	liveCoverDto.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+        }
         liveCoverDto.setNickName(userProfile.getNickName());
         liveCoverDto.setUid(topic.getUid());
         liveCoverDto.setLastUpdateTime(topic.getLongTime());
@@ -720,6 +724,9 @@ public class LiveServiceImpl implements LiveService {
         showLiveDto.setLevel(userProfile.getLevel());
         showLiveDto.setNickName(userProfile.getNickName());
         showLiveDto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+        if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+        	showLiveDto.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+        }
         showLiveDto.setCreateTime(topic.getCreateTime());
         showLiveDto.setUpdateTime(topic.getLongTime());
         showLiveDto.setSummary(topic.getSummary());
@@ -1014,6 +1021,9 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setUid(uid);
             if(null != userProfile){
                 liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+                if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+                	liveElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+                }
                 liveElement.setNickName(userProfile.getNickName());
                 liveElement.setV_lv(userProfile.getvLv());
                 liveElement.setLevel(userProfile.getLevel());
@@ -2148,6 +2158,9 @@ public class LiveServiceImpl implements LiveService {
             userProfile = profileMap.get(String.valueOf(topic.getUid()));
             showTopicElement.setAvatar(this.genAvatar(userProfile.getAvatar()));
             showTopicElement.setNickName(userProfile.getNickName());
+            if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+            	showTopicElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+            }
             /*int lastLevel =(Integer) liveLocalJdbcDao.getlastUser(topic.getId()).get("level");
             showTopicElement.setLevel(lastLevel);*/
             showTopicElement.setCreateTime(topic.getCreateTime());
@@ -2205,6 +2218,9 @@ public class LiveServiceImpl implements LiveService {
                     showTopicElement.setLastAvatar(this.genAvatar(lastUserProfile.getAvatar()));
                     showTopicElement.setLastV_lv(lastUserProfile.getvLv());
                     showTopicElement.setLastLevel(lastUserProfile.getLevel());
+                    if(!StringUtils.isEmpty(lastUserProfile.getAvatarFrame())){
+                    	showTopicElement.setLastAvatarFrame(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatarFrame());
+                    }
                 }
             } else {
                 showTopicElement.setLastContentType(-1);
@@ -3063,6 +3079,9 @@ public class LiveServiceImpl implements LiveService {
                 attentionElement.setUid(content.getUid());
                 attentionElement.setV_lv(userProfile.getvLv());
                 attentionElement.setLevel(userProfile.getLevel());
+                if(!StringUtil.isEmpty(userProfile.getAvatarFrame())){
+                	attentionElement.setAvatarFrame(Constant.QINIU_DOMAIN+"/"+userProfile.getAvatarFrame());
+                }
                 showTopicListDto.getAttentionData().add(attentionElement);
                 if(size >= 5){
                     break;
@@ -3099,7 +3118,9 @@ public class LiveServiceImpl implements LiveService {
         	gk.setNickName(myProfile.getNickName());
         	gk.setV_lv(myProfile.getvLv());
         	gk.setLevel(myProfile.getLevel());
-        	
+        	if(StringUtils.isEmpty(myProfile.getAvatarFrame())){
+        		gk.setAvatarFrame(Constant.QINIU_DOMAIN + "/" +myProfile.getAvatarFrame());
+        	}
         	showTopicListDto.getGivenKingdoms().add(gk);
         }
         
@@ -3719,6 +3740,9 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setUid(uid);
             if(null != userProfile){
             	liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            	if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+            		liveElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+            	}
                 liveElement.setNickName(userProfile.getNickName());
                 liveElement.setV_lv(userProfile.getvLv());
                 liveElement.setLevel(userProfile.getLevel());
@@ -3916,6 +3940,9 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setUid(uid);
             if(null != userProfile){
             	liveElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            	if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+            		liveElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+            	}
                 liveElement.setNickName(userProfile.getNickName());
                 liveElement.setV_lv(userProfile.getvLv());
                 liveElement.setLevel(userProfile.getLevel());
@@ -4746,6 +4773,9 @@ public class LiveServiceImpl implements LiveService {
         	topicId = (Long)topic.get("id");
         	userProfile = profileMap.get(String.valueOf(topicUid));
             e.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+            	e.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+            }
             e.setNickName(userProfile.getNickName());
             e.setV_lv(userProfile.getvLv());
             e.setLevel(userProfile.getLevel());
@@ -6383,6 +6413,9 @@ public class LiveServiceImpl implements LiveService {
                 continue;
             }
             e.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+            	e.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+            }
             e.setNickName(userProfile.getNickName());
             e.setUid(kingUid);
             e.setV_lv(userProfile.getvLv());
@@ -6576,6 +6609,9 @@ public class LiveServiceImpl implements LiveService {
                 continue;
             }
             e.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+            	e.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+            }
             e.setNickName(userProfile.getNickName());
             e.setUid(kingUid);
             e.setV_lv(userProfile.getvLv());
@@ -7117,6 +7153,32 @@ public class LiveServiceImpl implements LiveService {
             uList = searchService.topicAtUserList(atListDTO.getKeyword(), atListDTO.getUid());
             if(null != uList && uList.size() > 0){
                 result.setTotalPage(1);
+                //由于是从es中获取的数据，所以需要实时的数据再查一次
+                List<Long> uidList = new ArrayList<Long>();
+                for(Map<String, Object> u : uList){
+                	uidList.add((Long)u.get("uid"));
+                }
+                List<UserProfile> upList = userService.getUserProfilesByUids(uidList);
+                Map<String, UserProfile> upMap = new HashMap<String, UserProfile>();
+                if(null != upList && upList.size() > 0){
+                	for(UserProfile up : upList){
+                		upMap.put(up.getUid().toString(), up);
+                	}
+                }
+                
+                Long uid = null;
+            	UserProfile up = null;
+            	for(Map<String, Object> u : uList){
+            		uid = (Long)u.get("uid");
+            		up = upMap.get(uid.toString());
+            		if(null != up){
+            			u.put("nick_name", up.getNickName());
+            			u.put("avatar", up.getAvatar());
+            			u.put("avatar_frame", up.getAvatarFrame());
+            			u.put("v_lv", up.getvLv());
+            			u.put("level", up.getLevel());
+            		}
+            	}
             }else{
                 result.setTotalPage(0);
             }
@@ -7131,6 +7193,9 @@ public class LiveServiceImpl implements LiveService {
                 e.setUid(uid);
                 e.setNickName((String)u.get("nick_name"));
                 e.setAvatar(Constant.QINIU_DOMAIN + "/" + (String)u.get("avatar"));
+                if(!StringUtils.isEmpty((String)u.get("avatar_frame"))){
+                	e.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + (String)u.get("avatar_frame"));
+                }
                 e.setV_lv((Integer)u.get("v_lv"));
                 e.setLevel((Integer) u.get("level"));
                 if(coreUidList.contains(uid)){
@@ -8997,6 +9062,9 @@ public class LiveServiceImpl implements LiveService {
 				return Response.failure(500, "找不到该抽奖发起人信息！");
 			}
 			dto.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+			if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+				dto.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+			}
 			dto.setNickName(userProfile.getNickName());
 			dto.setV_lv(userProfile.getvLv());
 			dto.setLevel(userProfile.getLevel());
@@ -9036,6 +9104,9 @@ public class LiveServiceImpl implements LiveService {
 				GetLotteryDto.UserElement u = new GetLotteryDto.UserElement();
 				u.setUid((Long) map.get("uid"));
 				u.setAvatar(Constant.QINIU_DOMAIN + "/" + String.valueOf(map.get("avatar")));
+				if(!StringUtils.isEmpty((String)map.get("avatar_frame"))){
+					u.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + (String)map.get("avatar_frame"));
+				}
 				u.setNickName(String.valueOf(map.get("nick_name")));
 				u.setV_lv((Integer) map.get("v_lv"));
 				u.setLevel((Integer) map.get("level"));
@@ -9045,32 +9116,35 @@ public class LiveServiceImpl implements LiveService {
 		return Response.success(dto);
 	}
     @Override
-    public Response getJoinLotteryUsers(long lotteryId,long sinceId){
-    	LotteryInfo lotteryInfo = liveMybatisDao.getLotteryInfoById(lotteryId);
-    	if(lotteryInfo==null){
-    		return Response.failure(500, "找不到该抽奖信息！");
-    	}
-    	GetJoinLotteryUsersDto dto = new GetJoinLotteryUsersDto();
-      List<Map<String,Object>> joinUsers =  liveLocalJdbcDao.getJoinLotteryUsers(lotteryId, sinceId);
-      for (Map<String, Object> map : joinUsers) {
-    	  GetJoinLotteryUsersDto.UserElement u = new GetJoinLotteryUsersDto.UserElement();
-    	  u.setSinceId((Long)map.get("sinceId"));
-    	  u.setUid((Long)map.get("uid"));
-    	  u.setAvatar(Constant.QINIU_DOMAIN + "/" + String.valueOf(map.get("avatar")));
-    	  u.setNickName(String.valueOf(map.get("nick_name")));
-    	  u.setV_lv((Integer)map.get("v_lv"));
-    	  u.setLevel((Integer)map.get("level"));
-    	  u.setContent(String.valueOf(map.get("content")));
-    	  u.setCreateTime(((Date)map.get("create_time")).getTime());
-    	  if(map.get("prohibit")==null){
-    		  u.setProhibit(0);
-    	  }else{
-    		  u.setProhibit(1);
-    	  }
-    	  dto.getJoinUsers().add(u);
-	  }
-        return Response.success(dto);
-    }
+	public Response getJoinLotteryUsers(long lotteryId, long sinceId) {
+		LotteryInfo lotteryInfo = liveMybatisDao.getLotteryInfoById(lotteryId);
+		if (lotteryInfo == null) {
+			return Response.failure(500, "找不到该抽奖信息！");
+		}
+		GetJoinLotteryUsersDto dto = new GetJoinLotteryUsersDto();
+		List<Map<String, Object>> joinUsers = liveLocalJdbcDao.getJoinLotteryUsers(lotteryId, sinceId);
+		for (Map<String, Object> map : joinUsers) {
+			GetJoinLotteryUsersDto.UserElement u = new GetJoinLotteryUsersDto.UserElement();
+			u.setSinceId((Long) map.get("sinceId"));
+			u.setUid((Long) map.get("uid"));
+			u.setAvatar(Constant.QINIU_DOMAIN + "/" + String.valueOf(map.get("avatar")));
+			if (!StringUtils.isEmpty((String) map.get("avatar_frame"))) {
+				u.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + (String) map.get("avatar_frame"));
+			}
+			u.setNickName(String.valueOf(map.get("nick_name")));
+			u.setV_lv((Integer) map.get("v_lv"));
+			u.setLevel((Integer) map.get("level"));
+			u.setContent(String.valueOf(map.get("content")));
+			u.setCreateTime(((Date) map.get("create_time")).getTime());
+			if (map.get("prohibit") == null) {
+				u.setProhibit(0);
+			} else {
+				u.setProhibit(1);
+			}
+			dto.getJoinUsers().add(u);
+		}
+		return Response.success(dto);
+	}
     
     @Override
     public Response specialKingdomInfo(long uid, int searchType){
@@ -9294,58 +9368,61 @@ public class LiveServiceImpl implements LiveService {
         return Response.success();
     }
     @Override
-    public Response getLotteryList(long topicId,long sinceId,long uid){
-    	GetLotteryListDto dto = new GetLotteryListDto();
-      List<LotteryInfo> list =  liveMybatisDao.getLotteryListByTopicId(topicId, sinceId);
-      for (LotteryInfo lotteryInfo : list) {
-    	  GetLotteryListDto.LotteryInfoElement u = GetLotteryListDto.createLotteryInfoElement();
-    	  u.setSinceId(lotteryInfo.getId());
-    	  u.setCreateTime(lotteryInfo.getCreateTime().getTime());
-    	  u.setTitle(lotteryInfo.getTitle());
-    	  u.setSummary(lotteryInfo.getSummary());
-    	  u.setUid(lotteryInfo.getUid());
-    	  if(new Date().compareTo(lotteryInfo.getEndTime())>=0 && lotteryInfo.getStatus()==0){
-        		u.setStatus(1);
-        	}else{
-        		u.setStatus(lotteryInfo.getStatus());
-        	}
-      	int countLotteryContent = liveMybatisDao.countLotteryContent(lotteryInfo.getId(),uid);
-          if(countLotteryContent>0){
-          	u.setSignUp(1);
-          }else{
-          	u.setSignUp(0);
-          }
-          if(u.getStatus()==0){
-          	 long timeInterval = (lotteryInfo.getEndTime().getTime()-new Date().getTime())/1000;
-          	 u.setTimeInterval(timeInterval);
-          }else{
-          	u.setTimeInterval(0);
-          }
-          int isWin = liveMybatisDao.lotteryIsWin(lotteryInfo.getId(), uid);
-          if(isWin>0){
-       	   u.setIsWin(1);
-          }else{
-       	   u.setIsWin(0);
-          }
-          u.setEndTime(lotteryInfo.getEndTime().getTime());
-          u.setWinNumber(lotteryInfo.getWinNumber());
-          
-          int joinNumber = liveLocalJdbcDao.countLotteryJoinUser(lotteryInfo.getId());
-          u.setJoinNumber(joinNumber);
-         List<Map<String,Object>> winUsers =  liveLocalJdbcDao.getLotteryWinUserList(lotteryInfo.getId());
-         for (Map<String, Object> map : winUsers) {
-        	 GetLotteryListDto.WinUser u1 = GetLotteryListDto.createWinUser();
-       	  u1.setUid((Long)map.get("uid"));
-       	  u1.setAvatar(Constant.QINIU_DOMAIN + "/" + String.valueOf(map.get("avatar")));
-       	  u1.setNickName(String.valueOf(map.get("nick_name")));
-       	  u1.setV_lv((Integer)map.get("v_lv"));
-       	  u1.setLevel((Integer)map.get("level"));
-       	  u.getWinUsers().add(u1);
-   	  }
-    	  dto.getLotteryList().add(u);
-	  }
-        return Response.success(dto);
-    }
+	public Response getLotteryList(long topicId, long sinceId, long uid) {
+		GetLotteryListDto dto = new GetLotteryListDto();
+		List<LotteryInfo> list = liveMybatisDao.getLotteryListByTopicId(topicId, sinceId);
+		for (LotteryInfo lotteryInfo : list) {
+			GetLotteryListDto.LotteryInfoElement u = GetLotteryListDto.createLotteryInfoElement();
+			u.setSinceId(lotteryInfo.getId());
+			u.setCreateTime(lotteryInfo.getCreateTime().getTime());
+			u.setTitle(lotteryInfo.getTitle());
+			u.setSummary(lotteryInfo.getSummary());
+			u.setUid(lotteryInfo.getUid());
+			if (new Date().compareTo(lotteryInfo.getEndTime()) >= 0 && lotteryInfo.getStatus() == 0) {
+				u.setStatus(1);
+			} else {
+				u.setStatus(lotteryInfo.getStatus());
+			}
+			int countLotteryContent = liveMybatisDao.countLotteryContent(lotteryInfo.getId(), uid);
+			if (countLotteryContent > 0) {
+				u.setSignUp(1);
+			} else {
+				u.setSignUp(0);
+			}
+			if (u.getStatus() == 0) {
+				long timeInterval = (lotteryInfo.getEndTime().getTime() - new Date().getTime()) / 1000;
+				u.setTimeInterval(timeInterval);
+			} else {
+				u.setTimeInterval(0);
+			}
+			int isWin = liveMybatisDao.lotteryIsWin(lotteryInfo.getId(), uid);
+			if (isWin > 0) {
+				u.setIsWin(1);
+			} else {
+				u.setIsWin(0);
+			}
+			u.setEndTime(lotteryInfo.getEndTime().getTime());
+			u.setWinNumber(lotteryInfo.getWinNumber());
+
+			int joinNumber = liveLocalJdbcDao.countLotteryJoinUser(lotteryInfo.getId());
+			u.setJoinNumber(joinNumber);
+			List<Map<String, Object>> winUsers = liveLocalJdbcDao.getLotteryWinUserList(lotteryInfo.getId());
+			for (Map<String, Object> map : winUsers) {
+				GetLotteryListDto.WinUser u1 = GetLotteryListDto.createWinUser();
+				u1.setUid((Long) map.get("uid"));
+				u1.setAvatar(Constant.QINIU_DOMAIN + "/" + String.valueOf(map.get("avatar")));
+				if (!StringUtils.isEmpty((String) map.get("avatar_frame"))) {
+					u1.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + (String) map.get("avatar_frame"));
+				}
+				u1.setNickName(String.valueOf(map.get("nick_name")));
+				u1.setV_lv((Integer) map.get("v_lv"));
+				u1.setLevel((Integer) map.get("level"));
+				u.getWinUsers().add(u1);
+			}
+			dto.getLotteryList().add(u);
+		}
+		return Response.success(dto);
+	}
     
     @Override
 	public Response runLottery(long lotteryId, long uid, int source) {

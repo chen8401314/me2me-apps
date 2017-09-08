@@ -29,6 +29,7 @@ public class ShowContactsDTO implements BaseEntity {
 		private String nickName;
 		private String introduced;
 		private int v_lv;
+		private String avatarFrame;
 		private int isFollowed;
 		private int isFollowMe;
 		private int level;
@@ -40,6 +41,7 @@ public class ShowContactsDTO implements BaseEntity {
 		
 		private long uid;
 		private String avatar;
+		private String avatarFrame;
 		private String nickName;
 		private String introduced;
 		private int v_lv;
@@ -54,6 +56,7 @@ public class ShowContactsDTO implements BaseEntity {
 		
 		private long uid;
 		private String avatar;
+		private String avatarFrame;
 		private String nickName;
 		private String introduced;
 		private int v_lv;

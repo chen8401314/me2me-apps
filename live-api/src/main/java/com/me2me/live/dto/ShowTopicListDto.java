@@ -68,6 +68,8 @@ public class ShowTopicListDto implements BaseEntity{
         private long uid;
 
         private String avatar;
+        
+        private String avatarFrame;
 
         private Date createTime;
 
@@ -129,6 +131,7 @@ public class ShowTopicListDto implements BaseEntity{
         private long lastUid;
         private String lastNickName;
         private String lastAvatar;
+        private String lastAvatarFrame;
         private int lastV_lv;
         private int price;
         private int level;
@@ -158,6 +161,7 @@ public class ShowTopicListDto implements BaseEntity{
 
         private int level;
 
+        private String avatarFrame;
     }
 
 }

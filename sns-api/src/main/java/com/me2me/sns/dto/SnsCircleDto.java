@@ -17,6 +17,8 @@ public class SnsCircleDto implements BaseEntity {
     private String nickName;
 
     private String avatar;
+    
+    private String avatarFrame;
 
     private String introduced;
 

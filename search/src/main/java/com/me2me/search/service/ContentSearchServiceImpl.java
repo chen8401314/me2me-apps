@@ -188,6 +188,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 		} else {
 			bq.should(QueryBuilders.queryStringQuery(content).field("nick_name"));
 			bq.should(QueryBuilders.queryStringQuery(content).field("introduced"));
+			bq.should(QueryBuilders.termQuery("me_number", content));//米号要全匹配
 		}
 
 		SearchQuery sq = new NativeSearchQuery(bq);
@@ -362,8 +363,7 @@ public class ContentSearchServiceImpl implements ContentSearchService {
 				}
 
 				while (true) {
-					List<UserEsMapping> users = searchMapper.getUserPageByUpdateDate(beginDate, endDate, skip,
-							batchSize);
+					List<UserEsMapping> users = searchMapper.getUserPageByUpdateDate(beginDate, endDate, skip, batchSize);
 
 //					log.info("get users,begin:{} end:{} skip:{} batchSize:{}", beginDate, endDate, skip, batchSize);
 					if (users == null || users.isEmpty()) {

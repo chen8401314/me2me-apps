@@ -392,6 +392,9 @@ public class ContentServiceImpl implements ContentService {
             userProfile = profileMap.get(String.valueOf(content.getUid()));
             log.info(" get userProfile success");
             squareDataElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+            	squareDataElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+            }
             squareDataElement.setNickName(userProfile.getNickName());
             String contentStr = content.getContent();
             if (contentStr.length() > 100) {
@@ -1384,6 +1387,9 @@ public class ContentServiceImpl implements ContentService {
             userProfile = profileMap.get(String.valueOf(content.getUid()));
             contentElement.setV_lv(userProfile.getvLv());
             contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+            	contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+            }
             contentElement.setNickName(userProfile.getNickName());
             contentElement.setLevel(userProfile.getLevel());
             contentElement.setUid(content.getUid());
@@ -1502,6 +1508,11 @@ public class ContentServiceImpl implements ContentService {
             			contentElement.setV_lv(lastUserProfile.getvLv());
             			contentElement.setLevel(lastUserProfile.getLevel());
             			contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
+            			if(!StringUtils.isEmpty(lastUserProfile.getAvatarFrame())){
+            				contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatarFrame());
+            			}else{
+            				contentElement.setAvatarFrame(null);
+            			}
             			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+content.getUid())){
                             contentElement.setIsFollowed(1);
                         }else{
@@ -2034,6 +2045,9 @@ public class ContentServiceImpl implements ContentService {
         userInfoDto.getUser().setV_lv(userProfile.getvLv());
         userInfoDto.getUser().setNickName(userProfile.getNickName());
         userInfoDto.getUser().setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+        if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+        	userInfoDto.getUser().setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+        }
         userInfoDto.getUser().setGender(userProfile.getGender());
         userInfoDto.getUser().setUid(userProfile.getUid());
         userInfoDto.getUser().setMeNumber(userService.getUserNoByUid(targetUid));
@@ -2988,6 +3002,9 @@ public class ContentServiceImpl implements ContentService {
             contentElement.setV_lv(userProfile.getvLv());
             contentElement.setLevel(userProfile.getLevel());
             contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+            	contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+            }
             contentElement.setNickName(userProfile.getNickName());
             contentElement.setCreateTime(content.getUpdateTime());
             String contentStr = content.getContent();
@@ -3102,6 +3119,11 @@ public class ContentServiceImpl implements ContentService {
             			contentElement.setV_lv(lastUserProfile.getvLv());
             			contentElement.setLevel(lastUserProfile.getLevel());
             			contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
+            			if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+                        	contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+                        }else{
+                        	contentElement.setAvatarFrame(null);
+                        }
             			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+content.getUid())){
                             contentElement.setIsFollowed(1);
                         }else{
@@ -3366,6 +3388,9 @@ public class ContentServiceImpl implements ContentService {
             userProfile = profileMap.get(String.valueOf(content.getUid()));
             contentElement.setV_lv(userProfile.getvLv());
             contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+            if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+            	contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+            }
             contentElement.setNickName(userProfile.getNickName());
             contentElement.setLevel(userProfile.getLevel());
             contentElement.setCreateTime(content.getCreateTime());
@@ -3473,6 +3498,11 @@ public class ContentServiceImpl implements ContentService {
             			contentElement.setV_lv(lastUserProfile.getvLv());
             			contentElement.setLevel(lastUserProfile.getLevel());
             			contentElement.setAvatar(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatar());
+            			if(!StringUtils.isEmpty(lastUserProfile.getAvatarFrame())){
+                        	contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + lastUserProfile.getAvatarFrame());
+                        }else{
+                        	contentElement.setAvatarFrame(null);
+                        }
             			if(null != followMap.get(String.valueOf(topicOutData.get("uid"))+"_"+content.getUid())){
                             contentElement.setIsFollowed(1);
                         }else{
@@ -4659,6 +4689,9 @@ public class ContentServiceImpl implements ContentService {
                     famousUserElement.setNickName(userProfile.getNickName());
                     famousUserElement.setIntroduced(userProfile.getIntroduced());
                     famousUserElement.setV_lv(userProfile.getvLv());
+                    if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+                    	famousUserElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+                    }
                     famousUserElement.setLevel(userProfile.getLevel());
                 }
                 if(null != followMap.get(uid+"_"+uf.getUid())){
@@ -4784,6 +4817,9 @@ public class ContentServiceImpl implements ContentService {
                     contentElement.setNickName(userProfile.getNickName());
                     contentElement.setV_lv(userProfile.getvLv());
                     contentElement.setLevel(userProfile.getLevel());
+                    if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+                    	contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+                    }
                 }
                 if(null != followMap.get(uid+"_"+c.getUid())){
                     contentElement.setIsFollowed(1);
@@ -4883,6 +4919,9 @@ public class ContentServiceImpl implements ContentService {
                     contentElement.setNickName(userProfile.getNickName());
                     contentElement.setV_lv(userProfile.getvLv());
                     contentElement.setLevel(userProfile.getLevel());
+                    if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+                    	contentElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+                    }
                 }
                 if(null != followMap.get(uid+"_"+c.getUid())){
                     contentElement.setIsFollowed(1);
@@ -5422,6 +5461,9 @@ public class ContentServiceImpl implements ContentService {
                                 bangDanInnerData.setNickName(userProfile.getNickName());
                                 bangDanInnerData.setV_lv(userProfile.getvLv());
                                 bangDanInnerData.setLevel(userProfile.getLevel());
+                                if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+                                	bangDanInnerData.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+                                }
                                 if(null != followMap.get(currentUid+"_"+uid)){
                                     bangDanInnerData.setIsFollowed(1);
                                 }else{
@@ -5484,6 +5526,9 @@ public class ContentServiceImpl implements ContentService {
                                 bangDanInnerData.setNickName(userProfile.getNickName());
                                 bangDanInnerData.setV_lv(userProfile.getvLv());
                                 bangDanInnerData.setLevel(userProfile.getLevel());
+                                if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+                                	bangDanInnerData.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+                                }
                                 if(null != followMap.get(currentUid+"_"+targetId)){
                                     bangDanInnerData.setIsFollowed(1);
                                 }else{
@@ -5831,6 +5876,9 @@ public class ContentServiceImpl implements ContentService {
                         bangDanInnerData.setNickName(userProfile.getNickName());
                         bangDanInnerData.setV_lv(userProfile.getvLv());
                         bangDanInnerData.setLevel(userProfile.getLevel());
+                        if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+                        	bangDanInnerData.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+                        }
                         if(null != followMap.get(currentUid+"_"+uid)){
                             bangDanInnerData.setIsFollowed(1);
                         }else{
@@ -5888,6 +5936,9 @@ public class ContentServiceImpl implements ContentService {
                         bangDanInnerData.setNickName(userProfile.getNickName());
                         bangDanInnerData.setV_lv(userProfile.getvLv());
                         bangDanInnerData.setLevel(userProfile.getLevel());
+                        if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+                        	bangDanInnerData.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+                        }
                         if(null != followMap.get(currentUid+"_"+targetId)){
                             bangDanInnerData.setIsFollowed(1);
                         }else{
@@ -6311,6 +6362,9 @@ public class ContentServiceImpl implements ContentService {
                     bangDanInnerData.setNickName(userProfile.getNickName());
                     bangDanInnerData.setV_lv(userProfile.getvLv());
                     bangDanInnerData.setLevel(userProfile.getLevel());
+                    if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+                    	bangDanInnerData.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+                    }
                     if(null != followMap.get(currentUid+"_"+uid)){
                         bangDanInnerData.setIsFollowed(1);
                     }else{
@@ -6371,6 +6425,9 @@ public class ContentServiceImpl implements ContentService {
                     bangDanInnerData.setNickName(userProfile.getNickName());
                     bangDanInnerData.setV_lv(userProfile.getvLv());
                     bangDanInnerData.setLevel(userProfile.getLevel());
+                    if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+                    	bangDanInnerData.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+                    }
                     if(null != followMap.get(currentUid+"_"+bbl.getTargetId())){
                         bangDanInnerData.setIsFollowed(1);
                     }else{
@@ -6526,6 +6583,9 @@ public class ContentServiceImpl implements ContentService {
                     bangDanInnerData.setNickName(userProfile.getNickName());
                     bangDanInnerData.setV_lv(userProfile.getvLv());
                     bangDanInnerData.setLevel(userProfile.getLevel());
+                    if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+                    	bangDanInnerData.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+                    }
                     if(null != followMap.get(currentUid+"_"+uid)){
                         bangDanInnerData.setIsFollowed(1);
                     }else{
@@ -6586,6 +6646,9 @@ public class ContentServiceImpl implements ContentService {
                     bangDanInnerData.setNickName(userProfile.getNickName());
                     bangDanInnerData.setV_lv(userProfile.getvLv());
                     bangDanInnerData.setLevel(userProfile.getLevel());
+                    if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+                    	bangDanInnerData.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+                    }
                     if(null != followMap.get(currentUid+"_"+String.valueOf(bbl.getTargetId()))){
                         bangDanInnerData.setIsFollowed(1);
                     }else{
