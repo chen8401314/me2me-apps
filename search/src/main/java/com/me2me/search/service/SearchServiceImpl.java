@@ -426,7 +426,13 @@ public class SearchServiceImpl implements SearchService {
 			}
 			kingdomElement.setUpdateTime(((Date)topic.get("update_time")).getTime());
 			kingdomElement.setLastUpdateTime((Long)topic.get("long_time"));
-			kingdomElement.setInternalStatus(this.getInternalStatus((String)topic.get("core_circle"), uid));
+            int internalStatust = this.getInternalStatus((String)topic.get("core_circle"), uid);
+            if(internalStatust==Specification.SnsCircle.OUT.index){
+            	if( liveFavouriteMap.get(String.valueOf(topic.get("id")))!=null){
+            		internalStatust=Specification.SnsCircle.IN.index;
+            	}
+            }
+			kingdomElement.setInternalStatus(internalStatust);
 			kingdomElement.setCid((Long)topicContent.get("id"));
 			kingdomElement.setLikeCount((Integer)topicContent.get("like_count"));
 			kingdomElement.setReadCount((Integer)topicContent.get("read_count_dummy"));
@@ -894,7 +900,13 @@ public class SearchServiceImpl implements SearchService {
 					RecommendListDto.EmotionKingdom emotionKingdom = new RecommendListDto.EmotionKingdom();
 					emotionKingdom.setContentType((Integer)topic.get("type"));
 					emotionKingdom.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
-					emotionKingdom.setInternalStatus(this.getInternalStatus((String)topic.get("core_circle"), uid));
+					int internalStatus = this.getInternalStatus((String) topic.get("core_circle"), uid);
+					if (internalStatus == 0) {
+						if (contentForSearchJdbcDao.isFavoriteTopic(uid, (Long) topic.get("id"))) {
+							internalStatus = Specification.SnsCircle.IN.index;
+						}
+					}
+					emotionKingdom.setInternalStatus(internalStatus);
 					emotionKingdom.setTitle((String)topic.get("title"));
 					emotionKingdom.setTopicId(firstUserEmotionInfo.getTopicid());
 					indexData.setEmotionKingdom(emotionKingdom);
@@ -1034,7 +1046,13 @@ public class SearchServiceImpl implements SearchService {
 					}
 					kingdomElement.setUpdateTime(((Date)meTopic.get("update_time")).getTime());
 					kingdomElement.setLastUpdateTime((Long)meTopic.get("long_time"));
-					kingdomElement.setInternalStatus(this.getInternalStatus((String)meTopic.get("core_circle"), uid));
+					int internalStatus = this.getInternalStatus((String)meTopic.get("core_circle"), uid);
+					if (internalStatus == 0) {
+						if (contentForSearchJdbcDao.isFavoriteTopic(uid, (Long) meTopic.get("id"))) {
+							internalStatus = Specification.SnsCircle.IN.index;
+						}
+					}
+					kingdomElement.setInternalStatus(internalStatus);
 					kingdomElement.setCid((Long)topicContent.get("id"));
 					kingdomElement.setLikeCount((Integer)topicContent.get("like_count"));
 					kingdomElement.setReadCount((Integer)topicContent.get("read_count_dummy"));
@@ -1759,7 +1777,13 @@ public class SearchServiceImpl implements SearchService {
 			}
 			kingdomElement.setUpdateTime(((Date)topic.get("update_time")).getTime());
 			kingdomElement.setLastUpdateTime((Long)topic.get("long_time"));
-			kingdomElement.setInternalStatus(this.getInternalStatus((String)topic.get("core_circle"), uid));
+            int internalStatust = this.getInternalStatus((String)topic.get("core_circle"), uid);
+            if(internalStatust==Specification.SnsCircle.OUT.index){
+            	if( liveFavouriteMap.get(String.valueOf(topic.get("id")))!=null){
+            		internalStatust=Specification.SnsCircle.IN.index;
+            	}
+            }
+			kingdomElement.setInternalStatus(internalStatust);
 			kingdomElement.setCid((Long)topicContent.get("id"));
 			kingdomElement.setLikeCount((Integer)topicContent.get("like_count"));
 			kingdomElement.setReadCount((Integer)topicContent.get("read_count_dummy"));

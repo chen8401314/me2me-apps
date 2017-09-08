@@ -383,6 +383,14 @@ public class ContentServiceImpl implements ContentService {
             topicMemberCountMap = new HashMap<String, Long>();
         }
 
+        //一次性获取当前用户针对于各王国是否收藏过
+        Map<String, Map<String,Object>> liveFavoriteMap = new HashMap<String, Map<String,Object>>();
+        List<Map<String,Object>> liveFavoriteList = liveForContentJdbcDao.getLiveFavoritesByUidAndTopicIds(uid, topicIdList);
+        if(null != liveFavoriteList && liveFavoriteList.size() > 0){
+            for(Map<String,Object> lf : liveFavoriteList){
+                liveFavoriteMap.put(String.valueOf(lf.get("topic_id")), lf);
+            }
+        }
         UserProfile userProfile = null;
         Map<String, Object> topicUserProfile = null;
         for (Content content : contents) {
@@ -462,7 +470,13 @@ public class ContentServiceImpl implements ContentService {
                 //王国增加身份信息
                 Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
                 if(null != topic){
-                    squareDataElement.setInternalStatus(this.getInternalStatus(topic, uid));
+                    int internalStatust = this.getInternalStatus(topic, uid);
+                    if(internalStatust==Specification.SnsCircle.OUT.index){
+                    	if( liveFavoriteMap.get(String.valueOf(topic.get("id")))!=null){
+                    		internalStatust=Specification.SnsCircle.IN.index;
+                    	}
+                    }
+                    squareDataElement.setInternalStatus(internalStatust);
                     //是否聚合王国
                     squareDataElement.setContentType((Integer) topic.get("type"));
                     if((Integer)topic.get("type") == 1000){
@@ -1467,7 +1481,13 @@ public class ContentServiceImpl implements ContentService {
                 Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
                 if(null != topic){
                 	contentElement.setLastUpdateTime((Long)topic.get("long_time"));
-                    contentElement.setInternalStatus(this.getInternalStatus(topic, currentUid));
+                    int internalStatust = this.getInternalStatus(topic, currentUid);
+                    if(internalStatust==Specification.SnsCircle.OUT.index){
+                    	if(null != liveFavouriteMap.get(content.getForwardCid().toString())){
+                    		internalStatust=Specification.SnsCircle.IN.index;
+                    	}
+                    }
+                    contentElement.setInternalStatus(internalStatust);
                     contentElement.setContentType((Integer)topic.get("type"));
                     if(contentElement.getContentType() == 1000){//聚合王国要有子王国数
                         int acCount = liveForContentJdbcDao.getTopicAggregationCountByTopicId((Long) topic.get("id"));
@@ -2210,7 +2230,13 @@ public class ContentServiceImpl implements ContentService {
                 Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
                 if(null != topic){
                 	contentElement.setLastUpdateTime((Long)topic.get("long_time"));
-                    contentElement.setInternalStatus(this.getInternalStatus(topic, sourceUid));
+                    int internalStatust = this.getInternalStatus(topic, sourceUid);
+                    if(internalStatust==Specification.SnsCircle.OUT.index){
+                    	if(null != liveFavouriteMap.get(content.getForwardCid().toString())){
+                    		internalStatust=Specification.SnsCircle.IN.index;
+                    	}
+                    }
+                    contentElement.setInternalStatus(internalStatust);
                     contentElement.setContentType((Integer) topic.get("type"));
                     if((Integer)topic.get("type") == 1000){
                         //查询聚合子王国
@@ -2571,6 +2597,16 @@ public class ContentServiceImpl implements ContentService {
             }
         }
 
+		// 一次性获取当前用户针对于各王国是否收藏过
+		Map<String, Map<String, Object>> liveFavoriteMap = new HashMap<String, Map<String, Object>>();
+		List<Map<String, Object>> liveFavoriteList = liveForContentJdbcDao.getLiveFavoritesByUidAndTopicIds(uid,
+				topicIdList);
+		if (null != liveFavoriteList && liveFavoriteList.size() > 0) {
+			for (Map<String, Object> lf : liveFavoriteList) {
+				liveFavoriteMap.put(String.valueOf(lf.get("topic_id")), lf);
+			}
+		}
+
         UserProfile userProfile = null;
         Map<String, Object> topicUserProfile = null;
         for(Content content : contentList){
@@ -2617,7 +2653,13 @@ public class ContentServiceImpl implements ContentService {
                 Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
                 if(null != topic){
                     hottestContentElement.setContentType((Integer) topic.get("type"));
-                    hottestContentElement.setInternalStatus(this.getInternalStatus(topic, uid));
+                    int internalStatust = this.getInternalStatus(topic, uid);
+                    if(internalStatust==Specification.SnsCircle.OUT.index){
+                    	if( liveFavoriteMap.get(String.valueOf(topic.get("id")))!=null){
+                    		internalStatust=Specification.SnsCircle.IN.index;
+                    	}
+                    }
+                    hottestContentElement.setInternalStatus(internalStatust);
                     if((Integer)topic.get("type") == 1000){
                         //查询聚合子王国
                         int acCount = liveForContentJdbcDao.getTopicAggregationCountByTopicId((Long) topic.get("id"));
@@ -2721,7 +2763,15 @@ public class ContentServiceImpl implements ContentService {
                 followMap.put(uf.getSourceUid()+"_"+uf.getTargetUid(), "1");
             }
         }
-
+		// 一次性获取当前用户针对于各王国是否收藏过
+		Map<String, Map<String, Object>> liveFavoriteMap = new HashMap<String, Map<String, Object>>();
+		List<Map<String, Object>> liveFavoriteList = liveForContentJdbcDao.getLiveFavoritesByUidAndTopicIds(uid,
+				topicIdList);
+		if (null != liveFavoriteList && liveFavoriteList.size() > 0) {
+			for (Map<String, Object> lf : liveFavoriteList) {
+				liveFavoriteMap.put(String.valueOf(lf.get("topic_id")), lf);
+			}
+		}
         UserProfile userProfile = null;
         Map<String, Object> topicUserProfile = null;
         for(Content2Dto content : contentList){
@@ -2771,7 +2821,13 @@ public class ContentServiceImpl implements ContentService {
                 Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
                 if(null != topic){
                     hottestContentElement.setContentType((Integer) topic.get("type"));
-                    hottestContentElement.setInternalStatus(this.getInternalStatus(topic, uid));
+                    int internalStatust = this.getInternalStatus(topic, uid);
+                    if(internalStatust==Specification.SnsCircle.OUT.index){
+                    	if( liveFavoriteMap.get(String.valueOf(topic.get("id")))!=null){
+                    		internalStatust=Specification.SnsCircle.IN.index;
+                    	}
+                    }
+                    hottestContentElement.setInternalStatus(internalStatust);
                     if((Integer)topic.get("type") == 1000){
                         //查询聚合子王国
                         int acCount = liveForContentJdbcDao.getTopicAggregationCountByTopicId((Long) topic.get("id"));
@@ -3060,7 +3116,13 @@ public class ContentServiceImpl implements ContentService {
                 //王国增加身份信息
                 Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
                 if(null != topic){
-                    contentElement.setInternalStatus(this.getInternalStatus(topic, uid));
+                    int internalStatust = this.getInternalStatus(topic, uid);
+                    if(internalStatust==Specification.SnsCircle.OUT.index){
+                    	if( liveFavouriteMap.get(String.valueOf(topic.get("id")))!=null){
+                    		internalStatust=Specification.SnsCircle.IN.index;
+                    	}
+                    }
+                    contentElement.setInternalStatus(internalStatust);
                     contentElement.setContentType((Integer) topic.get("type"));
                     if((Integer)topic.get("type") == 1000){
                         //查询聚合子王国
@@ -3475,7 +3537,13 @@ public class ContentServiceImpl implements ContentService {
                 Map<String, Object> topic = topicMap.get(String.valueOf(content.getForwardCid()));
                 if(null != topic){
                 	contentElement.setLastUpdateTime((Long)topic.get("long_time"));
-                    contentElement.setInternalStatus(this.getInternalStatus(topic, uid));
+                    int internalStatust = this.getInternalStatus(topic, uid);
+                    if(internalStatust==Specification.SnsCircle.OUT.index){
+                    	if( liveFavouriteMap.get(String.valueOf(topic.get("id")))!=null){
+                    		internalStatust=Specification.SnsCircle.IN.index;
+                    	}
+                    }
+                    contentElement.setInternalStatus(internalStatust);
                     contentElement.setContentType((Integer) topic.get("type"));
                     if((Integer) topic.get("type") == 1000){
                         //聚合王国子王国数量
@@ -4669,7 +4737,13 @@ public class ContentServiceImpl implements ContentService {
                     if(null != topic && null != topicContent){
                         activityElement.setCid(topicContent.getId());
                         activityElement.setTopicType((Integer)topic.get("type"));
-                        activityElement.setTopicInternalStatus(this.getInternalStatus(topic, uid));
+                        int internalStatust = this.getInternalStatus(topic, uid);
+                        if(internalStatust==Specification.SnsCircle.OUT.index){
+                        	if( liveFavouriteMap.get(String.valueOf(topic.get("id")))!=null){
+                        		internalStatust=Specification.SnsCircle.IN.index;
+                        	}
+                        }
+                        activityElement.setTopicInternalStatus(internalStatust);
                     }
                 }
                 activityElement.setLinkUrl("");//这个是兼容安卓222版本bug
@@ -4853,7 +4927,13 @@ public class ContentServiceImpl implements ContentService {
                     topic = topicMap.get(c.getForwardCid().toString());
                     if(null != topic){
                         contentElement.setContentType((Integer)topic.get("type"));
-                        contentElement.setInternalStatus(this.getInternalStatus(topic, uid));
+                        int internalStatust = this.getInternalStatus(topic, uid);
+                        if(internalStatust==Specification.SnsCircle.OUT.index){
+                        	if( liveFavouriteMap.get(String.valueOf(topic.get("id")))!=null){
+                        		internalStatust=Specification.SnsCircle.IN.index;
+                        	}
+                        }
+                        contentElement.setInternalStatus(internalStatust);
                         contentElement.setPrice((Integer)topic.get("price"));
                         contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice()));
                         contentElement.setShowPriceBrand(0);		//首页只显示RMB吊牌
@@ -4955,7 +5035,13 @@ public class ContentServiceImpl implements ContentService {
                     topic = topicMap.get(c.getForwardCid().toString());
                     if(null != topic){
                         contentElement.setContentType((Integer)topic.get("type"));
-                        contentElement.setInternalStatus(this.getInternalStatus(topic, uid));
+                        int internalStatust = this.getInternalStatus(topic, uid);
+                        if(internalStatust==Specification.SnsCircle.OUT.index){
+                        	if( liveFavouriteMap.get(String.valueOf(topic.get("id")))!=null){
+                        		internalStatust=Specification.SnsCircle.IN.index;
+                        	}
+                        }
+                        contentElement.setInternalStatus(internalStatust);
                         contentElement.setPrice((Integer)topic.get("price"));
                         contentElement.setPriceRMB(exchangeKingdomPrice(contentElement.getPrice()));
                         contentElement.setShowPriceBrand(0);		//首页只显示RMB吊牌
@@ -5179,7 +5265,13 @@ public class ContentServiceImpl implements ContentService {
                     ceKingdomElement.setUpdateTime((Long)topic.get("long_time"));
                     ceKingdomElement.setLastUpdateTime((Long)topic.get("long_time"));
                     ceKingdomElement.setContentType((Integer)topic.get("type"));
-                    ceKingdomElement.setInternalStatus(this.getInternalStatus(topic, uid));
+                    int internalStatust = this.getInternalStatus(topic, uid);
+                    if(internalStatust==Specification.SnsCircle.OUT.index){
+                    	if( liveFavouriteMap.get(String.valueOf(topic.get("id")))!=null){
+                    		internalStatust=Specification.SnsCircle.IN.index;
+                    	}
+                    }
+                    ceKingdomElement.setInternalStatus(internalStatust);
                 }
                 if(null != topicMemberCountMap.get(ce.getForwardCid().toString())){
                     ceKingdomElement.setFavoriteCount(topicMemberCountMap.get(ce.getForwardCid().toString()).intValue()+1);
@@ -5204,7 +5296,13 @@ public class ContentServiceImpl implements ContentService {
                         acTopElement.setTitle((String)acTop.get("title"));
                         acTopElement.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)acTop.get("live_image"));
                         acTopElement.setContentType((Integer)acTop.get("type"));
-                        acTopElement.setInternalStatus(this.getInternalStatus(acTop, uid));
+                        int internalStatust = this.getInternalStatus(acTop, uid);
+                        if(internalStatust==Specification.SnsCircle.OUT.index){
+                        	if( liveFavouriteMap.get(String.valueOf(acTop.get("id")))!=null){
+                        		internalStatust=Specification.SnsCircle.IN.index;
+                        	}
+                        }
+                        acTopElement.setInternalStatus(internalStatust);
                         ceKingdomElement.getAcTopList().add(acTopElement);
                     }
                 }
@@ -5496,7 +5594,13 @@ public class ContentServiceImpl implements ContentService {
                                 bangDanInnerData.setForwardCid(targetId);
                                 bangDanInnerData.setTitle((String)topic.get("title"));
                                 bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
-                                bangDanInnerData.setInternalStatus(getInternalStatus(topic,currentUid));
+                                int internalStatust = this.getInternalStatus(topic, currentUid);
+                                if(internalStatust==Specification.SnsCircle.OUT.index){
+                                	if( liveFavouriteMap.get(String.valueOf(topic.get("id")))!=null){
+                                		internalStatust=Specification.SnsCircle.IN.index;
+                                	}
+                                }
+                                bangDanInnerData.setInternalStatus(internalStatust);
                                 if(null != topicMemberCountMap.get(String.valueOf(targetId))){
                                     bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(String.valueOf(targetId)).intValue() + 1);
                                 }else{
@@ -5903,7 +6007,13 @@ public class ContentServiceImpl implements ContentService {
                         bangDanInnerData.setForwardCid(targetId);
                         bangDanInnerData.setTitle((String)topic.get("title"));
                         bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
-                        bangDanInnerData.setInternalStatus(getInternalStatus(topic,currentUid));
+                        int internalStatust = this.getInternalStatus(topic,currentUid);
+                        if(internalStatust==Specification.SnsCircle.OUT.index){
+                        	if( liveFavouriteMap.get(String.valueOf(topic.get("id")))!=null){
+                        		internalStatust=Specification.SnsCircle.IN.index;
+                        	}
+                        }
+                        bangDanInnerData.setInternalStatus(internalStatust);
                         if(null != topicMemberCountMap.get(String.valueOf(targetId))){
                             bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(String.valueOf(targetId)).intValue()+1);
                         }else{
@@ -6391,7 +6501,13 @@ public class ContentServiceImpl implements ContentService {
                     bangDanInnerData.setForwardCid(bbl.getTargetId());
                     bangDanInnerData.setTitle((String)topic.get("title"));
                     bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + topic.get("live_image").toString());
-                    bangDanInnerData.setInternalStatus(getInternalStatus(topic,currentUid));
+                    int internalStatust = this.getInternalStatus(topic, currentUid);
+                    if(internalStatust==Specification.SnsCircle.OUT.index){
+                    	if( liveFavouriteMap.get(String.valueOf(topic.get("id")))!=null){
+                    		internalStatust=Specification.SnsCircle.IN.index;
+                    	}
+                    }
+                    bangDanInnerData.setInternalStatus(internalStatust);
                     if(null != topicMemberCountMap.get(String.valueOf(bbl.getTargetId()))){
                         bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(String.valueOf(bbl.getTargetId())).intValue()+1);
                     }else{
@@ -6616,7 +6732,13 @@ public class ContentServiceImpl implements ContentService {
                     bangDanInnerData.setForwardCid(bbl.getTargetId());
                     bangDanInnerData.setTitle((String)topic.get("title"));
                     bangDanInnerData.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)topic.get("live_image"));
-                    bangDanInnerData.setInternalStatus(getInternalStatus(topic,currentUid));
+                    int internalStatust = this.getInternalStatus(topic, currentUid);
+                    if(internalStatust==Specification.SnsCircle.OUT.index){
+                    	if( liveFavouriteMap.get(String.valueOf(topic.get("id")))!=null){
+                    		internalStatust=Specification.SnsCircle.IN.index;
+                    	}
+                    }
+                    bangDanInnerData.setInternalStatus(internalStatust);
                     if(null != topicMemberCountMap.get(String.valueOf(bbl.getTargetId()))){
                         bangDanInnerData.setFavoriteCount(topicMemberCountMap.get(String.valueOf(bbl.getTargetId())).intValue()+1);
                     }else{
