@@ -4923,6 +4923,8 @@ public class LiveServiceImpl implements LiveService {
             }
             e.setInternalStatus(internalStatust);
 
+            e.setSummary((String)topic.get("summary"));
+            
             cacheModel = new MySubscribeCacheModel(uid, String.valueOf(topicId), "0");
             String isUpdate = cacheService.hGet(cacheModel.getKey(), String.valueOf(topicId));
             if (!StringUtils.isEmpty(isUpdate) && Integer.valueOf(isUpdate) > 0) {

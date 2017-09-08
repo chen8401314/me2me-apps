@@ -40,6 +40,8 @@ public class ShowTopicSearchDTO implements BaseEntity {
         private int favorite;
         private int isUpdate;
         
+        private String summary;//王国简介
+        
         private int LastContentType;
         private String lastFragment;
         private String lastFragmentImage;
