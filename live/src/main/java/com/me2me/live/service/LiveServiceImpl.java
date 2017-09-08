@@ -420,8 +420,13 @@ public class LiveServiceImpl implements LiveService {
         LiveFavorite hasFavorite =  liveMybatisDao.getLiveFavorite(uid,topicId);
         liveCoverDto.setHasFavorite(hasFavorite==null?0:1);
         liveCoverDto.setFavorite(liveCoverDto.getHasFavorite());
-
-        liveCoverDto.setInternalStatus(getInternalStatus(topic,uid));
+        int internalStatus = getInternalStatus(topic,uid);
+        if(internalStatus==Specification.SnsCircle.OUT.index){
+        	if(hasFavorite!=null){
+        		internalStatus=Specification.SnsCircle.IN.index;
+        	}
+        }
+        liveCoverDto.setInternalStatus(internalStatus);
         liveCoverDto.setLiveWebUrl(live_web+topicId+"?uid="+uid);//返回直播URL地址
         
         if(activityService.isTopicRec(topicId)){
@@ -547,6 +552,7 @@ public class LiveServiceImpl implements LiveService {
             int needNum = 30;
             //置顶的按置顶时间倒序，非置顶的按更新时间倒叙
             List<Map<String, Object>> acTopList = liveLocalJdbcDao.getAcTopicListByCeTopicId(topicId, 0, needNum);
+            
             if(null != acTopList && acTopList.size() > 0){
                 List<Long> uidList = new ArrayList<Long>();
                 Long id = null;
@@ -556,14 +562,34 @@ public class LiveServiceImpl implements LiveService {
                         uidList.add(id);
                     }
                 }
-
+                List<Long> tidList = new ArrayList<Long>();
+                for(Map<String, Object> t : acTopList){
+                   Long tid = (Long)t.get("id");
+                    if(!tidList.contains(tid)){
+                    	tidList.add(tid);
+                    }
+                }
+                //一次性获取当前用户针对于各王国是否收藏过
+                Map<String, LiveFavorite> liveFavoriteMap = new HashMap<String, LiveFavorite>();
+                List<LiveFavorite> liveFavoriteList = liveMybatisDao.getLiveFavoritesByUidAndTopicIds(uid, tidList);
+                if(null != liveFavoriteList && liveFavoriteList.size() > 0){
+                    for(LiveFavorite lf : liveFavoriteList){
+                        liveFavoriteMap.put(String.valueOf(lf.getTopicId()), lf);
+                    }
+                }
                 LiveCoverDto.TopicElement e = null;
                 for(Map<String, Object> t : acTopList){
                     e = new LiveCoverDto.TopicElement();
                     e.setTopicId((Long)t.get("id"));
                     e.setTitle((String)t.get("title"));
                     e.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)t.get("live_image"));
-                    e.setInternalStatus(this.getUserInternalStatus((String)t.get("core_circle"), uid));
+                    int internalStatust = this.getUserInternalStatus((String)t.get("core_circle"), uid);
+                    if(internalStatust==Specification.SnsCircle.OUT.index){
+                    	if(liveFavoriteMap.get(String.valueOf(t.get("id")))!=null){
+                    		internalStatust=Specification.SnsCircle.IN.index;
+                    	}
+                    }
+                    e.setInternalStatus(internalStatust);
                     liveCoverDto.getAcTopList().add(e);
                 }
             }
@@ -612,6 +638,23 @@ public class LiveServiceImpl implements LiveService {
         if(null != topicNewsList && topicNewsList.size() > 0){
         	LiveCoverDto.TopicNewsElement  topicNewsElement = null;
         	Topic newsTopic = null;
+        	
+            List<Long> tidList = new ArrayList<Long>();
+            for(TopicNews tnews : topicNewsList){
+               Long tid = tnews.getTopicId();
+                if(!tidList.contains(tid)){
+                	tidList.add(tid);
+                }
+            }
+            //一次性获取当前用户针对于各王国是否收藏过
+            Map<String, LiveFavorite> liveFavoriteMap = new HashMap<String, LiveFavorite>();
+            List<LiveFavorite> liveFavoriteList = liveMybatisDao.getLiveFavoritesByUidAndTopicIds(uid, tidList);
+            if(null != liveFavoriteList && liveFavoriteList.size() > 0){
+                for(LiveFavorite lf : liveFavoriteList){
+                    liveFavoriteMap.put(String.valueOf(lf.getTopicId()), lf);
+                }
+            }
+        	
         	for(TopicNews tnews : topicNewsList){
         		topicNewsElement = new LiveCoverDto.TopicNewsElement();
                 topicNewsElement.setId(tnews.getId());
@@ -623,6 +666,12 @@ public class LiveServiceImpl implements LiveService {
                     continue;
                 }
                 topicNewsElement.setContentType(newsTopic.getType());
+                int internalStatust = this.getUserInternalStatus(newsTopic.getCoreCircle(), uid);
+                if(internalStatust==Specification.SnsCircle.OUT.index){
+                	if(liveFavoriteMap.get(String.valueOf(tnews.getTopicId()))!=null){
+                		internalStatust=Specification.SnsCircle.IN.index;
+                	}
+                }
                 topicNewsElement.setInternalStatus(this.getUserInternalStatus(newsTopic.getCoreCircle(), uid));
                 liveCoverDto.getNewsTopList().add(topicNewsElement);
         	}
@@ -761,7 +810,14 @@ public class LiveServiceImpl implements LiveService {
         showLiveDto.setTitle(topic.getTitle());
         showLiveDto.setStatus(topic.getStatus());
         showLiveDto.setIsLike(contentService.isLike(content.getId(), uid));
-        showLiveDto.setInternalStatus(this.getInternalStatus(topic, uid));
+        
+        int internalStatus = this.getInternalStatus(topic, uid);
+        if(internalStatus==Specification.SnsCircle.OUT.index){
+        	if(liveFavorite != null){
+        		internalStatus=Specification.SnsCircle.IN.index;
+        	}
+        }
+        showLiveDto.setInternalStatus(internalStatus);
         showLiveDto.setContentType(topic.getType());
 
         if(activityService.isTopicRec(cid)){
@@ -822,14 +878,34 @@ public class LiveServiceImpl implements LiveService {
                         uidList.add(id);
                     }
                 }
-
+                List<Long> tidList = new ArrayList<Long>();
+                for(Map<String, Object> t : acTopList){
+                   Long tid = (Long)t.get("id");
+                    if(!tidList.contains(tid)){
+                    	tidList.add(tid);
+                    }
+                }
+                //一次性获取当前用户针对于各王国是否收藏过
+                Map<String, LiveFavorite> liveFavoriteMap = new HashMap<String, LiveFavorite>();
+                List<LiveFavorite> liveFavoriteList = liveMybatisDao.getLiveFavoritesByUidAndTopicIds(uid, tidList);
+                if(null != liveFavoriteList && liveFavoriteList.size() > 0){
+                    for(LiveFavorite lf : liveFavoriteList){
+                        liveFavoriteMap.put(String.valueOf(lf.getTopicId()), lf);
+                    }
+                }
                 ShowLiveDto.TopicElement e = null;
                 for(Map<String, Object> t : acTopList){
                     e = new ShowLiveDto.TopicElement();
                     e.setTopicId((Long)t.get("id"));
                     e.setTitle((String)t.get("title"));
                     e.setCoverImage(Constant.QINIU_DOMAIN + "/" + (String)t.get("live_image"));
-                    e.setInternalStatus(this.getUserInternalStatus((String)t.get("core_circle"), uid));
+                    int internalStatust = this.getUserInternalStatus((String)t.get("core_circle"), uid);
+                    if(internalStatust==Specification.SnsCircle.OUT.index){
+                    	if(liveFavoriteMap.get(String.valueOf(t.get("id")))!=null){
+                    		internalStatust=Specification.SnsCircle.IN.index;
+                    	}
+                    }
+                    e.setInternalStatus(internalStatust);
                     showLiveDto.getAcTopList().add(e);
                 }
             }
@@ -1046,8 +1122,14 @@ public class LiveServiceImpl implements LiveService {
             if(!StringUtils.isEmpty(topicFragment.getSource())) {
                 liveElement.setExtra(topicFragment.getExtra());
             }
-
-            liveElement.setInternalStatus(getInternalStatus(topic, uid));
+            LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid, topic.getId());
+            int internalStatus = getInternalStatus(topic,uid);
+            if(internalStatus==Specification.SnsCircle.OUT.index){
+            	if(liveFavorite!=null){
+            		internalStatus=Specification.SnsCircle.IN.index;
+            	}
+            }
+            liveElement.setInternalStatus(internalStatus);
             if (null != topicFragment.getAtUid() && topicFragment.getAtUid() != 0) {
                 if(topicFragment.getType() == Specification.LiveSpeakType.AT.index
                         || topicFragment.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
@@ -1825,7 +1907,13 @@ public class LiveServiceImpl implements LiveService {
             }else{
                 showTopicElement.setTopicCount(0);
             }
-            showTopicElement.setInternalStatus(this.getInternalStatus(topic, uid));
+            int internalStatust = this.getInternalStatus(topic, uid);
+            if(internalStatust==Specification.SnsCircle.OUT.index){
+            	if( liveFavoriteMap.get(String.valueOf(topic.getId()))!=null){
+            		internalStatust=Specification.SnsCircle.IN.index;
+            	}
+            }
+            showTopicElement.setInternalStatus(internalStatust);
             showTopicElement.setContentType(topic.getType());
             if(topic.getType() == 1000){
                 if(null != acCountMap.get(String.valueOf(topic.getId()))){
@@ -1996,7 +2084,13 @@ public class LiveServiceImpl implements LiveService {
             }
             showTopicElement.setLastUpdateTime(topic.getLongTime());
             showTopicElement.setV_lv(userProfile.getvLv());
-            showTopicElement.setInternalStatus(this.getInternalStatus(topic, uid));
+            int internalStatust = this.getInternalStatus(topic, uid);
+            if(internalStatust==Specification.SnsCircle.OUT.index){
+            	if( liveFavoriteMap.get(String.valueOf(topic.getId()))!=null){
+            		internalStatust=Specification.SnsCircle.IN.index;
+            	}
+            }
+            showTopicElement.setInternalStatus(internalStatust);
             showTopicElement.setContentType(topic.getType());
             if(topic.getType() == 1000){
                 if(null != acCountMap.get(String.valueOf(topic.getId()))){
@@ -2187,7 +2281,13 @@ public class LiveServiceImpl implements LiveService {
             showTopicElement.setLastUpdateTime(topic.getLongTime());
             showTopicElement.setV_lv(userProfile.getvLv());
             showTopicElement.setLevel(userProfile.getLevel());
-            showTopicElement.setInternalStatus(this.getInternalStatus(topic, uid));
+            int internalStatust = this.getInternalStatus(topic, uid);
+            if(internalStatust==Specification.SnsCircle.OUT.index){
+            	if( liveFavoriteMap.get(String.valueOf(topic.getId()))!=null){
+            		internalStatust=Specification.SnsCircle.IN.index;
+            	}
+            }
+            showTopicElement.setInternalStatus(internalStatust);
             showTopicElement.setContentType(topic.getType());
             if(topic.getType() == 1000){
                 if(null != acCountMap.get(String.valueOf(topic.getId()))){
@@ -3763,8 +3863,14 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setFragmentId(topicFragment.getId());
             liveElement.setSource(topicFragment.getSource());
             liveElement.setExtra(topicFragment.getExtra());
-
-            liveElement.setInternalStatus(getInternalStatus(topic, uid));
+            LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid, topic.getId());
+            int internalStatus = getInternalStatus(topic,uid);
+            if(internalStatus==Specification.SnsCircle.OUT.index){
+            	if(liveFavorite!=null){
+            		internalStatus=Specification.SnsCircle.IN.index;
+            	}
+            }
+            liveElement.setInternalStatus(internalStatus);
             if (null != topicFragment.getAtUid() && topicFragment.getAtUid() > 0){
             	if(topicFragment.getType() == Specification.LiveSpeakType.AT.index
             			|| topicFragment.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
@@ -3963,8 +4069,14 @@ public class LiveServiceImpl implements LiveService {
             liveElement.setFragmentId(topicFragment.getId());
             liveElement.setSource(topicFragment.getSource());
             liveElement.setExtra(topicFragment.getExtra());
-
-            liveElement.setInternalStatus(getInternalStatus(topic, uid));
+			LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid, topic.getId());
+			int internalStatus = getInternalStatus(topic, uid);
+			if (internalStatus == 0) {
+				if (liveFavorite != null) {
+					internalStatus = Specification.SnsCircle.IN.index;
+				}
+			}
+            liveElement.setInternalStatus(internalStatus);
             if (null != topicFragment.getAtUid() && topicFragment.getAtUid() > 0){
             	if(topicFragment.getType() == Specification.LiveSpeakType.AT.index
             			|| topicFragment.getType() == Specification.LiveSpeakType.ANCHOR_AT.index
@@ -4803,7 +4915,13 @@ public class LiveServiceImpl implements LiveService {
             }else{
             	e.setTopicCount(0);
             }
-            e.setInternalStatus(this.getUserInternalStatus((String)topic.get("core_circle"), uid));
+            int internalStatust = this.getUserInternalStatus((String)topic.get("core_circle"), uid);
+            if(internalStatust==Specification.SnsCircle.OUT.index){
+            	if(liveFavoriteMap.get(String.valueOf(topicId))!=null){
+            		internalStatust=Specification.SnsCircle.IN.index;
+            	}
+            }
+            e.setInternalStatus(internalStatust);
 
             cacheModel = new MySubscribeCacheModel(uid, String.valueOf(topicId), "0");
             String isUpdate = cacheService.hGet(cacheModel.getKey(), String.valueOf(topicId));
@@ -5824,6 +5942,12 @@ public class LiveServiceImpl implements LiveService {
             Content content = contentService.getContentByTopicId(droparound.getTopicid());
             if (topic != null) {
                 int status = this.getInternalStatus(topic, uid);
+                LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid, topic.getId());
+                if(status==Specification.SnsCircle.OUT.index){
+                	if(liveFavorite!=null){
+                		status=Specification.SnsCircle.IN.index;
+                	}
+                }
                 dto.setInternalStatus(status);
                 dto.setTopicType(topic.getType());
             }
@@ -5874,6 +5998,12 @@ public class LiveServiceImpl implements LiveService {
         Content content = contentService.getContentByTopicId(topicInfo.getId());
         if(topicInfo != null){
             int status = this.getInternalStatus(topicInfo ,uid);
+            LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid, topicInfo.getId());
+            if(status==Specification.SnsCircle.OUT.index){
+            	if(liveFavorite!=null){
+            		status=Specification.SnsCircle.IN.index;
+            	}
+            }
             dto.setInternalStatus(status);
             dto.setTopicType(topicInfo.getType());
         }
@@ -6439,7 +6569,13 @@ public class LiveServiceImpl implements LiveService {
             e.setUpdateTime((Long)topic.get("long_time"));
             e.setType(3);//默认王国3
             e.setContentType((Integer)topic.get("type"));
-            e.setInternalStatus(this.getUserInternalStatus((String)topic.get("core_circle"), currentUid));
+            int internalStatust = this.getUserInternalStatus((String)topic.get("core_circle"), currentUid);
+            if(internalStatust==Specification.SnsCircle.OUT.index){
+            	if(null != topicMemberCountMap.get(topicId.toString())){
+            		internalStatust=Specification.SnsCircle.IN.index;
+            	}
+            }
+            e.setInternalStatus(internalStatust);
             if(null != topicCountMap.get(topicId.toString())){
                 e.setTopicCount(topicCountMap.get(topicId.toString()).longValue());
             }else{
@@ -6635,7 +6771,13 @@ public class LiveServiceImpl implements LiveService {
             e.setUpdateTime((Long)topic.get("long_time"));
             e.setType(3);//默认王国3
             e.setContentType((Integer)topic.get("type"));
-            e.setInternalStatus(this.getUserInternalStatus((String)topic.get("core_circle"), currentUid));
+            int internalStatust = this.getUserInternalStatus((String)topic.get("core_circle"), currentUid);
+            if(internalStatust==Specification.SnsCircle.OUT.index){
+            	if(null != topicMemberCountMap.get(tid.toString())){
+            		internalStatust=Specification.SnsCircle.IN.index;
+            	}
+            }
+            e.setInternalStatus(internalStatust);
             if(null != topicCountMap.get(tid.toString())){
                 e.setTopicCount(topicCountMap.get(tid.toString()).longValue());
             }else{
@@ -7201,7 +7343,12 @@ public class LiveServiceImpl implements LiveService {
                 if(coreUidList.contains(uid)){
                     e.setInternalStatus(2);
                 }else{
-                    e.setInternalStatus(0);
+                    LiveFavorite liveFavorite = liveMybatisDao.getLiveFavorite(uid, topic.getId());
+                    	if(liveFavorite!=null){
+                    		 e.setInternalStatus(Specification.SnsCircle.IN.index);
+                    	}else{
+                    	     e.setInternalStatus(0);
+                    	}
                 }
                 result.getUserData().add(e);
             }
@@ -9310,7 +9457,7 @@ public class LiveServiceImpl implements LiveService {
     	
     	int internalStatus =  getInternalStatus( topic, uid);
 		SpeakDto speakDto = new SpeakDto();
-	    if(internalStatus==0){
+	    if(internalStatus==Specification.SnsCircle.OUT.index){
 	    	speakDto.setType(1);
 	    }else{
 	    	speakDto.setType(0);
