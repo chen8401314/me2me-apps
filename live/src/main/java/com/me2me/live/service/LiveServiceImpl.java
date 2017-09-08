@@ -9845,12 +9845,12 @@ public class LiveServiceImpl implements LiveService {
 			GetGiftInfoListDto.GiftInfoElement e = GetGiftInfoListDto.createGiftInfoElement();
 			e.setGiftId(giftInfo.getId());
 			e.setName(giftInfo.getName());
-			e.setImage(giftInfo.getImage());
+			e.setImage(Constant.QINIU_DOMAIN + "/" + giftInfo.getImage());
 			e.setPrice(giftInfo.getPrice());
 			e.setAddPrice(giftInfo.getAddPrice());
 			e.setImageWidth(giftInfo.getImageWidth());
 			e.setImageHeight(giftInfo.getImageHeight());
-			e.setGifImage(giftInfo.getGifImage());
+			e.setGifImage(Constant.QINIU_DOMAIN + "/" + giftInfo.getGifImage());
 			e.setPlayTime(giftInfo.getPlayTime());
 			e.setSortNumber(giftInfo.getSortNumber());
 			e.setStatus(giftInfo.getStatus());
