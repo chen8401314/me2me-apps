@@ -117,8 +117,8 @@ public class ActivitySpringController {
 		return view;
 	}
 	
-	@RequestMapping(value="/control/startNotice")
-	@ResponseBody
+	//@RequestMapping(value="/control/startNotice")
+	//@ResponseBody
 	public String msgStartNotice(){
 		//先获取所有手机用户手机号
     	List<String> mobileList = activityService.getAllUserMobilesInApp();
