@@ -206,7 +206,6 @@ import com.me2me.user.model.UserNoticeUnread;
 import com.me2me.user.model.UserProfile;
 import com.me2me.user.model.UserTips;
 import com.me2me.user.service.UserService;
-import com.plusnet.common.util.StringUtil;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -3179,7 +3178,7 @@ public class LiveServiceImpl implements LiveService {
                 attentionElement.setUid(content.getUid());
                 attentionElement.setV_lv(userProfile.getvLv());
                 attentionElement.setLevel(userProfile.getLevel());
-                if(!StringUtil.isEmpty(userProfile.getAvatarFrame())){
+                if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
                 	attentionElement.setAvatarFrame(Constant.QINIU_DOMAIN+"/"+userProfile.getAvatarFrame());
                 }
                 showTopicListDto.getAttentionData().add(attentionElement);
