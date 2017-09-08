@@ -27,6 +27,7 @@ public class RecommendListDto implements BaseEntity {
 		private long uid;
 		private String nickName;
 		private String avatar;
+		private String avatarFrame;
 		private int v_lv;
 		private int level;
 		private int completion;
@@ -92,6 +93,7 @@ public class RecommendListDto implements BaseEntity {
 		private String coverImage;
 		private String title;
 		private String avatar;
+		private String avatarFrame;
 		private String nickName;
 		private long createTime;
 		private long  topicId;

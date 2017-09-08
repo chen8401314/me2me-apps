@@ -25,6 +25,7 @@ public class ShowTopicSearchDTO implements BaseEntity {
 		private String coverImage;
 		private String title;
 		private String avatar;
+		private String avatarFrame;
 		private String nickName;
 		private Date createTime;
 		private long topicId;
@@ -38,6 +39,8 @@ public class ShowTopicSearchDTO implements BaseEntity {
         private int internalStatus;//0圈外 1圈内 2核心圈
         private int favorite;
         private int isUpdate;
+        
+        private String summary;//王国简介
         
         private int LastContentType;
         private String lastFragment;

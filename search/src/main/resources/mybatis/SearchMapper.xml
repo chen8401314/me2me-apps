@@ -17,9 +17,11 @@
 	</select>
 
 	<select id="getUserPageByUpdateDate" resultType="com.me2me.search.esmapping.UserEsMapping">
-		select * from user_profile
-		where DATE_FORMAT(update_time,'%Y-%m-%d %T') &gt;= #{dateBegin}
-		and DATE_FORMAT(update_time,'%Y-%m-%d %T') &lt;= #{dateEnd}
+		select u.*,n.me_number from user_profile u,user_no n
+		where u.uid=n.uid
+		and DATE_FORMAT(u.update_time,'%Y-%m-%d %T') &gt;= #{dateBegin}
+		and DATE_FORMAT(u.update_time,'%Y-%m-%d %T') &lt;= #{dateEnd}
+		order by u.id
 		limit #{skip},#{limit}
 	</select>
 

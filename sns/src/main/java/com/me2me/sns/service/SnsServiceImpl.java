@@ -116,6 +116,9 @@ public class SnsServiceImpl implements SnsService {
     	            userElement.setUid((Long)up.get("uid"));
     	            userElement.setV_lv((Integer)up.get("v_lv"));
     	            userElement.setAvatar(Constant.QINIU_DOMAIN + "/" + (String)up.get("avatar"));
+    	            if(!StringUtils.isEmpty((String)up.get("avatar_frame"))){
+    	            	userElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + (String)up.get("avatar_frame"));
+    	            }
     	            userElement.setIntroduced((String)up.get("introduced"));
     	            userElement.setNickName((String)up.get("nick_name"));
     	            userElement.setLevel((int)up.get("level"));
@@ -217,6 +220,9 @@ public class SnsServiceImpl implements SnsService {
     			e.setV_lv(up.getvLv());
                 e.setUid(up.getUid());
                 e.setAvatar(Constant.QINIU_DOMAIN + "/" + up.getAvatar());
+                if(!StringUtils.isEmpty(up.getAvatarFrame())){
+                	e.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + up.getAvatarFrame());
+                }
                 e.setLevel(up.getLevel());
                 e.setIntroduced(up.getIntroduced());
                 e.setNickName(up.getNickName());

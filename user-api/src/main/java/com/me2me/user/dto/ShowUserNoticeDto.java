@@ -43,6 +43,8 @@ public class ShowUserNoticeDto implements BaseEntity {
         private int likeCount;
 
         private String fromAvatar;
+        
+        private String fromAvatarFrame;
 
         private int readStatus;
 

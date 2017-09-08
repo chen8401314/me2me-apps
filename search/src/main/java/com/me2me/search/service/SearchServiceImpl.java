@@ -400,6 +400,9 @@ public class SearchServiceImpl implements SearchService {
 			kingdomElement.setPrice((Integer)topic.get("price"));
 			kingdomElement.setUid(userProfile.getUid());
 			kingdomElement.setNickName(userProfile.getNickName());
+			if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+				kingdomElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+			}
 			kingdomElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
 			kingdomElement.setV_lv(userProfile.getvLv());
 			kingdomElement.setLevel(userProfile.getLevel());
@@ -511,6 +514,9 @@ public class SearchServiceImpl implements SearchService {
     		userElement.setUid(userProfile.getUid());
     		userElement.setNickName(userProfile.getNickName());
     		userElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+    		if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+    			userElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+    		}
     		userElement.setV_lv(userProfile.getvLv());
     		userElement.setLevel(userProfile.getLevel());
     		userElement.setIntroduced(userProfile.getIntroduced());
@@ -777,6 +783,9 @@ public class SearchServiceImpl implements SearchService {
 			person.setUid(uid);
 			person.setNickName(profile.getNickName());
 			person.setAvatar(Constant.QINIU_DOMAIN + "/" + profile.getAvatar());
+			if(!StringUtils.isEmpty(profile.getAvatarFrame())){
+				person.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + profile.getAvatar());
+			}
 			person.setV_lv(profile.getvLv());
 			person.setLevel(profile.getLevel());
 			person.setSex(profile.getGender());
@@ -949,6 +958,9 @@ public class SearchServiceImpl implements SearchService {
 					RecommendUser ruser = new RecommendUser();
 					ruser.setUid(meAdmin.getUid());
 					ruser.setAvatar(Constant.QINIU_DOMAIN + "/" + meAdmin.getAvatar());
+					if(!StringUtils.isEmpty(meAdmin.getAvatarFrame())){
+						ruser.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + meAdmin.getAvatarFrame());
+					}
 					ruser.setNickName(meAdmin.getNickName());
 					ruser.setV_lv(meAdmin.getvLv());
 					ruser.setLevel(meAdmin.getLevel());
@@ -1017,6 +1029,9 @@ public class SearchServiceImpl implements SearchService {
 					kingdomElement.setUid(meAdmin.getUid());
 					kingdomElement.setNickName(meAdmin.getNickName());
 					kingdomElement.setAvatar(Constant.QINIU_DOMAIN + "/" + meAdmin.getAvatar());
+					if(!StringUtils.isEmpty(meAdmin.getAvatarFrame())){
+						kingdomElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + meAdmin.getAvatarFrame());
+					}
 					kingdomElement.setV_lv(meAdmin.getvLv());
 					kingdomElement.setLevel(meAdmin.getLevel());
 					kingdomElement.setIsFollowed(userService.isFollow(meAdmin.getUid(), uid));
@@ -1149,6 +1164,9 @@ public class SearchServiceImpl implements SearchService {
 						ru.setLevel(((Integer)user.get("level")).intValue());
 						ru.setNickName((String)user.get("nick_name"));
 						ru.setV_lv((Integer)user.get("v_lv"));
+						if(!StringUtils.isEmpty((String)user.get("avatar_frame"))){
+							ru.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + (String)user.get("avatar_frame"));
+						}
 					}
 				}
 			}
@@ -1412,6 +1430,9 @@ public class SearchServiceImpl implements SearchService {
 					rUser = new RecommendUser();
 					rUser.setUid((Long)u.get("uid"));
 					rUser.setAvatar(Constant.QINIU_DOMAIN + "/" + (String)u.get("avatar"));
+					if(!StringUtils.isEmpty((String)u.get("avatar_frame"))){
+						rUser.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + (String)u.get("avatar_frame"));
+					}
 					rUser.setLevel((Integer)u.get("level"));
 					rUser.setNickName((String)u.get("nick_name"));
 					rUser.setV_lv((Integer)u.get("v_lv"));
@@ -1732,6 +1753,9 @@ public class SearchServiceImpl implements SearchService {
 			kingdomElement.setUid(userProfile.getUid());
 			kingdomElement.setNickName(userProfile.getNickName());
 			kingdomElement.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+			if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+				kingdomElement.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+			}
 			kingdomElement.setV_lv(userProfile.getvLv());
 			if(null != followMap.get(uid+"_"+userProfile.getUid())){
 				kingdomElement.setIsFollowed(1);

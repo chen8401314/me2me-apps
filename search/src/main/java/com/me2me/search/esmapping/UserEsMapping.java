@@ -84,6 +84,9 @@ public class UserEsMapping {
 	@Field(index=FieldIndex.analyzed,store=true,type=FieldType.String,indexAnalyzer="ik",searchAnalyzer="ik")
 	private String last_emotions;
 	
+	@Field(index=FieldIndex.not_analyzed,store=true,type=FieldType.String)
+	private String me_number;//米号
+	
 	public Long getId() {
 		return id;
 	}
@@ -266,6 +269,22 @@ public class UserEsMapping {
 
 	public void setLast_emotions(String last_emotions) {
 		this.last_emotions = last_emotions;
+	}
+
+	public Integer getLevel() {
+		return level;
+	}
+
+	public void setLevel(Integer level) {
+		this.level = level;
+	}
+
+	public String getMe_number() {
+		return me_number;
+	}
+
+	public void setMe_number(String me_number) {
+		this.me_number = me_number;
 	}
 	
 	

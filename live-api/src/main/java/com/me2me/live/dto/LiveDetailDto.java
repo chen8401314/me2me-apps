@@ -52,6 +52,8 @@ public class LiveDetailDto implements BaseEntity {
         private String fragmentImage;
 
         private String avatar;
+        
+        private String avatarFrame;
 
         private long id;
 

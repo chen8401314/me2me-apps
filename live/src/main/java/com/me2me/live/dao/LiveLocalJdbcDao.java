@@ -1439,7 +1439,7 @@ public class LiveLocalJdbcDao {
     }
     public List<Map<String,Object>> getLotteryWinUserList(long lotteryId){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select u.uid,u.avatar,u.nick_name,u.v_lv,u.level FROM user_profile u ,lottery_win l WHERE l.uid = u.uid AND l.lottery_id = ");
+    	sb.append("select u.uid,u.avatar,u.avatar_frame,u.nick_name,u.v_lv,u.level FROM user_profile u ,lottery_win l WHERE l.uid = u.uid AND l.lottery_id = ");
     	sb.append(lotteryId);
     	String sql = sb.toString();
 		return jdbcTemplate.queryForList(sql);
@@ -1447,7 +1447,7 @@ public class LiveLocalJdbcDao {
     
     public List<Map<String,Object>> getJoinLotteryUsers(long lotteryId,long sinceId){
     	StringBuilder sb = new StringBuilder();
-    	sb.append("select l.id AS sinceId,u.uid,u.avatar,u.nick_name,u.v_lv,u.level,l.content,p.id AS prohibit,l.create_time ");
+    	sb.append("select l.id AS sinceId,u.uid,u.avatar,u.avatar_frame,u.nick_name,u.v_lv,u.level,l.content,p.id AS prohibit,l.create_time ");
     	sb.append(" FROM (lottery_content l,user_profile u) LEFT JOIN lottery_prohibit p ON p.lottery_id=l.lottery_id AND u.uid = p.uid  ");
     	sb.append("  WHERE l.uid = u.uid AND l.lottery_id =  ");
     	sb.append(lotteryId);

@@ -41,6 +41,8 @@ public class UserInfoDto2 implements BaseEntity{
         private long uid;
 
         private String avatar;
+        
+        private String avatarFrame;
 
         private int gender;
 

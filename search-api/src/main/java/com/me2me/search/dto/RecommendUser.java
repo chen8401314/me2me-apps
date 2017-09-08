@@ -22,6 +22,7 @@ public class RecommendUser implements BaseEntity{
 	private String avatar;
 	private int v_lv;
 	private int level;
+	private String avatarFrame;
 	private String reason;
 	private List<String> userTags;		// 用户标签
 	private int tagMatchedLength;	// 匹配标签长度

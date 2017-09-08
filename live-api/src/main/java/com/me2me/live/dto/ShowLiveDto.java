@@ -18,6 +18,8 @@ import java.util.List;
 public class ShowLiveDto implements BaseEntity {
 
     private String avatar;
+    
+    private String avatarFrame;
 
     private String coverImage;
 

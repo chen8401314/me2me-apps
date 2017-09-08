@@ -1286,9 +1286,11 @@ public class UserServiceImpl implements UserService {
             userNoticeElement.setToUid(userNotice.getToUid());
             userNoticeElement.setReview(userNotice.getReview());
             userNoticeElement.setV_lv(fromUser.getvLv());
-            userNoticeElement.setLevel(fromUser.getLevel());
             if (fromUser.getLevel() != null){
                 userNoticeElement.setLevel(fromUser.getLevel());
+            }
+            if(!StringUtils.isEmpty(fromUser.getAvatarFrame())){
+            	userNoticeElement.setFromAvatarFrame(Constant.QINIU_DOMAIN + "/" + fromUser.getAvatarFrame());
             }
 
             toUser = userProfileMap.get(String.valueOf(userNotice.getToUid()));
@@ -1753,6 +1755,9 @@ public class UserServiceImpl implements UserService {
         showUserProfileDto.setUid(userProfile.getUid());
         showUserProfileDto.setNickName(userProfile.getNickName());
         showUserProfileDto.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
+        if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+        	showUserProfileDto.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+        }
         showUserProfileDto.setBirthday(userProfile.getBirthday());
         showUserProfileDto.setGender(userProfile.getGender());
         showUserProfileDto.setUserName(userProfile.getMobile());
@@ -2312,6 +2317,9 @@ public class UserServiceImpl implements UserService {
         dto.setUid(uid);
         dto.setIntroduced(userProfile.getIntroduced());
         dto.setAvatar(Constant.QINIU_DOMAIN + "/" +userProfile.getAvatar());
+        if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+        	dto.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+        }
         dto.setNickName(userProfile.getNickName());
         dto.setRegUrl(reg_web+uid);
         dto.setV_lv(userProfile.getvLv());
@@ -2383,6 +2391,11 @@ public class UserServiceImpl implements UserService {
             userFansDto.setIntroduced(userProfile.getIntroduced());
             userFansDto.setV_lv(userProfile.getvLv());
             userFansDto.setLevel(userProfile.getLevel());
+            if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+            	userFansDto.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+            }else{
+            	userFansDto.setAvatarFrame(null);
+            }
         }
         ShowUserFansDto showUserFansDto = new ShowUserFansDto();
         showUserFansDto.setResult(list);
@@ -2406,6 +2419,11 @@ public class UserServiceImpl implements UserService {
             userFollowDto.setIntroduced(userProfile.getIntroduced());
             userFollowDto.setV_lv(userProfile.getvLv());
             userFollowDto.setLevel(userProfile.getLevel());
+            if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+            	userFollowDto.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+            }else{
+            	userFollowDto.setAvatarFrame(null);
+            }
         }
         showUserFollowDto.setResult(list);
         log.info("getFollowsOrderByTime end ...");
@@ -3635,6 +3653,9 @@ public class UserServiceImpl implements UserService {
 					e.setUid(user.getUid());
 					e.setNickName(user.getNickName());
 					e.setAvatar(Constant.QINIU_DOMAIN + "/" + user.getAvatar());
+					if(!StringUtils.isEmpty(user.getAvatarFrame())){
+						e.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + user.getAvatarFrame());
+					}
 					e.setV_lv(user.getvLv());
 					e.setIntroduced(user.getIntroduced());
 					e.setLevel(user.getLevel());
@@ -3770,6 +3791,9 @@ public class UserServiceImpl implements UserService {
 					e.setV_lv(user.getvLv());
 					e.setLevel(user.getLevel());
 					e.setIntroduced(user.getIntroduced());
+					if(!StringUtils.isEmpty(user.getAvatarFrame())){
+						e.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + user.getAvatarFrame());
+					}
 					if(null != followMap.get(uid+"_"+user.getUid().toString())){
 		                e.setIsFollowed(1);
 		            }else{
@@ -3813,6 +3837,9 @@ public class UserServiceImpl implements UserService {
 				e.setUid(user.getUid());
 				e.setV_lv(user.getvLv());
 				e.setLevel(user.getLevel());
+				if(!StringUtils.isEmpty(user.getAvatarFrame())){
+					e.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + user.getAvatarFrame());
+				}
 				result.getSeekFollowData().add(e);
 			}
 		}
@@ -3838,6 +3865,9 @@ public class UserServiceImpl implements UserService {
 	            }else{
 	                e.setIsFollowMe(0);
 	            }
+	            if(!StringUtils.isEmpty((String)followUser.get("avatar_frame"))){
+					e.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + (String)followUser.get("avatar_frame"));
+				}
 				result.getMyFollowData().add(e);
 			}
 		}
@@ -3927,6 +3957,9 @@ public class UserServiceImpl implements UserService {
 				e.setUid(user.getUid());
 				e.setV_lv(user.getvLv());
 				e.setLevel(user.getLevel());
+				if(!StringUtils.isEmpty(user.getAvatarFrame())){
+					e.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + user.getAvatarFrame());
+				}
 				result.getSeekFollowData().add(e);
 			}
 		}
@@ -4001,6 +4034,9 @@ public class UserServiceImpl implements UserService {
 	                e.setIsFollowMe(1);
 	            }else{
 	                e.setIsFollowMe(0);
+	            }
+	            if(!StringUtils.isEmpty((String)followUser.get("avatar_frame"))){
+	            	e.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + (String)followUser.get("avatar_frame"));
 	            }
 				result.getMyFollowData().add(e);
 			}

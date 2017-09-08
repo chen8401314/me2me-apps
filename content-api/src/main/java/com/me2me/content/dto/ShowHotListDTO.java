@@ -71,6 +71,7 @@ public class ShowHotListDTO implements BaseEntity {
 		private String introduced;
 		private int v_lv;
 		private int level;
+		private String avatarFrame;
 		private int isFollowed;
 		private int isFollowMe;
 	}
@@ -142,6 +143,7 @@ public class ShowHotListDTO implements BaseEntity {
 		private String nickName;
 		private int v_lv;
 		private int level;
+		private String avatarFrame;
 		private int isFollowed;
 		private int isFollowMe;
 		private int type;

@@ -24,6 +24,7 @@ public class ShowSearchDTO implements BaseEntity {
 		private long uid;
 		private String nickName;
 		private String avatar;
+		private String avatarFrame;
 		private int isFollowed;
 		private int isFollowMe;
 		private String introduced;
@@ -39,6 +40,7 @@ public class ShowSearchDTO implements BaseEntity {
 		private String coverImage;
 		private String title;
 		private String avatar;
+		private String avatarFrame;
 		private String nickName;
 		private long createTime;
 		private long topicId;
