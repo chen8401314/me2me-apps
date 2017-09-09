@@ -4486,7 +4486,9 @@ public class ContentServiceImpl implements ContentService {
         		totalPrice = (Map<String,Object>)tagRes;
         	}else{
         		log.info("查的数据库呀22");
-        		totalPrice = topicTagMapper.getTagPriceAndKingdomCount(topicIds);
+        		if(null != topicIds && topicIds.size() > 0){
+        			totalPrice = topicTagMapper.getTagPriceAndKingdomCount(topicIds);
+        		}
         		Map<String, Object> cacheObj = new HashMap<String, Object>();
         		if(null != totalPrice && totalPrice.size() > 0){
         			cacheObj.putAll(totalPrice);
@@ -7408,7 +7410,9 @@ public class ContentServiceImpl implements ContentService {
         		totalPrice = (Map<String,Object>)tagRes;
         	}else{
         		log.info("查的数据库呀11");
-        		totalPrice = topicTagMapper.getTagPriceAndKingdomCount(topicIds);
+        		if(null != topicIds && topicIds.size() > 0){
+        			totalPrice = topicTagMapper.getTagPriceAndKingdomCount(topicIds);
+        		}
         		Map<String, Object> cacheObj = new HashMap<String, Object>();
         		if(null != totalPrice && totalPrice.size() > 0){
         			cacheObj.putAll(totalPrice);
