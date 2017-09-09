@@ -490,7 +490,7 @@ public class LiveForActivityDao {
 		StringBuilder sb = new StringBuilder();
 		sb.append("select * from a_anchor a LEFT JOIN (");
 		sb.append("select e.anchor_id,count(1) as cc from a_anchor_enter e group by e.anchor_id");
-		sb.append(") m on a.id=m.anchor_id order by m.cc desc");
+		sb.append(") m on a.id=m.anchor_id order by m.cc desc,a.id");
 		
 		return jdbcTemplate.queryForList(sb.toString());
 	}

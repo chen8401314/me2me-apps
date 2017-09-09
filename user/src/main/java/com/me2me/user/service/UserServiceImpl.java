@@ -1652,6 +1652,9 @@ public class UserServiceImpl implements UserService {
         user.setV_lv(userProfile.getvLv());
         user.setNickName(userProfile.getNickName());
         user.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+        if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+        	user.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+        }
         user.setGender(userProfile.getGender());
         user.setUid(userProfile.getUid());
         user.setIsFollowed(isFollow(targetUid,sourceUid));
