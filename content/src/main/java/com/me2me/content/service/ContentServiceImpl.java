@@ -4441,15 +4441,13 @@ public class ContentServiceImpl implements ContentService {
         List<String> adminTags = Arrays.asList(strAdminTags.split("\\n"));
         int n=0;
         for(String adminTag:adminTags){
-        	if(n<20 && !blackTags.contains(adminTag)){	//除以上三种标签之外,随机从运营后台设定的"体系标签中"选出的标签,数量20个
+        	if(!StringUtils.isEmpty(adminTag) && n<20 && !blackTags.contains(adminTag)){	//除以上三种标签之外,随机从运营后台设定的"体系标签中"选出的标签,数量20个
         		allTags.add(adminTag);	
         		n++;
         	}
         }
        
-        log.info("===="+allTags);
         for(String label:allTags){
-        	log.info("=111==="+label);
         	long tagId= topicTagMapper.getTagIdByTag(label);
             HotTagElement element = new HotTagElement();
            	element.setIsShowLikeButton(userLikeTags.contains(label)?0:1);
