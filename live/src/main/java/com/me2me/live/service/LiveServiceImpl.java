@@ -3656,7 +3656,9 @@ public class LiveServiceImpl implements LiveService {
         	Map<String,Long> result  = liveMybatisDao.countFragmentByTopicIdWithSince(getLiveUpdateDto);
             totalRecords = result.get("total_records").intValue();
             updateRecords = result.get("update_records").intValue();
-            lastFragmentId = result.get("lastFragmentId").longValue();
+            if(null != result.get("lastFragmentId")){
+            	lastFragmentId = result.get("lastFragmentId").longValue();
+            }
             firstDelCount = result.get("firstDelCount").longValue();
         }
         LiveUpdateDto liveUpdateDto = new LiveUpdateDto();
