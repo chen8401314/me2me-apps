@@ -4472,7 +4472,10 @@ public class ContentServiceImpl implements ContentService {
             	cacheService.cacheJavaObject(ktKey, tkCacheObj, 2*60*60);//缓存两小时
             }*/
            	List<Long> topicIds = topicTagMapper.getTopicIdsByTagAndSubTag(tagId);
-           	List<Map<String,Object>> topicList = this.topicTagMapper.getKingdomsByTag(uid,topicIds,"new",1,4, blacklistUids);
+           	List<Map<String,Object>> topicList = null;
+           	if(null != topicIds && topicIds.size() > 0){
+           		topicList = this.topicTagMapper.getKingdomsByTag(uid,topicIds,"new",1,4, blacklistUids);
+           	}
             
             //List<Integer> topicIds = this.topicTagMapper.getTopicIdsByTag(label);
             Map<String,Object> totalPrice = null;
@@ -7388,7 +7391,9 @@ public class ContentServiceImpl implements ContentService {
         	cacheService.cacheJavaObject(ktKey, tkCacheObj, 2*60*60);//缓存两小时
         }*/
         List<Long> topicIds = topicTagMapper.getTopicIdsByTagAndSubTag(tagId);
-        topics = topicTagMapper.getKingdomsByTag(uid,topicIds, order, page, pageSize, blacklistUids);
+        if(null != topicIds && topicIds.size() > 0){
+        	topics = topicTagMapper.getKingdomsByTag(uid,topicIds, order, page, pageSize, blacklistUids);
+        }
         
         List<BasicKingdomInfo> kingdoms = this.kingdomBuider.buildKingdoms(topics, uid);
         TagKingdomDto dto = new TagKingdomDto();
