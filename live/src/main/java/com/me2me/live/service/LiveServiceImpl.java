@@ -4193,8 +4193,8 @@ public class LiveServiceImpl implements LiveService {
         		}
 			}
         }
+        UserProfile userProfile = userService.getUserProfileByUid(createKingdomDto.getUid());
         if(free==0){
-        	UserProfile userProfile = userService.getUserProfileByUid(createKingdomDto.getUid());
         	int price = userProfile.getAvailableCoin();
         	if(price<needPrice){
         		return Response.failure(500,"需要消耗"+needPrice+"米汤币,当前余额不足！");
@@ -4493,11 +4493,13 @@ public class LiveServiceImpl implements LiveService {
     	}
         // 机器人自动回复结束 -- end --
         log.info("createKingdom end");
-        CoinRule coinRule = userService.getCoinRules().get(Rules.CREATE_KING_KEY);
-        coinRule.setExt(createKingdomDto.getUid());
-        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(createKingdomDto.getUid(), coinRule);
-        speakDto2.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
-        speakDto2.setUpgrade(modifyUserCoinDto.getUpgrade());
+//        CoinRule coinRule = userService.getCoinRules().get(Rules.CREATE_KING_KEY);
+//        coinRule.setExt(createKingdomDto.getUid());
+//        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(createKingdomDto.getUid(), coinRule);
+//        speakDto2.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
+//        speakDto2.setUpgrade(modifyUserCoinDto.getUpgrade());
+        speakDto2.setCurrentLevel(userProfile.getLevel());
+        speakDto2.setUpgrade(0);
         Response response = Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status, ResponseStatus.USER_CREATE_LIVE_SUCCESS.message, speakDto2);
      // 记录操作日志
         contentService.addUserOprationLog(topic.getUid(), USER_OPRATE_TYPE.CREATE_KINGDOM, topic.getId());
