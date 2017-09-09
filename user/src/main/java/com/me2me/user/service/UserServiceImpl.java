@@ -4800,16 +4800,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ModifyUserCoinDto modifyUserCoin(long uid , int coin) {
-    	log.info("12345");
 	    ModifyUserCoinDto modifyUserCoinDto = new ModifyUserCoinDto();
 	    UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
-	    log.info("12345-1");
         modifyUserCoinDto.setCurrentLevel(userProfile.getLevel());
         int modifyCoin = userProfile.getAvailableCoin()+coin;
 	    userInitJdbcDao.modifyUserCoin(uid,modifyCoin);
-	    log.info("12345-2");
         String permissions = getAppConfigByKey(USER_PERMISSIONS);
-        log.info("12345-3");
         UserPermissionDto userPermissionDto = JSON.parseObject(permissions, UserPermissionDto.class);
         int lv = 0;
         for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
@@ -4821,7 +4817,6 @@ public class UserServiceImpl implements UserService {
             lv = 9;
         }
         if(lv <= userProfile.getLevel()){
-        	log.info("54321");
             return modifyUserCoinDto;
         }else{
             for (UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()) {
@@ -4832,7 +4827,6 @@ public class UserServiceImpl implements UserService {
                     break;
                 }
             }
-            log.info("54322");
             return modifyUserCoinDto;
         }
     }
@@ -4866,7 +4860,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ModifyUserCoinDto coinRule(long uid,CoinRule rule) {
-    	log.info("1111");
 	    UserProfile userProfile = getUserProfileByUid(uid);
 	    // 根据等级获取今日上限值
         String limits = getAppConfigByKey("GET_COIN_LEVEL_LIMITS");
@@ -4879,38 +4872,30 @@ public class UserServiceImpl implements UserService {
         int allDayPoints = userInitJdbcDao.getDayCoins(uid) + userInitJdbcDao.getDayCoins2(uid);
         
         if(allDayPoints < map.get(userProfile.getLevel())){
-        	log.info("22222");
             // 并且规则是否允许重复
             if(!rule.isRepeatable()){
-            	log.info("55555");
                 boolean result = userInitJdbcDao.isNotExistsRuleLogByDay(rule.getCode(),uid);
                 if(result) {
                     //记录日志
                     userInitJdbcDao.writeRuleLog(uid,rule);
-                    log.info("7777");
                     return  modifyUserCoin(uid, rule.getPoint());
                 }
             }else{
-            	log.info("6666");
                 if(rule.getExt()>0){
                     boolean result = userInitJdbcDao.isNotExistsRuleLogByDay(rule.getCode(),uid,rule.getExt());
                     if(result){
                         userInitJdbcDao.writeRuleLog(uid,rule);
-                        log.info("8888");
                         return  modifyUserCoin(uid, rule.getPoint());
                     }
                 }else{
                     userInitJdbcDao.writeRuleLog(uid,rule);
-                    log.info("9999");
                     return  modifyUserCoin(uid, rule.getPoint());
                 }
             }
 
         }else{
-        	log.info("3333");
             return  modifyUserCoin(uid, 0);
         }
-        log.info("4444");
         return  modifyUserCoin(uid, 0);
     }
 

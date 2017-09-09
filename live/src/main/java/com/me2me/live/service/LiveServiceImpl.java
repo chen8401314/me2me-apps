@@ -1048,7 +1048,7 @@ public class LiveServiceImpl implements LiveService {
                     continue;
             	}
             }
-            if(!CommonUtils.isNewVersion(getLiveTimeLineDto.getVersion(), "3.0.2")){
+            if(!CommonUtils.isNewVersion(getLiveTimeLineDto.getVersion(), "3.0.3")){
             	 if(topicFragment.getContentType() == 24){//礼物
                      liveElement.setStatus(0);
                      continue;
@@ -4024,6 +4024,14 @@ public class LiveServiceImpl implements LiveService {
             	}
             }
             
+            //送礼物
+            if(getLiveDetailDto.getVersionFlag() < 6){//低于V3.0.3版本
+            	if(topicFragment.getContentType() == 24){
+            		liveElement.setStatus(0);
+                    continue;
+            	}
+            }
+            
             //逗一逗自动播放状态
             int teaseStatus = 0;
             if((topicFragment.getType() == 51 || topicFragment.getType() == 52) && topicFragment.getContentType() == 20){
@@ -4040,6 +4048,22 @@ public class LiveServiceImpl implements LiveService {
                }
             }
             liveElement.setTeaseStatus(teaseStatus);
+            
+            //送礼物自动播放状态
+            int giftStatus = 0;
+            if(topicFragment.getContentType() == 24){
+            	//24小时内
+                if(new Date().getTime()-topicFragment.getCreateTime().getTime()<=24*60*60*1000){
+                    String giftStatusstr = cacheService.get("GIFT_STATUS_"+uid+"_"+topicFragment.getId());
+                    if (!StringUtils.isEmpty(giftStatusstr)) {
+                    	giftStatus=0;
+                    } else {
+                    	giftStatus=1;
+                        cacheService.setex("GIFT_STATUS_"+uid+"_"+topicFragment.getId(),"1",60*60*48);
+                    }
+                }
+            }
+            liveElement.setGiftStatus(giftStatus);
 
             userProfile = userMap.get(String.valueOf(uid));
             liveElement.setUid(uid);
@@ -4326,7 +4350,7 @@ public class LiveServiceImpl implements LiveService {
         UserProfile profile = userService.getUserProfileByUid(createKingdomDto.getUid());
         speakDto2.setV_lv(profile.getvLv());
         //检查有没有出错的数据，如果有则删除出错数据
-        contentService.clearData();
+//        contentService.clearData();
 
         log.info("first speak...");
         long lastFragmentId = 0;
@@ -8855,7 +8879,7 @@ public class LiveServiceImpl implements LiveService {
         UserProfile profile = userService.getUserProfileByUid(createKingdomDto.getUid());
         speakDto2.setV_lv(profile.getvLv());
         //检查有没有出错的数据，如果有则删除出错数据
-        contentService.clearData();
+//        contentService.clearData();
 
         log.info("first speak...");
         long lastFragmentId = 0;
