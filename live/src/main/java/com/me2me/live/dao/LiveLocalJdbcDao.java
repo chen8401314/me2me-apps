@@ -1591,11 +1591,14 @@ public class LiveLocalJdbcDao {
 		return count>0;
 	}
 	
-	public void batchInsertUserLikeTags(Long uid, Set<String> userHobbyTags) {
+	public void batchInsertUserLikeTags(Long uid, Set<Long> userHobbyTags) {
+		if(null == userHobbyTags || userHobbyTags.size() == 0){
+			return;
+		}
 		jdbcTemplate.update("delete from user_dislike where uid=? and is_like=1 and type=2 and data in (?)",uid,userHobbyTags);
 		String sql ="insert into user_dislike (uid,data,is_like,type,create_time) values(?,?,1,2,now())";
 		List<Object[]> batchArgs = new ArrayList<>();
-		for(String tag:userHobbyTags){
+		for(Long tag:userHobbyTags){
 			batchArgs.add(new Object[]{uid,tag});
 		}
 		jdbcTemplate.batchUpdate(sql, batchArgs );

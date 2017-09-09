@@ -4452,10 +4452,9 @@ public class LiveServiceImpl implements LiveService {
         	if(null != tags && tags.length > 0){
         		TopicTag topicTag = null;
         		TopicTagDetail tagDetail = null;
-        		Set<String> tagSet = new LinkedHashSet<>();
+        		Set<Long> tagSet = new LinkedHashSet<>();
         		for(String tag : tags){
         			tag = tag.trim();
-        			tagSet.add(tag);
         			if(!StringUtils.isEmpty(tag)){
         				topicTag = liveMybatisDao.getTopicTagByTag(tag);
         				if(null == topicTag){
@@ -4463,19 +4462,20 @@ public class LiveServiceImpl implements LiveService {
         					topicTag.setTag(tag);
         					liveMybatisDao.insertTopicTag(topicTag);
         				}
+        				tagSet.add(topicTag.getId());
+        				tagDetail = new TopicTagDetail();
+            			tagDetail.setTag(tag);
+            			tagDetail.setTagId(topicTag.getId());
+            			tagDetail.setTopicId(topic.getId());
+            			tagDetail.setUid(createKingdomDto.getUid());
+            			if(autoTagSet.contains(tag)){
+            				tagDetail.setAutoTag(1);
+            			}else{
+            				tagDetail.setAutoTag(0);
+            			}
+            			liveMybatisDao.insertTopicTagDetail(tagDetail);
+            			// 4 用户建立了新的王国,并且王国有标签,及时声称
         			}
-        			tagDetail = new TopicTagDetail();
-        			tagDetail.setTag(tag);
-        			tagDetail.setTagId(topicTag.getId());
-        			tagDetail.setTopicId(topic.getId());
-        			tagDetail.setUid(createKingdomDto.getUid());
-        			if(autoTagSet.contains(tag)){
-        				tagDetail.setAutoTag(1);
-        			}else{
-        				tagDetail.setAutoTag(0);
-        			}
-        			liveMybatisDao.insertTopicTagDetail(tagDetail);
-        			// 4 用户建立了新的王国,并且王国有标签,及时声称
         		}
         		liveLocalJdbcDao.batchInsertUserLikeTags(createKingdomDto.getUid(),tagSet);
         	}
