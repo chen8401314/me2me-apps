@@ -4544,11 +4544,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public String getAppConfigByKey(String key){
 		String result = cacheService.get(CacheConstant.APP_CONFIG_KEY_PRE + key);
-		if(!StringUtils.isEmpty(result)){
+		if(null != result){
 			return result;
 		}
 		AppConfig config = userMybatisDao.getAppConfigByKey(key);
-		if(null != config && !StringUtils.isEmpty(config.getConfigValue())){
+		if(null != config && null != config.getConfigValue()){
 			cacheService.set(CacheConstant.APP_CONFIG_KEY_PRE + key, config.getConfigValue());
 			return config.getConfigValue();
 		}
@@ -4589,7 +4589,7 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public void saveAppConfig(String key, String value, String desc){
-		if(StringUtils.isEmpty(key) || StringUtils.isEmpty(value)){
+		if(StringUtils.isEmpty(key) || value == null){
 			return;
 		}
 		AppConfig config = userMybatisDao.getAppConfigByKey(key);
