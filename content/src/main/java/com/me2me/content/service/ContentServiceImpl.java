@@ -45,7 +45,6 @@ import com.me2me.cache.service.CacheService;
 import com.me2me.common.Constant;
 import com.me2me.common.enums.USER_OPRATE_TYPE;
 import com.me2me.common.page.PageBean;
-import com.me2me.common.utils.CollectionUtils;
 import com.me2me.common.utils.JPushUtils;
 import com.me2me.common.web.Response;
 import com.me2me.common.web.ResponseStatus;
@@ -4450,6 +4449,7 @@ public class ContentServiceImpl implements ContentService {
        
         log.info("===="+allTags);
         for(String label:allTags){
+        	log.info("=111==="+label);
         	long tagId= topicTagMapper.getTagIdByTag(label);
             HotTagElement element = new HotTagElement();
            	element.setIsShowLikeButton(userLikeTags.contains(label)?0:1);
