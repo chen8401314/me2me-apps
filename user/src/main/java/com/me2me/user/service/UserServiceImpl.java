@@ -4803,10 +4803,13 @@ public class UserServiceImpl implements UserService {
     	log.info("12345");
 	    ModifyUserCoinDto modifyUserCoinDto = new ModifyUserCoinDto();
 	    UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
+	    log.info("12345-1");
         modifyUserCoinDto.setCurrentLevel(userProfile.getLevel());
         int modifyCoin = userProfile.getAvailableCoin()+coin;
 	    userInitJdbcDao.modifyUserCoin(uid,modifyCoin);
+	    log.info("12345-2");
         String permissions = getAppConfigByKey(USER_PERMISSIONS);
+        log.info("12345-3");
         UserPermissionDto userPermissionDto = JSON.parseObject(permissions, UserPermissionDto.class);
         int lv = 0;
         for(UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()){
@@ -4829,7 +4832,7 @@ public class UserServiceImpl implements UserService {
                     break;
                 }
             }
-            log.info("54321");
+            log.info("54322");
             return modifyUserCoinDto;
         }
     }
