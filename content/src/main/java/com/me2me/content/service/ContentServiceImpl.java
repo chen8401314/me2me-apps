@@ -8,11 +8,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +26,6 @@ import com.me2me.user.dto.*;
 import com.me2me.user.rule.Rules;
 
 import org.apache.commons.lang3.RandomUtils;
-import org.eclipse.paho.client.mqttv3.logging.Logger;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -4451,6 +4448,7 @@ public class ContentServiceImpl implements ContentService {
         	}
         }
        
+        log.info("===="+allTags);
         for(String label:allTags){
         	long tagId= topicTagMapper.getTagIdByTag(label);
             HotTagElement element = new HotTagElement();
