@@ -1,6 +1,7 @@
 package com.me2me.user.dto;
 
 import com.me2me.common.web.BaseEntity;
+
 import lombok.Data;
 
 /**
@@ -29,4 +30,7 @@ public class UserLoginDto implements BaseEntity {
     
     private String registerVersion;
 
+    private String deviceData;
+    
+    private String ip;
 }
