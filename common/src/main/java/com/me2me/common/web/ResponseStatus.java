@@ -474,7 +474,7 @@ public enum  ResponseStatus {
     ILLEGAL_REQUEST("非法的请求参数","illegal request",50099),
 	
     //创建王国余额不足
-	CREATE_KINGDOM_PRICE_LACK("需要消耗#{price}#米汤币,当前余额不足！","create kingdom price lack",50100);
+	CREATE_KINGDOM_PRICE_LACK("需要消耗#{price}#米汤币,当前余额不足！","create kingdom price lack",500100);
 
     public final String message;
 
