@@ -14,5 +14,7 @@ public class SendGiftDto implements BaseEntity {
     public long fragmentId;
     
     public int count;
+    
+    public int remainPrice;
 
 }

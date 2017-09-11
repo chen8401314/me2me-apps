@@ -9958,9 +9958,10 @@ public class LiveServiceImpl implements LiveService {
 		giftHistory.setFragmentId(speakDto.getFragmentId());
 
 		liveMybatisDao.saveGiftHistory(giftHistory);
-        
+		UserProfile newUserProfile = userService.getUserProfileByUid(uid);
         dto.setFragmentId(speakDto.getFragmentId());
         dto.setCount(count);
+        dto.setRemainPrice(newUserProfile.getAvailableCoin());
 		return Response.success(dto);
 	}
 
