@@ -6279,7 +6279,7 @@ public class LiveServiceImpl implements LiveService {
                 	tagList.add(tag);
                 }
             }
-            resultDTO.setMyUsedTags(org.apache.commons.lang3.StringUtils.join(tagList,","));
+            resultDTO.setMyUsedTags(org.apache.commons.lang3.StringUtils.join(tagList,";"));
         }
      
         

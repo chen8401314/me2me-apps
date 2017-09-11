@@ -225,10 +225,10 @@
 	        	}
 	        }},
 	        {data: "isSys",orderable:false,title: "是否体系",render:function(data){
-	        	return data=='1'?'Y':'N';
+	        	return data==1?'Y':'N';
 	        }},
 	        {data: "isRec",title: "是否推荐",render:function(data){
-	        	return data=='1'?'Y':'N';
+	        	return data==1?'Y':'N';
 	        }},
 	       // {data: "orderNum",title: "排序值"},
 	        {data: "status",title: "状态",render:function(data){
