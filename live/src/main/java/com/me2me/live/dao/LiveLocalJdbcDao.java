@@ -1038,8 +1038,8 @@ public class LiveLocalJdbcDao {
 		jdbcTemplate.update(sql,uid);
 	}
 	public void addMyCoins(long uid,int price) {
-		String sql = "update user_profile set available_coin = available_coin+"+price+" where uid = ?";
-		jdbcTemplate.update(sql,uid);
+		String sql = "update user_profile set available_coin = available_coin+ ? where uid = ?";
+		jdbcTemplate.update(sql,new Object[]{price,uid});
 	}
 	public int getReadCount(long topicId) {
 		String sql = "select sum(read_count_dummy) as readCount from topic_read_his where topic_id=? group by topic_id";

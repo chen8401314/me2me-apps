@@ -471,7 +471,10 @@ public enum  ResponseStatus {
     //完善个人资料领取红包
     ERR_RED_BAG("不能重复领取","Cannot receive again.",50070),
     
-    ILLEGAL_REQUEST("非法的请求参数","illegal request",50099);
+    ILLEGAL_REQUEST("非法的请求参数","illegal request",50099),
+	
+    //创建王国余额不足
+	CREATE_KINGDOM_PRICE_LACK("需要消耗#{price}#米汤币,当前余额不足！","create kingdom price lack",50100);
 
     public final String message;
 

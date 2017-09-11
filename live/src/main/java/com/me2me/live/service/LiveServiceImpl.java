@@ -4202,7 +4202,7 @@ public class LiveServiceImpl implements LiveService {
             	if(userCreateKingdomCount>=1){
                 	int price = userProfile.getAvailableCoin();
                 	if(price<needPrice){
-                		return Response.failure(500,"需要消耗"+needPrice+"米汤币,当前余额不足！");
+                		return Response.failure(ResponseStatus.CREATE_KINGDOM_PRICE_LACK.status, ResponseStatus.CREATE_KINGDOM_PRICE_LACK.message.replace("#{price}#", String.valueOf(needPrice)));
                 	}
             	}
             }
@@ -4506,7 +4506,7 @@ public class LiveServiceImpl implements LiveService {
         	if(userCreateKingdomCount>=1 && free==0){
         		liveLocalJdbcDao.addMyCoins(createKingdomDto.getUid(), 0-needPrice);
         	}
-        	cacheService.set(userCreateKingdomCountKey, (userCreateKingdomCount+1)+"");
+        	cacheService.incr(userCreateKingdomCountKey);
         }
         return response;
 
