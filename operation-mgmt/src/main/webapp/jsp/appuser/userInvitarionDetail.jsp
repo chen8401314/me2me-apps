@@ -57,7 +57,7 @@
 					</div>
 				</div>
 				<!-- page end-->
-				<span class="btn btn-default"><a href="${ctx}/appuser/invitation/list">返回</a></span>
+				<span class="btn btn-default"><a href="${ctx}/appuser/invitation/list?uid=${param.uid }&nickName=${param.nickName }&meNo=${param.meNo }&mobile=${param.mobile }&startTime=${param.startTime }&endTime=${param.endTime }">返回</a></span>
 			</section>
 		</section>
 		<!--main content end-->

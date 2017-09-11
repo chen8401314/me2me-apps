@@ -9,6 +9,10 @@ public class UserInvitationDetailQueryDTO extends DatatablePage {
 	private String startTime;
 	private String endTime;
 	
+	private String nickName;
+	private Long uid;
+	private Long meNo;
+	private String mobile;
 	
 	public long getRefereeUid() {
 		return refereeUid;
@@ -33,5 +37,29 @@ public class UserInvitationDetailQueryDTO extends DatatablePage {
 	}
 	public void setSearchType(int searchType) {
 		this.searchType = searchType;
+	}
+	public String getNickName() {
+		return nickName;
+	}
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+	public Long getUid() {
+		return uid;
+	}
+	public void setUid(Long uid) {
+		this.uid = uid;
+	}
+	public Long getMeNo() {
+		return meNo;
+	}
+	public void setMeNo(Long meNo) {
+		this.meNo = meNo;
+	}
+	public String getMobile() {
+		return mobile;
+	}
+	public void setMobile(String mobile) {
+		this.mobile = mobile;
 	}
 }
