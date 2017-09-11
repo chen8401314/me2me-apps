@@ -4452,8 +4452,9 @@ public class ContentServiceImpl implements ContentService {
         	long tagId= info.getTagId();
             HotTagElement element = new HotTagElement();
            	element.setIsShowLikeButton(userLikeTags.contains(label)?0:1);
-            element.setCoverImg(info.getCoverImg());
-            
+           	if(info.getCoverImg()!=null){
+           		element.setCoverImg(Constant.QINIU_DOMAIN+"/"+info.getCoverImg());
+           	}
            /* List<Map<String,Object>> topicList = null;
             String ktKey = "OBJ:KINGDOMSBYTAG:"+label+"_new_1_4";
             Object tkRes = cacheService.getJavaObject(ktKey);
