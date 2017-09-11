@@ -4193,11 +4193,18 @@ public class LiveServiceImpl implements LiveService {
 			}
         }
         UserProfile userProfile = userService.getUserProfileByUid(createKingdomDto.getUid());
+        String userCreateKingdomCountKey = "USER_CREATEKINGDOM_COUNT@"+createKingdomDto.getUid();
+        String userCreateKingdomCountStr= cacheService.get(userCreateKingdomCountKey);
         if(free==0){
-        	int price = userProfile.getAvailableCoin();
-        	if(price<needPrice){
-        		return Response.failure(500,"需要消耗"+needPrice+"米汤币,当前余额不足！");
-        	}
+            if(!StringUtils.isEmpty(userCreateKingdomCountStr)){
+            	int userCreateKingdomCount  = Integer.parseInt(userCreateKingdomCountStr);
+            	if(userCreateKingdomCount>=1 && free==0){
+                	int price = userProfile.getAvailableCoin();
+                	if(price<needPrice){
+                		return Response.failure(500,"需要消耗"+needPrice+"米汤币,当前余额不足！");
+                	}
+            	}
+            }
         }
 		boolean isDouble = false;
 		int type = 0;
@@ -4412,8 +4419,6 @@ public class LiveServiceImpl implements LiveService {
         }
        
         //扣除创建王国168米汤币
-        String userCreateKingdomCountKey = "USER_CREATEKINGDOM_COUNT@"+createKingdomDto.getUid();
-        String userCreateKingdomCountStr= cacheService.get(userCreateKingdomCountKey);
         if(StringUtils.isEmpty(userCreateKingdomCountStr)){
         	//第一次创建王国免费
         	cacheService.set(userCreateKingdomCountKey, "1");
