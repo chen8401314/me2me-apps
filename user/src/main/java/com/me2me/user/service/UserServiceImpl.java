@@ -5,6 +5,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import ch.qos.logback.classic.Logger;
+
 import com.me2me.core.KeysManager;
 import com.me2me.user.dto.*;
 import com.me2me.user.model.*;
@@ -294,6 +296,10 @@ public class UserServiceImpl implements UserService {
         device.setOs(userSignUpDto.getOs());
         device.setUid(user.getUid());
         userMybatisDao.updateUserDevice(device);
+        
+        //添加设备相关信息new
+        this.saveUserDeviceInfo(user.getUid(), userSignUpDto.getIp(), 1, userSignUpDto.getDeviceData());
+        
         log.info("userDevice is create");
         // 获取默认值给前端
         UserProfile up = userMybatisDao.getUserProfileByUid(user.getUid());
@@ -466,6 +472,10 @@ public class UserServiceImpl implements UserService {
         device.setOs(userSignUpDto.getOs());
         device.setUid(newUser.getUid());
         userMybatisDao.updateUserDevice(device);
+        
+        //添加设备相关信息new
+        this.saveUserDeviceInfo(newUser.getUid(), userSignUpDto.getIp(), 1, userSignUpDto.getDeviceData());
+        
         log.info("userDevice is create");
         // 获取默认值给前端
         UserProfile up = userMybatisDao.getUserProfileByUid(newUser.getUid());
@@ -621,6 +631,10 @@ public class UserServiceImpl implements UserService {
                 device.setOs(userLoginDto.getOs());
                 device.setUid(user.getUid());
                 userMybatisDao.updateUserDevice(device);
+                
+                //保存登录设备信息new
+                this.saveUserDeviceInfo(userProfile.getUid(), userLoginDto.getIp(), 2, userLoginDto.getDeviceData());
+                
                 // 保存极光推送
                 if(!StringUtils.isEmpty(userLoginDto.getJPushToken())) {
                     // 判断当前用户是否存在JpushToken,如果存在，并且相同我们不做处理，否则修改
@@ -712,6 +726,10 @@ public class UserServiceImpl implements UserService {
                 device.setOs(userLoginDto.getOs());
                 device.setUid(user.getUid());
                 userMybatisDao.updateUserDevice(device);
+                
+                //保存登录设备信息new
+                this.saveUserDeviceInfo(userProfile.getUid(), userLoginDto.getIp(), 2, userLoginDto.getDeviceData());
+                
                 // 保存极光推送
                 if(!StringUtils.isEmpty(userLoginDto.getJPushToken())) {
                     // 判断当前用户是否存在JpushToken,如果存在，并且相同我们不做处理，否则修改
@@ -2555,6 +2573,7 @@ public class UserServiceImpl implements UserService {
                 if(checkUserDisable(loginSuccessDto.getUid())){
                 	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                 }
+                this.saveUserDeviceInfo(userProfile.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
                 return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
             } else {
                 buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
@@ -2578,6 +2597,7 @@ public class UserServiceImpl implements UserService {
                     if(checkUserDisable(loginSuccessDto.getUid())){
                     	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                     }
+                    this.saveUserDeviceInfo(userProfile.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 }
                 //h5微信登录
@@ -2602,6 +2622,7 @@ public class UserServiceImpl implements UserService {
                 if(checkUserDisable(loginSuccessDto.getUid())){
                 	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                 }
+                this.saveUserDeviceInfo(users.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
                 return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
 
             } else if(users !=null && !StringUtils.isEmpty(users.getThirdPartUnionid()) && thirdPartSignUpDto.getThirdPartType() == users.getThirdPartType()){
@@ -2610,6 +2631,7 @@ public class UserServiceImpl implements UserService {
                 if(checkUserDisable(loginSuccessDto.getUid())){
                 	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                 }
+                this.saveUserDeviceInfo(users.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
                 return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
             }
             else if(users ==null){
@@ -2635,6 +2657,7 @@ public class UserServiceImpl implements UserService {
                     if(checkUserDisable(loginSuccessDto.getUid())){
                     	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                     }
+                    this.saveUserDeviceInfo(users.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 }else{
                     buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
@@ -2651,6 +2674,7 @@ public class UserServiceImpl implements UserService {
                     if(checkUserDisable(loginSuccessDto.getUid())){
                     	return Response.failure(ResponseStatus.USER_ACCOUNT_DISABLED.status, ResponseStatus.USER_ACCOUNT_DISABLED.message);
                     }
+                    this.saveUserDeviceInfo(users.getUid(), thirdPartSignUpDto.getIp(), 2, thirdPartSignUpDto.getDeviceData());
                     return Response.success(ResponseStatus.USER_EXISTS.status, ResponseStatus.USER_EXISTS.message, loginSuccessDto);
                 } else {
                     buildThirdPart(thirdPartSignUpDto, loginSuccessDto);
@@ -2663,6 +2687,42 @@ public class UserServiceImpl implements UserService {
 
         }
 
+    }
+    
+    /**
+     * 保存设备相关信息
+     * @param uid
+     * @param ip
+     * @param type  1注册 2登录
+     * @param deviceDataJson
+     */
+    private void saveUserDeviceInfo(long uid, String ip, int type, String deviceDataJson){
+    	UserDeviceInfo udi = new UserDeviceInfo();
+		udi.setCreateTime(new Date());
+		udi.setUid(uid);
+		udi.setIp(ip);
+		udi.setType(type);
+        if(!StringUtils.isEmpty(deviceDataJson)){
+        	JSONObject deviceData = null;
+        	try{
+        		deviceData = JSONObject.parseObject(deviceDataJson);
+        	}catch(Exception e){
+        		log.error("json处理异常", e);
+        	}
+        	if(null != deviceData){
+        		
+        		if(null != deviceData.get("deviceCode")){
+        			udi.setDeviceCode(deviceData.getString("deviceCode"));
+        		}
+        		if(null != deviceData.get("mobileModel")){
+        			udi.setMobileModel(deviceData.getString("mobileModel"));
+        		}
+        		if(null != deviceData.get("systemVersion")){
+        			udi.setSystemVersion(deviceData.getString("systemVersion"));
+        		}
+        	}
+        }
+        userMybatisDao.saveUserDeviceInfo(udi);
     }
     
     private boolean checkUserDisable(long uid){
@@ -2811,6 +2871,9 @@ public class UserServiceImpl implements UserService {
         userMybatisDao.createUserProfile(userProfile);
         log.info("UserProfile is create");
 
+        //添加设备相关信息new
+        this.saveUserDeviceInfo(userProfile.getUid(), thirdPartSignUpDto.getIp(), 1, thirdPartSignUpDto.getDeviceData());
+        
         // 保存用户token信息
         UserToken userToken1 = new UserToken();
         userToken1.setUid(user.getUid());

@@ -154,6 +154,9 @@ public class UserMybatisDao {
     @Autowired
     private UserFirstLogMapper userFirstLogMapper;
     
+    @Autowired
+    private UserDeviceInfoMapper userDeviceInfoMapper;
+    
     /**
      * 保存用户注册信息
      * @param user
@@ -1485,5 +1488,9 @@ public class UserMybatisDao {
     
     public void saveUserFirstLog(UserFirstLog ufl){
     	userFirstLogMapper.insertSelective(ufl);
+    }
+    
+    public void saveUserDeviceInfo(UserDeviceInfo udi){
+    	userDeviceInfoMapper.insertSelective(udi);
     }
 }

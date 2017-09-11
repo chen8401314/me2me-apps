@@ -70,5 +70,6 @@
 		<!-- <table tableName="user_black_list" domainObjectName="UserBlackList"/> -->
 		<!-- <table tableName="user_first_log" domainObjectName="UserFirstLog"/> -->
 		<!-- <table tableName="user_avatar_frame" domainObjectName="UserAvatarFrame"/> -->
+		<!-- <table tableName="user_device_info" domainObjectName="UserDeviceInfo"/> -->
     </context>
 </generatorConfiguration>
