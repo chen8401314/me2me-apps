@@ -9932,15 +9932,11 @@ public class LiveServiceImpl implements LiveService {
         json.put("w", giftInfo.getImageWidth());
         json.put("h", giftInfo.getImageHeight());
         SpeakDto speakDto = new SpeakDto();
-        if(topic.getUid().longValue()==uid){
-        	speakDto.setType(0);
-        }else{
-            if(getInternalStatus(topic,uid)==0){
-            	speakDto.setType(51);
-            }else{
-            	speakDto.setType(1);
-            }
-        }
+		if (getInternalStatus(topic, uid) == 0) {
+			speakDto.setType(51);
+		} else {
+			speakDto.setType(57);
+		}
         speakDto.setContentType(24);
         speakDto.setUid(uid);
         speakDto.setTopicId(topicId);
