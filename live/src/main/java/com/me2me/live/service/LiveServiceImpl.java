@@ -4182,6 +4182,7 @@ public class LiveServiceImpl implements LiveService {
         String freeUser = userService.getAppConfigByKey("FREE_CREATEKINGDOM_USER");
         int needPrice = StringUtils.isEmpty(userService.getAppConfigByKey("CREATE_KINGDOM_PRICE")) ? 168
 				: Integer.parseInt(userService.getAppConfigByKey("CREATE_KINGDOM_PRICE"));
+        //1免费创建  0需要扣费
         int free = 0;
         if(!StringUtils.isEmpty(freeUser)){
         	String freeUserIds[] = freeUser.split(",");
@@ -4198,7 +4199,7 @@ public class LiveServiceImpl implements LiveService {
         if(free==0){
             if(!StringUtils.isEmpty(userCreateKingdomCountStr)){
             	int userCreateKingdomCount  = Integer.parseInt(userCreateKingdomCountStr);
-            	if(userCreateKingdomCount>=1 && free==0){
+            	if(userCreateKingdomCount>=1){
                 	int price = userProfile.getAvailableCoin();
                 	if(price<needPrice){
                 		return Response.failure(500,"需要消耗"+needPrice+"米汤币,当前余额不足！");
@@ -4417,19 +4418,7 @@ public class LiveServiceImpl implements LiveService {
 //        		}
 //        	}
         }
-       
-        //扣除创建王国168米汤币
-        if(StringUtils.isEmpty(userCreateKingdomCountStr)){
-        	//第一次创建王国免费
-        	cacheService.set(userCreateKingdomCountKey, "1");
-        }else{
-        	int userCreateKingdomCount  = Integer.parseInt(userCreateKingdomCountStr);
-        	if(userCreateKingdomCount>=1 && free==0){
-        		liveLocalJdbcDao.addMyCoins(createKingdomDto.getUid(), 0-needPrice);
-        	}
-        	cacheService.set(userCreateKingdomCountKey, (userCreateKingdomCount+1)+"");
-        }
-        
+
         //特殊王国需要做一点特殊处理
         if(createKingdomDto.getKType() != Specification.KingdomType.NORMAL.index
         		&& createKingdomDto.getKType() != Specification.KingdomType.AGGREGATION.index){
@@ -4508,6 +4497,17 @@ public class LiveServiceImpl implements LiveService {
      // 记录操作日志
         contentService.addUserOprationLog(topic.getUid(), USER_OPRATE_TYPE.CREATE_KINGDOM, topic.getId());
         
+        //扣除创建王国168米汤币
+        if(StringUtils.isEmpty(userCreateKingdomCountStr)){
+        	//第一次创建王国免费
+        	cacheService.set(userCreateKingdomCountKey, "1");
+        }else{
+        	int userCreateKingdomCount  = Integer.parseInt(userCreateKingdomCountStr);
+        	if(userCreateKingdomCount>=1 && free==0){
+        		liveLocalJdbcDao.addMyCoins(createKingdomDto.getUid(), 0-needPrice);
+        	}
+        	cacheService.set(userCreateKingdomCountKey, (userCreateKingdomCount+1)+"");
+        }
         return response;
 
 	}
