@@ -82,5 +82,7 @@ public class ThirdPartRequest extends Request {
     @Setter
     private String openinstallData;
     
-
+    @Getter
+    @Setter
+    private String deviceData;
 }

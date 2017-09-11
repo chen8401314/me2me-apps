@@ -11,6 +11,7 @@ import com.me2me.common.web.ResponseStatus;
 import com.me2me.user.dto.*;
 import com.me2me.user.rule.Rules;
 import com.me2me.web.request.*;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
@@ -65,7 +66,7 @@ public class Users extends BaseController {
      */
     @RequestMapping(value = "/signUp",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response signUp(SignUpRequest request){
+    public Response signUp(SignUpRequest request, HttpServletRequest rq){
         UserSignUpDto userSignUpDto = new UserSignUpDto();
         userSignUpDto.setMobile(request.getMobile());
         userSignUpDto.setGender(request.getGender());
@@ -80,7 +81,36 @@ public class Users extends BaseController {
         userSignUpDto.setRegisterVersion(request.getVersion());
         userSignUpDto.setParams(request.getParams());
         userSignUpDto.setOpeninstallData(request.getOpeninstallData());
+        userSignUpDto.setDeviceData(request.getDeviceData());
 
+        //获取ipaddress信息
+        String ip = rq.getHeader("X-Forwarded-For");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("X-Real-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getRemoteAddr();
+        }
+        if ("127.0.0.1".equals(ip) || "0:0:0:0:0:0:0:1".equals(ip)){
+        	try {
+                ip = InetAddress.getLocalHost().getHostAddress();
+            }catch (UnknownHostException unknownhostexception) {
+            }
+        }
+        userSignUpDto.setIp(ip);
+        
         if(StringUtils.isEmpty(request.getChannel())){
         	log.info("手机注册无渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"],["+request.getOpeninstallData()+"]");
         }else{
@@ -98,7 +128,7 @@ public class Users extends BaseController {
      */
     @RequestMapping(value = "/signUpByVerify",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response signUpByVerify(SignUpRequest request){
+    public Response signUpByVerify(SignUpRequest request, HttpServletRequest rq){
         UserSignUpDto userSignUpDto = new UserSignUpDto();
         userSignUpDto.setMobile(request.getMobile());
         userSignUpDto.setGender(-1);
@@ -113,6 +143,35 @@ public class Users extends BaseController {
         userSignUpDto.setParams(request.getParams());
         userSignUpDto.setVerifyCode(request.getVerifyCode());
         userSignUpDto.setOpeninstallData(request.getOpeninstallData());
+        userSignUpDto.setDeviceData(request.getDeviceData());
+
+        //获取ipaddress信息
+        String ip = rq.getHeader("X-Forwarded-For");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("X-Real-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getRemoteAddr();
+        }
+        if ("127.0.0.1".equals(ip) || "0:0:0:0:0:0:0:1".equals(ip)){
+        	try {
+                ip = InetAddress.getLocalHost().getHostAddress();
+            }catch (UnknownHostException unknownhostexception) {
+            }
+        }
+        userSignUpDto.setIp(ip);
         
         if(StringUtils.isEmpty(request.getChannel())){
         	log.info("手机验证码注册无渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"],["+request.getOpeninstallData()+"]");
@@ -130,7 +189,7 @@ public class Users extends BaseController {
      */
     @RequestMapping(value = "/login",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response login(LoginRequest request){
+    public Response login(LoginRequest request, HttpServletRequest rq){
         UserLoginDto userLoginDto = new UserLoginDto();
         userLoginDto.setUserName(request.getUserName());
         userLoginDto.setEncrypt(request.getEncrypt());
@@ -140,6 +199,35 @@ public class Users extends BaseController {
         userLoginDto.setJPushToken(request.getJPushToken());
         userLoginDto.setChannel(request.getChannel());
         userLoginDto.setRegisterVersion(request.getVersion());
+        userLoginDto.setDeviceData(request.getDeviceData());
+
+        //获取ipaddress信息
+        String ip = rq.getHeader("X-Forwarded-For");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("X-Real-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getRemoteAddr();
+        }
+        if ("127.0.0.1".equals(ip) || "0:0:0:0:0:0:0:1".equals(ip)){
+        	try {
+                ip = InetAddress.getLocalHost().getHostAddress();
+            }catch (UnknownHostException unknownhostexception) {
+            }
+        }
+        userLoginDto.setIp(ip);
         return userService.login(userLoginDto);
     }
 
@@ -150,7 +238,7 @@ public class Users extends BaseController {
      */
     @RequestMapping(value = "/loginByVerify",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public Response loginByVerify(LoginRequest request){
+    public Response loginByVerify(LoginRequest request, HttpServletRequest rq){
         UserLoginDto userLoginDto = new UserLoginDto();
         userLoginDto.setUserName(request.getUserName());
         userLoginDto.setOs(request.getOs());
@@ -160,6 +248,35 @@ public class Users extends BaseController {
         userLoginDto.setVerifyCode(request.getVerifyCode());
         userLoginDto.setChannel(request.getChannel());
         userLoginDto.setRegisterVersion(request.getVersion());
+        userLoginDto.setDeviceData(request.getDeviceData());
+
+        //获取ipaddress信息
+        String ip = rq.getHeader("X-Forwarded-For");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("X-Real-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getRemoteAddr();
+        }
+        if ("127.0.0.1".equals(ip) || "0:0:0:0:0:0:0:1".equals(ip)){
+        	try {
+                ip = InetAddress.getLocalHost().getHostAddress();
+            }catch (UnknownHostException unknownhostexception) {
+            }
+        }
+        userLoginDto.setIp(ip);
         return userService.loginByVerify(userLoginDto);
     }
 
@@ -691,7 +808,7 @@ public class Users extends BaseController {
      */
     @ResponseBody
     @RequestMapping(value = "/thirdPartLogin",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
-    public Response thirdPartLogin(ThirdPartRequest request){
+    public Response thirdPartLogin(ThirdPartRequest request, HttpServletRequest rq){
         ThirdPartSignUpDto dto = new ThirdPartSignUpDto();
         dto.setThirdPartOpenId(request.getThirdPartOpenId());
         dto.setThirdPartToken(request.getThirdPartToken());
@@ -708,6 +825,36 @@ public class Users extends BaseController {
         dto.setRegisterVersion(request.getVersion());
         dto.setParams(request.getParams());
         dto.setOpeninstallData(request.getOpeninstallData());
+        dto.setDeviceData(request.getDeviceData());
+
+        //获取ipaddress信息
+        String ip = rq.getHeader("X-Forwarded-For");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("HTTP_X_FORWARDED_FOR");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getHeader("X-Real-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)){
+        	ip = rq.getRemoteAddr();
+        }
+        if ("127.0.0.1".equals(ip) || "0:0:0:0:0:0:0:1".equals(ip)){
+        	try {
+                ip = InetAddress.getLocalHost().getHostAddress();
+            }catch (UnknownHostException unknownhostexception) {
+            }
+        }
+        dto.setIp(ip);
+        
         if(StringUtils.isEmpty(request.getChannel())){
         	log.info("三方登录无渠道=["+request.getNickName()+"],["+request.getChannel()+"],["+request.getVersion()+"],["+request.getPlatform()+"],["+request.getOpeninstallData()+"]");
         }else{

@@ -71,5 +71,7 @@ public class SignUpRequest extends Request{
     @Setter
     private String openinstallData;
 
-
+    @Getter
+    @Setter
+    private String deviceData;
 }

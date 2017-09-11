@@ -1,6 +1,7 @@
 package com.me2me.user.dto;
 
 import com.me2me.common.web.BaseEntity;
+
 import lombok.Data;
 
 /**
@@ -41,5 +42,7 @@ public class UserSignUpDto implements BaseEntity {
     
     private String openinstallData;
     
-
+    private String deviceData;
+    
+    private String ip;
 }

@@ -52,5 +52,9 @@ public class ThirdPartSignUpDto extends UserSignUpDto {
     private String params;
     
     private String openinstallData;
+    
+    private String deviceData;
+    
+    private String ip;
 
 }
