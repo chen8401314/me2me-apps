@@ -4498,6 +4498,10 @@ public class ContentServiceImpl implements ContentService {
         		cacheService.cacheJavaObject(cacheKey, cacheObj, 2*60*60);//缓存两小时
         	}
 
+        	if(null == totalPrice){
+        		totalPrice = new HashMap<String, Object>();
+        	}
+        	
             if(topicList!=null && topicList.size()>0){
                 List<BasicKingdomInfo> kingdoms =this.kingdomBuider.buildKingdoms(topicList, uid);
                 element.setKingdomList(kingdoms);
