@@ -110,9 +110,9 @@ var check = function(){
 													<th>${userItem.nichName }</th>
 													<th>${userItem.meNo }</th>
 													<th>${userItem.mobile }</th>
-													<th><a href="${ctx}/appuser/invitation/detail?refereeUid=${userItem.uid }&startTime=${dataObj.startTime }&endTime=${dataObj.endTime }&searchType=0">${userItem.totalCount }</a></th>
-													<th><a href="${ctx}/appuser/invitation/detail?refereeUid=${userItem.uid }&startTime=${dataObj.startTime }&endTime=${dataObj.endTime }&searchType=2">${userItem.iosCount }</a></th>
-													<th><a href="${ctx}/appuser/invitation/detail?refereeUid=${userItem.uid }&startTime=${dataObj.startTime }&endTime=${dataObj.endTime }&searchType=1">${userItem.androidCount }</a></th>
+													<th><a href="${ctx}/appuser/invitation/detail?refereeUid=${userItem.uid }&startTime=${dataObj.startTime }&endTime=${dataObj.endTime }&searchType=0&uid=${dataObj.uid }&nickName=${dataObj.nickName }&meNo=${dataObj.meNo }&mobile=${dataObj.mobile }">${userItem.totalCount }</a></th>
+													<th><a href="${ctx}/appuser/invitation/detail?refereeUid=${userItem.uid }&startTime=${dataObj.startTime }&endTime=${dataObj.endTime }&searchType=2&uid=${dataObj.uid }&nickName=${dataObj.nickName }&meNo=${dataObj.meNo }&mobile=${dataObj.mobile }">${userItem.iosCount }</a></th>
+													<th><a href="${ctx}/appuser/invitation/detail?refereeUid=${userItem.uid }&startTime=${dataObj.startTime }&endTime=${dataObj.endTime }&searchType=1&uid=${dataObj.uid }&nickName=${dataObj.nickName }&meNo=${dataObj.meNo }&mobile=${dataObj.mobile }">${userItem.androidCount }</a></th>
 												</tr>
 											</c:forEach>
 										</tbody>
