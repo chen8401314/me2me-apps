@@ -3222,7 +3222,7 @@ public class ContentServiceImpl implements ContentService {
             				contentType = ((Integer)topicOutData.get("content_type")).intValue();
             				if((type == 0 || type == 52) && contentType == 23){//UGC不要了
             					continue;
-            				}else if((type == 0 || type == 55) && contentType == 0){//文本
+            				}else if((type == 0 || type == 55 || type == 52) && contentType == 0){//文本
             					if(contentElement.getTextData().size() == 0){
             						outElement = new ShowNewestDto.OutDataElement();
                         			outElement.setId((Long)topicOutData.get("id"));

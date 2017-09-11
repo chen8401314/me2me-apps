@@ -5384,6 +5384,7 @@ public class ActivityServiceImpl implements ActivityService {
     @Override
     public Response anchorList(long uid){
     	ShowAnchorListDTO result = new ShowAnchorListDTO();
+    	result.setEnterStatus(0);
     	
     	List<Map<String, Object>> list = liveForActivityDao.getAnchorList();
     	
@@ -5391,6 +5392,7 @@ public class ActivityServiceImpl implements ActivityService {
     	Map<String, String> statusMap = new HashMap<String, String>();
     	List<Map<String, Object>> enterList = liveForActivityDao.getUserAnchorEnterByUid(uid);
     	if(null != enterList && enterList.size() > 0){
+    		result.setEnterStatus(1);
     		for(Map<String, Object> m : enterList){
     			statusMap.put(String.valueOf(m.get("anchor_id")), "1");
     		}
@@ -5428,10 +5430,16 @@ public class ActivityServiceImpl implements ActivityService {
     		return Response.failure(500, "报名失败");
     	}
     	
-    	Map<String, Object> ea = liveForActivityDao.getAnchorEnterByUidAndAid(uid, aid);
-    	if(null != ea){
-    		return Response.failure(500, "已经报过名了");
+//    	Map<String, Object> ea = liveForActivityDao.getAnchorEnterByUidAndAid(uid, aid);
+//    	if(null != ea){
+//    		return Response.failure(500, "已经报过名了");
+//    	}
+    	
+    	List<Map<String, Object>> list = liveForActivityDao.getAnchorEnterByUid(uid);
+    	if(null != list && list.size() > 0){
+    		return Response.failure(501, "不能重复报名");
     	}
+    	
     	liveForActivityDao.insertAnchorEnter(uid, aid);
     	
     	return Response.success(200, "报名成功");
