@@ -1049,7 +1049,7 @@ public class LiveServiceImpl implements LiveService {
             	}
             }
             if(!CommonUtils.isNewVersion(getLiveTimeLineDto.getVersion(), "3.0.3")){
-            	 if(topicFragment.getContentType() == 24){//礼物
+            	 if(topicFragment.getContentType() == 24 || topicFragment.getContentType() == 25 ){//过滤礼物和排版图组
                      liveElement.setStatus(0);
                      continue;
                  }
@@ -3794,9 +3794,9 @@ public class LiveServiceImpl implements LiveService {
                     continue;
             	}
             }
-            //送礼物
+            //送礼物和排版图组
             if(getLiveDetailDto.getVersionFlag() < 6){//低于V3.0.3版本
-            	if(topicFragment.getContentType() == 24){
+            	if(topicFragment.getContentType() == 24  || topicFragment.getContentType() == 25 ){
             		liveElement.setStatus(0);
                     continue;
             	}
@@ -4026,9 +4026,9 @@ public class LiveServiceImpl implements LiveService {
             	}
             }
             
-            //送礼物
+            //送礼物和排版图组
             if(getLiveDetailDto.getVersionFlag() < 6){//低于V3.0.3版本
-            	if(topicFragment.getContentType() == 24){
+            	if(topicFragment.getContentType() == 24 || topicFragment.getContentType() == 25 ){
             		liveElement.setStatus(0);
                     continue;
             	}
