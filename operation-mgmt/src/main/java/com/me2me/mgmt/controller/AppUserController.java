@@ -611,8 +611,24 @@ public class AppUserController {
 	@RequestMapping(value = "/invitation/detailPage")
 	public UserInvitationDetailQueryDTO invitationDetailPage(UserInvitationDetailQueryDTO dto){
 		PageBean page= dto.toPageBean();
+		StringBuilder countSql = new StringBuilder();
+		countSql.append("select count(1) from user_profile u where u.is_activate=1");
+		countSql.append(" and u.referee_uid=").append(dto.getRefereeUid());
+		if(dto.getSearchType() == 1){//安卓
+			countSql.append(" and (u.channel!='0' or u.platform=1)");
+		}else if(dto.getSearchType() == 2){//IOS
+			countSql.append(" and (u.channel='0' or u.platform=2)");
+		}
+		if(StringUtils.isNotBlank(dto.getStartTime())){
+			countSql.append(" and u.create_time>='").append(dto.getStartTime()).append(" 00:00:00'");
+		}
+		if(StringUtils.isNotBlank(dto.getEndTime())){
+			countSql.append(" and u.create_time<='").append(dto.getEndTime()).append(" 23:59:59'");
+		}
+		
 		StringBuilder userSql = new StringBuilder();
-		userSql.append(" from user_profile u where u.is_activate=1");
+		userSql.append("select u.uid,u.nick_name,u.third_part_bind,u.mobile,u.create_time,i.ip,i.device_code,i.mobile_model,i.system_version");
+		userSql.append(" from user_profile u left join user_device_info i on u.uid=i.uid and i.type=1 where u.is_activate=1");
 		userSql.append(" and u.referee_uid=").append(dto.getRefereeUid());
 		if(dto.getSearchType() == 1){//安卓
 			userSql.append(" and (u.channel!='0' or u.platform=1)");
@@ -625,12 +641,10 @@ public class AppUserController {
 		if(StringUtils.isNotBlank(dto.getEndTime())){
 			userSql.append(" and u.create_time<='").append(dto.getEndTime()).append(" 23:59:59'");
 		}
+		userSql.append(" order by u.id desc limit ?,?");
 		
-		String querySql = "select u.uid,u.nick_name,u.third_part_bind,u.mobile,u.create_time" + userSql.toString() + " order by u.id desc limit ?,?";
-		String countSql = "select count(1)" + userSql.toString();
-		
-		int count = localJdbcDao.queryForObject(countSql, Integer.class);
-		List<Map<String, Object>> dataList = localJdbcDao.queryForList(querySql,(page.getCurrentPage()-1)*page.getPageSize(),page.getPageSize());
+		int count = localJdbcDao.queryForObject(countSql.toString(), Integer.class);
+		List<Map<String, Object>> dataList = localJdbcDao.queryForList(userSql.toString(),(page.getCurrentPage()-1)*page.getPageSize(),page.getPageSize());
 		if(null != dataList && dataList.size() > 0){
 			List<Long> uidList = new ArrayList<Long>();
 			Long uid = null;
@@ -680,7 +694,6 @@ public class AppUserController {
 			//加上两个数据
 			for(Map<String, Object> d : dataList){
 				uid = (Long)d.get("uid");
-				d.put("ip", "");
 				if(null != kingCountMap.get(uid.toString())){
 					d.put("kingdomCount", kingCountMap.get(uid.toString()));
 				}else{
