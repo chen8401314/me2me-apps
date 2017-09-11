@@ -194,7 +194,10 @@
 	        }},
 	        {data: "kingdomCount",orderable:false,title: "王国数"},
 	        {data: "speakCount",orderable:false,title: "王国发言数"},
-	        {data: "ip",orderable:false,title: "注册IP"}
+	        {data: "ip",orderable:false,title: "注册IP"},
+	        {data: "device_code",orderable:false,title: "设备码"},
+	        {data: "mobile_model",orderable:false,title: "手机型号"},
+	        {data: "system_version",orderable:false,title: "系统版本号"}
 	     ]
 	});
 	</script>

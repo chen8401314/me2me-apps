@@ -509,6 +509,11 @@ public class LiveForActivityDao {
 		return null;
 	}
 	
+	public List<Map<String, Object>> getAnchorEnterByUid(long uid){
+		String sql = "select * from a_anchor_enter e where e.uid=?";
+		return jdbcTemplate.queryForList(sql, uid);
+	}
+	
 	public void insertAnchorEnter(long uid, long aid){
 		String sql = "insert into a_anchor_enter(uid,anchor_id) values(?,?)";
 		jdbcTemplate.update(sql, uid, aid);

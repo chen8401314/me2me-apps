@@ -213,6 +213,8 @@ public class KingdomPriceTask {
 		Map<String, Object> subsidyConfig = null;
 		StringBuilder readDayCountSql = null;
 		List<Map<String, Object>> readDayCountList = null;
+		StringBuilder giftPriceSql = null;
+		List<Map<String, Object>> giftPriceList = null;
 		while(true){
 			topicList = localJdbcDao.queryEvery(topicSql+start+","+pageSize);
 			if(null == topicList || topicList.size() == 0){
@@ -233,6 +235,28 @@ public class KingdomPriceTask {
 				kc.setUid(uid);
 				if(!uidList.contains(uid)){
 					uidList.add(uid);
+				}
+			}
+			
+			//批量查询送礼物价值
+			giftPriceSql = new StringBuilder();
+			giftPriceSql.append("select g.topic_id,sum(g.gift_topic_price) as giftPrice");
+			giftPriceSql.append(" from gift_history g where g.create_time>='").append(startTime);
+			giftPriceSql.append("' and g.create_time<='").append(endTime).append("' and g.topic_id in (");
+			for(int i=0;i<topicList.size();i++){
+				if(i>0){
+					giftPriceSql.append(",");
+				}
+				giftPriceSql.append(String.valueOf(topicList.get(i).get("id")));
+			}
+			giftPriceSql.append(") group by g.topic_id");
+			giftPriceList = localJdbcDao.queryEvery(giftPriceSql.toString());
+			if(null != giftPriceList && giftPriceList.size() > 0){
+				for(Map<String, Object> g : giftPriceList){
+					kc = kingCountMap.get(String.valueOf(g.get("topic_id")));
+					if(null != kc){
+						kc.setGiftPrice((Integer)g.get("giftPrice"));
+					}
 				}
 			}
 			
@@ -515,6 +539,7 @@ public class KingdomPriceTask {
 					long noUpdateDayCount = DateUtil.getDaysBetween2Date(kc.getLastUpdateTime(), yesterday);
 					kc.setNoUpdateDayCount((int)noUpdateDayCount);
 				}
+				
 				if(null != vlvMap.get(String.valueOf(kc.getUid())) && vlvMap.get(String.valueOf(kc.getUid())).intValue() == 1){
 					kc.setVlv(true);
 				}
@@ -882,6 +907,8 @@ public class KingdomPriceTask {
 		private long updateCount = 0;
 		
 		private int kv0;
+		
+		private int giftPrice = 0;//礼物价值
 	}
 	
 	public void executeFull(String dateStr) throws Exception{
@@ -1258,7 +1285,7 @@ public class KingdomPriceTask {
 		if(!isNew){//有的，则更新
 			saveSql.append("update topic_data set steal_price=").append(kc.getStealPrice());
 			saveSql.append(",last_price=").append(oldPrice);
-			saveSql.append(",last_price_incr=").append(kc.getPrice()-oldPrice);
+			saveSql.append(",last_price_incr=").append(kc.getPrice()-oldPrice+kc.getGiftPrice());
 			saveSql.append(",diligently=").append(kc.getDiligently()<0?0:kc.getDiligently());
 			saveSql.append(",approve=").append(kc.getApprove()<0?0:kc.getApprove());
 			saveSql.append(",update_text_length=").append(kc.getUpdateTextWordCount());
@@ -1281,7 +1308,7 @@ public class KingdomPriceTask {
 			saveSql.append("update_text_count,update_image_count,update_vedio_count,update_vedio_length,update_audio_count,");
 			saveSql.append("update_audio_length,update_vote_count,update_tease_count,update_day_count,review_text_count,review_text_length,kv0,harvest_price)");
 			saveSql.append(" values (").append(kc.getTopicId()).append(",").append(oldPrice).append(",");
-			saveSql.append(kc.getPrice()-oldPrice).append(",").append(kc.getStealPrice()).append(",now(),");
+			saveSql.append(kc.getPrice()-oldPrice+kc.getGiftPrice()).append(",").append(kc.getStealPrice()).append(",now(),");
 			saveSql.append(kc.getDiligently()).append(",").append(kc.getApprove()).append(",").append(kc.getUpdateTextWordCount());
 			saveSql.append(",").append(kc.getUpdateTextCount()).append(",").append(kc.getUpdateImageCount()).append(",");
 			saveSql.append(kc.getUpdateVedioCount()).append(",").append(kc.getUpdateVedioLenght()).append(",").append(kc.getUpdateAudioCount());

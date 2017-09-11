@@ -11,6 +11,7 @@ import com.me2me.common.web.BaseEntity;
 public class ShowAnchorListDTO implements BaseEntity {
 	private static final long serialVersionUID = -748268165893758794L;
 
+	private int enterStatus;
 	private List<AnchorInfoElement> resultList = Lists.newArrayList();
 	
 	@Data
