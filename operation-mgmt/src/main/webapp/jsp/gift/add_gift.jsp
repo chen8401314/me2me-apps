@@ -94,7 +94,7 @@
 	                                        </div>
 	                                        <div class="form-group">
 	                                            <label for="exampleInputFile">礼物图片高度</label>
-	                                            <input name="imageWidth" type="number"   class="form-control" value="${item.imageHeight}"  required/>
+	                                            <input name="imageHeight" type="number"   class="form-control" value="${item.imageHeight}"  required/>
 	                                        </div>	                                        
                                     	     <div class="form-group">
 	                                            <label for="exampleInputFile">礼物价值</label>
