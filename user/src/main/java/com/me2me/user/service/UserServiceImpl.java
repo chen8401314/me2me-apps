@@ -1652,6 +1652,9 @@ public class UserServiceImpl implements UserService {
         user.setV_lv(userProfile.getvLv());
         user.setNickName(userProfile.getNickName());
         user.setAvatar(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatar());
+        if(!StringUtils.isEmpty(userProfile.getAvatarFrame())){
+        	user.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + userProfile.getAvatarFrame());
+        }
         user.setGender(userProfile.getGender());
         user.setUid(userProfile.getUid());
         user.setIsFollowed(isFollow(targetUid,sourceUid));
@@ -4541,11 +4544,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public String getAppConfigByKey(String key){
 		String result = cacheService.get(CacheConstant.APP_CONFIG_KEY_PRE + key);
-		if(!StringUtils.isEmpty(result)){
+		if(null != result){
 			return result;
 		}
 		AppConfig config = userMybatisDao.getAppConfigByKey(key);
-		if(null != config && !StringUtils.isEmpty(config.getConfigValue())){
+		if(null != config && null != config.getConfigValue()){
 			cacheService.set(CacheConstant.APP_CONFIG_KEY_PRE + key, config.getConfigValue());
 			return config.getConfigValue();
 		}
@@ -4586,7 +4589,7 @@ public class UserServiceImpl implements UserService {
 	
 	@Override
 	public void saveAppConfig(String key, String value, String desc){
-		if(StringUtils.isEmpty(key) || StringUtils.isEmpty(value)){
+		if(StringUtils.isEmpty(key) || value == null){
 			return;
 		}
 		AppConfig config = userMybatisDao.getAppConfigByKey(key);
@@ -4797,11 +4800,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public ModifyUserCoinDto modifyUserCoin(long uid , int coin) {
+    	log.info("111");
 	    ModifyUserCoinDto modifyUserCoinDto = new ModifyUserCoinDto();
 	    UserProfile userProfile = userMybatisDao.getUserProfileByUid(uid);
         modifyUserCoinDto.setCurrentLevel(userProfile.getLevel());
         int modifyCoin = userProfile.getAvailableCoin()+coin;
+        log.info("222");
 	    userInitJdbcDao.modifyUserCoin(uid,modifyCoin);
+	    log.info("333");
         String permissions = getAppConfigByKey(USER_PERMISSIONS);
         UserPermissionDto userPermissionDto = JSON.parseObject(permissions, UserPermissionDto.class);
         int lv = 0;
@@ -4814,6 +4820,7 @@ public class UserServiceImpl implements UserService {
             lv = 9;
         }
         if(lv <= userProfile.getLevel()){
+        	log.info("444");
             return modifyUserCoinDto;
         }else{
             for (UserPermissionDto.UserLevelDto userLevelDto : userPermissionDto.getLevels()) {
@@ -4824,6 +4831,7 @@ public class UserServiceImpl implements UserService {
                     break;
                 }
             }
+            log.info("555");
             return modifyUserCoinDto;
         }
     }
@@ -4867,8 +4875,7 @@ public class UserServiceImpl implements UserService {
         }
         // 日志拉取今日的累计值
         int allDayPoints = userInitJdbcDao.getDayCoins(uid) + userInitJdbcDao.getDayCoins2(uid);
-
-
+        
         if(allDayPoints < map.get(userProfile.getLevel())){
             // 并且规则是否允许重复
             if(!rule.isRepeatable()){
@@ -4892,10 +4899,6 @@ public class UserServiceImpl implements UserService {
             }
 
         }else{
-//            ModifyUserCoinDto modifyUserCoinDto =   new ModifyUserCoinDto();
-//            modifyUserCoinDto.setCurrentLevel(userProfile.getLevel());
-//            modifyUserCoinDto.setUpgrade(0);
-//            return modifyUserCoinDto;
             return  modifyUserCoin(uid, 0);
         }
         return  modifyUserCoin(uid, 0);

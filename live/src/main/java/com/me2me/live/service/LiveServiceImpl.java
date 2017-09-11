@@ -1048,7 +1048,7 @@ public class LiveServiceImpl implements LiveService {
                     continue;
             	}
             }
-            if(!CommonUtils.isNewVersion(getLiveTimeLineDto.getVersion(), "3.0.2")){
+            if(!CommonUtils.isNewVersion(getLiveTimeLineDto.getVersion(), "3.0.3")){
             	 if(topicFragment.getContentType() == 24){//礼物
                      liveElement.setStatus(0);
                      continue;
@@ -3656,7 +3656,9 @@ public class LiveServiceImpl implements LiveService {
         	Map<String,Long> result  = liveMybatisDao.countFragmentByTopicIdWithSince(getLiveUpdateDto);
             totalRecords = result.get("total_records").intValue();
             updateRecords = result.get("update_records").intValue();
-            lastFragmentId = result.get("lastFragmentId").longValue();
+            if(null != result.get("lastFragmentId")){
+            	lastFragmentId = result.get("lastFragmentId").longValue();
+            }
             firstDelCount = result.get("firstDelCount").longValue();
         }
         LiveUpdateDto liveUpdateDto = new LiveUpdateDto();
@@ -4024,6 +4026,14 @@ public class LiveServiceImpl implements LiveService {
             	}
             }
             
+            //送礼物
+            if(getLiveDetailDto.getVersionFlag() < 6){//低于V3.0.3版本
+            	if(topicFragment.getContentType() == 24){
+            		liveElement.setStatus(0);
+                    continue;
+            	}
+            }
+            
             //逗一逗自动播放状态
             int teaseStatus = 0;
             if((topicFragment.getType() == 51 || topicFragment.getType() == 52) && topicFragment.getContentType() == 20){
@@ -4040,6 +4050,22 @@ public class LiveServiceImpl implements LiveService {
                }
             }
             liveElement.setTeaseStatus(teaseStatus);
+            
+            //送礼物自动播放状态
+            int giftStatus = 0;
+            if(topicFragment.getContentType() == 24){
+            	//24小时内
+                if(new Date().getTime()-topicFragment.getCreateTime().getTime()<=24*60*60*1000){
+                    String giftStatusstr = cacheService.get("GIFT_STATUS_"+uid+"_"+topicFragment.getId());
+                    if (!StringUtils.isEmpty(giftStatusstr)) {
+                    	giftStatus=0;
+                    } else {
+                    	giftStatus=1;
+                        cacheService.setex("GIFT_STATUS_"+uid+"_"+topicFragment.getId(),"1",60*60*48);
+                    }
+                }
+            }
+            liveElement.setGiftStatus(giftStatus);
 
             userProfile = userMap.get(String.valueOf(uid));
             liveElement.setUid(uid);
@@ -4167,8 +4193,8 @@ public class LiveServiceImpl implements LiveService {
         		}
 			}
         }
+        UserProfile userProfile = userService.getUserProfileByUid(createKingdomDto.getUid());
         if(free==0){
-        	UserProfile userProfile = userService.getUserProfileByUid(createKingdomDto.getUid());
         	int price = userProfile.getAvailableCoin();
         	if(price<needPrice){
         		return Response.failure(500,"需要消耗"+needPrice+"米汤币,当前余额不足！");
@@ -4326,7 +4352,7 @@ public class LiveServiceImpl implements LiveService {
         UserProfile profile = userService.getUserProfileByUid(createKingdomDto.getUid());
         speakDto2.setV_lv(profile.getvLv());
         //检查有没有出错的数据，如果有则删除出错数据
-        contentService.clearData();
+//        contentService.clearData();
 
         log.info("first speak...");
         long lastFragmentId = 0;
@@ -4348,42 +4374,42 @@ public class LiveServiceImpl implements LiveService {
             lastFragmentId = topicFragment.getId();
             total++;*/
         }else{//图片
-        	String[] imgs = createKingdomDto.getFragment().split(";");
-        	Map<String, String> map = new HashMap<String, String>();
-        	String extra = createKingdomDto.getExtra();
-        	if(!StringUtils.isEmpty(extra)){
-        		JSONArray obj = JSON.parseArray(extra);
-        		if(!obj.isEmpty()){
-        			for(int i=0;i<obj.size();i++){
-        				map.put(String.valueOf(i), obj.getJSONObject(i).toJSONString());
-        			}
-        		}
-        	}
-
-        	if(null != imgs && imgs.length > 0){
-        		TopicFragmentWithBLOBs topicFragment = null;
-        		String e = null;
-        		for(int i=0;i<imgs.length;i++){
-        			topicFragment = new TopicFragmentWithBLOBs();
-                	topicFragment.setFragmentImage(imgs[i]);
-                	topicFragment.setUid(createKingdomDto.getUid());
-                	topicFragment.setType(0);//第一次发言肯定是主播发言
-                	topicFragment.setContentType(1);
-                	topicFragment.setTopicId(topic.getId());
-                    topicFragment.setBottomId(0l);
-                    topicFragment.setTopId(0l);
-                    topicFragment.setSource(createKingdomDto.getSource());
-                    topicFragment.setCreateTime(now);
-                    e = map.get(String.valueOf(i));
-                    if(null == e){
-                    	e = "";
-                    }
-                    topicFragment.setExtra(e);
-                    liveMybatisDao.createTopicFragment(topicFragment);
-                    lastFragmentId = topicFragment.getId();
-                    total++;
-        		}
-        	}
+//        	String[] imgs = createKingdomDto.getFragment().split(";");
+//        	Map<String, String> map = new HashMap<String, String>();
+//        	String extra = createKingdomDto.getExtra();
+//        	if(!StringUtils.isEmpty(extra)){
+//        		JSONArray obj = JSON.parseArray(extra);
+//        		if(!obj.isEmpty()){
+//        			for(int i=0;i<obj.size();i++){
+//        				map.put(String.valueOf(i), obj.getJSONObject(i).toJSONString());
+//        			}
+//        		}
+//        	}
+//
+//        	if(null != imgs && imgs.length > 0){
+//        		TopicFragmentWithBLOBs topicFragment = null;
+//        		String e = null;
+//        		for(int i=0;i<imgs.length;i++){
+//        			topicFragment = new TopicFragmentWithBLOBs();
+//                	topicFragment.setFragmentImage(imgs[i]);
+//                	topicFragment.setUid(createKingdomDto.getUid());
+//                	topicFragment.setType(0);//第一次发言肯定是主播发言
+//                	topicFragment.setContentType(1);
+//                	topicFragment.setTopicId(topic.getId());
+//                    topicFragment.setBottomId(0l);
+//                    topicFragment.setTopId(0l);
+//                    topicFragment.setSource(createKingdomDto.getSource());
+//                    topicFragment.setCreateTime(now);
+//                    e = map.get(String.valueOf(i));
+//                    if(null == e){
+//                    	e = "";
+//                    }
+//                    topicFragment.setExtra(e);
+//                    liveMybatisDao.createTopicFragment(topicFragment);
+//                    lastFragmentId = topicFragment.getId();
+//                    total++;
+//        		}
+//        	}
         }
        
         //扣除创建王国168米汤币
@@ -4411,8 +4437,8 @@ public class LiveServiceImpl implements LiveService {
         }
 
         //--add update kingdom cache -- modify by zcl -- begin --
-		String value = lastFragmentId + "," + total;
-        cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
+//		String value = lastFragmentId + "," + total;
+//        cacheService.hSet(TOPIC_FRAGMENT_NEWEST_MAP_KEY, "T_" + topic.getId(), value);
         //--add update kingdom cache -- modify by zcl -- end --
         // 找到机器TAG
         
@@ -4428,10 +4454,9 @@ public class LiveServiceImpl implements LiveService {
         	if(null != tags && tags.length > 0){
         		TopicTag topicTag = null;
         		TopicTagDetail tagDetail = null;
-        		Set<String> tagSet = new LinkedHashSet<>();
+        		Set<Long> tagSet = new LinkedHashSet<>();
         		for(String tag : tags){
         			tag = tag.trim();
-        			tagSet.add(tag);
         			if(!StringUtils.isEmpty(tag)){
         				topicTag = liveMybatisDao.getTopicTagByTag(tag);
         				if(null == topicTag){
@@ -4439,19 +4464,20 @@ public class LiveServiceImpl implements LiveService {
         					topicTag.setTag(tag);
         					liveMybatisDao.insertTopicTag(topicTag);
         				}
+        				tagSet.add(topicTag.getId());
+        				tagDetail = new TopicTagDetail();
+            			tagDetail.setTag(tag);
+            			tagDetail.setTagId(topicTag.getId());
+            			tagDetail.setTopicId(topic.getId());
+            			tagDetail.setUid(createKingdomDto.getUid());
+            			if(autoTagSet.contains(tag)){
+            				tagDetail.setAutoTag(1);
+            			}else{
+            				tagDetail.setAutoTag(0);
+            			}
+            			liveMybatisDao.insertTopicTagDetail(tagDetail);
+            			// 4 用户建立了新的王国,并且王国有标签,及时声称
         			}
-        			tagDetail = new TopicTagDetail();
-        			tagDetail.setTag(tag);
-        			tagDetail.setTagId(topicTag.getId());
-        			tagDetail.setTopicId(topic.getId());
-        			tagDetail.setUid(createKingdomDto.getUid());
-        			if(autoTagSet.contains(tag)){
-        				tagDetail.setAutoTag(1);
-        			}else{
-        				tagDetail.setAutoTag(0);
-        			}
-        			liveMybatisDao.insertTopicTagDetail(tagDetail);
-        			// 4 用户建立了新的王国,并且王国有标签,及时声称
         		}
         		liveLocalJdbcDao.batchInsertUserLikeTags(createKingdomDto.getUid(),tagSet);
         	}
@@ -4467,11 +4493,13 @@ public class LiveServiceImpl implements LiveService {
     	}
         // 机器人自动回复结束 -- end --
         log.info("createKingdom end");
-        CoinRule coinRule = userService.getCoinRules().get(Rules.CREATE_KING_KEY);
-        coinRule.setExt(createKingdomDto.getUid());
-        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(createKingdomDto.getUid(), userService.getCoinRules().get(Rules.CREATE_KING_KEY));
-        speakDto2.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
-        speakDto2.setUpgrade(modifyUserCoinDto.getUpgrade());
+//        CoinRule coinRule = userService.getCoinRules().get(Rules.CREATE_KING_KEY);
+//        coinRule.setExt(createKingdomDto.getUid());
+//        ModifyUserCoinDto modifyUserCoinDto = userService.coinRule(createKingdomDto.getUid(), coinRule);
+//        speakDto2.setCurrentLevel(modifyUserCoinDto.getCurrentLevel());
+//        speakDto2.setUpgrade(modifyUserCoinDto.getUpgrade());
+        speakDto2.setCurrentLevel(userProfile.getLevel());
+        speakDto2.setUpgrade(0);
         Response response = Response.success(ResponseStatus.USER_CREATE_LIVE_SUCCESS.status, ResponseStatus.USER_CREATE_LIVE_SUCCESS.message, speakDto2);
      // 记录操作日志
         contentService.addUserOprationLog(topic.getUid(), USER_OPRATE_TYPE.CREATE_KINGDOM, topic.getId());
@@ -8855,7 +8883,7 @@ public class LiveServiceImpl implements LiveService {
         UserProfile profile = userService.getUserProfileByUid(createKingdomDto.getUid());
         speakDto2.setV_lv(profile.getvLv());
         //检查有没有出错的数据，如果有则删除出错数据
-        contentService.clearData();
+//        contentService.clearData();
 
         log.info("first speak...");
         long lastFragmentId = 0;
