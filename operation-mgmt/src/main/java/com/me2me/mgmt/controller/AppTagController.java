@@ -1,25 +1,33 @@
 package com.me2me.mgmt.controller;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.annotation.MultipartConfig;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.RandomUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.me2me.common.page.PageBean;
+import com.me2me.common.security.SecurityUtils;
 import com.me2me.content.service.ContentService;
+import com.me2me.io.service.FileTransferService;
 import com.me2me.live.model.TopicTag;
 import com.me2me.live.service.LiveService;
 import com.me2me.mgmt.request.AppTagQueryDTO;
@@ -32,7 +40,8 @@ import com.me2me.mgmt.syslog.SystemControllerLog;
 public class AppTagController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AppTagController.class);
-	
+	@Autowired
+	private FileTransferService fileTransferService;
 	@Autowired
     private ContentService contentService;
 	@Autowired
@@ -199,10 +208,31 @@ public class AppTagController {
 		return view;
 	}
 	
+	@RequestMapping(value="/tagNew")
+	@SystemControllerLog(description = "更新标签")
+	public ModelAndView tagNew(TopicTag topicTag){
+		//查体系标签
+		String sql = "select * from topic_tag where is_sys=1";
+		
+		ModelAndView view = new ModelAndView("/tag/tagNew");
+		view.addObject("sysTagList",contentService.queryEvery(sql));
+		view.addObject("userHobbyList",contentService.queryEvery("select * from dictionary where tid=3"));
+		return view;
+	}
+
 	@RequestMapping(value="/updateTag")
 	@SystemControllerLog(description = "更新标签")
-	public ModelAndView updateTag(TopicTag topicTag){
+	public ModelAndView updateTag(TopicTag topicTag,@RequestParam("image2")MultipartFile file){
 		ModelAndView view = null;
+		if(file!=null && StringUtils.isNotEmpty(file.getOriginalFilename()) && file.getSize()>0){
+			String imgName = SecurityUtils.md5(System.currentTimeMillis()+RandomUtils.nextInt(100, 999)+"", "1");
+    		try {
+				fileTransferService.upload(file.getBytes(), imgName);
+				topicTag.setCoverImg(imgName);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		TopicTag dbTag = liveService.getTopicTagByTag(topicTag.getTag());
 		if(null != dbTag && dbTag.getId().longValue() != topicTag.getId().longValue()){
 			view = new ModelAndView("tag/tagEdit");
@@ -225,22 +255,19 @@ public class AppTagController {
 		view = new ModelAndView("redirect:/tag/query");
 		return view;
 	}
-	@RequestMapping(value="/tagNew")
-	@SystemControllerLog(description = "更新标签")
-	public ModelAndView tagNew(TopicTag topicTag){
-		//查体系标签
-		String sql = "select * from topic_tag where is_sys=1";
-		
-		ModelAndView view = new ModelAndView("/tag/tagNew");
-		view.addObject("sysTagList",contentService.queryEvery(sql));
-		view.addObject("userHobbyList",contentService.queryEvery("select * from dictionary where tid=3"));
-		return view;
-	}
-	
 	@RequestMapping(value="/createTag")
 	@SystemControllerLog(description = "新建标签")
-	public ModelAndView createTag(TopicTag topicTag){
+	public ModelAndView createTag(TopicTag topicTag,@RequestParam("image2")MultipartFile file){
 		ModelAndView view = null;
+		if(file!=null && StringUtils.isNotEmpty(file.getOriginalFilename()) && file.getSize()>0){
+			String imgName = SecurityUtils.md5(System.currentTimeMillis()+RandomUtils.nextInt(100, 999)+"", "1");
+    		try {
+				fileTransferService.upload(file.getBytes(), imgName);
+				topicTag.setCoverImg(imgName);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 		TopicTag dbTag = liveService.getTopicTagByTag(topicTag.getTag());
 		if(null != dbTag){
 			view = new ModelAndView("tag/tagNew");

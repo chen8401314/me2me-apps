@@ -224,7 +224,7 @@
 	        		return new Date(data).Format("yyyy-MM-dd hh:mm:ss");
 	        	}
 	        }},
-	        {data: "isSys",orderable:false,title: "是否体系",render:function(data){
+	        {data: "issys",orderable:false,title: "是否体系",render:function(data){
 	        	return data==1?'Y':'N';
 	        }},
 	        {data: "isRec",title: "是否推荐",render:function(data){

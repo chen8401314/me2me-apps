@@ -104,7 +104,7 @@ public interface TopicTagSearchMapper {
 	public List<TagInfo> getUserLikeTagAndSubTag(@Param("uid")long uid,@Param("isLike")int isLike);
 	
 	@ResultType(Long.class)
-	@Select("select id from topic_tag where tag=#{0}")
-	public long getTagIdByTag(String label);
+	@Select("select id as tagId,tag as tagName,cover_img as coverImg from topic_tag where tag=#{0}")
+	public TagInfo getTagInfo(String label);
 
 }

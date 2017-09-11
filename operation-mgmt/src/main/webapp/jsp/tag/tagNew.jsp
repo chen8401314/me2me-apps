@@ -42,7 +42,7 @@
 
             <!--main content start-->
             <section id="main-content">
-            	<form id="form1" action="${ctx}/tag/createTag" method="POST">
+            	<form id="form1" action="${ctx}/tag/createTag" method="POST" enctype="multipart/form-data">
                 <section class="wrapper">
                     <!-- page start-->
                     <div class="row">
@@ -50,16 +50,20 @@
                             <section class="panel">
                                 <header class="panel-heading">基本信息</header>
                                 <div class="panel-body">
-                                    <div role="form">
+                                    <div class="row">
+										<div class="col-xs-4">
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">标签名</label>
                                             <input type="text" id="tag" name="tag" class="form-control" value="${dataObj.tag }" style="width: 100%" maxlength="8" required>
                                         </div>
+                                        </div>
+										<div class="col-xs-4">
                                         <div class="form-group">
-                                            <label for="exampleInputEmail1">排序号</label>
-                                            <p>小数排前面，升序排序</p>
+                                            <label for="exampleInputEmail1">排序号(小数排前面，升序排序)</label>
                                             <input type="text" id="orderNum" name="orderNum" class="form-control" value="0" >
                                         </div>
+                                        </div>
+										<div class="col-xs-4">
                                         <div class="form-group">
                                             <label for="exampleInputEmail1">父标签</label>
                                             <select name="pid" id="pid" class="form-control">
@@ -69,6 +73,8 @@
 												</c:forEach>
 											</select>
                                         </div>
+                                        </div>
+										<div class="col-xs-4">
                                         <div class="form-group">
                                             <label for="exampleInputFile">是否体系</label>
                                             <select name="isSys" id="isSys" class="form-control">
@@ -76,6 +82,8 @@
 												<option value="1" ${dataObj.isSys==1?'selected':''}>是</option>
 											</select>
                                         </div>
+                                        </div>
+										<div class="col-xs-4">
                                         <div class="form-group">
                                             <label for="exampleInputFile">是否推荐</label>
                                             <select name="isRec" id="isRec" class="form-control">
@@ -83,6 +91,17 @@
 												<option value="1" ${dataObj.isRec==1?'selected':''}>是</option>
 											</select>
                                         </div>
+                                        </div>
+                                        <div class="col-xs-4">
+                                        <div class="form-group">
+                                            <label for="exampleInputFile">状态</label>
+                                            <select name="status" id="status" class="form-control">
+												<option value="0" ${dataObj.status==0?'selected':''}>正常</option>
+												<option value="1" ${dataObj.status==1?'selected':''}>禁用</option>
+											</select>
+                                        </div>
+                                        </div>
+										<div class="col-xs-4">
                                          <div class="form-group">
                                             <label for="exampleInputFile">对应用户喜好</label>
                                              <p>ctrl+鼠标左键多选，误点击可按F5刷新还原，不选时请选中“不选”</p>
@@ -93,13 +112,25 @@
 												</c:forEach>
 											</select>
                                         </div>
-                                        <div class="form-group">
-                                            <label for="exampleInputFile">状态</label>
-                                            <select name="status" id="status" class="form-control">
-												<option value="0" ${dataObj.status==0?'selected':''}>正常</option>
-												<option value="1" ${dataObj.status==1?'selected':''}>禁用</option>
-											</select>
                                         </div>
+										<div class="col-xs-4">
+										<div class="form-group">
+	                                            <label for="exampleInputFile">背景图</label>
+                                                <div class="fileupload fileupload-new" data-provides="fileupload">
+                                                    <div class="fileupload-new thumbnail" style="width: 200px; height: 150px;">
+                                                    </div>
+                                                    <div class="fileupload-preview fileupload-exists thumbnail" style="max-width: 200px; max-height: 150px; line-height: 20px;"></div>
+                                                    <div>
+                                                        <span class="btn btn-white btn-file">
+                                                            <span class="fileupload-new"><i class="fa fa-paper-clip"></i>选择上传图片</span>
+                                                            <span class="fileupload-exists"><i class="fa fa-undo"></i>修改</span>
+                                                            <input type="file" id="image2" name="image2" class="default">
+                                                        </span>
+                                                        <a href="#" class="btn btn-danger fileupload-exists" data-dismiss="fileupload"><i class="fa fa-trash"></i>删除</a>
+                                                    </div>
+                                                </div>
+	                                        </div>
+	                                     </div>
                                     </div>
                                 </div>
                             </section>

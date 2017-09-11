@@ -4448,10 +4448,11 @@ public class ContentServiceImpl implements ContentService {
         }
        
         for(String label:allTags){
-        	long tagId= topicTagMapper.getTagIdByTag(label);
+        	TagInfo info=topicTagMapper.getTagInfo(label);
+        	long tagId= info.getTagId();
             HotTagElement element = new HotTagElement();
            	element.setIsShowLikeButton(userLikeTags.contains(label)?0:1);
-            
+            element.setCoverImg(info.getCoverImg());
             
            /* List<Map<String,Object>> topicList = null;
             String ktKey = "OBJ:KINGDOMSBYTAG:"+label+"_new_1_4";
@@ -7373,7 +7374,8 @@ public class ContentServiceImpl implements ContentService {
     @Override
     public Response<TagKingdomDto> tagKingdomList(String tagName, String order, int page, int pageSize, long uid) {
     	List<Long> blacklistUids = liveForContentJdbcDao.getBlacklist(uid);
-    	long tagId = topicTagMapper.getTagIdByTag(tagName);
+    	TagInfo info = topicTagMapper.getTagInfo(tagName);
+    	long tagId = info.getTagId();
         List<Map<String,Object>> topics = null;
      /*   String ktKey = "OBJ:KINGDOMSBYTAG:"+tagName+"_"+order+"_"+page+"_"+pageSize;
         Object tkRes = cacheService.getJavaObject(ktKey);
