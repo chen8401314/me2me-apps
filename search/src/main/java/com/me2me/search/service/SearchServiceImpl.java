@@ -784,7 +784,7 @@ public class SearchServiceImpl implements SearchService {
 			person.setNickName(profile.getNickName());
 			person.setAvatar(Constant.QINIU_DOMAIN + "/" + profile.getAvatar());
 			if(!StringUtils.isEmpty(profile.getAvatarFrame())){
-				person.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + profile.getAvatar());
+				person.setAvatarFrame(Constant.QINIU_DOMAIN + "/" + profile.getAvatarFrame());
 			}
 			person.setV_lv(profile.getvLv());
 			person.setLevel(profile.getLevel());
